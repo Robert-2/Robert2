@@ -1,0 +1,17 @@
+[
+    {
+        "id"   : 1,
+        "name" : "France",
+        "code" : "FR"
+    },
+    {
+        "id"   : 2,
+        "name" : "Suisse",
+        "code" : "CH"
+    },
+    {
+        "id"   : 3,
+        "name" : "Belgique",
+        "code" : "BE"
+    }
+]

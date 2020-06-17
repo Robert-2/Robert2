@@ -1,0 +1,9 @@
+#!/usr/bin/env php
+<?php
+declare(strict_types=1);
+
+require __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'init.php';
+
+$app = new Symfony\Component\Console\Application();
+$app->add(new Robert2\Scripts\ImportsV1\Command());
+$app->run();

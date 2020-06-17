@@ -1,0 +1,27 @@
+[
+    {
+        "tag_id"        : 1,
+        "taggable_type" : "Robert2\\API\\Models\\Person",
+        "taggable_id"   : 2
+    },
+    {
+        "tag_id"        : 2,
+        "taggable_type" : "Robert2\\API\\Models\\Person",
+        "taggable_id"   : 2
+    },
+    {
+        "tag_id"        : 3,
+        "taggable_type" : "Robert2\\API\\Models\\Material",
+        "taggable_id"   : 1
+    },
+    {
+        "tag_id"        : 3,
+        "taggable_type" : "Robert2\\API\\Models\\Material",
+        "taggable_id"   : 2
+    },
+    {
+        "tag_id"        : 3,
+        "taggable_type" : "Robert2\\API\\Models\\Material",
+        "taggable_id"   : 3
+    }
+]

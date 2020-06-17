@@ -1,0 +1,60 @@
+.header-page {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  padding: $content-padding-small-horizontal $content-padding-small-vertical;
+
+  &__help {
+    display: none;
+    flex: 1;
+    color: $help-text-color;
+  }
+
+  &__error {
+    margin-top: .5rem;
+    color: $text-danger-color;
+    font-weight: 600;
+  }
+
+  &__actions {
+    flex: 0 1 auto;
+    display: flex;
+    flex-direction: column-reverse;
+    min-width: $form-min-width;
+    padding: .55rem 0;
+
+    select,
+    button,
+    input,
+    .v-select {
+      margin-bottom: .5rem;
+      margin-right: .8rem;
+    }
+  }
+
+  @media(min-width: $screen-mobile) {
+    padding: $content-padding-large-horizontal $content-padding-large-vertical;
+  }
+
+  @media(min-width: $screen-tablet) {
+    &__help {
+      display: block;
+      min-height: 25px;
+      margin-right: .78rem;
+    }
+
+    &__actions {
+      flex-direction: row;
+      align-items: flex-start;
+      min-width: auto;
+
+      select,
+      button,
+      input,
+      .v-select {
+        margin-bottom: .3rem;
+      }
+    }
+  }
+}

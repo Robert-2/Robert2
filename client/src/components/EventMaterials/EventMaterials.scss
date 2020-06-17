@@ -1,0 +1,77 @@
+.EventMaterials {
+  &__toggle,
+  &__categories,
+  &__footer {
+    flex: 0 0 auto;
+    margin-bottom: 1.5rem;
+  }
+
+  &__category {
+    padding: 0 .5rem;
+    border-left: 3px solid $list-left-border-color;
+  }
+
+  &__title {
+    margin: 0 0 .5rem;
+  }
+
+  &__list {
+    margin: 0 0 .5rem;
+    padding: 0;
+  }
+
+  &__item,
+  &__subtotal {
+    list-style: none;
+    display: flex;
+
+    &__name {
+      flex: 1;
+    }
+
+    &__price {
+      flex: 0 0 auto;
+      margin-left: .8rem;
+      color: $text-light-color;
+      text-align: right;
+    }
+  }
+
+  &__item {
+    margin-bottom: .35rem;
+    border-bottom: 1px dashed $list-left-border-color;
+
+    &__quantity {
+      flex: 0 0 3rem;
+      margin: 0 .8rem 0 .8rem;
+
+      .fas {
+        margin-right: .2rem;
+        color: $text-light-color;
+        font-size: .8rem;
+      }
+    }
+
+    &__total {
+      flex: 0 0 5rem;
+      margin-left: .8rem;
+      text-align: right;
+    }
+  }
+
+  &__subtotal {
+    padding: .5rem 0 0;
+    font-size: 1.1rem;
+
+    &__name {
+      text-align: right;
+      color: $text-light-color;
+    }
+
+    &__price {
+      flex: 0 0 auto;
+      color: $text-base-color;
+      font-weight: 600;
+    }
+  }
+}

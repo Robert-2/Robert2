@@ -1,0 +1,40 @@
+.AttributeEditForm {
+  display: flex;
+  background-color: $bg-color-table-td;
+
+  &__name {
+    flex: 1;
+    padding: .8rem .5rem;
+  }
+
+  &__type {
+    flex: 0 0 170px;
+    padding: .8rem .5rem;
+  }
+
+  &__unit {
+    flex: 0 0 80px;
+    padding: .8rem .5rem;
+    text-align: center;
+  }
+
+  &__max-length {
+    flex: 0 0 110px;
+    padding: .8rem .5rem;
+    text-align: center;
+  }
+
+  &__input,
+  &__select {
+    width: 100%;
+  }
+
+  &__error {
+    color: $text-danger-color;
+    padding: 0;
+
+    li {
+      list-style: inside;
+    }
+  }
+}

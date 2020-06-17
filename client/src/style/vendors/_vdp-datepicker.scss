@@ -1,0 +1,31 @@
+.vdp-datepicker {
+  &__calendar {
+    background-color : $bg-color-input-normal !important;
+    border-color     : #5c5c5c !important;
+    color            : $link-active-color !important;
+
+    header {
+      .next:not(.disabled):hover,
+      .prev:not(.disabled):hover,
+      .up:not(.disabled):hover {
+        background-color : $bg-color-button-info;
+      }
+    }
+
+    .cell:not(.blank):not(.disabled).day:hover,
+    .cell:not(.blank):not(.disabled).month:hover,
+    .cell:not(.blank):not(.disabled).year:hover {
+      border-color: #5c5c5c;
+    }
+
+    .cell.disabled {
+      color: $text-muted-color;
+    }
+
+    .cell.selected,
+    .cell.selected.highlighted,
+    .cell.selected:hover {
+      background-color : $bg-color-button-info;
+    }
+  }
+}

@@ -1,0 +1,15 @@
+.Technician {
+  display: flex;
+  flex-wrap: wrap;
+  padding-bottom: 3rem;
+
+  .PersonForm {
+    flex: 2;
+  }
+
+  .Help {
+    flex: 1;
+    margin-top: 2.8rem;
+    min-width: 150px;
+  }
+}

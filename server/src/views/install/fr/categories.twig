@@ -1,0 +1,48 @@
+<div class="page__content">
+    <h2>{{stepNumber}} - Catégories</h2>
+    <p>
+        Parfait ! L'installation est maintenant terminée.
+    </p>
+    <p>
+        Cependant vous pouvez déjà créer quelques <strong>catégories principales de matériel</strong>
+        si vous le souhaitez.<br>
+        Ces catégories devraient refléter les différentes choses que vous louerez
+        en utilisant Robert2. Par exemple, si vous êtes une société de location de
+        matériel de sonorisation, vous pouvez créer les catégories <em>"mixage"</em>,
+        <em>"enceintes"</em>, <em>"micros"</em>, <em>"effets"</em>, etc.
+    </p>
+    <p>
+        Bien sûr, ces catégories pourront toujours être <strong>modifiées plus tard</strong>.
+    </p>
+    <form method="POST" class="form">
+        <div class="form__field">
+            <p class="form__field-description">
+                Écrire une liste de catégories, séparées par des virgules (,).
+            </p>
+            <input
+                type="text"
+                name="categories"
+                id="categories"
+                class="form__input-categories"
+                value="{{stepData['categories']}}"
+                onKeyUp="onInputKeyUp()"
+                autocomplete="off"
+                autofocus
+            />
+            {% if validationErrors %}
+            <div class="form__field-error">
+                <pre>{{validationErrors}}</pre>
+            </div>
+            {% endif %}
+            <p class="form__field-description" style="margin-top: .5rem;">
+                <span class="categs-count">2</span> catégories seront créées.
+            </p>
+        </div>
+        <div class="form__submit">
+            <button role="submit" class="form__submit-button">Créer les catégories et terminer</button>
+            <a href="/login" class="form__submit-button">Accéder directement à l'application</a>
+        </div>
+    </form>
+</div>
+
+<script src="js/install/categories.js"></script>

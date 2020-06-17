@@ -1,0 +1,174 @@
+<section class="page__content">
+    <h2>{{stepNumber}} - Your organization</h2>
+    <p>
+        To be able to create bills and quotations, the application needs to know the details
+        about your organization (enterprise, non-profit, etc.)
+    </p>
+    <form method="POST" class="form">
+        <section class="form__field">
+            <h3 class="form__field-title">Company name *</h3>
+            <p class="form__field-description">
+                The name of your company / association / institution...
+            </p>
+            <input
+                type="text"
+                name="name"
+                style="width: 410px;"
+                value="{{stepData['company']['name']}}"
+            />
+            {% if validationErrors['name'] %}
+            <div class="form__field-error">{{ translate(validationErrors['name']) }}</div>
+            {% endif %}
+        </section>
+        <section class="form__field">
+            <h3 class="form__field-title">Address *</h3>
+            <p class="form__field-description">
+                Postal address of your company / association / institution...
+            </p>
+            <label>Rue, Number *</label>
+            <input
+                type="text"
+                name="street"
+                style="width: 410px;"
+                value="{{stepData['company']['street']}}"
+            />
+            {% if validationErrors['street'] %}
+            <div class="form__field-error">{{ translate(validationErrors['street']) }}</div>
+            {% endif %}
+            <div class="form__sub-fields">
+                <div class="form__sub-fields__item">
+                    <label>Zip code *</label>
+                    <input
+                        type="text"
+                        name="zipCode"
+                        style="width: 100px;"
+                        value="{{stepData['company']['zipCode']}}"
+                    />
+                    {% if validationErrors['zipCode'] %}
+                    <div class="form__field-error">{{ translate(validationErrors['zipCode']) }}</div>
+                    {% endif %}
+                </div>
+                <div class="form__sub-fields__item">
+                    <label>Locality *</label>
+                    <input
+                        type="text"
+                        name="locality"
+                        style="width: 300px;"
+                        value="{{stepData['company']['locality']}}"
+                    />
+                    {% if validationErrors['locality'] %}
+                    <div class="form__field-error">{{ translate(validationErrors['locality']) }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            <label>Country</label>
+            <input
+                type="text"
+                name="country"
+                style="width: 250px;"
+                value="{{stepData['company']['country']}}"
+            />
+        </section>
+        <section class="form__field">
+            <h3 class="form__field-title">Phone</h3>
+            <p class="form__field-description">
+                The phone number that will be displayed on documents (quotations, bills...) (optional)
+            </p>
+            <input
+                type="text"
+                name="phone"
+                style="width: 410px;"
+                value="{{stepData['company']['phone']}}"
+            />
+        </section>
+        <section class="form__field">
+            <h3 class="form__field-title">E-mail</h3>
+            <p class="form__field-description">
+                E-mail address that will appear on documents (optional).
+            </p>
+            <input
+                type="text"
+                name="email"
+                style="width: 410px;"
+                value="{{stepData['company']['email']}}"
+            />
+        </section>
+        <section class="form__field">
+            <h3 class="form__field-title">V.A.T.</h3>
+            <p class="form__field-description">
+                Your V.A.T. number and rate. If you're not concerned by V.A.T., you can leave these
+                fields empty.
+            </p>
+            <div class="form__sub-fields">
+                <div class="form__sub-fields__item">
+                    <label>Number</label>
+                    <input
+                        type="text"
+                        name="vatNumber"
+                        style="width: 250px;"
+                        value="{{stepData['company']['vatNumber']}}"
+                    />
+                </div>
+                <div class="form__sub-fields__item">
+                    <label>Rate (in %)</label>
+                    <input
+                        type="number"
+                        step="0.1"
+                        name="vatRate"
+                        style="width: 100px;"
+                        value="{{stepData['company']['vatRate']}}"
+                    />
+                </div>
+            </div>
+        </section>
+        <section class="form__field">
+            <h3 class="form__field-title">Other legal numbers (optional)</h3>
+            <p class="form__field-description">
+                You can add up to two administrative numbers that will appear on the quotations and bills.
+            </p>
+            <h4 style="margin: 1rem 0 0;">First number&nbsp;:</h4>
+            <div class="form__sub-fields">
+                <div class="form__sub-fields__item">
+                    <label>Name</label>
+                    <input
+                        type="text"
+                        name="legalNumbers[0][name]"
+                        style="width: 100px;"
+                        value="SIRET"
+                    />
+                </div>
+                <div class="form__sub-fields__item">
+                    <label>Value</label>
+                    <input
+                        type="text"
+                        name="legalNumbers[0][value]"
+                        style="width: 250px;"
+                    />
+                </div>
+            </div>
+            <h4 style="margin: 1rem 0 0;">Second number&nbsp;:</h4>
+            <div class="form__sub-fields">
+                <div class="form__sub-fields__item">
+                    <label>Name</label>
+                    <input
+                        type="text"
+                        name="legalNumbers[1][name]"
+                        style="width: 100px;"
+                        value="APE"
+                    />
+                </div>
+                <div class="form__sub-fields__item">
+                    <label>Value</label>
+                    <input
+                        type="text"
+                        name="legalNumbers[1][value]"
+                        style="width: 250px;"
+                    />
+                </div>
+            </div>
+        </section>
+        <section class="form__submit">
+            <button role="submit">Next step</button>
+        </section>
+    </form>
+</section>

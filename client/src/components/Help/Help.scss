@@ -1,0 +1,33 @@
+.Help {
+  &__loading {
+    display: flex;
+    align-items: center;
+
+    .fa-spin {
+      margin-bottom: .1rem;
+      margin-right: .5rem;
+      font-size: 1.8rem;
+    }
+  }
+
+  &__message {
+    .fas {
+      vertical-align: middle;
+      margin: 0 .2rem .2rem 0;
+      font-size: 1.2rem;
+    }
+  }
+
+  &__error-details-button {
+    font-weight: 400;
+  }
+
+  &--success {
+    color: $text-success-color;
+  }
+
+  &--error {
+    color: $text-danger-color;
+    font-weight: 600;
+  }
+}

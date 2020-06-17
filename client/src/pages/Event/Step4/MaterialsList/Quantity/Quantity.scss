@@ -1,0 +1,14 @@
+.MaterialsListQuantity {
+  width: 9rem;
+  min-width: 9rem;
+
+  button {
+    padding: 6px 8px;
+  }
+
+  &__number {
+    width: 3rem;
+    margin: 0 .3rem;
+    padding: 5px 8px 6px;
+  }
+}

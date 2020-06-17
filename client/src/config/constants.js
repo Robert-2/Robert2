@@ -1,0 +1,5 @@
+const DATE_DB_FORMAT = 'YYYY-MM-DD HH:mm:ss';
+const DATE_QUERY_FORMAT = 'YYYY-MM-DD';
+const DEBOUNCE_WAIT = 500; // - in miliseconds
+
+export { DATE_DB_FORMAT, DATE_QUERY_FORMAT, DEBOUNCE_WAIT };

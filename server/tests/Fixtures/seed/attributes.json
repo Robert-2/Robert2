@@ -1,0 +1,30 @@
+[
+    {
+        "id"         : 1,
+        "name"       : "Poids",
+        "type"       : "float",
+        "unit"       : "kg",
+        "max_length" : null
+    },
+    {
+        "id"         : 2,
+        "name"       : "Couleur",
+        "type"       : "string",
+        "unit"       : null,
+        "max_length" : null
+    },
+    {
+        "id"         : 3,
+        "name"       : "Puissance",
+        "type"       : "integer",
+        "unit"       : "W",
+        "max_length" : null
+    },
+    {
+        "id"         : 4,
+        "name"       : "Conforme",
+        "type"       : "boolean",
+        "unit"       : null,
+        "max_length" : null
+    }
+]

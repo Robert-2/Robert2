@@ -1,0 +1,50 @@
+[
+    {
+        "id"          : 1,
+        "event_id"    : 1,
+        "material_id" : 1,
+        "quantity"    : 1
+    },
+    {
+        "id"          : 2,
+        "event_id"    : 1,
+        "material_id" : 2,
+        "quantity"    : 1
+    },
+    {
+        "id"          : 3,
+        "event_id"    : 1,
+        "material_id" : 4,
+        "quantity"    : 1
+    },
+    {
+        "id"          : 4,
+        "event_id"    : 2,
+        "material_id" : 1,
+        "quantity"    : 3
+    },
+    {
+        "id"          : 5,
+        "event_id"    : 2,
+        "material_id" : 2,
+        "quantity"    : 2
+    },
+    {
+        "id"          : 6,
+        "event_id"    : 3,
+        "material_id" : 3,
+        "quantity"    : 10
+    },
+    {
+        "id"          : 7,
+        "event_id"    : 3,
+        "material_id" : 2,
+        "quantity"    : 1
+    },
+    {
+        "id"          : 8,
+        "event_id"    : 3,
+        "material_id" : 5,
+        "quantity"    : 12
+    }
+]

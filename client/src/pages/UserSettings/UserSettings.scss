@@ -1,0 +1,38 @@
+.UserSettings {
+  &__title {
+    margin-bottom: 2rem;
+  }
+
+  &__content {
+    display: flex;
+    flex-wrap: wrap;
+    padding-bottom: 3rem;
+  }
+
+  .Form {
+    flex: 2;
+    min-width: $form-min-width;
+    max-width: $form-max-width;
+    margin-right: 1rem;
+  }
+
+  &__hours .FormField__input {
+    max-width: 70px;
+  }
+
+  &__extras {
+    flex: 1;
+    min-width: $form-min-width;
+
+    &__buttons {
+      margin-top: 2rem;
+      text-align: center;
+    }
+  }
+
+  @media screen and (min-width: $screen-tablet) {
+    &__title {
+      margin-left: $form-label-width;
+    }
+  }
+}

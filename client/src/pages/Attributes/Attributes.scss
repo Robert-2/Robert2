@@ -1,0 +1,74 @@
+.Attributes {
+  &__header {
+    .Help {
+      margin-top: $content-padding-small-horizontal;
+      margin-right: $content-padding-small-vertical;
+    }
+  }
+
+  &__back-button {
+    margin-top: $content-padding-small-horizontal;
+  }
+
+  &__content {
+    max-width: $form-max-width + $form-label-width;
+  }
+
+  &__no-data {
+    background-color: $bg-color-table-td;
+    margin: 0;
+    padding: 1.5rem .5rem;
+    text-align: center;
+    font-style: italic;
+  }
+
+  &__items {
+    width: 100%;
+    min-width: 540px;
+    margin: 0;
+    background-color: $bg-color-table-td;
+    color: $text-base-color;
+    border-collapse: collapse;
+
+    &__header {
+      font-weight: 600;
+      background-color: $bg-color-table-th;
+      color: $text-nav-color;
+      text-align: left;
+    }
+
+    &__name {
+      padding: .8rem .5rem;
+      border-bottom: 1px solid $bg-color-body;
+    }
+
+    &__type {
+      width: 170px;
+      padding: .8rem .5rem;
+      border-bottom: 1px solid $bg-color-body;
+    }
+
+    &__unit {
+      width: 80px;
+      padding: .8rem .5rem;
+      border-bottom: 1px solid $bg-color-body;
+      text-align: center;
+    }
+
+    &__max-length {
+      width: 110px;
+      padding: .8rem .5rem;
+      border-bottom: 1px solid $bg-color-body;
+      text-align: center;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    margin-top: 1rem;
+
+    &--add {
+      justify-content: flex-end;
+    }
+  }
+}

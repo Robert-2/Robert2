@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Devis Test n°20200129-1</title>
+    <style type="text/css">
+        html {
+            margin: 10mm 8mm;
+            font-family: 'DejaVu Sans', Helvetica;
+            font-size: 9pt;
+        }
+        body { margin: 0; }
+        h1 { font-size: 16pt; margin: 0 0 5mm 0; }
+        h2 { font-size: 14pt; margin: 0 0 5mm 0; }
+        h3 { font-size: 12pt; margin: 0 0 5mm 0; }
+        h4 { font-size: 10pt; margin: 0 0 5mm 0; }
+        p { margin: 0 0 5mm 0; }
+        ul, ol { margin: 2mm 0 5mm 0; }
+        table { width: 100%; margin: 0 0 5mm 0; border-collapse: collapse; }
+        th, td {
+            padding: 1mm 2mm;
+            border-top: 1pt solid #888;
+            border-left: 1pt solid #888;
+        }
+        th:last-child, td:last-child { border-right: 1pt solid #888; }
+        tr:last-child > td { border-bottom: 1pt solid #888; }
+        .light { color: #333; }
+        .lighter { color: #666; }
+    </style>
+</head>
+<body>
+    <h1>Testing H1</h1>
+    <h2>Testing H2</h2>
+    <h3>Testing H3</h3>
+    <h4>Testing H4</h4>
+    <p>Test de paragraphe pour visionner les marges</p>
+    <p>Avec un <strong>texte en gras</strong>, et un autre <em>en italique</em>.</p>
+    <table>
+        <thead>
+            <tr><th>Réf.</th><th>Nom</th><th>Prix unitaire</th><th>Quantité</th><th>Totaux</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>test1</td><td>Matériel de test</td><td>25,00 €</td><td>2</td><td>50,00 €</td></tr>
+            <tr><td>test2</td><td>Second matos de test</td><td>12,50 €</td><td>4</td><td>52,00 €</td></tr>
+        </tbody>
+    </table>
+    <p class="light">Il faut savoir que les règles CSS <code>flex</code> ne fonctionnent pas dans les PDF.</p>
+    <p class="lighter">Un texte plus clair pour voir</p>
+    <ul>
+        <li>Une liste</li>
+        <li>Non ordonnée</li>
+    </ul>
+    <ol>
+        <li>Une autre liste</li>
+        <li>Ordonnée cette fois</li>
+    </ol>
+    Cheers&nbsp;!
+</body>
+</html>

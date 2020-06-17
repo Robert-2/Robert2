@@ -1,0 +1,136 @@
+<div class="page__content">
+    <h2>{{stepNumber}} - Administrateur</h2>
+    <p>
+        Génial, la structure des données de Robert2 est maintenant complète !
+    </p>
+    {% if stepData['existingAdmins'] %}
+    <p>
+        Il existe déjà <strong>{{ stepData['existingAdmins']|length }} utilisateurs admin</strong>
+        dans votre base de données&nbsp;:
+    </p>
+    <ul>
+        {% for adminUser in stepData['existingAdmins'] %}
+        <li><strong>{{ adminUser['pseudo'] }}</strong> ({{ adminUser['email'] }})</li>
+        {% endfor %}
+    </ul>
+    <form method="POST" class="install__admin-form" {% if error %}style="display: none;"{% endif %} id="adminFormSkip">
+        <p>
+            Voulez-vous créer un nouvel utilisateur admin, afin de pouvoir accéder à l'application
+            avec celui-ci&nbsp;?
+        </p>
+        <p>
+            <a class="button" role="button" onclick="showAdminFormData()">Ajouter un utilisateur admin</a>
+        </p>
+        <p>
+            Ou bien préférez-vous continuer avec les admins existants, et passer directement à l'étape
+            suivante&nbsp;?
+        </p>
+        <div class="form__submit">
+            <input type="hidden" name="skipUserCreation" value="yes" />
+            <button role="submit">Étape suivante</button>
+        </div>
+    </form>
+    {% else %}
+    <p>
+        Il est maintenant temps de <strong>créer le premier utilisateur</strong>. Cet utilisateur
+        sera un <strong>administrateur</strong>, il aura donc accès à tous les aspects de
+        l'application, il aura tous les droits.
+    </p>
+    {% endif %}
+    <div {% if stepData['existingAdmins'] and not error %}style="display: none;"{% endif %} id="adminFormData">
+        <p>
+            Choisissez un pseudo et un mot de passe, et donnez une adresse e-mail
+            ainsi que le nom et prénom de cet utilisateur.
+        </p>
+        <form method="POST" class="form">
+            <div class="form__field">
+                <h3 class="form__field-title">Pseudo</h3>
+                <p class="form__field-description">
+                    Le pseudo de l'utilisateur, utilisé pour se connecter à l'application en tant
+                    qu'administrateur.
+                </p>
+                <input
+                    type="text"
+                    name="user[pseudo]"
+                    style="width: 200px;"
+                    value="{{stepData['user']['pseudo']}}"
+                />
+                {% if validationErrors['pseudo'] %}
+                <div class="form__field-error">{{validationErrors['pseudo'][0]}}</div>
+                {% endif %}
+            </div>
+            <div class="form__field">
+                <h3 class="form__field-title">Mot de passe</h3>
+                <p class="form__field-description">
+                    Le mot de passe à utiliser pour accéder à Robert2 avec cet utilisateur.
+                </p>
+                <input
+                    type="password"
+                    name="user[password]"
+                    style="width: 200px;"
+                    value="{{stepData['user']['password']}}"
+                />
+                {% if validationErrors['password'] %}
+                <div class="form__field-error">{{validationErrors['password'][0]}}</div>
+                {% endif %}
+            </div>
+            <div class="form__field">
+                <h3 class="form__field-title">Adresse e-mail</h3>
+                <p class="form__field-description">
+                    L'adresse e-mail de l'utilisateur admin, qui peut aussi être utilisée
+                    pour se connecter à Robert2.
+                </p>
+                <input
+                    type="email"
+                    name="user[email]"
+                    style="width: 300px;"
+                    placeholder="votre-adresse@votre-société.com"
+                    value="{{stepData['user']['email']}}"
+                />
+                {% if validationErrors['email'] %}
+                <div class="form__field-error">{{validationErrors['email'][0]}}</div>
+                {% endif %}
+            </div>
+            <div class="form__field">
+                <h3 class="form__field-title">Nom et prénom</h3>
+                <p class="form__field-description">
+                    Le nom et prénom de cet utilisateur admin (facultatif).
+                </p>
+                <div class="install__admin-names">
+                    <label for="userFirstName">Prénom&nbsp;:</label>
+                    <input
+                        type="text"
+                        name="user[person][first_name]"
+                        id="userFirstName"
+                        value="{{stepData['user']['person']['first_name']}}"
+                    />
+                    <label for="userLastName">Nom&nbsp;:</label>
+                    <input
+                        type="text"
+                        name="user[person][last_name]"
+                        id="userLastName"
+                        value="{{stepData['user']['person']['last_name']}}"
+                    />
+                </div>
+                {% if validationErrors['person']['last_name'] %}
+                <div class="form__field-error">
+                    {{validationErrors['person']['last_name'][0]}}
+                </div>
+                {% endif %}
+                {% if validationErrors['person']['first_name'] %}
+                <div class="form__field-error">
+                    {{validationErrors['person']['first_name'][0]}}
+                </div>
+                {% endif %}
+            </div>
+            <div class="form__submit form__submit--horizontal">
+                {% if stepData['existingAdmins'] %}
+                <a href="#" onclick="hideAdminFormData()" style="margin-right: 2rem;">Annuler la création</a>
+                {% endif %}
+                <button role="submit">Étape suivante</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="js/install/adminUserFormToggle.js"></script>

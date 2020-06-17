@@ -1,0 +1,153 @@
+.EventOverview {
+  $info-spacing: 1.5rem;
+  color: $text-base-color;
+
+  &__title {
+    font-size: 1.5rem;
+    margin: $content-padding-small-vertical 0 $info-spacing;
+  }
+
+  &__dates-location {
+    margin: 0 0 $info-spacing;
+  }
+
+  &__dates-location {
+    font-size: 1.2rem;
+  }
+
+  &__description {
+    padding-top: 0;
+    padding-bottom: $info-spacing;
+    white-space: pre-wrap;
+    line-height: 1.5;
+  }
+
+  &__dates-location,
+  &__description {
+    .fas {
+      width: 1.5rem;
+      margin-right: .5rem;
+      margin-bottom: .5rem;
+      font-size: 1.2rem;
+      text-align: center;
+    }
+  }
+
+  &__main,
+  &__materials,
+  &__billing {
+    margin-bottom: $info-spacing;
+    border-bottom: 1px solid $list-left-border-color;
+  }
+
+  &__missing-materials {
+    margin-bottom: $info-spacing;
+  }
+
+  &__main {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  &__section {
+    flex: 1;
+    min-width: 200px;
+    margin-bottom: $info-spacing;
+    margin-right: $info-spacing;
+  }
+
+  &__info__term,
+  &__materials__title,
+  &__billing-title {
+    margin: 0 0 $info-spacing;
+    font-size: 1.2rem;
+    font-weight: 600;
+
+    .fas,
+    .far {
+      width: 1.5rem;
+      margin-right: .5rem;
+      margin-bottom: .5rem;
+      text-align: center;
+    }
+  }
+
+  &__info {
+    margin: 0;
+
+    & + & {
+      margin-top: $info-spacing;
+    }
+
+    &__term {
+      margin-bottom: .5rem;
+
+      &::after {
+        content: ':';
+      }
+    }
+
+    &__value {
+      display: block;
+      margin: 0;
+      font-size: 1.1rem;
+    }
+
+    &__list {
+      margin: 0;
+      padding: 0;
+    }
+
+    &__list-item {
+      list-style: inside;
+      margin-left: .2rem;
+    }
+
+    &--vertical {
+      flex-direction: column;
+      align-items: flex-start;
+
+      .EventOverview__info__value {
+        margin-top: .5rem;
+        margin-left: 0;
+      }
+    }
+  }
+
+  &__materials {
+    &__empty {
+      color: $text-danger-color;
+
+      .fas {
+        margin-right: .3rem;
+      }
+    }
+  }
+
+  &__billing {
+    display: flex;
+    flex-direction: column-reverse;
+    padding-bottom: $info-spacing;
+
+    .EventBilling {
+      flex: 1;
+      min-width: 300px;
+      padding: 0 .5rem;
+      padding-right: $content-padding-large-horizontal;
+      border-left: 3px solid #383838;
+    }
+
+    .EventTotals {
+      flex: 1;
+      padding-bottom: $info-spacing;
+      padding-left: $content-padding-large-horizontal;
+      border-left: 3px solid #383838;
+    }
+  }
+
+  @media(min-width: $screen-desktop) {
+    &__billing {
+      flex-direction: row;
+    }
+  }
+}

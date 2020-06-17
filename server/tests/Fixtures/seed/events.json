@@ -1,0 +1,35 @@
+[
+    {
+        "id"           : 1,
+        "user_id"      : 1,
+        "title"        : "Premier événement",
+        "description"  : null,
+        "start_date"   : "2018-12-17 00:00:00",
+        "end_date"     : "2018-12-18 23:59:59",
+        "is_confirmed" : 0,
+        "location"     : "Gap",
+        "is_billable"  : 1
+    },
+    {
+        "id"           : 2,
+        "user_id"      : 1,
+        "title"        : "Second événement",
+        "description"  : null,
+        "start_date"   : "2018-12-18 00:00:00",
+        "end_date"     : "2018-12-19 23:59:59",
+        "is_confirmed" : 0,
+        "location"     : "Lyon",
+        "is_billable"  : 1
+    },
+    {
+        "id"           : 3,
+        "user_id"      : 1,
+        "title"        : "Avant-premier événement",
+        "description"  : null,
+        "start_date"   : "2018-12-15 00:00:00",
+        "end_date"     : "2018-12-16 23:59:59",
+        "is_confirmed" : 0,
+        "location"     : "Brousse",
+        "is_billable"  : 0
+    }
+]

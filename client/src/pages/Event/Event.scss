@@ -1,0 +1,63 @@
+.Event {
+  display: flex;
+  flex-wrap: wrap;
+  padding-bottom: 3rem;
+
+  &__panel {
+    position: fixed;
+    padding: 7px 0;
+    text-align: right;
+    width: 160px;
+  }
+
+  .EventMiniSummary {
+    width: 100%;
+    margin-top: 1rem;
+  }
+
+  .EventStep1,
+  .EventStep2,
+  .EventStep3,
+  .EventStep4,
+  .EventStep5 {
+    margin-left: 180px;
+    min-width: 250px;
+    max-width: $form-max-width;
+  }
+
+  .EventStep4 {
+    width: 100%;
+    max-width: none;
+  }
+
+  .EventStep5 {
+    width: 100%;
+    max-width: 850px;
+  }
+
+  .Help {
+    margin: 1rem 0;
+    text-align: center;
+    line-height: 1.5;
+
+    &__loading {
+      justify-content: center;
+    }
+  }
+}
+
+@media(min-width: $screen-desktop) {
+  .Event {
+    &__panel {
+      width: 200px;
+    }
+
+    .EventStep1,
+    .EventStep2,
+    .EventStep3,
+    .EventStep4,
+    .EventStep5 {
+      margin-left: 220px;
+    }
+  }
+}

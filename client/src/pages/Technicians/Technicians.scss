@@ -1,0 +1,27 @@
+.Technicians {
+  &__nickname,
+  &__email,
+  &__address,
+  &__note {
+    display: none;
+  }
+
+  @media(min-width: $screen-mobile) {
+    &__email {
+      display: table-cell;
+    }
+  }
+
+  @media(min-width: $screen-tablet) {
+    &__nickname {
+      display: table-cell;
+    }
+  }
+
+  @media(min-width: $screen-desktop) {
+    &__address,
+    &__note {
+      display: table-cell;
+    }
+  }
+}

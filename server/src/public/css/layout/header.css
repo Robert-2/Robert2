@@ -1,0 +1,27 @@
+.header {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    color: #fff;
+    background: #333;
+}
+
+.header__logo {
+    flex: 0 0 auto;
+    height: 35px;
+}
+
+.header__title {
+    flex: 1;
+    margin: 5px 0 0 30px;
+    font-size: 1.3rem;
+}
+
+@media(min-width: 600px) {
+    .header__logo {
+        height: 50px;
+    }
+    .header__title {
+        margin: 12px 0 0 50px;
+    }
+}

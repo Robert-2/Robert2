@@ -1,0 +1,43 @@
+.vue-tablist {
+  list-style: none;
+  display: flex;
+  padding: 0;
+  margin: 0;
+  border-bottom: 1px solid $tabs-bottom-border-color;
+  margin-bottom: $content-padding-small-vertical;
+}
+
+.vue-tab {
+  position: relative;
+  bottom: -1px;
+  margin-right: 1px;
+  padding: .8rem 1rem;
+  border-bottom: 2px solid $tabs-bottom-border-color;
+  border-radius: $input-border-radius $input-border-radius 0 0;
+  background-color: $bg-color-side-nav;
+  color: $text-nav-color;
+  user-select: none;
+  cursor: pointer;
+
+  .fas,
+  .far,
+  .fab {
+    margin-right: .3rem;
+  }
+}
+
+.vue-tab[aria-selected="true"] {
+  border-color: $tabs-active-bottom-border-color;
+  color: $color-tab-active;
+}
+
+.vue-tab[aria-disabled="true"] {
+  cursor: not-allowed;
+  color: $text-muted-color;
+}
+
+@media(min-width: $screen-desktop) {
+  .vue-tablist {
+    margin-bottom: $content-padding-large-vertical;
+  }
+}

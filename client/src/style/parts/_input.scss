@@ -1,0 +1,22 @@
+input,
+textarea {
+  flex: 0 0 auto;
+  padding: $input-padding-vertical $input-padding-horizontal;
+  background-color: $bg-color-input-normal;
+  color: $color-input;
+  border: $input-border-size solid $bg-color-input-normal;
+  border-radius: $input-border-radius;
+  font-family: $text-base-font-family;
+  font-size: $input-font-size;
+  outline: 0;
+
+  &:focus {
+    border-color: $bg-color-button-info;
+  }
+
+  &:disabled {
+    background-color: $bg-color-input-disabled;
+    color: $color-input-disabled;
+    border-color: $bg-color-input-normal;
+  }
+}

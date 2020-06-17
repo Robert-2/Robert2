@@ -1,0 +1,145 @@
+.VueTables {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  .row {
+    flex: 0 0 auto;
+  }
+
+  .col-md-12 {
+    display: flex;
+
+    & > div,
+    & > nav {
+      flex: 1;
+    }
+
+    & > .pull-left,
+    & > .pull-right {
+      flex: 0 0 auto;
+    }
+  }
+
+  label {
+    display: none;
+  }
+
+  &__search-wrapper {
+    flex: 1;
+  }
+
+  &__search-field input {
+    min-width: 180px;
+  }
+
+  &__search-limit {
+    flex: 1;
+  }
+
+  .table-responsive {
+    flex: 1;
+    margin-top: 1rem;
+  }
+
+  &__table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th {
+    text-align: left;
+    white-space: nowrap;
+    background: $bg-color-table-th;
+  }
+
+  &__sortable {
+    padding: .78rem .35rem;
+    cursor: pointer;
+  }
+
+  &__limit {
+    margin-left: 1rem;
+  }
+
+  &__actions {
+    width: 6rem;
+    min-width: 6rem;
+    text-align: left;
+  }
+
+  &__sort-icon {
+    float: none;
+    margin-left: .5rem;
+    opacity: .5;
+  }
+
+  td {
+    padding: .45rem;
+    background: $bg-color-table-td;
+    color: $text-base-color;
+    border-bottom: 1px solid $bg-color-body;
+
+    &:focus {
+      outline: 0;
+    }
+  }
+
+  &__no-results td {
+    padding: .78rem;
+    text-align: center;
+    font-style: italic;
+    color: $text-light-color;
+  }
+
+  &__columns-dropdown-wrapper {
+    display: none;
+    position: relative;
+    margin-left: 1rem;
+    text-align: right;
+
+    .dropdown-toggle {
+      padding: .78rem;
+      background: none;
+      border: 1px solid $bg-color-button-default;
+      color: $help-text-color;
+
+      &:hover {
+        border-color: $text-base-color;
+        color: $text-base-color;
+      }
+    }
+  }
+
+  &__columns-dropdown {
+    .dropdown-menu {
+      position: absolute;
+      z-index: 1;
+      right: 0;
+      margin: 0;
+      padding: 10px;
+      background-color: $bg-color-main-header;
+      box-shadow: 3px 3px 14px rgba(0, 0, 0, 0.4);
+
+      li {
+        list-style: none;
+
+        a {
+          display: flex;
+        }
+
+        // - Hide the 'actions' column in list
+        &:last-child {
+          display: none;
+        }
+      }
+    }
+  }
+
+  @media(min-width: $screen-desktop) {
+    &__columns-dropdown-wrapper {
+      display: block;
+    }
+  }
+}

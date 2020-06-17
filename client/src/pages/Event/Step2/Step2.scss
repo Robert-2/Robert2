@@ -1,0 +1,14 @@
+.EventStep2 {
+  &__help {
+    margin-left: $form-label-width;
+
+    .fas {
+      font-size: 1.2rem;
+      margin-right: .3rem;
+    }
+  }
+
+  &__save-btn {
+    margin-bottom: 1rem;
+  }
+}

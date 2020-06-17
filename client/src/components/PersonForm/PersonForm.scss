@@ -1,0 +1,51 @@
+.PersonForm {
+  min-width: $form-min-width;
+  max-width: $form-max-width;
+  margin-right: 1rem;
+
+  &__company {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: $content-padding-small-vertical;
+
+    .FormField {
+      flex: 1;
+    }
+
+    &__edit-btn {
+      flex: 0 0 auto;
+      margin-top: 2rem;
+    }
+  }
+
+  &__phone .FormField__input {
+    max-width: 120px;
+  }
+
+  &__postal-code .FormField__input {
+    max-width: 70px;
+  }
+
+  &__notes {
+    .FormField__label {
+      align-self: flex-start;
+      padding-top: .6rem;
+    }
+
+    .FormField__textarea {
+      min-height: 120px;
+    }
+  }
+
+  @media screen and (min-width: $screen-tablet) {
+    &__company__edit-btn {
+      margin-top: 0;
+    }
+
+    &__add-company {
+      margin-left: $form-label-width;
+    }
+  }
+}

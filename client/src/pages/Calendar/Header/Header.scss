@@ -1,0 +1,86 @@
+.CalendarHeader {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  padding: $content-padding-small-horizontal $content-padding-small-vertical 0;
+
+  &__left {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    margin-bottom: $content-padding-large-horizontal;
+  }
+
+  &__center {
+    flex: 1;
+    min-width: 130px;
+    margin-bottom: $content-padding-large-horizontal;
+  }
+
+  &__right {
+    flex: 1 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-bottom: $content-padding-large-horizontal;
+  }
+
+  &__loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .fa-spin {
+      margin-bottom: .1rem;
+      margin-right: .5rem;
+      font-size: 1.8rem;
+    }
+  }
+
+  &__center-date {
+    flex: 1;
+    margin-right: .5rem;
+
+    .FormField__label {
+      display: none;
+      flex: 0 0 auto;
+      padding-left: 0;
+    }
+
+    .FormField__datepicker {
+      width: 100%;
+
+      &__input {
+        padding: 8px 10px;
+      }
+    }
+  }
+
+  &__button {
+    flex: 0 0 auto;
+    &__title {
+      display: none;
+      margin-left: .5rem;
+    }
+  }
+
+  @media(min-width: $screen-mobile) {
+    padding: $content-padding-large-horizontal $content-padding-large-vertical 0;
+  }
+
+  @media(min-width: $screen-desktop) {
+    &__center-date {
+      min-width: 200px;
+
+      .FormField__label {
+        display: block;
+      }
+    }
+
+    &__button {
+      &__title {
+        display: inline-block;
+      }
+    }
+  }
+}

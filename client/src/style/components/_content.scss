@@ -1,0 +1,40 @@
+.content {
+  flex: 1;
+  position: relative;
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: stretch;
+  justify-content: flex-start;
+  height: 100%;
+  overflow: auto;
+
+  &__header {
+    flex: 0 0 auto;
+  }
+
+  &__main-view {
+    flex: 1;
+    padding: $content-padding-small-horizontal $content-padding-small-vertical;
+  }
+
+  &__header + &__main-view {
+    padding-top: 0;
+  }
+
+  &__footer {
+    flex: 0 0 auto;
+    display: flex;
+    justify-content: flex-end;
+    padding: 0 $content-padding-small-vertical $content-padding-small-horizontal;
+  }
+
+  @media(min-width: $screen-mobile) {
+    &__main-view {
+      padding: $content-padding-large-horizontal $content-padding-large-vertical;
+    }
+
+    &__footer {
+      padding: 0 $content-padding-large-vertical $content-padding-large-horizontal;
+    }
+  }
+}

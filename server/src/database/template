@@ -1,0 +1,25 @@
+<?php
+// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
+
+use Phinx\Migration\AbstractMigration;
+
+class $className extends AbstractMigration
+{
+    public function up()
+    {
+        $table = $this->table('');
+        $table
+            ->addColumn('')
+            ->addColumn('created_at', 'datetime', ['null' => true])
+            ->addColumn('updated_at', 'datetime', ['null' => true])
+            ->addColumn('deleted_at', 'datetime', ['null' => true])
+            ->create();
+    }
+
+    public function down()
+    {
+        $this->table('')->drop()->save();
+    }
+}
+
+// phpcs:enable

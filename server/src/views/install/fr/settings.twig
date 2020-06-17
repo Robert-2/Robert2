@@ -1,0 +1,152 @@
+<section class="page__content">
+    <h2>{{stepNumber}} - Paramètres de l'application</h2>
+    <p>
+        Dans cette étape nous allons définir quelques paramètres importants pour <strong>votre
+        utilisation</strong> personnalisée de Robert2.
+    </p>
+    <form method="POST" class="form">
+        <section class="form__field">
+            <h3 class="form__field-title">Langue par défaut</h3>
+            <p class="form__field-description">
+                La langue que Robert utilisera par défaut pour les nouveaux utilisateurs.
+            </p>
+            <select name="defaultLang" style="width: 150px;">
+                <option value="fr" selected>Français</option>
+                <option value="en">English</option>
+            </select>
+        </section>
+        <section class="form__field">
+            <h3 class="form__field-title">Devise</h3>
+            <p class="form__field-description">
+                La devise qui sera utilisée pour l'affichage des prix dans l'application.
+            </p>
+            <select class="currency-selector" name="currency" style="width: 300px;">
+                {% for currency in stepData['currencies'] %}
+                <option value="{{currency['iso']}}" {% if currency['iso'] == 'EUR' %}selected{% endif %}>
+                    {{currency['name']}} ({{currency['symbol']}})
+                </option>
+                {% endfor %}
+            </select>
+        </section>
+        <section class="form__field">
+            <h3 class="form__field-title">Mode d'utilisation</h3>
+            <p class="form__field-description">
+                Définissez quelle utilisation vous ferez de Robert2, parmis les trois choix suivants&nbsp;:
+            </p>
+            <div class="form__radio" style="margin-top: .5rem;">
+                <input
+                    type="radio"
+                    id="billingModeAll"
+                    name="billingMode"
+                    value="all"
+                    onchange="handleBillingModeChange(this)"
+                />
+                <label for="billingModeAll">
+                    <strong>Location de matériel</strong>&nbsp;:
+                    facturation de tous les événements.
+                </label>
+            </div>
+            <div class="form__radio">
+                <input
+                    type="radio"
+                    id="billingModePartial"
+                    name="billingMode"
+                    value="partial"
+                    onchange="handleBillingModeChange(this)"
+                    checked
+                />
+                <label for="billingModePartial">
+                    <strong>Location ET prêt de matériel</strong>&nbsp;:
+                    le choix se fait pour chaque événement.
+                </label>
+            </div>
+            <div class="form__radio">
+                <input
+                    type="radio"
+                    id="billingModeNone"
+                    name="billingMode"
+                    value="none"
+                    onchange="handleBillingModeChange(this)"
+                />
+                <label for="billingModeNone">
+                    <strong>Prêt de matériel</strong>&nbsp;:
+                    pas de facturation du tout.
+                </label>
+            </div>
+        </section>
+        <section class="form__field" id="degressiveRateField">
+            <h3 class="form__field-title">
+                Tarif dégressif
+            </h3>
+            <p class="form__field-description">
+                Il s'agit de la fonction qui sera utilisée pour calculer le tarif
+                de location dégressif selon la durée de location (en jours).
+                La variable <code>daysCount</code> représente le nombre de jours.
+            </p>
+            <input
+                type="text"
+                name="degressiveRateFunction"
+                value="{{config['degressiveRateFunction']}}"
+            />
+        </section>
+        <section class="form__field">
+            <h3 class="form__field-title">Parc de matériel</h3>
+            <p class="form__field-description">
+                Le nom du parc de matériel <em>principal</em> qui sera créé. Il vous sera
+                bien sûr possible de le modifier et d'en créer d'autres une fois l'application installée.
+            </p>
+            <input
+                type="text"
+                name="defaultParkName"
+                placeholder="default"
+                value="Interne"
+            />
+        </section>
+        <section class="form__field">
+            <h3 class="form__field-title">
+                Nombre d'éléments par page
+            </h3>
+            <p class="form__field-description">
+                Le nombre maximum d'éléments qu'il faudra afficher par page dans les listings.
+            </p>
+            <div class="form__input">
+                <input
+                    type="number"
+                    step="1"
+                    name="maxItemsPerPage"
+                    value="{{config['maxItemsPerPage']}}"
+                />
+                <label for="maxItemsPerPage">éléments</label>
+            </div>
+        </section>
+        <section class="form__field">
+            <h3 class="form__field-title">Tags par défaut</h3>
+            <p class="form__field-description">
+                Le nom des tags qui seront utilisés pour identifier le type de personne.
+            </p>
+            <div class="form__input">
+                <label for="defaultTagBenef" style="width: 120px;">Bénéficiaires&nbsp;:</label>
+                <input
+                    type="text"
+                    name="defaultTags[beneficiary]"
+                    id="defaultTagBenef"
+                    value="{{config['defaultTags']['beneficiary']}}"
+                />
+            </div>
+            <div class="form__input" style="margin-top: .5rem;">
+                <label for="defaultTagTech" style="width: 120px;">Techniciens&nbsp;:</label>
+                <input
+                    type="text"
+                    name="defaultTags[technician]"
+                    id="defaultTagTech"
+                    value="{{config['defaultTags']['technician']}}"
+                />
+            </div>
+        </section>
+        <section class="form__submit">
+            <button role="submit">Étape suivante</button>
+        </section>
+    </form>
+</section>
+
+<script src="js/install/modeToggle.js"></script>

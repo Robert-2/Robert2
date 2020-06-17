@@ -1,0 +1,94 @@
+.Materials {
+  &__create {
+    width: 15rem;
+  }
+
+  &__ref,
+  &__park,
+  &__category,
+  &__description,
+  &__rental-price,
+  &__replacement-price,
+  &__quantity-out,
+  &__tags {
+    display: none;
+  }
+
+  &__category {
+    white-space: nowrap;
+  }
+
+  &__rental-price,
+  &__replacement-price {
+    text-align: right !important;
+  }
+
+  &__quantity,
+  &__quantity-out {
+    text-align: center !important;
+  }
+
+  &__tags-list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: -.35rem;
+    cursor: pointer;
+
+    &:hover {
+      color: $link-hover-color;
+    }
+  }
+
+  &__tag-item,
+  &__add-tags {
+    padding: .4rem .55rem;
+    font-size: 0.85rem;
+  }
+
+  &__tag-item {
+    flex: 0 0 auto;
+    margin: 0 0 .35rem .35rem;
+    background: $bg-color-emphasis;
+    border-radius: 10px;
+  }
+
+  &__add-tags {
+    flex: 1;
+    margin-bottom: .35rem;
+  }
+}
+
+@media(min-width: $screen-tablet) {
+  .Materials {
+    &__ref,
+    &__rental-price,
+    &__replacement-price,
+    &__category {
+      display: table-cell;
+    }
+
+    &__create {
+      width: auto;
+      margin-left: 1.5rem !important;
+    }
+  }
+}
+
+@media(min-width: $screen-desktop) {
+  .Materials {
+    &__quantity-out,
+    &__tags {
+      display: table-cell;
+    }
+  }
+}
+
+@media(min-width: $screen-big-desktop) {
+  .Materials {
+    &__park,
+    &__description {
+      display: table-cell;
+    }
+  }
+}

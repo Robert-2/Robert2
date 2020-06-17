@@ -1,0 +1,14 @@
+[
+    {
+        "id"   : 1,
+        "name" : "sound"
+    },
+    {
+        "id"   : 2,
+        "name" : "light"
+    },
+    {
+        "id"   : 3,
+        "name" : "transport"
+    }
+]

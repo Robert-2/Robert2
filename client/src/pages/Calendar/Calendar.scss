@@ -1,0 +1,107 @@
+
+.Calendar {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+
+  &__loading {
+    position: absolute;
+    top: 50px;
+    left: 50%;
+  }
+
+  &__timeline {
+    flex: 0 0 auto;
+
+    .vis-timeline {
+      background-color: $calendar-main-background-color;
+
+      .vis-grid {
+        &.vis-vertical {
+          border-color: $calendar-cells-border-color;
+        }
+
+        &.vis-today {
+          background-color: $calendar-current-date-background-color;
+        }
+      }
+
+      .vis-time-axis .vis-text {
+        color: $text-nav-color;
+      }
+
+      .vis-current-time {
+        background-color: $calendar-time-cursor-color;
+      }
+
+      .vis-item {
+        color: $calendar-event-text-color;
+      }
+
+      .vis-tooltip {
+        background-color: $bg-color-tooltip;
+        color: $text-base-color;
+      }
+    }
+  }
+
+  &__event {
+    box-shadow: 1px 2px 3px rgba(0,0,0,.5);
+    background-color: $calendar-event-normal-color;
+
+    &.vis-selected {
+      background-color: lighten($calendar-event-normal-color, 10%);
+    }
+
+    &--past {
+      background-color: $calendar-event-past-color;
+      color: $text-base-color !important;
+
+      &.vis-selected {
+        background-color: lighten($calendar-event-past-color, 10%);
+      }
+    }
+
+    &--locked {
+      .vis-item-content::before {
+        content: "\f023";
+        display: inline-block;
+        font-family: 'Font Awesome 5 Free';
+        font-weight: 900;
+        margin-right: .5rem;
+      }
+    }
+
+    &--confirmed {
+      background-color: $calendar-event-confirmed-color;
+
+      &.vis-selected {
+        background-color: lighten($calendar-event-confirmed-color, 10%);
+      }
+    }
+
+    &--current {
+      background-size: 40px 40px;
+      background-image: linear-gradient(
+        45deg,
+        rgba(255, 255, 255, 0.1) 25%,
+        transparent                25%,
+        transparent                50%,
+        rgba(255, 255, 255, 0.1) 50%,
+        rgba(255, 255, 255, 0.1) 75%,
+        transparent                75%,
+        transparent
+      );
+      animation: animBackground 3s linear infinite;
+    }
+  }
+
+  .Help {
+    margin: 1rem 0;
+  }
+}
+
+@keyframes animBackground {
+  from { background-position: 0 0; }
+	to { background-position: 40px 0; }
+}

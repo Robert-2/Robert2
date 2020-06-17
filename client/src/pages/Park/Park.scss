@@ -1,0 +1,22 @@
+.Park {
+  display: flex;
+  flex-wrap: wrap;
+  padding-bottom: 3rem;
+
+  .Form {
+    flex: 2;
+    min-width: $form-min-width;
+    max-width: $form-max-width;
+    margin-right: 1rem;
+  }
+
+  .Help {
+    flex: 1;
+    margin-top: 2.8rem;
+    min-width: 150px;
+  }
+
+  &__postal-code .FormField__input {
+    max-width: 70px;
+  }
+}

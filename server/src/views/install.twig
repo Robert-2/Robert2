@@ -1,0 +1,12 @@
+{% extends "common/base.twig" %}
+
+{% block title %}{{ translate("Install") }} - {{ translate(step) }}{% endblock %}
+
+{% block pageTitle %}{{ translate("Installation wizard") }}{% endblock %}
+
+{% block content %}
+    {% if error %}
+    <div class="page__error">{{ translate(error) }}</div>
+    {% endif %}
+    {{ include('install/' ~ lang ~ '/' ~ step ~ '.twig') }}
+{% endblock %}

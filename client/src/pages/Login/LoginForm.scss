@@ -1,0 +1,23 @@
+.login-form {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 30px 20px;
+
+  &__input {
+    width: 200px;
+    margin-right: 10px;
+    margin-bottom: 1rem;
+  }
+
+  &__submit {
+    padding: $input-padding-vertical $input-padding-horizontal;
+  }
+
+  @media (max-width: 500px) {
+    flex-flow: column nowrap;
+    justify-content: space-around;
+    align-items: center;
+  }
+}

@@ -1,0 +1,50 @@
+<div class="page__content">
+    <h2>Welcome !</h2>
+    <p>
+        This is the Robert2 API installation wizard, version <strong>{{version()}}</strong>.
+    </p>
+    <p>
+        It will guide you, in 5 short steps, to set the configuration of your Robert2.
+        At the very end of the wizard, you'll be able to use Robert2!<br />
+        But first, let's check if the minimal requirements are met on your server.
+    </p>
+    <div class="install__check">
+        Robert2 API is compatible with PHP version <strong>7.1.0</strong> and earlier.
+        <div class="install__check-result">
+            {% if phpVersionOK %}
+            <div class="install__check-success">OK, PHP version: {{phpVersion}}</div>
+            {% else %}
+            <div class="install__check-error">
+                You must install a newer version of PHP in order to use Robert2.<br />
+                current version: <strong>{{phpVersion}}</strong>.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="install__check">
+        There are some PHP extensions that must be installed on the server.
+        <div class="install__check-result">
+            {% for extension in missingExtensions %}
+            <li class="install__check-error">Extension '{{extension}}' is missing</li>
+            {% else %}
+            <span class="install__check-success">All needed extensions installed!</span>
+            {% endfor %}
+        </div>
+    </div>
+    {% if requirementsOK %}
+    <p>
+        Congratulations, all minimum requirements are met. You can now install Robert2.
+    </p>
+    <form method="POST" class="form">
+        <div class="form__submit">
+            <button role="submit">Let's go!</button>
+        </div>
+    </form>
+    {% else %}
+    <p>
+        Unfortunately, <strong class="install__check-error">you can't install Robert2</strong>
+        on this server because the minimum requirements are not met. After having corrected
+        the points listed above, come back here and retry!
+    </p>
+    {% endif %}
+</div>

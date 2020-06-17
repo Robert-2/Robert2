@@ -1,0 +1,52 @@
+<div class="page__content">
+    <h2>Bienvenue !</h2>
+    <p>
+        Voici l'assistant d'installation de l'API de Robert2, version <strong>{{version()}}</strong>.
+    </p>
+    <p>
+        Il va vous guider, en 5 petites étapes, pour installer et configurer votre Robert2.
+        À la toute fin de cet assistant, vous serez en mesure d'utiliser Robert2 !<br />
+        Mais avant, vérifions si votre serveur dispose du minimum requis pour que Robert2 fonctionne.
+    </p>
+    <div class="install__check">
+        L'API de Robert2 est compatible avec la version de PHP <strong>7.1.0</strong> et plus.
+        <div class="install__check-result">
+            {% if phpVersionOK %}
+            <div class="install__check-success">OK, version de PHP utilisée : {{phpVersion}}</div>
+            {% else %}
+            <div class="install__check-error">
+                Vous devez installer une version plus récente de PHP pour pouvoir utiliser Robert2.<br />
+                Version actuelle utilisée : <strong>{{phpVersion}}</strong>.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="install__check">
+        Quelques extensions PHP doivent aussi être installées sur le serveur.
+        <div class="install__check-result">
+            {% for extension in missingExtensions %}
+            <li class="install__check-error">L'extension '{{extension}}' est manquante</li>
+            {% else %}
+            <span class="install__check-success">Toutes les extensions requises sont présentes !</span>
+            {% endfor %}
+        </div>
+    </div>
+    {% if requirementsOK %}
+    <p>
+        Félicitations, toutes les exigences minimales sont satisfaites.
+        Vous pouvez maintenant installer Robert2.
+    </p>
+    <form method="POST" class="form">
+        <div class="form__submit">
+            <button role="submit">C'est parti !</button>
+        </div>
+    </form>
+    {% else %}
+    <p>
+        Malheureusement, <strong class="install__check-error">vous ne pouvez pas
+        installer Robert2</strong> sur ce serveur car il ne dispose pas de la
+        configuration minimale requise. Après avoir corrigé les points soulignés
+        plus haut, revenez ici et réessayez !
+    </p>
+    {% endif %}
+</div>
