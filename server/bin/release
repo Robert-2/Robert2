@@ -32,15 +32,17 @@ mv dist/src $distFolder/src
 cp -r utilities $distFolder
 cp .htaccess $distFolder/.htaccess
 cp composer.json $distFolder/composer.json
-cp README.md $distFolder/README.md
-cp LICENCE.md $distFolder/LICENCE.md
-cd $distFolder
-rm -R utilities/postman
-mkdir -p data/bills
-mkdir data/imports
+cp ../README.md $distFolder/README.md
+cp ../LICENCE.md $distFolder/LICENCE.md
+rm -R $distFolder/utilities/postman
+mkdir -p $distFolder/data/bills
+cp data/bills/.gitignore $distFolder/data/bills/.gitignore
+mkdir $distFolder/data/imports
+cp data/imports/.gitignore $distFolder/data/imports/.gitignore
 
 echo "
 Cleaning unnecessary (and private config) files..."
+cd $distFolder
 rm -r src/vendor
 rm src/App/Config/settings.json
 rm src/install/progress.json
