@@ -1,0 +1,15 @@
+## Prohibit autoindex
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    ## Restrict access to `data/` and `utilities/` folders
+    RewriteRule ^data/(.*)?$ / [F,L]
+    RewriteRule ^utilities/(.*)?$ / [F,L]
+
+    ## Redirect all requests to `public/` folder
+    RewriteRule ^$ src/public/ [QSA,NC,L]
+    RewriteRule ^(.*)$ src/public/$1 [QSA,NC,L]
+</IfModule>

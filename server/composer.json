@@ -4,7 +4,11 @@
     "authors": [
         {
             "name": "Paul Maillardet",
-            "email": "polo@robertmanager.org"
+            "email": "paul@pulsanova.com"
+        },
+        {
+            "name": "Donovan Lambert",
+            "email": "donovan@pulsanova.com"
         },
         {
             "name": "Mathieu Di Martino",
@@ -59,7 +63,7 @@
         "testmodels": "src/vendor/bin/phpunit --colors=always --testsuite models --filter",
         "testother": "src/vendor/bin/phpunit --colors=always --testsuite other --filter",
         "build-api-doc": "postmanerator -output=./src/views/apidoc.html -collection=./utilities/postman/collection.json -environment=./utilities/postman/environment_example.json -theme=./src/views/apidoc-theme",
-        "Robert:release": "bin/release",
-        "Robert:importsV1": "utilities/Scripts/ImportsV1/run"
+        "release": "bin/release",
+        "Robert2:importsV1": "utilities/Scripts/ImportsV1/run"
     }
 }

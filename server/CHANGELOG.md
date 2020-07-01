@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.8.1 (2020-07-01)
+
+- Fix `composer.json` & `.htaccess` files, and improve release script.
+
 ## 0.8.0 (2020-06-17)
 
 - Whole project restructuration.
