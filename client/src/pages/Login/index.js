@@ -1,4 +1,3 @@
-import version from '@/VERSION';
 import Config from '@/config/globalConfig';
 import Auth from '@/auth';
 
@@ -29,7 +28,6 @@ export default {
     return {
       message: { type, text, isLoading: false },
       credentials: { identifier: '', password: '' },
-      version,
       apiVersion: Config.api.version,
     };
   },

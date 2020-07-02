@@ -1,7 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 import deepFreeze from 'deep-freeze-strict';
 
-let baseUrl = 'http://robert2-api.etoilenoire';
+let baseUrl = 'http://robert2.etoilenoire';
 if (window.__SERVER_CONFIG__ && window.__SERVER_CONFIG__.baseUrl) {
   baseUrl = window.__SERVER_CONFIG__.baseUrl;
 }

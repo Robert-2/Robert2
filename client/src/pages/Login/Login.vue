@@ -27,11 +27,10 @@
     </form>
     <div class="login__footer">
       {{ $t('page-login.footer') }}<br>
-      WebClient v{{ version }}
       | <a href="http://robertmanager.org" target="_blank">{{ $t('page-login.official-website') }}</a>
       | <a href="http://forum.robertmanager.org" target="_blank">{{ $t('page-login.community-forum') }}</a>
       | <a href="https://github.com/robert-2/Robert2" target="_blank">Github project</a> |
-      API v{{ apiVersion }}
+      v{{ apiVersion }}
     </div>
   </div>
 </template>

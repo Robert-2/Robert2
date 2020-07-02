@@ -1,7 +1,11 @@
 #!/bin/bash
 
-versionFilecontent=$(<src/VERSION.js)
-version=`expr match "$versionFilecontent" '.*\([0-9][.][0-9]\+[.][0-9]\+\)'`
+if ! [ -x "$(command -v jq)" ]; then
+  echo "ERROR: Program 'jq' is needed and not installed." >&2
+  exit 1
+fi
+
+version=$(jq -r .version package.json)
 
 echo "
    ____       _               _   ____

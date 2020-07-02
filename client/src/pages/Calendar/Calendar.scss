@@ -14,7 +14,7 @@
     flex: 0 0 auto;
 
     .vis-timeline {
-      background-color: $calendar-main-background-color;
+      background-color: $calendar-main-background-color !important;
 
       .vis-grid {
         &.vis-vertical {
@@ -22,7 +22,7 @@
         }
 
         &.vis-today {
-          background-color: $calendar-current-date-background-color;
+          background-color: $calendar-current-date-background-color !important;
         }
       }
 
@@ -31,7 +31,7 @@
       }
 
       .vis-current-time {
-        background-color: $calendar-time-cursor-color;
+        background-color: $calendar-time-cursor-color !important;
       }
 
       .vis-item {
@@ -39,7 +39,7 @@
       }
 
       .vis-tooltip {
-        background-color: $bg-color-tooltip;
+        background-color: $bg-color-tooltip !important;
         color: $text-base-color;
       }
     }
@@ -47,18 +47,18 @@
 
   &__event {
     box-shadow: 1px 2px 3px rgba(0,0,0,.5);
-    background-color: $calendar-event-normal-color;
+    background-color: $calendar-event-normal-color !important;
 
     &.vis-selected {
-      background-color: lighten($calendar-event-normal-color, 10%);
+      background-color: lighten($calendar-event-normal-color, 10%) !important;
     }
 
     &--past {
-      background-color: $calendar-event-past-color;
+      background-color: $calendar-event-past-color !important;
       color: $text-base-color !important;
 
       &.vis-selected {
-        background-color: lighten($calendar-event-past-color, 10%);
+        background-color: lighten($calendar-event-past-color, 10%) !important;
       }
     }
 
@@ -73,10 +73,10 @@
     }
 
     &--confirmed {
-      background-color: $calendar-event-confirmed-color;
+      background-color: $calendar-event-confirmed-color !important;
 
       &.vis-selected {
-        background-color: lighten($calendar-event-confirmed-color, 10%);
+        background-color: lighten($calendar-event-confirmed-color, 10%) !important;
       }
     }
 
@@ -85,11 +85,11 @@
       background-image: linear-gradient(
         45deg,
         rgba(255, 255, 255, 0.1) 25%,
-        transparent                25%,
-        transparent                50%,
+        transparent 25%,
+        transparent 50%,
         rgba(255, 255, 255, 0.1) 50%,
         rgba(255, 255, 255, 0.1) 75%,
-        transparent                75%,
+        transparent 75%,
         transparent
       );
       animation: animBackground 3s linear infinite;
