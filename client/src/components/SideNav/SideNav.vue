@@ -6,7 +6,7 @@
     <SideMenu class="SideNav__menu" />
     <div class="SideNav__footer">
       © 2017-{{ year }}<br>
-      v. {{ version }}, API v. {{ apiVersion }}
+      v. {{ apiVersion }}
     </div>
   </div>
 </template>
@@ -17,7 +17,6 @@
 </style>
 
 <script>
-import version from '@/VERSION';
 import Config from '@/config/globalConfig';
 import SideMenu from './SideMenu/SideMenu.vue';
 
@@ -28,7 +27,7 @@ export default {
   data() {
     const year = (new Date()).getFullYear();
     const apiVersion = Config.api.version;
-    return { year, version, apiVersion };
+    return { year, apiVersion };
   },
 };
 </script>
