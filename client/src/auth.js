@@ -1,6 +1,6 @@
 /* eslint-disable import/no-cycle */
 import router from '@/router';
-import store from './store';
+import store from '@/store';
 
 export default {
   is: { authenticated: false },

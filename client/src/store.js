@@ -2,12 +2,12 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import createPersistedState from 'vuex-persistedstate';
-import countriesStore from './stores/countries';
-import parksStore from './stores/parks';
-import categoriesStore from './stores/categories';
-import companiesStore from './stores/companies';
-import tagsStore from './stores/tags';
-import userStore from './stores/user';
+import countriesStore from '@/stores/countries';
+import parksStore from '@/stores/parks';
+import categoriesStore from '@/stores/categories';
+import companiesStore from '@/stores/companies';
+import tagsStore from '@/stores/tags';
+import userStore from '@/stores/user';
 
 Vue.use(Vuex);
 
