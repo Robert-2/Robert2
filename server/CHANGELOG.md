@@ -8,6 +8,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 - Update dependencies
 - Remove bills file storage, and always re-create PDFs on demand (#8).
+- Change bills numbers to be successive instead of using date of creation (#8).
 
 ## 0.8.2 (2020-07-02)
 

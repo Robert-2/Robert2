@@ -154,7 +154,7 @@ final class BillTest extends ModelTestCase
     public function testCreateFromEvent()
     {
         $result = $this->model->createFromEvent(2, 1, 25.9542);
-        $newBillNumber = sprintf('%s-00002', date('ymd'));
+        $newBillNumber = sprintf('%s-00002', date('Y'));
         $expected = [
             'id'             => 2,
             'number'         => $newBillNumber,
@@ -219,7 +219,13 @@ final class BillTest extends ModelTestCase
         $this->assertNotNull($this->model->find(1));
 
         // - Permanently deletes bill ID n°1
-        $this->model->deleteByNumber('200130-00001');
+        $this->model->deleteByNumber('2020-00001');
         $this->assertNull($this->model->find(1));
+    }
+
+    public function testGetLastBillNumber()
+    {
+        $result = $this->model->getLastBillNumber();
+        $this->assertEquals(1, $result);
     }
 }

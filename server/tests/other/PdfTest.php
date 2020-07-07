@@ -74,7 +74,7 @@ final class PdfTest extends ModelTestCase
             ->find(1)
             ->toArray();
 
-        $EventBill = new EventBill(new \DateTime('2020-02-10'), $billEvent, 1);
+        $EventBill = new EventBill(new \DateTime('2020-02-10'), $billEvent, '2020-00002', 1);
         $this->assertNotEmpty($EventBill);
 
         $EventBill->setDiscountRate(10.0);

@@ -293,7 +293,7 @@ final class EventsTest extends ApiTestCase
             'bills' => [
                 [
                     'id'            => 1,
-                    'number'        => '200130-00001',
+                    'number'        => '2020-00001',
                     'date'          => '2020-01-30 14:00:00',
                     'discount_rate' => 50.0,
                     'due_amount'    => 325.5,
@@ -602,7 +602,7 @@ final class EventsTest extends ApiTestCase
             'bills' => [
                 [
                     'id'            => 1,
-                    'number'        => '200130-00001',
+                    'number'        => '2020-00001',
                     'date'          => '2020-01-30 14:00:00',
                     'discount_rate' => 50.0,
                     'due_amount'    => 325.5,

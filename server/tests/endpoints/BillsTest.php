@@ -12,7 +12,7 @@ final class BillsTest extends ApiTestCase
         $this->assertStatusCode(SUCCESS_OK);
         $this->assertResponseData([
             'id'             => 1,
-            'number'         => '200130-00001',
+            'number'         => '2020-00001',
             'date'           => '2020-01-30 14:00:00',
             'event_id'       => 1,
             'beneficiary_id' => 3,
@@ -63,7 +63,7 @@ final class BillsTest extends ApiTestCase
     {
         $this->client->post('/api/events/2/bill');
         $this->assertStatusCode(SUCCESS_CREATED);
-        $newBillNumber = sprintf('%s-00002', date('ymd'));
+        $newBillNumber = sprintf('%s-00002', date('Y'));
         $this->assertResponseData([
             'id'             => 2,
             'number'         => $newBillNumber,
@@ -114,7 +114,7 @@ final class BillsTest extends ApiTestCase
     {
         $this->client->post('/api/events/2/bill', ['discountRate' => 50.0]);
         $this->assertStatusCode(SUCCESS_CREATED);
-        $newBillNumber = sprintf('%s-00002', date('ymd'));
+        $newBillNumber = sprintf('%s-00002', date('Y'));
         $this->assertResponseData([
             'id'             => 2,
             'number'         => $newBillNumber,

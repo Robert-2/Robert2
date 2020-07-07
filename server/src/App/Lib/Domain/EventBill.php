@@ -20,7 +20,7 @@ class EventBill
     protected $_eventData;
     protected $materials;
 
-    public function __construct(\DateTime $date, array $event, ?int $userId = null)
+    public function __construct(\DateTime $date, array $event, string $billNumber, ?int $userId = null)
     {
         if (empty($event) || empty($event['beneficiaries'] || empty($event['materials']))) {
             throw new \InvalidArgumentException(
@@ -36,8 +36,8 @@ class EventBill
         $this->eventId = $event['id'];
         $this->vatRate = (float)Config::getSettings('companyData')['vatRate'];
         $this->materials = $event['materials'];
+        $this->number = $billNumber;
 
-        $this->_setNumber();
         $this->_setDaysCount();
         $this->_setDegressiveRate();
     }
@@ -240,20 +240,20 @@ class EventBill
         ];
     }
 
+    public static function createNumber(\DateTime $date, int $lastBillNumber): string
+    {
+        return sprintf(
+            '%s-%05d',
+            $date->format('Y'),
+            $lastBillNumber + 1
+        );
+    }
+
     // ------------------------------------------------------
     // -
     // -    Internal Methods
     // -
     // ------------------------------------------------------
-
-    protected function _setNumber(): void
-    {
-        $this->number = sprintf(
-            '%s-%05d',
-            $this->date->format('ymd'),
-            $this->eventId
-        );
-    }
 
     protected function _setDaysCount(): void
     {

@@ -132,8 +132,10 @@ class Bill extends BaseModel
             throw new \InvalidArgumentException("Event is not billable.");
         }
 
-        $EventBill = new EventBill($date, $eventData, $userId);
+        $newNumber = EventBill::createNumber($date, $this->getLastBillNumber());
+        $EventBill = new EventBill($date, $eventData, $newNumber, $userId);
         $EventBill->setDiscountRate($discountRate);
+
         $newBillData = $EventBill->toModelArray();
 
         $this->deleteByNumber($newBillData['number']);
@@ -161,8 +163,9 @@ class Bill extends BaseModel
             ->find($bill->event_id)
             ->toArray();
 
-        $EventBill = new EventBill($date, $eventData, $bill->user_id);
+        $EventBill = new EventBill($date, $eventData, $bill->number, $bill->user_id);
         $EventBill->setDiscountRate($bill->discount_rate);
+
         $categories = (new Category())->getAll()->get()->toArray();
 
         $billPdf = $this->_getPdfAsString($EventBill->toPdfTemplateArray($categories));
@@ -185,5 +188,20 @@ class Bill extends BaseModel
         }
 
         $bill->forceDelete();
+    }
+
+    public function getLastBillNumber(): int
+    {
+        $allBills = self::selectRaw('number')
+            ->whereRaw(sprintf('YEAR(date) = %s', date('Y')))
+            ->get();
+
+        $lastBillNumber = 0;
+        foreach ($allBills as $existingBill) {
+            $billNumber = explode('-', $existingBill->number);
+            $lastBillNumber = max((int)$billNumber[1], $lastBillNumber);
+        }
+
+        return $lastBillNumber;
     }
 }
