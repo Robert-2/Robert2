@@ -4,7 +4,7 @@
       <div class="EventTotals__base">
         {{ $t('total') }}:
         <span class="EventTotals__items-count">
-          {{ $t('items-count', { count: itemsCount }) }}
+          {{ $t('items-count', { count: itemsCount }, itemsCount) }}
         </span>
         <span class="EventTotals__daily-total">
           <i class="fas fa-arrow-right" />

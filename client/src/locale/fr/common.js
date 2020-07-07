@@ -142,7 +142,11 @@ export default {
   'click-here-to-regenerate': "Cliquez ici pour refaire une facture.",
   'total': "Total",
   'total-discountable': "Total remisable",
-  'items-count': "{count} articles",
+  'items-count': [
+    "{count} article",
+    "{count} articles",
+  ],
+  'stock-items-count': "{count} en stock",
   'sub-total': "Sous-total",
   'total-amount': "Montant total",
   'total-amount-with-discount': "Total après remise",
