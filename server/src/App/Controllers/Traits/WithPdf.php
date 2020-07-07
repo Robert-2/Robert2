@@ -24,7 +24,12 @@ trait WithPdf
         }
         $fileName = $this->model->getPdfName($id);
 
-        return $this->_responseWithPdf($response, $fileName);
+        if (!method_exists($this->model, 'getPdfContent')) {
+            throw new \RuntimeException("Model used for PDF must implement getPdfContent() method.");
+        }
+        $fileContent = $this->model->getPdfContent($id);
+
+        return $this->_responseWithPdf($response, $fileName, $fileContent);
     }
 
     // ------------------------------------------------------
@@ -33,15 +38,12 @@ trait WithPdf
     // -
     // ------------------------------------------------------
 
-    protected function _responseWithPdf(Response $response, string $fileName): Response
+    protected function _responseWithPdf(Response $response, string $fileName, string $fileContent): Response
     {
-        $filePath = DATA_FOLDER . DS . $this->dataFolder . DS . $fileName;
-        if (!file_exists($filePath)) {
-            throw new Errors\NotFoundException(sprintf("PDF file %s not found.", $fileName));
-        }
-
         try {
-            $streamHandle = fopen($filePath, 'r');
+            $streamHandle = fopen('php://memory', 'r+');
+            fwrite($streamHandle, $fileContent);
+            rewind($streamHandle);
             $pdfStream = new Stream($streamHandle);
 
             return $response
@@ -50,11 +52,11 @@ trait WithPdf
                 ->withHeader('Content-Type', 'application/download')
                 ->withHeader('Content-Description', 'File Transfer')
                 ->withHeader('Content-Transfer-Encoding', 'binary')
-                ->withHeader('Content-Disposition', sprintf('attachment; filename="%s"', basename($filePath)))
+                ->withHeader('Content-Disposition', sprintf('attachment; filename="%s"', $fileName))
                 ->withHeader('Expires', '0')
                 ->withHeader('Cache-Control', 'must-revalidate, post-check=0, pre-check=0')
                 ->withHeader('Pragma', 'public')
-                ->withHeader('Content-Length', filesize($filePath))
+                ->withHeader('Content-Length', $pdfStream->getSize())
                 ->withBody($pdfStream);
         } catch (\Exception $e) {
             throw new \RuntimeException(sprintf(

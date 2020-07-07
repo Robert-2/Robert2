@@ -21,9 +21,11 @@
                 {{ translate('phone', [company['phone']]) }}<br>
                 {{ translate('email', [company['email']]) }}
             </p>
+            {% if company['vatNumber'] %}
             <p>
                 {{ translate('vatNumber', [company['vatNumber']]) }}
             </p>
+            {% endif %}
         </td>
         <td class="half">
             <h2 class="box center">{{ translate('billTitle', [currencyName, number]) }}</h2>

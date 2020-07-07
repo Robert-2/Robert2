@@ -74,26 +74,14 @@ final class PdfTest extends ModelTestCase
             ->find(1)
             ->toArray();
 
-        $EventBill = new EventBill(new \DateTime('2020-02-10'), $billEvent, 1);
+        $EventBill = new EventBill(new \DateTime('2020-02-10'), $billEvent, '2020-00002', 1);
         $this->assertNotEmpty($EventBill);
 
         $EventBill->setDiscountRate(10.0);
         $categories = (new Category())->getAll()->get()->toArray();
         $billData = $EventBill->toPdfTemplateArray($categories);
 
-        $isSaved = Pdf::createFromTemplate('bill-default', $billData, $this->_pdfResultFile);
-        $this->assertTrue($isSaved);
-        $this->assertTrue(file_exists($this->_pdfResultFile));
-
-        // - Check if result file and expected file have the same size
-        //   NOTE: This part is buggy on the GitLab's C.I. runner: files sizes are different...
-        //   But why? Well, that's a mystery!
-
-        // $resultSize = filesize($this->_pdfResultFile);
-        // $expectedSize = filesize(__DIR__ . DS . 'Pdf/expected_bill.pdf');
-        // $this->assertEquals($expectedSize, $resultSize);
-
-        // - Clean result file (comment this line if you want to check the content of './Pdf/result.pdf')
-        unlink($this->_pdfResultFile);
+        $pdfContent = Pdf::createFromTemplate('bill-default', $billData, $this->_pdfResultFile);
+        $this->assertNotEmpty($pdfContent);
     }
 }

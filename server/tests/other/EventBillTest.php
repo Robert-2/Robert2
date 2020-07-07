@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Robert2\Tests;
 
+use DateTime;
 use Robert2\Lib\Domain\EventBill;
 use Robert2\API\Config\Config;
 use Robert2\API\Models\Event;
@@ -43,13 +44,13 @@ final class EventBillTest extends ModelTestCase
 
             $this->_number = sprintf(
                 '%s-%05d',
-                $this->_date->format('ymd'),
+                $this->_date->format('Y'),
                 $this->_eventData['id']
             );
 
             $this->_categories = (new Category())->getAll()->get()->toArray();
 
-            $this->EventBill = new EventBill($this->_date, $this->_eventData, 1);
+            $this->EventBill = new EventBill($this->_date, $this->_eventData, $this->_number, 1);
         } catch (\Exception $e) {
             $this->fail($e->getMessage());
         }
@@ -65,6 +66,17 @@ final class EventBillTest extends ModelTestCase
     {
         $this->EventBill->setDiscountRate(33.33);
         $this->assertEquals(33.33, $this->EventBill->discountRate);
+    }
+
+    public function testCreateNumber()
+    {
+        $date = new \DateTime();
+
+        $result = EventBill::createNumber($date, 1);
+        $this->assertEquals(sprintf('%s-00002', date('Y')), $result);
+
+        $result = EventBill::createNumber($date, 155);
+        $this->assertEquals(sprintf('%s-00156', date('Y')), $result);
     }
 
     // ------------------------------------------------------

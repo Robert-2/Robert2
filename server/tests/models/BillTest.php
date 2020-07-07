@@ -144,17 +144,6 @@ final class BillTest extends ModelTestCase
         $this->assertEquals($expected, $result);
     }
 
-    public function testDeleteByNumber()
-    {
-        // - Bill does not exists, nothing happens
-        $this->model->deleteByNumber('_inexistant_');
-        $this->assertNotNull($this->model->find(1));
-
-        // - Permanently deletes bill ID n°1
-        $this->model->deleteByNumber('200130-00001');
-        $this->assertNull($this->model->find(1));
-    }
-
     public function testCreateFromEventNotFound()
     {
         $this->expectException(Errors\NotFoundException::class);
@@ -165,7 +154,7 @@ final class BillTest extends ModelTestCase
     public function testCreateFromEvent()
     {
         $result = $this->model->createFromEvent(2, 1, 25.9542);
-        $newBillNumber = sprintf('%s-00002', date('ymd'));
+        $newBillNumber = sprintf('%s-00002', date('Y'));
         $expected = [
             'id'             => 2,
             'number'         => $newBillNumber,
@@ -215,21 +204,28 @@ final class BillTest extends ModelTestCase
             $safeResult[$field] = 'fakedTestContent';
         }
         $this->assertEquals($expected, $safeResult);
+    }
 
-        // - Check PDF file was created
-        $i18n = new I18n(Config::getSettings('defaultLang'));
-        $company = Config::getSettings('companyData');
-        $fileName = sprintf(
-            'TEST-%s-%s-%s-%s.pdf',
-            $i18n->translate("Bill"),
-            slugify($company['name']),
-            $newBillNumber,
-            'Client_Benef'
-        );
-        $filePath = DATA_FOLDER . DS . 'bills' . DS . $fileName;
-        $this->assertTrue(file_exists($filePath));
+    public function testGetPdfContent()
+    {
+        $result = $this->model->getPdfContent(1);
+        $this->assertNotEmpty($result);
+    }
 
-        // - Remove PDF file (comment this line if you want to check the result)
-        unlink($filePath);
+    public function testDeleteByNumber()
+    {
+        // - Bill does not exists, nothing happens
+        $this->model->deleteByNumber('_inexistant_');
+        $this->assertNotNull($this->model->find(1));
+
+        // - Permanently deletes bill ID n°1
+        $this->model->deleteByNumber('2020-00001');
+        $this->assertNull($this->model->find(1));
+    }
+
+    public function testGetLastBillNumber()
+    {
+        $result = $this->model->getLastBillNumber();
+        $this->assertEquals(1, $result);
     }
 }
