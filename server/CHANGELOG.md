@@ -7,6 +7,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## 0.9.0 (unreleased)
 
 - Update dependencies
+- Remove bills file storage, and always re-create PDFs on demand (#8).
 
 ## 0.8.2 (2020-07-02)
 

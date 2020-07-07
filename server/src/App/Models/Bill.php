@@ -92,21 +92,6 @@ class Bill extends BaseModel
         'user_id'            => 'integer',
     ];
 
-    public function deleteByNumber(string $number): void
-    {
-        $bill = self::where('number', $number);
-        if (!$bill) {
-            return;
-        }
-
-        $foundBill = $bill->first();
-        if ($foundBill) {
-            $this->_unlinkPdf($foundBill->id);
-        }
-
-        $bill->forceDelete();
-    }
-
     // ------------------------------------------------------
     // -
     // -    Setters
@@ -156,9 +141,32 @@ class Bill extends BaseModel
         $newBill = new Bill();
         $newBill->fill($newBillData)->save();
 
+        return $newBill;
+    }
+
+    public function getPdfContent(int $id): string
+    {
+        if (!$this->exists($id)) {
+            throw new Errors\NotFoundException;
+        }
+
+        $bill = self::find($id);
+
+        $date = new \DateTime($bill->date);
+
+        $Event = new Event();
+        $eventData = $Event
+            ->with('Beneficiaries')
+            ->with('Materials')
+            ->find($bill->event_id)
+            ->toArray();
+
+        $EventBill = new EventBill($date, $eventData, $bill->user_id);
+        $EventBill->setDiscountRate($bill->discount_rate);
         $categories = (new Category())->getAll()->get()->toArray();
-        if (!$this->_savePdf($newBill->id, $EventBill->toPdfTemplateArray($categories))) {
-            $newBill->remove($newBill->id, ['force' => true]);
+
+        $billPdf = $this->_getPdfAsString($EventBill->toPdfTemplateArray($categories));
+        if (!$billPdf) {
             $lastError = error_get_last();
             throw new \RuntimeException(sprintf(
                 "Unable to create PDF file. Reason: %s",
@@ -166,33 +174,16 @@ class Bill extends BaseModel
             ));
         }
 
-        return $newBill;
+        return $billPdf;
     }
 
-    // - Overwrites the BaseModel::remove() method to add PDF file deletion
-    public function remove(int $id, array $options = []): ?Model
+    public function deleteByNumber(string $number): void
     {
-        $options = array_merge([
-            'force' => false
-        ], $options);
-
-        $bill = self::withTrashed()->find($id);
-        if (empty($bill)) {
-            throw new Errors\NotFoundException;
+        $bill = self::where('number', $number);
+        if (!$bill) {
+            return;
         }
 
-        if ($bill->trashed() || $options['force'] === true) {
-            $this->_unlinkPdf($id);
-            if (!$bill->forceDelete()) {
-                throw new \RuntimeException("Unable to destroy $this->_modelName ID #$id.");
-            }
-            return null;
-        }
-
-        if (!$bill->delete()) {
-            throw new \RuntimeException("Unable to delete $this->_modelName ID #$id.");
-        }
-
-        return $bill;
+        $bill->forceDelete();
     }
 }
