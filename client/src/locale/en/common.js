@@ -142,7 +142,11 @@ export default {
   'click-here-to-regenerate': "Click here to create a new bill.",
   'total': "Total",
   'total-discountable': "Total discountable",
-  'items-count': "{count} items",
+  'items-count': [
+    "{count} item",
+    "{count} items",
+  ],
+  'stock-items-count': "{count} in stock",
   'sub-total': "Sub-total",
   'total-amount': "Total amount",
   'total-amount-with-discount': "Total with discount",

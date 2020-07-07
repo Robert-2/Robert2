@@ -35,11 +35,12 @@
           {{ park.row.postal_code }} {{ park.row.locality }}
         </div>
         <div slot="totalItems" slot-scope="park">
-          <router-link
-            :to="`/materials?park=${park.row.id}`"
-          >
-            {{ $t('page-parks.items-count', { count: park.row.total_items }) }}
+          <router-link :to="`/materials?park=${park.row.id}`">
+            {{ $t('items-count', { count: park.row.total_items }, park.row.total_items) }}
           </router-link>
+          <span v-if="park.row.total_items > 0" class="Parks__total-stock">
+            ({{ $t('stock-items-count', { count: park.row.total_stock_quantity }) }})
+          </span>
           <span class="Parks__total-amount">
             ({{ formatAmount(park.row.total_amount) }})
           </span>

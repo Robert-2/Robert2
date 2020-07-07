@@ -208,7 +208,6 @@ export default {
     'confirm-restore': "Voulez-vous vraiment restaurer ce parc\u00a0?",
     'saved': "Parc sauvegardé.",
     'total-items': 'Totaux',
-    'items-count': '{count} articles',
   },
 
   'page-tags': {
