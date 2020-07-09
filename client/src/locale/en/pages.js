@@ -53,6 +53,10 @@ export default {
     'help-timeline-event-operations': "Click to selct the event and move or resize it. Double-click to open event's preview.",
     'center-on-today': "Center on today",
     'center-on': "Center on",
+    'this-event-is-past': "This event is past.",
+    'this-event-is-currently-running': "This event is currently running.",
+    'this-event-is-confirmed': "This event is confirmed.",
+    'this-event-has-missing-materials': "This event has missing materials.",
   },
 
   'page-events': {

@@ -123,7 +123,7 @@ export default {
       this.$http.get(this.$route.meta.resource, { params })
         .then(({ data }) => {
           this.events = data.data.map(
-            (event) => utils.formatTimelineEvent(event),
+            (event) => utils.formatTimelineEvent(event, this.$t),
           );
           this.isLoading = false;
         })

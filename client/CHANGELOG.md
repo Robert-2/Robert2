@@ -8,6 +8,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 - Update dependencies
 - Fix totals of items in parks listing, and add total in stock (#6).
+- Display an icon (warning) on timeline events when they miss some materials (#16).
+- Add a tooltip when hovering events on the timeline with information about event' status.
 
 ## 0.8.1 (2020-07-02)
 
