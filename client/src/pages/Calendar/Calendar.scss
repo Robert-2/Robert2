@@ -72,11 +72,26 @@
       }
     }
 
+    &--with-warning {
+      .vis-item-content::before {
+        content: "\f071";
+        display: inline-block;
+        font-family: 'Font Awesome 5 Free';
+        font-weight: 900;
+        margin-right: .5rem;
+        color: $text-danger-color;
+      }
+    }
+
     &--confirmed {
       background-color: $calendar-event-confirmed-color !important;
 
       &.vis-selected {
         background-color: lighten($calendar-event-confirmed-color, 10%) !important;
+      }
+
+      .vis-item-content::before {
+        color: $text-base-color;
       }
     }
 

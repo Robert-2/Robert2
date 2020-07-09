@@ -34,9 +34,13 @@ class EventController extends BaseController
             ->setPeriod($startDate, $endDate)
             ->getAll($deleted);
 
-        return $response->withJson([
-            'data' => $results->get()->toArray()
-        ]);
+        $data = $results->get()->toArray();
+        foreach ($data as $index => $event) {
+            $eventMissingMaterials = $this->model->getMissingMaterials($event['id']);
+            $data[$index]['has_missing_materials'] = !empty($eventMissingMaterials);
+        }
+
+        return $response->withJson([ 'data' => $data ]);
     }
 
     public function getOne(Request $request, Response $response): Response

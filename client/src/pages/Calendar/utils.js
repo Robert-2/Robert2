@@ -5,6 +5,7 @@ const formatEvent = (dataEvent) => {
     start_date: rawStartDate,
     end_date: rawEndDate,
     is_confirmed: isConfirmed,
+    has_missing_materials: hasMissingMaterials,
   } = dataEvent;
 
   const now = moment();
@@ -20,10 +21,11 @@ const formatEvent = (dataEvent) => {
     isConfirmed,
     isPast,
     isCurrent,
+    hasMissingMaterials,
   };
 };
 
-const formatTimelineEvent = (dataEvent) => {
+const formatTimelineEvent = (dataEvent, translate) => {
   const {
     id,
     title,
@@ -33,29 +35,48 @@ const formatTimelineEvent = (dataEvent) => {
     isCurrent,
     isConfirmed,
     location,
+    hasMissingMaterials,
   } = formatEvent(dataEvent);
-  const isLocked = isPast || isConfirmed;
-
-  const classNames = ['Calendar__event'];
-  if (isPast) {
-    classNames.push('Calendar__event--past');
-  }
-
-  if (isCurrent) {
-    classNames.push('Calendar__event--current');
-  }
-
-  if (isConfirmed && !isPast) {
-    classNames.push('Calendar__event--confirmed');
-  }
-
-  if (isLocked) {
-    classNames.push('Calendar__event--locked');
-  }
 
   let content = title;
   if (location) {
     content = `${title} (${location})`;
+  }
+
+  const eventStatus = [];
+
+  const classNames = ['Calendar__event'];
+  if (isPast) {
+    classNames.push('Calendar__event--past');
+    eventStatus.push(translate('page-calendar.this-event-is-past'));
+  }
+
+  if (isCurrent) {
+    classNames.push('Calendar__event--current');
+    eventStatus.push(translate('page-calendar.this-event-is-currently-running'));
+  }
+
+  if (isConfirmed) {
+    eventStatus.push(translate('page-calendar.this-event-is-confirmed'));
+
+    if (!isPast) {
+      classNames.push('Calendar__event--confirmed');
+    }
+  }
+
+  const isLocked = isPast || isConfirmed;
+  if (isLocked) {
+    classNames.push('Calendar__event--locked');
+  }
+
+  if (hasMissingMaterials) {
+    classNames.push('Calendar__event--with-warning');
+    eventStatus.push(translate('page-calendar.this-event-has-missing-materials'));
+  }
+
+  let eventTitle = content;
+  if (eventStatus.length > 0) {
+    eventTitle += `\n  →${eventStatus.join('\n  →')}`;
   }
 
   return {
@@ -65,6 +86,7 @@ const formatTimelineEvent = (dataEvent) => {
     end,
     editable: !isLocked,
     className: classNames.join(' '),
+    title: eventTitle,
   };
 };
 
