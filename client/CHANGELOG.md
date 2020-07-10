@@ -10,6 +10,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - Fix totals of items in parks listing, and add total in stock (#6).
 - Display an icon (warning) on timeline events when they miss some materials (#16).
 - Add a tooltip when hovering events on the timeline with information about event' status.
+- Add a column "quantity" on the left of materials choice table in event's step 4 (#19).
+- Fix interactive updates of quantities, amounts and buttons in event's materials choice table.
 
 ## 0.8.1 (2020-07-02)
 

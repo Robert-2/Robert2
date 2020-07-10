@@ -78,6 +78,11 @@
     }
   }
 
+  &__qty {
+    color: $text-light-color !important;
+    font-weight: 600;
+  }
+
   &__ref {
     font-weight: 600;
   }

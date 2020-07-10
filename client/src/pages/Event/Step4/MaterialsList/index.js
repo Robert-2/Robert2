@@ -15,6 +15,7 @@ export default {
   },
   data() {
     const columns = [
+      'qty',
       'reference',
       'name',
       'remaining_quantity',
@@ -42,6 +43,7 @@ export default {
         initialPage: this.$route.query.page || 1,
         sortable: ['reference', 'name'],
         columnsClasses: {
+          qty: 'MaterialsList__qty',
           reference: 'MaterialsList__ref',
           name: 'MaterialsList__name',
           remaining_quantity: 'MaterialsList__remaining',
@@ -112,6 +114,10 @@ export default {
 
     getQuantity(materialId) {
       return MaterialsStore.getters.getQuantity(materialId);
+    },
+
+    getRemainingQuantity(material) {
+      return material.remaining_quantity - MaterialsStore.getters.getQuantity(material.id);
     },
 
     setQuantity(id, value) {

@@ -27,8 +27,14 @@
         :columns="columns"
         :options="options"
       >
+        <div slot="qty" slot-scope="material">
+          <span :key="`qty-${material.row.id}-${renderId}`">
+            {{ getQuantity(material.row.id) > 0 ? `${getQuantity(material.row.id)}\u00a0×` : '' }}
+          </span>
+        </div>
         <div slot="remaining_quantity" slot-scope="material">
           <span
+            :key="`remain-qty-${material.row.id}-${renderId}`"
             class="MaterialsList__remaining"
             :class="{
               'MaterialsList__remaining--zero':
@@ -37,9 +43,7 @@
                 material.row.remaining_quantity < getQuantity(material.row.id),
             }"
           >
-            {{ $t('remaining-count', {
-              count: material.row.remaining_quantity - getQuantity(material.row.id)
-            }) }}
+            {{ $t('remaining-count', { count: getRemainingQuantity(material.row) }) }}
           </span>
         </div>
         <div slot="price" slot-scope="material">
@@ -49,7 +53,7 @@
         <Quantity
           slot="quantity"
           slot-scope="material"
-          :key="`${material.row.id}-${renderId}`"
+          :key="`quantities-${material.row.id}-${renderId}`"
           :materialId="material.row.id"
           :initialQuantity="getQuantity(material.row.id)"
           :maxQuantity="material.row.remaining_quantity"
@@ -58,11 +62,14 @@
           @increment="increment(material.row.id)"
         />
         <div slot="amount" slot-scope="material">
-          {{ formatAmount(material.row.rental_price * getQuantity(material.row.id)) }}
+          <span :key="`amount-${material.row.id}-${renderId}`">
+            {{ formatAmount(material.row.rental_price * getQuantity(material.row.id)) }}
+          </span>
         </div>
         <div slot="actions" slot-scope="material">
           <button
-            v-if="getQuantity(material.row.id) > 0"
+            :key="`clear-${material.row.id}-${renderId}`"
+            v-show="getQuantity(material.row.id) > 0"
             class="warning"
             @click="setQuantity(material.row.id, 0)"
           >
