@@ -2519,8 +2519,14 @@ return [
     "vatNumber"
     => "VAT number: %s",
 
+    "assignees"
+    => "Technicians",
+
     "beneficiary"
     => "Beneficiary",
+
+    "otherBeneficiaries"
+    => "Other beneficiaries",
 
     "event"
     => "Event: %s",
@@ -2607,5 +2613,23 @@ return [
     => "Designation",
 
     "replacementValue"
-    => "Repl. Val."
+    => "Repl. Val.",
+
+    "eventSummary"
+    => "Event summary",
+
+    "title"
+    => "Title: « %s »",
+
+    "location"
+    => "Location: %s",
+
+    "thisEventIsConfirmed"
+    => "This event is confirmed.",
+
+    "materials"
+    => "Materials",
+
+    "eventTotalReplacementAmount"
+    => "Total replacement amount for the event: %s",
 ];

@@ -739,4 +739,17 @@ final class EventsTest extends ApiTestCase
         $this->assertStatusCode(ERROR_NOT_FOUND);
         $this->assertNotFoundErrorMessage();
     }
+
+    public function testDownloadPdf()
+    {
+        // - Event does not exists
+        $this->client->get('/events/999/pdf');
+        $this->assertStatusCode(404);
+
+        // - Download event n°1 PDF file
+        $this->client->get('/events/1/pdf');
+        $this->assertStatusCode(200);
+        $responseStream = $this->client->response->getBody();
+        $this->assertTrue($responseStream->isReadable());
+    }
 }

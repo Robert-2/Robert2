@@ -1,3 +1,4 @@
+import Config from '@/config/globalConfig';
 import EventOverview from '@/components/EventOverview/EventOverview.vue';
 
 export default {
@@ -6,6 +7,13 @@ export default {
   props: { event: Object },
   data() {
     return { isConfirming: false };
+  },
+  computed: {
+    eventSummaryPdfUrl() {
+      const { baseUrl } = Config;
+      const { id } = this.event || { id: null };
+      return `${baseUrl}/events/${id}/pdf`;
+    },
   },
   methods: {
     confirmEvent() {

@@ -275,4 +275,10 @@ final class EventTest extends ModelTestCase
         );
         $this->model->validate($testData);
     }
+
+    public function testGetPdfContent()
+    {
+        $result = $this->model->getPdfContent(1);
+        $this->assertNotEmpty($result);
+    }
 }

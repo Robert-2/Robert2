@@ -1,3 +1,4 @@
+import Config from '@/config/globalConfig';
 import store from '@/store';
 
 export default {
@@ -9,6 +10,13 @@ export default {
       fromToDates: {},
       isVisitor: store.state.user.groupId === 'visitor',
     };
+  },
+  computed: {
+    eventSummaryPdfUrl() {
+      const { baseUrl } = Config;
+      const { id } = this.event || { id: null };
+      return `${baseUrl}/events/${id}/pdf`;
+    },
   },
   created() {
     const { event } = this.$props;

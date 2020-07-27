@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Respect\Validation\Validator as V;
 
 use Robert2\API\Errors;
+use Robert2\API\Config\Config;
+use Robert2\API\I18n\I18n;
 use Robert2\API\Models\Traits\WithPdf;
 use Robert2\Lib\Domain\EventBill;
 
@@ -146,6 +148,30 @@ class Bill extends BaseModel
         return $newBill;
     }
 
+    public function getPdfName(int $id): string
+    {
+        $model = $this->withTrashed()->find($id);
+        if (!$model) {
+            throw new NotFoundException(sprintf('%s not found.', $this->_modelName));
+        }
+
+        $company = Config::getSettings('companyData');
+
+        $i18n = new I18n(Config::getSettings('defaultLang'));
+        $fileName = sprintf(
+            '%s-%s-%s-%s.pdf',
+            $i18n->translate($this->_modelName),
+            slugify($company['name']),
+            $model->number,
+            slugify($model->Beneficiary->full_name)
+        );
+        if (isTestMode()) {
+            $fileName = sprintf('TEST-%s', $fileName);
+        }
+
+        return $fileName;
+    }
+
     public function getPdfContent(int $id): string
     {
         if (!$this->exists($id)) {
@@ -179,6 +205,12 @@ class Bill extends BaseModel
 
         return $billPdf;
     }
+
+    // ——————————————————————————————————————————————————————
+    // —
+    // —    Setters
+    // —
+    // ——————————————————————————————————————————————————————
 
     public function deleteByNumber(string $number): void
     {

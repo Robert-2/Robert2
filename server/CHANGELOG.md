@@ -12,6 +12,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - Fix total replacement amount of parks material (#6).
 - Add a flag `has_missing_materials` in each event's data (#16).
 - Fix undefined index in step 6 of install wizard (#26).
+- Make the event summary printable (#15).
 
 ## 0.8.2 (2020-07-02)
 
