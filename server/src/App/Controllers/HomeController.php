@@ -83,7 +83,9 @@ class HomeController
 
                 if ($currentStep === 'adminUser') {
                     $user = new Models\User();
-                    if ($installData['skipUserCreation'] === 'yes') {
+                    if (array_key_exists('skipUserCreation', $installData)
+                        && $installData['skipUserCreation'] === 'yes'
+                    ) {
                         $existingAdmins = $user->getAll()->where('group_id', 'admin')->get()->toArray();
                         if (empty($existingAdmins)) {
                             throw new \InvalidArgumentException(
