@@ -12,6 +12,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - Add a tooltip when hovering events on the timeline with information about event' status.
 - Add a column "quantity" on the left of materials choice table in event's step 4 (#19).
 - Fix interactive updates of quantities, amounts and buttons in event's materials choice table.
+- Make the event summary printable (#15).
 
 ## 0.8.1 (2020-07-02)
 

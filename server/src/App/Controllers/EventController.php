@@ -8,9 +8,12 @@ use Slim\Http\Response;
 
 use Robert2\API\Errors;
 use Robert2\API\Models\Event;
+use Robert2\API\Controllers\Traits\WithPdf;
 
 class EventController extends BaseController
 {
+    use WithPdf;
+
     public function __construct($container)
     {
         parent::__construct($container);

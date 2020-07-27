@@ -2521,8 +2521,14 @@ return [
     "vatNumber"
     => "N° TVA Intracom. : %s",
 
+    "assignees"
+    => "Techniciens",
+
     "beneficiary"
     => "Bénéficiaire",
+
+    "otherBeneficiaries"
+    => "Autres bénéficiaires",
 
     "event"
     => "Événement : %s",
@@ -2609,5 +2615,23 @@ return [
     => "Désignation",
 
     "replacementValue"
-    => "Val. Remp."
+    => "Val. Remp.",
+
+    "eventSummary"
+    => "Récapitulatif de l'événement",
+
+    "title"
+    => "Titre : « %s »",
+
+    "location"
+    => "Lieu : %s",
+
+    "thisEventIsConfirmed"
+    => "Cet événement est confirmé.",
+
+    "materials"
+    => "Matériel",
+
+    "eventTotalReplacementAmount"
+    => "Montant total de remplacement pour l'événement : %s",
 ];

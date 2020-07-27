@@ -49,10 +49,14 @@
         <i v-if="!isConfirming" class="fas fa-hourglass-half" />
         {{ $t('set-back-on-hold') }}
       </button>
-      <button disabled @click="printEvent">
+      <a
+        :href="eventSummaryPdfUrl"
+        target="_blank"
+        class="CalendarEventDetailsHeader__actions__print"
+      >
         <i class="fas fa-print" />
         {{ $t('print') }}
-      </button>
+      </a>
     </div>
     <button class="close" @click="$emit('close')">
       <i class="fas fa-times" />

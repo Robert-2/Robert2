@@ -1,0 +1,101 @@
+{% extends "base.twig" %}
+
+{% block title %}{{ translate("Bill") }} n°{{ number }}{% endblock %}
+
+{% block content %}
+<h1 class="center vspace10">{{ translate('eventSummary') }} «&nbsp;{{ event['title'] }}&nbsp;»</h1>
+<table class="layout-table table-marginated">
+    <tr>
+        <td>
+            <h2 class="vspace5">
+                {{ translate(
+                    'fromToDates',
+                    [event['start_date']|format_date('short', locale=locale),
+                    event['end_date']|format_date('short', locale=locale)]
+                ) }}
+            </h3>
+            {% if event['assignees'] %}
+
+            <h3>{{ translate('assignees') }}</h3>
+            <ul class="indent5 spaceBottom5 size12">
+                {% for assignee in event['assignees'] %}
+                <li>{{ assignee['full_name'] }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+
+            {% if event['is_confirmed'] %}
+            <h3>{{ translate('thisEventIsConfirmed') }}</h3>
+            {% endif %}
+
+            {% if replacementAmount %}
+            <h3>
+                {{ translate('eventTotalReplacementAmount', [
+                    replacementAmount|format_currency(currency, formatCurrencyOptions, locale)
+                ]) }}
+            </h3>
+            {% endif %}
+        </td>
+        <td>
+            {% if event['location'] %}
+            <h2 class="vspace5">{{ translate('location', [event['location']]) }}</h2>
+            {% endif %}
+
+            <h3>{{ translate('beneficiary') }}</h3>
+            <p class="size12 spaceBottom5">
+                {{ event['beneficiaries'][0]['full_name'] }}<br>
+                {{ event['beneficiaries'][0]['street'] }}<br>
+                {{ event['beneficiaries'][0]['postal_code'] }} {{ event['beneficiaries'][0]['locality'] }}
+            </p>
+            {% if event['beneficiaries'][1] %}
+
+            <h3>{{ translate('otherBeneficiaries') }}</h3>
+            <ul class="indent5 spaceBottom5">
+                {% for beneficiary in event['beneficiaries'] %}
+                {% if loop.index0 > 0 %}
+                <li>
+                    {{ beneficiary['full_name'] }}<br>
+                    {{ beneficiary['street'] }} {{ beneficiary['postal_code'] }} {{ event['beneficiaries'][0]['locality'] }}
+                </li>
+                {% endif %}
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </td>
+    </tr>
+</table>
+
+<h2 class="vspace5">{{ translate('materials') }}</h2>
+<table class="size9">
+    <thead>
+        <tr>
+            <th>{{ translate('qty') }}</th>
+            <th>{{ translate('ref') }}</th>
+            <th>{{ translate('designation') }}</th>
+            <th>{{ translate('replacementValue') }}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for subCategory in materialBySubCategories %}
+            <tr>
+                <td></td>
+                <td class="lighter size12" style="padding: 2mm 2mm 3mm">{{ subCategory['name'] }}</td>
+                <td></td>
+                <td></td>
+            </tr>
+            {% for material in subCategory['materials'] %}
+            <tr>
+                <td style="border-top:none;" class="center">
+                    {{ material['quantity'] }}
+                </td>
+                <td style="border-top:none;">{{ material['reference'] }}</td>
+                <td style="border-top:none;">{{ material['name'] }}</td>
+                <td style="border-top:none;" class="right lighter">
+                    {{ material['replacementPrice']|format_currency(currency, formatCurrencyOptions, locale) }}
+                </td>
+            </tr>
+            {% endfor %}
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
