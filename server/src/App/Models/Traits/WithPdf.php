@@ -32,7 +32,7 @@ trait WithPdf
             '%s-%s-%s.pdf',
             $i18n->translate($this->_modelName),
             slugify($company['name']),
-            $model->id
+            $model->title ?: $model->id
         );
         if (isTestMode()) {
             $fileName = sprintf('TEST-%s', $fileName);

@@ -2615,6 +2615,12 @@ return [
     "replacementValue"
     => "Repl. Val.",
 
+    "totalReplacementValue"
+    => "Total Repl. Val.",
+
+    "releaseSheet"
+    => "Release sheet",
+
     "eventSummary"
     => "Event summary",
 
@@ -2630,6 +2636,33 @@ return [
     "materials"
     => "Materials",
 
+    "otherMaterials"
+    => "Other Materials",
+
+    "Event"
+    => "Release sheet",
+
+    "onDate"
+    => "On %s",
+
     "eventTotalReplacementAmount"
-    => "Total replacement amount for the event: %s",
+    => "Total replacement amount: %s",
+
+    "output"
+    => "Output",
+
+    "outputScheduledFor"
+    => "Scheduled for: %s",
+
+    "return"
+    => "Return",
+
+    "returnScheduledFor"
+    => "Scheduled for: %s",
+
+    "effectiveDate"
+    => "Effective date:",
+
+    "signature"
+    => "Signature:",
 ];

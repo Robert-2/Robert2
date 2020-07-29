@@ -256,6 +256,7 @@ class Event extends BaseModel
             'event' => $event,
             'date' => $date,
             'locale' => Config::getSettings('defaultLang'),
+            'company' => Config::getSettings('companyData'),
             'currency' => Config::getSettings('currency')['iso'],
             'currencyName' => Config::getSettings('currency')['name'],
             'materialBySubCategories' => $EventBill->getMaterialBySubCategories($categories),

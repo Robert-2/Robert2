@@ -9,13 +9,31 @@
             font-family: -apple-system, 'Segoe UI', Roboto, Ubuntu, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';;
             font-size: 10pt;
         }
-        body { margin: 0; }
-        h1 { font-size: 14pt; margin: 0 0 3mm 0; }
-        h2 { font-size: 12pt; margin: 0 0 3mm 0; }
-        h3 { font-size: 11pt; margin: 0 0 3mm 0; }
-        h4 { font-size: 10pt; margin: 0 0 3mm 0; }
-        p { margin: 0 0 3mm 0; }
-        ul, ol { margin: 2mm 0 3mm 0; }
+        body {
+            margin: 0;
+        }
+        h1 {
+            font-size: 14pt;
+            margin: 0 0 3mm 0;
+        }
+        h2 {
+            font-size: 12pt;
+            margin: 0 0 3mm 0;
+        }
+        h3 {
+            font-size: 11pt;
+            margin: 0 0 3mm 0;
+        }
+        h4 {
+            font-size: 10pt;
+            margin: 0 0 3mm 0;
+        }
+        p {
+            margin: 0 0 3mm 0;
+        }
+        ul, ol {
+            margin: 2mm 0 3mm 0;
+        }
         table {
             width: 100%;
             table-layout: auto;
@@ -29,12 +47,37 @@
             border-left: 1pt solid #888;
             vertical-align: top;
         }
-        th { text-align: center; }
-        th:last-child, td:last-child { border-right: 1pt solid #888; }
-        tr:last-child > td { border-bottom: 1pt solid #888; }
-        .layout-table > tbody > tr > td { border: none; padding: 0; }
-        .table-marginated { margin: 0 10mm; }
+        th {
+            text-align: center;
+        }
+        th:last-child, td:last-child {
+            border-right: 1pt solid #888;
+        }
+        tr:last-child > td {
+            border-bottom: 1pt solid #888;
+        }
+        .layout-table > tbody > tr > td {
+            border: none;
+            padding: 0;
+        }
+        .listing-table > tbody > tr > td {
+            padding: 2mm;
+        }
+        .listing-table > tbody > tr:not(:first-child) > td {
+            border-top: 1pt solid #ccc;
+        }
+        .listing-table .sub-category-line {
+            padding: 4mm 2mm 2mm;
+            font-size: 12pt;
+            color: #666;
+        }
+        .inset {
+            padding: 5mm 3mm 8mm !important;
+            border: 1px solid #999 !important;
+        }
         .half { width: 50%; }
+        .third { width: 33.33%; }
+        .two-third { width: 66.66%; }
         .left { text-align: left; }
         .center { text-align: center; }
         .right { text-align: right; }

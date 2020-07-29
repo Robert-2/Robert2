@@ -2617,6 +2617,12 @@ return [
     "replacementValue"
     => "Val. Remp.",
 
+    "totalReplacementValue"
+    => "Val. Remp. Totale",
+
+    "releaseSheet"
+    => "Fiche de sortie",
+
     "eventSummary"
     => "Récapitulatif de l'événement",
 
@@ -2632,6 +2638,33 @@ return [
     "materials"
     => "Matériel",
 
+    "otherMaterials"
+    => "Autre matériel",
+
+    "Event"
+    => "Fiche de sortie",
+
+    "onDate"
+    => "Le %s",
+
     "eventTotalReplacementAmount"
-    => "Montant total de remplacement pour l'événement : %s",
+    => "Montant total de remplacement : %s",
+
+    "output"
+    => "Sortie",
+
+    "outputScheduledFor"
+    => "Prévue le : %s",
+
+    "return"
+    => "Retour",
+
+    "returnScheduledFor"
+    => "Prévu le : %s",
+
+    "effectiveDate"
+    => "Date effective :",
+
+    "signature"
+    => "Signature :",
 ];

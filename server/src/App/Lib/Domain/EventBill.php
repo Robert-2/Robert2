@@ -118,8 +118,8 @@ class EventBill
 
             if (!isset($categoriesTotals[$categoryId])) {
                 $categoriesTotals[$categoryId] = [
-                    'id'       => $categoryId,
-                    'name'     => $this->getCategoryName($categories, $categoryId),
+                    'id' => $categoryId,
+                    'name' => $this->getCategoryName($categories, $categoryId),
                     'quantity' => $quantity,
                     'subTotal' => $quantity * $price,
                 ];
@@ -147,25 +147,27 @@ class EventBill
 
             if (!isset($subCategoriesMaterials[$subCategoryId])) {
                 $subCategoriesMaterials[$subCategoryId] = [
-                    'id'        => $subCategoryId,
-                    'name'      => $this->getSubCategoryName($categories, $subCategoryId),
+                    'id' => $subCategoryId,
+                    'name' => $this->getSubCategoryName($categories, $subCategoryId),
                     'materials' => [],
                 ];
             }
 
             $quantity = $material['pivot']['quantity'];
+            $replacementPrice = $material['replacement_price'];
 
             $subCategoriesMaterials[$subCategoryId]['materials'][] = [
-                'reference'        => $material['reference'],
-                'name'             => $material['name'],
-                'quantity'         => $quantity,
-                'rentalPrice'      => $price,
-                'replacementPrice' => $material['replacement_price'],
-                'total'            => $price * $quantity,
+                'reference' => $material['reference'],
+                'name' => $material['name'],
+                'quantity' => $quantity,
+                'rentalPrice' => $price,
+                'replacementPrice' => $replacementPrice,
+                'total' => $price * $quantity,
+                'totalReplacementPrice' => $replacementPrice * $quantity,
             ];
         }
 
-        return array_values($subCategoriesMaterials);
+        return array_reverse(array_values($subCategoriesMaterials));
     }
 
     public function getMaterials()

@@ -41,6 +41,7 @@
           {{ $t('set-back-event-pending') }}
         </button>
         <a
+          v-if="event.beneficiaries.length > 0"
           :href="eventSummaryPdfUrl"
           target="_blank"
           class="EventStep5__confirmation__actions__print"
