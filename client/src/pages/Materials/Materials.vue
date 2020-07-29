@@ -45,6 +45,9 @@
         <div slot="rental_price" slot-scope="material">
           {{ formatAmount(material.row.rental_price) }}
         </div>
+        <div slot="replacement_price" slot-scope="material">
+          {{ formatAmount(material.row.replacement_price) }}
+        </div>
         <div
           slot="tags"
           slot-scope="material"
