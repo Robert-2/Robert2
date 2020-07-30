@@ -35,14 +35,11 @@ class ValidationException extends \Exception
         $message = "";
         $details = $e->getMessage();
 
-        if ($e->getCode() == '23000') {
-            $subcode = explode(" ", explode(": ", $details)[2]);
-            if ($subcode[0] == '1062') {
-                $this->code           = ERROR_DUPLICATE;
-                $offsetKeyName        = strripos($details, "for key '") + strlen("for key '");
-                $keyNameWithoutUnique = substr($details, $offsetKeyName, - strlen("_UNIQUE'"));
-                $message              = "Duplicate entry: index $keyNameWithoutUnique must be unique";
-            }
+        if (isDuplicateException($e)) {
+            $this->code = ERROR_DUPLICATE;
+            $offsetKeyName = strripos($details, "for key '") + strlen("for key '");
+            $keyNameWithoutUnique = substr($details, $offsetKeyName, - strlen("_UNIQUE'"));
+            $message = "Duplicate entry: index $keyNameWithoutUnique must be unique";
         }
 
         $this->setValidationErrors([$message, $details]);

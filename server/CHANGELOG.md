@@ -14,6 +14,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - Fix undefined index in step 6 of install wizard (#26).
 - Make the event summary printable (#15).
 - Fix the `taggables` table `PRIMARY` constraint (#28).
+- Automatically manage duplicate Person (technician / beneficiary) by adding the right tag (#14).
 
 ## 0.8.2 (2020-07-02)
 

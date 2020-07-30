@@ -28,4 +28,12 @@ final class FunctionsTest extends TestCase
         $this->assertEquals('un_test', slugify("un test"));
         $this->assertEquals('test_espace_insécable', slugify("test espace insécable"));
     }
+
+    public function testCleanEmptyFields()
+    {
+        $data = ['field1' => 'not-empty', 'field2' => '', 'field3' => null];
+        $result = cleanEmptyFields($data);
+        $expected = ['field1' => 'not-empty', 'field2' => null, 'field3' => null];
+        $this->assertEquals($expected, $result);
+    }
 }
