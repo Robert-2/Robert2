@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 0.9.0 (unreleased)
+## 0.9.0 (2020-07-31)
 
 - Update dependencies
 - Fix totals of items in parks listing, and add total in stock (#6).
