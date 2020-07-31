@@ -6,8 +6,10 @@ namespace Robert2\API\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\QueryException;
 use Respect\Validation\Validator as V;
 
+use Robert2\API\Errors;
 use Robert2\API\Formater\Phone;
 use Robert2\API\Models\Traits\Taggable;
 
@@ -176,13 +178,48 @@ class Person extends BaseModel
             $data['phone'] = $this->normalizePhone($data['phone']);
         }
 
-        $person = parent::edit($id, $data);
+        if ($id && !$this->exists($id)) {
+            throw new Errors\NotFoundException("Edit model $this->_modelName failed, entity not found.");
+        }
 
-        if (!empty($data['tags'])) {
-            $this->setTags($person['id'], $data['tags']);
+        $data = cleanEmptyFields($data);
+
+        $onlyFields = $id ? array_keys($data) : [];
+        $this->validate($data, $onlyFields);
+
+        try {
+            $person = self::updateOrCreate(['id' => $id], $data);
+
+            if (!empty($data['tags'])) {
+                $this->setTags($person['id'], $data['tags']);
+            }
+        } catch (QueryException $e) {
+            if (!isDuplicateException($e)) {
+                $error = new Errors\ValidationException();
+                $error->setPDOValidationException($e);
+                throw $error;
+            }
+
+            $person = self::where('email', $data['email'])->first();
+            $this->_setOtherTag($person);
         }
 
         return $person;
+    }
+
+    protected function _setOtherTag(Model $person): void
+    {
+        $defaultTags = array_values($this->_settings['defaultTags']);
+        $existingTags = array_map(function ($tag) {
+            return $tag['name'];
+        }, $person->tags);
+
+        $diff = array_diff($defaultTags, $existingTags);
+        if (empty($diff)) {
+            return;
+        }
+
+        $this->addTag($person->id, $diff[0]);
     }
 
     protected function _setSearchConditions(Builder $builder): Builder

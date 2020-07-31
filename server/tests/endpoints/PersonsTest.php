@@ -287,14 +287,35 @@ final class PersonsTest extends ApiTestCase
 
     public function testCreatePersonDuplicate()
     {
-        $this->client->post('/api/persons', [
+        $data = [
             'first_name' => 'Roger',
-            'last_name'  => 'Rabbit',
-            'nickname'   => 'Riri',
-            'email'      => 'tester2@robertmanager.net',
-        ]);
-        $this->assertStatusCode(ERROR_DUPLICATE);
-        $this->assertValidationErrorMessage();
+            'last_name' => 'Rabbit',
+            'nickname' => 'Riri',
+            'email' => 'tester2@robertmanager.net',
+        ];
+        $this->client->post('/api/persons', $data);
+        $this->assertStatusCode(SUCCESS_CREATED);
+        $this->assertResponseData([
+            'id'          => 2,
+            'first_name'  => 'Roger',
+            'last_name'   => 'Rabbit',
+            'full_name'   => 'Roger Rabbit',
+            'nickname'    => 'Riri',
+            'email'       => 'tester2@robertmanager.net',
+            'phone'       => null,
+            'street'      => null,
+            'postal_code' => null,
+            'locality'    => null,
+            'user_id'     => 2,
+            'country_id'  => null,
+            'company_id'  => null,
+            'note'        => null,
+            'created_at'  => null,
+            'updated_at'  => null,
+            'deleted_at'  => null,
+            'company'     => null,
+            'country'     => null,
+        ], ['created_at', 'updated_at']);
     }
 
     public function testCreatePerson()

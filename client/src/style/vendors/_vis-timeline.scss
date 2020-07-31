@@ -96,10 +96,12 @@ $items-border-radius: 10px;
   }
 }
 
-.vis-tooltip {
+div.vis-tooltip {
   max-width: 50%;
   margin: 30px 0 0 15px;
   border: none !important;
   border-radius: 3px;
+  padding: $content-padding-small-horizontal $content-padding-small-vertical;
   white-space: pre-wrap !important;
+  font-family: $text-base-font-family;
 }

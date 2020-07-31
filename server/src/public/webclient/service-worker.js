@@ -11,11 +11,13 @@
  * See https://goo.gl/2aRDsh
  */
 
-importScripts('https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js');
+importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
-importScripts('/precache-manifest.js');
+importScripts(
+  "/precache-manifest.41e838c00f9de1190b5867b806b9aae2.js"
+);
 
-workbox.core.setCacheNameDetails({ prefix: 'robert2-webclient' });
+workbox.core.setCacheNameDetails({prefix: "robert2-webclient"});
 
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {

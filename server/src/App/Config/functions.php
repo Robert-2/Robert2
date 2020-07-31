@@ -16,19 +16,18 @@ function isTestMode(): bool
  *
  * @param var mixed: Variable to monitor
  * @param options array: Options:
- *   log (bool): Wether to log the debug in `/var/log` instead of direct output (default FALSE)
- *   exit (bool): Wether to exit after debug, or not (default TRUE)
+ *   - `log` (bool): Wether to log the debug in `/var/log` instead of direct output (default `false`)
+ *   - `append` (bool): Wether to append to log file instead of replace (default `true`)
  * @return void
  *
  * @codeCoverageIgnore
  */
 function debug($var = null, array $options = []): void
 {
-    $options = array_merge($options, [
-        'log'    => true,
+    $options = array_merge([
+        'log' => false,
         'append' => true,
-        'exit'   => false,
-    ]);
+    ], $options);
 
     if ($options['log']) {
         $backtrace = debug_backtrace();
@@ -42,11 +41,7 @@ function debug($var = null, array $options = []): void
             print_r($var, true)
         );
         $logFile = VAR_FOLDER . DS . 'logs' . DS . 'debug.log';
-        file_put_contents($logFile, $debug, $options['append'] ? FILE_APPEND : null);
-
-        if ($options['exit']) {
-            exit;
-        }
+        file_put_contents($logFile, $debug, $options['append'] ? FILE_APPEND : 0);
         return;
     }
 
@@ -62,10 +57,6 @@ function debug($var = null, array $options = []): void
         var_dump($var);
     }
     echo $wrap[1];
-
-    if ($options['exit']) {
-        exit;
-    }
 }
 
 /**
@@ -123,4 +114,35 @@ function snakeToCamelCase(string $str, bool $capitalizeFirstLetter = false): str
 function slugify(string $str): string
 {
     return preg_replace('/\s|\xc2\xa0/', '_', $str);
+}
+
+/**
+ * Set all empty fields of an array to null
+ *
+ * @param data array: The array to clean
+ * @return array
+ */
+function cleanEmptyFields(array $data): array
+{
+    return array_map(function ($value) {
+        return ($value === '') ? null : $value;
+    }, $data);
+}
+
+/**
+ * Set all empty fields of an array to null
+ *
+ * @param e Illuminate\Database\QueryException: The PDO Exception thrown
+ * @return bool
+ */
+function isDuplicateException(Illuminate\Database\QueryException $e): bool
+{
+    if ($e->getCode() != '23000') {
+        return false;
+    }
+
+    $details = $e->getMessage();
+    $subCode = explode(" ", explode(": ", $details)[2]);
+
+    return $subCode[0] == '1062';
 }

@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.9.0 (2020-07-31)
+
+- Update dependencies
+- Fix totals of items in parks listing, and add total in stock (#6).
+- Display an icon (warning) on timeline events when they miss some materials (#16).
+- Add a tooltip when hovering events on the timeline with information about event' status.
+- Add a column "quantity" on the left of materials choice table in event's step 4 (#19).
+- Fix interactive updates of quantities, amounts and buttons in event's materials choice table.
+- Make the event summary printable (#15).
+
 ## 0.8.1 (2020-07-02)
 
 - Fix color of events in calendar (#11).

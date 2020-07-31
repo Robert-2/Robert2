@@ -2521,8 +2521,14 @@ return [
     "vatNumber"
     => "N° TVA Intracom. : %s",
 
+    "assignees"
+    => "Techniciens",
+
     "beneficiary"
     => "Bénéficiaire",
+
+    "otherBeneficiaries"
+    => "Autres bénéficiaires",
 
     "event"
     => "Événement : %s",
@@ -2609,5 +2615,56 @@ return [
     => "Désignation",
 
     "replacementValue"
-    => "Val. Remp."
+    => "Val. Remp.",
+
+    "totalReplacementValue"
+    => "Val. Remp. Totale",
+
+    "releaseSheet"
+    => "Fiche de sortie",
+
+    "eventSummary"
+    => "Récapitulatif de l'événement",
+
+    "title"
+    => "Titre : « %s »",
+
+    "location"
+    => "Lieu : %s",
+
+    "thisEventIsConfirmed"
+    => "Cet événement est confirmé.",
+
+    "materials"
+    => "Matériel",
+
+    "otherMaterials"
+    => "Autre matériel",
+
+    "Event"
+    => "Fiche de sortie",
+
+    "onDate"
+    => "Le %s",
+
+    "eventTotalReplacementAmount"
+    => "Montant total de remplacement : %s",
+
+    "output"
+    => "Sortie",
+
+    "outputScheduledFor"
+    => "Prévue le : %s",
+
+    "return"
+    => "Retour",
+
+    "returnScheduledFor"
+    => "Prévu le : %s",
+
+    "effectiveDate"
+    => "Date effective :",
+
+    "signature"
+    => "Signature :",
 ];

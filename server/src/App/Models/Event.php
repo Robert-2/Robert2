@@ -7,13 +7,17 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Builder;
 use Respect\Validation\Validator as V;
 
+use Robert2\API\Config\Config;
 use Robert2\API\Models\Material;
 use Robert2\API\I18n\I18n;
+use Robert2\API\Models\Traits\WithPdf;
+use Robert2\Lib\Domain\EventBill;
 use Robert2\API\Errors\ValidationException;
 
 class Event extends BaseModel
 {
     use SoftDeletes;
+    use WithPdf;
 
     protected $table = 'events';
 
@@ -30,6 +34,8 @@ class Event extends BaseModel
     public function __construct()
     {
         parent::__construct();
+
+        $this->pdfTemplate = 'event-summary-default';
 
         $thisYear = date('Y');
         $this->_startDate = new \DateTime("$thisYear-01-01");
@@ -227,6 +233,46 @@ class Event extends BaseModel
         });
 
         return empty($missingMaterials) ? null : array_values($missingMaterials);
+    }
+
+    public function getPdfContent(int $id): string
+    {
+        if (!$this->exists($id)) {
+            throw new Errors\NotFoundException;
+        }
+
+        $event = $this
+            ->with('Assignees')
+            ->with('Beneficiaries')
+            ->with('Materials')
+            ->find($id)
+            ->toArray();
+
+        $date = new \DateTime();
+        $EventBill = new EventBill($date, $event, 'summary', $event['user_id']);
+        $categories = (new Category())->getAll()->get()->toArray();
+
+        $data = [
+            'event' => $event,
+            'date' => $date,
+            'locale' => Config::getSettings('defaultLang'),
+            'company' => Config::getSettings('companyData'),
+            'currency' => Config::getSettings('currency')['iso'],
+            'currencyName' => Config::getSettings('currency')['name'],
+            'materialBySubCategories' => $EventBill->getMaterialBySubCategories($categories),
+            'replacementAmount' => $EventBill->getReplacementAmount(),
+        ];
+
+        $eventPdf = $this->_getPdfAsString($data);
+        if (!$eventPdf) {
+            $lastError = error_get_last();
+            throw new \RuntimeException(sprintf(
+                "Unable to create PDF file. Reason: %s",
+                $lastError['message']
+            ));
+        }
+
+        return $eventPdf;
     }
 
     // ——————————————————————————————————————————————————————

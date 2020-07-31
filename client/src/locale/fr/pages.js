@@ -53,6 +53,10 @@ export default {
     'help-timeline-event-operations': "Cliquer pour sélectionner l'événement et le déplacer ou redimensionner. Double-cliquer pour ouvrir l'aperçu de l'événement.",
     'center-on-today': "Centrer sur aujourd'hui",
     'center-on': "Centrer sur le",
+    'this-event-is-past': "Cet événement est passé.",
+    'this-event-is-currently-running': "Cet événement se déroule en ce moment.",
+    'this-event-is-confirmed': "Cet événement est confirmé.",
+    'this-event-has-missing-materials': "Cet événement a du matériel manquant.",
   },
 
   'page-events': {
@@ -208,7 +212,6 @@ export default {
     'confirm-restore': "Voulez-vous vraiment restaurer ce parc\u00a0?",
     'saved': "Parc sauvegardé.",
     'total-items': 'Totaux',
-    'items-count': '{count} articles',
   },
 
   'page-tags': {

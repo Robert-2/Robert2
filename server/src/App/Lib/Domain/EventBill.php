@@ -20,7 +20,7 @@ class EventBill
     protected $_eventData;
     protected $materials;
 
-    public function __construct(\DateTime $date, array $event, ?int $userId = null)
+    public function __construct(\DateTime $date, array $event, string $billNumber, ?int $userId = null)
     {
         if (empty($event) || empty($event['beneficiaries'] || empty($event['materials']))) {
             throw new \InvalidArgumentException(
@@ -36,8 +36,8 @@ class EventBill
         $this->eventId = $event['id'];
         $this->vatRate = (float)Config::getSettings('companyData')['vatRate'];
         $this->materials = $event['materials'];
+        $this->number = $billNumber;
 
-        $this->_setNumber();
         $this->_setDaysCount();
         $this->_setDegressiveRate();
     }
@@ -118,8 +118,8 @@ class EventBill
 
             if (!isset($categoriesTotals[$categoryId])) {
                 $categoriesTotals[$categoryId] = [
-                    'id'       => $categoryId,
-                    'name'     => $this->getCategoryName($categories, $categoryId),
+                    'id' => $categoryId,
+                    'name' => $this->getCategoryName($categories, $categoryId),
                     'quantity' => $quantity,
                     'subTotal' => $quantity * $price,
                 ];
@@ -147,25 +147,27 @@ class EventBill
 
             if (!isset($subCategoriesMaterials[$subCategoryId])) {
                 $subCategoriesMaterials[$subCategoryId] = [
-                    'id'        => $subCategoryId,
-                    'name'      => $this->getSubCategoryName($categories, $subCategoryId),
+                    'id' => $subCategoryId,
+                    'name' => $this->getSubCategoryName($categories, $subCategoryId),
                     'materials' => [],
                 ];
             }
 
             $quantity = $material['pivot']['quantity'];
+            $replacementPrice = $material['replacement_price'];
 
             $subCategoriesMaterials[$subCategoryId]['materials'][] = [
-                'reference'        => $material['reference'],
-                'name'             => $material['name'],
-                'quantity'         => $quantity,
-                'rentalPrice'      => $price,
-                'replacementPrice' => $material['replacement_price'],
-                'total'            => $price * $quantity,
+                'reference' => $material['reference'],
+                'name' => $material['name'],
+                'quantity' => $quantity,
+                'rentalPrice' => $price,
+                'replacementPrice' => $replacementPrice,
+                'total' => $price * $quantity,
+                'totalReplacementPrice' => $replacementPrice * $quantity,
             ];
         }
 
-        return array_values($subCategoriesMaterials);
+        return array_reverse(array_values($subCategoriesMaterials));
     }
 
     public function getMaterials()
@@ -240,20 +242,20 @@ class EventBill
         ];
     }
 
+    public static function createNumber(\DateTime $date, int $lastBillNumber): string
+    {
+        return sprintf(
+            '%s-%05d',
+            $date->format('Y'),
+            $lastBillNumber + 1
+        );
+    }
+
     // ------------------------------------------------------
     // -
     // -    Internal Methods
     // -
     // ------------------------------------------------------
-
-    protected function _setNumber(): void
-    {
-        $this->number = sprintf(
-            '%s-%05d',
-            $this->date->format('ymd'),
-            $this->eventId
-        );
-    }
 
     protected function _setDaysCount(): void
     {

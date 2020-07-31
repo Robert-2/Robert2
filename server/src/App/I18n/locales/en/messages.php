@@ -2519,8 +2519,14 @@ return [
     "vatNumber"
     => "VAT number: %s",
 
+    "assignees"
+    => "Technicians",
+
     "beneficiary"
     => "Beneficiary",
+
+    "otherBeneficiaries"
+    => "Other beneficiaries",
 
     "event"
     => "Event: %s",
@@ -2607,5 +2613,56 @@ return [
     => "Designation",
 
     "replacementValue"
-    => "Repl. Val."
+    => "Repl. Val.",
+
+    "totalReplacementValue"
+    => "Total Repl. Val.",
+
+    "releaseSheet"
+    => "Release sheet",
+
+    "eventSummary"
+    => "Event summary",
+
+    "title"
+    => "Title: « %s »",
+
+    "location"
+    => "Location: %s",
+
+    "thisEventIsConfirmed"
+    => "This event is confirmed.",
+
+    "materials"
+    => "Materials",
+
+    "otherMaterials"
+    => "Other Materials",
+
+    "Event"
+    => "Release sheet",
+
+    "onDate"
+    => "On %s",
+
+    "eventTotalReplacementAmount"
+    => "Total replacement amount: %s",
+
+    "output"
+    => "Output",
+
+    "outputScheduledFor"
+    => "Scheduled for: %s",
+
+    "return"
+    => "Return",
+
+    "returnScheduledFor"
+    => "Scheduled for: %s",
+
+    "effectiveDate"
+    => "Effective date:",
+
+    "signature"
+    => "Signature:",
 ];

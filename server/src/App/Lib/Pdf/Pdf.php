@@ -42,7 +42,7 @@ class Pdf
         return (bool)file_put_contents($filePath, $result);
     }
 
-    public static function createFromTemplate(string $templateName, array $data, string $filePath): bool
+    public static function createFromTemplate(string $templateName, array $data): string
     {
         $data['formatCurrencyOptions'] = [
             // - Disable thousand grouping in numbers, because there are weird results in PDFs with some locales
@@ -66,6 +66,6 @@ class Pdf
         $html = $template->render($data);
 
         $pdf = new Pdf($html);
-        return $pdf->saveToFile($filePath);
+        return $pdf->getResult();
     }
 }

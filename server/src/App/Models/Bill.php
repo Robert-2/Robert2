@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Respect\Validation\Validator as V;
 
 use Robert2\API\Errors;
+use Robert2\API\Config\Config;
+use Robert2\API\I18n\I18n;
 use Robert2\API\Models\Traits\WithPdf;
 use Robert2\Lib\Domain\EventBill;
 
@@ -92,21 +94,6 @@ class Bill extends BaseModel
         'user_id'            => 'integer',
     ];
 
-    public function deleteByNumber(string $number): void
-    {
-        $bill = self::where('number', $number);
-        if (!$bill) {
-            return;
-        }
-
-        $foundBill = $bill->first();
-        if ($foundBill) {
-            $this->_unlinkPdf($foundBill->id);
-        }
-
-        $bill->forceDelete();
-    }
-
     // ------------------------------------------------------
     // -
     // -    Setters
@@ -147,8 +134,10 @@ class Bill extends BaseModel
             throw new \InvalidArgumentException("Event is not billable.");
         }
 
-        $EventBill = new EventBill($date, $eventData, $userId);
+        $newNumber = EventBill::createNumber($date, $this->getLastBillNumber());
+        $EventBill = new EventBill($date, $eventData, $newNumber, $userId);
         $EventBill->setDiscountRate($discountRate);
+
         $newBillData = $EventBill->toModelArray();
 
         $this->deleteByNumber($newBillData['number']);
@@ -156,9 +145,57 @@ class Bill extends BaseModel
         $newBill = new Bill();
         $newBill->fill($newBillData)->save();
 
+        return $newBill;
+    }
+
+    public function getPdfName(int $id): string
+    {
+        $model = $this->withTrashed()->find($id);
+        if (!$model) {
+            throw new NotFoundException(sprintf('%s not found.', $this->_modelName));
+        }
+
+        $company = Config::getSettings('companyData');
+
+        $i18n = new I18n(Config::getSettings('defaultLang'));
+        $fileName = sprintf(
+            '%s-%s-%s-%s.pdf',
+            $i18n->translate($this->_modelName),
+            slugify($company['name']),
+            $model->number,
+            slugify($model->Beneficiary->full_name)
+        );
+        if (isTestMode()) {
+            $fileName = sprintf('TEST-%s', $fileName);
+        }
+
+        return $fileName;
+    }
+
+    public function getPdfContent(int $id): string
+    {
+        if (!$this->exists($id)) {
+            throw new Errors\NotFoundException;
+        }
+
+        $bill = self::find($id);
+
+        $date = new \DateTime($bill->date);
+
+        $Event = new Event();
+        $eventData = $Event
+            ->with('Beneficiaries')
+            ->with('Materials')
+            ->find($bill->event_id)
+            ->toArray();
+
+        $EventBill = new EventBill($date, $eventData, $bill->number, $bill->user_id);
+        $EventBill->setDiscountRate($bill->discount_rate);
+
         $categories = (new Category())->getAll()->get()->toArray();
-        if (!$this->_savePdf($newBill->id, $EventBill->toPdfTemplateArray($categories))) {
-            $newBill->remove($newBill->id, ['force' => true]);
+
+        $billPdf = $this->_getPdfAsString($EventBill->toPdfTemplateArray($categories));
+        if (!$billPdf) {
             $lastError = error_get_last();
             throw new \RuntimeException(sprintf(
                 "Unable to create PDF file. Reason: %s",
@@ -166,33 +203,37 @@ class Bill extends BaseModel
             ));
         }
 
-        return $newBill;
+        return $billPdf;
     }
 
-    // - Overwrites the BaseModel::remove() method to add PDF file deletion
-    public function remove(int $id, array $options = []): ?Model
+    // ——————————————————————————————————————————————————————
+    // —
+    // —    Setters
+    // —
+    // ——————————————————————————————————————————————————————
+
+    public function deleteByNumber(string $number): void
     {
-        $options = array_merge([
-            'force' => false
-        ], $options);
-
-        $bill = self::withTrashed()->find($id);
-        if (empty($bill)) {
-            throw new Errors\NotFoundException;
+        $bill = self::where('number', $number);
+        if (!$bill) {
+            return;
         }
 
-        if ($bill->trashed() || $options['force'] === true) {
-            $this->_unlinkPdf($id);
-            if (!$bill->forceDelete()) {
-                throw new \RuntimeException("Unable to destroy $this->_modelName ID #$id.");
-            }
-            return null;
+        $bill->forceDelete();
+    }
+
+    public function getLastBillNumber(): int
+    {
+        $allBills = self::selectRaw('number')
+            ->whereRaw(sprintf('YEAR(date) = %s', date('Y')))
+            ->get();
+
+        $lastBillNumber = 0;
+        foreach ($allBills as $existingBill) {
+            $billNumber = explode('-', $existingBill->number);
+            $lastBillNumber = max((int)$billNumber[1], $lastBillNumber);
         }
 
-        if (!$bill->delete()) {
-            throw new \RuntimeException("Unable to delete $this->_modelName ID #$id.");
-        }
-
-        return $bill;
+        return $lastBillNumber;
     }
 }

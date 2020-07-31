@@ -12,7 +12,7 @@ final class BillsTest extends ApiTestCase
         $this->assertStatusCode(SUCCESS_OK);
         $this->assertResponseData([
             'id'             => 1,
-            'number'         => '200130-00001',
+            'number'         => '2020-00001',
             'date'           => '2020-01-30 14:00:00',
             'event_id'       => 1,
             'beneficiary_id' => 3,
@@ -63,7 +63,7 @@ final class BillsTest extends ApiTestCase
     {
         $this->client->post('/api/events/2/bill');
         $this->assertStatusCode(SUCCESS_CREATED);
-        $newBillNumber = sprintf('%s-00002', date('ymd'));
+        $newBillNumber = sprintf('%s-00002', date('Y'));
         $this->assertResponseData([
             'id'             => 2,
             'number'         => $newBillNumber,
@@ -108,20 +108,13 @@ final class BillsTest extends ApiTestCase
             'created_at'         => 'fakedTestContent',
             'updated_at'         => 'fakedTestContent',
         ], ['date', 'created_at', 'updated_at']);
-
-        // - Check PDF file was created
-        $filePath = $this->_getBillFilePath($newBillNumber);
-        $this->assertTrue(file_exists($filePath));
-
-        // - Remove PDF file (comment this line if you want to check the result)
-        unlink($filePath);
     }
 
     public function testCreateBillWithDiscount()
     {
         $this->client->post('/api/events/2/bill', ['discountRate' => 50.0]);
         $this->assertStatusCode(SUCCESS_CREATED);
-        $newBillNumber = sprintf('%s-00002', date('ymd'));
+        $newBillNumber = sprintf('%s-00002', date('Y'));
         $this->assertResponseData([
             'id'             => 2,
             'number'         => $newBillNumber,
@@ -166,13 +159,6 @@ final class BillsTest extends ApiTestCase
             'created_at'         => 'fakedTestContent',
             'updated_at'         => 'fakedTestContent',
         ], ['date', 'created_at', 'updated_at']);
-
-        // - Check PDF file was created
-        $filePath = $this->_getBillFilePath($newBillNumber);
-        $this->assertTrue(file_exists($filePath));
-
-        // - Remove PDF file (comment this line if you want to check the result)
-        unlink($filePath);
     }
 
     public function testDeleteAndDestroyBill()
@@ -191,44 +177,14 @@ final class BillsTest extends ApiTestCase
 
     public function testDownloadPdf()
     {
-        // - No PDF file to download, error 404
-        $this->client->get('/bills/1/pdf');
+        // - Bill does not exists
+        $this->client->get('/bills/999/pdf');
         $this->assertStatusCode(404);
 
-        // - Copy a PDF file in data/bills folder to have a file to be downloaded
-        $sourcePdf = __DIR__ . DS . '..' . DS . 'other' . DS . 'Pdf' . DS . 'expected_bill.pdf';
-        $expectedBillPdf = $this->_getBillFilePath('200130-00001');
-        copy($sourcePdf, $expectedBillPdf);
-
-        // - Download file
+        // - Download bill n°1 PDF file
         $this->client->get('/bills/1/pdf');
         $this->assertStatusCode(200);
         $responseStream = $this->client->response->getBody();
         $this->assertTrue($responseStream->isReadable());
-
-        // - Cleaning test PDF file
-        unlink($expectedBillPdf);
-    }
-
-    // ------------------------------------------------------
-    // -
-    // -    Internal Methods
-    // -
-    // ------------------------------------------------------
-
-    private function _getBillFilePath(string $number): string
-    {
-        $i18n = new I18n(Config::getSettings('defaultLang'));
-        $company = Config::getSettings('companyData');
-
-        $fileName = sprintf(
-            'TEST-%s-%s-%s-%s.pdf',
-            $i18n->translate("Bill"),
-            slugify($company['name']),
-            $number,
-            'Client_Benef'
-        );
-
-        return DATA_FOLDER . DS . 'bills' . DS . $fileName;
     }
 }

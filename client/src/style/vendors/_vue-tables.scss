@@ -16,9 +16,12 @@
       flex: 1;
     }
 
-    & > .pull-left,
-    & > .pull-right {
+    & > .pull-left {
       flex: 0 0 auto;
+    }
+
+    & > .pull-right {
+      flex: 1;
     }
   }
 
@@ -52,6 +55,10 @@
     text-align: left;
     white-space: nowrap;
     background: $bg-color-table-th;
+
+    &:focus {
+      outline: 0;
+    }
   }
 
   &__sortable {

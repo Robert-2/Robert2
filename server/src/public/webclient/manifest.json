@@ -1,6 +1,7 @@
 {
     "name": "Robert2",
     "short_name": "Robert2",
+    "theme_color": "#e14406",
     "icons": [
         {
             "src": "./img/icons/android-chrome-192x192.png",
@@ -15,6 +16,5 @@
     ],
     "start_url": "./index.html",
     "display": "standalone",
-    "background_color": "#333333",
-    "theme_color": "#e14406"
+    "background_color": "#333333"
 }

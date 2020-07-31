@@ -8,9 +8,12 @@ use Slim\Http\Response;
 
 use Robert2\API\Errors;
 use Robert2\API\Models\Event;
+use Robert2\API\Controllers\Traits\WithPdf;
 
 class EventController extends BaseController
 {
+    use WithPdf;
+
     public function __construct($container)
     {
         parent::__construct($container);
@@ -34,9 +37,13 @@ class EventController extends BaseController
             ->setPeriod($startDate, $endDate)
             ->getAll($deleted);
 
-        return $response->withJson([
-            'data' => $results->get()->toArray()
-        ]);
+        $data = $results->get()->toArray();
+        foreach ($data as $index => $event) {
+            $eventMissingMaterials = $this->model->getMissingMaterials($event['id']);
+            $data[$index]['has_missing_materials'] = !empty($eventMissingMaterials);
+        }
+
+        return $response->withJson([ 'data' => $data ]);
     }
 
     public function getOne(Request $request, Response $response): Response

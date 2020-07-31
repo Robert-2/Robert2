@@ -84,7 +84,7 @@ trait Taggable
         }
 
         // - Filter list to keep only names
-        // - in case $tagNames is in the form [{ id: nummber, nam: string }]
+        // - in case $tagNames is in the form [{ id: number, name: string }]
         $tagNames = array_map(function ($tag) {
             return (is_array($tag) && array_key_exists('name', $tag)) ? $tag['name'] : $tag;
         }, $tagNames);
@@ -97,6 +97,21 @@ trait Taggable
         }
 
         $Model->Tags()->sync($tagsIds);
+        return $Model->tags;
+    }
+
+    public function addTag(int $id, string $tagName): array
+    {
+        $Model = self::find($id);
+        $tagName = trim($tagName);
+
+        if (!$Model || empty($tagName)) {
+            throw new Errors\NotFoundException;
+        }
+
+        $Tag = Tag::firstOrCreate(['name' => $tagName]);
+
+        $Model->Tags()->attach($Tag->id);
         return $Model->tags;
     }
 }

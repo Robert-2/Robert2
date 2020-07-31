@@ -29,11 +29,10 @@ trait WithPdf
 
         $i18n = new I18n(Config::getSettings('defaultLang'));
         $fileName = sprintf(
-            '%s-%s-%s-%s.pdf',
+            '%s-%s-%s.pdf',
             $i18n->translate($this->_modelName),
             slugify($company['name']),
-            $model->number,
-            slugify($model->Beneficiary->full_name)
+            $model->title ?: $model->id
         );
         if (isTestMode()) {
             $fileName = sprintf('TEST-%s', $fileName);
@@ -48,30 +47,12 @@ trait WithPdf
     // -
     // ------------------------------------------------------
 
-    protected function _savePdf(int $id, array $data): bool
+    protected function _getPdfAsString(array $data): string
     {
         if (empty($this->pdfTemplate)) {
             throw new \RuntimeException("Missing model's PDF template name");
         }
 
-        $fileName = $this->getPdfName($id);
-        $filePath = DATA_FOLDER . DS . $this->table . DS . $fileName;
-
-        return Pdf::createFromTemplate($this->pdfTemplate, $data, $filePath);
-    }
-
-    public function _unlinkPdf(int $id): void
-    {
-        if (!$id) {
-            throw new \RuntimeException("Missing model's ID to delete PDF file.");
-        }
-
-        $fileName = $this->getPdfName($id);
-        $filePath = DATA_FOLDER . DS . $this->table . DS . $fileName;
-        if (!file_exists($filePath)) {
-            return;
-        }
-
-        @unlink($filePath);
+        return Pdf::createFromTemplate($this->pdfTemplate, $data);
     }
 }

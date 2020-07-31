@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Robert2\Tests;
 
+use DateTime;
 use Robert2\Lib\Domain\EventBill;
 use Robert2\API\Config\Config;
 use Robert2\API\Models\Event;
@@ -43,13 +44,13 @@ final class EventBillTest extends ModelTestCase
 
             $this->_number = sprintf(
                 '%s-%05d',
-                $this->_date->format('ymd'),
+                $this->_date->format('Y'),
                 $this->_eventData['id']
             );
 
             $this->_categories = (new Category())->getAll()->get()->toArray();
 
-            $this->EventBill = new EventBill($this->_date, $this->_eventData, 1);
+            $this->EventBill = new EventBill($this->_date, $this->_eventData, $this->_number, 1);
         } catch (\Exception $e) {
             $this->fail($e->getMessage());
         }
@@ -65,6 +66,17 @@ final class EventBillTest extends ModelTestCase
     {
         $this->EventBill->setDiscountRate(33.33);
         $this->assertEquals(33.33, $this->EventBill->discountRate);
+    }
+
+    public function testCreateNumber()
+    {
+        $date = new \DateTime();
+
+        $result = EventBill::createNumber($date, 1);
+        $this->assertEquals(sprintf('%s-00002', date('Y')), $result);
+
+        $result = EventBill::createNumber($date, 155);
+        $this->assertEquals(sprintf('%s-00156', date('Y')), $result);
     }
 
     // ------------------------------------------------------
@@ -103,16 +115,17 @@ final class EventBillTest extends ModelTestCase
         $result = $this->EventBill->getMaterialBySubCategories($this->_categories);
         $expected = [
             [
-                'id'        => 4,
-                'name'      => "dimmers",
+                'id'        => 1,
+                'name'      => "mixers",
                 'materials' => [
                     [
-                        'reference'        => 'SDS-6-01',
-                        'name'             => 'Showtec SDS-6',
-                        'quantity'         => 1,
-                        'rentalPrice'      => 15.95,
-                        'replacementPrice' => 59.0,
-                        'total'            => 15.95,
+                        'reference'             => 'CL3',
+                        'name'                  => 'Console Yamaha CL3',
+                        'quantity'              => 1,
+                        'rentalPrice'           => 300.0,
+                        'replacementPrice'      => 19400.0,
+                        'total'                 => 300.0,
+                        'totalReplacementPrice' => 19400.0,
                     ],
                 ],
             ],
@@ -121,26 +134,28 @@ final class EventBillTest extends ModelTestCase
                 'name'      => "processors",
                 'materials' => [
                     [
-                        'reference'        => 'DBXPA2',
-                        'name'             => 'Processeur DBX PA2',
-                        'quantity'         => 1,
-                        'rentalPrice'      => 25.5,
-                        'replacementPrice' => 349.9,
-                        'total'            => 25.5,
+                        'reference'             => 'DBXPA2',
+                        'name'                  => 'Processeur DBX PA2',
+                        'quantity'              => 1,
+                        'rentalPrice'           => 25.5,
+                        'replacementPrice'      => 349.9,
+                        'total'                 => 25.5,
+                        'totalReplacementPrice' => 349.9,
                     ],
                 ],
             ],
             [
-                'id'        => 1,
-                'name'      => "mixers",
+                'id'        => 4,
+                'name'      => "dimmers",
                 'materials' => [
                     [
-                        'reference'        => 'CL3',
-                        'name'             => 'Console Yamaha CL3',
-                        'quantity'         => 1,
-                        'rentalPrice'      => 300.0,
-                        'replacementPrice' => 19400.0,
-                        'total'            => 300.0,
+                        'reference'             => 'SDS-6-01',
+                        'name'                  => 'Showtec SDS-6',
+                        'quantity'              => 1,
+                        'rentalPrice'           => 15.95,
+                        'replacementPrice'      => 59.0,
+                        'total'                 => 15.95,
+                        'totalReplacementPrice' => 59.0,
                     ],
                 ],
             ],
@@ -342,16 +357,17 @@ final class EventBillTest extends ModelTestCase
             ],
             'materialBySubCategories' => [
                 [
-                    'id'        => 4,
-                    'name'      => "dimmers",
+                    'id'        => 1,
+                    'name'      => "mixers",
                     'materials' => [
                         [
-                            'reference'        => 'SDS-6-01',
-                            'name'             => 'Showtec SDS-6',
-                            'quantity'         => 1,
-                            'rentalPrice'      => 15.95,
-                            'replacementPrice' => 59.0,
-                            'total'            => 15.95,
+                            'reference'             => 'CL3',
+                            'name'                  => 'Console Yamaha CL3',
+                            'quantity'              => 1,
+                            'rentalPrice'           => 300.0,
+                            'replacementPrice'      => 19400.0,
+                            'total'                 => 300.0,
+                            'totalReplacementPrice' => 19400.0,
                         ],
                     ],
                 ],
@@ -360,26 +376,28 @@ final class EventBillTest extends ModelTestCase
                     'name'      => "processors",
                     'materials' => [
                         [
-                            'reference'        => 'DBXPA2',
-                            'name'             => 'Processeur DBX PA2',
-                            'quantity'         => 1,
-                            'rentalPrice'      => 25.5,
-                            'replacementPrice' => 349.9,
-                            'total'            => 25.5,
+                            'reference'             => 'DBXPA2',
+                            'name'                  => 'Processeur DBX PA2',
+                            'quantity'              => 1,
+                            'rentalPrice'           => 25.5,
+                            'replacementPrice'      => 349.9,
+                            'total'                 => 25.5,
+                            'totalReplacementPrice' => 349.9,
                         ],
                     ],
                 ],
                 [
-                    'id'        => 1,
-                    'name'      => "mixers",
+                    'id'        => 4,
+                    'name'      => "dimmers",
                     'materials' => [
                         [
-                            'reference'        => 'CL3',
-                            'name'             => 'Console Yamaha CL3',
-                            'quantity'         => 1,
-                            'rentalPrice'      => 300.0,
-                            'replacementPrice' => 19400.0,
-                            'total'            => 300.0,
+                            'reference'             => 'SDS-6-01',
+                            'name'                  => 'Showtec SDS-6',
+                            'quantity'              => 1,
+                            'rentalPrice'           => 15.95,
+                            'replacementPrice'      => 59.0,
+                            'total'                 => 15.95,
+                            'totalReplacementPrice' => 59.0,
                         ],
                     ],
                 ],

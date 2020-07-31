@@ -40,10 +40,15 @@
           <i v-if="!isConfirming" class="fas fa-hourglass-half" />
           {{ $t('set-back-event-pending') }}
         </button>
-        <button disabled @click="printEvent">
+        <a
+          v-if="event.beneficiaries.length > 0"
+          :href="eventSummaryPdfUrl"
+          target="_blank"
+          class="EventStep5__confirmation__actions__print"
+        >
           <i class="fas fa-print" />
           {{ $t('print-summary') }}
-        </button>
+        </a>
       </div>
     </section>
     <section>

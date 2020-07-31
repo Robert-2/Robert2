@@ -96,9 +96,7 @@ class BaseModel extends Model
             throw new Errors\NotFoundException("Edit model $this->_modelName failed, entity not found.");
         }
 
-        $data = array_map(function ($value) {
-            return ($value === '')  ? null : $value;
-        }, $data);
+        $data = cleanEmptyFields($data);
 
         $onlyFields = $id ? array_keys($data) : [];
         $this->validate($data, $onlyFields);

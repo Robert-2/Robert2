@@ -21,46 +21,46 @@ final class EventTest extends ModelTestCase
         $result = $this->model->getAll()->get()->toArray();
         $this->assertEquals([
             [
-                'id'           => 3,
-                'user_id'      => 1,
-                'title'        => "Avant-premier événement",
-                'description'  => null,
-                'start_date'   => "2018-12-15 00:00:00",
-                'end_date'     => "2018-12-16 23:59:59",
-                'is_confirmed' => null,
-                'location'     => "Brousse",
-                'is_billable'  => false,
-                'created_at'   => null,
-                'updated_at'   => null,
-                'deleted_at'   => null,
+                'id' => 3,
+                'user_id' => 1,
+                'title' => "Avant-premier événement",
+                'description' => null,
+                'start_date' => "2018-12-15 00:00:00",
+                'end_date' => "2018-12-16 23:59:59",
+                'is_confirmed' => false,
+                'location' => "Brousse",
+                'is_billable' => false,
+                'created_at' => null,
+                'updated_at' => null,
+                'deleted_at' => null,
             ],
             [
-                'id'           => 1,
-                'user_id'      => 1,
-                'title'        => "Premier événement",
-                'description'  => null,
-                'start_date'   => "2018-12-17 00:00:00",
-                'end_date'     => "2018-12-18 23:59:59",
-                'is_confirmed' => null,
-                'location'     => "Gap",
-                'is_billable'  => true,
-                'created_at'   => null,
-                'updated_at'   => null,
-                'deleted_at'   => null,
+                'id' => 1,
+                'user_id' => 1,
+                'title' => "Premier événement",
+                'description' => null,
+                'start_date' => "2018-12-17 00:00:00",
+                'end_date' => "2018-12-18 23:59:59",
+                'is_confirmed' => false,
+                'location' => "Gap",
+                'is_billable' => true,
+                'created_at' => null,
+                'updated_at' => null,
+                'deleted_at' => null,
             ],
             [
-                'id'           => 2,
-                'user_id'      => 1,
-                'title'        => "Second événement",
-                'description'  => null,
-                'start_date'   => "2018-12-18 00:00:00",
-                'end_date'     => "2018-12-19 23:59:59",
-                'is_confirmed' => null,
-                'location'     => "Lyon",
-                'is_billable'  => true,
-                'created_at'   => null,
-                'updated_at'   => null,
-                'deleted_at'   => null,
+                'id' => 2,
+                'user_id' => 1,
+                'title' => "Second événement",
+                'description' => null,
+                'start_date' => "2018-12-18 00:00:00",
+                'end_date' => "2018-12-19 23:59:59",
+                'is_confirmed' => false,
+                'location' => "Lyon",
+                'is_billable' => true,
+                'created_at' => null,
+                'updated_at' => null,
+                'deleted_at' => null,
             ]
         ], $result);
     }
@@ -221,7 +221,7 @@ final class EventTest extends ModelTestCase
         $expected = [
             [
                 'id'            => 1,
-                'number'        => '200130-00001',
+                'number'        => '2020-00001',
                 'date'          => '2020-01-30 14:00:00',
                 'discount_rate' => 50.0,
                 'due_amount'    => 325.5,
@@ -274,5 +274,11 @@ final class EventTest extends ModelTestCase
             ['end_date' => '2020-02-20 23:59:59']
         );
         $this->model->validate($testData);
+    }
+
+    public function testGetPdfContent()
+    {
+        $result = $this->model->getPdfContent(1);
+        $this->assertNotEmpty($result);
     }
 }

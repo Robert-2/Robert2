@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.9.0 (2020-07-31)
+
+- Update dependencies
+- Remove bills file storage, and always re-create PDFs on demand (#8).
+- Change bills numbers to be successive instead of using date of creation (#8).
+- Fix total replacement amount of parks material (#6).
+- Add a flag `has_missing_materials` in each event's data (#16).
+- Fix undefined index in step 6 of install wizard (#26).
+- Make the event summary printable (#15).
+- Fix the `taggables` table `PRIMARY` constraint (#28).
+- Automatically manage duplicate Person (technician / beneficiary) by adding the right tag (#14).
+
 ## 0.8.2 (2020-07-02)
 
 - Fix color of events in calendar (#11).
