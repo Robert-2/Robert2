@@ -23,12 +23,12 @@ export default {
       'quantity',
       'amount',
       'actions',
-    ];
-
-    if (Config.billingMode === 'none' || !this.eventIsBillable) {
-      columns.splice(5, 1); // - Removes 'amount'
-      columns.splice(3, 1); // - Removes 'price'
-    }
+    ].filter((column) => {
+      if (Config.billingMode === 'none' || !this.eventIsBillable) {
+        return !['price', 'amount'].includes(column);
+      }
+      return true;
+    });
 
     return {
       error: null,
