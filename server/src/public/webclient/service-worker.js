@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/precache-manifest.41e838c00f9de1190b5867b806b9aae2.js"
+  "/precache-manifest.0.9.1.js"
 );
 
 workbox.core.setCacheNameDetails({prefix: "robert2-webclient"});
