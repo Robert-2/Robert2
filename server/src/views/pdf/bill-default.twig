@@ -39,7 +39,11 @@
                 {{ translate('beneficiary') }}
             </p>
             <h2 class="vspace10 indent5">
+                {% if event['beneficiaries'][0]['company'] %}
+                {{ event['beneficiaries'][0]['company']['legal_name'] }}<br>
+                {% else %}
                 {{ event['beneficiaries'][0]['full_name'] }}<br>
+                {% endif %}
                 {{ event['beneficiaries'][0]['street'] }}<br>
                 {{ event['beneficiaries'][0]['postal_code'] }} {{ event['beneficiaries'][0]['locality'] }}
             </h2>

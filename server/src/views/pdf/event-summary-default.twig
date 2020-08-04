@@ -56,7 +56,11 @@
 
             <h3>{{ translate('beneficiary') }}</h3>
             <p class="size12 spaceBottom5">
+                {% if event['beneficiaries'][0]['company'] %}
+                {{ event['beneficiaries'][0]['company']['legal_name'] }}<br>
+                {% else %}
                 {{ event['beneficiaries'][0]['full_name'] }}<br>
+                {% endif %}
                 {{ event['beneficiaries'][0]['street'] }}<br>
                 {{ event['beneficiaries'][0]['postal_code'] }} {{ event['beneficiaries'][0]['locality'] }}
             </p>
@@ -67,8 +71,12 @@
                 {% for beneficiary in event['beneficiaries'] %}
                 {% if loop.index0 > 0 %}
                 <li>
+                    {% if beneficiary['company'] %}
+                    {{ beneficiary['company']['legal_name'] }}<br>
+                    {% else %}
                     {{ beneficiary['full_name'] }}<br>
-                    {{ beneficiary['street'] }} {{ beneficiary['postal_code'] }} {{ event['beneficiaries'][0]['locality'] }}
+                    {% endif %}
+                    {{ beneficiary['street'] }} {{ beneficiary['postal_code'] }} {{ beneficiary['locality'] }}
                 </li>
                 {% endif %}
                 {% endfor %}

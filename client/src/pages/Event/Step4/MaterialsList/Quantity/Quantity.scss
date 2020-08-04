@@ -1,4 +1,6 @@
 .MaterialsListQuantity {
+  display: flex;
+  align-items: center;
   width: 9rem;
   min-width: 9rem;
 
@@ -9,6 +11,6 @@
   &__number {
     width: 3rem;
     margin: 0 .3rem;
-    padding: 5px 8px 6px;
+    padding: 5px 8px;
   }
 }
