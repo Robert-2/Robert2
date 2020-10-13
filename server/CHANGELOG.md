@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.9.2 (2020-10-13)
+
+- Update webclient to version 0.9.2
+
 ## 0.9.1 (2020-08-04)
 
 - Fix display name of beneficiaries in PDF files (bills and event summary) (#31).

@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import moment from 'moment';
 import vuexI18n from 'vuex-i18n';
-import VueJsModal from 'vue-js-modal';
+import VueJsModal from 'vue-js-modal/dist/index.nocss';
 import { VTooltip } from 'v-tooltip';
 import { ClientTable, ServerTable } from 'vue-tables-2';
 
@@ -14,10 +14,12 @@ import Auth from '@/auth';
 import router from '@/router';
 import App from '@/App.vue';
 
-Vue.config.productionTip = false;
-
 // CSS vendors libraries
+import 'vue-js-modal/dist/styles.css';
+
 require('@fortawesome/fontawesome-free/css/all.css');
+
+Vue.config.productionTip = false;
 
 // HTTP (ajax) lib
 Vue.prototype.$http = axios;

@@ -1,70 +1,70 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "ea276d55b7e54e05a1bf",
-    "url": "/webclient/css/app.css"
+    "revision": "445f29cd13d93cf8c743",
+    "url": "/webclient/css/app.0.9.2.css"
   },
   {
-    "revision": "219a22fccc491133e609",
-    "url": "/webclient/css/chunk-vendors.css"
+    "revision": "389fdd13aad6f4ff1f35",
+    "url": "/webclient/css/chunk-vendors.0.9.2.css"
   },
   {
-    "revision": "4a5d4d855d11fae79cc864bdacb2f479",
+    "revision": "e2ca6541bff3a3e9f4799ee327b28c58",
     "url": "/webclient/fonts/fa-brands-400.eot"
   },
   {
-    "revision": "4c1da237bdae0773309df93b2cd48e09",
+    "revision": "8300bd7f30e0a313c1d772b49d96cb8e",
     "url": "/webclient/fonts/fa-brands-400.ttf"
   },
   {
-    "revision": "5734d789b25228cbafc64a58ae971aca",
+    "revision": "ad527cc5ec23d6da66e8a1d6772ea6d3",
     "url": "/webclient/fonts/fa-brands-400.woff"
   },
   {
-    "revision": "91a23e8bf2b4b84c39311cb5eb23aaa0",
+    "revision": "f075c50f89795e4cdb4d45b51f1a6800",
     "url": "/webclient/fonts/fa-brands-400.woff2"
   },
   {
-    "revision": "6b20949b3a679c30d09f64acd5d3317d",
+    "revision": "b01516c1808be557667befec76cd6318",
     "url": "/webclient/fonts/fa-regular-400.eot"
   },
   {
-    "revision": "260be4f29c0b2ce47480afb23f38f237",
+    "revision": "49f00693b0e5d45097832ef5ea1bc541",
     "url": "/webclient/fonts/fa-regular-400.ttf"
   },
   {
-    "revision": "d44ad00c44e46fd29f6126fa7d888cde",
+    "revision": "3c6879c4f342203d099bdd66dce6d396",
     "url": "/webclient/fonts/fa-regular-400.woff"
   },
   {
-    "revision": "5c674c9216c06ede2f618aa58ae71116",
+    "revision": "4a74738e7728e93c4394b8604081da62",
     "url": "/webclient/fonts/fa-regular-400.woff2"
   },
   {
-    "revision": "9a1672a8a8d91fbf82c71f451d495253",
+    "revision": "8ac3167427b1d5d2967646bd8f7a0587",
     "url": "/webclient/fonts/fa-solid-900.eot"
   },
   {
-    "revision": "c65d154888aa166982dac3e72e7380ec",
+    "revision": "205f07b3883c484f27f40d21a92950d4",
     "url": "/webclient/fonts/fa-solid-900.ttf"
   },
   {
-    "revision": "f3a7d3b5880544a91e9a7e6f8f35d4d2",
+    "revision": "4451e1d86df7491dd874f2c41eee1053",
     "url": "/webclient/fonts/fa-solid-900.woff"
   },
   {
-    "revision": "412a43d6840addd683665ec12c30f810",
+    "revision": "8e1ed89b6ccb8ce41faf5cb672677105",
     "url": "/webclient/fonts/fa-solid-900.woff2"
   },
   {
-    "revision": "778b1f251bea7412048da95b87bf816f",
+    "revision": "2f12242375edd68e9013ecfb59c672e9",
     "url": "/img/fa-brands-400.svg"
   },
   {
-    "revision": "66578cdbb6dc01f527a53971051b3e85",
+    "revision": "3602b7e8b2cb1462b0bef9738757ef8a",
     "url": "/img/fa-regular-400.svg"
   },
   {
-    "revision": "486853107489520b3265b19b191626f8",
+    "revision": "664de3932dd6291b4b8a8c0ddbcb4c61",
     "url": "/img/fa-solid-900.svg"
   },
   {
@@ -88,12 +88,12 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/img/logos/white.svg"
   },
   {
-    "revision": "ea276d55b7e54e05a1bf",
-    "url": "/webclient/js/app.js"
+    "revision": "445f29cd13d93cf8c743",
+    "url": "/webclient/js/app.0.9.2.js"
   },
   {
-    "revision": "219a22fccc491133e609",
-    "url": "/webclient/js/chunk-vendors.js"
+    "revision": "389fdd13aad6f4ff1f35",
+    "url": "/webclient/js/chunk-vendors.0.9.2.js"
   },
   {
     "revision": "6395a7670d1a343944de42b831cb5bba",
