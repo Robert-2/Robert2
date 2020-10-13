@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.9.2 (2020-10-13)
+
+- Update dependencies
+
 ## 0.9.1 (2020-08-04)
 
 - Fix materials list columns visibility in event step 4 when billing mode 'none' or when event is not billable (#30).
