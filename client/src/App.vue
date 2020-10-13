@@ -5,7 +5,6 @@
       <div class="main__body">
         <SideNav v-if="user.groupId" :isOpen="isOpenedSideNav" />
         <router-view />
-        <modals-container />
       </div>
     </div>
   </div>
