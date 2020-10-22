@@ -25,7 +25,7 @@ class Command extends ConsoleCommand
 
     protected function configure()
     {
-        $this->setName('import')
+        $this->setName('import-v1')
             ->setDescription('Import data from first version of Robert (0.6.x)')
             ->setHelp('Use this command to import data from Robert 0.6.x DB format.')
             ->addOption('start', 's', InputOption::VALUE_OPTIONAL, "Index of data from which to start import", 0)
