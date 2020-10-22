@@ -26,10 +26,10 @@ class Command extends ConsoleCommand
     protected function configure()
     {
         $this->setName('import-v1')
-            ->setDescription('Import data from first version of Robert (0.6.x)')
-            ->setHelp('Use this command to import data from Robert 0.6.x DB format.')
-            ->addOption('start', 's', InputOption::VALUE_OPTIONAL, "Index of data from which to start import", 0)
-            ->addArgument('entity', InputArgument::REQUIRED, 'Name of the entity to import');
+            ->setDescription('Importe les données depuis la première version de Robert (0.6.x)')
+            ->setHelp('Utilisez cette commande pour importer les données depuis Robert 0.6.x.')
+            ->addOption('start', 's', InputOption::VALUE_OPTIONAL, "Index de la donnée à partir de laquelle vous souhaitez commencer l'import", 0)
+            ->addArgument('entity', InputArgument::REQUIRED, "Nom de l'entité à importer.");
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -43,23 +43,23 @@ class Command extends ConsoleCommand
 
         $this->initData();
 
-        $this->out('info', "\nHello!\nLet's import entity « $this->entity » to Robert2.");
-        $startMessage = "Importing $this->preCount items";
+        $this->out('info', "\Bonjour!\nCommençons l'import de l'entité « $this->entity » vers Robert2.");
+        $startMessage = "Importation de $this->preCount éléments";
         if ($this->start > 0) {
-            $startMessage .= ", starting from index $this->start";
+            $startMessage .= ", en débutant à l'index $this->start";
         }
         $this->out('info', "$startMessage...");
 
         $this->initProcessor();
         $this->process();
 
-        $this->out('success', "[END] Bye!");
+        $this->out('success', "[END] À bientôt !");
     }
 
     protected function process()
     {
         $this->out('info', sprintf(
-            "Entity input fields:\n  - '%s'",
+            "Champs de l'entité:\n  - '%s'",
             implode("'\n  - '", array_keys($this->processor->autoFieldsMap))
         ));
 
@@ -67,11 +67,11 @@ class Command extends ConsoleCommand
             $this->processor->import($this->data, $this->start);
             $count = $this->processor->count;
 
-            $this->out('success', "OK, $count items imported.");
+            $this->out('success', "OK, $count éléments importés.");
         } catch (\Exception $e) {
             $lastIndex = $this->processor->lastIndex;
             $this->out('error', sprintf(
-                "An error occurred at index %d of data set. Error message:\n« %s »",
+                "Une erreur est survenue à l'index %d. Message d'erreur:\n« %s »",
                 $lastIndex,
                 $e->getMessage()
             ));
@@ -81,12 +81,12 @@ class Command extends ConsoleCommand
             }
 
             $count = $this->processor->count;
-            $this->out('warning', "[END] $count items were imported.");
+            $this->out('warning', "[END] $count éléments ont été importés.");
 
             if ($count > 0 || $lastIndex > 0) {
                 $this->out(
                     'warning',
-                    "Warning: make sure to restart your import with following option: --start=$lastIndex"
+                    "Attention: Assurez vous de redémarrer l'import avec l'option: --start=$lastIndex"
                 );
             }
             exit(1);
@@ -103,7 +103,7 @@ class Command extends ConsoleCommand
     {
         if (!in_array($this->entity, array_keys($this->entitiesProcessors))) {
             $this->out('error', sprintf(
-                "\nERROR:\nUnknown entity « %s ». Currently known entities are:\n  - %s",
+                "\ERREUR:\nEntité inconnue « %s ». Les entités connues sont:\n  - %s",
                 $this->entity,
                 implode("\n  - ", array_keys($this->entitiesProcessors))
             ));
@@ -117,7 +117,7 @@ class Command extends ConsoleCommand
         $filePath = DATA_FOLDER . DS . 'imports' . DS . $fileName;
 
         if (!file_exists($filePath)) {
-            $this->out('error', "\nERROR:\nEntity data file not found. Please create the file\n`$filePath`");
+            $this->out('error', "\ERREUR:\nLe fichier de données de l'entité n'a pas été trouvé. Veuillez créer le fichier:\n`$filePath`");
             exit(1);
         }
 
@@ -126,8 +126,8 @@ class Command extends ConsoleCommand
             $this->out(
                 'error',
                 "\nERROR:\n" .
-                "<error>Entity file exists but no data found in '$fileName'.</error>\n" .
-                "<error>Please make sure that this file returns directly the data to import.</error>"
+                "<error>Le fichier de données de l'entité existe mais ne semble pas contenir de données.</error>\n" .
+                "<error>Assurez-vous que le fichier retourne directement les données à importer.</error>"
             );
             exit(1);
         }
@@ -143,8 +143,8 @@ class Command extends ConsoleCommand
         if (!class_exists($processorClass)) {
             $this->out(
                 'error',
-                "Entity's processor class not found.\n" .
-                "Please create class `$processorClass.php`."
+                "Le processeur de données n'a pas été trouvé.\n" .
+                "Veuillez créer la classe `$processorClass.php`."
             );
             exit(1);
         }
@@ -174,10 +174,5 @@ class Command extends ConsoleCommand
         $this->output->writeln(
             sprintf("\033[%sm%s\033[0m\n", $colors[$type], $message)
         );
-
-        // $exit = ($type === 'error' && $withExit === null) || $withExit;
-        // if ($exit) {
-        //     exit(1);
-        // }
     }
 }
