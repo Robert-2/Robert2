@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\Scripts\ImportsV1;
+namespace Robert2\Scripts\ImportV1;
 
 use Symfony\Component\Console\Command\Command as ConsoleCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -138,7 +138,7 @@ class Command extends ConsoleCommand
     protected function initProcessor()
     {
         $processorName = $this->entitiesProcessors[$this->entity];
-        $processorClass = "Robert2\\Scripts\\ImportsV1\\Processors\\$processorName";
+        $processorClass = "Robert2\\Scripts\\ImportV1\\Processors\\$processorName";
 
         if (!class_exists($processorClass)) {
             $this->out(

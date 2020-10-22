@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\Scripts\ImportsV1;
+namespace Robert2\Scripts\ImportV1;
 
 class Processor
 {

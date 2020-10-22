@@ -63,7 +63,6 @@
         "testmodels": "src/vendor/bin/phpunit --colors=always --testsuite models --filter",
         "testother": "src/vendor/bin/phpunit --colors=always --testsuite other --filter",
         "build-api-doc": "postmanerator -output=./src/views/apidoc.html -collection=./utilities/postman/collection.json -environment=./utilities/postman/environment_example.json -theme=./src/views/apidoc-theme",
-        "release": "bin/release",
-        "Robert2:importsV1": "utilities/Scripts/ImportsV1/run"
+        "release": "bin/release"
     }
 }
