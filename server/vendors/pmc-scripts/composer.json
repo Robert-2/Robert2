@@ -4,7 +4,8 @@
      "private": true,
      "bin": ["./bin/pmc-scripts"],
      "require": {
-          "league/csv": "~9.6.1"
+          "league/csv": "~9.6.1",
+          "symfony/console": "^4.4.7"
      },
      "autoload": {
         "psr-4": {

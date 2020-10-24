@@ -2,6 +2,11 @@
 <?php
 declare(strict_types=1);
 
+// @see https://csv.thephpleague.com/9.0/connections/#os-specificity
+if (!ini_get('auto_detect_line_endings')) {
+    ini_set('auto_detect_line_endings', '1');
+}
+
 $files = [
     __DIR__ . '/../../../autoload.php',
     __DIR__ . '/../../../src/vendor/autoload.php',
@@ -11,6 +16,10 @@ foreach ($files as $file) {
         require_once $file;
     }
 }
+
+// - Obligatoire pour pouvoir instancier les modèles Robert2.
+require_once __DIR__ . '/../../../src/App/Config/constants.php';
+require_once __DIR__ . '/../../../src/App/Config/functions.php';
 
 $app = new PmcScripts\Console\Application();
 $app->run();
