@@ -7,6 +7,6 @@ require __DIR__ . DS . '..' . DS . 'utilities' . DS . 'scripts' . DS . 'init.php
 
 $app = new Symfony\Component\Console\Application();
 
-$app->add(new Robert2\Scripts\ImportPmc\Command());
+$app->add(new Robert2\Scripts\ImportV1\Command());
 
 $app->run();
