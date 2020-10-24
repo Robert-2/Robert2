@@ -209,9 +209,7 @@ class ImportEvents extends Command
                 in_array(strtolower($record['location']), ['1', 'oui', 'yes'], true)
             );
         };
-
-        $stmt = (new Statement())->where($filter);
-        return $stmt->process($csv);
+        return (new Statement())->where($filter)->process($csv);
     }
 
     // ------------------------------------------------------
@@ -327,7 +325,7 @@ class ImportEvents extends Command
         foreach ($quantities as $index => $quantity) {
             $isInteger = preg_match('/^(?<quantity>[0-9]+)(?:[,.]0+)?$/', trim($quantity), $matches);
             if (!$isInteger) {
-                return false;
+                return null;
             }
             $quantities[$index] = (int) $matches['quantity'];
         }
