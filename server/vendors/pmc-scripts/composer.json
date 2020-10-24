@@ -1,0 +1,14 @@
+{
+     "name": "robert2/pmc-scripts",
+     "version": "0.1.0",
+     "private": true,
+     "bin": ["./bin/pmc-scripts"],
+     "require": {
+          "league/csv": "~9.6.1"
+     },
+     "autoload": {
+        "psr-4": {
+            "PmcScripts\\": "src/"
+        }
+    }
+}
