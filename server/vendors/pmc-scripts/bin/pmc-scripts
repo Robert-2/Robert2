@@ -2,7 +2,15 @@
 <?php
 declare(strict_types=1);
 
-require_once __DIR__ . '/../../../autoload.php';
+$files = [
+    __DIR__ . '/../../../autoload.php',
+    __DIR__ . '/../../../src/vendor/autoload.php',
+];
+foreach ($files as $file) {
+    if (is_file($file)) {
+        require_once $file;
+    }
+}
 
 $app = new PmcScripts\Console\Application();
 $app->run();

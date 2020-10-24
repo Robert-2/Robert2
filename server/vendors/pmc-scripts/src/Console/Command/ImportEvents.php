@@ -7,16 +7,16 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ImportEvent extends Command
+class ImportEvents extends Command
 {
     protected function configure()
     {
-        $this->setName('import-event')
+        $this->setName('import-events')
             ->setDescription("[PMC Milliot] Importe les données des commandes Simax dans Robert2.");
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $output->write('// TODO :)');
+        $output->writeLn('// TODO :)');
     }
 }

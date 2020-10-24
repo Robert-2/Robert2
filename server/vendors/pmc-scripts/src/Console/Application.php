@@ -2,8 +2,7 @@
 
 namespace PmcScripts\Console;
 
-use PmcScripts\Console\Command\ImportEvent;
-use PmcScripts\Console\Command\ImportMaterial;
+use PmcScripts\Console\Command;
 use Symfony\Component\Console\Application as CoreApplication;
 
 class Application extends CoreApplication
@@ -13,8 +12,8 @@ class Application extends CoreApplication
         parent::__construct("Scripts PMC Milliot pour Robert2.");
 
         $this->addCommands([
-            new ImportEvent(),
-            new ImportMaterial(),
+            new Command\ImportEvents(),
+            new Command\ImportMaterials(),
         ]);
     }
 }
