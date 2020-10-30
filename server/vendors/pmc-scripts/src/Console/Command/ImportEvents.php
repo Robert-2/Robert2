@@ -257,7 +257,14 @@ class ImportEvents extends Command
 
         $orderDate = !empty($record['date_cmd']) ? new \DateTime($record['date_cmd']) : null;
         $end = $normalizeDate($matches['end'], 23, 59, 59, $orderDate);
+        if ($end) {
+            $end->add(new \DateInterval('P3D'));
+        }
+
         $start = $normalizeDate($matches['start'], 00, 00, 00, $end);
+        if ($start) {
+            $start->sub(new \DateInterval('P2D'));
+        }
 
         return compact('start', 'end');
     }
