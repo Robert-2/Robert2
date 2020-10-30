@@ -66,7 +66,7 @@ class ImportEvents extends Command
 
         $recordsCount = count($records);
         if ($recordsCount === 0) {
-            $output->writeln("<comment>Aucun commande à importer.</comment>");
+            $output->writeln("<comment>Aucune commande à importer.</comment>");
             return;
         }
 
