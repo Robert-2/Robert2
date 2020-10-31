@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## 0.10.0 (UNRELEASED)
 - Met à jour Phinx (système de migration de la base de données).
+- Change le terme "Salut" en "Bonjour" en haut de l'application (#46).
 
 ## 0.9.2 (2020-10-13)
 
