@@ -1,6 +1,4 @@
 <?php
-// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
-
 use Phinx\Migration\AbstractMigration;
 
 class AddIsDiscountableToMaterials extends AbstractMigration
@@ -24,5 +22,3 @@ class AddIsDiscountableToMaterials extends AbstractMigration
             ->update();
     }
 }
-
-// phpcs:enable

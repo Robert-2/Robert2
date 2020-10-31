@@ -1,6 +1,4 @@
 <?php
-// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
-
 use Phinx\Migration\AbstractMigration;
 
 class CreateBills extends AbstractMigration
@@ -51,5 +49,3 @@ class CreateBills extends AbstractMigration
         $this->table('bills')->drop()->save();
     }
 }
-
-// phpcs:enable

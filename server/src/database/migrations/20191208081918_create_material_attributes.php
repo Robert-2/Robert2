@@ -1,6 +1,4 @@
 <?php
-// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
-
 use Phinx\Migration\AbstractMigration;
 
 class CreateMaterialAttributes extends AbstractMigration
@@ -49,5 +47,3 @@ class CreateMaterialAttributes extends AbstractMigration
         $this->table('attributes')->drop()->save();
     }
 }
-
-// phpcs:enable

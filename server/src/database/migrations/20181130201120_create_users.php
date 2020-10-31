@@ -1,6 +1,4 @@
 <?php
-// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
-
 use Phinx\Migration\AbstractMigration;
 
 class CreateUsers extends AbstractMigration
@@ -32,5 +30,3 @@ class CreateUsers extends AbstractMigration
         $this->table('users')->drop()->save();
     }
 }
-
-// phpcs:enable

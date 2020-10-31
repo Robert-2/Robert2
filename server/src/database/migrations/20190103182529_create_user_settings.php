@@ -1,6 +1,4 @@
 <?php
-// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
-
 use Phinx\Migration\AbstractMigration;
 
 use Robert2\API\Config as Config;
@@ -43,5 +41,3 @@ class CreateUserSettings extends AbstractMigration
         $this->table('user_settings')->drop()->save();
     }
 }
-
-// phpcs:enable

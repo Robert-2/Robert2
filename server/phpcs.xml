@@ -26,4 +26,16 @@
     <rule ref="Squiz.PHP.DisallowSizeFunctionsInLoops"/>
     <rule ref="Squiz.PHP.Eval"/>
     <rule ref="Generic.PHP.ForbiddenFunctions"/>
+
+    <!--
+    ***********************************************
+    **
+    **      Exclusions
+    **
+    ***********************************************
+    -->
+
+    <rule ref="PSR1.Classes.ClassDeclaration.MissingNamespace">
+        <exclude-pattern>*/database/migrations/*</exclude-pattern>
+    </rule>
 </ruleset>

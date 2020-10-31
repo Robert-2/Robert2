@@ -1,6 +1,4 @@
 <?php
-// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
-
 use Phinx\Migration\AbstractMigration;
 
 class AddIsBillableToEvents extends AbstractMigration
@@ -24,5 +22,3 @@ class AddIsBillableToEvents extends AbstractMigration
             ->update();
     }
 }
-
-// phpcs:enable
