@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Robert2\Tests;
 
-use Robert2\Scripts\ImportsV1\Processors;
+use Robert2\Scripts\ImportV1\Processors;
 use Robert2\API\Errors\ValidationException;
 
 final class ImportsTest extends ModelTestCase
