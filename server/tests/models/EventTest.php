@@ -279,6 +279,28 @@ final class EventTest extends ModelTestCase
         $this->model->validate($testData);
     }
 
+    public function testValidateReference(): void
+    {
+        $data = [
+            'user_id'      => 1,
+            'title'        => "Test dates validation",
+            'start_date'   => '2020-03-01 00:00:00',
+            'end_date'     => '2020-03-03 23:59:59',
+            'is_confirmed' => false,
+        ];
+
+        foreach (['REF1', null] as $testValue) {
+            $testData = array_merge($data, ['reference' => $testValue]);
+            $this->model->validate($testData);
+        }
+
+        // - Validation fail: Reference is an empty string
+        $this->expectException(Errors\ValidationException::class);
+        $this->expectExceptionCode(ERROR_VALIDATION);
+        $testData = array_merge($data, ['reference' => '']);
+        $this->model->validate($testData);
+    }
+
     public function testGetPdfContent()
     {
         $result = $this->model->getPdfContent(1);

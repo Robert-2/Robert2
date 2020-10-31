@@ -45,7 +45,7 @@ class Event extends BaseModel
             'user_id'      => V::notEmpty()->numeric(),
             'title'        => V::notEmpty()->length(2, 191),
             'description'  => V::optional(V::length(null, 255)),
-            'reference'    => V::nullable(V::alnum('.,-/_ ')->length(1, 64)),
+            'reference'    => V::oneOf(V::nullType(), V::alnum('.,-/_ ')->length(1, 64)),
             'start_date'   => V::notEmpty()->date(),
             'end_date'     => V::notEmpty()->date(),
             'is_confirmed' => V::notOptional()->boolType(),
