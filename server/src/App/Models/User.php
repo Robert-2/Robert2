@@ -24,9 +24,9 @@ class User extends BaseModel
     protected $_allowedSearchFields = ['pseudo', 'email'];
     protected $_searchField = 'pseudo';
 
-    public function __construct()
+    public function __construct(array $attributes = [])
     {
-        parent::__construct();
+        parent::__construct($attributes);
 
         $this->validation = [
             'pseudo'   => V::notEmpty()->alnum()->length(4, 100),

@@ -13,9 +13,9 @@ class Attribute extends BaseModel
     protected $_orderField = 'id';
     protected $_orderDirection = 'asc';
 
-    public function __construct()
+    public function __construct(array $attributes = [])
     {
-        parent::__construct();
+        parent::__construct($attributes);
 
         $this->validation = [
             'name' => V::notEmpty()->alpha(self::EXTRA_CHARS)->length(2, 64),

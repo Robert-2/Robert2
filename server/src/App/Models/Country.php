@@ -19,9 +19,9 @@ class Country extends BaseModel
     protected $_allowedSearchFields = ['name', 'code'];
     protected $_searchField = 'name';
 
-    public function __construct()
+    public function __construct(array $attributes = [])
     {
-        parent::__construct();
+        parent::__construct($attributes);
 
         $this->validation = [
             'name' => V::notEmpty()->alpha(self::EXTRA_CHARS)->length(4, 96),

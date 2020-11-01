@@ -27,9 +27,9 @@ class Person extends BaseModel
     protected $_allowedSearchFields = ['full_name', 'first_name', 'last_name', 'nickname', 'email'];
     protected $_searchField = 'full_name';
 
-    public function __construct()
+    public function __construct(array $attributes = [])
     {
-        parent::__construct();
+        parent::__construct($attributes);
 
         $this->validation = [
             'user_id'     => V::optional(V::numeric()),

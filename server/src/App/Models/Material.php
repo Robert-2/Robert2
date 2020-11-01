@@ -23,9 +23,9 @@ class Material extends BaseModel
     protected $_allowedSearchFields = ['name', 'reference', 'name|reference'];
     protected $_searchField = 'name|reference';
 
-    public function __construct()
+    public function __construct(array $attributes = [])
     {
-        parent::__construct();
+        parent::__construct($attributes);
 
         $this->validation = [
             'name'                  => V::notEmpty()->length(2, 191),

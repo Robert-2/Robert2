@@ -31,9 +31,9 @@ class Event extends BaseModel
     protected $_allowedSearchFields = ['title', 'start_date', 'end_date', 'location'];
     protected $_searchField = 'title';
 
-    public function __construct()
+    public function __construct(array $attributes = [])
     {
-        parent::__construct();
+        parent::__construct($attributes);
 
         $this->pdfTemplate = 'event-summary-default';
 
