@@ -29,7 +29,7 @@ class Material extends BaseModel
 
         $this->validation = [
             'name'                  => V::notEmpty()->length(2, 191),
-            'reference'             => V::notEmpty()->alnum('.,-/_ ')->length(2, 64),
+            'reference'             => V::notEmpty()->alnum('.,-+/_ ')->length(2, 64),
             'park_id'               => V::notEmpty()->numeric(),
             'category_id'           => V::notEmpty()->numeric(),
             'sub_category_id'       => V::optional(V::numeric()),
