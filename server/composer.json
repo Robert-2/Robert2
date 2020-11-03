@@ -45,7 +45,7 @@
             "Robert2\\Lib\\Domain\\": "src/App/Lib/Domain",
             "Robert2\\Lib\\Pdf\\": "src/App/Lib/Pdf",
             "Robert2\\Install\\": "src/install",
-            "Robert2\\Scripts\\": "utilities/Scripts",
+            "Robert2\\Scripts\\": "utilities/scripts",
             "Robert2\\Tests\\": "tests",
             "Robert2\\Fixtures\\": "tests/Fixtures"
         }
