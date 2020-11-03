@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.10.0 (UNRELEASED)
+
+- Ajoute un filtre sur le calendrier permettant de n'afficher que les événements qui ont du matériel manquant (#42).
+
 ## 0.9.2 (2020-10-13)
 
 - Update dependencies

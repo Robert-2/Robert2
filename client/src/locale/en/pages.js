@@ -84,6 +84,8 @@ export default {
     'warning-no-material': "Warning: this event is empty, there is no material at the moment!",
     'missing-material-count': "Need {quantity}, missing\u00a0{missing}!",
     'beneficiary-billing-help': "Only the first beneficiary in the list will be displayed on the bill.",
+    'all-events': "All events",
+    'event-with-missing-material-only': "Events with missing material only?",
   },
 
   'page-users': {

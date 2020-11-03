@@ -39,7 +39,9 @@ export default {
       fetchStart: moment().subtract(8, 'days').startOf('day'),
       fetchEnd: moment().add(1, 'months').endOf('month'),
       isModalOpened: false,
+      hasMissingMaterialFilter: false,
       events: [],
+      allEvents: [],
       timelineOptions: {
         selectable: !isVisitor,
         editable: {
@@ -80,6 +82,7 @@ export default {
               this.isLoading = false;
               this.help = { type: 'success', text: 'page-calendar.event-saved' };
               callback(item);
+              this.getEventsData();
             })
             .catch((error) => {
               callback(null); // - Needed to cancel the move in timeline
@@ -111,6 +114,12 @@ export default {
     this.getEventsData();
   },
   methods: {
+    filterEventsByMissingMaterials() {
+      this.events = this.allEvents.filter(
+        ({ hasMissingMaterials }) => !!hasMissingMaterials,
+      );
+    },
+
     getEventsData() {
       this.error = null;
       this.isLoading = true;
@@ -125,6 +134,12 @@ export default {
           this.events = data.data.map(
             (event) => utils.formatTimelineEvent(event, this.$t),
           );
+
+          this.allEvents = [...this.events];
+          if (this.hasMissingMaterialFilter) {
+            this.filterEventsByMissingMaterials();
+          }
+
           this.isLoading = false;
         })
         .catch((error) => {
@@ -201,6 +216,10 @@ export default {
     },
 
     onRemoved() {
+      if (!this.isLoading) {
+        return;
+      }
+
       this.help = { type: 'success', text: 'page-calendar.event-deleted' };
       this.error = null;
       this.isLoading = false;
@@ -209,6 +228,16 @@ export default {
     showError(error) {
       this.error = error;
       this.isLoading = false;
+    },
+
+    handleFilterMissingMaterial(hasMissingMaterialFilter) {
+      this.hasMissingMaterialFilter = hasMissingMaterialFilter;
+
+      if (hasMissingMaterialFilter) {
+        this.filterEventsByMissingMaterials();
+      } else {
+        this.events = [...this.allEvents];
+      }
     },
   },
 };

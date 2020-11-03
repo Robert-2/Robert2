@@ -87,6 +87,7 @@ const formatTimelineEvent = (dataEvent, translate) => {
     editable: !isLocked,
     className: classNames.join(' '),
     title: eventTitle,
+    hasMissingMaterials,
   };
 };
 

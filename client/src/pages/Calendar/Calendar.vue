@@ -6,6 +6,7 @@
         :isLoading="isLoading"
         @set-center-date="setCenterDate"
         @refresh="getEventsData"
+        @filterMissingMaterials="handleFilterMissingMaterial"
       />
     </div>
     <div ref="Container" class="content__main-view Calendar">

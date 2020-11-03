@@ -58,9 +58,22 @@
 
   &__button {
     flex: 0 0 auto;
+
     &__title {
       display: none;
       margin-left: .5rem;
+    }
+  }
+
+  &__filter {
+    flex: 0 0 auto;
+    margin-left: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .SwitchToggle {
+      margin-top: 3px;
     }
   }
 

@@ -28,6 +28,15 @@
         <i class="fas fa-sync-alt" />
         <span class="CalendarHeader__button__title">{{ $t('action-refresh') }}</span>
       </button>
+      <div class="CalendarHeader__filter">
+        <label class="CalendarHeader__filter__label">
+          {{ $t('page-calendar.event-with-missing-material-only') }}
+        </label>
+        <SwitchToggle
+          :value="hasFilterMissingMaterial"
+          @input="handleFilterMissingMaterialChange"
+        />
+      </div>
     </div>
     <div class="CalendarHeader__center">
       <div v-if="isLoading" class="CalendarHeader__loading">

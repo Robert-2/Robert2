@@ -1,11 +1,12 @@
 import moment from 'moment';
 import store from '@/store';
 import FormField from '@/components/FormField/FormField.vue';
+import SwitchToggle from '@/components/SwitchToggle/SwitchToggle.vue';
 import Help from '@/components/Help/Help.vue';
 
 export default {
   name: 'CalendarHeader',
-  components: { Help, FormField },
+  components: { Help, FormField, SwitchToggle },
   props: { isLoading: Boolean },
   data() {
     return {
@@ -14,6 +15,7 @@ export default {
         format: 'd MMMM yyyy',
       },
       isVisitor: store.state.user.groupId === 'visitor',
+      hasFilterMissingMaterial: false,
     };
   },
   computed: {
@@ -41,6 +43,11 @@ export default {
       const end = moment(newPeriod.end);
       const duration = end.diff(start, 'hours');
       this.centerDate = start.add(duration / 2, 'hours').format();
+    },
+
+    handleFilterMissingMaterialChange(hasFilter) {
+      this.hasFilterMissingMaterial = hasFilter;
+      this.$emit('filterMissingMaterials', hasFilter);
     },
   },
 };
