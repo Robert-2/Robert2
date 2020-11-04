@@ -9,6 +9,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - Ajoute un filtre sur le calendrier permettant de n'afficher que les événements qui ont du matériel manquant (#42).
 - Permet la modification des événements passés dans le calendrier (#41).
 - Affiche une alerte dans les événements qui n'ont pas de bénéficiaire, et cache leur bouton "imprimer".
+- Trie les personnes (bénéficiaires et techniciens) sur le nom de famille par défaut (#37).
 
 ## 0.9.2 (2020-10-13)
 
