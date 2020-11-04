@@ -18,7 +18,7 @@
         </span>
       </div>
     </div>
-    <div v-if="!event.isPast" class="CalendarEventDetailsHeader__actions">
+    <div class="CalendarEventDetailsHeader__actions">
       <router-link
         v-show="!isVisitor"
         :to="`/events/${event.id}`"
