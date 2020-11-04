@@ -82,6 +82,7 @@ export default {
     'event-missing-materials': "Missing materials",
     'event-missing-materials-help': "These are the missing materials for the period of the event, because it is used in another event, the number needed is too high, or there are some out of order. These materials must therefore be added to the park, or rented from another company.",
     'warning-no-material': "Warning: this event is empty, there is no material at the moment!",
+    'warning-no-beneficiary': "Warning: this event has no beneficiaries!",
     'missing-material-count': "Need {quantity}, missing\u00a0{missing}!",
     'beneficiary-billing-help': "Only the first beneficiary in the list will be displayed on the bill.",
     'all-events': "All events",

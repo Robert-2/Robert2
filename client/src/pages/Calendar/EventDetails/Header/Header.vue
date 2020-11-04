@@ -52,6 +52,7 @@
       <a
         :href="eventSummaryPdfUrl"
         target="_blank"
+        v-if="event.materials.length > 0 && event.beneficiaries.length > 0"
         class="CalendarEventDetailsHeader__actions__print"
       >
         <i class="fas fa-print" />
