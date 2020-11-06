@@ -2558,6 +2558,9 @@ return [
     => "Remarque : vous trouverez le détail du matériel aux pages suivantes.",
 
     "dailyAmount"
+    => "Tarif / jour",
+
+    "dailyAmountExclVat"
     => "Tarif H.T. / jour",
 
     "numberOfDays"
@@ -2590,11 +2593,23 @@ return [
     "vat"
     => "T.V.A.",
 
+    "vatNotApplicable"
+    => "(T.V.A non applicable)",
+
+    "unitPrice"
+    => "P.U.",
+
     "unitPriceExclVat"
     => "P.U. H.T.",
 
+    "totalDay"
+    => "Total / jour",
+
     "totalDayExclVat"
     => "Total H.T. / jour",
+
+    "total"
+    => "Total",
 
     "totalExclVat"
     => "Total H.T.",

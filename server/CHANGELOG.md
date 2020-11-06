@@ -11,6 +11,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - Met à jour Phinx (système de migration de la base de données).
 - Change le terme "Salut" en "Bonjour" en haut de l'application (#46).
 - Autorise le signe "+" dans la référence du matériel (#43).
+- Adapte les factures au cas où la T.V.A n'est pas applicable (#24).
 
 ## 0.9.2 (2020-10-13)
 

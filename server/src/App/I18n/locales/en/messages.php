@@ -2556,6 +2556,9 @@ return [
     => "Note: you'll find the detail of materials in next pages.",
 
     "dailyAmount"
+    => "Daily price",
+
+    "dailyAmountExclVat"
     => "Daily price excl. VAT",
 
     "numberOfDays"
@@ -2588,11 +2591,23 @@ return [
     "vat"
     => "V.A.T.",
 
+    "vatNotApplicable"
+    => "(V.A.T. not applicable)",
+
+    "unitPrice"
+    => "Unit Price",
+
     "unitPriceExclVat"
     => "Unit Price (excl. VAT)",
 
+    "totalDay"
+    => "Total / day",
+
     "totalDayExclVat"
     => "Total excl. VAT / day",
+
+    "total"
+    => "Total",
 
     "totalExclVat"
     => "Total excl. VAT",
