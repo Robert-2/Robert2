@@ -18,7 +18,7 @@
         </span>
       </div>
     </div>
-    <div v-if="!event.isPast" class="CalendarEventDetailsHeader__actions">
+    <div class="CalendarEventDetailsHeader__actions">
       <router-link
         v-show="!isVisitor"
         :to="`/events/${event.id}`"
@@ -52,6 +52,7 @@
       <a
         :href="eventSummaryPdfUrl"
         target="_blank"
+        v-if="event.materials.length > 0 && event.beneficiaries.length > 0"
         class="CalendarEventDetailsHeader__actions__print"
       >
         <i class="fas fa-print" />

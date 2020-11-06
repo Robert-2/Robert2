@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\Scripts\ImportsV1\Processors;
+namespace Robert2\Scripts\ImportV1\Processors;
 
-use Robert2\Scripts\ImportsV1\Processor;
+use Robert2\Scripts\ImportV1\Processor;
 use Robert2\API\Models\Material;
 use Robert2\API\Models\Park;
 use Robert2\API\Models\Category;

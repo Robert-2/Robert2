@@ -1,6 +1,4 @@
 <?php
-// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
-
 use Phinx\Migration\AbstractMigration;
 
 class AddQuantityToEventsMaterialsPivot extends AbstractMigration
@@ -26,5 +24,3 @@ class AddQuantityToEventsMaterialsPivot extends AbstractMigration
             ->update();
     }
 }
-
-// phpcs:enable

@@ -27,9 +27,9 @@ class Bill extends BaseModel
     protected $_allowedSearchFields = ['number', 'due_amount', 'date'];
     protected $_searchField = 'number';
 
-    public function __construct()
+    public function __construct(array $attributes = [])
     {
-        parent::__construct();
+        parent::__construct($attributes);
 
         $this->pdfTemplate = 'bill-default';
 

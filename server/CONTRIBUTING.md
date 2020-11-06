@@ -180,3 +180,21 @@ Into `/src/App` folder (= PHP namespace `\Robert2\App`), we cand find:
 - `/src/App/Middlewares`: Slim middlewares classes *(ACL*, *JWT Auth*, and *Pagination*).
 - `/src/App/Models`: Application *[Eloquent](https://laravel.com/docs/5.8/eloquent)* models.
 - `/src/App/Validation`: Validator class (may need to be moved elsewhere?).
+
+## Releasing
+
+### Client (if has modifications)
+
+- Change version number in `client/package.json` file
+- Set release date in `client/CHANGELOG.md` file
+- Run `cd client && yarn release`
+- Check paths and filenames in `server/src/public/webclient/precache-manifest.x.x.x.js` file
+  according to `server/src/public/webclient` files
+- Update versions of CSS and JS sources in `server/src/views/entrypoint.twig` file
+
+### Server (to do always)
+
+- Set version number in `server/public/version.txt` file
+- Set release date in `server/CHANGELOG.md` file
+- Run `cd server && composer release`
+- Done! you can grab the zip file created in `server/dist/` and give it to the world!

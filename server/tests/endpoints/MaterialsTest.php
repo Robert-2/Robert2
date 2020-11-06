@@ -502,7 +502,7 @@ final class MaterialsTest extends ApiTestCase
         $this->assertErrorDetails([
             'reference' => [
                 "reference must not be empty",
-                'reference must contain only letters (a-z), digits (0-9) and ".,-/_ "',
+                'reference must contain only letters (a-z), digits (0-9) and ".,-+/_ "',
                 "reference must have a length between 2 and 64",
             ],
         ]);

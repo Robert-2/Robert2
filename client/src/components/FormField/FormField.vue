@@ -30,6 +30,7 @@
     </div>
     <select
       v-if="type === 'select'"
+      :key="renderKey"
       :name="name"
       :value="value"
       :disabled="disabled"
@@ -122,7 +123,15 @@ export default {
     datepickerOptions: Object,
   },
   data() {
-    return { datepickerLang: lang[store.state.i18n.locale] };
+    return {
+      datepickerLang: lang[store.state.i18n.locale],
+      renderKey: 1,
+    };
+  },
+  watch: {
+    options() {
+      this.renderKey += 1;
+    },
   },
   methods: {
     handleDatepickerChange(newDate) {

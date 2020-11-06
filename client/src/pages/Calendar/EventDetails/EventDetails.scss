@@ -35,6 +35,7 @@
   }
 
   &__location,
+  &__no-beneficiary,
   &__beneficiaries,
   &__assignees,
   &__description,
@@ -64,6 +65,10 @@
       margin-right: .3rem;
       color: $text-base-color;
     }
+  }
+
+  &__no-beneficiary {
+    color: $text-danger-color;
   }
 
   &__confirmation {

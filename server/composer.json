@@ -16,12 +16,10 @@
         }
     ],
     "config": {
-        "vendor-dir": "src/vendor",
-        "platform": {
-            "php": "7.1.17"
-        }
+        "vendor-dir": "src/vendor"
     },
     "require": {
+        "php": ">=7.1.17",
         "slim/slim": "^3.12.3",
         "slim/http-cache": "^0.4.0",
         "slim/twig-view": "^2.5.1",
@@ -30,7 +28,7 @@
         "respect/validation": "^1.1.31",
         "illuminate/database": "^5.8.36",
         "illuminate/pagination": "^5.8.35",
-        "robmorgan/phinx": "^0.11.4",
+        "robmorgan/phinx": "^0.12.4",
         "delfimov/translate": "^2.6.0",
         "symfony/console": "^4.4.7",
         "dompdf/dompdf": "^0.8.5",
@@ -47,7 +45,7 @@
             "Robert2\\Lib\\Domain\\": "src/App/Lib/Domain",
             "Robert2\\Lib\\Pdf\\": "src/App/Lib/Pdf",
             "Robert2\\Install\\": "src/install",
-            "Robert2\\Scripts\\": "utilities/Scripts",
+            "Robert2\\Scripts\\": "utilities/scripts",
             "Robert2\\Tests\\": "tests",
             "Robert2\\Fixtures\\": "tests/Fixtures"
         }
@@ -63,7 +61,6 @@
         "testmodels": "src/vendor/bin/phpunit --colors=always --testsuite models --filter",
         "testother": "src/vendor/bin/phpunit --colors=always --testsuite other --filter",
         "build-api-doc": "postmanerator -output=./src/views/apidoc.html -collection=./utilities/postman/collection.json -environment=./utilities/postman/environment_example.json -theme=./src/views/apidoc-theme",
-        "release": "bin/release",
-        "Robert2:importsV1": "utilities/Scripts/ImportsV1/run"
+        "release": "bin/release"
     }
 }

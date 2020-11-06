@@ -6,7 +6,10 @@
 // -----------------------------------------------------------
 // phpcs:enable
 
-define('DS', DIRECTORY_SEPARATOR);
+if (!defined('DS')) {
+    define('DS', DIRECTORY_SEPARATOR);
+}
+
 define('SCRIPTS_FOLDER', __DIR__);
 define('ROOT_FOLDER', dirname(dirname(SCRIPTS_FOLDER)));
 define('DATA_FOLDER', ROOT_FOLDER . DS . 'data');

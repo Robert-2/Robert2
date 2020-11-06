@@ -13,8 +13,8 @@ return [
         'seeds'      => __DIR__ . '/seeds',
     ],
     'environments' => [
-        'default_database' => 'development',
-        'development'      => [
+        'default_environment' => 'development',
+        'development' => [
             'table_prefix' => $config['prefix'],
             'name'         => $config['database'],
             'connection'   => $pdo,

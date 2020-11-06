@@ -38,14 +38,14 @@ class BaseModel extends Model
 
     const EXTRA_CHARS = '-_. ÇçàÀâÂäÄåÅèÈéÉêÊëËíÍìÌîÎïÏòÒóÓôÔöÖðÐõÕøØúÚùÙûÛüÜýÝÿŸŷŶøØæÆœŒñÑßÞ';
 
-    public function __construct()
+    public function __construct(array $attributes = [])
     {
         $this->_settings  = Config::getSettings();
         $this->_validator = new Validator();
 
         Config::getCapsule();
 
-        parent::__construct();
+        parent::__construct($attributes);
     }
 
     // ——————————————————————————————————————————————————————

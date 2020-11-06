@@ -1,6 +1,4 @@
 <?php
-// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
-
 use Phinx\Migration\AbstractMigration;
 
 class FixTaggablesPrimaryConstraint extends AbstractMigration
@@ -21,5 +19,3 @@ class FixTaggablesPrimaryConstraint extends AbstractMigration
             ->save();
     }
 }
-
-// phpcs:enable

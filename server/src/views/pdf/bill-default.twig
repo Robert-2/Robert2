@@ -59,14 +59,16 @@
         {% else %}
         {{ translate('fromToDates', [event['start_date']|format_date('full', locale=locale), event['end_date']|format_date('full', locale=locale)]) }},
         {% endif %}
+        {% if event['location'] %}
         {{ translate('inLocation', [event['location']]) }}
+        {% endif %}
     </p>
     <table>
         <thead>
             <tr>
                 <th class="left">{{ translate('category') }}</th>
                 <th>{{ translate('quantity') }}</th>
-                <th>{{ translate('totalDayExclVat') }}</th>
+                <th>{{ translate(vatRate > 0 ? 'totalDayExclVat' : 'totalDay') }}</th>
             </tr>
         </thead>
         <tbody>
@@ -88,7 +90,7 @@
     <table>
         <thead>
             <tr>
-                <th>{{ translate('dailyAmount') }}</th>
+                <th>{{ translate(vatRate > 0 ? 'dailyAmountExclVat' : 'dailyAmount') }}</th>
                 <th>{{ translate('discountRate') }}</th>
                 <th>{{ translate('totalDay') }}</th>
                 <th>{{ translate('degressiveRate') }}</th>
@@ -97,7 +99,7 @@
         </thead>
         <tbody>
             <tr class="center">
-                <td rowspan="3" style="border-bottom: 1pt solid #888;">
+                <td rowspan="{{ vatRate > 0 ? 3 : 1 }}" style="border-bottom: 1pt solid #888;">
                     <div class="vspace2">
                         {{ dailyAmount|format_currency(currency, formatCurrencyOptions, locale) }}
                     </div>
@@ -106,7 +108,7 @@
                         {{ discountableDailyAmount|format_currency(currency, formatCurrencyOptions, locale) }}
                     </div>
                 </td>
-                <td rowspan="3" style="border-bottom: 1pt solid #888;">
+                <td rowspan="{{ vatRate > 0 ? 3 : 1 }}" style="border-bottom: 1pt solid #888;">
                     <div class="vspace2">
                         {% if discountRate > 0 %}
                         {{ discountRate|format_percent_number({fraction_digit: 4}) }}<br><br>
@@ -116,7 +118,8 @@
                         {% endif %}
                     </div>
                 </td>
-                <td rowspan="3" style="border-bottom: 1pt solid #888;">
+                <td rowspan="{{ vatRate > 0 ? 3 : 1 }}" style="border-bottom: 1pt solid #888;">
+                    {% if vatRate > 0 %}
                     <div class="vspace2 right">
                         {{ translate('exclVat') }}<br>
                         {{ totalDailyExclVat|format_currency(currency, formatCurrencyOptions, locale) }}
@@ -125,12 +128,13 @@
                         {{ translate('vat') }} ({{ vatRate|format_percent_number({fraction_digit: 1}) }})<br>
                         {{ vatAmount|format_currency(currency, formatCurrencyOptions, locale) }}
                     </div>
+                    {% endif %}
                     <div class="vspace2 right">
-                        {{ translate('inclVat') }}<br>
+                        {% if vatRate > 0 %}{{ translate('inclVat') }}<br>{% endif %}
                         {{ totalDailyInclVat|format_currency(currency, formatCurrencyOptions, locale) }}
                     </div>
                 </td>
-                <td rowspan="3" style="border-bottom: 1pt solid #888;">
+                <td rowspan="{{ vatRate > 0 ? 3 : 1 }}" style="border-bottom: 1pt solid #888;">
                     <div class="vspace2">
                         ×&nbsp;<strong>{{ degressiveRate|format_number }}</strong><br><br>
                         <span class="lighter">
@@ -138,6 +142,7 @@
                         </span>
                     </div>
                 </td>
+                {% if vatRate > 0 %}
                 <td>
                     <div class="vspace2 strong center">{{ translate('totalExclVat') }}</div>
                 </td>
@@ -146,7 +151,24 @@
                         {{ totalExclVat|format_currency(currency, formatCurrencyOptions, locale) }}
                     </div>
                 </td>
+                {% endif %}
+                {% if vatRate == 0 %}
+                <td rowspan="1">
+                    <div class="vspace2 strong size10 center">
+                        {{ translate('totalDue') }}
+                    </div>
+                    <div class="vspace2 size9 center">
+                        {{ translate('vatNotApplicable') }}
+                    </div>
+                </td>
+                <td rowspan="1">
+                    <div class="vspace2 size10 strong right">
+                        {{ totalInclVat|format_currency(currency, formatCurrencyOptions, locale) }}
+                    </div>
+                </td>
+                {% endif %}
             </tr>
+            {% if vatRate > 0 %}
             <tr>
                 <td>
                     <div class="vspace2 strong center">{{ translate('totalInclVat') }}</div>
@@ -169,6 +191,7 @@
                     </div>
                 </td>
             </tr>
+            {% endif %}
         </tbody>
     </table>
 </div>
@@ -207,9 +230,9 @@
             <th>{{ translate('ref') }}</th>
             <th>{{ translate('designation') }}</th>
             <th>{{ translate('qty') }}</th>
-            <th>{{ translate('unitPriceExclVat') }}</th>
+            <th>{{ translate(vatRate > 0 ? 'unitPriceExclVat' : 'unitPrice') }}</th>
             <th>{{ translate('replacementValue') }}</th>
-            <th>{{ translate('totalExclVat') }}</th>
+            <th>{{ translate(vatRate > 0 ? 'totalExclVat' : 'total') }}</th>
         </tr>
     </thead>
     <tbody>

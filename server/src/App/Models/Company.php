@@ -26,9 +26,9 @@ class Company extends BaseModel
     protected $_allowedSearchFields = ['legal_name'];
     protected $_searchField = 'legal_name';
 
-    public function __construct()
+    public function __construct(array $attributes = [])
     {
-        parent::__construct();
+        parent::__construct($attributes);
 
         $this->validation = [
             'legal_name'  => V::notEmpty()->length(1, 191),

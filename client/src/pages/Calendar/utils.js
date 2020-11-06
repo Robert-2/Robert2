@@ -64,7 +64,7 @@ const formatTimelineEvent = (dataEvent, translate) => {
     }
   }
 
-  const isLocked = isPast || isConfirmed;
+  const isLocked = isConfirmed;
   if (isLocked) {
     classNames.push('Calendar__event--locked');
   }
@@ -87,6 +87,7 @@ const formatTimelineEvent = (dataEvent, translate) => {
     editable: !isLocked,
     className: classNames.join(' '),
     title: eventTitle,
+    hasMissingMaterials,
   };
 };
 

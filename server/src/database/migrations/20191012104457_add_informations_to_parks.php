@@ -1,6 +1,4 @@
 <?php
-// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
-
 use Phinx\Migration\AbstractMigration;
 
 class AddInformationsToParks extends AbstractMigration
@@ -87,5 +85,3 @@ class AddInformationsToParks extends AbstractMigration
             ->update();
     }
 }
-
-// phpcs:enable

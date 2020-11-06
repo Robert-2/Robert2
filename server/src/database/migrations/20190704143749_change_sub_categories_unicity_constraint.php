@@ -1,6 +1,4 @@
 <?php
-// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
-
 use Phinx\Migration\AbstractMigration;
 
 class ChangeSubCategoriesUnicityConstraint extends AbstractMigration
@@ -29,5 +27,3 @@ class ChangeSubCategoriesUnicityConstraint extends AbstractMigration
             ->update();
     }
 }
-
-// phpcs:enable

@@ -1,6 +1,4 @@
 <?php
-// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
-
 use Phinx\Migration\AbstractMigration;
 
 class CreateCategories extends AbstractMigration
@@ -45,5 +43,3 @@ class CreateCategories extends AbstractMigration
         $this->table('categories')->drop()->save();
     }
 }
-
-// phpcs:enable

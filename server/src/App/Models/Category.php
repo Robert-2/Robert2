@@ -20,9 +20,9 @@ class Category extends BaseModel
     protected $_allowedSearchFields = ['name'];
     protected $_searchField = 'name';
 
-    public function __construct()
+    public function __construct(array $attributes = [])
     {
-        parent::__construct();
+        parent::__construct($attributes);
 
         $this->validation = [
             'name' => V::notEmpty()->length(2, 96)

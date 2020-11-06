@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.10.0 (2020-11-06)
+
+- Ajoute un nouveau champ `reference` à la table `events` permettant d'identifier  
+  chaque événement côté machine après un import par exemple (non utilisé dans l'interface) (#45).
+- Met à jour Phinx (système de migration de la base de données).
+- Change le terme "Salut" en "Bonjour" en haut de l'application (#46).
+- Autorise le signe "+" dans la référence du matériel (#43).
+- Adapte les factures au cas où la T.V.A n'est pas applicable (#24).
+
 ## 0.9.2 (2020-10-13)
 
 - Update webclient to version 0.9.2

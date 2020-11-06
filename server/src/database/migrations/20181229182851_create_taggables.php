@@ -1,6 +1,4 @@
 <?php
-// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
-
 use Phinx\Migration\AbstractMigration;
 
 class CreateTaggables extends AbstractMigration
@@ -50,5 +48,3 @@ class CreateTaggables extends AbstractMigration
         $this->table('taggables')->drop()->save();
     }
 }
-
-// phpcs:enable

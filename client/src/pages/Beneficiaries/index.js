@@ -13,8 +13,8 @@ export default {
       isDisplayTrashed: false,
       isTrashDisplayed: false,
       columns: [
-        'first_name',
         'last_name',
+        'first_name',
         'company',
         'email',
         'phone',
@@ -25,16 +25,16 @@ export default {
       options: {
         columnsDropdown: true,
         preserveState: true,
-        orderBy: { column: 'first_name', ascending: true },
+        orderBy: { column: 'last_name', ascending: true },
         initialPage: this.$route.query.page || 1,
-        sortable: ['first_name', 'last_name', 'company', 'email'],
+        sortable: ['last_name', 'first_name', 'company', 'email'],
         columnsDisplay: {
           // - This is a hack: init the table with hidden columns by default
           note: 'mobile',
         },
         headings: {
-          first_name: this.$t('first-name'),
           last_name: this.$t('last-name'),
+          first_name: this.$t('first-name'),
           company: this.$t('company'),
           email: this.$t('email'),
           phone: this.$t('phone'),

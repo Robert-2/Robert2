@@ -30,6 +30,10 @@
                 &nbsp; <i class="fas fa-external-link-alt" />
               </a>
             </div>
+            <div v-if="beneficiaries.length === 0" class="CalendarEventDetails__no-beneficiary">
+              <i class="fas fa-exclamation-circle" />
+              {{ $t('page-events.warning-no-beneficiary') }}
+            </div>
             <div v-if="beneficiaries.length > 0" class="CalendarEventDetails__beneficiaries">
               <i class="fas fa-address-book" />
               {{ $t('for') }}

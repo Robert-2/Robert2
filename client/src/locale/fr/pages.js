@@ -57,6 +57,8 @@ export default {
     'this-event-is-currently-running': "Cet événement se déroule en ce moment.",
     'this-event-is-confirmed': "Cet événement est confirmé.",
     'this-event-has-missing-materials': "Cet événement a du matériel manquant.",
+    'all-events': "Tous les événements",
+    'event-with-missing-material-only': "Événements en manque de matériel uniquement\u00a0?",
   },
 
   'page-events': {
@@ -82,6 +84,7 @@ export default {
     'event-missing-materials': "Matériel manquant",
     'event-missing-materials-help': "Il s'agit du matériel manquant pour la période de l'événement, car il est utilisé dans un autre événement, le nombre voulu est trop important, ou quelques uns sont en panne. Ce matériel doit donc être ajouté au parc, ou bien loué auprès d'une autre société.",
     'warning-no-material': "Attention, cet événement est vide, il ne contient aucun matériel pour le moment\u00a0!",
+    'warning-no-beneficiary': "Attention, cet événement n'a aucun bénéficiaire\u00a0!",
     'missing-material-count': "Besoin de {quantity}, il en manque\u00a0{missing}\u00a0!",
     'beneficiary-billing-help': "Seul le premier bénéficiaire de la liste apparaîtra sur la facture.",
   },

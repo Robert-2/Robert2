@@ -56,7 +56,7 @@ describe('formatTimelineEvent', () => {
       end: '2019-10-02T00:00:00.000Z',
       editable: false,
       className: 'Calendar__event Calendar__event--past Calendar__event--locked Calendar__event--with-warning',
-      title: "Test (Testville)\n  →page-calendar.this-event-is-past\n  →page-calendar.this-event-has-missing-materials"
+      title: 'Test (Testville)\n  →page-calendar.this-event-is-past\n  →page-calendar.this-event-has-missing-materials',
     });
   });
 });

@@ -1,6 +1,6 @@
 {
   "name": "robert2-webclient",
-  "version": "0.9.2",
+  "version": "0.10.0",
   "description": "Open source hardware park manager",
   "main": "dist/index.html",
   "author": "polosson <polo@polosson.com>",

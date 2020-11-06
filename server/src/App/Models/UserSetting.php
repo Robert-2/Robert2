@@ -22,9 +22,9 @@ class UserSetting extends BaseModel
         'updated_at',
     ];
 
-    public function __construct()
+    public function __construct(array $attributes = [])
     {
-        parent::__construct();
+        parent::__construct($attributes);
 
         $this->validation = [
             'user_id'  => V::notEmpty()->intVal(),

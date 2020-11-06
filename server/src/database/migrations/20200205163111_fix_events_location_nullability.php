@@ -1,6 +1,4 @@
 <?php
-// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
-
 use Phinx\Migration\AbstractMigration;
 
 use Robert2\API\Config as Config;
@@ -35,5 +33,3 @@ class FixEventsLocationNullability extends AbstractMigration
             ->update();
     }
 }
-
-// phpcs:enable

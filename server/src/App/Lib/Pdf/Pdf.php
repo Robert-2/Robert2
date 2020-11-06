@@ -65,6 +65,8 @@ class Pdf
         $template = $twig->load(sprintf('%s.twig', $templateName));
         $html = $template->render($data);
 
+        // debug($html); exit;
+
         $pdf = new Pdf($html);
         return $pdf->getResult();
     }

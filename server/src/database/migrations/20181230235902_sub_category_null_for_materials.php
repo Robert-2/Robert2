@@ -1,6 +1,4 @@
 <?php
-// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
-
 use Phinx\Migration\AbstractMigration;
 
 class SubCategoryNullForMaterials extends AbstractMigration
@@ -39,5 +37,3 @@ class SubCategoryNullForMaterials extends AbstractMigration
             ->save();
     }
 }
-
-// phpcs:enable

@@ -31,9 +31,9 @@ class Event extends BaseModel
     protected $_allowedSearchFields = ['title', 'start_date', 'end_date', 'location'];
     protected $_searchField = 'title';
 
-    public function __construct()
+    public function __construct(array $attributes = [])
     {
-        parent::__construct();
+        parent::__construct($attributes);
 
         $this->pdfTemplate = 'event-summary-default';
 
@@ -45,6 +45,7 @@ class Event extends BaseModel
             'user_id'      => V::notEmpty()->numeric(),
             'title'        => V::notEmpty()->length(2, 191),
             'description'  => V::optional(V::length(null, 255)),
+            'reference'    => V::oneOf(V::nullType(), V::alnum('.,-/_ ')->length(1, 64)),
             'start_date'   => V::notEmpty()->date(),
             'end_date'     => V::notEmpty()->date(),
             'is_confirmed' => V::notOptional()->boolType(),
@@ -146,6 +147,7 @@ class Event extends BaseModel
 
     protected $casts = [
         'user_id'      => 'integer',
+        'reference'    => 'string',
         'title'        => 'string',
         'description'  => 'string',
         'start_date'   => 'string',
@@ -299,6 +301,7 @@ class Event extends BaseModel
 
     protected $fillable = [
         'user_id',
+        'reference',
         'title',
         'description',
         'start_date',
