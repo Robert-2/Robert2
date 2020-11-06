@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 0.10.0 (UNRELEASED)
+## 0.10.0 (2020-11-06)
 
 - Ajoute un nouveau champ `reference` à la table `events` permettant d'identifier  
   chaque événement côté machine après un import par exemple (non utilisé dans l'interface) (#45).

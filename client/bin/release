@@ -50,7 +50,7 @@ mv server/src/public/webclient/img server/src/public/img
 echo "
 Done.
 
-You should now check and modify content of 'precache-manifest' file,
-according to server/src/public/webclient folders structure and file names.
+Il faut maintenant modifier le contenu du fichier 'server/src/public/precache-manifest.x.x.x.js',
+selon la structure du dossier 'server/src/public/webclient' et ses fichiers.
 
 See you next release. Bye!"
