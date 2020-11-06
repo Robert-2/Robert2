@@ -188,8 +188,9 @@ Into `/src/App` folder (= PHP namespace `\Robert2\App`), we cand find:
 - Change version number in `client/package.json` file
 - Set release date in `client/CHANGELOG.md` file
 - Run `cd client && yarn release`
-- Check paths and filenames in `server/src/public/webclient/precache-manifest.x.x.x.js` file,
+- Check paths and filenames in `server/src/public/webclient/precache-manifest.x.x.x.js` file
   according to `server/src/public/webclient` files
+- Update versions of CSS and JS sources in `server/src/views/entrypoint.twig` file
 
 ### Server (to do always)
 
