@@ -9,7 +9,7 @@ echo "
   |  _ < (_) | |_) |  __/ |  | |_ / __/
   |_| \_\___/|_.__/ \___|_|   \__|_____|
 
-* RELEASE ${version} DISTRIBUTION SCRIPT *
+ * RELEASE ${version} DISTRIBUTION SCRIPT *
 
 Let's start..."
 
@@ -18,12 +18,10 @@ if ! [ -x "$(command -v jq)" ]; then
   exit 1
 fi
 
-echo "
-Removing old 'dist' folder..."
+echo -e "\nRemoving old 'dist' folder..."
 rm -rf dist
 
-echo "
-Copying all application source code's folders..."
+echo -e "\nCopying all application source code's folders..."
 releaseName="Robert2-${version}"
 distFolder="dist/${releaseName}"
 mkdir -p $distFolder
@@ -32,16 +30,13 @@ mv dist/src $distFolder/src
 cp -r utilities $distFolder
 cp .htaccess $distFolder/.htaccess
 cp composer.json $distFolder/composer.json
+cp composer.lock $distFolder/composer.lock
 cp ../README.md $distFolder/README.md
 cp ../LICENCE.md $distFolder/LICENCE.md
 rm -R $distFolder/utilities/postman
-mkdir -p $distFolder/data/bills
-cp data/bills/.gitignore $distFolder/data/bills/.gitignore
-mkdir $distFolder/data/imports
-cp data/imports/.gitignore $distFolder/data/imports/.gitignore
+mkdir -p $distFolder/data/{bills,imports}
 
-echo "
-Cleaning unnecessary (and private config) files..."
+echo -e "\nCleaning unnecessary (and private config) files..."
 cd $distFolder
 rm -r src/vendor
 rm src/App/Config/settings.json
@@ -50,31 +45,25 @@ rm -r src/var/cache && mkdir -m 777 src/var/cache/
 rm -r src/var/logs && mkdir -m 777 src/var/logs/
 rm -r src/var/tmp && mkdir -m 777 src/var/tmp/
 
-echo "
-Set folders permissions..."
+echo -e "\nSet folders permissions..."
 chmod 777 -R data
 chmod 777 src/App/Config
 chmod 777 src/install
 
-echo "
-Installing dependencies..."
+echo -e "\nInstalling dependencies..."
 query='del(."require-dev")|del(.autoload."psr-4"."Robert2\\Tests\\")|del(.autoload."psr-4"."Robert2\\Fixtures\\")|del(.scripts."create-migration")|del(.scripts."lint")|del(.scripts."test")|del(.scripts."testapi")|del(.scripts."testmodels")|del(.scripts."testother")|del(.scripts."build-api-doc")|del(.scripts."release")'
 jq $query composer.json > tmp.composer.json
 mv tmp.composer.json composer.json
+composer update --lock --quiet
 composer install --quiet
 echo "Done."
 
-echo "
-Packaging project into ZIP file..."
-cd ..
+echo -e "\nPackaging project into ZIP file..."
+cd .. && zip -r --quiet "${releaseName}.zip" $releaseName
 echo " -> ${releaseName}.zip"
-zip -r --quiet "${releaseName}.zip" $releaseName
 
-echo "
-Removing folder..."
-cd ..
-rm -rf $distFolder
+echo -e "\nRemoving folder..."
+cd .. && rm -rf $distFolder
 
-echo "
-All done!!
-See you next release. Bye!"
+echo -e "\nAll done!!\n"
+echo "See you next release. Bye!"
