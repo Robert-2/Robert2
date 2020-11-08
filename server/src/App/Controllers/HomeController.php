@@ -208,9 +208,9 @@ class HomeController
     private function _bindCustomTwigFunctions(): void
     {
         $i18n = new I18n();
-        $translate = new \Twig_SimpleFunction('translate', [$i18n, 'translate']);
-        $version = new \Twig_SimpleFunction('version', $this->getVersion());
-        $serverConfig = new \Twig_SimpleFunction('serverConfig', $this->getServerConfig());
+        $translate = new \Twig\TwigFunction('translate', [$i18n, 'translate']);
+        $version = new \Twig\TwigFunction('version', $this->getVersion());
+        $serverConfig = new \Twig\TwigFunction('serverConfig', $this->getServerConfig());
 
         $this->view->getEnvironment()->addFunction($translate);
         $this->view->getEnvironment()->addFunction($version);
