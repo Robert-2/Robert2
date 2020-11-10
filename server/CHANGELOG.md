@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.10.1 (2020-11-10)
+
+- Met à jour les dépendances côté serveur (+ corrige un bug avec Twig) (#55) (👏 @Tuxem).
+
 ## 0.10.0 (2020-11-06)
 
 - Ajoute un nouveau champ `reference` à la table `events` permettant d'identifier  
