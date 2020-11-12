@@ -40,7 +40,6 @@
         "illuminate/pagination": "^5.8.35",
         "robmorgan/phinx": "^0.11.4",
         "delfimov/translate": "^2.6.0",
-        "symfony/console": "^4.4.7",
         "dompdf/dompdf": "^0.8.5",
         "twig/intl-extra": "^3.0.3"
     },
@@ -55,7 +54,6 @@
             "Robert2\\Lib\\Domain\\": "src/App/Lib/Domain",
             "Robert2\\Lib\\Pdf\\": "src/App/Lib/Pdf",
             "Robert2\\Install\\": "src/install",
-            "Robert2\\Scripts\\": "utilities/scripts",
             "Robert2\\Tests\\": "tests",
             "Robert2\\Fixtures\\": "tests/Fixtures"
         }
