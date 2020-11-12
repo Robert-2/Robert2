@@ -8,10 +8,6 @@ Robert2 utilise la nomenclature de version [Semantic Versionning (semver)](https
 
 Un fichier de changelog est présent à la racine des deux dossiers principaux du projet, montrant l'évolution des fonctionnalités au fil du temps et des versions. Il est (et doit être) impérativement maintenu à jour.
 
-### Docker
-
-Robert2 offre la possibilité de lancer l'application dans un container docker. Voir [le Readme](./server/docker/README.md) dédié à ceci dans le dossier `server/docker`.
-
 ### Routing
 
 Le point d'entrée principal de l'application (`/`) déclenche le rendu de la partie "front" (voir ci-dessus).

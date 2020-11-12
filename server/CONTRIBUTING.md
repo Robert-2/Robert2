@@ -2,11 +2,6 @@
 
 ## Getting started
 
-### Using Docker (if you want)
-
-It's possible to use Docker in order to have sane environment to work with.
-To do so, we recommend reading `./docker/README.md` file first.
-
 ### Installation
 
 At first, to install dependencies, just run:
@@ -150,7 +145,6 @@ Among other small dependencies.
 
 - `/bin`: Utility *scripts* (bash, or whatever you want).
 - `/dist`: Where the *release* process comes up, and the release ZIP file is stored.
-- `/docker`: *Dockerfiles* (main & db). The Readme can help there.
 - `/src`: Source code of the application (see above for details). The release ZIP basically contains all the stuff in there.
 - `/tests`: All unit- and integration-tests, as well as fixtures system and data.
 - ~~`/utilities`: Useless, this one will be removed soon.~~
