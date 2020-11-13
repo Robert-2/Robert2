@@ -1,0 +1,83 @@
+#!/bin/bash
+
+version=$(<./server/src/public/version.txt)
+releaseName="Robert2-${version}"
+distFolder="./dist/${releaseName}"
+
+echo "
+  ____       _               _   ____
+ |  _ \ ___ | |__   ___ _ __| |_|___ \\
+ | |_) / _ \| '_ \ / _ \ '__| __| __) |
+ |  _ < (_) | |_) |  __/ |  | |_ / __/
+ |_| \_\___/|_.__/ \___|_|   \__|_____|
+
+ * RELEASE ${version} DISTRIBUTION SCRIPT *
+
+Commençons..."
+
+if ! [ -x "$(command -v jq)" ]; then
+    echo "ERREUR: Le programme 'jq' est requis et ne semble pas installé." >&2
+    exit 1
+fi
+
+echo -e "\nCompression des sources du client..."
+(cd ./client && yarn build)
+echo "Done."
+
+echo -e "\nSuppresion des fichiers client inutiles..."
+rm ./client/dist/index.html
+
+echo -e "\nRemplacement du dossier \"webclient\" côté serveur..."
+rm -R ./server/src/public/webclient
+cp -R ./client/dist ./server/src/public/webclient
+
+rm -R ./server/src/public/img
+mv ./server/src/public/webclient/img ./server/src/public/img
+
+echo -e "\nIl faut maintenant modifier le contenu du fichier '/server/src/public/webclient/precache-manifest.x.x.x.js',"
+echo -e "\nselon la structure du dossier '/server/src/public/webclient' et ses fichiers.\n\n"
+read -n 1 -s -r -p "Une fois fait, appuyez sur n'importe quelle touche pour continuer..."
+
+echo -e "\nSuppression de l'ancien dossier \"dist\"..."
+rm -rf ./dist
+
+echo -e "\nCopie des sources vers le dossier de distribution..."
+mkdir -p $distFolder
+cp -r ./server/src dist
+mv ./dist/src $distFolder/src
+
+cp ./server/.htaccess $distFolder/.htaccess
+cp ./server/composer.json $distFolder/composer.json
+cp ./server/composer.lock $distFolder/composer.lock
+cp ./README.md $distFolder/README.md
+cp ./LICENCE.md $distFolder/LICENCE.md
+
+echo -e "\nNettoyage du dossier de distrubution (suppression des fichiers inutiles / privés)..."
+cd $distFolder
+rm -r src/vendor
+rm src/App/Config/settings.json
+rm src/install/progress.json
+rm -r src/var/cache && mkdir -m 777 src/var/cache/
+rm -r src/var/logs && mkdir -m 777 src/var/logs/
+rm -r src/var/tmp && mkdir -m 777 src/var/tmp/
+
+echo -e "\nDéfinition des permission des dossiers..."
+chmod 777 src/App/Config
+chmod 777 src/install
+
+echo -e "\nInstallation des dépendances..."
+query='del(."require-dev")|del(.autoload."psr-4"."Robert2\\Tests\\")|del(.autoload."psr-4"."Robert2\\Fixtures\\")|del(.scripts."create-migration")|del(.scripts."lint")|del(.scripts."test")|del(.scripts."testapi")|del(.scripts."testmodels")|del(.scripts."testother")'
+jq $query composer.json > tmp.composer.json
+mv tmp.composer.json composer.json
+composer update --lock --quiet
+composer install --quiet
+echo "Fait."
+
+echo -e "\nEmpaquetage de la release dans un fichier ZIP..."
+cd .. && zip -r --quiet "${releaseName}.zip" $releaseName
+echo " -> ${releaseName}.zip"
+
+echo -e "\nSuppression du dossier temporaire..."
+cd .. && rm -rf $distFolder
+
+echo -e "\nTerminé !!\n"
