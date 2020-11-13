@@ -1,6 +1,5 @@
 {
     "name": "robert2-webclient",
-    "version": "0.10.0",
     "private": true,
     "main": "dist/index.html",
     "scripts": {

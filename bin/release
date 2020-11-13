@@ -1,6 +1,6 @@
 #!/bin/bash
 
-version=$(<./server/src/public/version.txt)
+version=$(<./VERSION)
 releaseName="Robert2-${version}"
 distFolder="./dist/${releaseName}"
 
@@ -42,6 +42,7 @@ mv ./dist/src $distFolder/src
 cp ./server/.htaccess $distFolder/.htaccess
 cp ./server/composer.json $distFolder/composer.json
 cp ./server/composer.lock $distFolder/composer.lock
+rm $distFolder/src/VERSION && cp ./VERSION $distFolder/src/VERSION
 cp ./README.md $distFolder/README.md
 cp ./LICENCE.md $distFolder/LICENCE.md
 

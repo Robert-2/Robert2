@@ -38,7 +38,7 @@ veuillez spécifier les traductions anglaises de vos ajouts en français dans vo
 ## Version et Changelog
 
 Robert2 utilise la nomenclature de version [Semantic Versionning (semver)](https://semver.org/) pour ses numéros de version. La version actuelle qui 
-correspond à celle se trouvant dans la branche `master` est définie dans le fichier `server/src/public/version.txt`.
+correspond à celle se trouvant dans la branche `master` est définie dans le fichier `/VERSION`.
 
 Un fichier de changelog est présent à la racine du projet, montrant l'évolution des fonctionnalités au fil du temps et des versions.   
 __Il est (et doit être) impérativement maintenu à jour.__
@@ -52,7 +52,7 @@ Pour créer une release de Robert2, veuillez suivre les étapes suivantes :
 3. Exécutez : `yarn release` toujours en étant à la racine du dossier `/client`.
 4. Vérifiez les chemins dans le fichier `/server/src/public/webclient/precache-manifest.x.x.x.js`.  
    => Ajustez-les en fonction du nom des fichiers situés dans `/server/src/public/webclient`.
-5. Changez le numéro de version dans le fichier `/server/src/public/version.txt`.
+5. Changez le numéro de version dans le fichier `/VERSION`.
 6. Modifiez le `UNRELEASED` par la date du jour au format `YYYY-MM-DD` pour la  
    version en cours de développement dans le fichier `/CHANGELOG.md`.
 7. Exécutez : `composer release` en étant à la racine du dossier `/server`.
