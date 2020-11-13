@@ -1,6 +1,5 @@
 {
-    "name": "robertmanager/robert2-api",
-    "description": "Web app for managing a fleet of equipment for rental or loan.",
+    "private": true,
     "authors": [
         {
             "name": "Paul Maillardet",
@@ -11,8 +10,17 @@
             "email": "donovan@pulsanova.com"
         }
     ],
-    "config": {
-        "vendor-dir": "src/vendor"
+    "scripts": {
+        "create-migration": "src/vendor/bin/phinx --configuration=src/database/phinx.php create $1 --template=src/database/template",
+        "migration-status": "src/vendor/bin/phinx --configuration=src/database/phinx.php status",
+        "migrate": "src/vendor/bin/phinx --configuration=src/database/phinx.php migrate",
+        "rollback": "src/vendor/bin/phinx --configuration=src/database/phinx.php rollback",
+        "lint": "src/vendor/bin/phpcs -s --colors -p ./src/App/",
+        "test": "src/vendor/bin/phpunit --colors=always --coverage-html tests/coverage",
+        "testapi": "src/vendor/bin/phpunit --colors=always --testsuite api --filter",
+        "testmodels": "src/vendor/bin/phpunit --colors=always --testsuite models --filter",
+        "testother": "src/vendor/bin/phpunit --colors=always --testsuite other --filter",
+        "release": "bin/release"
     },
     "require": {
         "php": ">=7.1.17",
@@ -46,16 +54,7 @@
             "Robert2\\Fixtures\\": "tests/Fixtures"
         }
     },
-    "scripts": {
-        "create-migration": "src/vendor/bin/phinx --configuration=src/database/phinx.php create $1 --template=src/database/template",
-        "migration-status": "src/vendor/bin/phinx --configuration=src/database/phinx.php status",
-        "migrate": "src/vendor/bin/phinx --configuration=src/database/phinx.php migrate",
-        "rollback": "src/vendor/bin/phinx --configuration=src/database/phinx.php rollback",
-        "lint": "src/vendor/bin/phpcs -s --colors -p ./src/App/",
-        "test": "src/vendor/bin/phpunit --colors=always --coverage-html tests/coverage",
-        "testapi": "src/vendor/bin/phpunit --colors=always --testsuite api --filter",
-        "testmodels": "src/vendor/bin/phpunit --colors=always --testsuite models --filter",
-        "testother": "src/vendor/bin/phpunit --colors=always --testsuite other --filter",
-        "release": "bin/release"
+    "config": {
+        "vendor-dir": "src/vendor"
     }
 }
