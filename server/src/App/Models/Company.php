@@ -9,13 +9,12 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Respect\Validation\Validator as V;
 
 use Robert2\API\Errors;
-use Robert2\API\Formater\Phone;
 use Robert2\API\Models\Traits\Taggable;
 
 class Company extends BaseModel
 {
     use SoftDeletes;
-    use Phone, Taggable;
+    use Taggable;
 
     protected $table = 'companies';
 
@@ -112,7 +111,7 @@ class Company extends BaseModel
     public function edit(?int $id = null, array $data = []): Model
     {
         if (!empty($data['phone'])) {
-            $data['phone'] = $this->normalizePhone($data['phone']);
+            $data['phone'] = normalizePhone($data['phone']);
         }
 
         $company = parent::edit($id, $data);
