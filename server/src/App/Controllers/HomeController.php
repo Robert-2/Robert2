@@ -159,11 +159,6 @@ class HomeController
         ]);
     }
 
-    public function apidoc(Request $request, Response $response)
-    {
-        return $this->view->render($response, 'apidoc.html');
-    }
-
     // ——————————————————————————————————————————————————————
     // —
     // —    Private methods
