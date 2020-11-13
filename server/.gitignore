@@ -1,4 +1,5 @@
 src/vendor/
+
 tests/coverage/
 tests/Fixtures/tmp/*
 dist/
