@@ -10,28 +10,28 @@ En plus des ["outils" globaux requis](https://robertmanager.org/wiki/install#ins
 vous devrez aussi installer la dernière version de __[Node](https://nodejs.org/fr/)__ pour pouvoir lancer les commandes de build 
 (si vous touchez à la partie front).
 
-À noter que dans ce guide de contribution, nous utiliserons __[Yarn v1][https://classic.yarnpkg.com/fr/]__ pour les commandes côté client.  
+Pour pouvoir générer un rapport de couverture en HTML (pour la partie serveur), il faut que __xDebug__ soit installé sur votre système.  
+Vous pouvez l'installer via la commande suivante (sur les systèmes Debian-like) : `sudo apt install php-xdebug`.
+
+À noter que dans ce guide de contribution, nous utiliserons __[Yarn v1](https://classic.yarnpkg.com/fr/)__ pour les commandes côté client.  
 Nous vous invitons donc à l'installer et à l'utiliser lorsque vous intervenez sur Robert2.
 
 ## Installation
 
-Pour ce qui est de l'installation de Robert2 en lui-même, veuillez suivre [la procédure d'installation 
-avancée](https://robertmanager.org/wiki/install) telle que documentée sur le site de Robert, il n'y a pas 
-de changement par rapport à ceci.
+Pour ce qui est de l'installation de Robert2 en lui-même, veuillez suivre [la procédure d'installation avancée](https://robertmanager.org/wiki/install)   
+telle que documentée sur le site de Robert, il n'y a pas de changement par rapport à celle-ci.
 
-À noter que vous avez aussi la possibilité d'utiliser Docker plutôt que de tout installer directement sur votre machine.  
-Pour cette façon de faire, veuillez consulter [le repository dédié](https://github.com/Robert-2/Docker).
-
-Pour ce qui est de la partie client, veuillez vous rendre à la racine du dossier `client/` et exécutez `yarn install`.  
+Pour ce qui est de la partie client, veuillez vous rendre à la racine du dossier `client/` et exécutez `yarn install`.  
 
 ## Langue du projet
 
 Nous avons fait le choix de communiquer exclusivement en __français__ partout dans les outils liés à Robert.  
-Les fichiers markdown, commentaires, entrées de CHANGELOG, outils CLI, messages de commit et tickets doivent donc être rédigés en français uniquement.
+Les fichiers markdown, commentaires, entrées de CHANGELOG, outils CLI, messages de commit et tickets   
+doivent donc être rédigés en français uniquement.
 
 Le code, lui, à l'exception des commentaires, doit être exclusivement en anglais, pas de variable ou de nom de migration en français.
 
-⚠️ Attention, cela ne veut pas dire que Robert n'est pas traduit, au contraire: Robert2 est aussi disponible en anglais et doit continuer à l'être.  
+Attention ⚠️ , cela ne veut pas dire que Robert n'est pas traduit : Robert2 est aussi disponible en anglais et doit continuer à l'être.  
 Merci donc de bien vouloir prendre en compte le fait que chaque texte affiché dans l'interface de Robert doit pouvoir être traduit et si possible,
 veuillez spécifier les traductions anglaises de vos ajouts en français dans vos pull requests.
 
@@ -47,27 +47,27 @@ __Il est (et doit être) impérativement maintenu à jour.__
 
 Pour créer une release de Robert2, veuillez suivre les étapes suivantes :
 
-- 1. Rendez-vous à la racine du dossier `/client`. 
-- 2. Changez le numéro de version dans le fichier `client/package.json`.
-- 3. Exécutez : `yarn release` toujours en étant à la racine du dossier `/client`.
-- 4. Vérifiez les chemins dans le fichier `/server/src/public/webclient/precache-manifest.x.x.x.js`.  
-     => Ajustez les en fonction du nom des fichiers situés dans `/server/src/public/webclient`.
-- 5. Changez le numéro de version dans le fichier `/server/src/public/version.txt`.
-- 6. Modifiez le `UNRELEASED` par la date du jour au format `YYYY-MM-DD` pour la  
-     version en cours de développement dans le fichier `/CHANGELOG.md`.
-- 7. Exécutez : `composer release` en étant à la racine du dossier `/server`.
-- 8. Terminé ! Vous pouvez récupérer le fichier ZIP qui a été créé dans le dossier `/server/dist`.
+1. Rendez-vous à la racine du dossier `/client`. 
+2. Changez le numéro de version dans le fichier `client/package.json`.
+3. Exécutez : `yarn release` toujours en étant à la racine du dossier `/client`.
+4. Vérifiez les chemins dans le fichier `/server/src/public/webclient/precache-manifest.x.x.x.js`.  
+   => Ajustez-les en fonction du nom des fichiers situés dans `/server/src/public/webclient`.
+5. Changez le numéro de version dans le fichier `/server/src/public/version.txt`.
+6. Modifiez le `UNRELEASED` par la date du jour au format `YYYY-MM-DD` pour la  
+   version en cours de développement dans le fichier `/CHANGELOG.md`.
+7. Exécutez : `composer release` en étant à la racine du dossier `/server`.
+8. Terminé ! Vous pouvez récupérer le fichier ZIP qui a été créé dans le dossier `/server/dist`.
 
 ## Build de la partie client
 
-Si vous intervenez sur la partie client, vous aurez besoin de build celle-ci pour que votre instance   
+Si vous intervenez sur la partie client, vous aurez besoin de compiler celle-ci pour que votre instance locale   
 reflète directement les changements que vous apportez au code.
 
-Pour cela, vous avez à disposition deux commandes :  
+Pour cela, vous avez à disposition deux commandes (à exécuter depuis la racine du dossier `/client`) :  
 
 #### `yarn start`
 
-Cette commandevous permet de lancer un serveur de développement front avec prise en charge du Hot Reloading.  
+Cette commande vous permet de lancer un serveur de développement front avec prise en charge du Hot Reloading.  
 C'est cette méthode qu'il faudra utiliser  pendant la plupart de vos développements front.
 
 #### `yarn build`
@@ -91,7 +91,7 @@ Ensuite, vous pourrez utiliser les commandes suivantes :
 ```bash
 composer migration-status # Affiche le statut de migration de votre base de données.
 composer migrate          # Migration de votre base de données en prenant en compte tous les fichiers de migration non exécutés.
-composer rollback         # Annule la dernière migration exécutée sur votre base de données (peut être exécutée plusieurs fois).
+composer rollback         # Annule la dernière migration exécutée sur votre base de données (peut être lancée plusieurs fois).
 ```
 
 ## Tests unitaires
@@ -105,34 +105,25 @@ Robert2, mais suffixée avec `_test` (exemple : `robert2_test`).
 Une fois les indications ci-dessus suivis, exécutez les tests via :
 
 ```bash
-# - Pour la partie client:
+# - Pour la partie client
 yarn test [--watch]
 
 # - Pour la partie serveur
 composer test
-```
+```
 
 ### Qu'est-ce que l'on teste ?
 
 Côté back, des tests unitaires doivent être mis en place au moins pour tous les modèles, les routes d'API   
 ainsi que pour les fonctions et classes utilitaires.  
 
+Côté front, tous les utilitaires doivent être testés.
+
 N'hésitez pas, bien sûr, à tester aussi des parties du code qui ne sont pas spécifiées ci-dessus, plus il y a de test, mieux c'est !
-
-### Couverture de test (code coverage)
-
-Pour pouvoir générer un rapport de couverture en HTML, vous devez avoir __xDebug__ d'installé sur votre système.  
-Vous pouvez l'installer via la commande suivante (sur les systèmes Debian-like) :
-
-```bash
-sudo apt install php-xdebug
-```
-
-Le rapport sera visible en ouvrant le fichier `server/tests/coverage/index.html` dans votre navigateur.
 
 ## Linting
 
-Le projet suit des règles strictes de linting (avec PHPCS pour la partie back, et ESLint pour la partie Front).   
+Le projet suit des règles strictes de linting (avec PHPCS pour la partie back et ESLint pour la partie Front).   
 Un fichier `.editorconfig` existe à la racine du projet pour permettre aux IDE d'automatiser la présentation de base du code.
 
 Vous avez la possibilité de vérifier que votre code respecte bien ces conventions via :  
