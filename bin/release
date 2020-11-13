@@ -24,19 +24,12 @@ echo -e "\nCompression des sources du client..."
 (cd ./client && yarn build)
 echo "Done."
 
-echo -e "\nSuppresion des fichiers client inutiles..."
-rm ./client/dist/index.html
-
 echo -e "\nRemplacement du dossier \"webclient\" côté serveur..."
 rm -R ./server/src/public/webclient
 cp -R ./client/dist ./server/src/public/webclient
 
 rm -R ./server/src/public/img
 mv ./server/src/public/webclient/img ./server/src/public/img
-
-echo -e "\nIl faut maintenant modifier le contenu du fichier '/server/src/public/webclient/precache-manifest.x.x.x.js',"
-echo -e "\nselon la structure du dossier '/server/src/public/webclient' et ses fichiers.\n\n"
-read -n 1 -s -r -p "Une fois fait, appuyez sur n'importe quelle touche pour continuer..."
 
 echo -e "\nSuppression de l'ancien dossier \"dist\"..."
 rm -rf ./dist
