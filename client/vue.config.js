@@ -1,4 +1,5 @@
 module.exports = {
+  publicPath: '/webclient/',
   runtimeCompiler: true,
   productionSourceMap: false,
   filenameHashing: false,

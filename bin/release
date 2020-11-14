@@ -28,9 +28,6 @@ echo -e "\nRemplacement du dossier \"webclient\" côté serveur..."
 rm -R ./server/src/public/webclient
 cp -R ./client/dist ./server/src/public/webclient
 
-rm -R ./server/src/public/img
-mv ./server/src/public/webclient/img ./server/src/public/img
-
 echo -e "\nSuppression de l'ancien dossier \"dist\"..."
 rm -rf ./dist
 

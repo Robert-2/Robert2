@@ -1,7 +1,7 @@
 <template id="SideNav-template">
   <div class="SideNav" :class="{'SideNav--opened': isOpen}">
     <div class="SideNav__logo">
-      <img src="/img/logos/R-only.svg">
+      <img src="/webclient/img/logo-R.svg">
     </div>
     <SideMenu class="SideNav__menu" />
     <div class="SideNav__footer">
