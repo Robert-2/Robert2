@@ -47,16 +47,11 @@ __Il est (et doit être) impérativement maintenu à jour.__
 
 Pour créer une release de Robert2, veuillez suivre les étapes suivantes :
 
-1. Rendez-vous à la racine du dossier `/client`. 
-2. Changez le numéro de version dans le fichier `client/package.json`.
-3. Exécutez : `yarn release` toujours en étant à la racine du dossier `/client`.
-4. Vérifiez les chemins dans le fichier `/server/src/public/webclient/precache-manifest.x.x.x.js`.  
-   => Ajustez-les en fonction du nom des fichiers situés dans `/server/src/public/webclient`.
-5. Changez le numéro de version dans le fichier `/VERSION`.
-6. Modifiez le `UNRELEASED` par la date du jour au format `YYYY-MM-DD` pour la  
+1. Changez le numéro de version dans le fichier `/VERSION` à la racine du projet.
+2. Exécutez `./bin/release` toujours en étant à la racine du projet.
+3. Modifiez le `UNRELEASED` par la date du jour au format `YYYY-MM-DD` pour la  
    version en cours de développement dans le fichier `/CHANGELOG.md`.
-7. Exécutez : `composer release` en étant à la racine du dossier `/server`.
-8. Terminé ! Vous pouvez récupérer le fichier ZIP qui a été créé dans le dossier `/server/dist`.
+4. Terminé ! Vous pouvez récupérer le fichier ZIP qui a été créé dans le dossier `/dist`.
 
 ## Build de la partie client
 
@@ -73,6 +68,7 @@ C'est cette méthode qu'il faudra utiliser  pendant la plupart de vos développe
 #### `yarn build`
 
 Cette commande va créer un build de production de la partie client en compilant et compressant les sources.  
+_(Pensez à exécuter cette commande et à commiter le résultat dans votre PR lorsque vous modifiez la partie client)_
 
 ## Migration de la base de données
 
@@ -143,9 +139,8 @@ composer lint
 ├── bin                            # - Executables globaux (`./bin/release`, etc.)
 │
 ├── client
+│   ├── dist                       # - Contient les sources compilées de la partie client.
 │   ├── node_modules               # - Dépendances de la partie client.
-│   ├── public
-│   │   └── css/, js/, img/        # - Dossiers contenant des fichiers d'asset utilisés dans la partie client.
 │   ├── src
 │   │   ├── components             # - Components Vue réutilisables.
 │   │   ├── config                 # - Fichiers de configuration de la partie client (constantes, configuration globale, etc.).
@@ -177,7 +172,7 @@ composer lint
     │   ├── install                # - Classes et utilitaires liés à l'assistant d'installation de Robert2.
     │   ├── public
     │   │   ├── css/, js/, img/    # - Dossiers contenant des fichiers d'asset utilisés spécifiquement dans les vues de la partie serveur.
-    │   │   ├── webclient          # - Contient les sources compilées de la partie `/client` de Robert2.
+    │   │   ├── webclient          # - Lien symbolique vers les sources compilées de la partie `/client` de Robert2.
     │   │   └── index.php          # - Point d'entrée de l'application (tous les `.htaccess` redirigent vers ce fichier).
     │   ├── var
     │   │   ├── cache              # - Fichiers de cache (contenu à supprimer en cas de modification du code qui semble sans effet)
