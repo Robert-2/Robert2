@@ -16,6 +16,18 @@ Vous pouvez l'installer via la commande suivante (sur les systèmes Debian-like)
 À noter que dans ce guide de contribution, nous utiliserons __[Yarn v1](https://classic.yarnpkg.com/fr/)__ pour les commandes côté client.  
 Nous vous invitons donc à l'installer et à l'utiliser lorsque vous intervenez sur Robert2.
 
+### Pour les développeurs sous MacOs / Windows
+
+Cette application est avant tout pensée pour être développée dans un environnement Linux-like.  
+
+Par exemple, dans l'installation de développement, des liens symboliques sont utilisés à certains endroits 
+(`/server/src/VERSION` et `/server/src/public/webclient`) et ceux-ci devront être re-créés manuellement avec leur équivalent 
+sous windows qui ne supporte pas les liens symboliques tel qu'ils apparaissent dans le repository.
+
+De la même façon, sous MacOs, certains des utilitaires globaux (tel que `sed`, `grep`, etc.) diffèrent des utilitaires GNU linux.  
+Pour ceux-ci, nous vous conseillons d'installer les paquets Homebrew liés (`coreutils`, `gnu-sed`, etc.) et de mettre ces exécutables par défaut via votre $PATH.  
+(ceci sera au moins à faire pour `sed` sans quoi vous ne pourrez pas exécuter le script de releasing)
+
 ## Installation
 
 Pour ce qui est de l'installation de Robert2 en lui-même, veuillez suivre [la procédure d'installation avancée](https://robertmanager.org/wiki/install)   
@@ -47,11 +59,9 @@ __Il est (et doit être) impérativement maintenu à jour.__
 
 Pour créer une release de Robert2, veuillez suivre les étapes suivantes :
 
-1. Changez le numéro de version dans le fichier `/VERSION` à la racine du projet.
-2. Exécutez `./bin/release` toujours en étant à la racine du projet.
-3. Modifiez le `UNRELEASED` par la date du jour au format `YYYY-MM-DD` pour la  
-   version en cours de développement dans le fichier `/CHANGELOG.md`.
-4. Terminé ! Vous pouvez récupérer le fichier ZIP qui a été créé dans le dossier `/dist`.
+1. Exécutez `./bin/release [NuméroDeVersion]` en étant à la racine du projet.  
+   (Note: si vous ne spécifiez pas de version, la version actuellement dans le fichier `/VERSION` sera utilisée).
+2. Terminé ! Vous pouvez récupérer le fichier ZIP qui a été créé dans le dossier `/dist`.
 
 ## Build de la partie client
 

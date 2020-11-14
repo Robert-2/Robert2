@@ -1,6 +1,6 @@
 #!/bin/bash
 
-version=$(<./VERSION)
+VERSION=${1:-$(<./VERSION)}
 releaseName="Robert2-${version}"
 distFolder="./dist/${releaseName}"
 
@@ -11,7 +11,7 @@ echo "
  |  _ < (_) | |_) |  __/ |  | |_ / __/
  |_| \_\___/|_.__/ \___|_|   \__|_____|
 
- * RELEASE ${version} DISTRIBUTION SCRIPT *
+ * RELEASE ${VERSION} DISTRIBUTION SCRIPT *
 
 Commençons..."
 
@@ -19,6 +19,19 @@ if ! [ -x "$(command -v jq)" ]; then
     echo "ERREUR: Le programme 'jq' est requis et ne semble pas installé." >&2
     exit 1
 fi
+
+echo -e "\nMet à jour le CHANGELOG et le fichier de version..."
+CHANGELOG_REGEX="$VERSION\s+\(UNRELEASED\)"
+grep -i -E "$CHANGELOG_REGEX" ./CHANGELOG.md > /dev/null 2>&1
+if [ $? -ne 0 ]; then
+    read -p ">> Le CHANGELOG n'a pas pu être mis à jour automatiquement, voulez-vous continuer (y/n) ? " -n 1 -r
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        echo -e "\nReleasing annulé."
+        exit 1
+    fi
+fi
+sed -i -E "s/$CHANGELOG_REGEX/$VERSION \($(date '+%Y-%m-%d')\)/i" ./CHANGELOG.md
+echo $VERSION > ./VERSION
 
 echo -e "\nSuppression de l'ancien dossier \"dist\"..."
 rm -rf ./dist
