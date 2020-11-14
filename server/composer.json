@@ -12,7 +12,10 @@
         }
     ],
     "config": {
-        "vendor-dir": "src/vendor"
+        "vendor-dir": "src/vendor",
+        "platform": {
+            "php": "7.1.17"
+        }
     },
     "require": {
         "php": ">=7.1.17",
