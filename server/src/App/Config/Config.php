@@ -49,6 +49,7 @@ class Config
         'db' => [
             'driver'       => 'mysql',
             'host'         => 'localhost',
+            'port'         => 3306,
             'database'     => 'robert2',
             'testDatabase' => 'robert2_test',
             'username'     => 'root',
@@ -150,10 +151,20 @@ class Config
             $dbConfig['database'] = $dbConfig['testDatabase'];
         }
 
+        // - Récupération des overwrites depuis les variables d'environnement.
+        $possibleEnvVars = ['port', 'host', 'name', 'user'];
+        foreach ($possibleEnvVars as $var) {
+            $value = getenv(sprintf('DB_%s', strtoupper($var)));
+            if ($value !== false) {
+                $dbConfig[$var] = $value;
+            }
+        }
+
         $dbConfig['dsn'] = sprintf(
-            '%s:host=%s;dbname=%s',
+            '%s:host=%s;port=%s;dbname=%s',
             $dbConfig['driver'],
             $dbConfig['host'],
+            $dbConfig['port'],
             $dbConfig['database']
         );
 
