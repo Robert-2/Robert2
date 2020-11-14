@@ -24,9 +24,10 @@ Par exemple, dans l'installation de développement, des liens symboliques sont u
 (`/server/src/VERSION` et `/server/src/public/webclient`) et ceux-ci devront être re-créés manuellement avec leur équivalent 
 sous windows qui ne supporte pas les liens symboliques tel qu'ils apparaissent dans le repository.
 
-De la même façon, sous MacOs, certains des utilitaires globaux (tel que `sed`, `grep`, etc.) diffèrent des utilitaires GNU linux.  
-Pour ceux-ci, nous vous conseillons d'installer les paquets Homebrew liés (`coreutils`, `gnu-sed`, etc.) et de mettre ces exécutables par défaut via votre $PATH.  
-(ceci sera au moins à faire pour `sed` sans quoi vous ne pourrez pas exécuter le script de releasing)
+De la même façon, sous MacOs, certains des utilitaires globaux (tel que `sed`, `grep`, etc.) diffèrent des utilitaires GNU utilisés sous linux.  
+Pour ceux-ci, nous vous conseillons d'installer les paquets [Homebrew](https://brew.sh/index_fr) liés (`coreutils`, `gnu-sed`, etc.) et de mettre 
+ces exécutables par défaut via votre $PATH.  
+(ceci sera au moins à faire pour `grep` et `sed` sans quoi vous ne pourrez pas exécuter le script de releasing)
 
 ## Installation
 
