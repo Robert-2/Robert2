@@ -1,7 +1,7 @@
 <template>
   <div class="MainHeader">
     <div class="MainHeader__logo">
-      <img src="/webclient/img/logo-R.svg">
+      <Logo minimalist />
     </div>
     <div class="MainHeader__menu-toggle" @click="toggleMenu">
       <i class="fas fa-bars fa-2x"></i>
@@ -20,11 +20,12 @@
 
 <script>
 import store from '@/store';
+import Logo from '@/components/Logo/Logo.vue';
 import TopMenu from './TopMenu/TopMenu.vue';
 
 export default {
   name: 'MainHeader',
-  components: { TopMenu },
+  components: { TopMenu, Logo },
   computed: {
     pageTitle() {
       return store.state.pageTitle;

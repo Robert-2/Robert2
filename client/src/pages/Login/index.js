@@ -1,8 +1,10 @@
 import Config from '@/config/globalConfig';
+import Logo from '@/components/Logo/Logo.vue';
 import Auth from '@/auth';
 
 export default {
   name: 'Login',
+  components: { Logo },
   data() {
     let type = 'default';
     let text = this.$t('page-login.welcome');

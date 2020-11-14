@@ -1,7 +1,7 @@
 <template>
   <div class="login">
     <div class="login__logo">
-      <img src="/webclient/img/logo.svg" alt="Robert">
+      <Logo />
     </div>
     <div class="login__message" :class="`login__message--${message.type}`">
       <i v-if="message.isLoading" class="fa fa-circle-o-notch fa-spin" />
