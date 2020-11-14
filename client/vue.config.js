@@ -1,5 +1,5 @@
 module.exports = {
-  publicPath: '/webclient/',
+  publicPath: process.env.NODE_ENV === 'production' ? '/webclient/' : '/',
   runtimeCompiler: true,
   productionSourceMap: false,
   filenameHashing: false,
