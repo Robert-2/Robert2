@@ -20,16 +20,12 @@ if ! [ -x "$(command -v jq)" ]; then
     exit 1
 fi
 
+echo -e "\nSuppression de l'ancien dossier \"dist\"..."
+rm -rf ./dist
+
 echo -e "\nCompression des sources du client..."
 (cd ./client && yarn build)
 echo "Done."
-
-echo -e "\nRemplacement du dossier \"webclient\" côté serveur..."
-rm -R ./server/src/public/webclient
-cp -R ./client/dist ./server/src/public/webclient
-
-echo -e "\nSuppression de l'ancien dossier \"dist\"..."
-rm -rf ./dist
 
 echo -e "\nCopie des sources vers le dossier de distribution..."
 mkdir -p $distFolder
@@ -39,11 +35,16 @@ mv ./dist/src $distFolder/src
 cp ./server/.htaccess $distFolder/.htaccess
 cp ./server/composer.json $distFolder/composer.json
 cp ./server/composer.lock $distFolder/composer.lock
-rm $distFolder/src/VERSION && cp ./VERSION $distFolder/src/VERSION
 cp ./README.md $distFolder/README.md
 cp ./LICENCE.md $distFolder/LICENCE.md
 
-echo -e "\nNettoyage du dossier de distrubution (suppression des fichiers inutiles / privés)..."
+rm $distFolder/src/VERSION
+cp ./VERSION $distFolder/src/VERSION
+
+rm $distFolder/src/public/webclient
+cp -R ./client/dist $distFolder/src/public/webclient
+
+echo -e "\nNettoyage du dossier de distribution (suppression des fichiers inutiles / privés)..."
 cd $distFolder
 rm -r src/vendor
 rm src/App/Config/settings.json
