@@ -1,7 +1,5 @@
 {
-    "name": "robert2-webclient",
     "private": true,
-    "main": "dist/index.html",
     "scripts": {
         "start": "vue-cli-service serve",
         "build": "vue-cli-service build",
