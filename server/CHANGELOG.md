@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 0.10.2 (unreleased)
+## 0.10.2 (2020-11-16)
 
 - Le support de PHP 7.1 malencontruesement supprimé dans la précédente version a été rétabli.
 
