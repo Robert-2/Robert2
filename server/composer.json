@@ -12,7 +12,10 @@
         }
     ],
     "config": {
-        "vendor-dir": "src/vendor"
+        "vendor-dir": "src/vendor",
+        "platform": {
+            "php": "7.1.17"
+        }
     },
     "require": {
         "php": ">=7.1.17",
@@ -24,7 +27,7 @@
         "respect/validation": "^1.1.31",
         "illuminate/database": "^5.8.36",
         "illuminate/pagination": "^5.8.35",
-        "robmorgan/phinx": "^0.12.4",
+        "robmorgan/phinx": "^0.11.4",
         "delfimov/translate": "^2.6.0",
         "symfony/console": "^4.4.7",
         "dompdf/dompdf": "^0.8.5",
