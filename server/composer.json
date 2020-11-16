@@ -57,8 +57,5 @@
             "Robert2\\Tests\\": "tests",
             "Robert2\\Fixtures\\": "tests/Fixtures"
         }
-    },
-    "config": {
-        "vendor-dir": "src/vendor"
     }
 }

@@ -4,6 +4,10 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.10.2 (2020-11-16)
+
+- Le support de PHP 7.1 malencontreusement supprimé dans la précédente version a été rétabli.
+
 ## 0.10.1 (2020-11-10)
 
 - Met à jour les dépendances côté serveur (+ corrige un bug avec Twig) (#55) (👏 @Tuxem).
