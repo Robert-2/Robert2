@@ -9,14 +9,14 @@
 
     <title>Robert2</title>
 
-    <link href="/webclient/css/chunk-vendors.0.10.0.css" rel="preload" as="style">
-    <link href="/webclient/css/app.0.10.0.css" rel="preload" as="style">
+    <link href="/webclient/css/chunk-vendors.css?v={{version()}}" rel="preload" as="style">
+    <link href="/webclient/css/app.css?v={{version()}}" rel="preload" as="style">
 
-    <link href="/webclient/js/chunk-vendors.0.10.0.js" rel="preload" as="script">
-    <link href="/webclient/js/app.0.10.0.js" rel="preload" as="script">
+    <link href="/webclient/js/chunk-vendors.js?v={{version()}}" rel="preload" as="script">
+    <link href="/webclient/js/app.js?v={{version()}}" rel="preload" as="script">
 
-    <link href="/webclient/css/chunk-vendors.0.10.0.css" rel="stylesheet">
-    <link href="/webclient/css/app.0.10.0.css" rel="stylesheet">
+    <link href="/webclient/css/chunk-vendors.css?v={{version()}}" rel="stylesheet">
+    <link href="/webclient/css/app.css?v={{version()}}" rel="stylesheet">
 
     <link rel="icon" type="image/png" sizes="32x32" href="/img/icons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/img/icons/favicon-16x16.png">
@@ -29,7 +29,7 @@
     <meta name="msapplication-TileImage" content="/img/icons/msapplication-icon-144x144.png">
     <meta name="msapplication-TileColor" content="#000000">
 
-    <link rel="apple-touch-icon" href="/img/icons/apple-touch-icon-152x152.png">
+    <link rel="apple-touch-icon" href="/img/icons/apple-touch-icon.png">
     <link rel="mask-icon" href="/img/icons/safari-pinned-tab.svg" color="#4DBA87">
 </head>
 <body>
@@ -40,7 +40,7 @@
 var __SERVER_CONFIG__ = {{serverConfig() | raw}};
 //]]>
     </script>
-    <script src="/webclient/js/chunk-vendors.0.10.0.js"></script>
-    <script src="/webclient/js/app.0.10.0.js"></script>
+    <script src="/webclient/js/chunk-vendors.js?v={{version()}}"></script>
+    <script src="/webclient/js/app.js?v={{version()}}"></script>
 </body>
 </html>

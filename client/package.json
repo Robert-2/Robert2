@@ -1,12 +1,8 @@
 {
-    "name": "robert2-webclient",
-    "version": "0.10.0",
-    "main": "dist/index.html",
     "private": true,
     "scripts": {
         "start": "vue-cli-service serve",
         "build": "vue-cli-service build",
-        "release": "bin/release",
         "lint": "vue-cli-service lint",
         "test": "vue-cli-service test:unit"
     },
@@ -36,7 +32,6 @@
     "devDependencies": {
         "@vue/cli-plugin-babel": "^4.5.7",
         "@vue/cli-plugin-eslint": "^4.5.7",
-        "@vue/cli-plugin-pwa": "^4.5.7",
         "@vue/cli-plugin-unit-jest": "^4.5.7",
         "@vue/cli-service": "^4.5.7",
         "@vue/eslint-config-airbnb": "^5.0.2",

@@ -16,6 +16,19 @@ Vous pouvez l'installer via la commande suivante (sur les systèmes Debian-like)
 À noter que dans ce guide de contribution, nous utiliserons __[Yarn v1](https://classic.yarnpkg.com/fr/)__ pour les commandes côté client.  
 Nous vous invitons donc à l'installer et à l'utiliser lorsque vous intervenez sur Robert2.
 
+### Pour les développeurs sous MacOs / Windows
+
+Cette application est avant tout pensée pour être développée dans un environnement Linux-like.  
+
+Par exemple, dans l'installation de développement, des liens symboliques sont utilisés à certains endroits 
+(`/server/src/VERSION` et `/server/src/public/webclient`) et ceux-ci devront être re-créés manuellement avec leur équivalent 
+sous windows qui ne supporte pas les liens symboliques tel qu'ils apparaissent dans le repository.
+
+De la même façon, sous MacOs, certains des utilitaires globaux (tel que `sed`, `grep`, etc.) diffèrent des utilitaires GNU utilisés sous linux.  
+Pour ceux-ci, nous vous conseillons d'installer les paquets [Homebrew](https://brew.sh/index_fr) liés (`coreutils`, `gnu-sed`, etc.) et de mettre 
+ces exécutables par défaut via votre $PATH.  
+(ceci sera au moins à faire pour `grep` et `sed` sans quoi vous ne pourrez pas exécuter le script de releasing)
+
 ## Installation
 
 Pour ce qui est de l'installation de Robert2 en lui-même, veuillez suivre [la procédure d'installation avancée](https://robertmanager.org/wiki/install)   
@@ -38,7 +51,7 @@ veuillez spécifier les traductions anglaises de vos ajouts en français dans vo
 ## Version et Changelog
 
 Robert2 utilise la nomenclature de version [Semantic Versionning (semver)](https://semver.org/) pour ses numéros de version. La version actuelle qui 
-correspond à celle se trouvant dans la branche `master` est définie dans le fichier `server/src/public/version.txt`.
+correspond à celle se trouvant dans la branche `master` est définie dans le fichier `/VERSION`.
 
 Un fichier de changelog est présent à la racine du projet, montrant l'évolution des fonctionnalités au fil du temps et des versions.   
 __Il est (et doit être) impérativement maintenu à jour.__
@@ -47,16 +60,9 @@ __Il est (et doit être) impérativement maintenu à jour.__
 
 Pour créer une release de Robert2, veuillez suivre les étapes suivantes :
 
-1. Rendez-vous à la racine du dossier `/client`. 
-2. Changez le numéro de version dans le fichier `client/package.json`.
-3. Exécutez : `yarn release` toujours en étant à la racine du dossier `/client`.
-4. Vérifiez les chemins dans le fichier `/server/src/public/webclient/precache-manifest.x.x.x.js`.  
-   => Ajustez-les en fonction du nom des fichiers situés dans `/server/src/public/webclient`.
-5. Changez le numéro de version dans le fichier `/server/src/public/version.txt`.
-6. Modifiez le `UNRELEASED` par la date du jour au format `YYYY-MM-DD` pour la  
-   version en cours de développement dans le fichier `/CHANGELOG.md`.
-7. Exécutez : `composer release` en étant à la racine du dossier `/server`.
-8. Terminé ! Vous pouvez récupérer le fichier ZIP qui a été créé dans le dossier `/server/dist`.
+1. Exécutez `./bin/release [NuméroDeVersion]` en étant à la racine du projet.  
+   (Note: si vous ne spécifiez pas de version, la version actuellement dans le fichier `/VERSION` sera utilisée).
+2. Terminé ! Vous pouvez récupérer le fichier ZIP qui a été créé dans le dossier `/dist`.
 
 ## Build de la partie client
 
@@ -73,6 +79,7 @@ C'est cette méthode qu'il faudra utiliser  pendant la plupart de vos développe
 #### `yarn build`
 
 Cette commande va créer un build de production de la partie client en compilant et compressant les sources.  
+_(Pensez à exécuter cette commande et à commiter le résultat dans votre PR lorsque vous modifiez la partie client)_
 
 ## Migration de la base de données
 
@@ -143,9 +150,8 @@ composer lint
 ├── bin                            # - Executables globaux (`./bin/release`, etc.)
 │
 ├── client
+│   ├── dist                       # - Contient les sources compilées de la partie client.
 │   ├── node_modules               # - Dépendances de la partie client.
-│   ├── public
-│   │   └── css/, js/, img/        # - Dossiers contenant des fichiers d'asset utilisés dans la partie client.
 │   ├── src
 │   │   ├── components             # - Components Vue réutilisables.
 │   │   ├── config                 # - Fichiers de configuration de la partie client (constantes, configuration globale, etc.).
@@ -177,7 +183,7 @@ composer lint
     │   ├── install                # - Classes et utilitaires liés à l'assistant d'installation de Robert2.
     │   ├── public
     │   │   ├── css/, js/, img/    # - Dossiers contenant des fichiers d'asset utilisés spécifiquement dans les vues de la partie serveur.
-    │   │   ├── webclient          # - Contient les sources compilées de la partie `/client` de Robert2.
+    │   │   ├── webclient          # - Lien symbolique vers les sources compilées de la partie `/client` de Robert2.
     │   │   └── index.php          # - Point d'entrée de l'application (tous les `.htaccess` redirigent vers ce fichier).
     │   ├── var
     │   │   ├── cache              # - Fichiers de cache (contenu à supprimer en cas de modification du code qui semble sans effet)
