@@ -25,7 +25,7 @@ final class ConfigTest extends ModelTestCase
     public function testGetDbConfig()
     {
         $result = Config\Config::getDbConfig();
-        $this->assertCount(11, $result);
+        $this->assertCount(12, $result);
     }
 
     public function testGetCapsule()

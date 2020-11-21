@@ -8,8 +8,7 @@
         "build": "vue-cli-service build",
         "release": "bin/release",
         "lint": "vue-cli-service lint",
-        "test": "vue-cli-service test:unit --watch",
-        "test:unit": "vue-cli-service test:unit"
+        "test": "vue-cli-service test:unit"
     },
     "dependencies": {
         "@fortawesome/fontawesome-free": "^5.15.1",
