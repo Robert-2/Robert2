@@ -81,6 +81,13 @@ C'est cette méthode qu'il faudra utiliser  pendant la plupart de vos développe
 Cette commande va créer un build de production de la partie client en compilant et compressant les sources.  
 _(Pensez à exécuter cette commande et à commiter le résultat dans votre PR lorsque vous modifiez la partie client)_
 
+## URL de l'API en développement
+
+En développement, l'hôte par défaut utilisé par la partie client pour communiquer avec l'API est `http://robert.local`.  
+
+Si vous souhaitez modifier ceci, vous pouvez créer un fichier `.env.local` à la racine du dossier client et surcharger
+la variable d'environnement `VUE_APP_API_URL` avec votre propre URL d'API (par exemple `http://localhost/robert2`).
+
 ## Migration de la base de données
 
 Nous utilisons [Phinx](https://phinx.org/) pour les mises à jour de la structure de la base de données.  
