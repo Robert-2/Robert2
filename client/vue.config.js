@@ -3,7 +3,7 @@ module.exports = {
   runtimeCompiler: true,
   productionSourceMap: false,
   filenameHashing: false,
-  chainWebpack: config => {
+  chainWebpack: (config) => {
     if (process.env.NODE_ENV === 'production') {
       config.plugins.delete('html');
       config.plugins.delete('preload');
