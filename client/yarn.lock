@@ -10947,11 +10947,11 @@ vis-data@^6.6.1:
   integrity sha512-xmujDB2Dzf8T04rGFJ9OP4OA6zRVrz8R9hb0CVKryBrZRCljCga9JjSfgctA8S7wdZu7otDtUIwX4ZOgfV/57w==
 
 vis-network@^7.8.0:
-  version "7.8.0"
-  resolved "https://registry.yarnpkg.com/vis-network/-/vis-network-7.8.0.tgz#13c9cd4152110dc443af2a2c806cdad7c801e110"
-  integrity sha512-nQLBaMZODkeC2T6DEcczuKVtC2f8IZtOeNlq3U3AOvrh8r8ippS3qn/vUafiEjjsAx1fGCe03icTs0WVL27iKw==
+  version "7.10.2"
+  resolved "https://registry.yarnpkg.com/vis-network/-/vis-network-7.10.2.tgz#b318f1907cf006d9640c4c31a262e0782405a3cf"
+  integrity sha512-KDx2agbDnaiE0Bye4AcCRqTn5mxzDKhdUNpKkzSn0AOLBmdhNtPGjxAFluAmvFVyiSK5R6Q5KIWdLjeIMu/PAQ==
 
-vis-timeline@^7.3.7:
+vis-timeline@7.3.7, vis-timeline@^7.3.7:
   version "7.3.7"
   resolved "https://registry.yarnpkg.com/vis-timeline/-/vis-timeline-7.3.7.tgz#af4b8d7c72ba9bd00944b9c2cb80d46ff629c516"
   integrity sha512-1tqPdJsM6JXCBY80Ut15TCQD2VoolAabQ7mXguOH/X+HrBCv7KstkfZ3J2eVkHWevGEh2D8m+c8reyW2E6YI3Q==
