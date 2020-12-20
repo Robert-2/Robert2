@@ -6,6 +6,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 
 ## 0.11.0 (UNRELEASED)
 
+- Met à jour les dépendances du projet.
 - Le numéro de version du projet est maintenant centralisé dans un fichier `VERSION` à la racine.
 - Les sources du client sont maintenant embarquées dans un dossier `dist/` côté client et non directement côté serveur.  
   Ceci va, par exemple, permettre de simplifier les mises à jour de la version compilée du client (via un simple `yarn build`).
