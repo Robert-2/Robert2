@@ -51,6 +51,19 @@ final class SubCategoryTest extends ModelTestCase
         $results = $SubCategory->materials;
         $this->assertEquals([
             [
+                'id'                    => 6,
+                'name'                  => 'Behringer X Air XR18',
+                'description'           => 'Mélangeur numérique 18 canaux',
+                'reference'             => 'XR18',
+                'park_id'               => null,
+                'rental_price'          => 49.99,
+                'stock_quantity'        => null,
+                'out_of_order_quantity' => null,
+                'replacement_price'     => 419.0,
+                'tags'                  => [],
+                'attributes'            => [],
+            ],
+            [
                 'id'                     => 1,
                 'name'                   => "Console Yamaha CL3",
                 'description'            => "Console numérique 64 entrées / 8 sorties + Master + Sub",

@@ -321,7 +321,7 @@ final class EventsTest extends ApiTestCase
         $this->client->post('/api/events', $data);
         $this->assertStatusCode(SUCCESS_CREATED);
         $response = $this->_getResponseAsArray();
-        $this->assertEquals(4, $response['id']);
+        $this->assertEquals(5, $response['id']);
         $this->assertEquals("Un nouvel événement", $response['title']);
         $this->assertEmpty($response['beneficiaries']);
         $this->assertEmpty($response['assignees']);
@@ -341,7 +341,7 @@ final class EventsTest extends ApiTestCase
         $this->client->post('/api/events', $dataWithChildren);
         $this->assertStatusCode(SUCCESS_CREATED);
         $response = $this->_getResponseAsArray();
-        $this->assertEquals(5, $response['id']);
+        $this->assertEquals(6, $response['id']);
         $this->assertEquals("Encore un événement", $response['title']);
         $this->assertCount(1, $response['beneficiaries']);
         $this->assertCount(2, $response['assignees']);

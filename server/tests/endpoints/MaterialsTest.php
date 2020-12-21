@@ -18,8 +18,8 @@ final class MaterialsTest extends ApiTestCase
                 'prev_page_url'  => null,
                 'last_page_url'  => '/api/materials?page=1',
                 'per_page'       => $this->settings['maxItemsPerPage'],
-                'to'             => 5,
-                'total'          => 5,
+                'to'             => 7,
+                'total'          => 7,
             ],
             'data' => [
                 [
@@ -27,6 +27,7 @@ final class MaterialsTest extends ApiTestCase
                     'name'                  => 'Câble XLR 10m',
                     'reference'             => 'XLR10',
                     'description'           => 'Câble audio XLR 10 mètres, mâle-femelle',
+                    'is_unitary'            => 0,
                     'park_id'               => 1,
                     'category_id'           => 1,
                     'sub_category_id'       => null,
@@ -48,6 +49,7 @@ final class MaterialsTest extends ApiTestCase
                     'name'                  => 'Console Yamaha CL3',
                     'reference'             => 'CL3',
                     'description'           => 'Console numérique 64 entrées / 8 sorties + Master + Sub',
+                    'is_unitary'            => 0,
                     'park_id'               => 1,
                     'category_id'           => 1,
                     'sub_category_id'       => 1,
@@ -93,6 +95,7 @@ final class MaterialsTest extends ApiTestCase
                     'name'                  => 'PAR64 LED',
                     'reference'             => 'PAR64LED',
                     'description'           => 'Projecteur PAR64 à LED, avec son set de gélatines',
+                    'is_unitary'            => 0,
                     'park_id'               => 1,
                     'category_id'           => 2,
                     'sub_category_id'       => 3,
@@ -131,6 +134,7 @@ final class MaterialsTest extends ApiTestCase
                     'name'                  => 'Processeur DBX PA2',
                     'reference'             => 'DBXPA2',
                     'description'           => 'Système de diffusion numérique',
+                    'is_unitary'            => 0,
                     'park_id'               => 1,
                     'category_id'           => 1,
                     'sub_category_id'       => 2,
@@ -169,6 +173,7 @@ final class MaterialsTest extends ApiTestCase
                     'name'                  => 'Showtec SDS-6',
                     'reference'             => 'SDS-6-01',
                     'description'           => "Console DMX (jeu d'orgue) Showtec 6 canaux",
+                    'is_unitary'            => 0,
                     'park_id'               => 1,
                     'category_id'           => 2,
                     'sub_category_id'       => 4,
@@ -212,13 +217,21 @@ final class MaterialsTest extends ApiTestCase
 
         $this->client->get('/api/materials?orderBy=reference&ascending=0');
         $this->assertStatusCode(SUCCESS_OK);
-        $this->assertResponsePaginatedData(5, '/api/materials', 'orderBy=reference&ascending=0');
+        $this->assertResponsePaginatedData(7, '/api/materials', 'orderBy=reference&ascending=0');
         $results = $this->_getResponseAsArray();
-        $this->assertEquals('XLR10', $results['data'][0]['reference']);
-        $this->assertEquals('SDS-6-01', $results['data'][1]['reference']);
-        $this->assertEquals('PAR64LED', $results['data'][2]['reference']);
-        $this->assertEquals('DBXPA2', $results['data'][3]['reference']);
-        $this->assertEquals('CL3', $results['data'][4]['reference']);
+
+        $expectedResults = [
+            'XR18',
+            'XLR10',
+            'Transporter',
+            'SDS-6-01',
+            'PAR64LED',
+            'DBXPA2',
+            'CL3',
+        ];
+        foreach ($expectedResults as $index => $expected) {
+            $this->assertEquals($expected, $results['data'][$index]['reference']);
+        }
 
         $this->client->get('/api/materials?deleted=1');
         $this->assertStatusCode(SUCCESS_OK);
@@ -259,6 +272,7 @@ final class MaterialsTest extends ApiTestCase
             'id'                    => 1,
             'name'                  => 'Console Yamaha CL3',
             'reference'             => 'CL3',
+            'is_unitary'            => 0,
             'description'           => 'Console numérique 64 entrées / 8 sorties + Master + Sub',
             'park_id'               => 1,
             'category_id'           => 1,
@@ -379,10 +393,10 @@ final class MaterialsTest extends ApiTestCase
             'prev_page_url'  => null,
             'last_page_url'  => $pagesUrl,
             'per_page'       => $this->settings['maxItemsPerPage'],
-            'to'             => 5,
-            'total'          => 5,
+            'to'             => 7,
+            'total'          => 7,
         ], $response['pagination']);
-        $this->assertCount(5, $response['data']);
+        $this->assertCount(7, $response['data']);
     }
 
     public function testGetMaterialsByCategoryAndSubCategory()
@@ -401,10 +415,10 @@ final class MaterialsTest extends ApiTestCase
             'prev_page_url'  => null,
             'last_page_url'  => $pagesUrl,
             'per_page'       => $this->settings['maxItemsPerPage'],
-            'to'             => 1,
-            'total'          => 1,
+            'to'             => 2,
+            'total'          => 2,
         ], $response['pagination']);
-        $this->assertCount(1, $response['data']);
+        $this->assertCount(2, $response['data']);
     }
 
     public function testGetMaterialsWhileEvent()
@@ -414,12 +428,11 @@ final class MaterialsTest extends ApiTestCase
         $this->client->get('/api/materials?whileEvent=1');
         $this->assertStatusCode(SUCCESS_OK);
         $response = $this->_getResponseAsArray();
-        $this->assertCount(5, $response['data']);
-        $this->assertEquals(32, $response['data'][0]['remaining_quantity']);
-        $this->assertEquals(1, $response['data'][1]['remaining_quantity']);
-        $this->assertEquals(30, $response['data'][2]['remaining_quantity']);
-        $this->assertEquals(0, $response['data'][3]['remaining_quantity']);
-        $this->assertEquals(2, $response['data'][4]['remaining_quantity']);
+        $this->assertCount(7, $response['data']);
+
+        foreach ([0, 32, 1, 30, 0, 2, 0] as $index => $expected) {
+            $this->assertEquals($expected, $response['data'][$index]['remaining_quantity']);
+        }
     }
 
     public function testGetAttributes()
@@ -533,9 +546,10 @@ final class MaterialsTest extends ApiTestCase
         $this->client->post('/api/materials', $data);
         $this->assertStatusCode(SUCCESS_CREATED);
         $this->assertResponseData([
-            'id'                    => 6,
+            'id'                    => 8,
             'name'                  => 'Analog Mixing Console Yamaha RM800',
             'reference'             => 'RM800',
+            'is_unitary'            => 0,
             'park_id'               => 1,
             'category_id'           => 1,
             'sub_category_id'       => 1,
@@ -578,9 +592,10 @@ final class MaterialsTest extends ApiTestCase
         $this->client->post('/api/materials', $data);
         $this->assertStatusCode(SUCCESS_CREATED);
         $this->assertResponseData([
-            'id'                    => 6,
+            'id'                    => 8,
             'name'                  => 'Console numérique Yamaha 01V96 V2',
             'reference'             => '01V96-v2',
+            'is_unitary'            => 0,
             'park_id'               => 1,
             'category_id'           => 1,
             'sub_category_id'       => 1,
