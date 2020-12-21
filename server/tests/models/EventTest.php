@@ -91,6 +91,7 @@ final class EventTest extends ModelTestCase
             'name'                  => 'Showtec SDS-6',
             'description'           => "Console DMX (jeu d'orgue) Showtec 6 canaux",
             'reference'             => 'SDS-6-01',
+            'is_unitary'            => false,
             'park_id'               => 1,
             'category_id'           => 2,
             'sub_category_id'       => 4,

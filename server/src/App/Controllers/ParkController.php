@@ -3,11 +3,11 @@ declare(strict_types=1);
 
 namespace Robert2\API\Controllers;
 
+use Robert2\API\Errors;
+use Robert2\API\Models\Material;
+use Robert2\API\Models\Park;
 use Slim\Http\Request;
 use Slim\Http\Response;
-
-use Robert2\API\Errors;
-use Robert2\API\Models\Park;
 
 class ParkController extends BaseController
 {
@@ -38,6 +38,7 @@ class ParkController extends BaseController
         $materials->withPath($basePath);
 
         $results = $this->_formatPagination($materials);
+        $results['data'] = array_map([Material::class, 'format'], $results['data']);
 
         return $response->withJson($results);
     }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Robert2\API\Models;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Builder;
 use Respect\Validation\Validator as V;
 
 use Robert2\API\Models\Traits\Taggable;
@@ -97,6 +96,7 @@ class Material extends BaseModel
         'name'                  => 'string',
         'reference'             => 'string',
         'description'           => 'string',
+        'is_unitary'            => 'boolean',
         'park_id'               => 'integer',
         'category_id'           => 'integer',
         'sub_category_id'       => 'integer',
@@ -281,5 +281,23 @@ class Material extends BaseModel
         );
 
         return $eventMaterialIndex === false ? [] : $event['materials'][$eventMaterialIndex];
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Static methods
+    // -
+    // ------------------------------------------------------
+
+    public static function format(array $material): array
+    {
+        if (!$material['is_unitary']) {
+            return $material;
+        }
+
+        return array_replace($material, [
+            'stock_quantity' => 0,
+            'out_of_order_quantity' => 0,
+        ]);
     }
 }

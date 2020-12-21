@@ -114,6 +114,7 @@ class Event extends BaseModel
             'name',
             'description',
             'reference',
+            'is_unitary',
             'park_id',
             'category_id',
             'sub_category_id',
