@@ -3,8 +3,9 @@ declare(strict_types=1);
 
 namespace Robert2\Tests;
 
-use Robert2\API\Models;
 use Robert2\API\Errors;
+use Robert2\API\Models;
+use Robert2\API\Models\Material;
 
 final class MaterialTest extends ModelTestCase
 {
@@ -321,5 +322,54 @@ final class MaterialTest extends ModelTestCase
         unset($result->created_at);
         unset($result->updated_at);
         $this->assertEquals($expected, $result->toArray());
+    }
+
+    public function testFormat(): void
+    {
+        $getTestData = function ($data = []) {
+            $baseData = [
+                'id'                    => 8,
+                'name'                  => 'Analog Mixing Console Yamaha RM800',
+                'reference'             => 'RM800',
+                'is_unitary'            => false,
+                'park_id'               => 1,
+                'category_id'           => 1,
+                'rental_price'          => 100.0,
+                'replacement_price'     => 100.6,
+                'stock_quantity'        => 2,
+                'out_of_order_quantity' => 1,
+                'tags'                  => [
+                    ['id' => 4, 'name' => 'old matos'],
+                    ['id' => 5, 'name' => 'vintage'],
+                ],
+                'attributes' => [],
+            ];
+            return array_replace($baseData, $data);
+        };
+
+        // - Test de base.
+        $this->assertSame($getTestData(), Material::format($getTestData()));
+
+        // - Test avec une gestion unitaire et quantités `null`.
+        $testData = $getTestData([
+            'is_unitary' => true,
+            'stock_quantity' => null,
+            'out_of_order_quantity' => null,
+        ]);
+        $expected = $getTestData([
+            'is_unitary' => true,
+            'stock_quantity' => 0,
+            'out_of_order_quantity' => 0,
+        ]);
+        $this->assertSame($expected, Material::format($testData));
+
+        // - Test avec une gestion unitaire et quantités non-`null`.
+        $testData = $getTestData(['is_unitary' => true]);
+        $expected = $getTestData([
+            'is_unitary' => true,
+            'stock_quantity' => 0,
+            'out_of_order_quantity' => 0,
+        ]);
+        $this->assertSame($expected, Material::format($testData));
     }
 }

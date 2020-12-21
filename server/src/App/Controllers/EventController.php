@@ -10,7 +10,7 @@ use Robert2\API\Models\Material;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-class EventController extends BaseController //-
+class EventController extends BaseController
 {
     use WithPdf;
 
@@ -52,7 +52,7 @@ class EventController extends BaseController //-
         if (!$this->model->exists($id)) {
             throw new Errors\NotFoundException;
         }
-        return $response->withJson($this->_getResultWithBills($id));
+        return $response->withJson($this->_getFormattedEvent($id));
     }
 
     public function getMissingMaterials(Request $request, Response $response): Response
@@ -81,7 +81,7 @@ class EventController extends BaseController //-
         $postData = $request->getParsedBody();
         $id = $this->_saveEvent(null, $postData);
 
-        return $response->withJson($this->_getResultWithBills($id), SUCCESS_CREATED);
+        return $response->withJson($this->_getFormattedEvent($id), SUCCESS_CREATED);
     }
 
     public function update(Request $request, Response $response): Response
@@ -95,7 +95,7 @@ class EventController extends BaseController //-
         $postData = $request->getParsedBody();
         $id = $this->_saveEvent($id, $postData);
 
-        return $response->withJson($this->_getResultWithBills($id), SUCCESS_OK);
+        return $response->withJson($this->_getFormattedEvent($id), SUCCESS_OK);
     }
 
     // ——————————————————————————————————————————————————————
@@ -140,7 +140,7 @@ class EventController extends BaseController //-
         return $result->id;
     }
 
-    protected function _getResultWithBills(int $id): array
+    protected function _getFormattedEvent(int $id): array
     {
         $model = $this->model
             ->with('User')
