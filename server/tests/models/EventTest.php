@@ -98,7 +98,6 @@ final class EventTest extends ModelTestCase
             'stock_quantity'        => 2,
             'out_of_order_quantity' => null,
             'replacement_price'     => 59.0,
-            'serial_number'         => '1212121-5',
             'is_hidden_on_bill'     => false,
             'is_discountable'       => true,
             'tags'                  => [],

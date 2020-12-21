@@ -121,7 +121,6 @@ class Event extends BaseModel
             'stock_quantity',
             'out_of_order_quantity',
             'replacement_price',
-            'serial_number',
             'is_hidden_on_bill',
             'is_discountable',
         ];

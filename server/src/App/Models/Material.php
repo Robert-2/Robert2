@@ -37,7 +37,6 @@ class Material extends BaseModel
             'stock_quantity'        => V::intVal()->max(100000),
             'out_of_order_quantity' => V::optional(V::intVal()->max(100000)),
             'replacement_price'     => V::optional(V::floatVal()->max(999999.99, true)),
-            'serial_number'         => V::optional(V::alnum('-/*.')->length(2, 64)),
             'is_hidden_on_bill'     => V::optional(V::boolType()),
             'is_discountable'       => V::optional(V::boolType()),
         ];
@@ -105,7 +104,6 @@ class Material extends BaseModel
         'stock_quantity'        => 'integer',
         'out_of_order_quantity' => 'integer',
         'replacement_price'     => 'float',
-        'serial_number'         => 'string',
         'is_hidden_on_bill'     => 'boolean',
         'is_discountable'       => 'boolean',
         'note'                  => 'string',
@@ -183,7 +181,6 @@ class Material extends BaseModel
         'stock_quantity',
         'out_of_order_quantity',
         'replacement_price',
-        'serial_number',
         'is_hidden_on_bill',
         'is_discountable',
         'note',

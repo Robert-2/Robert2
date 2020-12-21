@@ -11,7 +11,6 @@
         "stock_quantity"        : 5,
         "out_of_order_quantity" : 1,
         "replacement_price"     : 19400,
-        "serial_number"         : "Y-23887-010066",
         "is_hidden_on_bill"     : 0,
         "is_discountable"       : 0,
         "note"                  : null
@@ -28,7 +27,6 @@
         "stock_quantity"        : 2,
         "out_of_order_quantity" : null,
         "replacement_price"     : 349.9,
-        "serial_number"         : "12345678-1",
         "is_hidden_on_bill"     : 0,
         "is_discountable"       : 1,
         "note"                  : null
@@ -45,7 +43,6 @@
         "stock_quantity"        : 34,
         "out_of_order_quantity" : 4,
         "replacement_price"     : 89,
-        "serial_number"         : null,
         "is_hidden_on_bill"     : 0,
         "is_discountable"       : 1,
         "note"                  : "Soyez délicats avec ces projos !"
@@ -62,7 +59,6 @@
         "stock_quantity"        : 2,
         "out_of_order_quantity" : null,
         "replacement_price"     : 59,
-        "serial_number"         : "1212121-5",
         "is_hidden_on_bill"     : 0,
         "is_discountable"       : 1,
         "note"                  : null
@@ -79,7 +75,6 @@
         "stock_quantity"        : 40,
         "out_of_order_quantity" : 8,
         "replacement_price"     : 9.5,
-        "serial_number"         : null,
         "is_hidden_on_bill"     : 1,
         "is_discountable"       : 1,
         "note"                  : null

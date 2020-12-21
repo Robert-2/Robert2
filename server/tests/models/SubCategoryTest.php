@@ -60,7 +60,6 @@ final class SubCategoryTest extends ModelTestCase
                 'stock_quantity'         => 5,
                 'out_of_order_quantity'  => 1,
                 'replacement_price'      => 19400.0,
-                'serial_number'          => "Y-23887-010066",
                 'attributes'             => [
                     [
                         'id'    => 3,
