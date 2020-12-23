@@ -114,6 +114,7 @@ class Event extends BaseModel
             'name',
             'description',
             'reference',
+            'is_unitary',
             'park_id',
             'category_id',
             'sub_category_id',
@@ -121,7 +122,6 @@ class Event extends BaseModel
             'stock_quantity',
             'out_of_order_quantity',
             'replacement_price',
-            'serial_number',
             'is_hidden_on_bill',
             'is_discountable',
         ];

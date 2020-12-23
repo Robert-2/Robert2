@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Robert2\API\Models;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Builder;
 use Respect\Validation\Validator as V;
 
 use Robert2\API\Models\Traits\Taggable;
@@ -37,7 +36,6 @@ class Material extends BaseModel
             'stock_quantity'        => V::intVal()->max(100000),
             'out_of_order_quantity' => V::optional(V::intVal()->max(100000)),
             'replacement_price'     => V::optional(V::floatVal()->max(999999.99, true)),
-            'serial_number'         => V::optional(V::alnum('-/*.')->length(2, 64)),
             'is_hidden_on_bill'     => V::optional(V::boolType()),
             'is_discountable'       => V::optional(V::boolType()),
         ];
@@ -98,6 +96,7 @@ class Material extends BaseModel
         'name'                  => 'string',
         'reference'             => 'string',
         'description'           => 'string',
+        'is_unitary'            => 'boolean',
         'park_id'               => 'integer',
         'category_id'           => 'integer',
         'sub_category_id'       => 'integer',
@@ -105,7 +104,6 @@ class Material extends BaseModel
         'stock_quantity'        => 'integer',
         'out_of_order_quantity' => 'integer',
         'replacement_price'     => 'float',
-        'serial_number'         => 'string',
         'is_hidden_on_bill'     => 'boolean',
         'is_discountable'       => 'boolean',
         'note'                  => 'string',
@@ -183,7 +181,6 @@ class Material extends BaseModel
         'stock_quantity',
         'out_of_order_quantity',
         'replacement_price',
-        'serial_number',
         'is_hidden_on_bill',
         'is_discountable',
         'note',
@@ -284,5 +281,23 @@ class Material extends BaseModel
         );
 
         return $eventMaterialIndex === false ? [] : $event['materials'][$eventMaterialIndex];
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Static methods
+    // -
+    // ------------------------------------------------------
+
+    public static function format(array $material): array
+    {
+        if (!$material['is_unitary']) {
+            return $material;
+        }
+
+        return array_replace($material, [
+            'stock_quantity' => 0,
+            'out_of_order_quantity' => 0,
+        ]);
     }
 }

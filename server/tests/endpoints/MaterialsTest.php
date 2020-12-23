@@ -18,15 +18,38 @@ final class MaterialsTest extends ApiTestCase
                 'prev_page_url'  => null,
                 'last_page_url'  => '/api/materials?page=1',
                 'per_page'       => $this->settings['maxItemsPerPage'],
-                'to'             => 5,
-                'total'          => 5,
+                'to'             => 7,
+                'total'          => 7,
             ],
             'data' => [
+                [
+                    'id'                    => 6,
+                    'name'                  => 'Behringer X Air XR18',
+                    'description'           => 'Mélangeur numérique 18 canaux',
+                    'reference'             => 'XR18',
+                    'is_unitary'            => true,
+                    'park_id'               => null,
+                    'category_id'           => 1,
+                    'sub_category_id'       => 1,
+                    'rental_price'          => 49.99,
+                    'stock_quantity'        => 0,
+                    'out_of_order_quantity' => 0,
+                    'replacement_price'     => 419,
+                    'is_hidden_on_bill'     => false,
+                    'is_discountable'       => false,
+                    'note'                  => null,
+                    'created_at'            => null,
+                    'updated_at'            => null,
+                    'deleted_at'            => null,
+                    'tags'                  => [],
+                    'attributes'            => [],
+                ],
                 [
                     'id'                    => 5,
                     'name'                  => 'Câble XLR 10m',
                     'reference'             => 'XLR10',
                     'description'           => 'Câble audio XLR 10 mètres, mâle-femelle',
+                    'is_unitary'            => false,
                     'park_id'               => 1,
                     'category_id'           => 1,
                     'sub_category_id'       => null,
@@ -34,7 +57,6 @@ final class MaterialsTest extends ApiTestCase
                     'stock_quantity'        => 40,
                     'out_of_order_quantity' => 8,
                     'replacement_price'     => 9.5,
-                    'serial_number'         => null,
                     'is_hidden_on_bill'     => true,
                     'is_discountable'       => true,
                     'note'                  => null,
@@ -49,6 +71,7 @@ final class MaterialsTest extends ApiTestCase
                     'name'                  => 'Console Yamaha CL3',
                     'reference'             => 'CL3',
                     'description'           => 'Console numérique 64 entrées / 8 sorties + Master + Sub',
+                    'is_unitary'            => false,
                     'park_id'               => 1,
                     'category_id'           => 1,
                     'sub_category_id'       => 1,
@@ -56,7 +79,6 @@ final class MaterialsTest extends ApiTestCase
                     'stock_quantity'        => 5,
                     'out_of_order_quantity' => 1,
                     'replacement_price'     => 19400,
-                    'serial_number'         => 'Y-23887-010066',
                     'is_hidden_on_bill'     => false,
                     'is_discountable'       => false,
                     'note'                  => null,
@@ -95,6 +117,7 @@ final class MaterialsTest extends ApiTestCase
                     'name'                  => 'PAR64 LED',
                     'reference'             => 'PAR64LED',
                     'description'           => 'Projecteur PAR64 à LED, avec son set de gélatines',
+                    'is_unitary'            => false,
                     'park_id'               => 1,
                     'category_id'           => 2,
                     'sub_category_id'       => 3,
@@ -102,7 +125,6 @@ final class MaterialsTest extends ApiTestCase
                     'stock_quantity'        => 34,
                     'out_of_order_quantity' => 4,
                     'replacement_price'     => 89,
-                    'serial_number'         => null,
                     'is_hidden_on_bill'     => false,
                     'is_discountable'       => true,
                     'note'                  => 'Soyez délicats avec ces projos !',
@@ -134,6 +156,7 @@ final class MaterialsTest extends ApiTestCase
                     'name'                  => 'Processeur DBX PA2',
                     'reference'             => 'DBXPA2',
                     'description'           => 'Système de diffusion numérique',
+                    'is_unitary'            => false,
                     'park_id'               => 1,
                     'category_id'           => 1,
                     'sub_category_id'       => 2,
@@ -141,7 +164,6 @@ final class MaterialsTest extends ApiTestCase
                     'stock_quantity'        => 2,
                     'out_of_order_quantity' => null,
                     'replacement_price'     => 349.9,
-                    'serial_number'         => '12345678-1',
                     'is_hidden_on_bill'     => false,
                     'is_discountable'       => true,
                     'note'                  => null,
@@ -173,6 +195,7 @@ final class MaterialsTest extends ApiTestCase
                     'name'                  => 'Showtec SDS-6',
                     'reference'             => 'SDS-6-01',
                     'description'           => "Console DMX (jeu d'orgue) Showtec 6 canaux",
+                    'is_unitary'            => false,
                     'park_id'               => 1,
                     'category_id'           => 2,
                     'sub_category_id'       => 4,
@@ -180,7 +203,6 @@ final class MaterialsTest extends ApiTestCase
                     'stock_quantity'        => 2,
                     'out_of_order_quantity' => null,
                     'replacement_price'     => 59,
-                    'serial_number'         => '1212121-5',
                     'is_hidden_on_bill'     => false,
                     'is_discountable'       => true,
                     'note'                  => null,
@@ -212,18 +234,48 @@ final class MaterialsTest extends ApiTestCase
                     'updated_at' => null,
                     'deleted_at' => null,
                 ],
+                [
+                    'id'                    => 7,
+                    'name'                  => 'Volkswagen Transporter',
+                    'description'           => 'Volume utile : 9.3 m3',
+                    'reference'             => 'Transporter',
+                    'is_unitary'            => true,
+                    'park_id'               => null,
+                    'category_id'           => 3,
+                    'sub_category_id'       => null,
+                    'rental_price'          => 300,
+                    'stock_quantity'        => 0,
+                    'out_of_order_quantity' => 0,
+                    'replacement_price'     => 32000,
+                    'is_hidden_on_bill'     => false,
+                    'is_discountable'       => false,
+                    'note'                  => null,
+                    'created_at'            => null,
+                    'updated_at'            => null,
+                    'deleted_at'            => null,
+                    'tags'                  => [],
+                    'attributes'            => [],
+                ],
             ],
         ]);
 
         $this->client->get('/api/materials?orderBy=reference&ascending=0');
         $this->assertStatusCode(SUCCESS_OK);
-        $this->assertResponsePaginatedData(5, '/api/materials', 'orderBy=reference&ascending=0');
+        $this->assertResponsePaginatedData(7, '/api/materials', 'orderBy=reference&ascending=0');
         $results = $this->_getResponseAsArray();
-        $this->assertEquals('XLR10', $results['data'][0]['reference']);
-        $this->assertEquals('SDS-6-01', $results['data'][1]['reference']);
-        $this->assertEquals('PAR64LED', $results['data'][2]['reference']);
-        $this->assertEquals('DBXPA2', $results['data'][3]['reference']);
-        $this->assertEquals('CL3', $results['data'][4]['reference']);
+
+        $expectedResults = [
+            'XR18',
+            'XLR10',
+            'Transporter',
+            'SDS-6-01',
+            'PAR64LED',
+            'DBXPA2',
+            'CL3',
+        ];
+        foreach ($expectedResults as $index => $expected) {
+            $this->assertEquals($expected, $results['data'][$index]['reference']);
+        }
 
         $this->client->get('/api/materials?deleted=1');
         $this->assertStatusCode(SUCCESS_OK);
@@ -264,6 +316,7 @@ final class MaterialsTest extends ApiTestCase
             'id'                    => 1,
             'name'                  => 'Console Yamaha CL3',
             'reference'             => 'CL3',
+            'is_unitary'            => false,
             'description'           => 'Console numérique 64 entrées / 8 sorties + Master + Sub',
             'park_id'               => 1,
             'category_id'           => 1,
@@ -272,7 +325,6 @@ final class MaterialsTest extends ApiTestCase
             'stock_quantity'        => 5,
             'out_of_order_quantity' => 1,
             'replacement_price'     => 19400,
-            'serial_number'         => 'Y-23887-010066',
             'is_hidden_on_bill'     => false,
             'is_discountable'       => false,
             'note'                  => null,
@@ -385,10 +437,10 @@ final class MaterialsTest extends ApiTestCase
             'prev_page_url'  => null,
             'last_page_url'  => $pagesUrl,
             'per_page'       => $this->settings['maxItemsPerPage'],
-            'to'             => 5,
-            'total'          => 5,
+            'to'             => 7,
+            'total'          => 7,
         ], $response['pagination']);
-        $this->assertCount(5, $response['data']);
+        $this->assertCount(7, $response['data']);
     }
 
     public function testGetMaterialsByCategoryAndSubCategory()
@@ -407,10 +459,10 @@ final class MaterialsTest extends ApiTestCase
             'prev_page_url'  => null,
             'last_page_url'  => $pagesUrl,
             'per_page'       => $this->settings['maxItemsPerPage'],
-            'to'             => 1,
-            'total'          => 1,
+            'to'             => 2,
+            'total'          => 2,
         ], $response['pagination']);
-        $this->assertCount(1, $response['data']);
+        $this->assertCount(2, $response['data']);
     }
 
     public function testGetMaterialsWhileEvent()
@@ -420,12 +472,11 @@ final class MaterialsTest extends ApiTestCase
         $this->client->get('/api/materials?whileEvent=1');
         $this->assertStatusCode(SUCCESS_OK);
         $response = $this->_getResponseAsArray();
-        $this->assertCount(5, $response['data']);
-        $this->assertEquals(32, $response['data'][0]['remaining_quantity']);
-        $this->assertEquals(1, $response['data'][1]['remaining_quantity']);
-        $this->assertEquals(30, $response['data'][2]['remaining_quantity']);
-        $this->assertEquals(0, $response['data'][3]['remaining_quantity']);
-        $this->assertEquals(2, $response['data'][4]['remaining_quantity']);
+        $this->assertCount(7, $response['data']);
+
+        foreach ([0, 32, 1, 30, 0, 2, 0] as $index => $expected) {
+            $this->assertEquals($expected, $response['data'][$index]['remaining_quantity']);
+        }
     }
 
     public function testGetAttributes()
@@ -539,9 +590,10 @@ final class MaterialsTest extends ApiTestCase
         $this->client->post('/api/materials', $data);
         $this->assertStatusCode(SUCCESS_CREATED);
         $this->assertResponseData([
-            'id'                    => 6,
+            'id'                    => 8,
             'name'                  => 'Analog Mixing Console Yamaha RM800',
             'reference'             => 'RM800',
+            'is_unitary'            => false,
             'park_id'               => 1,
             'category_id'           => 1,
             'sub_category_id'       => 1,
@@ -552,7 +604,6 @@ final class MaterialsTest extends ApiTestCase
             'is_hidden_on_bill'     => false,
             'is_discountable'       => true,
             'description'           => null,
-            'serial_number'         => null,
             'note'                  => null,
             'attributes'            => [],
             'tags'                  => [
@@ -585,9 +636,10 @@ final class MaterialsTest extends ApiTestCase
         $this->client->post('/api/materials', $data);
         $this->assertStatusCode(SUCCESS_CREATED);
         $this->assertResponseData([
-            'id'                    => 6,
+            'id'                    => 8,
             'name'                  => 'Console numérique Yamaha 01V96 V2',
             'reference'             => '01V96-v2',
+            'is_unitary'            => false,
             'park_id'               => 1,
             'category_id'           => 1,
             'sub_category_id'       => 1,
@@ -598,7 +650,6 @@ final class MaterialsTest extends ApiTestCase
             'is_hidden_on_bill'     => false,
             'is_discountable'       => true,
             'description'           => null,
-            'serial_number'         => null,
             'note'                  => null,
             'attributes'            => [
                 [

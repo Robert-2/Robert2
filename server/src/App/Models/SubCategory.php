@@ -53,7 +53,6 @@ class SubCategory extends BaseModel
             'stock_quantity',
             'out_of_order_quantity',
             'replacement_price',
-            'serial_number',
         ];
 
         return $this->hasMany('Robert2\API\Models\Material')->select($fields);
