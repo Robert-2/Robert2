@@ -11,7 +11,7 @@ use Robert2\API\Controllers\Traits\Taggable;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-class MaterialController extends BaseController //-
+class MaterialController extends BaseController
 {
     use Taggable;
 
