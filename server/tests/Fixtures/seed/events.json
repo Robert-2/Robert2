@@ -31,5 +31,16 @@
         "is_confirmed" : 0,
         "location"     : "Brousse",
         "is_billable"  : 0
+    },
+    {
+        "id"           : 4,
+        "user_id"      : 1,
+        "title"        : "Concert X",
+        "description"  : null,
+        "start_date"   : "2019-03-01 00:00:00",
+        "end_date"     : "2019-02-10 23:59:59",
+        "is_confirmed" : 0,
+        "location"     : "Moon",
+        "is_billable"  : 0
     }
 ]

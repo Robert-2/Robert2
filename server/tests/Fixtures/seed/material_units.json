@@ -1,0 +1,26 @@
+[
+    {
+        "id": 1,
+        "material_id": 6,
+        "serial_number": "XR18-1",
+        "is_broken": 0
+    },
+    {
+        "id": 2,
+        "material_id": 6,
+        "serial_number": "XR18-2",
+        "is_broken": 0
+    },
+    {
+        "id": 3,
+        "material_id": 6,
+        "serial_number": "XR18-3",
+        "is_broken": 1
+    },
+    {
+        "id": 4,
+        "material_id": 7,
+        "serial_number": "VHCL-1",
+        "is_broken": 0
+    }
+]

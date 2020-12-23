@@ -102,7 +102,7 @@ class Park extends BaseModel
         $materials = $this->Materials()->get(['stock_quantity']);
         $total = 0;
         foreach ($materials as $material) {
-            $total += $material->stock_quantity;
+            $total += (int)$material->stock_quantity;
         }
         return $total;
     }
@@ -112,7 +112,7 @@ class Park extends BaseModel
         $materials = $this->Materials()->get(['stock_quantity', 'replacement_price']);
         $total = 0;
         foreach ($materials as $material) {
-            $total += ($material->replacement_price * $material->stock_quantity);
+            $total += ($material->replacement_price * (int)$material->stock_quantity);
         }
         return $total;
     }

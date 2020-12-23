@@ -3,14 +3,13 @@ declare(strict_types=1);
 
 namespace Robert2\API\Controllers;
 
-use Slim\Http\Request;
-use Slim\Http\Response;
-
 use Robert2\API\Errors;
 use Robert2\API\Models\Material;
 use Robert2\API\Models\Attribute;
 use Robert2\API\Models\Event;
 use Robert2\API\Controllers\Traits\Taggable;
+use Slim\Http\Request;
+use Slim\Http\Response;
 
 class MaterialController extends BaseController
 {
@@ -78,6 +77,8 @@ class MaterialController extends BaseController
         $results = $results->withPath($basePath)->appends($params);
         $results = $this->_formatPagination($results);
 
+        $results['data'] = array_map([Material::class, 'format'], $results['data']);
+
         if ($whileEvent) {
             $eventId = (int)$whileEvent;
             $Event = new Event();
@@ -114,8 +115,7 @@ class MaterialController extends BaseController
         $postData = $request->getParsedBody();
 
         $result = $this->_saveMaterial(null, $postData);
-
-        return $response->withJson($result->toArray(), SUCCESS_CREATED);
+        return $response->withJson($result, SUCCESS_CREATED);
     }
 
     public function update(Request $request, Response $response): Response
@@ -129,8 +129,7 @@ class MaterialController extends BaseController
         $postData = $request->getParsedBody();
 
         $result = $this->_saveMaterial($id, $postData);
-
-        return $response->withJson($result->toArray(), SUCCESS_OK);
+        return $response->withJson($result, SUCCESS_OK);
     }
 
     // ------------------------------------------------------
@@ -139,7 +138,7 @@ class MaterialController extends BaseController
     // —
     // ------------------------------------------------------
 
-    protected function _saveMaterial(?int $id, array $postData): Material
+    protected function _saveMaterial(?int $id, array $postData): array
     {
         if (empty($postData)) {
             throw new \InvalidArgumentException(
@@ -183,6 +182,7 @@ class MaterialController extends BaseController
             $result->Attributes()->sync($attributes);
         }
 
-        return $this->model->find($result->id);
+        $model = $this->model->find($result->id);
+        return Material::format($model->toArray());
     }
 }
