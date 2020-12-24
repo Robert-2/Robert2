@@ -6,8 +6,8 @@ namespace Robert2\API\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Illuminate\Database\Eloquent\Builder;
+use Respect\Validation\Exceptions\NestedValidationException;
 use InvalidArgumentException;
-use Robert2\API\Validation\Validator;
 use Robert2\API\Config\Config;
 use Robert2\API\Errors;
 
@@ -32,8 +32,6 @@ class BaseModel extends Model
         'deleted_at',
     ];
 
-    private $_validator;
-
     public $validation;
 
     const EXTRA_CHARS = '-_. ÇçàÀâÂäÄåÅèÈéÉêÊëËíÍìÌîÎïÏòÒóÓôÔöÖðÐõÕøØúÚùÙûÛüÜýÝÿŸŷŶøØæÆœŒñÑßÞ';
@@ -41,7 +39,6 @@ class BaseModel extends Model
     public function __construct(array $attributes = [])
     {
         $this->_settings  = Config::getSettings();
-        $this->_validator = new Validator();
 
         Config::getCapsule();
 
@@ -84,9 +81,42 @@ class BaseModel extends Model
         return $this->_getOrderBy($builder);
     }
 
+    // ------------------------------------------------------
+    // -
+    // -    Setters
+    // -
+    // ------------------------------------------------------
+
+    public function setOrderBy(?string $orderBy = null, bool $ascending = true): BaseModel
+    {
+        if ($orderBy) {
+            $this->_orderField = $orderBy;
+        }
+        $this->_orderDirection = $ascending ? 'asc' : 'desc';
+        return $this;
+    }
+
+    public function setSearch(?string $term = null, ?string $field = null): BaseModel
+    {
+        if (empty($term)) {
+            return $this;
+        }
+
+        if ($field) {
+            if (!in_array($field, $this->_allowedSearchFields)) {
+                throw new InvalidArgumentException("Search field « $field » not allowed.");
+            }
+
+            $this->_searchField = $field;
+        }
+
+        $this->_searchTerm = trim($term);
+        return $this;
+    }
+
     // ——————————————————————————————————————————————————————
     // —
-    // —    Setters
+    // —    "Repository" methods
     // —
     // ——————————————————————————————————————————————————————
 
@@ -97,12 +127,9 @@ class BaseModel extends Model
         }
 
         $data = cleanEmptyFields($data);
-
-        $onlyFields = $id ? array_keys($data) : [];
-        $this->validate($data, $onlyFields);
-
         try {
-            $model = self::updateOrCreate(['id' => $id], $data);
+            $model = self::firstOrNew(compact('id'));
+            $model->fill($data)->validate()->save();
         } catch (QueryException $e) {
             $error = new Errors\ValidationException();
             $error->setPDOValidationException($e);
@@ -151,33 +178,6 @@ class BaseModel extends Model
         return $model;
     }
 
-    public function setOrderBy(?string $orderBy = null, bool $ascending = true): BaseModel
-    {
-        if ($orderBy) {
-            $this->_orderField = $orderBy;
-        }
-        $this->_orderDirection = $ascending ? 'asc' : 'desc';
-        return $this;
-    }
-
-    public function setSearch(?string $term = null, ?string $field = null): BaseModel
-    {
-        if (empty($term)) {
-            return $this;
-        }
-
-        if ($field) {
-            if (!in_array($field, $this->_allowedSearchFields)) {
-                throw new InvalidArgumentException("Search field « $field » not allowed.");
-            }
-
-            $this->_searchField = $field;
-        }
-
-        $this->_searchTerm = trim($term);
-        return $this;
-    }
-
     // ——————————————————————————————————————————————————————
     // —
     // —    Other useful methods
@@ -189,34 +189,42 @@ class BaseModel extends Model
         return self::where('id', $id)->exists();
     }
 
-    public function validate(array $data, array $onlyFields = []): void
+    public function validate(): self
     {
-        if (empty($this->validation)) {
+        $rules = $this->validation;
+        if (empty($rules)) {
             throw new \RuntimeException("Validation rules cannot be empty for model $this->_modelName.");
         }
 
+        $data = $this->getAttributes();
         foreach ($data as $field => $value) {
             if (is_array($value)) {
                 unset($data[$field]);
             }
         }
 
-        if (!empty($onlyFields)) {
-            foreach (array_keys($this->validation) as $fieldToValidate) {
-                if (!in_array($fieldToValidate, $onlyFields)) {
-                    unset($this->validation[$fieldToValidate]);
-                    unset($data[$fieldToValidate]);
-                }
+        // - Si le modèle existe déjà en base, on ne valide que les champs qui ont changés.
+        if ($this->exists) {
+            $rules = array_intersect_key($rules, $this->getDirty());
+        }
+
+        // - Validation
+        $errors = [];
+        foreach ($rules as $field => $rule) {
+            try {
+                $rule->setName($field)->assert($data[$field] ?? null);
+            } catch (NestedValidationException $e) {
+                $errors[$field] = $e->getMessages();
             }
         }
 
-        $this->_validator->validate($data, $this->validation);
-
-        if ($this->_validator->hasError()) {
+        if (count($errors) > 0) {
             $ex = new Errors\ValidationException();
-            $ex->setValidationErrors($this->_validator->getErrors());
+            $ex->setValidationErrors($errors);
             throw $ex;
         }
+
+        return $this;
     }
 
     // ------------------------------------------------------

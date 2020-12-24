@@ -6,7 +6,7 @@ namespace Robert2\API\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Respect\Validation\Validator as V;
+use Robert2\API\Validation\Validator as V;
 
 use Robert2\API\Errors;
 use Robert2\API\Models\Traits\Taggable;

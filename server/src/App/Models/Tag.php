@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace Robert2\API\Models;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Respect\Validation\Validator as V;
 use Illuminate\Database\Eloquent\Collection;
+use Robert2\API\Validation\Validator as V;
 
 class Tag extends BaseModel
 {
