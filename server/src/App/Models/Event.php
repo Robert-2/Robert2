@@ -7,10 +7,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Builder;
 use Robert2\API\Config\Config;
 use Robert2\API\Models\Material;
-use Robert2\API\I18n\I18n;
 use Robert2\API\Models\Traits\WithPdf;
 use Robert2\Lib\Domain\EventBill;
-use Robert2\API\Errors\ValidationException;
 use Robert2\API\Validation\Validator as V;
 
 class Event extends BaseModel
@@ -42,32 +40,34 @@ class Event extends BaseModel
             'description'  => V::optional(V::length(null, 255)),
             'reference'    => V::oneOf(V::nullType(), V::alnum('.,-/_ ')->length(1, 64)),
             'start_date'   => V::notEmpty()->date(),
-            'end_date'     => V::notEmpty()->date(),
+            'end_date'     => V::callback([$this, 'checkEndDate']),
             'is_confirmed' => V::notOptional()->boolType(),
             'location'     => V::optional(V::length(2, 64)),
             'is_billable'  => V::optional(V::boolType()),
         ];
     }
 
-    public function validate(array $data, array $onlyFields = []): void
+    // ------------------------------------------------------
+    // -
+    // -    Validation
+    // -
+    // ------------------------------------------------------
+
+    public function checkEndDate($value)
     {
-        parent::validate($data, $onlyFields);
-
-        if (!empty($onlyFields) && !in_array('end_date', $onlyFields)) {
-            return;
+        $dateChecker = V::notEmpty()->date();
+        if (!$dateChecker->validate($value)) {
+            return false;
         }
 
-        $startDate = new \DateTime($data['start_date']);
-        $endDate = new \DateTime($data['end_date']);
-
-        if ($startDate >= $endDate) {
-            $i18n = new I18n;
-            $ex = new ValidationException();
-            $ex->setValidationErrors([
-                'end_date' => [$i18n->translate('endDateMustBeLater')]
-            ]);
-            throw $ex;
+        if (!$dateChecker->validate($this->start_date)) {
+            return true;
         }
+
+        $startDate = new \DateTime($this->start_date);
+        $endDate = new \DateTime($this->end_date);
+
+        return $startDate < $endDate ?: 'endDateMustBeLater';
     }
 
     // ——————————————————————————————————————————————————————

@@ -171,24 +171,22 @@ class Person extends BaseModel
 
     public function edit(?int $id = null, array $data = []): Model
     {
-        if (!empty($data['phone'])) {
-            $data['phone'] = normalizePhone($data['phone']);
-        }
-
         if ($id && !$this->exists($id)) {
             throw new Errors\NotFoundException(sprintf("Edit failed, entity %d not found.", $id));
         }
 
         $data = cleanEmptyFields($data);
 
-        $onlyFields = $id ? array_keys($data) : [];
-        $this->validate($data, $onlyFields);
+        if (!empty($data['phone'])) {
+            $data['phone'] = normalizePhone($data['phone']);
+        }
 
         try {
-            $person = self::updateOrCreate(['id' => $id], $data);
+            $person = self::firstOrNew(compact('id'));
+            $person->fill($data)->validate()->save();
 
             if (!empty($data['tags'])) {
-                $this->setTags($person['id'], $data['tags']);
+                $this->setTags($person->id, $data['tags']);
             }
         } catch (QueryException $e) {
             if (!isDuplicateException($e)) {

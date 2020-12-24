@@ -272,7 +272,7 @@ final class EventTest extends ModelTestCase
             $data,
             ['end_date' => '2020-03-03 23:59:59']
         );
-        $this->model->validate($testData);
+        (new Models\Event($testData))->validate();
 
         // - Validation fail: end date is after start date
         $this->expectException(Errors\ValidationException::class);
@@ -281,7 +281,7 @@ final class EventTest extends ModelTestCase
             $data,
             ['end_date' => '2020-02-20 23:59:59']
         );
-        $this->model->validate($testData);
+        (new Models\Event($testData))->validate();
     }
 
     public function testValidateReference(): void
@@ -296,14 +296,14 @@ final class EventTest extends ModelTestCase
 
         foreach (['REF1', null] as $testValue) {
             $testData = array_merge($data, ['reference' => $testValue]);
-            $this->model->validate($testData);
+            (new Models\Event($testData))->validate();
         }
 
         // - Validation fail: Reference is an empty string
         $this->expectException(Errors\ValidationException::class);
         $this->expectExceptionCode(ERROR_VALIDATION);
         $testData = array_merge($data, ['reference' => '']);
-        $this->model->validate($testData);
+        (new Models\Event($testData))->validate();
     }
 
     public function testGetPdfContent()

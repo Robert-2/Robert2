@@ -106,8 +106,9 @@ final class TagTest extends ModelTestCase
 
         // - Ajout de tags avec un qui existait déjà (ne l'ajoute pas deux fois)
         $result = $this->model->bulkAdd(['super tag', 'tag 01']);
-        $this->assertEquals('tag 01', @$result[0]['name']);
-        $this->assertEquals('super tag', @$result[1]['name']);
+        $this->assertEquals('super tag', @$result[0]['name']);
+        $this->assertEquals('tag 01', @$result[1]['name']);
+        $this->assertEquals(1, @$result[1]['id']);
     }
 
     public function testFormat(): void

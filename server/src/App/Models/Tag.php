@@ -5,7 +5,9 @@ namespace Robert2\API\Models;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\QueryException;
 use Robert2\API\Validation\Validator as V;
+use Robert2\API\Errors\ValidationException;
 
 class Tag extends BaseModel
 {
@@ -98,26 +100,36 @@ class Tag extends BaseModel
 
     public function bulkAdd(array $tagNames = []): array
     {
-        $tags = [];
-        $results = [];
-        foreach ($tagNames as $tagName) {
-            $existingTag = self::where('name', $tagName)->first();
-            if ($existingTag) {
-                $results[] = $existingTag;
-                continue;
+        $tags = array_map(
+            function ($tagName) {
+                $existingTag = self::where('name', $tagName)->first();
+                if ($existingTag) {
+                    return $existingTag;
+                }
+
+                $tag = new static(['name' => trim($tagName)]);
+                return tap($tag, function ($instance) {
+                    $instance->validate();
+                });
+            },
+            $tagNames,
+        );
+
+        $this->getConnection()->transaction(function () use ($tags) {
+            try {
+                foreach ($tags as $tag) {
+                    if (!$tag->exists || $tag->isDirty()) {
+                        $tag->save();
+                    }
+                }
+            } catch (QueryException $e) {
+                $error = new ValidationException();
+                $error->setPDOValidationException($e);
+                throw $error;
             }
+        });
 
-            $safeTag = ['name' => trim($tagName)];
-            $this->validate($safeTag);
-
-            $tags[] = $safeTag;
-        }
-
-        foreach ($tags as $tagData) {
-            $results[] = self::edit(null, $tagData);
-        }
-
-        return $results;
+        return $tags;
     }
 
     // ——————————————————————————————————————————————————————
