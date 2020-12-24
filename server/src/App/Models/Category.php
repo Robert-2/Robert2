@@ -113,7 +113,7 @@ class Category extends BaseModel
                     $instance->validate();
                 });
             },
-            $categoriesNames,
+            $categoriesNames
         );
 
         $this->getConnection()->transaction(function () use ($categories) {

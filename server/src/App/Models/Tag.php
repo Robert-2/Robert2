@@ -112,7 +112,7 @@ class Tag extends BaseModel
                     $instance->validate();
                 });
             },
-            $tagNames,
+            $tagNames
         );
 
         $this->getConnection()->transaction(function () use ($tags) {

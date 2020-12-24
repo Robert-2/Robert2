@@ -239,7 +239,7 @@ class BaseModel extends Model
     {
         return array_unique(array_merge(
             (array)$this->searchField,
-            (array)$this->allowedSearchFields,
+            (array)$this->allowedSearchFields
         ));
     }
 
