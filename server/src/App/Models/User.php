@@ -15,14 +15,10 @@ class User extends BaseModel
 {
     use SoftDeletes;
 
-    protected $table = 'users';
+    protected $orderField = 'pseudo';
 
-    protected $_modelName = 'User';
-    protected $_orderField = 'pseudo';
-    protected $_orderDirection = 'asc';
-
-    protected $_allowedSearchFields = ['pseudo', 'email'];
-    protected $_searchField = 'pseudo';
+    protected $allowedSearchFields = ['pseudo', 'email'];
+    protected $searchField = 'pseudo';
 
     public function __construct(array $attributes = [])
     {

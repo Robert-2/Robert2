@@ -18,14 +18,11 @@ class Bill extends BaseModel
     use SoftDeletes;
     use WithPdf;
 
-    protected $table = 'bills';
+    protected $orderField = 'date';
+    protected $orderDirection = 'desc';
 
-    protected $_modelName = 'Bill';
-    protected $_orderField = 'date';
-    protected $_orderDirection = 'desc';
-
-    protected $_allowedSearchFields = ['number', 'due_amount', 'date'];
-    protected $_searchField = 'number';
+    protected $allowedSearchFields = ['number', 'due_amount', 'date'];
+    protected $searchField = 'number';
 
     public function __construct(array $attributes = [])
     {
@@ -152,7 +149,7 @@ class Bill extends BaseModel
     {
         $model = $this->withTrashed()->find($id);
         if (!$model) {
-            throw new NotFoundException(sprintf('%s not found.', $this->_modelName));
+            throw new NotFoundException(sprintf('Record %d not found.', $id));
         }
 
         $company = Config::getSettings('companyData');
@@ -160,7 +157,7 @@ class Bill extends BaseModel
         $i18n = new I18n(Config::getSettings('defaultLang'));
         $fileName = sprintf(
             '%s-%s-%s-%s.pdf',
-            $i18n->translate($this->_modelName),
+            $i18n->translate(class_basename($this)),
             slugify($company['name']),
             $model->number,
             slugify($model->Beneficiary->full_name)

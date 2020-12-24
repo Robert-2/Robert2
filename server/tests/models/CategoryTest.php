@@ -14,6 +14,11 @@ final class CategoryTest extends ModelTestCase
         $this->model = new Models\Category();
     }
 
+    public function testTableName(): void
+    {
+        $this->assertEquals('categories', $this->model->getTable());
+    }
+
     public function testGetAll(): void
     {
         $result = $this->model->getAll()->get()->toArray();

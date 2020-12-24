@@ -15,6 +15,11 @@ final class TagTest extends ModelTestCase
         $this->model = new Models\Tag();
     }
 
+    public function testTableName(): void
+    {
+        $this->assertEquals('tags', $this->model->getTable());
+    }
+
     public function testGetAll(): void
     {
         $result = $this->model->getAll()->get()->toArray();

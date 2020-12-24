@@ -13,14 +13,7 @@ class Material extends BaseModel
     use SoftDeletes;
     use Taggable;
 
-    protected $table = 'materials';
-
-    protected $_modelName = 'Material';
-    protected $_orderField = 'name';
-    protected $_orderDirection = 'asc';
-
-    protected $_allowedSearchFields = ['name', 'reference', 'name|reference'];
-    protected $_searchField = 'name|reference';
+    protected $searchField = ['name', 'reference'];
 
     public function __construct(array $attributes = [])
     {

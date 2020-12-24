@@ -15,6 +15,11 @@ final class EventTest extends ModelTestCase
         $this->model = new Models\Event();
     }
 
+    public function testTableName(): void
+    {
+        $this->assertEquals('events', $this->model->getTable());
+    }
+
     public function testGetAll(): void
     {
         $this->model->setPeriod('2018-01-15', '2018-12-19');

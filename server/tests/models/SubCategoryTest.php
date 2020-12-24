@@ -15,6 +15,11 @@ final class SubCategoryTest extends ModelTestCase
         $this->model = new Models\SubCategory();
     }
 
+    public function testTableName(): void
+    {
+        $this->assertEquals('sub_categories', $this->model->getTable());
+    }
+
     public function testGetAll(): void
     {
         $result = $this->model->getAll()->get()->toArray();

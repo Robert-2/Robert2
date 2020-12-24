@@ -11,14 +11,7 @@ class Tag extends BaseModel
 {
     use SoftDeletes;
 
-    protected $table = 'tags';
-
-    protected $_modelName = 'Tag';
-    protected $_orderField = 'name';
-    protected $_orderDirection = 'asc';
-
-    protected $_allowedSearchFields = ['name'];
-    protected $_searchField = 'name';
+    protected $searchField = 'name';
 
     public function __construct(array $attributes = [])
     {

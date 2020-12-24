@@ -11,12 +11,6 @@ use Robert2\API\Errors;
 
 class UserSetting extends BaseModel
 {
-    protected $table = 'user_settings';
-
-    protected $_modelName = 'UserSetting';
-    protected $_orderField = 'id';
-    protected $_orderDirection = 'asc';
-
     protected $dates = [
         'created_at',
         'updated_at',

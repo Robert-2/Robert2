@@ -7,11 +7,7 @@ use Robert2\API\Validation\Validator as V;
 
 class Attribute extends BaseModel
 {
-    protected $table = 'attributes';
-
-    protected $_modelName = 'Attribute';
-    protected $_orderField = 'id';
-    protected $_orderDirection = 'asc';
+    protected $orderField = 'id';
 
     public function __construct(array $attributes = [])
     {

@@ -16,14 +16,8 @@ class Company extends BaseModel
     use SoftDeletes;
     use Taggable;
 
-    protected $table = 'companies';
-
-    protected $_modelName = 'Company';
-    protected $_orderField = 'legal_name';
-    protected $_orderDirection = 'asc';
-
-    protected $_allowedSearchFields = ['legal_name'];
-    protected $_searchField = 'legal_name';
+    protected $orderField = 'legal_name';
+    protected $searchField = 'legal_name';
 
     public function __construct(array $attributes = [])
     {

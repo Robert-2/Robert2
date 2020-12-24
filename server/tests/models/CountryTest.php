@@ -14,6 +14,11 @@ final class CountryTest extends ModelTestCase
         $this->model = new Models\Country();
     }
 
+    public function testTableName(): void
+    {
+        $this->assertEquals('countries', $this->model->getTable());
+    }
+
     public function testGetAll(): void
     {
         $result = $this->model->getAll()->get()->toArray();

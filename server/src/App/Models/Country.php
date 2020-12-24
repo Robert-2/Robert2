@@ -10,14 +10,8 @@ class Country extends BaseModel
 {
     use SoftDeletes;
 
-    protected $table = 'countries';
-
-    protected $_modelName = 'Country';
-    protected $_orderField = 'name';
-    protected $_orderDirection = 'asc';
-
-    protected $_allowedSearchFields = ['name', 'code'];
-    protected $_searchField = 'name';
+    protected $allowedSearchFields = ['name', 'code'];
+    protected $searchField = 'name';
 
     public function __construct(array $attributes = [])
     {

@@ -10,14 +10,7 @@ class Park extends BaseModel
 {
     use SoftDeletes;
 
-    protected $table = 'parks';
-
-    protected $_modelName = 'Park';
-    protected $_orderField = 'name';
-    protected $_orderDirection = 'asc';
-
-    protected $_allowedSearchFields = ['name'];
-    protected $_searchField = 'name';
+    protected $searchField = 'name';
 
     public function __construct(array $attributes = [])
     {

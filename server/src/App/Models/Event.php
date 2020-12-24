@@ -18,17 +18,13 @@ class Event extends BaseModel
     use SoftDeletes;
     use WithPdf;
 
-    protected $table = 'events';
-
-    protected $_modelName = 'Event';
-    protected $_orderField = 'start_date';
-    protected $_orderDirection = 'asc';
+    protected $orderField = 'start_date';
 
     protected $_startDate;
     protected $_endDate;
 
-    protected $_allowedSearchFields = ['title', 'start_date', 'end_date', 'location'];
-    protected $_searchField = 'title';
+    protected $allowedSearchFields = ['title', 'start_date', 'end_date', 'location'];
+    protected $searchField = 'title';
 
     public function __construct(array $attributes = [])
     {

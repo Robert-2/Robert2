@@ -15,6 +15,11 @@ final class PersonTest extends ModelTestCase
         $this->model = new Models\Person();
     }
 
+    public function testTableName(): void
+    {
+        $this->assertEquals('persons', $this->model->getTable());
+    }
+
     public function testGetAll(): void
     {
         $result = $this->model->getAll()->get()->toArray();
