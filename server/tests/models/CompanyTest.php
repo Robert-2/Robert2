@@ -15,6 +15,11 @@ final class CompanyTest extends ModelTestCase
         $this->model = new Models\Company();
     }
 
+    public function testTableName(): void
+    {
+        $this->assertEquals('companies', $this->model->getTable());
+    }
+
     public function testGetAll(): void
     {
         $results = $this->model->getAll()->get()->toArray();

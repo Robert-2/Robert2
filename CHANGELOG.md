@@ -12,6 +12,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
   Ceci va, par exemple, permettre de simplifier les mises à jour de la version compilée du client (via un simple `yarn build`).
   (Un lien symbolique est utilisé côté serveur pour relier les deux côtés de l'application)
 - Corrige l'hôte de développement et permet sa customisation via une variable d'environnement. 
+- Améliorations internes de la validation des données.
 
 ## 0.10.2 (2020-11-16)
 

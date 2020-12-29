@@ -14,6 +14,11 @@ final class CategoryTest extends ModelTestCase
         $this->model = new Models\Category();
     }
 
+    public function testTableName(): void
+    {
+        $this->assertEquals('categories', $this->model->getTable());
+    }
+
     public function testGetAll(): void
     {
         $result = $this->model->getAll()->get()->toArray();
@@ -129,9 +134,10 @@ final class CategoryTest extends ModelTestCase
         $this->assertEquals('one', @$result[0]['name']);
         $this->assertEquals('dès', @$result[1]['name']);
 
-        // - Ajout d'une catégorie, mais ignore la catégorie qui existe déjà
-        $result = $this->model->bulkAdd(['new categ', 'sound']);
-        $this->assertEquals('new categ', @$result[0]['name']);
-        $this->assertEmpty(@$result[1]['name']);
+        // - Ajout de catégories avec une qui existait déjà (ne l'ajoute pas deux fois)
+        $result = $this->model->bulkAdd(['new categorie', 'sound']);
+        $this->assertEquals('new categorie', @$result[0]['name']);
+        $this->assertEquals('sound', @$result[1]['name']);
+        $this->assertEquals(1, @$result[1]['id']);
     }
 }

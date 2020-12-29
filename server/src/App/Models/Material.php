@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Robert2\API\Models;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Respect\Validation\Validator as V;
+use Robert2\API\Validation\Validator as V;
 
 use Robert2\API\Models\Traits\Taggable;
 
@@ -13,14 +13,7 @@ class Material extends BaseModel
     use SoftDeletes;
     use Taggable;
 
-    protected $table = 'materials';
-
-    protected $_modelName = 'Material';
-    protected $_orderField = 'name';
-    protected $_orderDirection = 'asc';
-
-    protected $_allowedSearchFields = ['name', 'reference', 'name|reference'];
-    protected $_searchField = 'name|reference';
+    protected $searchField = ['name', 'reference'];
 
     public function __construct(array $attributes = [])
     {

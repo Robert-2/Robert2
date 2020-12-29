@@ -2,38 +2,37 @@
 
 namespace Robert2\API\Validation;
 
+use Robert2\API\I18n\I18n;
+use Respect\Validation\Factory;
+use Respect\Validation\Validator as CoreValidator;
 use Respect\Validation\Exceptions\NestedValidationException;
 
-use Robert2\API\I18n\I18n;
-
-class Validator
+class Validator extends CoreValidator
 {
-    protected $_errors = [];
-
-    public function validate(array $data, array $rules)
+    public function assert($input)
     {
-        foreach ($rules as $field => $rule) {
-            try {
-                $rule->setName($field)->assert(@$data[$field]);
-            } catch (NestedValidationException $e) {
-                $e->setParam('translator', [new I18n, 'translate']);
-                $this->addError($field, $e->getMessages());
-            }
+        try {
+            parent::assert($input);
+        } catch (NestedValidationException $e) {
+            $e->setParam('translator', [new I18n, 'translate']);
+            throw $e;
         }
+
+        return true;
     }
 
-    public function addError(string $field, array $message): void
-    {
-        $this->_errors[$field] = $message;
-    }
+    // ------------------------------------------------------
+    // -
+    // -    Static methods
+    // -
+    // ------------------------------------------------------
 
-    public function hasError(): bool
+    protected static function getFactory()
     {
-        return count($this->_errors) > 0;
-    }
-
-    public function getErrors(): array
-    {
-        return $this->_errors;
+        if (!static::$factory instanceof Factory) {
+            static::$factory = new Factory();
+            static::$factory->prependRulePrefix('Robert2\\API\\Validation\\Rules');
+        }
+        return static::$factory;
     }
 }

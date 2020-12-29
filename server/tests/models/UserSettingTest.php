@@ -15,6 +15,11 @@ final class UserSettingTest extends ModelTestCase
         $this->model = new Models\UserSetting();
     }
 
+    public function testTableName(): void
+    {
+        $this->assertEquals('user_settings', $this->model->getTable());
+    }
+
     public function testGetAll(): void
     {
         $this->expectException(\Exception::class);

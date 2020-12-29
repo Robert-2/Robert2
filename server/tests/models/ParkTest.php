@@ -14,6 +14,11 @@ final class ParkTest extends ModelTestCase
         $this->model = new Models\Park();
     }
 
+    public function testTableName(): void
+    {
+        $this->assertEquals('parks', $this->model->getTable());
+    }
+
     public function testGetAll(): void
     {
         $result = $this->model->getAll()->get()->toArray();

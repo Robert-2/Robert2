@@ -14,6 +14,11 @@ final class AttributeTest extends ModelTestCase
         $this->model = new Models\Attribute();
     }
 
+    public function testTableName(): void
+    {
+        $this->assertEquals('attributes', $this->model->getTable());
+    }
+
     public function testGetAll(): void
     {
         $result = $this->model->getAll()->get()->toArray();

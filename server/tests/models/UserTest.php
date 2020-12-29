@@ -15,6 +15,11 @@ final class UserTest extends ModelTestCase
         $this->model = new Models\User();
     }
 
+    public function testTableName(): void
+    {
+        $this->assertEquals('users', $this->model->getTable());
+    }
+
     private $expectedDataUser1 = [
         'id'         => 1,
         'pseudo'     => 'test1',
