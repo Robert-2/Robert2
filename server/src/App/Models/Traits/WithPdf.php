@@ -22,7 +22,7 @@ trait WithPdf
     {
         $model = $this->withTrashed()->find($id);
         if (!$model) {
-            throw new NotFoundException(sprintf('%s not found.', $this->_modelName));
+            throw new NotFoundException(sprintf('Record %d not found.', $id));
         }
 
         $company = Config::getSettings('companyData');
@@ -30,7 +30,7 @@ trait WithPdf
         $i18n = new I18n(Config::getSettings('defaultLang'));
         $fileName = sprintf(
             '%s-%s-%s.pdf',
-            $i18n->translate($this->_modelName),
+            $i18n->translate(class_basename($this)),
             slugify($company['name']),
             $model->title ?: $model->id
         );

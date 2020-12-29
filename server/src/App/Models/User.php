@@ -6,7 +6,7 @@ namespace Robert2\API\Models;
 use Robert2\API\Config;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Respect\Validation\Validator as V;
+use Robert2\API\Validation\Validator as V;
 use Illuminate\Database\Eloquent\Builder;
 
 use Robert2\API\Errors;
@@ -15,14 +15,10 @@ class User extends BaseModel
 {
     use SoftDeletes;
 
-    protected $table = 'users';
+    protected $orderField = 'pseudo';
 
-    protected $_modelName = 'User';
-    protected $_orderField = 'pseudo';
-    protected $_orderDirection = 'asc';
-
-    protected $_allowedSearchFields = ['pseudo', 'email'];
-    protected $_searchField = 'pseudo';
+    protected $allowedSearchFields = ['pseudo', 'email'];
+    protected $searchField = 'pseudo';
 
     public function __construct(array $attributes = [])
     {

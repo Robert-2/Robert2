@@ -37,7 +37,7 @@ trait Taggable
             $builder = $builder->where($field, $value);
         }
 
-        if (!empty($this->_searchTerm)) {
+        if (!empty($this->searchTerm)) {
             $builder = $this->_setSearchConditions($builder);
         }
 

@@ -16,6 +16,11 @@ final class MaterialTest extends ModelTestCase
         $this->model = new Models\Material();
     }
 
+    public function testTableName(): void
+    {
+        $this->assertEquals('materials', $this->model->getTable());
+    }
+
     public function testGetAll(): void
     {
         $result = $this->model->getAll()->get()->toArray();

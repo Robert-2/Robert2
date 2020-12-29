@@ -17,6 +17,11 @@ final class BillTest extends ModelTestCase
         $this->model = new Models\Bill();
     }
 
+    public function testTableName(): void
+    {
+        $this->assertEquals('bills', $this->model->getTable());
+    }
+
     public function testGetAll(): void
     {
         $result = $this->model->getAll()->get()->toArray();
