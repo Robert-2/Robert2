@@ -157,7 +157,7 @@ class Bill extends BaseModel
         $i18n = new I18n(Config::getSettings('defaultLang'));
         $fileName = sprintf(
             '%s-%s-%s-%s.pdf',
-            $i18n->translate(class_basename($this)),
+            $i18n->translate('Bill'),
             slugify($company['name']),
             $model->number,
             slugify($model->Beneficiary->full_name)

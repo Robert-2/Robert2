@@ -201,7 +201,7 @@ class BaseModel extends Model
             }
         }
 
-        // - Si le modèle existe déjà en base, on ne valide que les champs qui ont changés.
+        // - Si le modèle existe déjà en base, on ne valide que les champs qui ont changé.
         if ($this->exists) {
             $rules = array_intersect_key($rules, $this->getDirty());
         }
