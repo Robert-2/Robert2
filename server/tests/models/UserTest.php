@@ -244,7 +244,7 @@ final class UserTest extends ModelTestCase
             ],
         ];
 
-        $result   = $this->model->edit(3, $data);
+        $result = $this->model->edit(3, $data);
         $this->assertEquals('testEdit', $result['pseudo']);
         $this->assertEquals('Testing Tester', $result['person']['full_name']);
     }
