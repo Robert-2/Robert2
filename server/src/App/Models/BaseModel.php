@@ -194,16 +194,16 @@ class BaseModel extends Model
             throw new \RuntimeException("Validation rules cannot be empty.");
         }
 
-        $data = $this->getAttributes();
+        // - Récupère les attributs du modèle, castés (sauf les données tout juste ajoutées).
+        $data = $this->addCastAttributesToArray(
+            $this->getAttributes(),
+            array_keys($this->getDirty())
+        );
+
         foreach ($data as $field => $value) {
             if (is_array($value)) {
                 unset($data[$field]);
             }
-        }
-
-        // - Si le modèle existe déjà en base, on ne valide que les champs qui ont changé.
-        if ($this->exists) {
-            $rules = array_intersect_key($rules, $this->getDirty());
         }
 
         // - Validation
