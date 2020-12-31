@@ -39,16 +39,46 @@ class Material extends BaseModel
         $this->validation = [
             'name'                  => V::notEmpty()->length(2, 191),
             'reference'             => V::notEmpty()->alnum('.,-+/_ ')->length(2, 64),
-            'park_id'               => V::notEmpty()->numeric(),
+            'park_id'               => V::callback([$this, 'checkParkId']),
             'category_id'           => V::notEmpty()->numeric(),
             'sub_category_id'       => V::optional(V::numeric()),
             'rental_price'          => V::floatVal()->max(999999.99, true),
-            'stock_quantity'        => V::intVal()->max(100000),
-            'out_of_order_quantity' => V::optional(V::intVal()->max(100000)),
+            'stock_quantity'        => V::callback([$this, 'checkStockQuantity']),
+            'out_of_order_quantity' => V::callback([$this, 'checkOutOfOrderQuantity']),
             'replacement_price'     => V::optional(V::floatVal()->max(999999.99, true)),
             'is_hidden_on_bill'     => V::optional(V::boolType()),
             'is_discountable'       => V::optional(V::boolType()),
         ];
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Validation
+    // -
+    // ------------------------------------------------------
+
+    public function checkParkId($value)
+    {
+        if ($this->is_unitary) {
+            return V::nullType();
+        }
+        return V::notEmpty()->numeric();
+    }
+
+    public function checkStockQuantity($value)
+    {
+        if ($this->is_unitary) {
+            return V::nullType();
+        }
+        return V::intVal()->max(100000);
+    }
+
+    public function checkOutOfOrderQuantity($value)
+    {
+        if ($this->is_unitary) {
+            return V::nullType();
+        }
+        return V::optional(V::intVal()->max(100000));
     }
 
     // ——————————————————————————————————————————————————————
