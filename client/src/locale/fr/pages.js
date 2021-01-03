@@ -138,7 +138,6 @@ export default {
     'edit': "Modifier le matériel «\u00a0{pageSubTitle}\u00a0»",
     'help-edit': "Trouvez un nom assez court, et utilisez plutôt la description pour détailler le matériel si besoin.",
     'view': "Détails du matériel «\u00a0{pageSubTitle}\u00a0»",
-    'help-view': "",
     'confirm-delete': "Mettre ce matériel à la corbeille\u00a0?",
     'confirm-permanently-delete': "Voulez-vous vraiment supprimer définitivement ce matériel\u00a0?",
     'confirm-restore': "Voulez-vous vraiment restaurer ce matériel\u00a0?",

@@ -100,7 +100,7 @@ export default {
   'open-trash-bin': "Display trash bin",
   'display-not-deleted-items': "Display not deleted items",
   'created-at': "Created at:",
-  'updated-at': "Last modif.:",
+  'updated-at': "Updated at:",
 
   'event-details': "Event's details",
   'title': "Title",

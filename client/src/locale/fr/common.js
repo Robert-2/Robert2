@@ -100,7 +100,7 @@ export default {
   'open-trash-bin': "Afficher la corbeille",
   'display-not-deleted-items': "Afficher les enregistrements non supprimés",
   'created-at': "Créé le\u00a0:",
-  'updated-at': "Dernière modif.\u00a0:",
+  'updated-at': "Modifié le\u00a0:",
 
   'event-details': "Détails de l'événement",
   'title': "Titre",
