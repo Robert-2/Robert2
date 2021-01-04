@@ -1,0 +1,32 @@
+.MaterialView {
+  display: flex;
+  flex-wrap: wrap;
+  color: $text-base-color;
+  padding-bottom: 6rem;
+
+  &__infos {
+    flex: 2;
+    min-width: 250px;
+    margin-right: 3rem;
+  }
+
+  &__no-attribute-help {
+    color: $text-light-color;
+    font-style: italic;
+  }
+
+  &__extras {
+    flex: 1;
+    min-width: 250px;
+    padding: 1rem 0 0;
+  }
+
+  &__categories {
+    margin: 1.5rem 0;
+  }
+
+  &__dates {
+    color: $text-light-color;
+    margin-top: 1.5rem;
+  }
+}

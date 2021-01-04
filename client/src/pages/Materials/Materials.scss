@@ -40,22 +40,15 @@
     }
   }
 
-  &__tag-item,
   &__add-tags {
+    flex: 1;
+    margin-bottom: .35rem;
     padding: .4rem .55rem;
     font-size: 0.85rem;
   }
 
-  &__tag-item {
-    flex: 0 0 auto;
-    margin: 0 0 .35rem .35rem;
-    background: $bg-color-emphasis;
-    border-radius: 10px;
-  }
-
-  &__add-tags {
-    flex: 1;
-    margin-bottom: .35rem;
+  &__actions {
+    min-width: 110px;
   }
 }
 

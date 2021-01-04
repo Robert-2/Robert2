@@ -4,12 +4,13 @@ import store from '@/store';
 import Alert from '@/components/Alert';
 import Help from '@/components/Help/Help.vue';
 import AssignTags from '@/components/AssignTags/AssignTags.vue';
-import MaterialsFilter from '@/components/MaterialsFilters/MaterialsFilters.vue';
+import MaterialsFilters from '@/components/MaterialsFilters/MaterialsFilters.vue';
+import MaterialTags from '@/components/MaterialTags/MaterialTags.vue';
 import formatAmount from '@/utils/formatAmount';
 
 export default {
   name: 'Materials',
-  components: { Help, MaterialsFilter },
+  components: { Help, MaterialsFilters, MaterialTags },
   data() {
     const columns = [
       'reference',

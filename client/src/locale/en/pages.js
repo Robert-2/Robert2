@@ -137,6 +137,7 @@ export default {
     'add': "New material",
     'edit': "Modify material «\u00a0{pageSubTitle}\u00a0»",
     'help-edit': "Give a short name, and use the description field to detail the material if needed.",
+    'view': "Details of material «\u00a0{pageSubTitle}\u00a0»",
     'confirm-delete': "Move this material in trash bin?",
     'confirm-permanently-delete': "Do you really want to permanently delete this material?",
     'confirm-restore': "Do you really want to restore this material?",
