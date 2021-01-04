@@ -101,6 +101,7 @@ export default {
   'display-not-deleted-items': "Afficher les enregistrements non supprimés",
   'created-at': "Créé le\u00a0:",
   'updated-at': "Modifié le\u00a0:",
+  'units': "Unités",
 
   'event-details': "Détails de l'événement",
   'title': "Titre",
@@ -155,6 +156,7 @@ export default {
     "{count} articles",
   ],
   'stock-items-count': "{count} en stock",
+  'out-of-order-items-count': "{count} en panne",
   'sub-total': "Sous-total",
   'total-amount': "Montant total",
   'total-amount-with-discount': "Total après remise",

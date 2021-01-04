@@ -101,6 +101,7 @@ export default {
   'display-not-deleted-items': "Display not deleted items",
   'created-at': "Created at:",
   'updated-at': "Updated at:",
+  'units': "Units",
 
   'event-details': "Event's details",
   'title': "Title",
@@ -155,6 +156,7 @@ export default {
     "{count} items",
   ],
   'stock-items-count': "{count} in stock",
+  'out-of-order-items-count': "{count} out of order",
   'sub-total': "Sub-total",
   'total-amount': "Total amount",
   'total-amount-with-discount': "Total with discount",
