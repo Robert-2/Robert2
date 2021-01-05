@@ -10,7 +10,7 @@ use Illuminate\Pagination\LengthAwarePaginator as Paginator;
 use Robert2\API\Errors;
 use Robert2\API\Controllers\Traits\AuthUser;
 
-class BaseController
+abstract class BaseController
 {
     use AuthUser;
 
