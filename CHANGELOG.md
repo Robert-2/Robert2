@@ -13,6 +13,8 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
   (Un lien symbolique est utilisé côté serveur pour relier les deux côtés de l'application)
 - Corrige l'hôte de développement et permet sa customisation via une variable d'environnement. 
 - Améliorations internes de la validation des données.
+- Ajoute une page de vue du matériel en détail.
+- Utilise des onglets dans la page de vue du matériel.
 
 ## 0.10.2 (2020-11-16)
 

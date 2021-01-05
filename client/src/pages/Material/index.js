@@ -149,7 +149,7 @@ export default {
           this.setMaterialData(data);
 
           setTimeout(() => {
-            this.$router.push('/materials');
+            this.$router.push(`/materials/${data.id}/view`);
           }, 300);
         })
         .catch(this.displayError);
