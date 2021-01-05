@@ -4,22 +4,13 @@ declare(strict_types=1);
 namespace Robert2\API\Controllers;
 
 use Robert2\API\Errors;
-use Robert2\API\Models\Event;
 use Robert2\API\Controllers\Traits\WithPdf;
-use Robert2\API\Models\Material;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
 class EventController extends BaseController
 {
     use WithPdf;
-
-    public function __construct($container)
-    {
-        parent::__construct($container);
-
-        $this->model = new Event();
-    }
 
     // ——————————————————————————————————————————————————————
     // —
@@ -151,8 +142,6 @@ class EventController extends BaseController
             ->find($id);
 
         $result = $model->toArray();
-        $result['materials'] = array_map([Material::class, 'format'], $result['materials']);
-
         if (!$model->bills) {
             return $result;
         }

@@ -15,6 +15,23 @@ class Material extends BaseModel
 
     protected $searchField = ['name', 'reference'];
 
+    protected $attributes = [
+        'name' => null,
+        'description' => null,
+        'reference' => null,
+        'is_unitary' => false,
+        'park_id' => null,
+        'category_id' => null,
+        'sub_category_id' => null,
+        'rental_price' => null,
+        'stock_quantity' => null,
+        'out_of_order_quantity' => null,
+        'replacement_price' => null,
+        'is_hidden_on_bill' => false,
+        'is_discountable' => true,
+        'note' => null,
+    ];
+
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
@@ -101,6 +118,22 @@ class Material extends BaseModel
         'is_discountable'       => 'boolean',
         'note'                  => 'string',
     ];
+
+    public function getStockQuantityAttribute($value)
+    {
+        if ($this->is_unitary) {
+            $value = 0;
+        }
+        return $this->castAttribute('stock_quantity', $value);
+    }
+
+    public function getOutOfOrderQuantityAttribute($value)
+    {
+        if ($this->is_unitary) {
+            $value = 0;
+        }
+        return $this->castAttribute('out_of_order_quantity', $value);
+    }
 
     public function getParkAttribute()
     {
@@ -274,23 +307,5 @@ class Material extends BaseModel
         );
 
         return $eventMaterialIndex === false ? [] : $event['materials'][$eventMaterialIndex];
-    }
-
-    // ------------------------------------------------------
-    // -
-    // -    Static methods
-    // -
-    // ------------------------------------------------------
-
-    public static function format(array $material): array
-    {
-        if (!$material['is_unitary']) {
-            return $material;
-        }
-
-        return array_replace($material, [
-            'stock_quantity' => 0,
-            'out_of_order_quantity' => 0,
-        ]);
     }
 }

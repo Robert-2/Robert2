@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Robert2\API\Controllers;
 
 use Robert2\API\Errors;
-use Robert2\API\Models\Material;
 use Robert2\API\Models\Attribute;
 use Robert2\API\Models\Event;
 use Robert2\API\Controllers\Traits\Taggable;
@@ -14,13 +13,6 @@ use Slim\Http\Response;
 class MaterialController extends BaseController
 {
     use Taggable;
-
-    public function __construct($container)
-    {
-        parent::__construct($container);
-
-        $this->model = new Material();
-    }
 
     // ——————————————————————————————————————————————————————
     // —
@@ -76,8 +68,6 @@ class MaterialController extends BaseController
         $params = $request->getQueryParams();
         $results = $results->withPath($basePath)->appends($params);
         $results = $this->_formatPagination($results);
-
-        $results['data'] = array_map([Material::class, 'format'], $results['data']);
 
         if ($whileEvent) {
             $eventId = (int)$whileEvent;
@@ -183,6 +173,6 @@ class MaterialController extends BaseController
         }
 
         $model = $this->model->find($result->id);
-        return Material::format($model->toArray());
+        return $model->toArray();
     }
 }

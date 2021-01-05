@@ -291,6 +291,7 @@ final class UsersTest extends ApiTestCase
         $response = $this->_getResponseAsArray();
         unset($response['created_at']);
         unset($response['updated_at']);
+        unset($response['deleted_at']);
         unset($response['person']['created_at']);
         unset($response['person']['updated_at']);
         $this->assertEquals([
@@ -336,6 +337,7 @@ final class UsersTest extends ApiTestCase
             'group_id'   => 'member',
             'created_at' => 'fakedTestContent',
             'updated_at' => 'fakedTestContent',
+            'deleted_at' => null,
             'person'     => null,
         ], ['created_at', 'updated_at']);
     }

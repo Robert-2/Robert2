@@ -11,7 +11,7 @@ use InvalidArgumentException;
 use Robert2\API\Config\Config;
 use Robert2\API\Errors;
 
-class BaseModel extends Model
+abstract class BaseModel extends Model
 {
     private $columns;
 
@@ -134,7 +134,7 @@ class BaseModel extends Model
             throw $error;
         }
 
-        return $model;
+        return $model->refresh();
     }
 
     public function remove(int $id, array $options = []): ?Model

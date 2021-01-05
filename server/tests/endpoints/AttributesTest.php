@@ -21,6 +21,7 @@ final class AttributesTest extends ApiTestCase
             'max_length' => 4,
             'created_at' => 'fakedTestContent',
             'updated_at' => 'fakedTestContent',
+            'deleted_at' => null,
         ];
         $this->assertResponseData($expected, ['created_at', 'updated_at']);
     }
