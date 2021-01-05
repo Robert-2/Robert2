@@ -189,8 +189,7 @@ final class UserTest extends ModelTestCase
             'group_id' => 'member',
             'person'   => null
         ];
-        unset($result->created_at);
-        unset($result->updated_at);
+        unset($result->created_at, $result->updated_at, $result->deleted_at);
         $this->assertEquals($expected, $result->toArray());
 
         // - Check if settings are created

@@ -7,19 +7,11 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 
 use Robert2\API\Errors;
-use Robert2\API\Models\Company;
 use Robert2\API\Controllers\Traits\Taggable;
 
 class CompanyController extends BaseController
 {
     use Taggable;
-
-    public function __construct($container)
-    {
-        parent::__construct($container);
-
-        $this->model = new Company;
-    }
 
     // ——————————————————————————————————————————————————————
     // —

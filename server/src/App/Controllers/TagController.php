@@ -4,20 +4,11 @@ declare(strict_types=1);
 namespace Robert2\API\Controllers;
 
 use Robert2\API\Errors;
-use Robert2\API\Models\Material;
-use Robert2\API\Models\Tag;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
 class TagController extends BaseController
 {
-    public function __construct($container)
-    {
-        parent::__construct($container);
-
-        $this->model = new Tag();
-    }
-
     public function getPersons(Request $request, Response $response): Response
     {
         $id = (int)$request->getAttribute('id');
@@ -50,8 +41,6 @@ class TagController extends BaseController
         $materials->withPath($basePath);
 
         $results = $this->_formatPagination($materials);
-        $results['data'] = array_map([Material::class, 'format'], $results['data']);
-
         return $response->withJson($results);
     }
 }
