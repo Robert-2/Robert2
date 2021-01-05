@@ -15,6 +15,23 @@ class Material extends BaseModel
 
     protected $searchField = ['name', 'reference'];
 
+    protected $attributes = [
+        'name' => null,
+        'description' => null,
+        'reference' => null,
+        'is_unitary' => false,
+        'park_id' => null,
+        'category_id' => null,
+        'sub_category_id' => null,
+        'rental_price' => null,
+        'stock_quantity' => null,
+        'out_of_order_quantity' => null,
+        'replacement_price' => null,
+        'is_hidden_on_bill' => false,
+        'is_discountable' => true,
+        'note' => null,
+    ];
+
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
