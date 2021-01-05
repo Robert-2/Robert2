@@ -87,6 +87,7 @@ export default {
   'reference': "Reference",
   'park': "Park",
   'prices': "Prices",
+  'is-unitary': "Unitary identification?",
   'rental-price': "Rental price",
   'replacement-price': "Replacement price",
   'rent-price': "Rent. price",

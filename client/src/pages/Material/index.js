@@ -22,6 +22,7 @@ export default {
         reference: '',
         park_id: 1,
         category_id: '',
+        is_unitary: false,
         rental_price: showBilling ? '' : 0,
         stock_quantity: '',
         description: '',
@@ -119,6 +120,18 @@ export default {
       };
     },
 
+    handleUnitaryChange(isUnitary) {
+      if (!isUnitary) {
+        return;
+      }
+
+      this.material.park_id = null;
+
+      // Note: On garde les `stock_quantity` + `out_of_order_quantity` tel quels
+      // pour permettre à l'utilisateur de switch-back vers une gestion non unitaire
+      // avec les anciennes valeurs.
+    },
+
     saveMaterial(e) {
       e.preventDefault();
       this.resetHelpLoading();
@@ -137,10 +150,12 @@ export default {
         { id: attributeId, value: this.materialAttributes[attributeId] }
       ));
 
-      const postData = {
-        ...this.material,
-        attributes,
-      };
+      const postData = { ...this.material, attributes };
+
+      if (postData.is_unitary) {
+        postData.stock_quantity = null;
+        postData.out_of_order_quantity = null;
+      }
 
       request(route, postData)
         .then(({ data }) => {
