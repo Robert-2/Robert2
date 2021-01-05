@@ -121,18 +121,18 @@ class Material extends BaseModel
 
     public function getStockQuantityAttribute($value)
     {
-        if (!$this->is_unitary) {
-            return $value;
+        if ($this->is_unitary) {
+            $value = 0;
         }
-        return 0;
+        return $this->castAttribute('stock_quantity', $value);
     }
 
     public function getOutOfOrderQuantityAttribute($value)
     {
-        if (!$this->is_unitary) {
-            return $value;
+        if ($this->is_unitary) {
+            $value = 0;
         }
-        return 0;
+        return $this->castAttribute('out_of_order_quantity', $value);
     }
 
     public function getParkAttribute()
