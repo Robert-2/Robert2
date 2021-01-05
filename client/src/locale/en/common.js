@@ -109,6 +109,7 @@ export default {
   'display-not-deleted-items': "Display not deleted items",
   'created-at': "Created at:",
   'updated-at': "Updated at:",
+  'units': "Units",
 
   'event-details': "Event's details",
   'title': "Title",

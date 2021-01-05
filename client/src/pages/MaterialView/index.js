@@ -2,6 +2,7 @@ import { Tabs, Tab } from 'vue-slim-tabs';
 import store from '@/store';
 import Help from '@/components/Help/Help.vue';
 import Infos from './Infos/Infos.vue';
+import Units from './Units/Units.vue';
 
 export default {
   name: 'MaterialView',
@@ -10,6 +11,7 @@ export default {
     Tab,
     Help,
     Infos,
+    Units,
   },
   data() {
     return {
