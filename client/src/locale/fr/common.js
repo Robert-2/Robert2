@@ -155,6 +155,7 @@ export default {
     "{count} articles",
   ],
   'stock-items-count': "{count} en stock",
+  'out-of-order-items-count': "{count} en panne",
   'sub-total': "Sous-total",
   'total-amount': "Montant total",
   'total-amount-with-discount': "Total après remise",

@@ -1,59 +1,26 @@
-import moment from 'moment';
-import Config from '@/config/globalConfig';
-import formatAmount from '@/utils/formatAmount';
+import { Tabs, Tab } from 'vue-slim-tabs';
 import store from '@/store';
 import Help from '@/components/Help/Help.vue';
-import MaterialTags from '@/components/MaterialTags/MaterialTags.vue';
+import Infos from './Infos/Infos.vue';
 
 export default {
   name: 'MaterialView',
-  components: { Help, MaterialTags },
+  components: {
+    Tabs,
+    Tab,
+    Help,
+    Infos,
+  },
   data() {
     return {
       help: '',
       error: null,
       isLoading: false,
-      extraAttributes: [],
-      showBilling: Config.billingMode !== 'none',
       material: {
         id: this.$route.params.id,
         attributes: [],
       },
     };
-  },
-  computed: {
-    createDate() {
-      const { created_at: createdAt } = this.material;
-      return createdAt ? moment(createdAt).format('L') : null;
-    },
-    updateDate() {
-      const { updated_at: updatedAt } = this.material;
-      return updatedAt ? moment(updatedAt).format('L') : null;
-    },
-    categoryName() {
-      const { category_id: categoryId } = this.material;
-      const categoryNameGetter = store.getters['categories/categoryName'];
-      return categoryNameGetter(categoryId);
-    },
-    subCategoryName() {
-      const { sub_category_id: subCategoryId } = this.material;
-      const subCategoryNameGetter = store.getters['categories/subCategoryName'];
-      return subCategoryNameGetter(subCategoryId);
-    },
-    rentalPrice() {
-      const { rental_price: rentalPrice } = this.material;
-      return rentalPrice ? formatAmount(rentalPrice) : null;
-    },
-    replacementPrice() {
-      const { replacement_price: replacementPrice } = this.material;
-      return replacementPrice ? formatAmount(replacementPrice) : null;
-    },
-    queryStringCategory() {
-      return `category=${this.material.category_id}`;
-    },
-    queryStringSubCategory() {
-      return `category=${this.material.category_id}&subCategory=${this.material.sub_category_id}`;
-    },
   },
   mounted() {
     store.dispatch('categories/fetch');
