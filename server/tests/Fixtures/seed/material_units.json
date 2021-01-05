@@ -2,24 +2,28 @@
     {
         "id": 1,
         "material_id": 6,
+        "park_id": 1,
         "serial_number": "XR18-1",
         "is_broken": false
     },
     {
         "id": 2,
         "material_id": 6,
+        "park_id": 1,
         "serial_number": "XR18-2",
         "is_broken": false
     },
     {
         "id": 3,
         "material_id": 6,
+        "park_id": 2,
         "serial_number": "XR18-3",
         "is_broken": true
     },
     {
         "id": 4,
         "material_id": 7,
+        "park_id": 2,
         "serial_number": "VHCL-1",
         "is_broken": false
     }
