@@ -20,6 +20,14 @@ abstract class BaseController
 
     public function __construct($container)
     {
+        if ($this->model === null) {
+            $modelName = preg_replace('/Controller$/', '', class_basename($this));
+            $modelFullName = sprintf('\\Robert2\\API\\Models\\%s', $modelName);
+            if (class_exists($modelFullName, true)) {
+                $this->model = new $modelFullName();
+            }
+        }
+
         $this->container  = $container;
         $this->itemsCount = $container->settings['maxItemsPerPage'];
     }

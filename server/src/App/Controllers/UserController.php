@@ -7,18 +7,10 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 
 use Robert2\API\Errors;
-use Robert2\API\Models\User;
 use Robert2\API\Config\Config;
 
 class UserController extends BaseController
 {
-    public function __construct($container)
-    {
-        parent::__construct($container);
-
-        $this->model = new User;
-    }
-
     // ——————————————————————————————————————————————————————
     // —
     // —    Model dedicated methods
