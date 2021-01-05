@@ -115,9 +115,10 @@ final class CategoriesTest extends ApiTestCase
         $this->assertResponseData([
             'id'             => 4,
             'name'           => 'New Category',
+            'sub_categories' => [],
             'created_at'     => 'fakedTestContent',
             'updated_at'     => 'fakedTestContent',
-            'sub_categories' => [],
+            'deleted_at'     => null,
         ], ['created_at', 'updated_at']);
     }
 

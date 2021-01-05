@@ -5,7 +5,6 @@ namespace Robert2\Tests;
 
 use Robert2\API\Errors;
 use Robert2\API\Models;
-use Robert2\API\Models\Material;
 
 final class MaterialTest extends ModelTestCase
 {
@@ -304,8 +303,8 @@ final class MaterialTest extends ModelTestCase
             'reference'         => 'RM800',
             'park_id'           => 1,
             'category_id'       => 1,
-            'rental_price'      => 100.0,
-            'replacement_price' => 100.6,
+            'rental_price'      => '100.0',
+            'replacement_price' => '100.6',
             'stock_quantity'    => 1,
             'tags'              => ['old matos', 'vintage'],
         ]);
@@ -331,8 +330,7 @@ final class MaterialTest extends ModelTestCase
             ],
             'attributes' => [],
         ];
-        unset($result->created_at);
-        unset($result->updated_at);
+        unset($result->created_at, $result->updated_at, $result->deleted_at);
         $this->assertEquals($expected, $result->toArray());
     }
 }

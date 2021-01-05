@@ -134,7 +134,7 @@ abstract class BaseModel extends Model
             throw $error;
         }
 
-        return $model;
+        return $model->refresh();
     }
 
     public function remove(int $id, array $options = []): ?Model

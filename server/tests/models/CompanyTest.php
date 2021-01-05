@@ -180,14 +180,14 @@ final class CompanyTest extends ModelTestCase
             'locality'    => 'Paris',
             'country_id'  => 1,
             'phone'       => '+0033625252125',
+            'note'        => null,
             'country'     => [
                 'id'   => 1,
                 'name' => 'France',
                 'code' => 'FR',
             ],
         ];
-        unset($result->created_at);
-        unset($result->updated_at);
+        unset($result->created_at, $result->updated_at, $result->deleted_at);
         $this->assertEquals($expected, $result->toArray());
     }
 
@@ -229,14 +229,14 @@ final class CompanyTest extends ModelTestCase
             'locality'    => 'Paris',
             'country_id'  => 1,
             'phone'       => '+0033625252125',
+            'note'        => null,
             'country'     => [
                 'id'   => 1,
                 'name' => 'France',
                 'code' => 'FR',
             ],
         ];
-        unset($result->created_at);
-        unset($result->updated_at);
+        unset($result->created_at, $result->updated_at, $result->deleted_at);
         $this->assertEquals($expected, $result->toArray());
     }
 
