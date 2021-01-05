@@ -218,7 +218,6 @@ class Material extends BaseModel
     // -
     // ------------------------------------------------------
 
-    //-
     public function recalcQuantitiesForPeriod(
         array $data,
         string $start,
