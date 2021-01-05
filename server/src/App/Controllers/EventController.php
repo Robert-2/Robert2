@@ -151,8 +151,6 @@ class EventController extends BaseController
             ->find($id);
 
         $result = $model->toArray();
-        $result['materials'] = array_map([Material::class, 'format'], $result['materials']);
-
         if (!$model->bills) {
             return $result;
         }

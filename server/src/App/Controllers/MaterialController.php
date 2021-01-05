@@ -77,8 +77,6 @@ class MaterialController extends BaseController
         $results = $results->withPath($basePath)->appends($params);
         $results = $this->_formatPagination($results);
 
-        $results['data'] = array_map([Material::class, 'format'], $results['data']);
-
         if ($whileEvent) {
             $eventId = (int)$whileEvent;
             $Event = new Event();
@@ -183,6 +181,6 @@ class MaterialController extends BaseController
         }
 
         $model = $this->model->find($result->id);
-        return Material::format($model->toArray());
+        return $model->toArray();
     }
 }

@@ -38,8 +38,6 @@ class ParkController extends BaseController
         $materials->withPath($basePath);
 
         $results = $this->_formatPagination($materials);
-        $results['data'] = array_map([Material::class, 'format'], $results['data']);
-
         return $response->withJson($results);
     }
 }

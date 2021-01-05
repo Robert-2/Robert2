@@ -102,6 +102,22 @@ class Material extends BaseModel
         'note'                  => 'string',
     ];
 
+    public function getStockQuantityAttribute($value)
+    {
+        if (!$this->is_unitary) {
+            return $value;
+        }
+        return 0;
+    }
+
+    public function getOutOfOrderQuantityAttribute($value)
+    {
+        if (!$this->is_unitary) {
+            return $value;
+        }
+        return 0;
+    }
+
     public function getParkAttribute()
     {
         $park = $this->Park()->first();
@@ -185,6 +201,7 @@ class Material extends BaseModel
     // -
     // ------------------------------------------------------
 
+    //-
     public function recalcQuantitiesForPeriod(
         array $data,
         string $start,
@@ -274,23 +291,5 @@ class Material extends BaseModel
         );
 
         return $eventMaterialIndex === false ? [] : $event['materials'][$eventMaterialIndex];
-    }
-
-    // ------------------------------------------------------
-    // -
-    // -    Static methods
-    // -
-    // ------------------------------------------------------
-
-    public static function format(array $material): array
-    {
-        if (!$material['is_unitary']) {
-            return $material;
-        }
-
-        return array_replace($material, [
-            'stock_quantity' => 0,
-            'out_of_order_quantity' => 0,
-        ]);
     }
 }
