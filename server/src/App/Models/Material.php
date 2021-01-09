@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace Robert2\API\Models;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Builder;
 use Robert2\API\Validation\Validator as V;
-
 use Robert2\API\Models\Traits\Taggable;
 
 class Material extends BaseModel
@@ -326,5 +326,28 @@ class Material extends BaseModel
         }
 
         return $data;
+    }
+
+    public function getAllFiltered(array $conditions, bool $withDeleted = false): Builder
+    {
+        $parkId = array_key_exists('park_id', $conditions) ? $conditions['park_id'] : null;
+        unset($conditions['park_id']);
+
+        $builder = parent::getAllFiltered($conditions, $withDeleted);
+
+        if ($parkId) {
+            $builder->where(function ($query) use ($parkId) {
+                $query
+                    ->where('park_id', $parkId)
+                    ->orWhereHas(
+                        'units',
+                        function ($subQuery) use ($parkId) {
+                            $subQuery->where('park_id', $parkId);
+                        }
+                    );
+            });
+        }
+
+        return $builder;
     }
 }

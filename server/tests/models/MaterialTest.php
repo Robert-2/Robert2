@@ -31,7 +31,12 @@ final class MaterialTest extends ModelTestCase
         // - Récupération du matériel associé au parc n°1
         $options = ['park_id' => 1];
         $result = $this->model->getAllFiltered($options)->get()->toArray();
-        $this->assertCount(5, $result);
+        $this->assertCount(7, $result);
+
+        // - Récupération du matériel associé au parc n°2
+        $options = ['park_id' => 2];
+        $result = $this->model->getAllFiltered($options)->get()->toArray();
+        $this->assertCount(2, $result);
 
         // - Récupération du matériel associé à la catégorie n°1
         $options = ['category_id' => 1];
