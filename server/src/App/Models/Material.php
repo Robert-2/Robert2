@@ -114,7 +114,7 @@ class Material extends BaseModel
     public function Units()
     {
         return $this->hasMany('Robert2\API\Models\MaterialUnit')
-            ->select(['id', 'serial_number', 'is_broken']);
+            ->select(['id', 'serial_number', 'park_id', 'is_broken']);
     }
 
     public function Attributes()

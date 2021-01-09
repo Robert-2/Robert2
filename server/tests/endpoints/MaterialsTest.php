@@ -48,16 +48,19 @@ final class MaterialsTest extends ApiTestCase
                             'id' => 1,
                             'serial_number' => 'XR18-1',
                             'is_broken' => false,
+                            'park_id' => 1,
                         ],
                         [
                             'id' => 2,
                             'serial_number' => 'XR18-2',
                             'is_broken' => false,
+                            'park_id' => 1,
                         ],
                         [
                             'id' => 3,
                             'serial_number' => 'XR18-3',
                             'is_broken' => true,
+                            'park_id' => 2,
                         ],
                     ]
                 ],
@@ -157,11 +160,13 @@ final class MaterialsTest extends ApiTestCase
                             'id' => 5,
                             'serial_number' => 'DECOR-FOREST-1',
                             'is_broken' => false,
+                            'park_id' => 1,
                         ],
                         [
                             'id' => 6,
                             'serial_number' => 'DECOR-FOREST-2',
                             'is_broken' => false,
+                            'park_id' => 1,
                         ],
                     ]
                 ],
@@ -316,6 +321,7 @@ final class MaterialsTest extends ApiTestCase
                             'id' => 4,
                             'serial_number' => 'VHCL-1',
                             'is_broken' => false,
+                            'park_id' => 2,
                         ]
                     ],
                 ],
