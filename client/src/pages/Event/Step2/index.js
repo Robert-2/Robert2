@@ -1,6 +1,5 @@
 import Config from '@/config/globalConfig';
 import MultipleItem from '@/components/MultipleItem/MultipleItem.vue';
-import formatOptions from '@/utils/formatOptions';
 import EventStore from '../EventStore';
 
 export default {
@@ -10,30 +9,15 @@ export default {
   data() {
     return {
       beneficiariesIds: this.event.beneficiaries.map((benef) => benef.id),
-      beneficiariesOptions: [],
       showBillingHelp: Config.billingMode !== 'none',
+      fetchParams: { tags: [Config.beneficiaryTagName] },
       errors: {},
     };
   },
   mounted() {
-    this.getEntities();
     EventStore.commit('setIsSaved', true);
   },
   methods: {
-    getEntities() {
-      this.$emit('loading');
-      const params = { tags: [Config.beneficiaryTagName] };
-      this.$http.get('persons', { params })
-        .then(({ data }) => {
-          this.beneficiariesOptions = formatOptions(
-            data.data,
-            ['first_name', 'last_name', '−', 'company.legal_name', '−', 'locality'],
-          );
-          this.$emit('stopLoading');
-        })
-        .catch(this.displayError);
-    },
-
     updateItems(ids) {
       this.beneficiariesIds = ids;
 

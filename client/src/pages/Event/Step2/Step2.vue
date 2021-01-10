@@ -7,9 +7,11 @@
       <MultipleItem
         label="beneficiary"
         field="full_name"
-        :field-options="beneficiariesOptions"
-        :initial-items-ids="beneficiariesIds"
+        fetchEntity="persons"
+        :fetchParams="fetchParams"
+        :selectedItems="event.beneficiaries"
         @itemsUpdated="updateItems"
+        createItemPath="/beneficiaries/new"
       />
       <p v-if="showBillingHelp" class="EventStep2__help">
         <i class="fas fa-info-circle" />

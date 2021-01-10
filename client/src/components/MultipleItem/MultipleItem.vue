@@ -1,8 +1,8 @@
 <template>
   <div class="MultipleItem">
     <div
-      v-for="(itemId, index) in itemsIds"
-      :key="itemId"
+      v-for="(itemData, index) in notSavedSelectedItem"
+      :key="itemData.id || `unknown-${index}`"
       class="MultipleItem__item FormField"
     >
       <label class="FormField__label">
@@ -10,24 +10,18 @@
       </label>
       <div class="MultipleItem__value-field">
         <span
-          v-if="fieldOptions.length === 0"
-          class="MultipleItem__value-field--loading"
-        >
-          <i class="fas fa-spin fa-spinner" />
-        </span>
-        <span
-          v-if="fieldOptions.length > 0 && !getItemLabel(itemId)"
+          v-if="!itemData"
           class="MultipleItem__value-field--error"
         >
           <i class="fas fa-exclamation-triangle" />
           {{$t('item-not-found', { item: $t(label) })}}
         </span>
-        <span v-else>{{ getItemLabel(itemId) }}</span>
+        <span v-else>{{ getItemLabel(itemData) }}</span>
       </div>
       <button
         class="MultipleItem__item-action-btn danger"
         :title="$t('remove-item', { item: $t(label) })"
-        @click="(e) => { e.preventDefault(); removeItem(itemId); }"
+        @click="(e) => { e.preventDefault(); removeItem(itemData.id); }"
       >
         <i class="fas fa-trash-alt" />
       </button>
@@ -41,9 +35,34 @@
       </label>
       <VueSelect
         v-model="newItem"
+        :filterable="false"
         :options="selectableOptions"
+        @search="handleSearch"
         @input="insertNewItem"
-      />
+      >
+        <template #no-options="{ search }">
+          <span v-if="search.length === 0">
+            {{ $t('start-typing-to-search') }}
+          </span>
+          <span v-if="search.length > 0 && search.length < minSearchCharacters">
+            {{ $t(
+              'type-at-least-count-chars-to-search',
+              { count: minSearchCharacters - search.length },
+              minSearchCharacters - search.length,
+            ) }}
+          </span>
+          <div v-if="search.length >= minSearchCharacters">
+            <p>{{ $t('no-result-found-try-another-search') }}</p>
+            <router-link
+              :to="createItemPath"
+              tag="button"
+              class="success"
+            >
+              {{ $t('create-select-item-label', { label: $t(label) }) }}
+            </router-link>
+          </div>
+        </template>
+      </VueSelect>
       <button
         class="MultipleItem__item-action-btn warning"
         :title="$t('cancel-add-item', { item: $t(label) })"
@@ -70,69 +89,4 @@
   @import './MultipleItem';
 </style>
 
-<script>
-import VueSelect from 'vue-select';
-
-export default {
-  name: 'MultipleItem',
-  components: { VueSelect },
-  props: {
-    label: String,
-    field: String,
-    fieldOptions: Array,
-    initialItemsIds: Array,
-  },
-  data() {
-    const defaultItem = { value: null, label: this.$t('please-choose') };
-
-    return {
-      itemsIds: [...this.initialItemsIds] || [],
-      askNewItem: false,
-      newItem: defaultItem,
-      defaultItem,
-    };
-  },
-  computed: {
-    selectableOptions() {
-      return this.fieldOptions.filter(
-        (option) => !this.itemsIds.includes(option.value),
-      );
-    },
-  },
-  methods: {
-    getItemLabel(id) {
-      const itemOption = this.fieldOptions.find(
-        (option) => option.value === id,
-      );
-      return itemOption ? itemOption.label : '';
-    },
-
-    startAddItem(e) {
-      e.preventDefault();
-      this.askNewItem = true;
-    },
-
-    insertNewItem() {
-      if (!this.newItem || !this.newItem.value) {
-        return;
-      }
-      this.itemsIds.push(this.newItem.value);
-
-      this.askNewItem = false;
-      this.newItem = this.defaultItem;
-      this.$emit('itemsUpdated', this.itemsIds);
-    },
-
-    cancelNewItem(e) {
-      e.preventDefault();
-      this.askNewItem = false;
-      this.newItem = this.defaultItem;
-    },
-
-    removeItem(id) {
-      this.itemsIds = this.itemsIds.filter((_id) => _id !== id);
-      this.$emit('itemsUpdated', this.itemsIds);
-    },
-  },
-};
-</script>
+<script src="./index.js"></script>

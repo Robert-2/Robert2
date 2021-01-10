@@ -7,9 +7,11 @@
       <MultipleItem
         label="technician"
         field="full_name"
-        :field-options="assigneesOptions"
-        :initial-items-ids="assigneesIds"
+        fetchEntity="persons"
+        :fetchParams="fetchParams"
+        :selectedItems="event.assignees"
         @itemsUpdated="updateItems"
+        createItemPath="/technicians/new"
       />
     </section>
     <section class="Form__actions">

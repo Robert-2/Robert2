@@ -1,8 +1,6 @@
 const formatOptions = (data, labelFields = ['name'], emptyLabel = null) => {
   if (!data || data.length === 0) {
-    return [
-      { value: '', label: 'N/A' },
-    ];
+    return [];
   }
 
   const options = data.map(

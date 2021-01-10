@@ -1,14 +1,10 @@
 import formatOptions from '@/utils/formatOptions';
 
 describe('formatOptions', () => {
-  const emptyOptions = [
-    { value: '', label: 'N/A' },
-  ];
-
   it('returns an array with only one empty option', () => {
-    expect(formatOptions()).toEqual(emptyOptions);
-    expect(formatOptions(null)).toEqual(emptyOptions);
-    expect(formatOptions([])).toEqual(emptyOptions);
+    expect(formatOptions()).toEqual([]);
+    expect(formatOptions(null)).toEqual([]);
+    expect(formatOptions([])).toEqual([]);
   });
 
   it('returns a set of options with given list of entities', () => {

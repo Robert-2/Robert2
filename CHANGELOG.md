@@ -15,6 +15,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Améliorations internes de la validation des données.
 - Ajoute une page de vue du matériel en détail.
 - Utilise des onglets dans la page de vue du matériel.
+- Dans l'édition d'événements, la recherche directe des bénéficiaires et techniciens dans le champ multiple permet de tous les retrouver (#36).
 
 ## 0.10.2 (2020-11-16)
 
