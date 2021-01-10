@@ -176,6 +176,7 @@ export default {
     'confirm-restore': "Do you really want to restore this category?",
     'saved': "Category saved.",
     'deleted': "Category deleted.",
+    'display-materials': "See the material of this category",
   },
 
   'page-subcategories': {
@@ -189,6 +190,7 @@ export default {
     'confirm-restore': "Do you really want to restore this sub-category?",
     'saved': "Sub-category saved.",
     'deleted': "Sub-category deleted.",
+    'display-materials': "See the material of this sub-category",
   },
 
   'page-technicians': {
