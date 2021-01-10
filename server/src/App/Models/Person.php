@@ -19,7 +19,7 @@ class Person extends BaseModel
 
     protected $table = 'persons';
 
-    protected $orderField = 'first_name';
+    protected $orderField = 'last_name';
 
     protected $allowedSearchFields = ['full_name', 'first_name', 'last_name', 'nickname', 'email'];
     protected $searchField = 'full_name';
