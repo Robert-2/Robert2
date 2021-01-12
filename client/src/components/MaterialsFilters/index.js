@@ -41,6 +41,16 @@ export default {
     store.dispatch('categories/fetch');
     store.dispatch('tags/fetch');
   },
+  watch: {
+    categories() {
+      const { category, subCategory } = this.filters;
+      if (subCategory.length > 0 && this.categories.length > 0) {
+        this.selectedCategory = this.categories.find(
+          (_category) => _category.id === parseInt(category, 10),
+        ) || { sub_categories: [] };
+      }
+    },
+  },
   methods: {
     changePark(e) {
       this.filters.park = parseInt(e.currentTarget.value, 10) || '';
@@ -57,6 +67,7 @@ export default {
         this.selectedCategory = { sub_categories: [] };
       }
       this.filters.category = categoryId;
+      this.filters.subCategory = '';
       this.setQueryFilters();
     },
 

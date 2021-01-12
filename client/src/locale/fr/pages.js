@@ -176,6 +176,7 @@ export default {
     'confirm-restore': "Voulez-vous vraiment restaurer cette catégorie\u00a0?",
     'saved': "Catégorie sauvegardée.",
     'deleted': "Catégorie supprimée.",
+    'display-materials': "Voir le matériel de la catégorie",
   },
 
   'page-subcategories': {
@@ -189,6 +190,7 @@ export default {
     'confirm-restore': "Voulez-vous vraiment restaurer cette sous-catégorie\u00a0?",
     'saved': "Sous-catégorie sauvegardée.",
     'deleted': "Sous-catégorie supprimée.",
+    'display-materials': "Voir le matériel de la sous-catégorie",
   },
 
   'page-technicians': {
