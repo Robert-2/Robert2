@@ -12,8 +12,11 @@ export default {
   getters: {
     options: (state, getters, rootState) => {
       const { locale, translations } = rootState.i18n;
-      const emptyLabel = translations[locale]['please-choose'];
-      return formatOptions(state.list, ['legal_name'], emptyLabel);
+      return formatOptions(
+        state.list,
+        (item) => item.legal_name,
+        translations[locale]['please-choose'],
+      );
     },
   },
   mutations: {

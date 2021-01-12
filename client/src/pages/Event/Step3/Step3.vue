@@ -12,6 +12,8 @@
         :selectedItems="event.assignees"
         @itemsUpdated="updateItems"
         createItemPath="/technicians/new"
+        :formatOptions="formatItemOptions"
+        :getItemLabel="getItemLabel"
       />
     </section>
     <section class="Form__actions">

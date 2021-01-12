@@ -1,7 +1,7 @@
 <template>
   <div class="MultipleItem">
     <div
-      v-for="(itemData, index) in notSavedSelectedItem"
+      v-for="(itemData, index) in notSavedSelectedItems"
       :key="itemData.id || `unknown-${index}`"
       class="MultipleItem__item FormField"
     >
@@ -16,7 +16,7 @@
           <i class="fas fa-exclamation-triangle" />
           {{$t('item-not-found', { item: $t(label) })}}
         </span>
-        <span v-else>{{ getItemLabel(itemData) }}</span>
+        <span v-else>{{ getItemLabel(itemData) || 'N/A' }}</span>
       </div>
       <button
         class="MultipleItem__item-action-btn danger"
