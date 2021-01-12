@@ -43,6 +43,7 @@ abstract class BaseController
         $searchTerm = $request->getQueryParam('search', null);
         $searchField = $request->getQueryParam('searchBy', null);
         $orderBy = $request->getQueryParam('orderBy', null);
+        $limit = $request->getQueryParam('limit', null);
         $ascending = (bool)$request->getQueryParam('ascending', true);
         $withDeleted = (bool)$request->getQueryParam('deleted', false);
 
@@ -50,7 +51,7 @@ abstract class BaseController
             ->setOrderBy($orderBy, $ascending)
             ->setSearch($searchTerm, $searchField)
             ->getAll($withDeleted)
-            ->paginate($this->itemsCount);
+            ->paginate($limit ? (int)$limit : $this->itemsCount);
 
         $basePath = $request->getUri()->getPath();
         $params = $request->getQueryParams();

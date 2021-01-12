@@ -30,6 +30,13 @@ export default {
   'copied-in-clipboard': "Copied in clipboard!",
 
   'please-choose': "Please choose...",
+  'start-typing-to-search': "Start typing to search...",
+  'type-at-least-count-chars-to-search': [
+    "Type again, at least {count} character to search...",
+    "Type again, at least {count} characters to search...",
+  ],
+  'no-result-found-try-another-search': "No results. Try another search term.",
+  'create-select-item-label': "Create a {label}",
   'add-item': "Add a {item}",
   'remove-item': "Remove this {item}",
   'cancel-add-item': "Cancel adding {item}",

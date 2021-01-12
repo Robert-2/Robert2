@@ -16,6 +16,7 @@ trait Taggable
         $searchField = $request->getQueryParam('searchBy', null);
         $tags = $request->getQueryParam('tags', []);
         $orderBy = $request->getQueryParam('orderBy', null);
+        $limit = $request->getQueryParam('limit', null);
         $ascending = (bool)$request->getQueryParam('ascending', true);
         $withDeleted = (bool)$request->getQueryParam('deleted', false);
 
@@ -23,7 +24,7 @@ trait Taggable
             ->setOrderBy($orderBy, $ascending)
             ->setSearch($searchTerm, $searchField)
             ->getAllFilteredOrTagged([], $tags, $withDeleted)
-            ->paginate($this->itemsCount);
+            ->paginate($limit ? (int)$limit : $this->itemsCount);
 
         $basePath = $request->getUri()->getPath();
         $params   = $request->getQueryParams();
