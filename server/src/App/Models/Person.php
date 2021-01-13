@@ -176,6 +176,7 @@ class Person extends BaseModel
         }
 
         $data = cleanEmptyFields($data);
+        $data = $this->_trimStringFields($data);
 
         if (!empty($data['phone'])) {
             $data['phone'] = normalizePhone($data['phone']);

@@ -164,14 +164,14 @@ final class CompanyTest extends ModelTestCase
     public function testCreateCompany(): void
     {
         $data = [
-            'legal_name'  => 'test company',
+            'legal_name'  => '  test company  ',
             'street'      => 'Somewhere street, 123',
             'postal_code' => '75000',
             'locality'    => 'Paris',
             'country_id'  => 1,
             'phone'       => '+00336 25 25 21 25',
         ];
-        $result   = $this->model->edit(null, $data);
+        $result = $this->model->edit(null, $data);
         $expected = [
             'id'          => 3,
             'legal_name'  => 'test company',
