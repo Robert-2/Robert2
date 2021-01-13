@@ -32,6 +32,7 @@ class EventController extends BaseController
         foreach ($data as $index => $event) {
             $eventMissingMaterials = $this->model->getMissingMaterials($event['id']);
             $data[$index]['has_missing_materials'] = !empty($eventMissingMaterials);
+            $data[$index]['parks'] = $this->model->getParks($event['id']);
         }
 
         return $response->withJson([ 'data' => $data ]);

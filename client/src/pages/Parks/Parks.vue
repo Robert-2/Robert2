@@ -45,6 +45,11 @@
             ({{ formatAmount(park.row.total_amount) }})
           </span>
         </div>
+        <div slot="events" slot-scope="park">
+          <router-link :to="`/?park=${park.row.id}`">
+            {{ $t('page-parks.display-events-for-park') }}
+          </router-link>
+        </div>
         <div slot="note" slot-scope="park">
           <pre>{{ park.row.note }}</pre>
         </div>

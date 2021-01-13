@@ -18,6 +18,7 @@ export default {
         'address',
         'opening_hours',
         'totalItems',
+        'events',
         'note',
         'actions',
       ],
@@ -36,12 +37,14 @@ export default {
           address: this.$t('address'),
           opening_hours: this.$t('opening-hours'),
           totalItems: this.$t('page-parks.total-items'),
+          events: '',
           note: this.$t('notes'),
           actions: '',
         },
         columnsClasses: {
           address: 'Parks__address',
           opening_hours: 'Parks__opening-hours',
+          events: 'Parks__events',
           note: 'Parks__note',
         },
         requestFunction: (pagination) => {

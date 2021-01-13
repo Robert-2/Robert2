@@ -14,6 +14,10 @@
     color: $text-light-color;
   }
 
+  &__actions {
+    min-width: 110px;
+  }
+
   @media(min-width: $screen-mobile) {
     &__address {
       display: table-cell;
