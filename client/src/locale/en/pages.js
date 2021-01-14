@@ -57,6 +57,7 @@ export default {
     'this-event-is-currently-running': "This event is currently running.",
     'this-event-is-confirmed': "This event is confirmed.",
     'this-event-has-missing-materials': "This event has missing materials.",
+    'display-all-parks': "All parks",
   },
 
   'page-events': {
@@ -218,6 +219,7 @@ export default {
     'confirm-restore': "Do you really want to restore this park?",
     'saved': "Park saved.",
     'total-items': 'Totals',
+    'display-events-for-park': "See events",
   },
 
   'page-tags': {

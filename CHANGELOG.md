@@ -19,6 +19,8 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Dans l'édition d'événements, la recherche directe des bénéficiaires et techniciens dans le champ multiple permet de tous les retrouver (#36).
 - Ajoute des boutons dans la page des catégories, permettant d'ouvrir la liste du matériel d'une catégorie ou sous-catégorie (#51).
 - Supprime automatiquement les espaces vides inutiles dans les champs des formulaires (#87).
+- Si plusieurs parcs existent, un sélecteur dans le calendrier permet de filtrer les événements qui contiennent au moins un matériel d'un parc sélectionné (#94).
+- Dans la liste des parcs (s'il y en a plusieurs), un lien sur chaque parc permet d'ouvrir le calendrier, filtré par ce parc (#94).
 
 ## 0.10.2 (2020-11-16)
 

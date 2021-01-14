@@ -31,6 +31,7 @@ export default {
     }
 
     const isVisitor = store.state.user.groupId === 'visitor';
+    const parkFilter = this.$route.query.park;
 
     return {
       help: 'page-calendar.help',
@@ -40,6 +41,7 @@ export default {
       fetchEnd: moment().add(1, 'months').endOf('month'),
       isModalOpened: false,
       hasMissingMaterialFilter: false,
+      parkId: parkFilter ? Number.parseInt(parkFilter, 10) : null,
       events: [],
       allEvents: [],
       timelineOptions: {
@@ -114,10 +116,21 @@ export default {
     this.getEventsData();
   },
   methods: {
-    filterEventsByMissingMaterials() {
-      this.events = this.allEvents.filter(
-        ({ hasMissingMaterials }) => !!hasMissingMaterials,
-      );
+    filterEvents() {
+      let events = [...this.allEvents];
+      if (this.parkId) {
+        events = events.filter(
+          ({ parks: eventParks }) => eventParks?.includes(this.parkId),
+        );
+      }
+
+      if (this.hasMissingMaterialFilter) {
+        events = events.filter(
+          ({ hasMissingMaterials }) => !!hasMissingMaterials,
+        );
+      }
+
+      this.events = events;
     },
 
     getEventsData() {
@@ -136,9 +149,7 @@ export default {
           );
 
           this.allEvents = [...this.events];
-          if (this.hasMissingMaterialFilter) {
-            this.filterEventsByMissingMaterials();
-          }
+          this.filterEvents();
 
           this.isLoading = false;
         })
@@ -232,12 +243,12 @@ export default {
 
     handleFilterMissingMaterial(hasMissingMaterialFilter) {
       this.hasMissingMaterialFilter = hasMissingMaterialFilter;
+      this.filterEvents();
+    },
 
-      if (hasMissingMaterialFilter) {
-        this.filterEventsByMissingMaterials();
-      } else {
-        this.events = [...this.allEvents];
-      }
+    handleFilterByPark(parkId) {
+      this.parkId = parkId === '' ? null : Number.parseInt(parkId, 10);
+      this.filterEvents();
     },
   },
 };

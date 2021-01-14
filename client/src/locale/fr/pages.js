@@ -59,6 +59,7 @@ export default {
     'this-event-has-missing-materials': "Cet événement a du matériel manquant.",
     'all-events': "Tous les événements",
     'event-with-missing-material-only': "Événements en manque de matériel uniquement\u00a0?",
+    'display-all-parks': "Tous les parcs",
   },
 
   'page-events': {
@@ -218,6 +219,7 @@ export default {
     'confirm-restore': "Voulez-vous vraiment restaurer ce parc\u00a0?",
     'saved': "Parc sauvegardé.",
     'total-items': 'Totaux',
+    'display-events-for-park': "Voir les événements",
   },
 
   'page-tags': {
