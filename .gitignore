@@ -1,0 +1,38 @@
+/dist
+
+#
+# - Fichiers spécifiques à certains systèmes.
+#
+
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# - Minitatures
+._*
+
+# - Fichiers qui peuvent apparaître à la racine de volumes.
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+
+# - IDE
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# - Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# - Fichiers locaux d'environnement
+.env.local
+.env.*.local

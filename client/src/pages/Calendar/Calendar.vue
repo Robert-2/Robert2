@@ -7,6 +7,7 @@
         @set-center-date="setCenterDate"
         @refresh="getEventsData"
         @filterMissingMaterials="handleFilterMissingMaterial"
+        @filterByPark="handleFilterByPark"
       />
     </div>
     <div ref="Container" class="content__main-view Calendar">

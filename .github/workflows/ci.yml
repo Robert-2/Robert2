@@ -1,0 +1,65 @@
+name : CI
+on   : [push, pull_request]
+jobs :
+    client-linting:
+        name     : "Client: Linting"
+        runs-on  : ubuntu-latest
+        defaults : { run: { working-directory: ./client }}
+        steps    :
+            - uses: actions/checkout@v2
+            - uses: actions/setup-node@v1
+            - run: yarn install --non-interactive --pure-lockfile
+            - run: yarn lint --max-warnings 0 --color
+
+    client-unit-tests:
+        name     : "Client: Tests unitaires"
+        runs-on  : ubuntu-latest
+        defaults : { run: { working-directory: ./client }}
+        steps    :
+            - uses: actions/checkout@v2
+            - uses: actions/setup-node@v1
+            - run: yarn install --non-interactive --pure-lockfile
+            - run: yarn test --colors --coverage --passWithNoTests
+
+    server-linting:
+        name     : "Serveur: Linting"
+        runs-on  : ubuntu-latest
+        defaults : { run: { working-directory: ./server }}
+        steps    :
+            - uses: actions/checkout@v2
+            - uses: shivammathur/setup-php@v2
+              with:
+                  php-version : 7.4
+                  extensions  : dom, mbstring, pdo, intl, simplexml
+                  coverage    : none
+            - run: composer install --no-interaction --no-progress
+            - run: composer lint
+
+    server-unit-tests:
+        name     : "Serveur: Tests unitaires (PHP ${{ matrix.php }})"
+        runs-on  : ubuntu-latest
+        strategy :
+            matrix:
+                php: [7.4, 7.3, 7.2, 7.1]
+        defaults : { run: { working-directory: ./server }}
+        services :
+            mysql:
+                image: mysql:5.7
+                env:
+                    MYSQL_DATABASE: robert2_test
+                    MYSQL_ROOT_PASSWORD: 'root'
+                ports:
+                    - 3306
+                options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+        steps:
+            - uses: actions/checkout@v2
+            - uses: shivammathur/setup-php@v2
+              with:
+                  php-version : ${{ matrix.php }}
+                  extensions  : dom, mbstring, pdo, intl, simplexml
+                  coverage    : xdebug
+            - run: composer install --no-interaction --no-progress
+            - run: cp ../.github/workflows/ci_settings.json ./src/App/Config/settings.json
+            - run: ./src/vendor/bin/phpunit --coverage-text
+              env:
+                  DB_PORT: ${{ job.services.mysql.ports[3306] }}

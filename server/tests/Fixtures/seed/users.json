@@ -11,13 +11,13 @@
         "pseudo"    : "test2",
         "group_id"  : "member",
         "email"     : "tester2@robertmanager.net",
-        "password"  : ""
+        "password"  : "$2y$10$VkEmVCo1wNxcfebjiOp50OHsdSzRPEqZA9MROgeS2pw5fqHIUCq16"
     },
     {
         "id"        : 3,
         "pseudo"    : "nobody",
         "group_id"  : "member",
         "email"     : "nobody@robertmanager.net",
-        "password"  : ""
+        "password"  : "$2y$10$VkEmVCo1wNxcfebjiOp50OHsdSzRPEqZA9MROgeS2pw5fqHIUCq16"
     }
 ]

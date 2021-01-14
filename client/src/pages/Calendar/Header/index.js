@@ -14,14 +14,24 @@ export default {
       datepickerOptions: {
         format: 'd MMMM yyyy',
       },
+      filters: {
+        park: this.$route.query.park || '',
+        hasMissingMaterials: false,
+      },
       isVisitor: store.state.user.groupId === 'visitor',
-      hasFilterMissingMaterial: false,
     };
   },
   computed: {
+    parks() {
+      return store.state.parks.list;
+    },
+
     isToday() {
       return moment(this.centerDate).isSame(moment(), 'day');
     },
+  },
+  mounted() {
+    store.dispatch('parks/fetch');
   },
   methods: {
     setCenterDate(date) {
@@ -46,8 +56,13 @@ export default {
     },
 
     handleFilterMissingMaterialChange(hasFilter) {
-      this.hasFilterMissingMaterial = hasFilter;
+      this.filters.hasMissingMaterials = hasFilter;
       this.$emit('filterMissingMaterials', hasFilter);
+    },
+
+    handleFilterParkChange(e) {
+      const { value: parkId } = e.currentTarget;
+      this.$emit('filterByPark', parkId);
     },
   },
 };

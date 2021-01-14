@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace Robert2\Tests;
 
-use Robert2\API\Models;
 use Robert2\API\Errors;
+use Robert2\API\Models;
 
 final class MaterialTest extends ModelTestCase
 {
@@ -15,10 +15,15 @@ final class MaterialTest extends ModelTestCase
         $this->model = new Models\Material();
     }
 
+    public function testTableName(): void
+    {
+        $this->assertEquals('materials', $this->model->getTable());
+    }
+
     public function testGetAll(): void
     {
         $result = $this->model->getAll()->get()->toArray();
-        $this->assertCount(5, $result);
+        $this->assertCount(7, $result);
     }
 
     public function testGetAllFiltered(): void
@@ -31,12 +36,12 @@ final class MaterialTest extends ModelTestCase
         // - Récupération du matériel associé à la catégorie n°1
         $options = ['category_id' => 1];
         $result = $this->model->getAllFiltered($options)->get()->toArray();
-        $this->assertCount(3, $result);
+        $this->assertCount(4, $result);
 
         // - Récupération du matériel associé à la catégorie n°1 et à la sous-catégorie n°1
         $options = ['category_id' => 1, 'sub_category_id' => 1];
         $result = $this->model->getAllFiltered($options)->get()->toArray();
-        $this->assertCount(1, $result);
+        $this->assertCount(2, $result);
 
         // - Récupération du matériel associé à la catégorie n°1 avec le nom "console"
         $options = ['category_id' => 1];
@@ -59,46 +64,44 @@ final class MaterialTest extends ModelTestCase
 
     public function testRecalcQuantitiesForPeriod(): void
     {
+        $getData = function () {
+            $builder = $this->model->getAll();
+            $builder->getQuery()->orders = null;
+            return $builder->orderBy('id', 'asc')->get()->toArray();
+        };
+
         // - Calcul des quantités restantes de chaque matériel pour une période sans événement
-        $data = $this->model->getAll()->get()->toArray();
+        $data = $getData();
         $result = $this->model->recalcQuantitiesForPeriod($data, '2018-12-01', '2018-12-02');
-        $this->assertCount(5, $result);
-        $this->assertEquals(32, $result[0]['remaining_quantity']);
-        $this->assertEquals(4, $result[1]['remaining_quantity']);
-        $this->assertEquals(30, $result[2]['remaining_quantity']);
-        $this->assertEquals(2, $result[3]['remaining_quantity']);
-        $this->assertEquals(2, $result[4]['remaining_quantity']);
+        $this->assertCount(7, $result);
+        foreach ([4, 2, 30, 2, 32] as $index => $expected) {
+            $this->assertEquals($expected, $result[$index]['remaining_quantity']);
+        }
 
         // - Calcul des quantités restantes de chaque matériel pour une période avec trois événements
-        $data = $this->model->getAll()->get()->toArray();
+        $data = $getData();
         $result = $this->model->recalcQuantitiesForPeriod($data, '2018-12-15', '2018-12-20');
-        $this->assertCount(5, $result);
-        $this->assertEquals(20, $result[0]['remaining_quantity']);
-        $this->assertEquals(0, $result[1]['remaining_quantity']);
-        $this->assertEquals(20, $result[2]['remaining_quantity']);
-        $this->assertEquals(-1, $result[3]['remaining_quantity']);
-        $this->assertEquals(1, $result[4]['remaining_quantity']);
+        $this->assertCount(7, $result);
+        foreach ([0, -1, 20, 1, 20] as $index => $expected) {
+            $this->assertEquals($expected, $result[$index]['remaining_quantity']);
+        }
 
         // - Calcul des quantités restantes de chaque matériel pour une période avec un seul événement
-        $data = $this->model->getAll()->get()->toArray();
+        $data = $getData();
         $result = $this->model->recalcQuantitiesForPeriod($data, '2018-12-19', '2018-12-20');
-        $this->assertCount(5, $result);
-        $this->assertEquals(32, $result[0]['remaining_quantity']);
-        $this->assertEquals(1, $result[1]['remaining_quantity']);
-        $this->assertEquals(30, $result[2]['remaining_quantity']);
-        $this->assertEquals(0, $result[3]['remaining_quantity']);
-        $this->assertEquals(2, $result[4]['remaining_quantity']);
+        $this->assertCount(7, $result);
+        foreach ([1, 0, 30, 2, 32] as $index => $expected) {
+            $this->assertEquals($expected, $result[$index]['remaining_quantity']);
+        }
 
         // - Calcul des quantités restantes de chaque matériel pour une période avec trois événements
         // - en excluant l'événement n°2
-        $data = $this->model->getAll()->get()->toArray();
+        $data = $getData();
         $result = $this->model->recalcQuantitiesForPeriod($data, '2018-12-15', '2018-12-20', 2);
-        $this->assertCount(5, $result);
-        $this->assertEquals(20, $result[0]['remaining_quantity']);
-        $this->assertEquals(3, $result[1]['remaining_quantity']);
-        $this->assertEquals(20, $result[2]['remaining_quantity']);
-        $this->assertEquals(1, $result[3]['remaining_quantity']);
-        $this->assertEquals(1, $result[4]['remaining_quantity']);
+        $this->assertCount(7, $result);
+        foreach ([3, 1, 20, 1, 20] as $index => $expected) {
+            $this->assertEquals($expected, $result[$index]['remaining_quantity']);
+        }
     }
 
     public function testSetSearch(): void
@@ -106,7 +109,7 @@ final class MaterialTest extends ModelTestCase
         // - Empty search
         $this->model->setSearch();
         $results = $this->model->getAll()->get()->toArray();
-        $this->assertCount(5, $results);
+        $this->assertCount(7, $results);
 
         // - Search a material name
         $this->model->setSearch('console');
@@ -205,7 +208,7 @@ final class MaterialTest extends ModelTestCase
     {
         $Material = $this->model::find(1);
         $results = $Material->Events;
-        $this->assertCount(2, $results);
+        $this->assertCount(3, $results);
         $this->assertEquals([
             'id'           => 2,
             'title'        => 'Second événement',
@@ -217,7 +220,7 @@ final class MaterialTest extends ModelTestCase
                 'event_id'    => 2,
                 'quantity'    => 3
             ],
-        ], $results[0]);
+        ], $results[1]);
         $this->assertEquals([
             'id'           => 1,
             'title'        => 'Premier événement',
@@ -229,7 +232,7 @@ final class MaterialTest extends ModelTestCase
                 'event_id'    => 1,
                 'quantity'    => 1
             ],
-        ], $results[1]);
+        ], $results[2]);
     }
 
     public function testSetTagsNoData(): void
@@ -300,28 +303,34 @@ final class MaterialTest extends ModelTestCase
             'reference'         => 'RM800',
             'park_id'           => 1,
             'category_id'       => 1,
-            'rental_price'      => 100.0,
-            'replacement_price' => 100.6,
+            'rental_price'      => '100.0',
+            'replacement_price' => '100.6',
             'stock_quantity'    => 1,
             'tags'              => ['old matos', 'vintage'],
         ]);
         $expected = [
-            'id'                => 6,
-            'name'              => 'Analog Mixing Console Yamaha RM800',
-            'reference'         => 'RM800',
-            'park_id'           => 1,
-            'category_id'       => 1,
-            'rental_price'      => 100.0,
-            'replacement_price' => 100.6,
-            'stock_quantity'    => 1,
-            'tags'              => [
+            'id'                    => 8,
+            'name'                  => 'Analog Mixing Console Yamaha RM800',
+            'description'           => null,
+            'reference'             => 'RM800',
+            'is_unitary'            => false,
+            'park_id'               => 1,
+            'category_id'           => 1,
+            'sub_category_id'       => null,
+            'out_of_order_quantity' => null,
+            'rental_price'          => 100.0,
+            'replacement_price'     => 100.6,
+            'stock_quantity'        => 1,
+            'is_hidden_on_bill'     => false,
+            'is_discountable'       => true,
+            'note'                  => null,
+            'tags'                  => [
                 ['id' => 4, 'name' => 'old matos'],
                 ['id' => 5, 'name' => 'vintage'],
             ],
             'attributes' => [],
         ];
-        unset($result->created_at);
-        unset($result->updated_at);
+        unset($result->created_at, $result->updated_at, $result->deleted_at);
         $this->assertEquals($expected, $result->toArray());
     }
 }

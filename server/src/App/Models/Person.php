@@ -7,25 +7,22 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\QueryException;
-use Respect\Validation\Validator as V;
-
-use Robert2\API\Errors;
-use Robert2\API\Formater\Phone;
+use Robert2\API\Config\Config;
 use Robert2\API\Models\Traits\Taggable;
+use Robert2\API\Validation\Validator as V;
+use Robert2\API\Errors;
 
 class Person extends BaseModel
 {
     use SoftDeletes;
-    use Phone, Taggable;
+    use Taggable;
 
     protected $table = 'persons';
 
-    protected $_modelName = 'Person';
-    protected $_orderField = 'first_name';
-    protected $_orderDirection = 'asc';
+    protected $orderField = 'last_name';
 
-    protected $_allowedSearchFields = ['full_name', 'first_name', 'last_name', 'nickname', 'email'];
-    protected $_searchField = 'full_name';
+    protected $allowedSearchFields = ['full_name', 'first_name', 'last_name', 'nickname', 'email'];
+    protected $searchField = 'full_name';
 
     public function __construct(array $attributes = [])
     {
@@ -132,11 +129,11 @@ class Person extends BaseModel
 
     protected function _getOrderBy(?Builder $builder = null): Builder
     {
-        $order = $this->_orderField ?: 'id';
+        $order = $this->orderField ?: 'id';
         if ($order === 'company') {
             $order = 'companies.legal_name';
         }
-        $direction = $this->_orderDirection ?: 'asc';
+        $direction = $this->orderDirection ?: 'asc';
 
         if ($builder) {
             $builder = $builder->orderBy($order, $direction);
@@ -174,24 +171,23 @@ class Person extends BaseModel
 
     public function edit(?int $id = null, array $data = []): Model
     {
-        if (!empty($data['phone'])) {
-            $data['phone'] = $this->normalizePhone($data['phone']);
-        }
-
         if ($id && !$this->exists($id)) {
-            throw new Errors\NotFoundException("Edit model $this->_modelName failed, entity not found.");
+            throw new Errors\NotFoundException(sprintf("Edit failed, entity %d not found.", $id));
         }
 
         $data = cleanEmptyFields($data);
+        $data = $this->_trimStringFields($data);
 
-        $onlyFields = $id ? array_keys($data) : [];
-        $this->validate($data, $onlyFields);
+        if (!empty($data['phone'])) {
+            $data['phone'] = normalizePhone($data['phone']);
+        }
 
         try {
-            $person = self::updateOrCreate(['id' => $id], $data);
+            $person = self::firstOrNew(compact('id'));
+            $person->fill($data)->validate()->save();
 
             if (!empty($data['tags'])) {
-                $this->setTags($person['id'], $data['tags']);
+                $this->setTags($person->id, $data['tags']);
             }
         } catch (QueryException $e) {
             if (!isDuplicateException($e)) {
@@ -209,7 +205,7 @@ class Person extends BaseModel
 
     protected function _setOtherTag(Model $person): void
     {
-        $defaultTags = array_values($this->_settings['defaultTags']);
+        $defaultTags = array_values(Config::getSettings('defaultTags'));
         $existingTags = array_map(function ($tag) {
             return $tag['name'];
         }, $person->tags);
@@ -224,13 +220,13 @@ class Person extends BaseModel
 
     protected function _setSearchConditions(Builder $builder): Builder
     {
-        if (!$this->_searchField || !$this->_searchTerm) {
+        if (!$this->searchField || !$this->searchTerm) {
             return $builder;
         }
 
-        $term = sprintf('%%%s%%', addcslashes($this->_searchTerm, '%_'));
+        $term = sprintf('%%%s%%', addcslashes($this->searchTerm, '%_'));
 
-        if ($this->_searchField === 'full_name') {
+        if ($this->searchField === 'full_name') {
             $group = function (Builder $query) use ($term) {
                 $query->orWhere('first_name', 'like', $term)
                     ->orWhere('last_name', 'like', $term);
@@ -238,6 +234,6 @@ class Person extends BaseModel
             return $builder->where($group);
         }
 
-        return $builder->where($this->_searchField, 'like', $term);
+        return $builder->where($this->searchField, 'like', $term);
     }
 }

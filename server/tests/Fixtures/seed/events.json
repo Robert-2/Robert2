@@ -6,9 +6,9 @@
         "description"  : null,
         "start_date"   : "2018-12-17 00:00:00",
         "end_date"     : "2018-12-18 23:59:59",
-        "is_confirmed" : 0,
+        "is_confirmed" : false,
         "location"     : "Gap",
-        "is_billable"  : 1
+        "is_billable"  : true
     },
     {
         "id"           : 2,
@@ -17,9 +17,9 @@
         "description"  : null,
         "start_date"   : "2018-12-18 00:00:00",
         "end_date"     : "2018-12-19 23:59:59",
-        "is_confirmed" : 0,
+        "is_confirmed" : false,
         "location"     : "Lyon",
-        "is_billable"  : 1
+        "is_billable"  : true
     },
     {
         "id"           : 3,
@@ -28,8 +28,19 @@
         "description"  : null,
         "start_date"   : "2018-12-15 00:00:00",
         "end_date"     : "2018-12-16 23:59:59",
-        "is_confirmed" : 0,
+        "is_confirmed" : false,
         "location"     : "Brousse",
-        "is_billable"  : 0
+        "is_billable"  : false
+    },
+    {
+        "id"           : 4,
+        "user_id"      : 1,
+        "title"        : "Concert X",
+        "description"  : null,
+        "start_date"   : "2019-03-01 00:00:00",
+        "end_date"     : "2019-02-10 23:59:59",
+        "is_confirmed" : false,
+        "location"     : "Moon",
+        "is_billable"  : false
     }
 ]

@@ -4,20 +4,13 @@ declare(strict_types=1);
 namespace Robert2\API\Models;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Respect\Validation\Validator as V;
+use Robert2\API\Validation\Validator as V;
 
 class Park extends BaseModel
 {
     use SoftDeletes;
 
-    protected $table = 'parks';
-
-    protected $_modelName = 'Park';
-    protected $_orderField = 'name';
-    protected $_orderDirection = 'asc';
-
-    protected $_allowedSearchFields = ['name'];
-    protected $_searchField = 'name';
+    protected $searchField = 'name';
 
     public function __construct(array $attributes = [])
     {
@@ -102,7 +95,7 @@ class Park extends BaseModel
         $materials = $this->Materials()->get(['stock_quantity']);
         $total = 0;
         foreach ($materials as $material) {
-            $total += $material->stock_quantity;
+            $total += (int)$material->stock_quantity;
         }
         return $total;
     }
@@ -112,7 +105,7 @@ class Park extends BaseModel
         $materials = $this->Materials()->get(['stock_quantity', 'replacement_price']);
         $total = 0;
         foreach ($materials as $material) {
-            $total += ($material->replacement_price * $material->stock_quantity);
+            $total += ($material->replacement_price * (int)$material->stock_quantity);
         }
         return $total;
     }

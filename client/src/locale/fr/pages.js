@@ -59,6 +59,7 @@ export default {
     'this-event-has-missing-materials': "Cet événement a du matériel manquant.",
     'all-events': "Tous les événements",
     'event-with-missing-material-only': "Événements en manque de matériel uniquement\u00a0?",
+    'display-all-parks': "Tous les parcs",
   },
 
   'page-events': {
@@ -137,6 +138,7 @@ export default {
     'add': "Nouveau matériel",
     'edit': "Modifier le matériel «\u00a0{pageSubTitle}\u00a0»",
     'help-edit': "Trouvez un nom assez court, et utilisez plutôt la description pour détailler le matériel si besoin.",
+    'view': "Détails du matériel «\u00a0{pageSubTitle}\u00a0»",
     'confirm-delete': "Mettre ce matériel à la corbeille\u00a0?",
     'confirm-permanently-delete': "Voulez-vous vraiment supprimer définitivement ce matériel\u00a0?",
     'confirm-restore': "Voulez-vous vraiment restaurer ce matériel\u00a0?",
@@ -175,6 +177,7 @@ export default {
     'confirm-restore': "Voulez-vous vraiment restaurer cette catégorie\u00a0?",
     'saved': "Catégorie sauvegardée.",
     'deleted': "Catégorie supprimée.",
+    'display-materials': "Voir le matériel de la catégorie",
   },
 
   'page-subcategories': {
@@ -188,6 +191,7 @@ export default {
     'confirm-restore': "Voulez-vous vraiment restaurer cette sous-catégorie\u00a0?",
     'saved': "Sous-catégorie sauvegardée.",
     'deleted': "Sous-catégorie supprimée.",
+    'display-materials': "Voir le matériel de la sous-catégorie",
   },
 
   'page-technicians': {
@@ -215,6 +219,7 @@ export default {
     'confirm-restore': "Voulez-vous vraiment restaurer ce parc\u00a0?",
     'saved': "Parc sauvegardé.",
     'total-items': 'Totaux',
+    'display-events-for-park': "Voir les événements",
   },
 
   'page-tags': {

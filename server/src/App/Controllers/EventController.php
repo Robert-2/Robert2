@@ -3,23 +3,15 @@ declare(strict_types=1);
 
 namespace Robert2\API\Controllers;
 
+use Robert2\API\Errors;
+use Robert2\API\Controllers\Traits\WithPdf;
+use Robert2\API\Models\Park;
 use Slim\Http\Request;
 use Slim\Http\Response;
-
-use Robert2\API\Errors;
-use Robert2\API\Models\Event;
-use Robert2\API\Controllers\Traits\WithPdf;
 
 class EventController extends BaseController
 {
     use WithPdf;
-
-    public function __construct($container)
-    {
-        parent::__construct($container);
-
-        $this->model = new Event();
-    }
 
     // ——————————————————————————————————————————————————————
     // —
@@ -38,9 +30,11 @@ class EventController extends BaseController
             ->getAll($deleted);
 
         $data = $results->get()->toArray();
+        $useMultipleParks = Park::count() > 1;
         foreach ($data as $index => $event) {
             $eventMissingMaterials = $this->model->getMissingMaterials($event['id']);
             $data[$index]['has_missing_materials'] = !empty($eventMissingMaterials);
+            $data[$index]['parks'] = $useMultipleParks ? $this->model->getParks($event['id']) : null;
         }
 
         return $response->withJson([ 'data' => $data ]);
@@ -49,19 +43,10 @@ class EventController extends BaseController
     public function getOne(Request $request, Response $response): Response
     {
         $id = (int)$request->getAttribute('id');
-        $event = $this->model
-            ->with('User')
-            ->with('Assignees')
-            ->with('Beneficiaries')
-            ->with('Materials')
-            ->with('Bills')
-            ->find($id);
-
-        if (!$event) {
+        if (!$this->model->exists($id)) {
             throw new Errors\NotFoundException;
         }
-
-        return $response->withJson($this->_getResultWithBills($event));
+        return $response->withJson($this->_getFormattedEvent($id));
     }
 
     public function getMissingMaterials(Request $request, Response $response): Response
@@ -88,9 +73,9 @@ class EventController extends BaseController
     public function create(Request $request, Response $response): Response
     {
         $postData = $request->getParsedBody();
-        $event = $this->_saveEvent(null, $postData);
+        $id = $this->_saveEvent(null, $postData);
 
-        return $response->withJson($this->_getResultWithBills($event), SUCCESS_CREATED);
+        return $response->withJson($this->_getFormattedEvent($id), SUCCESS_CREATED);
     }
 
     public function update(Request $request, Response $response): Response
@@ -102,9 +87,9 @@ class EventController extends BaseController
         }
 
         $postData = $request->getParsedBody();
-        $event = $this->_saveEvent($id, $postData);
+        $id = $this->_saveEvent($id, $postData);
 
-        return $response->withJson($this->_getResultWithBills($event), SUCCESS_OK);
+        return $response->withJson($this->_getFormattedEvent($id), SUCCESS_OK);
     }
 
     // ——————————————————————————————————————————————————————
@@ -113,7 +98,7 @@ class EventController extends BaseController
     // —
     // ——————————————————————————————————————————————————————
 
-    protected function _saveEvent(?int $id, array $postData): Event
+    protected function _saveEvent(?int $id, array $postData): int
     {
         if (empty($postData)) {
             throw new \InvalidArgumentException(
@@ -146,17 +131,19 @@ class EventController extends BaseController
             $result->Materials()->sync($materials);
         }
 
-        return $this->model
+        return $result->id;
+    }
+
+    protected function _getFormattedEvent(int $id): array
+    {
+        $model = $this->model
             ->with('User')
             ->with('Assignees')
             ->with('Beneficiaries')
             ->with('Materials')
             ->with('Bills')
-            ->find($result->id);
-    }
+            ->find($id);
 
-    protected function _getResultWithBills(Event $model): array
-    {
         $result = $model->toArray();
         if (!$model->bills) {
             return $result;

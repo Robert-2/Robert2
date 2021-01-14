@@ -1,0 +1,17 @@
+[
+    {
+        "id"                : 1,
+        "event_material_id" : 10,
+        "material_unit_id"  : 1
+    },
+    {
+        "id"                : 2,
+        "event_material_id" : 10,
+        "material_unit_id"  : 3
+    },
+    {
+        "id"                : 3,
+        "event_material_id" : 11,
+        "material_unit_id"  : 4
+    }
+]

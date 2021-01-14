@@ -57,6 +57,7 @@ export default {
     'this-event-is-currently-running': "This event is currently running.",
     'this-event-is-confirmed': "This event is confirmed.",
     'this-event-has-missing-materials': "This event has missing materials.",
+    'display-all-parks': "All parks",
   },
 
   'page-events': {
@@ -137,6 +138,7 @@ export default {
     'add': "New material",
     'edit': "Modify material «\u00a0{pageSubTitle}\u00a0»",
     'help-edit': "Give a short name, and use the description field to detail the material if needed.",
+    'view': "Details of material «\u00a0{pageSubTitle}\u00a0»",
     'confirm-delete': "Move this material in trash bin?",
     'confirm-permanently-delete': "Do you really want to permanently delete this material?",
     'confirm-restore': "Do you really want to restore this material?",
@@ -175,6 +177,7 @@ export default {
     'confirm-restore': "Do you really want to restore this category?",
     'saved': "Category saved.",
     'deleted': "Category deleted.",
+    'display-materials': "See the material of this category",
   },
 
   'page-subcategories': {
@@ -188,6 +191,7 @@ export default {
     'confirm-restore': "Do you really want to restore this sub-category?",
     'saved': "Sub-category saved.",
     'deleted': "Sub-category deleted.",
+    'display-materials': "See the material of this sub-category",
   },
 
   'page-technicians': {
@@ -215,6 +219,7 @@ export default {
     'confirm-restore': "Do you really want to restore this park?",
     'saved': "Park saved.",
     'total-items': 'Totals',
+    'display-events-for-park': "See events",
   },
 
   'page-tags': {

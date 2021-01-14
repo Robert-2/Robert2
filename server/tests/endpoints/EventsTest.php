@@ -21,6 +21,7 @@ final class EventsTest extends ApiTestCase
                     'location' => "Brousse",
                     'is_billable' => false,
                     'has_missing_materials' => false,
+                    'parks' => [1],
                     'created_at' => null,
                     'updated_at' => null,
                     'deleted_at' => null,
@@ -37,6 +38,7 @@ final class EventsTest extends ApiTestCase
                     'location' => "Gap",
                     'is_billable' => true,
                     'has_missing_materials' => true,
+                    'parks' => [1],
                     'created_at' => null,
                     'updated_at' => null,
                     'deleted_at' => null,
@@ -53,6 +55,7 @@ final class EventsTest extends ApiTestCase
                     'location' => "Lyon",
                     'is_billable' => true,
                     'has_missing_materials' => true,
+                    'parks' => [1],
                     'created_at' => null,
                     'updated_at' => null,
                     'deleted_at' => null,
@@ -181,12 +184,12 @@ final class EventsTest extends ApiTestCase
                     'name'                  => 'Showtec SDS-6',
                     'description'           => "Console DMX (jeu d'orgue) Showtec 6 canaux",
                     'reference'             => 'SDS-6-01',
+                    'is_unitary'            => false,
                     'park_id'               => 1,
                     'rental_price'          => 15.95,
                     'stock_quantity'        => 2,
                     'out_of_order_quantity' => null,
                     'replacement_price'     => 59,
-                    'serial_number'         => '1212121-5',
                     'is_hidden_on_bill'     => false,
                     'is_discountable'       => true,
                     'category_id'           => 2,
@@ -222,12 +225,12 @@ final class EventsTest extends ApiTestCase
                     'name'                  => 'Processeur DBX PA2',
                     'description'           => 'Système de diffusion numérique',
                     'reference'             => 'DBXPA2',
+                    'is_unitary'            => false,
                     'park_id'               => 1,
                     'rental_price'          => 25.5,
                     'stock_quantity'        => 2,
                     'out_of_order_quantity' => null,
                     'replacement_price'     => 349.9,
-                    'serial_number'         => '12345678-1',
                     'is_hidden_on_bill'     => false,
                     'is_discountable'       => true,
                     'category_id'           => 1,
@@ -258,12 +261,12 @@ final class EventsTest extends ApiTestCase
                     'name'                  => 'Console Yamaha CL3',
                     'description'           => 'Console numérique 64 entrées / 8 sorties + Master + Sub',
                     'reference'             => 'CL3',
+                    'is_unitary'            => false,
                     'park_id'               => 1,
                     'rental_price'          => 300,
                     'stock_quantity'        => 5,
                     'out_of_order_quantity' => 1,
                     'replacement_price'     => 19400,
-                    'serial_number'         => 'Y-23887-010066',
                     'is_hidden_on_bill'     => false,
                     'is_discountable'       => false,
                     'category_id'           => 1,
@@ -324,7 +327,7 @@ final class EventsTest extends ApiTestCase
         $this->client->post('/api/events', $data);
         $this->assertStatusCode(SUCCESS_CREATED);
         $response = $this->_getResponseAsArray();
-        $this->assertEquals(4, $response['id']);
+        $this->assertEquals(5, $response['id']);
         $this->assertEquals("Un nouvel événement", $response['title']);
         $this->assertEmpty($response['beneficiaries']);
         $this->assertEmpty($response['assignees']);
@@ -344,7 +347,7 @@ final class EventsTest extends ApiTestCase
         $this->client->post('/api/events', $dataWithChildren);
         $this->assertStatusCode(SUCCESS_CREATED);
         $response = $this->_getResponseAsArray();
-        $this->assertEquals(5, $response['id']);
+        $this->assertEquals(6, $response['id']);
         $this->assertEquals("Encore un événement", $response['title']);
         $this->assertCount(1, $response['beneficiaries']);
         $this->assertCount(2, $response['assignees']);
@@ -479,6 +482,7 @@ final class EventsTest extends ApiTestCase
                     'name'                  => 'Showtec SDS-6',
                     'description'           => 'Console DMX (jeu d\'orgue) Showtec 6 canaux',
                     'reference'             => 'SDS-6-01',
+                    'is_unitary'            => false,
                     'park_id'               => 1,
                     'category_id'           => 2,
                     'sub_category_id'       => 4,
@@ -486,7 +490,6 @@ final class EventsTest extends ApiTestCase
                     'stock_quantity'        => 2,
                     'out_of_order_quantity' => null,
                     'replacement_price'     => 59,
-                    'serial_number'         => '1212121-5',
                     'is_hidden_on_bill'     => false,
                     'is_discountable'       => true,
                     'tags'                  => [],
@@ -524,6 +527,7 @@ final class EventsTest extends ApiTestCase
                     'name'                  => 'Processeur DBX PA2',
                     'description'           => 'Système de diffusion numérique',
                     'reference'             => 'DBXPA2',
+                    'is_unitary'            => false,
                     'park_id'               => 1,
                     'category_id'           => 1,
                     'sub_category_id'       => 2,
@@ -531,7 +535,6 @@ final class EventsTest extends ApiTestCase
                     'stock_quantity'        => 2,
                     'out_of_order_quantity' => null,
                     'replacement_price'     => 349.9,
-                    'serial_number'         => '12345678-1',
                     'is_hidden_on_bill'     => false,
                     'is_discountable'       => true,
                     'tags'                  => [
@@ -564,6 +567,7 @@ final class EventsTest extends ApiTestCase
                     'name'                  => 'Console Yamaha CL3',
                     'description'           => 'Console numérique 64 entrées / 8 sorties + Master + Sub',
                     'reference'             => 'CL3',
+                    'is_unitary'            => false,
                     'park_id'               => 1,
                     'category_id'           => 1,
                     'sub_category_id'       => 1,
@@ -571,7 +575,6 @@ final class EventsTest extends ApiTestCase
                     'stock_quantity'        => 5,
                     'out_of_order_quantity' => 1,
                     'replacement_price'     => 19400,
-                    'serial_number'         => 'Y-23887-010066',
                     'is_hidden_on_bill'     => false,
                     'is_discountable'       => false,
                     'tags'                  => [
@@ -701,6 +704,7 @@ final class EventsTest extends ApiTestCase
                 'name'                  => 'Processeur DBX PA2',
                 'description'           => 'Système de diffusion numérique',
                 'reference'             => 'DBXPA2',
+                'is_unitary'            => false,
                 'park_id'               => 1,
                 'category_id'           => 1,
                 'sub_category_id'       => 2,
@@ -709,7 +713,6 @@ final class EventsTest extends ApiTestCase
                 'remaining_quantity'    => -1,
                 'out_of_order_quantity' => null,
                 'replacement_price'     => 349.9,
-                'serial_number'         => '12345678-1',
                 'is_hidden_on_bill'     => false,
                 'is_discountable'       => true,
                 'tags'                  => [

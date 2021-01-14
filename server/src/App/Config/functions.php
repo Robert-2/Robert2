@@ -130,6 +130,18 @@ function cleanEmptyFields(array $data): array
 }
 
 /**
+ * Permet de normaliser un numéro de téléphone.
+ *
+ * @param string $phone Le numéro de téléphone à normaliser.
+ *
+ * @return string Le numéro de téléphone normalisé.
+ */
+function normalizePhone(string $phone): string
+{
+    return preg_replace('/ /', '', $phone);
+}
+
+/**
  * Set all empty fields of an array to null
  *
  * @param e Illuminate\Database\QueryException: The PDO Exception thrown

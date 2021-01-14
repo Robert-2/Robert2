@@ -9,7 +9,7 @@
         />
       </div>
       <div class="header-page__actions">
-        <MaterialsFilter
+        <MaterialsFilters
           baseRoute="/materials"
           @change="refreshTableAndPagination"
         />
@@ -55,14 +55,9 @@
           role="button"
           @click="setTags(material.row)"
         >
-          <span
-            v-for="tag in material.row.tags"
-            :key="tag.id"
-            class="Materials__tag-item"
-          >
-            <i class="fas fa-tag" />
-            {{ tag.name }}
-          </span>
+          <MaterialTags
+            :tags="material.row.tags"
+          />
           <span
             v-if="material.row.tags.length === 0 && !isTrashDisplayed"
             class="Materials__add-tags"
@@ -71,6 +66,14 @@
           </span>
         </div>
         <div slot="actions" slot-scope="material" class="Materials__actions">
+          <router-link
+            v-tooltip="$t('action-view')"
+            :to="`/materials/${material.row.id}/view`"
+            tag="button"
+            class="item-actions__button success"
+          >
+            <i class="fas fa-eye" />
+          </router-link>
           <router-link
             v-if="!isTrashDisplayed"
             v-tooltip="$t('action-edit')"

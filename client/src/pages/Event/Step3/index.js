@@ -1,5 +1,6 @@
 import Config from '@/config/globalConfig';
 import MultipleItem from '@/components/MultipleItem/MultipleItem.vue';
+import getPersonItemLabel from '@/utils/getPersonItemLabel';
 import formatOptions from '@/utils/formatOptions';
 import EventStore from '../EventStore';
 
@@ -10,29 +11,14 @@ export default {
   data() {
     return {
       assigneesIds: this.event.assignees.map((assignee) => assignee.id),
-      assigneesOptions: [],
+      fetchParams: { tags: [Config.technicianTagName] },
       errors: {},
     };
   },
   mounted() {
-    this.getEntities();
     EventStore.commit('setIsSaved', true);
   },
   methods: {
-    getEntities() {
-      this.$emit('loading');
-      const params = { tags: [Config.technicianTagName] };
-      this.$http.get('persons', { params })
-        .then(({ data }) => {
-          this.assigneesOptions = formatOptions(
-            data.data,
-            ['first_name', 'last_name', '−', 'phone'],
-          );
-          this.$emit('stopLoading');
-        })
-        .catch(this.displayError);
-    },
-
     updateItems(ids) {
       this.assigneesIds = ids;
 
@@ -42,6 +28,14 @@ export default {
         .concat(savedList.filter((id) => !ids.includes(id)));
 
       EventStore.commit('setIsSaved', listDifference.length === 0);
+    },
+
+    formatItemOptions(data) {
+      return formatOptions(data, getPersonItemLabel);
+    },
+
+    getItemLabel(itemData) {
+      return getPersonItemLabel(itemData);
     },
 
     saveAndBack(e) {

@@ -1,6 +1,5 @@
 {
-    "name": "robertmanager/robert2-api",
-    "description": "Web app for managing a fleet of equipment for rental or loan.",
+    "private": true,
     "authors": [
         {
             "name": "Paul Maillardet",
@@ -11,6 +10,17 @@
             "email": "donovan@pulsanova.com"
         }
     ],
+    "scripts": {
+        "create-migration": "src/vendor/bin/phinx --configuration=src/database/phinx.php create $1 --template=src/database/template",
+        "migration-status": "src/vendor/bin/phinx --configuration=src/database/phinx.php status",
+        "migrate": "src/vendor/bin/phinx --configuration=src/database/phinx.php migrate",
+        "rollback": "src/vendor/bin/phinx --configuration=src/database/phinx.php rollback",
+        "lint": "src/vendor/bin/phpcs -s --colors -p ./src/App/",
+        "test": "src/vendor/bin/phpunit --colors=always --coverage-html tests/coverage",
+        "testapi": "src/vendor/bin/phpunit --colors=always --testsuite api --filter",
+        "testmodels": "src/vendor/bin/phpunit --colors=always --testsuite models --filter",
+        "testother": "src/vendor/bin/phpunit --colors=always --testsuite other --filter"
+    },
     "config": {
         "vendor-dir": "src/vendor",
         "platform": {
@@ -29,7 +39,6 @@
         "illuminate/pagination": "^5.8.35",
         "robmorgan/phinx": "^0.11.4",
         "delfimov/translate": "^2.6.0",
-        "symfony/console": "^4.4.7",
         "dompdf/dompdf": "^0.8.5",
         "twig/intl-extra": "^3.0.3"
     },
@@ -44,22 +53,8 @@
             "Robert2\\Lib\\Domain\\": "src/App/Lib/Domain",
             "Robert2\\Lib\\Pdf\\": "src/App/Lib/Pdf",
             "Robert2\\Install\\": "src/install",
-            "Robert2\\Scripts\\": "utilities/scripts",
             "Robert2\\Tests\\": "tests",
             "Robert2\\Fixtures\\": "tests/Fixtures"
         }
-    },
-    "scripts": {
-        "create-migration": "src/vendor/bin/phinx --configuration=src/database/phinx.php create $1 --template=src/database/template",
-        "migration-status": "src/vendor/bin/phinx --configuration=src/database/phinx.php status",
-        "migrate": "src/vendor/bin/phinx --configuration=src/database/phinx.php migrate",
-        "rollback": "src/vendor/bin/phinx --configuration=src/database/phinx.php rollback",
-        "lint": "src/vendor/bin/phpcs -s --colors -p ./src/App/",
-        "test": "src/vendor/bin/phpunit --colors=always --coverage-html tests/coverage",
-        "testapi": "src/vendor/bin/phpunit --colors=always --testsuite api --filter",
-        "testmodels": "src/vendor/bin/phpunit --colors=always --testsuite models --filter",
-        "testother": "src/vendor/bin/phpunit --colors=always --testsuite other --filter",
-        "build-api-doc": "postmanerator -output=./src/views/apidoc.html -collection=./utilities/postman/collection.json -environment=./utilities/postman/environment_example.json -theme=./src/views/apidoc-theme",
-        "release": "bin/release"
     }
 }

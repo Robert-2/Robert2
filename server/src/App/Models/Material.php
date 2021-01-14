@@ -4,8 +4,7 @@ declare(strict_types=1);
 namespace Robert2\API\Models;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Builder;
-use Respect\Validation\Validator as V;
+use Robert2\API\Validation\Validator as V;
 
 use Robert2\API\Models\Traits\Taggable;
 
@@ -14,14 +13,24 @@ class Material extends BaseModel
     use SoftDeletes;
     use Taggable;
 
-    protected $table = 'materials';
+    protected $searchField = ['name', 'reference'];
 
-    protected $_modelName = 'Material';
-    protected $_orderField = 'name';
-    protected $_orderDirection = 'asc';
-
-    protected $_allowedSearchFields = ['name', 'reference', 'name|reference'];
-    protected $_searchField = 'name|reference';
+    protected $attributes = [
+        'name' => null,
+        'description' => null,
+        'reference' => null,
+        'is_unitary' => false,
+        'park_id' => null,
+        'category_id' => null,
+        'sub_category_id' => null,
+        'rental_price' => null,
+        'stock_quantity' => null,
+        'out_of_order_quantity' => null,
+        'replacement_price' => null,
+        'is_hidden_on_bill' => false,
+        'is_discountable' => true,
+        'note' => null,
+    ];
 
     public function __construct(array $attributes = [])
     {
@@ -37,7 +46,6 @@ class Material extends BaseModel
             'stock_quantity'        => V::intVal()->max(100000),
             'out_of_order_quantity' => V::optional(V::intVal()->max(100000)),
             'replacement_price'     => V::optional(V::floatVal()->max(999999.99, true)),
-            'serial_number'         => V::optional(V::alnum('-/*.')->length(2, 64)),
             'is_hidden_on_bill'     => V::optional(V::boolType()),
             'is_discountable'       => V::optional(V::boolType()),
         ];
@@ -98,6 +106,7 @@ class Material extends BaseModel
         'name'                  => 'string',
         'reference'             => 'string',
         'description'           => 'string',
+        'is_unitary'            => 'boolean',
         'park_id'               => 'integer',
         'category_id'           => 'integer',
         'sub_category_id'       => 'integer',
@@ -105,11 +114,26 @@ class Material extends BaseModel
         'stock_quantity'        => 'integer',
         'out_of_order_quantity' => 'integer',
         'replacement_price'     => 'float',
-        'serial_number'         => 'string',
         'is_hidden_on_bill'     => 'boolean',
         'is_discountable'       => 'boolean',
         'note'                  => 'string',
     ];
+
+    public function getStockQuantityAttribute($value)
+    {
+        if ($this->is_unitary) {
+            $value = 0;
+        }
+        return $this->castAttribute('stock_quantity', $value);
+    }
+
+    public function getOutOfOrderQuantityAttribute($value)
+    {
+        if ($this->is_unitary) {
+            $value = 0;
+        }
+        return $this->castAttribute('out_of_order_quantity', $value);
+    }
 
     public function getParkAttribute()
     {
@@ -183,7 +207,6 @@ class Material extends BaseModel
         'stock_quantity',
         'out_of_order_quantity',
         'replacement_price',
-        'serial_number',
         'is_hidden_on_bill',
         'is_discountable',
         'note',

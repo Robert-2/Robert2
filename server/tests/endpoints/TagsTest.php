@@ -87,6 +87,7 @@ final class TagsTest extends ApiTestCase
             'name'       => 'New tag',
             'created_at' => 'fakedTestContent',
             'updated_at' => 'fakedTestContent',
+            'deleted_at' => null,
         ], ['created_at', 'updated_at']);
     }
 

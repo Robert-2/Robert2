@@ -15,6 +15,11 @@ final class CompanyTest extends ModelTestCase
         $this->model = new Models\Company();
     }
 
+    public function testTableName(): void
+    {
+        $this->assertEquals('companies', $this->model->getTable());
+    }
+
     public function testGetAll(): void
     {
         $results = $this->model->getAll()->get()->toArray();
@@ -159,14 +164,14 @@ final class CompanyTest extends ModelTestCase
     public function testCreateCompany(): void
     {
         $data = [
-            'legal_name'  => 'test company',
+            'legal_name'  => '  test company  ',
             'street'      => 'Somewhere street, 123',
             'postal_code' => '75000',
             'locality'    => 'Paris',
             'country_id'  => 1,
             'phone'       => '+00336 25 25 21 25',
         ];
-        $result   = $this->model->edit(null, $data);
+        $result = $this->model->edit(null, $data);
         $expected = [
             'id'          => 3,
             'legal_name'  => 'test company',
@@ -175,14 +180,14 @@ final class CompanyTest extends ModelTestCase
             'locality'    => 'Paris',
             'country_id'  => 1,
             'phone'       => '+0033625252125',
+            'note'        => null,
             'country'     => [
                 'id'   => 1,
                 'name' => 'France',
                 'code' => 'FR',
             ],
         ];
-        unset($result->created_at);
-        unset($result->updated_at);
+        unset($result->created_at, $result->updated_at, $result->deleted_at);
         $this->assertEquals($expected, $result->toArray());
     }
 
@@ -224,14 +229,14 @@ final class CompanyTest extends ModelTestCase
             'locality'    => 'Paris',
             'country_id'  => 1,
             'phone'       => '+0033625252125',
+            'note'        => null,
             'country'     => [
                 'id'   => 1,
                 'name' => 'France',
                 'code' => 'FR',
             ],
         ];
-        unset($result->created_at);
-        unset($result->updated_at);
+        unset($result->created_at, $result->updated_at, $result->deleted_at);
         $this->assertEquals($expected, $result->toArray());
     }
 

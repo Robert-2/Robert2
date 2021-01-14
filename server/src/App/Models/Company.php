@@ -6,25 +6,18 @@ namespace Robert2\API\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Respect\Validation\Validator as V;
+use Robert2\API\Validation\Validator as V;
 
 use Robert2\API\Errors;
-use Robert2\API\Formater\Phone;
 use Robert2\API\Models\Traits\Taggable;
 
 class Company extends BaseModel
 {
     use SoftDeletes;
-    use Phone, Taggable;
+    use Taggable;
 
-    protected $table = 'companies';
-
-    protected $_modelName = 'Company';
-    protected $_orderField = 'legal_name';
-    protected $_orderDirection = 'asc';
-
-    protected $_allowedSearchFields = ['legal_name'];
-    protected $_searchField = 'legal_name';
+    protected $orderField = 'legal_name';
+    protected $searchField = 'legal_name';
 
     public function __construct(array $attributes = [])
     {
@@ -112,7 +105,7 @@ class Company extends BaseModel
     public function edit(?int $id = null, array $data = []): Model
     {
         if (!empty($data['phone'])) {
-            $data['phone'] = $this->normalizePhone($data['phone']);
+            $data['phone'] = normalizePhone($data['phone']);
         }
 
         $company = parent::edit($id, $data);

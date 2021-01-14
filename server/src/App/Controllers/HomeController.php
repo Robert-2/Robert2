@@ -159,11 +159,6 @@ class HomeController
         ]);
     }
 
-    public function apidoc(Request $request, Response $response)
-    {
-        return $this->view->render($response, 'apidoc.html');
-    }
-
     // ——————————————————————————————————————————————————————
     // —
     // —    Private methods
@@ -245,7 +240,7 @@ class HomeController
     protected function getVersion(): callable
     {
         return function (): string {
-            return trim(file_get_contents(PUBLIC_FOLDER . DS . 'version.txt'));
+            return trim(file_get_contents(SRC_FOLDER . DS . 'VERSION'));
         };
     }
 

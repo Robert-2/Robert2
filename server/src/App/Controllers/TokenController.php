@@ -5,7 +5,7 @@ namespace Robert2\API\Controllers;
 
 use Slim\Http\Request;
 use Slim\Http\Response;
-use Respect\Validation\Validator as V;
+use Robert2\API\Validation\Validator as V;
 
 use Robert2\API\Errors\ValidationException;
 use Robert2\API\Middlewares\Security;

@@ -15,6 +15,11 @@ final class PersonTest extends ModelTestCase
         $this->model = new Models\Person();
     }
 
+    public function testTableName(): void
+    {
+        $this->assertEquals('persons', $this->model->getTable());
+    }
+
     public function testGetAll(): void
     {
         $result = $this->model->getAll()->get()->toArray();
@@ -46,7 +51,7 @@ final class PersonTest extends ModelTestCase
         $this->assertEmpty($result);
     }
 
-    public function testGetUser(): void
+    public function testGetPerson(): void
     {
         $Person = $this->model::find(1);
         $this->assertEquals([
@@ -229,5 +234,56 @@ final class PersonTest extends ModelTestCase
             'email'      => 'fonfon@robertmanager.net',
             'phone'      => 'notAphoneNumber',
         ]);
+    }
+
+    public function testUpdatePerson(): void
+    {
+        $result = $this->model->edit(1, [
+            'first_name' => '  Jeannot ',
+            'nickname'   => ' testMan  ',
+        ]);
+        $expected = [
+            'id'          => 1,
+            'user_id'     => 1,
+            'first_name'  => 'Jeannot',
+            'last_name'   => 'Fountain',
+            'full_name'   => 'Jeannot Fountain',
+            'nickname'    => 'testMan',
+            'email'       => 'tester@robertmanager.net',
+            'phone'       => null,
+            'street'      => '1, somewhere av.',
+            'postal_code' => '1234',
+            'locality'    => 'Megacity',
+            'country_id'  => 1,
+            'company_id'  => 1,
+            'note'        => null,
+            'company'     => [
+                'id'          => 1,
+                'legal_name'  => 'Testing, Inc',
+                'street'      => '1, company st.',
+                'postal_code' => '1234',
+                'locality'    => 'Megacity',
+                'country_id'  => 1,
+                'phone'       => '+4123456789',
+                'note'        => 'Just for tests',
+                'created_at'  => null,
+                'updated_at'  => null,
+                'deleted_at'  => null,
+                'country'     => [
+                    'id'   => 1,
+                    'name' => 'France',
+                    'code' => 'FR',
+                ],
+            ],
+            'country' => [
+                'id'   => 1,
+                'name' => 'France',
+                'code' => 'FR',
+            ],
+        ];
+        unset($result->created_at);
+        unset($result->updated_at);
+        unset($result->deleted_at);
+        $this->assertEquals($expected, $result->toArray());
     }
 }

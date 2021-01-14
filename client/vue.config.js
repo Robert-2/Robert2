@@ -1,10 +1,14 @@
 module.exports = {
+  publicPath: process.env.NODE_ENV === 'production' ? '/webclient/' : '/',
   runtimeCompiler: true,
   productionSourceMap: false,
   filenameHashing: false,
-  pwa: {
-    name: 'Robert2',
-    themeColor: '#e14406',
-    msTileColor: '#ffffff',
+  chainWebpack: (config) => {
+    if (process.env.NODE_ENV === 'production') {
+      config.plugins.delete('html');
+      config.plugins.delete('preload');
+      config.plugins.delete('prefetch');
+      config.plugins.delete('friendly-errors');
+    }
   },
 };

@@ -5,8 +5,6 @@ namespace Robert2\Tests;
 
 use Robert2\API\Models;
 use Robert2\API\Errors;
-use Robert2\API\I18n\I18n;
-use Robert2\API\Config\Config;
 
 final class BillTest extends ModelTestCase
 {
@@ -15,6 +13,11 @@ final class BillTest extends ModelTestCase
         parent::setUp();
 
         $this->model = new Models\Bill();
+    }
+
+    public function testTableName(): void
+    {
+        $this->assertEquals('bills', $this->model->getTable());
     }
 
     public function testGetAll(): void
@@ -154,7 +157,7 @@ final class BillTest extends ModelTestCase
     public function testCreateFromEvent()
     {
         $result = $this->model->createFromEvent(2, 1, 25.9542);
-        $newBillNumber = sprintf('%s-00002', date('Y'));
+        $newBillNumber = sprintf('%s-00001', date('Y'));
         $expected = [
             'id'             => 2,
             'number'         => $newBillNumber,
@@ -226,6 +229,6 @@ final class BillTest extends ModelTestCase
     public function testGetLastBillNumber()
     {
         $result = $this->model->getLastBillNumber();
-        $this->assertEquals(1, $result);
+        $this->assertEquals(0, $result);
     }
 }

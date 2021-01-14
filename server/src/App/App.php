@@ -140,7 +140,6 @@ class App
     private function _setAppRoutes()
     {
         // - "Static" routes
-        $this->app->get('/apidoc', 'HomeController:apidoc')->setName('apidoc');
         $this->app->map(['GET', 'POST'], '/install', 'HomeController:install')->setName('install');
 
         $settings = $this->app->getContainer()->get('settings');

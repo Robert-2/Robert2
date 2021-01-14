@@ -10,7 +10,7 @@ use Illuminate\Pagination\LengthAwarePaginator as Paginator;
 use Robert2\API\Errors;
 use Robert2\API\Controllers\Traits\AuthUser;
 
-class BaseController
+abstract class BaseController
 {
     use AuthUser;
 
@@ -20,6 +20,14 @@ class BaseController
 
     public function __construct($container)
     {
+        if ($this->model === null) {
+            $modelName = preg_replace('/Controller$/', '', class_basename($this));
+            $modelFullName = sprintf('\\Robert2\\API\\Models\\%s', $modelName);
+            if (class_exists($modelFullName, true)) {
+                $this->model = new $modelFullName();
+            }
+        }
+
         $this->container  = $container;
         $this->itemsCount = $container->settings['maxItemsPerPage'];
     }
@@ -35,6 +43,7 @@ class BaseController
         $searchTerm = $request->getQueryParam('search', null);
         $searchField = $request->getQueryParam('searchBy', null);
         $orderBy = $request->getQueryParam('orderBy', null);
+        $limit = $request->getQueryParam('limit', null);
         $ascending = (bool)$request->getQueryParam('ascending', true);
         $withDeleted = (bool)$request->getQueryParam('deleted', false);
 
@@ -42,7 +51,7 @@ class BaseController
             ->setOrderBy($orderBy, $ascending)
             ->setSearch($searchTerm, $searchField)
             ->getAll($withDeleted)
-            ->paginate($this->itemsCount);
+            ->paginate($limit ? (int)$limit : $this->itemsCount);
 
         $basePath = $request->getUri()->getPath();
         $params = $request->getQueryParams();

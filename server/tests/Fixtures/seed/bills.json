@@ -16,8 +16,8 @@
                 "stock_quantity"        : 5,
                 "out_of_order_quantity" : 1,
                 "replacement_price"     : 19400,
-                "is_hidden_on_bill"     : 0,
-                "is_discountable"       : 0
+                "is_hidden_on_bill"     : false,
+                "is_discountable"       : false
             },
             {
                 "id"                    : 2,
@@ -30,8 +30,8 @@
                 "stock_quantity"        : 2,
                 "out_of_order_quantity" : null,
                 "replacement_price"     : 349.9,
-                "is_hidden_on_bill"     : 0,
-                "is_discountable"       : 1
+                "is_hidden_on_bill"     : false,
+                "is_discountable"       : true
             }
         ],
         "degressive_rate"    : 1.75,

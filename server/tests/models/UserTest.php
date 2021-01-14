@@ -15,6 +15,11 @@ final class UserTest extends ModelTestCase
         $this->model = new Models\User();
     }
 
+    public function testTableName(): void
+    {
+        $this->assertEquals('users', $this->model->getTable());
+    }
+
     private $expectedDataUser1 = [
         'id'         => 1,
         'pseudo'     => 'test1',
@@ -184,8 +189,7 @@ final class UserTest extends ModelTestCase
             'group_id' => 'member',
             'person'   => null
         ];
-        unset($result->created_at);
-        unset($result->updated_at);
+        unset($result->created_at, $result->updated_at, $result->deleted_at);
         $this->assertEquals($expected, $result->toArray());
 
         // - Check if settings are created
@@ -239,7 +243,7 @@ final class UserTest extends ModelTestCase
             ],
         ];
 
-        $result   = $this->model->edit(3, $data);
+        $result = $this->model->edit(3, $data);
         $this->assertEquals('testEdit', $result['pseudo']);
         $this->assertEquals('Testing Tester', $result['person']['full_name']);
     }
@@ -342,7 +346,14 @@ final class UserTest extends ModelTestCase
                 'start_date'   => '2018-12-18 00:00:00',
                 'end_date'     => '2018-12-19 23:59:59',
                 'is_confirmed' => false,
-            ]
+            ],
+            [
+                'id'           => 4,
+                'title'        => 'Concert X',
+                'start_date'   => '2019-03-01 00:00:00',
+                'end_date'     => '2019-02-10 23:59:59',
+                'is_confirmed' => false,
+            ],
         ], $results);
     }
 }

@@ -6,23 +6,21 @@ namespace Robert2\API\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Illuminate\Database\Eloquent\Builder;
+use Respect\Validation\Exceptions\NestedValidationException;
 use InvalidArgumentException;
-use Robert2\API\Validation\Validator;
 use Robert2\API\Config\Config;
 use Robert2\API\Errors;
 
-class BaseModel extends Model
+abstract class BaseModel extends Model
 {
-    protected $table;
-    protected $_settings;
+    private $columns;
 
-    protected $_modelName;
-    protected $_orderField;
-    protected $_orderDirection;
+    protected $orderField;
+    protected $orderDirection;
 
-    protected $_allowedSearchFields;
-    protected $_searchField;
-    protected $_searchTerm;
+    protected $allowedSearchFields = [];
+    protected $searchField;
+    protected $searchTerm;
 
     protected $fillable;
 
@@ -32,17 +30,12 @@ class BaseModel extends Model
         'deleted_at',
     ];
 
-    private $_validator;
-
     public $validation;
 
     const EXTRA_CHARS = '-_. ÇçàÀâÂäÄåÅèÈéÉêÊëËíÍìÌîÎïÏòÒóÓôÔöÖðÐõÕøØúÚùÙûÛüÜýÝÿŸŷŶøØæÆœŒñÑßÞ';
 
     public function __construct(array $attributes = [])
     {
-        $this->_settings  = Config::getSettings();
-        $this->_validator = new Validator();
-
         Config::getCapsule();
 
         parent::__construct($attributes);
@@ -58,7 +51,7 @@ class BaseModel extends Model
     {
         $builder = $this->_getOrderBy();
 
-        if (!empty($this->_searchTerm)) {
+        if (!empty($this->searchTerm)) {
             $builder = $this->_setSearchConditions($builder);
         }
 
@@ -73,7 +66,7 @@ class BaseModel extends Model
     {
         $builder = self::where($conditions);
 
-        if (!empty($this->_searchTerm)) {
+        if (!empty($this->searchTerm)) {
             $builder = $this->_setSearchConditions($builder);
         }
 
@@ -84,32 +77,66 @@ class BaseModel extends Model
         return $this->_getOrderBy($builder);
     }
 
+    // ------------------------------------------------------
+    // -
+    // -    Setters
+    // -
+    // ------------------------------------------------------
+
+    public function setOrderBy(?string $orderBy = null, bool $ascending = true): BaseModel
+    {
+        if ($orderBy) {
+            $this->orderField = $orderBy;
+        }
+        $this->orderDirection = $ascending ? 'asc' : 'desc';
+        return $this;
+    }
+
+    public function setSearch(?string $term = null, $fields = null): BaseModel
+    {
+        if (empty($term)) {
+            return $this;
+        }
+
+        if ($fields) {
+            $fields = !is_array($fields) ? explode('|', $fields) : $fields;
+            foreach ($fields as $field) {
+                if (!in_array($field, $this->getAllowedSearchFields())) {
+                    throw new InvalidArgumentException("Search field « $field » not allowed.");
+                }
+                $this->searchField = $field;
+            }
+        }
+
+        $this->searchTerm = trim($term);
+        return $this;
+    }
+
     // ——————————————————————————————————————————————————————
     // —
-    // —    Setters
+    // —    "Repository" methods
     // —
     // ——————————————————————————————————————————————————————
 
     public function edit(?int $id = null, array $data = []): Model
     {
         if ($id && !$this->exists($id)) {
-            throw new Errors\NotFoundException("Edit model $this->_modelName failed, entity not found.");
+            throw new Errors\NotFoundException(sprintf("Edit failed, record %d not found.", $id));
         }
 
         $data = cleanEmptyFields($data);
-
-        $onlyFields = $id ? array_keys($data) : [];
-        $this->validate($data, $onlyFields);
+        $data = $this->_trimStringFields($data);
 
         try {
-            $model = self::updateOrCreate(['id' => $id], $data);
+            $model = self::firstOrNew(compact('id'));
+            $model->fill($data)->validate()->save();
         } catch (QueryException $e) {
             $error = new Errors\ValidationException();
             $error->setPDOValidationException($e);
             throw $error;
         }
 
-        return $model;
+        return $model->refresh();
     }
 
     public function remove(int $id, array $options = []): ?Model
@@ -125,13 +152,13 @@ class BaseModel extends Model
 
         if ($model->trashed() || $options['force'] === true) {
             if (!$model->forceDelete()) {
-                throw new \RuntimeException("Unable to destroy $this->_modelName ID #$id.");
+                throw new \RuntimeException(sprintf("Unable to destroy the record %d.", $id));
             }
             return null;
         }
 
         if (!$model->delete()) {
-            throw new \RuntimeException("Unable to delete $this->_modelName ID #$id.");
+            throw new \RuntimeException(sprintf("Unable to delete the record %d.", $id));
         }
 
         return $model;
@@ -145,37 +172,10 @@ class BaseModel extends Model
         }
 
         if (!$model->restore()) {
-            throw new \RuntimeException("Unable to restore $this->_modelName ID #$id.");
+            throw new \RuntimeException(sprintf("Unable to restore the record %d.", $id));
         }
 
         return $model;
-    }
-
-    public function setOrderBy(?string $orderBy = null, bool $ascending = true): BaseModel
-    {
-        if ($orderBy) {
-            $this->_orderField = $orderBy;
-        }
-        $this->_orderDirection = $ascending ? 'asc' : 'desc';
-        return $this;
-    }
-
-    public function setSearch(?string $term = null, ?string $field = null): BaseModel
-    {
-        if (empty($term)) {
-            return $this;
-        }
-
-        if ($field) {
-            if (!in_array($field, $this->_allowedSearchFields)) {
-                throw new InvalidArgumentException("Search field « $field » not allowed.");
-            }
-
-            $this->_searchField = $field;
-        }
-
-        $this->_searchTerm = trim($term);
-        return $this;
     }
 
     // ——————————————————————————————————————————————————————
@@ -189,11 +189,18 @@ class BaseModel extends Model
         return self::where('id', $id)->exists();
     }
 
-    public function validate(array $data, array $onlyFields = []): void
+    public function validate(): self
     {
-        if (empty($this->validation)) {
-            throw new \RuntimeException("Validation rules cannot be empty for model $this->_modelName.");
+        $rules = $this->validation;
+        if (empty($rules)) {
+            throw new \RuntimeException("Validation rules cannot be empty.");
         }
+
+        // - Récupère les attributs du modèle, castés (sauf les données tout juste ajoutées).
+        $data = $this->addCastAttributesToArray(
+            $this->getAttributes(),
+            array_keys($this->getDirty())
+        );
 
         foreach ($data as $field => $value) {
             if (is_array($value)) {
@@ -201,22 +208,41 @@ class BaseModel extends Model
             }
         }
 
-        if (!empty($onlyFields)) {
-            foreach (array_keys($this->validation) as $fieldToValidate) {
-                if (!in_array($fieldToValidate, $onlyFields)) {
-                    unset($this->validation[$fieldToValidate]);
-                    unset($data[$fieldToValidate]);
-                }
+        // - Validation
+        $errors = [];
+        foreach ($rules as $field => $rule) {
+            try {
+                $rule->setName($field)->assert($data[$field] ?? null);
+            } catch (NestedValidationException $e) {
+                $errors[$field] = $e->getMessages();
             }
         }
 
-        $this->_validator->validate($data, $this->validation);
-
-        if ($this->_validator->hasError()) {
+        if (count($errors) > 0) {
             $ex = new Errors\ValidationException();
-            $ex->setValidationErrors($this->_validator->getErrors());
+            $ex->setValidationErrors($errors);
             throw $ex;
         }
+
+        return $this;
+    }
+
+    public function getTableColumns(): array
+    {
+        if (!$this->columns) {
+            $this->columns = $this->getConnection()
+                ->getSchemaBuilder()
+                ->getColumnListing($this->getTable());
+        }
+        return $this->columns;
+    }
+
+    public function getAllowedSearchFields(): array
+    {
+        return array_unique(array_merge(
+            (array)$this->searchField,
+            (array)$this->allowedSearchFields
+        ));
     }
 
     // ------------------------------------------------------
@@ -227,8 +253,12 @@ class BaseModel extends Model
 
     protected function _getOrderBy(?Builder $builder = null): Builder
     {
-        $order = $this->_orderField ?: 'id';
-        $direction = $this->_orderDirection ?: 'asc';
+        $direction = $this->orderDirection ?: 'asc';
+
+        $order = $this->orderField;
+        if (!$order) {
+            $order = in_array('name', $this->getTableColumns()) ? 'name' : 'id';
+        }
 
         if ($builder) {
             return $builder->orderBy($order, $direction);
@@ -239,24 +269,31 @@ class BaseModel extends Model
 
     protected function _setSearchConditions(Builder $builder): Builder
     {
-        if (!$this->_searchField || !$this->_searchTerm) {
+        if (!$this->searchField || !$this->searchTerm) {
             return $builder;
         }
 
-        $term = sprintf('%%%s%%', addcslashes($this->_searchTerm, '%_'));
+        $term = sprintf('%%%s%%', addcslashes($this->searchTerm, '%_'));
 
-        if (preg_match('/\|/', $this->_searchField)) {
-            $fields = explode('|', $this->_searchField);
-
-            $group = function (Builder $query) use ($fields, $term) {
-                foreach ($fields as $field) {
+        if (is_array($this->searchField)) {
+            $group = function (Builder $query) use ($term) {
+                foreach ($this->searchField as $field) {
                     $query->orWhere($field, 'LIKE', $term);
                 }
             };
-
             return $builder->where($group);
         }
 
-        return $builder->where($this->_searchField, 'LIKE', $term);
+        return $builder->where($this->searchField, 'LIKE', $term);
+    }
+
+    protected function _trimStringFields(array $data): array
+    {
+        $trimmedData = [];
+        foreach ($data as $field => $value) {
+            $isString = array_key_exists($field, $this->casts) && $this->casts[$field] === 'string';
+            $trimmedData[$field] = ($isString && $value) ? trim($value) : $value;
+        }
+        return $trimmedData;
     }
 }

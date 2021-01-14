@@ -15,6 +15,11 @@ final class EventTest extends ModelTestCase
         $this->model = new Models\Event();
     }
 
+    public function testTableName(): void
+    {
+        $this->assertEquals('events', $this->model->getTable());
+    }
+
     public function testGetAll(): void
     {
         $this->model->setPeriod('2018-01-15', '2018-12-19');
@@ -81,6 +86,15 @@ final class EventTest extends ModelTestCase
         $this->assertEquals(-1, $result[0]['remaining_quantity']);
     }
 
+    public function testGetParks(): void
+    {
+        $result = $this->model->getParks(1);
+        $this->assertEquals([1], $result);
+
+        $result = $this->model->getParks(4);
+        $this->assertEquals([null, 1], $result);
+    }
+
     public function testGetMaterials(): void
     {
         $Event = $this->model::find(1);
@@ -91,6 +105,7 @@ final class EventTest extends ModelTestCase
             'name'                  => 'Showtec SDS-6',
             'description'           => "Console DMX (jeu d'orgue) Showtec 6 canaux",
             'reference'             => 'SDS-6-01',
+            'is_unitary'            => false,
             'park_id'               => 1,
             'category_id'           => 2,
             'sub_category_id'       => 4,
@@ -98,7 +113,6 @@ final class EventTest extends ModelTestCase
             'stock_quantity'        => 2,
             'out_of_order_quantity' => null,
             'replacement_price'     => 59.0,
-            'serial_number'         => '1212121-5',
             'is_hidden_on_bill'     => false,
             'is_discountable'       => true,
             'tags'                  => [],
@@ -267,7 +281,7 @@ final class EventTest extends ModelTestCase
             $data,
             ['end_date' => '2020-03-03 23:59:59']
         );
-        $this->model->validate($testData);
+        (new Models\Event($testData))->validate();
 
         // - Validation fail: end date is after start date
         $this->expectException(Errors\ValidationException::class);
@@ -276,7 +290,7 @@ final class EventTest extends ModelTestCase
             $data,
             ['end_date' => '2020-02-20 23:59:59']
         );
-        $this->model->validate($testData);
+        (new Models\Event($testData))->validate();
     }
 
     public function testValidateReference(): void
@@ -291,14 +305,14 @@ final class EventTest extends ModelTestCase
 
         foreach (['REF1', null] as $testValue) {
             $testData = array_merge($data, ['reference' => $testValue]);
-            $this->model->validate($testData);
+            (new Models\Event($testData))->validate();
         }
 
         // - Validation fail: Reference is an empty string
         $this->expectException(Errors\ValidationException::class);
         $this->expectExceptionCode(ERROR_VALIDATION);
         $testData = array_merge($data, ['reference' => '']);
-        $this->model->validate($testData);
+        (new Models\Event($testData))->validate();
     }
 
     public function testGetPdfContent()
