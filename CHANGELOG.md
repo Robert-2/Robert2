@@ -4,7 +4,7 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 0.11.0 (UNRELEASED)
+## 0.11.0 (2021-01-14)
 
 - Met à jour les dépendances du projet.
 - Ajoute un fichier de config pour le "dependabot" de Github (#86).
