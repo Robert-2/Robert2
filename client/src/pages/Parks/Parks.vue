@@ -46,7 +46,7 @@
           </span>
         </div>
         <div slot="events" slot-scope="park">
-          <router-link :to="`/?park=${park.row.id}`">
+          <router-link :to="`/?park=${park.row.id}`" v-if="parksCount > 1">
             {{ $t('page-parks.display-events-for-park') }}
           </router-link>
         </div>

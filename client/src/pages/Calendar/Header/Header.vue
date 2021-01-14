@@ -33,10 +33,11 @@
       <div
         class="CalendarHeader__filter"
         :class="{ 'CalendarHeader__filter--active': !!filters.park }"
+        v-if="parks.length > 1"
       >
         <select
           v-model="filters.park"
-          class="CalendarHeader__filter__park"
+          class="CalendarHeader__filter__select"
           @change="handleFilterParkChange"
         >
           <option value="">

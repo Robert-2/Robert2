@@ -5,6 +5,7 @@ namespace Robert2\API\Controllers;
 
 use Robert2\API\Errors;
 use Robert2\API\Controllers\Traits\WithPdf;
+use Robert2\API\Models\Park;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -29,10 +30,11 @@ class EventController extends BaseController
             ->getAll($deleted);
 
         $data = $results->get()->toArray();
+        $useMultipleParks = Park::count() > 1;
         foreach ($data as $index => $event) {
             $eventMissingMaterials = $this->model->getMissingMaterials($event['id']);
             $data[$index]['has_missing_materials'] = !empty($eventMissingMaterials);
-            $data[$index]['parks'] = $this->model->getParks($event['id']);
+            $data[$index]['parks'] = $useMultipleParks ? $this->model->getParks($event['id']) : null;
         }
 
         return $response->withJson([ 'data' => $data ]);

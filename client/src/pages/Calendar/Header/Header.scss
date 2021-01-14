@@ -88,14 +88,14 @@
       margin-top: 3px;
     }
 
-    &__park {
+    &__select {
       padding: .55rem .78rem;
     }
 
     &--active {
       color: $text-warning-color;
 
-      .CalendarHeader__filter__park {
+      .CalendarHeader__filter__select {
         background-color: $bg-color-button-warning;
       }
 

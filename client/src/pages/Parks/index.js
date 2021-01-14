@@ -65,6 +65,11 @@ export default {
       },
     };
   },
+  computed: {
+    parksCount() {
+      return store.state.parks.list.length;
+    },
+  },
   methods: {
     deletePark(parkId) {
       const isSoft = !this.isTrashDisplayed;
