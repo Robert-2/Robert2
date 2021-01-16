@@ -96,18 +96,4 @@ final class ParksTest extends ApiTestCase
             'deleted_at' => null,
         ]);
     }
-
-    public function testGetMaterialsNotFound()
-    {
-        $this->client->get('/api/parks/999/materials');
-        $this->assertStatusCode(ERROR_NOT_FOUND);
-        $this->assertNotFoundErrorMessage();
-    }
-
-    public function testGetMaterials()
-    {
-        $this->client->get('/api/parks/1/materials');
-        $this->assertStatusCode(SUCCESS_OK);
-        $this->assertResponsePaginatedData(5, '/api/parks/1/materials');
-    }
 }
