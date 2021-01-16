@@ -151,9 +151,9 @@ final class MaterialTest extends ModelTestCase
         $this->assertEquals([
             'id' => 1,
             'name' => "default",
-            'total_items' => 5,
-            'total_amount' => 101223.80,
-            'total_stock_quantity' => 83,
+            'total_items' => 7,
+            'total_amount' => 119061.80,
+            'total_stock_quantity' => 87,
         ], $result);
     }
 

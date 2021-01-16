@@ -35,13 +35,13 @@ final class ParkTest extends ModelTestCase
     public function testGetTotalItems(): void
     {
         $Park = $this->model::find(1);
-        $this->assertEquals(5, $Park->total_items);
+        $this->assertEquals(7, $Park->total_items);
     }
 
     public function testGetTotalAmount(): void
     {
         $Park = $this->model::find(1);
-        $this->assertEquals(101223.80, $Park->total_amount);
+        $this->assertEquals(119061.80, $Park->total_amount);
     }
 
     public function testGetPerson(): void
