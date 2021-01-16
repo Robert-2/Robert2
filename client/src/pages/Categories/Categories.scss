@@ -2,14 +2,18 @@
   &__items {
     display: flex;
     flex-wrap: wrap;
+    // !important: overwrite padding of .content__main-view
+    padding-right: 0 !important;
   }
 
   &__category {
     flex: 1 0 220px;
+    max-width: 500px;
     margin-bottom: 2rem;
     padding: .6rem 1rem;
     background: $bg-color-emphasis;
     border-radius: 10px;
+    margin-right: 1rem;
   }
 
   &__sub-categories {
@@ -37,8 +41,10 @@
 
     &__actions {
       flex: 1;
-      text-align: right;
-      min-width: 5.6rem;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      min-width: 110px;
     }
   }
 
@@ -66,14 +72,6 @@
 @media(min-width: $screen-mobile) {
   .Categories {
     &__category {
-      margin-right: 1rem;
-    }
-  }
-}
-
-@media(min-width: $screen-tablet) {
-  .Categories {
-    &__category {
       margin-right: 2rem;
     }
   }
@@ -81,7 +79,8 @@
 
 @media(min-width: $screen-desktop) {
   .Categories {
-    &__edit-button {
+    &__edit-button,
+    &__link-button {
       visibility: hidden;
     }
 
@@ -92,13 +91,10 @@
     &__category,
     &__sub-category {
       &__name:hover {
-        .Categories__edit-button {
+        .Categories__edit-button,
+        .Categories__link-button {
           visibility: visible;
         }
-      }
-
-      &__actions {
-        flex: 0 0 auto;
       }
     }
   }

@@ -17,7 +17,6 @@ export default {
   getters: {
     options: (state, getters) => formatOptions(
       state.list.filter((tag) => !getters.isProtected(tag.name)),
-      ['name'],
     ),
 
     isProtected: (state) => (tagName) => (

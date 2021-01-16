@@ -194,11 +194,7 @@ export default {
         return;
       }
 
-      this.subCategoriesOptions = formatOptions(
-        category.sub_categories,
-        ['name'],
-        this.$t('please-choose'),
-      );
+      this.subCategoriesOptions = formatOptions(category.sub_categories, null, this.$t('please-choose'));
 
       this.refreshSubCategorySelect();
     },

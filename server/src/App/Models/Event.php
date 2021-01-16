@@ -232,6 +232,20 @@ class Event extends BaseModel
         return empty($missingMaterials) ? null : array_values($missingMaterials);
     }
 
+    public function getParks(int $id): ?array
+    {
+        $event = $this->with('Materials')->find($id);
+        if (!$event) {
+            return null;
+        }
+
+        $materialParks = array_map(function ($material) {
+            return $material['park_id'];
+        }, $event['materials']);
+
+        return array_values(array_unique($materialParks));
+    }
+
     public function getPdfContent(int $id): string
     {
         if (!$this->exists($id)) {

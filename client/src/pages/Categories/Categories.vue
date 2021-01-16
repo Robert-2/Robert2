@@ -32,6 +32,13 @@
           <i class="fas fa-folder-open" />
           {{ category.name }}
           <div class="Categories__category__actions">
+            <router-link
+              v-tooltip="$t('page-categories.display-materials')"
+              :to="`/materials?category=${category.id}`"
+              class="Categories__link-button"
+            >
+              <i class="fas fa-eye" />
+            </router-link>
             <button
               v-tooltip="$t('action-edit')"
               class="Categories__edit-button info"
@@ -58,6 +65,13 @@
               <i class="fas fa-arrow-right" />
               {{ subCategory.name }}
               <div class="Categories__sub-category__actions">
+                <router-link
+                  v-tooltip="$t('page-subcategories.display-materials')"
+                  :to="`/materials?category=${category.id}&subCategory=${subCategory.id}`"
+                  class="Categories__link-button"
+                >
+                  <i class="fas fa-eye" />
+                </router-link>
                 <button
                   v-tooltip="$t('action-edit')"
                   class="Categories__edit-button info"

@@ -30,6 +30,13 @@ export default {
   'copied-in-clipboard': "Copié dans le presse-papier\u00a0!",
 
   'please-choose': "Veuillez choisir...",
+  'start-typing-to-search': "Commencez à écrire pour rechercher...",
+  'type-at-least-count-chars-to-search': [
+    "Entrez encore au moins {count} lettre pour rechercher...",
+    "Entrez encore au moins {count} lettres pour rechercher...",
+  ],
+  'no-result-found-try-another-search': "Aucun résultat. Essayez avec une autre recherche.",
+  'create-select-item-label': "Créer un {label}",
   'add-item': "Ajouter un {item}",
   'remove-item': "Enlever ce {item}",
   'cancel-add-item': "Annuler l'ajout de {item}",

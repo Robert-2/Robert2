@@ -36,6 +36,7 @@ const formatTimelineEvent = (dataEvent, translate) => {
     isConfirmed,
     location,
     hasMissingMaterials,
+    parks,
   } = formatEvent(dataEvent);
 
   let content = title;
@@ -88,6 +89,7 @@ const formatTimelineEvent = (dataEvent, translate) => {
     className: classNames.join(' '),
     title: eventTitle,
     hasMissingMaterials,
+    parks,
   };
 };
 

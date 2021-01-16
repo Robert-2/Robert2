@@ -19,7 +19,7 @@ class Person extends BaseModel
 
     protected $table = 'persons';
 
-    protected $orderField = 'first_name';
+    protected $orderField = 'last_name';
 
     protected $allowedSearchFields = ['full_name', 'first_name', 'last_name', 'nickname', 'email'];
     protected $searchField = 'full_name';
@@ -176,6 +176,7 @@ class Person extends BaseModel
         }
 
         $data = cleanEmptyFields($data);
+        $data = $this->_trimStringFields($data);
 
         if (!empty($data['phone'])) {
             $data['phone'] = normalizePhone($data['phone']);

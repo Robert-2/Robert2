@@ -4,9 +4,10 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 0.11.0 (UNRELEASED)
+## 0.11.0 (2021-01-14)
 
 - Met à jour les dépendances du projet.
+- Ajoute un fichier de config pour le "dependabot" de Github (#86).
 - Le numéro de version du projet est maintenant centralisé dans un fichier `VERSION` à la racine.
 - Les sources du client sont maintenant embarquées dans un dossier `dist/` côté client et non directement côté serveur.  
   Ceci va, par exemple, permettre de simplifier les mises à jour de la version compilée du client (via un simple `yarn build`).
@@ -15,6 +16,11 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Améliorations internes de la validation des données.
 - Ajoute une page de vue du matériel en détail.
 - Utilise des onglets dans la page de vue du matériel.
+- Dans l'édition d'événements, la recherche directe des bénéficiaires et techniciens dans le champ multiple permet de tous les retrouver (#36).
+- Ajoute des boutons dans la page des catégories, permettant d'ouvrir la liste du matériel d'une catégorie ou sous-catégorie (#51).
+- Supprime automatiquement les espaces vides inutiles dans les champs des formulaires (#87).
+- Si plusieurs parcs existent, un sélecteur dans le calendrier permet de filtrer les événements qui contiennent au moins un matériel d'un parc sélectionné (#94).
+- Dans la liste des parcs (s'il y en a plusieurs), un lien sur chaque parc permet d'ouvrir le calendrier, filtré par ce parc (#94).
 
 ## 0.10.2 (2020-11-16)
 

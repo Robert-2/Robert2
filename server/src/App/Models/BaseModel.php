@@ -125,6 +125,8 @@ abstract class BaseModel extends Model
         }
 
         $data = cleanEmptyFields($data);
+        $data = $this->_trimStringFields($data);
+
         try {
             $model = self::firstOrNew(compact('id'));
             $model->fill($data)->validate()->save();
@@ -283,5 +285,15 @@ abstract class BaseModel extends Model
         }
 
         return $builder->where($this->searchField, 'LIKE', $term);
+    }
+
+    protected function _trimStringFields(array $data): array
+    {
+        $trimmedData = [];
+        foreach ($data as $field => $value) {
+            $isString = array_key_exists($field, $this->casts) && $this->casts[$field] === 'string';
+            $trimmedData[$field] = ($isString && $value) ? trim($value) : $value;
+        }
+        return $trimmedData;
     }
 }
