@@ -116,6 +116,22 @@ final class MaterialTest extends ModelTestCase
         foreach ([4, 2, 30, 2, 32, 2, 1, 1] as $index => $expected) {
             $this->assertEquals($expected, $result[$index]['remaining_quantity']);
         }
+
+        // - Vérifie que les unités des matériels avec gestion unitaire sont
+        //   bien marquées comme disponibles ou non.
+        $expectedUnitaryMap = [
+            5 => [true, true, true],
+            6 => [true],
+            7 => [false, true],
+        ];
+        foreach ($expectedUnitaryMap as $index => $expectedAvailabilities) {
+            $this->assertArrayHasKey('units', $result[$index]);
+
+            foreach ($result[$index]['units'] as $unitIndex => $unitResult) {
+                $this->assertArrayHasKey('is_available', $unitResult);
+                $this->assertEquals($expectedAvailabilities[$unitIndex], $unitResult['is_available']);
+            }
+        }
     }
 
     public function testSetSearch(): void

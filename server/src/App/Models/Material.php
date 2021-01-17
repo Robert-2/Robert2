@@ -296,7 +296,15 @@ class Material extends BaseModel
                     $eventMaterial = $event['materials'][$eventMaterialIndex];
                     $usedUnits = array_merge($usedUnits, $eventMaterial['pivot']['units']);
                 }
+
                 $usedCount = count(array_unique($usedUnits));
+
+                // - Ajoute le champ `is_available` aux unités des matériels.
+                if (array_key_exists('units', $material)) {
+                    foreach ($material['units'] as &$unit) {
+                        $unit['is_available'] = !in_array($unit['id'], $usedUnits, true);
+                    }
+                }
             } else {
                 $quantityPerPeriod = [0];
                 foreach ($periods as $periodIndex => $period) {
