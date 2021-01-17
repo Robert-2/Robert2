@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
+use Illuminate\Database\Eloquent\Model;
 use Robert2\API\Models\BaseModel;
-use Robert2\API\Models\Event;
 use Robert2\API\Validation\Validator as V;
 
 class MaterialUnit extends BaseModel
@@ -71,4 +71,29 @@ class MaterialUnit extends BaseModel
         'serial_number',
         'is_broken',
     ];
+
+    public function setSerialNumberAttribute($value)
+    {
+        $this->attributes['serial_number'] = trim($value);
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    "Repository" methods
+    // -
+    // ------------------------------------------------------
+
+    public function remove(int $id, array $options = []): ?Model
+    {
+        $model = self::find($id);
+        if (empty($model)) {
+            throw new Errors\NotFoundException;
+        }
+
+        if (!$model->delete()) {
+            throw new \RuntimeException(sprintf("Unable to delete the record %d.", $id));
+        }
+
+        return null;
+    }
 }
