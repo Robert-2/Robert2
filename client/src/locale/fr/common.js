@@ -87,7 +87,6 @@ export default {
   'reference': "Référence",
   'park': "Parc",
   'prices': "Tarifs",
-  'is-unitary': "Identification unitaire\u00a0?",
   'rental-price': "Tarif location",
   'replacement-price': "Prix de remplacement",
   'rent-price': "Tarif loc.",
