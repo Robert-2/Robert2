@@ -218,7 +218,12 @@ final class EventsTest extends ApiTestCase
                             'value' => 3.15,
                         ],
                     ],
-                    'pivot' => ['event_id' => 1, 'material_id' => 4, 'quantity' => 1],
+                    'pivot' => [
+                        'id' => 3,
+                        'event_id' => 1,
+                        'material_id' => 4,
+                        'quantity' => 1,
+                    ],
                 ],
                 [
                     'id'                    => 2,
@@ -254,7 +259,12 @@ final class EventsTest extends ApiTestCase
                             'value' => 2.2,
                         ],
                     ],
-                    'pivot' => ['event_id' => 1, 'material_id' => 2, 'quantity' => 1],
+                    'pivot' => [
+                        'id' => 2,
+                        'event_id' => 1,
+                        'material_id' => 2,
+                        'quantity' => 1,
+                    ],
                 ],
                 [
                     'id'                    => 1,
@@ -297,7 +307,12 @@ final class EventsTest extends ApiTestCase
                             'value' => 36.5,
                         ],
                     ],
-                    'pivot' => ['event_id' => 1, 'material_id' => 1, 'quantity' => 1],
+                    'pivot' => [
+                        'id' => 1,
+                        'event_id' => 1,
+                        'material_id' => 1,
+                        'quantity' => 1,
+                    ],
                 ],
             ],
             'bills' => [
@@ -517,6 +532,7 @@ final class EventsTest extends ApiTestCase
                         ],
                     ],
                     'pivot' => [
+                        'id'          => 3,
                         'event_id'    => 1,
                         'material_id' => 4,
                         'quantity'    => 1,
@@ -557,6 +573,7 @@ final class EventsTest extends ApiTestCase
                         ],
                     ],
                     'pivot' => [
+                        'id'          => 2,
                         'event_id'    => 1,
                         'material_id' => 2,
                         'quantity'    => 1,
@@ -604,6 +621,7 @@ final class EventsTest extends ApiTestCase
                         ],
                     ],
                     'pivot' => [
+                        'id'          => 1,
                         'event_id'    => 1,
                         'material_id' => 1,
                         'quantity'    => 1,
@@ -735,6 +753,7 @@ final class EventsTest extends ApiTestCase
                     ],
                 ],
                 'pivot' => [
+                    'id'          => 2,
                     'event_id'    => 1,
                     'material_id' => 2,
                     'quantity'    => 1,

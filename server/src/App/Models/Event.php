@@ -123,7 +123,7 @@ class Event extends BaseModel
 
         return $this->belongsToMany('Robert2\API\Models\Material', 'event_materials')
             ->using('Robert2\API\Models\EventMaterial')
-            ->withPivot('quantity')
+            ->withPivot('id', 'quantity')
             ->select($fields);
     }
 

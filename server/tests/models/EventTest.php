@@ -140,6 +140,7 @@ final class EventTest extends ModelTestCase
                 ],
             ],
             'pivot' => [
+                'id'          => 3,
                 'event_id'    => 1,
                 'material_id' => 4,
                 'quantity'    => 1,
