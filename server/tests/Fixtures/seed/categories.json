@@ -10,5 +10,9 @@
     {
         "id"   : 3,
         "name" : "transport"
+    },
+    {
+        "id"   : 4,
+        "name" : "Décors"
     }
 ]

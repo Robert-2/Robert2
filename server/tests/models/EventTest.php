@@ -85,15 +85,20 @@ final class EventTest extends ModelTestCase
         $this->assertCount(1, $result);
         $this->assertEquals('DBXPA2', $result[0]['reference']);
         $this->assertEquals(1, $result[0]['missing_quantity']);
-    }
 
-    public function testGetParks(): void
-    {
-        $result = $this->model->getParks(1);
-        $this->assertEquals([1], $result);
+        // - Get missing materials of event #4
+        $result = $this->model->getMissingMaterials(4);
+        $this->assertNotNull($result);
+        $this->assertCount(1, $result);
+        $this->assertEquals('Transporter', $result[0]['reference']);
+        $this->assertEquals(2, $result[0]['missing_quantity']);
 
-        $result = $this->model->getParks(4);
-        $this->assertEquals([null, 1], $result);
+        // - Get missing materials of event #5
+        $result = $this->model->getMissingMaterials(5);
+        $this->assertNotNull($result);
+        $this->assertCount(1, $result);
+        $this->assertEquals('Decor-Forest', $result[0]['reference']);
+        $this->assertEquals(1, $result[0]['missing_quantity']);
     }
 
     public function testGetMaterials(): void
@@ -117,6 +122,7 @@ final class EventTest extends ModelTestCase
             'is_hidden_on_bill'     => false,
             'is_discountable'       => true,
             'tags'                  => [],
+            'units'                 => [],
             'attributes'            => [
                 [
                     'id'    => 4,
@@ -145,6 +151,7 @@ final class EventTest extends ModelTestCase
                 'event_id'    => 1,
                 'material_id' => 4,
                 'quantity'    => 1,
+                'units'       => [],
             ],
         ];
         $this->assertEquals($expected, $results[0]);
@@ -321,5 +328,17 @@ final class EventTest extends ModelTestCase
     {
         $result = $this->model->getPdfContent(1);
         $this->assertNotEmpty($result);
+    }
+
+    public function testGetConcurrentlyUsedUnits(): void
+    {
+        $result = Models\Event::findOrFail(1)->getConcurrentlyUsedUnits();
+        $this->assertEquals([], $result);
+
+        $result = Models\Event::findOrFail(4)->getConcurrentlyUsedUnits();
+        $this->assertEquals([], $result);
+
+        $result = Models\Event::findOrFail(6)->getConcurrentlyUsedUnits();
+        $this->assertEquals([4, 3, 1], $result);
     }
 }

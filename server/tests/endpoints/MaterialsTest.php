@@ -18,8 +18,8 @@ final class MaterialsTest extends ApiTestCase
                 'prev_page_url'  => null,
                 'last_page_url'  => '/api/materials?page=1',
                 'per_page'       => $this->settings['maxItemsPerPage'],
-                'to'             => 7,
-                'total'          => 7,
+                'to'             => 8,
+                'total'          => 8,
             ],
             'data' => [
                 [
@@ -32,8 +32,8 @@ final class MaterialsTest extends ApiTestCase
                     'category_id'           => 1,
                     'sub_category_id'       => 1,
                     'rental_price'          => 49.99,
-                    'stock_quantity'        => 0,
-                    'out_of_order_quantity' => 0,
+                    'stock_quantity'        => 3,
+                    'out_of_order_quantity' => 1,
                     'replacement_price'     => 419,
                     'is_hidden_on_bill'     => false,
                     'is_discountable'       => false,
@@ -43,6 +43,26 @@ final class MaterialsTest extends ApiTestCase
                     'deleted_at'            => null,
                     'tags'                  => [],
                     'attributes'            => [],
+                    'units'                 => [
+                        [
+                            'id' => 1,
+                            'serial_number' => 'XR18-1',
+                            'is_broken' => false,
+                            'park_id' => 1,
+                        ],
+                        [
+                            'id' => 2,
+                            'serial_number' => 'XR18-2',
+                            'is_broken' => false,
+                            'park_id' => 1,
+                        ],
+                        [
+                            'id' => 3,
+                            'serial_number' => 'XR18-3',
+                            'is_broken' => true,
+                            'park_id' => 2,
+                        ],
+                    ]
                 ],
                 [
                     'id'                    => 5,
@@ -60,6 +80,7 @@ final class MaterialsTest extends ApiTestCase
                     'is_hidden_on_bill'     => true,
                     'is_discountable'       => true,
                     'note'                  => null,
+                    'units'                 => [],
                     'attributes'            => [],
                     'tags'                  => [],
                     'created_at'            => null,
@@ -82,6 +103,7 @@ final class MaterialsTest extends ApiTestCase
                     'is_hidden_on_bill'     => false,
                     'is_discountable'       => false,
                     'note'                  => null,
+                    'units'                 => [],
                     'attributes'            => [
                         [
                             'id'    => 3,
@@ -113,6 +135,42 @@ final class MaterialsTest extends ApiTestCase
                     'deleted_at' => null,
                 ],
                 [
+                    'id'                    => 8,
+                    'name'                  => 'Décor Thème Forêt',
+                    'description'           => 'Forêt mystique, typique des récits fantastiques.',
+                    'reference'             => 'Decor-Forest',
+                    'is_unitary'            => true,
+                    'park_id'               => null,
+                    'category_id'           => 4,
+                    'sub_category_id'       => null,
+                    'rental_price'          => 1500,
+                    'stock_quantity'        => 2,
+                    'out_of_order_quantity' => 0,
+                    'replacement_price'     => 8500,
+                    'is_hidden_on_bill'     => false,
+                    'is_discountable'       => true,
+                    'note'                  => null,
+                    'created_at'            => null,
+                    'updated_at'            => null,
+                    'deleted_at'            => null,
+                    'tags'                  => [],
+                    'attributes'            => [],
+                    'units'                 => [
+                        [
+                            'id' => 5,
+                            'serial_number' => 'DECOR-FOREST-1',
+                            'is_broken' => false,
+                            'park_id' => 1,
+                        ],
+                        [
+                            'id' => 6,
+                            'serial_number' => 'DECOR-FOREST-2',
+                            'is_broken' => false,
+                            'park_id' => 1,
+                        ],
+                    ]
+                ],
+                [
                     'id'                    => 3,
                     'name'                  => 'PAR64 LED',
                     'reference'             => 'PAR64LED',
@@ -128,6 +186,7 @@ final class MaterialsTest extends ApiTestCase
                     'is_hidden_on_bill'     => false,
                     'is_discountable'       => true,
                     'note'                  => 'Soyez délicats avec ces projos !',
+                    'units'                 => [],
                     'attributes'            => [
                         [
                             'id'    => 3,
@@ -167,6 +226,7 @@ final class MaterialsTest extends ApiTestCase
                     'is_hidden_on_bill'     => false,
                     'is_discountable'       => true,
                     'note'                  => null,
+                    'units'                 => [],
                     'attributes'            => [
                         [
                             'id'    => 3,
@@ -206,6 +266,7 @@ final class MaterialsTest extends ApiTestCase
                     'is_hidden_on_bill'     => false,
                     'is_discountable'       => true,
                     'note'                  => null,
+                    'units'                 => [],
                     'attributes'            => [
                         [
                             'id'    => 4,
@@ -244,7 +305,7 @@ final class MaterialsTest extends ApiTestCase
                     'category_id'           => 3,
                     'sub_category_id'       => null,
                     'rental_price'          => 300,
-                    'stock_quantity'        => 0,
+                    'stock_quantity'        => 1,
                     'out_of_order_quantity' => 0,
                     'replacement_price'     => 32000,
                     'is_hidden_on_bill'     => false,
@@ -255,13 +316,21 @@ final class MaterialsTest extends ApiTestCase
                     'deleted_at'            => null,
                     'tags'                  => [],
                     'attributes'            => [],
+                    'units'                 => [
+                        [
+                            'id' => 4,
+                            'serial_number' => 'VHCL-1',
+                            'is_broken' => false,
+                            'park_id' => 2,
+                        ]
+                    ],
                 ],
             ],
         ]);
 
         $this->client->get('/api/materials?orderBy=reference&ascending=0');
         $this->assertStatusCode(SUCCESS_OK);
-        $this->assertResponsePaginatedData(7, '/api/materials', 'orderBy=reference&ascending=0');
+        $this->assertResponsePaginatedData(8, '/api/materials', 'orderBy=reference&ascending=0');
         $results = $this->_getResponseAsArray();
 
         $expectedResults = [
@@ -270,6 +339,7 @@ final class MaterialsTest extends ApiTestCase
             'Transporter',
             'SDS-6-01',
             'PAR64LED',
+            'Decor-Forest',
             'DBXPA2',
             'CL3',
         ];
@@ -328,6 +398,7 @@ final class MaterialsTest extends ApiTestCase
             'is_hidden_on_bill'     => false,
             'is_discountable'       => false,
             'note'                  => null,
+            'units'                 => [],
             'attributes'            => [
                 [
                     'id'    => 3,
@@ -437,10 +508,10 @@ final class MaterialsTest extends ApiTestCase
             'prev_page_url'  => null,
             'last_page_url'  => $pagesUrl,
             'per_page'       => $this->settings['maxItemsPerPage'],
-            'to'             => 7,
-            'total'          => 7,
+            'to'             => 8,
+            'total'          => 8,
         ], $response['pagination']);
-        $this->assertCount(7, $response['data']);
+        $this->assertCount(8, $response['data']);
     }
 
     public function testGetMaterialsByCategoryAndSubCategory()
@@ -472,9 +543,9 @@ final class MaterialsTest extends ApiTestCase
         $this->client->get('/api/materials?whileEvent=1');
         $this->assertStatusCode(SUCCESS_OK);
         $response = $this->_getResponseAsArray();
-        $this->assertCount(7, $response['data']);
+        $this->assertCount(8, $response['data']);
 
-        foreach ([0, 32, 1, 30, 0, 2, 0] as $index => $expected) {
+        foreach ([2, 32, 1, 2, 30, 0, 2, 1] as $index => $expected) {
             $this->assertEquals($expected, $response['data'][$index]['remaining_quantity']);
         }
     }
@@ -590,7 +661,7 @@ final class MaterialsTest extends ApiTestCase
         $this->client->post('/api/materials', $data);
         $this->assertStatusCode(SUCCESS_CREATED);
         $this->assertResponseData([
-            'id'                    => 8,
+            'id'                    => 9,
             'name'                  => 'Analog Mixing Console Yamaha RM800',
             'reference'             => 'RM800',
             'is_unitary'            => false,
@@ -606,6 +677,7 @@ final class MaterialsTest extends ApiTestCase
             'description'           => null,
             'note'                  => null,
             'attributes'            => [],
+            'units'                 => [],
             'tags'                  => [
                 ['id' => 4, 'name' => 'old matos'],
                 ['id' => 5, 'name' => 'vintage'],
@@ -636,7 +708,7 @@ final class MaterialsTest extends ApiTestCase
         $this->client->post('/api/materials', $data);
         $this->assertStatusCode(SUCCESS_CREATED);
         $this->assertResponseData([
-            'id'                    => 8,
+            'id'                    => 9,
             'name'                  => 'Console numérique Yamaha 01V96 V2',
             'reference'             => '01V96-v2',
             'is_unitary'            => false,
@@ -651,6 +723,7 @@ final class MaterialsTest extends ApiTestCase
             'is_discountable'       => true,
             'description'           => null,
             'note'                  => null,
+            'units'                 => [],
             'attributes'            => [
                 [
                     'id'    => 4,

@@ -40,6 +40,7 @@ class SubCategory extends BaseModel
             'id',
             'name',
             'description',
+            'is_unitary',
             'reference',
             'park_id',
             'rental_price',

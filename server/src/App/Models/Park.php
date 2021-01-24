@@ -45,6 +45,11 @@ class Park extends BaseModel
         return $this->hasMany('Robert2\API\Models\Material');
     }
 
+    public function MaterialUnits()
+    {
+        return $this->hasMany('Robert2\API\Models\MaterialUnit');
+    }
+
     public function Person()
     {
         return $this->belongsTo('Robert2\API\Models\Person');
@@ -85,28 +90,63 @@ class Park extends BaseModel
         return $materials ? $materials->toArray() : null;
     }
 
+    public function getMaterialUnitsAttribute()
+    {
+        $materialUnits = $this->MaterialUnits()->get();
+        return $materialUnits ? $materialUnits->toArray() : [];
+    }
+
     public function getTotalItemsAttribute()
     {
-        return $this->Materials()->count();
+        // - Matériel (non unitaire)
+        $total = $this->Materials()->where('is_unitary', false)->count();
+
+        // - Unités
+        $total += $this->MaterialUnits()->distinct()->count('material_id');
+
+        return $total;
     }
 
     public function getTotalStockQuantityAttribute()
     {
-        $materials = $this->Materials()->get(['stock_quantity']);
         $total = 0;
+
+        // - Matériel (non unitaire)
+        $materials = $this->Materials()->get(['stock_quantity', 'is_unitary']);
         foreach ($materials as $material) {
+            // - Si unitaire, ne devrait pas avoir de `park_id`.
+            if ($material->is_unitary) {
+                continue;
+            }
             $total += (int)$material->stock_quantity;
         }
+
+        // - Unités
+        $total += $this->MaterialUnits()->count();
+
         return $total;
     }
 
     public function getTotalAmountAttribute()
     {
-        $materials = $this->Materials()->get(['stock_quantity', 'replacement_price']);
         $total = 0;
+
+        // - Matériel (non unitaire)
+        $materials = $this->Materials()->get(['stock_quantity', 'is_unitary', 'replacement_price']);
         foreach ($materials as $material) {
+            // - Si unitaire, ne devrait pas avoir de `park_id`.
+            if ($material->is_unitary) {
+                continue;
+            }
             $total += ($material->replacement_price * (int)$material->stock_quantity);
         }
+
+        // - Unités
+        $units = $this->MaterialUnits()->get();
+        foreach ($units as $unit) {
+            $total += $unit->material['replacement_price'];
+        }
+
         return $total;
     }
 

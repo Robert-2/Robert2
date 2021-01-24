@@ -195,6 +195,7 @@ final class EventsTest extends ApiTestCase
                     'category_id'           => 2,
                     'sub_category_id'       => 4,
                     'tags'                  => [],
+                    'units'                 => [],
                     'attributes'            => [
                         [
                             'id'    => 4,
@@ -223,6 +224,7 @@ final class EventsTest extends ApiTestCase
                         'event_id' => 1,
                         'material_id' => 4,
                         'quantity' => 1,
+                        'units' => [],
                     ],
                 ],
                 [
@@ -240,6 +242,7 @@ final class EventsTest extends ApiTestCase
                     'is_discountable'       => true,
                     'category_id'           => 1,
                     'sub_category_id'       => 2,
+                    'units'                 => [],
                     'tags'                  => [
                         ['id' => 3, 'name' => 'pro'],
                     ],
@@ -264,6 +267,7 @@ final class EventsTest extends ApiTestCase
                         'event_id' => 1,
                         'material_id' => 2,
                         'quantity' => 1,
+                        'units' => [],
                     ],
                 ],
                 [
@@ -281,6 +285,7 @@ final class EventsTest extends ApiTestCase
                     'is_discountable'       => false,
                     'category_id'           => 1,
                     'sub_category_id'       => 1,
+                    'units'                 => [],
                     'tags'                  => [
                         ['id' => 3, 'name' => 'pro'],
                     ],
@@ -312,6 +317,7 @@ final class EventsTest extends ApiTestCase
                         'event_id' => 1,
                         'material_id' => 1,
                         'quantity' => 1,
+                        'units' => [],
                     ],
                 ],
             ],
@@ -342,7 +348,7 @@ final class EventsTest extends ApiTestCase
         $this->client->post('/api/events', $data);
         $this->assertStatusCode(SUCCESS_CREATED);
         $response = $this->_getResponseAsArray();
-        $this->assertEquals(5, $response['id']);
+        $this->assertEquals(7, $response['id']);
         $this->assertEquals("Un nouvel événement", $response['title']);
         $this->assertEmpty($response['beneficiaries']);
         $this->assertEmpty($response['assignees']);
@@ -362,7 +368,7 @@ final class EventsTest extends ApiTestCase
         $this->client->post('/api/events', $dataWithChildren);
         $this->assertStatusCode(SUCCESS_CREATED);
         $response = $this->_getResponseAsArray();
-        $this->assertEquals(6, $response['id']);
+        $this->assertEquals(8, $response['id']);
         $this->assertEquals("Encore un événement", $response['title']);
         $this->assertCount(1, $response['beneficiaries']);
         $this->assertCount(2, $response['assignees']);
@@ -508,6 +514,7 @@ final class EventsTest extends ApiTestCase
                     'is_hidden_on_bill'     => false,
                     'is_discountable'       => true,
                     'tags'                  => [],
+                    'units'                 => [],
                     'attributes'            => [
                         [
                             'id'    => 4,
@@ -536,6 +543,7 @@ final class EventsTest extends ApiTestCase
                         'event_id'    => 1,
                         'material_id' => 4,
                         'quantity'    => 1,
+                        'units'       => [],
                     ],
                 ],
                 [
@@ -553,6 +561,7 @@ final class EventsTest extends ApiTestCase
                     'replacement_price'     => 349.9,
                     'is_hidden_on_bill'     => false,
                     'is_discountable'       => true,
+                    'units'                 => [],
                     'tags'                  => [
                         ['id' => 3, 'name' => 'pro'],
                     ],
@@ -577,6 +586,7 @@ final class EventsTest extends ApiTestCase
                         'event_id'    => 1,
                         'material_id' => 2,
                         'quantity'    => 1,
+                        'units'       => [],
                     ],
                 ],
                 [
@@ -594,6 +604,7 @@ final class EventsTest extends ApiTestCase
                     'replacement_price'     => 19400,
                     'is_hidden_on_bill'     => false,
                     'is_discountable'       => false,
+                    'units'                 => [],
                     'tags'                  => [
                         ['id' => 3, 'name' => 'pro'],
                     ],
@@ -625,6 +636,7 @@ final class EventsTest extends ApiTestCase
                         'event_id'    => 1,
                         'material_id' => 1,
                         'quantity'    => 1,
+                        'units'       => [],
                     ],
                 ],
             ],
@@ -734,6 +746,7 @@ final class EventsTest extends ApiTestCase
                 'replacement_price'     => 349.9,
                 'is_hidden_on_bill'     => false,
                 'is_discountable'       => true,
+                'units'                 => [],
                 'tags'                  => [
                     ['id' => 3, 'name' => 'pro'],
                 ],
@@ -758,6 +771,7 @@ final class EventsTest extends ApiTestCase
                     'event_id'    => 1,
                     'material_id' => 2,
                     'quantity'    => 1,
+                    'units'       => [],
                 ],
             ],
         ]);

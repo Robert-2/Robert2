@@ -23,7 +23,7 @@ final class MaterialTest extends ModelTestCase
     public function testGetAll(): void
     {
         $result = $this->model->getAll()->get()->toArray();
-        $this->assertCount(7, $result);
+        $this->assertCount(8, $result);
     }
 
     public function testGetAllFiltered(): void
@@ -31,7 +31,12 @@ final class MaterialTest extends ModelTestCase
         // - Récupération du matériel associé au parc n°1
         $options = ['park_id' => 1];
         $result = $this->model->getAllFiltered($options)->get()->toArray();
-        $this->assertCount(5, $result);
+        $this->assertCount(7, $result);
+
+        // - Récupération du matériel associé au parc n°2
+        $options = ['park_id' => 2];
+        $result = $this->model->getAllFiltered($options)->get()->toArray();
+        $this->assertCount(2, $result);
 
         // - Récupération du matériel associé à la catégorie n°1
         $options = ['category_id' => 1];
@@ -73,24 +78,24 @@ final class MaterialTest extends ModelTestCase
         // - Calcul des quantités restantes de chaque matériel pour une période sans événement
         $data = $getData();
         $result = $this->model->recalcQuantitiesForPeriod($data, '2018-12-01', '2018-12-02');
-        $this->assertCount(7, $result);
-        foreach ([4, 2, 30, 2, 32] as $index => $expected) {
+        $this->assertCount(8, $result);
+        foreach ([4, 2, 30, 2, 32, 2, 1, 2] as $index => $expected) {
             $this->assertEquals($expected, $result[$index]['remaining_quantity']);
         }
 
         // - Calcul des quantités restantes de chaque matériel pour une période avec trois événements
         $data = $getData();
         $result = $this->model->recalcQuantitiesForPeriod($data, '2018-12-15', '2018-12-20');
-        $this->assertCount(7, $result);
-        foreach ([0, 0, 20, 1, 20] as $index => $expected) {
+        $this->assertCount(8, $result);
+        foreach ([0, 0, 20, 1, 20, 2, 1, 2] as $index => $expected) {
             $this->assertEquals($expected, $result[$index]['remaining_quantity']);
         }
 
         // - Calcul des quantités restantes de chaque matériel pour une période avec un seul événement
         $data = $getData();
         $result = $this->model->recalcQuantitiesForPeriod($data, '2018-12-19', '2018-12-20');
-        $this->assertCount(7, $result);
-        foreach ([1, 0, 30, 2, 32] as $index => $expected) {
+        $this->assertCount(8, $result);
+        foreach ([1, 0, 30, 2, 32, 2, 1, 2] as $index => $expected) {
             $this->assertEquals($expected, $result[$index]['remaining_quantity']);
         }
 
@@ -98,9 +103,34 @@ final class MaterialTest extends ModelTestCase
         // - en excluant l'événement n°2
         $data = $getData();
         $result = $this->model->recalcQuantitiesForPeriod($data, '2018-12-15', '2018-12-20', 2);
-        $this->assertCount(7, $result);
-        foreach ([3, 1, 20, 1, 20] as $index => $expected) {
+        $this->assertCount(8, $result);
+        foreach ([3, 1, 20, 1, 20, 2, 1, 2] as $index => $expected) {
             $this->assertEquals($expected, $result[$index]['remaining_quantity']);
+        }
+
+        // - Calcul des quantités restantes de chaque matériel pour une période contenant
+        //   un événement contenant un matériel avec gestion unitaire ajouté partiellement.
+        $data = $getData();
+        $result = $this->model->recalcQuantitiesForPeriod($data, '2019-12-25', '2020-01-05');
+        $this->assertCount(8, $result);
+        foreach ([4, 2, 30, 2, 32, 2, 1, 1] as $index => $expected) {
+            $this->assertEquals($expected, $result[$index]['remaining_quantity']);
+        }
+
+        // - Vérifie que les unités des matériels avec gestion unitaire sont
+        //   bien marquées comme disponibles ou non.
+        $expectedUnitaryMap = [
+            5 => [true, true, true],
+            6 => [true],
+            7 => [false, true],
+        ];
+        foreach ($expectedUnitaryMap as $index => $expectedAvailabilities) {
+            $this->assertArrayHasKey('units', $result[$index]);
+
+            foreach ($result[$index]['units'] as $unitIndex => $unitResult) {
+                $this->assertArrayHasKey('is_available', $unitResult);
+                $this->assertEquals($expectedAvailabilities[$unitIndex], $unitResult['is_available']);
+            }
         }
     }
 
@@ -109,7 +139,7 @@ final class MaterialTest extends ModelTestCase
         // - Empty search
         $this->model->setSearch();
         $results = $this->model->getAll()->get()->toArray();
-        $this->assertCount(7, $results);
+        $this->assertCount(8, $results);
 
         // - Search a material name
         $this->model->setSearch('console');
@@ -137,9 +167,9 @@ final class MaterialTest extends ModelTestCase
         $this->assertEquals([
             'id' => 1,
             'name' => "default",
-            'total_items' => 5,
-            'total_amount' => 101223.80,
-            'total_stock_quantity' => 83,
+            'total_items' => 7,
+            'total_amount' => 119061.80,
+            'total_stock_quantity' => 87,
         ], $result);
     }
 
@@ -219,7 +249,8 @@ final class MaterialTest extends ModelTestCase
                 'id'          => 4,
                 'material_id' => 1,
                 'event_id'    => 2,
-                'quantity'    => 3
+                'quantity'    => 3,
+                'units'       => [],
             ],
         ], $results[1]);
         $this->assertEquals([
@@ -232,7 +263,8 @@ final class MaterialTest extends ModelTestCase
                 'id'          => 1,
                 'material_id' => 1,
                 'event_id'    => 1,
-                'quantity'    => 1
+                'quantity'    => 1,
+                'units'       => [],
             ],
         ], $results[2]);
     }
@@ -311,7 +343,7 @@ final class MaterialTest extends ModelTestCase
             'tags'              => ['old matos', 'vintage'],
         ]);
         $expected = [
-            'id'                    => 8,
+            'id'                    => 9,
             'name'                  => 'Analog Mixing Console Yamaha RM800',
             'description'           => null,
             'reference'             => 'RM800',
@@ -331,6 +363,7 @@ final class MaterialTest extends ModelTestCase
                 ['id' => 5, 'name' => 'vintage'],
             ],
             'attributes' => [],
+            'units'      => [],
         ];
         unset($result->created_at, $result->updated_at, $result->deleted_at);
         $this->assertEquals($expected, $result->toArray());

@@ -61,12 +61,33 @@ final class SubCategoryTest extends ModelTestCase
                 'description'           => 'Mélangeur numérique 18 canaux',
                 'reference'             => 'XR18',
                 'park_id'               => null,
+                'is_unitary'            => true,
                 'rental_price'          => 49.99,
-                'stock_quantity'        => null,
-                'out_of_order_quantity' => null,
+                'stock_quantity'        => 3,
+                'out_of_order_quantity' => 1,
                 'replacement_price'     => 419.0,
                 'tags'                  => [],
                 'attributes'            => [],
+                'units'                 => [
+                    [
+                        'id' => 1,
+                        'serial_number' => 'XR18-1',
+                        'is_broken' => false,
+                        'park_id' => 1,
+                    ],
+                    [
+                        'id' => 2,
+                        'serial_number' => 'XR18-2',
+                        'is_broken' => false,
+                        'park_id' => 1,
+                    ],
+                    [
+                        'id' => 3,
+                        'serial_number' => 'XR18-3',
+                        'is_broken' => true,
+                        'park_id' => 2,
+                    ],
+                ],
             ],
             [
                 'id'                     => 1,
@@ -74,6 +95,7 @@ final class SubCategoryTest extends ModelTestCase
                 'description'            => "Console numérique 64 entrées / 8 sorties + Master + Sub",
                 'reference'              => "CL3",
                 'park_id'                => 1,
+                'is_unitary'             => false,
                 'rental_price'           => 300.0,
                 'stock_quantity'         => 5,
                 'out_of_order_quantity'  => 1,
@@ -104,6 +126,7 @@ final class SubCategoryTest extends ModelTestCase
                 'tags' => [
                     ['id' => 3, 'name' => 'pro']
                 ],
+                'units' => [],
             ],
         ], $results);
     }

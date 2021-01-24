@@ -128,7 +128,7 @@ class MaterialController extends BaseController
     // —
     // ------------------------------------------------------
 
-    protected function _saveMaterial(?int $id, array $postData): array
+    protected function _saveMaterial(?int $id, $postData): array
     {
         if (!is_array($postData) || empty($postData)) {
             throw new \InvalidArgumentException(
@@ -137,23 +137,31 @@ class MaterialController extends BaseController
             );
         }
 
-        if (array_key_exists('stock_quantity', $postData)) {
-            $stockQuantity = $postData['stock_quantity'];
-            if ($stockQuantity !== null && (int)$stockQuantity < 0) {
-                $postData['stock_quantity'] = 0;
-            }
-        }
+        $postData['is_unitary'] = (bool)($postData['is_unitary'] ?? false);
 
-        if (array_key_exists('out_of_order_quantity', $postData)) {
-            $stockQuantity = (int)($postData['stock_quantity'] ?? 0);
-            $outOfOrderQuantity = (int)$postData['out_of_order_quantity'];
-            if ($outOfOrderQuantity > $stockQuantity) {
-                $outOfOrderQuantity = $stockQuantity;
-                $postData['out_of_order_quantity'] = $outOfOrderQuantity;
+        if (!$postData['is_unitary']) {
+            if (array_key_exists('stock_quantity', $postData)) {
+                $stockQuantity = $postData['stock_quantity'];
+                if ($stockQuantity !== null && (int)$stockQuantity < 0) {
+                    $postData['stock_quantity'] = 0;
+                }
             }
-            if ($outOfOrderQuantity <= 0) {
-                $postData['out_of_order_quantity'] = null;
+
+            if (array_key_exists('out_of_order_quantity', $postData)) {
+                $stockQuantity = (int)($postData['stock_quantity'] ?? 0);
+                $outOfOrderQuantity = (int)$postData['out_of_order_quantity'];
+                if ($outOfOrderQuantity > $stockQuantity) {
+                    $outOfOrderQuantity = $stockQuantity;
+                    $postData['out_of_order_quantity'] = $outOfOrderQuantity;
+                }
+                if ($outOfOrderQuantity <= 0) {
+                    $postData['out_of_order_quantity'] = null;
+                }
             }
+        } else {
+            $postData['park_id'] = null;
+            $postData['stock_quantity'] = null;
+            $postData['out_of_order_quantity'] = null;
         }
 
         $result = $this->model->edit($id, $postData);

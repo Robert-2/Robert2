@@ -18,10 +18,18 @@ final class CategoriesTest extends ApiTestCase
                 'prev_page_url'  => null,
                 'last_page_url'  => '/api/categories?page=1',
                 'per_page'       => $this->settings['maxItemsPerPage'],
-                'to'             => 3,
-                'total'          => 3,
+                'to'             => 4,
+                'total'          => 4,
             ],
             'data' => [
+                [
+                    'id'             => 4,
+                    'name'           => 'Décors',
+                    'created_at'     => null,
+                    'updated_at'     => null,
+                    'deleted_at'     => null,
+                    'sub_categories' => [],
+                ],
                 [
                     'id'             => 2,
                     'name'           => 'light',
@@ -113,7 +121,7 @@ final class CategoriesTest extends ApiTestCase
         $this->client->post('/api/categories', ['name' => 'New Category']);
         $this->assertStatusCode(SUCCESS_CREATED);
         $this->assertResponseData([
-            'id'             => 4,
+            'id'             => 5,
             'name'           => 'New Category',
             'sub_categories' => [],
             'created_at'     => 'fakedTestContent',
