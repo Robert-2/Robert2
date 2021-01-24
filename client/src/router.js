@@ -15,6 +15,7 @@ import Beneficiary from '@/pages/Beneficiary/Beneficiary.vue';
 import Company from '@/pages/Company/Company.vue';
 import Materials from '@/pages/Materials/Materials.vue';
 import Material from '@/pages/Material/Material.vue';
+import MaterialUnit from '@/pages/MaterialUnit/MaterialUnit.vue';
 import MaterialView from '@/pages/MaterialView/MaterialView.vue';
 import Attributes from '@/pages/Attributes/Attributes.vue';
 import Tags from '@/pages/Tags/Tags.vue';
@@ -173,6 +174,28 @@ const router = new Router({
       meta: {
         resource: 'companies',
         readableName: 'page-companies.edit',
+        requiresAuth: true,
+        requiresGroups: ['admin', 'member'],
+      },
+    },
+    {
+      path: '/materials/:materialId/units/new',
+      name: 'addMaterialUnit',
+      component: MaterialUnit,
+      meta: {
+        // resource: 'materials',
+        readableName: 'page-material-units.add',
+        requiresAuth: true,
+        requiresGroups: ['admin', 'member'],
+      },
+    },
+    {
+      path: '/materials/:materialId/units/:id',
+      name: 'editMaterialUnit',
+      component: MaterialUnit,
+      meta: {
+        // resource: 'materials',
+        readableName: 'page-material-units.edit',
         requiresAuth: true,
         requiresGroups: ['admin', 'member'],
       },

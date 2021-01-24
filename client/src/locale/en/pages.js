@@ -166,6 +166,11 @@ export default {
     },
   },
 
+  'page-material-units': {
+    'add': "New Unit for material «\u00a0{pageSubTitle}\u00a0»",
+    'edit': "Modify unit «\u00a0{pageSubTitle}\u00a0»",
+  },
+
   'page-attributes': {
     'title': "Material special attributes",
     'help': "Here you can check, and add fields that allows you to describe your material according to your own criteria.",

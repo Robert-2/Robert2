@@ -166,6 +166,11 @@ export default {
     },
   },
 
+  'page-material-units': {
+    'add': "Nouvelle unité pour le matériel «\u00a0{pageSubTitle}\u00a0»",
+    'edit': "Modifier l'unité «\u00a0{pageSubTitle}\u00a0»",
+  },
+
   'page-attributes': {
     'title': "Caractéristiques spéciales du matériel",
     'help': "Ici vous pouvez consulter, et ajouter les champs qui permettent de décrire votre matériel selon vos propres critères.",
