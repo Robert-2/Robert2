@@ -22,7 +22,7 @@ final class CategoryTest extends ModelTestCase
     public function testGetAll(): void
     {
         $result = $this->model->getAll()->get()->toArray();
-        $this->assertCount(3, $result);
+        $this->assertCount(4, $result);
     }
 
     public function testGetSubCategories(): void
@@ -54,6 +54,7 @@ final class CategoryTest extends ModelTestCase
                 'description'            => "Console DMX (jeu d'orgue) Showtec 6 canaux",
                 'reference'              => "SDS-6-01",
                 'park_id'                => 1,
+                'is_unitary'             => false,
                 'rental_price'           => 15.95,
                 'stock_quantity'         => 2,
                 'out_of_order_quantity'  => null,
@@ -90,6 +91,7 @@ final class CategoryTest extends ModelTestCase
                 'description'            => "Projecteur PAR64 à LED, avec son set de gélatines",
                 'reference'              => "PAR64LED",
                 'park_id'                => 1,
+                'is_unitary'             => false,
                 'rental_price'           => 3.5,
                 'stock_quantity'         => 34,
                 'out_of_order_quantity'  => 4,

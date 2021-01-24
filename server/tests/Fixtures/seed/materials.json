@@ -117,5 +117,22 @@
         "is_hidden_on_bill"     : false,
         "is_discountable"       : false,
         "note"                  : null
+    },
+    {
+        "id"                    : 8,
+        "name"                  : "Décor Thème Forêt",
+        "reference"             : "Decor-Forest",
+        "is_unitary"            : true,
+        "description"           : "Forêt mystique, typique des récits fantastiques.",
+        "park_id"               : null,
+        "category_id"           : 4,
+        "sub_category_id"       : null,
+        "rental_price"          : 1500,
+        "stock_quantity"        : null,
+        "out_of_order_quantity" : null,
+        "replacement_price"     : 8500,
+        "is_hidden_on_bill"     : false,
+        "is_discountable"       : true,
+        "note"                  : null
     }
 ]

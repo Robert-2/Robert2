@@ -351,7 +351,14 @@ final class UserTest extends ModelTestCase
                 'id'           => 4,
                 'title'        => 'Concert X',
                 'start_date'   => '2019-03-01 00:00:00',
-                'end_date'     => '2019-02-10 23:59:59',
+                'end_date'     => '2019-04-10 23:59:59',
+                'is_confirmed' => false,
+            ],
+            [
+                'id'           => 5,
+                'title'        => 'Kermesse de l\'école des trois cailloux',
+                'start_date'   => '2020-01-01 00:00:00',
+                'end_date'     => '2020-01-01 23:59:59',
                 'is_confirmed' => false,
             ],
         ], $results);

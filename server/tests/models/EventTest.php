@@ -85,15 +85,13 @@ final class EventTest extends ModelTestCase
         $this->assertCount(1, $result);
         $this->assertEquals('DBXPA2', $result[0]['reference']);
         $this->assertEquals(1, $result[0]['missing_quantity']);
-    }
 
-    public function testGetParks(): void
-    {
-        $result = $this->model->getParks(1);
-        $this->assertEquals([1], $result);
-
-        $result = $this->model->getParks(4);
-        $this->assertEquals([null, 1], $result);
+        // - Get missing materials of event #4
+        $result = $this->model->getMissingMaterials(4);
+        $this->assertNotNull($result);
+        $this->assertCount(1, $result);
+        $this->assertEquals('Transporter', $result[0]['reference']);
+        $this->assertEquals(-2, $result[0]['remaining_quantity']);
     }
 
     public function testGetMaterials(): void

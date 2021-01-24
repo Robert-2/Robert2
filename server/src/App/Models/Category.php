@@ -48,12 +48,12 @@ class Category extends BaseModel
             'description',
             'reference',
             'park_id',
+            'is_unitary',
             'rental_price',
             'stock_quantity',
             'out_of_order_quantity',
             'replacement_price',
         ];
-
         return $this->hasMany('Robert2\API\Models\Material')->select($fields);
     }
 

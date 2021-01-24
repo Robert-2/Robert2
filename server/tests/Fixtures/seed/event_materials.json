@@ -64,5 +64,11 @@
         "event_id"    : 4,
         "material_id" : 7,
         "quantity"    : 3
+    },
+    {
+        "id"          : 12,
+        "event_id"    : 5,
+        "material_id" : 8,
+        "quantity"    : 2
     }
 ]

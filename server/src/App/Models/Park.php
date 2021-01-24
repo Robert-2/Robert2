@@ -93,7 +93,7 @@ class Park extends BaseModel
     public function getMaterialUnitsAttribute()
     {
         $materialUnits = $this->MaterialUnits()->get();
-        return $materialUnits ? $materialUnits->toArray() : null;
+        return $materialUnits ? $materialUnits->toArray() : [];
     }
 
     public function getTotalItemsAttribute()

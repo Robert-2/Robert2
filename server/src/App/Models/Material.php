@@ -113,7 +113,8 @@ class Material extends BaseModel
 
     public function Units()
     {
-        return $this->hasMany('Robert2\API\Models\MaterialUnit');
+        return $this->hasMany('Robert2\API\Models\MaterialUnit')
+            ->select(['id', 'serial_number', 'is_broken']);
     }
 
     public function Attributes()
@@ -158,7 +159,7 @@ class Material extends BaseModel
     public function getStockQuantityAttribute($value)
     {
         if ($this->is_unitary) {
-            $value = 0;
+            $value = $this->Units()->count();
         }
         return $this->castAttribute('stock_quantity', $value);
     }
@@ -166,7 +167,7 @@ class Material extends BaseModel
     public function getOutOfOrderQuantityAttribute($value)
     {
         if ($this->is_unitary) {
-            $value = 0;
+            $value = $this->Units()->where('is_broken', true)->count();
         }
         return $this->castAttribute('out_of_order_quantity', $value);
     }
@@ -184,7 +185,7 @@ class Material extends BaseModel
     public function getUnitsAttribute()
     {
         $units = $this->Units()->get();
-        return $units ? $units->toArray() : null;
+        return $units ? $units->toArray() : [];
     }
 
     public function getCategoryAttribute()
