@@ -91,7 +91,14 @@ final class EventTest extends ModelTestCase
         $this->assertNotNull($result);
         $this->assertCount(1, $result);
         $this->assertEquals('Transporter', $result[0]['reference']);
-        $this->assertEquals(-2, $result[0]['remaining_quantity']);
+        $this->assertEquals(2, $result[0]['missing_quantity']);
+
+        // - Get missing materials of event #5
+        $result = $this->model->getMissingMaterials(5);
+        $this->assertNotNull($result);
+        $this->assertCount(1, $result);
+        $this->assertEquals('Decor-Forest', $result[0]['reference']);
+        $this->assertEquals(1, $result[0]['missing_quantity']);
     }
 
     public function testGetMaterials(): void
@@ -144,6 +151,7 @@ final class EventTest extends ModelTestCase
                 'event_id'    => 1,
                 'material_id' => 4,
                 'quantity'    => 1,
+                'units'       => [],
             ],
         ];
         $this->assertEquals($expected, $results[0]);

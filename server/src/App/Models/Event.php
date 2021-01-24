@@ -227,8 +227,14 @@ class Event extends BaseModel
 
         $missingMaterials = [];
         foreach ($eventMaterials as $material) {
-            $material['missing_quantity'] = $material['pivot']['quantity'] - $material['remaining_quantity'];
+            $availableQuantity = $material['remaining_quantity'];
+            if ($material['is_unitary']) {
+                $availableQuantity = count($material['pivot']['units']);
+            }
+
+            $material['missing_quantity'] = $material['pivot']['quantity'] - $availableQuantity;
             $material['missing_quantity'] = min($material['missing_quantity'], $material['pivot']['quantity']);
+
             if ($material['missing_quantity'] <= 0) {
                 continue;
             }

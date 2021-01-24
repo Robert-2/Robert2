@@ -224,6 +224,7 @@ final class EventsTest extends ApiTestCase
                         'event_id' => 1,
                         'material_id' => 4,
                         'quantity' => 1,
+                        'units' => [],
                     ],
                 ],
                 [
@@ -266,6 +267,7 @@ final class EventsTest extends ApiTestCase
                         'event_id' => 1,
                         'material_id' => 2,
                         'quantity' => 1,
+                        'units' => [],
                     ],
                 ],
                 [
@@ -315,6 +317,7 @@ final class EventsTest extends ApiTestCase
                         'event_id' => 1,
                         'material_id' => 1,
                         'quantity' => 1,
+                        'units' => [],
                     ],
                 ],
             ],
@@ -540,6 +543,7 @@ final class EventsTest extends ApiTestCase
                         'event_id'    => 1,
                         'material_id' => 4,
                         'quantity'    => 1,
+                        'units'       => [],
                     ],
                 ],
                 [
@@ -582,6 +586,7 @@ final class EventsTest extends ApiTestCase
                         'event_id'    => 1,
                         'material_id' => 2,
                         'quantity'    => 1,
+                        'units'       => [],
                     ],
                 ],
                 [
@@ -631,6 +636,7 @@ final class EventsTest extends ApiTestCase
                         'event_id'    => 1,
                         'material_id' => 1,
                         'quantity'    => 1,
+                        'units'       => [],
                     ],
                 ],
             ],
@@ -765,6 +771,7 @@ final class EventsTest extends ApiTestCase
                     'event_id'    => 1,
                     'material_id' => 2,
                     'quantity'    => 1,
+                    'units'       => [],
                 ],
             ],
         ]);

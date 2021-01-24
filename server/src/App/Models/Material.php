@@ -285,29 +285,44 @@ class Material extends BaseModel
         $periods = splitPeriods($events);
 
         foreach ($data as &$material) {
-            $quantityPerPeriod = [0];
-            foreach ($periods as $periodIndex => $period) {
-                $overlapEvents = array_filter($events, function ($event) use ($period) {
-                    return (
-                        strtotime($event['start_date']) < strtotime($period[1]) &&
-                        strtotime($event['end_date']) > strtotime($period[0])
-                    );
-                });
-
-                $quantityPerPeriod[$periodIndex] = 0;
-                foreach ($overlapEvents as $event) {
+            if ($material['is_unitary']) {
+                $usedUnits = [];
+                foreach ($events as $event) {
                     $eventMaterialIndex = array_search($material['id'], array_column($event['materials'], 'id'));
                     if ($eventMaterialIndex === false) {
                         continue;
                     }
 
                     $eventMaterial = $event['materials'][$eventMaterialIndex];
-                    $quantityPerPeriod[$periodIndex] += $eventMaterial['pivot']['quantity'];
+                    $usedUnits = array_merge($usedUnits, $eventMaterial['pivot']['units']);
                 }
+                $usedCount = count(array_unique($usedUnits));
+            } else {
+                $quantityPerPeriod = [0];
+                foreach ($periods as $periodIndex => $period) {
+                    $overlapEvents = array_filter($events, function ($event) use ($period) {
+                        return (
+                            strtotime($event['start_date']) < strtotime($period[1]) &&
+                            strtotime($event['end_date']) > strtotime($period[0])
+                        );
+                    });
+
+                    $quantityPerPeriod[$periodIndex] = 0;
+                    foreach ($overlapEvents as $event) {
+                        $eventMaterialIndex = array_search($material['id'], array_column($event['materials'], 'id'));
+                        if ($eventMaterialIndex === false) {
+                            continue;
+                        }
+
+                        $eventMaterial = $event['materials'][$eventMaterialIndex];
+                        $quantityPerPeriod[$periodIndex] += $eventMaterial['pivot']['quantity'];
+                    }
+                }
+                $usedCount = max($quantityPerPeriod);
             }
 
             $remainingQuantity = (int)$material['stock_quantity'] - (int)$material['out_of_order_quantity'];
-            $material['remaining_quantity'] = max($remainingQuantity - max($quantityPerPeriod), 0);
+            $material['remaining_quantity'] = max($remainingQuantity - $usedCount, 0);
         }
 
         return $data;

@@ -3,11 +3,25 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
-use Illuminate\Database\Eloquent\Relations\Pivot;
+use Robert2\API\Models\BaseModel;
 
-class EventMaterial extends Pivot
+class EventMaterialUnit extends BaseModel
 {
-    public $incrementing = true;
+    // ——————————————————————————————————————————————————————
+    // —
+    // —    Relations
+    // —
+    // ——————————————————————————————————————————————————————
+
+    public function EventMaterial()
+    {
+        return $this->belongsTo('Robert2\API\Models\EventMaterial');
+    }
+
+    public function MaterialUnit()
+    {
+        return $this->belongsTo('Robert2\API\Models\MaterialUnit');
+    }
 
     // ——————————————————————————————————————————————————————
     // —
@@ -16,41 +30,18 @@ class EventMaterial extends Pivot
     // ——————————————————————————————————————————————————————
 
     protected $casts = [
-        'event_id'    => 'integer',
-        'material_id' => 'integer',
-        'quantity'    => 'integer',
+        'event_material_id' => 'integer',
+        'material_unit_id'  => 'integer',
     ];
 
     // ——————————————————————————————————————————————————————
     // —
-    // —    Relations
+    // —    Setters
     // —
     // ——————————————————————————————————————————————————————
 
-    public function Units()
-    {
-        $relation = $this->hasMany(
-            'Robert2\API\Models\EventMaterialUnit',
-            'event_material_id',
-            'id'
-        );
-        return $relation->select(['id', 'material_unit_id']);
-    }
-
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Mutators
-    // —
-    // ——————————————————————————————————————————————————————
-
-    protected $appends = ['units'];
-
-    public function getUnitsAttribute()
-    {
-        $units = $this->Units()->get();
-        if (!$units) {
-            return [];
-        }
-        return array_column($units->toArray(), 'material_unit_id');
-    }
+    protected $fillable = [
+        'event_material_id',
+        'material_unit_id',
+    ];
 }

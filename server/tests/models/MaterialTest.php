@@ -102,6 +102,15 @@ final class MaterialTest extends ModelTestCase
         foreach ([3, 1, 20, 1, 20, 2, 1, 2] as $index => $expected) {
             $this->assertEquals($expected, $result[$index]['remaining_quantity']);
         }
+
+        // - Calcul des quantités restantes de chaque matériel pour une période contenant
+        //   un événement contenant un matériel avec gestion unitaire ajouté partiellement.
+        $data = $getData();
+        $result = $this->model->recalcQuantitiesForPeriod($data, '2019-12-25', '2020-01-05');
+        $this->assertCount(8, $result);
+        foreach ([4, 2, 30, 2, 32, 2, 1, 1] as $index => $expected) {
+            $this->assertEquals($expected, $result[$index]['remaining_quantity']);
+        }
     }
 
     public function testSetSearch(): void
@@ -219,7 +228,8 @@ final class MaterialTest extends ModelTestCase
                 'id'          => 4,
                 'material_id' => 1,
                 'event_id'    => 2,
-                'quantity'    => 3
+                'quantity'    => 3,
+                'units'       => [],
             ],
         ], $results[1]);
         $this->assertEquals([
@@ -232,7 +242,8 @@ final class MaterialTest extends ModelTestCase
                 'id'          => 1,
                 'material_id' => 1,
                 'event_id'    => 1,
-                'quantity'    => 1
+                'quantity'    => 1,
+                'units'       => [],
             ],
         ], $results[2]);
     }
