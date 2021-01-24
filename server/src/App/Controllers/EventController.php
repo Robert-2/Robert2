@@ -107,14 +107,14 @@ class EventController extends BaseController
             );
         }
 
-        $result = $this->model->edit($id, $postData);
+        $event = $this->model->edit($id, $postData);
 
         if (isset($postData['beneficiaries'])) {
-            $result->Beneficiaries()->sync($postData['beneficiaries']);
+            $event->Beneficiaries()->sync($postData['beneficiaries']);
         }
 
         if (isset($postData['assignees'])) {
-            $result->Assignees()->sync($postData['assignees']);
+            $event->Assignees()->sync($postData['assignees']);
         }
 
         if (isset($postData['materials'])) {
@@ -128,10 +128,10 @@ class EventController extends BaseController
                     'quantity' => $material['quantity']
                 ];
             }
-            $result->Materials()->sync($materials);
+            $event->Materials()->sync($materials);
         }
 
-        return $result->id;
+        return $event->id;
     }
 
     protected function _getFormattedEvent(int $id): array

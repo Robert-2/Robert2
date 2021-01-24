@@ -31,24 +31,12 @@ trait Taggable
 
     public function getAllFilteredOrTagged(array $conditions, array $tags = [], bool $withDeleted = false): Builder
     {
-        $builder = $this->_getOrderBy();
-
-        foreach ($conditions as $field => $value) {
-            $builder = $builder->where($field, $value);
-        }
-
-        if (!empty($this->searchTerm)) {
-            $builder = $this->_setSearchConditions($builder);
-        }
+        $builder = $this->getAllFiltered($conditions, $withDeleted);
 
         if (!empty($tags)) {
             $builder = $builder->whereHas('tags', function ($query) use ($tags) {
                 $query->whereIn('name', $tags);
             });
-        }
-
-        if ($withDeleted) {
-            $builder = $builder->onlyTrashed();
         }
 
         return $builder;

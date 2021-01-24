@@ -214,12 +214,11 @@ class Event extends BaseModel
     public function getMissingMaterials(int $id): ?array
     {
         $event = $this->with('Materials')->find($id);
-        if (!$event) {
+        if (!$event || empty($event->materials)) {
             return null;
         }
 
-        $material = new Material();
-        $eventMaterials = $material->recalcQuantitiesForPeriod(
+        $eventMaterials = (new Material())->recalcQuantitiesForPeriod(
             $event->materials,
             $event->start_date,
             $event->end_date

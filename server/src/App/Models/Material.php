@@ -137,6 +137,10 @@ class Material extends BaseModel
 
     public function getParkAttribute()
     {
+        if ($this->is_unitary) {
+            return null;
+        }
+
         $park = $this->Park()->first();
         return $park ? $park->toArray() : null;
     }
@@ -228,48 +232,40 @@ class Material extends BaseModel
             return [];
         }
 
-        $Event = new Event();
-        $events = $Event->setPeriod($start, $end)->getAll();
+        $events = (new Event())->setPeriod($start, $end)->getAll();
         if ($exceptEventId) {
             $events = $events->where('id', '!=', $exceptEventId);
         }
+
         $events = $events->with('Materials')->get()->toArray();
         $periods = splitPeriods($events);
 
-        foreach ($data as $index => $material) {
-            $materialId = $material['id'];
-            $remainingQuantity = (int)$material['stock_quantity'] - (int)$material['out_of_order_quantity'];
+        foreach ($data as &$material) {
             $quantityPerPeriod = [0];
-
             foreach ($periods as $periodIndex => $period) {
-                $quantityPerPeriod[$periodIndex] = 0;
                 $overlapEvents = array_filter($events, function ($event) use ($period) {
-                    return (strtotime($event['start_date']) < strtotime($period[1]) &&
-                        strtotime($event['end_date']) > strtotime($period[0]));
+                    return (
+                        strtotime($event['start_date']) < strtotime($period[1]) &&
+                        strtotime($event['end_date']) > strtotime($period[0])
+                    );
                 });
 
+                $quantityPerPeriod[$periodIndex] = 0;
                 foreach ($overlapEvents as $event) {
-                    $eventMaterial = $this->_getMaterialFromEvent($materialId, $event);
-                    if (empty($eventMaterial)) {
+                    $eventMaterialIndex = array_search($material['id'], array_column($event['materials'], 'id'));
+                    if ($eventMaterialIndex === false) {
                         continue;
                     }
+
+                    $eventMaterial = $event['materials'][$eventMaterialIndex];
                     $quantityPerPeriod[$periodIndex] += $eventMaterial['pivot']['quantity'];
                 }
             }
 
-            $data[$index]['remaining_quantity'] = $remainingQuantity - max($quantityPerPeriod);
+            $remainingQuantity = (int)$material['stock_quantity'] - (int)$material['out_of_order_quantity'];
+            $material['remaining_quantity'] = $remainingQuantity - max($quantityPerPeriod);
         }
 
         return $data;
-    }
-
-    protected function _getMaterialFromEvent(int $materialId, array $event): array
-    {
-        $eventMaterialIndex = array_search(
-            $materialId,
-            array_column($event['materials'], 'id')
-        );
-
-        return $eventMaterialIndex === false ? [] : $event['materials'][$eventMaterialIndex];
     }
 }
