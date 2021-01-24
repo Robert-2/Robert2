@@ -234,8 +234,7 @@ class Material extends BaseModel
             $events = $events->where('id', '!=', $exceptEventId);
         }
         $events = $events->with('Materials')->get()->toArray();
-
-        $periods = $this->_getSplittedPeriods($events);
+        $periods = splitPeriods($events);
 
         foreach ($data as $index => $material) {
             $materialId = $material['id'];
@@ -262,41 +261,6 @@ class Material extends BaseModel
         }
 
         return $data;
-    }
-
-    // ------------------------------------------------------
-    // -
-    // -    Internal Methods
-    // -
-    // ------------------------------------------------------
-
-    protected function _getSplittedPeriods(array $events): array
-    {
-        $timeLine = [];
-        foreach ($events as $event) {
-            $timeLine[] = $event['start_date'];
-            $timeLine[] = $event['end_date'];
-        }
-
-        $timeLine = array_unique($timeLine);
-        $timeLineCount = count($timeLine);
-        if ($timeLineCount < 2) {
-            return [];
-        }
-
-        usort($timeLine, function ($dateTime1, $dateTime2) {
-            if ($dateTime1 === $dateTime2) {
-                return 0;
-            }
-            return strtotime($dateTime1) < strtotime($dateTime2) ? -1 : 1;
-        });
-
-        $periods = [];
-        for ($i = 0; $i < $timeLineCount - 1; $i++) {
-            $periods[] = [$timeLine[$i], $timeLine[$i + 1]];
-        }
-
-        return $periods;
     }
 
     protected function _getMaterialFromEvent(int $materialId, array $event): array
