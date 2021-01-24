@@ -282,7 +282,6 @@ class Material extends BaseModel
         }
 
         $events = $events->with('Materials')->get()->toArray();
-        $periods = splitPeriods($events);
 
         foreach ($data as &$material) {
             if ($material['is_unitary']) {
@@ -307,6 +306,7 @@ class Material extends BaseModel
                 }
             } else {
                 $quantityPerPeriod = [0];
+                $periods = splitPeriods($events);
                 foreach ($periods as $periodIndex => $period) {
                     $overlapEvents = array_filter($events, function ($event) use ($period) {
                         return (

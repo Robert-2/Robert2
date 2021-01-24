@@ -120,7 +120,7 @@ class EventController extends BaseController
             $event->Assignees()->sync($postData['assignees']);
         }
 
-        // - Unités déjà utilisée auparavant dans l'événement.
+        // - Unités déjà utilisées auparavant dans l'événement.
         $existingUnits = [];
         foreach ($event->Materials()->get() as $material) {
             $existingUnits = array_merge($existingUnits, $material->pivot->units);
@@ -166,7 +166,7 @@ class EventController extends BaseController
                                 );
                             }
 
-                            // - Si l'unité était déjà sauvé pour l'événement, on bypass les autres vérifs.
+                            // - Si l'unité était déjà sauvée pour l'événement, on bypass les autres vérifs.
                             if (in_array($unit->id, $existingUnits, true)) {
                                 continue;
                             }
