@@ -82,7 +82,7 @@ final class MaterialTest extends ModelTestCase
         $data = $getData();
         $result = $this->model->recalcQuantitiesForPeriod($data, '2018-12-15', '2018-12-20');
         $this->assertCount(7, $result);
-        foreach ([0, -1, 20, 1, 20] as $index => $expected) {
+        foreach ([0, 0, 20, 1, 20] as $index => $expected) {
             $this->assertEquals($expected, $result[$index]['remaining_quantity']);
         }
 

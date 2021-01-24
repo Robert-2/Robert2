@@ -23,13 +23,7 @@ export default {
 
     getMissingCount(missingMaterial) {
       const { quantity } = missingMaterial.pivot;
-
-      const missing = Math.min(
-        Math.abs(missingMaterial.remaining_quantity),
-        quantity,
-      );
-
-      return { quantity, missing };
+      return { quantity, missing: missingMaterial.missing_quantity };
     },
 
     displayError(error) {

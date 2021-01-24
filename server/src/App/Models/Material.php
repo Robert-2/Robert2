@@ -263,7 +263,7 @@ class Material extends BaseModel
             }
 
             $remainingQuantity = (int)$material['stock_quantity'] - (int)$material['out_of_order_quantity'];
-            $material['remaining_quantity'] = $remainingQuantity - max($quantityPerPeriod);
+            $material['remaining_quantity'] = max($remainingQuantity - max($quantityPerPeriod), 0);
         }
 
         return $data;

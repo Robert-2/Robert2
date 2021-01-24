@@ -221,12 +221,20 @@ class Event extends BaseModel
         $eventMaterials = (new Material())->recalcQuantitiesForPeriod(
             $event->materials,
             $event->start_date,
-            $event->end_date
+            $event->end_date,
+            $id
         );
 
-        $missingMaterials = array_filter($eventMaterials, function ($eventMaterial) {
-            return $eventMaterial['remaining_quantity'] < 0;
-        });
+        $missingMaterials = [];
+        foreach ($eventMaterials as $material) {
+            $material['missing_quantity'] = $material['pivot']['quantity'] - $material['remaining_quantity'];
+            $material['missing_quantity'] = min($material['missing_quantity'], $material['pivot']['quantity']);
+            if ($material['missing_quantity'] <= 0) {
+                continue;
+            }
+
+            $missingMaterials[] = $material;
+        }
 
         return empty($missingMaterials) ? null : array_values($missingMaterials);
     }
