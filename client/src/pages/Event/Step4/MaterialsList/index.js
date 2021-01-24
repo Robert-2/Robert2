@@ -3,6 +3,7 @@ import formatAmount from '@/utils/formatAmount';
 import MaterialsFilter from '@/components/MaterialsFilters/MaterialsFilters.vue';
 import SwitchToggle from '@/components/SwitchToggle/SwitchToggle.vue';
 import Quantity from './Quantity/Quantity.vue';
+import Units from './Units/Units.vue';
 import MaterialsStore from './MaterialsStore';
 
 export default {
@@ -15,6 +16,7 @@ export default {
   },
   data() {
     const columns = [
+      'child-toggler',
       'qty',
       'reference',
       'name',
@@ -42,7 +44,10 @@ export default {
         orderBy: { column: 'reference', ascending: true },
         initialPage: this.$route.query.page || 1,
         sortable: ['reference', 'name'],
+        showChildRowToggler: false,
+        childRow: Units,
         columnsClasses: {
+          'child-toggler': 'MaterialsList__child-toggler',
           qty: 'MaterialsList__qty',
           reference: 'MaterialsList__ref',
           name: 'MaterialsList__name',
@@ -100,6 +105,10 @@ export default {
       this.showSelectedOnly = newValue;
       this.isLoading = true;
       this.$refs.DataTable.refresh();
+    },
+
+    toggleChild(index) {
+      this.$refs.DataTable.toggleChildRow(index);
     },
 
     refreshTable() {

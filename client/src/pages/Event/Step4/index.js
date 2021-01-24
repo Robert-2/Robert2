@@ -3,6 +3,8 @@ import { DEBOUNCE_WAIT } from '@/config/constants';
 import MaterialsList from './MaterialsList/MaterialsList.vue';
 import EventStore from '../EventStore';
 
+// TODO: Pour les unitaires, le compteur de matériel restant doit compter les vrais unités prisent.
+//       (et non faire une bête soustraction sur la quantité dispo - quantité voulu)
 export default {
   name: 'EventStep4',
   components: { MaterialsList },

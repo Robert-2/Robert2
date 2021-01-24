@@ -27,6 +27,15 @@
         :columns="columns"
         :options="options"
       >
+        <template #child-toggler="{ index, row: material }">
+            <button
+              type="button"
+              @click="toggleChild(index)"
+              v-if="material.is_unitary"
+            >
+              [Toggle]
+            </button>
+        </template>
         <div slot="qty" slot-scope="material">
           <span :key="`qty-${material.row.id}-${renderId}`">
             {{ getQuantity(material.row.id) > 0 ? `${getQuantity(material.row.id)}\u00a0×` : '' }}
