@@ -112,6 +112,7 @@ export default {
   'display-not-deleted-items': "Afficher les enregistrements non supprimés",
   'created-at': "Créé le\u00a0:",
   'updated-at': "Modifié le\u00a0:",
+  'units': "Unités",
 
   'event-details': "Détails de l'événement",
   'title': "Titre",

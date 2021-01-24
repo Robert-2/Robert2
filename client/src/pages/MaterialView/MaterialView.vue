@@ -16,11 +16,17 @@
           <template slot="infos">
             <i class="fas fa-info-circle" /> {{ $t('informations') }}
           </template>
+          <template slot="units">
+            <i class="fas fa-qrcode" /> {{ $t('units') }}
+          </template>
           <template slot="documents">
             <i class="fas fa-file-pdf" /> {{ $t('documents') }}
           </template>
           <tab title-slot="infos">
             <Infos :material="material" />
+          </tab>
+          <tab title-slot="units" v-if="material.is_unitary">
+            <Units :material="material" />
           </tab>
           <tab title-slot="documents">
             <Documents />

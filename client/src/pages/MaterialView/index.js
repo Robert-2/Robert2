@@ -3,6 +3,7 @@ import store from '@/store';
 import Help from '@/components/Help/Help.vue';
 import Infos from './Infos/Infos.vue';
 import Documents from './Documents/Documents.vue';
+import Units from './Units/Units.vue';
 
 export default {
   name: 'MaterialView',
@@ -12,6 +13,7 @@ export default {
     Help,
     Infos,
     Documents,
+    Units,
   },
   data() {
     return {
