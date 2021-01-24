@@ -20,7 +20,7 @@ export default {
       help: '',
       error: null,
       isLoading: false,
-      tabsIndexes: ['#infos', '#documents'],
+      tabsIndexes: ['#infos', '#documents', '#units'],
       selectedTabIndex: 0,
       material: {
         id: this.$route.params.id,

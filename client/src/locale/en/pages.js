@@ -164,6 +164,7 @@ export default {
       'saved': "Documents saved.",
       'deleted': "Document deleted.",
     },
+    'add-unit': "Add a new unit",
   },
 
   'page-material-units': {

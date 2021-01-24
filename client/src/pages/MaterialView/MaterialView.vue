@@ -31,6 +31,21 @@
           <tab title-slot="documents">
             <Documents />
           </tab>
+
+          <!-- Menu contextuel droit -->
+          <template #right>
+            <nav class="MaterialView__menu" v-if="selectedTabIndex === 1">
+              <router-link
+                v-tooltip="$t('action-add')"
+                :to="`/materials/${material.id}/units/new`"
+                tag="button"
+                class="info"
+              >
+                <i class="fas fa-plus" />
+                {{ $t('page-materials-view.add-unit') }}
+              </router-link>
+            </nav>
+          </template>
         </tabs>
       </div>
     </div>
