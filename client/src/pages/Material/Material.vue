@@ -29,6 +29,15 @@
               :errors="errors.reference"
             />
             <FormField
+              required
+              v-model="material.is_unitary"
+              type="switch"
+              name="is_unitary"
+              label="is-unitary"
+              @input="handleUnitaryChange"
+            />
+            <FormField
+              v-show="!material.is_unitary"
               v-model="material.park_id"
               name="park_id"
               label="park"
@@ -60,6 +69,7 @@
               @input="updateRentalPrice"
             />
             <FormField
+              v-show="!material.is_unitary"
               v-model="material.stock_quantity"
               name="stock_quantity"
               label="quantity"
@@ -99,6 +109,7 @@
               :errors="errors.replacement_price"
             />
             <FormField
+              v-show="!material.is_unitary"
               v-model="material.out_of_order_quantity"
               name="out_of_order_quantity"
               label="quantity-out-of-order"
