@@ -100,6 +100,7 @@ export default {
   'quantities': "Quantities",
   'quantity-out-of-order': "Out of order qty",
   'discountable': "Discountable?",
+  'is-broken': "Out of order?",
   'material-is-discountable': "The material is «\u0a00discountable\u00a0»: a discount amount can be applied to this material.",
   'hidden-on-bill': "Hidden on bill?",
   'material-not-displayed-on-bill': "The material is not displayed on bills.",
