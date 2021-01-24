@@ -218,7 +218,12 @@ final class EventsTest extends ApiTestCase
                             'value' => 3.15,
                         ],
                     ],
-                    'pivot' => ['event_id' => 1, 'material_id' => 4, 'quantity' => 1],
+                    'pivot' => [
+                        'id' => 3,
+                        'event_id' => 1,
+                        'material_id' => 4,
+                        'quantity' => 1,
+                    ],
                 ],
                 [
                     'id'                    => 2,
@@ -254,7 +259,12 @@ final class EventsTest extends ApiTestCase
                             'value' => 2.2,
                         ],
                     ],
-                    'pivot' => ['event_id' => 1, 'material_id' => 2, 'quantity' => 1],
+                    'pivot' => [
+                        'id' => 2,
+                        'event_id' => 1,
+                        'material_id' => 2,
+                        'quantity' => 1,
+                    ],
                 ],
                 [
                     'id'                    => 1,
@@ -297,7 +307,12 @@ final class EventsTest extends ApiTestCase
                             'value' => 36.5,
                         ],
                     ],
-                    'pivot' => ['event_id' => 1, 'material_id' => 1, 'quantity' => 1],
+                    'pivot' => [
+                        'id' => 1,
+                        'event_id' => 1,
+                        'material_id' => 1,
+                        'quantity' => 1,
+                    ],
                 ],
             ],
             'bills' => [
@@ -517,6 +532,7 @@ final class EventsTest extends ApiTestCase
                         ],
                     ],
                     'pivot' => [
+                        'id'          => 3,
                         'event_id'    => 1,
                         'material_id' => 4,
                         'quantity'    => 1,
@@ -557,6 +573,7 @@ final class EventsTest extends ApiTestCase
                         ],
                     ],
                     'pivot' => [
+                        'id'          => 2,
                         'event_id'    => 1,
                         'material_id' => 2,
                         'quantity'    => 1,
@@ -604,6 +621,7 @@ final class EventsTest extends ApiTestCase
                         ],
                     ],
                     'pivot' => [
+                        'id'          => 1,
                         'event_id'    => 1,
                         'material_id' => 1,
                         'quantity'    => 1,
@@ -710,7 +728,8 @@ final class EventsTest extends ApiTestCase
                 'sub_category_id'       => 2,
                 'rental_price'          => 25.5,
                 'stock_quantity'        => 2,
-                'remaining_quantity'    => -1,
+                'remaining_quantity'    => 0,
+                'missing_quantity'      => 1,
                 'out_of_order_quantity' => null,
                 'replacement_price'     => 349.9,
                 'is_hidden_on_bill'     => false,
@@ -735,6 +754,7 @@ final class EventsTest extends ApiTestCase
                     ],
                 ],
                 'pivot' => [
+                    'id'          => 2,
                     'event_id'    => 1,
                     'material_id' => 2,
                     'quantity'    => 1,

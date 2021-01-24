@@ -158,3 +158,50 @@ function isDuplicateException(Illuminate\Database\QueryException $e): bool
 
     return $subCode[0] == '1062';
 }
+
+function splitPeriods(array $slots): array
+{
+    $normalizeDate = function ($date, $defaultTime) {
+        if (!($date instanceof \DateTime)) {
+            $parsedTime = date_parse($date);
+            if (!$parsedTime || $parsedTime['error_count'] > 0) {
+                throw new \InvalidArgumentException(
+                    sprintf("La date \"%s\" est invalide.", $date)
+                );
+            }
+
+            $date = new \DateTime($date);
+            if ($parsedTime['hour'] === false) {
+                $timeParts = array_map('intval', explode(':', $defaultTime));
+                call_user_func_array([$date, 'setTime'], $timeParts);
+            }
+        }
+        return $date->format('Y-m-d H:i');
+    };
+
+    $timeLine = [];
+    foreach ($slots as $slot) {
+        $timeLine[] = $normalizeDate($slot['start_date'], '00:00');
+        $timeLine[] = $normalizeDate($slot['end_date'], '23:59');
+    }
+
+    $timeLine = array_unique($timeLine);
+    $timeLineCount = count($timeLine);
+    if ($timeLineCount < 2) {
+        return [];
+    }
+
+    usort($timeLine, function ($dateTime1, $dateTime2) {
+        if ($dateTime1 === $dateTime2) {
+            return 0;
+        }
+        return strtotime($dateTime1) < strtotime($dateTime2) ? -1 : 1;
+    });
+
+    $periods = [];
+    for ($i = 0; $i < $timeLineCount - 1; $i++) {
+        $periods[] = [$timeLine[$i], $timeLine[$i + 1]];
+    }
+
+    return $periods;
+}

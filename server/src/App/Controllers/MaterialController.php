@@ -130,25 +130,25 @@ class MaterialController extends BaseController
 
     protected function _saveMaterial(?int $id, array $postData): array
     {
-        if (empty($postData)) {
+        if (!is_array($postData) || empty($postData)) {
             throw new \InvalidArgumentException(
                 "Missing request data to process validation",
                 ERROR_VALIDATION
             );
         }
 
-        if (isset($postData['stock_quantity'])) {
-            $stockQuantity = (int)$postData['stock_quantity'];
+        if (array_key_exists('stock_quantity', $postData)) {
+            $stockQuantity = $postData['stock_quantity'];
             if ($stockQuantity !== null && (int)$stockQuantity < 0) {
                 $postData['stock_quantity'] = 0;
             }
         }
 
-        if (isset($postData['out_of_order_quantity'])) {
-            $stockQuantity = $postData['stock_quantity'] ?? 0;
+        if (array_key_exists('out_of_order_quantity', $postData)) {
+            $stockQuantity = (int)($postData['stock_quantity'] ?? 0);
             $outOfOrderQuantity = (int)$postData['out_of_order_quantity'];
-            if ($outOfOrderQuantity > (int)$stockQuantity) {
-                $outOfOrderQuantity = (int)$stockQuantity;
+            if ($outOfOrderQuantity > $stockQuantity) {
+                $outOfOrderQuantity = $stockQuantity;
                 $postData['out_of_order_quantity'] = $outOfOrderQuantity;
             }
             if ($outOfOrderQuantity <= 0) {

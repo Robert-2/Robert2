@@ -122,8 +122,8 @@ class Event extends BaseModel
         ];
 
         return $this->belongsToMany('Robert2\API\Models\Material', 'event_materials')
-            ->using('Robert2\API\Models\EventMaterialsPivot')
-            ->withPivot('quantity')
+            ->using('Robert2\API\Models\EventMaterial')
+            ->withPivot('id', 'quantity')
             ->select($fields);
     }
 
@@ -214,20 +214,27 @@ class Event extends BaseModel
     public function getMissingMaterials(int $id): ?array
     {
         $event = $this->with('Materials')->find($id);
-        if (!$event) {
+        if (!$event || empty($event->materials)) {
             return null;
         }
 
-        $material = new Material();
-        $eventMaterials = $material->recalcQuantitiesForPeriod(
+        $eventMaterials = (new Material())->recalcQuantitiesForPeriod(
             $event->materials,
             $event->start_date,
-            $event->end_date
+            $event->end_date,
+            $id
         );
 
-        $missingMaterials = array_filter($eventMaterials, function ($eventMaterial) {
-            return $eventMaterial['remaining_quantity'] < 0;
-        });
+        $missingMaterials = [];
+        foreach ($eventMaterials as $material) {
+            $material['missing_quantity'] = $material['pivot']['quantity'] - $material['remaining_quantity'];
+            $material['missing_quantity'] = min($material['missing_quantity'], $material['pivot']['quantity']);
+            if ($material['missing_quantity'] <= 0) {
+                continue;
+            }
+
+            $missingMaterials[] = $material;
+        }
 
         return empty($missingMaterials) ? null : array_values($missingMaterials);
     }
