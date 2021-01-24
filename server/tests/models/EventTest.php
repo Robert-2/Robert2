@@ -329,4 +329,16 @@ final class EventTest extends ModelTestCase
         $result = $this->model->getPdfContent(1);
         $this->assertNotEmpty($result);
     }
+
+    public function testGetConcurrentlyUsedUnits(): void
+    {
+        $result = Models\Event::findOrFail(1)->getConcurrentlyUsedUnits();
+        $this->assertEquals([], $result);
+
+        $result = Models\Event::findOrFail(4)->getConcurrentlyUsedUnits();
+        $this->assertEquals([], $result);
+
+        $result = Models\Event::findOrFail(6)->getConcurrentlyUsedUnits();
+        $this->assertEquals([4, 3, 1], $result);
+    }
 }

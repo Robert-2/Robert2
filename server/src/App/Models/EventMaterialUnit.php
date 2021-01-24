@@ -3,25 +3,11 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
-use Robert2\API\Models\BaseModel;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 
-class EventMaterialUnit extends BaseModel
+class EventMaterialUnit extends Pivot
 {
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Relations
-    // —
-    // ——————————————————————————————————————————————————————
-
-    public function EventMaterial()
-    {
-        return $this->belongsTo('Robert2\API\Models\EventMaterial');
-    }
-
-    public function MaterialUnit()
-    {
-        return $this->belongsTo('Robert2\API\Models\MaterialUnit');
-    }
+    public $incrementing = true;
 
     // ——————————————————————————————————————————————————————
     // —
@@ -32,16 +18,5 @@ class EventMaterialUnit extends BaseModel
     protected $casts = [
         'event_material_id' => 'integer',
         'material_unit_id'  => 'integer',
-    ];
-
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Setters
-    // —
-    // ——————————————————————————————————————————————————————
-
-    protected $fillable = [
-        'event_material_id',
-        'material_unit_id',
     ];
 }

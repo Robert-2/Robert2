@@ -6,8 +6,11 @@ namespace Robert2\API\Controllers;
 use Robert2\API\Errors;
 use Robert2\API\Controllers\Traits\WithPdf;
 use Robert2\API\Models\Park;
+use Robert2\API\Models\Material;
+use Robert2\API\Models\MaterialUnit;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class EventController extends BaseController
 {
@@ -117,18 +120,92 @@ class EventController extends BaseController
             $event->Assignees()->sync($postData['assignees']);
         }
 
+        // - Unités déjà utilisée auparavant dans l'événement.
+        $existingUnits = [];
+        foreach ($event->Materials()->get() as $material) {
+            $existingUnits = array_merge($existingUnits, $material->pivot->units);
+        }
+
+        // - Unités utilisées au moment de l'événement (dans les autres événements).
+        $concurrentlyUsedUnits = $event->getConcurrentlyUsedUnits();
+
         if (isset($postData['materials'])) {
             $materials = [];
-            foreach ($postData['materials'] as $material) {
-                if ((int)$material['quantity'] <= 0) {
+            $materialsUnits = [];
+            foreach ($postData['materials'] as $materialData) {
+                if ((int)$materialData['quantity'] <= 0) {
                     continue;
                 }
 
-                $materials[$material['id']] = [
-                    'quantity' => $material['quantity']
-                ];
+                try {
+                    $material = Material::findOrFail($materialData['id']);
+
+                    $unitIds = [];
+                    if ($material->is_unitary && !empty($materialData['units'])) {
+                        $unitIds = $materialData['units'];
+                        if (!is_array($unitIds)) {
+                            throw new \InvalidArgumentException(
+                                sprintf(
+                                    "Le format des unités selectionnées pour le matériel ref. \"%s\" est invalide.",
+                                    $material->reference
+                                ),
+                                ERROR_VALIDATION
+                            );
+                        }
+
+                        foreach ($unitIds as $unitId) {
+                            $unit = MaterialUnit::findOrFail($unitId);
+                            if ($unit->material_id !== $material->id) {
+                                throw new \InvalidArgumentException(
+                                    vsprintf(
+                                        "L'unité ref. \"%s\", séléctionnée pour le matériel " .
+                                        "ref. \"%s\" n'appartient pas à celui-ci.",
+                                        [$unit->serial_number, $material->reference]
+                                    ),
+                                    ERROR_VALIDATION
+                                );
+                            }
+
+                            // - Si l'unité était déjà sauvé pour l'événement, on bypass les autres vérifs.
+                            if (in_array($unit->id, $existingUnits, true)) {
+                                continue;
+                            }
+
+                            // NOTE: On n'empêche pas le save des unités `is_broken` car si l'utilisateur final
+                            // souhaite quand même les placer dans un événement, libre à lui.
+                            if (in_array($unit->id, $concurrentlyUsedUnits, true)) {
+                                throw new \InvalidArgumentException(
+                                    vsprintf(
+                                        "L'unité ref. \"%s\", séléctionnée pour le matériel " .
+                                        "ref. \"%s\" n'est pas disponible à cette période.",
+                                        [$unit->serial_number, $material->reference]
+                                    ),
+                                    ERROR_VALIDATION
+                                );
+                            }
+                        }
+                    }
+
+                    $materialsUnits[$materialData['id']] = $unitIds;
+                    $materials[$materialData['id']] = [
+                        'quantity' => $materialData['quantity']
+                    ];
+                } catch (ModelNotFoundException $e) {
+                    throw new \InvalidArgumentException(
+                        "Un ou plusieurs matériels (ou des unités de ceux-ci) ajoutés à l'événement n'existent pas.",
+                        ERROR_VALIDATION
+                    );
+                }
             }
+
             $event->Materials()->sync($materials);
+
+            // - Synchronisation des unités.
+            $materials = $event->Materials()->get();
+            foreach ($materials as $material) {
+                $units = $materialsUnits[$material->id] ?? [];
+                $material->pivot->Units()->sync($units);
+            }
         }
 
         return $event->id;

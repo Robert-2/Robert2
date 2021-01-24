@@ -53,5 +53,16 @@
         "is_confirmed" : false,
         "location"     : "Saint-Jean-la-Forêt",
         "is_billable"  : false
+    },
+    {
+        "id"           : 6,
+        "user_id"      : 1,
+        "title"        : "Un événement sans inspiration",
+        "description"  : null,
+        "start_date"   : "2019-03-15 00:00:00",
+        "end_date"     : "2019-04-01 23:59:59",
+        "is_confirmed" : false,
+        "location"     : "La Clusaz",
+        "is_billable"  : false
     }
 ]

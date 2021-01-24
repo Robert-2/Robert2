@@ -29,12 +29,15 @@ class EventMaterial extends Pivot
 
     public function Units()
     {
-        $relation = $this->hasMany(
-            'Robert2\API\Models\EventMaterialUnit',
-            'event_material_id',
-            'id'
+        $relation = $this->belongsToMany(
+            'Robert2\API\Models\MaterialUnit',
+            'event_material_units',
+            'event_material_id'
         );
-        return $relation->select(['id', 'material_unit_id']);
+
+        return $relation
+            ->using('Robert2\API\Models\EventMaterialUnit')
+            ->select(['material_units.id']);
     }
 
     // ——————————————————————————————————————————————————————
@@ -47,10 +50,10 @@ class EventMaterial extends Pivot
 
     public function getUnitsAttribute()
     {
-        $units = $this->Units()->get();
+        $units = $this->Units()->get(['id']);
         if (!$units) {
             return [];
         }
-        return array_column($units->toArray(), 'material_unit_id');
+        return array_column($units->toArray(), 'id');
     }
 }

@@ -3,8 +3,9 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
-use Robert2\API\Validation\Validator as V;
 use Robert2\API\Models\BaseModel;
+use Robert2\API\Models\Event;
+use Robert2\API\Validation\Validator as V;
 
 class MaterialUnit extends BaseModel
 {
@@ -35,6 +36,17 @@ class MaterialUnit extends BaseModel
         return $this->belongsTo('Robert2\API\Models\Park');
     }
 
+    public function EventMaterials()
+    {
+        $relation = $this->belongsToMany(
+            'Robert2\API\Models\EventMaterial',
+            'event_material_units',
+            'material_unit_id',
+            'event_material_id'
+        );
+        return $relation->using('Robert2\API\Models\EventMaterialUnit');
+    }
+
     // ——————————————————————————————————————————————————————
     // —
     // —    Mutators
@@ -43,6 +55,7 @@ class MaterialUnit extends BaseModel
 
     protected $casts = [
         'park_id'       => 'integer',
+        'material_id'   => 'integer',
         'serial_number' => 'string',
         'is_broken'     => 'boolean',
     ];

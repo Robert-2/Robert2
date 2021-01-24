@@ -299,6 +299,36 @@ class Event extends BaseModel
         return $eventPdf;
     }
 
+    /**
+     * Permet de récuperer les ids des unités utilisées pendant l'événement
+     * représenté par l'instance courante.
+     *
+     * Seules les unités utilisées dans les autres événements au même moment
+     * seront récuprées, et non pas celles utilisées par l'événement lui-même.
+     *
+     * @return array - La liste d'unités utilisées au même moment que l'événement.
+     */
+    public function getConcurrentlyUsedUnits(): array
+    {
+        $events = (new static())
+            ->setPeriod($this->start_date, $this->end_date)
+            ->getAll()
+            ->with('Materials');
+
+        if ($this->exists) {
+            $events = $events->where('id', '!=', $this->id);
+        }
+
+        $usedUnits = [];
+        foreach ($events->get() as $event) {
+            foreach ($event->materials as $material) {
+                $usedUnits = array_merge($usedUnits, $material['pivot']['units']);
+            }
+        }
+
+        return array_unique($usedUnits);
+    }
+
     // ——————————————————————————————————————————————————————
     // —
     // —    Setters
