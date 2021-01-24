@@ -60,6 +60,12 @@ class MaterialUnit extends BaseModel
         'is_broken'     => 'boolean',
     ];
 
+    public function getMaterialAttribute($value)
+    {
+        $material = $this->Material()->first();
+        return $material ? $material->toArray() : null;
+    }
+
     // ——————————————————————————————————————————————————————
     // —
     // —    Setters

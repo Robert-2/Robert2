@@ -12,6 +12,19 @@ use Slim\Http\Response;
 
 class MaterialUnitController extends BaseController
 {
+    public function getOne(Request $request, Response $response): Response
+    {
+        $id = (int)$request->getAttribute('id');
+
+        $unit = $this->model->find($id);
+        if (!$unit) {
+            throw new Errors\NotFoundException;
+        }
+
+        $data = $unit->append('material')->toArray();
+        return $response->withJson($data);
+    }
+
     public function create(Request $request, Response $response): Response
     {
         $data = $request->getParsedBody();

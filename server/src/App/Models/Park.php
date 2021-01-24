@@ -142,9 +142,9 @@ class Park extends BaseModel
         }
 
         // - Unités
-        $units = $this->MaterialUnits()->with('Material')->get();
+        $units = $this->MaterialUnits()->get();
         foreach ($units as $unit) {
-            $total += $unit->material->replacement_price;
+            $total += $unit->material['replacement_price'];
         }
 
         return $total;

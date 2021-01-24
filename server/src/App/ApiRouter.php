@@ -27,6 +27,7 @@ class ApiRouter
             '/parks/{id:[0-9]+}[/]'                    => 'ParkController:getOne',
             '/materials[/]'                            => 'MaterialController:getAll',
             '/materials/{id:[0-9]+}[/]'                => 'MaterialController:getOne',
+            '/material-units/{id:[0-9]+}[/]'           => 'MaterialUnitController:getOne',
             '/materials/{id:[0-9]+}/tags[/]'           => 'MaterialController:getTags',
             '/materials/attributes[/]'                 => 'MaterialController:getAttributes',
             '/events[/]'                               => 'EventController:getAll',
