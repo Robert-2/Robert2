@@ -117,6 +117,7 @@ final class EventTest extends ModelTestCase
             'is_hidden_on_bill'     => false,
             'is_discountable'       => true,
             'tags'                  => [],
+            'units'                 => [],
             'attributes'            => [
                 [
                     'id'    => 4,

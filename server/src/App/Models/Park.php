@@ -45,6 +45,11 @@ class Park extends BaseModel
         return $this->hasMany('Robert2\API\Models\Material');
     }
 
+    public function MaterialUnits()
+    {
+        return $this->hasMany('Robert2\API\Models\MaterialUnit');
+    }
+
     public function Person()
     {
         return $this->belongsTo('Robert2\API\Models\Person');
@@ -83,6 +88,12 @@ class Park extends BaseModel
     {
         $materials = $this->Materials()->get();
         return $materials ? $materials->toArray() : null;
+    }
+
+    public function getMaterialUnitsAttribute()
+    {
+        $materialUnits = $this->MaterialUnits()->get();
+        return $materialUnits ? $materialUnits->toArray() : null;
     }
 
     public function getTotalItemsAttribute()

@@ -59,6 +59,7 @@ class Material extends BaseModel
 
     protected $appends = [
         'tags',
+        'units',
         'attributes',
     ];
 
@@ -78,6 +79,11 @@ class Material extends BaseModel
     {
         return $this->belongsTo('Robert2\API\Models\SubCategory')
             ->select(['id', 'name', 'category_id']);
+    }
+
+    public function Units()
+    {
+        return $this->hasMany('Robert2\API\Models\MaterialUnit');
     }
 
     public function Attributes()
@@ -145,6 +151,12 @@ class Material extends BaseModel
         return $park ? $park->toArray() : null;
     }
 
+    public function getUnitsAttribute()
+    {
+        $units = $this->Units()->get();
+        return $units ? $units->toArray() : null;
+    }
+
     public function getCategoryAttribute()
     {
         $category = $this->Category()->first();
@@ -204,6 +216,7 @@ class Material extends BaseModel
         'name',
         'reference',
         'description',
+        'is_unitary',
         'park_id',
         'category_id',
         'sub_category_id',

@@ -76,6 +76,7 @@ final class AttributeTest extends ModelTestCase
                 'id'         => 4,
                 'name'       => 'Showtec SDS-6',
                 'tags'       => [],
+                'units'      => [],
                 'attributes' => [
                     [
                         'id'    => 4,

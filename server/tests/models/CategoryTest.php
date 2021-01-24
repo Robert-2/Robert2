@@ -58,6 +58,7 @@ final class CategoryTest extends ModelTestCase
                 'stock_quantity'         => 2,
                 'out_of_order_quantity'  => null,
                 'replacement_price'      => 59.0,
+                'units'                  => [],
                 'tags'                   => [],
                 'attributes'             => [
                     [
@@ -93,6 +94,7 @@ final class CategoryTest extends ModelTestCase
                 'stock_quantity'         => 34,
                 'out_of_order_quantity'  => 4,
                 'replacement_price'      => 89.0,
+                'units'                  => [],
                 'tags'                   => [
                     ['id' => 3, 'name' => 'pro']
                 ],
