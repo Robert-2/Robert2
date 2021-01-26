@@ -87,13 +87,6 @@ class MaterialController extends BaseController
         return $response->withJson($results);
     }
 
-    public function getAttributes(Request $request, Response $response): Response
-    {
-        $attributes = new Attribute();
-        $result = $attributes->getAll()->get();
-        return $response->withJson($result->toArray());
-    }
-
     // ------------------------------------------------------
     // -
     // -    Setters

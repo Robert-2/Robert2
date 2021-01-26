@@ -7,6 +7,7 @@ class ApiRouter
 {
     private $_routes = [
         'get' => [
+            '/attributes[/]'                           => 'AttributeController:getAll',
             '/users[/]'                                => 'UserController:getAll',
             '/users/{id:[0-9]+}[/]'                    => 'UserController:getOne',
             '/users/{id:[0-9]+}/settings[/]'           => 'UserController:getSettings',
@@ -28,7 +29,6 @@ class ApiRouter
             '/materials[/]'                            => 'MaterialController:getAll',
             '/materials/{id:[0-9]+}[/]'                => 'MaterialController:getOne',
             '/materials/{id:[0-9]+}/tags[/]'           => 'MaterialController:getTags',
-            '/materials/attributes[/]'                 => 'MaterialController:getAttributes',
             '/events[/]'                               => 'EventController:getAll',
             '/events/{id:[0-9]+}[/]'                   => 'EventController:getOne',
             '/events/{id:[0-9]+}/missing-materials[/]' => 'EventController:getMissingMaterials',

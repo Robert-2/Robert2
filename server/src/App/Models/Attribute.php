@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Robert2\API\Validation\Validator as V;
 
 class Attribute extends BaseModel
@@ -21,7 +22,7 @@ class Attribute extends BaseModel
                 v::equals('float'),
                 v::equals('boolean')
             ),
-            'unit'       => V::optional(V::length(1, 8)),
+            'unit' => V::optional(V::length(1, 8)),
             'max_length' => V::optional(V::numeric()),
         ];
     }
@@ -40,6 +41,13 @@ class Attribute extends BaseModel
             ->select(['materials.id', 'name']);
     }
 
+    public function Categories()
+    {
+        return $this->belongsToMany('Robert2\API\Models\Category', 'attribute_categories')
+            ->orderBy('name')
+            ->select(['categories.id', 'name']);
+    }
+
     // ——————————————————————————————————————————————————————
     // —
     // —    Mutators
@@ -47,9 +55,9 @@ class Attribute extends BaseModel
     // ——————————————————————————————————————————————————————
 
     protected $casts = [
-        'name'       => 'string',
-        'type'       => 'string',
-        'unit'       => 'string',
+        'name' => 'string',
+        'type' => 'string',
+        'unit' => 'string',
         'max_length' => 'integer',
     ];
 
@@ -57,6 +65,23 @@ class Attribute extends BaseModel
     {
         $materials = $this->Materials()->get();
         return $materials ? $materials->toArray() : null;
+    }
+
+    public function getCategoriesAttribute()
+    {
+        return $this->Categories()->get()->toArray();
+    }
+
+    // ——————————————————————————————————————————————————————
+    // —
+    // —    Getters
+    // —
+    // ——————————————————————————————————————————————————————
+
+    public function getAll(bool $withDeleted = false): Builder
+    {
+        $builder = parent::getAll($withDeleted);
+        return $builder->with('categories');
     }
 
     // ——————————————————————————————————————————————————————
