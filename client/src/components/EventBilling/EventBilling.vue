@@ -84,7 +84,6 @@
                 :key="beneficiaries[0].id"
                 :to="`/beneficiaries/${beneficiaries[0].id}`"
                 :title="$t('action-edit')"
-                tag="a"
               >
                 {{ beneficiaries[0].full_name }}
               </router-link>

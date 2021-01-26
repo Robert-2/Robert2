@@ -28,7 +28,6 @@ Vue.use(Router);
 
 const router = new Router({
   mode: 'history',
-  linkActiveClass: 'SideMenu__item--active',
   routes: [
     {
       path: '/login',

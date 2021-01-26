@@ -45,7 +45,6 @@
                 <router-link
                   :to="`/beneficiaries/${beneficiary.id}`"
                   :title="$t('action-edit')"
-                  tag="a"
                 >
                   {{ beneficiary.name }}
                 </router-link>
@@ -53,7 +52,6 @@
                   v-if="beneficiary.company"
                   :to="`/companies/${beneficiary.company_id}`"
                   :title="$t('action-edit')"
-                  tag="a"
                 >
                   ({{ beneficiary.company }})
                 </router-link>
@@ -70,7 +68,6 @@
                 <router-link
                   :to="`/technicians/${assignee.id}`"
                   :title="$t('action-edit')"
-                  tag="a"
                 >
                   {{ assignee.name }}
                 </router-link>
@@ -157,10 +154,12 @@
           <router-link
             v-if="!event.isPast"
             :to="`/events/${event.id}`"
-            tag="button"
-            class="info"
+            v-slot="{ navigate }"
+            custom
           >
-            <i class="fas fa-edit" /> {{ $t('page-events.edit-event') }}
+            <button @click="navigate" class="info">
+              <i class="fas fa-edit" /> {{ $t('page-events.edit-event') }}
+            </button>
           </router-link>
         </div>
       </div>
