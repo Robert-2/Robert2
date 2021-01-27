@@ -45,7 +45,7 @@
               required
               :options="categoriesOptions"
               :errors="errors.category_id"
-              @change="updateSubCategories"
+              @change="handleCategoryChange"
             />
             <FormField
               v-show="showBilling"
@@ -143,16 +143,18 @@
             <p v-if="extraAttributes.length === 0" class="Material__no-attribute-help">
               {{ $t('page-attributes.no-attribute-yet') }}
             </p>
-            <FormField
-              v-for="extraAttribute in extraAttributes"
-              :key="extraAttribute.id"
-              v-model="materialAttributes[extraAttribute.id]"
-              :name="extraAttribute.name"
-              :label="extraAttribute.name"
-              :addon="extraAttribute.unit"
-              :type="getAttributeType(extraAttribute.type)"
-              @change="handleAttributeChange"
-            />
+            <div v-if="extraAttributes.length > 0" class="Material__attributes">
+              <FormField
+                v-for="extraAttribute in extraAttributes"
+                :key="extraAttribute.id"
+                v-model="materialAttributes[extraAttribute.id]"
+                :name="extraAttribute.name"
+                :label="extraAttribute.name"
+                :addon="extraAttribute.unit"
+                :type="getAttributeType(extraAttribute.type)"
+                @change="handleAttributeChange"
+              />
+            </div>
             <router-link to="/attributes" class="Material__modify-attribute-link">
               <i class="fas fa-plus" /> {{ $t('page-attributes.add-attributes') }}
             </router-link>

@@ -87,7 +87,14 @@ export default {
     },
 
     fetchAttributes() {
-      this.$http.get('materials/attributes')
+      this.extraAttributes = [];
+
+      const { category_id: categoryId } = this.material;
+      if (!categoryId) {
+        return;
+      }
+
+      this.$http.get(`attributes?category=${categoryId}`)
         .then(({ data }) => {
           this.extraAttributes = data;
         })
@@ -183,6 +190,11 @@ export default {
       if (this.material.rental_price > 0) {
         this.material.is_hidden_on_bill = false;
       }
+    },
+
+    handleCategoryChange() {
+      this.fetchAttributes();
+      this.updateSubCategories();
     },
 
     updateSubCategories() {

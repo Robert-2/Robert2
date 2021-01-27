@@ -162,6 +162,7 @@ export default {
     'add-attributes': "Add attributes",
     'no-attribute-yet': "No attribute yet.",
     'add-btn': "Add an attribute",
+    'limited-to-categories': "Limited to categories",
   },
 
   'page-categories': {

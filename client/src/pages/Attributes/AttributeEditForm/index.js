@@ -1,3 +1,5 @@
+import store from '@/store';
+
 export default {
   name: 'AttributeEditForm',
   props: { errors: Object },
@@ -5,13 +7,37 @@ export default {
     return {
       hasUnit: false,
       hasMaxLength: true,
+      categories: [],
     };
+  },
+  computed: {
+    categoriesOptions() {
+      return store.getters['categories/options']
+        .filter(({ value }) => value !== '');
+    },
+  },
+  mounted() {
+    store.dispatch('categories/fetch');
   },
   methods: {
     handleTypeChange(e) {
       const { value } = e.currentTarget;
       this.hasUnit = value === 'integer' || value === 'float';
       this.hasMaxLength = value === 'string';
+    },
+
+    toggleCategory(categoryId) {
+      const foundIndex = this.categories.findIndex((id) => id === categoryId);
+      if (foundIndex === -1) {
+        this.categories.push(categoryId);
+        return;
+      }
+
+      this.categories.splice(foundIndex, 1);
+    },
+
+    isSelected(categoryId) {
+      return this.categories.includes(categoryId);
     },
 
     getValues() {
@@ -27,11 +53,17 @@ export default {
       const unit = InputUnit ? (InputUnit.value || null) : null;
       const maxLength = InputMaxLength ? (InputMaxLength.value || null) : null;
 
+      let categories = [];
+      if (this.categories.length < this.categoriesOptions.length) {
+        categories = this.categories;
+      }
+
       return {
         name,
         type,
         unit,
         max_length: maxLength,
+        categories,
       };
     },
 

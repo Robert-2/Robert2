@@ -28,6 +28,9 @@
               <th class="Attributes__items__max-length">
                 {{ $t('page-attributes.max-length') }}
               </th>
+              <th class="Attributes__items__categories">
+                {{ $t('page-attributes.limited-to-categories') }}
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -45,6 +48,17 @@
                 {{ attribute.max_length || (
                   attribute.type === 'string' ? $t('page-attributes.no-limit') : ''
                 ) }}
+              </td>
+              <td class="Attributes__items__categories">
+                <span
+                  v-if="attribute.categories.length === 0"
+                  class="Attributes__items__categories__empty"
+                >
+                  {{ $t('all-categories') }} ({{ $t('not-limited') }})
+                </span>
+                <span v-if="attribute.categories.length > 0">
+                  {{ attribute.categories.map(({ name }) => name).join(', ') }}
+                </span>
               </td>
             </tr>
           </tbody>
