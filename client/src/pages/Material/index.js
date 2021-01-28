@@ -108,6 +108,8 @@ export default {
           return 'number';
         case 'boolean':
           return 'switch';
+        case 'date':
+          return 'date';
         default:
           return 'text';
       }

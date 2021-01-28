@@ -17,9 +17,10 @@
         class="AttributeEditForm__select"
         @change="handleTypeChange"
       >
-        <option value="string">{{ $t('page-attributes.type-string') }}</option>
         <option value="integer">{{ $t('page-attributes.type-integer') }}</option>
         <option value="float">{{ $t('page-attributes.type-float') }}</option>
+        <option value="date">{{ $t('page-attributes.type-date') }}</option>
+        <option value="string">{{ $t('page-attributes.type-string') }}</option>
         <option value="boolean">{{ $t('page-attributes.type-boolean') }}</option>
       </select>
       <ul v-if="errors.type" class="AttributeEditForm__error">

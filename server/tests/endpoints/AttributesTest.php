@@ -33,6 +33,17 @@ final class AttributesTest extends ApiTestCase
                 'deleted_at' => null,
             ],
             [
+                'id' => 5,
+                'name' => "Date d'achat",
+                'type' => "date",
+                'unit' => null,
+                'max_length' => null,
+                'categories' => [],
+                'created_at' => null,
+                'updated_at' => null,
+                'deleted_at' => null,
+            ],
+            [
                 'id' => 1,
                 'name' => "Poids",
                 'type' => "float",
@@ -117,6 +128,17 @@ final class AttributesTest extends ApiTestCase
                 'updated_at' => null,
                 'deleted_at' => null,
             ],
+            [
+                'id' => 5,
+                'name' => "Date d'achat",
+                'type' => "date",
+                'unit' => null,
+                'max_length' => null,
+                'categories' => [],
+                'created_at' => null,
+                'updated_at' => null,
+                'deleted_at' => null,
+            ],
         ];
         $this->assertEquals($expected, $response);
 
@@ -141,6 +163,17 @@ final class AttributesTest extends ApiTestCase
                 'id' => 2,
                 'name' => "Couleur",
                 'type' => "string",
+                'unit' => null,
+                'max_length' => null,
+                'categories' => [],
+                'created_at' => null,
+                'updated_at' => null,
+                'deleted_at' => null,
+            ],
+            [
+                'id' => 5,
+                'name' => "Date d'achat",
+                'type' => "date",
                 'unit' => null,
                 'max_length' => null,
                 'categories' => [],
@@ -195,7 +228,7 @@ final class AttributesTest extends ApiTestCase
         $this->client->post('/api/attributes', $data);
         $this->assertStatusCode(SUCCESS_CREATED);
         $expected = [
-            'id' => 5,
+            'id' => 6,
             'name' => 'Speed',
             'type' => 'float',
             'unit' => 'km/h',
@@ -208,13 +241,13 @@ final class AttributesTest extends ApiTestCase
                         ['id' => 4, 'name' => 'dimmers', 'category_id' => 2],
                         ['id' => 3, 'name' => 'projectors', 'category_id' => 2],
                     ],
-                    'pivot' => ['attribute_id' => 5, 'category_id' => 2]
+                    'pivot' => ['attribute_id' => 6, 'category_id' => 2]
                 ],
                 [
                     'id' => 3,
                     'name' => "transport",
                     'sub_categories' => [],
-                    'pivot' => ['attribute_id' => 5, 'category_id' => 3]
+                    'pivot' => ['attribute_id' => 6, 'category_id' => 3]
                 ],
             ],
             'created_at' => 'fakedTestContent',
