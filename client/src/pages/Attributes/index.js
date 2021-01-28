@@ -21,7 +21,7 @@ export default {
   methods: {
     fetchAttributes() {
       this.isLoading = true;
-      this.$http.get('materials/attributes')
+      this.$http.get('attributes')
         .then(({ data }) => {
           this.attributes = data;
           this.isLoading = false;

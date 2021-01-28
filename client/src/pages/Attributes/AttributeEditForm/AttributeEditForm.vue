@@ -52,6 +52,19 @@
         {{ errors.max_length[0] }}
       </div>
     </div>
+    <div class="AttributeEditForm__categories">
+      <button
+        v-for="categoryOption in categoriesOptions"
+        class="AttributeEditForm__categories__item"
+        :class="{
+          'AttributeEditForm__categories__item--selected': isSelected(categoryOption.value)
+        }"
+        :key="categoryOption.value"
+        @click="toggleCategory(categoryOption.value)"
+      >
+        {{ categoryOption.label }}
+      </button>
+    </div>
   </div>
 </template>
 

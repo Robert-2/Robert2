@@ -1,9 +1,10 @@
 .AttributeEditForm {
   display: flex;
+  min-width: 800px;
   background-color: $bg-color-table-td;
 
   &__name {
-    flex: 1;
+    flex: 0 0 220px;
     padding: .8rem .5rem;
   }
 
@@ -19,9 +20,26 @@
   }
 
   &__max-length {
-    flex: 0 0 110px;
+    flex: 0 0 115px;
     padding: .8rem .5rem;
     text-align: center;
+  }
+
+  &__categories {
+    flex: 1;
+    padding: .8rem .5rem;
+
+    &__item {
+      margin-top: 4px;
+      opacity: .6;
+
+      &--selected,
+      &--selected:hover,
+      &--selected:focus {
+        opacity: 1;
+        background-color: $bg-color-button-info;
+      }
+    }
   }
 
   &__input,

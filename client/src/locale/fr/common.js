@@ -104,6 +104,7 @@ export default {
   'all-parks': "Tous parcs confondus",
   'all-categories': "Toutes catégories",
   'all-sub-categories': "Toutes sous-catégories",
+  'not-limited': "non limité",
   'open-trash-bin': "Afficher la corbeille",
   'display-not-deleted-items': "Afficher les enregistrements non supprimés",
   'created-at': "Créé le\u00a0:",

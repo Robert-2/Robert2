@@ -162,6 +162,7 @@ export default {
     'add-attributes': "Ajouter des caractéristiques",
     'no-attribute-yet': "Aucune caractéristique spéciale pour le moment.",
     'add-btn': "Ajouter une caractéristique",
+    'limited-to-categories': "Limitée aux catégories",
   },
 
   'page-categories': {
