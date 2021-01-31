@@ -107,8 +107,13 @@ export default {
       this.$refs.DataTable.refresh();
     },
 
-    toggleChild(index) {
-      this.$refs.DataTable.toggleChildRow(index);
+    toggleChild(id) {
+      this.$refs.DataTable.toggleChildRow(id);
+    },
+
+    isChildOpen(id) {
+      const tableRef = this.$refs.DataTable.$refs.table;
+      return tableRef.openChildRows.includes(id);
     },
 
     refreshTable() {

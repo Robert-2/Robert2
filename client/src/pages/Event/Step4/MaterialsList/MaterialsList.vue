@@ -27,13 +27,15 @@
         :columns="columns"
         :options="options"
       >
-        <template #child-toggler="{ index, row: material }">
+        <template #child-toggler="{ row: material }">
             <button
               type="button"
-              @click="toggleChild(index)"
+              class="MaterialsList__child-toggler__button"
+              @click="toggleChild(material.id)"
               v-if="material.is_unitary"
             >
-              [Toggle]
+              <i v-if="!isChildOpen(material.id)" class="fas fa-caret-right" />
+              <i v-if="isChildOpen(material.id)" class="fas fa-caret-down" />
             </button>
         </template>
         <div slot="qty" slot-scope="material">

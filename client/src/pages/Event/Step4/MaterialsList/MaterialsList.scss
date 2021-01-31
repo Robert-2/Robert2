@@ -78,6 +78,27 @@
     }
   }
 
+  &__child-toggler {
+    width: 85px;
+    padding: 0 .45rem 0 0 !important;
+
+    &__button {
+      border: 0;
+      background: rgba(255, 255, 255, .1);
+      color: inherit;
+      font-size: 1.5rem;
+      padding: 2px 1rem;
+      box-sizing: content-box;
+      width: 1rem;
+      text-align: center;
+
+      &:focus,
+      &:hover {
+        background: rgba(255, 255, 255, .1);
+      }
+    }
+  }
+
   &__qty {
     color: $text-light-color !important;
     font-weight: 600;
