@@ -5,6 +5,15 @@
     margin-bottom: 1rem;
   }
 
+  &__body {
+    color: $text-base-color;
+    padding-bottom: 6rem;
+
+    .vue-tablist {
+      margin-bottom: 1rem;
+    }
+  }
+
   &__menu {
     margin-left: auto;
   }
