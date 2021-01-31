@@ -183,7 +183,6 @@ const router = new Router({
       name: 'addMaterialUnit',
       component: MaterialUnit,
       meta: {
-        // resource: 'materials',
         readableName: 'page-material-units.add',
         requiresAuth: true,
         requiresGroups: ['admin', 'member'],
@@ -194,7 +193,6 @@ const router = new Router({
       name: 'editMaterialUnit',
       component: MaterialUnit,
       meta: {
-        // resource: 'materials',
         readableName: 'page-material-units.edit',
         requiresAuth: true,
         requiresGroups: ['admin', 'member'],

@@ -170,6 +170,7 @@ export default {
   'page-material-units': {
     'add': "New Unit for material «\u00a0{pageSubTitle}\u00a0»",
     'edit': "Modify unit «\u00a0{pageSubTitle}\u00a0»",
+    'saved': "Unit saved.",
   },
 
   'page-attributes': {

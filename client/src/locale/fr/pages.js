@@ -170,6 +170,7 @@ export default {
   'page-material-units': {
     'add': "Nouvelle unité pour le matériel «\u00a0{pageSubTitle}\u00a0»",
     'edit': "Modifier l'unité «\u00a0{pageSubTitle}\u00a0»",
+    'saved': "Unité sauvegardée.",
   },
 
   'page-attributes': {
