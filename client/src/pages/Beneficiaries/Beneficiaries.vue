@@ -11,11 +11,16 @@
       <div class="header-page__actions">
         <router-link
           :to="`/beneficiaries/new`"
-          tag="button"
-          class="Beneficiaries__create success"
+          v-slot="{ navigate }"
+          custom
         >
-          <i class="fas fa-user-plus" />
-          {{ $t('page-beneficiaries.action-add') }}
+          <button
+            class="Beneficiaries__create success"
+            @click="navigate"
+          >
+            <i class="fas fa-user-plus" />
+            {{ $t('page-beneficiaries.action-add') }}
+          </button>
         </router-link>
       </div>
     </div>
@@ -32,7 +37,6 @@
             v-if="beneficiary.row.company"
             v-tooltip="$t('action-edit')"
             :to="`/companies/${beneficiary.row.company.id}`"
-            tag="a"
           >
             {{ beneficiary.row.company.legal_name }}
             <i class="fas fa-edit" />
@@ -72,10 +76,12 @@
             v-if="!isTrashDisplayed"
             v-tooltip="$t('action-edit')"
             :to="`/beneficiaries/${beneficiary.row.id}`"
-            tag="button"
-            class="item-actions__button info"
+            v-slot="{ navigate }"
+            custom
           >
-            <i class="fas fa-edit" />
+            <button class="item-actions__button info" @click="navigate">
+              <i class="fas fa-edit" />
+            </button>
           </router-link>
           <button
             v-if="!isTrashDisplayed"

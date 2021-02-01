@@ -42,10 +42,12 @@
         <router-link
           v-if="person.company_id"
           :to="`/companies/${person.company_id}`"
-          class="PersonForm__company__edit-btn info"
-          tag="button"
+          v-slot="{ navigate }"
+          custom
         >
-          <i class="fas fa-edit" /> {{ $t('page-companies.edit-btn') }}
+          <button class="PersonForm__company__edit-btn info" @click="navigate">
+            <i class="fas fa-edit" /> {{ $t('page-companies.edit-btn') }}
+          </button>
         </router-link>
       </div>
       <router-link to="/companies/new" class="PersonForm__add-company">

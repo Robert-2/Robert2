@@ -550,57 +550,6 @@ final class MaterialsTest extends ApiTestCase
         }
     }
 
-    public function testGetAttributes()
-    {
-        // - Récupère les caractéristiques custom du matériel
-        $this->client->get('/api/materials/attributes');
-        $this->assertStatusCode(SUCCESS_OK);
-        $response = $this->_getResponseAsArray();
-        $expected = [
-            [
-                'id'         => 1,
-                'name'       => 'Poids',
-                'type'       => 'float',
-                'unit'       => 'kg',
-                'max_length' => null,
-                'created_at' => null,
-                'updated_at' => null,
-                'deleted_at' => null,
-            ],
-            [
-                'id'         => 2,
-                'name'       => 'Couleur',
-                'type'       => 'string',
-                'unit'       => null,
-                'max_length' => null,
-                'created_at' => null,
-                'updated_at' => null,
-                'deleted_at' => null,
-            ],
-            [
-                'id'         => 3,
-                'name'       => 'Puissance',
-                'type'       => 'integer',
-                'unit'       => 'W',
-                'max_length' => null,
-                'created_at' => null,
-                'updated_at' => null,
-                'deleted_at' => null,
-            ],
-            [
-                'id'         => 4,
-                'name'       => 'Conforme',
-                'type'       => 'boolean',
-                'unit'       => null,
-                'max_length' => null,
-                'created_at' => null,
-                'updated_at' => null,
-                'deleted_at' => null,
-            ]
-        ];
-        $this->assertEquals($expected, $response);
-    }
-
     public function testCreateMaterialWithoutData()
     {
         $this->client->post('/api/materials');

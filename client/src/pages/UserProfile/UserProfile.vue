@@ -127,13 +127,11 @@
             :isLoading="isLoading"
           />
           <div class="UserProfile__extras__buttons">
-            <router-link
-              to="/settings"
-              tag="button"
-              class="info"
-            >
-              <i class="fas fa-cogs" />
-              {{ $t('your-settings') }}
+            <router-link to="/settings" v-slot="{ navigate }" custom>
+              <button @click="navigate" class="info">
+                <i class="fas fa-cogs" />
+                {{ $t('your-settings') }}
+              </button>
             </router-link>
           </div>
         </div>

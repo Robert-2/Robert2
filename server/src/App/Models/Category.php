@@ -42,7 +42,7 @@ class Category extends BaseModel
 
     public function Materials()
     {
-        $fields = [
+        return $this->hasMany('Robert2\API\Models\Material')->select([
             'id',
             'name',
             'description',
@@ -53,8 +53,14 @@ class Category extends BaseModel
             'stock_quantity',
             'out_of_order_quantity',
             'replacement_price',
-        ];
-        return $this->hasMany('Robert2\API\Models\Material')->select($fields);
+        ]);
+    }
+
+    public function Attributes()
+    {
+        return $this->belongsToMany('Robert2\API\Models\Attribute', 'attribute_categories')
+            ->using('Robert2\API\Models\AttributeCategoriesPivot')
+            ->select(['attributes.id', 'attributes.name', 'attributes.type', 'attributes.unit']);
     }
 
     // ——————————————————————————————————————————————————————

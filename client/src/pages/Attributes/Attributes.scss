@@ -10,10 +10,6 @@
     margin-top: $content-padding-small-horizontal;
   }
 
-  &__content {
-    max-width: $form-max-width + $form-label-width;
-  }
-
   &__no-data {
     background-color: $bg-color-table-td;
     margin: 0;
@@ -24,7 +20,7 @@
 
   &__items {
     width: 100%;
-    min-width: 540px;
+    min-width: 800px;
     margin: 0;
     background-color: $bg-color-table-td;
     color: $text-base-color;
@@ -37,29 +33,39 @@
       text-align: left;
     }
 
-    &__name {
+    &__name,
+    &__type,
+    &__unit,
+    &__max-length,
+    &__categories {
       padding: .8rem .5rem;
       border-bottom: 1px solid $bg-color-body;
+    }
+
+    &__name {
+      width: 220px;
+      font-weight: bold;
     }
 
     &__type {
       width: 170px;
-      padding: .8rem .5rem;
-      border-bottom: 1px solid $bg-color-body;
     }
 
     &__unit {
       width: 80px;
-      padding: .8rem .5rem;
-      border-bottom: 1px solid $bg-color-body;
       text-align: center;
     }
 
     &__max-length {
-      width: 110px;
-      padding: .8rem .5rem;
-      border-bottom: 1px solid $bg-color-body;
+      width: 125px;
       text-align: center;
+    }
+
+    &__categories {
+      &__empty {
+        color: $text-light-color;
+        font-style: italic;
+      }
     }
   }
 

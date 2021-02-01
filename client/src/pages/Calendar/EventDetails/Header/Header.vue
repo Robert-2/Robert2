@@ -23,10 +23,12 @@
         v-show="!isVisitor"
         :to="`/events/${event.id}`"
         :disabled="event.isConfirmed"
-        tag="button"
-        class="info"
+        v-slot="{ navigate }"
+        custom
       >
-        <i class="fas fa-edit" /> {{ $t('action-edit') }}
+        <button @click="navigate" class="info" >
+          <i class="fas fa-edit" /> {{ $t('action-edit') }}
+        </button>
       </router-link>
       <button
         v-show="!isVisitor"
