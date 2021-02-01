@@ -26,5 +26,12 @@
         "type"       : "boolean",
         "unit"       : null,
         "max_length" : null
+    },
+    {
+        "id"         : 5,
+        "name"       : "Date d'achat",
+        "type"       : "date",
+        "unit"       : null,
+        "max_length" : null
     }
 ]

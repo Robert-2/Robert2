@@ -8,28 +8,37 @@ final class MaterialUnitsTest extends ApiTestCase
         $this->client->get('/api/material-units/1');
         $this->assertStatusCode(SUCCESS_OK);
         $this->assertResponseData([
-            'id'            => 1,
-            'material_id'   => 6,
+            'id' => 1,
+            'material_id' => 6,
             'serial_number' => 'XR18-1',
-            'park_id'       => 1,
-            'is_broken'     => false,
+            'park_id' => 1,
+            'is_broken' => false,
             'material' => [
-                'id'                    => 6,
-                'name'                  => 'Behringer X Air XR18',
-                'reference'             => 'XR18',
-                'is_unitary'            => true,
-                'description'           => 'Mélangeur numérique 18 canaux',
-                'park_id'               => null,
-                'category_id'           => 1,
-                'sub_category_id'       => 1,
-                'rental_price'          => 49.99,
-                'stock_quantity'        => 3,
+                'id' => 6,
+                'name' => 'Behringer X Air XR18',
+                'reference' => 'XR18',
+                'is_unitary' => true,
+                'description' => 'Mélangeur numérique 18 canaux',
+                'park_id' => null,
+                'category_id' => 1,
+                'sub_category_id' => 1,
+                'rental_price' => 49.99,
+                'stock_quantity' => 3,
                 'out_of_order_quantity' => 1,
-                'replacement_price'     => 419,
-                'is_hidden_on_bill'     => false,
-                'is_discountable'       => false,
-                'note'                  => null,
-                'units'                 => [
+                'replacement_price' => 419,
+                'is_hidden_on_bill' => false,
+                'is_discountable' => false,
+                'note' => null,
+                'attributes' => [
+                    [
+                        'id' => 5,
+                        'name' => "Date d'achat",
+                        'type' => "date",
+                        'unit' => null,
+                        'value' => '2021-01-28',
+                    ],
+                ],
+                'units' => [
                     [
                         'id'            => 1,
                         'serial_number' => 'XR18-1',
@@ -49,11 +58,10 @@ final class MaterialUnitsTest extends ApiTestCase
                         'is_broken'     => true,
                     ]
                 ],
-                'attributes'            => [],
-                'tags'                  => [],
-                'created_at'            => null,
-                'updated_at'            => null,
-                'deleted_at'            => null
+                'tags' => [],
+                'created_at' => null,
+                'updated_at' => null,
+                'deleted_at' => null
             ],
             'created_at' => null,
             'updated_at' => null,

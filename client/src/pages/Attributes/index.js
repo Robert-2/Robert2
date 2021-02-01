@@ -45,6 +45,7 @@ export default {
 
     saveAttribute() {
       this.isLoading = true;
+      this.error = null;
       const data = this.$refs.AttributeEditForm.getValues();
 
       this.$http.post('/attributes', data)
