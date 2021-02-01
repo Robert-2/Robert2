@@ -22,7 +22,7 @@ final class AttributeTest extends ModelTestCase
     public function testGetAll(): void
     {
         $result = $this->model->getAll()->get()->toArray();
-        $this->assertCount(4, $result);
+        $this->assertCount(5, $result);
         $this->assertEquals([
             [
                 'id' => 1,
@@ -90,6 +90,17 @@ final class AttributeTest extends ModelTestCase
                 'id' => 4,
                 'name' => "Conforme",
                 'type' => "boolean",
+                'unit' => null,
+                'max_length' => null,
+                'categories' => [],
+                'created_at' => null,
+                'updated_at' => null,
+                'deleted_at' => null,
+            ],
+            [
+                'id' => 5,
+                'name' => "Date d'achat",
+                'type' => "date",
                 'unit' => null,
                 'max_length' => null,
                 'categories' => [],

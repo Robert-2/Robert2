@@ -20,7 +20,8 @@ class Attribute extends BaseModel
                 v::equals('string'),
                 v::equals('integer'),
                 v::equals('float'),
-                v::equals('boolean')
+                v::equals('boolean'),
+                v::equals('date')
             ),
             'unit' => V::optional(V::length(1, 8)),
             'max_length' => V::optional(V::numeric()),

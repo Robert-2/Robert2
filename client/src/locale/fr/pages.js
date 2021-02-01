@@ -158,6 +158,7 @@ export default {
     'type-integer': "Nombre entier",
     'type-float': "Nombre décimal",
     'type-boolean': "Booléen (Oui / Non)",
+    'type-date': "Date",
     'no-limit': "Sans limite",
     'add-attributes': "Ajouter des caractéristiques",
     'no-attribute-yet': "Aucune caractéristique spéciale pour le moment.",
