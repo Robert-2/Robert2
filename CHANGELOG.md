@@ -9,6 +9,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Améliore le calcul du matériel restant dans les événements.
 - Ajoute la possibilité de limiter les caractéristiques spéciales du matériel par catégorie (#91).
 - Ajoute le type "date" aux caractéristiques spéciales du matériel (#90).
+- Permet l'envoi de documents (fichiers PDF, images JPEG ou PNG) associés à du matériel (#92).
 
 ## 0.11.0 (2021-01-14)
 

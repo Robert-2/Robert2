@@ -5,9 +5,11 @@ const ConfirmDelete = ($t, entityName, isSoft = true) => Swal.fire({
   text: isSoft
     ? $t(`page-${entityName}.confirm-delete`)
     : $t(`page-${entityName}.confirm-permanently-delete`),
-  type: 'warning',
+  icon: 'warning',
   showCancelButton: true,
-  confirmButtonClass: isSoft ? 'swal2-confirm--trash' : 'swal2-confirm--delete',
+  customClass: {
+    confirmButton: isSoft ? 'swal2-confirm--trash' : 'swal2-confirm--delete',
+  },
   confirmButtonText: isSoft ? $t('yes-delete') : $t('yes-permanently-delete'),
   cancelButtonText: $t('cancel'),
 });
@@ -15,9 +17,11 @@ const ConfirmDelete = ($t, entityName, isSoft = true) => Swal.fire({
 const ConfirmRestore = ($t, entityName) => Swal.fire({
   title: $t('please-confirm'),
   text: $t(`page-${entityName}.confirm-restore`),
-  type: 'warning',
+  icon: 'warning',
   showCancelButton: true,
-  confirmButtonClass: 'swal2-confirm--restore',
+  customClass: {
+    confirmButton: 'swal2-confirm--restore',
+  },
   confirmButtonText: $t('yes-restore'),
   cancelButtonText: $t('cancel'),
 });
@@ -28,7 +32,9 @@ const Prompt = ($t, title, placeholder, confirmText, inputValue = '') => Swal.fi
   inputPlaceholder: $t(placeholder),
   inputValue,
   showCancelButton: true,
-  confirmButtonClass: 'swal2-confirm--success',
+  customClass: {
+    confirmButton: 'swal2-confirm--success',
+  },
   confirmButtonText: $t(confirmText),
   cancelButtonText: $t('cancel'),
 });

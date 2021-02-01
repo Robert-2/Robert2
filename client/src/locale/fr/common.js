@@ -28,6 +28,7 @@ export default {
   'close': "Fermer",
   'copy-to-clipboard': "Copier dans le presse-papier",
   'copied-in-clipboard': "Copié dans le presse-papier\u00a0!",
+  'almost-done': "Presque terminé...",
 
   'please-choose': "Veuillez choisir...",
   'start-typing-to-search': "Commencez à écrire pour rechercher...",
@@ -54,6 +55,7 @@ export default {
   'minimal-infos': "Informations minimales",
   'extra-infos': "Informations supplémentaires",
   'billing-infos': "Informations de facturation",
+  'documents': "Documents",
   'billing': "Facturation",
   'special-attributes': "Caractéristiques spéciales",
   'pseudo': "Pseudo",
