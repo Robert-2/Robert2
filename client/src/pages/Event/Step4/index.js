@@ -2,9 +2,8 @@ import { debounce } from 'debounce';
 import { DEBOUNCE_WAIT } from '@/config/constants';
 import MaterialsList from './MaterialsList/MaterialsList.vue';
 import EventStore from '../EventStore';
+import { getMaterialsQuantities, materialsHasChanged } from './_utils';
 
-// TODO: Pour les unitaires, le compteur de matériel restant doit compter les vrais unités prisent.
-//       (et non faire une bête soustraction sur la quantité dispo - quantité voulu)
 export default {
   name: 'EventStep4',
   components: { MaterialsList },
@@ -13,33 +12,15 @@ export default {
   },
   data() {
     return {
-      materials: this.event.materials.map(
-        ({ id, pivot }) => ({ id, quantity: pivot.quantity }),
-      ),
+      materials: getMaterialsQuantities(this.event.materials),
     };
   },
   methods: {
     handleChange(newList) {
       this.materials = newList;
 
-      const savedList = this.event.materials.map(
-        ({ id, pivot }) => ({ id, quantity: pivot.quantity }),
-      );
-
-      const listDifference = newList
-        .filter(({ id, quantity }) => {
-          if (quantity === 0) { return false; }
-          return !savedList.some(({ id: _id, quantity: _quantity }) => (
-            id === _id && quantity === _quantity
-          ));
-        })
-        .concat(savedList.filter(({ id, quantity }) => (
-          !newList.some(({ id: _id, quantity: _quantity }) => (
-            id === _id && quantity === _quantity
-          ))
-        )));
-
-      const hasDifference = listDifference.length > 0;
+      const savedList = getMaterialsQuantities(this.event.materials);
+      const hasDifference = materialsHasChanged(savedList, newList);
       EventStore.commit('setIsSaved', !hasDifference);
 
       if (hasDifference) {

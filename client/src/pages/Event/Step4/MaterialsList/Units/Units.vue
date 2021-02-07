@@ -1,26 +1,40 @@
 <template>
-  <div>
-    Unités:
-    <ul>
-      <li v-for="unit in data.units" :key="unit.id">{{ unit.id }}</li>
-    </ul>
+  <div class="MaterialsListUnits">
+    <table class="MaterialsListUnits__table MaterialsListUnits__table--header">
+      <thead>
+        <tr>
+          <th class="MaterialsListUnits__heading MaterialsListUnits__heading--selector"></th>
+          <th class="MaterialsListUnits__heading MaterialsListUnits__heading--serial-number">
+            {{ $t('serial-number') }}
+          </th>
+          <th class="MaterialsListUnits__heading MaterialsListUnits__heading--is-broken">
+            {{ $t('is-broken') }}
+          </th>
+          <th class="MaterialsListUnits__heading MaterialsListUnits__heading--park">
+            {{ $t('park') }}
+          </th>
+        </tr>
+      </thead>
+    </table>
+    <div class="MaterialsListUnits__body">
+      <table class="MaterialsListUnits__table MaterialsListUnits__table--body">
+        <tbody>
+          <Unit
+            v-for="unit in units"
+            :key="unit.id"
+            :data="unit"
+            :isSelected="selected.includes(unit.id)"
+            @toggle="handleToggleUnit(unit.id)"
+          />
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
 
-<script>
+<style lang="scss">
+  @import '../../../../../themes/default/index';
+  @import './Units';
+</style>
 
-// Il faudra griser les unités marquées comme étant `is_available` à `false` / `is_broken` à `true`.
-// MAIS il faut prendre en compte le fait que si celles-ci étaient déjà save dans l'event
-// à l'arrivée sur la page, on ne devrait pas être bloquée pour les envoyer à nouveau.
-// (Si edit => On doit pouvoir re-sauver les données, même si is_available à false).
-//
-// A noter aussi que quand l'unité est is_broken, on devrait pouvoir "forcer" sa sélection et passer
-// outre le fait que ce soit grisé.
-
-export default {
-  name: 'MaterialsListUnits',
-  props: {
-    data: Object,
-  },
-};
-</script>
+<script src="./index.js"></script>

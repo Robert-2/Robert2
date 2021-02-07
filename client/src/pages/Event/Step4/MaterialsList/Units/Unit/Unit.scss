@@ -1,0 +1,64 @@
+.MaterialsListUnit {
+  user-select: none;
+
+  // - Les !important sont là pour surcharger le style injecté par VueTables sur les tds.
+  &__col {
+    border: 0 !important;
+    background: rgba(0, 0, 0, 0.2) !important;
+    color: inherit !important;
+    padding: .8rem .45rem !important;
+
+    &:first-child {
+      padding-left: 1rem !important;
+      border-top-left-radius: .8rem;
+      border-bottom-left-radius: .8rem;
+    }
+
+    &:last-child {
+      padding-right: 1rem !important;
+      border-top-right-radius: .8rem;
+      border-bottom-right-radius: .8rem;
+    }
+
+    //
+    // - Colonnes
+    //
+
+    &--selector {
+      width: 5rem;
+    }
+
+    &--is-broken {
+      width: 15rem;
+      text-align: center;
+    }
+
+    &--serial-number {
+      width: 30%
+    }
+  }
+
+  //
+  // - États
+  //
+
+  &--broken {
+    .MaterialsListUnit__col--is-broken {
+      color: $text-warning-color !important;
+    }
+  }
+
+  &--unavailable {
+    opacity: .3;
+    cursor: not-allowed;
+  }
+
+  &--selected {
+    opacity: 1 !important;
+    cursor: pointer !important;
+
+    .MaterialsListUnit__col {
+      background: rgba(0, 0, 0, .4) !important;
+    }
+  }
+}

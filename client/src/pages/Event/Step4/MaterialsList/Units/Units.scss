@@ -1,0 +1,45 @@
+.MaterialsListUnits {
+  padding: .5rem 0 0;
+
+  &__table {
+    width: 100%;
+
+    &--header {
+      margin-bottom: .4rem;
+      border-collapse: collapse;
+    }
+
+    &--body {
+      border-collapse: separate;
+      border-spacing: 0 .8rem;
+    }
+  }
+
+  &__heading {
+    padding: 0 .45rem  !important;
+    background: transparent !important;
+    font-size: .9rem;
+
+    //
+    // - Colonnes
+    //
+
+    &--selector {
+      width: 5rem;
+    }
+
+    &--serial-number {
+      width: 30%
+    }
+
+    &--is-broken {
+      width: 15rem;
+      text-align: center !important;
+    }
+  }
+
+  &__body {
+    max-height: 350px;
+    overflow-y: auto;
+  }
+}

@@ -62,17 +62,17 @@
   }
 
   .VueTables__table {
-    thead {
+    > thead {
       display: none;
     }
 
     .VueTables__row {
-      td {
+      > td {
         background: none;
         border-bottom-color: $list-left-border-color;
       }
 
-      &:first-child td {
+      &:first-child > td {
         border-top: 1px solid $list-left-border-color;
       }
     }
