@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Robert2\Tests;
 
 use PHPUnit\Framework\TestCase;
+use Slim\Http\UploadedFile;
 
 final class FunctionsTest extends TestCase
 {
@@ -29,12 +30,18 @@ final class FunctionsTest extends TestCase
         $this->assertEquals('test_espace_insécable', slugify("test espace insécable"));
     }
 
-    public function testCleanEmptyFields()
+    public function testCleanEmptyFields(): void
     {
         $data = ['field1' => 'not-empty', 'field2' => '', 'field3' => null];
         $result = cleanEmptyFields($data);
         $expected = ['field1' => 'not-empty', 'field2' => null, 'field3' => null];
         $this->assertEquals($expected, $result);
+    }
+
+    public function testNormalizePhone(): void
+    {
+        $result = normalizePhone('01 23 45 67 89');
+        $this->assertEquals('0123456789', $result);
     }
 
     public function testSplitPeriods(): void
@@ -92,5 +99,22 @@ final class FunctionsTest extends TestCase
         // - La fonction doit lever une exception si une des dates fournies est invalide.
         $this->expectException(\InvalidArgumentException::class);
         $exec([['INVALID-DATE', '2020-12-31']]);
+    }
+
+    public function testMoveUploadedFile(): void
+    {
+        $sourceFile = DATA_FOLDER . DS . 'tmp' . DS . 'upload_file.pdf';
+        $destinationFolder = DATA_FOLDER . DS . 'materials' . DS . 'tests';
+
+        // - Déplace le fichier de test d'upload dans
+        $file = new UploadedFile($sourceFile, 'Uploaded File for Tests', 'application/pdf', 13269);
+        // - Déplace le fichier de test d'upload dans le dossier d'un matériel
+        $filename = moveUploadedFile($destinationFolder, $file);
+        $this->assertEquals('Uploaded-File-for-Tests', $filename);
+        $destinationFile = $destinationFolder . DS . $filename;
+        $this->assertTrue(file_exists($destinationFile));
+        // - Remet le fichier dans son dossier d'origine
+        rename($destinationFile, $sourceFile);
+        $this->assertTrue(file_exists($sourceFile));
     }
 }

@@ -40,7 +40,8 @@
         "robmorgan/phinx": "^0.11.4",
         "delfimov/translate": "^2.6.0",
         "dompdf/dompdf": "^0.8.5",
-        "twig/intl-extra": "^3.0.3"
+        "twig/intl-extra": "^3.0.3",
+        "cocur/slugify": "^4.0"
     },
    "require-dev": {
         "there4/slim-test-helpers": "^2.1.3",

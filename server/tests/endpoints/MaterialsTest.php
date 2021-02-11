@@ -699,4 +699,30 @@ final class MaterialsTest extends ApiTestCase
         $response = $this->_getResponseAsArray();
         $this->assertEmpty($response['deleted_at']);
     }
+
+    public function testGetAllDocuments()
+    {
+        // - Get all documents of material #1
+        $this->client->get('/api/materials/1/documents');
+        $this->assertStatusCode(SUCCESS_OK);
+        $this->assertResponseData([
+            [
+                'id' => 1,
+                'name' => 'User-manual.pdf',
+                'type' => 'application/pdf',
+                'size' => 54681233
+            ],
+            [
+                'id' => 2,
+                'name' => 'warranty.pdf',
+                'type' => 'application/pdf',
+                'size' => 124068
+            ]
+        ]);
+
+        // - Get all documents of material #2
+        $this->client->get('/api/materials/2/documents');
+        $this->assertStatusCode(SUCCESS_OK);
+        $this->assertResponseData([]);
+    }
 }

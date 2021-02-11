@@ -168,6 +168,7 @@ class App
         // - Download files
         $this->app->get('/bills/{id:[0-9]+}/pdf[/]', 'BillController:getOnePdf')->setName('getBillPdf');
         $this->app->get('/events/{id:[0-9]+}/pdf[/]', 'EventController:getOnePdf')->setName('getEventPdf');
+        $this->app->get('/documents/{id:[0-9]+}/download[/]', 'DocumentController:getOne')->setName('getDocumentFile');
 
         // - All remaining non-API routes should be handled by Front-End Router
         $this->app->get('/[{path:.*}]', 'HomeController:entrypoint');
