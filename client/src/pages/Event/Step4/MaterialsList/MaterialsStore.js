@@ -1,4 +1,5 @@
 import Vuex from 'vuex';
+import _times from 'lodash.times';
 
 export default new Vuex.Store({
   state: {
@@ -22,11 +23,6 @@ export default new Vuex.Store({
     setQuantity(state, { material, quantity }) {
       const { id } = material;
 
-      if (quantity <= 0) {
-        delete state.materials[id];
-        return;
-      }
-
       if (!state.materials[id]) {
         state.materials = {
           ...state.materials,
@@ -34,7 +30,24 @@ export default new Vuex.Store({
         };
       }
 
+      const prevQuantity = state.materials[id].quantity;
+      const diff = quantity - prevQuantity;
       state.materials[id].quantity = quantity;
+
+      if (material.is_unitary && diff !== 0) {
+        if (diff > 0) {
+          _times(diff, () => { this.commit('selectNextUnit', material); });
+        } else {
+          let unitsToRemove;
+          const unitsQuantity = state.materials[id].units.length;
+          unitsToRemove = Math.abs(diff) - Math.max(prevQuantity - unitsQuantity, 0);
+          unitsToRemove = Math.min(unitsToRemove, unitsQuantity);
+
+          if (unitsToRemove > 0) {
+            _times(unitsToRemove, () => { this.commit('unselectLastUnit', material); });
+          }
+        }
+      }
     },
 
     increment(state, material) {
@@ -48,6 +61,10 @@ export default new Vuex.Store({
       }
 
       state.materials[id].quantity += 1;
+
+      if (material.is_unitary) {
+        this.commit('selectNextUnit', material);
+      }
     },
 
     decrement(state, material) {
@@ -63,12 +80,18 @@ export default new Vuex.Store({
 
       state.materials[id].quantity -= 1;
 
+      const useExternalMaterial = state.materials[id].quantity >= state.materials[id].units.length;
+      if (material.is_unitary && !useExternalMaterial) {
+        this.commit('unselectLastUnit', material);
+      }
+    },
+
     toggleUnit(state, payload) {
       const { material, unitId } = payload;
       const { id } = material;
 
       if (!material.is_unitary) {
-        throw new Error("Le matériel n'est pas unitaire, impossible d'ajouter une unité.");
+        throw new Error("Le matériel n'est pas unitaire, impossible d'ajouter/supprimer une unité.");
       }
 
       if (!state.materials[id]) {
@@ -86,6 +109,49 @@ export default new Vuex.Store({
 
       state.materials[id].quantity += 1;
       state.materials[id].units.push(unitId);
+    },
+
+    selectNextUnit(state, material) {
+      const { id } = material;
+
+      if (!material.is_unitary) {
+        throw new Error("Le matériel n'est pas unitaire, impossible d'ajouter une unité.");
+      }
+
+      const nextAvailableUnit = material.units.find((unit) => {
+        // - Si l'unité est déjà sélectionnée.
+        if (state.materials[id].units.includes(unit.id)) {
+          return false;
+        }
+
+        if (!unit.is_available || unit.is_broken) {
+          return false;
+        }
+
+        return true;
+      });
+      if (nextAvailableUnit) {
+        state.materials[id].units.push(nextAvailableUnit.id);
+      }
+    },
+
+    unselectLastUnit(state, material) {
+      const { id } = material;
+
+      if (!material.is_unitary) {
+        throw new Error("Le matériel n'est pas unitaire, impossible de supprimer une unité.");
+      }
+
+      // - Récupère la première unité selectionnée en partant de la fin
+      //   de la liste des unités du matériel.
+      const closestSelectedUnit = [...material.units].reverse().find((unit) => (
+        state.materials[id].units.includes(unit.id)
+      ));
+      if (closestSelectedUnit) {
+        state.materials[id].units = state.materials[id].units.filter(
+          (_id) => _id !== closestSelectedUnit.id,
+        );
+      }
     },
   },
   getters: {

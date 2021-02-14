@@ -309,14 +309,20 @@ class Material extends BaseModel
                     $usedUnits = array_merge($usedUnits, $eventMaterial['pivot']['units']);
                 }
 
-                $usedCount = count(array_unique($usedUnits));
-
-                // - Ajoute le champ `is_available` aux unités des matériels.
+                // - Ajoute le champ `is_available` aux unités des matériels
+                // + Supprime les unités marquées comme "utilisé" qui sont cassées.
+                //   (=> Elles ne comptent pas dans le calcul des unités utilisées)
                 if (array_key_exists('units', $material)) {
                     foreach ($material['units'] as &$unit) {
                         $unit['is_available'] = !in_array($unit['id'], $usedUnits, true);
+
+                        if ($unit['is_broken']) {
+                            $usedUnits = array_diff($usedUnits, [$unit['id']]);
+                        }
                     }
                 }
+
+                $usedCount = count(array_unique($usedUnits));
             } else {
                 $quantityPerPeriod = [0];
                 $periods = splitPeriods($events);

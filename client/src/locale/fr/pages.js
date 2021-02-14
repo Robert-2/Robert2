@@ -88,6 +88,7 @@ export default {
     'warning-no-beneficiary': "Attention, cet événement n'a aucun bénéficiaire\u00a0!",
     'missing-material-count': "Besoin de {quantity}, il en manque\u00a0{missing}\u00a0!",
     'beneficiary-billing-help': "Seul le premier bénéficiaire de la liste apparaîtra sur la facture.",
+    'no-units-available': "Aucune unité disponible pendant cet événement pour ce matériel.",
   },
 
   'page-users': {

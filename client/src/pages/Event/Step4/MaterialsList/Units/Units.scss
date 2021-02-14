@@ -42,4 +42,12 @@
     max-height: 350px;
     overflow-y: auto;
   }
+
+  &__empty {
+    margin: .6rem 0 1rem;
+    color: $text-light-color;
+    text-align: center;
+    font-style: italic;
+    font-size: 1.1rem;
+  }
 }

@@ -146,15 +146,17 @@ export default {
         return material.remaining_quantity - this.getQuantity(material);
       }
 
+      const filters = this.getFilters();
       const selectedUnits = MaterialsStore.getters.getUnits(material.id);
-      if (!selectedUnits.length) {
-        return material.remaining_quantity;
-      }
-
       const availableUnits = material.units.filter((unit) => {
         if (!unit.is_available || unit.is_broken) {
           return false;
         }
+
+        if (filters.park && unit.park_id !== filters.park) {
+          return false;
+        }
+
         return !selectedUnits.includes(unit.id);
       });
 
