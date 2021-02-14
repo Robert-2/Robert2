@@ -349,23 +349,30 @@ class Material extends BaseModel
         return $data;
     }
 
-    public function getAllFiltered(array $conditions, bool $withDeleted = false): Builder
-    {
+    public function getAllFiltered(
+        array $conditions,
+        bool $withDeleted = false,
+        bool $ignoreUnitaries = false
+    ): Builder {
         $parkId = array_key_exists('park_id', $conditions) ? $conditions['park_id'] : null;
         unset($conditions['park_id']);
 
         $builder = parent::getAllFiltered($conditions, $withDeleted);
 
         if ($parkId) {
-            $builder->where(function ($query) use ($parkId) {
-                $query
-                    ->where('park_id', $parkId)
-                    ->orWhereHas(
+            $builder->where(function ($query) use ($parkId, $ignoreUnitaries) {
+                $query->where('park_id', $parkId);
+
+                if (!$ignoreUnitaries) {
+                    $query->orWhereHas(
                         'units',
                         function ($subQuery) use ($parkId) {
                             $subQuery->where('park_id', $parkId);
                         }
                     );
+                } else {
+                    $query->orWhere('is_unitary', true);
+                }
             });
         }
 

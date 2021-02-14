@@ -2,6 +2,7 @@ import Config from '@/config/globalConfig';
 import formatAmount from '@/utils/formatAmount';
 import MaterialsFilter from '@/components/MaterialsFilters/MaterialsFilters.vue';
 import SwitchToggle from '@/components/SwitchToggle/SwitchToggle.vue';
+import isValidInteger from '@/utils/isValidInteger';
 import Quantity from './Quantity/Quantity.vue';
 import Units from './Units/Units.vue';
 import MaterialsStore from './MaterialsStore';
@@ -61,8 +62,15 @@ export default {
         },
         requestFunction: (pagination) => {
           this.isLoading = true;
+
           const filters = this.getFilters();
-          const params = { whileEvent: this.event.id, ...pagination, ...filters };
+          const params = {
+            whileEvent: this.event.id,
+            ignoreUnitaries: true,
+            ...pagination,
+            ...filters,
+          };
+
           return this.$http
             .get('materials', { params })
             .then((response) => {
@@ -80,8 +88,9 @@ export default {
   methods: {
     getFilters() {
       const params = {};
-      if (this.$route.query.park) {
-        params.park = this.$route.query.park;
+
+      if (this.$route.query.park && isValidInteger(this.$route.query.park)) {
+        params.park = parseInt(this.$route.query.park, 10);
       }
 
       if (this.$route.query.category) {

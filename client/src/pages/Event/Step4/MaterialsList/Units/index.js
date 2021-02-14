@@ -7,6 +7,7 @@ export default {
   props: {
     event: Object,
     material: Object,
+    filters: Object,
   },
   data() {
     const initialMaterial = this.event.materials?.find(({ id }) => id === this.material.id);
@@ -25,6 +26,11 @@ export default {
         if (initialUnits.includes(unit.id)) {
           return true;
         }
+
+        if (this.filters.park && unit.park_id !== this.filters.park) {
+          return false;
+        }
+
         return unit.is_available && !unit.is_broken;
       });
     },

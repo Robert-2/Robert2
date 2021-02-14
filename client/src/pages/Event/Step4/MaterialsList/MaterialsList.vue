@@ -39,7 +39,12 @@
             </button>
         </template>
         <template #child_row="{ row: material }">
-          <Units :material="material" :event="event" @change="handleChanges" />
+          <Units
+            :material="material"
+            :event="event"
+            :filters="getFilters()"
+            @change="handleChanges"
+          />
         </template>
         <div slot="qty" slot-scope="material">
           <span :key="`qty-${material.row.id}-${renderId}`">
