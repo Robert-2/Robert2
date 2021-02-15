@@ -237,6 +237,28 @@ final class MaterialTest extends ModelTestCase
         ], $results[2]);
     }
 
+    public function testGetDocuments()
+    {
+        $Material = $this->model::find(1);
+        $results = $Material->Documents;
+        $this->assertCount(2, $results);
+        $expected = [
+            [
+                'id' => 1,
+                'name' => 'User-manual.pdf',
+                'type' => 'application/pdf',
+                'size' => 54681233
+            ],
+            [
+                'id' => 2,
+                'name' => 'warranty.pdf',
+                'type' => 'application/pdf',
+                'size' => 124068
+            ]
+        ];
+        $this->assertEquals($expected, $results);
+    }
+
     public function testSetTagsNoData(): void
     {
         $result = $this->model->setTags(1, null);

@@ -17,6 +17,10 @@ export default {
     'details-message': "Error message",
     'details-file': "File:",
     'details-stacktrace': "Stack trace:",
+
+    'file-type-not-allowed': "Type '{type}' not supported.",
+    'file-size-exceeded': "File too large. Maximum {max}.",
+    'file-already-exists': "This file already exists in the list.",
   },
 };
 /* eslint-enable quotes */

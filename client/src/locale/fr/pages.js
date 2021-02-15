@@ -146,6 +146,22 @@ export default {
     'clear-filters': "Réinitialiser les filtres",
   },
 
+  'page-materials-view': {
+    'documents': {
+      'no-document': "Aucun document pour le moment.",
+      'drag-and-drop-files-here': "Glissez-déposez des fichiers ici ↓ pour les ajouter.",
+      'choose-files': "Ou cliquez ici pour choisir des fichiers à ajouter",
+      'send-files': [
+        "Envoyer le fichier",
+        "Envoyer {count} fichiers",
+      ],
+      'click-to-open': "Cliquez pour ouvrir / télécharger le fichier",
+      'confirm-permanently-delete': "Voulez-vous vraiment supprimer définitivement ce document\u00a0?",
+      'saved': "Documents sauvegardés.",
+      'deleted': "Document supprimé.",
+    },
+  },
+
   'page-attributes': {
     'title': "Caractéristiques spéciales du matériel",
     'help': "Ici vous pouvez consulter, et ajouter les champs qui permettent de décrire votre matériel selon vos propres critères.",

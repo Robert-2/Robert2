@@ -17,6 +17,10 @@ export default {
     'details-message': "Message de l'erreur",
     'details-file': "Fichier\u00a0:",
     'details-stacktrace': "Trace de la pile\u00a0:",
+
+    'file-type-not-allowed': "Le type '{type}' n'est pas pris en charge.",
+    'file-size-exceeded': "Fichier trop gros. Maximum {max}.",
+    'file-already-exists': "Ce fichier est déjà présent dans la liste.",
   },
 };
 /* eslint-enable quotes */

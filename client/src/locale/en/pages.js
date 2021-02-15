@@ -146,6 +146,22 @@ export default {
     'clear-filters': "Clear filters",
   },
 
+  'page-materials-view': {
+    'documents': {
+      'no-document': "No document yet.",
+      'drag-and-drop-files-here': "Drag and drop files here ↓ to add them.",
+      'choose-files': "Or click here to choose files to add",
+      'send-files': [
+        "Send file",
+        "Send {count} files",
+      ],
+      'click-to-open': "Click to open / download file",
+      'confirm-permanently-delete': "Do you really want to permanently delete this document?",
+      'saved': "Documents saved.",
+      'deleted': "Document deleted.",
+    },
+  },
+
   'page-attributes': {
     'title': "Material special attributes",
     'help': "Here you can check, and add fields that allows you to describe your material according to your own criteria.",

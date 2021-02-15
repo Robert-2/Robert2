@@ -85,6 +85,21 @@ trait SettingsTrait
                     ['name' => 'APE', 'value' => '947A'],
                 ],
             ],
+            'authorizedFileTypes' => [
+                'application/pdf',
+                'application/zip',
+                'application/x-rar-compressed',
+                'image/jpeg',
+                'image/png',
+                'image/webp',
+                'text/plain',
+                'application/vnd.oasis.opendocument.spreadsheet',
+                'application/vnd.ms-excel',
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'application/vnd.oasis.opendocument.text',
+                'application/msword',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            ],
         ];
 
         $this->_setTestSettings();

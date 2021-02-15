@@ -2,6 +2,7 @@ import { Tabs, Tab } from 'vue-slim-tabs';
 import store from '@/store';
 import Help from '@/components/Help/Help.vue';
 import Infos from './Infos/Infos.vue';
+import Documents from './Documents/Documents.vue';
 
 export default {
   name: 'MaterialView',
@@ -10,17 +11,26 @@ export default {
     Tab,
     Help,
     Infos,
+    Documents,
   },
   data() {
     return {
       help: '',
       error: null,
       isLoading: false,
+      tabsIndexes: ['#infos', '#documents'],
+      selectedTabIndex: 0,
       material: {
         id: this.$route.params.id,
         attributes: [],
       },
     };
+  },
+  created() {
+    const { hash } = this.$route;
+    if (hash && this.tabsIndexes.includes(hash)) {
+      this.selectedTabIndex = this.tabsIndexes.findIndex((tab) => tab === hash);
+    }
   },
   mounted() {
     store.dispatch('categories/fetch');
@@ -28,6 +38,11 @@ export default {
     this.fetchMaterial();
   },
   methods: {
+    onSelectTab(e, index) {
+      this.selectedTabIndex = index;
+      this.$router.push(this.tabsIndexes[index]);
+    },
+
     fetchMaterial() {
       const { id } = this.material;
 
@@ -48,7 +63,6 @@ export default {
     },
 
     displayError(error) {
-      console.log(error);
       this.error = error;
       this.isLoading = false;
 

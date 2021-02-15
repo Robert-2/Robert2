@@ -66,6 +66,9 @@ rm -r src/var/cache && mkdir -m 777 src/var/cache/
 rm -r src/var/logs && mkdir -m 777 src/var/logs/
 rm -r src/var/tmp && mkdir -m 777 src/var/tmp/
 
+echo -e "\nCréation du dossier des données privées..."
+mkdir -m 777 data/
+
 echo -e "\nDéfinition des permission des dossiers..."
 chmod 777 src/App/Config
 chmod 777 src/install
