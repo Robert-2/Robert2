@@ -133,6 +133,13 @@ class Material extends BaseModel
             ->select(['events.id', 'title', 'start_date', 'end_date', 'is_confirmed']);
     }
 
+    public function Documents()
+    {
+        return $this->hasMany('Robert2\API\Models\Document')
+            ->orderBy('name', 'asc')
+            ->select(['id', 'name', 'type', 'size']);
+    }
+
     // ——————————————————————————————————————————————————————
     // —
     // —    Mutators
@@ -235,6 +242,12 @@ class Material extends BaseModel
     {
         $events = $this->Events()->get();
         return $events ? $events->toArray() : null;
+    }
+
+    public function getDocumentsAttribute()
+    {
+        $documents = $this->Documents()->get();
+        return $documents ? $documents->toArray() : null;
     }
 
     // ——————————————————————————————————————————————————————

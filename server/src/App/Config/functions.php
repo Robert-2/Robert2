@@ -205,3 +205,26 @@ function splitPeriods(array $slots): array
 
     return $periods;
 }
+
+/**
+ * Déplace un fichier uploaded dans le dossier des data en sécurisant son nom
+ *
+ * @param string $directory dossier dans lequel placer le fichier (sera créé si inexistant)
+ * @param UploadedFile $uploadedFile le fichier à placer
+ * @return string le nom du fichier résultant
+ */
+function moveUploadedFile($directory, Slim\Http\UploadedFile $uploadedFile)
+{
+    $name = $uploadedFile->getClientFilename();
+
+    $slugify = new Cocur\Slugify\Slugify(['lowercase' => false]);
+    $nameSecure = $slugify->slugify($name);
+
+    if (!is_dir($directory)) {
+        mkdir($directory, 0777, true);
+    }
+
+    $uploadedFile->moveTo($directory . DS . $nameSecure);
+
+    return $nameSecure;
+}

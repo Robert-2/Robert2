@@ -30,6 +30,7 @@ class ApiRouter
             '/materials/{id:[0-9]+}[/]'                => 'MaterialController:getOne',
             '/material-units/{id:[0-9]+}[/]'           => 'MaterialUnitController:getOne',
             '/materials/{id:[0-9]+}/tags[/]'           => 'MaterialController:getTags',
+            '/materials/{id:[0-9]+}/documents[/]'      => 'MaterialController:getAllDocuments',
             '/events[/]'                               => 'EventController:getAll',
             '/events/{id:[0-9]+}[/]'                   => 'EventController:getOne',
             '/events/{id:[0-9]+}/missing-materials[/]' => 'EventController:getMissingMaterials',
@@ -47,6 +48,7 @@ class ApiRouter
             '/parks[/]'                               => 'ParkController:create',
             '/materials[/]'                           => 'MaterialController:create',
             '/materials/{materialId:[0-9]+}/units[/]' => 'MaterialUnitController:create',
+            '/materials/{id:[0-9]+}/documents[/]'     => 'MaterialController:handleUploadDocuments',
             '/attributes[/]'                          => 'AttributeController:create',
             '/events[/]'                              => 'EventController:create',
             '/events/{eventId:[0-9]+}/bill[/]'        => 'BillController:create',
@@ -85,6 +87,7 @@ class ApiRouter
             '/material-units/{id:[0-9]+}[/]' => 'MaterialUnitController:delete',
             '/events/{id:[0-9]+}[/]'         => 'EventController:delete',
             '/bills/{id:[0-9]+}[/]'          => 'BillController:delete',
+            '/documents/{id:[0-9]+}[/]'      => 'DocumentController:delete',
         ],
     ];
 

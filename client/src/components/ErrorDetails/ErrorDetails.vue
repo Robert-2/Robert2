@@ -16,7 +16,7 @@
           {{ $t('errors.details-intro-forum') }}
         </a>
         {{ $t('errors.details-intro3') }}
-        <a href="https://gitlab.com/robertmanager/Robert2-API/-/issues" target="_blank">GitLab</a>.
+        <a href="https://github.com/Robert-2/Robert2/issues" target="_blank">Github</a>.
       </p>
       <p v-if="!data.requested" class="ErrorDetails__no-details-info">
         <i class="fas fa-info-circle" />

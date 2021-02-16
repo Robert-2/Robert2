@@ -28,6 +28,7 @@ export default {
   'close': "Close",
   'copy-to-clipboard': "Copy to clipboard",
   'copied-in-clipboard': "Copied in clipboard!",
+  'almost-done': "Almost done...",
 
   'please-choose': "Please choose...",
   'start-typing-to-search': "Start typing to search...",
@@ -53,6 +54,7 @@ export default {
   'personnal-infos': "Personnal informations",
   'minimal-infos': "Minimal informations",
   'billing-infos': "Billing informations",
+  'documents': "Documents",
   'billing': "Billing",
   'extra-infos': "Extra informations",
   'special-attributes': "Special attributes",

@@ -4,8 +4,9 @@ declare(strict_types=1);
 namespace Robert2\API\Controllers;
 
 use Robert2\API\Errors;
-use Robert2\API\Models\Attribute;
+use Robert2\API\Config\Config;
 use Robert2\API\Models\Event;
+use Robert2\API\Models\Document;
 use Robert2\API\Controllers\Traits\Taggable;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -175,5 +176,82 @@ class MaterialController extends BaseController
 
         $model = $this->model->find($result->id);
         return $model->toArray();
+    }
+
+    public function getAllDocuments(Request $request, Response $response): Response
+    {
+        $id = (int)$request->getAttribute('id');
+        $model = $this->model->find($id);
+        if (!$model) {
+            throw new Errors\NotFoundException;
+        }
+
+        return $response->withJson($model->documents, SUCCESS_OK);
+    }
+
+    public function handleUploadDocuments(Request $request, Response $response): Response
+    {
+        $id = (int)$request->getAttribute('id');
+        $model = $this->model->find($id);
+        if (!$model) {
+            throw new Errors\NotFoundException;
+        }
+
+        $uploadedFiles = $request->getUploadedFiles();
+        $destDirectory = Document::getFilePath($id);
+
+        $errors = [];
+        $files = [];
+        foreach ($uploadedFiles as $file) {
+            if ($file->getError() !== UPLOAD_ERR_OK) {
+                $errors[$file->getClientFilename()] = 'File upload failed.';
+                continue;
+            }
+
+            $fileType = $file->getClientMediaType();
+            if (!in_array($fileType, Config::getSettings('authorizedFileTypes'))) {
+                $errors[$file->getClientFilename()] = 'This file type is not allowed.';
+                continue;
+            }
+
+            $filename = moveUploadedFile($destDirectory, $file);
+            if (!$filename) {
+                $errors[$file->getClientFilename()] = 'Saving file failed.';
+                continue;
+            }
+
+            $files[] = [
+                'material_id' => $id,
+                'name' => $filename,
+                'type' => $fileType,
+                'size' => $file->getSize(),
+            ];
+        }
+
+        foreach ($files as $document) {
+            try {
+                Document::updateOrCreate(
+                    ['material_id' => $id, 'name' => $document['name']],
+                    $document
+                );
+            } catch (\Exception $e) {
+                $filePath = Document::getFilePath($id, $document['name']);
+                unlink($filePath);
+                $errors[$document['name']] = sprintf(
+                    'Document could not be saved in database: %s',
+                    $e->getMessage()
+                );
+            }
+        }
+
+        if (count($errors) > 0) {
+            throw new \Exception(implode("\n", $errors));
+        }
+
+        $result = [
+            'saved_files' => $files,
+            'errors' => $errors,
+        ];
+        return $response->withJson($result, SUCCESS_OK);
     }
 }
