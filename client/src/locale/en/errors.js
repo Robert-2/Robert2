@@ -11,7 +11,7 @@ export default {
     'details-intro1': "You can copy and paste the following to get help from the community.",
     'details-intro2': "Please copy it as is, because it's written in markdown to help reading on",
     'details-intro-forum': "the forum",
-    'details-intro3': "or in",
+    'details-intro3': "or on",
     'details-intro-not-detailed': "To get more details about the error, you can modify the parameter `displayErrorDetails` to 'true' in file 'src/App/Config/settings.json'.",
     'details-request': "API request:",
     'details-message': "Error message",
