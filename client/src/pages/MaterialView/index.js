@@ -4,6 +4,7 @@ import Help from '@/components/Help/Help.vue';
 import Infos from './Infos/Infos.vue';
 import Documents from './Documents/Documents.vue';
 import Units from './Units/Units.vue';
+import Availabilities from './Availabilities/Availabilities.vue';
 
 export default {
   name: 'MaterialView',
@@ -14,13 +15,14 @@ export default {
     Infos,
     Documents,
     Units,
+    Availabilities,
   },
   data() {
     return {
       help: '',
       error: null,
       isLoading: false,
-      tabsIndexes: ['#infos', '#units', '#documents'],
+      tabsIndexes: ['#infos', '#units', '#documents', '#availabilities'],
       selectedTabIndex: 0,
       material: {
         id: this.$route.params.id,

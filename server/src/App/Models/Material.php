@@ -132,7 +132,8 @@ class Material extends BaseModel
         return $this->belongsToMany('Robert2\API\Models\Event', 'event_materials')
             ->using('Robert2\API\Models\EventMaterial')
             ->withPivot('id', 'quantity')
-            ->select(['events.id', 'title', 'start_date', 'end_date', 'is_confirmed']);
+            ->orderBy('start_date', 'desc')
+            ->select(['events.id', 'title', 'start_date', 'end_date', 'location', 'is_confirmed']);
     }
 
     public function Documents()

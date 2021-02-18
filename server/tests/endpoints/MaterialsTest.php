@@ -798,4 +798,57 @@ final class MaterialsTest extends ApiTestCase
         $this->assertStatusCode(SUCCESS_OK);
         $this->assertResponseData([]);
     }
+
+    public function testGetEvents()
+    {
+        $this->client->get('/api/materials/1/events');
+        $this->assertStatusCode(SUCCESS_OK);
+        $this->assertResponseData([
+            [
+                'id' => 4,
+                'title' => 'Concert X',
+                'start_date' => '2019-03-01 00:00:00',
+                'end_date' => '2019-04-10 23:59:59',
+                'location' => 'Moon',
+                'is_confirmed' => false,
+                'pivot' => [
+                    'id' => 9,
+                    'material_id' => 1,
+                    'event_id' => 4,
+                    'quantity' => 1,
+                    'units' => [],
+                ],
+            ],
+            [
+                'id' => 2,
+                'title' => 'Second événement',
+                'start_date' => '2018-12-18 00:00:00',
+                'end_date' => '2018-12-19 23:59:59',
+                'location' => 'Lyon',
+                'is_confirmed' => false,
+                'pivot' => [
+                    'id' => 4,
+                    'material_id' => 1,
+                    'event_id' => 2,
+                    'quantity' => 3,
+                    'units' => [],
+                ],
+            ],
+            [
+                'id' => 1,
+                'title' => 'Premier événement',
+                'start_date' => '2018-12-17 00:00:00',
+                'end_date' => '2018-12-18 23:59:59',
+                'location' => 'Gap',
+                'is_confirmed' => false,
+                'pivot' => [
+                    'id' => 1,
+                    'material_id' => 1,
+                    'event_id' => 1,
+                    'quantity' => 1,
+                    'units' => [],
+                ],
+            ]
+        ]);
+    }
 }
