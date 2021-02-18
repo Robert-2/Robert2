@@ -28,13 +28,15 @@ class TokenController
 
         $this->_validateAuthRequest($data);
 
-        $user = $this->user->getLogin($data['identifier'], $data['password'])->toArray();
+        $user = $this->user->getLogin($data['identifier'], $data['password']);
+        $result = $user->toArray();
+        $result['restricted_parks'] = $user->RestrictedParks;
 
         $defaultTokenDuration = Config::getSettings('sessionExpireHours');
-        $tokenDuration = $user['settings']['auth_token_validity_duration'] ?: $defaultTokenDuration;
+        $tokenDuration = $result['settings']['auth_token_validity_duration'] ?: $defaultTokenDuration;
 
-        $responseData['user'] = $user;
-        $responseData['token'] = Security::generateToken($user, $tokenDuration);
+        $responseData['user'] = $result;
+        $responseData['token'] = Security::generateToken($result, $tokenDuration);
 
         if (!isTestMode()) {
             $expireHours = $this->config['sessionExpireHours'] ?: 12;

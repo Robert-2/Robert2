@@ -175,24 +175,24 @@ final class UserTest extends ModelTestCase
     public function testCreate(): void
     {
         $data = [
-            'pseudo'   => 'testadd',
-            'email'    => 'testadd@robertmanager.net',
+            'pseudo' => 'testadd',
+            'email' => 'testadd@robertmanager.net',
             'password' => 'testadd',
             'group_id' => 'member',
         ];
 
-        $result   = $this->model->edit(null, $data);
+        $result = $this->model->edit(null, $data);
         $expected = [
-            'id'       => 4,
-            'pseudo'   => 'testadd',
-            'email'    => 'testadd@robertmanager.net',
+            'id' => 4,
+            'pseudo' => 'testadd',
+            'email' => 'testadd@robertmanager.net',
             'group_id' => 'member',
-            'person'   => null
+            'person' => null
         ];
         unset($result->created_at, $result->updated_at, $result->deleted_at);
         $this->assertEquals($expected, $result->toArray());
 
-        // - Check if settings are created
+        // - Vérifie que les settings ont été créé
         $settings = Models\UserSetting::find(3);
         unset($settings->created_at);
         unset($settings->updated_at);
@@ -224,6 +224,20 @@ final class UserTest extends ModelTestCase
         $this->assertEquals('testNewPerson', $result['person']['nickname']);
     }
 
+    public function testCreateWithRestrictedParks(): void
+    {
+        $data = [
+            'pseudo' => 'testNewPerson',
+            'email' => 'testNewPerson@robertmanager.net',
+            'password' => 'testNewPerson',
+            'group_id' => 'member',
+            'restricted_parks' => [1, 2],
+        ];
+
+        $result = $this->model->edit(null, $data);
+        $this->assertEquals([2, 1], $result['restricted_parks']);
+    }
+
     public function testUpdate(): void
     {
         $data = [
@@ -234,7 +248,7 @@ final class UserTest extends ModelTestCase
         $result = $this->model->edit(1, $data);
         $this->assertEquals('testUpdate', $result['pseudo']);
 
-        // - Test update with Person data
+        // - Test update avec des données de "Person"
         $data = [
             'pseudo' => 'testEdit',
             'person' => [
@@ -242,10 +256,14 @@ final class UserTest extends ModelTestCase
                 'last_name'  => 'Tester',
             ],
         ];
-
         $result = $this->model->edit(3, $data);
         $this->assertEquals('testEdit', $result['pseudo']);
         $this->assertEquals('Testing Tester', $result['person']['full_name']);
+
+        // - Test update avec des restricted_parks
+        $data = ['restricted_parks' => [1, 2]];
+        $result = $this->model->edit(3, $data);
+        $this->assertEquals([1, 2], $result['restricted_parks']);
     }
 
     public function testRemoveNotFound(): void
@@ -369,5 +387,26 @@ final class UserTest extends ModelTestCase
                 'is_confirmed' => false,
             ]
         ], $results);
+    }
+
+    public function testGetRestrictedParks(): void
+    {
+        // - Retourne la liste des IDs de parks dont l'accès
+        // est restreint pour l'utilisateur #1
+        $User = $this->model::find(1);
+        $results = $User->RestrictedParks;
+        $this->assertEquals([], $results);
+
+        // - Retourne la liste des IDs de parks dont l'accès
+        // est restreint pour l'utilisateur #2
+        $User = $this->model::find(2);
+        $results = $User->RestrictedParks;
+        $this->assertEquals([2], $results);
+
+        // - Retourne la liste des IDs de parks dont l'accès
+        // est restreint pour l'utilisateur #3
+        $User = $this->model::find(3);
+        $results = $User->RestrictedParks;
+        $this->assertEquals([2], $results);
     }
 }

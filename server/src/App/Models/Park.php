@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Robert2\API\Models;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Builder;
 use Robert2\API\Validation\Validator as V;
 
 class Park extends BaseModel
@@ -27,6 +28,24 @@ class Park extends BaseModel
             'country_id'    => V::optional(V::numeric()),
             'opening_hours' => V::optional(V::length(null, 255)),
         ];
+    }
+
+    // ——————————————————————————————————————————————————————
+    // —
+    // —    Getters
+    // —
+    // ——————————————————————————————————————————————————————
+
+    public function getAllForUser(int $userId): Builder
+    {
+        $builder = self::whereDoesntHave(
+            'Users',
+            function (Builder $query) use ($userId) {
+                $query->where('user_id', $userId);
+            }
+        );
+
+        return $builder;
     }
 
     // ——————————————————————————————————————————————————————
@@ -65,6 +84,13 @@ class Park extends BaseModel
     {
         return $this->belongsTo('Robert2\API\Models\Country')
             ->select(['id', 'name', 'code']);
+    }
+
+    public function Users()
+    {
+        return $this->belongsToMany('Robert2\API\Models\User', 'user_restricted_parks')
+            ->using('Robert2\API\Models\UserRestrictedParksPivot')
+            ->select(['users.id']);
     }
 
     // ——————————————————————————————————————————————————————
@@ -167,6 +193,12 @@ class Park extends BaseModel
     {
         $country = $this->Country()->first();
         return $country ? $country->toArray() : null;
+    }
+
+    public function getUsersAttribute()
+    {
+        $users = $this->Users()->get();
+        return $users ? $users->toArray() : null;
     }
 
     // ——————————————————————————————————————————————————————

@@ -245,16 +245,23 @@ class Event extends BaseModel
         return empty($missingMaterials) ? null : array_values($missingMaterials);
     }
 
-    public function getParks(int $id): ?array
+    public function getParks(int $id): array
     {
         $event = $this->with('Materials')->find($id);
         if (!$event) {
-            return null;
+            return [];
         }
 
-        $materialParks = array_map(function ($material) {
-            return $material['park_id'];
-        }, $event['materials']);
+        $materialParks = [];
+        foreach ($event['materials'] as $material) {
+            if ($material['is_unitary']) {
+                foreach ($material['units'] as $unit) {
+                    $materialParks[] = $unit['park_id'];
+                };
+                continue;
+            }
+            $materialParks[] = $material['park_id'];
+        };
 
         return array_values(array_unique($materialParks));
     }

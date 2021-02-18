@@ -291,6 +291,130 @@ final class MaterialTest extends ModelTestCase
         $this->assertEquals($expected, $results);
     }
 
+    public function testGetOneForUserNotFound()
+    {
+        $this->expectException(Errors\NotFoundException::class);
+        $this->expectExceptionMessage("The required resource was not found.");
+        $this->model->getOneForUser(9999, 1);
+    }
+
+    public function testGetOneForUser()
+    {
+        // - Récupère le matériel #1 (qui n'est pas unitaire) pour l'utilisateur #1
+        $result = $this->model->getOneForUser(1, 1);
+        $expected = [
+            'id' => 1,
+            'name' => 'Console Yamaha CL3',
+            'description' => 'Console numérique 64 entrées / 8 sorties + Master + Sub',
+            'reference' => 'CL3',
+            'is_unitary' => false,
+            'park_id' => 1,
+            'category_id' => 1,
+            'sub_category_id' => 1,
+            'rental_price' => 300.0,
+            'stock_quantity' => 5,
+            'out_of_order_quantity' => 1,
+            'replacement_price' => 19400.0,
+            'is_hidden_on_bill' => false,
+            'is_discountable' => false,
+            'note' => null,
+            'units' => [],
+            'created_at' => null,
+            'updated_at' => null,
+            'deleted_at' => null,
+        ];
+        unset($result['tags']);
+        unset($result['attributes']);
+        $this->assertEquals($expected, $result);
+
+        // - Récupère le matériel #6 (qui est unitaire) pour l'utilisateur #1
+        $result = $this->model->getOneForUser(6, 1);
+        $expected = [
+            'id' => 6,
+            'name' => 'Behringer X Air XR18',
+            'description' => 'Mélangeur numérique 18 canaux',
+            'reference' => 'XR18',
+            'is_unitary' => true,
+            'park_id' => null,
+            'category_id' => 1,
+            'sub_category_id' => 1,
+            'rental_price' => 49.99,
+            'stock_quantity' => 3,
+            'out_of_order_quantity' => 1,
+            'replacement_price' => 419.0,
+            'is_hidden_on_bill' => false,
+            'is_discountable' => false,
+            'note' => null,
+            'units' => [
+                [
+                    'id' => 1,
+                    'serial_number' => 'XR18-1',
+                    'park_id' => 1,
+                    'is_broken' => false,
+                ],
+                [
+                    'id' => 2,
+                    'serial_number' => 'XR18-2',
+                    'park_id' => 1,
+                    'is_broken' => false,
+                ],
+                [
+                    'id' => 3,
+                    'serial_number' => 'XR18-3',
+                    'park_id' => 2,
+                    'is_broken' => true,
+                ],
+            ],
+            'created_at' => null,
+            'updated_at' => null,
+            'deleted_at' => null,
+        ];
+        unset($result['tags']);
+        unset($result['attributes']);
+        $this->assertEquals($expected, $result);
+
+        // - Récupère le matériel #6 (qui est unitaire) pour l'utilisateur #2
+        // (utilisateur qui a des restrictions de parc)
+        $result = $this->model->getOneForUser(6, 2);
+        $expected = [
+            'id' => 6,
+            'name' => 'Behringer X Air XR18',
+            'description' => 'Mélangeur numérique 18 canaux',
+            'reference' => 'XR18',
+            'is_unitary' => true,
+            'park_id' => null,
+            'category_id' => 1,
+            'sub_category_id' => 1,
+            'rental_price' => 49.99,
+            'stock_quantity' => 2,
+            'out_of_order_quantity' => 0,
+            'replacement_price' => 419.0,
+            'is_hidden_on_bill' => false,
+            'is_discountable' => false,
+            'note' => null,
+            'units' => [
+                [
+                    'id' => 1,
+                    'serial_number' => 'XR18-1',
+                    'park_id' => 1,
+                    'is_broken' => false,
+                ],
+                [
+                    'id' => 2,
+                    'serial_number' => 'XR18-2',
+                    'park_id' => 1,
+                    'is_broken' => false,
+                ],
+            ],
+            'created_at' => null,
+            'updated_at' => null,
+            'deleted_at' => null,
+        ];
+        unset($result['tags']);
+        unset($result['attributes']);
+        $this->assertEquals($expected, $result);
+    }
+
     public function testSetTagsNoData(): void
     {
         $result = $this->model->setTags(1, null);

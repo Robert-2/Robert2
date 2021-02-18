@@ -18,6 +18,7 @@ export default {
         password: '',
         password_confirmation: '',
         group_id: store.state.user.groupId,
+        restricted_parks: [],
         person: {
           first_name: '',
           last_name: '',
@@ -75,6 +76,8 @@ export default {
       this.resetHelpLoading();
 
       const postData = { ...this.user };
+      delete postData.restricted_parks;
+
       if (password) {
         if (password !== this.user.password_confirmation) {
           this.errors.password = [this.$t('page-profile.password-confirmation-must-match')];

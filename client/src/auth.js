@@ -38,6 +38,7 @@ export default {
   // - Possible modes: `expired` | `bye` | `restricted`
   logout({ mode } = { mode: null }) {
     store.commit('user/reset');
+    store.commit('parks/reset');
 
     window.sessionStorage.clear();
     this.is.authenticated = false;

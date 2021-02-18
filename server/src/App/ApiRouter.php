@@ -25,6 +25,7 @@ class ApiRouter
             '/companies/{id:[0-9]+}[/]'                => 'CompanyController:getOne',
             '/companies/{id:[0-9]+}/persons[/]'        => 'CompanyController:getPersons',
             '/parks[/]'                                => 'ParkController:getAll',
+            '/parks/list[/]'                           => 'ParkController:getList',
             '/parks/{id:[0-9]+}[/]'                    => 'ParkController:getOne',
             '/materials[/]'                            => 'MaterialController:getAll',
             '/materials/{id:[0-9]+}[/]'                => 'MaterialController:getOne',

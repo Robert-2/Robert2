@@ -39,6 +39,23 @@
               required
               :options="groupOptions"
               :errors="errors.group_id"
+              @change="handleUserGroupChange"
+            />
+          </section>
+          <section v-if="!isAdmin && hasMultipleParks" class="Form__fieldset">
+            <h4 class="Form__fieldset__title">
+              {{ $t('page-users.parks-access') }}
+            </h4>
+            <FormField
+              v-model="hasParksRestriction"
+              label="page-users.restrict-access-to-parks"
+              type="switch"
+              @change="setParksSelection([])"
+            />
+            <ParkChooser
+              v-if="hasParksRestriction"
+              :initialSelection="user.restricted_parks"
+              @updateParksSelection="setParksSelection"
             />
           </section>
           <section class="Form__fieldset">

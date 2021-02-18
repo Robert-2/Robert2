@@ -7,6 +7,7 @@ use Robert2\API\Errors;
 use Robert2\API\Config\Config;
 use Robert2\API\Models\Event;
 use Robert2\API\Models\Document;
+use Robert2\API\Models\User;
 use Robert2\API\Controllers\Traits\Taggable;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -64,12 +65,42 @@ class MaterialController extends BaseController
             });
         }
 
+        $userId = $this->_getAuthUserId($request);
+        $restrictedParks = User::find($userId)->restricted_parks;
+        if (count($restrictedParks) > 0) {
+            $model = $model->where(function ($query) use ($ignoreUnitaries, $restrictedParks) {
+                $query->whereNotIn('park_id', $restrictedParks)
+                    ->orWhere('park_id', null);
+
+                if ($ignoreUnitaries) {
+                    $query->whereHas('units', function ($subQuery) use ($restrictedParks) {
+                        $subQuery->whereNotIn('park_id', $restrictedParks);
+                    });
+                }
+            });
+        }
+
         $results = $model->paginate($this->itemsCount);
 
         $basePath = $request->getUri()->getPath();
         $params = $request->getQueryParams();
         $results = $results->withPath($basePath)->appends($params);
         $results = $this->_formatPagination($results);
+
+        if (count($restrictedParks) > 0) {
+            $results['data'] = array_map(function ($item) use ($restrictedParks) {
+                if (!$item['is_unitary']) {
+                    return $item;
+                }
+                $item['units'] = array_values(
+                    array_filter($item['units'], function ($unit) use ($restrictedParks) {
+                        return !in_array($unit['park_id'], $restrictedParks);
+                    })
+                );
+                $item['stock_quantity'] = count($item['units']);
+                return $item;
+            }, $results['data']);
+        }
 
         if ($whileEvent) {
             $eventId = (int)$whileEvent;
@@ -87,6 +118,16 @@ class MaterialController extends BaseController
         }
 
         return $response->withJson($results);
+    }
+
+    public function getOne(Request $request, Response $response): Response
+    {
+        $id = (int)$request->getAttribute('id');
+        $userId = $this->_getAuthUserId($request);
+
+        $material = $this->model->getOneForUser($id, $userId);
+
+        return $response->withJson($material);
     }
 
     // ------------------------------------------------------

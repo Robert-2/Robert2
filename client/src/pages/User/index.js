@@ -1,21 +1,24 @@
 import store from '@/store';
 import Help from '@/components/Help/Help.vue';
 import FormField from '@/components/FormField/FormField.vue';
+import ParkChooser from './ParkChooser/ParkChooser.vue';
 
 export default {
   name: 'User',
-  components: { Help, FormField },
+  components: { Help, FormField, ParkChooser },
   data() {
     return {
       help: 'page-users.help-edit',
       error: null,
       isLoading: false,
+      hasParksRestriction: false,
       user: {
         id: this.$route.params.id || null,
         pseudo: '',
         email: '',
         password: '',
         group_id: 'member',
+        restricted_parks: [],
         person: {
           first_name: '',
           last_name: '',
@@ -48,7 +51,16 @@ export default {
       ],
     };
   },
+  computed: {
+    isAdmin() {
+      return this.user.group_id === 'admin';
+    },
+    hasMultipleParks() {
+      return store.state.parks.list.length > 1;
+    },
+  },
   mounted() {
+    store.dispatch('parks/fetch');
     this.getUserData();
   },
   methods: {
@@ -64,6 +76,7 @@ export default {
       this.$http.get(`${resource}/${id}`)
         .then(({ data }) => {
           this.setUserData(data);
+          this.hasParksRestriction = data.restricted_parks.length > 0;
           this.isLoading = false;
         })
         .catch(this.displayError);
@@ -83,7 +96,12 @@ export default {
         route = `${resource}/${id}`;
       }
 
-      request(route, { ...this.user })
+      const postData = {
+        ...this.user,
+        restricted_parks: this.user.restricted_parks,
+      };
+
+      request(route, postData)
         .then(({ data }) => {
           this.isLoading = false;
           this.help = { type: 'success', text: 'page-users.saved' };
@@ -94,6 +112,17 @@ export default {
           }, 300);
         })
         .catch(this.displayError);
+    },
+
+    handleUserGroupChange() {
+      if (this.isAdmin) {
+        this.hasParksRestriction = false;
+        this.user.restricted_parks = [];
+      }
+    },
+
+    setParksSelection(newParkSelection) {
+      this.user.restricted_parks = newParkSelection;
     },
 
     resetHelpLoading() {

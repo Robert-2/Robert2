@@ -19,7 +19,7 @@ class UserController extends BaseController
 
     public function getOne(Request $request, Response $response): Response
     {
-        $id   = (int)$request->getAttribute('id');
+        $id = (int)$request->getAttribute('id');
         $user = $this->model->find($id);
 
         if (!$user) {
@@ -28,7 +28,10 @@ class UserController extends BaseController
 
         unset($user->password);
 
-        return $response->withJson($user->toArray());
+        $result = $user->toArray();
+        $result['restricted_parks'] = $user->RestrictedParks;
+
+        return $response->withJson($result);
     }
 
     public function getSettings(Request $request, Response $response): Response

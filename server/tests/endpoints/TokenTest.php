@@ -114,6 +114,7 @@ final class TokenTest extends ApiTestCase
                 'created_at'                   => null,
                 'updated_at'                   => null
             ],
+            'restricted_parks' => [],
         ];
 
         // - Test auth with e-mail address

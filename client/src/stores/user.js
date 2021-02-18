@@ -8,6 +8,7 @@ export default {
     pseudo: '',
     email: '',
     locale: '',
+    restrictedParks: [],
   },
   mutations: {
     init(state, data) {
@@ -18,6 +19,7 @@ export default {
       state.pseudo = data.pseudo;
       state.email = data.email;
       state.locale = data.settings ? data.settings.language : 'en';
+      state.restrictedParks = data.restricted_parks;
     },
 
     setLocale(state, locale) {
@@ -38,6 +40,7 @@ export default {
       state.lastName = '';
       state.pseudo = '';
       state.email = '';
+      state.restrictedParks = [];
     },
   },
   getters: { fullName: (state) => `${state.lastName} ${state.firstName}` },
