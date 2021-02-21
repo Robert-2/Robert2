@@ -35,7 +35,7 @@
               v-if="material.is_unitary"
             >
               <i v-if="!isChildOpen(material.id)" class="fas fa-caret-right" />
-              <i v-if="isChildOpen(material.id)" class="fas fa-caret-down" />
+              <i v-else class="fas fa-caret-down" />
             </button>
         </template>
         <template #child_row="{ row: material }">
