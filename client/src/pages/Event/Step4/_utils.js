@@ -37,6 +37,6 @@ export const materialsHasChanged = (before, after) => {
   const differencesOld = before.filter(
     (oldMaterial) => !after.some(materialComparatorBuilder(oldMaterial)),
   );
-  // eslint-disable-next-line no-unused-expressions
+
   return differencesOld.length > 0;
 };
