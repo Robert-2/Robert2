@@ -16,8 +16,8 @@ const materialComparatorBuilder = (a) => (b) => {
 
 export const getMaterialsQuantities = (materials) => (
   materials.map(({ id, is_unitary: isUnitary, pivot }) => {
-    const data = { id, quantity: pivot.quantity, units: [] };
-    return !isUnitary ? data : { ...data, units: pivot.units };
+    const data = { id, quantity: pivot?.quantity || 0, units: [] };
+    return !isUnitary ? data : { ...data, units: pivot?.units || [] };
   })
 );
 
@@ -34,9 +34,12 @@ export const materialsHasChanged = (before, after) => {
   }
 
   // - Si un matériel sauvé n'existe plus ou a changé dans le nouveau jeu de données.
-  const differencesOld = before.filter(
-    (oldMaterial) => !after.some(materialComparatorBuilder(oldMaterial)),
-  );
+  const differencesOld = before.filter((oldMaterial) => {
+    if (oldMaterial.quantity === 0) {
+      return false;
+    }
+    return !after.some(materialComparatorBuilder(oldMaterial));
+  });
 
   return differencesOld.length > 0;
 };
