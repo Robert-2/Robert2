@@ -80,7 +80,8 @@ class MaterialUnit extends BaseModel
 
     public function setSerialNumberAttribute($value)
     {
-        $this->attributes['serial_number'] = trim($value);
+        $value = is_string($value) ? trim($value) : $value;
+        $this->attributes['serial_number'] = $value;
     }
 
     // ------------------------------------------------------

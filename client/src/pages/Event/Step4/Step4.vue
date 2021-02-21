@@ -1,12 +1,7 @@
 <template>
   <form class="Form EventStep4" method="POST" @submit="saveAndBack">
     <section class="Form__fieldset">
-      <MaterialsList
-        :eventId="event.id"
-        :initialList="event.materials"
-        :eventIsBillable="event.is_billable"
-        @change="handleChange"
-      />
+      <MaterialsList :event="event" @change="handleChange" />
     </section>
     <section class="Form__actions">
       <button class="EventStep4__save-btn info" type="submit">

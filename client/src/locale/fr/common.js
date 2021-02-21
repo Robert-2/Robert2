@@ -89,6 +89,7 @@ export default {
   'reference': "Référence",
   'park': "Parc",
   'prices': "Tarifs",
+  'is-unitary': "Identification unitaire\u00a0?",
   'rental-price': "Tarif location",
   'replacement-price': "Prix de remplacement",
   'rent-price': "Tarif loc.",
@@ -99,6 +100,7 @@ export default {
   'quantities': "Quantités",
   'quantity-out-of-order': "Qté en panne",
   'discountable': "Remisable\u00a0?",
+  'is-broken': "En panne\u00a0?",
   'material-is-discountable': "Le matériel est «\u00a0remisable\u00a0»\u00a0: une remise peut être appliquée sur ce matériel.",
   'hidden-on-bill': "Caché sur la facture\u00a0?",
   'material-not-displayed-on-bill': "Le matériel n'est pas affiché sur les factures.",
@@ -111,6 +113,7 @@ export default {
   'display-not-deleted-items': "Afficher les enregistrements non supprimés",
   'created-at': "Créé le\u00a0:",
   'updated-at': "Modifié le\u00a0:",
+  'units': "Unités",
 
   'event-details': "Détails de l'événement",
   'title': "Titre",

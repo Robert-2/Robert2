@@ -3,6 +3,7 @@ import ModalConfig from '@/config/modalConfig';
 import store from '@/store';
 import Alert from '@/components/Alert';
 import Help from '@/components/Help/Help.vue';
+import isValidInteger from '@/utils/isValidInteger';
 import AssignTags from '@/components/AssignTags/AssignTags.vue';
 import MaterialsFilters from '@/components/MaterialsFilters/MaterialsFilters.vue';
 import MaterialTags from '@/components/MaterialTags/MaterialTags.vue';
@@ -121,8 +122,9 @@ export default {
 
     getFilters() {
       const params = {};
-      if (this.$route.query.park) {
-        params.park = this.$route.query.park;
+
+      if (this.$route.query.park && isValidInteger(this.$route.query.park)) {
+        params.park = parseInt(this.$route.query.park, 10);
       }
 
       if (this.$route.query.category) {
@@ -224,6 +226,22 @@ export default {
 
     formatAmount(value) {
       return formatAmount(value);
+    },
+
+    getStockQuantity(material) {
+      if (!material.is_unitary) {
+        return material.stock_quantity;
+      }
+
+      const filters = this.getFilters();
+      if (!filters.park) {
+        return material.units.length;
+      }
+
+      const parkUnits = material.units.filter(
+        (unit) => unit.park_id === filters.park,
+      );
+      return parkUnits.length;
     },
   },
 };

@@ -2,7 +2,7 @@
   <div class="MaterialsList">
     <header class="MaterialsList__header">
       <MaterialsFilter
-        :baseRoute="`/events/${eventId}`"
+        :baseRoute="`/events/${event.id}`"
         @change="refreshTableAndPagination"
       />
       <div class="MaterialsList__header__extra-filters">
@@ -27,9 +27,28 @@
         :columns="columns"
         :options="options"
       >
+        <template #child-toggler="{ row: material }">
+            <button
+              type="button"
+              class="MaterialsList__child-toggler__button"
+              @click="toggleChild(material.id)"
+              v-if="material.is_unitary"
+            >
+              <i v-if="!isChildOpen(material.id)" class="fas fa-caret-right" />
+              <i v-else class="fas fa-caret-down" />
+            </button>
+        </template>
+        <template #child_row="{ row: material }">
+          <Units
+            :material="material"
+            :event="event"
+            :filters="getFilters()"
+            @change="handleChanges"
+          />
+        </template>
         <div slot="qty" slot-scope="material">
           <span :key="`qty-${material.row.id}-${renderId}`">
-            {{ getQuantity(material.row.id) > 0 ? `${getQuantity(material.row.id)}\u00a0×` : '' }}
+            {{ getQuantity(material.row) > 0 ? `${getQuantity(material.row)}\u00a0×` : '' }}
           </span>
         </div>
         <div slot="remaining_quantity" slot-scope="material">
@@ -37,10 +56,8 @@
             :key="`remain-qty-${material.row.id}-${renderId}`"
             class="MaterialsList__remaining"
             :class="{
-              'MaterialsList__remaining--zero':
-                material.row.remaining_quantity === getQuantity(material.row.id),
-              'MaterialsList__remaining--empty':
-                material.row.remaining_quantity < getQuantity(material.row.id),
+              'MaterialsList__remaining--zero': getRemainingQuantity(material.row) === 0,
+              'MaterialsList__remaining--empty': getRemainingQuantity(material.row) < 0,
             }"
           >
             {{ $t('remaining-count', { count: getRemainingQuantity(material.row) }) }}
@@ -54,24 +71,23 @@
           slot="quantity"
           slot-scope="material"
           :key="`quantities-${material.row.id}-${renderId}`"
-          :materialId="material.row.id"
-          :initialQuantity="getQuantity(material.row.id)"
-          :maxQuantity="material.row.remaining_quantity"
-          @decrement="decrement(material.row.id)"
+          :material="material.row"
+          :initialQuantity="getQuantity(material.row)"
+          @decrement="decrement(material.row)"
           @setQuantity="setQuantity"
-          @increment="increment(material.row.id)"
+          @increment="increment(material.row)"
         />
         <div slot="amount" slot-scope="material">
           <span :key="`amount-${material.row.id}-${renderId}`">
-            {{ formatAmount(material.row.rental_price * getQuantity(material.row.id)) }}
+            {{ formatAmount(material.row.rental_price * getQuantity(material.row)) }}
           </span>
         </div>
         <div slot="actions" slot-scope="material">
           <button
             :key="`clear-${material.row.id}-${renderId}`"
-            v-show="getQuantity(material.row.id) > 0"
+            v-show="getQuantity(material.row) > 0"
             class="warning"
-            @click="setQuantity(material.row.id, 0)"
+            @click="setQuantity(material.row, 0)"
           >
             <i class="fas fa-backspace" />
           </button>

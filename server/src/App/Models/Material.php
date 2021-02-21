@@ -309,14 +309,20 @@ class Material extends BaseModel
                     $usedUnits = array_merge($usedUnits, $eventMaterial['pivot']['units']);
                 }
 
-                $usedCount = count(array_unique($usedUnits));
-
-                // - Ajoute le champ `is_available` aux unités des matériels.
+                // - Ajoute le champ `is_available` aux unités des matériels
+                // + Supprime les unités marquées comme "utilisé" qui sont cassées.
+                //   (=> Elles ne comptent pas dans le calcul des unités utilisées)
                 if (array_key_exists('units', $material)) {
                     foreach ($material['units'] as &$unit) {
                         $unit['is_available'] = !in_array($unit['id'], $usedUnits, true);
+
+                        if ($unit['is_broken']) {
+                            $usedUnits = array_diff($usedUnits, [$unit['id']]);
+                        }
                     }
                 }
+
+                $usedCount = count(array_unique($usedUnits));
             } else {
                 $quantityPerPeriod = [0];
                 $periods = splitPeriods($events);
@@ -349,23 +355,30 @@ class Material extends BaseModel
         return $data;
     }
 
-    public function getAllFiltered(array $conditions, bool $withDeleted = false): Builder
-    {
+    public function getAllFiltered(
+        array $conditions,
+        bool $withDeleted = false,
+        bool $ignoreUnitaries = false
+    ): Builder {
         $parkId = array_key_exists('park_id', $conditions) ? $conditions['park_id'] : null;
         unset($conditions['park_id']);
 
         $builder = parent::getAllFiltered($conditions, $withDeleted);
 
         if ($parkId) {
-            $builder->where(function ($query) use ($parkId) {
-                $query
-                    ->where('park_id', $parkId)
-                    ->orWhereHas(
+            $builder->where(function ($query) use ($parkId, $ignoreUnitaries) {
+                $query->where('park_id', $parkId);
+
+                if (!$ignoreUnitaries) {
+                    $query->orWhereHas(
                         'units',
                         function ($subQuery) use ($parkId) {
                             $subQuery->where('park_id', $parkId);
                         }
                     );
+                } else {
+                    $query->orWhere('is_unitary', true);
+                }
             });
         }
 

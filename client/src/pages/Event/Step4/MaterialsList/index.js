@@ -2,19 +2,25 @@ import Config from '@/config/globalConfig';
 import formatAmount from '@/utils/formatAmount';
 import MaterialsFilter from '@/components/MaterialsFilters/MaterialsFilters.vue';
 import SwitchToggle from '@/components/SwitchToggle/SwitchToggle.vue';
+import isValidInteger from '@/utils/isValidInteger';
 import Quantity from './Quantity/Quantity.vue';
+import Units from './Units/Units.vue';
 import MaterialsStore from './MaterialsStore';
 
 export default {
   name: 'MaterialsList',
-  components: { MaterialsFilter, SwitchToggle, Quantity },
+  components: {
+    MaterialsFilter,
+    SwitchToggle,
+    Quantity,
+    Units,
+  },
   props: {
-    eventId: Number,
-    initialList: Array,
-    eventIsBillable: Boolean,
+    event: Object,
   },
   data() {
     const columns = [
+      'child-toggler',
       'qty',
       'reference',
       'name',
@@ -24,7 +30,7 @@ export default {
       'amount',
       'actions',
     ].filter((column) => {
-      if (Config.billingMode === 'none' || !this.eventIsBillable) {
+      if (Config.billingMode === 'none' || !this.event.is_billable) {
         return !['price', 'amount'].includes(column);
       }
       return true;
@@ -33,7 +39,7 @@ export default {
     return {
       error: null,
       renderId: 1,
-      showSelectedOnly: this.initialList.length > 0,
+      showSelectedOnly: this.event.materials.length > 0,
       isLoading: true,
       columns,
       options: {
@@ -42,7 +48,9 @@ export default {
         orderBy: { column: 'reference', ascending: true },
         initialPage: this.$route.query.page || 1,
         sortable: ['reference', 'name'],
+        showChildRowToggler: false,
         columnsClasses: {
+          'child-toggler': 'MaterialsList__child-toggler',
           qty: 'MaterialsList__qty',
           reference: 'MaterialsList__ref',
           name: 'MaterialsList__name',
@@ -54,8 +62,15 @@ export default {
         },
         requestFunction: (pagination) => {
           this.isLoading = true;
+
           const filters = this.getFilters();
-          const params = { whileEvent: this.eventId, ...pagination, ...filters };
+          const params = {
+            whileEvent: this.event.id,
+            ignoreUnitaries: true,
+            ...pagination,
+            ...filters,
+          };
+
           return this.$http
             .get('materials', { params })
             .then((response) => {
@@ -68,13 +83,14 @@ export default {
     };
   },
   created() {
-    MaterialsStore.commit('init', this.initialList);
+    MaterialsStore.commit('init', this.event.materials);
   },
   methods: {
     getFilters() {
       const params = {};
-      if (this.$route.query.park) {
-        params.park = this.$route.query.park;
+
+      if (this.$route.query.park && isValidInteger(this.$route.query.park)) {
+        params.park = parseInt(this.$route.query.park, 10);
       }
 
       if (this.$route.query.category) {
@@ -90,7 +106,7 @@ export default {
       }
 
       if (this.showSelectedOnly) {
-        params.onlySelectedInEvent = this.eventId;
+        params.onlySelectedInEvent = this.event.id;
       }
 
       return params;
@@ -100,6 +116,15 @@ export default {
       this.showSelectedOnly = newValue;
       this.isLoading = true;
       this.$refs.DataTable.refresh();
+    },
+
+    toggleChild(id) {
+      this.$refs.DataTable.toggleChildRow(id);
+    },
+
+    isChildOpen(id) {
+      const tableRef = this.$refs.DataTable.$refs.table;
+      return tableRef.openChildRows.includes(id);
     },
 
     refreshTable() {
@@ -112,37 +137,55 @@ export default {
       this.$refs.DataTable.refresh();
     },
 
-    getQuantity(materialId) {
-      return MaterialsStore.getters.getQuantity(materialId);
+    getQuantity(material) {
+      return MaterialsStore.getters.getQuantity(material.id);
     },
 
     getRemainingQuantity(material) {
-      return material.remaining_quantity - MaterialsStore.getters.getQuantity(material.id);
+      if (!material.is_unitary) {
+        return material.remaining_quantity - this.getQuantity(material);
+      }
+
+      const filters = this.getFilters();
+      const selectedUnits = MaterialsStore.getters.getUnits(material.id);
+      const availableUnits = material.units.filter((unit) => {
+        if (!unit.is_available || unit.is_broken) {
+          return false;
+        }
+
+        if (filters.park && unit.park_id !== filters.park) {
+          return false;
+        }
+
+        return !selectedUnits.includes(unit.id);
+      });
+
+      return availableUnits.length;
     },
 
-    setQuantity(id, value) {
+    setQuantity(material, value) {
       const quantity = parseInt(value, 10) || 0;
-      MaterialsStore.commit('setQuantity', { id, quantity });
-      this.handleQuantitiesChange();
+      MaterialsStore.commit('setQuantity', { material, quantity });
+      this.handleChanges();
     },
 
-    decrement(id) {
-      MaterialsStore.commit('decrement', id);
-      this.handleQuantitiesChange();
+    decrement(material) {
+      MaterialsStore.commit('decrement', material);
+      this.handleChanges();
     },
 
-    increment(id) {
-      MaterialsStore.commit('increment', id);
-      this.handleQuantitiesChange();
+    increment(material) {
+      MaterialsStore.commit('increment', material);
+      this.handleChanges();
     },
 
-    handleQuantitiesChange() {
+    handleChanges() {
       // - This hack is necessary because Vue-table-2 does not re-render the cells
       // - when quantities are changing.
       this.renderId += 1;
 
-      const materials = Object.keys(MaterialsStore.state.quantities).map(
-        (id) => ({ id: parseInt(id, 10), quantity: MaterialsStore.getters.getQuantity(id) }),
+      const materials = Object.entries(MaterialsStore.state.materials).map(
+        ([id, { quantity, units }]) => ({ id: parseInt(id, 10), quantity, units: [...units] }),
       );
       this.$emit('change', materials);
     },

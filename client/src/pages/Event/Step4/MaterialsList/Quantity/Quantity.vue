@@ -14,7 +14,7 @@
       @focus="$event.target.select()"
     >
     <button
-      :class="{ info: quantity < maxQuantity }"
+      :class="{ info: quantity < material.remaining_quantity }"
       @click="$emit('increment')"
     >
       <i class="fas fa-plus" />
@@ -33,9 +33,8 @@ import debounce from 'debounce';
 export default {
   name: 'MaterialsListQuantity',
   props: {
-    materialId: Number,
+    material: Object,
     initialQuantity: Number,
-    maxQuantity: Number,
   },
   data: (vm) => (
     { quantity: vm.initialQuantity }
@@ -43,7 +42,7 @@ export default {
   methods: {
     // eslint-disable-next-line func-names
     updateQuantityDebounced: debounce(function () {
-      this.$emit('setQuantity', this.materialId, this.quantity);
+      this.$emit('setQuantity', this.material, this.quantity);
     }, 300),
   },
 };

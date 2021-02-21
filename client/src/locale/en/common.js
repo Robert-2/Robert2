@@ -89,6 +89,7 @@ export default {
   'reference': "Reference",
   'park': "Park",
   'prices': "Prices",
+  'is-unitary': "Unitary identification?",
   'rental-price': "Rental price",
   'replacement-price': "Replacement price",
   'rent-price': "Rent. price",
@@ -99,6 +100,7 @@ export default {
   'quantities': "Quantities",
   'quantity-out-of-order': "Out of order qty",
   'discountable': "Discountable?",
+  'is-broken': "Out of order?",
   'material-is-discountable': "The material is «\u0a00discountable\u00a0»: a discount amount can be applied to this material.",
   'hidden-on-bill': "Hidden on bill?",
   'material-not-displayed-on-bill': "The material is not displayed on bills.",
@@ -111,6 +113,7 @@ export default {
   'display-not-deleted-items': "Display not deleted items",
   'created-at': "Created at:",
   'updated-at': "Updated at:",
+  'units': "Units",
 
   'event-details': "Event's details",
   'title': "Title",

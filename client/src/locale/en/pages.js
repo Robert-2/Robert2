@@ -88,6 +88,7 @@ export default {
     'beneficiary-billing-help': "Only the first beneficiary in the list will be displayed on the bill.",
     'all-events': "All events",
     'event-with-missing-material-only': "Events with missing material only?",
+    'no-units-available': "No unit available during this event for this material.",
   },
 
   'page-users': {
@@ -141,7 +142,11 @@ export default {
     'action-add': "New material",
     'add': "New material",
     'edit': "Modify material «\u00a0{pageSubTitle}\u00a0»",
-    'help-edit': "Give a short name, and use the description field to detail the material if needed.",
+    'help-edit': (
+      `Use a short name for the material and use the description field to enter details.\n
+      If you check the box «\u00a0Unitary identification\u00a0», you will be able to specify units
+      of this material in the «\u00a0Units\u00a0» tab of the material page, after saving this form.`
+    ),
     'view': "Details of material «\u00a0{pageSubTitle}\u00a0»",
     'confirm-delete': "Move this material in trash bin?",
     'confirm-permanently-delete': "Do you really want to permanently delete this material?",
@@ -164,6 +169,14 @@ export default {
       'saved': "Documents saved.",
       'deleted': "Document deleted.",
     },
+    'add-unit': "Add a new unit",
+  },
+
+  'page-material-units': {
+    'add': "New Unit for material «\u00a0{pageSubTitle}\u00a0»",
+    'edit': "Modify unit «\u00a0{pageSubTitle}\u00a0»",
+    'confirm-permanently-delete': "Do you really want to permanently delete this unit?",
+    'saved': "Unit saved.",
   },
 
   'page-attributes': {

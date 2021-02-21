@@ -29,6 +29,7 @@ class MaterialController extends BaseController
         $categoryId = $request->getQueryParam('category', null);
         $subCategoryId = $request->getQueryParam('subCategory', null);
         $withDeleted = (bool)$request->getQueryParam('deleted', false);
+        $ignoreUnitaries = (bool)$request->getQueryParam('ignoreUnitaries', false);
         $tags = $request->getQueryParam('tags', []);
         $whileEvent = $request->getQueryParam('whileEvent', null);
         $onlySelectedInEvent = $request->getQueryParam('onlySelectedInEvent', null);
@@ -54,7 +55,7 @@ class MaterialController extends BaseController
         if (empty($options) && empty($tags)) {
             $model = $model->getAll($withDeleted);
         } else {
-            $model = $model->getAllFilteredOrTagged($options, $tags, $withDeleted);
+            $model = $model->getAllFilteredOrTagged($options, $tags, $withDeleted, $ignoreUnitaries);
         }
 
         if ($onlySelectedInEvent) {

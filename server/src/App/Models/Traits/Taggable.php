@@ -31,7 +31,11 @@ trait Taggable
 
     public function getAllFilteredOrTagged(array $conditions, array $tags = [], bool $withDeleted = false): Builder
     {
-        $builder = $this->getAllFiltered($conditions, $withDeleted);
+        $otherArgs = array_slice(func_get_args(), 3);
+        $builder = call_user_func_array(
+            [$this, 'getAllFiltered'],
+            array_merge([$conditions, $withDeleted], $otherArgs)
+        );
 
         if (!empty($tags)) {
             $builder = $builder->whereHas('tags', function ($query) use ($tags) {

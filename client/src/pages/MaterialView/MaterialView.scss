@@ -6,6 +6,19 @@
   }
 
   &__body {
+    color: $text-base-color;
+    padding-bottom: 6rem;
+
+    .vue-tablist {
+      margin-bottom: 1rem;
+    }
+  }
+
+  &__menu {
+    margin-left: auto;
+  }
+
+  &__body {
     height: 100%;
     display: flex;
     flex-direction: column;
