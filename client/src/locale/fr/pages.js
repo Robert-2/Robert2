@@ -142,7 +142,12 @@ export default {
     'action-add': "Nouveau matériel",
     'add': "Nouveau matériel",
     'edit': "Modifier le matériel «\u00a0{pageSubTitle}\u00a0»",
-    'help-edit': "Trouvez un nom assez court, et utilisez plutôt la description pour détailler le matériel si besoin.",
+    'help-edit': (
+      `Utilisez un nom assez court pour le matériel, et la description pour entrer dans les détails.\n
+      Si vous cochez la case «\u00a0identification unitaire\u00a0», vous aurez la possibilité de spécifier des
+      unités de ce matériel dans l'onglet «\u00a0unités\u00a0» de la page du matériel, après avoir sauvegardé
+      le présent formulaire.`
+    ),
     'view': "Détails du matériel «\u00a0{pageSubTitle}\u00a0»",
     'confirm-delete': "Mettre ce matériel à la corbeille\u00a0?",
     'confirm-permanently-delete': "Voulez-vous vraiment supprimer définitivement ce matériel\u00a0?",

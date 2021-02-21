@@ -142,7 +142,11 @@ export default {
     'action-add': "New material",
     'add': "New material",
     'edit': "Modify material «\u00a0{pageSubTitle}\u00a0»",
-    'help-edit': "Give a short name, and use the description field to detail the material if needed.",
+    'help-edit': (
+      `Use a short name for the material and use the description field to enter details.\n
+      If you check the box «\u00a0Unitary identification\u00a0», you will be able to specify units
+      of this material in the «\u00a0Units\u00a0» tab of the material page, after saving this form.`
+    ),
     'view': "Details of material «\u00a0{pageSubTitle}\u00a0»",
     'confirm-delete': "Move this material in trash bin?",
     'confirm-permanently-delete': "Do you really want to permanently delete this material?",
