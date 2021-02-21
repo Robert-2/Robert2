@@ -1,5 +1,6 @@
 .MaterialsListUnit {
   user-select: none;
+  cursor: pointer;
 
   // - Les !important sont là pour surcharger le style injecté par VueTables sur les tds.
   &__col {
@@ -50,12 +51,10 @@
 
   &--unavailable {
     opacity: .3;
-    cursor: not-allowed;
   }
 
   &--selected {
     opacity: 1 !important;
-    cursor: pointer !important;
 
     .MaterialsListUnit__col {
       background: rgba(0, 0, 0, .4) !important;
