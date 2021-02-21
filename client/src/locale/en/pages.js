@@ -93,7 +93,11 @@ export default {
   'page-users': {
     'title': "Users",
     'help': "You can send an email to an user by clicking on his/her adress.",
-    'help-edit': "«\u00a0Administrator\u00a0» group gives all access rights to user. Group «\u00a0Member\u00a0» allow user to use most parts of Robert application. And «\u00a0Visitor\u00a0» group gives a limited access to some data.",
+    'help-edit': (
+      `- Group «\u00a0Administrator\u00a0» group gives all access rights to user.
+      - Group «\u00a0Member\u00a0» allow user to use most parts of Robert application.
+      - Group «\u00a0Visitor\u00a0» group gives a limited access to some data.`
+    ),
     'action-add': "New user",
     'add': "New user",
     'edit': "Modify user «\u00a0{pageSubTitle}\u00a0»",

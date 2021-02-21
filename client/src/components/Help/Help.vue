@@ -15,8 +15,6 @@
       </p>
     </div>
     <div v-if="$t(messageText) && !error && !isLoading" class="Help__message">
-      <i v-if="modifier === 'success'" class="fas fa-check" />
-      <i v-if="modifier === 'info'" class="fas fa-info-circle" />
       {{ $t(messageText) }}
     </div>
   </div>
