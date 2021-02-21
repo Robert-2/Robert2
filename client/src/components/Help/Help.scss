@@ -1,3 +1,6 @@
+@import '~@fortawesome/fontawesome-free/scss/variables';
+@import '~@fortawesome/fontawesome-free/scss/mixins';
+
 .Help {
   &__loading {
     display: flex;
@@ -7,14 +10,27 @@
       margin-bottom: .1rem;
       margin-right: .5rem;
       font-size: 1.8rem;
+      line-height: 1rem;
     }
   }
 
   &__message {
-    .fas {
+    position: relative;
+    white-space: pre-line;
+    padding-left: 1.8rem;
+    text-align: left;
+
+    &::before {
+      @include fa-icon;
+
+      position: absolute;
+      top: 0;
+      left: 0;
+      font-family: 'Font Awesome 5 Free';
+      font-weight: 900;
       vertical-align: middle;
-      margin: 0 .2rem .2rem 0;
       font-size: 1.2rem;
+      margin-top: .1rem;
     }
   }
 
@@ -24,6 +40,16 @@
 
   &--success {
     color: $text-success-color;
+
+    .Help__message::before {
+      content: fa-content($fa-var-check);
+    }
+  }
+
+  &--info {
+    .Help__message::before {
+      content: fa-content($fa-var-info-circle);
+    }
   }
 
   &--error {

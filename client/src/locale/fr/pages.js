@@ -93,7 +93,11 @@ export default {
   'page-users': {
     'title': "Utilisateurs",
     'help': "Vous pouvez envoyer un email à un utilisateur en cliquant sur son adresse.",
-    'help-edit': "Le groupe «\u00a0Administrateur\u00a0» donne tous les droits à l'utilisateur. Le groupe «\u00a0Membre\u00a0» permet à l'utilisateur d'utiliser la plupart des fonctions de Robert. Et le groupe «\u00a0Visiteur\u00a0» donne un accès limité à certaines données.",
+    'help-edit': (
+      `- Le groupe «\u00a0Administrateur\u00a0» donne tous les droits à l'utilisateur.
+      - Le groupe «\u00a0Membre\u00a0» permet à l'utilisateur d'utiliser la plupart des fonctions de Robert.
+      - Le groupe «\u00a0Visiteur\u00a0» donne un accès limité à certaines données.`
+    ),
     'action-add': "Nouvel utilisateur",
     'add': "Nouvel utilisateur",
     'edit': "Modifier l'utilisateur «\u00a0{pageSubTitle}\u00a0»",
