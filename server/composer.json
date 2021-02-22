@@ -39,9 +39,9 @@
         "illuminate/pagination": "^5.8.35",
         "robmorgan/phinx": "^0.11.4",
         "delfimov/translate": "^2.6.0",
-        "dompdf/dompdf": "^0.8.5",
-        "twig/intl-extra": "^3.0.3",
-        "cocur/slugify": "^4.0"
+        "dompdf/dompdf": "^1.0.2",
+        "twig/intl-extra": "^3.3.0",
+        "cocur/slugify": "^4.0.0"
     },
    "require-dev": {
         "there4/slim-test-helpers": "^2.1.3",

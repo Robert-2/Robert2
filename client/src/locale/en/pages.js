@@ -19,7 +19,7 @@ export default {
 
   'page-profile': {
     'title': "Profile of user «\u00a0{pageSubTitle}\u00a0»",
-    'help': "",
+    'help': "If you change your email, pseudo or password, do not forget them before logging-out!",
     'you-are-group': "You are: {group}.",
     'edit-password': "Change your password",
     'password-confirmation': "Password confirmation",
@@ -40,7 +40,11 @@ export default {
 
   'page-calendar': {
     'title': "Calendar",
-    'help': "Click and drag to move timeline. Use mouse wheel to zoom in / out. Double-click on an empty column to create an event with start date pre-filled.",
+    'help': (
+      `Click and drag to move timeline.
+      Use mouse wheel to zoom in / out.
+      Double-click on an empty column to create an event with start date pre-filled.`
+    ),
     'help-center-view-on-today': "Center calendar on today",
     'help-add-event': "Create a new event",
     'add-event': "New event",
@@ -50,13 +54,18 @@ export default {
     'event-deleted': "The event was deleted.",
     'event-saved': "The event was saved.",
     'loading-event': "Loading event...",
-    'help-timeline-event-operations': "Click to selct the event and move or resize it. Double-click to open event's preview.",
+    'help-timeline-event-operations': (
+      `Click once to select the event, in order to move, resize or delete it.
+      Double-click on an event to open its preview, and modify its details.`
+    ),
     'center-on-today': "Center on today",
     'center-on': "Center on",
     'this-event-is-past': "This event is past.",
     'this-event-is-currently-running': "This event is currently running.",
     'this-event-is-confirmed': "This event is confirmed.",
     'this-event-has-missing-materials': "This event has missing materials.",
+    'all-events': "All events",
+    'event-with-missing-material-only': "Events with missing material only?",
     'display-all-parks': "All parks",
   },
 
@@ -86,14 +95,12 @@ export default {
     'warning-no-beneficiary': "Warning: this event has no beneficiaries!",
     'missing-material-count': "Need {quantity}, missing\u00a0{missing}!",
     'beneficiary-billing-help': "Only the first beneficiary in the list will be displayed on the bill.",
-    'all-events': "All events",
-    'event-with-missing-material-only': "Events with missing material only?",
     'no-units-available': "No unit available during this event for this material.",
   },
 
   'page-users': {
     'title': "Users",
-    'help': "You can send an email to an user by clicking on his/her adress.",
+    'help': "You can send an email to an user by clicking on his/her address.",
     'help-edit': (
       `- Group «\u00a0Administrator\u00a0» group gives all access rights to user.
       - Group «\u00a0Member\u00a0» allow user to use most parts of Robert application.
@@ -111,7 +118,7 @@ export default {
 
   'page-beneficiaries': {
     'title': "Beneficiaries",
-    'help': "You can send an email to a beneficiary by clicking on his/her adress.",
+    'help': "You can send an email to a beneficiary by clicking on his/her address.",
     'action-add': "New beneficiary",
     'add': "New beneficiary",
     'edit': "Modify beneficiary «\u00a0{pageSubTitle}\u00a0»",
@@ -231,7 +238,7 @@ export default {
 
   'page-technicians': {
     'title': "Technicians",
-    'help': "You can send an email to a technician by clicking on his/her adress.",
+    'help': "You can send an email to a technician by clicking on his/her address.",
     'action-add': "New technician",
     'add': "New technician",
     'edit': "Modify technician «\u00a0{pageSubTitle}\u00a0»",

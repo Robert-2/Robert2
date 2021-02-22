@@ -19,7 +19,7 @@ export default {
 
   'page-profile': {
     'title': "Profil de l'utilisateur «\u00a0{pageSubTitle}\u00a0»",
-    'help': "Si vous modifiez votre email, votre pseudo ou votre mot de passe, ne les oubliez pas avant de vous déconnecter ;)",
+    'help': "Si vous modifiez votre email, votre pseudo ou votre mot de passe, ne les oubliez pas avant de vous déconnecter\u00a0!",
     'you-are-group': "Vous êtes\u00a0: {group}.",
     'edit-password': "Modifier votre mot de passe",
     'password-confirmation': "Confirmation du mot passe",
@@ -40,7 +40,11 @@ export default {
 
   'page-calendar': {
     'title': "Calendrier",
-    'help': "Cliquez-glissez pour déplacer la frise. Utilisez la molette pour zoomer / dézoomer. Double-cliquez sur une colonne vide pour créer un événement avec la date de départ pré-remplie.",
+    'help': (
+      `Cliquez-glissez pour déplacer la frise temporelle.
+      Utilisez la molette pour zoomer / dézoomer.
+      Double-cliquez sur une colonne vide pour créer un événement avec la date de départ pré-remplie.`
+    ),
     'help-center-view-on-today': "Centrer le calendrier sur aujourd'hui",
     'help-add-event': "Créer un nouvel événement",
     'add-event': "Nouvel événement",
@@ -50,7 +54,10 @@ export default {
     'event-deleted': "L'événement a bien été supprimé.",
     'event-saved': "L'événement a bien été sauvegardé.",
     'loading-event': "Chargement de l'événement...",
-    'help-timeline-event-operations': "Cliquer pour sélectionner l'événement et le déplacer ou redimensionner. Double-cliquer pour ouvrir l'aperçu de l'événement.",
+    'help-timeline-event-operations': (
+      `Cliquez une fois pour sélectionner l'événement, afin de le déplacer, le redimensionner ou le supprimer.
+      Double-cliquez sur l'événement pour en ouvrir l'aperçu, et en modifier les détails.`
+    ),
     'center-on-today': "Centrer sur aujourd'hui",
     'center-on': "Centrer sur le",
     'this-event-is-past': "Cet événement est passé.",
@@ -80,7 +87,7 @@ export default {
     'saved': "Événement sauvegardé.",
     'not-saved': "L'événement comporte des modifications non sauvegardées",
     'display-only-selected-materials': "Afficher uniquement le matériel de l'événement\u00a0?",
-    'event-not-confirmed-help': "L'évenement n'est pas encore confirmé, il est susceptible de changer à tout moment.",
+    'event-not-confirmed-help': "L'événement n'est pas encore confirmé, il est susceptible de changer à tout moment.",
     'event-confirmed-help': "L'événement est confirmé\u00a0: Ses informations ne devraient plus changer.",
     'event-missing-materials': "Matériel manquant",
     'event-missing-materials-help': "Il s'agit du matériel manquant pour la période de l'événement, car il est utilisé dans un autre événement, le nombre voulu est trop important, ou quelques uns sont en panne. Ce matériel doit donc être ajouté au parc, ou bien loué auprès d'une autre société.",

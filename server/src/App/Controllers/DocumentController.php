@@ -37,7 +37,6 @@ class DocumentController
         }
 
         $filePath = Document::getFilePath((int)$model->material_id, $model->name);
-        debug($filePath, ['log' => true, 'append' => false]);
 
         $fileContent = file_get_contents($filePath);
         if (!$fileContent) {

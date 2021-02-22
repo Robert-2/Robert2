@@ -12,7 +12,6 @@ import userStore from '@/stores/user';
 Vue.use(Vuex);
 
 export default new Vuex.Store({
-  namepaced: true,
   state: {
     pageTitle: '',
     pageSubTitle: '',

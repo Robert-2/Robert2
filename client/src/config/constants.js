@@ -1,6 +1,6 @@
 const DATE_DB_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 const DATE_QUERY_FORMAT = 'YYYY-MM-DD';
-const DEBOUNCE_WAIT = 500; // - in miliseconds
+const DEBOUNCE_WAIT = 500; // - in milliseconds
 
 const AUTHORIZED_FILE_TYPES = [
   'application/pdf',
