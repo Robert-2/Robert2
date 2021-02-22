@@ -60,8 +60,10 @@ __Il est (et doit être) impérativement maintenu à jour.__
 
 Pour créer une release de Robert2, veuillez suivre les étapes suivantes :
 
-1. Exécutez `./bin/release [NuméroDeVersion]` en étant à la racine du projet.  
-   (Note: si vous ne spécifiez pas de version, la version actuellement dans le fichier `/VERSION` sera utilisée).
+1. Exécutez `./bin/release -v [NuméroDeVersion]` en étant à la racine du projet.  
+   (Note : si vous ne spécifiez pas de version, la version actuellement dans le fichier `/VERSION` sera utilisée.
+   Vous pouvez aussi spécifier le terme `testing` pour la version, afin de créer une release temporaire qui ne
+   met pas à jour le Changelog ni le fichier de version).
 2. Terminé ! Vous pouvez récupérer le fichier ZIP qui a été créé dans le dossier `/dist`.
 
 ## Build de la partie client
