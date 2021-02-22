@@ -2,14 +2,20 @@
 
 VERSION=${1:-$(<./VERSION)}
 isProduction=true
+isPremium=false
 
-while getopts "v:" option
+while getopts "pv:" option
 do
     case $option in
     (v) VERSION=$OPTARG ; [ $OPTARG == 'testing' ] && isProduction=false ;;
+    (p) isPremium=true ;;
     (*) printf "Option inconue : '-%s'\n" "$opt" && exit 1 ;;
     esac
 done
+
+if $isPremium; then
+    VERSION="${VERSION}-premium"
+fi
 
 releaseName="Robert2-${VERSION}"
 distFolder="./dist/${releaseName}"
