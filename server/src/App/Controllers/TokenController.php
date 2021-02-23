@@ -10,6 +10,7 @@ use Robert2\API\Validation\Validator as V;
 use Robert2\API\Errors\ValidationException;
 use Robert2\API\Middlewares\Security;
 use Robert2\API\Models\User;
+use Robert2\API\Config\Config;
 
 class TokenController
 {
@@ -29,7 +30,8 @@ class TokenController
 
         $user = $this->user->getLogin($data['identifier'], $data['password'])->toArray();
 
-        $tokenDuration = $user['settings']['auth_token_validity_duration'];
+        $defaultTokenDuration = Config::getSettings('sessionExpireHours');
+        $tokenDuration = $user['settings']['auth_token_validity_duration'] ?: $defaultTokenDuration;
 
         $responseData['user'] = $user;
         $responseData['token'] = Security::generateToken($user, $tokenDuration);

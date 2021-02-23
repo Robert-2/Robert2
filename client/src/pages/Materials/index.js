@@ -109,7 +109,7 @@ export default {
   },
   methods: {
     getParkName(parkId) {
-      return store.getters['parks/parkName'](parkId);
+      return store.getters['parks/parkName'](parkId) || '--';
     },
 
     getCategoryName(categoryId) {

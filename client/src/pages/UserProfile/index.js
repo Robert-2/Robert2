@@ -118,7 +118,21 @@ export default {
     },
 
     setUserData(data) {
-      this.user = data;
+      let { person } = data;
+      if (!person) {
+        person = {
+          first_name: '',
+          last_name: '',
+          nickname: '',
+          phone: '',
+          street: '',
+          postal_code: '',
+          locality: '',
+        };
+      }
+
+      this.user = { ...data, person };
+
       store.commit('setPageSubTitle', this.user.pseudo);
     },
 

@@ -1,6 +1,7 @@
 <template>
   <div class="MaterialsFilters">
     <select
+      v-if="parks.length > 1"
       v-model="filters.park"
       class="MaterialsFilters__park"
       @change="changePark"

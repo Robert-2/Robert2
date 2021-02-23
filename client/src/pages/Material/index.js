@@ -20,7 +20,7 @@ export default {
         id: this.$route.params.id || null,
         name: '',
         reference: '',
-        park_id: 1,
+        park_id: '',
         category_id: '',
         is_unitary: false,
         rental_price: showBilling ? '' : 0,
@@ -57,6 +57,9 @@ export default {
     parksOptions() {
       return store.getters['parks/options'];
     },
+    firstPark() {
+      return store.getters['parks/firstPark'];
+    },
     categoriesOptions() {
       return store.getters['categories/options'];
     },
@@ -66,6 +69,12 @@ export default {
     store.dispatch('categories/fetch');
 
     this.fetchMaterial();
+    this.setDefaultPark();
+  },
+  watch: {
+    firstPark() {
+      this.setDefaultPark();
+    },
   },
   methods: {
     fetchMaterial() {
@@ -85,6 +94,12 @@ export default {
           this.isLoading = false;
         })
         .catch(this.displayError);
+    },
+
+    setDefaultPark() {
+      if (this.material.id === null) {
+        this.material.park_id = this.firstPark?.id || '';
+      }
     },
 
     fetchAttributes() {
