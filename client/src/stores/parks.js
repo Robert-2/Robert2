@@ -21,6 +21,11 @@ export default {
       );
       return park ? park.name : null;
     },
+
+    firstPark: (state) => {
+      const [park] = state.list;
+      return park;
+    },
   },
   mutations: {
     init(state, data) {
