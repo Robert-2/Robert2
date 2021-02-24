@@ -25,6 +25,25 @@ final class ParkTest extends ModelTestCase
         $this->assertCount(2, $result);
     }
 
+    public function testGetAllForUser(): void
+    {
+        // - Récupère la liste des parks visibles par l'utilisateur #1
+        $result = $this->model->getAllForUser(1)->get()->toArray();
+        $this->assertCount(2, $result);
+        $this->assertEquals(1, $result[0]['id']);
+        $this->assertEquals(2, $result[1]['id']);
+
+        // - Récupère la liste des parks visibles par l'utilisateur #2
+        $result = $this->model->getAllForUser(2)->get()->toArray();
+        $this->assertCount(1, $result);
+        $this->assertEquals(1, $result[0]['id']);
+
+        // - Récupère la liste des parks visibles par l'utilisateur #3
+        $result = $this->model->getAllForUser(3)->get()->toArray();
+        $this->assertCount(1, $result);
+        $this->assertEquals(1, $result[0]['id']);
+    }
+
     public function testGetMaterials(): void
     {
         $Park = $this->model::find(1);
@@ -122,5 +141,19 @@ final class ParkTest extends ModelTestCase
             'name' => 'France',
             'code' => 'FR',
         ], $Park->country);
+    }
+
+    public function testGetUsers(): void
+    {
+        // - Récupère les utilisateurs qui n'ont pas accès au park #1
+        $Park = $this->model::find(1);
+        $results = $Park->users;
+        $this->assertEquals([], $results);
+
+        // - Récupère les utilisateurs qui n'ont pas accès au park #2
+        $Park = $this->model::find(2);
+        $results = $Park->users;
+        $this->assertEquals(3, $results[0]['id']);
+        $this->assertEquals(2, $results[1]['id']);
     }
 }

@@ -63,6 +63,13 @@ class User extends BaseModel
             ->orderBy('start_date');
     }
 
+    public function RestrictedParks()
+    {
+        return $this->belongsToMany('Robert2\API\Models\Park', 'user_restricted_parks')
+            ->using('Robert2\API\Models\UserRestrictedParksPivot')
+            ->select(['parks.id']);
+    }
+
     // ——————————————————————————————————————————————————————
     // —
     // —    Mutators
@@ -92,6 +99,18 @@ class User extends BaseModel
     {
         $events = $this->Events()->get();
         return $events ? $events->toArray() : null;
+    }
+
+    public function getRestrictedParksAttribute()
+    {
+        $restrictedParks = $this->RestrictedParks()->get();
+        if (!$restrictedParks) {
+            return [];
+        }
+
+        return array_map(function ($restrictedPark) {
+            return (int)$restrictedPark['id'];
+        }, $restrictedParks->toArray());
     }
 
     // ——————————————————————————————————————————————————————
@@ -179,6 +198,10 @@ class User extends BaseModel
                 ['user_id' => $userId],
                 $data['person']
             );
+        }
+
+        if (array_key_exists('restricted_parks', $data)) {
+            $User->RestrictedParks()->sync($data['restricted_parks']);
         }
 
         unset($user['password']);

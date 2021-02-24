@@ -8,6 +8,7 @@ use Robert2\API\Controllers\Traits\WithPdf;
 use Robert2\API\Models\Park;
 use Robert2\API\Models\Material;
 use Robert2\API\Models\MaterialUnit;
+use Robert2\API\Models\User;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -32,15 +33,30 @@ class EventController extends BaseController
             ->setPeriod($startDate, $endDate)
             ->getAll($deleted);
 
-        $data = $results->get()->toArray();
+        $userId = $this->_getAuthUserId($request);
+        $restrictedParks = User::find($userId)->restricted_parks;
         $useMultipleParks = Park::count() > 1;
-        foreach ($data as $index => $event) {
+
+        $data = [];
+        $events = $results->get()->toArray();
+        foreach ($events as $event) {
             $eventMissingMaterials = $this->model->getMissingMaterials($event['id']);
-            $data[$index]['has_missing_materials'] = !empty($eventMissingMaterials);
-            $data[$index]['parks'] = $useMultipleParks ? $this->model->getParks($event['id']) : null;
+            $event['has_missing_materials'] = !empty($eventMissingMaterials);
+            $event['parks'] = null;
+
+            if ($useMultipleParks) {
+                $event['parks'] = $this->model->getParks($event['id']);
+
+                $parksCount = count($event['parks']);
+                $intersectCount = count(array_intersect($restrictedParks, $event['parks']));
+                if ($parksCount > 0 && $parksCount === $intersectCount) {
+                    continue;
+                }
+            }
+            $data[] = $event;
         }
 
-        return $response->withJson([ 'data' => $data ]);
+        return $response->withJson(compact('data'));
     }
 
     public function getOne(Request $request, Response $response): Response

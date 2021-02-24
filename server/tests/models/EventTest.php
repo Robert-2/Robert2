@@ -101,6 +101,31 @@ final class EventTest extends ModelTestCase
         $this->assertEquals(1, $result[0]['missing_quantity']);
     }
 
+    public function testGetParks(): void
+    {
+        // - Non-existant event
+        $result = $this->model->getParks(999);
+        $this->assertEquals([], $result);
+
+        // - Events with material from one park
+        $result = $this->model->getParks(1);
+        $this->assertEquals([1], $result);
+        $result = $this->model->getParks(2);
+        $this->assertEquals([1], $result);
+        $result = $this->model->getParks(3);
+        $this->assertEquals([1], $result);
+        $result = $this->model->getParks(5);
+        $this->assertEquals([1], $result);
+
+        // - Event with material from two parks
+        $result = $this->model->getParks(4);
+        $this->assertEquals([2, 1], $result);
+
+        // - Event without material (so without park)
+        $result = $this->model->getParks(6);
+        $this->assertEquals([], $result);
+    }
+
     public function testGetMaterials(): void
     {
         $Event = $this->model::find(1);

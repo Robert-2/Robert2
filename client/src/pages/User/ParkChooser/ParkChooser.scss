@@ -1,0 +1,28 @@
+.ParkChooser {
+  display: flex;
+  flex-wrap: wrap;
+  margin: $content-padding-small-horizontal 0;
+  padding: 0;
+
+  &__park {
+    list-style: none;
+    padding: .55rem .78rem;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    border-radius: 2px;
+    cursor: pointer;
+    background-color: $bg-color-button-info;
+    color: $color-base-button;
+    line-height: 1.25;
+    font-size: 1rem;
+    transition: all 300ms;
+
+    &--selected {
+      background-color: $bg-color-button-danger;
+    }
+  }
+
+  @media screen and (min-width: $screen-tablet) {
+    margin-left: $form-label-width;
+  }
+}

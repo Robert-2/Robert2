@@ -66,6 +66,16 @@ final class ParksTest extends ApiTestCase
         $this->assertResponsePaginatedData(0, '/api/parks', 'deleted=1');
     }
 
+    public function testGetParksList()
+    {
+        $this->client->get('/api/parks/list');
+        $this->assertStatusCode(SUCCESS_OK);
+        $this->assertResponseData([
+            ['id' => 1, 'name' => 'default'],
+            ['id' => 2, 'name' => 'spare'],
+        ]);
+    }
+
     public function testGetParkNotFound()
     {
         $this->client->get('/api/parks/999');

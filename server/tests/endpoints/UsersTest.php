@@ -182,7 +182,15 @@ final class UsersTest extends ApiTestCase
                     'code' => 'FR',
                 ],
             ],
+            'restricted_parks' => [],
         ]);
+
+        // - Pour l'utilisateur #2, on vérifie que les restricted_parks sont correctement retournés
+        $this->client->get('/api/users/2');
+        $this->assertStatusCode(SUCCESS_OK);
+        $response = $this->_getResponseAsArray();
+        $this->assertTrue(array_key_exists('restricted_parks', $response));
+        $this->assertEquals([2], $response['restricted_parks']);
     }
 
     public function testGetUserSettingsNotFound()

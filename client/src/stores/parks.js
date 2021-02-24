@@ -37,6 +37,12 @@ export default {
     setError(state, errorData) {
       state.error = errorData;
     },
+
+    reset(state) {
+      state.list = [];
+      state.isFetched = false;
+      state.error = null;
+    },
   },
   actions: {
     fetch({ state, commit }) {
@@ -44,9 +50,9 @@ export default {
         return;
       }
 
-      axios.get('parks')
+      axios.get('parks/list')
         .then(({ data }) => {
-          commit('init', data.data);
+          commit('init', data);
         })
         .catch((error) => {
           commit('setError', error);
@@ -56,9 +62,9 @@ export default {
     refresh({ state, commit }) {
       state.isFetched = false;
 
-      axios.get('parks')
+      axios.get('parks/list')
         .then(({ data }) => {
-          commit('init', data.data);
+          commit('init', data);
         })
         .catch((error) => {
           commit('setError', error);

@@ -114,6 +114,8 @@ export default {
     'confirm-restore': "Do you really want to restore this user?",
     'saved': "User saved.",
     'profile-missing-or-deleted': "Profile missing or deleted",
+    'parks-access': "Access to material parks",
+    'restrict-access-to-parks': "Restrict access to some parks",
   },
 
   'page-beneficiaries': {

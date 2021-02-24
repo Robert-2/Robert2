@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Builder;
 use Robert2\API\Validation\Validator as V;
 use Robert2\API\Models\Traits\Taggable;
+use Robert2\API\Models\User;
+use Robert2\API\Errors;
 
 class Material extends BaseModel
 {
@@ -383,5 +385,25 @@ class Material extends BaseModel
         }
 
         return $builder;
+    }
+
+    public function getOneForUser(int $id, ?int $userId = null): array
+    {
+        $material = $this->find($id);
+        if (!$material) {
+            throw new Errors\NotFoundException;
+        }
+
+        $materialData = $material->toArray();
+
+        if ($userId !== null && $material->is_unitary) {
+            $restrictedParks = User::find($userId)->restricted_parks;
+            $units = $material->Units()->whereNotIn('park_id', $restrictedParks);
+            $materialData['units'] = $units->get()->toArray();
+            $materialData['stock_quantity'] = $units->count();
+            $materialData['out_of_order_quantity'] = $units->where('is_broken', true)->count();
+        }
+
+        return $materialData;
     }
 }

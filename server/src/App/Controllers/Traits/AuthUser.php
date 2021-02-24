@@ -20,4 +20,10 @@ trait AuthUser
 
         return (array)$jwt['user'];
     }
+
+    protected function _getAuthUserId(Request $request): int
+    {
+        $authUserData = $this->_getAuthUserData($request);
+        return (int)$authUserData['id'];
+    }
 }
