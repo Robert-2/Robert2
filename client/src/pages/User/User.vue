@@ -12,7 +12,6 @@
               name="pseudo"
               label="pseudo"
               required
-              :disabled="user.id && user.group_id === 'admin'"
               :errors="errors.pseudo"
             />
             <FormField
@@ -21,7 +20,6 @@
               label="email"
               type="email"
               required
-              :disabled="user.id && user.group_id === 'admin'"
               :errors="errors.email"
             />
             <FormField
@@ -39,7 +37,6 @@
               label="group"
               type="select"
               required
-              :disabled="user.id && user.group_id === 'admin'"
               :options="groupOptions"
               :errors="errors.group_id"
             />
