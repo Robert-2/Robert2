@@ -398,10 +398,12 @@ class Material extends BaseModel
 
         if ($userId !== null && $material->is_unitary) {
             $restrictedParks = User::find($userId)->restricted_parks;
-            $units = $material->Units()->whereNotIn('park_id', $restrictedParks);
-            $materialData['units'] = $units->get()->toArray();
-            $materialData['stock_quantity'] = $units->count();
-            $materialData['out_of_order_quantity'] = $units->where('is_broken', true)->count();
+            if (!empty($restrictedParks)) {
+                $units = $material->Units()->whereNotIn('park_id', $restrictedParks);
+                $materialData['units'] = $units->get()->toArray();
+                $materialData['stock_quantity'] = $units->count();
+                $materialData['out_of_order_quantity'] = $units->where('is_broken', true)->count();
+            }
         }
 
         return $materialData;
