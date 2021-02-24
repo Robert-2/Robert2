@@ -35,6 +35,15 @@
             <button class="Form__actions__save success" type="submit">
               {{ $t('save') }}
             </button>
+            <router-link
+              :to="`/materials/${materialId}/view#units`"
+              custom
+              v-slot="{ navigate }"
+            >
+              <button type="button" class="Form__actions__cancel" @click="navigate">
+                {{ $t('cancel') }}
+              </button>
+            </router-link>
           </section>
         </form>
         <Help :message="help" :error="error" :isLoading="isLoading" />

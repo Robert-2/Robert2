@@ -42,11 +42,20 @@ export default {
     parksOptions() {
       return store.getters['parks/options'];
     },
+    firstPark() {
+      return store.getters['parks/firstPark'];
+    },
   },
   mounted() {
     store.dispatch('parks/fetch');
 
     this.fetchData();
+    this.setDefaultPark();
+  },
+  watch: {
+    firstPark() {
+      this.setDefaultPark();
+    },
   },
   methods: {
     handleSubmit(e) {
@@ -148,6 +157,12 @@ export default {
       } finally {
         this.isLoading = false;
         this.ongoingPersist = null;
+      }
+    },
+
+    setDefaultPark() {
+      if (this.id === null) {
+        this.unit.park_id = this.firstPark?.id || '';
       }
     },
   },

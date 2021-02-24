@@ -11,10 +11,12 @@
           <router-link
             v-tooltip="$t('action-edit')"
             :to="`/materials/${material.id}/units/${unit.row.id}`"
-            tag="button"
-            class="item-actions__button info"
+            custom
+            v-slot="{ navigate }"
           >
-            <i class="fas fa-edit" />
+            <button class="item-actions__button info" @click="navigate">
+              <i class="fas fa-edit" />
+            </button>
           </router-link>
           <button
             v-tooltip="$t('action-delete')"

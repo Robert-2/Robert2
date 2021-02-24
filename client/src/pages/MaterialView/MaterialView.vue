@@ -42,11 +42,13 @@
               <router-link
                 v-tooltip="$t('action-add')"
                 :to="`/materials/${material.id}/units/new`"
-                tag="button"
-                class="info"
+                custom
+                v-slot="{ navigate }"
               >
-                <i class="fas fa-plus" />
-                {{ $t('page-materials-view.add-unit') }}
+                <button class="info" @click="navigate">
+                  <i class="fas fa-plus" />
+                  {{ $t('page-materials-view.add-unit') }}
+                </button>
               </router-link>
             </nav>
           </template>
