@@ -13,6 +13,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Corrige le lien vers le repo (Github au lieu de Gitlab) dans la modale des détails d'erreur (#97).
 - Affiche certains messages d'aide sur plusieurs lignes, et corrige quelques fautes dans ces messages.
 
+- Permet la gestion et l'identification unitaire du matériel (Premium #5).
 - Ajoute la restriction de l'accès des parcs à certains membres (Premium #11).
 
 ## 0.11.0 (2021-01-14)
