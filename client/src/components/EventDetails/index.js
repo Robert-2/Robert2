@@ -6,11 +6,11 @@ import EventMaterials from '@/components/EventMaterials/EventMaterials.vue';
 import EventMissingMaterials from '@/components/EventMissingMaterials/EventMissingMaterials.vue';
 import EventBilling from '@/components/EventBilling/EventBilling.vue';
 import EventTotals from '@/components/EventTotals/EventTotals.vue';
-import utils from '../utils';
+import formatTimelineEvent from '@/utils/timeline-event/format';
 import Header from './Header/Header.vue';
 
 export default {
-  name: 'CalendarEventDetails',
+  name: 'EventDetails',
   components: {
     Header,
     Tabs,
@@ -21,7 +21,9 @@ export default {
     EventBilling,
     EventTotals,
   },
-  props: ['eventId'],
+  props: {
+    eventId: { type: Number, required: true },
+  },
   data() {
     return {
       help: '',
@@ -41,13 +43,13 @@ export default {
   },
   computed: {
     hasMaterials() {
-      return this.event.materials.length > 0;
+      return this.event?.materials?.length > 0;
     },
   },
   methods: {
     getEvent() {
       const { eventId } = this.$props;
-      const url = `${this.$route.meta.resource}/${eventId}`;
+      const url = `events/${eventId}`;
       this.error = null;
       this.isLoading = true;
       this.$http.get(url)
@@ -66,7 +68,7 @@ export default {
       this.error = null;
       this.billLoading = true;
       const { eventId } = this.$props;
-      const url = `${this.$route.meta.resource}/${eventId}/bill`;
+      const url = `events/${eventId}/bill`;
       this.$http.post(url, { discountRate })
         .then(({ data }) => {
           this.lastBill = { ...data, date: moment(data.date) };
@@ -82,7 +84,7 @@ export default {
       this.isLoading = true;
       const { eventId } = this.$props;
       const putData = { is_billable: true };
-      this.$http.put(`${this.$route.meta.resource}/${eventId}`, putData)
+      this.$http.put(`events/${eventId}`, putData)
         .then(({ data }) => {
           this.setData(data);
           this.isLoading = false;
@@ -104,7 +106,7 @@ export default {
 
     setData(data) {
       this.event = {
-        ...utils.formatEvent(data),
+        ...formatTimelineEvent(data),
         ...data,
       };
 

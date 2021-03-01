@@ -1,7 +1,8 @@
 $items-border-radius: 10px;
 
 .vis-timeline {
-  border:none !important;
+  border:none;
+  background-color: $calendar-main-background-color;
 
   .vis-panel {
     &.vis-bottom,
@@ -14,18 +15,27 @@ $items-border-radius: 10px;
   }
 
   .vis-time-axis.vis-foreground {
-    background: rgba(255, 255, 255, .05);
-    box-shadow: 0 0 5px rgba(0, 0, 0, .25);
+    background: rgba(#fff, .05);
+    box-shadow: 0 0 5px rgba(#000, .25);
   }
 
   .vis-grid {
+    &.vis-vertical {
+      border-color: $calendar-cells-border-color;
+    }
+
+    &.vis-today {
+      background-color: $calendar-current-date-background-color;
+    }
+
     &.vis-sunday {
-      background: rgba(255, 255, 255, .1);
+      background: rgba(#fff, .1);
     }
   }
 
   .vis-time-axis .vis-text {
     text-align: center;
+    color: $text-nav-color;
 
     &.vis-major {
       margin-left: .5rem;
@@ -37,6 +47,7 @@ $items-border-radius: 10px;
   .vis-current-time {
     max-height: calc(100% - 42px);
     margin-top: 42px;
+    background-color: $calendar-time-cursor-color;
   }
 }
 
@@ -45,10 +56,17 @@ $items-border-radius: 10px;
   padding: 1rem 1.1rem;
   border: none !important;
   border-radius: $items-border-radius !important;
+  color: $calendar-event-text-color;
+  box-shadow: 1px 2px 3px rgba(#000, .5);
+  background-color: $calendar-event-normal-color;
   font-size: .9rem;
 
   .vis-item-content {
-    padding: 0 0 .1rem 0 !important;
+    padding: 0 0 .1rem 0;
+  }
+
+  &.vis-selected {
+    background-color: lighten($calendar-event-normal-color, 10%);
   }
 
   &:not(.vis-readonly) {
@@ -56,18 +74,18 @@ $items-border-radius: 10px;
 
     .vis-drag-left,
     .vis-drag-right {
-      width: 32px !important;
-      background: rgba(0, 0, 0, .1);
+      width: 32px;
+      background: rgba(#000, .1);
     }
 
     .vis-drag-left {
-      border-radius: $items-border-radius 0 0 $items-border-radius !important;
-      left: 0 !important;
+      border-radius: $items-border-radius 0 0 $items-border-radius;
+      left: 0;
     }
 
     .vis-drag-right {
-      border-radius: 0 $items-border-radius $items-border-radius 0 !important;
-      right: 0 !important;
+      border-radius: 0 $items-border-radius $items-border-radius 0;
+      right: 0;
     }
   }
 
@@ -99,9 +117,11 @@ $items-border-radius: 10px;
 div.vis-tooltip {
   max-width: 50%;
   margin: 30px 0 0 15px;
-  border: none !important;
-  border-radius: 3px;
   padding: $content-padding-small-horizontal $content-padding-small-vertical;
-  white-space: pre-wrap !important;
+  border: none;
+  border-radius: 3px;
+  background-color: $bg-color-tooltip;
+  color: $text-base-color;
+  white-space: pre-wrap;
   font-family: $text-base-font-family;
 }
