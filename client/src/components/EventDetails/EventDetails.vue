@@ -1,24 +1,24 @@
 <template>
-  <div class="CalendarEventDetails">
-    <section v-if="isLoading" class="CalendarEventDetails__loading">
+  <div class="EventDetails">
+    <section v-if="isLoading" class="EventDetails__loading">
       <i class="fas fa-circle-notch fa-spin fa-2x" />
       {{ $t('page-calendar.loading-event') }}
     </section>
-    <section v-if="!isLoading" class="CalendarEventDetails__content">
+    <section v-if="!isLoading && event" class="EventDetails__content">
       <Header
         :event="event"
         @close="$emit('close')"
         @saved="handleSaved"
         @error="handleError"
       />
-      <div class="CalendarEventDetails__content__body">
+      <div class="EventDetails__content__body">
         <Help
           :message="help"
           :error="error"
         />
         <tabs>
           <tab title-slot="infos">
-            <div v-if="event.location" class="CalendarEventDetails__location">
+            <div v-if="event.location" class="EventDetails__location">
               <i class="fas fa-map-marker-alt" />
               {{ $t('in') }}
               <strong>{{ event.location }}</strong>
@@ -30,16 +30,16 @@
                 &nbsp; <i class="fas fa-external-link-alt" />
               </a>
             </div>
-            <div v-if="beneficiaries.length === 0" class="CalendarEventDetails__no-beneficiary">
+            <div v-if="beneficiaries.length === 0" class="EventDetails__no-beneficiary">
               <i class="fas fa-exclamation-circle" />
               {{ $t('page-events.warning-no-beneficiary') }}
             </div>
-            <div v-if="beneficiaries.length > 0" class="CalendarEventDetails__beneficiaries">
+            <div v-if="beneficiaries.length > 0" class="EventDetails__beneficiaries">
               <i class="fas fa-address-book" />
               {{ $t('for') }}
               <div
                 v-for="beneficiary in beneficiaries"
-                class="CalendarEventDetails__beneficiary"
+                class="EventDetails__beneficiary"
                 :key="beneficiary.id"
               >
                 <router-link
@@ -57,12 +57,12 @@
                 </router-link>
               </div>
             </div>
-            <div v-if="assignees.length > 0" class="CalendarEventDetails__assignees">
+            <div v-if="assignees.length > 0" class="EventDetails__assignees">
               <i class="fas fa-people-carry" />
               {{ $t('with') }}
               <div
                 v-for="assignee in assignees"
-                class="CalendarEventDetails__assignee"
+                class="EventDetails__assignee"
                 :key="assignee.id"
               >
                 <router-link
@@ -73,14 +73,14 @@
                 </router-link>
               </div>
             </div>
-            <p v-if="event.description" class="CalendarEventDetails__description">
+            <p v-if="event.description" class="EventDetails__description">
               <i class="fas fa-clipboard" />
               {{ event.description }}
             </p>
             <div
               v-if="hasMaterials && !event.isPast"
-              class="CalendarEventDetails__confirmation"
-              :class="{ 'CalendarEventDetails__confirmation--confirmed': event.is_confirmed }"
+              class="EventDetails__confirmation"
+              :class="{ 'EventDetails__confirmation--confirmed': event.is_confirmed }"
             >
               <p v-if="!event.is_confirmed">
                 <i class="fas fa-hourglass-half" />
@@ -115,7 +115,7 @@
               @discountRateChange="handleChangeDiscountRate"
               @createBill="handleCreateBill"
             />
-            <div v-if="!event.is_billable" class="CalendarEventDetails__not-billable">
+            <div v-if="!event.is_billable" class="EventDetails__not-billable">
               <p>
                 <i class="fas fa-ban" />
                 {{ $t('event-not-billable') }}
@@ -137,7 +137,7 @@
             <i class="fas fa-file-invoice-dollar" /> {{ $t('billing') }}
           </template>
         </tabs>
-        <div v-if="hasMaterials" class="CalendarEventDetails__totals">
+        <div v-if="hasMaterials" class="EventDetails__totals">
           <EventTotals
             :materials="event.materials"
             :withRentalPrices="showBilling && event.is_billable"
@@ -146,7 +146,7 @@
             :end="event.endDate"
           />
         </div>
-        <div v-if="!hasMaterials" class="CalendarEventDetails__materials-empty">
+        <div v-if="!hasMaterials" class="EventDetails__materials-empty">
           <p>
             <i class="fas fa-exclamation-triangle"></i>
             {{ $t('page-events.warning-no-material') }}
@@ -168,7 +168,7 @@
 </template>
 
 <style lang="scss">
-  @import '../../../themes/default/index';
+  @import '../../themes/default/index';
   @import './EventDetails';
 </style>
 

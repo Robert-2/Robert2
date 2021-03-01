@@ -12,6 +12,15 @@ export default {
     };
   },
   computed: {
+    isPrintable() {
+      return (
+        this.event.materials
+        && this.event.materials.length > 0
+        && this.event.beneficiaries
+        && this.event.beneficiaries.length > 0
+      );
+    },
+
     eventSummaryPdfUrl() {
       const { baseUrl } = Config;
       const { id } = this.event || { id: null };
@@ -38,13 +47,9 @@ export default {
       this.setEventConfirmation(false);
     },
 
-    printEvent() {
-      console.log('TODO: PRINT EVENT');
-    },
-
     setEventConfirmation(confirmed) {
       const { id } = this.$props.event;
-      const url = `${this.$route.meta.resource}/${id}`;
+      const url = `events/${id}`;
       this.isConfirming = true;
       this.$http.put(url, { id, is_confirmed: confirmed })
         .then(({ data }) => {

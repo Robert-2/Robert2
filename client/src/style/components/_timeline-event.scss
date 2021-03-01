@@ -1,0 +1,58 @@
+.timeline-event {
+  &--past {
+    background-color: $calendar-event-past-color !important;
+    color: $text-base-color !important;
+
+    &.vis-selected {
+      background-color: lighten($calendar-event-past-color, 10%) !important;
+    }
+  }
+
+  &--locked {
+    .vis-item-content::before {
+      content: "\f023";
+      display: inline-block;
+      font-family: 'Font Awesome 5 Free';
+      font-weight: 900;
+      margin-right: .5rem;
+    }
+  }
+
+  &--with-warning {
+    .vis-item-content::before {
+      content: "\f071";
+      display: inline-block;
+      font-family: 'Font Awesome 5 Free';
+      font-weight: 900;
+      margin-right: .5rem;
+      color: $text-danger-color;
+    }
+  }
+
+  &--confirmed {
+    background-color: $calendar-event-confirmed-color !important;
+
+    &.vis-selected {
+      background-color: lighten($calendar-event-confirmed-color, 10%) !important;
+    }
+
+    .vis-item-content::before {
+      color: $text-base-color;
+    }
+  }
+
+  &--current {
+    background-size: 40px 40px;
+    background-image: linear-gradient(
+      45deg,
+      rgba(255, 255, 255, 0.1) 25%,
+      transparent 25%,
+      transparent 50%,
+      rgba(255, 255, 255, 0.1) 50%,
+      rgba(255, 255, 255, 0.1) 75%,
+      transparent 75%,
+      transparent
+    );
+    animation: animBackground 3s linear infinite;
+  }
+}

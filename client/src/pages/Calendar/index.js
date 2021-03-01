@@ -5,9 +5,9 @@ import ModalConfig from '@/config/modalConfig';
 import store from '@/store';
 import Alert from '@/components/Alert';
 import Help from '@/components/Help/Help.vue';
+import EventDetails from '@/components/EventDetails/EventDetails.vue';
 import CalendarHeader from './Header/Header.vue';
-import EventDetails from './EventDetails/EventDetails.vue';
-import utils from './utils';
+import formatEvent from './utils';
 
 const ONE_DAY = 1000 * 3600 * 24;
 
@@ -56,7 +56,7 @@ export default {
         start,
         end,
         locale: store.state.i18n.locale,
-        minHeight: 300,
+        minHeight: '100%',
         orientation: 'top',
         zoomMin: ONE_DAY * 7,
         zoomMax: ONE_DAY * 60,
@@ -145,7 +145,7 @@ export default {
       this.$http.get(this.$route.meta.resource, { params })
         .then(({ data }) => {
           this.events = data.data.map(
-            (event) => utils.formatTimelineEvent(event, this.$t),
+            (event) => formatEvent(event, this.$t),
           );
 
           this.allEvents = [...this.events];

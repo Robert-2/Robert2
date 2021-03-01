@@ -1,99 +1,40 @@
-import moment from 'moment';
+import formatTimelineEvent from '@/utils/timeline-event/format';
+import getTimelineEventClassNames from '@/utils/timeline-event/getClassNames';
+import getTimelineEventI18nStatuses from '@/utils/timeline-event/getI18nStatuses';
 
-const formatEvent = (dataEvent) => {
+const formatEvent = (dataEvent, translate) => {
+  const formattedEvent = formatTimelineEvent(dataEvent);
   const {
-    start_date: rawStartDate,
-    end_date: rawEndDate,
-    is_confirmed: isConfirmed,
-    has_missing_materials: hasMissingMaterials,
-  } = dataEvent;
-
-  const now = moment();
-  const startDate = moment(rawStartDate);
-  const endDate = moment(rawEndDate);
-  const isPast = endDate.isBefore(now, 'day');
-  const isCurrent = now.isBetween(startDate, endDate, 'day', '[]');
-
-  return {
-    ...dataEvent,
-    startDate,
-    endDate,
-    isConfirmed,
-    isPast,
-    isCurrent,
-    hasMissingMaterials,
-  };
-};
-
-const formatTimelineEvent = (dataEvent, translate) => {
-  const {
-    id,
     title,
+    location,
     startDate: start,
     endDate: end,
-    isPast,
-    isCurrent,
     isConfirmed,
-    location,
-    hasMissingMaterials,
-    parks,
-  } = formatEvent(dataEvent);
+  } = formattedEvent;
 
   let content = title;
   if (location) {
     content = `${title} (${location})`;
   }
 
-  const eventStatus = [];
-
-  const classNames = ['Calendar__event'];
-  if (isPast) {
-    classNames.push('Calendar__event--past');
-    eventStatus.push(translate('page-calendar.this-event-is-past'));
-  }
-
-  if (isCurrent) {
-    classNames.push('Calendar__event--current');
-    eventStatus.push(translate('page-calendar.this-event-is-currently-running'));
-  }
-
-  if (isConfirmed) {
-    eventStatus.push(translate('page-calendar.this-event-is-confirmed'));
-
-    if (!isPast) {
-      classNames.push('Calendar__event--confirmed');
-    }
-  }
-
-  const isLocked = isConfirmed;
-  if (isLocked) {
-    classNames.push('Calendar__event--locked');
-  }
-
-  if (hasMissingMaterials) {
-    classNames.push('Calendar__event--with-warning');
-    eventStatus.push(translate('page-calendar.this-event-has-missing-materials'));
-  }
+  const eventStatuses = getTimelineEventI18nStatuses(formattedEvent).map(
+    (i18nKey) => translate(`page-calendar.${i18nKey}`),
+  );
 
   let eventTitle = content;
-  if (eventStatus.length > 0) {
-    eventTitle += `\n  →${eventStatus.join('\n  →')}`;
+  if (eventStatuses.length > 0) {
+    eventTitle += `\n  →${eventStatuses.join('\n  →')}`;
   }
 
   return {
-    id,
+    ...formattedEvent,
     content,
     start,
     end,
-    editable: !isLocked,
-    className: classNames.join(' '),
+    editable: !isConfirmed,
+    className: getTimelineEventClassNames(formattedEvent).join(' '),
     title: eventTitle,
-    hasMissingMaterials,
-    parks,
   };
 };
 
-export default {
-  formatEvent,
-  formatTimelineEvent,
-};
+export default formatEvent;

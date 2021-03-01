@@ -1,4 +1,4 @@
-.CalendarEventDetailsHeader {
+.EventDetailsHeader {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
@@ -11,7 +11,7 @@
     font-size: 2rem;
 
     .fa-check {
-      color: $text-success-color;
+      color: $calendar-event-confirmed-color;
     }
   }
 
