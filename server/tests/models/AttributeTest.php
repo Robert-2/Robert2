@@ -153,4 +153,45 @@ final class AttributeTest extends ModelTestCase
         ];
         $this->assertEquals($expected, $results);
     }
+
+    public function testEdit(): void
+    {
+        // - Crée une caractéristique spéciale
+        $result = $this->model->edit(null, ['name' => 'Testing', 'type' => 'date']);
+        $expected = [
+            'id' => 6,
+            'name' => 'Testing',
+            'type' => 'date',
+            'unit' => null,
+            'max_length' => null,
+        ];
+        unset($result->created_at, $result->updated_at, $result->deleted_at);
+        $this->assertEquals($expected, $result->toArray());
+
+        // - Modifie une caractéristique spéciale
+        $result = $this->model->edit(1, [
+            'name' => 'Masse',
+            'type' => 'integer',
+            'unit' => 'g',
+            'max_length' => 10,
+        ]);
+        // - Uniquement le nom a été modifié
+        $expected = [
+            'id' => 1,
+            'name' => 'Masse',
+            'type' => 'float',
+            'unit' => 'kg',
+            'max_length' => null,
+        ];
+        unset($result->created_at, $result->updated_at, $result->deleted_at);
+        $this->assertEquals($expected, $result->toArray());
+    }
+
+    public function testRemove(): void
+    {
+        // - Supprime une caractéristique spéciale
+        $this->model->remove(3);
+        // - Vérifie qu'elle a bien été supprimée
+        $this->assertEmpty(Models\Attribute::find(3));
+    }
 }

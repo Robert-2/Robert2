@@ -155,6 +155,7 @@ export default {
   'download-bill-help2': "with a discount rate of {discountRate}\u00a0%",
   'download-bill-help3': "for an amount of {amount}",
   'create-bill-help': "You can create a new bill for the first beneficiary in the list, and give it a discount rate or amount:",
+  'contact-someone-to-create-bill': "If needed, contact a member of the team and ask them to edit the invoice.",
   'discount': "Discount",
   'without-discount': "Without discount",
   'wanted-rate': "Rate in %",

@@ -155,6 +155,7 @@ export default {
   'download-bill-help2': "avec une remise de {discountRate}\u00a0%",
   'download-bill-help3': "pour un montant de {amount}",
   'create-bill-help': "Vous pouvez créer une facture au nom du premier bénéficiaire de la liste, en utilisant une remise (taux ou montant)\u00a0:",
+  'contact-someone-to-create-bill': "Si besoin, contactez un membre de l'équipe pour lui demander d'éditer la facture.",
   'discount': "Remise",
   'without-discount': "sans remise",
   'wanted-rate': "Taux en %",

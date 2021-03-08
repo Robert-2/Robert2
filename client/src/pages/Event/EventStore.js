@@ -1,4 +1,5 @@
 import Vuex from 'vuex';
+import isSameDate from '@/utils/isSameDate';
 
 export default new Vuex.Store({
   state: {
@@ -41,8 +42,8 @@ export default new Vuex.Store({
     checkIsSaved({ commit, state }, event) {
       const isIdentical = (
         event.title === state.title
-        && event.start_date === state.dates.start
-        && event.end_date === state.dates.end
+        && isSameDate(event.start_date, state.dates.start)
+        && isSameDate(event.end_date, state.dates.end)
         && event.location === state.location
         && event.description === state.description
         && event.is_confirmed === state.isConfirmed

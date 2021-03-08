@@ -1,4 +1,5 @@
 import Config from '@/config/globalConfig';
+import store from '@/store';
 import formatAmount from '@/utils/formatAmount';
 import getMaterialItemsCount from '@/utils/getMaterialItemsCount';
 import getEventOneDayTotal from '@/utils/getEventOneDayTotal';
@@ -34,6 +35,11 @@ export default {
     },
   },
   computed: {
+    userCanEdit() {
+      const { groupId } = store.state.user;
+      return ['admin', 'member'].includes(groupId);
+    },
+
     billPdfUrl() {
       const { baseUrl } = Config;
       const { id } = this.lastBill || { id: null };

@@ -197,7 +197,10 @@ export default {
 
   'page-attributes': {
     'title': "Material special attributes",
-    'help': "Here you can check, and add fields that allows you to describe your material according to your own criteria.",
+    'help': (
+      `Here you can add fields that allows you to describe your material according to your own criteria.
+      Once created, a special attribute cannot be modified (except for its name).`
+    ),
     'go-back-to-material': "Back to material",
     'name': "Name of the attribute",
     'type': "Attribute type",
@@ -213,6 +216,18 @@ export default {
     'no-attribute-yet': "No attribute yet.",
     'add-btn': "Add an attribute",
     'limited-to-categories': "Limited to categories",
+    'confirm-permanently-delete': (
+      `Do you really want to permanently delete this special attribute?
+
+      WARNING: All data related to this special attribute will be deleted DEFINITIVELY!!`
+    ),
+    'second-confirm': {
+      'confirm-permanently-delete': (
+        `Sorry to insist, but this operation is IRREVERSIBLE.
+
+        Do you REALLY want to remove this special attribute?`
+      ),
+    },
   },
 
   'page-categories': {
