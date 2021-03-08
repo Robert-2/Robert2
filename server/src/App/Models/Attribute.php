@@ -15,7 +15,7 @@ class Attribute extends BaseModel
         parent::__construct($attributes);
 
         $this->validation = [
-            'name' => V::notEmpty()->alpha(self::EXTRA_CHARS)->length(2, 64),
+            'name' => V::notEmpty()->alnum(self::EXTRA_CHARS)->length(2, 64),
             'type' => V::notEmpty()->oneOf(
                 v::equals('string'),
                 v::equals('integer'),

@@ -13,6 +13,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Corrige le lien vers le repo (Github au lieu de Gitlab) dans la modale des détails d'erreur (#97).
 - Affiche certains messages d'aide sur plusieurs lignes, et corrige quelques fautes dans ces messages.
 - Améliore l'affichage de la page du calendrier.
+- Ajoute la possibilité de mettre des chiffres dans le nom des caractéristiques spéciales (#103).
 
 ## 0.11.0 (2021-01-14)
 
