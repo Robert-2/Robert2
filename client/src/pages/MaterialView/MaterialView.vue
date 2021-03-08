@@ -22,6 +22,10 @@
           <template slot="documents">
             <i class="fas fa-file-pdf" /> {{ $t('documents') }}
           </template>
+          <template slot="availabilities">
+            <i class="far fa-calendar-alt" /> {{ $t('page-materials-view.booking-periods.title') }}
+          </template>
+
           <tab title-slot="infos">
             <Infos :material="material" />
           </tab>
@@ -34,6 +38,9 @@
           </tab>
           <tab title-slot="documents">
             <Documents />
+          </tab>
+          <tab title-slot="availabilities">
+            <Availabilities :units="material.units" />
           </tab>
 
           <!-- Menu contextuel droit -->

@@ -179,6 +179,13 @@ export default {
       'saved': "Documents sauvegardés.",
       'deleted': "Document supprimé.",
     },
+    'booking-periods': {
+      'title': "Périodes de réservation",
+      'used-units': "Unités utilisées",
+      'currently-out': "Actuellement sorti",
+      'done': "Terminé",
+      'expected-to-be-out-on': "Sortie prévue le {date}",
+    },
     'add-unit': "Ajouter une unité",
   },
 

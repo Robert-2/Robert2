@@ -1,0 +1,100 @@
+.MaterialAvailabilitiesItem {
+  display: flex;
+  align-items: center;
+  list-style: square;
+  padding: $content-padding-small-horizontal 0;
+  margin-bottom: $content-padding-small-horizontal;
+  background-color: $bg-color-table-th;
+  color: $text-nav-color;
+  border-radius: $input-border-radius;
+  opacity: .7;
+  cursor: pointer;
+
+  &:hover {
+    background-color: $bg-color-table-td;
+  }
+
+  &__quantity {
+    flex: 0 0 45px;
+    margin: 0 $content-padding-large-vertical 0 0;
+    padding: 0 0 0 $content-padding-large-horizontal;
+    font-size: 2rem;
+    text-align: right;
+    color: $text-base-color;
+  }
+
+  &__quantity-text {
+    flex: 0 0 auto;
+  }
+
+  &__main {
+    flex: 1;
+    margin: 0 $content-padding-large-vertical;
+
+    &__title {
+      margin: 0 0 $content-padding-small-horizontal;
+      color: $text-base-color;
+    }
+
+    &__icon {
+      margin: 0 $content-padding-small-horizontal;
+    }
+  }
+
+  &__units {
+    flex: 1;
+
+    &__title {
+      color: $text-nav-color;
+    }
+  }
+
+  &__readable-state {
+    flex: 0 0 200px;
+    padding: 0 $content-padding-large-horizontal;
+    text-align: left;
+
+    .fas {
+      margin-right: 5px;
+    }
+  }
+
+  &__actions {
+    padding: 0 $content-padding-large-horizontal;
+  }
+
+  &--future {
+    color: $text-base-color;
+    opacity: 1;
+
+    .MaterialAvailabilitiesItem__quantity,
+    .MaterialAvailabilitiesItem__main__title {
+      color: $text-info-color;
+    }
+  }
+
+  &--future + &:not(.MaterialAvailabilitiesItem--future) {
+    margin-top: $content-padding-large-vertical;
+  }
+
+  &--current {
+    background-color: darken($calendar-event-normal-color, 12%);
+
+    &:hover {
+      background-color: darken($calendar-event-normal-color, 7%);
+    }
+  }
+
+  &--confirmed {
+    .MaterialAvailabilitiesItem__main__icon {
+      color: $calendar-event-confirmed-color;
+    }
+
+    &.MaterialAvailabilitiesItem--future {
+      .MaterialAvailabilitiesItem__quantity,
+      .MaterialAvailabilitiesItem__main__title {
+        color: $calendar-event-confirmed-color;
+      }
+    }
+  }
+}

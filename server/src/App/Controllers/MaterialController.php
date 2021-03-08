@@ -296,4 +296,15 @@ class MaterialController extends BaseController
         ];
         return $response->withJson($result, SUCCESS_OK);
     }
+
+    public function getEvents(Request $request, Response $response): Response
+    {
+        $id = (int)$request->getAttribute('id');
+        $model = $this->model->find($id);
+        if (!$model) {
+            throw new Errors\NotFoundException;
+        }
+
+        return $response->withJson($model->events, SUCCESS_OK);
+    }
 }
