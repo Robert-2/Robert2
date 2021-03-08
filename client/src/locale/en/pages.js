@@ -146,6 +146,7 @@ export default {
     'title': "Materials",
     'help': "You can choose a park, a category or some tags to filter materials.",
     'action-add': "New material",
+    'manage-attributes': "Manage special attributes",
     'add': "New material",
     'edit': "Modify material «\u00a0{pageSubTitle}\u00a0»",
     'help-edit': "Give a short name, and use the description field to detail the material if needed.",

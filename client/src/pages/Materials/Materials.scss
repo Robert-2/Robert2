@@ -3,6 +3,18 @@
     width: 15rem;
   }
 
+  &__main-view {
+    position: relative;
+  }
+
+  &__attributes-link {
+    display: block;
+    position: absolute;
+    top: 10px;
+    right: $content-padding-large-vertical;
+    z-index: 1;
+  }
+
   &__ref,
   &__park,
   &__category,
@@ -73,6 +85,10 @@
     &__quantity-out,
     &__tags {
       display: table-cell;
+    }
+
+    &__attributes-link {
+      right: calc(#{$content-padding-large-vertical} + 45px + #{$content-padding-small-vertical});
     }
   }
 }

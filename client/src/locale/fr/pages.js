@@ -146,6 +146,7 @@ export default {
     'title': "Matériel",
     'help': "Vous pouvez choisir un parc, une catégorie ou des étiquettes pour filtrer le matériel.",
     'action-add': "Nouveau matériel",
+    'manage-attributes': "Gérer les caractéristiques spéciales",
     'add': "Nouveau matériel",
     'edit': "Modifier le matériel «\u00a0{pageSubTitle}\u00a0»",
     'help-edit': "Trouvez un nom assez court, et utilisez plutôt la description pour détailler le matériel si besoin.",

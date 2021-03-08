@@ -22,7 +22,10 @@
       </div>
     </div>
 
-    <div class="content__main-view">
+    <div class="content__main-view Materials__main-view">
+      <router-link to="/attributes" class="Materials__attributes-link">
+        {{ $t('page-materials.manage-attributes') }}
+      </router-link>
       <v-server-table
         ref="DataTable"
         name="materialsTable"
