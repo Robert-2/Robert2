@@ -16,7 +16,7 @@
         <table class="Attributes__items">
           <thead class="Attributes__items__header">
             <tr>
-              <th class="Attributes__items__name">
+              <th class="Attributes__items__name" colspan="2">
                 {{ $t('page-attributes.name') }}
               </th>
               <th class="Attributes__items__type">
@@ -34,9 +34,32 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="attribute in attributes" :key="attribute.id">
+            <tr v-for="attribute in attributes" :key="attribute.id" class="Attributes__items__line">
               <td class="Attributes__items__name">
-                {{ attribute.name }}
+                <div v-if="editAttribute === attribute.id">
+                  <input type="text" v-model="editAttributeName" />
+                  <div v-if="errors.name" class="Attributes__items__name-error">
+                    {{ errors.name[0] }}
+                  </div>
+                </div>
+                <span v-else>{{ attribute.name }}</span>
+              </td>
+              <td class="Attributes__items__edit-name">
+                <button
+                  v-if="!editAttribute"
+                  class="Attributes__items__edit-name__edit-button info"
+                  @click="startEditAttribute(attribute.id, attribute.name)"
+                >
+                  <i class="fas fa-pen" />
+                </button>
+                <div v-if="editAttribute === attribute.id">
+                  <button @click="cancelAttributeName()">
+                    <i class="fas fa-ban" />
+                  </button>
+                  <button class="success" @click="saveAttributeName(attribute.id)">
+                    <i class="fas fa-check" />
+                  </button>
+                </div>
               </td>
               <td class="Attributes__items__type">
                 {{ $t(`page-attributes.type-${attribute.type}`) }}

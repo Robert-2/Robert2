@@ -256,4 +256,29 @@ final class AttributesTest extends ApiTestCase
         ];
         $this->assertResponseData($expected, ['created_at', 'updated_at']);
     }
+
+    public function testUpdateAttribute()
+    {
+        // - Modifie une caractéristique spéciale
+        $data = [
+            'name' => 'Masse',
+            'type' => 'integer',
+            'unit' => 'g',
+            'max_length' => 10,
+        ];
+        $this->client->put('/api/attributes/1', $data);
+        $this->assertStatusCode(SUCCESS_OK);
+        // - Uniquement le nom a été modifié
+        $expected = [
+            'id' => 1,
+            'name' => 'Masse',
+            'type' => 'float',
+            'unit' => 'kg',
+            'max_length' => null,
+            'created_at' => null,
+            'updated_at' => 'fakedTestContent',
+            'deleted_at' => null,
+        ];
+        $this->assertResponseData($expected, ['updated_at']);
+    }
 }
