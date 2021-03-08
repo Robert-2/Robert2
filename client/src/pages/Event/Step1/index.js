@@ -26,7 +26,6 @@ export default {
           to: null,
         },
       },
-      initialStartDate: null,
       duration: 0,
       showIsBillable: Config.billingMode === 'partial',
       errors: {
@@ -39,10 +38,6 @@ export default {
     };
   },
   mounted() {
-    if (!this.event.id && this.$route.query.startDate) {
-      const newDate = moment(this.$route.query.startDate).toDate();
-      this.refreshDateFieldLimit({ field: 'start_date', newDate });
-    }
     this.refreshDatesLimits();
   },
   watch: {
@@ -52,39 +47,24 @@ export default {
     refreshDatesLimits() {
       const { start_date: startDate } = this.event;
       if (startDate) {
-        this.initialStartDate = moment(startDate);
         this.endDatepickerOptions.disabled.to = moment(startDate).toDate();
-      }
-      this.calcDuration();
-    },
-
-    handleStartDateChange({ field, newDate }) {
-      const oldStart = this.initialStartDate;
-      const { end_date: endDate } = this.event;
-
-      if (field === 'start_date' && endDate) {
-        const newStart = moment(newDate);
-        if (oldStart) {
-          const offset = newStart.diff(oldStart, 'days');
-          if (offset) {
-            const end = moment(endDate);
-            this.event.end_date = end.add(offset, 'days').toDate();
-          }
-        }
-
-        this.initialStartDate = newStart;
-      }
-
-      this.refreshDateFieldLimit({ field, newDate });
-    },
-
-    refreshDateFieldLimit({ field, newDate }) {
-      if (field === 'start_date') {
-        this.endDatepickerOptions.disabled.to = newDate;
       }
 
       this.calcDuration();
       this.checkIsSavedEvent();
+    },
+
+    handleStartDateChange({ newDate }) {
+      const { end_date: endDate } = this.event;
+      if (endDate) {
+        const start = moment(newDate);
+        const end = moment(endDate);
+        if (end.isBefore(start)) {
+          this.event.end_date = start.toDate();
+        }
+      }
+
+      this.refreshDatesLimits();
     },
 
     calcDuration() {
