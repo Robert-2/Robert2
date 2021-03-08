@@ -15,6 +15,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Améliore l'affichage de la page du calendrier.
 - Ajoute la possibilité de mettre des chiffres dans le nom des caractéristiques spéciales (#103).
 - Améliore l'affichage de l'onglet "Facturation" des événements pour les utilisateurs du groupe "visiteur" (#104).
+- Pré-rempli le champ "quantité" du formulaire de nouveau matériel à 1 (#106).
 
 ## 0.11.0 (2021-01-14)
 
