@@ -13,6 +13,8 @@ export default {
       help: 'page-attributes.help',
       error: null,
       isLoading: false,
+      editAttribute: null,
+      editAttributeName: '',
     };
   },
   mounted() {
@@ -46,12 +48,38 @@ export default {
     saveAttribute() {
       this.isLoading = true;
       this.error = null;
+      this.errors = {};
       const data = this.$refs.AttributeEditForm.getValues();
 
       this.$http.post('/attributes', data)
         .then(() => {
           this.resetForm();
           this.fetchAttributes();
+        })
+        .catch(this.displayError);
+    },
+
+    startEditAttribute(id, name) {
+      this.editAttributeName = name;
+      this.editAttribute = id;
+    },
+
+    cancelAttributeName() {
+      this.editAttributeName = '';
+      this.editAttribute = null;
+    },
+
+    saveAttributeName(id) {
+      this.isLoading = true;
+      this.error = null;
+      this.errors = {};
+
+      const name = this.editAttributeName;
+      this.$http.put(`/attributes/${id}`, { name })
+        .then(() => {
+          this.fetchAttributes();
+          this.editAttribute = null;
+          this.editAttributeName = '';
         })
         .catch(this.displayError);
     },

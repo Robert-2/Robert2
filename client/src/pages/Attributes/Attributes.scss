@@ -34,6 +34,7 @@
     }
 
     &__name,
+    &__edit-name,
     &__type,
     &__unit,
     &__max-length,
@@ -42,9 +43,36 @@
       border-bottom: 1px solid $bg-color-body;
     }
 
+    &__name-error {
+      color: $text-danger-color;
+      font-weight: 400;
+    }
+
+    &__edit-name {
+      height: 45px;
+      text-align: center;
+
+      &__edit-button {
+        visibility: hidden;
+        transition: none;
+        padding: 5px 8px;
+        font-size: .9rem;
+      }
+    }
+
+    &__line:hover {
+      .Attributes__items__edit-name__edit-button {
+        visibility: visible;
+      }
+    }
+
     &__name {
       width: 220px;
       font-weight: bold;
+    }
+
+    &__edit-name {
+      width: 85px;
     }
 
     &__type {
