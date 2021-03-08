@@ -1,6 +1,7 @@
 import moment from 'moment';
 import { Tabs, Tab } from 'vue-slim-tabs';
 import Config from '@/config/globalConfig';
+import store from '@/store';
 import Help from '@/components/Help/Help.vue';
 import EventMaterials from '@/components/EventMaterials/EventMaterials.vue';
 import EventMissingMaterials from '@/components/EventMissingMaterials/EventMissingMaterials.vue';
@@ -44,6 +45,11 @@ export default {
   computed: {
     hasMaterials() {
       return this.event?.materials?.length > 0;
+    },
+
+    userCanEditBill() {
+      const { groupId } = store.state.user;
+      return ['admin', 'member'].includes(groupId);
     },
   },
   methods: {

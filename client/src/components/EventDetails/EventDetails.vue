@@ -120,7 +120,7 @@
                 <i class="fas fa-ban" />
                 {{ $t('event-not-billable') }}
               </p>
-              <p v-if="!event.is_confirmed">
+              <p v-if="!event.is_confirmed && userCanEditBill">
                 <button @click="setEventIsBillable" class="success">
                   {{ $t('enable-billable-event') }}
                 </button>
