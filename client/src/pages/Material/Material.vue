@@ -48,6 +48,14 @@
               @change="handleCategoryChange"
             />
             <FormField
+              v-model="material.sub_category_id"
+              name="sub_category_id"
+              label="sub-category"
+              type="select"
+              :options="subCategoriesOptions"
+              :errors="errors.sub_category_id"
+            />
+            <FormField
               v-show="showBilling"
               v-model="material.rental_price"
               name="rental_price"
@@ -80,14 +88,6 @@
               label="description"
               type="textarea"
               :errors="errors.description"
-            />
-            <FormField
-              v-model="material.sub_category_id"
-              name="sub_category_id"
-              label="sub-category"
-              type="select"
-              :options="subCategoriesOptions"
-              :errors="errors.sub_category_id"
             />
             <FormField
               v-model="material.replacement_price"
