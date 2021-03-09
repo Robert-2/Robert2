@@ -82,6 +82,7 @@ class ApiRouter
             '/companies/{id:[0-9]+}[/]'     => 'CompanyController:delete',
             '/parks/{id:[0-9]+}[/]'         => 'ParkController:delete',
             '/materials/{id:[0-9]+}[/]'     => 'MaterialController:delete',
+            '/attributes/{id:[0-9]+}[/]'    => 'AttributeController:delete',
             '/events/{id:[0-9]+}[/]'        => 'EventController:delete',
             '/bills/{id:[0-9]+}[/]'         => 'BillController:delete',
             '/documents/{id:[0-9]+}[/]'     => 'DocumentController:delete',

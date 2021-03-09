@@ -113,4 +113,18 @@ class Attribute extends BaseModel
 
         return parent::edit($id, $data);
     }
+
+    public function remove(int $id, array $options = []): ?Model
+    {
+        $model = self::find($id);
+        if (empty($model)) {
+            throw new Errors\NotFoundException;
+        }
+
+        if (!$model->delete()) {
+            throw new \RuntimeException(sprintf("Unable to delete the attribute %d.", $id));
+        }
+
+        return null;
+    }
 }
