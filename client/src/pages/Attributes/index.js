@@ -1,4 +1,5 @@
 import router from '@/router';
+import Alert from '@/components/Alert';
 import Help from '@/components/Help/Help.vue';
 import AttributeEditForm from './AttributeEditForm/AttributeEditForm.vue';
 
@@ -15,6 +16,7 @@ export default {
       isLoading: false,
       editAttribute: null,
       editAttributeName: '',
+      currentlyDeleting: null,
     };
   },
   mounted() {
@@ -82,6 +84,38 @@ export default {
           this.editAttributeName = '';
         })
         .catch(this.displayError);
+    },
+
+    async deleteAttribute(id) {
+      this.currentlyDeleting = id;
+
+      const { value: firstConfirm } = await Alert.ConfirmDelete(this.$t, 'attributes', false);
+      if (!firstConfirm) {
+        this.currentlyDeleting = null;
+        return;
+      }
+
+      const { value: secondConfirm } = await Alert.ConfirmDelete(
+        this.$t,
+        'attributes.second-confirm',
+        false,
+      );
+      if (!secondConfirm) {
+        this.currentlyDeleting = null;
+        return;
+      }
+
+      this.error = null;
+      this.isLoading = true;
+
+      try {
+        await this.$http.delete(`attributes/${id}`);
+        this.fetchAttributes();
+      } catch (error) {
+        this.displayError(error);
+      } finally {
+        this.currentlyDeleting = null;
+      }
     },
 
     displayError(error) {

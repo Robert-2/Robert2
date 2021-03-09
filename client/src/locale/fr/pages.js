@@ -176,7 +176,10 @@ export default {
 
   'page-attributes': {
     'title': "Caractéristiques spéciales du matériel",
-    'help': "Ici vous pouvez consulter, et ajouter les champs qui permettent de décrire votre matériel selon vos propres critères.",
+    'help': (
+      `Ici vous pouvez ajouter les champs qui permettent de décrire votre matériel selon vos propres critères.
+      Une fois créée, une caractéristique spéciale ne pourra plus être modifiée (sauf son nom).`
+    ),
     'go-back-to-material': "Retourner au matériel",
     'name': "Nom de la caractéristique",
     'type': "Type de donnée",
@@ -192,6 +195,18 @@ export default {
     'no-attribute-yet': "Aucune caractéristique spéciale pour le moment.",
     'add-btn': "Ajouter une caractéristique",
     'limited-to-categories': "Limitée aux catégories",
+    'confirm-permanently-delete': (
+      `Voulez-vous vraiment supprimer définitivement cette caractéristique spéciale\u00a0?
+
+      ATTENTION\u00a0: Toutes les données relative à cette caractéristique spéciale seront supprimées DÉFINITIVEMENT\u00a0!!`
+    ),
+    'second-confirm': {
+      'confirm-permanently-delete': (
+        `Désolé d'insister, mais cette opération IRRÉVERSIBLE.
+
+        Voulez-vous VRAIMENT supprimer cette caractéristique spéciale\u00a0?`
+      ),
+    },
   },
 
   'page-categories': {

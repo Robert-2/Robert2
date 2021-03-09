@@ -185,4 +185,12 @@ final class AttributeTest extends ModelTestCase
         unset($result->created_at, $result->updated_at, $result->deleted_at);
         $this->assertEquals($expected, $result->toArray());
     }
+
+    public function testRemove(): void
+    {
+        // - Supprime une caractéristique spéciale
+        $this->model->remove(3);
+        // - Vérifie qu'elle a bien été supprimée
+        $this->assertEmpty(Models\Attribute::find(3));
+    }
 }

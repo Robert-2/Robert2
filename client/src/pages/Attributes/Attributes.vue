@@ -1,15 +1,15 @@
 <template>
   <div class="content Attributes">
     <div class="Attributes__header header-page">
+      <button @click="goBack" class="info Attributes__back-button">
+        <i class="fas fa-arrow-left" />
+        {{ $t('page-attributes.go-back-to-material') }}
+      </button>
       <Help
         :message="help"
         :error="error"
         :isLoading="isLoading"
       />
-      <button @click="goBack" class="info Attributes__back-button">
-        <i class="fas fa-arrow-left" />
-        {{ $t('page-attributes.go-back-to-material') }}
-      </button>
     </div>
     <div class="content__main-view">
       <div class="Attributes__content">
@@ -28,7 +28,7 @@
               <th class="Attributes__items__max-length">
                 {{ $t('page-attributes.max-length') }}
               </th>
-              <th class="Attributes__items__categories">
+              <th class="Attributes__items__categories" colspan="2">
                 {{ $t('page-attributes.limited-to-categories') }}
               </th>
             </tr>
@@ -82,6 +82,18 @@
                 <span v-if="attribute.categories.length > 0">
                   {{ attribute.categories.map(({ name }) => name).join(', ') }}
                 </span>
+              </td>
+              <td class="Attributes__items__delete">
+                <button
+                  v-if="!editAttribute"
+                  class="Attributes__items__delete__button danger"
+                  :class="{
+                    'Attributes__items__delete__button--show': currentlyDeleting === attribute.id
+                  }"
+                  @click="deleteAttribute(attribute.id)"
+                >
+                  <i class="fas fa-trash" />
+                </button>
               </td>
             </tr>
           </tbody>

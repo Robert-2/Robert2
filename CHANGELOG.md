@@ -14,6 +14,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Dans l'édition d'un événement, la modification de la date de début ne change plus la date de fin automatiquement (#99).
 - Affiche certains messages d'aide sur plusieurs lignes, et corrige quelques fautes dans ces messages.
 - Améliore l'affichage de la page du calendrier.
+- Permet la suppression des caractéristiques spéciales de matériel (#101).
 - Ajoute la possibilité de mettre des chiffres dans le nom des caractéristiques spéciales (#103).
 - Améliore l'affichage de l'onglet "Facturation" des événements pour les utilisateurs du groupe "visiteur" (#104).
 - Place le champ "sous-catégorie" en dessous du champ "catégorie" dans l'édition de matériel (#105).
