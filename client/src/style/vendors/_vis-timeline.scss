@@ -1,7 +1,10 @@
 $items-border-radius: 10px;
 
+// - L'obligation d'utiliser des !important est due au fait que lors du build,
+//   l'ordre final du CSS semble être inversé : le CSS de vis-timeline (importé d'office
+//   par vue-visjs) se retrouve après celui-ci
 .vis-timeline {
-  border:none;
+  border:none !important;
   background-color: $calendar-main-background-color;
 
   .vis-panel {
@@ -21,11 +24,11 @@ $items-border-radius: 10px;
 
   .vis-grid {
     &.vis-vertical {
-      border-color: $calendar-cells-border-color;
+      border-color: $calendar-cells-border-color !important;
     }
 
     &.vis-today {
-      background-color: $calendar-current-date-background-color;
+      background-color: $calendar-current-date-background-color !important;
     }
 
     &.vis-sunday {
@@ -56,17 +59,11 @@ $items-border-radius: 10px;
   padding: 1rem 1.1rem;
   border: none !important;
   border-radius: $items-border-radius !important;
-  color: $calendar-event-text-color;
   box-shadow: 1px 2px 3px rgba(#000, .5);
-  background-color: $calendar-event-normal-color;
-  font-size: .9rem;
+  font-size: .95rem;
 
   .vis-item-content {
-    padding: 0 0 .1rem 0;
-  }
-
-  &.vis-selected {
-    background-color: lighten($calendar-event-normal-color, 10%);
+    padding: 0 0 .1rem 0 !important;
   }
 
   &:not(.vis-readonly) {
@@ -74,18 +71,18 @@ $items-border-radius: 10px;
 
     .vis-drag-left,
     .vis-drag-right {
-      width: 32px;
+      width: 32px !important;
       background: rgba(#000, .1);
     }
 
     .vis-drag-left {
       border-radius: $items-border-radius 0 0 $items-border-radius;
-      left: 0;
+      left: 0 !important;
     }
 
     .vis-drag-right {
       border-radius: 0 $items-border-radius $items-border-radius 0;
-      right: 0;
+      right: 0 !important;
     }
   }
 
@@ -105,23 +102,35 @@ $items-border-radius: 10px;
     border-radius: 3px;
 
     &::after {
-      content: "\f1f8";
-      font-family: 'Font Awesome 5 Free';
+      color: $text-danger-color;
+      content: "\f1f8" !important;
+      font-family: 'Font Awesome 5 Free' !important;
       font-weight: 900 !important;
-      font-size: 1.7rem;
-      font-weight: 400;
+      font-size: 1.7rem !important;
     }
+  }
+}
+
+// - Pour éviter d'avoir à définir des !important pour les couleurs,
+//   car elles sont potentiellement écrasées par les modifiers de .timeline-event,
+//   en fonction du statut de l'événement.
+.vis-group > .vis-item {
+  background-color: $calendar-event-normal-color;
+  color: $calendar-event-text-color;
+
+  &.vis-selected {
+    background-color: lighten($calendar-event-normal-color, 10%);
   }
 }
 
 div.vis-tooltip {
   max-width: 50%;
   margin: 30px 0 0 15px;
-  padding: $content-padding-small-horizontal $content-padding-small-vertical;
-  border: none;
+  padding: $content-padding-small-horizontal $content-padding-small-vertical !important;
+  border: none !important;
   border-radius: 3px;
-  background-color: $bg-color-tooltip;
-  color: $text-base-color;
-  white-space: pre-wrap;
-  font-family: $text-base-font-family;
+  background-color: $bg-color-tooltip !important;
+  color: $text-base-color !important;
+  white-space: pre-wrap !important;
+  font-family: $text-base-font-family !important;
 }
