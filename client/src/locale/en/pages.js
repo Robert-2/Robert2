@@ -147,6 +147,8 @@ export default {
     'help': "You can choose a park, a category or some tags to filter materials.",
     'action-add': "New material",
     'manage-attributes': "Manage special attributes",
+    'display-quantities-at-date': "Display quantities at date...",
+    'quantities-for-date': "Quantities displayed for {date}",
     'add': "New material",
     'edit': "Modify material «\u00a0{pageSubTitle}\u00a0»",
     'help-edit': "Give a short name, and use the description field to detail the material if needed.",

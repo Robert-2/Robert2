@@ -23,9 +23,20 @@
     </div>
 
     <div class="content__main-view Materials__main-view">
-      <router-link to="/attributes" class="Materials__attributes-link">
-        {{ $t('page-materials.manage-attributes') }}
-      </router-link>
+      <div class="Materials__secondary-actions">
+        <button v-if="dateForQuantities === null" class="info" @click="showQuantityAtDateModal">
+          {{ $t('page-materials.display-quantities-at-date') }}
+        </button>
+        <div v-else class="Materials__quantities-date">
+          {{ $t('page-materials.quantities-for-date', { date: dateForQuantities.format('L') }) }}
+          <button class="warning" @click="removeDateForQuantities">
+            {{ $t('reset-date') }}
+          </button>
+        </div>
+        <router-link to="/attributes" class="Materials__attributes-link">
+          {{ $t('page-materials.manage-attributes') }}
+        </router-link>
+      </div>
       <v-server-table
         ref="DataTable"
         name="materialsTable"
