@@ -148,7 +148,7 @@ export default {
     'action-add': "Nouveau matériel",
     'manage-attributes': "Gérer les caractéristiques spéciales",
     'display-quantities-at-date': "Afficher les quantités à date...",
-    'quantities-for-date': "Quantités affichées pour le {date}",
+    'remaining-quantities-on-date': "Quantités restantes le {date}",
     'add': "Nouveau matériel",
     'edit': "Modifier le matériel «\u00a0{pageSubTitle}\u00a0»",
     'help-edit': "Trouvez un nom assez court, et utilisez plutôt la description pour détailler le matériel si besoin.",

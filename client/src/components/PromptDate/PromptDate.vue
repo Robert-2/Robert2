@@ -12,7 +12,7 @@
       <Datepicker
         :value="currentDate"
         :language="datepickerLang"
-        :format="format || 'dd/MM/yyyy'"
+        :format="formatDate"
         :placeholder="$t(placeholder)"
         class="PromptDate__datepicker"
         input-class="PromptDate__datepicker__input"
@@ -22,7 +22,7 @@
     </div>
     <hr />
     <div class="PromptDate__footer">
-      <button @click="$emit('close', { date: currentDate })" class="success">
+      <button @click="handleSubmit" class="success">
         <i class="fas fa-check" />
         {{ $t('choose-date') }}
       </button>
@@ -40,6 +40,7 @@
 </style>
 
 <script>
+import moment from 'moment';
 import Datepicker from 'vuejs-datepicker';
 import * as lang from 'vuejs-datepicker/src/locale';
 import store from '@/store';
@@ -60,9 +61,14 @@ export default {
     };
   },
   methods: {
+    formatDate(date) {
+      return this.format || moment(date).format('LL');
+    },
     handleChange(newDate) {
-      // const newValue = moment(newDate).format('YYYY-MM-DD');
       this.currentDate = newDate;
+    },
+    handleSubmit() {
+      this.$emit('close', { date: this.currentDate });
     },
   },
 };

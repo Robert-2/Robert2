@@ -235,7 +235,7 @@ export default {
     },
 
     formatAmount(value) {
-      return formatAmount(value);
+      return value !== null ? formatAmount(value) : '';
     },
 
     async showQuantityAtDateModal() {
