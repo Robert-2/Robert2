@@ -1,0 +1,41 @@
+<style>
+    .app-loading {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        height: 100vh;
+        text-align: center;
+        font-size: 1.2rem;
+    }
+    .app-loading__logo {
+        margin: 0;
+        padding: 30px 0;
+    }
+    .app-loading__details {
+        margin: 0 0 168px 0;
+        padding: 10px 0;
+        background-color: #1f1f1f;
+    }
+    .app-loading__details__spinner {
+        -webkit-animation: spin 2s linear infinite;
+        -moz-animation: spin 2s linear infinite;
+        animation: spin 2s linear infinite;
+    }
+    @-moz-keyframes spin {
+        100% { -moz-transform: rotate(360deg); }
+    }
+    @-webkit-keyframes spin {
+        100% { -webkit-transform: rotate(360deg); }
+    }
+    @keyframes spin {
+        100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); }
+    }
+</style>
+<div class="app-loading">
+    <p class="app-loading__logo">
+        <img src="/webclient/img/logo.svg" height="200" alt="Robert2" />
+    </p>
+    <p class="app-loading__details">
+        <img src="/img/loading.svg" height="35" alt="Loading..." class="app-loading__details__spinner" />
+    </p>
+</div>
