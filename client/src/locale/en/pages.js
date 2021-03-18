@@ -148,7 +148,10 @@ export default {
     'action-add': "New material",
     'manage-attributes': "Manage special attributes",
     'display-quantities-at-date': "Display quantities at date...",
-    'remaining-quantities-on-date': "Remaining quantities on {date}",
+    'remaining-quantities-on-date': (
+      `Remaining quantities
+      on {date}`
+    ),
     'add': "New material",
     'edit': "Modify material «\u00a0{pageSubTitle}\u00a0»",
     'help-edit': "Give a short name, and use the description field to detail the material if needed.",

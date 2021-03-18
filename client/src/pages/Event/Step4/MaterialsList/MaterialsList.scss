@@ -12,14 +12,6 @@
     .MaterialsFilters {
       flex: 1;
       margin: $content-padding-small-vertical 0;
-
-      select,
-      button,
-      input,
-      .v-select {
-        margin-right: .3rem;
-        margin-bottom: .3rem;
-      }
     }
 
     &__extra-filters {

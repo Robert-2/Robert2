@@ -22,6 +22,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Pré-rempli le champ "quantité" du formulaire de nouveau matériel à 1 (#106).
 - Dans le listing du matériel, ajoute un lien vers la gestion des caractéristiques spéciales.
 - Ajoute la possibilité de modifier le nom des caractéristiques spéciales (#107).
+- Améliore la disposition des filtres dans les pages de listing du matériel (#114).
 
 ## 0.11.0 (2021-01-14)
 

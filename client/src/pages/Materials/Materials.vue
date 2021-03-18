@@ -9,44 +9,49 @@
         />
       </div>
       <div class="header-page__actions">
-        <MaterialsFilters
-          baseRoute="/materials"
-          @change="refreshTableAndPagination"
-        />
-        <router-link :to="`/materials/new`" v-slot="{ navigate }" custom>
+        <router-link to="/materials/new" v-slot="{ navigate }" custom>
           <button @click="navigate" class="Materials__create success">
             <i class="fas fa-plus" />
             {{ $t('page-materials.action-add') }}
+          </button>
+        </router-link>
+        <router-link to="/attributes" v-slot="{ navigate }" custom>
+          <button @click="navigate">
+            <i class="fas fa-cog" />
+            {{ $t('page-materials.manage-attributes') }}
           </button>
         </router-link>
       </div>
     </div>
 
     <div class="content__main-view Materials__main-view">
-      <div class="Materials__secondary-actions">
-        <button
-          v-if="dateForQuantities === null"
-          class="Materials__secondary-actions__button info"
-          @click="showQuantityAtDateModal"
-        >
-          {{ $t('page-materials.display-quantities-at-date') }}
-        </button>
-        <div v-else class="Materials__quantities-date">
-          <div class="Materials__quantities-date__label">
-            {{ $t('page-materials.remaining-quantities-on-date', {
-              date: dateForQuantities.format('LL')
-            }) }}
-          </div>
+      <div class="Materials__filters">
+        <MaterialsFilters
+          baseRoute="/materials"
+          @change="refreshTableAndPagination"
+        />
+        <div class="Materials__quantities-date">
           <button
-            class="Materials__secondary-actions__button warning"
-            @click="removeDateForQuantities"
+            v-if="dateForQuantities === null"
+            class="Materials__quantities-date__button"
+            @click="showQuantityAtDateModal"
           >
-            {{ $t('reset-date') }}
+            {{ $t('page-materials.display-quantities-at-date') }}
           </button>
+          <div v-else class="Materials__quantities-date__displayed">
+            <p class="Materials__quantities-date__label">
+              {{ $t('page-materials.remaining-quantities-on-date', {
+                date: dateForQuantities.format('LL')
+              }) }}
+            </p>
+            <button
+              class="Materials__quantities-date__button warning"
+              @click="removeDateForQuantities"
+            >
+              {{ $t('reset-date') }}
+            </button>
+          </div>
         </div>
-        <router-link to="/attributes" class="Materials__attributes-link">
-          {{ $t('page-materials.manage-attributes') }}
-        </router-link>
       </div>
       <v-server-table
         ref="DataTable"

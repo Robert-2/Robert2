@@ -3,21 +3,23 @@
   align-items: center;
   flex-wrap: wrap;
 
-  &__park,
-  &__category,
-  &__sub-category {
-    flex: 0 0 auto;
-    padding: 6px 10px;
+  &__item,
+  &__reset {
+    margin-left: 0;
+    margin-bottom: $content-padding-large-horizontal;
+    margin-right: $content-padding-small-vertical / 2;
+    padding: 8px 10px;
   }
 
   .v-select {
     flex: 0 0 auto;
-    max-height: 31px;
     min-width: 150px;
-    max-width: 300px;
+    margin-bottom: $content-padding-large-horizontal;
+    margin-right: $content-padding-small-vertical / 2;
+    padding: 5.5px 10px;
 
     .vs__selected-options {
-      padding: .2rem 0;
+      padding: 0;
       font-size: .9rem;
 
       .vs__selected {
@@ -34,5 +36,9 @@
     .vs__search {
       padding: .3rem 0;
     }
+  }
+
+  &__item--is-active {
+    background-color: darken($bg-color-button-warning, 5%) !important;
   }
 }
