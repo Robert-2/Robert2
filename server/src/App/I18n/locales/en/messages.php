@@ -2680,4 +2680,7 @@ return [
 
     "signature"
     => "Signature:",
+
+    "label"
+    => "Label",
 ];
