@@ -10,6 +10,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Ajoute la possibilité de limiter les caractéristiques spéciales du matériel par catégorie (#91).
 - Ajoute le type "date" aux caractéristiques spéciales du matériel (#90).
 - Permet l'envoi de documents (fichiers PDF, images JPEG ou PNG) associés à du matériel (#92).
+- Ajoute la possibilité d'afficher les quantités de matériel disponibles pour une date donnée, dans le listing du matériel (#93).
 - Corrige le lien vers le repo (Github au lieu de Gitlab) dans la modale des détails d'erreur (#97).
 - Dans l'édition d'un événement, la modification de la date de début ne change plus la date de fin automatiquement (#99).
 - Affiche certains messages d'aide sur plusieurs lignes, et corrige quelques fautes dans ces messages.
@@ -21,6 +22,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Pré-rempli le champ "quantité" du formulaire de nouveau matériel à 1 (#106).
 - Dans le listing du matériel, ajoute un lien vers la gestion des caractéristiques spéciales.
 - Ajoute la possibilité de modifier le nom des caractéristiques spéciales (#107).
+- Améliore la disposition des filtres dans les pages de listing du matériel (#114).
 
 - Permet la gestion et l'identification unitaire du matériel (Premium #5).
 - Ajoute la restriction de l'accès des parcs à certains membres (Premium #11).

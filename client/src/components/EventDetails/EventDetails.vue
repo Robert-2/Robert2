@@ -100,7 +100,7 @@
               :start="event.startDate"
               :end="event.endDate"
               :withRentalPrices="showBilling && event.is_billable"
-              :hideDetails="false"
+              :hideDetails="event.materials.length > 16"
             />
           </tab>
           <tab v-if="showBilling" title-slot="billing" :disabled="!hasMaterials">

@@ -558,6 +558,20 @@ final class MaterialsTest extends ApiTestCase
         }
     }
 
+    public function testGetMaterialsWithDateForQuantities()
+    {
+        // - Récupère le matériel avec les quantités qu'il reste pour un jour
+        // - pendant lequel se déroulent les événements n°1 et n°2
+        $this->client->get('/api/materials?dateForQuantities=2018-12-18');
+        $this->assertStatusCode(SUCCESS_OK);
+        $response = $this->_getResponseAsArray();
+        $this->assertCount(8, $response['data']);
+
+        foreach ([2, 32, 3, 2, 30, 1, 1] as $index => $expected) {
+            $this->assertEquals($expected, $response['data'][$index]['remaining_quantity']);
+        }
+    }
+
     public function testCreateMaterialWithoutData()
     {
         $this->client->post('/api/materials');

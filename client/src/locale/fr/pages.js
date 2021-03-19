@@ -149,6 +149,12 @@ export default {
     'title': "Matériel",
     'help': "Vous pouvez choisir un parc, une catégorie ou des étiquettes pour filtrer le matériel.",
     'action-add': "Nouveau matériel",
+    'manage-attributes': "Gérer les caractéristiques spéciales",
+    'display-quantities-at-date': "Afficher les quantités à date...",
+    'remaining-quantities-on-date': (
+      `Quantités restantes
+      le {date}`
+    ),
     'add': "Nouveau matériel",
     'edit': "Modifier le matériel «\u00a0{pageSubTitle}\u00a0»",
     'help-edit': (

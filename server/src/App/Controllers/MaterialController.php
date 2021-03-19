@@ -29,6 +29,7 @@ class MaterialController extends BaseController
         $parkId = $request->getQueryParam('park', null);
         $categoryId = $request->getQueryParam('category', null);
         $subCategoryId = $request->getQueryParam('subCategory', null);
+        $dateForQuantities = $request->getQueryParam('dateForQuantities', null);
         $withDeleted = (bool)$request->getQueryParam('deleted', false);
         $ignoreUnitaries = (bool)$request->getQueryParam('ignoreUnitaries', false);
         $tags = $request->getQueryParam('tags', []);
@@ -115,6 +116,13 @@ class MaterialController extends BaseController
                     $eventId
                 );
             }
+        } elseif ($dateForQuantities) {
+            $results['data'] = $this->model->recalcQuantitiesForPeriod(
+                $results['data'],
+                $dateForQuantities,
+                $dateForQuantities,
+                null
+            );
         }
 
         return $response->withJson($results);

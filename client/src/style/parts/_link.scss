@@ -1,9 +1,13 @@
-a, a:visited, a:active {
-  color: $link-base-color;
-  text-decoration: none;
-  cursor: pointer;
-}
+a:not(.button) {
+  &,
+  &:visited,
+  &:active {
+    color: $link-base-color;
+    text-decoration: none;
+    cursor: pointer;
+  }
 
-a:hover {
-  color: $link-hover-color;
+  &:hover {
+    color: $link-hover-color;
+  }
 }

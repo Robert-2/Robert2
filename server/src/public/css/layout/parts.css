@@ -22,15 +22,15 @@ h4 {
     margin: 0 0 15px 0;
 }
 
-a {
+a:not(.button) {
     color: #e14406;
     text-decoration: none;
     outline: 0;
 }
 
-a:hover,
-a:active,
-a:focus {
+a:not(.button):hover,
+a:not(.button):active,
+a:not(.button):focus {
     color: #993006;
     border-bottom: 1px dotted #993006;
 }

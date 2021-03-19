@@ -41,7 +41,8 @@
         "delfimov/translate": "^2.6.0",
         "dompdf/dompdf": "^1.0.2",
         "twig/intl-extra": "^3.3.0",
-        "cocur/slugify": "^4.0.0"
+        "cocur/slugify": "^4.0.0",
+        "twig/extensions": "^1.5.4"
     },
    "require-dev": {
         "there4/slim-test-helpers": "^2.1.3",

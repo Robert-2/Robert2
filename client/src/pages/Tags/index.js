@@ -34,12 +34,10 @@ export default {
     },
 
     addTag() {
-      Alert.Prompt(
-        this.$t,
-        this.$t('page-tags.prompt-add'),
-        'page-tags.tag-name',
-        'page-tags.create',
-      ).then(({ value: name }) => {
+      Alert.Prompt(this.$t, 'page-tags.prompt-add', {
+        placeholder: 'page-tags.tag-name',
+        confirmText: 'page-tags.create',
+      }).then(({ value: name }) => {
         if (name) {
           this.save(null, name);
         }
@@ -47,13 +45,11 @@ export default {
     },
 
     edit(tagId, oldName) {
-      Alert.Prompt(
-        this.$t,
-        this.$t('page-tags.prompt-modify'),
-        oldName,
-        'save',
-        oldName,
-      ).then(({ value: newName }) => {
+      Alert.Prompt(this.$t, 'page-tags.prompt-modify', {
+        placeholder: oldName,
+        confirmText: 'save',
+        inputValue: oldName,
+      }).then(({ value: newName }) => {
         if (newName) {
           this.save(tagId, newName);
         }
