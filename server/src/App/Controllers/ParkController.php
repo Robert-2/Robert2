@@ -3,11 +3,15 @@ declare(strict_types=1);
 
 namespace Robert2\API\Controllers;
 
+use Robert2\API\Models\Park;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
 class ParkController extends BaseController
 {
+    /** @var Park */
+    protected $model;
+
     // ——————————————————————————————————————————————————————
     // —
     // —    Getters

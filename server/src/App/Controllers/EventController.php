@@ -9,6 +9,7 @@ use Robert2\API\Models\Park;
 use Robert2\API\Models\Material;
 use Robert2\API\Models\MaterialUnit;
 use Robert2\API\Models\User;
+use Robert2\API\Models\Event;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
