@@ -9,7 +9,6 @@ use Robert2\API\Validation\Validator as V;
 use Robert2\API\Errors\ValidationException;
 use Robert2\API\Middlewares\Auth;
 use Robert2\API\Models\User;
-use \phpCAS;
 
 class AuthController
 {

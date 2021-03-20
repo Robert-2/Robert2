@@ -88,7 +88,6 @@ export default {
     },
     logout({ commit }) {
       commit('setUser', null);
-      commit('parks/reset', undefined, { root: true });
 
       Cookies.remove(Config.auth.cookie);
     },

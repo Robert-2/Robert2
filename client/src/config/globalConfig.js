@@ -26,7 +26,6 @@ const defaultConfig = {
   auth: {
     cookie: 'Authorization',
     timeout: 12, // - En heures (ou `null` pour un cookie de session).
-    isCASEnabled: false,
   },
   defaultPaginationLimit: 100,
   beneficiaryTagName: 'Bénéficiaire',
