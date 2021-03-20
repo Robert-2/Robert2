@@ -86,7 +86,19 @@ export default {
       window.localStorage.setItem('userLocale', userLocale);
       dispatch('i18n/setLocale', { locale: userLocale }, { root: true });
     },
-    logout({ commit }) {
+    async logout({ commit }) {
+      const hasPotentiallyStatefulSession = false;
+
+      if (hasPotentiallyStatefulSession) {
+        window.location.assign(`${Config.baseUrl}/logout`);
+
+        // - Timeout de 5 secondes avant de rejeter la promise.
+        // => L'idée étant que la redirection doit avoir lieu dans ce labs de temps.
+        // => Cela permet aussi de "bloquer" les listeners de cette méthodes pour éviter
+        //    qu'ils executent des process post-logout (redirection, vidage de store ...)
+        await new Promise((_, reject) => { setTimeout(reject, 5000); });
+      }
+
       commit('setUser', null);
 
       Cookies.remove(Config.auth.cookie);

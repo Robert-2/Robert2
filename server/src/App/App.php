@@ -51,6 +51,7 @@ class App
         $container = $this->_setHttpCachePovider($container);
         $container = $this->_setErrorHandlers($container);
         $container = $this->_setControllers($container);
+        $container = $this->_setServices($container);
     }
 
     private function _setHttpCachePovider(\Slim\Container $container): \Slim\Container
@@ -104,17 +105,26 @@ class App
         return $container;
     }
 
+    private function _setServices(\Slim\Container $container): \Slim\Container
+    {
+        $container['auth'] = new Services\Auth([
+            new Services\Auth\JWT,
+        ]);
+
+        return $container;
+    }
+
     private function _setMiddlewares(): void
     {
+        $container = $this->app->getContainer();
+
         $this->app->add(new Middlewares\Pagination);
 
         // - On passe l'identification si c'est une requête OPTIONS.
         $request = $this->app->getContainer()->get('request');
         if (!$request->isOptions()) {
             $this->app->add(new Middlewares\Acl);
-            $this->app->add(new Middlewares\Auth([
-                new Middlewares\Auth\JWT,
-            ]));
+            $this->app->add([$container->get('auth'), 'middleware']);
         }
     }
 
@@ -150,6 +160,9 @@ class App
         $this->app->get('/bills/{id:[0-9]+}/pdf[/]', 'BillController:getOnePdf')->setName('getBillPdf');
         $this->app->get('/events/{id:[0-9]+}/pdf[/]', 'EventController:getOnePdf')->setName('getEventPdf');
         $this->app->get('/documents/{id:[0-9]+}/download[/]', 'DocumentController:getOne')->setName('getDocumentFile');
+
+        // - Login services
+        $this->app->get('/logout', 'AuthController:logout');
 
         // - All remaining non-API routes should be handled by Front-End Router
         $this->app->get('/[{path:.*}]', 'HomeController:entrypoint');

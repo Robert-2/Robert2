@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Middlewares;
+namespace Robert2\API\Services;
 
 use Robert2\API\Config\Acl;
-use Robert2\API\Middlewares\Auth\AuthenticatorInterface;
+use Robert2\API\Services\Auth\AuthenticatorInterface;
 use Robert2\API\Models\User;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -27,7 +27,7 @@ final class Auth
         $this->authenticators = $authenticators;
     }
 
-    public function __invoke(Request $request, Response $response, callable $next)
+    public function middleware(Request $request, Response $response, callable $next)
     {
         if (!$this->needsAuthentication($request)) {
             $this->retrieveUser($request);
@@ -39,6 +39,22 @@ final class Auth
         }
 
         return $next($request, $response);
+    }
+
+    public function logout()
+    {
+        if (!static::isAuthenticated()) {
+            return true;
+        }
+
+        $isFullyLogout = true;
+        foreach ($this->authenticators as $auth) {
+            if (!$auth->logout()) {
+                $isFullyLogout = false;
+            }
+        }
+
+        return $isFullyLogout;
     }
 
     // ------------------------------------------------------

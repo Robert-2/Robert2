@@ -6,7 +6,7 @@ namespace Robert2\API\Controllers;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Robert2\API\Errors;
-use Robert2\API\Middlewares\Auth;
+use Robert2\API\Services\Auth;
 use Robert2\API\Models\User;
 
 class UserController extends BaseController
