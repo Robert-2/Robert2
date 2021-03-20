@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Robert2\API\Controllers;
 
 use Robert2\API\Errors;
-use Robert2\API\Middlewares\Auth;
+use Robert2\API\Services\Auth;
 use Robert2\API\Config\Config;
 use Robert2\API\Models\Event;
 use Robert2\API\Models\Document;

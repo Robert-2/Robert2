@@ -3,11 +3,11 @@ declare(strict_types=1);
 
 namespace Robert2\API\Middlewares;
 
-use Slim\Http\Request;
-use Slim\Http\Response;
-
 use Robert2\API\ApiRouter;
 use Robert2\API\Config;
+use Robert2\API\Services\Auth;
+use Slim\Http\Request;
+use Slim\Http\Response;
 
 class Acl
 {

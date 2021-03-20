@@ -1,16 +1,23 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Middlewares\Auth;
+namespace Robert2\API\Services\Auth;
 
 use Firebase\JWT\JWT as JWTCore;
 use Robert2\API\Config\Config;
-use Robert2\API\Middlewares\Auth;
+use Robert2\API\Services\Auth;
 use Robert2\API\Models\User;
 use Slim\Http\Request;
 
 final class JWT implements AuthenticatorInterface
 {
+    private $settings;
+
+    public function __construct()
+    {
+        $this->settings = Config::getSettings();
+    }
+
     public function getUser(Request $request): ?User
     {
         try {
@@ -27,6 +34,12 @@ final class JWT implements AuthenticatorInterface
         return User::find($decoded['user']->id);
     }
 
+    public function logout(): bool
+    {
+        $cookieName = $this->settings['auth']['cookie'];
+        return setcookie($cookieName, '', time() - 42000, '/');
+    }
+
     // ------------------------------------------------------
     // -
     // -    Internal methods
@@ -35,10 +48,8 @@ final class JWT implements AuthenticatorInterface
 
     private function fetchToken(Request $request): string
     {
-        $settings = Config::getSettings();
-
         // - Tente de récupèrer le token dans les headers HTTP.
-        $headerName = $settings['httpAuthHeader'];
+        $headerName = $this->settings['httpAuthHeader'];
         $header = $request->getHeaderLine(sprintf('HTTP_%s', strtoupper(snake_case($headerName))));
         if (!empty($header)) {
             if (preg_match('/Bearer\s+(.*)$/i', $header, $matches)) {
@@ -48,7 +59,7 @@ final class JWT implements AuthenticatorInterface
 
         if (!Auth::isApiRequest($request)) {
             // - Sinon tente de récupèrer le token dans les cookies.
-            $cookieName = $settings['auth']['cookie'];
+            $cookieName = $this->settings['auth']['cookie'];
             $cookieParams = $request->getCookieParams();
             if (isset($cookieParams[$cookieName])) {
                 if (preg_match('/Bearer\s+(.*)$/i', $cookieParams[$cookieName], $matches)) {
@@ -63,12 +74,10 @@ final class JWT implements AuthenticatorInterface
 
     private function decodeToken(string $token): array
     {
-        $settings = Config::getSettings();
-
         try {
             $decoded = JWTCore::decode(
                 $token,
-                $settings['JWTSecret'],
+                $this->settings['JWTSecret'],
                 ['HS256', 'HS512', 'HS384']
             );
             return (array) $decoded;

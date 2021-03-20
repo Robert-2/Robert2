@@ -5,7 +5,7 @@ namespace Robert2\API\Controllers;
 
 use Robert2\API\Errors;
 use Robert2\API\Controllers\Traits\WithPdf;
-use Robert2\API\Middlewares\Auth;
+use Robert2\API\Services\Auth;
 use Robert2\API\Models\Park;
 use Robert2\API\Models\Material;
 use Robert2\API\Models\MaterialUnit;

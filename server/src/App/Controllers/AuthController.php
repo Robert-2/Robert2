@@ -7,7 +7,7 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 use Robert2\API\Validation\Validator as V;
 use Robert2\API\Errors\ValidationException;
-use Robert2\API\Middlewares\Auth;
+use Robert2\API\Services\Auth;
 use Robert2\API\Models\User;
 
 class AuthController
@@ -40,6 +40,18 @@ class AuthController
         $responseData['token'] = Auth\JWT::generateToken($user);
 
         return $response->withJson($responseData, SUCCESS_OK);
+    }
+
+    public function logout(Request $request, Response $response)
+    {
+        $auth = $this->container->get('auth');
+        if (!$auth->logout()) {
+            // TODO: Ajouter un message d'erreur passé au client (lorsqu'on aura un moyen de le faire)
+            //       l'informant du fait qu'il n'a pas été complétement
+            //       déconnécté.
+            return $response->withRedirect('/');
+        }
+        return $response->withRedirect('/login#bye');
     }
 
     // ——————————————————————————————————————————————————————
