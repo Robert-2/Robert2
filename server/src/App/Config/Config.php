@@ -160,6 +160,18 @@ class Config
         return file_exists(self::SETTINGS_FILE);
     }
 
+    public static function getEnv()
+    {
+        $env = $_ENV['APP_ENV'] ?? static::getSettings('env') ?? 'production';
+
+        $availableEnvs = ['development', 'production', 'test'];
+        if (empty($env) || !in_array($env, $availableEnvs)) {
+            $env = 'production';
+        }
+
+        return $env;
+    }
+
     public static function getDbConfig(array $options = []): array
     {
         $options = array_merge(['noCharset' => false], $options);

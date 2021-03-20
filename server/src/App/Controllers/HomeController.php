@@ -170,12 +170,35 @@ class HomeController
             'cache' => false,
         ]);
 
+        //
+        // - Global variables
+        //
+
+        $this->view->getEnvironment()->addGlobal('env', Config::getEnv());
+
+        //
+        // - Extensions
+        //
+
         $this->view->addExtension(new \Slim\Views\TwigExtension(
             $container->router,
             $container->request->getUri()
         ));
 
-        $this->_bindCustomTwigFunctions();
+        //
+        // - Functions
+        //
+
+        $i18n = new I18n();
+        $translate = new \Twig\TwigFunction('translate', [$i18n, 'translate']);
+        $version = new \Twig\TwigFunction('version', $this->getVersion());
+        $serverConfig = new \Twig\TwigFunction('serverConfig', $this->getServerConfig());
+        $clientAssetFunction = new \Twig\TwigFunction('client_asset', $this->getClientAsset());
+
+        $this->view->getEnvironment()->addFunction($translate);
+        $this->view->getEnvironment()->addFunction($version);
+        $this->view->getEnvironment()->addFunction($serverConfig);
+        $this->view->getEnvironment()->addFunction($clientAssetFunction);
     }
 
     private function _getCheckRequirementsData(): array
@@ -197,18 +220,6 @@ class HomeController
             'missingExtensions' => $missingExtensions,
             'requirementsOK' => $phpversionOK && empty($missingExtensions),
         ];
-    }
-
-    private function _bindCustomTwigFunctions(): void
-    {
-        $i18n = new I18n();
-        $translate = new \Twig\TwigFunction('translate', [$i18n, 'translate']);
-        $version = new \Twig\TwigFunction('version', $this->getVersion());
-        $serverConfig = new \Twig\TwigFunction('serverConfig', $this->getServerConfig());
-
-        $this->view->getEnvironment()->addFunction($translate);
-        $this->view->getEnvironment()->addFunction($version);
-        $this->view->getEnvironment()->addFunction($serverConfig);
     }
 
     private function _validateCompanyData($companyData): void
@@ -240,6 +251,23 @@ class HomeController
     {
         return function (): string {
             return trim(file_get_contents(SRC_FOLDER . DS . 'VERSION'));
+        };
+    }
+
+    public function getClientAsset(): callable
+    {
+        return function ($path) {
+            $host = Config::getSettings();
+
+            $host = Config::getEnv() === 'development'
+                ? 'http://localhost:8081'
+                : '';
+
+            return vsprintf('%s/webclient/%s?v=%s', [
+                rtrim($host, '/'),
+                ltrim($path, '/'),
+                $this->getVersion()(),
+            ]);
         };
     }
 
