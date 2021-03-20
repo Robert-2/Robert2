@@ -1,5 +1,4 @@
 import Config from '@/config/globalConfig';
-import store from '@/store';
 
 export default {
   name: 'CalendarEventDetailsHeader',
@@ -8,7 +7,6 @@ export default {
     return {
       isConfirming: false,
       fromToDates: {},
-      isVisitor: store.state.user.groupId === 'visitor',
     };
   },
   computed: {
@@ -20,7 +18,9 @@ export default {
         && this.event.beneficiaries.length > 0
       );
     },
-
+    isVisitor() {
+      return this.$store.getters['auth/is']('visitor');
+    },
     eventSummaryPdfUrl() {
       const { baseUrl } = Config;
       const { id } = this.event || { id: null };

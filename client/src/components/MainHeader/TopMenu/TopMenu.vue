@@ -47,8 +47,6 @@
 
 <script>
 import ClickOutside from 'vue-click-outside';
-import Auth from '@/auth';
-import store from '@/store';
 
 export default {
   name: 'TopMenu',
@@ -57,9 +55,9 @@ export default {
     return { isDropdownMenuOpen: false };
   },
   computed: {
-    nickname() { return store.state.user.pseudo; },
-    isAdmin() { return store.state.user.groupId === 'admin'; },
-    isMember() { return store.state.user.groupId === 'member'; },
+    nickname() {
+      return this.$store.state.auth.user.pseudo;
+    },
   },
   watch: {
     $route() {
@@ -76,7 +74,9 @@ export default {
     },
 
     logout() {
-      Auth.logout({ mode: 'bye' });
+      this.$store.dispatch('auth/logout').then(() => {
+        this.$router.replace({ path: '/login', hash: 'bye' });
+      });
     },
   },
 };

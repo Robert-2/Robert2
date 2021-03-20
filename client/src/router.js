@@ -1,7 +1,6 @@
 /* eslint-disable import/no-cycle */
 import Vue from 'vue';
 import Router from 'vue-router';
-import Auth from '@/auth';
 import store from '@/store';
 import Login from '@/pages/Login/Login.vue';
 import UserProfile from '@/pages/UserProfile/UserProfile.vue';
@@ -33,6 +32,9 @@ const router = new Router({
       path: '/login',
       name: 'login',
       component: Login,
+      meta: {
+        requiresAuth: false,
+      },
     },
     {
       path: '/profile',
@@ -327,23 +329,64 @@ const router = new Router({
 router.beforeEach((to, from, next) => {
   let restrictAccess = false;
 
-  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
-  if (requiresAuth && !Auth.is.authenticated) {
-    restrictAccess = true;
+  const requiresAuth = to.matched.reduce(
+    (currentState, { meta }) => {
+      // - Non indiqué explicitement => Route publique.
+      if (meta.requiresAuth == null) {
+        return currentState;
+      }
+
+      // - Marqué à `true` (ou valeur truthy) => Authentification requise.
+      if (meta.requiresAuth) {
+        return true;
+      }
+
+      // - Marqué à `false` (ou valeur falsy) => Route pour visiteurs.
+      //   (uniquement si l'état courant n'est pas déjà marqué comme "authentification requise")
+      //   (= l'authentification requise l'emporte sur la route visiteur)
+      if (currentState === null && !meta.requiresAuth) {
+        return false;
+      }
+
+      return currentState;
+    },
+    null,
+  );
+
+  const isLogged = store.getters['auth/isLogged'];
+  if (requiresAuth && !isLogged) {
+    next('/login');
+    return;
+  }
+
+  if (!requiresAuth) {
+    if (requiresAuth === false && isLogged) {
+      next('/');
+      return;
+    }
+
+    next();
+    return;
   }
 
   const { requiresGroups } = to.matched[0].meta;
-  const { groupId } = store.state.user;
   if (requiresGroups && requiresGroups.length) {
-    const isAllowed = requiresGroups.includes(groupId);
-    if (!isAllowed) {
+    if (!isLogged) {
+      next('/login');
+      return;
+    }
+
+    const { groupId } = store.state.auth.user;
+    if (!requiresGroups.includes(groupId)) {
       restrictAccess = true;
     }
   }
 
   if (restrictAccess) {
     window.localStorage.removeItem('lastVisited');
-    Auth.logout({ mode: 'restricted' });
+    store.dispatch('auth/logout').then(() => {
+      next({ path: '/login', hash: 'restricted' });
+    });
     return;
   }
 

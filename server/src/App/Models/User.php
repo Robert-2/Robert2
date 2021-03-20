@@ -25,7 +25,7 @@ class User extends BaseModel
         parent::__construct($attributes);
 
         $this->validation = [
-            'pseudo'   => V::notEmpty()->alnum()->length(4, 100),
+            'pseudo'   => V::notEmpty()->alnum('-', '_')->length(4, 100),
             'email'    => V::notEmpty()->email()->length(5, 191),
             'group_id' => V::notEmpty()->oneOf(
                 V::equals('admin'),
@@ -100,6 +100,8 @@ class User extends BaseModel
     // —
     // ——————————————————————————————————————————————————————
 
+    protected $hidden = ['password'];
+
     public function getAll(bool $softDeleted = false): Builder
     {
         $fields = array_merge(['id', 'pseudo', 'email', 'group_id'], $this->dates);
@@ -149,6 +151,11 @@ class User extends BaseModel
         $settings = $UserSetting->edit($userId, $data);
 
         return $settings->toArray();
+    }
+
+    public static function new(array $data = []): User
+    {
+        return (new static())->edit(null, $data);
     }
 
     public function edit(?int $id = null, array $data = []): Model

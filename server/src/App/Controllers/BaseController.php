@@ -5,15 +5,11 @@ namespace Robert2\API\Controllers;
 
 use Slim\Http\Request;
 use Slim\Http\Response;
-use Illuminate\Pagination\LengthAwarePaginator as Paginator;
-
 use Robert2\API\Errors;
-use Robert2\API\Controllers\Traits\AuthUser;
+use Illuminate\Pagination\LengthAwarePaginator as Paginator;
 
 abstract class BaseController
 {
-    use AuthUser;
-
     protected $container;
     protected $model;
     protected $itemsCount;

@@ -22,6 +22,8 @@ export default {
     EventStep5,
   },
   data() {
+    const currentUser = this.$store.state.auth.user;
+
     return {
       help: 'page-events.help-edit',
       error: null,
@@ -62,7 +64,7 @@ export default {
         location: '',
         description: '',
         is_confirmed: false,
-        user_id: store.state.user.id,
+        user_id: currentUser.id,
         is_billable: true,
         beneficiaries: [],
         technicians: [],

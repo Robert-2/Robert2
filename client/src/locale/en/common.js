@@ -139,6 +139,7 @@ export default {
   'open-in-openstreetmap': "Search in OpenStreetMap",
   'on-date': "On {date}",
   'from-date-to-date': "from\u00a0{from} to\u00a0{to}",
+  'or': "or",
   'for': "For",
   'with': "With",
   'in-progress': "in progress",

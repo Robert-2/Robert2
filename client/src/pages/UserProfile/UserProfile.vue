@@ -8,7 +8,7 @@
         {{ $t('page-profile.you-are-group', { group: $t(groupId) }) }}
       </h3>
       <div class="UserProfile__content">
-        <form class="Form" method="POST" @submit="saveUser">
+        <form class="Form" method="POST" @submit.prevent="save">
           <section class="Form__fieldset">
             <h4 class="Form__fieldset__title">
               {{ $t('connexion-infos') }}

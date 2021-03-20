@@ -13,6 +13,9 @@ class EventController extends BaseController
 {
     use WithPdf;
 
+    /** @var Event */
+    protected $model;
+
     // ——————————————————————————————————————————————————————
     // —
     // —    Getters

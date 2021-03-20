@@ -1,6 +1,10 @@
 <?php
 declare(strict_types=1);
 
+use Robert2\API\Config\Config;
+use Slim\Http\Headers;
+use Slim\Http\Response;
+
 /**
  * Check wether current run is in TEST mode
  *
@@ -227,4 +231,27 @@ function moveUploadedFile($directory, Slim\Http\UploadedFile $uploadedFile)
     $uploadedFile->moveTo($directory . DS . $nameSecure);
 
     return $nameSecure;
+}
+
+function alphanumericalize(string $string): string
+{
+    return (new Cocur\Slugify\Slugify())
+        ->slugify($string, ['separator' => '-']);
+}
+
+function buildResponse(int $status = 200): Response
+{
+    $headers = ['Content-Type' => 'text/html; charset=UTF-8'];
+
+    $isCORSEnabled = Config::getSettings('enableCORS');
+    if (!isTestMode() && $isCORSEnabled) {
+        $headers = array_merge($headers, [
+            'Access-Control-Allow-Origin'  => '*',
+            'Access-Control-Allow-Headers' => 'X-Requested-With, Content-Type, Accept, Origin, Authorization',
+            'Access-Control-Allow-Methods' => 'GET, POST, PUT, DELETE, OPTIONS'
+        ]);
+    }
+
+    return (new Response($status, new Headers($headers)))
+        ->withProtocolVersion('1.1');
 }
