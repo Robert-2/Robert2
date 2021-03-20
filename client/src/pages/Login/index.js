@@ -1,4 +1,3 @@
-import Config from '@/config/globalConfig';
 import Layout from './components/Layout/Layout.vue';
 
 export default {
