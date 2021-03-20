@@ -132,8 +132,9 @@ class App
         // - Auth middlewares are skipped for unit tests
         if (!isTestMode() && !$request->isOptions()) {
             $this->app->add(new Middlewares\Acl);
+
             // - JWT security middleware (added last to be executed first)
-            $this->app->add(Middlewares\Security::initJwtAuth());
+            $this->app->add(Middlewares\Auth\JWT::init());
         }
     }
 

@@ -8,7 +8,7 @@ use Slim\Http\Response;
 use Robert2\API\Validation\Validator as V;
 
 use Robert2\API\Errors\ValidationException;
-use Robert2\API\Middlewares\Security;
+use Robert2\API\Middlewares\Auth;
 use Robert2\API\Models\User;
 use Robert2\API\Config\Config;
 
@@ -34,7 +34,7 @@ class TokenController
         $tokenDuration = $user['settings']['auth_token_validity_duration'] ?: $defaultTokenDuration;
 
         $responseData['user'] = $user;
-        $responseData['token'] = Security::generateToken($user, $tokenDuration);
+        $responseData['token'] = Auth\JWT::generateToken($user, $tokenDuration);
 
         if (!isTestMode()) {
             $expireHours = $this->config['sessionExpireHours'] ?: 12;

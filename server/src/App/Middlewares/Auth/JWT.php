@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Middlewares;
+namespace Robert2\API\Middlewares\Auth;
 
-use Firebase\JWT\JWT;
+use Firebase\JWT\JWT as JWTCore;
 use Tuupola\Middleware\JwtAuthentication;
 use Monolog\Logger;
 use Monolog\Handler\RotatingFileHandler;
@@ -11,7 +11,7 @@ use Monolog\Handler\RotatingFileHandler;
 use Robert2\API\Config\Config;
 use Robert2\API\Config\Acl;
 
-class Security
+class JWT
 {
     public static function generateToken(array $user, int $duration = 2): string
     {
@@ -26,14 +26,14 @@ class Security
 
         $secret = Config::getSettings('JWTSecret');
 
-        return JWT::encode($payload, $secret, "HS256");
+        return JWTCore::encode($payload, $secret, "HS256");
     }
 
     /**
      * Inits and returns the JwtAuthentication Middleware
      * @codeCoverageIgnore
      */
-    public static function initJwtAuth(): JwtAuthentication
+    public static function init(): JwtAuthentication
     {
         $settings = Config::getSettings();
 

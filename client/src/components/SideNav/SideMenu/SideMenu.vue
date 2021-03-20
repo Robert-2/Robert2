@@ -129,13 +129,15 @@
 </style>
 
 <script>
-import store from '@/store';
-
 export default {
   name: 'SideMenu',
   computed: {
-    isAdmin() { return store.state.user.groupId === 'admin'; },
-    isMember() { return store.state.user.groupId === 'member'; },
+    isAdmin() {
+      return this.$store.getters['auth/is']('admin');
+    },
+    isMember() {
+      return this.$store.getters['auth/is']('member');
+    },
   },
 };
 </script>
