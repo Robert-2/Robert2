@@ -1,5 +1,4 @@
 import moment from 'moment';
-import store from '@/store';
 import FormField from '@/components/FormField/FormField.vue';
 import SwitchToggle from '@/components/SwitchToggle/SwitchToggle.vue';
 import Help from '@/components/Help/Help.vue';
@@ -18,20 +17,21 @@ export default {
         park: this.$route.query.park || '',
         hasMissingMaterials: false,
       },
-      isVisitor: store.state.user.groupId === 'visitor',
     };
   },
   computed: {
     parks() {
-      return store.state.parks.list;
+      return this.$store.state.parks.list;
     },
-
     isToday() {
       return moment(this.centerDate).isSame(moment(), 'day');
     },
+    isVisitor() {
+      return this.$store.getters['auth/is']('visitor');
+    },
   },
   mounted() {
-    store.dispatch('parks/fetch');
+    this.$store.dispatch('parks/fetch');
   },
   methods: {
     setCenterDate(date) {

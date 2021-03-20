@@ -1,5 +1,3 @@
-/* eslint-disable import/no-cycle */
-
 import Axios from 'axios';
 import Config from '@/config/globalConfig';
 import Cookies from '@/utils/cookies';

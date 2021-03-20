@@ -14,11 +14,11 @@ class Acl
     public function __invoke(Request $request, Response $response, callable $next)
     {
         $currentRoute = $this->_getCurrentRoute($request);
-        if (!$this->_isProtectedRoute($currentRoute)) {
+        if (!preg_match('/^\/?api\//', $currentRoute)) {
             return $next($request, $response);
         }
 
-        $groupId = $this->_getCurrentUserGroup($request, $currentRoute);
+        $groupId = Auth::isAuthenticated() ? Auth::user()->group_id : 'visitor';
         $method = strtolower($request->getMethod());
         $deniedRoutes = $this->_getDeniedRoutes($groupId, $method);
         if (empty($deniedRoutes)) {
@@ -43,25 +43,6 @@ class Acl
         $currentRoute = preg_replace('/[0-9]+/', '{id:[0-9]+}', $currentRoute);
         $currentRoute = preg_replace('/\/$/', '', $currentRoute);
         return $currentRoute;
-    }
-
-    protected function _isProtectedRoute(string $route): bool
-    {
-        if (!preg_match('/^\/?api\//', $route)) {
-            return false;
-        }
-
-        return !in_array($route, Config\Acl::PUBLIC_ROUTES);
-    }
-
-    protected function _getCurrentUserGroup(Request $request, string $currentRoute): string
-    {
-        $tokenData = $request->getAttribute(Config\Config::getSettings('JWTAttributeName'));
-        if (!$tokenData || !array_key_exists('user', $tokenData)) {
-            throw new \RuntimeException("Missing current user from token data for route: " . $currentRoute);
-        }
-
-        return $tokenData['user']->group_id;
     }
 
     protected function _getGroupDeny(string $groupId)

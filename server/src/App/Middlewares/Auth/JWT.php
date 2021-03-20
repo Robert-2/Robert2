@@ -4,75 +4,128 @@ declare(strict_types=1);
 namespace Robert2\API\Middlewares\Auth;
 
 use Firebase\JWT\JWT as JWTCore;
-use Tuupola\Middleware\JwtAuthentication;
-use Monolog\Logger;
-use Monolog\Handler\RotatingFileHandler;
-
 use Robert2\API\Config\Config;
-use Robert2\API\Config\Acl;
+use Robert2\API\Middlewares\Auth;
+use Robert2\API\Models\User;
+use Slim\Http\Request;
 
-class JWT
+final class JWT implements AuthenticatorInterface
 {
-    public static function generateToken(array $user, int $duration = 2): string
+    public function getUser(Request $request): ?User
     {
-        $now     = new \DateTime();
-        $expires = new \DateTime(sprintf('now +%d hours', $duration));
+        try {
+            $token = $this->fetchToken($request);
+            $decoded = $this->decodeToken($token);
+        } catch (\RuntimeException | \DomainException $exception) {
+            return null;
+        }
 
-        $payload = [
-            "iat"  => $now->getTimeStamp(),
-            "exp"  => $expires->getTimeStamp(),
-            "user" => $user
-        ];
+        if (empty($decoded['user']) || !property_exists($decoded['user'], 'id')) {
+            return null;
+        }
 
-        $secret = Config::getSettings('JWTSecret');
-
-        return JWTCore::encode($payload, $secret, "HS256");
+        return User::find($decoded['user']->id);
     }
 
-    /**
-     * Inits and returns the JwtAuthentication Middleware
-     * @codeCoverageIgnore
-     */
-    public static function init(): JwtAuthentication
+    // ------------------------------------------------------
+    // -
+    // -    Internal methods
+    // -
+    // ------------------------------------------------------
+
+    private function fetchToken(Request $request): string
     {
         $settings = Config::getSettings();
 
-        $headerName = sprintf(
-            'HTTP_%s',
-            strtoupper(snake_case($settings['httpAuthHeader']))
+        // - Tente de récupèrer le token dans les headers HTTP.
+        $headerName = $settings['httpAuthHeader'];
+        $header = $request->getHeaderLine(sprintf('HTTP_%s', strtoupper(snake_case($headerName))));
+        if (!empty($header)) {
+            if (preg_match('/Bearer\s+(.*)$/i', $header, $matches)) {
+                return $matches[1];
+            }
+        }
+
+        if (!Auth::isApiRequest($request)) {
+            // - Sinon tente de récupèrer le token dans les cookies.
+            $cookieName = $settings['auth']['cookie'];
+            $cookieParams = $request->getCookieParams();
+            if (isset($cookieParams[$cookieName])) {
+                if (preg_match('/Bearer\s+(.*)$/i', $cookieParams[$cookieName], $matches)) {
+                    return $matches[1];
+                }
+                return $cookieParams[$cookieName];
+            };
+        }
+
+        throw new \RuntimeException("Token introuvable.");
+    }
+
+    private function decodeToken(string $token): array
+    {
+        $settings = Config::getSettings();
+
+        try {
+            $decoded = JWTCore::decode(
+                $token,
+                $settings['JWTSecret'],
+                ['HS256', 'HS512', 'HS384']
+            );
+            return (array) $decoded;
+        } catch (\Exception $exception) {
+            throw $exception;
+        }
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Public static methods
+    // -
+    // ------------------------------------------------------
+
+    public static function generateToken(User $user): string
+    {
+        $duration = static::getTokenDuration($user) ?: 12;
+        $expires = new \DateTime(sprintf('now +%d hours', $duration));
+
+        $payload = [
+            'iat'  => (new \DateTime())->getTimeStamp(),
+            'exp'  => $expires->getTimeStamp(),
+            'user' => $user->toArray()
+        ];
+
+        $secret = Config::getSettings('JWTSecret');
+        return JWTCore::encode($payload, $secret, "HS256");
+    }
+
+    public static function registerToken(User $user, $forceSessionOnly = false): string
+    {
+        $settings = Config::getSettings();
+        $token = static::generateToken($user);
+
+        $expireTime = 0;
+        if (!$forceSessionOnly) {
+            $expireHours = static::getTokenDuration($user);
+            if ($expireHours && $expireHours !== 0) {
+                $expireTime = time() + $expireHours * 60 * 60;
+            }
+        }
+
+        setcookie(
+            $settings['auth']['cookie'],
+            $token,
+            $expireTime,
+            '/'
         );
 
-        $logger = new Logger('slim');
-        $rotating = new RotatingFileHandler(VAR_FOLDER . DS . 'logs' . DS . 'JWTauth', 0, Logger::DEBUG);
-        $logger->pushHandler($rotating);
+        return $token;
+    }
 
-        return new JwtAuthentication([
-            'secure'    => $settings['useHTTPS'],
-            'secret'    => $settings['JWTSecret'],
-            'header'    => $headerName,
-            'cookie'    => $settings['httpAuthHeader'],
-            'attribute' => Config::getSettings('JWTAttributeName'),
-            'path'      => ['/api'],
-            'ignore'    => Acl::PUBLIC_ROUTES,
-            "logger"    => $logger,
-            'error'     => function ($response, $args) {
-                $response = $response
-                    ->withHeader('Access-Control-Allow-Origin', '*')
-                    ->withHeader(
-                        'Access-Control-Allow-Headers',
-                        'X-Requested-With, Content-Type, Accept, Origin, Authorization'
-                    )
-                    ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    protected static function getTokenDuration(User $user)
+    {
+        $settings = Config::getSettings();
 
-                $data = [
-                    'success' => false,
-                    'error'   => [
-                        'message' => $args['message'],
-                        'details' => null,
-                    ],
-                ];
-                return $response->withJson($data, ERROR_UNAUTHORIZED);
-            },
-        ]);
+        $defaultTokenDuration = $settings['sessionExpireHours'];
+        return $user->settings['auth_token_validity_duration'] ?: $defaultTokenDuration;
     }
 }

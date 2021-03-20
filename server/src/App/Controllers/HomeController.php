@@ -3,14 +3,13 @@ declare(strict_types=1);
 
 namespace Robert2\API\Controllers;
 
+use Robert2\API\Config\Config;
+use Robert2\API\Errors;
+use Robert2\API\I18n\I18n;
+use Robert2\API\Models;
+use Robert2\Install;
 use Slim\Http\Request;
 use Slim\Http\Response;
-
-use Robert2\Install;
-use Robert2\API\Errors;
-use Robert2\API\Config;
-use Robert2\API\Models;
-use Robert2\API\I18n\I18n;
 
 class HomeController
 {
@@ -30,7 +29,7 @@ class HomeController
 
     public function entrypoint(Request $request, Response $response)
     {
-        if (!Config\Config::customConfigExists()) {
+        if (!Config::customConfigExists()) {
             return $response->withRedirect('/install', 307); // 307 is "Temporary Redirect"
         }
         return $this->view->render($response, 'entrypoint.twig');
@@ -72,8 +71,8 @@ class HomeController
 
                 if ($currentStep === 'database') {
                     $settings = Install\Install::getSettingsFromInstallData();
-                    Config\Config::saveCustomConfig($settings, true);
-                    Config\Config::getPDO(); // - Try to connect to DB
+                    Config::saveCustomConfig($settings, true);
+                    Config::getPDO(); // - Try to connect to DB
                 }
 
                 if ($currentStep === 'dbStructure') {
@@ -114,7 +113,7 @@ class HomeController
                 }
 
                 if ($currentStep === 'database') {
-                    Config\Config::deleteCustomConfig();
+                    Config::deleteCustomConfig();
                 }
             }
         }
@@ -131,14 +130,14 @@ class HomeController
             try {
                 $stepData = [
                     'migrationStatus' => Install\Install::getMigrationsStatus(),
-                    'canProcess'      => true
+                    'canProcess' => true
                 ];
             } catch (\Exception $e) {
                 $stepData = [
                     'migrationStatus' => [],
-                    'errorCode'       => $e->getCode(),
-                    'error'           => $e->getMessage(),
-                    'canProcess'      => false
+                    'errorCode' => $e->getCode(),
+                    'error' => $e->getMessage(),
+                    'canProcess' => false
                 ];
             }
         }
@@ -149,13 +148,13 @@ class HomeController
         }
 
         return $this->view->render($response, 'install.twig', [
-            'lang'             => $lang,
-            'step'             => $installProgress['step'],
-            'stepNumber'       => array_search($installProgress['step'], Install\Install::INSTALL_STEPS),
-            'error'            => $error,
+            'lang' => $lang,
+            'step' => $installProgress['step'],
+            'stepNumber' => array_search($installProgress['step'], Install\Install::INSTALL_STEPS),
+            'error' => $error,
             'validationErrors' => $validationErrors,
-            'stepData'         => $stepData,
-            'config'           => $this->config,
+            'stepData' => $stepData,
+            'config' => $this->config,
         ]);
     }
 
@@ -192,11 +191,11 @@ class HomeController
         $missingExtensions = array_diff($neededExstensions, $loadedExtensions);
 
         return [
-            'step'              => 'welcome',
-            'phpVersion'        => $phpVersion,
-            'phpVersionOK'      => $phpversionOK,
+            'step' => 'welcome',
+            'phpVersion' => $phpVersion,
+            'phpVersionOK' => $phpversionOK,
             'missingExtensions' => $missingExtensions,
-            'requirementsOK'    => $phpversionOK && empty($missingExtensions),
+            'requirementsOK' => $phpversionOK && empty($missingExtensions),
         ];
     }
 
@@ -246,28 +245,32 @@ class HomeController
 
     protected function getServerConfig(): callable
     {
-        $rawConfig = Config\Config::getSettings();
+        $rawConfig = Config::getSettings();
         $config = [
             'baseUrl' => $rawConfig['apiUrl'],
-            'api'     => [
-                'url'     => $rawConfig['apiUrl'] . '/api',
+            'api' => [
+                'url' => $rawConfig['apiUrl'] . '/api',
                 'headers' => $rawConfig['apiHeaders'],
                 'version' => $this->getVersion()()
             ],
+            'auth' => [
+                'cookie' => $rawConfig['auth']['cookie'],
+                'timeout' => $rawConfig['sessionExpireHours'],
+            ],
             'defaultPaginationLimit' => $rawConfig['maxItemsPerPage'],
-            'defaultLang'            => $rawConfig['defaultLang'],
-            'currency'               => $rawConfig['currency'],
-            'beneficiaryTagName'     => $rawConfig['defaultTags']['beneficiary'],
-            'technicianTagName'      => $rawConfig['defaultTags']['technician'],
-            'billingMode'            => $rawConfig['billingMode'],
-            'degressiveRate'         => sprintf(
+            'defaultLang' => $rawConfig['defaultLang'],
+            'currency' => $rawConfig['currency'],
+            'beneficiaryTagName' => $rawConfig['defaultTags']['beneficiary'],
+            'technicianTagName' => $rawConfig['defaultTags']['technician'],
+            'billingMode' => $rawConfig['billingMode'],
+            'degressiveRate' => sprintf(
                 'function (daysCount) { return %s; }',
                 $rawConfig['degressiveRateFunction']
             ),
         ];
 
         return function () use ($config): string {
-            $jsonConfig = json_encode($config, Config\Config::JSON_OPTIONS);
+            $jsonConfig = json_encode($config, Config::JSON_OPTIONS);
             $jsonConfig = preg_replace('/"degressiveRate": "/', '"degressiveRate": ', $jsonConfig);
             return preg_replace('/}"/', '}', $jsonConfig);
         };

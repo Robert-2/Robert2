@@ -18,81 +18,83 @@ class Config
      * or even better, use the Installation Wizard.
      */
     const DEFAULT_SETTINGS = [
-        'apiUrl'              => (USE_SSL ? 'https://' : 'http://') . HOST_NAME,
-        'apiHeaders'          => ['Accept' => 'application/json'],
-        'basename'            => "Robert2",
-        'enableCORS'          => false,
+        'apiUrl' => (USE_SSL ? 'https://' : 'http://') . HOST_NAME,
+        'apiHeaders' => ['Accept' => 'application/json'],
+        'basename' => "Robert2",
+        'enableCORS' => false,
         'displayErrorDetails' => false,
-        'useRouterCache'      => true,
-        'useHTTPS'            => USE_SSL,
-        'routerCacheFile'     => VAR_FOLDER . DS . 'cache' . DS . 'routes.php',
-        'JWTSecret'           => 'super_secret_key_you_should_not_commit',
-        'JWTAttributeName'    => 'JWT',
-        'httpAuthHeader'      => 'Authorization',
-        'sessionExpireHours'  => 12,
-        'maxItemsPerPage'     => 100,
-        'defaultLang'         => 'fr',
-        'defaultTags'         => [
+        'useRouterCache' => true,
+        'useHTTPS' => USE_SSL,
+        'routerCacheFile' => VAR_FOLDER . DS . 'cache' . DS . 'routes.php',
+        'JWTSecret' => 'super_secret_key_you_should_not_commit',
+        'httpAuthHeader' => 'Authorization',
+        'sessionExpireHours' => 12,
+        'maxItemsPerPage' => 100,
+        'defaultLang' => 'fr',
+        'defaultTags' => [
             'beneficiary' => 'Bénéficiaire',
-            'technician'  => 'Technicien',
+            'technician' => 'Technicien',
         ],
-        'billingMode'            => 'partial',
+        'billingMode' => 'partial',
         'degressiveRateFunction' => '((daysCount - 1) * 0.75) + 1',
-        'currency'               => [
-          'symbol'         => '€',
-          'name'           => 'Euro',
-          'iso'            => 'EUR',
-          'symbol_intl'    => '€',
+        'auth' => [
+            'cookie' => 'auth',
+        ],
+        'currency' => [
+          'symbol' => '€',
+          'name' => 'Euro',
+          'iso' => 'EUR',
+          'symbol_intl' => '€',
           'decimal_digits' => 2,
-          'rounding'       => 0,
+          'rounding' => 0,
         ],
         'db' => [
-            'driver'       => 'mysql',
-            'host'         => 'localhost',
-            'port'         => 3306,
-            'database'     => 'robert2',
+            'driver' => 'mysql',
+            'host' => 'localhost',
+            'port' => 3306,
+            'database' => 'robert2',
             'testDatabase' => 'robert2_test',
-            'username'     => 'root',
-            'password'     => '',
-            'charset'      => 'utf8mb4',
-            'collation'    => 'utf8mb4_unicode_ci',
-            'prefix'       => '',
-            'options'      => [
-                \PDO::ATTR_CASE               => \PDO::CASE_NATURAL,
-                \PDO::ATTR_ERRMODE            => \PDO::ERRMODE_EXCEPTION,
+            'username' => 'root',
+            'password' => '',
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'options' => [
+                \PDO::ATTR_CASE => \PDO::CASE_NATURAL,
+                \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
                 \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
-                \PDO::ATTR_STRINGIFY_FETCHES  => false,
-                \PDO::ATTR_EMULATE_PREPARES   => true,
-                \PDO::ATTR_PERSISTENT         => true,
+                \PDO::ATTR_STRINGIFY_FETCHES => false,
+                \PDO::ATTR_EMULATE_PREPARES => true,
+                \PDO::ATTR_PERSISTENT => true,
             ],
         ],
         'companyData' => [
-            'name'         => '',
-            'street'       => '',
-            'zipCode'      => '',
-            'locality'     => '',
-            'country'      => '',
-            'phone'        => '',
-            'email'        => '',
+            'name' => '',
+            'street' => '',
+            'zipCode' => '',
+            'locality' => '',
+            'country' => '',
+            'phone' => '',
+            'email' => '',
             'legalNumbers' => [
                 [
-                    'name'  => 'SIRET',
+                    'name' => 'SIRET',
                     'value' => '',
                 ],
                 [
-                    'name'  => 'APE',
+                    'name' => 'APE',
                     'value' => '',
                 ],
             ],
             'vatNumber' => '',
-            'vatRate'   => 0.0,
+            'vatRate' => 0.0,
         ],
         'logger' => [
             'directory' => VAR_FOLDER . DS . 'logs',
-            'filename'  => 'robert2-api.log',
-            'timezone'  => 'Europe/Paris',
-            'level'     => 'debug',
-            'handlers'  => [],
+            'filename' => 'robert2-api.log',
+            'timezone' => 'Europe/Paris',
+            'level' => 'debug',
+            'handlers' => [],
             'max_files' => 10,
         ],
         'authorizedFileTypes' => [
@@ -119,36 +121,38 @@ class Config
         JSON_UNESCAPED_SLASHES;
 
     public const CUSTOM_SETTINGS = [
-        'apiUrl'                 => 'string',
-        'basename'               => 'string',
-        'enableCORS'             => 'bool',
-        'displayErrorDetails'    => 'bool',
-        'useRouterCache'         => 'bool',
-        'useHTTPS'               => 'bool',
-        'useHTTPS'               => 'bool',
-        'JWTSecret'              => 'string',
-        'httpAuthHeader'         => 'string',
-        'sessionExpireHours'     => 'int',
-        'maxItemsPerPage'        => 'int',
-        'billingMode'            => 'string',
+        'apiUrl' => 'string',
+        'basename' => 'string',
+        'enableCORS' => 'bool',
+        'displayErrorDetails' => 'bool',
+        'useRouterCache' => 'bool',
+        'useHTTPS' => 'bool',
+        'useHTTPS' => 'bool',
+        'JWTSecret' => 'string',
+        'httpAuthHeader' => 'string',
+        'sessionExpireHours' => 'int',
+        'maxItemsPerPage' => 'int',
+        'billingMode' => 'string',
         'degressiveRateFunction' => 'string',
-        'defaultLang'            => 'string',
-        'defaultTags'            => 'array',
-        'currency'               => 'array',
-        'db'                     => 'array',
-        'companyData'            => 'array',
+        'defaultLang' => 'string',
+        'defaultTags' => 'array',
+        'currency' => 'array',
+        'db' => 'array',
+        'companyData' => 'array',
     ];
 
     public static function getSettings(?string $setting = null)
     {
-        // @codeCoverageIgnoreStart
-        if (!self::customConfigExists()) {
-            return (!empty($setting)) ? self::DEFAULT_SETTINGS[$setting] : self::DEFAULT_SETTINGS;
+        $settings = self::DEFAULT_SETTINGS;
+        if (self::customConfigExists()) {
+            $settings = self::_readSettingsFile();
         }
-        // @codeCoverageIgnoreEnd
 
-        $settings = self::_readSettingsFile();
-        return (!empty($setting)) ? $settings[$setting] : $settings;
+        if (empty($setting)) {
+            return $settings;
+        }
+
+        return $settings[$setting] ?? null;
     }
 
     public static function customConfigExists(): bool

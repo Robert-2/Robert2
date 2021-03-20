@@ -6,8 +6,6 @@ namespace Robert2\API;
 use Robert2\API\Config as Config;
 use Robert2\API\Errors as Errors;
 use Robert2\API\Middlewares as Middlewares;
-use Slim\Http\Headers;
-use Slim\Http\Response;
 
 class App
 {
@@ -17,7 +15,7 @@ class App
     {
         $this->app = new \Slim\App([
             'settings' => Config\Config::getSettings(),
-            'response' => $this->_getCORSResponse()
+            'response' => buildResponse(200),
         ]);
 
         $this->_setContainer();
@@ -31,7 +29,7 @@ class App
             $settings = $this->app->getContainer()->get('settings');
             $settings->replace([
                 'displayErrorDetails' => true,
-                'routerCacheFile'     => false,
+                'routerCacheFile' => false,
             ]);
         }
 
@@ -43,24 +41,6 @@ class App
     // -    Internal Methods
     // -
     // ------------------------------------------------------
-
-    private function _getCORSResponse()
-    {
-        return function ($container): Response {
-            $settings = $container->get('settings');
-            $headers = ['Content-Type' => 'text/html; charset=UTF-8'];
-
-            if (!isTestMode() && $settings['enableCORS']) {
-                $headers = array_merge($headers, [
-                    'Access-Control-Allow-Origin'  => '*',
-                    'Access-Control-Allow-Headers' => 'X-Requested-With, Content-Type, Accept, Origin, Authorization',
-                    'Access-Control-Allow-Methods' => 'GET, POST, PUT, DELETE, OPTIONS'
-                ]);
-            }
-
-            return (new Response(200, new Headers($headers)))->withProtocolVersion('1.1');
-        };
-    }
 
     private function _setContainer(): void
     {
@@ -128,13 +108,13 @@ class App
     {
         $this->app->add(new Middlewares\Pagination);
 
+        // - On passe l'identification si c'est une requête OPTIONS.
         $request = $this->app->getContainer()->get('request');
-        // - Auth middlewares are skipped for unit tests
-        if (!isTestMode() && !$request->isOptions()) {
+        if (!$request->isOptions()) {
             $this->app->add(new Middlewares\Acl);
-
-            // - JWT security middleware (added last to be executed first)
-            $this->app->add(Middlewares\Auth\JWT::init());
+            $this->app->add(new Middlewares\Auth([
+                new Middlewares\Auth\JWT,
+            ]));
         }
     }
 

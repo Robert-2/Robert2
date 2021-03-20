@@ -1,6 +1,5 @@
 import Alert from '@/components/Alert';
 import Help from '@/components/Help/Help.vue';
-import store from '@/store';
 
 export default {
   name: 'Users',
@@ -68,7 +67,7 @@ export default {
   },
   computed: {
     currentUserId() {
-      return store.state.user.id;
+      return this.$store.state.auth.user.id;
     },
   },
   methods: {

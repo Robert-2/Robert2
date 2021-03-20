@@ -18,7 +18,7 @@ export default {
   },
 
   'page-profile': {
-    'title': "Profile of user «\u00a0{pageSubTitle}\u00a0»",
+    'title': "Your profile",
     'help': "If you change your email, pseudo or password, do not forget them before logging-out!",
     'you-are-group': "You are: {group}.",
     'edit-password': "Change your password",
@@ -29,7 +29,7 @@ export default {
   },
 
   'page-settings': {
-    'title': "Settings of {pageSubTitle}",
+    'title': "Your settings",
     'help': "The « duration of a session » is the time allowed before you're automatically logged out.",
     'auth-token-validity-duration': "Max. duration of a session",
     'interface': "Interface",
