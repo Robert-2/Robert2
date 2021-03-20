@@ -18,7 +18,7 @@ export default {
   },
 
   'page-profile': {
-    'title': "Profil de l'utilisateur «\u00a0{pageSubTitle}\u00a0»",
+    'title': "Votre profil",
     'help': "Si vous modifiez votre email, votre pseudo ou votre mot de passe, ne les oubliez pas avant de vous déconnecter\u00a0!",
     'you-are-group': "Vous êtes\u00a0: {group}.",
     'edit-password': "Modifier votre mot de passe",
@@ -29,7 +29,7 @@ export default {
   },
 
   'page-settings': {
-    'title': "Paramètres de {pageSubTitle}",
+    'title': "Vos paramètres",
     'help': "La « durée d'une session » est le temps imparti avant votre déconnexion automatique de l'application.",
     'auth-token-validity-duration': "Durée max. d'une session",
     'interface': "Interface",

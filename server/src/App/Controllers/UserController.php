@@ -5,12 +5,15 @@ namespace Robert2\API\Controllers;
 
 use Slim\Http\Request;
 use Slim\Http\Response;
-
 use Robert2\API\Errors;
-use Robert2\API\Config\Config;
+use Robert2\API\Middlewares\Auth;
+use Robert2\API\Models\User;
 
 class UserController extends BaseController
 {
+    /** @var User */
+    protected $model;
+
     // ——————————————————————————————————————————————————————
     // —
     // —    Model dedicated methods
@@ -73,15 +76,12 @@ class UserController extends BaseController
     public function delete(Request $request, Response $response): Response
     {
         $id = (int)$request->getAttribute('id');
-        $jwt = $request->getAttribute(Config::getSettings('JWTAttributeName'));
-
-        if ($jwt && $jwt['user'] && $jwt['user']->id === $id) {
+        if (Auth::user()->id === $id) {
             throw new \InvalidArgumentException(
                 "Cannot delete user that is currently logged in.",
                 ERROR_VALIDATION
             );
         }
-
         return parent::delete($request, $response);
     }
 }

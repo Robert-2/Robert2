@@ -6,14 +6,16 @@ namespace Robert2\API\Controllers;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Robert2\API\Validation\Validator as V;
-
 use Robert2\API\Errors\ValidationException;
-use Robert2\API\Middlewares\Security;
+use Robert2\API\Middlewares\Auth;
 use Robert2\API\Models\User;
 use Robert2\API\Config\Config;
 
-class TokenController
+class AuthController
 {
+    /** @var User */
+    protected $user;
+
     public function __construct($container)
     {
         $this->container = $container;
@@ -22,32 +24,21 @@ class TokenController
         $this->user = new User;
     }
 
-    public function auth(Request $request, Response $response): Response
+    public function getSelf(Request $request, Response $response): Response
+    {
+        return $response->withJson(Auth::user(), SUCCESS_OK);
+    }
+
+    public function loginWithForm(Request $request, Response $response): Response
     {
         $data = $request->getParsedBody();
 
         $this->_validateAuthRequest($data);
 
         $user = $this->user->getLogin($data['identifier'], $data['password']);
-        $result = $user->toArray();
-        $result['restricted_parks'] = $user->RestrictedParks;
 
-        $defaultTokenDuration = Config::getSettings('sessionExpireHours');
-        $tokenDuration = $result['settings']['auth_token_validity_duration'] ?: $defaultTokenDuration;
-
-        $responseData['user'] = $result;
-        $responseData['token'] = Security::generateToken($result, $tokenDuration);
-
-        if (!isTestMode()) {
-            $expireHours = $this->config['sessionExpireHours'] ?: 12;
-            $expireTime = time() + $expireHours * 60 * 60;
-            setcookie(
-                $this->config['httpAuthHeader'],
-                $responseData['token'],
-                $expireTime,
-                '/'
-            );
-        }
+        $responseData['user'] = $user->append('restricted_parks')->toArray();
+        $responseData['token'] = Auth\JWT::generateToken($user);
 
         return $response->withJson($responseData, SUCCESS_OK);
     }

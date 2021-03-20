@@ -7,6 +7,7 @@ class ApiRouter
 {
     private $_routes = [
         'get' => [
+            '/session[/]'                              => 'AuthController:getSelf',
             '/attributes[/]'                           => 'AttributeController:getAll',
             '/users[/]'                                => 'UserController:getAll',
             '/users/{id:[0-9]+}[/]'                    => 'UserController:getOne',
@@ -39,8 +40,7 @@ class ApiRouter
             '/bills/{id:[0-9]+}[/]'                    => 'BillController:getOne',
         ],
         'post' => [
-            '/token[/]'                               => 'TokenController:auth',
-            '/users/signin[/]'                        => 'TokenController:auth',
+            '/session[/]'                             => 'AuthController:loginWithForm',
             '/users/signup[/]'                        => 'UserController:create',
             '/categories[/]'                          => 'CategoryController:create',
             '/subcategories[/]'                       => 'SubCategoryController:create',

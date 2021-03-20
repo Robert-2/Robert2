@@ -1,24 +1,5 @@
-.login {
-  position: relative;
-  flex: 1;
-  display: flex;
-  flex-flow: column nowrap;
-  justify-content: flex-start;
-  padding-bottom: calc(60px + .1vh);
-
-  &__logo {
-    flex: 0 0 auto;
-    padding: 30px 20px;
-    text-align: center;
-
-    img {
-      max-height: 80px;
-      max-width: 100%;
-    }
-  }
-
+.Login {
   &__message {
-    flex: 0 0 auto;
     background-color: $bg-color-emphasis;
     padding: 20px;
     font-size: 1.2rem;
@@ -37,42 +18,33 @@
     }
   }
 
+  &__body {
+    padding: 30px 20px;
+  }
+
   &__form {
-    flex: 0 0 auto;
-  }
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: space-around;
+    align-items: center;
 
-  &__footer {
-    display: none;
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    padding: 10px 15px;
-    background-color: $bg-color-emphasis;
-    color: $text-muted-color;
-    font-size: 0.8rem;
-    line-height: 1.52rem;
-    text-align: center;
-  }
-
-  @media(min-width: $screen-mobile) {
-    &__logo {
-      img {
-        max-height: 120px;
-      }
-    }
-  }
-
-  @media(min-width: $screen-tablet) {
-    justify-content: center;
-
-    &__logo {
-      img {
-        max-height: 200px;
-      }
+    &__input {
+      width: 200px;
+      margin-right: 10px;
+      margin-bottom: 1rem;
     }
 
-    &__footer {
-      display: block;
+    &__submit {
+      padding: $input-padding-vertical $input-padding-horizontal;
+    }
+
+    @media(min-width: 600px) {
+      flex-flow: row nowrap;
+      justify-content: center;
+
+      &__input {
+        margin-bottom: 0;
+      }
     }
   }
 }

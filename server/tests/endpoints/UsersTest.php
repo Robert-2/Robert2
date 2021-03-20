@@ -261,7 +261,7 @@ final class UsersTest extends ApiTestCase
         $this->assertErrorDetails([
             'pseudo' => [
                 "pseudo must not be empty",
-                "pseudo must contain only letters (a-z) and digits (0-9)",
+                "pseudo must contain only letters (a-z), digits (0-9) and \"-\"",
                 "pseudo must have a length between 4 and 100",
             ],
             'email' => [
@@ -402,12 +402,12 @@ final class UsersTest extends ApiTestCase
 
     public function testRestoreUser()
     {
-        // - First, delete user #1
-        $this->client->delete('/api/users/1');
+        // - First, delete user #2
+        $this->client->delete('/api/users/2');
         $this->assertStatusCode(SUCCESS_OK);
 
-        // - Then, restore user #1
-        $this->client->put('/api/users/restore/1');
+        // - Then, restore user #2
+        $this->client->put('/api/users/restore/2');
         $this->assertStatusCode(SUCCESS_OK);
         $response = $this->_getResponseAsArray();
         $this->assertEmpty($response['deleted_at']);

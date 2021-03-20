@@ -2,7 +2,6 @@ import moment from 'moment';
 import { Timeline } from 'vue-visjs';
 import { DATE_DB_FORMAT, DATE_QUERY_FORMAT } from '@/config/constants';
 import ModalConfig from '@/config/modalConfig';
-import store from '@/store';
 import Alert from '@/components/Alert';
 import Help from '@/components/Help/Help.vue';
 import EventDetails from '@/components/EventDetails/EventDetails.vue';
@@ -30,7 +29,7 @@ export default {
       end = savedEnd;
     }
 
-    const isVisitor = store.state.user.groupId === 'visitor';
+    const isVisitor = this.$store.getters['auth/is']('visitor');
     const parkFilter = this.$route.query.park;
 
     return {
@@ -55,7 +54,7 @@ export default {
         },
         start,
         end,
-        locale: store.state.i18n.locale,
+        locale: this.$store.state.i18n.locale,
         minHeight: '100%',
         orientation: 'top',
         zoomMin: ONE_DAY * 7,

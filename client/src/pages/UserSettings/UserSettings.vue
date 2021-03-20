@@ -5,7 +5,7 @@
         {{ $t('page-settings.interface') }}
       </h3>
       <div class="UserSettings__content">
-        <form class="Form" method="POST" @submit="saveSettings">
+        <form class="Form" method="POST" @submit.prevent="save">
           <section class="Form__fieldset">
             <FormField
               v-model="settings.language"

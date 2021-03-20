@@ -5,6 +5,18 @@ namespace Robert2\API\Config;
 
 class Acl
 {
+    const PUBLIC_ROUTES = [
+        '/install',
+        '/login',
+
+        //
+        // - Api
+        //
+
+        '/api/session' => ['POST'],
+        '/api/users/signup',
+    ];
+
     const DENY_LIST = [
         'admin'  => [],
         'member' => [
@@ -85,11 +97,5 @@ class Acl
                 'restore',
             ],
         ],
-    ];
-
-    const PUBLIC_ROUTES = [
-        '/api/token',
-        '/api/users/signin',
-        '/api/users/signup',
     ];
 }

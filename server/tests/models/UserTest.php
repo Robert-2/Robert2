@@ -155,14 +155,14 @@ final class UserTest extends ModelTestCase
     {
         $this->expectException(Errors\ValidationException::class);
         $this->expectExceptionCode(ERROR_VALIDATION);
-        $this->model->edit(null, []);
+        Models\User::new([]);
     }
 
     public function testCreateBadData(): void
     {
         $this->expectException(Errors\ValidationException::class);
         $this->expectExceptionCode(ERROR_VALIDATION);
-        $this->model->edit(null, ['foo' => 'bar']);
+        Models\User::new(['foo' => 'bar']);
     }
 
     public function testUpdateNotFound(): void
@@ -181,7 +181,7 @@ final class UserTest extends ModelTestCase
             'group_id' => 'member',
         ];
 
-        $result = $this->model->edit(null, $data);
+        $result = Models\User::new($data);
         $expected = [
             'id' => 4,
             'pseudo' => 'testadd',
@@ -218,7 +218,7 @@ final class UserTest extends ModelTestCase
             ],
         ];
 
-        $result = $this->model->edit(null, $data);
+        $result = Models\User::new($data);
         $this->assertEquals(4, $result['person']['id']);
         $this->assertEquals(4, $result['person']['user_id']);
         $this->assertEquals('testNewPerson', $result['person']['nickname']);

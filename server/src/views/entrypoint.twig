@@ -9,19 +9,23 @@
 
     <title>Robert2</title>
 
-    <link href="/webclient/css/chunk-vendors.css?v={{version()}}" rel="preload" as="style">
-    <link href="/webclient/css/app.css?v={{version()}}" rel="preload" as="style">
+    {% if env is not same as('development') -%}
+    <link href="{{ client_asset('/css/chunk-vendors.css') }}" rel="preload" as="style">
+    <link href="{{ client_asset('/css/app.css') }}" rel="preload" as="style">
+    {% endif -%}
 
-    <link href="/webclient/js/chunk-vendors.js?v={{version()}}" rel="preload" as="script">
-    <link href="/webclient/js/app.js?v={{version()}}" rel="preload" as="script">
+    <link href="{{ client_asset('/js/chunk-vendors.js') }}" rel="preload" as="script">
+    <link href="{{ client_asset('/js/app.js') }}" rel="preload" as="script">
 
-    <link href="/webclient/css/chunk-vendors.css?v={{version()}}" rel="stylesheet">
-    <link href="/webclient/css/app.css?v={{version()}}" rel="stylesheet">
+    {% if env is not same as('development') -%}
+    <link href="{{ client_asset('/css/chunk-vendors.css') }}" rel="stylesheet">
+    <link href="{{ client_asset('/css/app.css') }}" rel="stylesheet">
+    {% endif -%}
 
     <link rel="icon" type="image/png" sizes="32x32" href="/img/icons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/img/icons/favicon-16x16.png">
 
-    <link rel="manifest" href="/webclient/manifest.json">
+    <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#4DBA87">
     <meta name="apple-mobile-web-app-capable" content="no">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -42,7 +46,7 @@
 var __SERVER_CONFIG__ = {{serverConfig() | raw}};
 //]]>
     </script>
-    <script src="/webclient/js/chunk-vendors.js?v={{version()}}"></script>
-    <script src="/webclient/js/app.js?v={{version()}}"></script>
+    <script src="{{ client_asset('/js/chunk-vendors.js') }}"></script>
+    <script src="{{ client_asset('/js/app.js') }}"></script>
 </body>
 </html>

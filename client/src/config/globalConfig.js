@@ -1,4 +1,5 @@
 /* eslint-disable no-underscore-dangle */
+
 import deepFreeze from 'deep-freeze-strict';
 
 let baseUrl = process.env.VUE_APP_API_URL ?? '';
@@ -22,12 +23,16 @@ const defaultConfig = {
     decimal_digits: 2,
     rounding: 0,
   },
+  auth: {
+    cookie: 'Authorization',
+    timeout: 12, // - En heures (ou `null` pour un cookie de session).
+  },
   defaultPaginationLimit: 100,
   beneficiaryTagName: 'Bénéficiaire',
   technicianTagName: 'Technicien',
   billingMode: 'partial',
 
-  // - This function should return a number
+  // - Cette fonction doit retourner un nombre.
   degressiveRate: (daysCount) => (
     ((daysCount - 1) * 0.75) + 1
   ),
