@@ -57,14 +57,15 @@ final class TokenTest extends ApiTestCase
     public function testTokenAuthOK()
     {
         $expectedUserData = [
-            'id'         => 1,
-            'email'      => 'tester@robertmanager.net',
-            'pseudo'     => 'test1',
-            'group_id'   => 'admin',
-            'created_at' => null,
-            'updated_at' => null,
-            'deleted_at' => null,
-            'person'     => [
+            'id'             => 1,
+            'email'          => 'tester@robertmanager.net',
+            'pseudo'         => 'test1',
+            'group_id'       => 'admin',
+            'cas_identifier' => null,
+            'created_at'     => null,
+            'updated_at'     => null,
+            'deleted_at'     => null,
+            'person'         => [
                 'id'          => 1,
                 'user_id'     => 1,
                 'first_name'  => 'Jean',

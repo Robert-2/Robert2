@@ -133,14 +133,15 @@ final class UsersTest extends ApiTestCase
         $this->client->get('/api/users/1');
         $this->assertStatusCode(SUCCESS_OK);
         $this->assertResponseData([
-            'id'         => 1,
-            'pseudo'     => 'test1',
-            'email'      => 'tester@robertmanager.net',
-            'group_id'   => 'admin',
-            'created_at' => null,
-            'updated_at' => null,
-            'deleted_at' => null,
-            'person'     => [
+            'id'             => 1,
+            'pseudo'         => 'test1',
+            'email'          => 'tester@robertmanager.net',
+            'group_id'       => 'admin',
+            'cas_identifier' => null,
+            'created_at'     => null,
+            'updated_at'     => null,
+            'deleted_at'     => null,
+            'person'         => [
                 'id'          => 1,
                 'user_id'     => 1,
                 'first_name'  => 'Jean',
@@ -303,11 +304,12 @@ final class UsersTest extends ApiTestCase
         unset($response['person']['created_at']);
         unset($response['person']['updated_at']);
         $this->assertEquals([
-            'id'       => 4,
-            'email'    => 'nobody@test.org',
-            'pseudo'   => 'signupTest',
-            'group_id' => 'member',
-            'person'   => [
+            'id'             => 4,
+            'email'          => 'nobody@test.org',
+            'pseudo'         => 'signupTest',
+            'group_id'       => 'member',
+            'cas_identifier' => null,
+            'person'         => [
                 'id'          => 4,
                 'first_name'  => 'Nobody',
                 'last_name'   => 'Testeur',
@@ -339,14 +341,15 @@ final class UsersTest extends ApiTestCase
         ]);
         $this->assertStatusCode(SUCCESS_CREATED);
         $this->assertResponseData([
-            'id'         => 4,
-            'pseudo'     => 'New User',
-            'email'      => 'test@testing.org',
-            'group_id'   => 'member',
-            'created_at' => 'fakedTestContent',
-            'updated_at' => 'fakedTestContent',
-            'deleted_at' => null,
-            'person'     => null,
+            'id'             => 4,
+            'pseudo'         => 'New User',
+            'email'          => 'test@testing.org',
+            'group_id'       => 'member',
+            'cas_identifier' => null,
+            'created_at'     => 'fakedTestContent',
+            'updated_at'     => 'fakedTestContent',
+            'deleted_at'     => null,
+            'person'         => null,
         ], ['created_at', 'updated_at']);
     }
 

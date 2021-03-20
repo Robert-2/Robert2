@@ -4,10 +4,10 @@ declare(strict_types=1);
 namespace Robert2\API\Controllers;
 
 use Robert2\API\Errors;
+use Robert2\API\Middlewares\Auth;
 use Robert2\API\Config\Config;
 use Robert2\API\Models\Event;
 use Robert2\API\Models\Document;
-use Robert2\API\Models\User;
 use Robert2\API\Models\Material;
 use Robert2\API\Controllers\Traits\Taggable;
 use Slim\Http\Request;
@@ -70,8 +70,7 @@ class MaterialController extends BaseController
             });
         }
 
-        $userId = $this->_getAuthUserId($request);
-        $restrictedParks = User::find($userId)->restricted_parks;
+        $restrictedParks = Auth::user()->restricted_parks;
         if (count($restrictedParks) > 0) {
             $model = $model->where(function ($query) use ($ignoreUnitaries, $restrictedParks) {
                 $query->whereNotIn('park_id', $restrictedParks)
@@ -135,10 +134,7 @@ class MaterialController extends BaseController
     public function getOne(Request $request, Response $response): Response
     {
         $id = (int)$request->getAttribute('id');
-        $userId = $this->_getAuthUserId($request);
-
-        $material = $this->model->getOneForUser($id, $userId);
-
+        $material = $this->model->getOneForUser($id, Auth::user()->id);
         return $response->withJson($material);
     }
 

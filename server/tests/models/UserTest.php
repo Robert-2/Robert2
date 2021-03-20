@@ -132,6 +132,7 @@ final class UserTest extends ModelTestCase
     public function testGetLogin(): void
     {
         $expectedUserData = array_merge($this->expectedDataUser1, [
+            'cas_identifier' => null,
             'settings' => [
                 'id'                           => 1,
                 'user_id'                      => 1,
@@ -187,6 +188,7 @@ final class UserTest extends ModelTestCase
             'pseudo' => 'testadd',
             'email' => 'testadd@robertmanager.net',
             'group_id' => 'member',
+            'cas_identifier' => null,
             'person' => null
         ];
         unset($result->created_at, $result->updated_at, $result->deleted_at);
@@ -234,7 +236,7 @@ final class UserTest extends ModelTestCase
             'restricted_parks' => [1, 2],
         ];
 
-        $result = $this->model->edit(null, $data);
+        $result = Models\User::new($data);
         $this->assertEquals([2, 1], $result['restricted_parks']);
     }
 

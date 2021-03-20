@@ -5,10 +5,10 @@ namespace Robert2\API\Controllers;
 
 use Robert2\API\Errors;
 use Robert2\API\Controllers\Traits\WithPdf;
+use Robert2\API\Middlewares\Auth;
 use Robert2\API\Models\Park;
 use Robert2\API\Models\Material;
 use Robert2\API\Models\MaterialUnit;
-use Robert2\API\Models\User;
 use Robert2\API\Models\Event;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -37,8 +37,7 @@ class EventController extends BaseController
             ->setPeriod($startDate, $endDate)
             ->getAll($deleted);
 
-        $userId = $this->_getAuthUserId($request);
-        $restrictedParks = User::find($userId)->restricted_parks;
+        $restrictedParks = Auth::user()->restricted_parks;
         $useMultipleParks = Park::count() > 1;
 
         $data = [];
