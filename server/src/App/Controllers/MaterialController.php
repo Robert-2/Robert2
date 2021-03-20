@@ -7,6 +7,7 @@ use Robert2\API\Errors;
 use Robert2\API\Config\Config;
 use Robert2\API\Models\Event;
 use Robert2\API\Models\Document;
+use Robert2\API\Models\Material;
 use Robert2\API\Controllers\Traits\Taggable;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -14,6 +15,9 @@ use Slim\Http\Response;
 class MaterialController extends BaseController
 {
     use Taggable;
+
+    /** @var Material */
+    protected $model;
 
     // ——————————————————————————————————————————————————————
     // —
