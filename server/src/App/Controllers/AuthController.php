@@ -42,6 +42,28 @@ class AuthController
         return $response->withJson($responseData, SUCCESS_OK);
     }
 
+    public function loginWithCAS(Request $request, Response $response): Response
+    {
+        if (!$this->config['auth']['CAS']['enabled']) {
+            return $response->withRedirect('/');
+        }
+
+        try {
+            Auth\CAS::initializeCAS();
+
+            $isAuthenticated = phpCAS::forceAuthentication();
+            if (!$isAuthenticated) {
+                throw new \Exception("L'authentification CAS a échoué (absence de redirection vers le serveur CAS).");
+            }
+        } catch (\Throwable $e) {
+            // TODO: Ajouter un message d'erreur passé au client (lorsqu'on aura un moyen de le faire)
+            //       l'information du fait que la connexion a échoué.
+        }
+
+        // TODO: globalConfig['client_url'] à la place de '/' ?
+        return $response->withRedirect('/');
+    }
+
     public function logout(Request $request, Response $response)
     {
         $auth = $this->container->get('auth');

@@ -1,3 +1,4 @@
+import Config from '@/config/globalConfig';
 import Layout from './components/Layout/Layout.vue';
 
 export default {
@@ -28,7 +29,17 @@ export default {
     return {
       message: { type, text, isLoading: false },
       credentials: { identifier: '', password: '' },
+      showCASLogin: Config.auth.isCASEnabled,
     };
+  },
+  computed: {
+    showAlternativesLogin() {
+      return this.showCASLogin;
+    },
+    casLoginUrl() {
+      const { baseUrl } = Config;
+      return `${baseUrl}/login/cas`;
+    },
   },
   methods: {
     async login() {

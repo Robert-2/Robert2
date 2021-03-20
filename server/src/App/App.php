@@ -109,6 +109,7 @@ class App
     {
         $container['auth'] = new Services\Auth([
             new Services\Auth\JWT,
+            new Services\Auth\CAS,
         ]);
 
         return $container;
@@ -162,6 +163,7 @@ class App
         $this->app->get('/documents/{id:[0-9]+}/download[/]', 'DocumentController:getOne')->setName('getDocumentFile');
 
         // - Login services
+        $this->app->get('/login/cas', 'AuthController:loginWithCAS');
         $this->app->get('/logout', 'AuthController:logout');
 
         // - All remaining non-API routes should be handled by Front-End Router

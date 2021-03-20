@@ -24,6 +24,20 @@
             {{ $t('page-login.connexion') }}
           </button>
         </form>
+        <div class="Login__alternatives" v-if="showAlternativesLogin">
+          <div class="Login__divider">
+            <strong class="Login__divider__label">{{ $t('or') }}</strong>
+          </div>
+          <div class="Login__buttons">
+            <a
+              class="Login__button Login__button--cas"
+              :href="casLoginUrl"
+              v-if="showCASLogin"
+            >
+              {{ $t('page-login.login-with-cas') }}
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   </Layout>

@@ -284,6 +284,7 @@ class HomeController
             'auth' => [
                 'cookie' => $rawConfig['auth']['cookie'],
                 'timeout' => $rawConfig['sessionExpireHours'],
+                'isCASEnabled' => $rawConfig['auth']['CAS']['enabled'],
             ],
             'defaultPaginationLimit' => $rawConfig['maxItemsPerPage'],
             'defaultLang' => $rawConfig['defaultLang'],

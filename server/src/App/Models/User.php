@@ -77,10 +77,11 @@ class User extends BaseModel
     // ——————————————————————————————————————————————————————
 
     protected $casts = [
-        'pseudo'   => 'string',
-        'email'    => 'string',
-        'group_id' => 'string',
-        'password' => 'string',
+        'pseudo'         => 'string',
+        'email'          => 'string',
+        'group_id'       => 'string',
+        'password'       => 'string',
+        'cas_identifier' => 'string',
     ];
 
     public function getPersonAttribute()
@@ -147,6 +148,11 @@ class User extends BaseModel
         return $user;
     }
 
+    public static function withCasIdentifier($casIdentifier): ?User
+    {
+        return self::where('cas_identifier', $casIdentifier)->first();
+    }
+
     // ——————————————————————————————————————————————————————
     // —
     // —    Setters
@@ -158,6 +164,7 @@ class User extends BaseModel
         'email',
         'group_id',
         'password',
+        'cas_identifier',
     ];
 
     public function setSettings(int $userId, array $data = []): array

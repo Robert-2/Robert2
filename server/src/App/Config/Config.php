@@ -39,6 +39,18 @@ class Config
         'degressiveRateFunction' => '((daysCount - 1) * 0.75) + 1',
         'auth' => [
             'cookie' => 'auth',
+            'CAS' => [
+                'enabled' => false,
+                'host' => 'cas.robert.local',
+                'port' => 8080,
+                'cert' => false, // /path/to/cachain.pem
+                'attributes' => [
+                    'pseudo' => 'givenName',
+                    'email' => ['mail', 'email'],
+                    'group' => 'group',
+                ],
+                'groupsMapping' => [],
+            ],
         ],
         'currency' => [
           'symbol' => '€',

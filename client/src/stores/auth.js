@@ -87,7 +87,7 @@ export default {
       dispatch('i18n/setLocale', { locale: userLocale }, { root: true });
     },
     async logout({ commit }) {
-      const hasPotentiallyStatefulSession = false;
+      const hasPotentiallyStatefulSession = !!Config.auth.isCASEnabled;
 
       if (hasPotentiallyStatefulSession) {
         window.location.assign(`${Config.baseUrl}/logout`);

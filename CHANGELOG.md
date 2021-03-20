@@ -27,6 +27,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Permet la gestion et l'identification unitaire du matériel (Premium #5).
 - Ajoute la restriction de l'accès des parcs à certains membres (Premium #11).
 - Ajoute la visualisation des disponibilités sous forme de timeline dans un onglet de la vue d'un matériel (Premium #8).
+- Ajoute l'authentification via CAS (Premium #1).
 
 ## 0.11.0 (2021-01-14)
 

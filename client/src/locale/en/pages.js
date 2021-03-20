@@ -4,6 +4,7 @@ export default {
   'page-login': {
     'welcome': "Hello! Who are you?",
     'connexion': "Enter Robert",
+    'login-with-cas': "Login with CAS",
     'please-wait': "Authentication, please wait...",
     'bye': "See you\u00a0!",
     'footer': "Robert2 is a free (as in 'freedom') software. You can copy and redistribute it freely, except for commercial purpose.",
