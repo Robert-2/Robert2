@@ -1,4 +1,14 @@
 <style>
+    html {
+        padding: 0;
+    }
+    body {
+        background-color: #242424;
+        margin: 0;
+    }
+    .app {
+        color: #e3e3e3;
+    }
     .app-loading {
         display: flex;
         flex-direction: column;
@@ -33,7 +43,7 @@
 </style>
 <div class="app-loading">
     <p class="app-loading__logo">
-        <img src="/webclient/img/logo.svg" height="200" alt="Robert2" />
+        <img src="{{ client_asset('/img/logo.svg') }}" height="200" alt="Robert2" />
     </p>
     <p class="app-loading__details">
         <img src="/img/loading.svg" height="35" alt="Loading..." class="app-loading__details__spinner" />
