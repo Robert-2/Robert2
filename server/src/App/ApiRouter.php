@@ -31,6 +31,7 @@ class ApiRouter
             '/materials/{id:[0-9]+}[/]' => 'MaterialController:getOne',
             '/materials/{id:[0-9]+}/tags[/]' => 'MaterialController:getTags',
             '/materials/{id:[0-9]+}/documents[/]' => 'MaterialController:getAllDocuments',
+            '/materials/while-event/{eventId:[0-9]+}[/]' => 'MaterialController:getAllWhileEvent',
             '/events[/]' => 'EventController:getAll',
             '/events/{id:[0-9]+}[/]' => 'EventController:getOne',
             '/events/{id:[0-9]+}/missing-materials[/]' => 'EventController:getMissingMaterials',
