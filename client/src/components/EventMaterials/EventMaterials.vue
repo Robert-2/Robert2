@@ -27,6 +27,9 @@
             :key="material.id"
             class="EventMaterials__item"
           >
+            <div class="EventMaterials__item__quantity-first">
+              {{ material.pivot.quantity }}
+            </div>
             <div class="EventMaterials__item__name">
               {{ material.name }}
             </div>

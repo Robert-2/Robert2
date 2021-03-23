@@ -1,6 +1,8 @@
 <template>
   <div class="MaterialsListQuantity">
     <button
+      type="button"
+      role="button"
       :class="{ info: quantity > 0 }"
       :disabled="quantity === 0"
       @click="$emit('decrement')"
@@ -14,6 +16,8 @@
       @focus="$event.target.select()"
     >
     <button
+      type="button"
+      role="button"
       :class="{ info: quantity < material.remaining_quantity }"
       @click="$emit('increment')"
     >

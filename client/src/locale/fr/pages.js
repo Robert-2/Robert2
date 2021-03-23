@@ -88,6 +88,8 @@ export default {
     'saved': "Événement sauvegardé.",
     'not-saved': "L'événement comporte des modifications non sauvegardées",
     'display-only-selected-materials': "Afficher uniquement le matériel de l'événement\u00a0?",
+    'display-all-materials-to-add-some': "Afficher tout le matériel pour en ajouter",
+    'display-only-event-materials': "Afficher uniquement le matériel de l'événement",
     'event-not-confirmed-help': "L'événement n'est pas encore confirmé, il est susceptible de changer à tout moment.",
     'event-confirmed-help': "L'événement est confirmé\u00a0: Ses informations ne devraient plus changer.",
     'event-missing-materials': "Matériel manquant",

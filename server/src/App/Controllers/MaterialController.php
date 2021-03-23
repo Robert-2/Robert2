@@ -37,8 +37,6 @@ class MaterialController extends BaseController
         $withDeleted = (bool)$request->getQueryParam('deleted', false);
         $ignoreUnitaries = (bool)$request->getQueryParam('ignoreUnitaries', false);
         $tags = $request->getQueryParam('tags', []);
-        $whileEvent = $request->getQueryParam('whileEvent', null);
-        $onlySelectedInEvent = $request->getQueryParam('onlySelectedInEvent', null);
 
         $options = [];
         if ($parkId) {
@@ -62,12 +60,6 @@ class MaterialController extends BaseController
             $model = $model->getAll($withDeleted);
         } else {
             $model = $model->getAllFilteredOrTagged($options, $tags, $withDeleted, $ignoreUnitaries);
-        }
-
-        if ($onlySelectedInEvent) {
-            $model = $model->whereHas('events', function ($query) use ($onlySelectedInEvent) {
-                $query->where('event_id', $onlySelectedInEvent);
-            });
         }
 
         $restrictedParks = Auth::user()->restricted_parks;
@@ -106,25 +98,42 @@ class MaterialController extends BaseController
             }, $results['data']);
         }
 
-        if ($whileEvent) {
-            $eventId = (int)$whileEvent;
-            $Event = new Event();
-            $currentEvent = $Event->find($eventId);
-
-            if ($currentEvent) {
-                $results['data'] = $this->model->recalcQuantitiesForPeriod(
-                    $results['data'],
-                    $currentEvent->start_date,
-                    $currentEvent->end_date,
-                    $eventId
-                );
-            }
-        } elseif ($dateForQuantities) {
+        if ($dateForQuantities) {
             $results['data'] = $this->model->recalcQuantitiesForPeriod(
                 $results['data'],
                 $dateForQuantities,
                 $dateForQuantities,
                 null
+            );
+        }
+
+        return $response->withJson($results);
+    }
+
+    public function getAllWhileEvent(Request $request, Response $response): Response
+    {
+        $eventId = (int)$request->getAttribute('eventId');
+
+        $Event = new Event();
+        $currentEvent = $Event->find($eventId);
+        if (!$currentEvent) {
+            throw new Errors\NotFoundException(
+                sprintf("Event #%d was not found.", $eventId)
+            );
+        }
+
+        $results = $this->model
+            ->setOrderBy('reference', true)
+            ->getAll()
+            ->get()
+            ->toArray();
+
+        if ($results && count($results) > 0) {
+            $results = $this->model->recalcQuantitiesForPeriod(
+                $results,
+                $currentEvent->start_date,
+                $currentEvent->end_date,
+                $eventId
             );
         }
 

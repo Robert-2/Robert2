@@ -41,11 +41,18 @@
     margin-bottom: .35rem;
     border-bottom: 1px dashed $list-left-border-color;
 
+    &__quantity-first {
+      flex: 0 0 35px;
+      color: $text-light-color;
+      padding-right: $content-padding-large-horizontal;
+      text-align: right;
+    }
+
     &__quantity {
       flex: 0 0 3rem;
       margin: 0 .8rem 0 .8rem;
 
-      .fas {
+      .fa-times {
         margin-right: .2rem;
         color: $text-light-color;
         font-size: .8rem;

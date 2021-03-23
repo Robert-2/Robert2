@@ -23,6 +23,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Dans le listing du matériel, ajoute un lien vers la gestion des caractéristiques spéciales.
 - Ajoute la possibilité de modifier le nom des caractéristiques spéciales (#107).
 - Améliore la disposition des filtres dans les pages de listing du matériel (#114).
+- Supprime la pagination côté serveur pour le matériel à l'étape 4 de l'édition d'événement, et améliore l'UX (#115).
 
 - Permet la gestion et l'identification unitaire du matériel (Premium #5).
 - Ajoute la restriction de l'accès des parcs à certains membres (Premium #11).

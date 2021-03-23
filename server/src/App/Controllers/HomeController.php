@@ -27,12 +27,12 @@ class HomeController
     // —
     // ——————————————————————————————————————————————————————
 
-    public function entrypoint(Request $request, Response $response)
+    public function webclient(Request $request, Response $response)
     {
         if (!Config::customConfigExists()) {
-            return $response->withRedirect('/install', 307); // 307 is "Temporary Redirect"
+            return $response->withRedirect('/install', 302); // 302 Redirect
         }
-        return $this->view->render($response, 'entrypoint.twig');
+        return $this->view->render($response, 'webclient.twig');
     }
 
     public function install(Request $request, Response $response)

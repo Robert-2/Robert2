@@ -3,10 +3,10 @@
     <header class="MaterialsList__header">
       <MaterialsFilter
         :baseRoute="`/events/${event.id}`"
-        @change="refreshTableAndPagination"
+        @change="setFilters"
       />
       <div class="MaterialsList__header__extra-filters">
-        <div class="MaterialsList__header__extra-filters__filter">
+        <div v-if="hasMaterial" class="MaterialsList__header__extra-filters__filter">
           {{ $t('page-events.display-only-selected-materials') }}
           <SwitchToggle
             :value="showSelectedOnly"
@@ -21,11 +21,12 @@
         <i class="fas fa-circle-notch fa-spin fa-2x" />
         {{ $t('help-loading') }}
       </div>
-      <v-server-table
+      <v-client-table
         ref="DataTable"
         name="materialsListTable"
+        :data="materials"
         :columns="columns"
-        :options="options"
+        :options="tableOptions"
       >
         <template #child-toggler="{ row: material }">
             <button
@@ -86,13 +87,35 @@
           <button
             :key="`clear-${material.row.id}-${renderId}`"
             v-show="getQuantity(material.row) > 0"
+            type="button"
+            role="button"
             class="warning"
             @click="setQuantity(material.row, 0)"
           >
             <i class="fas fa-backspace" />
           </button>
         </div>
-      </v-server-table>
+      </v-client-table>
+      <div v-if="!isLoading && hasMaterial" class="MaterialsList__add-more">
+        <button
+          v-if="showSelectedOnly"
+          type="button"
+          role="button"
+          @click="handleToggleSelectedOnly(false)"
+        >
+          <i class="fas fa-plus" />
+          {{ $t('page-events.display-all-materials-to-add-some') }}
+        </button>
+        <button
+          v-if="!showSelectedOnly"
+          type="button"
+          role="button"
+          @click="handleToggleSelectedOnly(true)"
+        >
+          <i class="fas fa-eye" />
+          {{ $t('page-events.display-only-event-materials') }}
+        </button>
+      </div>
     </div>
   </div>
 </template>

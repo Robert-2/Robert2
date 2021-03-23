@@ -167,6 +167,6 @@ class App
         $this->app->get('/logout', 'AuthController:logout');
 
         // - All remaining non-API routes should be handled by Front-End Router
-        $this->app->get('/[{path:.*}]', 'HomeController:entrypoint');
+        $this->app->get('/[{path:.*}]', 'HomeController:webclient');
     }
 }
