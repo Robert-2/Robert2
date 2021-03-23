@@ -75,8 +75,13 @@ Pour cela, vous avez à disposition deux commandes (à exécuter depuis la racin
 
 #### `yarn start`
 
-Cette commande vous permet de lancer un serveur de développement front avec prise en charge du Hot Reloading.  
-C'est cette méthode qu'il faudra utiliser  pendant la plupart de vos développements front.
+C'est cette méthode qu'il faudra utiliser pendant la plupart de vos développements front-end.
+
+Cette commande vous permet de lancer un serveur de développement front-end, avec prise en charge du Hot Reloading,
+qui servira les sources JS, CSS et les assets, à l'adresse `http://localhost:8081/`.  
+
+Pour travailler, créez un fichier `.env` dans le dossier `server/` qui contient la variable `APP_ENV=development`,
+puis ouvrez l'application sur son serveur back-end (par ex. `http://robert.local`).
 
 #### `yarn build`
 
@@ -87,8 +92,9 @@ _(Pensez à exécuter cette commande et à commiter le résultat dans votre PR l
 
 En développement, l'hôte par défaut utilisé par la partie client pour communiquer avec l'API est `http://robert.local`.  
 
-Si vous souhaitez modifier ceci, vous pouvez créer un fichier `.env.local` à la racine du dossier client et surcharger
-la variable d'environnement `VUE_APP_API_URL` avec votre propre URL d'API (par exemple `http://localhost/robert2`).
+Si vous souhaitez modifier ceci, vous pouvez créer un fichier `.env.development.local` à la racine du dossier
+client et surcharger la variable d'environnement `VUE_APP_API_URL` avec votre propre URL d'API (par
+exemple `http://localhost/robert2`).
 
 ## Migration de la base de données
 
@@ -156,49 +162,62 @@ composer lint
 
 ```
 .
-├── bin                            # - Executables globaux (`./bin/release`, etc.)
+├── bin                          # - Executables globaux (`./bin/release`, etc.)
 │
 ├── client
-│   ├── dist                       # - Contient les sources compilées de la partie client.
-│   ├── node_modules               # - Dépendances de la partie client.
+│   ├── dist                     # - Contient les sources compilées de la partie client.
+│   ├── node_modules             # - Dépendances de la partie client.
 │   ├── src
-│   │   ├── components             # - Components Vue réutilisables.
-│   │   ├── config                 # - Fichiers de configuration de la partie client (constantes, configuration globale, etc.).
-│   │   ├── locale                 # - Fichiers de traduction de la partie client dans les différentes langues supportées.
-│   │   ├── pages                  # - Chaque sous-dossier représente une page de l'application.
-│   │   ├── stores                 # - Contient les différents stores (Vuex) globaux de l'application.
-│   │   ├── style                  # - Contient le style global de l'application (reset, fonts, style de base, variables globales, etc.).
-│   │   ├── themes                 # - Contient les différents thèmes de Robert2.
+│   │   ├── components           # - Components Vue réutilisables.
+│   │   ├── config               # - Fichiers de configuration de la partie client (constantes, configuration globale, etc.).
+│   │   ├── locale               # - Fichiers de traduction de la partie client dans les différentes langues supportées.
+│   │   ├── pages                # - Chaque sous-dossier représente une page de l'application.
+│   │   ├── stores               # - Contient les différents stores (Vuex) globaux de l'application.
+│   │   ├── style                # - Contient le style global de l'application (reset, fonts, style de base, variables globales, etc.).
+│   │   ├── themes               # - Contient les différents thèmes de Robert2.
 │   │   │   └── default
-│   │   └── utils
-│   └── tests                      # - Contient les tests unitaires (Jest) de la partie client.
+│   │   └── utils                # - Fonctions JS utilitaires
+│   └── tests                    # - Contient les tests unitaires (Jest) de la partie client.
 │
 └── server
-    ├── bin                        # - Executables spécifiques à la partie serveur.
-    ├── src                        # - Code source back-end de l'application.
-    │   ├── App                    # - Modèles, controller, configurations et autres fichiers du coeur de l'application.
-    │   │   ├── Config             # - Configuration, ACLs et constantes et fonctions globales.
-    │   │   ├── Controllers        # - Contrôleurs de l'application (contenant principalement les endpoints d'API)
-    │   │   ├── Errors             # - Gestion des erreurs et classes d'exceptions customs.
+    ├── data                     # - Fichiers associés aux données (matériel, etc.)
+    ├── src
+    │   ├── App                  # - Modèles, controller, configurations et autres fichiers du cœur de l'application.
+    │   │   ├── Config           # - Configuration, ACLs et constantes et fonctions globales.
+    │   │   ├── Controllers      # - Contrôleurs de l'application (contenant principalement les endpoints d'API)
+    │   │   ├── Errors           # - Gestion des erreurs et classes d'exceptions customs.
     │   │   ├── I18n
-    │   │   │   └── locales        # - Fichiers de traduction de la partie serveur dans les différentes langues supportées.
-    │   │   ├── Lib                # - Classes métiers et autres classes d'abstraction (PDF, etc.).
-    │   │   ├── Middlewares        # - Middlewares Slim (ACL, JWT Auth, pagination, etc.).
-    │   │   ├── Models             # - Modèles (Eloquent) de l'application.
-    │   │   ├── Validation         # - Contient les utilitaires liés à la validation des données.
-    │   │   └── ApiRouter.php      # - Fichier contenant les routes back-end de l'application (mise en relation chemin <=> action de contrôleur).
+    │   │   │   └── locales      # - Fichiers de traduction de la partie serveur dans les différentes langues supportées.
+    │   │   ├── Lib              # - Classes métiers et autres classes d'abstraction (PDF, etc.).
+    │   │   ├── Middlewares      # - Middlewares Slim (ACL, JWT Auth, pagination, etc.).
+    │   │   ├── Models           # - Modèles (Eloquent) de l'application.
+    │   │   ├── Services         # - Contient les services, comme le système d'authentification.
+    │   │   ├── Validation       # - Contient les utilitaires liés à la validation des données.
+    │   │   └── ApiRouter.php    # - Fichier contenant les routes back-end de l'application (mise en relation chemin <=> action de contrôleur).
     │   ├── database
-    │   │   └── migrations         # - Fichiers de migration de la base de données (générés via `composer create-migration [MigrationName]`)
-    │   ├── install                # - Classes et utilitaires liés à l'assistant d'installation de Robert2.
+    │   │   └── migrations       # - Fichiers de migration de la base de données (générés via `composer create-migration [MigrationName]`)
+    │   ├── install              # - Classes et utilitaires liés à l'assistant d'installation de Robert2.
     │   ├── public
-    │   │   ├── css/, js/, img/    # - Dossiers contenant des fichiers d'asset utilisés spécifiquement dans les vues de la partie serveur.
-    │   │   ├── webclient          # - Lien symbolique vers les sources compilées de la partie `/client` de Robert2.
-    │   │   └── index.php          # - Point d'entrée de l'application (tous les `.htaccess` redirigent vers ce fichier).
+    │   │   ├── css/, js/, img/  # - Dossiers contenant des fichiers d'asset utilisés spécifiquement dans les vues de la partie serveur.
+    │   │   ├── webclient        # - Lien symbolique vers les sources compilées de la partie `/client` de Robert2.
+    │   │   └── index.php        # - Point d'entrée de l'application (tous les `.htaccess` redirigent vers ce fichier).
     │   ├── var
-    │   │   ├── cache              # - Fichiers de cache (contenu à supprimer en cas de modification du code qui semble sans effet)
-    │   │   ├── logs               # - Fichiers de log de l'application.
-    │   │   └── tmp                # - Fichiers temporaires.
-    │   ├── vendor                 # - Dépendances (composer) de la partie serveur.
-    │   └── views                  # - Dossier contenant les vues Twig de l'application.
-    └── tests                      # - Contient les tests unitaires (PHPUnit) de la partie serveur (ainsi que les fixtures liées).
+    │   │   ├── cache            # - Fichiers de cache (contenu à supprimer en cas de modification du code qui semble sans effet)
+    │   │   ├── logs             # - Fichiers de log de l'application.
+    │   │   └── tmp              # - Fichiers temporaires.
+    │   ├── vendor               # - Dépendances (composer) de la partie serveur.
+    │   └── views                # - Dossier contenant les vues Twig de l'application.
+    │   │   ├── blocks           # - Les blocks communs, comme le loading, etc.
+    │   │   ├── install          # - Toutes les pages de l'assistant d'installation
+    │   │   └── pdf              # - Les vues des sorties PDF (factures, fiches d'événement, etc.)
+    │   │   └── webclient.twig   # - Point d'entrée de l'application Robert2 (front-end)
+    │   │   └── install.twig     # - Point d'entrée de l'assistant d'installation
+    └── tests
+    │   ├── endpoints            # - Tests unitaires (PHPUnit) des controllers.
+    │   ├── Fixtures
+    │   │   ├── files            # - Fichiers associés aux données (voir server/data) à utiliser pour les fixtures.
+    │   │   ├── seed             # - Données utilisées pour les tables de la DB de test, au format JSON.
+    │   │   └── tmp              # - Dossier utilisé pour stocker la structure SQL (créée à la volée) de la DB de test, pour reset.
+    │   ├── models               # - Tests unitaires (PHPUnit) des modèles.
+    │   └── other                # - Tests unitaires (PHPUnit) des fonctions utilitaires et autres classes.
 ```
