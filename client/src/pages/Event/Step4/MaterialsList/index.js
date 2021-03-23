@@ -1,5 +1,6 @@
 import Config from '@/config/globalConfig';
 import formatAmount from '@/utils/formatAmount';
+import isValidInteger from '@/utils/isValidInteger';
 import MaterialsFilter from '@/components/MaterialsFilters/MaterialsFilters.vue';
 import SwitchToggle from '@/components/SwitchToggle/SwitchToggle.vue';
 import Quantity from './Quantity/Quantity.vue';
@@ -34,26 +35,6 @@ export default {
 
     const hasMaterial = this.initialList.length > 0;
 
-    const initFilters = {
-      onlySelected: hasMaterial,
-    };
-
-    if (this.$route.query.park) {
-      initFilters.park = this.$route.query.park;
-    }
-
-    if (this.$route.query.category) {
-      initFilters.category = this.$route.query.category;
-    }
-
-    if (this.$route.query.subCategory) {
-      initFilters.subCategory = this.$route.query.subCategory;
-    }
-
-    if (this.$route.query.tags) {
-      initFilters.tags = JSON.parse(this.$route.query.tags);
-    }
-
     return {
       error: null,
       renderId: 1,
@@ -78,7 +59,7 @@ export default {
           amount: 'MaterialsList__amount',
           actions: 'MaterialsList__actions',
         },
-        initFilters,
+        initFilters: this.getFilters(),
         customFilters: [
           {
             name: 'park',
@@ -127,6 +108,30 @@ export default {
         this.isLoading = false;
         this.$refs.DataTable.setLoadingState(false);
       }
+    },
+
+    getFilters() {
+      const filters = {
+        onlySelected: this.showSelectedOnly,
+      };
+
+      if (this.$route.query.park && isValidInteger(this.$route.query.park)) {
+        filters.park = parseInt(this.$route.query.park, 10);
+      }
+
+      if (this.$route.query.category) {
+        filters.category = this.$route.query.category;
+      }
+
+      if (this.$route.query.subCategory) {
+        filters.subCategory = this.$route.query.subCategory;
+      }
+
+      if (this.$route.query.tags) {
+        filters.tags = JSON.parse(this.$route.query.tags);
+      }
+
+      return filters;
     },
 
     handleToggleSelectedOnly(newValue) {
