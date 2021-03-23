@@ -16,7 +16,7 @@ export default new Vuex.Store({
     setQuantity(state, { id, quantity }) {
       state.quantities[id] = quantity;
 
-      if (!state.quantities[id]) {
+      if (state.quantities[id] === 0) {
         delete state.quantities[id];
       }
     },
@@ -34,6 +34,10 @@ export default new Vuex.Store({
         return;
       }
       state.quantities[id] -= 1;
+
+      if (state.quantities[id] === 0) {
+        delete state.quantities[id];
+      }
     },
   },
   getters: {

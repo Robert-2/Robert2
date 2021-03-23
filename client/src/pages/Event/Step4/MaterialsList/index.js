@@ -5,6 +5,8 @@ import SwitchToggle from '@/components/SwitchToggle/SwitchToggle.vue';
 import Quantity from './Quantity/Quantity.vue';
 import MaterialsStore from './MaterialsStore';
 
+const noPaginationLimit = 100000;
+
 export default {
   name: 'MaterialsList',
   components: { MaterialsFilter, SwitchToggle, Quantity },
@@ -30,18 +32,42 @@ export default {
       return true;
     });
 
+    const hasMaterial = this.initialList.length > 0;
+
+    const initFilters = {
+      onlySelected: hasMaterial,
+    };
+
+    if (this.$route.query.park) {
+      initFilters.park = this.$route.query.park;
+    }
+
+    if (this.$route.query.category) {
+      initFilters.category = this.$route.query.category;
+    }
+
+    if (this.$route.query.subCategory) {
+      initFilters.subCategory = this.$route.query.subCategory;
+    }
+
+    if (this.$route.query.tags) {
+      initFilters.tags = JSON.parse(this.$route.query.tags);
+    }
+
     return {
       error: null,
       renderId: 1,
-      showSelectedOnly: this.initialList.length > 0,
+      hasMaterial,
+      showSelectedOnly: hasMaterial,
       isLoading: true,
       columns,
-      options: {
+      materials: [],
+      tableOptions: {
         columnsDropdown: false,
         preserveState: false,
         orderBy: { column: 'reference', ascending: true },
-        initialPage: this.$route.query.page || 1,
-        sortable: ['reference', 'name'],
+        initialPage: 1,
+        perPage: hasMaterial ? noPaginationLimit : Config.defaultPaginationLimit,
         columnsClasses: {
           qty: 'MaterialsList__qty',
           reference: 'MaterialsList__ref',
@@ -52,64 +78,69 @@ export default {
           amount: 'MaterialsList__amount',
           actions: 'MaterialsList__actions',
         },
-        requestFunction: (pagination) => {
-          this.isLoading = true;
-          const filters = this.getFilters();
-          const params = { whileEvent: this.eventId, ...pagination, ...filters };
-          return this.$http
-            .get('materials', { params })
-            .then((response) => {
-              this.isLoading = false;
-              return response;
-            })
-            .catch(this.showError);
-        },
+        initFilters,
+        customFilters: [
+          {
+            name: 'park',
+            callback: (row, parkId) => row.park_id === parkId,
+          },
+          {
+            name: 'category',
+            callback: (row, categoryId) => row.category_id === categoryId,
+          },
+          {
+            name: 'subCategory',
+            callback: (row, subCategoryId) => row.sub_category_id === subCategoryId,
+          },
+          {
+            name: 'tags',
+            callback: (row, tags) => (
+              tags.length === 0 || row.tags.some((tag) => tags.includes(tag.name))
+            ),
+          },
+          {
+            name: 'onlySelected',
+            callback: (row, isOnlySelected) => (
+              !isOnlySelected || this.getQuantity(row.id) > 0
+            ),
+          },
+        ],
       },
     };
   },
   created() {
     MaterialsStore.commit('init', this.initialList);
   },
+  mounted() {
+    this.fetchMaterials();
+  },
   methods: {
-    getFilters() {
-      const params = {};
-      if (this.$route.query.park) {
-        params.park = this.$route.query.park;
+    async fetchMaterials() {
+      try {
+        this.isLoading = true;
+        this.$refs.DataTable.setLoadingState(true);
+        const { data } = await this.$http.get(`materials/while-event/${this.eventId}`);
+        this.materials = data;
+      } catch (error) {
+        this.showError(error);
+      } finally {
+        this.isLoading = false;
+        this.$refs.DataTable.setLoadingState(false);
       }
-
-      if (this.$route.query.category) {
-        params.category = this.$route.query.category;
-      }
-
-      if (this.$route.query.subCategory) {
-        params.subCategory = this.$route.query.subCategory;
-      }
-
-      if (this.$route.query.tags) {
-        params.tags = JSON.parse(this.$route.query.tags);
-      }
-
-      if (this.showSelectedOnly) {
-        params.onlySelectedInEvent = this.eventId;
-      }
-
-      return params;
     },
 
     handleToggleSelectedOnly(newValue) {
+      this.$refs.DataTable.setCustomFilters({ onlySelected: newValue });
+      this.$refs.DataTable.setLimit(
+        newValue ? noPaginationLimit : Config.defaultPaginationLimit,
+      );
       this.showSelectedOnly = newValue;
-      this.isLoading = true;
-      this.$refs.DataTable.refresh();
     },
 
-    refreshTable() {
-      this.$refs.DataTable.getData();
-    },
-
-    refreshTableAndPagination() {
-      this.error = false;
-      this.isLoading = true;
-      this.$refs.DataTable.refresh();
+    setFilters(filters) {
+      const onlySelected = this.showSelectedOnly;
+      const newFilters = { ...filters, onlySelected };
+      this.$refs.DataTable.setCustomFilters(newFilters);
     },
 
     getQuantity(materialId) {
@@ -141,7 +172,14 @@ export default {
       // - when quantities are changing.
       this.renderId += 1;
 
-      const materials = Object.keys(MaterialsStore.state.quantities).map(
+      const materialIds = Object.keys(MaterialsStore.state.quantities);
+
+      this.hasMaterial = materialIds.length > 0;
+      if (!this.hasMaterial) {
+        this.handleToggleSelectedOnly(false);
+      }
+
+      const materials = materialIds.map(
         (id) => ({ id: parseInt(id, 10), quantity: MaterialsStore.getters.getQuantity(id) }),
       );
       this.$emit('change', materials);
