@@ -1,4 +1,14 @@
 .timeline-event {
+  .fas,
+  .far {
+    width: 1.2rem;
+    text-align: center;
+  }
+
+  .fa-exclamation-triangle {
+    color: $text-danger-color;
+  }
+
   &--past {
     background-color: $calendar-event-past-color !important;
     color: $text-base-color !important;
@@ -9,24 +19,9 @@
   }
 
   &--locked {
-    .vis-item-content::before {
-      content: "\f023";
-      display: inline-block;
-      font-family: 'Font Awesome 5 Free';
-      font-weight: 900;
-      margin-right: .5rem;
-    }
   }
 
   &--with-warning {
-    .vis-item-content::before {
-      content: "\f071";
-      display: inline-block;
-      font-family: 'Font Awesome 5 Free';
-      font-weight: 900;
-      margin-right: .5rem;
-      color: $text-danger-color;
-    }
   }
 
   &--confirmed {
@@ -34,10 +29,6 @@
 
     &.vis-selected {
       background-color: lighten($calendar-event-confirmed-color, 10%) !important;
-    }
-
-    .vis-item-content::before {
-      color: $text-base-color;
     }
   }
 
