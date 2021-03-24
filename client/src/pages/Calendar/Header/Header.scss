@@ -37,10 +37,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    color: $text-warning-color;
+    font-weight: 600;
 
     .fa-spin {
       margin-bottom: .1rem;
-      margin-right: .5rem;
+      margin-right: $content-padding-small-horizontal;
       font-size: 1.8rem;
     }
   }

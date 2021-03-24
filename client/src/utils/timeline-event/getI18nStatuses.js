@@ -8,20 +8,32 @@ const getTimelineEventI18nStatuses = (formattedEvent) => {
 
   const eventStatuses = [];
 
-  if (isPast) {
-    eventStatuses.push('this-event-is-past');
+  if (isPast && !isConfirmed) {
+    eventStatuses.push({
+      icon: 'history',
+      i18nKey: 'this-event-is-past',
+    });
   }
 
   if (isCurrent) {
-    eventStatuses.push('this-event-is-currently-running');
+    eventStatuses.push({
+      icon: 'running',
+      i18nKey: 'this-event-is-currently-running',
+    });
   }
 
   if (isConfirmed) {
-    eventStatuses.push('this-event-is-confirmed');
+    eventStatuses.push({
+      icon: isPast ? 'lock' : 'check',
+      i18nKey: isPast ? 'this-event-is-locked-past-confirmed' : 'this-event-is-confirmed',
+    });
   }
 
   if (hasMissingMaterials) {
-    eventStatuses.push('this-event-has-missing-materials');
+    eventStatuses.push({
+      icon: 'exclamation-triangle',
+      i18nKey: 'this-event-has-missing-materials',
+    });
   }
 
   return eventStatuses;

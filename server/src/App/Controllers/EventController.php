@@ -35,7 +35,9 @@ class EventController extends BaseController
 
         $results = $this->model
             ->setPeriod($startDate, $endDate)
-            ->getAll($deleted);
+            ->getAll($deleted)
+            ->with('Beneficiaries:persons.id,first_name,last_name')
+            ->with('Assignees:persons.id,first_name,last_name');
 
         $restrictedParks = Auth::user()->restricted_parks;
         $useMultipleParks = Park::count() > 1;

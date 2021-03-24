@@ -85,7 +85,8 @@ class Event extends BaseModel
     public function Assignees()
     {
         return $this->belongsToMany('Robert2\API\Models\Person', 'event_assignees')
-            ->select(['persons.id', 'first_name', 'last_name', 'nickname']);
+            ->select(['persons.id', 'first_name', 'last_name', 'nickname'])
+            ->orderBy('last_name');
     }
 
     public function Beneficiaries()
@@ -99,7 +100,8 @@ class Event extends BaseModel
                 'street',
                 'postal_code',
                 'locality',
-            ]);
+            ])
+            ->orderBy('last_name');
     }
 
     public function Materials()
@@ -166,8 +168,8 @@ class Event extends BaseModel
 
     public function getBeneficiariesAttribute()
     {
-        $assignees = $this->Beneficiaries()->get();
-        return $assignees ? $assignees->toArray() : null;
+        $beneficiaries = $this->Beneficiaries()->get();
+        return $beneficiaries ? $beneficiaries->toArray() : null;
     }
 
     public function getMaterialsAttribute()

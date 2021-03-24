@@ -64,6 +64,7 @@ export default {
     'this-event-is-past': "Cet événement est passé.",
     'this-event-is-currently-running': "Cet événement se déroule en ce moment.",
     'this-event-is-confirmed': "Cet événement est confirmé.",
+    'this-event-is-locked-past-confirmed': "Cet événement est verrouillé car il est confirmé, et déjà passé.",
     'this-event-has-missing-materials': "Cet événement a du matériel manquant.",
     'all-events': "Tous les événements",
     'event-with-missing-material-only': "Événements en manque de matériel uniquement\u00a0?",
