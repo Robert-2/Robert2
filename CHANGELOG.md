@@ -24,6 +24,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Ajoute la possibilité de modifier le nom des caractéristiques spéciales (#107).
 - Améliore la disposition des filtres dans les pages de listing du matériel (#114).
 - Supprime la pagination côté serveur pour le matériel à l'étape 4 de l'édition d'événement, et améliore l'UX (#115).
+- Ajoute quelques informations (dates, bénéficiaires, techniciens) au survol des événements dans le calendrier (#117).
 
 ## 0.11.0 (2021-01-14)
 

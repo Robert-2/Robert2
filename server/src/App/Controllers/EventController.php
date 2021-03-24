@@ -31,7 +31,9 @@ class EventController extends BaseController
 
         $results = $this->model
             ->setPeriod($startDate, $endDate)
-            ->getAll($deleted);
+            ->getAll($deleted)
+            ->with('Beneficiaries')
+            ->with('Assignees');
 
         $data = $results->get()->toArray();
         $useMultipleParks = Park::count() > 1;

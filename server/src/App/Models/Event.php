@@ -166,8 +166,8 @@ class Event extends BaseModel
 
     public function getBeneficiariesAttribute()
     {
-        $assignees = $this->Beneficiaries()->get();
-        return $assignees ? $assignees->toArray() : null;
+        $beneficiaries = $this->Beneficiaries()->get();
+        return $beneficiaries ? $beneficiaries->toArray() : null;
     }
 
     public function getMaterialsAttribute()

@@ -56,11 +56,11 @@ $items-border-radius: 10px;
 
 .vis-item {
   margin: 0;
-  padding: 1rem 1.1rem;
+  padding: 1.2rem 1.1rem;
   border: none !important;
   border-radius: $items-border-radius !important;
   box-shadow: 1px 2px 3px rgba(#000, .5);
-  font-size: .95rem;
+  font-size: 1rem;
 
   .vis-item-content {
     padding: 0 0 .1rem 0 !important;
@@ -133,4 +133,19 @@ div.vis-tooltip {
   color: $text-base-color !important;
   white-space: pre-wrap !important;
   font-family: $text-base-font-family !important;
+
+  .fas,
+  .far {
+    width: 1.5rem;
+    text-align: center;
+    margin-bottom: 3px;
+  }
+
+  .fa-exclamation-triangle {
+    color: $text-danger-color;
+  }
+
+  .fa-check {
+    color: $text-success-color;
+  }
 }

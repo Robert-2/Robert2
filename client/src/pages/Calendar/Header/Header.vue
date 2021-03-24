@@ -24,6 +24,7 @@
         class="CalendarHeader__button info"
         @click="refresh()"
         :title="$t('action-refresh')"
+        :disabled="isLoading"
       >
         <i class="fas fa-sync-alt" />
         <span class="CalendarHeader__button__title">{{ $t('action-refresh') }}</span>
