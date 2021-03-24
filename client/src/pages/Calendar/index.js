@@ -58,7 +58,7 @@ export default {
         minHeight: '100%',
         orientation: 'top',
         zoomMin: ONE_DAY * 7,
-        zoomMax: ONE_DAY * 60,
+        zoomMax: ONE_DAY * 6 * 30,
         tooltip: { followMouse: true, overflowMethod: 'flip' },
         moment: (date) => moment(date),
         onMove: (item, callback) => {
