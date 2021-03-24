@@ -37,6 +37,13 @@ final class PersonTest extends ModelTestCase
         $result = $this->model->getAll()->get()->toArray();
         $this->assertCount(1, $result);
         $this->assertEquals('Jean Fountain', $result[0]['full_name']);
+
+        // - Search by company name
+        $this->model->setSearch('Testing');
+        $result = $this->model->getAll()->get()->toArray();
+        $this->assertCount(1, $result);
+        $this->assertEquals('Jean Fountain', $result[0]['full_name']);
+        $this->assertEquals(1, $result[0]['company_id']);
     }
 
     public function testGetAllFilteredOrTagged(): void

@@ -2,6 +2,7 @@
 /* eslint-disable quote-props */
 export default {
   'page-login': {
+    'title': "Connexion",
     'welcome': "Bonjour\u00a0! Qui êtes vous\u00a0?",
     'connexion': "Connexion",
     'login-with-cas': "Connexion via CAS",
@@ -113,6 +114,7 @@ export default {
     'action-add': "Nouvel utilisateur",
     'add': "Nouvel utilisateur",
     'edit': "Modifier l'utilisateur «\u00a0{pageSubTitle}\u00a0»",
+    'edit-title': "Modifier l'utilisateur",
     'confirm-delete': "Mettre cet utilisateur à la corbeille\u00a0?",
     'confirm-permanently-delete': "Voulez-vous vraiment supprimer définitivement cet utilisateur\u00a0?",
     'confirm-restore': "Voulez-vous vraiment restaurer cet utilisateur\u00a0?",
@@ -128,6 +130,7 @@ export default {
     'action-add': "Nouveau bénéficiaire",
     'add': "Nouveau bénéficiaire",
     'edit': "Modifier le bénéficiaire «\u00a0{pageSubTitle}\u00a0»",
+    'edit-title': "Modifier le bénéficiaire",
     'beneficiary-type': "Type de bénéficiaire",
     'person': "Personne physique (individu)",
     'company': "Personne morale (entreprise)",
@@ -142,6 +145,7 @@ export default {
     'title': "Sociétés",
     'add': "Nouvelle société",
     'edit': "Modifier la société «\u00a0{pageSubTitle}\u00a0»",
+    'edit-title': "Modifier la société",
     'edit-btn': "Modifier la société",
     'create-new': "Ajouter une nouvelle société",
     'help-edit': "La raison sociale (nom de la société) est obligatoire.",
@@ -161,6 +165,7 @@ export default {
     ),
     'add': "Nouveau matériel",
     'edit': "Modifier le matériel «\u00a0{pageSubTitle}\u00a0»",
+    'edit-title': "Modifier le matériel",
     'help-edit': (
       `Utilisez un nom assez court pour le matériel, et la description pour entrer dans les détails.\n
       Si vous cochez la case «\u00a0identification unitaire\u00a0», vous aurez la possibilité de spécifier des
@@ -176,6 +181,7 @@ export default {
   },
 
   'page-materials-view': {
+    'title': "Détails du matériel",
     'documents': {
       'no-document': "Aucun document pour le moment.",
       'drag-and-drop-files-here': "Glissez-déposez des fichiers ici ↓ pour les ajouter.",
@@ -277,6 +283,7 @@ export default {
     'action-add': "Nouveau technicien",
     'add': "Nouveau technicien",
     'edit': "Modifier le technicien «\u00a0{pageSubTitle}\u00a0»",
+    'edit-title': "Modifier le technicien",
     'help-edit': "Seuls le nom et le prénom de la personne sont obligatoires.",
     'confirm-delete': "Mettre ce technicien à la corbeille\u00a0?",
     'confirm-permanently-delete': "Voulez-vous vraiment supprimer définitivement ce technicien\u00a0?",
@@ -290,6 +297,7 @@ export default {
     'action-add': "Nouveau parc de matériel",
     'add': "Nouveau parc de matériel",
     'edit': "Modifier le parc «\u00a0{pageSubTitle}\u00a0»",
+    'edit-title': "Modifier le parc",
     'help-edit': "Seul le nom du parc est obligatoire.",
     'confirm-delete': "Mettre ce parc à la corbeille\u00a0? Cela ne supprimera pas le matériel qu'il contient.",
     'confirm-permanently-delete': "Voulez-vous vraiment supprimer définitivement ce parc\u00a0? ATTENTION, cela supprimera tout le matériel contenu dans ce parc\u00a0!!",

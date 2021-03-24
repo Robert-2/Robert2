@@ -2,6 +2,7 @@
 /* eslint-disable quote-props */
 export default {
   'page-login': {
+    'title': "Login",
     'welcome': "Hello! Who are you?",
     'connexion': "Enter Robert",
     'login-with-cas': "Login with CAS",
@@ -76,6 +77,7 @@ export default {
     'back-to-calendar': "Back to calendar",
     'add': "New event",
     'edit': "Modify event «\u00a0{pageSubTitle}\u00a0»",
+    'edit-title': "Modify event",
     'edit-event': "Modify event",
     'save-and-back-to-calendar': "Save and back to calendar",
     'save-and-continue': "Save and continue",
@@ -113,6 +115,7 @@ export default {
     'action-add': "New user",
     'add': "New user",
     'edit': "Modify user «\u00a0{pageSubTitle}\u00a0»",
+    'edit-title': "Modify user",
     'confirm-delete': "Move this user in trash bin?",
     'confirm-permanently-delete': "Do you really want to permanently delete this user?",
     'confirm-restore': "Do you really want to restore this user?",
@@ -128,6 +131,7 @@ export default {
     'action-add': "New beneficiary",
     'add': "New beneficiary",
     'edit': "Modify beneficiary «\u00a0{pageSubTitle}\u00a0»",
+    'edit-title': "Modify beneficiary",
     'beneficiary-type': "Beneficiary type",
     'person': "Natural person (individual)",
     'company': "Legal entity (company)",
@@ -142,6 +146,7 @@ export default {
     'title': "Companies",
     'add': "New company",
     'edit': "Modify company «\u00a0{pageSubTitle}\u00a0»",
+    'edit-title': "Modify company",
     'edit-btn': "Modify company",
     'create-new': "Add a new company",
     'help-edit': "The legal name of the company is mandatory.",
@@ -161,6 +166,7 @@ export default {
     ),
     'add': "New material",
     'edit': "Modify material «\u00a0{pageSubTitle}\u00a0»",
+    'edit-title': "Modify material",
     'help-edit': (
       `Use a short name for the material and use the description field to enter details.\n
       If you check the box «\u00a0Unitary identification\u00a0», you will be able to specify units
@@ -276,6 +282,7 @@ export default {
     'action-add': "New technician",
     'add': "New technician",
     'edit': "Modify technician «\u00a0{pageSubTitle}\u00a0»",
+    'edit-title': "Modify technician",
     'help-edit': "Only first name and last name are mandatory.",
     'confirm-delete': "Move this technician in trash bin?",
     'confirm-permanently-delete': "Do you really want to permanently delete this technician?",
@@ -289,6 +296,7 @@ export default {
     'action-add': "New materials park",
     'add': "New materials park",
     'edit': "Modify park «\u00a0{pageSubTitle}\u00a0»",
+    'edit-title': "Modify park",
     'help-edit': "Only the name of the park is mandatory.",
     'confirm-delete': "Move this park in trash bin? This won't delete materials in this park.",
     'confirm-permanently-delete': "Do you really want to permanently delete this park? WARNING: this will delete all materials of this park!!",

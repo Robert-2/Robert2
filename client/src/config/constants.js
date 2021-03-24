@@ -1,3 +1,5 @@
+const APP_NAME = 'Robert2';
+
 const DATE_DB_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 const DATE_QUERY_FORMAT = 'YYYY-MM-DD';
 const DEBOUNCE_WAIT = 500; // - in milliseconds
@@ -21,6 +23,7 @@ const AUTHORIZED_FILE_TYPES = [
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 
 export {
+  APP_NAME,
   DATE_DB_FORMAT,
   DATE_QUERY_FORMAT,
   DEBOUNCE_WAIT,
