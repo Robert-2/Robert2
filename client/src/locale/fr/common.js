@@ -174,6 +174,10 @@ export default {
     "{count} article",
     "{count} articles",
   ],
+  'used-count': [
+    "{count} utilisé",
+    "{count} utilisés",
+  ],
   'stock-items-count': "{count} en stock",
   'out-of-order-items-count': "{count} en panne",
   'sub-total': "Sous-total",

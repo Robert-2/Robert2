@@ -3,6 +3,10 @@ import getTimelineEventClassNames from '@/utils/timeline-event/getClassNames';
 import getTimelineEventI18nStatuses from '@/utils/timeline-event/getI18nStatuses';
 
 const formatEvent = (dataEvent, translate) => {
+  const withIcon = (iconName, text) => (
+    `<i class="fas fa-${iconName}"></i> ${text}`
+  );
+
   const formattedEvent = formatTimelineEvent(dataEvent);
   const {
     title,
@@ -12,19 +16,21 @@ const formatEvent = (dataEvent, translate) => {
     pivot,
   } = formattedEvent;
 
-  const content = `${title} (${pivot.quantity})`;
+  const { quantity: count } = pivot;
+  const countText = translate('used-count', { count }, count);
 
-  const eventStatuses = getTimelineEventI18nStatuses(formattedEvent).map(
-    (i18nKey) => translate(`page-calendar.${i18nKey}`),
+  const content = `${title} (${countText})`;
+
+  const locationText = withIcon('map-marker-alt', location || '?');
+
+  const datesText = withIcon(
+    'clock',
+    translate('from-date-to-date', { from: start.format('L'), to: end.format('L') }),
   );
 
-  let eventTitle = title;
-  if (location) {
-    eventTitle = `${title} - ${location}`;
-  }
-  if (eventStatuses.length > 0) {
-    eventTitle += `\n  →${eventStatuses.join('\n  →')}`;
-  }
+  const statusesText = getTimelineEventI18nStatuses(formattedEvent).map(
+    ({ icon, i18nKey }) => withIcon(icon, translate(`page-calendar.${i18nKey}`)),
+  ).join('\n');
 
   return {
     ...formattedEvent,
@@ -33,7 +39,14 @@ const formatEvent = (dataEvent, translate) => {
     end,
     editable: false,
     className: getTimelineEventClassNames(formattedEvent).join(' '),
-    title: eventTitle,
+    title: [
+      `<strong>${title}</strong>, ${countText}`,
+      '',
+      locationText,
+      datesText,
+      '',
+      statusesText,
+    ].join('\n'),
   };
 };
 

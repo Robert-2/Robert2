@@ -22,11 +22,12 @@ describe('MaterialView/Availabilities/utils.formatEvent', () => {
     expect(result).toBeDefined();
 
     expect(result.title).toBe(
-      'Test event - TestVille\n'
-      + '  →page-calendar.this-event-is-past\n'
-      + '  →page-calendar.this-event-is-confirmed',
+      '<strong>Test event</strong>, used-count'
+      + '\n\n<i class="fas fa-map-marker-alt"></i> TestVille'
+      + '\n<i class="fas fa-clock"></i> from-date-to-date'
+      + '\n\n<i class="fas fa-lock"></i> page-calendar.this-event-is-locked-past-confirmed',
     );
-    expect(result.content).toBe('Test event (3)');
+    expect(result.content).toBe('Test event (used-count)');
     expect(result.className).toBe('timeline-event timeline-event--past timeline-event--locked');
     expect(result.editable).toBe(false);
     expect(result.hasMissingMaterials).toBe(false);
