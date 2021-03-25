@@ -27,6 +27,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Ajoute quelques informations (dates, bénéficiaires, techniciens) au survol des événements dans le calendrier (#117).
 - Augmente le zoom maximum du calendrier à 6 mois pour élargir la vision globale de la frise temporelle (#118).
 - Ajoute le titre des pages dans l'onglet du navigateur.
+- Améliore le système de recherche des bénéficiaires pour inclure aussi le nom de la structure associée à la personne (#119).
 
 ## 0.11.0 (2021-01-14)
 

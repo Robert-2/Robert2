@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
 use Robert2\API\Config\Config;
 use Robert2\API\Models\Traits\Taggable;
 use Robert2\API\Validation\Validator as V;
@@ -21,8 +22,15 @@ class Person extends BaseModel
 
     protected $orderField = 'last_name';
 
-    protected $allowedSearchFields = ['full_name', 'first_name', 'last_name', 'nickname', 'email'];
-    protected $searchField = 'full_name';
+    protected $allowedSearchFields = [
+        'first_name',
+        'last_name',
+        'full_name',
+        'full_name_or_company',
+        'nickname',
+        'email',
+    ];
+    protected $searchField = 'full_name_or_company';
 
     public function __construct(array $attributes = [])
     {
@@ -232,6 +240,18 @@ class Person extends BaseModel
                     ->orWhere('last_name', 'like', $term);
             };
             return $builder->where($group);
+        }
+
+        if ($this->searchField === 'full_name_or_company') {
+            $group = function (Builder $query) use ($term) {
+                $query->orWhere('first_name', 'like', $term)
+                    ->orWhere('last_name', 'like', $term);
+            };
+            return $builder
+                ->where($group)
+                ->orWhereHas('company', function (Builder $subQuery) use ($term) {
+                    $subQuery->where('companies.legal_name', 'like', $term);
+                });
         }
 
         return $builder->where($this->searchField, 'like', $term);
