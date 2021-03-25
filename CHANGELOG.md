@@ -26,6 +26,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Supprime la pagination côté serveur pour le matériel à l'étape 4 de l'édition d'événement, et améliore l'UX (#115).
 - Ajoute quelques informations (dates, bénéficiaires, techniciens) au survol des événements dans le calendrier (#117).
 - Augmente le zoom maximum du calendrier à 6 mois pour élargir la vision globale de la frise temporelle (#118).
+- Ajoute le titre des pages dans l'onglet du navigateur.
 
 ## 0.11.0 (2021-01-14)
 
