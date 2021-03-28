@@ -2683,4 +2683,7 @@ return [
 
     "label"
     => "Label",
+
+    "park-value"
+    => "Park: %s",
 ];

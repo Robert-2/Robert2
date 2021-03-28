@@ -1,11 +1,12 @@
-import Config from '@/config/globalConfig';
-import formatAmount from '@/utils/formatAmount';
 import MaterialsFilter from '@/components/MaterialsFilters/MaterialsFilters.vue';
 import SwitchToggle from '@/components/SwitchToggle/SwitchToggle.vue';
+import Config from '@/config/globalConfig';
+import formatAmount from '@/utils/formatAmount';
 import isValidInteger from '@/utils/isValidInteger';
+import observeBarcodeScan from '@/utils/observeBarcodeScan';
+import MaterialsStore from './MaterialsStore';
 import Quantity from './Quantity/Quantity.vue';
 import Units from './Units/Units.vue';
-import MaterialsStore from './MaterialsStore';
 
 const noPaginationLimit = 100000;
 
@@ -48,10 +49,11 @@ export default {
       isLoading: true,
       columns,
       materials: [],
+      manualOrder: [],
       tableOptions: {
         columnsDropdown: false,
         preserveState: false,
-        orderBy: { column: 'reference', ascending: true },
+        orderBy: { column: 'custom', ascending: true },
         initialPage: 1,
         perPage: hasMaterial ? noPaginationLimit : Config.defaultPaginationLimit,
         showChildRowToggler: false,
@@ -67,6 +69,28 @@ export default {
           actions: 'MaterialsList__actions',
         },
         initFilters: this.getFilters(),
+        customSorting: {
+          custom: (ascending) => (a, b) => {
+            let result = null;
+
+            // - Si on est en mode "sélectionnés uniquement" et qu'au moins l'un
+            //   des deux à un ordre manuellement défini, on l'utilise.
+            if (this.showSelectedOnly) {
+              const aManualOrderIndex = this.manualOrder.indexOf(a.id);
+              const bManualOrderIndex = this.manualOrder.indexOf(b.id);
+              if (aManualOrderIndex !== -1 || bManualOrderIndex !== -1) {
+                result = aManualOrderIndex > bManualOrderIndex ? -1 : 1;
+              }
+            }
+
+            // - Sinon on fallback sur le tri par reference.
+            if (result === null) {
+              result = a.reference.localeCompare(b.reference, { ignorePunctuation: true });
+            }
+
+            return ascending || result === 0 ? result : -result;
+          },
+        },
         customFilters: [
           {
             name: 'park',
@@ -101,6 +125,18 @@ export default {
   },
   mounted() {
     this.fetchMaterials();
+
+    this.cancelScanObservation = observeBarcodeScan(this.handleScan);
+  },
+  beforeDestroy() {
+    if (this.cancelScanObservation) {
+      this.cancelScanObservation();
+    }
+  },
+  computed: {
+    isFiltered() {
+      return Object.keys(this.getFilters(false)).length !== 0;
+    },
   },
   methods: {
     async fetchMaterials() {
@@ -117,10 +153,54 @@ export default {
       }
     },
 
-    getFilters() {
-      const filters = {
-        onlySelected: this.showSelectedOnly,
-      };
+    handleScan(id, unitId) {
+      if (!id || !unitId) {
+        return;
+      }
+
+      const material = this.materials.find((_material) => _material.id === id);
+      if (!material) {
+        return;
+      }
+
+      const unit = material.units.find((_unit) => _unit.id === unitId);
+      if (!unit || !unit.is_available) {
+        return;
+      }
+
+      // - On affiche uniquement les items selectionnés.
+      this.setSelectedOnly(true);
+
+      // - On reset les filtres (au cas ou l'item scanné n'est pas dedans).
+      if (this.isFiltered) {
+        this.$refs.filters.clearFilters();
+      }
+
+      // - Si elle n'est pas encore sélectionnée, on sélectionne l'unité.
+      const selectedUnits = MaterialsStore.getters.getUnits(material.id);
+      const isAlreadySelected = selectedUnits.includes(unit.id);
+      if (!isAlreadySelected) {
+        MaterialsStore.commit('selectUnit', { material, unitId: unit.id });
+        this.handleChanges();
+      }
+
+      // - Ajoute l'élément au tableau des ordonnés "manuellement".
+      const existingOrderIndex = this.manualOrder.indexOf(material.id);
+      if (existingOrderIndex !== -1) {
+        this.manualOrder.splice(existingOrderIndex, 1);
+      }
+      this.manualOrder.push(material.id);
+
+      // TODO: Améliorer ça, pas idéal d'avoir à référencer le `.content` ici ...
+      document.querySelector('.content').scrollTo(0, 0);
+    },
+
+    getFilters(extended = true) {
+      const filters = {};
+
+      if (extended) {
+        filters.onlySelected = this.showSelectedOnly;
+      }
 
       if (this.$route.query.park && isValidInteger(this.$route.query.park)) {
         filters.park = parseInt(this.$route.query.park, 10);
@@ -141,12 +221,12 @@ export default {
       return filters;
     },
 
-    handleToggleSelectedOnly(newValue) {
-      this.$refs.DataTable.setCustomFilters({ onlySelected: newValue });
+    setSelectedOnly(onlySelected) {
+      this.$refs.DataTable.setCustomFilters({ onlySelected });
       this.$refs.DataTable.setLimit(
-        newValue ? noPaginationLimit : Config.defaultPaginationLimit,
+        onlySelected ? noPaginationLimit : Config.defaultPaginationLimit,
       );
-      this.showSelectedOnly = newValue;
+      this.showSelectedOnly = onlySelected;
     },
 
     toggleChild(id) {
@@ -156,12 +236,6 @@ export default {
     isChildOpen(id) {
       const tableRef = this.$refs.DataTable.$refs.table;
       return tableRef.openChildRows.includes(id);
-    },
-
-    setFilters(filters) {
-      const onlySelected = this.showSelectedOnly;
-      const newFilters = { ...filters, onlySelected };
-      this.$refs.DataTable.setCustomFilters(newFilters);
     },
 
     getQuantity(material) {
@@ -206,6 +280,12 @@ export default {
       this.handleChanges();
     },
 
+    handleFiltersChanges(filters) {
+      const onlySelected = this.showSelectedOnly;
+      const newFilters = { ...filters, onlySelected };
+      this.$refs.DataTable.setCustomFilters(newFilters);
+    },
+
     handleChanges() {
       // - This hack is necessary because Vue-table-2 does not re-render the cells
       // - when quantities are changing.
@@ -215,7 +295,7 @@ export default {
 
       this.hasMaterial = materialIds.length > 0;
       if (!this.hasMaterial) {
-        this.handleToggleSelectedOnly(false);
+        this.setSelectedOnly(false);
       }
 
       const materials = Object.entries(MaterialsStore.state.materials).map(

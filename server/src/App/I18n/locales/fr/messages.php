@@ -2685,4 +2685,7 @@ return [
 
     "label"
     => "Étiquette",
+
+    "park-value"
+    => "Parc : %s",
 ];

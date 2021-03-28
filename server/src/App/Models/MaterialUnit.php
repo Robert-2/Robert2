@@ -5,6 +5,8 @@ namespace Robert2\API\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Robert2\API\Models\BaseModel;
+use BigFish\PDF417\PDF417;
+use BigFish\PDF417\Renderers\SvgRenderer;
 use Robert2\API\Validation\Validator as V;
 
 class MaterialUnit extends BaseModel
@@ -15,7 +17,7 @@ class MaterialUnit extends BaseModel
 
         $this->validation = [
             'park_id'       => V::notEmpty()->numeric(),
-            'serial_number' => V::notEmpty()->alnum('-/*.')->length(2, 64),
+            'serial_number' => V::notEmpty()->alnum('-+/*.')->length(2, 64),
             'is_broken'     => V::optional(V::boolType()),
         ];
     }
@@ -60,10 +62,55 @@ class MaterialUnit extends BaseModel
         'is_broken'     => 'boolean',
     ];
 
-    public function getMaterialAttribute($value)
+    public function getMaterialAttribute()
     {
         $material = $this->Material()->first();
         return $material ? $material->toArray() : null;
+    }
+
+    public function getParkAttribute()
+    {
+        return $this->park()->first();
+    }
+
+    public function getBarcodeAttribute()
+    {
+        if (!$this->id || !$this->material) {
+            return null;
+        }
+
+        $params = array_map(
+            function ($id) {
+                return str_pad((string)$id, 11, '0', STR_PAD_LEFT);
+            },
+            [$this->material['id'], $this->id]
+        );
+
+        try {
+            $code = sprintf('^#[%s]#$', implode('/', $params));
+            $barcode = (new PDF417())->encode($code);
+
+            // - Calcule le ratio idéal vu le nombre de lignes du barcode.
+            for ($ratio = 5; $ratio > 1; $ratio--) {
+                if (($ratio * $barcode->rows) <= 30) {
+                    break;
+                }
+            }
+
+            $renderer = new SvgRenderer([
+                'scale' => 1,
+                'ratio' => $ratio,
+                'padding' => 0,
+            ]);
+            $svg = $renderer->render($barcode);
+        } catch (\Throwable $e) {
+            throw new \RuntimeException(sprintf(
+                "Impossible de générer le code barre pour le numéro de série \"%s\".",
+                $this->serial_number
+            ));
+        }
+
+        return sprintf('data:image/svg+xml;base64,%s', base64_encode($svg));
     }
 
     // ——————————————————————————————————————————————————————

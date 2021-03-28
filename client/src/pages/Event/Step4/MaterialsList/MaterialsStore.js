@@ -86,6 +86,29 @@ export default new Vuex.Store({
       }
     },
 
+    selectUnit(state, payload) {
+      const { material, unitId } = payload;
+      const { id } = material;
+
+      if (!material.is_unitary) {
+        throw new Error("Le matériel n'est pas unitaire, impossible d'ajouter/supprimer une unité.");
+      }
+
+      if (!state.materials[id]) {
+        state.materials = {
+          ...state.materials,
+          [id]: { quantity: 0, units: [] },
+        };
+      }
+
+      if (state.materials[id].units.includes(unitId)) {
+        return;
+      }
+
+      state.materials[id].quantity += 1;
+      state.materials[id].units.push(unitId);
+    },
+
     toggleUnit(state, payload) {
       const { material, unitId } = payload;
       const { id } = material;

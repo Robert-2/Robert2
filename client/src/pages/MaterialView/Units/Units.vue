@@ -8,6 +8,13 @@
         {{ unit.row.is_broken ? $t('yes') : $t('no') }}
       </template>
       <template #actions="unit">
+          <a
+            target="_blank"
+            :href="getFileUrl(unit.row.id)"
+            class="button item-actions__button info"
+          >
+            <i class="fas fa-barcode" />
+          </a>
           <router-link
             v-tooltip="$t('action-edit')"
             :to="`/materials/${material.id}/units/${unit.row.id}`"

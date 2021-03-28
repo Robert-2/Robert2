@@ -2,16 +2,14 @@
   <div class="MaterialsList">
     <header class="MaterialsList__header">
       <MaterialsFilter
+        ref="filters"
         :baseRoute="`/events/${event.id}`"
-        @change="setFilters"
+        @change="handleFiltersChanges"
       />
       <div class="MaterialsList__header__extra-filters">
         <div v-if="hasMaterial" class="MaterialsList__header__extra-filters__filter">
           {{ $t('page-events.display-only-selected-materials') }}
-          <SwitchToggle
-            :value="showSelectedOnly"
-            @input="handleToggleSelectedOnly"
-          />
+          <SwitchToggle :value="showSelectedOnly" @input="setSelectedOnly" />
         </div>
       </div>
     </header>
@@ -101,7 +99,7 @@
           v-if="showSelectedOnly"
           type="button"
           role="button"
-          @click="handleToggleSelectedOnly(false)"
+          @click="setSelectedOnly(false)"
         >
           <i class="fas fa-plus" />
           {{ $t('page-events.display-all-materials-to-add-some') }}
@@ -110,7 +108,7 @@
           v-if="!showSelectedOnly"
           type="button"
           role="button"
-          @click="handleToggleSelectedOnly(true)"
+          @click="setSelectedOnly(true)"
         >
           <i class="fas fa-eye" />
           {{ $t('page-events.display-only-event-materials') }}

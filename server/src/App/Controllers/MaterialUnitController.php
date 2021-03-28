@@ -7,11 +7,51 @@ use Illuminate\Database\QueryException;
 use Robert2\API\Errors;
 use Robert2\API\Models\Material;
 use Robert2\API\Models\MaterialUnit;
+use Robert2\API\Controllers\Traits\FileResponse;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use Robert2\Lib\Pdf\Pdf;
+use Robert2\API\I18n\I18n;
 
 class MaterialUnitController extends BaseController
 {
+    use FileResponse;
+
+    /** @var MaterialUnit */
+    protected $model;
+
+    public function barCode(Request $request, Response $response): Response
+    {
+        $id = (int)$request->getAttribute('id');
+
+        $unit = $this->model->with('Material')->find($id);
+        if (!$unit) {
+            throw new Errors\NotFoundException;
+        }
+
+        $vars = [
+            'name' => $unit->material['name'],
+            'park' =>  $unit->park->name,
+            'serialNumber' => $unit->serial_number,
+            'barcode' => $unit->barcode,
+        ];
+        $pdf = Pdf::createFromTemplate('barcode', $vars);
+
+        $fileName = sprintf(
+            '%s-%s-%s.pdf',
+            (new I18n())->translate('label'),
+            slugify($unit->material['name']),
+            slugify($unit->serial_number)
+        );
+        return $this->_responseWithFile($response, $fileName, $pdf);
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Api Actions
+    // -
+    // ------------------------------------------------------
+
     public function getOne(Request $request, Response $response): Response
     {
         $id = (int)$request->getAttribute('id');

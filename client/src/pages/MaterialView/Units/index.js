@@ -1,5 +1,6 @@
 import store from '@/store';
 import Alert from '@/components/Alert';
+import Config from '@/config/globalConfig';
 
 export default {
   name: 'MaterialViewUnits',
@@ -38,6 +39,11 @@ export default {
   methods: {
     getParkName(parkId) {
       return store.getters['parks/parkName'](parkId);
+    },
+
+    getFileUrl(unitId) {
+      const { baseUrl } = Config;
+      return `${baseUrl}/material-units/${unitId}/barcode`;
     },
 
     async deleteUnit(unitId) {

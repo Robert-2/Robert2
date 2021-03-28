@@ -14,6 +14,19 @@ export default {
     const initialUnits = initialMaterial ? [...initialMaterial.pivot.units] : [];
     return { initialUnits };
   },
+  watch: {
+    event(newEvent) {
+      const newMaterial = newEvent.materials?.find(({ id }) => id === this.material.id);
+      if (!newMaterial) {
+        return;
+      }
+
+      const newUnits = [...newMaterial.pivot.units]
+        .filter((unitId) => !this.initialUnits.includes(unitId));
+
+      this.initialUnits.push(...newUnits);
+    },
+  },
   computed: {
     selected() {
       return store.getters.getUnits(this.material.id);
