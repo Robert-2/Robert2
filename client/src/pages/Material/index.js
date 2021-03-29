@@ -20,14 +20,14 @@ export default {
         id: this.$route.params.id || null,
         name: '',
         reference: '',
-        park_id: 1,
+        park_id: '',
         category_id: '',
         rental_price: showBilling ? '' : 0,
-        stock_quantity: '',
+        stock_quantity: '1',
         description: '',
         sub_category_id: '',
         replacement_price: '',
-        out_of_order_quantity: '',
+        out_of_order_quantity: '0',
         note: '',
         is_hidden_on_bill: false,
         is_discountable: true,
@@ -56,6 +56,9 @@ export default {
     parksOptions() {
       return store.getters['parks/options'];
     },
+    firstPark() {
+      return store.getters['parks/firstPark'];
+    },
     categoriesOptions() {
       return store.getters['categories/options'];
     },
@@ -65,6 +68,12 @@ export default {
     store.dispatch('categories/fetch');
 
     this.fetchMaterial();
+    this.setDefaultPark();
+  },
+  watch: {
+    firstPark() {
+      this.setDefaultPark();
+    },
   },
   methods: {
     fetchMaterial() {
@@ -86,8 +95,21 @@ export default {
         .catch(this.displayError);
     },
 
+    setDefaultPark() {
+      if (this.material.id === null) {
+        this.material.park_id = this.firstPark?.id || '';
+      }
+    },
+
     fetchAttributes() {
-      this.$http.get('materials/attributes')
+      this.extraAttributes = [];
+
+      const { category_id: categoryId } = this.material;
+      if (!categoryId) {
+        return;
+      }
+
+      this.$http.get(`attributes?category=${categoryId}`)
         .then(({ data }) => {
           this.extraAttributes = data;
         })
@@ -101,6 +123,8 @@ export default {
           return 'number';
         case 'boolean':
           return 'switch';
+        case 'date':
+          return 'date';
         default:
           return 'text';
       }
@@ -183,6 +207,11 @@ export default {
       if (this.material.rental_price > 0) {
         this.material.is_hidden_on_bill = false;
       }
+    },
+
+    handleCategoryChange() {
+      this.fetchAttributes();
+      this.updateSubCategories();
     },
 
     updateSubCategories() {

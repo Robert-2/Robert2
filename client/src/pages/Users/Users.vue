@@ -9,13 +9,11 @@
         />
       </div>
       <div class="header-page__actions">
-        <router-link
-          :to="`/users/new`"
-          tag="button"
-          class="Users__create success"
-        >
-          <i class="fas fa-user-plus" />
-          {{ $t('page-users.action-add') }}
+        <router-link :to="`/users/new`" v-slot="{ navigate }" custom>
+          <button @click="navigate" class="Users__create success" >
+            <i class="fas fa-user-plus" />
+            {{ $t('page-users.action-add') }}
+          </button>
         </router-link>
       </div>
     </div>
@@ -61,11 +59,13 @@
           <div v-if="user.row.id === currentUserId">
             <router-link
               to="/profile"
-              tag="button"
-              class="info"
+              v-slot="{ navigate }"
+              custom
             >
-              <i class="fas fa-edit" />
-              {{$t('your-profile')}}
+              <button @click="navigate" class="info">
+                <i class="fas fa-edit" />
+                {{$t('your-profile')}}
+              </button>
             </router-link>
           </div>
           <div v-else>
@@ -73,10 +73,12 @@
               v-if="!isTrashDisplayed"
               v-tooltip="$t('action-edit')"
               :to="`/users/${user.row.id}`"
-              tag="button"
-              class="item-actions__button info"
+              v-slot="{ navigate }"
+              custom
             >
-              <i class="fas fa-edit" />
+              <button @click="navigate" class="item-actions__button info">
+                <i class="fas fa-edit" />
+              </button>
             </router-link>
             <button
               v-if="!isTrashDisplayed && user.row.group_id !== 'admin'"

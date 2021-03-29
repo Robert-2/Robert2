@@ -24,10 +24,7 @@
                 class="Company__persons__item"
               >
                 <i class="fas fa-user" />
-                <router-link
-                  :to="`/beneficiaries/${person.id}`"
-                  tag="a"
-                >
+                <router-link :to="`/beneficiaries/${person.id}`">
                   {{ person.full_name }}
                 </router-link>
               </li>

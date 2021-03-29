@@ -34,6 +34,10 @@ export default {
     },
   },
   computed: {
+    userCanEdit() {
+      return this.$store.getters['auth/is'](['admin', 'member']);
+    },
+
     billPdfUrl() {
       const { baseUrl } = Config;
       const { id } = this.lastBill || { id: null };

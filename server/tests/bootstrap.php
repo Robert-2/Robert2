@@ -10,6 +10,7 @@ date_default_timezone_set('UTC');
 putenv('PHP_ROBERT2_TESTING=TESTS');
 
 require_once 'src/vendor/autoload.php';
+require_once 'tests/constants.php';
 require_once 'src/App/Config/constants.php';
 require_once 'src/App/Config/functions.php';
 

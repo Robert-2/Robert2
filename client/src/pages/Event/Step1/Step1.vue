@@ -33,7 +33,7 @@
             required
             :errors="errors.end_date"
             :datepicker-options="endDatepickerOptions"
-            @change="refreshDateFieldLimit"
+            @change="refreshDatesLimits"
           />
         </div>
         <div v-if="duration > 0" class="EventStep1__dates__duration">

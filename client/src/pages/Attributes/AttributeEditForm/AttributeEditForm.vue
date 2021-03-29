@@ -17,9 +17,10 @@
         class="AttributeEditForm__select"
         @change="handleTypeChange"
       >
-        <option value="string">{{ $t('page-attributes.type-string') }}</option>
         <option value="integer">{{ $t('page-attributes.type-integer') }}</option>
         <option value="float">{{ $t('page-attributes.type-float') }}</option>
+        <option value="date">{{ $t('page-attributes.type-date') }}</option>
+        <option value="string">{{ $t('page-attributes.type-string') }}</option>
         <option value="boolean">{{ $t('page-attributes.type-boolean') }}</option>
       </select>
       <ul v-if="errors.type" class="AttributeEditForm__error">
@@ -51,6 +52,19 @@
       <div v-if="errors.max_length" class="AttributeEditForm__error">
         {{ errors.max_length[0] }}
       </div>
+    </div>
+    <div class="AttributeEditForm__categories">
+      <button
+        v-for="categoryOption in categoriesOptions"
+        class="AttributeEditForm__categories__item"
+        :class="{
+          'AttributeEditForm__categories__item--selected': isSelected(categoryOption.value)
+        }"
+        :key="categoryOption.value"
+        @click="toggleCategory(categoryOption.value)"
+      >
+        {{ categoryOption.label }}
+      </button>
     </div>
   </div>
 </template>

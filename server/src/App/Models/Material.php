@@ -91,9 +91,16 @@ class Material extends BaseModel
     public function Events()
     {
         return $this->belongsToMany('Robert2\API\Models\Event', 'event_materials')
-            ->using('Robert2\API\Models\EventMaterialsPivot')
-            ->withPivot('quantity')
+            ->using('Robert2\API\Models\EventMaterial')
+            ->withPivot('id', 'quantity')
             ->select(['events.id', 'title', 'start_date', 'end_date', 'is_confirmed']);
+    }
+
+    public function Documents()
+    {
+        return $this->hasMany('Robert2\API\Models\Document')
+            ->orderBy('name', 'asc')
+            ->select(['id', 'name', 'type', 'size']);
     }
 
     // ——————————————————————————————————————————————————————
@@ -137,6 +144,10 @@ class Material extends BaseModel
 
     public function getParkAttribute()
     {
+        if ($this->is_unitary) {
+            return null;
+        }
+
         $park = $this->Park()->first();
         return $park ? $park->toArray() : null;
     }
@@ -190,6 +201,12 @@ class Material extends BaseModel
         return $events ? $events->toArray() : null;
     }
 
+    public function getDocumentsAttribute()
+    {
+        $documents = $this->Documents()->get();
+        return $documents ? $documents->toArray() : null;
+    }
+
     // ——————————————————————————————————————————————————————
     // —
     // —    Setters
@@ -228,84 +245,40 @@ class Material extends BaseModel
             return [];
         }
 
-        $Event = new Event();
-        $events = $Event->setPeriod($start, $end)->getAll();
+        $events = (new Event())->setPeriod($start, $end)->getAll();
         if ($exceptEventId) {
             $events = $events->where('id', '!=', $exceptEventId);
         }
+
         $events = $events->with('Materials')->get()->toArray();
+        $periods = splitPeriods($events);
 
-        $periods = $this->_getSplittedPeriods($events);
-
-        foreach ($data as $index => $material) {
-            $materialId = $material['id'];
-            $remainingQuantity = (int)$material['stock_quantity'] - (int)$material['out_of_order_quantity'];
+        foreach ($data as &$material) {
             $quantityPerPeriod = [0];
-
             foreach ($periods as $periodIndex => $period) {
-                $quantityPerPeriod[$periodIndex] = 0;
                 $overlapEvents = array_filter($events, function ($event) use ($period) {
-                    return (strtotime($event['start_date']) < strtotime($period[1]) &&
-                        strtotime($event['end_date']) > strtotime($period[0]));
+                    return (
+                        strtotime($event['start_date']) < strtotime($period[1]) &&
+                        strtotime($event['end_date']) > strtotime($period[0])
+                    );
                 });
 
+                $quantityPerPeriod[$periodIndex] = 0;
                 foreach ($overlapEvents as $event) {
-                    $eventMaterial = $this->_getMaterialFromEvent($materialId, $event);
-                    if (empty($eventMaterial)) {
+                    $eventMaterialIndex = array_search($material['id'], array_column($event['materials'], 'id'));
+                    if ($eventMaterialIndex === false) {
                         continue;
                     }
+
+                    $eventMaterial = $event['materials'][$eventMaterialIndex];
                     $quantityPerPeriod[$periodIndex] += $eventMaterial['pivot']['quantity'];
                 }
             }
 
-            $data[$index]['remaining_quantity'] = $remainingQuantity - max($quantityPerPeriod);
+            $remainingQuantity = (int)$material['stock_quantity'] - (int)$material['out_of_order_quantity'];
+            $material['remaining_quantity'] = max($remainingQuantity - max($quantityPerPeriod), 0);
         }
 
         return $data;
-    }
-
-    // ------------------------------------------------------
-    // -
-    // -    Internal Methods
-    // -
-    // ------------------------------------------------------
-
-    protected function _getSplittedPeriods(array $events): array
-    {
-        $timeLine = [];
-        foreach ($events as $event) {
-            $timeLine[] = $event['start_date'];
-            $timeLine[] = $event['end_date'];
-        }
-
-        $timeLine = array_unique($timeLine);
-        $timeLineCount = count($timeLine);
-        if ($timeLineCount < 2) {
-            return [];
-        }
-
-        usort($timeLine, function ($dateTime1, $dateTime2) {
-            if ($dateTime1 === $dateTime2) {
-                return 0;
-            }
-            return strtotime($dateTime1) < strtotime($dateTime2) ? -1 : 1;
-        });
-
-        $periods = [];
-        for ($i = 0; $i < $timeLineCount - 1; $i++) {
-            $periods[] = [$timeLine[$i], $timeLine[$i + 1]];
-        }
-
-        return $periods;
-    }
-
-    protected function _getMaterialFromEvent(int $materialId, array $event): array
-    {
-        $eventMaterialIndex = array_search(
-            $materialId,
-            array_column($event['materials'], 'id')
-        );
-
-        return $eventMaterialIndex === false ? [] : $event['materials'][$eventMaterialIndex];
     }
 }

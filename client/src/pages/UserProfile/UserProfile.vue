@@ -8,7 +8,7 @@
         {{ $t('page-profile.you-are-group', { group: $t(groupId) }) }}
       </h3>
       <div class="UserProfile__content">
-        <form class="Form" method="POST" @submit="saveUser">
+        <form class="Form" method="POST" @submit.prevent="save">
           <section class="Form__fieldset">
             <h4 class="Form__fieldset__title">
               {{ $t('connexion-infos') }}
@@ -127,13 +127,11 @@
             :isLoading="isLoading"
           />
           <div class="UserProfile__extras__buttons">
-            <router-link
-              to="/settings"
-              tag="button"
-              class="info"
-            >
-              <i class="fas fa-cogs" />
-              {{ $t('your-settings') }}
+            <router-link to="/settings" v-slot="{ navigate }" custom>
+              <button @click="navigate" class="info">
+                <i class="fas fa-cogs" />
+                {{ $t('your-settings') }}
+              </button>
             </router-link>
           </div>
         </div>

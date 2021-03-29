@@ -2,12 +2,11 @@ import moment from 'moment';
 import { Timeline } from 'vue-visjs';
 import { DATE_DB_FORMAT, DATE_QUERY_FORMAT } from '@/config/constants';
 import ModalConfig from '@/config/modalConfig';
-import store from '@/store';
 import Alert from '@/components/Alert';
 import Help from '@/components/Help/Help.vue';
+import EventDetails from '@/components/EventDetails/EventDetails.vue';
 import CalendarHeader from './Header/Header.vue';
-import EventDetails from './EventDetails/EventDetails.vue';
-import utils from './utils';
+import formatEvent from './utils';
 
 const ONE_DAY = 1000 * 3600 * 24;
 
@@ -30,7 +29,7 @@ export default {
       end = savedEnd;
     }
 
-    const isVisitor = store.state.user.groupId === 'visitor';
+    const isVisitor = this.$store.getters['auth/is']('visitor');
     const parkFilter = this.$route.query.park;
 
     return {
@@ -55,11 +54,11 @@ export default {
         },
         start,
         end,
-        locale: store.state.i18n.locale,
-        minHeight: 300,
+        locale: this.$store.state.i18n.locale,
+        minHeight: '100%',
         orientation: 'top',
         zoomMin: ONE_DAY * 7,
-        zoomMax: ONE_DAY * 60,
+        zoomMax: ONE_DAY * 6 * 30,
         tooltip: { followMouse: true, overflowMethod: 'flip' },
         moment: (date) => moment(date),
         onMove: (item, callback) => {
@@ -145,7 +144,7 @@ export default {
       this.$http.get(this.$route.meta.resource, { params })
         .then(({ data }) => {
           this.events = data.data.map(
-            (event) => utils.formatTimelineEvent(event, this.$t),
+            (event) => formatEvent(event, this.$t),
           );
 
           this.allEvents = [...this.events];

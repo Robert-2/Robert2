@@ -81,9 +81,10 @@ final class EventTest extends ModelTestCase
 
         // - Get missing materials of event #1
         $result = $this->model->getMissingMaterials(1);
+        $this->assertNotNull($result);
         $this->assertCount(1, $result);
         $this->assertEquals('DBXPA2', $result[0]['reference']);
-        $this->assertEquals(-1, $result[0]['remaining_quantity']);
+        $this->assertEquals(1, $result[0]['missing_quantity']);
     }
 
     public function testGetParks(): void
@@ -140,6 +141,7 @@ final class EventTest extends ModelTestCase
                 ],
             ],
             'pivot' => [
+                'id'          => 3,
                 'event_id'    => 1,
                 'material_id' => 4,
                 'quantity'    => 1,

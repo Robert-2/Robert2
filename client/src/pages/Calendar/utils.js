@@ -1,99 +1,81 @@
-import moment from 'moment';
+import formatTimelineEvent from '@/utils/timeline-event/format';
+import getTimelineEventClassNames from '@/utils/timeline-event/getClassNames';
+import getTimelineEventI18nStatuses from '@/utils/timeline-event/getI18nStatuses';
 
-const formatEvent = (dataEvent) => {
+const formatEvent = (dataEvent, translate) => {
+  const withIcon = (iconName, text) => (
+    `<i class="fas fa-${iconName}"></i> ${text}`
+  );
+
+  const formattedEvent = formatTimelineEvent(dataEvent);
   const {
-    start_date: rawStartDate,
-    end_date: rawEndDate,
-    is_confirmed: isConfirmed,
-    has_missing_materials: hasMissingMaterials,
-  } = dataEvent;
-
-  const now = moment();
-  const startDate = moment(rawStartDate);
-  const endDate = moment(rawEndDate);
-  const isPast = endDate.isBefore(now, 'day');
-  const isCurrent = now.isBetween(startDate, endDate, 'day', '[]');
-
-  return {
-    ...dataEvent,
-    startDate,
-    endDate,
-    isConfirmed,
-    isPast,
-    isCurrent,
-    hasMissingMaterials,
-  };
-};
-
-const formatTimelineEvent = (dataEvent, translate) => {
-  const {
-    id,
     title,
+    location,
     startDate: start,
     endDate: end,
     isPast,
-    isCurrent,
     isConfirmed,
-    location,
     hasMissingMaterials,
-    parks,
-  } = formatEvent(dataEvent);
+    beneficiaries,
+    assignees,
+  } = formattedEvent;
 
   let content = title;
-  if (location) {
-    content = `${title} (${location})`;
-  }
-
-  const eventStatus = [];
-
-  const classNames = ['Calendar__event'];
-  if (isPast) {
-    classNames.push('Calendar__event--past');
-    eventStatus.push(translate('page-calendar.this-event-is-past'));
-  }
-
-  if (isCurrent) {
-    classNames.push('Calendar__event--current');
-    eventStatus.push(translate('page-calendar.this-event-is-currently-running'));
-  }
-
-  if (isConfirmed) {
-    eventStatus.push(translate('page-calendar.this-event-is-confirmed'));
-
-    if (!isPast) {
-      classNames.push('Calendar__event--confirmed');
-    }
-  }
-
-  const isLocked = isConfirmed;
-  if (isLocked) {
-    classNames.push('Calendar__event--locked');
-  }
-
   if (hasMissingMaterials) {
-    classNames.push('Calendar__event--with-warning');
-    eventStatus.push(translate('page-calendar.this-event-has-missing-materials'));
+    content = withIcon('exclamation-triangle', content);
+  }
+  if (isConfirmed) {
+    content = withIcon(isPast ? 'lock' : 'check', content);
   }
 
-  let eventTitle = content;
-  if (eventStatus.length > 0) {
-    eventTitle += `\n  →${eventStatus.join('\n  →')}`;
+  const locationText = withIcon('map-marker-alt', location || '?');
+  if (location) {
+    content = `${content} − ${locationText}`;
   }
+
+  const dates = withIcon(
+    'clock',
+    translate('from-date-to-date', { from: start.format('L'), to: end.format('L') }),
+  );
+
+  let beneficiariesText = withIcon(
+    'exclamation-triangle',
+    `<em>(${translate('missing-beneficiary')})</em>`,
+  );
+  if (beneficiaries.length > 0) {
+    const beneficiariesNames = beneficiaries.map((beneficiary) => beneficiary.full_name);
+    beneficiariesText = withIcon(
+      'address-book',
+      `${translate('for')} ${beneficiariesNames.join(', ')}`,
+    );
+  }
+
+  let assigneesText = '';
+  if (assignees.length > 0) {
+    const assigneesNames = assignees.map((beneficiary) => beneficiary.full_name);
+    assigneesText = withIcon(
+      'people-carry',
+      `${translate('with')} ${assigneesNames.join(', ')}`,
+    );
+  }
+
+  const statusesText = getTimelineEventI18nStatuses(formattedEvent).map(
+    ({ icon, i18nKey }) => withIcon(icon, translate(`page-calendar.${i18nKey}`)),
+  ).join('\n');
 
   return {
-    id,
+    ...formattedEvent,
     content,
     start,
     end,
-    editable: !isLocked,
-    className: classNames.join(' '),
-    title: eventTitle,
-    hasMissingMaterials,
-    parks,
+    editable: !isConfirmed,
+    className: getTimelineEventClassNames(formattedEvent).join(' '),
+    title: [
+      `<strong>${title}</strong>`,
+      `\n${locationText}\n${dates}\n${beneficiariesText}\n${assigneesText}\n`,
+      statusesText,
+    ].join('\n'),
   };
 };
 
-export default {
-  formatEvent,
-  formatTimelineEvent,
-};
+export default formatEvent;

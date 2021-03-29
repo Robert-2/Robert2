@@ -31,7 +31,6 @@
                 <router-link
                   :to="`/beneficiaries/${beneficiary.id}`"
                   :title="$t('action-edit')"
-                  tag="a"
                 >
                   {{ beneficiary.full_name }}
                 </router-link>
@@ -39,7 +38,6 @@
                   v-if="beneficiary.company"
                   :to="`/companies/${beneficiary.company_id}`"
                   :title="$t('action-edit')"
-                  tag="a"
                 >
                   ({{ beneficiary.company.legal_name }})
                 </router-link>
@@ -64,7 +62,6 @@
                 <router-link
                   :key="technician.id"
                   :to="`/technicians/${technician.id}`"
-                  tag="a"
                   class="EventOverview__info__link"
                   :title="$t('action-edit')"
                 >

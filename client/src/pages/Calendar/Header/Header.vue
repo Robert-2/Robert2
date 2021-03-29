@@ -24,6 +24,7 @@
         class="CalendarHeader__button info"
         @click="refresh()"
         :title="$t('action-refresh')"
+        :disabled="isLoading"
       >
         <i class="fas fa-sync-alt" />
         <span class="CalendarHeader__button__title">{{ $t('action-refresh') }}</span>
@@ -72,8 +73,15 @@
       </div>
     </div>
     <div class="CalendarHeader__actions">
-      <router-link v-show="!isVisitor" :to="`/events/new`" tag="button" class="success">
-        <i class="fas fa-plus" /> {{ $t('page-calendar.add-event') }}
+      <router-link
+        v-show="!isVisitor"
+        :to="`/events/new`"
+        v-slot="{ navigate }"
+        custom
+      >
+        <button @click="navigate" class="success">
+          <i class="fas fa-plus" /> {{ $t('page-calendar.add-event') }}
+        </button>
       </router-link>
     </div>
   </div>

@@ -19,7 +19,7 @@
           {{ $t('download-bill-pdf') }}
         </a>
       </div>
-      <div v-if="lastBill" class="EventBilling__last-bill__regenerate">
+      <div v-if="lastBill && userCanEdit" class="EventBilling__last-bill__regenerate">
         <p class="EventBilling__last-bill__regenerate__text">
           {{ $t('regenerate-bill-help') }}
         </p>
@@ -33,17 +33,18 @@
           <i class="fas fa-exclamation-triangle" />
           {{ $t('missing-beneficiary') }}
         </h3>
-        <p class="EventBilling__last-bill__not-billable__text">
+        <p v-if="userCanEdit" class="EventBilling__last-bill__not-billable__text">
           {{ $t('not-billable-help') }}<br />
           {{ $t('click-edit-to-create-one') }}
         </p>
       </div>
       <p v-if="!lastBill && isBillable" class="EventBilling__last-bill__no-bill">
-        {{ $t('no-bill-help') }}<br />
-        {{ $t('create-bill-help') }}
+          {{ $t('no-bill-help') }}<br />
+          <span v-if="userCanEdit">{{ $t('create-bill-help') }}</span>
+          <span v-else>{{ $t('contact-someone-to-create-bill') }}</span>
       </p>
       <form
-        v-if="displayCreateBill || loading || (!lastBill && isBillable)"
+        v-if="displayCreateBill || loading || (!lastBill && isBillable && userCanEdit)"
         class="Form EventBilling__last-bill__create"
         method="POST"
         @submit="createBill"
@@ -84,7 +85,6 @@
                 :key="beneficiaries[0].id"
                 :to="`/beneficiaries/${beneficiaries[0].id}`"
                 :title="$t('action-edit')"
-                tag="a"
               >
                 {{ beneficiaries[0].full_name }}
               </router-link>

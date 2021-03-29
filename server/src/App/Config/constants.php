@@ -9,6 +9,9 @@ if (!defined('DS')) {
 if (!defined('ROOT_FOLDER')) {
     define('ROOT_FOLDER', dirname(dirname(dirname(dirname(__FILE__)))));
 }
+if (!defined('DATA_FOLDER')) {
+    define('DATA_FOLDER', ROOT_FOLDER . DS . 'data');
+}
 if (!defined('SRC_FOLDER')) {
     define('SRC_FOLDER', ROOT_FOLDER . DS . 'src');
 }

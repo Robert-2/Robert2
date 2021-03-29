@@ -12,11 +12,17 @@
       >
         {{ attribute.name }}:
         <span
-          v-if="attribute.type !== 'boolean'"
+          v-if="!['boolean', 'date'].includes(attribute.type)"
           class="MaterialViewInfosAttributes__list__item__value"
         >
           {{ attribute.value }}
           {{ attribute.unit }}
+        </span>
+        <span
+          v-if="attribute.type === 'date'"
+          class="MaterialViewInfosAttributes__list__item__value"
+        >
+          {{ formatDate(attribute.value) }}
         </span>
         <span
           v-if="attribute.type === 'boolean'"
@@ -35,10 +41,17 @@
 </style>
 
 <script>
+import moment from 'moment';
+
 export default {
   name: 'MaterialViewInfosAttributes',
   props: {
     attributes: { required: true, type: Array },
+  },
+  methods: {
+    formatDate(value) {
+      return moment(value).format('DD/MM/yyyy');
+    },
   },
 };
 </script>

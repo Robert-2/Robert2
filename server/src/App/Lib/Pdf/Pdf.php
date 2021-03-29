@@ -55,6 +55,7 @@ class Pdf
 
         $twig = new \Twig\Environment($loader, ['cache' => false]);
         $twig->addExtension(new IntlExtension());
+        $twig->addExtension(new \Twig_Extensions_Extension_Text());
 
         $i18n = new I18n(Config::getSettings('defaultLang'));
         $translateFunction = new \Twig\TwigFunction('translate', [$i18n, 'translate']);

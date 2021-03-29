@@ -28,9 +28,13 @@
     "db": {
         "driver": "mysql",
         "host": "127.0.0.1",
+        "port": 3306,
+        "database": "robert2",
+        "testDatabase": "robert2_test",
         "username": "root",
         "password": "root",
-        "database": "robert2",
+        "charset": "utf8mb4",
+        "collation": "utf8mb4_unicode_ci",
         "prefix": ""
     },
     "companyData": {
@@ -41,6 +45,8 @@
         "country": "France",
         "phone": "+33456789123",
         "email": "jean@testing-corp.dev",
+        "vatNumber": "FR11223344556600",
+        "vatRate": 20.0,
         "legalNumbers": [
             {
                 "name": "SIRET",
@@ -50,8 +56,21 @@
                 "name": "APE",
                 "value": "947A"
             }
-        ],
-        "vatNumber": "FR11223344556600",
-        "vatRate": 20.0
-    }
+        ]
+    },
+    "authorizedFileTypes": [
+        "application\/pdf",
+        "application\/zip",
+        "application\/x-rar-compressed",
+        "image\/jpeg",
+        "image\/png",
+        "image\/webp",
+        "text\/plain",
+        "application\/vnd.oasis.opendocument.spreadsheet",
+        "application\/vnd.ms-excel",
+        "application\/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "application\/vnd.oasis.opendocument.text",
+        "application\/msword",
+        "application\/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ]
 }

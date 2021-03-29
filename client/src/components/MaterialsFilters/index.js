@@ -88,7 +88,6 @@ export default {
     },
 
     setQueryFilters() {
-      const query = {};
       const {
         park,
         category,
@@ -96,6 +95,14 @@ export default {
         tags,
       } = this.filters;
 
+      const filters = {
+        park: park || null,
+        category: category || null,
+        subCategory: subCategory || null,
+        tags: tags.map((tag) => tag.label),
+      };
+
+      const query = {};
       if (park) {
         query.park = park;
       }
@@ -110,7 +117,7 @@ export default {
       }
 
       this.$router.push({ path: this.baseRoute, query });
-      this.$emit('change');
+      this.$emit('change', filters);
     },
   },
 };

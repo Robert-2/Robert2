@@ -132,6 +132,7 @@ final class UserTest extends ModelTestCase
     public function testGetLogin(): void
     {
         $expectedUserData = array_merge($this->expectedDataUser1, [
+            'cas_identifier' => null,
             'settings' => [
                 'id'                           => 1,
                 'user_id'                      => 1,
@@ -155,14 +156,14 @@ final class UserTest extends ModelTestCase
     {
         $this->expectException(Errors\ValidationException::class);
         $this->expectExceptionCode(ERROR_VALIDATION);
-        $this->model->edit(null, []);
+        Models\User::new([]);
     }
 
     public function testCreateBadData(): void
     {
         $this->expectException(Errors\ValidationException::class);
         $this->expectExceptionCode(ERROR_VALIDATION);
-        $this->model->edit(null, ['foo' => 'bar']);
+        Models\User::new(['foo' => 'bar']);
     }
 
     public function testUpdateNotFound(): void
@@ -175,24 +176,25 @@ final class UserTest extends ModelTestCase
     public function testCreate(): void
     {
         $data = [
-            'pseudo'   => 'testadd',
-            'email'    => 'testadd@robertmanager.net',
+            'pseudo' => 'testadd',
+            'email' => 'testadd@robertmanager.net',
             'password' => 'testadd',
             'group_id' => 'member',
         ];
 
-        $result   = $this->model->edit(null, $data);
+        $result = Models\User::new($data);
         $expected = [
-            'id'       => 4,
-            'pseudo'   => 'testadd',
-            'email'    => 'testadd@robertmanager.net',
+            'id' => 4,
+            'pseudo' => 'testadd',
+            'email' => 'testadd@robertmanager.net',
             'group_id' => 'member',
-            'person'   => null
+            'cas_identifier' => null,
+            'person' => null
         ];
         unset($result->created_at, $result->updated_at, $result->deleted_at);
         $this->assertEquals($expected, $result->toArray());
 
-        // - Check if settings are created
+        // - Vérifie que les settings ont été créé
         $settings = Models\UserSetting::find(3);
         unset($settings->created_at);
         unset($settings->updated_at);
@@ -218,7 +220,7 @@ final class UserTest extends ModelTestCase
             ],
         ];
 
-        $result = $this->model->edit(null, $data);
+        $result = Models\User::new($data);
         $this->assertEquals(4, $result['person']['id']);
         $this->assertEquals(4, $result['person']['user_id']);
         $this->assertEquals('testNewPerson', $result['person']['nickname']);
@@ -234,7 +236,7 @@ final class UserTest extends ModelTestCase
         $result = $this->model->edit(1, $data);
         $this->assertEquals('testUpdate', $result['pseudo']);
 
-        // - Test update with Person data
+        // - Test update avec des données de "Person"
         $data = [
             'pseudo' => 'testEdit',
             'person' => [
@@ -242,7 +244,6 @@ final class UserTest extends ModelTestCase
                 'last_name'  => 'Tester',
             ],
         ];
-
         $result = $this->model->edit(3, $data);
         $this->assertEquals('testEdit', $result['pseudo']);
         $this->assertEquals('Testing Tester', $result['person']['full_name']);

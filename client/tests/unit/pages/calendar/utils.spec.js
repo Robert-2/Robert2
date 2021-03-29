@@ -1,64 +1,46 @@
-import utils from '@/pages/Calendar/utils';
+import moment from 'moment';
+import formatEvent from '@/pages/Calendar/utils';
 
-jest.mock('moment', () => {
-  const momentMock = require.requireActual('moment');
-  return momentMock.utc;
-});
-
-describe('formatEvent', () => {
-  const event = {
-    title: 'Test',
-    start_date: '2019-10-01',
-    end_date: '2019-10-02',
-    is_confirmed: false,
-    has_missing_materials: false,
-  };
-
-  it('returns the event with moment dates and time flags', () => {
-    const result = utils.formatEvent(event);
-    expect(result).toBeDefined();
-    const resultWithStringDates = JSON.parse(JSON.stringify(result));
-    expect(resultWithStringDates).toEqual({
-      title: 'Test',
-      startDate: '2019-10-01T00:00:00.000Z',
-      start_date: '2019-10-01',
-      endDate: '2019-10-02T00:00:00.000Z',
-      end_date: '2019-10-02',
-      is_confirmed: false,
-      isConfirmed: false,
-      isCurrent: false,
-      has_missing_materials: false,
-      hasMissingMaterials: false,
-      isPast: true,
-    });
-  });
-});
-
-describe('formatTimelineEvent', () => {
-  const event = {
-    id: 1,
-    title: 'Test',
-    start_date: '2019-10-01',
-    end_date: '2019-10-02',
-    is_confirmed: false,
-    has_missing_materials: true,
-    location: 'Testville',
-  };
-
-  it('returns the event well formated to be used in timeline', () => {
-    const result = utils.formatTimelineEvent(event, (s) => s);
-    expect(result).toBeDefined();
-
-    const resultWithStringDates = JSON.parse(JSON.stringify(result));
-    expect(resultWithStringDates).toEqual({
+describe('Calendar/utils.formatEvent', () => {
+  test('returns data of event formatted for timeline usage with classes and popups texts', () => {
+    const rawEvent = {
       id: 1,
-      content: 'Test (Testville)',
-      start: '2019-10-01T00:00:00.000Z',
-      end: '2019-10-02T00:00:00.000Z',
-      editable: true,
-      hasMissingMaterials: true,
-      className: 'Calendar__event Calendar__event--past Calendar__event--with-warning',
-      title: 'Test (Testville)\n  →page-calendar.this-event-is-past\n  →page-calendar.this-event-has-missing-materials',
-    });
+      title: 'Test event',
+      start_date: '2019-10-01 00:00:00',
+      end_date: '2019-10-02 23:59:59',
+      is_confirmed: false,
+      has_missing_materials: true,
+      location: 'Testville',
+      beneficiaries: [
+        { id: 1, full_name: 'Jean Benef' },
+      ],
+      assignees: [
+        { id: 1, full_name: 'Marc Tekos' },
+      ],
+    };
+
+    const result = formatEvent(rawEvent, (s) => s);
+    expect(result).toBeDefined();
+
+    expect(result.title).toEqual(
+      '<strong>Test event</strong>'
+      + '\n\n<i class="fas fa-map-marker-alt"></i> Testville'
+      + '\n<i class="fas fa-clock"></i> from-date-to-date'
+      + '\n<i class="fas fa-address-book"></i> for Jean Benef'
+      + '\n<i class="fas fa-people-carry"></i> with Marc Tekos'
+      + '\n\n<i class="fas fa-history"></i> page-calendar.this-event-is-past'
+      + '\n<i class="fas fa-exclamation-triangle"></i> page-calendar.this-event-has-missing-materials',
+    );
+    expect(result.content).toEqual(
+      '<i class="fas fa-exclamation-triangle"></i> Test event − '
+      + '<i class="fas fa-map-marker-alt"></i> Testville',
+    );
+    expect(result.className).toEqual(
+      'timeline-event timeline-event--past timeline-event--with-warning',
+    );
+    expect(result.editable).toBe(true);
+    expect(result.hasMissingMaterials).toBe(true);
+    expect(result.start).toBeInstanceOf(moment);
+    expect(result.end).toBeInstanceOf(moment);
   });
 });

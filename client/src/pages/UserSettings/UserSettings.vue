@@ -5,7 +5,7 @@
         {{ $t('page-settings.interface') }}
       </h3>
       <div class="UserSettings__content">
-        <form class="Form" method="POST" @submit="saveSettings">
+        <form class="Form" method="POST" @submit.prevent="save">
           <section class="Form__fieldset">
             <FormField
               v-model="settings.language"
@@ -41,13 +41,11 @@
             :isLoading="isLoading"
           />
           <div class="UserSettings__extras__buttons">
-            <router-link
-              to="/profile"
-              tag="button"
-              class="info"
-            >
-              <i class="fas fa-user-alt" />
-              {{ $t('your-profile') }}
+            <router-link to="/profile" v-slot="{ navigate }" custom>
+              <button @click="navigate" class="info">
+                <i class="fas fa-user-alt" />
+                {{ $t('your-profile') }}
+              </button>
             </router-link>
           </div>
         </div>

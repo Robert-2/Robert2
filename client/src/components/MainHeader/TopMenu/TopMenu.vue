@@ -5,35 +5,38 @@
       <i v-show="!isDropdownMenuOpen" class="fas fa-chevron-down" />
       <i v-show="isDropdownMenuOpen" class="fas fa-chevron-up" />
     </div>
-    <div
+    <ul
       class="TopMenu__dropdown"
       :class="{ 'TopMenu__dropdown--open': isDropdownMenuOpen }"
     >
       <div class="TopMenu__dropdown__nickname">{{ nickname }}</div>
-      <router-link
-        to="/profile"
-        tag="div"
-        class="TopMenu__dropdown__item"
-      >
-        <i class="fas fa-user-alt" />
-        {{$t('your-profile')}}
+      <router-link to="/profile" custom v-slot="{ navigate, isActive }">
+        <li
+          @click="navigate"
+          class="TopMenu__dropdown__item"
+          :class="{ 'TopMenu__dropdown__item--active': isActive }"
+        >
+          <i class="fas fa-user-alt" />
+          {{$t('your-profile')}}
+        </li>
       </router-link>
-      <router-link
-        to="/settings"
-        tag="div"
-        class="TopMenu__dropdown__item"
-      >
-        <i class="fas fa-cogs" />
-        {{$t('your-settings')}}
+      <router-link to="/settings" custom v-slot="{ navigate, isActive }">
+        <li
+          @click="navigate"
+          class="TopMenu__dropdown__item"
+          :class="{ 'TopMenu__dropdown__item--active': isActive }"
+        >
+          <i class="fas fa-cogs" />
+          {{$t('your-settings')}}
+        </li>
       </router-link>
       <div
         class="TopMenu__dropdown__item"
         @click="logout"
       >
-        <i class="fas fa-power-off" />
-          {{$t('logout-quit')}}
+        <i class="fas fa-power-off" /> {{$t('logout-quit')}}
       </div>
-    </div>
+    </ul>
   </div>
 </template>
 
@@ -44,8 +47,6 @@
 
 <script>
 import ClickOutside from 'vue-click-outside';
-import Auth from '@/auth';
-import store from '@/store';
 
 export default {
   name: 'TopMenu',
@@ -54,9 +55,9 @@ export default {
     return { isDropdownMenuOpen: false };
   },
   computed: {
-    nickname() { return store.state.user.pseudo; },
-    isAdmin() { return store.state.user.groupId === 'admin'; },
-    isMember() { return store.state.user.groupId === 'member'; },
+    nickname() {
+      return this.$store.state.auth.user.pseudo;
+    },
   },
   watch: {
     $route() {
@@ -73,7 +74,9 @@ export default {
     },
 
     logout() {
-      Auth.logout({ mode: 'bye' });
+      this.$store.dispatch('auth/logout').then(() => {
+        this.$router.replace({ path: '/login', hash: 'bye' });
+      });
     },
   },
 };

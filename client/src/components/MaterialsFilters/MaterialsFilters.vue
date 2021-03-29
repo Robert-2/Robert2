@@ -1,8 +1,10 @@
 <template>
   <div class="MaterialsFilters">
     <select
+      v-if="parks.length > 1"
       v-model="filters.park"
-      class="MaterialsFilters__park"
+      class="MaterialsFilters__item"
+      :class="{ 'MaterialsFilters__item--is-active': filters.park !== '' }"
       @change="changePark"
     >
       <option value="">
@@ -18,7 +20,8 @@
     </select>
     <select
       v-model="filters.category"
-      class="MaterialsFilters__category"
+      class="MaterialsFilters__item"
+      :class="{ 'MaterialsFilters__item--is-active': filters.category !== '' }"
       @change="changeCategory"
     >
       <option value="">
@@ -34,7 +37,8 @@
     </select>
     <select
       v-model="filters.subCategory"
-      class="MaterialsFilters__sub-category"
+      class="MaterialsFilters__item"
+      :class="{ 'MaterialsFilters__item--is-active': filters.subCategory !== '' }"
       :disabled="selectedCategory.sub_categories.length === 0"
       @change="changeSubCategory"
     >
@@ -51,15 +55,17 @@
     </select>
     <VueSelect
       v-model="filters.tags"
-      class="MaterialsFilters__tags"
+      class="MaterialsFilters__item"
+      :class="{ 'MaterialsFilters__item--is-active': filters.tags.length > 0 }"
       :options="$store.getters['tags/options']"
       :placeholder="$t('tags')"
       @input="setQueryFilters"
       multiple
     />
     <button
+      v-if="!isFilterEmpty"
+      class="MaterialsFilters__reset warning"
       v-tooltip="$t('page-materials.clear-filters')"
-      :disabled="isFilterEmpty"
       @click="clearFilters"
     >
       <i class="fas fa-backspace" />

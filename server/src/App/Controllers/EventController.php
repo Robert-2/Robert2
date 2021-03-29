@@ -6,12 +6,16 @@ namespace Robert2\API\Controllers;
 use Robert2\API\Errors;
 use Robert2\API\Controllers\Traits\WithPdf;
 use Robert2\API\Models\Park;
+use Robert2\API\Models\Event;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
 class EventController extends BaseController
 {
     use WithPdf;
+
+    /** @var Event */
+    protected $model;
 
     // ——————————————————————————————————————————————————————
     // —
@@ -27,7 +31,9 @@ class EventController extends BaseController
 
         $results = $this->model
             ->setPeriod($startDate, $endDate)
-            ->getAll($deleted);
+            ->getAll($deleted)
+            ->with('Beneficiaries:persons.id,first_name,last_name')
+            ->with('Assignees:persons.id,first_name,last_name');
 
         $data = $results->get()->toArray();
         $useMultipleParks = Park::count() > 1;
@@ -107,14 +113,14 @@ class EventController extends BaseController
             );
         }
 
-        $result = $this->model->edit($id, $postData);
+        $event = $this->model->edit($id, $postData);
 
         if (isset($postData['beneficiaries'])) {
-            $result->Beneficiaries()->sync($postData['beneficiaries']);
+            $event->Beneficiaries()->sync($postData['beneficiaries']);
         }
 
         if (isset($postData['assignees'])) {
-            $result->Assignees()->sync($postData['assignees']);
+            $event->Assignees()->sync($postData['assignees']);
         }
 
         if (isset($postData['materials'])) {
@@ -128,10 +134,10 @@ class EventController extends BaseController
                     'quantity' => $material['quantity']
                 ];
             }
-            $result->Materials()->sync($materials);
+            $event->Materials()->sync($materials);
         }
 
-        return $result->id;
+        return $event->id;
     }
 
     protected function _getFormattedEvent(int $id): array

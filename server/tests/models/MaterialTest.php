@@ -82,7 +82,7 @@ final class MaterialTest extends ModelTestCase
         $data = $getData();
         $result = $this->model->recalcQuantitiesForPeriod($data, '2018-12-15', '2018-12-20');
         $this->assertCount(7, $result);
-        foreach ([0, -1, 20, 1, 20] as $index => $expected) {
+        foreach ([0, 0, 20, 1, 20] as $index => $expected) {
             $this->assertEquals($expected, $result[$index]['remaining_quantity']);
         }
 
@@ -216,6 +216,7 @@ final class MaterialTest extends ModelTestCase
             'end_date'     => '2018-12-19 23:59:59',
             'is_confirmed' => false,
             'pivot'        => [
+                'id'          => 4,
                 'material_id' => 1,
                 'event_id'    => 2,
                 'quantity'    => 3
@@ -228,11 +229,34 @@ final class MaterialTest extends ModelTestCase
             'end_date'     => '2018-12-18 23:59:59',
             'is_confirmed' => false,
             'pivot'        => [
+                'id'          => 1,
                 'material_id' => 1,
                 'event_id'    => 1,
                 'quantity'    => 1
             ],
         ], $results[2]);
+    }
+
+    public function testGetDocuments()
+    {
+        $Material = $this->model::find(1);
+        $results = $Material->Documents;
+        $this->assertCount(2, $results);
+        $expected = [
+            [
+                'id' => 1,
+                'name' => 'User-manual.pdf',
+                'type' => 'application/pdf',
+                'size' => 54681233
+            ],
+            [
+                'id' => 2,
+                'name' => 'warranty.pdf',
+                'type' => 'application/pdf',
+                'size' => 124068
+            ]
+        ];
+        $this->assertEquals($expected, $results);
     }
 
     public function testSetTagsNoData(): void

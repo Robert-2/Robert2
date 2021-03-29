@@ -20,16 +20,11 @@
   &__actions {
     flex: 0 1 auto;
     display: flex;
-    flex-direction: column-reverse;
     min-width: $form-min-width;
     padding: .55rem 0;
 
-    select,
-    button,
-    input,
-    .v-select {
-      margin-bottom: .5rem;
-      margin-right: .8rem;
+    button + button {
+      margin: 0 0 0 $content-padding-small-vertical;
     }
   }
 
@@ -48,13 +43,6 @@
       flex-direction: row;
       align-items: flex-start;
       min-width: auto;
-
-      select,
-      button,
-      input,
-      .v-select {
-        margin-bottom: .3rem;
-      }
     }
   }
 }

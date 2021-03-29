@@ -1,3 +1,5 @@
+.env
+
 src/vendor/
 
 tests/coverage/

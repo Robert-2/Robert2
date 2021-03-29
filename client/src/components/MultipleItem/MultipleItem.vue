@@ -53,12 +53,10 @@
           </span>
           <div v-if="search.length >= minSearchCharacters">
             <p>{{ $t('no-result-found-try-another-search') }}</p>
-            <router-link
-              :to="createItemPath"
-              tag="button"
-              class="success"
-            >
-              {{ $t('create-select-item-label', { label: $t(label) }) }}
+            <router-link :to="createItemPath" v-slot="{ navigate }" custom>
+              <button @click="navigate" class="success">
+                {{ $t('create-select-item-label', { label: $t(label) }) }}
+              </button>
             </router-link>
           </div>
         </template>

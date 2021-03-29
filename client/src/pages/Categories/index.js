@@ -27,12 +27,10 @@ export default {
   },
   methods: {
     addCategory() {
-      Alert.Prompt(
-        this.$t,
-        this.$t('page-categories.prompt-add'),
-        'page-categories.category-name',
-        'page-categories.create',
-      ).then(({ value: name }) => {
+      Alert.Prompt(this.$t, 'page-categories.prompt-add', {
+        placeholder: 'page-categories.category-name',
+        confirmText: 'page-categories.create',
+      }).then(({ value: name }) => {
         if (name) {
           this.save('categories', null, name);
         }
@@ -40,13 +38,11 @@ export default {
     },
 
     editCategory(categoryId, oldName) {
-      Alert.Prompt(
-        this.$t,
-        this.$t('page-categories.prompt-modify'),
-        oldName,
-        'save',
-        oldName,
-      ).then(({ value: newName }) => {
+      Alert.Prompt(this.$t, 'page-categories.prompt-modify', {
+        placeholder: oldName,
+        confirmText: 'save',
+        inputValue: oldName,
+      }).then(({ value: newName }) => {
         if (newName) {
           this.save('categories', categoryId, newName);
         }
@@ -54,12 +50,11 @@ export default {
     },
 
     addSubCategory(categoryId, categoryName) {
-      Alert.Prompt(
-        this.$t,
-        this.$t('page-subcategories.prompt-add', { categoryName }),
-        'page-subcategories.sub-category-name',
-        'page-subcategories.create',
-      ).then(({ value: name }) => {
+      Alert.Prompt(this.$t, 'page-subcategories.prompt-add', {
+        titleData: { categoryName },
+        placeholder: 'page-subcategories.sub-category-name',
+        confirmText: 'page-subcategories.create',
+      }).then(({ value: name }) => {
         if (name) {
           this.saveNewSubCategory(name, categoryId);
         }
@@ -67,13 +62,11 @@ export default {
     },
 
     editSubCategory(subCategoryId, oldName) {
-      Alert.Prompt(
-        this.$t,
-        this.$t('page-subcategories.prompt-modify'),
-        oldName,
-        'save',
-        oldName,
-      ).then(({ value: newName }) => {
+      Alert.Prompt(this.$t, 'page-subcategories.prompt-modify', {
+        placeholder: oldName,
+        confirmText: 'save',
+        inputValue: oldName,
+      }).then(({ value: newName }) => {
         if (newName) {
           this.save('subcategories', subCategoryId, newName);
         }

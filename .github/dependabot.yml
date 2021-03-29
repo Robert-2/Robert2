@@ -1,7 +1,7 @@
 version: 2
 updates:
     - package-ecosystem: 'npm'
-        directory: '/server'
+        directory: '/client'
         schedule:
         interval: 'weekly'
         target-branch: 'develop'
@@ -9,7 +9,7 @@ updates:
             - 'Interface'
             - 'dependencies'
     - package-ecosystem: 'composer'
-        directory: '/client'
+        directory: '/server'
         schedule:
         interval: 'weekly'
         target-branch: 'develop'

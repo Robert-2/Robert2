@@ -63,11 +63,13 @@
         <router-link
           v-tooltip="$t('action-edit')"
           :to="`/materials/${material.id}`"
-          tag="button"
-          class="info"
+          v-slot="{ navigate }"
+          custom
         >
-          <i class="fas fa-edit" />
-          {{ $t('action-edit') }}
+          <button @click="navigate" class="info">
+            <i class="fas fa-edit" />
+            {{ $t('action-edit') }}
+          </button>
         </router-link>
       </div>
       <div class="MaterialViewInfos__categories">

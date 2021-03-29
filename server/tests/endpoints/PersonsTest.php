@@ -360,13 +360,13 @@ final class PersonsTest extends ApiTestCase
             'first_name' => [
                 "first_name must not be empty",
                 'first_name must contain only letters (a-z) and ' .
-                '""-_. ÇçàÀâÂäÄåÅèÈéÉêÊëËíÍìÌîÎïÏòÒóÓôÔöÖðÐõÕøØúÚùÙûÛüÜýÝÿŸŷŶøØæÆœŒñÑßÞ""',
+                '""-_.\' ÇçàÀâÂäÄåÅèÈéÉêÊëËíÍìÌîÎïÏòÒóÓôÔöÖðÐõÕøØúÚùÙûÛüÜýÝÿŸŷŶøØæÆœŒñÑßÞ""',
                 "first_name must have a length between 2 and 96"
             ],
             'last_name' => [
                 "last_name must not be empty",
                 'last_name must contain only letters (a-z) and ' .
-                '""-_. ÇçàÀâÂäÄåÅèÈéÉêÊëËíÍìÌîÎïÏòÒóÓôÔöÖðÐõÕøØúÚùÙûÛüÜýÝÿŸŷŶøØæÆœŒñÑßÞ""',
+                '""-_.\' ÇçàÀâÂäÄåÅèÈéÉêÊëËíÍìÌîÎïÏòÒóÓôÔöÖðÐõÕøØúÚùÙûÛüÜýÝÿŸŷŶøØæÆœŒñÑßÞ""',
                 "last_name must have a length between 2 and 96"
             ],
             'email' => [
