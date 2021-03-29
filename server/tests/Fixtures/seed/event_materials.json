@@ -46,5 +46,29 @@
         "event_id"    : 3,
         "material_id" : 5,
         "quantity"    : 12
+    },
+    {
+        "id"          : 9,
+        "event_id"    : 4,
+        "material_id" : 1,
+        "quantity"    : 1
+    },
+    {
+        "id"          : 10,
+        "event_id"    : 4,
+        "material_id" : 6,
+        "quantity"    : 2
+    },
+    {
+        "id"          : 11,
+        "event_id"    : 4,
+        "material_id" : 7,
+        "quantity"    : 3
+    },
+    {
+        "id"          : 12,
+        "event_id"    : 5,
+        "material_id" : 8,
+        "quantity"    : 2
     }
 ]

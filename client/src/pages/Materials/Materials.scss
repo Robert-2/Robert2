@@ -1,6 +1,41 @@
 .Materials {
-  &__create {
-    width: 15rem;
+  &__main-view {
+    position: relative;
+  }
+
+  &__filters {
+    display: flex;
+    flex-wrap: wrap;
+
+    .MaterialsFilters {
+      flex: 0 1 auto;
+      margin-right: $content-padding-small-vertical;
+    }
+  }
+
+  &__quantities-date {
+    flex: 1 0 auto;
+    margin-bottom: $content-padding-large-horizontal;
+
+    &__displayed {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      color: $text-base-color;
+      font-weight: 600;
+    }
+
+    &__label {
+      max-width: 140px;
+      margin: 0 $content-padding-small-vertical 0 0;
+      white-space: pre-line;
+      text-align: center;
+      color: $text-warning-color;
+    }
+
+    &__button {
+      padding: 9px 10px;
+    }
   }
 
   &__ref,
@@ -24,8 +59,14 @@
   }
 
   &__quantity,
+  &__remaining-quantity,
   &__quantity-out {
     text-align: center !important;
+  }
+
+  &__remaining-quantity {
+    color: $text-warning-color !important;
+    font-weight: 800;
   }
 
   &__tags-list {
@@ -40,55 +81,50 @@
     }
   }
 
-  &__tag-item,
   &__add-tags {
+    flex: 1;
+    margin-bottom: .35rem;
     padding: .4rem .55rem;
     font-size: 0.85rem;
   }
 
-  &__tag-item {
-    flex: 0 0 auto;
-    margin: 0 0 .35rem .35rem;
-    background: $bg-color-emphasis;
-    border-radius: 10px;
+  &__actions {
+    min-width: 110px;
   }
 
-  &__add-tags {
-    flex: 1;
-    margin-bottom: .35rem;
-  }
-}
-
-@media(min-width: $screen-tablet) {
-  .Materials {
+  @media(min-width: $screen-tablet) {
     &__ref,
     &__rental-price,
     &__replacement-price,
     &__category {
       display: table-cell;
     }
-
-    &__create {
-      width: auto;
-      margin-left: 1.5rem !important;
-    }
   }
-}
 
-@media(min-width: $screen-desktop) {
-  .Materials {
+  @media(min-width: $screen-desktop) {
     &__quantity-out,
     &__tags {
       display: table-cell;
     }
   }
-}
 
-@media(min-width: $screen-big-desktop) {
-  .Materials {
+  @media(min-width: $screen-big-desktop) {
     &__park,
     &__description {
       display: table-cell;
+    }
+
+    &__filters {
+      position: absolute;
+      flex-wrap: nowrap;
+      align-items: center;
+      left: 240px;
+      right: calc(#{$content-padding-large-vertical} + 45px + #{$content-padding-small-vertical});
+      z-index: 1;
+
+      .MaterialsFilters {
+        flex-wrap: nowrap;
+      }
     }
   }
 }

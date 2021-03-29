@@ -18,15 +18,66 @@ final class MaterialsTest extends ApiTestCase
                 'prev_page_url'  => null,
                 'last_page_url'  => '/api/materials?page=1',
                 'per_page'       => $this->settings['maxItemsPerPage'],
-                'to'             => 5,
-                'total'          => 5,
+                'to'             => 8,
+                'total'          => 8,
             ],
             'data' => [
+                [
+                    'id' => 6,
+                    'name' => 'Behringer X Air XR18',
+                    'description' => 'Mélangeur numérique 18 canaux',
+                    'reference' => 'XR18',
+                    'is_unitary' => true,
+                    'park_id' => null,
+                    'category_id' => 1,
+                    'sub_category_id' => 1,
+                    'rental_price' => 49.99,
+                    'stock_quantity' => 3,
+                    'out_of_order_quantity' => 1,
+                    'replacement_price' => 419,
+                    'is_hidden_on_bill' => false,
+                    'is_discountable' => false,
+                    'note' => null,
+                    'created_at' => null,
+                    'updated_at' => null,
+                    'deleted_at' => null,
+                    'tags' => [],
+                    'attributes' => [
+                        [
+                            'id' => 5,
+                            'name' => "Date d'achat",
+                            'type' => 'date',
+                            'unit' => null,
+                            'value' => '2021-01-28',
+                        ],
+                    ],
+                    'units' => [
+                        [
+                            'id' => 1,
+                            'serial_number' => 'XR18-1',
+                            'is_broken' => false,
+                            'park_id' => 1,
+                        ],
+                        [
+                            'id' => 2,
+                            'serial_number' => 'XR18-2',
+                            'is_broken' => false,
+                            'park_id' => 1,
+                        ],
+                        [
+                            'id' => 3,
+                            'serial_number' => 'XR18-3',
+                            'is_broken' => true,
+                            'park_id' => 2,
+                        ],
+                    ],
+                ],
                 [
                     'id'                    => 5,
                     'name'                  => 'Câble XLR 10m',
                     'reference'             => 'XLR10',
                     'description'           => 'Câble audio XLR 10 mètres, mâle-femelle',
+                    'is_unitary'            => false,
                     'park_id'               => 1,
                     'category_id'           => 1,
                     'sub_category_id'       => null,
@@ -34,10 +85,10 @@ final class MaterialsTest extends ApiTestCase
                     'stock_quantity'        => 40,
                     'out_of_order_quantity' => 8,
                     'replacement_price'     => 9.5,
-                    'serial_number'         => null,
                     'is_hidden_on_bill'     => true,
                     'is_discountable'       => true,
                     'note'                  => null,
+                    'units'                 => [],
                     'attributes'            => [],
                     'tags'                  => [],
                     'created_at'            => null,
@@ -49,6 +100,7 @@ final class MaterialsTest extends ApiTestCase
                     'name'                  => 'Console Yamaha CL3',
                     'reference'             => 'CL3',
                     'description'           => 'Console numérique 64 entrées / 8 sorties + Master + Sub',
+                    'is_unitary'            => false,
                     'park_id'               => 1,
                     'category_id'           => 1,
                     'sub_category_id'       => 1,
@@ -56,10 +108,10 @@ final class MaterialsTest extends ApiTestCase
                     'stock_quantity'        => 5,
                     'out_of_order_quantity' => 1,
                     'replacement_price'     => 19400,
-                    'serial_number'         => 'Y-23887-010066',
                     'is_hidden_on_bill'     => false,
                     'is_discountable'       => false,
                     'note'                  => null,
+                    'units'                 => [],
                     'attributes'            => [
                         [
                             'id'    => 3,
@@ -91,10 +143,47 @@ final class MaterialsTest extends ApiTestCase
                     'deleted_at' => null,
                 ],
                 [
+                    'id'                    => 8,
+                    'name'                  => 'Décor Thème Forêt',
+                    'description'           => 'Forêt mystique, typique des récits fantastiques.',
+                    'reference'             => 'Decor-Forest',
+                    'is_unitary'            => true,
+                    'park_id'               => null,
+                    'category_id'           => 4,
+                    'sub_category_id'       => null,
+                    'rental_price'          => 1500,
+                    'stock_quantity'        => 2,
+                    'out_of_order_quantity' => 0,
+                    'replacement_price'     => 8500,
+                    'is_hidden_on_bill'     => false,
+                    'is_discountable'       => true,
+                    'note'                  => null,
+                    'created_at'            => null,
+                    'updated_at'            => null,
+                    'deleted_at'            => null,
+                    'tags'                  => [],
+                    'attributes'            => [],
+                    'units'                 => [
+                        [
+                            'id' => 5,
+                            'serial_number' => 'DECOR-FOREST-1',
+                            'is_broken' => false,
+                            'park_id' => 1,
+                        ],
+                        [
+                            'id' => 6,
+                            'serial_number' => 'DECOR-FOREST-2',
+                            'is_broken' => false,
+                            'park_id' => 1,
+                        ],
+                    ]
+                ],
+                [
                     'id'                    => 3,
                     'name'                  => 'PAR64 LED',
                     'reference'             => 'PAR64LED',
                     'description'           => 'Projecteur PAR64 à LED, avec son set de gélatines',
+                    'is_unitary'            => false,
                     'park_id'               => 1,
                     'category_id'           => 2,
                     'sub_category_id'       => 3,
@@ -102,10 +191,10 @@ final class MaterialsTest extends ApiTestCase
                     'stock_quantity'        => 34,
                     'out_of_order_quantity' => 4,
                     'replacement_price'     => 89,
-                    'serial_number'         => null,
                     'is_hidden_on_bill'     => false,
                     'is_discountable'       => true,
                     'note'                  => 'Soyez délicats avec ces projos !',
+                    'units'                 => [],
                     'attributes'            => [
                         [
                             'id'    => 3,
@@ -134,6 +223,7 @@ final class MaterialsTest extends ApiTestCase
                     'name'                  => 'Processeur DBX PA2',
                     'reference'             => 'DBXPA2',
                     'description'           => 'Système de diffusion numérique',
+                    'is_unitary'            => false,
                     'park_id'               => 1,
                     'category_id'           => 1,
                     'sub_category_id'       => 2,
@@ -141,10 +231,10 @@ final class MaterialsTest extends ApiTestCase
                     'stock_quantity'        => 2,
                     'out_of_order_quantity' => null,
                     'replacement_price'     => 349.9,
-                    'serial_number'         => '12345678-1',
                     'is_hidden_on_bill'     => false,
                     'is_discountable'       => true,
                     'note'                  => null,
+                    'units'                 => [],
                     'attributes'            => [
                         [
                             'id'    => 3,
@@ -173,6 +263,7 @@ final class MaterialsTest extends ApiTestCase
                     'name'                  => 'Showtec SDS-6',
                     'reference'             => 'SDS-6-01',
                     'description'           => "Console DMX (jeu d'orgue) Showtec 6 canaux",
+                    'is_unitary'            => false,
                     'park_id'               => 1,
                     'category_id'           => 2,
                     'sub_category_id'       => 4,
@@ -180,10 +271,10 @@ final class MaterialsTest extends ApiTestCase
                     'stock_quantity'        => 2,
                     'out_of_order_quantity' => null,
                     'replacement_price'     => 59,
-                    'serial_number'         => '1212121-5',
                     'is_hidden_on_bill'     => false,
                     'is_discountable'       => true,
                     'note'                  => null,
+                    'units'                 => [],
                     'attributes'            => [
                         [
                             'id'    => 4,
@@ -212,18 +303,57 @@ final class MaterialsTest extends ApiTestCase
                     'updated_at' => null,
                     'deleted_at' => null,
                 ],
+                [
+                    'id'                    => 7,
+                    'name'                  => 'Volkswagen Transporter',
+                    'description'           => 'Volume utile : 9.3 m3',
+                    'reference'             => 'Transporter',
+                    'is_unitary'            => true,
+                    'park_id'               => null,
+                    'category_id'           => 3,
+                    'sub_category_id'       => null,
+                    'rental_price'          => 300,
+                    'stock_quantity'        => 1,
+                    'out_of_order_quantity' => 0,
+                    'replacement_price'     => 32000,
+                    'is_hidden_on_bill'     => false,
+                    'is_discountable'       => false,
+                    'note'                  => null,
+                    'created_at'            => null,
+                    'updated_at'            => null,
+                    'deleted_at'            => null,
+                    'tags'                  => [],
+                    'attributes'            => [],
+                    'units'                 => [
+                        [
+                            'id' => 4,
+                            'serial_number' => 'VHCL-1',
+                            'is_broken' => false,
+                            'park_id' => 2,
+                        ]
+                    ],
+                ],
             ],
         ]);
 
         $this->client->get('/api/materials?orderBy=reference&ascending=0');
         $this->assertStatusCode(SUCCESS_OK);
-        $this->assertResponsePaginatedData(5, '/api/materials', 'orderBy=reference&ascending=0');
+        $this->assertResponsePaginatedData(8, '/api/materials', 'orderBy=reference&ascending=0');
         $results = $this->_getResponseAsArray();
-        $this->assertEquals('XLR10', $results['data'][0]['reference']);
-        $this->assertEquals('SDS-6-01', $results['data'][1]['reference']);
-        $this->assertEquals('PAR64LED', $results['data'][2]['reference']);
-        $this->assertEquals('DBXPA2', $results['data'][3]['reference']);
-        $this->assertEquals('CL3', $results['data'][4]['reference']);
+
+        $expectedResults = [
+            'XR18',
+            'XLR10',
+            'Transporter',
+            'SDS-6-01',
+            'PAR64LED',
+            'Decor-Forest',
+            'DBXPA2',
+            'CL3',
+        ];
+        foreach ($expectedResults as $index => $expected) {
+            $this->assertEquals($expected, $results['data'][$index]['reference']);
+        }
 
         $this->client->get('/api/materials?deleted=1');
         $this->assertStatusCode(SUCCESS_OK);
@@ -256,6 +386,339 @@ final class MaterialsTest extends ApiTestCase
         $this->assertNotFoundErrorMessage();
     }
 
+    public function testGetMaterialsWhileEvent()
+    {
+        $this->client->get('/api/materials/while-event/1');
+        $this->assertStatusCode(SUCCESS_OK);
+        $this->assertResponseData([
+            [
+                'id' => 1,
+                'name' => 'Console Yamaha CL3',
+                'reference' => 'CL3',
+                'description' => 'Console numérique 64 entrées / 8 sorties + Master + Sub',
+                'is_unitary' => false,
+                'park_id' => 1,
+                'category_id' => 1,
+                'sub_category_id' => 1,
+                'rental_price' => 300,
+                'stock_quantity' => 5,
+                'out_of_order_quantity' => 1,
+                'replacement_price' => 19400,
+                'is_hidden_on_bill' => false,
+                'is_discountable' => false,
+                'note' => null,
+                'remaining_quantity' => 1,
+                'units' => [],
+                'attributes' => [
+                    [
+                        'id' => 3,
+                        'name' => 'Puissance',
+                        'type' => 'integer',
+                        'unit' => 'W',
+                        'value' => 850,
+                    ],
+                    [
+                        'id' => 2,
+                        'name' => 'Couleur',
+                        'type' => 'string',
+                        'unit' => null,
+                        'value' => 'Grise',
+                    ],
+                    [
+                        'id' => 1,
+                        'name' => 'Poids',
+                        'type' => 'float',
+                        'unit' => 'kg',
+                        'value' => 36.5,
+                    ],
+                ],
+                'tags' => [
+                    ['id' => 3, 'name' => 'pro'],
+                ],
+                'created_at' => null,
+                'updated_at' => null,
+                'deleted_at' => null,
+            ],
+            [
+                'id' => 2,
+                'name' => 'Processeur DBX PA2',
+                'reference' => 'DBXPA2',
+                'description' => 'Système de diffusion numérique',
+                'is_unitary' => false,
+                'park_id' => 1,
+                'category_id' => 1,
+                'sub_category_id' => 2,
+                'rental_price' => 25.5,
+                'stock_quantity' => 2,
+                'out_of_order_quantity' => null,
+                'replacement_price' => 349.9,
+                'is_hidden_on_bill' => false,
+                'is_discountable' => true,
+                'note' => null,
+                'remaining_quantity' => 0,
+                'units' => [],
+                'attributes' => [
+                    [
+                        'id' => 3,
+                        'name' => 'Puissance',
+                        'type' => 'integer',
+                        'unit' => 'W',
+                        'value' => 35,
+                    ],
+                    [
+                        'id' => 1,
+                        'name' => 'Poids',
+                        'type' => 'float',
+                        'unit' => 'kg',
+                        'value' => 2.2,
+                    ],
+                ],
+                'tags' => [
+                    ['id' => 3, 'name' => 'pro'],
+                ],
+                'created_at' => null,
+                'updated_at' => null,
+                'deleted_at' => null,
+            ],
+            [
+                'id' => 8,
+                'name' => 'Décor Thème Forêt',
+                'description' => 'Forêt mystique, typique des récits fantastiques.',
+                'reference' => 'Decor-Forest',
+                'is_unitary' => true,
+                'park_id' => null,
+                'category_id' => 4,
+                'sub_category_id' => null,
+                'rental_price' => 1500,
+                'stock_quantity' => 2,
+                'out_of_order_quantity' => 0,
+                'replacement_price' => 8500,
+                'is_hidden_on_bill' => false,
+                'is_discountable' => true,
+                'note' => null,
+                'created_at' => null,
+                'updated_at' => null,
+                'deleted_at' => null,
+                'remaining_quantity' => 2,
+                'tags' => [],
+                'units' => [
+                    [
+                        'id' => 5,
+                        'serial_number' => 'DECOR-FOREST-1',
+                        'is_broken' => false,
+                        'park_id' => 1,
+                        'is_available' => true,
+                    ],
+                    [
+                        'id' => 6,
+                        'serial_number' => 'DECOR-FOREST-2',
+                        'is_broken' => false,
+                        'park_id' => 1,
+                        'is_available' => true,
+                    ],
+                ],
+                'attributes' => [],
+            ],
+            [
+                'id' => 3,
+                'name' => 'PAR64 LED',
+                'reference' => 'PAR64LED',
+                'description' => 'Projecteur PAR64 à LED, avec son set de gélatines',
+                'is_unitary' => false,
+                'park_id' => 1,
+                'category_id' => 2,
+                'sub_category_id' => 3,
+                'rental_price' => 3.5,
+                'stock_quantity' => 34,
+                'out_of_order_quantity' => 4,
+                'replacement_price' => 89,
+                'is_hidden_on_bill' => false,
+                'is_discountable' => true,
+                'note' => 'Soyez délicats avec ces projos !',
+                'remaining_quantity' => 30,
+                'units' => [],
+                'attributes' => [
+                    [
+                        'id' => 3,
+                        'name' => 'Puissance',
+                        'type' => 'integer',
+                        'unit' => 'W',
+                        'value' => 150,
+                    ],
+                    [
+                        'id' => 1,
+                        'name' => 'Poids',
+                        'type' => 'float',
+                        'unit' => 'kg',
+                        'value' => 0.85,
+                    ],
+                ],
+                'tags' => [
+                    ['id' => 3, 'name' => 'pro'],
+                ],
+                'created_at' => null,
+                'updated_at' => null,
+                'deleted_at' => null,
+            ],
+            [
+                'id' => 4,
+                'name' => 'Showtec SDS-6',
+                'reference' => 'SDS-6-01',
+                'description' => "Console DMX (jeu d'orgue) Showtec 6 canaux",
+                'is_unitary' => false,
+                'park_id' => 1,
+                'category_id' => 2,
+                'sub_category_id' => 4,
+                'rental_price' => 15.95,
+                'stock_quantity' => 2,
+                'out_of_order_quantity' => null,
+                'replacement_price' => 59,
+                'is_hidden_on_bill' => false,
+                'is_discountable' => true,
+                'note' => null,
+                'remaining_quantity' => 2,
+                'units' => [],
+                'attributes' => [
+                    [
+                        'id' => 4,
+                        'name' => 'Conforme',
+                        'type' => 'boolean',
+                        'unit' => null,
+                        'value' => true,
+                    ],
+                    [
+                        'id' => 3,
+                        'name' => 'Puissance',
+                        'type' => 'integer',
+                        'unit' => 'W',
+                        'value' => 60,
+                    ],
+                    [
+                        'id' => 1,
+                        'name' => 'Poids',
+                        'type' => 'float',
+                        'unit' => 'kg',
+                        'value' => 3.15,
+                    ],
+                ],
+                'tags' => [],
+                'created_at' => null,
+                'updated_at' => null,
+                'deleted_at' => null,
+            ],
+            [
+                'id' => 7,
+                'name' => 'Volkswagen Transporter',
+                'description' => 'Volume utile : 9.3 m3',
+                'reference' => 'Transporter',
+                'is_unitary' => true,
+                'park_id' => null,
+                'category_id' => 3,
+                'sub_category_id' => null,
+                'rental_price' => 300,
+                'stock_quantity' => 1,
+                'out_of_order_quantity' => 0,
+                'replacement_price' => 32000,
+                'is_hidden_on_bill' => false,
+                'is_discountable' => false,
+                'note' => null,
+                'created_at' => null,
+                'updated_at' => null,
+                'deleted_at' => null,
+                'remaining_quantity' => 1,
+                'units' => [
+                    [
+                        'id' => 4,
+                        'serial_number' => 'VHCL-1',
+                        'is_broken' => false,
+                        'park_id' => 2,
+                        'is_available' => true,
+                    ],
+                ],
+                'attributes' => [],
+                'tags' => [],
+            ],
+            [
+                'id' => 5,
+                'name' => 'Câble XLR 10m',
+                'reference' => 'XLR10',
+                'description' => 'Câble audio XLR 10 mètres, mâle-femelle',
+                'is_unitary' => false,
+                'park_id' => 1,
+                'category_id' => 1,
+                'sub_category_id' => null,
+                'rental_price' => 0.5,
+                'stock_quantity' => 40,
+                'out_of_order_quantity' => 8,
+                'replacement_price' => 9.5,
+                'is_hidden_on_bill' => true,
+                'is_discountable' => true,
+                'note' => null,
+                'remaining_quantity' => 32,
+                'units' => [],
+                'attributes' => [],
+                'tags' => [],
+                'created_at' => null,
+                'updated_at' => null,
+                'deleted_at' => null,
+            ],
+            [
+                'id' => 6,
+                'name' => 'Behringer X Air XR18',
+                'description' => 'Mélangeur numérique 18 canaux',
+                'reference' => 'XR18',
+                'is_unitary' => true,
+                'park_id' => null,
+                'category_id' => 1,
+                'sub_category_id' => 1,
+                'rental_price' => 49.99,
+                'stock_quantity' => 3,
+                'out_of_order_quantity' => 1,
+                'replacement_price' => 419,
+                'is_hidden_on_bill' => false,
+                'is_discountable' => false,
+                'note' => null,
+                'created_at' => null,
+                'updated_at' => null,
+                'deleted_at' => null,
+                'remaining_quantity' => 2,
+                'units' => [
+                    [
+                        'id' => 1,
+                        'serial_number' => 'XR18-1',
+                        'is_broken' => false,
+                        'park_id' => 1,
+                        'is_available' => true,
+                    ],
+                    [
+                        'id' => 2,
+                        'serial_number' => 'XR18-2',
+                        'is_broken' => false,
+                        'park_id' => 1,
+                        'is_available' => true,
+                    ],
+                    [
+                        'id' => 3,
+                        'serial_number' => 'XR18-3',
+                        'is_broken' => true,
+                        'park_id' => 2,
+                        'is_available' => true,
+                    ],
+                ],
+                'attributes' => [
+                    [
+                        'id' => 5,
+                        'name' => "Date d'achat",
+                        'type' => 'date',
+                        'unit' => null,
+                        'value' => '2021-01-28',
+                    ],
+                ],
+                'tags' => [],
+            ],
+        ]);
+    }
+
     public function testGetMaterial()
     {
         $this->client->get('/api/materials/1');
@@ -264,6 +727,7 @@ final class MaterialsTest extends ApiTestCase
             'id'                    => 1,
             'name'                  => 'Console Yamaha CL3',
             'reference'             => 'CL3',
+            'is_unitary'            => false,
             'description'           => 'Console numérique 64 entrées / 8 sorties + Master + Sub',
             'park_id'               => 1,
             'category_id'           => 1,
@@ -272,10 +736,10 @@ final class MaterialsTest extends ApiTestCase
             'stock_quantity'        => 5,
             'out_of_order_quantity' => 1,
             'replacement_price'     => 19400,
-            'serial_number'         => 'Y-23887-010066',
             'is_hidden_on_bill'     => false,
             'is_discountable'       => false,
             'note'                  => null,
+            'units'                 => [],
             'attributes'            => [
                 [
                     'id'    => 3,
@@ -385,10 +849,10 @@ final class MaterialsTest extends ApiTestCase
             'prev_page_url'  => null,
             'last_page_url'  => $pagesUrl,
             'per_page'       => $this->settings['maxItemsPerPage'],
-            'to'             => 5,
-            'total'          => 5,
+            'to'             => 8,
+            'total'          => 8,
         ], $response['pagination']);
-        $this->assertCount(5, $response['data']);
+        $this->assertCount(8, $response['data']);
     }
 
     public function testGetMaterialsByCategoryAndSubCategory()
@@ -407,76 +871,23 @@ final class MaterialsTest extends ApiTestCase
             'prev_page_url'  => null,
             'last_page_url'  => $pagesUrl,
             'per_page'       => $this->settings['maxItemsPerPage'],
-            'to'             => 1,
-            'total'          => 1,
+            'to'             => 2,
+            'total'          => 2,
         ], $response['pagination']);
-        $this->assertCount(1, $response['data']);
+        $this->assertCount(2, $response['data']);
     }
-
-    public function testGetMaterialsWhileEvent()
+    public function testGetMaterialsWithDateForQuantities()
     {
-        // - Récupère le matériel avec les quantités qu'il reste pour la période
-        // - à laquelle se déroule l'événement n°1
-        $this->client->get('/api/materials?whileEvent=1');
+        // - Récupère le matériel avec les quantités qu'il reste pour un jour
+        // - pendant lequel se déroulent les événements n°1 et n°2
+        $this->client->get('/api/materials?dateForQuantities=2018-12-18');
         $this->assertStatusCode(SUCCESS_OK);
         $response = $this->_getResponseAsArray();
-        $this->assertCount(5, $response['data']);
-        $this->assertEquals(32, $response['data'][0]['remaining_quantity']);
-        $this->assertEquals(1, $response['data'][1]['remaining_quantity']);
-        $this->assertEquals(30, $response['data'][2]['remaining_quantity']);
-        $this->assertEquals(0, $response['data'][3]['remaining_quantity']);
-        $this->assertEquals(2, $response['data'][4]['remaining_quantity']);
-    }
+        $this->assertCount(8, $response['data']);
 
-    public function testGetAttributes()
-    {
-        // - Récupère les caractéristiques custom du matériel
-        $this->client->get('/api/materials/attributes');
-        $this->assertStatusCode(SUCCESS_OK);
-        $response = $this->_getResponseAsArray();
-        $expected = [
-            [
-                'id'         => 1,
-                'name'       => 'Poids',
-                'type'       => 'float',
-                'unit'       => 'kg',
-                'max_length' => null,
-                'created_at' => null,
-                'updated_at' => null,
-                'deleted_at' => null,
-            ],
-            [
-                'id'         => 2,
-                'name'       => 'Couleur',
-                'type'       => 'string',
-                'unit'       => null,
-                'max_length' => null,
-                'created_at' => null,
-                'updated_at' => null,
-                'deleted_at' => null,
-            ],
-            [
-                'id'         => 3,
-                'name'       => 'Puissance',
-                'type'       => 'integer',
-                'unit'       => 'W',
-                'max_length' => null,
-                'created_at' => null,
-                'updated_at' => null,
-                'deleted_at' => null,
-            ],
-            [
-                'id'         => 4,
-                'name'       => 'Conforme',
-                'type'       => 'boolean',
-                'unit'       => null,
-                'max_length' => null,
-                'created_at' => null,
-                'updated_at' => null,
-                'deleted_at' => null,
-            ]
-        ];
-        $this->assertEquals($expected, $response);
+        foreach ([2, 32, 3, 2, 30, 1, 1] as $index => $expected) {
+            $this->assertEquals($expected, $response['data'][$index]['remaining_quantity']);
+        }
     }
 
     public function testCreateMaterialWithoutData()
@@ -539,9 +950,10 @@ final class MaterialsTest extends ApiTestCase
         $this->client->post('/api/materials', $data);
         $this->assertStatusCode(SUCCESS_CREATED);
         $this->assertResponseData([
-            'id'                    => 6,
+            'id'                    => 9,
             'name'                  => 'Analog Mixing Console Yamaha RM800',
             'reference'             => 'RM800',
+            'is_unitary'            => false,
             'park_id'               => 1,
             'category_id'           => 1,
             'sub_category_id'       => 1,
@@ -552,9 +964,9 @@ final class MaterialsTest extends ApiTestCase
             'is_hidden_on_bill'     => false,
             'is_discountable'       => true,
             'description'           => null,
-            'serial_number'         => null,
             'note'                  => null,
             'attributes'            => [],
+            'units'                 => [],
             'tags'                  => [
                 ['id' => 4, 'name' => 'old matos'],
                 ['id' => 5, 'name' => 'vintage'],
@@ -585,9 +997,10 @@ final class MaterialsTest extends ApiTestCase
         $this->client->post('/api/materials', $data);
         $this->assertStatusCode(SUCCESS_CREATED);
         $this->assertResponseData([
-            'id'                    => 6,
+            'id'                    => 9,
             'name'                  => 'Console numérique Yamaha 01V96 V2',
             'reference'             => '01V96-v2',
+            'is_unitary'            => false,
             'park_id'               => 1,
             'category_id'           => 1,
             'sub_category_id'       => 1,
@@ -598,8 +1011,8 @@ final class MaterialsTest extends ApiTestCase
             'is_hidden_on_bill'     => false,
             'is_discountable'       => true,
             'description'           => null,
-            'serial_number'         => null,
             'note'                  => null,
+            'units'                 => [],
             'attributes'            => [
                 [
                     'id'    => 4,
@@ -690,5 +1103,84 @@ final class MaterialsTest extends ApiTestCase
         $this->assertStatusCode(SUCCESS_OK);
         $response = $this->_getResponseAsArray();
         $this->assertEmpty($response['deleted_at']);
+    }
+
+    public function testGetAllDocuments()
+    {
+        // - Get all documents of material #1
+        $this->client->get('/api/materials/1/documents');
+        $this->assertStatusCode(SUCCESS_OK);
+        $this->assertResponseData([
+            [
+                'id' => 1,
+                'name' => 'User-manual.pdf',
+                'type' => 'application/pdf',
+                'size' => 54681233
+            ],
+            [
+                'id' => 2,
+                'name' => 'warranty.pdf',
+                'type' => 'application/pdf',
+                'size' => 124068
+            ]
+        ]);
+
+        // - Get all documents of material #2
+        $this->client->get('/api/materials/2/documents');
+        $this->assertStatusCode(SUCCESS_OK);
+        $this->assertResponseData([]);
+    }
+
+    public function testGetEvents()
+    {
+        $this->client->get('/api/materials/1/events');
+        $this->assertStatusCode(SUCCESS_OK);
+        $this->assertResponseData([
+            [
+                'id' => 4,
+                'title' => 'Concert X',
+                'start_date' => '2019-03-01 00:00:00',
+                'end_date' => '2019-04-10 23:59:59',
+                'location' => 'Moon',
+                'is_confirmed' => false,
+                'pivot' => [
+                    'id' => 9,
+                    'material_id' => 1,
+                    'event_id' => 4,
+                    'quantity' => 1,
+                    'units' => [],
+                ],
+            ],
+            [
+                'id' => 2,
+                'title' => 'Second événement',
+                'start_date' => '2018-12-18 00:00:00',
+                'end_date' => '2018-12-19 23:59:59',
+                'location' => 'Lyon',
+                'is_confirmed' => false,
+                'pivot' => [
+                    'id' => 4,
+                    'material_id' => 1,
+                    'event_id' => 2,
+                    'quantity' => 3,
+                    'units' => [],
+                ],
+            ],
+            [
+                'id' => 1,
+                'title' => 'Premier événement',
+                'start_date' => '2018-12-17 00:00:00',
+                'end_date' => '2018-12-18 23:59:59',
+                'location' => 'Gap',
+                'is_confirmed' => false,
+                'pivot' => [
+                    'id' => 1,
+                    'material_id' => 1,
+                    'event_id' => 1,
+                    'quantity' => 1,
+                    'units' => [],
+                ],
+            ]
+        ]);
     }
 }

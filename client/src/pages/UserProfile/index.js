@@ -1,4 +1,3 @@
-import store from '@/store';
 import Help from '@/components/Help/Help.vue';
 import FormField from '@/components/FormField/FormField.vue';
 
@@ -6,18 +5,21 @@ export default {
   name: 'UserProfile',
   components: { Help, FormField },
   data() {
+    const { user } = this.$store.state.auth;
+
     return {
       help: 'page-profile.help',
       error: null,
       isLoading: false,
       isPasswordEdit: false,
       user: {
-        id: store.state.user.id,
-        pseudo: store.state.user.pseudo,
-        email: store.state.user.email,
+        id: user.id,
+        pseudo: user.pseudo,
+        email: user.email,
         password: '',
         password_confirmation: '',
-        group_id: store.state.user.groupId,
+        group_id: user.groupId,
+        restricted_parks: [],
         person: {
           first_name: '',
           last_name: '',
@@ -45,36 +47,39 @@ export default {
       },
     };
   },
-  computed: { groupId() { return store.state.user.groupId; } },
+  computed: {
+    groupId() {
+      return this.$store.state.auth.user.groupId;
+    },
+  },
   mounted() {
-    this.getUserData();
-    store.commit('setPageSubTitle', store.state.user.pseudo);
+    this.fetch();
   },
   methods: {
-    getUserData() {
-      const { id } = store.state.user;
+    async fetch() {
+      const { id } = this.$store.state.auth.user;
       const { resource } = this.$route.meta;
 
       this.resetHelpLoading();
-
-      this.$http.get(`${resource}/${id}`)
-        .then(({ data }) => {
-          this.setUserData(data);
-          this.isLoading = false;
-        })
-        .catch(this.displayError);
+      try {
+        const { data } = await this.$http.get(`${resource}/${id}`);
+        this.setUserData(data);
+      } catch (error) {
+        this.displayError(error);
+      } finally {
+        this.isLoading = false;
+      }
     },
 
-    saveUser(e) {
-      e.preventDefault();
+    async save() {
       const { id, password } = this.user;
       if (!id) {
         return;
       }
 
-      this.resetHelpLoading();
-
       const postData = { ...this.user };
+      delete postData.restricted_parks;
+
       if (password) {
         if (password !== this.user.password_confirmation) {
           this.errors.password = [this.$t('page-profile.password-confirmation-must-match')];
@@ -87,17 +92,20 @@ export default {
       }
 
       const { resource } = this.$route.meta;
-      this.$http.put(`${resource}/${id}`, postData)
-        .then(({ data }) => {
-          const text = this.isPasswordEdit ? 'page-profile.password-modified' : 'page-profile.saved';
-          this.help = { type: 'success', text };
-          this.isLoading = false;
-          this.isPasswordEdit = false;
+      this.resetHelpLoading();
+      try {
+        const { data } = await this.$http.put(`${resource}/${id}`, postData);
+        const text = this.isPasswordEdit ? 'page-profile.password-modified' : 'page-profile.saved';
+        this.help = { type: 'success', text };
+        this.isPasswordEdit = false;
 
-          this.setUserData(data);
-          store.commit('user/setInfos', data);
-        })
-        .catch(this.displayError);
+        this.setUserData(data);
+        this.$store.commit('auth/setUserProfile', data);
+      } catch (error) {
+        this.displayError(error);
+      } finally {
+        this.isLoading = false;
+      }
     },
 
     resetHelpLoading() {
@@ -118,8 +126,20 @@ export default {
     },
 
     setUserData(data) {
-      this.user = data;
-      store.commit('setPageSubTitle', this.user.pseudo);
+      let { person } = data;
+      if (!person) {
+        person = {
+          first_name: '',
+          last_name: '',
+          nickname: '',
+          phone: '',
+          street: '',
+          postal_code: '',
+          locality: '',
+        };
+      }
+
+      this.user = { ...data, person };
     },
 
     togglePasswordEdit(e) {

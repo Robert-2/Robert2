@@ -4,20 +4,15 @@ declare(strict_types=1);
 namespace Robert2\API\Models;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Respect\Validation\Validator as V;
+use Illuminate\Database\Eloquent\Builder;
+use Robert2\API\Validation\Validator as V;
 
 class Park extends BaseModel
 {
     use SoftDeletes;
 
-    protected $table = 'parks';
-
-    protected $_modelName = 'Park';
-    protected $_orderField = 'name';
-    protected $_orderDirection = 'asc';
-
-    protected $_allowedSearchFields = ['name'];
-    protected $_searchField = 'name';
+    protected $orderField = 'name';
+    protected $searchField = 'name';
 
     public function __construct(array $attributes = [])
     {
@@ -37,6 +32,24 @@ class Park extends BaseModel
 
     // ——————————————————————————————————————————————————————
     // —
+    // —    Getters
+    // —
+    // ——————————————————————————————————————————————————————
+
+    public function getAllForUser(int $userId): Builder
+    {
+        $builder = self::whereDoesntHave(
+            'Users',
+            function (Builder $query) use ($userId) {
+                $query->where('user_id', $userId);
+            }
+        );
+
+        return $builder;
+    }
+
+    // ——————————————————————————————————————————————————————
+    // —
     // —    Relations
     // —
     // ——————————————————————————————————————————————————————
@@ -50,6 +63,11 @@ class Park extends BaseModel
     public function Materials()
     {
         return $this->hasMany('Robert2\API\Models\Material');
+    }
+
+    public function MaterialUnits()
+    {
+        return $this->hasMany('Robert2\API\Models\MaterialUnit');
     }
 
     public function Person()
@@ -66,6 +84,13 @@ class Park extends BaseModel
     {
         return $this->belongsTo('Robert2\API\Models\Country')
             ->select(['id', 'name', 'code']);
+    }
+
+    public function Users()
+    {
+        return $this->belongsToMany('Robert2\API\Models\User', 'user_restricted_parks')
+            ->using('Robert2\API\Models\UserRestrictedParksPivot')
+            ->select(['users.id']);
     }
 
     // ——————————————————————————————————————————————————————
@@ -92,28 +117,63 @@ class Park extends BaseModel
         return $materials ? $materials->toArray() : null;
     }
 
+    public function getMaterialUnitsAttribute()
+    {
+        $materialUnits = $this->MaterialUnits()->get();
+        return $materialUnits ? $materialUnits->toArray() : [];
+    }
+
     public function getTotalItemsAttribute()
     {
-        return $this->Materials()->count();
+        // - Matériel (non unitaire)
+        $total = $this->Materials()->where('is_unitary', false)->count();
+
+        // - Unités
+        $total += $this->MaterialUnits()->distinct()->count('material_id');
+
+        return $total;
     }
 
     public function getTotalStockQuantityAttribute()
     {
-        $materials = $this->Materials()->get(['stock_quantity']);
         $total = 0;
+
+        // - Matériel (non unitaire)
+        $materials = $this->Materials()->get(['stock_quantity', 'is_unitary']);
         foreach ($materials as $material) {
-            $total += $material->stock_quantity;
+            // - Si unitaire, ne devrait pas avoir de `park_id`.
+            if ($material->is_unitary) {
+                continue;
+            }
+            $total += (int)$material->stock_quantity;
         }
+
+        // - Unités
+        $total += $this->MaterialUnits()->count();
+
         return $total;
     }
 
     public function getTotalAmountAttribute()
     {
-        $materials = $this->Materials()->get(['stock_quantity', 'replacement_price']);
         $total = 0;
+
+        // - Matériel (non unitaire)
+        $materials = $this->Materials()->get(['stock_quantity', 'is_unitary', 'replacement_price']);
         foreach ($materials as $material) {
-            $total += ($material->replacement_price * $material->stock_quantity);
+            // - Si unitaire, ne devrait pas avoir de `park_id`.
+            if ($material->is_unitary) {
+                continue;
+            }
+            $total += ($material->replacement_price * (int)$material->stock_quantity);
         }
+
+        // - Unités
+        $units = $this->MaterialUnits()->get();
+        foreach ($units as $unit) {
+            $total += $unit->material['replacement_price'];
+        }
+
         return $total;
     }
 
@@ -133,6 +193,12 @@ class Park extends BaseModel
     {
         $country = $this->Country()->first();
         return $country ? $country->toArray() : null;
+    }
+
+    public function getUsersAttribute()
+    {
+        $users = $this->Users()->get();
+        return $users ? $users->toArray() : null;
     }
 
     // ——————————————————————————————————————————————————————

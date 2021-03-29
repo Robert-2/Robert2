@@ -2682,4 +2682,10 @@ return [
 
     "signature"
     => "Signature :",
+
+    "label"
+    => "Étiquette",
+
+    "park-value"
+    => "Parc : %s",
 ];

@@ -3,25 +3,22 @@ declare(strict_types=1);
 
 namespace Robert2\API\Controllers;
 
+use Robert2\API\Errors;
+use Robert2\API\Services\Auth;
+use Robert2\API\Config\Config;
+use Robert2\API\Models\Event;
+use Robert2\API\Models\Document;
+use Robert2\API\Models\Material;
+use Robert2\API\Controllers\Traits\Taggable;
 use Slim\Http\Request;
 use Slim\Http\Response;
-
-use Robert2\API\Errors;
-use Robert2\API\Models\Material;
-use Robert2\API\Models\Attribute;
-use Robert2\API\Models\Event;
-use Robert2\API\Controllers\Traits\Taggable;
 
 class MaterialController extends BaseController
 {
     use Taggable;
 
-    public function __construct($container)
-    {
-        parent::__construct($container);
-
-        $this->model = new Material();
-    }
+    /** @var Material */
+    protected $model;
 
     // ——————————————————————————————————————————————————————
     // —
@@ -36,10 +33,10 @@ class MaterialController extends BaseController
         $parkId = $request->getQueryParam('park', null);
         $categoryId = $request->getQueryParam('category', null);
         $subCategoryId = $request->getQueryParam('subCategory', null);
+        $dateForQuantities = $request->getQueryParam('dateForQuantities', null);
         $withDeleted = (bool)$request->getQueryParam('deleted', false);
+        $ignoreUnitaries = (bool)$request->getQueryParam('ignoreUnitaries', false);
         $tags = $request->getQueryParam('tags', []);
-        $whileEvent = $request->getQueryParam('whileEvent', null);
-        $onlySelectedInEvent = $request->getQueryParam('onlySelectedInEvent', null);
 
         $options = [];
         if ($parkId) {
@@ -62,12 +59,20 @@ class MaterialController extends BaseController
         if (empty($options) && empty($tags)) {
             $model = $model->getAll($withDeleted);
         } else {
-            $model = $model->getAllFilteredOrTagged($options, $tags, $withDeleted);
+            $model = $model->getAllFilteredOrTagged($options, $tags, $withDeleted, $ignoreUnitaries);
         }
 
-        if ($onlySelectedInEvent) {
-            $model = $model->whereHas('events', function ($query) use ($onlySelectedInEvent) {
-                $query->where('event_id', $onlySelectedInEvent);
+        $restrictedParks = Auth::user()->restricted_parks;
+        if (count($restrictedParks) > 0) {
+            $model = $model->where(function ($query) use ($ignoreUnitaries, $restrictedParks) {
+                $query->whereNotIn('park_id', $restrictedParks)
+                    ->orWhere('park_id', null);
+
+                if ($ignoreUnitaries) {
+                    $query->whereHas('units', function ($subQuery) use ($restrictedParks) {
+                        $subQuery->whereNotIn('park_id', $restrictedParks);
+                    });
+                }
             });
         }
 
@@ -78,29 +83,68 @@ class MaterialController extends BaseController
         $results = $results->withPath($basePath)->appends($params);
         $results = $this->_formatPagination($results);
 
-        if ($whileEvent) {
-            $eventId = (int)$whileEvent;
-            $Event = new Event();
-            $currentEvent = $Event->find($eventId);
-
-            if ($currentEvent) {
-                $results['data'] = $this->model->recalcQuantitiesForPeriod(
-                    $results['data'],
-                    $currentEvent->start_date,
-                    $currentEvent->end_date,
-                    $eventId
+        if (count($restrictedParks) > 0) {
+            $results['data'] = array_map(function ($item) use ($restrictedParks) {
+                if (!$item['is_unitary']) {
+                    return $item;
+                }
+                $item['units'] = array_values(
+                    array_filter($item['units'], function ($unit) use ($restrictedParks) {
+                        return !in_array($unit['park_id'], $restrictedParks);
+                    })
                 );
-            }
+                $item['stock_quantity'] = count($item['units']);
+                return $item;
+            }, $results['data']);
+        }
+
+        if ($dateForQuantities) {
+            $results['data'] = $this->model->recalcQuantitiesForPeriod(
+                $results['data'],
+                $dateForQuantities,
+                $dateForQuantities,
+                null
+            );
         }
 
         return $response->withJson($results);
     }
 
-    public function getAttributes(Request $request, Response $response): Response
+    public function getAllWhileEvent(Request $request, Response $response): Response
     {
-        $attributes = new Attribute();
-        $result = $attributes->getAll()->get();
-        return $response->withJson($result->toArray());
+        $eventId = (int)$request->getAttribute('eventId');
+
+        $Event = new Event();
+        $currentEvent = $Event->find($eventId);
+        if (!$currentEvent) {
+            throw new Errors\NotFoundException(
+                sprintf("Event #%d was not found.", $eventId)
+            );
+        }
+
+        $results = $this->model
+            ->setOrderBy('reference', true)
+            ->getAll()
+            ->get()
+            ->toArray();
+
+        if ($results && count($results) > 0) {
+            $results = $this->model->recalcQuantitiesForPeriod(
+                $results,
+                $currentEvent->start_date,
+                $currentEvent->end_date,
+                $eventId
+            );
+        }
+
+        return $response->withJson($results);
+    }
+
+    public function getOne(Request $request, Response $response): Response
+    {
+        $id = (int)$request->getAttribute('id');
+        $material = $this->model->getOneForUser($id, Auth::user()->id);
+        return $response->withJson($material);
     }
 
     // ------------------------------------------------------
@@ -114,8 +158,7 @@ class MaterialController extends BaseController
         $postData = $request->getParsedBody();
 
         $result = $this->_saveMaterial(null, $postData);
-
-        return $response->withJson($result->toArray(), SUCCESS_CREATED);
+        return $response->withJson($result, SUCCESS_CREATED);
     }
 
     public function update(Request $request, Response $response): Response
@@ -129,8 +172,7 @@ class MaterialController extends BaseController
         $postData = $request->getParsedBody();
 
         $result = $this->_saveMaterial($id, $postData);
-
-        return $response->withJson($result->toArray(), SUCCESS_OK);
+        return $response->withJson($result, SUCCESS_OK);
     }
 
     // ------------------------------------------------------
@@ -139,32 +181,40 @@ class MaterialController extends BaseController
     // —
     // ------------------------------------------------------
 
-    protected function _saveMaterial(?int $id, array $postData): Material
+    protected function _saveMaterial(?int $id, $postData): array
     {
-        if (empty($postData)) {
+        if (!is_array($postData) || empty($postData)) {
             throw new \InvalidArgumentException(
                 "Missing request data to process validation",
                 ERROR_VALIDATION
             );
         }
 
-        if (isset($postData['stock_quantity'])) {
-            $stockQuantity = (int)$postData['stock_quantity'];
-            if ($stockQuantity !== null && (int)$stockQuantity < 0) {
-                $postData['stock_quantity'] = 0;
-            }
-        }
+        $postData['is_unitary'] = (bool)($postData['is_unitary'] ?? false);
 
-        if (isset($postData['out_of_order_quantity'])) {
-            $stockQuantity = $postData['stock_quantity'] ?? 0;
-            $outOfOrderQuantity = (int)$postData['out_of_order_quantity'];
-            if ($outOfOrderQuantity > (int)$stockQuantity) {
-                $outOfOrderQuantity = (int)$stockQuantity;
-                $postData['out_of_order_quantity'] = $outOfOrderQuantity;
+        if (!$postData['is_unitary']) {
+            if (array_key_exists('stock_quantity', $postData)) {
+                $stockQuantity = $postData['stock_quantity'];
+                if ($stockQuantity !== null && (int)$stockQuantity < 0) {
+                    $postData['stock_quantity'] = 0;
+                }
             }
-            if ($outOfOrderQuantity <= 0) {
-                $postData['out_of_order_quantity'] = null;
+
+            if (array_key_exists('out_of_order_quantity', $postData)) {
+                $stockQuantity = (int)($postData['stock_quantity'] ?? 0);
+                $outOfOrderQuantity = (int)$postData['out_of_order_quantity'];
+                if ($outOfOrderQuantity > $stockQuantity) {
+                    $outOfOrderQuantity = $stockQuantity;
+                    $postData['out_of_order_quantity'] = $outOfOrderQuantity;
+                }
+                if ($outOfOrderQuantity <= 0) {
+                    $postData['out_of_order_quantity'] = null;
+                }
             }
+        } else {
+            $postData['park_id'] = null;
+            $postData['stock_quantity'] = null;
+            $postData['out_of_order_quantity'] = null;
         }
 
         $result = $this->model->edit($id, $postData);
@@ -183,6 +233,95 @@ class MaterialController extends BaseController
             $result->Attributes()->sync($attributes);
         }
 
-        return $this->model->find($result->id);
+        $model = $this->model->find($result->id);
+        return $model->toArray();
+    }
+
+    public function getAllDocuments(Request $request, Response $response): Response
+    {
+        $id = (int)$request->getAttribute('id');
+        $model = $this->model->find($id);
+        if (!$model) {
+            throw new Errors\NotFoundException;
+        }
+
+        return $response->withJson($model->documents, SUCCESS_OK);
+    }
+
+    public function handleUploadDocuments(Request $request, Response $response): Response
+    {
+        $id = (int)$request->getAttribute('id');
+        $model = $this->model->find($id);
+        if (!$model) {
+            throw new Errors\NotFoundException;
+        }
+
+        $uploadedFiles = $request->getUploadedFiles();
+        $destDirectory = Document::getFilePath($id);
+
+        $errors = [];
+        $files = [];
+        foreach ($uploadedFiles as $file) {
+            if ($file->getError() !== UPLOAD_ERR_OK) {
+                $errors[$file->getClientFilename()] = 'File upload failed.';
+                continue;
+            }
+
+            $fileType = $file->getClientMediaType();
+            if (!in_array($fileType, Config::getSettings('authorizedFileTypes'))) {
+                $errors[$file->getClientFilename()] = 'This file type is not allowed.';
+                continue;
+            }
+
+            $filename = moveUploadedFile($destDirectory, $file);
+            if (!$filename) {
+                $errors[$file->getClientFilename()] = 'Saving file failed.';
+                continue;
+            }
+
+            $files[] = [
+                'material_id' => $id,
+                'name' => $filename,
+                'type' => $fileType,
+                'size' => $file->getSize(),
+            ];
+        }
+
+        foreach ($files as $document) {
+            try {
+                Document::updateOrCreate(
+                    ['material_id' => $id, 'name' => $document['name']],
+                    $document
+                );
+            } catch (\Exception $e) {
+                $filePath = Document::getFilePath($id, $document['name']);
+                unlink($filePath);
+                $errors[$document['name']] = sprintf(
+                    'Document could not be saved in database: %s',
+                    $e->getMessage()
+                );
+            }
+        }
+
+        if (count($errors) > 0) {
+            throw new \Exception(implode("\n", $errors));
+        }
+
+        $result = [
+            'saved_files' => $files,
+            'errors' => $errors,
+        ];
+        return $response->withJson($result, SUCCESS_OK);
+    }
+
+    public function getEvents(Request $request, Response $response): Response
+    {
+        $id = (int)$request->getAttribute('id');
+        $model = $this->model->find($id);
+        if (!$model) {
+            throw new Errors\NotFoundException;
+        }
+
+        return $response->withJson($model->events, SUCCESS_OK);
     }
 }

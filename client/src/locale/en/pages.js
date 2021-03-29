@@ -2,8 +2,10 @@
 /* eslint-disable quote-props */
 export default {
   'page-login': {
+    'title': "Login",
     'welcome': "Hello! Who are you?",
     'connexion': "Enter Robert",
+    'login-with-cas': "Login with CAS",
     'please-wait': "Authentication, please wait...",
     'bye': "See you\u00a0!",
     'footer': "Robert2 is a free (as in 'freedom') software. You can copy and redistribute it freely, except for commercial purpose.",
@@ -18,8 +20,8 @@ export default {
   },
 
   'page-profile': {
-    'title': "Profile of user «\u00a0{pageSubTitle}\u00a0»",
-    'help': "",
+    'title': "Your profile",
+    'help': "If you change your email, pseudo or password, do not forget them before logging-out!",
     'you-are-group': "You are: {group}.",
     'edit-password': "Change your password",
     'password-confirmation': "Password confirmation",
@@ -29,7 +31,7 @@ export default {
   },
 
   'page-settings': {
-    'title': "Settings of {pageSubTitle}",
+    'title': "Your settings",
     'help': "The « duration of a session » is the time allowed before you're automatically logged out.",
     'auth-token-validity-duration': "Max. duration of a session",
     'interface': "Interface",
@@ -40,7 +42,11 @@ export default {
 
   'page-calendar': {
     'title': "Calendar",
-    'help': "Click and drag to move timeline. Use mouse wheel to zoom in / out. Double-click on an empty column to create an event with start date pre-filled.",
+    'help': (
+      `Click and drag to move timeline.
+      Use mouse wheel to zoom in / out.
+      Double-click on an empty column to create an event with start date pre-filled.`
+    ),
     'help-center-view-on-today': "Center calendar on today",
     'help-add-event': "Create a new event",
     'add-event': "New event",
@@ -50,13 +56,20 @@ export default {
     'event-deleted': "The event was deleted.",
     'event-saved': "The event was saved.",
     'loading-event': "Loading event...",
-    'help-timeline-event-operations': "Click to selct the event and move or resize it. Double-click to open event's preview.",
+    'help-timeline-event-operations': (
+      `Click once to select the event, in order to move, resize or delete it.
+      Double-click on an event to open its preview, and modify its details.`
+    ),
     'center-on-today': "Center on today",
     'center-on': "Center on",
     'this-event-is-past': "This event is past.",
     'this-event-is-currently-running': "This event is currently running.",
     'this-event-is-confirmed': "This event is confirmed.",
+    'this-event-is-locked-past-confirmed': "This event is locked because it's confirmed, and past.",
     'this-event-has-missing-materials': "This event has missing materials.",
+    'all-events': "All events",
+    'event-with-missing-material-only': "Events with missing material only?",
+    'display-all-parks': "All parks",
   },
 
   'page-events': {
@@ -64,6 +77,7 @@ export default {
     'back-to-calendar': "Back to calendar",
     'add': "New event",
     'edit': "Modify event «\u00a0{pageSubTitle}\u00a0»",
+    'edit-title': "Modify event",
     'edit-event': "Modify event",
     'save-and-back-to-calendar': "Save and back to calendar",
     'save-and-continue': "Save and continue",
@@ -77,6 +91,8 @@ export default {
     'saved': "Event saved.",
     'not-saved': "Event has not saved modifications",
     'display-only-selected-materials': "Display event's selected materials only?",
+    'display-all-materials-to-add-some': "Display all materials to add some",
+    'display-only-event-materials': "Display only event's materials",
     'event-not-confirmed-help': "The event is not confirmed yet. It is subject to change at any time.",
     'event-confirmed-help': "The event is confirmed: its information should no longer change.",
     'event-missing-materials': "Missing materials",
@@ -85,30 +101,37 @@ export default {
     'warning-no-beneficiary': "Warning: this event has no beneficiaries!",
     'missing-material-count': "Need {quantity}, missing\u00a0{missing}!",
     'beneficiary-billing-help': "Only the first beneficiary in the list will be displayed on the bill.",
-    'all-events': "All events",
-    'event-with-missing-material-only': "Events with missing material only?",
+    'no-units-available': "No unit available during this event for this material.",
   },
 
   'page-users': {
     'title': "Users",
-    'help': "You can send an email to an user by clicking on his/her adress.",
-    'help-edit': "«\u00a0Administrator\u00a0» group gives all access rights to user. Group «\u00a0Member\u00a0» allow user to use most parts of Robert application. And «\u00a0Visitor\u00a0» group gives a limited access to some data.",
+    'help': "You can send an email to an user by clicking on his/her address.",
+    'help-edit': (
+      `- Group «\u00a0Administrator\u00a0» group gives all access rights to user.
+      - Group «\u00a0Member\u00a0» allow user to use most parts of Robert application.
+      - Group «\u00a0Visitor\u00a0» group gives a limited access to some data.`
+    ),
     'action-add': "New user",
     'add': "New user",
     'edit': "Modify user «\u00a0{pageSubTitle}\u00a0»",
+    'edit-title': "Modify user",
     'confirm-delete': "Move this user in trash bin?",
     'confirm-permanently-delete': "Do you really want to permanently delete this user?",
     'confirm-restore': "Do you really want to restore this user?",
     'saved': "User saved.",
     'profile-missing-or-deleted': "Profile missing or deleted",
+    'parks-access': "Access to material parks",
+    'restrict-access-to-parks': "Restrict access to some parks",
   },
 
   'page-beneficiaries': {
     'title': "Beneficiaries",
-    'help': "You can send an email to a beneficiary by clicking on his/her adress.",
+    'help': "You can send an email to a beneficiary by clicking on his/her address.",
     'action-add': "New beneficiary",
     'add': "New beneficiary",
     'edit': "Modify beneficiary «\u00a0{pageSubTitle}\u00a0»",
+    'edit-title': "Modify beneficiary",
     'beneficiary-type': "Beneficiary type",
     'person': "Natural person (individual)",
     'company': "Legal entity (company)",
@@ -123,6 +146,7 @@ export default {
     'title': "Companies",
     'add': "New company",
     'edit': "Modify company «\u00a0{pageSubTitle}\u00a0»",
+    'edit-title': "Modify company",
     'edit-btn': "Modify company",
     'create-new': "Add a new company",
     'help-edit': "The legal name of the company is mandatory.",
@@ -134,9 +158,21 @@ export default {
     'title': "Materials",
     'help': "You can choose a park, a category or some tags to filter materials.",
     'action-add': "New material",
+    'manage-attributes': "Manage special attributes",
+    'display-quantities-at-date': "Display quantities at date...",
+    'remaining-quantities-on-date': (
+      `Remaining quantities
+      on {date}`
+    ),
     'add': "New material",
     'edit': "Modify material «\u00a0{pageSubTitle}\u00a0»",
-    'help-edit': "Give a short name, and use the description field to detail the material if needed.",
+    'edit-title': "Modify material",
+    'help-edit': (
+      `Use a short name for the material and use the description field to enter details.\n
+      If you check the box «\u00a0Unitary identification\u00a0», you will be able to specify units
+      of this material in the «\u00a0Units\u00a0» tab of the material page, after saving this form.`
+    ),
+    'view': "Details of material «\u00a0{pageSubTitle}\u00a0»",
     'confirm-delete': "Move this material in trash bin?",
     'confirm-permanently-delete': "Do you really want to permanently delete this material?",
     'confirm-restore': "Do you really want to restore this material?",
@@ -144,9 +180,43 @@ export default {
     'clear-filters': "Clear filters",
   },
 
+  'page-materials-view': {
+    'documents': {
+      'no-document': "No document yet.",
+      'drag-and-drop-files-here': "Drag and drop files here ↓ to add them.",
+      'choose-files': "Or click here to choose files to add",
+      'send-files': [
+        "Send file",
+        "Send {count} files",
+      ],
+      'click-to-open': "Click to open / download file",
+      'confirm-permanently-delete': "Do you really want to permanently delete this document?",
+      'saved': "Documents saved.",
+      'deleted': "Document deleted.",
+    },
+    'booking-periods': {
+      'title': "Booking periods",
+      'used-units': "Unités utilisées",
+      'currently-out': "Actuellement sorti",
+      'done': "Terminé",
+      'expected-to-be-out-on': "Sortie prévue le {date}",
+    },
+    'add-unit': "Add a new unit",
+  },
+
+  'page-material-units': {
+    'add': "New Unit for material «\u00a0{pageSubTitle}\u00a0»",
+    'edit': "Modify unit «\u00a0{pageSubTitle}\u00a0»",
+    'confirm-permanently-delete': "Do you really want to permanently delete this unit?",
+    'saved': "Unit saved.",
+  },
+
   'page-attributes': {
     'title': "Material special attributes",
-    'help': "Here you can check, and add fields that allows you to describe your material according to your own criteria.",
+    'help': (
+      `Here you can add fields that allows you to describe your material according to your own criteria.
+      Once created, a special attribute cannot be modified (except for its name).`
+    ),
     'go-back-to-material': "Back to material",
     'name': "Name of the attribute",
     'type': "Attribute type",
@@ -156,10 +226,24 @@ export default {
     'type-integer': "Integer number",
     'type-float': "Decimal number",
     'type-boolean': "Boolean (Yes/No)",
+    'type-date': "Date",
     'no-limit': "No limit",
     'add-attributes': "Add attributes",
     'no-attribute-yet': "No attribute yet.",
     'add-btn': "Add an attribute",
+    'limited-to-categories': "Limited to categories",
+    'confirm-permanently-delete': (
+      `Do you really want to permanently delete this special attribute?
+
+      WARNING: All data related to this special attribute will be deleted DEFINITIVELY!!`
+    ),
+    'second-confirm': {
+      'confirm-permanently-delete': (
+        `Sorry to insist, but this operation is IRREVERSIBLE.
+
+        Do you REALLY want to remove this special attribute?`
+      ),
+    },
   },
 
   'page-categories': {
@@ -175,6 +259,7 @@ export default {
     'confirm-restore': "Do you really want to restore this category?",
     'saved': "Category saved.",
     'deleted': "Category deleted.",
+    'display-materials': "See the material of this category",
   },
 
   'page-subcategories': {
@@ -188,14 +273,16 @@ export default {
     'confirm-restore': "Do you really want to restore this sub-category?",
     'saved': "Sub-category saved.",
     'deleted': "Sub-category deleted.",
+    'display-materials': "See the material of this sub-category",
   },
 
   'page-technicians': {
     'title': "Technicians",
-    'help': "You can send an email to a technician by clicking on his/her adress.",
+    'help': "You can send an email to a technician by clicking on his/her address.",
     'action-add': "New technician",
     'add': "New technician",
     'edit': "Modify technician «\u00a0{pageSubTitle}\u00a0»",
+    'edit-title': "Modify technician",
     'help-edit': "Only first name and last name are mandatory.",
     'confirm-delete': "Move this technician in trash bin?",
     'confirm-permanently-delete': "Do you really want to permanently delete this technician?",
@@ -209,12 +296,14 @@ export default {
     'action-add': "New materials park",
     'add': "New materials park",
     'edit': "Modify park «\u00a0{pageSubTitle}\u00a0»",
+    'edit-title': "Modify park",
     'help-edit': "Only the name of the park is mandatory.",
     'confirm-delete': "Move this park in trash bin? This won't delete materials in this park.",
     'confirm-permanently-delete': "Do you really want to permanently delete this park? WARNING: this will delete all materials of this park!!",
     'confirm-restore': "Do you really want to restore this park?",
     'saved': "Park saved.",
     'total-items': 'Totals',
+    'display-events-for-park': "See events",
   },
 
   'page-tags': {

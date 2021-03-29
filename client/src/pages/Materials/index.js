@@ -1,17 +1,21 @@
+import moment from 'moment';
 import Config from '@/config/globalConfig';
 import ModalConfig from '@/config/modalConfig';
 import store from '@/store';
 import Alert from '@/components/Alert';
 import Help from '@/components/Help/Help.vue';
+import isValidInteger from '@/utils/isValidInteger';
+import PromptDate from '@/components/PromptDate/PromptDate.vue';
 import AssignTags from '@/components/AssignTags/AssignTags.vue';
-import MaterialsFilter from '@/components/MaterialsFilters/MaterialsFilters.vue';
+import MaterialsFilters from '@/components/MaterialsFilters/MaterialsFilters.vue';
+import MaterialTags from '@/components/MaterialTags/MaterialTags.vue';
 import formatAmount from '@/utils/formatAmount';
 
 export default {
   name: 'Materials',
-  components: { Help, MaterialsFilter },
+  components: { Help, MaterialsFilters, MaterialTags },
   data() {
-    const columns = [
+    let columns = [
       'reference',
       'name',
       'description',
@@ -26,8 +30,10 @@ export default {
     ];
 
     if (Config.billingMode === 'none') {
-      columns.splice(5, 1); // - Removes 'rental_price'
+      columns = columns.filter((column) => column !== 'rental_price');
     }
+
+    const quantityColumnIndex = columns.findIndex((column) => column === 'stock_quantity');
 
     return {
       help: 'page-materials.help',
@@ -35,6 +41,8 @@ export default {
       isLoading: false,
       isDisplayTrashed: false,
       isTrashDisplayed: false,
+      quantityColumnIndex,
+      dateForQuantities: null,
       columns,
       options: {
         columnsDropdown: true,
@@ -66,6 +74,7 @@ export default {
           rental_price: this.$t('rent-price'),
           replacement_price: this.$t('repl-price'),
           stock_quantity: this.$t('quantity'),
+          remaining_quantity: this.$t('remaining-quantity'),
           out_of_order_quantity: this.$t('quantity-out-of-order'),
           tags: this.$t('tags'),
           actions: '',
@@ -79,6 +88,7 @@ export default {
           rental_price: 'Materials__rental-price',
           replacement_price: 'Materials__replacement-price',
           stock_quantity: 'Materials__quantity',
+          remaining_quantity: 'Materials__remaining-quantity',
           out_of_order_quantity: 'Materials__quantity-out',
           tags: 'Materials__tags',
         },
@@ -91,7 +101,7 @@ export default {
             deleted: this.isDisplayTrashed ? '1' : '0',
           };
           return this.$http
-            .get(this.$route.meta.resource, { params })
+            .get('materials', { params })
             .catch(this.showError)
             .finally(() => {
               this.isTrashDisplayed = this.isDisplayTrashed;
@@ -107,7 +117,7 @@ export default {
   },
   methods: {
     getParkName(parkId) {
-      return store.getters['parks/parkName'](parkId);
+      return store.getters['parks/parkName'](parkId) || '--';
     },
 
     getCategoryName(categoryId) {
@@ -120,8 +130,9 @@ export default {
 
     getFilters() {
       const params = {};
-      if (this.$route.query.park) {
-        params.park = this.$route.query.park;
+
+      if (this.$route.query.park && isValidInteger(this.$route.query.park)) {
+        params.park = parseInt(this.$route.query.park, 10);
       }
 
       if (this.$route.query.category) {
@@ -134,6 +145,10 @@ export default {
 
       if (this.$route.query.tags) {
         params.tags = JSON.parse(this.$route.query.tags);
+      }
+
+      if (this.dateForQuantities) {
+        params.dateForQuantities = this.dateForQuantities.format('YYYY-MM-DD');
       }
 
       return params;
@@ -149,7 +164,7 @@ export default {
 
           this.error = null;
           this.isLoading = true;
-          this.$http.delete(`${this.$route.meta.resource}/${materialId}`)
+          this.$http.delete(`materials/${materialId}`)
             .then(this.refreshTable)
             .catch(this.showError);
         });
@@ -164,7 +179,7 @@ export default {
 
           this.error = null;
           this.isLoading = true;
-          this.$http.put(`${this.$route.meta.resource}/restore/${materialId}`)
+          this.$http.put(`materials/restore/${materialId}`)
             .then(this.refreshTable)
             .catch(this.showError);
         });
@@ -222,7 +237,60 @@ export default {
     },
 
     formatAmount(value) {
-      return formatAmount(value);
+      return value !== null ? formatAmount(value) : '';
+    },
+
+    getStockQuantity(material) {
+      if (!material.is_unitary) {
+        return material.stock_quantity;
+      }
+
+      const filters = this.getFilters();
+      if (!filters.park) {
+        return material.units.length;
+      }
+
+      const parkUnits = material.units.filter(
+        (unit) => unit.park_id === filters.park,
+      );
+      return parkUnits.length;
+    },
+
+    async showQuantityAtDateModal() {
+      if (this.dateForQuantities) {
+        return;
+      }
+
+      const modalConfig = {
+        ...ModalConfig,
+        width: 600,
+        draggable: true,
+        clickToClose: false,
+      };
+
+      this.$modal.show(
+        PromptDate,
+        {
+          title: this.$t('page-materials.display-quantities-at-date'),
+          defaultDate: new Date(),
+        },
+        modalConfig,
+        {
+          'before-close': ({ params }) => {
+            if (params) {
+              this.dateForQuantities = moment(params.date);
+              this.refreshTable();
+              this.columns.splice(this.quantityColumnIndex, 1, 'remaining_quantity');
+            }
+          },
+        },
+      );
+    },
+
+    removeDateForQuantities() {
+      this.dateForQuantities = null;
+      this.columns.splice(this.quantityColumnIndex, 1, 'stock_quantity');
+      this.refreshTable();
     },
   },
 };

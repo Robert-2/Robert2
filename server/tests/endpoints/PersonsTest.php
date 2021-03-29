@@ -114,6 +114,96 @@ final class PersonsTest extends ApiTestCase
         $this->assertResponsePaginatedData(0, '/api/persons', 'deleted=1');
     }
 
+    public function testGetPersonsWithLimit()
+    {
+        $this->client->get('/api/persons?limit=2');
+        $this->assertStatusCode(SUCCESS_OK);
+        $this->assertResponseData([
+            'pagination' => [
+                'current_page'   => 1,
+                'from'           => 1,
+                'last_page'      => 2,
+                'path'           => '/api/persons',
+                'first_page_url' => '/api/persons?limit=2&page=1',
+                'next_page_url'  => '/api/persons?limit=2&page=2',
+                'prev_page_url'  => null,
+                'last_page_url'  => '/api/persons?limit=2&page=2',
+                'per_page'       => 2,
+                'to'             => 2,
+                'total'          => 3,
+            ],
+            'data' => [
+                [
+                    'id'          => 3,
+                    'first_name'  => 'Client',
+                    'last_name'   => 'Benef',
+                    'full_name'   => 'Client Benef',
+                    'nickname'    => null,
+                    'email'       => 'client@beneficiaires.com',
+                    'phone'       => '+33123456789',
+                    'street'      => '156 bis, avenue des tests poussés',
+                    'postal_code' => '88080',
+                    'locality'    => 'Wazzaville',
+                    'user_id'     => null,
+                    'country_id'  => null,
+                    'company_id'  => null,
+                    'note'        => null,
+                    'created_at'  => null,
+                    'updated_at'  => null,
+                    'deleted_at'  => null,
+                    'company'     => null,
+                    'country'     => null,
+                ],
+                [
+                    'id'          => 1,
+                    'first_name'  => 'Jean',
+                    'last_name'   => 'Fountain',
+                    'full_name'   => 'Jean Fountain',
+                    'nickname'    => null,
+                    'email'       => 'tester@robertmanager.net',
+                    'phone'       => null,
+                    'street'      => "1, somewhere av.",
+                    'postal_code' => '1234',
+                    'locality'    => "Megacity",
+                    'user_id'     => 1,
+                    'country_id'  => 1,
+                    'company_id'  => 1,
+                    'note'        => null,
+                    'created_at'  => null,
+                    'updated_at'  => null,
+                    'deleted_at'  => null,
+                    'company'     => [
+                        'id'          => 1,
+                        'legal_name'  => 'Testing, Inc',
+                        'street'      => '1, company st.',
+                        'postal_code' => '1234',
+                        'locality'    => 'Megacity',
+                        'country_id'  => 1,
+                        'phone'       => '+4123456789',
+                        'note'        => 'Just for tests',
+                        'created_at'  => null,
+                        'updated_at'  => null,
+                        'deleted_at'  => null,
+                        'country'     => [
+                            'id'   => 1,
+                            'name' => 'France',
+                            'code' => 'FR',
+                        ],
+                    ],
+                    'country' => [
+                        'id'   => 1,
+                        'name' => 'France',
+                        'code' => 'FR',
+                    ],
+                ],
+            ],
+        ]);
+
+        $this->client->get('/api/persons?deleted=1');
+        $this->assertStatusCode(SUCCESS_OK);
+        $this->assertResponsePaginatedData(0, '/api/persons', 'deleted=1');
+    }
+
     public function testGetPersonNotFound()
     {
         $this->client->get('/api/persons/999');
@@ -270,13 +360,13 @@ final class PersonsTest extends ApiTestCase
             'first_name' => [
                 "first_name must not be empty",
                 'first_name must contain only letters (a-z) and ' .
-                '""-_. ÇçàÀâÂäÄåÅèÈéÉêÊëËíÍìÌîÎïÏòÒóÓôÔöÖðÐõÕøØúÚùÙûÛüÜýÝÿŸŷŶøØæÆœŒñÑßÞ""',
+                '""-_.\' ÇçàÀâÂäÄåÅèÈéÉêÊëËíÍìÌîÎïÏòÒóÓôÔöÖðÐõÕøØúÚùÙûÛüÜýÝÿŸŷŶøØæÆœŒñÑßÞ""',
                 "first_name must have a length between 2 and 96"
             ],
             'last_name' => [
                 "last_name must not be empty",
                 'last_name must contain only letters (a-z) and ' .
-                '""-_. ÇçàÀâÂäÄåÅèÈéÉêÊëËíÍìÌîÎïÏòÒóÓôÔöÖðÐõÕøØúÚùÙûÛüÜýÝÿŸŷŶøØæÆœŒñÑßÞ""',
+                '""-_.\' ÇçàÀâÂäÄåÅèÈéÉêÊëËíÍìÌîÎïÏòÒóÓôÔöÖðÐõÕøØúÚùÙûÛüÜýÝÿŸŷŶøØæÆœŒñÑßÞ""',
                 "last_name must have a length between 2 and 96"
             ],
             'email' => [

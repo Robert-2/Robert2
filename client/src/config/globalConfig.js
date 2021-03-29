@@ -1,7 +1,8 @@
 /* eslint-disable no-underscore-dangle */
+
 import deepFreeze from 'deep-freeze-strict';
 
-let baseUrl = 'http://robert2.etoilenoire';
+let baseUrl = process.env.VUE_APP_API_URL ?? '';
 if (window.__SERVER_CONFIG__ && window.__SERVER_CONFIG__.baseUrl) {
   baseUrl = window.__SERVER_CONFIG__.baseUrl;
 }
@@ -22,12 +23,17 @@ const defaultConfig = {
     decimal_digits: 2,
     rounding: 0,
   },
+  auth: {
+    cookie: 'Authorization',
+    timeout: 12, // - En heures (ou `null` pour un cookie de session).
+    isCASEnabled: false,
+  },
   defaultPaginationLimit: 100,
   beneficiaryTagName: 'Bénéficiaire',
   technicianTagName: 'Technicien',
   billingMode: 'partial',
 
-  // - This function should return a number
+  // - Cette fonction doit retourner un nombre.
   degressiveRate: (daysCount) => (
     ((daysCount - 1) * 0.75) + 1
   ),

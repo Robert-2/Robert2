@@ -33,9 +33,9 @@ final class ParksTest extends ApiTestCase
                     'country_id' => 1,
                     'opening_hours' => "Du lundi au vendredi, de 09:00 à 19:00.",
                     'note' => null,
-                    'total_items' => 5,
-                    'total_amount' => 101223.80,
-                    'total_stock_quantity' => 83,
+                    'total_items' => 7,
+                    'total_amount' => 119061.80,
+                    'total_stock_quantity' => 87,
                     'created_at' => null,
                     'updated_at' => null,
                     'deleted_at' => null,
@@ -51,9 +51,9 @@ final class ParksTest extends ApiTestCase
                     'country_id' => null,
                     'opening_hours' => null,
                     'note' => "Les bidouilles de fond de tiroir",
-                    'total_items' => 0,
-                    'total_amount' => 0,
-                    'total_stock_quantity'  => 0,
+                    'total_items' => 2,
+                    'total_amount' => 32419,
+                    'total_stock_quantity' => 2,
                     'created_at' => null,
                     'updated_at' => null,
                     'deleted_at' => null,
@@ -64,6 +64,16 @@ final class ParksTest extends ApiTestCase
         $this->client->get('/api/parks?deleted=1');
         $this->assertStatusCode(SUCCESS_OK);
         $this->assertResponsePaginatedData(0, '/api/parks', 'deleted=1');
+    }
+
+    public function testGetParksList()
+    {
+        $this->client->get('/api/parks/list');
+        $this->assertStatusCode(SUCCESS_OK);
+        $this->assertResponseData([
+            ['id' => 1, 'name' => 'default'],
+            ['id' => 2, 'name' => 'spare'],
+        ]);
     }
 
     public function testGetParkNotFound()
@@ -88,26 +98,12 @@ final class ParksTest extends ApiTestCase
             'country_id' => 1,
             'opening_hours' => "Du lundi au vendredi, de 09:00 à 19:00.",
             'note' => null,
-            'total_items' => 5,
-            'total_amount' => 101223.80,
-            'total_stock_quantity' => 83,
+            'total_items' => 7,
+            'total_amount' => 119061.80,
+            'total_stock_quantity' => 87,
             'created_at' => null,
             'updated_at' => null,
             'deleted_at' => null,
         ]);
-    }
-
-    public function testGetMaterialsNotFound()
-    {
-        $this->client->get('/api/parks/999/materials');
-        $this->assertStatusCode(ERROR_NOT_FOUND);
-        $this->assertNotFoundErrorMessage();
-    }
-
-    public function testGetMaterials()
-    {
-        $this->client->get('/api/parks/1/materials');
-        $this->assertStatusCode(SUCCESS_OK);
-        $this->assertResponsePaginatedData(5, '/api/parks/1/materials');
     }
 }

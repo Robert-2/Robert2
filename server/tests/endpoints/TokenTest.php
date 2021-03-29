@@ -5,7 +5,7 @@ final class TokenTest extends ApiTestCase
 {
     public function testAuthWithoutData()
     {
-        $this->client->post('/api/token');
+        $this->client->post('/api/session');
         $this->assertStatusCode(ERROR_VALIDATION);
         $this->assertValidationErrorMessage();$this->assertErrorDetails([
             'identifier' => [
@@ -19,7 +19,7 @@ final class TokenTest extends ApiTestCase
 
     public function testAuthBadData()
     {
-        $this->client->post('/api/token', [
+        $this->client->post('/api/session', [
             'identifier' => 'foo',
             'password'   => '',
         ]);
@@ -36,7 +36,7 @@ final class TokenTest extends ApiTestCase
 
     public function testTokenInexistantUser()
     {
-        $this->client->post('/api/token', [
+        $this->client->post('/api/session', [
             'identifier' => 'nobody@test.org',
             'password'   => 'testing',
         ]);
@@ -46,7 +46,7 @@ final class TokenTest extends ApiTestCase
 
     public function testTokenWrongPassword()
     {
-        $this->client->post('/api/token', [
+        $this->client->post('/api/session', [
             'identifier' => 'tester@robertmanager.net',
             'password'   => 'wrongPassword',
         ]);
@@ -57,14 +57,15 @@ final class TokenTest extends ApiTestCase
     public function testTokenAuthOK()
     {
         $expectedUserData = [
-            'id'         => 1,
-            'email'      => 'tester@robertmanager.net',
-            'pseudo'     => 'test1',
-            'group_id'   => 'admin',
-            'created_at' => null,
-            'updated_at' => null,
-            'deleted_at' => null,
-            'person'     => [
+            'id'             => 1,
+            'email'          => 'tester@robertmanager.net',
+            'pseudo'         => 'test1',
+            'group_id'       => 'admin',
+            'cas_identifier' => null,
+            'created_at'     => null,
+            'updated_at'     => null,
+            'deleted_at'     => null,
+            'person'         => [
                 'id'          => 1,
                 'user_id'     => 1,
                 'first_name'  => 'Jean',
@@ -114,10 +115,11 @@ final class TokenTest extends ApiTestCase
                 'created_at'                   => null,
                 'updated_at'                   => null
             ],
+            'restricted_parks' => [],
         ];
 
         // - Test auth with e-mail address
-        $this->client->post('/api/token', [
+        $this->client->post('/api/session', [
             'identifier' => 'tester@robertmanager.net',
             'password'   => 'testing-pw',
         ]);
@@ -128,7 +130,7 @@ final class TokenTest extends ApiTestCase
         ], ['token']);
 
         // - Test auth with pseudo
-        $this->client->post('/api/token', [
+        $this->client->post('/api/session', [
             'identifier' => 'test1',
             'password'   => 'testing-pw',
         ]);

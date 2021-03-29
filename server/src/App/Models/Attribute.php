@@ -3,29 +3,28 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
-use Respect\Validation\Validator as V;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use Robert2\API\Validation\Validator as V;
 
 class Attribute extends BaseModel
 {
-    protected $table = 'attributes';
-
-    protected $_modelName = 'Attribute';
-    protected $_orderField = 'id';
-    protected $_orderDirection = 'asc';
+    protected $orderField = 'id';
 
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
 
         $this->validation = [
-            'name' => V::notEmpty()->alpha(self::EXTRA_CHARS)->length(2, 64),
+            'name' => V::notEmpty()->alnum(self::EXTRA_CHARS)->length(2, 64),
             'type' => V::notEmpty()->oneOf(
                 v::equals('string'),
                 v::equals('integer'),
                 v::equals('float'),
-                v::equals('boolean')
+                v::equals('boolean'),
+                v::equals('date')
             ),
-            'unit'       => V::optional(V::length(1, 8)),
+            'unit' => V::optional(V::length(1, 8)),
             'max_length' => V::optional(V::numeric()),
         ];
     }
@@ -44,6 +43,13 @@ class Attribute extends BaseModel
             ->select(['materials.id', 'name']);
     }
 
+    public function Categories()
+    {
+        return $this->belongsToMany('Robert2\API\Models\Category', 'attribute_categories')
+            ->orderBy('name')
+            ->select(['categories.id', 'name']);
+    }
+
     // ——————————————————————————————————————————————————————
     // —
     // —    Mutators
@@ -51,9 +57,9 @@ class Attribute extends BaseModel
     // ——————————————————————————————————————————————————————
 
     protected $casts = [
-        'name'       => 'string',
-        'type'       => 'string',
-        'unit'       => 'string',
+        'name' => 'string',
+        'type' => 'string',
+        'unit' => 'string',
         'max_length' => 'integer',
     ];
 
@@ -61,6 +67,23 @@ class Attribute extends BaseModel
     {
         $materials = $this->Materials()->get();
         return $materials ? $materials->toArray() : null;
+    }
+
+    public function getCategoriesAttribute()
+    {
+        return $this->Categories()->get()->toArray();
+    }
+
+    // ——————————————————————————————————————————————————————
+    // —
+    // —    Getters
+    // —
+    // ——————————————————————————————————————————————————————
+
+    public function getAll(bool $withDeleted = false): Builder
+    {
+        $builder = parent::getAll($withDeleted);
+        return $builder->with('categories');
     }
 
     // ——————————————————————————————————————————————————————
@@ -75,4 +98,33 @@ class Attribute extends BaseModel
         'unit',
         'max_length',
     ];
+
+    // ——————————————————————————————————————————————————————
+    // —
+    // —    "Repository" methods
+    // —
+    // ——————————————————————————————————————————————————————
+
+    public function edit(?int $id = null, array $data = []): Model
+    {
+        if ($id) {
+            $data = ['name' => $data['name']];
+        }
+
+        return parent::edit($id, $data);
+    }
+
+    public function remove(int $id, array $options = []): ?Model
+    {
+        $model = self::find($id);
+        if (empty($model)) {
+            throw new Errors\NotFoundException;
+        }
+
+        if (!$model->delete()) {
+            throw new \RuntimeException(sprintf("Unable to delete the attribute %d.", $id));
+        }
+
+        return null;
+    }
 }

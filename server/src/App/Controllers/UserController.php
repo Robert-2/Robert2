@@ -5,19 +5,14 @@ namespace Robert2\API\Controllers;
 
 use Slim\Http\Request;
 use Slim\Http\Response;
-
 use Robert2\API\Errors;
+use Robert2\API\Services\Auth;
 use Robert2\API\Models\User;
-use Robert2\API\Config\Config;
 
 class UserController extends BaseController
 {
-    public function __construct($container)
-    {
-        parent::__construct($container);
-
-        $this->model = new User;
-    }
+    /** @var User */
+    protected $model;
 
     // ——————————————————————————————————————————————————————
     // —
@@ -27,7 +22,7 @@ class UserController extends BaseController
 
     public function getOne(Request $request, Response $response): Response
     {
-        $id   = (int)$request->getAttribute('id');
+        $id = (int)$request->getAttribute('id');
         $user = $this->model->find($id);
 
         if (!$user) {
@@ -36,7 +31,10 @@ class UserController extends BaseController
 
         unset($user->password);
 
-        return $response->withJson($user->toArray());
+        $result = $user->toArray();
+        $result['restricted_parks'] = $user->RestrictedParks;
+
+        return $response->withJson($result);
     }
 
     public function getSettings(Request $request, Response $response): Response
@@ -78,15 +76,12 @@ class UserController extends BaseController
     public function delete(Request $request, Response $response): Response
     {
         $id = (int)$request->getAttribute('id');
-        $jwt = $request->getAttribute(Config::getSettings('JWTAttributeName'));
-
-        if ($jwt && $jwt['user'] && $jwt['user']->id === $id) {
+        if (Auth::user()->id === $id) {
             throw new \InvalidArgumentException(
                 "Cannot delete user that is currently logged in.",
                 ERROR_VALIDATION
             );
         }
-
         return parent::delete($request, $response);
     }
 }

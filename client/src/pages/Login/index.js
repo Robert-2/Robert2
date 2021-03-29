@@ -1,8 +1,9 @@
 import Config from '@/config/globalConfig';
-import Auth from '@/auth';
+import Layout from './components/Layout/Layout.vue';
 
 export default {
   name: 'Login',
+  components: { Layout },
   data() {
     let type = 'default';
     let text = this.$t('page-login.welcome');
@@ -28,18 +29,43 @@ export default {
     return {
       message: { type, text, isLoading: false },
       credentials: { identifier: '', password: '' },
-      apiVersion: Config.api.version,
+      showCASLogin: Config.auth.isCASEnabled,
     };
   },
+  computed: {
+    showAlternativesLogin() {
+      return this.showCASLogin;
+    },
+    casLoginUrl() {
+      const { baseUrl } = Config;
+      return `${baseUrl}/login/cas`;
+    },
+  },
   methods: {
-    login() {
+    async login() {
       this.message = {
         type: 'default',
         text: this.$t('page-login.please-wait'),
         isLoading: true,
       };
 
-      Auth.login(this, this.credentials);
+      try {
+        await this.$store.dispatch('auth/login', { ...this.credentials });
+
+        const lastVisited = window.localStorage.getItem('lastVisited');
+        const redirect = (!lastVisited || lastVisited === '/login') ? '/' : lastVisited;
+        this.$router.replace(redirect || '/');
+      } catch (error) {
+        if (!error.response) {
+          this.errorMessage({ code: 0, message: 'network error' });
+          return;
+        }
+
+        const { status, data } = error.response;
+        const code = (status === 404 && !data.error) ? 0 : 404;
+        const message = data.error ? data.error.message : 'network error';
+        this.errorMessage({ code, message });
+      }
     },
 
     errorMessage(error) {

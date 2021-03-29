@@ -79,6 +79,8 @@ class RobertDataseed
             $value = "NULL";
         } elseif (is_array($value)) {
             $value = sprintf('"%s"', addslashes(json_encode($value)));
+        } elseif (is_bool($value)) {
+            $value = sprintf('%s', $value ? 1 : 0);
         } else {
             $value = sprintf('"%s"', addslashes((string)$value));
         }

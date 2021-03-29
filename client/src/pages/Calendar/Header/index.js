@@ -1,5 +1,4 @@
 import moment from 'moment';
-import store from '@/store';
 import FormField from '@/components/FormField/FormField.vue';
 import SwitchToggle from '@/components/SwitchToggle/SwitchToggle.vue';
 import Help from '@/components/Help/Help.vue';
@@ -14,14 +13,25 @@ export default {
       datepickerOptions: {
         format: 'd MMMM yyyy',
       },
-      isVisitor: store.state.user.groupId === 'visitor',
-      hasFilterMissingMaterial: false,
+      filters: {
+        park: this.$route.query.park || '',
+        hasMissingMaterials: false,
+      },
     };
   },
   computed: {
+    parks() {
+      return this.$store.state.parks.list;
+    },
     isToday() {
       return moment(this.centerDate).isSame(moment(), 'day');
     },
+    isVisitor() {
+      return this.$store.getters['auth/is']('visitor');
+    },
+  },
+  mounted() {
+    this.$store.dispatch('parks/fetch');
   },
   methods: {
     setCenterDate(date) {
@@ -46,8 +56,13 @@ export default {
     },
 
     handleFilterMissingMaterialChange(hasFilter) {
-      this.hasFilterMissingMaterial = hasFilter;
+      this.filters.hasMissingMaterials = hasFilter;
       this.$emit('filterMissingMaterials', hasFilter);
+    },
+
+    handleFilterParkChange(e) {
+      const { value: parkId } = e.currentTarget;
+      this.$emit('filterByPark', parkId);
     },
   },
 };

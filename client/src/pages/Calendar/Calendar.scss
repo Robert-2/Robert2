@@ -1,4 +1,3 @@
-
 .Calendar {
   position: relative;
   display: flex;
@@ -11,104 +10,11 @@
   }
 
   &__timeline {
-    flex: 0 0 auto;
-
-    .vis-timeline {
-      background-color: $calendar-main-background-color !important;
-
-      .vis-grid {
-        &.vis-vertical {
-          border-color: $calendar-cells-border-color;
-        }
-
-        &.vis-today {
-          background-color: $calendar-current-date-background-color !important;
-        }
-      }
-
-      .vis-time-axis .vis-text {
-        color: $text-nav-color;
-      }
-
-      .vis-current-time {
-        background-color: $calendar-time-cursor-color !important;
-      }
-
-      .vis-item {
-        color: $calendar-event-text-color;
-      }
-
-      .vis-tooltip {
-        background-color: $bg-color-tooltip !important;
-        color: $text-base-color;
-      }
-    }
+    flex: 1;
   }
 
-  &__event {
-    box-shadow: 1px 2px 3px rgba(0,0,0,.5);
-    background-color: $calendar-event-normal-color !important;
-
-    &.vis-selected {
-      background-color: lighten($calendar-event-normal-color, 10%) !important;
-    }
-
-    &--past {
-      background-color: $calendar-event-past-color !important;
-      color: $text-base-color !important;
-
-      &.vis-selected {
-        background-color: lighten($calendar-event-past-color, 10%) !important;
-      }
-    }
-
-    &--locked {
-      .vis-item-content::before {
-        content: "\f023";
-        display: inline-block;
-        font-family: 'Font Awesome 5 Free';
-        font-weight: 900;
-        margin-right: .5rem;
-      }
-    }
-
-    &--with-warning {
-      .vis-item-content::before {
-        content: "\f071";
-        display: inline-block;
-        font-family: 'Font Awesome 5 Free';
-        font-weight: 900;
-        margin-right: .5rem;
-        color: $text-danger-color;
-      }
-    }
-
-    &--confirmed {
-      background-color: $calendar-event-confirmed-color !important;
-
-      &.vis-selected {
-        background-color: lighten($calendar-event-confirmed-color, 10%) !important;
-      }
-
-      .vis-item-content::before {
-        color: $text-base-color;
-      }
-    }
-
-    &--current {
-      background-size: 40px 40px;
-      background-image: linear-gradient(
-        45deg,
-        rgba(255, 255, 255, 0.1) 25%,
-        transparent 25%,
-        transparent 50%,
-        rgba(255, 255, 255, 0.1) 50%,
-        rgba(255, 255, 255, 0.1) 75%,
-        transparent 75%,
-        transparent
-      );
-      animation: animBackground 3s linear infinite;
-    }
+  .Help {
+    flex: 0 0 50px;
   }
 
   .Help {

@@ -12,14 +12,6 @@
     .MaterialsFilters {
       flex: 1;
       margin: $content-padding-small-vertical 0;
-
-      select,
-      button,
-      input,
-      .v-select {
-        margin-right: .3rem;
-        margin-bottom: .3rem;
-      }
     }
 
     &__extra-filters {
@@ -62,18 +54,39 @@
   }
 
   .VueTables__table {
-    thead {
+    > thead {
       display: none;
     }
 
     .VueTables__row {
-      td {
+      > td {
         background: none;
         border-bottom-color: $list-left-border-color;
       }
 
-      &:first-child td {
+      &:first-child > td {
         border-top: 1px solid $list-left-border-color;
+      }
+    }
+  }
+
+  &__child-toggler {
+    width: 85px;
+    padding: 0 .45rem 0 0 !important;
+
+    &__button {
+      border: 0;
+      background: rgba(255, 255, 255, .1);
+      color: inherit;
+      font-size: 1.5rem;
+      padding: 2px 1rem;
+      box-sizing: content-box;
+      width: 1rem;
+      text-align: center;
+
+      &:focus,
+      &:hover {
+        background: rgba(255, 255, 255, .1);
       }
     }
   }
@@ -140,5 +153,10 @@
     button {
       padding: 6px 8px;
     }
+  }
+
+  &__add-more {
+    text-align: center;
+    margin: $content-padding-small-vertical 0 50px;
   }
 }

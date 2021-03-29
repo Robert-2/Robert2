@@ -1,20 +1,29 @@
-import Config from '@/config/globalConfig';
-import formatAmount from '@/utils/formatAmount';
 import MaterialsFilter from '@/components/MaterialsFilters/MaterialsFilters.vue';
 import SwitchToggle from '@/components/SwitchToggle/SwitchToggle.vue';
-import Quantity from './Quantity/Quantity.vue';
+import Config from '@/config/globalConfig';
+import formatAmount from '@/utils/formatAmount';
+import isValidInteger from '@/utils/isValidInteger';
+import observeBarcodeScan from '@/utils/observeBarcodeScan';
 import MaterialsStore from './MaterialsStore';
+import Quantity from './Quantity/Quantity.vue';
+import Units from './Units/Units.vue';
+
+const noPaginationLimit = 100000;
 
 export default {
   name: 'MaterialsList',
-  components: { MaterialsFilter, SwitchToggle, Quantity },
+  components: {
+    MaterialsFilter,
+    SwitchToggle,
+    Quantity,
+    Units,
+  },
   props: {
-    eventId: Number,
-    initialList: Array,
-    eventIsBillable: Boolean,
+    event: Object,
   },
   data() {
     const columns = [
+      'child-toggler',
       'qty',
       'reference',
       'name',
@@ -24,25 +33,32 @@ export default {
       'amount',
       'actions',
     ].filter((column) => {
-      if (Config.billingMode === 'none' || !this.eventIsBillable) {
+      if (Config.billingMode === 'none' || !this.event.is_billable) {
         return !['price', 'amount'].includes(column);
       }
       return true;
     });
 
+    const hasMaterial = this.event.materials.length > 0;
+
     return {
       error: null,
       renderId: 1,
-      showSelectedOnly: this.initialList.length > 0,
+      hasMaterial,
+      showSelectedOnly: hasMaterial,
       isLoading: true,
       columns,
-      options: {
+      materials: [],
+      manualOrder: [],
+      tableOptions: {
         columnsDropdown: false,
         preserveState: false,
-        orderBy: { column: 'reference', ascending: true },
-        initialPage: this.$route.query.page || 1,
-        sortable: ['reference', 'name'],
+        orderBy: { column: 'custom', ascending: true },
+        initialPage: 1,
+        perPage: hasMaterial ? noPaginationLimit : Config.defaultPaginationLimit,
+        showChildRowToggler: false,
         columnsClasses: {
+          'child-toggler': 'MaterialsList__child-toggler',
           qty: 'MaterialsList__qty',
           reference: 'MaterialsList__ref',
           name: 'MaterialsList__name',
@@ -52,97 +68,238 @@ export default {
           amount: 'MaterialsList__amount',
           actions: 'MaterialsList__actions',
         },
-        requestFunction: (pagination) => {
-          this.isLoading = true;
-          const filters = this.getFilters();
-          const params = { whileEvent: this.eventId, ...pagination, ...filters };
-          return this.$http
-            .get('materials', { params })
-            .then((response) => {
-              this.isLoading = false;
-              return response;
-            })
-            .catch(this.showError);
+        initFilters: this.getFilters(),
+        customSorting: {
+          custom: (ascending) => (a, b) => {
+            let result = null;
+
+            // - Si on est en mode "sélectionnés uniquement" et qu'au moins l'un
+            //   des deux à un ordre manuellement défini, on l'utilise.
+            if (this.showSelectedOnly) {
+              const aManualOrderIndex = this.manualOrder.indexOf(a.id);
+              const bManualOrderIndex = this.manualOrder.indexOf(b.id);
+              if (aManualOrderIndex !== -1 || bManualOrderIndex !== -1) {
+                result = aManualOrderIndex > bManualOrderIndex ? -1 : 1;
+              }
+            }
+
+            // - Sinon on fallback sur le tri par reference.
+            if (result === null) {
+              result = a.reference.localeCompare(b.reference, { ignorePunctuation: true });
+            }
+
+            return ascending || result === 0 ? result : -result;
+          },
         },
+        customFilters: [
+          {
+            name: 'park',
+            callback: (row, parkId) => row.park_id === parkId,
+          },
+          {
+            name: 'category',
+            callback: (row, categoryId) => row.category_id === categoryId,
+          },
+          {
+            name: 'subCategory',
+            callback: (row, subCategoryId) => row.sub_category_id === subCategoryId,
+          },
+          {
+            name: 'tags',
+            callback: (row, tags) => (
+              tags.length === 0 || row.tags.some((tag) => tags.includes(tag.name))
+            ),
+          },
+          {
+            name: 'onlySelected',
+            callback: (row, isOnlySelected) => (
+              !isOnlySelected || this.getQuantity(row) > 0
+            ),
+          },
+        ],
       },
     };
   },
   created() {
-    MaterialsStore.commit('init', this.initialList);
+    MaterialsStore.commit('init', this.event.materials);
+  },
+  mounted() {
+    this.fetchMaterials();
+
+    this.cancelScanObservation = observeBarcodeScan(this.handleScan);
+  },
+  beforeDestroy() {
+    if (this.cancelScanObservation) {
+      this.cancelScanObservation();
+    }
+  },
+  computed: {
+    isFiltered() {
+      return Object.keys(this.getFilters(false)).length !== 0;
+    },
   },
   methods: {
-    getFilters() {
-      const params = {};
-      if (this.$route.query.park) {
-        params.park = this.$route.query.park;
+    async fetchMaterials() {
+      try {
+        this.isLoading = true;
+        this.$refs.DataTable.setLoadingState(true);
+        const { data } = await this.$http.get(`materials/while-event/${this.event.id}`);
+        this.materials = data;
+      } catch (error) {
+        this.showError(error);
+      } finally {
+        this.isLoading = false;
+        this.$refs.DataTable.setLoadingState(false);
+      }
+    },
+
+    handleScan(id, unitId) {
+      if (!id || !unitId) {
+        return;
+      }
+
+      const material = this.materials.find((_material) => _material.id === id);
+      if (!material) {
+        return;
+      }
+
+      const unit = material.units.find((_unit) => _unit.id === unitId);
+      if (!unit || !unit.is_available) {
+        return;
+      }
+
+      // - On affiche uniquement les items selectionnés.
+      this.setSelectedOnly(true);
+
+      // - On reset les filtres (au cas ou l'item scanné n'est pas dedans).
+      if (this.isFiltered) {
+        this.$refs.filters.clearFilters();
+      }
+
+      // - Si elle n'est pas encore sélectionnée, on sélectionne l'unité.
+      const selectedUnits = MaterialsStore.getters.getUnits(material.id);
+      const isAlreadySelected = selectedUnits.includes(unit.id);
+      if (!isAlreadySelected) {
+        MaterialsStore.commit('selectUnit', { material, unitId: unit.id });
+        this.handleChanges();
+      }
+
+      // - Ajoute l'élément au tableau des ordonnés "manuellement".
+      const existingOrderIndex = this.manualOrder.indexOf(material.id);
+      if (existingOrderIndex !== -1) {
+        this.manualOrder.splice(existingOrderIndex, 1);
+      }
+      this.manualOrder.push(material.id);
+
+      // TODO: Améliorer ça, pas idéal d'avoir à référencer le `.content` ici ...
+      document.querySelector('.content').scrollTo(0, 0);
+    },
+
+    getFilters(extended = true) {
+      const filters = {};
+
+      if (extended) {
+        filters.onlySelected = this.showSelectedOnly;
+      }
+
+      if (this.$route.query.park && isValidInteger(this.$route.query.park)) {
+        filters.park = parseInt(this.$route.query.park, 10);
       }
 
       if (this.$route.query.category) {
-        params.category = this.$route.query.category;
+        filters.category = this.$route.query.category;
       }
 
       if (this.$route.query.subCategory) {
-        params.subCategory = this.$route.query.subCategory;
+        filters.subCategory = this.$route.query.subCategory;
       }
 
       if (this.$route.query.tags) {
-        params.tags = JSON.parse(this.$route.query.tags);
+        filters.tags = JSON.parse(this.$route.query.tags);
       }
 
-      if (this.showSelectedOnly) {
-        params.onlySelectedInEvent = this.eventId;
-      }
-
-      return params;
+      return filters;
     },
 
-    handleToggleSelectedOnly(newValue) {
-      this.showSelectedOnly = newValue;
-      this.isLoading = true;
-      this.$refs.DataTable.refresh();
+    setSelectedOnly(onlySelected) {
+      this.$refs.DataTable.setCustomFilters({ onlySelected });
+      this.$refs.DataTable.setLimit(
+        onlySelected ? noPaginationLimit : Config.defaultPaginationLimit,
+      );
+      this.showSelectedOnly = onlySelected;
     },
 
-    refreshTable() {
-      this.$refs.DataTable.getData();
+    toggleChild(id) {
+      this.$refs.DataTable.toggleChildRow(id);
     },
 
-    refreshTableAndPagination() {
-      this.error = false;
-      this.isLoading = true;
-      this.$refs.DataTable.refresh();
+    isChildOpen(id) {
+      const tableRef = this.$refs.DataTable.$refs.table;
+      return tableRef.openChildRows.includes(id);
     },
 
-    getQuantity(materialId) {
-      return MaterialsStore.getters.getQuantity(materialId);
+    getQuantity(material) {
+      return MaterialsStore.getters.getQuantity(material.id);
     },
 
     getRemainingQuantity(material) {
-      return material.remaining_quantity - MaterialsStore.getters.getQuantity(material.id);
+      if (!material.is_unitary) {
+        return material.remaining_quantity - this.getQuantity(material);
+      }
+
+      const filters = this.getFilters();
+      const selectedUnits = MaterialsStore.getters.getUnits(material.id);
+      const availableUnits = material.units.filter((unit) => {
+        if (!unit.is_available || unit.is_broken) {
+          return false;
+        }
+
+        if (filters.park && unit.park_id !== filters.park) {
+          return false;
+        }
+
+        return !selectedUnits.includes(unit.id);
+      });
+
+      return availableUnits.length;
     },
 
-    setQuantity(id, value) {
+    setQuantity(material, value) {
       const quantity = parseInt(value, 10) || 0;
-      MaterialsStore.commit('setQuantity', { id, quantity });
-      this.handleQuantitiesChange();
+      MaterialsStore.commit('setQuantity', { material, quantity });
+      this.handleChanges();
     },
 
-    decrement(id) {
-      MaterialsStore.commit('decrement', id);
-      this.handleQuantitiesChange();
+    decrement(material) {
+      MaterialsStore.commit('decrement', material);
+      this.handleChanges();
     },
 
-    increment(id) {
-      MaterialsStore.commit('increment', id);
-      this.handleQuantitiesChange();
+    increment(material) {
+      MaterialsStore.commit('increment', material);
+      this.handleChanges();
     },
 
-    handleQuantitiesChange() {
+    handleFiltersChanges(filters) {
+      const onlySelected = this.showSelectedOnly;
+      const newFilters = { ...filters, onlySelected };
+      this.$refs.DataTable.setCustomFilters(newFilters);
+    },
+
+    handleChanges() {
       // - This hack is necessary because Vue-table-2 does not re-render the cells
       // - when quantities are changing.
       this.renderId += 1;
 
-      const materials = Object.keys(MaterialsStore.state.quantities).map(
-        (id) => ({ id: parseInt(id, 10), quantity: MaterialsStore.getters.getQuantity(id) }),
+      const materialIds = Object.keys(MaterialsStore.state.materials);
+
+      this.hasMaterial = materialIds.length > 0;
+      if (!this.hasMaterial) {
+        this.setSelectedOnly(false);
+      }
+
+      const materials = Object.entries(MaterialsStore.state.materials).map(
+        ([id, { quantity, units }]) => ({ id: parseInt(id, 10), quantity, units: [...units] }),
       );
       this.$emit('change', materials);
     },

@@ -1,0 +1,36 @@
+.MaterialViewInfos {
+  display: flex;
+  flex-wrap: wrap;
+  padding-bottom: 6rem;
+
+  &__main {
+    flex: 2;
+    min-width: 250px;
+    margin-right: 3rem;
+  }
+
+  &__extras {
+    flex: 1;
+    min-width: 250px;
+    padding: 1rem 0 0;
+  }
+
+  &__rental-price,
+  &__stock-quantity {
+    font-weight: 700;
+    margin-bottom: .3rem;
+  }
+
+  &__out-of-order {
+    color: $text-danger-color;
+  }
+
+  &__categories {
+    margin: 1.5rem 0;
+  }
+
+  &__dates {
+    color: $text-light-color;
+    margin-top: 1.5rem;
+  }
+}

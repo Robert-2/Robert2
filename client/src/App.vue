@@ -1,9 +1,9 @@
 <template>
   <div id="app">
     <div class="main">
-      <MainHeader v-if="user.groupId" @toggleMenu="toggleSideNav" />
+      <MainHeader v-if="isLogged" @toggleMenu="toggleSideNav" />
       <div class="main__body">
-        <SideNav v-if="user.groupId" :isOpen="isOpenedSideNav" />
+        <SideNav v-if="isLogged" :isOpen="isOpenedSideNav" />
         <router-view />
       </div>
     </div>
@@ -17,20 +17,35 @@
 
 <script>
 import Vue from 'vue';
-import store from '@/store';
 import MainHeader from '@/components/MainHeader/MainHeader.vue';
 import SideNav from '@/components/SideNav/SideNav.vue';
 
 export default {
   name: 'App',
   components: { MainHeader, SideNav },
-  data: () => ({
-    user: store.state.user,
-    isOpenedSideNav: false,
-  }),
+  data() {
+    return { isOpenedSideNav: false };
+  },
+  created() {
+    this.$http.interceptors.response.use((response) => response, (error) => {
+      const { status } = error.response || { status: 0 };
+      if (status === 401) {
+        this.$store.dispatch('auth/logout').then(() => {
+          this.$router.replace({ path: '/login', hash: 'expired' })
+            .catch(() => {});
+        });
+      }
+      return Promise.reject(error);
+    });
+  },
   watch: {
     $route() {
       Vue.prototype.$modal.hide('defaultModal');
+    },
+  },
+  computed: {
+    isLogged() {
+      return this.$store.getters['auth/isLogged'];
     },
   },
   methods: {

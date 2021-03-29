@@ -10,7 +10,6 @@ import axios from '@/axios';
 import store from '@/store';
 import translations from '@/locale';
 import vueTableTranslations from '@/locale/vendors/vue-tables';
-import Auth from '@/auth';
 import router from '@/router';
 import App from '@/App.vue';
 
@@ -81,14 +80,13 @@ const tablesConfig = {
 Vue.use(ClientTable, tablesConfig);
 Vue.use(ServerTable, tablesConfig, true);
 
-// Authorization
-Auth.checkAuth();
-
-/* eslint-disable no-new */
-new Vue({
-  el: '#app',
-  store,
-  router,
-  components: { App },
-  template: '<App/>',
+store.dispatch('auth/fetch').then(() => {
+  /* eslint-disable no-new */
+  new Vue({
+    el: '#app',
+    store,
+    router,
+    components: { App },
+    template: '<App/>',
+  });
 });

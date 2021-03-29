@@ -5,31 +5,24 @@ namespace Robert2\API\Models;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Builder;
-use Respect\Validation\Validator as V;
-
 use Robert2\API\Config\Config;
 use Robert2\API\Models\Material;
-use Robert2\API\I18n\I18n;
 use Robert2\API\Models\Traits\WithPdf;
 use Robert2\Lib\Domain\EventBill;
-use Robert2\API\Errors\ValidationException;
+use Robert2\API\Validation\Validator as V;
 
 class Event extends BaseModel
 {
     use SoftDeletes;
     use WithPdf;
 
-    protected $table = 'events';
-
-    protected $_modelName = 'Event';
-    protected $_orderField = 'start_date';
-    protected $_orderDirection = 'asc';
+    protected $orderField = 'start_date';
 
     protected $_startDate;
     protected $_endDate;
 
-    protected $_allowedSearchFields = ['title', 'start_date', 'end_date', 'location'];
-    protected $_searchField = 'title';
+    protected $allowedSearchFields = ['title', 'start_date', 'end_date', 'location'];
+    protected $searchField = 'title';
 
     public function __construct(array $attributes = [])
     {
@@ -47,32 +40,34 @@ class Event extends BaseModel
             'description'  => V::optional(V::length(null, 255)),
             'reference'    => V::oneOf(V::nullType(), V::alnum('.,-/_ ')->length(1, 64)),
             'start_date'   => V::notEmpty()->date(),
-            'end_date'     => V::notEmpty()->date(),
+            'end_date'     => V::callback([$this, 'checkEndDate']),
             'is_confirmed' => V::notOptional()->boolType(),
             'location'     => V::optional(V::length(2, 64)),
             'is_billable'  => V::optional(V::boolType()),
         ];
     }
 
-    public function validate(array $data, array $onlyFields = []): void
+    // ------------------------------------------------------
+    // -
+    // -    Validation
+    // -
+    // ------------------------------------------------------
+
+    public function checkEndDate($value)
     {
-        parent::validate($data, $onlyFields);
-
-        if (!empty($onlyFields) && !in_array('end_date', $onlyFields)) {
-            return;
+        $dateChecker = V::notEmpty()->date();
+        if (!$dateChecker->validate($value)) {
+            return false;
         }
 
-        $startDate = new \DateTime($data['start_date']);
-        $endDate = new \DateTime($data['end_date']);
-
-        if ($startDate >= $endDate) {
-            $i18n = new I18n;
-            $ex = new ValidationException();
-            $ex->setValidationErrors([
-                'end_date' => [$i18n->translate('endDateMustBeLater')]
-            ]);
-            throw $ex;
+        if (!$dateChecker->validate($this->start_date)) {
+            return true;
         }
+
+        $startDate = new \DateTime($this->start_date);
+        $endDate = new \DateTime($this->end_date);
+
+        return $startDate < $endDate ?: 'endDateMustBeLater';
     }
 
     // ——————————————————————————————————————————————————————
@@ -90,7 +85,8 @@ class Event extends BaseModel
     public function Assignees()
     {
         return $this->belongsToMany('Robert2\API\Models\Person', 'event_assignees')
-            ->select(['persons.id', 'first_name', 'last_name', 'nickname']);
+            ->select(['persons.id', 'first_name', 'last_name', 'nickname'])
+            ->orderBy('last_name');
     }
 
     public function Beneficiaries()
@@ -104,7 +100,8 @@ class Event extends BaseModel
                 'street',
                 'postal_code',
                 'locality',
-            ]);
+            ])
+            ->orderBy('last_name');
     }
 
     public function Materials()
@@ -114,6 +111,7 @@ class Event extends BaseModel
             'name',
             'description',
             'reference',
+            'is_unitary',
             'park_id',
             'category_id',
             'sub_category_id',
@@ -121,14 +119,13 @@ class Event extends BaseModel
             'stock_quantity',
             'out_of_order_quantity',
             'replacement_price',
-            'serial_number',
             'is_hidden_on_bill',
             'is_discountable',
         ];
 
         return $this->belongsToMany('Robert2\API\Models\Material', 'event_materials')
-            ->using('Robert2\API\Models\EventMaterialsPivot')
-            ->withPivot('quantity')
+            ->using('Robert2\API\Models\EventMaterial')
+            ->withPivot('id', 'quantity')
             ->select($fields);
     }
 
@@ -171,8 +168,8 @@ class Event extends BaseModel
 
     public function getBeneficiariesAttribute()
     {
-        $assignees = $this->Beneficiaries()->get();
-        return $assignees ? $assignees->toArray() : null;
+        $beneficiaries = $this->Beneficiaries()->get();
+        return $beneficiaries ? $beneficiaries->toArray() : null;
     }
 
     public function getMaterialsAttribute()
@@ -219,22 +216,56 @@ class Event extends BaseModel
     public function getMissingMaterials(int $id): ?array
     {
         $event = $this->with('Materials')->find($id);
-        if (!$event) {
+        if (!$event || empty($event->materials)) {
             return null;
         }
 
-        $material = new Material();
-        $eventMaterials = $material->recalcQuantitiesForPeriod(
+        $eventMaterials = (new Material())->recalcQuantitiesForPeriod(
             $event->materials,
             $event->start_date,
-            $event->end_date
+            $event->end_date,
+            $id
         );
 
-        $missingMaterials = array_filter($eventMaterials, function ($eventMaterial) {
-            return $eventMaterial['remaining_quantity'] < 0;
-        });
+        $missingMaterials = [];
+        foreach ($eventMaterials as $material) {
+            $availableQuantity = $material['remaining_quantity'];
+            if ($material['is_unitary']) {
+                $availableQuantity = count($material['pivot']['units']);
+            }
+
+            $material['missing_quantity'] = $material['pivot']['quantity'] - $availableQuantity;
+            $material['missing_quantity'] = min($material['missing_quantity'], $material['pivot']['quantity']);
+
+            if ($material['missing_quantity'] <= 0) {
+                continue;
+            }
+
+            $missingMaterials[] = $material;
+        }
 
         return empty($missingMaterials) ? null : array_values($missingMaterials);
+    }
+
+    public function getParks(int $id): array
+    {
+        $event = $this->with('Materials')->find($id);
+        if (!$event) {
+            return [];
+        }
+
+        $materialParks = [];
+        foreach ($event['materials'] as $material) {
+            if ($material['is_unitary']) {
+                foreach ($material['units'] as $unit) {
+                    $materialParks[] = $unit['park_id'];
+                };
+                continue;
+            }
+            $materialParks[] = $material['park_id'];
+        };
+
+        return array_values(array_unique($materialParks));
     }
 
     public function getPdfContent(int $id): string
@@ -275,6 +306,36 @@ class Event extends BaseModel
         }
 
         return $eventPdf;
+    }
+
+    /**
+     * Permet de récuperer les ids des unités utilisées pendant l'événement
+     * représenté par l'instance courante.
+     *
+     * Seules les unités utilisées dans les autres événements au même moment
+     * seront récuprées, et non pas celles utilisées par l'événement lui-même.
+     *
+     * @return array - La liste d'unités utilisées au même moment que l'événement.
+     */
+    public function getConcurrentlyUsedUnits(): array
+    {
+        $events = (new static())
+            ->setPeriod($this->start_date, $this->end_date)
+            ->getAll()
+            ->with('Materials');
+
+        if ($this->exists) {
+            $events = $events->where('id', '!=', $this->id);
+        }
+
+        $usedUnits = [];
+        foreach ($events->get() as $event) {
+            foreach ($event->materials as $material) {
+                $usedUnits = array_merge($usedUnits, $material['pivot']['units']);
+            }
+        }
+
+        return array_unique($usedUnits);
     }
 
     // ——————————————————————————————————————————————————————

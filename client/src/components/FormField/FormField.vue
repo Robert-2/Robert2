@@ -83,6 +83,7 @@
 
 <script>
 import Datepicker from 'vuejs-datepicker';
+import moment from 'moment';
 import * as lang from 'vuejs-datepicker/src/locale';
 import store from '@/store';
 import SwitchToggle from '@/components/SwitchToggle/SwitchToggle.vue';
@@ -136,7 +137,8 @@ export default {
   methods: {
     handleDatepickerChange(newDate) {
       this.$emit('input', newDate);
-      this.$emit('change', { field: this.name, newDate });
+      const newValue = moment(newDate).format('YYYY-MM-DD');
+      this.$emit('change', { field: this.name, newValue, newDate });
     },
 
     handleSwitchChange(newValue) {

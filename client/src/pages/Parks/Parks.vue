@@ -9,13 +9,11 @@
         />
       </div>
       <div class="header-page__actions">
-        <router-link
-          :to="`/parks/new`"
-          tag="button"
-          class="success"
-        >
-          <i class="fas fa-user-plus" />
-          {{ $t('page-parks.action-add') }}
+        <router-link :to="`/parks/new`" v-slot="{ navigate }" custom>
+          <button @click="navigate" class="success" >
+            <i class="fas fa-user-plus" />
+            {{ $t('page-parks.action-add') }}
+          </button>
         </router-link>
       </div>
     </div>
@@ -45,6 +43,11 @@
             ({{ formatAmount(park.row.total_amount) }})
           </span>
         </div>
+        <div slot="events" slot-scope="park">
+          <router-link :to="`/?park=${park.row.id}`" v-if="parksCount > 1">
+            {{ $t('page-parks.display-events-for-park') }}
+          </router-link>
+        </div>
         <div slot="note" slot-scope="park">
           <pre>{{ park.row.note }}</pre>
         </div>
@@ -53,10 +56,12 @@
             v-if="!isTrashDisplayed"
             v-tooltip="$t('action-edit')"
             :to="`/parks/${park.row.id}`"
-            tag="button"
-            class="item-actions__button info"
+            v-slot="{ navigate }"
+            custom
           >
-            <i class="fas fa-edit" />
+            <button @click="navigate" class="item-actions__button info" >
+              <i class="fas fa-edit" />
+            </button>
           </router-link>
           <button
             v-if="!isTrashDisplayed"

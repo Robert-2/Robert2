@@ -52,14 +52,11 @@
       </div>
     </section>
     <section>
-      <router-link
-        to="/"
-        tag="button"
-        exact
-        class="EventStep5__back-btn info"
-      >
-        <i class="fas fa-arrow-left" />
-        {{ $t('page-events.back-to-calendar') }}
+      <router-link to="/" exact v-slot="{ navigate }" custom>
+        <button @click="navigate" class="EventStep5__back-btn info">
+          <i class="fas fa-arrow-left" />
+          {{ $t('page-events.back-to-calendar') }}
+        </button>
       </router-link>
     </section>
   </div>

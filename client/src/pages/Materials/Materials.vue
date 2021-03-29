@@ -9,22 +9,50 @@
         />
       </div>
       <div class="header-page__actions">
-        <MaterialsFilter
-          baseRoute="/materials"
-          @change="refreshTableAndPagination"
-        />
-        <router-link
-          :to="`/materials/new`"
-          tag="button"
-          class="Materials__create success"
-        >
-          <i class="fas fa-plus" />
-          {{ $t('page-materials.action-add') }}
+        <router-link to="/materials/new" v-slot="{ navigate }" custom>
+          <button @click="navigate" class="Materials__create success">
+            <i class="fas fa-plus" />
+            {{ $t('page-materials.action-add') }}
+          </button>
+        </router-link>
+        <router-link to="/attributes" v-slot="{ navigate }" custom>
+          <button @click="navigate">
+            <i class="fas fa-cog" />
+            {{ $t('page-materials.manage-attributes') }}
+          </button>
         </router-link>
       </div>
     </div>
 
-    <div class="content__main-view">
+    <div class="content__main-view Materials__main-view">
+      <div class="Materials__filters">
+        <MaterialsFilters
+          baseRoute="/materials"
+          @change="refreshTableAndPagination"
+        />
+        <div class="Materials__quantities-date">
+          <button
+            v-if="dateForQuantities === null"
+            class="Materials__quantities-date__button"
+            @click="showQuantityAtDateModal"
+          >
+            {{ $t('page-materials.display-quantities-at-date') }}
+          </button>
+          <div v-else class="Materials__quantities-date__displayed">
+            <p class="Materials__quantities-date__label">
+              {{ $t('page-materials.remaining-quantities-on-date', {
+                date: dateForQuantities.format('LL')
+              }) }}
+            </p>
+            <button
+              class="Materials__quantities-date__button warning"
+              @click="removeDateForQuantities"
+            >
+              {{ $t('reset-date') }}
+            </button>
+          </div>
+        </div>
+      </div>
       <v-server-table
         ref="DataTable"
         name="materialsTable"
@@ -48,6 +76,9 @@
         <div slot="replacement_price" slot-scope="material">
           {{ formatAmount(material.row.replacement_price) }}
         </div>
+        <template #stock_quantity="{ row: material }">
+          {{ getStockQuantity(material) }}
+        </template>
         <div
           slot="tags"
           slot-scope="material"
@@ -55,14 +86,9 @@
           role="button"
           @click="setTags(material.row)"
         >
-          <span
-            v-for="tag in material.row.tags"
-            :key="tag.id"
-            class="Materials__tag-item"
-          >
-            <i class="fas fa-tag" />
-            {{ tag.name }}
-          </span>
+          <MaterialTags
+            :tags="material.row.tags"
+          />
           <span
             v-if="material.row.tags.length === 0 && !isTrashDisplayed"
             class="Materials__add-tags"
@@ -72,13 +98,25 @@
         </div>
         <div slot="actions" slot-scope="material" class="Materials__actions">
           <router-link
+            v-tooltip="$t('action-view')"
+            :to="`/materials/${material.row.id}/view`"
+            v-slot="{ navigate }"
+            custom
+          >
+            <button @click="navigate" class="item-actions__button success">
+              <i class="fas fa-eye" />
+            </button>
+          </router-link>
+          <router-link
             v-if="!isTrashDisplayed"
             v-tooltip="$t('action-edit')"
             :to="`/materials/${material.row.id}`"
-            tag="button"
-            class="item-actions__button info"
+            v-slot="{ navigate }"
+            custom
           >
-            <i class="fas fa-edit" />
+            <button @click="navigate" class="item-actions__button info">
+              <i class="fas fa-edit" />
+            </button>
           </router-link>
           <button
             v-if="!isTrashDisplayed"

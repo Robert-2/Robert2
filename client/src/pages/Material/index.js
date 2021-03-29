@@ -20,14 +20,15 @@ export default {
         id: this.$route.params.id || null,
         name: '',
         reference: '',
-        park_id: 1,
+        park_id: '',
         category_id: '',
+        is_unitary: false,
         rental_price: showBilling ? '' : 0,
-        stock_quantity: '',
+        stock_quantity: '1',
         description: '',
         sub_category_id: '',
         replacement_price: '',
-        out_of_order_quantity: '',
+        out_of_order_quantity: '0',
         note: '',
         is_hidden_on_bill: false,
         is_discountable: true,
@@ -56,6 +57,9 @@ export default {
     parksOptions() {
       return store.getters['parks/options'];
     },
+    firstPark() {
+      return store.getters['parks/firstPark'];
+    },
     categoriesOptions() {
       return store.getters['categories/options'];
     },
@@ -65,6 +69,12 @@ export default {
     store.dispatch('categories/fetch');
 
     this.fetchMaterial();
+    this.setDefaultPark();
+  },
+  watch: {
+    firstPark() {
+      this.setDefaultPark();
+    },
   },
   methods: {
     fetchMaterial() {
@@ -86,8 +96,21 @@ export default {
         .catch(this.displayError);
     },
 
+    setDefaultPark() {
+      if (this.material.id === null) {
+        this.material.park_id = this.firstPark?.id || '';
+      }
+    },
+
     fetchAttributes() {
-      this.$http.get('materials/attributes')
+      this.extraAttributes = [];
+
+      const { category_id: categoryId } = this.material;
+      if (!categoryId) {
+        return;
+      }
+
+      this.$http.get(`attributes?category=${categoryId}`)
         .then(({ data }) => {
           this.extraAttributes = data;
         })
@@ -101,6 +124,8 @@ export default {
           return 'number';
         case 'boolean':
           return 'switch';
+        case 'date':
+          return 'date';
         default:
           return 'text';
       }
@@ -117,6 +142,18 @@ export default {
         ...this.materialAttributes,
         [attribute.id]: newValue,
       };
+    },
+
+    handleUnitaryChange(isUnitary) {
+      if (!isUnitary) {
+        return;
+      }
+
+      this.material.park_id = null;
+
+      // Note: On garde les `stock_quantity` + `out_of_order_quantity` tel quels
+      // pour permettre à l'utilisateur de switch-back vers une gestion non unitaire
+      // avec les anciennes valeurs.
     },
 
     saveMaterial(e) {
@@ -137,10 +174,12 @@ export default {
         { id: attributeId, value: this.materialAttributes[attributeId] }
       ));
 
-      const postData = {
-        ...this.material,
-        attributes,
-      };
+      const postData = { ...this.material, attributes };
+
+      if (postData.is_unitary) {
+        postData.stock_quantity = null;
+        postData.out_of_order_quantity = null;
+      }
 
       request(route, postData)
         .then(({ data }) => {
@@ -149,7 +188,7 @@ export default {
           this.setMaterialData(data);
 
           setTimeout(() => {
-            this.$router.push('/materials');
+            this.$router.push(`/materials/${data.id}/view`);
           }, 300);
         })
         .catch(this.displayError);
@@ -185,6 +224,11 @@ export default {
       }
     },
 
+    handleCategoryChange() {
+      this.fetchAttributes();
+      this.updateSubCategories();
+    },
+
     updateSubCategories() {
       const categories = store.state.categories.list;
       const category = categories.find(
@@ -194,11 +238,7 @@ export default {
         return;
       }
 
-      this.subCategoriesOptions = formatOptions(
-        category.sub_categories,
-        ['name'],
-        this.$t('please-choose'),
-      );
+      this.subCategoriesOptions = formatOptions(category.sub_categories, null, this.$t('please-choose'));
 
       this.refreshSubCategorySelect();
     },

@@ -15,6 +15,11 @@ final class EventTest extends ModelTestCase
         $this->model = new Models\Event();
     }
 
+    public function testTableName(): void
+    {
+        $this->assertEquals('events', $this->model->getTable());
+    }
+
     public function testGetAll(): void
     {
         $this->model->setPeriod('2018-01-15', '2018-12-19');
@@ -76,9 +81,49 @@ final class EventTest extends ModelTestCase
 
         // - Get missing materials of event #1
         $result = $this->model->getMissingMaterials(1);
+        $this->assertNotNull($result);
         $this->assertCount(1, $result);
         $this->assertEquals('DBXPA2', $result[0]['reference']);
-        $this->assertEquals(-1, $result[0]['remaining_quantity']);
+        $this->assertEquals(1, $result[0]['missing_quantity']);
+
+        // - Get missing materials of event #4
+        $result = $this->model->getMissingMaterials(4);
+        $this->assertNotNull($result);
+        $this->assertCount(1, $result);
+        $this->assertEquals('Transporter', $result[0]['reference']);
+        $this->assertEquals(2, $result[0]['missing_quantity']);
+
+        // - Get missing materials of event #5
+        $result = $this->model->getMissingMaterials(5);
+        $this->assertNotNull($result);
+        $this->assertCount(1, $result);
+        $this->assertEquals('Decor-Forest', $result[0]['reference']);
+        $this->assertEquals(1, $result[0]['missing_quantity']);
+    }
+
+    public function testGetParks(): void
+    {
+        // - Non-existant event
+        $result = $this->model->getParks(999);
+        $this->assertEquals([], $result);
+
+        // - Events with material from one park
+        $result = $this->model->getParks(1);
+        $this->assertEquals([1], $result);
+        $result = $this->model->getParks(2);
+        $this->assertEquals([1], $result);
+        $result = $this->model->getParks(3);
+        $this->assertEquals([1], $result);
+        $result = $this->model->getParks(5);
+        $this->assertEquals([1], $result);
+
+        // - Event with material from two parks
+        $result = $this->model->getParks(4);
+        $this->assertEquals([2, 1], $result);
+
+        // - Event without material (so without park)
+        $result = $this->model->getParks(6);
+        $this->assertEquals([], $result);
     }
 
     public function testGetMaterials(): void
@@ -91,6 +136,7 @@ final class EventTest extends ModelTestCase
             'name'                  => 'Showtec SDS-6',
             'description'           => "Console DMX (jeu d'orgue) Showtec 6 canaux",
             'reference'             => 'SDS-6-01',
+            'is_unitary'            => false,
             'park_id'               => 1,
             'category_id'           => 2,
             'sub_category_id'       => 4,
@@ -98,10 +144,10 @@ final class EventTest extends ModelTestCase
             'stock_quantity'        => 2,
             'out_of_order_quantity' => null,
             'replacement_price'     => 59.0,
-            'serial_number'         => '1212121-5',
             'is_hidden_on_bill'     => false,
             'is_discountable'       => true,
             'tags'                  => [],
+            'units'                 => [],
             'attributes'            => [
                 [
                     'id'    => 4,
@@ -126,9 +172,11 @@ final class EventTest extends ModelTestCase
                 ],
             ],
             'pivot' => [
+                'id'          => 3,
                 'event_id'    => 1,
                 'material_id' => 4,
                 'quantity'    => 1,
+                'units'       => [],
             ],
         ];
         $this->assertEquals($expected, $results[0]);
@@ -267,7 +315,7 @@ final class EventTest extends ModelTestCase
             $data,
             ['end_date' => '2020-03-03 23:59:59']
         );
-        $this->model->validate($testData);
+        (new Models\Event($testData))->validate();
 
         // - Validation fail: end date is after start date
         $this->expectException(Errors\ValidationException::class);
@@ -276,7 +324,7 @@ final class EventTest extends ModelTestCase
             $data,
             ['end_date' => '2020-02-20 23:59:59']
         );
-        $this->model->validate($testData);
+        (new Models\Event($testData))->validate();
     }
 
     public function testValidateReference(): void
@@ -291,19 +339,31 @@ final class EventTest extends ModelTestCase
 
         foreach (['REF1', null] as $testValue) {
             $testData = array_merge($data, ['reference' => $testValue]);
-            $this->model->validate($testData);
+            (new Models\Event($testData))->validate();
         }
 
         // - Validation fail: Reference is an empty string
         $this->expectException(Errors\ValidationException::class);
         $this->expectExceptionCode(ERROR_VALIDATION);
         $testData = array_merge($data, ['reference' => '']);
-        $this->model->validate($testData);
+        (new Models\Event($testData))->validate();
     }
 
     public function testGetPdfContent()
     {
         $result = $this->model->getPdfContent(1);
         $this->assertNotEmpty($result);
+    }
+
+    public function testGetConcurrentlyUsedUnits(): void
+    {
+        $result = Models\Event::findOrFail(1)->getConcurrentlyUsedUnits();
+        $this->assertEquals([], $result);
+
+        $result = Models\Event::findOrFail(4)->getConcurrentlyUsedUnits();
+        $this->assertEquals([], $result);
+
+        $result = Models\Event::findOrFail(6)->getConcurrentlyUsedUnits();
+        $this->assertEquals([4, 3, 1], $result);
     }
 }

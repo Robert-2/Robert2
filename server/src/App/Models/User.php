@@ -6,7 +6,7 @@ namespace Robert2\API\Models;
 use Robert2\API\Config;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Respect\Validation\Validator as V;
+use Robert2\API\Validation\Validator as V;
 use Illuminate\Database\Eloquent\Builder;
 
 use Robert2\API\Errors;
@@ -15,21 +15,17 @@ class User extends BaseModel
 {
     use SoftDeletes;
 
-    protected $table = 'users';
+    protected $orderField = 'pseudo';
 
-    protected $_modelName = 'User';
-    protected $_orderField = 'pseudo';
-    protected $_orderDirection = 'asc';
-
-    protected $_allowedSearchFields = ['pseudo', 'email'];
-    protected $_searchField = 'pseudo';
+    protected $allowedSearchFields = ['pseudo', 'email'];
+    protected $searchField = 'pseudo';
 
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
 
         $this->validation = [
-            'pseudo'   => V::notEmpty()->alnum()->length(4, 100),
+            'pseudo'   => V::notEmpty()->alnum('-', '_')->length(4, 100),
             'email'    => V::notEmpty()->email()->length(5, 191),
             'group_id' => V::notEmpty()->oneOf(
                 V::equals('admin'),
@@ -67,6 +63,13 @@ class User extends BaseModel
             ->orderBy('start_date');
     }
 
+    public function RestrictedParks()
+    {
+        return $this->belongsToMany('Robert2\API\Models\Park', 'user_restricted_parks')
+            ->using('Robert2\API\Models\UserRestrictedParksPivot')
+            ->select(['parks.id']);
+    }
+
     // ——————————————————————————————————————————————————————
     // —
     // —    Mutators
@@ -74,10 +77,11 @@ class User extends BaseModel
     // ——————————————————————————————————————————————————————
 
     protected $casts = [
-        'pseudo'   => 'string',
-        'email'    => 'string',
-        'group_id' => 'string',
-        'password' => 'string',
+        'pseudo'         => 'string',
+        'email'          => 'string',
+        'group_id'       => 'string',
+        'password'       => 'string',
+        'cas_identifier' => 'string',
     ];
 
     public function getPersonAttribute()
@@ -98,11 +102,25 @@ class User extends BaseModel
         return $events ? $events->toArray() : null;
     }
 
+    public function getRestrictedParksAttribute()
+    {
+        $restrictedParks = $this->RestrictedParks()->get();
+        if (!$restrictedParks) {
+            return [];
+        }
+
+        return array_map(function ($restrictedPark) {
+            return (int)$restrictedPark['id'];
+        }, $restrictedParks->toArray());
+    }
+
     // ——————————————————————————————————————————————————————
     // —
     // —    Getters
     // —
     // ——————————————————————————————————————————————————————
+
+    protected $hidden = ['password'];
 
     public function getAll(bool $softDeleted = false): Builder
     {
@@ -130,6 +148,11 @@ class User extends BaseModel
         return $user;
     }
 
+    public static function withCasIdentifier($casIdentifier): ?User
+    {
+        return self::where('cas_identifier', $casIdentifier)->first();
+    }
+
     // ——————————————————————————————————————————————————————
     // —
     // —    Setters
@@ -141,6 +164,7 @@ class User extends BaseModel
         'email',
         'group_id',
         'password',
+        'cas_identifier',
     ];
 
     public function setSettings(int $userId, array $data = []): array
@@ -153,6 +177,11 @@ class User extends BaseModel
         $settings = $UserSetting->edit($userId, $data);
 
         return $settings->toArray();
+    }
+
+    public static function new(array $data = []): User
+    {
+        return (new static())->edit(null, $data);
     }
 
     public function edit(?int $id = null, array $data = []): Model
@@ -183,6 +212,10 @@ class User extends BaseModel
                 ['user_id' => $userId],
                 $data['person']
             );
+        }
+
+        if (array_key_exists('restricted_parks', $data)) {
+            $User->RestrictedParks()->sync($data['restricted_parks']);
         }
 
         unset($user['password']);

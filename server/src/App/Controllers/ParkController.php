@@ -3,41 +3,26 @@ declare(strict_types=1);
 
 namespace Robert2\API\Controllers;
 
+use Robert2\API\Services\Auth;
+use Robert2\API\Models\Park;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-use Robert2\API\Errors;
-use Robert2\API\Models\Park;
-
 class ParkController extends BaseController
 {
-    public function __construct($container)
-    {
-        parent::__construct($container);
-
-        $this->model = new Park();
-    }
+    /** @var Park */
+    protected $model;
 
     // ——————————————————————————————————————————————————————
     // —
-    // —    Model dedicated methods
+    // —    Getters
     // —
     // ——————————————————————————————————————————————————————
 
-    public function getMaterials(Request $request, Response $response)
+    public function getList(Request $request, Response $response): Response
     {
-        $id = (int)$request->getAttribute('id');
-        if (!$this->model->exists($id)) {
-            throw new Errors\NotFoundException;
-        }
-
-        $Park = $this->model->find($id);
-        $materials = $Park->Materials()->paginate($this->itemsCount);
-
-        $basePath = $request->getUri()->getPath();
-        $materials->withPath($basePath);
-
-        $results = $this->_formatPagination($materials);
+        $parks = $this->model->getAllForUser(Auth::user()->id)->select(['id', 'name']);
+        $results = $parks->get()->each->setAppends([])->toArray();
 
         return $response->withJson($results);
     }

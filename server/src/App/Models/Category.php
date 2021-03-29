@@ -4,21 +4,15 @@ declare(strict_types=1);
 namespace Robert2\API\Models;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Respect\Validation\Validator as V;
+use Illuminate\Database\QueryException;
+use Robert2\API\Validation\Validator as V;
 use Robert2\API\Errors\ValidationException;
 
 class Category extends BaseModel
 {
     use SoftDeletes;
 
-    protected $table = 'categories';
-
-    protected $_modelName = 'Category';
-    protected $_orderField = 'name';
-    protected $_orderDirection = 'asc';
-
-    protected $_allowedSearchFields = ['name'];
-    protected $_searchField = 'name';
+    protected $searchField = 'name';
 
     public function __construct(array $attributes = [])
     {
@@ -48,20 +42,25 @@ class Category extends BaseModel
 
     public function Materials()
     {
-        $fields = [
+        return $this->hasMany('Robert2\API\Models\Material')->select([
             'id',
             'name',
             'description',
             'reference',
             'park_id',
+            'is_unitary',
             'rental_price',
             'stock_quantity',
             'out_of_order_quantity',
             'replacement_price',
-            'serial_number',
-        ];
+        ]);
+    }
 
-        return $this->hasMany('Robert2\API\Models\Material')->select($fields);
+    public function Attributes()
+    {
+        return $this->belongsToMany('Robert2\API\Models\Attribute', 'attribute_categories')
+            ->using('Robert2\API\Models\AttributeCategoriesPivot')
+            ->select(['attributes.id', 'attributes.name', 'attributes.type', 'attributes.unit']);
     }
 
     // ——————————————————————————————————————————————————————
@@ -108,24 +107,35 @@ class Category extends BaseModel
 
     public function bulkAdd(array $categoriesNames = []): array
     {
-        $categories = [];
-        foreach ($categoriesNames as $categoryName) {
-            $existingCategory = self::getIdsByNames([$categoryName]);
-            if (!empty($existingCategory)) {
-                continue;
+        $categories = array_map(
+            function ($categoryName) {
+                $existingCategory = self::where('name', $categoryName)->first();
+                if ($existingCategory) {
+                    return $existingCategory;
+                }
+
+                $category = new static(['name' => trim($categoryName)]);
+                return tap($category, function ($instance) {
+                    $instance->validate();
+                });
+            },
+            $categoriesNames
+        );
+
+        $this->getConnection()->transaction(function () use ($categories) {
+            try {
+                foreach ($categories as $category) {
+                    if (!$category->exists || $category->isDirty()) {
+                        $category->save();
+                    }
+                }
+            } catch (QueryException $e) {
+                $error = new ValidationException();
+                $error->setPDOValidationException($e);
+                throw $error;
             }
+        });
 
-            $safeCategory = ['name' => trim($categoryName)];
-            $this->validate($safeCategory);
-
-            $categories[] = $safeCategory;
-        }
-
-        $results = [];
-        foreach ($categories as $categoryData) {
-            $results[] = self::edit(null, $categoryData);
-        }
-
-        return $results;
+        return $categories;
     }
 }

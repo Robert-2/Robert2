@@ -1,9 +1,6 @@
 <?php
 namespace Robert2\Tests;
 
-use Robert2\API\I18n\I18n;
-use Robert2\API\Config\Config;
-
 final class BillsTest extends ApiTestCase
 {
     public function testGetBill()
@@ -63,7 +60,7 @@ final class BillsTest extends ApiTestCase
     {
         $this->client->post('/api/events/2/bill');
         $this->assertStatusCode(SUCCESS_CREATED);
-        $newBillNumber = sprintf('%s-00002', date('Y'));
+        $newBillNumber = sprintf('%s-00001', date('Y'));
         $this->assertResponseData([
             'id'             => 2,
             'number'         => $newBillNumber,
@@ -114,7 +111,7 @@ final class BillsTest extends ApiTestCase
     {
         $this->client->post('/api/events/2/bill', ['discountRate' => 50.0]);
         $this->assertStatusCode(SUCCESS_CREATED);
-        $newBillNumber = sprintf('%s-00002', date('Y'));
+        $newBillNumber = sprintf('%s-00001', date('Y'));
         $this->assertResponseData([
             'id'             => 2,
             'number'         => $newBillNumber,

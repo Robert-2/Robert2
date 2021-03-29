@@ -5,23 +5,34 @@ namespace Robert2\API\Models;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Builder;
-use Respect\Validation\Validator as V;
-
+use Robert2\API\Validation\Validator as V;
 use Robert2\API\Models\Traits\Taggable;
+use Robert2\API\Models\User;
+use Robert2\API\Errors;
 
 class Material extends BaseModel
 {
     use SoftDeletes;
     use Taggable;
 
-    protected $table = 'materials';
+    protected $searchField = ['name', 'reference'];
 
-    protected $_modelName = 'Material';
-    protected $_orderField = 'name';
-    protected $_orderDirection = 'asc';
-
-    protected $_allowedSearchFields = ['name', 'reference', 'name|reference'];
-    protected $_searchField = 'name|reference';
+    protected $attributes = [
+        'name' => null,
+        'description' => null,
+        'reference' => null,
+        'is_unitary' => false,
+        'park_id' => null,
+        'category_id' => null,
+        'sub_category_id' => null,
+        'rental_price' => null,
+        'stock_quantity' => null,
+        'out_of_order_quantity' => null,
+        'replacement_price' => null,
+        'is_hidden_on_bill' => false,
+        'is_discountable' => true,
+        'note' => null,
+    ];
 
     public function __construct(array $attributes = [])
     {
@@ -30,17 +41,46 @@ class Material extends BaseModel
         $this->validation = [
             'name'                  => V::notEmpty()->length(2, 191),
             'reference'             => V::notEmpty()->alnum('.,-+/_ ')->length(2, 64),
-            'park_id'               => V::notEmpty()->numeric(),
+            'park_id'               => V::callback([$this, 'checkParkId']),
             'category_id'           => V::notEmpty()->numeric(),
             'sub_category_id'       => V::optional(V::numeric()),
             'rental_price'          => V::floatVal()->max(999999.99, true),
-            'stock_quantity'        => V::intVal()->max(100000),
-            'out_of_order_quantity' => V::optional(V::intVal()->max(100000)),
+            'stock_quantity'        => V::callback([$this, 'checkStockQuantity']),
+            'out_of_order_quantity' => V::callback([$this, 'checkOutOfOrderQuantity']),
             'replacement_price'     => V::optional(V::floatVal()->max(999999.99, true)),
-            'serial_number'         => V::optional(V::alnum('-/*.')->length(2, 64)),
             'is_hidden_on_bill'     => V::optional(V::boolType()),
             'is_discountable'       => V::optional(V::boolType()),
         ];
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Validation
+    // -
+    // ------------------------------------------------------
+
+    public function checkParkId($value)
+    {
+        if ($this->is_unitary) {
+            return V::nullType();
+        }
+        return V::notEmpty()->numeric();
+    }
+
+    public function checkStockQuantity($value)
+    {
+        if ($this->is_unitary) {
+            return V::nullType();
+        }
+        return V::intVal()->max(100000);
+    }
+
+    public function checkOutOfOrderQuantity($value)
+    {
+        if ($this->is_unitary) {
+            return V::nullType();
+        }
+        return V::optional(V::intVal()->max(100000));
     }
 
     // ——————————————————————————————————————————————————————
@@ -51,6 +91,7 @@ class Material extends BaseModel
 
     protected $appends = [
         'tags',
+        'units',
         'attributes',
     ];
 
@@ -72,6 +113,12 @@ class Material extends BaseModel
             ->select(['id', 'name', 'category_id']);
     }
 
+    public function Units()
+    {
+        return $this->hasMany('Robert2\API\Models\MaterialUnit')
+            ->select(['id', 'serial_number', 'park_id', 'is_broken']);
+    }
+
     public function Attributes()
     {
         return $this->belongsToMany('Robert2\API\Models\Attribute', 'material_attributes')
@@ -83,9 +130,17 @@ class Material extends BaseModel
     public function Events()
     {
         return $this->belongsToMany('Robert2\API\Models\Event', 'event_materials')
-            ->using('Robert2\API\Models\EventMaterialsPivot')
-            ->withPivot('quantity')
-            ->select(['events.id', 'title', 'start_date', 'end_date', 'is_confirmed']);
+            ->using('Robert2\API\Models\EventMaterial')
+            ->withPivot('id', 'quantity')
+            ->orderBy('start_date', 'desc')
+            ->select(['events.id', 'title', 'start_date', 'end_date', 'location', 'is_confirmed']);
+    }
+
+    public function Documents()
+    {
+        return $this->hasMany('Robert2\API\Models\Document')
+            ->orderBy('name', 'asc')
+            ->select(['id', 'name', 'type', 'size']);
     }
 
     // ——————————————————————————————————————————————————————
@@ -98,6 +153,7 @@ class Material extends BaseModel
         'name'                  => 'string',
         'reference'             => 'string',
         'description'           => 'string',
+        'is_unitary'            => 'boolean',
         'park_id'               => 'integer',
         'category_id'           => 'integer',
         'sub_category_id'       => 'integer',
@@ -105,16 +161,41 @@ class Material extends BaseModel
         'stock_quantity'        => 'integer',
         'out_of_order_quantity' => 'integer',
         'replacement_price'     => 'float',
-        'serial_number'         => 'string',
         'is_hidden_on_bill'     => 'boolean',
         'is_discountable'       => 'boolean',
         'note'                  => 'string',
     ];
 
+    public function getStockQuantityAttribute($value)
+    {
+        if ($this->is_unitary) {
+            $value = $this->Units()->count();
+        }
+        return $this->castAttribute('stock_quantity', $value);
+    }
+
+    public function getOutOfOrderQuantityAttribute($value)
+    {
+        if ($this->is_unitary) {
+            $value = $this->Units()->where('is_broken', true)->count();
+        }
+        return $this->castAttribute('out_of_order_quantity', $value);
+    }
+
     public function getParkAttribute()
     {
+        if ($this->is_unitary) {
+            return null;
+        }
+
         $park = $this->Park()->first();
         return $park ? $park->toArray() : null;
+    }
+
+    public function getUnitsAttribute()
+    {
+        $units = $this->Units()->get();
+        return $units ? $units->toArray() : [];
     }
 
     public function getCategoryAttribute()
@@ -166,6 +247,12 @@ class Material extends BaseModel
         return $events ? $events->toArray() : null;
     }
 
+    public function getDocumentsAttribute()
+    {
+        $documents = $this->Documents()->get();
+        return $documents ? $documents->toArray() : null;
+    }
+
     // ——————————————————————————————————————————————————————
     // —
     // —    Setters
@@ -176,6 +263,7 @@ class Material extends BaseModel
         'name',
         'reference',
         'description',
+        'is_unitary',
         'park_id',
         'category_id',
         'sub_category_id',
@@ -183,7 +271,6 @@ class Material extends BaseModel
         'stock_quantity',
         'out_of_order_quantity',
         'replacement_price',
-        'serial_number',
         'is_hidden_on_bill',
         'is_discountable',
         'note',
@@ -205,84 +292,121 @@ class Material extends BaseModel
             return [];
         }
 
-        $Event = new Event();
-        $events = $Event->setPeriod($start, $end)->getAll();
+        $events = (new Event())->setPeriod($start, $end)->getAll();
         if ($exceptEventId) {
             $events = $events->where('id', '!=', $exceptEventId);
         }
+
         $events = $events->with('Materials')->get()->toArray();
 
-        $periods = $this->_getSplittedPeriods($events);
-
-        foreach ($data as $index => $material) {
-            $materialId = $material['id'];
-            $remainingQuantity = (int)$material['stock_quantity'] - (int)$material['out_of_order_quantity'];
-            $quantityPerPeriod = [0];
-
-            foreach ($periods as $periodIndex => $period) {
-                $quantityPerPeriod[$periodIndex] = 0;
-                $overlapEvents = array_filter($events, function ($event) use ($period) {
-                    return (strtotime($event['start_date']) < strtotime($period[1]) &&
-                        strtotime($event['end_date']) > strtotime($period[0]));
-                });
-
-                foreach ($overlapEvents as $event) {
-                    $eventMaterial = $this->_getMaterialFromEvent($materialId, $event);
-                    if (empty($eventMaterial)) {
+        foreach ($data as &$material) {
+            if ($material['is_unitary']) {
+                $usedUnits = [];
+                foreach ($events as $event) {
+                    $eventMaterialIndex = array_search($material['id'], array_column($event['materials'], 'id'));
+                    if ($eventMaterialIndex === false) {
                         continue;
                     }
-                    $quantityPerPeriod[$periodIndex] += $eventMaterial['pivot']['quantity'];
+
+                    $eventMaterial = $event['materials'][$eventMaterialIndex];
+                    $usedUnits = array_merge($usedUnits, $eventMaterial['pivot']['units']);
                 }
+
+                // - Ajoute le champ `is_available` aux unités des matériels
+                // + Supprime les unités marquées comme "utilisé" qui sont cassées.
+                //   (=> Elles ne comptent pas dans le calcul des unités utilisées)
+                if (array_key_exists('units', $material)) {
+                    foreach ($material['units'] as &$unit) {
+                        $unit['is_available'] = !in_array($unit['id'], $usedUnits, true);
+
+                        if ($unit['is_broken']) {
+                            $usedUnits = array_diff($usedUnits, [$unit['id']]);
+                        }
+                    }
+                }
+
+                $usedCount = count(array_unique($usedUnits));
+            } else {
+                $quantityPerPeriod = [0];
+                $periods = splitPeriods($events);
+                foreach ($periods as $periodIndex => $period) {
+                    $overlapEvents = array_filter($events, function ($event) use ($period) {
+                        return (
+                            strtotime($event['start_date']) < strtotime($period[1]) &&
+                            strtotime($event['end_date']) > strtotime($period[0])
+                        );
+                    });
+
+                    $quantityPerPeriod[$periodIndex] = 0;
+                    foreach ($overlapEvents as $event) {
+                        $eventMaterialIndex = array_search($material['id'], array_column($event['materials'], 'id'));
+                        if ($eventMaterialIndex === false) {
+                            continue;
+                        }
+
+                        $eventMaterial = $event['materials'][$eventMaterialIndex];
+                        $quantityPerPeriod[$periodIndex] += $eventMaterial['pivot']['quantity'];
+                    }
+                }
+                $usedCount = max($quantityPerPeriod);
             }
 
-            $data[$index]['remaining_quantity'] = $remainingQuantity - max($quantityPerPeriod);
+            $remainingQuantity = (int)$material['stock_quantity'] - (int)$material['out_of_order_quantity'];
+            $material['remaining_quantity'] = max($remainingQuantity - $usedCount, 0);
         }
 
         return $data;
     }
 
-    // ------------------------------------------------------
-    // -
-    // -    Internal Methods
-    // -
-    // ------------------------------------------------------
+    public function getAllFiltered(
+        array $conditions,
+        bool $withDeleted = false,
+        bool $ignoreUnitaries = false
+    ): Builder {
+        $parkId = array_key_exists('park_id', $conditions) ? $conditions['park_id'] : null;
+        unset($conditions['park_id']);
 
-    protected function _getSplittedPeriods(array $events): array
-    {
-        $timeLine = [];
-        foreach ($events as $event) {
-            $timeLine[] = $event['start_date'];
-            $timeLine[] = $event['end_date'];
+        $builder = parent::getAllFiltered($conditions, $withDeleted);
+
+        if ($parkId) {
+            $builder->where(function ($query) use ($parkId, $ignoreUnitaries) {
+                $query->where('park_id', $parkId);
+
+                if (!$ignoreUnitaries) {
+                    $query->orWhereHas(
+                        'units',
+                        function ($subQuery) use ($parkId) {
+                            $subQuery->where('park_id', $parkId);
+                        }
+                    );
+                } else {
+                    $query->orWhere('is_unitary', true);
+                }
+            });
         }
 
-        $timeLine = array_unique($timeLine);
-        $timeLineCount = count($timeLine);
-        if ($timeLineCount < 2) {
-            return [];
-        }
-
-        usort($timeLine, function ($dateTime1, $dateTime2) {
-            if ($dateTime1 === $dateTime2) {
-                return 0;
-            }
-            return strtotime($dateTime1) < strtotime($dateTime2) ? -1 : 1;
-        });
-
-        $periods = [];
-        for ($i = 0; $i < $timeLineCount - 1; $i++) {
-            $periods[] = [$timeLine[$i], $timeLine[$i + 1]];
-        }
-
-        return $periods;
+        return $builder;
     }
 
-    protected function _getMaterialFromEvent(int $materialId, array $event): array
+    public function getOneForUser(int $id, ?int $userId = null): array
     {
-        $eventMaterialIndex = array_search(
-            $materialId,
-            array_column($event['materials'], 'id')
-        );
+        $material = $this->find($id);
+        if (!$material) {
+            throw new Errors\NotFoundException;
+        }
 
-        return $eventMaterialIndex === false ? [] : $event['materials'][$eventMaterialIndex];
+        $materialData = $material->toArray();
+
+        if ($userId !== null && $material->is_unitary) {
+            $restrictedParks = User::find($userId)->restricted_parks;
+            if (!empty($restrictedParks)) {
+                $units = $material->Units()->whereNotIn('park_id', $restrictedParks);
+                $materialData['units'] = $units->get()->toArray();
+                $materialData['stock_quantity'] = $units->count();
+                $materialData['out_of_order_quantity'] = $units->where('is_broken', true)->count();
+            }
+        }
+
+        return $materialData;
     }
 }

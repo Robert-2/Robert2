@@ -2,75 +2,123 @@
   <div class="SideMenu">
     <router-link
       to="/"
-      tag="li"
       exact
-      class="SideMenu__item"
+      custom
+      v-slot="{ navigate, isActive }"
     >
-      <i class="fas fa-calendar-alt" /><br>
-      <span class="SideMenu__item__title">{{$t('page-calendar.title')}}</span>
+      <li
+        @click="navigate"
+        class="SideMenu__item"
+        :class="{ 'SideMenu__item--active': isActive }"
+      >
+        <i class="fas fa-calendar-alt" /><br>
+        <span class="SideMenu__item__title">{{$t('page-calendar.title')}}</span>
+      </li>
     </router-link>
     <router-link
       v-if="isAdmin || isMember"
       to="/materials"
-      tag="li"
-      class="SideMenu__item"
+      custom
+      v-slot="{ navigate, isActive }"
     >
-      <i class="fas fa-box" /><br>
-      <span class="SideMenu__item__title">{{$t('page-materials.title')}}</span>
+      <li
+        @click="navigate"
+        class="SideMenu__item"
+        :class="{ 'SideMenu__item--active': isActive }"
+      >
+        <i class="fas fa-box" /><br>
+        <span class="SideMenu__item__title">{{$t('page-materials.title')}}</span>
+      </li>
     </router-link>
     <router-link
       v-if="isAdmin || isMember"
       to="/technicians"
-      tag="li"
-      class="SideMenu__item"
+      custom
+      v-slot="{ navigate, isActive }"
     >
-      <i class="fas fa-people-carry" /><br>
-      <span class="SideMenu__item__title">{{$t('page-technicians.title')}}</span>
+      <li
+        @click="navigate"
+        class="SideMenu__item"
+        :class="{ 'SideMenu__item--active': isActive }"
+      >
+        <i class="fas fa-people-carry" /><br>
+        <span class="SideMenu__item__title">{{$t('page-technicians.title')}}</span>
+      </li>
     </router-link>
     <router-link
       v-if="isAdmin || isMember"
       to="/beneficiaries"
-      tag="li"
-      class="SideMenu__item"
+      custom
+      v-slot="{ navigate, isActive }"
     >
-      <i class="fas fa-address-book" /><br>
-      <span class="SideMenu__item__title">{{$t('page-beneficiaries.title')}}</span>
+      <li
+        @click="navigate"
+        class="SideMenu__item"
+        :class="{ 'SideMenu__item--active': isActive }"
+      >
+        <i class="fas fa-address-book" /><br>
+        <span class="SideMenu__item__title">{{$t('page-beneficiaries.title')}}</span>
+      </li>
     </router-link>
     <router-link
       v-if="isAdmin"
       to="/categories"
-      tag="li"
-      class="SideMenu__item"
+      custom
+      v-slot="{ navigate, isActive }"
     >
-      <i class="fas fa-sitemap" /><br>
-      <span class="SideMenu__item__title">{{$t('page-categories.title')}}</span>
+      <li
+        @click="navigate"
+        class="SideMenu__item"
+        :class="{ 'SideMenu__item--active': isActive }"
+      >
+        <i class="fas fa-sitemap" /><br>
+        <span class="SideMenu__item__title">{{$t('page-categories.title')}}</span>
+      </li>
     </router-link>
     <router-link
       v-if="isAdmin"
       to="/tags"
-      tag="li"
-      class="SideMenu__item"
+      custom
+      v-slot="{ navigate, isActive }"
     >
-      <i class="fas fa-tags" /><br>
-      <span class="SideMenu__item__title">{{$t('page-tags.title')}}</span>
+      <li
+        @click="navigate"
+        class="SideMenu__item"
+        :class="{ 'SideMenu__item--active': isActive }"
+      >
+        <i class="fas fa-tags" /><br>
+        <span class="SideMenu__item__title">{{$t('page-tags.title')}}</span>
+      </li>
     </router-link>
     <router-link
       v-if="isAdmin"
       to="/parks"
-      tag="li"
-      class="SideMenu__item"
+      custom
+      v-slot="{ navigate, isActive }"
     >
-      <i class="fas fa-industry" /><br>
-      <span class="SideMenu__item__title">{{$t('page-parks.title')}}</span>
+      <li
+        @click="navigate"
+        class="SideMenu__item"
+        :class="{ 'SideMenu__item--active': isActive }"
+      >
+        <i class="fas fa-industry" /><br>
+        <span class="SideMenu__item__title">{{$t('page-parks.title')}}</span>
+      </li>
     </router-link>
     <router-link
       v-if="isAdmin"
       to="/users"
-      tag="li"
-      class="SideMenu__item"
+      custom
+      v-slot="{ navigate, isActive }"
     >
-      <i class="fas fa-users-cog" /><br>
-      <span class="SideMenu__item__title">{{$t('page-users.title')}}</span>
+      <li
+        @click="navigate"
+        class="SideMenu__item"
+        :class="{ 'SideMenu__item--active': isActive }"
+      >
+        <i class="fas fa-users-cog" /><br>
+        <span class="SideMenu__item__title">{{$t('page-users.title')}}</span>
+      </li>
     </router-link>
   </div>
 </template>
@@ -81,13 +129,15 @@
 </style>
 
 <script>
-import store from '@/store';
-
 export default {
   name: 'SideMenu',
   computed: {
-    isAdmin() { return store.state.user.groupId === 'admin'; },
-    isMember() { return store.state.user.groupId === 'member'; },
+    isAdmin() {
+      return this.$store.getters['auth/is']('admin');
+    },
+    isMember() {
+      return this.$store.getters['auth/is']('member');
+    },
   },
 };
 </script>

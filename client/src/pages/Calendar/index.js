@@ -2,12 +2,11 @@ import moment from 'moment';
 import { Timeline } from 'vue-visjs';
 import { DATE_DB_FORMAT, DATE_QUERY_FORMAT } from '@/config/constants';
 import ModalConfig from '@/config/modalConfig';
-import store from '@/store';
 import Alert from '@/components/Alert';
 import Help from '@/components/Help/Help.vue';
+import EventDetails from '@/components/EventDetails/EventDetails.vue';
 import CalendarHeader from './Header/Header.vue';
-import EventDetails from './EventDetails/EventDetails.vue';
-import utils from './utils';
+import formatEvent from './utils';
 
 const ONE_DAY = 1000 * 3600 * 24;
 
@@ -30,7 +29,8 @@ export default {
       end = savedEnd;
     }
 
-    const isVisitor = store.state.user.groupId === 'visitor';
+    const isVisitor = this.$store.getters['auth/is']('visitor');
+    const parkFilter = this.$route.query.park;
 
     return {
       help: 'page-calendar.help',
@@ -40,6 +40,7 @@ export default {
       fetchEnd: moment().add(1, 'months').endOf('month'),
       isModalOpened: false,
       hasMissingMaterialFilter: false,
+      parkId: parkFilter ? Number.parseInt(parkFilter, 10) : null,
       events: [],
       allEvents: [],
       timelineOptions: {
@@ -53,11 +54,11 @@ export default {
         },
         start,
         end,
-        locale: store.state.i18n.locale,
-        minHeight: 300,
+        locale: this.$store.state.i18n.locale,
+        minHeight: '100%',
         orientation: 'top',
         zoomMin: ONE_DAY * 7,
-        zoomMax: ONE_DAY * 60,
+        zoomMax: ONE_DAY * 6 * 30,
         tooltip: { followMouse: true, overflowMethod: 'flip' },
         moment: (date) => moment(date),
         onMove: (item, callback) => {
@@ -114,10 +115,21 @@ export default {
     this.getEventsData();
   },
   methods: {
-    filterEventsByMissingMaterials() {
-      this.events = this.allEvents.filter(
-        ({ hasMissingMaterials }) => !!hasMissingMaterials,
-      );
+    filterEvents() {
+      let events = [...this.allEvents];
+      if (this.parkId) {
+        events = events.filter(
+          ({ parks: eventParks }) => eventParks?.includes(this.parkId),
+        );
+      }
+
+      if (this.hasMissingMaterialFilter) {
+        events = events.filter(
+          ({ hasMissingMaterials }) => !!hasMissingMaterials,
+        );
+      }
+
+      this.events = events;
     },
 
     getEventsData() {
@@ -132,13 +144,11 @@ export default {
       this.$http.get(this.$route.meta.resource, { params })
         .then(({ data }) => {
           this.events = data.data.map(
-            (event) => utils.formatTimelineEvent(event, this.$t),
+            (event) => formatEvent(event, this.$t),
           );
 
           this.allEvents = [...this.events];
-          if (this.hasMissingMaterialFilter) {
-            this.filterEventsByMissingMaterials();
-          }
+          this.filterEvents();
 
           this.isLoading = false;
         })
@@ -232,12 +242,12 @@ export default {
 
     handleFilterMissingMaterial(hasMissingMaterialFilter) {
       this.hasMissingMaterialFilter = hasMissingMaterialFilter;
+      this.filterEvents();
+    },
 
-      if (hasMissingMaterialFilter) {
-        this.filterEventsByMissingMaterials();
-      } else {
-        this.events = [...this.allEvents];
-      }
+    handleFilterByPark(parkId) {
+      this.parkId = parkId === '' ? null : Number.parseInt(parkId, 10);
+      this.filterEvents();
     },
   },
 };

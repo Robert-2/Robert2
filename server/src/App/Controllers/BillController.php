@@ -3,18 +3,16 @@ declare(strict_types=1);
 
 namespace Robert2\API\Controllers;
 
+use Robert2\API\Controllers\Traits\WithPdf;
+use Robert2\API\Errors;
+use Robert2\API\Services\Auth;
+use Robert2\API\Models\Bill;
 use Slim\Http\Request;
 use Slim\Http\Response;
-
-use Robert2\API\Errors;
-use Robert2\API\Models\Bill;
-use Robert2\API\Controllers\Traits\AuthUser;
-use Robert2\API\Controllers\Traits\WithPdf;
 
 class BillController
 {
     use WithPdf;
-    use AuthUser;
 
     protected $container;
     protected $model;
@@ -53,12 +51,8 @@ class BillController
     public function create(Request $request, Response $response): Response
     {
         $eventId = (int)$request->getAttribute('eventId');
-        $authUserData = $this->_getAuthUserData($request);
-
         $discountRate = (float)$request->getParsedBodyParam('discountRate');
-
-        $result = $this->model->createFromEvent($eventId, $authUserData['id'], $discountRate);
-
+        $result = $this->model->createFromEvent($eventId, Auth::user()->id, $discountRate);
         return $response->withJson($result->toArray(), SUCCESS_CREATED);
     }
 

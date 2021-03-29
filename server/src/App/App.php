@@ -6,8 +6,6 @@ namespace Robert2\API;
 use Robert2\API\Config as Config;
 use Robert2\API\Errors as Errors;
 use Robert2\API\Middlewares as Middlewares;
-use Slim\Http\Headers;
-use Slim\Http\Response;
 
 class App
 {
@@ -17,7 +15,7 @@ class App
     {
         $this->app = new \Slim\App([
             'settings' => Config\Config::getSettings(),
-            'response' => $this->_getCORSResponse()
+            'response' => buildResponse(200),
         ]);
 
         $this->_setContainer();
@@ -31,7 +29,7 @@ class App
             $settings = $this->app->getContainer()->get('settings');
             $settings->replace([
                 'displayErrorDetails' => true,
-                'routerCacheFile'     => false,
+                'routerCacheFile' => false,
             ]);
         }
 
@@ -44,24 +42,6 @@ class App
     // -
     // ------------------------------------------------------
 
-    private function _getCORSResponse()
-    {
-        return function ($container): Response {
-            $settings = $container->get('settings');
-            $headers = ['Content-Type' => 'text/html; charset=UTF-8'];
-
-            if (!isTestMode() && $settings['enableCORS']) {
-                $headers = array_merge($headers, [
-                    'Access-Control-Allow-Origin'  => '*',
-                    'Access-Control-Allow-Headers' => 'X-Requested-With, Content-Type, Accept, Origin, Authorization',
-                    'Access-Control-Allow-Methods' => 'GET, POST, PUT, DELETE, OPTIONS'
-                ]);
-            }
-
-            return (new Response(200, new Headers($headers)))->withProtocolVersion('1.1');
-        };
-    }
-
     private function _setContainer(): void
     {
         $container = $this->app->getContainer();
@@ -71,6 +51,7 @@ class App
         $container = $this->_setHttpCachePovider($container);
         $container = $this->_setErrorHandlers($container);
         $container = $this->_setControllers($container);
+        $container = $this->_setServices($container);
     }
 
     private function _setHttpCachePovider(\Slim\Container $container): \Slim\Container
@@ -124,23 +105,33 @@ class App
         return $container;
     }
 
+    private function _setServices(\Slim\Container $container): \Slim\Container
+    {
+        $container['auth'] = new Services\Auth([
+            new Services\Auth\JWT,
+            new Services\Auth\CAS,
+        ]);
+
+        return $container;
+    }
+
     private function _setMiddlewares(): void
     {
+        $container = $this->app->getContainer();
+
         $this->app->add(new Middlewares\Pagination);
 
+        // - On passe l'identification si c'est une requête OPTIONS.
         $request = $this->app->getContainer()->get('request');
-        // - Auth middlewares are skipped for unit tests
-        if (!isTestMode() && !$request->isOptions()) {
+        if (!$request->isOptions()) {
             $this->app->add(new Middlewares\Acl);
-            // - JWT security middleware (added last to be executed first)
-            $this->app->add(Middlewares\Security::initJwtAuth());
+            $this->app->add([$container->get('auth'), 'middleware']);
         }
     }
 
     private function _setAppRoutes()
     {
         // - "Static" routes
-        $this->app->get('/apidoc', 'HomeController:apidoc')->setName('apidoc');
         $this->app->map(['GET', 'POST'], '/install', 'HomeController:install')->setName('install');
 
         $settings = $this->app->getContainer()->get('settings');
@@ -169,8 +160,14 @@ class App
         // - Download files
         $this->app->get('/bills/{id:[0-9]+}/pdf[/]', 'BillController:getOnePdf')->setName('getBillPdf');
         $this->app->get('/events/{id:[0-9]+}/pdf[/]', 'EventController:getOnePdf')->setName('getEventPdf');
+        $this->app->get('/documents/{id:[0-9]+}/download[/]', 'DocumentController:getOne')->setName('getDocumentFile');
+        $this->app->get('/material-units/{id:[0-9]+}/barcode', 'MaterialUnitController:barCode');
+
+        // - Login services
+        $this->app->get('/login/cas', 'AuthController:loginWithCAS');
+        $this->app->get('/logout', 'AuthController:logout');
 
         // - All remaining non-API routes should be handled by Front-End Router
-        $this->app->get('/[{path:.*}]', 'HomeController:entrypoint');
+        $this->app->get('/[{path:.*}]', 'HomeController:webclient');
     }
 }

@@ -1,0 +1,25 @@
+.MaterialViewAvailabilities {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  &__listing {
+    flex: 3 1 0;
+    overflow: auto;
+    margin: $content-padding-small-vertical 0;
+    padding: 0;
+  }
+
+  &__timeline {
+    flex: 2 1 0;
+    margin: $content-padding-small-vertical 0;
+  }
+
+  &__loading {
+    position: absolute;
+    bottom: 20%;
+    left: 50%;
+  }
+}

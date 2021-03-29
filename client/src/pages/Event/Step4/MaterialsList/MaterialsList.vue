@@ -2,16 +2,14 @@
   <div class="MaterialsList">
     <header class="MaterialsList__header">
       <MaterialsFilter
-        :baseRoute="`/events/${eventId}`"
-        @change="refreshTableAndPagination"
+        ref="filters"
+        :baseRoute="`/events/${event.id}`"
+        @change="handleFiltersChanges"
       />
       <div class="MaterialsList__header__extra-filters">
-        <div class="MaterialsList__header__extra-filters__filter">
+        <div v-if="hasMaterial" class="MaterialsList__header__extra-filters__filter">
           {{ $t('page-events.display-only-selected-materials') }}
-          <SwitchToggle
-            :value="showSelectedOnly"
-            @input="handleToggleSelectedOnly"
-          />
+          <SwitchToggle :value="showSelectedOnly" @input="setSelectedOnly" />
         </div>
       </div>
     </header>
@@ -21,15 +19,35 @@
         <i class="fas fa-circle-notch fa-spin fa-2x" />
         {{ $t('help-loading') }}
       </div>
-      <v-server-table
+      <v-client-table
         ref="DataTable"
         name="materialsListTable"
+        :data="materials"
         :columns="columns"
-        :options="options"
+        :options="tableOptions"
       >
+        <template #child-toggler="{ row: material }">
+            <button
+              type="button"
+              class="MaterialsList__child-toggler__button"
+              @click="toggleChild(material.id)"
+              v-if="material.is_unitary"
+            >
+              <i v-if="!isChildOpen(material.id)" class="fas fa-caret-right" />
+              <i v-else class="fas fa-caret-down" />
+            </button>
+        </template>
+        <template #child_row="{ row: material }">
+          <Units
+            :material="material"
+            :event="event"
+            :filters="getFilters()"
+            @change="handleChanges"
+          />
+        </template>
         <div slot="qty" slot-scope="material">
           <span :key="`qty-${material.row.id}-${renderId}`">
-            {{ getQuantity(material.row.id) > 0 ? `${getQuantity(material.row.id)}\u00a0×` : '' }}
+            {{ getQuantity(material.row) > 0 ? `${getQuantity(material.row)}\u00a0×` : '' }}
           </span>
         </div>
         <div slot="remaining_quantity" slot-scope="material">
@@ -37,10 +55,8 @@
             :key="`remain-qty-${material.row.id}-${renderId}`"
             class="MaterialsList__remaining"
             :class="{
-              'MaterialsList__remaining--zero':
-                material.row.remaining_quantity === getQuantity(material.row.id),
-              'MaterialsList__remaining--empty':
-                material.row.remaining_quantity < getQuantity(material.row.id),
+              'MaterialsList__remaining--zero': getRemainingQuantity(material.row) === 0,
+              'MaterialsList__remaining--empty': getRemainingQuantity(material.row) < 0,
             }"
           >
             {{ $t('remaining-count', { count: getRemainingQuantity(material.row) }) }}
@@ -54,29 +70,50 @@
           slot="quantity"
           slot-scope="material"
           :key="`quantities-${material.row.id}-${renderId}`"
-          :materialId="material.row.id"
-          :initialQuantity="getQuantity(material.row.id)"
-          :maxQuantity="material.row.remaining_quantity"
-          @decrement="decrement(material.row.id)"
+          :material="material.row"
+          :initialQuantity="getQuantity(material.row)"
+          @decrement="decrement(material.row)"
           @setQuantity="setQuantity"
-          @increment="increment(material.row.id)"
+          @increment="increment(material.row)"
         />
         <div slot="amount" slot-scope="material">
           <span :key="`amount-${material.row.id}-${renderId}`">
-            {{ formatAmount(material.row.rental_price * getQuantity(material.row.id)) }}
+            {{ formatAmount(material.row.rental_price * getQuantity(material.row)) }}
           </span>
         </div>
         <div slot="actions" slot-scope="material">
           <button
             :key="`clear-${material.row.id}-${renderId}`"
-            v-show="getQuantity(material.row.id) > 0"
+            v-show="getQuantity(material.row) > 0"
+            type="button"
+            role="button"
             class="warning"
-            @click="setQuantity(material.row.id, 0)"
+            @click="setQuantity(material.row, 0)"
           >
             <i class="fas fa-backspace" />
           </button>
         </div>
-      </v-server-table>
+      </v-client-table>
+      <div v-if="!isLoading && hasMaterial" class="MaterialsList__add-more">
+        <button
+          v-if="showSelectedOnly"
+          type="button"
+          role="button"
+          @click="setSelectedOnly(false)"
+        >
+          <i class="fas fa-plus" />
+          {{ $t('page-events.display-all-materials-to-add-some') }}
+        </button>
+        <button
+          v-if="!showSelectedOnly"
+          type="button"
+          role="button"
+          @click="setSelectedOnly(true)"
+        >
+          <i class="fas fa-eye" />
+          {{ $t('page-events.display-only-event-materials') }}
+        </button>
+      </div>
     </div>
   </div>
 </template>

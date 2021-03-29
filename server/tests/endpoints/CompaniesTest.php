@@ -196,8 +196,11 @@ final class CompaniesTest extends ApiTestCase
             'postal_code' => '75000',
             'locality'    => 'Paris',
             'country_id'  => 1,
+            'phone'       => null,
+            'note'        => null,
             'created_at'  => 'fakedTestContent',
             'updated_at'  => 'fakedTestContent',
+            'deleted_at'  => null,
             'country'     => [
                 'id'   => 1,
                 'name' => 'France',
@@ -227,8 +230,10 @@ final class CompaniesTest extends ApiTestCase
             'locality'    => 'Paris',
             'country_id'  => 1,
             'phone'       => '+0033625252125',
+            'note'        => null,
             'created_at'  => 'fakedTestContent',
             'updated_at'  => 'fakedTestContent',
+            'deleted_at'  => null,
             'country'     => [
                 'id'   => 1,
                 'name' => 'France',

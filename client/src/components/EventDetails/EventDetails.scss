@@ -1,0 +1,109 @@
+.EventDetails {
+  display: flex;
+  flex-direction: column;
+
+  &__loading {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 250px;
+    background: $bg-color-side-nav;
+    color: $text-nav-color;
+
+    .fas {
+      margin-right: .5rem;
+    }
+  }
+
+  &__content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 200px;
+    max-height: 100vh;
+    overflow-y: auto;
+
+    &__body {
+      flex: 1;
+      padding: 1.5rem;
+      background-color: $bg-color-body;
+    }
+  }
+
+  &__error {
+    margin-bottom: $content-padding-small-vertical;
+    color: $text-danger-color;
+  }
+
+  &__location,
+  &__no-beneficiary,
+  &__beneficiaries,
+  &__assignees,
+  &__description,
+  &__confirmation,
+  &__materials-empty {
+    font-size: 1.2rem;
+    margin-bottom: $content-padding-small-vertical;;
+
+    .fas {
+      width: 1.5rem;
+      margin-right: .5rem;
+      text-align: center;
+    }
+  }
+
+  &__beneficiary,
+  &__assignee {
+    display: inline-block;
+  }
+
+  &__beneficiary + &__beneficiary,
+  &__assignee + &__assignee {
+    margin-left: .5rem;
+
+    &::before {
+      content: '|';
+      margin-right: .3rem;
+      color: $text-base-color;
+    }
+  }
+
+  &__no-beneficiary {
+    color: $text-danger-color;
+  }
+
+  &__confirmation {
+    color: $text-warning-color;
+
+    &--confirmed {
+      color: $text-success-color;
+    }
+  }
+
+  &__description {
+    color: $text-nav-color;
+    white-space: pre-wrap;
+    line-height: 1.5;
+  }
+
+  &__materials-empty {
+    color: $text-danger-color;
+
+    .fas {
+      margin-right: .3rem;
+    }
+  }
+
+  &__not-billable {
+    font-size: 1.2rem;
+    color: $text-warning-color;
+  }
+
+  &__totals {
+    .EventTotals {
+      padding: 0;
+      text-align: left;
+    }
+  }
+}

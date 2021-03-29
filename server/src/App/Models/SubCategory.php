@@ -4,20 +4,13 @@ declare(strict_types=1);
 namespace Robert2\API\Models;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Respect\Validation\Validator as V;
+use Robert2\API\Validation\Validator as V;
 
 class SubCategory extends BaseModel
 {
     use SoftDeletes;
 
-    protected $table = 'sub_categories';
-
-    protected $_modelName = 'SubCategory';
-    protected $_orderField = 'name';
-    protected $_orderDirection = 'asc';
-
-    protected $_allowedSearchFields = ['name'];
-    protected $_searchField = 'name';
+    protected $searchField = 'name';
 
     public function __construct(array $attributes = [])
     {
@@ -47,13 +40,13 @@ class SubCategory extends BaseModel
             'id',
             'name',
             'description',
+            'is_unitary',
             'reference',
             'park_id',
             'rental_price',
             'stock_quantity',
             'out_of_order_quantity',
             'replacement_price',
-            'serial_number',
         ];
 
         return $this->hasMany('Robert2\API\Models\Material')->select($fields);

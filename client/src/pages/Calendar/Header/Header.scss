@@ -2,22 +2,30 @@
   display: flex;
   flex-flow: row wrap;
   align-items: center;
-  padding: $content-padding-small-horizontal $content-padding-small-vertical 0;
+  padding: $content-padding-large-horizontal $content-padding-small-vertical 0;
 
-  &__left {
-    flex: 0 0 auto;
+  &__timeline-actions {
+    flex: 0 1 auto;
     display: flex;
     align-items: center;
     margin-bottom: $content-padding-large-horizontal;
   }
 
-  &__center {
-    flex: 1;
+  &__filters {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: $content-padding-large-horizontal;
+  }
+
+  &__loading-container {
+    flex: 0 0 130px;
     min-width: 130px;
     margin-bottom: $content-padding-large-horizontal;
   }
 
-  &__right {
+  &__actions {
     flex: 1 0 auto;
     display: flex;
     align-items: center;
@@ -29,10 +37,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    color: $text-warning-color;
+    font-weight: 600;
 
     .fa-spin {
       margin-bottom: .1rem;
-      margin-right: .5rem;
+      margin-right: $content-padding-small-horizontal;
       font-size: 1.8rem;
     }
   }
@@ -58,6 +68,7 @@
 
   &__button {
     flex: 0 0 auto;
+    margin: 0 .5rem 0 0;
 
     &__title {
       display: none;
@@ -67,21 +78,48 @@
 
   &__filter {
     flex: 0 0 auto;
-    margin-left: 1rem;
+    margin-right: 1rem;
     display: flex;
-    flex-direction: column;
     align-items: center;
+
+    &__label {
+      max-width: 170px;
+    }
 
     .SwitchToggle {
       margin-top: 3px;
+    }
+
+    &__select {
+      padding: .55rem .78rem;
+    }
+
+    &--active {
+      color: $text-warning-color;
+
+      .CalendarHeader__filter__select {
+        background-color: $bg-color-button-warning;
+      }
+
+      .CalendarHeader__filter__label {
+        color: $text-warning-color;
+      }
+
+      .SwitchToggle__button {
+        background-color: $bg-color-button-warning;
+      }
     }
   }
 
   @media(min-width: $screen-mobile) {
     padding: $content-padding-large-horizontal $content-padding-large-vertical 0;
+
+    &__button__title {
+      display: inline-block;
+    }
   }
 
-  @media(min-width: $screen-desktop) {
+  @media(min-width: $screen-tablet) {
     &__center-date {
       min-width: 200px;
 
@@ -89,11 +127,11 @@
         display: block;
       }
     }
+  }
 
-    &__button {
-      &__title {
-        display: inline-block;
-      }
+  @media(min-width: $screen-big-desktop) {
+    &__filters {
+      justify-content: flex-end;
     }
   }
 }

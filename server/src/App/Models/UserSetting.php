@@ -4,19 +4,13 @@ declare(strict_types=1);
 namespace Robert2\API\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Respect\Validation\Validator as V;
+use Robert2\API\Validation\Validator as V;
 use Illuminate\Database\Eloquent\Builder;
 
 use Robert2\API\Errors;
 
 class UserSetting extends BaseModel
 {
-    protected $table = 'user_settings';
-
-    protected $_modelName = 'UserSetting';
-    protected $_orderField = 'id';
-    protected $_orderDirection = 'asc';
-
     protected $dates = [
         'created_at',
         'updated_at',

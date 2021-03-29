@@ -10,11 +10,13 @@
             @openStep="openStep"
           />
           <MiniSummary />
-          <Help
-            :message="help"
-            :error="error"
-            :isLoading="isLoading"
-          />
+          <div class="Event__panel__help">
+            <Help
+              :message="help"
+              :error="error"
+              :isLoading="isLoading"
+            />
+          </div>
         </div>
         <EventStep1
           v-if="currentStep === 1"

@@ -15,6 +15,11 @@ final class SubCategoryTest extends ModelTestCase
         $this->model = new Models\SubCategory();
     }
 
+    public function testTableName(): void
+    {
+        $this->assertEquals('sub_categories', $this->model->getTable());
+    }
+
     public function testGetAll(): void
     {
         $result = $this->model->getAll()->get()->toArray();
@@ -51,42 +56,85 @@ final class SubCategoryTest extends ModelTestCase
         $results = $SubCategory->materials;
         $this->assertEquals([
             [
-                'id'                     => 1,
-                'name'                   => "Console Yamaha CL3",
-                'description'            => "Console numérique 64 entrées / 8 sorties + Master + Sub",
-                'reference'              => "CL3",
-                'park_id'                => 1,
-                'rental_price'           => 300.0,
-                'stock_quantity'         => 5,
-                'out_of_order_quantity'  => 1,
-                'replacement_price'      => 19400.0,
-                'serial_number'          => "Y-23887-010066",
-                'attributes'             => [
+                'id' => 6,
+                'name' => 'Behringer X Air XR18',
+                'is_unitary' => true,
+                'description' => 'Mélangeur numérique 18 canaux',
+                'reference' => 'XR18',
+                'park_id' => null,
+                'rental_price' => 49.99,
+                'stock_quantity' => 3,
+                'out_of_order_quantity' => 1,
+                'replacement_price' => 419.0,
+                'tags' => [],
+                'attributes' => [
                     [
-                        'id'    => 3,
-                        'name'  => 'Puissance',
-                        'type'  => 'integer',
-                        'unit'  => 'W',
+                        'id' => 5,
+                        'name' => "Date d'achat",
+                        'type' => "date",
+                        'unit' => null,
+                        'value' => '2021-01-28',
+                    ],
+                ],
+                'units' => [
+                    [
+                        'id' => 1,
+                        'serial_number' => 'XR18-1',
+                        'is_broken' => false,
+                        'park_id' => 1,
+                    ],
+                    [
+                        'id' => 2,
+                        'serial_number' => 'XR18-2',
+                        'is_broken' => false,
+                        'park_id' => 1,
+                    ],
+                    [
+                        'id' => 3,
+                        'serial_number' => 'XR18-3',
+                        'is_broken' => true,
+                        'park_id' => 2,
+                    ],
+                ],
+            ],
+            [
+                'id' => 1,
+                'name' => "Console Yamaha CL3",
+                'is_unitary' => false,
+                'description' => "Console numérique 64 entrées / 8 sorties + Master + Sub",
+                'reference' => "CL3",
+                'park_id' => 1,
+                'rental_price' => 300.0,
+                'stock_quantity' => 5,
+                'out_of_order_quantity' => 1,
+                'replacement_price' => 19400.0,
+                'attributes' => [
+                    [
+                        'id' => 3,
+                        'name' => 'Puissance',
+                        'type' => 'integer',
+                        'unit' => 'W',
                         'value' => 850,
                     ],
                     [
-                        'id'    => 2,
-                        'name'  => 'Couleur',
-                        'type'  => 'string',
-                        'unit'  => null,
+                        'id' => 2,
+                        'name' => 'Couleur',
+                        'type' => 'string',
+                        'unit' => null,
                         'value' => 'Grise',
                     ],
                     [
-                        'id'    => 1,
-                        'name'  => 'Poids',
-                        'type'  => 'float',
-                        'unit'  => 'kg',
+                        'id' => 1,
+                        'name' => 'Poids',
+                        'type' => 'float',
+                        'unit' => 'kg',
                         'value' => 36.5,
                     ],
                 ],
                 'tags' => [
                     ['id' => 3, 'name' => 'pro']
                 ],
+                'units' => [],
             ],
         ], $results);
     }
