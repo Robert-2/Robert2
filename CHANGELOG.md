@@ -4,7 +4,7 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 0.12.0 (unreleased)
+## 0.12.0 (2021-03-29)
 
 - Améliore le calcul du matériel restant dans les événements.
 - Ajoute la possibilité de limiter les caractéristiques spéciales du matériel par catégorie (#91).
