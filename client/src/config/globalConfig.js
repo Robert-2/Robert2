@@ -28,6 +28,9 @@ const defaultConfig = {
     timeout: 12, // - En heures (ou `null` pour un cookie de session).
     isCASEnabled: false,
   },
+  handScanner: {
+    inputLayout: 'qwerty',
+  },
   defaultPaginationLimit: 100,
   beneficiaryTagName: 'Bénéficiaire',
   technicianTagName: 'Technicien',

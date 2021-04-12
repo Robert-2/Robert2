@@ -4,6 +4,10 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.12.1 (unreleased)
+
+- Corrige la prise en charge des scanettes avec entrée QWERTY.
+
 ## 0.12.0 (2021-03-29)
 
 - Améliore le calcul du matériel restant dans les événements.
