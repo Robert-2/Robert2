@@ -286,6 +286,9 @@ class HomeController
                 'timeout' => $rawConfig['sessionExpireHours'],
                 'isCASEnabled' => $rawConfig['auth']['CAS']['enabled'],
             ],
+            'handScanner' => [
+                'inputLayout' => $rawConfig['handScanner']['inputLayout'],
+            ],
             'defaultPaginationLimit' => $rawConfig['maxItemsPerPage'],
             'defaultLang' => $rawConfig['defaultLang'],
             'currency' => $rawConfig['currency'],

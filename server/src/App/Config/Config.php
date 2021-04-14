@@ -109,6 +109,9 @@ class Config
             'handlers' => [],
             'max_files' => 10,
         ],
+        'handScanner' => [
+            'inputLayout' => 'qwerty',
+        ],
         'authorizedFileTypes' => [
             'application/pdf',
             'application/zip',

@@ -1,3 +1,6 @@
+import Config from '@/config/globalConfig';
+import decodeKeyEvent from '@/utils/decodeKeyEvent';
+
 const PREFIX_KEYCODES = Object.freeze([]);
 const SUFFIX_KEYCODES = Object.freeze([9, 13]); // Tab, Enter.
 
@@ -5,38 +8,6 @@ const SCAN_DELAY = 40; // - Millisecondes.
 
 const BARCODE_PREFIX = '^#[';
 const BARCODE_SUFFIX = ']#$';
-
-export const decodeKeyEvent = (event) => {
-  const keyCode = event.which || event.keyCode;
-
-  const isOperator = ['-', '+', '/', '*', '.'].includes(event.key);
-  const isBoundaryChar = ['^', '#', '[', ']', '$'].includes(event.key);
-  if (isOperator || isBoundaryChar) {
-    return event.key;
-  }
-
-  if (event.altKey) {
-    return '';
-  }
-
-  const isBasicAlpha = keyCode >= 48 && keyCode <= 90;
-  const isKeypadOperator = keyCode >= 106 && keyCode <= 111;
-  if ((isBasicAlpha || isKeypadOperator) && !event.altKey) {
-    if (event.key !== undefined && event.key !== '') {
-      return event.key;
-    }
-
-    const decoded = String.fromCharCode(keyCode);
-    return event.shiftKey ? decoded.toUpperCase() : decoded.toLowerCase();
-  }
-
-  const isKeypadNumeric = keyCode >= 96 && keyCode <= 105;
-  if (isKeypadNumeric) {
-    return 0 + (keyCode - 96);
-  }
-
-  return '';
-};
 
 const revertScanState = (target, input) => {
   switch (target.nodeName) {
@@ -94,7 +65,7 @@ const observeBarcodeScan = (handler) => {
 
       // - Sinon, on ajoute le caractère à la chaîne.
       default: {
-        const char = decodeKeyEvent(e);
+        const char = decodeKeyEvent(e, Config.handScanner.inputLayout);
         if (char === null || char === '') {
           return;
         }
