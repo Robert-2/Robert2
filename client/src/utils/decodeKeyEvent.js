@@ -32,12 +32,12 @@ const LAYOUT_MAP = {
   },
 };
 
-const decodeKeyEvent = (event, inputLayont) => {
+const decodeKeyEvent = (event, inputLayout) => {
   const keyCode = (event.which || event.keyCode).toString();
   const decoded = String.fromCharCode(keyCode);
 
   // - Cas particuliers
-  if (inputLayont === 'qwerty' && !event.altKey && !event.shiftKey) {
+  if (inputLayout === 'qwerty' && !event.altKey && !event.shiftKey) {
     // - Left bracket ?
     if (keyCode === '221' && event.code === 'BracketLeft') {
       return '[';
@@ -70,7 +70,7 @@ const decodeKeyEvent = (event, inputLayont) => {
     }
   }
 
-  const keyData = LAYOUT_MAP[inputLayont][keyCode];
+  const keyData = LAYOUT_MAP[inputLayout][keyCode];
   if (!keyData) {
     return '';
   }
