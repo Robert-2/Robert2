@@ -122,8 +122,9 @@ const observeBarcodeScan = (handler) => {
     const value = input.slice(BARCODE_PREFIX.length, -BARCODE_SUFFIX.length);
     input = '';
 
-    // - On parse le code obtenu (e.g. `0001/0002` donne les args `1` et `2`)
-    const parsedValue = value.split('/').map((_value) => parseInt(_value, 10));
+    // - On parse le code obtenu (e.g. `0001|0002` donne les args `1` et `2`)
+    const splittedValue = (value.split('/').join('|')).split('|');
+    const parsedValue = splittedValue.map((_value) => parseInt(_value, 10));
     if (parsedValue.some((_value) => Number.isNaN(_value))) {
       abortScan(false, `Code invalide (${value})`);
     } else {
