@@ -10,12 +10,14 @@
           <input
             v-model="credentials.identifier"
             type="text"
+            autocomplete="username"
             class="Login__form__input"
             :placeholder="$t('email-address-or-pseudo')"
           >
           <input
             v-model="credentials.password"
             type="password"
+            autocomplete="current-password"
             class="Login__form__input"
             :placeholder="$t('password')"
           >
