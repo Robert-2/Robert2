@@ -15,9 +15,9 @@ class BillController
     use WithPdf;
 
     protected $container;
-    protected $model;
 
-    protected $dataFolder = 'bills';
+    /** @var Bill */
+    protected $model;
 
     public function __construct($container)
     {

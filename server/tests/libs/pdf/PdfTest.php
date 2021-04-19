@@ -11,8 +11,8 @@ use Robert2\Fixtures\RobertFixtures;
 
 final class PdfTest extends ModelTestCase
 {
-    protected $_testHtmlFile = __DIR__ . DS . 'Pdf/test.html';
-    protected $_pdfResultFile = __DIR__ . DS . 'Pdf/result.pdf';
+    protected $_testHtmlFile = __DIR__ . DS . 'files/test.html';
+    protected $_pdfResultFile = __DIR__ . DS . 'files/result.pdf';
 
     public function testGetResult(): void
     {
@@ -36,10 +36,10 @@ final class PdfTest extends ModelTestCase
 
         // - Check if result file and expected file have the same size
         $resultSize = filesize($this->_pdfResultFile);
-        $expectedSize = filesize(__DIR__ . DS . 'Pdf/expected_save.pdf');
+        $expectedSize = filesize(__DIR__ . DS . 'files/expected_save.pdf');
         $this->assertEquals($expectedSize, $resultSize);
 
-        // - Clean result file (comment this line if you want to check the content of './Pdf/result.pdf')
+        // - Clean result file (comment this line if you want to check the content of './files/result.pdf')
         unlink($this->_pdfResultFile);
     }
 

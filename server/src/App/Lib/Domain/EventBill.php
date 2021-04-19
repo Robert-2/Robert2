@@ -22,7 +22,7 @@ class EventBill
 
     public function __construct(\DateTime $date, array $event, string $billNumber, ?int $userId = null)
     {
-        if (empty($event) || empty($event['beneficiaries'] || empty($event['materials']))) {
+        if (empty($event) || empty($event['beneficiaries']) || empty($event['materials'])) {
             throw new \InvalidArgumentException(
                 "Cannot create EventBill value-object without complete event's data."
             );
@@ -62,10 +62,6 @@ class EventBill
 
     public function getDailyAmount(): float
     {
-        if (!$this->materials || count($this->materials) === 0) {
-            return 0.0;
-        }
-
         $total = 0.0;
         foreach ($this->materials as $material) {
             $total += $material['rental_price'] * $material['pivot']['quantity'];
@@ -75,10 +71,6 @@ class EventBill
 
     public function getDiscountableDailyAmount(): float
     {
-        if (!$this->materials || count($this->materials) === 0) {
-            return 0.0;
-        }
-
         $total = 0.0;
         foreach ($this->materials as $material) {
             if (!$material['is_discountable']) {
@@ -92,10 +84,6 @@ class EventBill
 
     public function getReplacementAmount(): float
     {
-        if (!$this->materials || count($this->materials) === 0) {
-            return 0.0;
-        }
-
         $total = 0.0;
         foreach ($this->materials as $material) {
             $total += $material['replacement_price'] * $material['pivot']['quantity'];

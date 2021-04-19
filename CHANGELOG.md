@@ -4,6 +4,10 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.13.0 (UNRELEASED)
+
+- Ajoute la création / suppression de devis pour les événements (#5).
+
 ## 0.12.2-premium (2021-04-19)
 
 - Corrige un bug sous Firefox avec le séparateur `/` dans les code-barres (rétro-compatible).

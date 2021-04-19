@@ -1,18 +1,18 @@
 import Config from '@/config/globalConfig';
 import formatAmount from '@/utils/formatAmount';
-import getMaterialItemsCount from '@/utils/getMaterialItemsCount';
-import getEventOneDayTotal from '@/utils/getEventOneDayTotal';
-import getEventOneDayTotalDiscountable from '@/utils/getEventOneDayTotalDiscountable';
-import getEventGrandTotal from '@/utils/getEventGrandTotal';
-import getEventReplacementTotal from '@/utils/getEventReplacementTotal';
 import decimalRound from '@/utils/decimalRound';
-import FormField from '@/components/FormField/FormField.vue';
+import getEventGrandTotal from '@/utils/getEventGrandTotal';
+import getEventOneDayTotal from '@/utils/getEventOneDayTotal';
+import getDiscountRateFromLast from '@/utils/getDiscountRateFromLast';
+import getEventOneDayTotalDiscountable from '@/utils/getEventOneDayTotalDiscountable';
+import BillEstimateCreationForm from '@/components/BillEstimateCreationForm/BillEstimateCreationForm.vue';
 
 export default {
   name: 'EventBilling',
-  components: { FormField },
+  components: { BillEstimateCreationForm },
   props: {
     lastBill: Object,
+    lastEstimate: Object,
     beneficiaries: Array,
     materials: Array,
     loading: Boolean,
@@ -20,9 +20,11 @@ export default {
     end: Object,
   },
   data() {
+    const discountRate = getDiscountRateFromLast(this.lastBill, this.lastEstimate);
+
     return {
+      discountRate,
       duration: this.end ? this.end.diff(this.start, 'days') + 1 : 1,
-      discountRate: this.lastBill ? this.lastBill.discount_rate : 0,
       currency: Config.currency.symbol,
       isBillable: this.beneficiaries.length > 0,
       displayCreateBill: false,
@@ -30,7 +32,7 @@ export default {
   },
   watch: {
     discountRate(newRate) {
-      this.$emit('discountRateChange', parseFloat(newRate));
+      this.$emit('discountRateChange', Number.parseFloat(newRate));
     },
   },
   computed: {
@@ -38,18 +40,10 @@ export default {
       return this.$store.getters['auth/is'](['admin', 'member']);
     },
 
-    billPdfUrl() {
+    pdfUrl() {
       const { baseUrl } = Config;
       const { id } = this.lastBill || { id: null };
       return `${baseUrl}/bills/${id}/pdf`;
-    },
-
-    ratio() {
-      return Config.degressiveRate(this.duration);
-    },
-
-    itemsCount() {
-      return getMaterialItemsCount(this.materials);
     },
 
     total() {
@@ -82,22 +76,17 @@ export default {
         this.discountRate = decimalRound(rate, 4);
       },
     },
-
-    grandTotalWithDiscount() {
-      return this.grandTotal - this.discountAmount;
-    },
-
-    replacementTotal() {
-      return getEventReplacementTotal(this.materials);
-    },
   },
   methods: {
-    recalcDiscountRate(newVal) {
-      this.discountTarget = parseFloat(newVal);
+    handleChangeDiscount({ field, value }) {
+      if (field === 'amount') {
+        this.discountTarget = value;
+      } else if (field === 'rate') {
+        this.discountRate = value;
+      }
     },
 
-    createBill(e) {
-      e.preventDefault();
+    createBill() {
       this.displayCreateBill = false;
       if (this.loading) {
         return;
@@ -112,6 +101,11 @@ export default {
 
     closeBillRegeneration() {
       this.displayCreateBill = false;
+      this.discountRate = getDiscountRateFromLast(
+        this.lastBill,
+        this.lastEstimate,
+        this.discountRate,
+      );
     },
 
     formatAmount(amount) {

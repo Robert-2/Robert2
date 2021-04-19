@@ -240,14 +240,17 @@ class EventController extends BaseController
             ->with('Beneficiaries')
             ->with('Materials')
             ->with('Bills')
+            ->with('Estimates')
             ->find($id);
 
         $result = $model->toArray();
-        if (!$model->bills) {
-            return $result;
+        if ($model->bills) {
+            $result['bills'] = $model->bills;
+        }
+        if ($model->estimates) {
+            $result['estimates'] = $model->estimates;
         }
 
-        $result['bills'] = $model->bills;
         return $result;
     }
 }

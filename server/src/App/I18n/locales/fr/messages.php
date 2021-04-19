@@ -2497,14 +2497,20 @@ return [
     => "Terminé !",
 
     //
-    // - Bills messages
+    // - Bills & estimates messages
     //
 
     "Bill"
     => "Facture",
 
+    "Estimate"
+    => "Devis",
+
     "billTitle"
     => "Facture en %s, N° %s",
+
+    "estimateTitle"
+    => "Devis en %s",
 
     "onDate"
     => "Le %s",
@@ -2622,6 +2628,9 @@ return [
 
     "billDetailsTitle"
     => "Détails de la facture N° %s",
+
+    "estimateDetailsTitle"
+    => "Détails du devis",
 
     "ref"
     => "Réf.",
