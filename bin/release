@@ -14,7 +14,7 @@ done
 releaseName="Robert2-${VERSION}"
 distFolder="./dist/${releaseName}"
 
-echo "
+echo -e "
   ____       _               _   ____
  |  _ \ ___ | |__   ___ _ __| |_|___ \\
  | |_) / _ \| '_ \ / _ \ '__| __| __) |
@@ -44,7 +44,7 @@ if $isProduction; then
     sed -i -E "s/$CHANGELOG_REGEX/$VERSION \($(date '+%Y-%m-%d')\)/i" ./CHANGELOG.md
     echo $VERSION > ./VERSION
 else
-    echo -e "\e[1m\e[33m\n** MODE TESTING ** → omission de la mise à jour du Changelog et de la version !\e[0m"
+    echo -e "\e[1m\e[33m\n** MODE TESTING ** → omission de la mise à jour du Changelog et du fichier de version !\e[0m"
 fi
 
 echo -e "\e[1m\e[34m\nSuppression de l'ancien dossier \"dist\"...\e[0m"
