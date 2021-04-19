@@ -87,7 +87,7 @@ class MaterialUnit extends BaseModel
         );
 
         try {
-            $code = sprintf('^#[%s]#$', implode('/', $params));
+            $code = sprintf('^#[%s]#$', implode('|', $params));
             $barcode = (new PDF417())->encode($code);
 
             // - Calcule le ratio idéal vu le nombre de lignes du barcode.

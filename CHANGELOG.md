@@ -4,6 +4,10 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.12.2-premium (2021-04-19)
+
+- Corrige un bug sous Firefox avec le séparateur `/` dans les code-barres (rétro-compatible).
+
 ## 0.12.1-premium (2021-04-14)
 
 - Corrige la prise en charge des scanettes avec entrée QWERTY.
