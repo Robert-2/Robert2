@@ -233,6 +233,21 @@ final class EventTest extends ModelTestCase
         $this->assertEquals($expected, $results);
     }
 
+    public function testGetEstimates()
+    {
+        $Event = $this->model::find(1);
+        $results = $Event->estimates;
+        $expected = [
+            [
+                'id' => 1,
+                'date' => '2021-01-30 14:00:00',
+                'discount_rate' => 50.0,
+                'due_amount' => 325.5,
+            ]
+        ];
+        $this->assertEquals($expected, $results->toArray());
+    }
+
     public function testGetBills()
     {
         $Event = $this->model::find(1);

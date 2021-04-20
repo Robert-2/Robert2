@@ -2495,14 +2495,20 @@ return [
     => "Done!",
 
     //
-    // - Bills messages
+    // - Bills & estimates messages
     //
 
     "Bill"
     => "Bill",
 
+    "Estimate"
+    => "Devis",
+
     "billTitle"
     => "Bill in %s, N° %s",
+
+    "estimateTitle"
+    => "Estimate in %s",
 
     "onDate"
     => "On %s",
@@ -2620,6 +2626,9 @@ return [
 
     "billDetailsTitle"
     => "Details of bill N° %s",
+
+    "estimateDetailsTitle"
+    => "Estimate details",
 
     "ref"
     => "Ref.",

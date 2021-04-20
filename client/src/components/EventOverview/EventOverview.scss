@@ -126,22 +126,25 @@
 
   &__billing {
     display: flex;
-    flex-direction: column-reverse;
+    flex-direction: column;
     padding-bottom: $info-spacing;
 
-    .EventBilling {
-      flex: 1;
-      min-width: 300px;
-      padding: 0 .5rem;
-      padding-right: $content-padding-large-horizontal;
+    .EventTotals {
+      flex: 0 0 auto;
+      text-align: left;
+      padding: $content-padding-small-vertical $content-padding-large-horizontal $content-padding-large-vertical;
       border-left: 3px solid #383838;
     }
 
-    .EventTotals {
+    &__tabs {
       flex: 1;
-      padding-bottom: $info-spacing;
-      padding-left: $content-padding-large-horizontal;
+      min-width: 350px;
+      padding: 0 $content-padding-large-horizontal;
       border-left: 3px solid #383838;
+    }
+
+    .Help {
+      margin-bottom: $content-padding-small-vertical;
     }
   }
 

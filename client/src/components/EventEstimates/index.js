@@ -1,3 +1,4 @@
+import moment from 'moment';
 import Config from '@/config/globalConfig';
 import formatAmount from '@/utils/formatAmount';
 import getMaterialItemsCount from '@/utils/getMaterialItemsCount';
@@ -9,31 +10,27 @@ import decimalRound from '@/utils/decimalRound';
 import BillEstimateCreationForm from '@/components/BillEstimateCreationForm/BillEstimateCreationForm.vue';
 
 export default {
-  name: 'EventBilling',
+  name: 'EventEstimates',
   components: { BillEstimateCreationForm },
   props: {
-    lastBill: Object,
-    lastEstimate: Object,
     beneficiaries: Array,
     materials: Array,
+    estimates: Array,
+    lastBill: Object,
     loading: Boolean,
+    deletingId: Number,
     start: Object,
     end: Object,
   },
   data() {
-    let discountRate = 0;
-    if (this.lastEstimate) {
-      discountRate = this.lastEstimate.discount_rate;
-    } else if (this.lastBill) {
-      discountRate = this.lastBill.discount_rate;
-    }
+    const [lastEstimate] = this.estimates;
 
     return {
       duration: this.end ? this.end.diff(this.start, 'days') + 1 : 1,
-      discountRate,
+      discountRate: lastEstimate ? lastEstimate.discount_rate : 0,
       currency: Config.currency.symbol,
       isBillable: this.beneficiaries.length > 0,
-      displayCreateBill: false,
+      displayCreateEstimate: false,
     };
   },
   watch: {
@@ -44,12 +41,6 @@ export default {
   computed: {
     userCanEdit() {
       return this.$store.getters['auth/is'](['admin', 'member']);
-    },
-
-    pdfUrl() {
-      const { baseUrl } = Config;
-      const { id } = this.lastBill || { id: null };
-      return `${baseUrl}/bills/${id}/pdf`;
     },
 
     ratio() {
@@ -108,28 +99,38 @@ export default {
       }
     },
 
-    createBill() {
-      this.displayCreateBill = false;
+    createEstimate() {
+      this.displayCreateEstimate = false;
       if (this.loading) {
         return;
       }
 
-      this.$emit('createBill', this.discountRate);
+      this.$emit('createEstimate', this.discountRate);
     },
 
-    openBillRegeneration() {
-      this.displayCreateBill = true;
+    getPdfUrl(id) {
+      if (this.deletingId === id) {
+        return '#';
+      }
+
+      const { baseUrl } = Config;
+      return `${baseUrl}/estimates/${id}/pdf`;
     },
 
-    closeBillRegeneration() {
-      this.displayCreateBill = false;
+    openCreateEstimate() {
+      this.displayCreateEstimate = true;
+    },
 
-      if (this.lastEstimate) {
-        this.discountRate = this.lastEstimate.discount_rate;
-      }
-      if (this.lastBill) {
-        this.discountRate = this.lastBill.discount_rate;
-      }
+    closeCreateEstimate() {
+      this.displayCreateEstimate = false;
+    },
+
+    formatDate(date) {
+      const momentDate = moment(date);
+      return {
+        date: momentDate.format('L'),
+        hour: momentDate.format('HH:mm'),
+      };
     },
 
     formatAmount(amount) {

@@ -1,9 +1,11 @@
 import moment from 'moment';
 import { Tabs, Tab } from 'vue-slim-tabs';
 import Config from '@/config/globalConfig';
+import Alert from '@/components/Alert';
 import Help from '@/components/Help/Help.vue';
 import EventMaterials from '@/components/EventMaterials/EventMaterials.vue';
 import EventMissingMaterials from '@/components/EventMissingMaterials/EventMissingMaterials.vue';
+import EventEstimates from '@/components/EventEstimates/EventEstimates.vue';
 import EventBilling from '@/components/EventBilling/EventBilling.vue';
 import EventTotals from '@/components/EventTotals/EventTotals.vue';
 import formatTimelineEvent from '@/utils/timeline-event/format';
@@ -18,6 +20,7 @@ export default {
     Help,
     EventMaterials,
     EventMissingMaterials,
+    EventEstimates,
     EventBilling,
     EventTotals,
   },
@@ -26,16 +29,18 @@ export default {
   },
   data() {
     return {
-      help: '',
-      error: null,
-      isLoading: false,
       event: null,
       beneficiaries: [],
       discountRate: 0,
       assignees: [],
       showBilling: Config.billingMode !== 'none',
       lastBill: null,
-      billLoading: false,
+      lastEstimate: null,
+      successMessage: null,
+      error: null,
+      isLoading: false,
+      isCreating: false,
+      deletingId: null,
     };
   },
   created() {
@@ -50,52 +55,131 @@ export default {
     },
   },
   methods: {
-    getEvent() {
-      const { eventId } = this.$props;
-      const url = `events/${eventId}`;
-      this.error = null;
-      this.isLoading = true;
-      this.$http.get(url)
-        .then(({ data }) => {
-          this.setData(data);
-          this.isLoading = false;
-        })
-        .catch(this.handleError);
+    async getEvent() {
+      try {
+        this.error = null;
+        this.successMessage = null;
+        this.isLoading = true;
+
+        const { eventId } = this.$props;
+        const url = `events/${eventId}`;
+
+        const { data } = await this.$http.get(url);
+        this.setData(data);
+      } catch (error) {
+        this.handleError(error);
+      } finally {
+        this.isLoading = false;
+      }
     },
 
     handleChangeDiscountRate(discountRate) {
       this.discountRate = discountRate;
     },
 
-    handleCreateBill(discountRate) {
-      this.error = null;
-      this.billLoading = true;
-      const { eventId } = this.$props;
-      const url = `events/${eventId}/bill`;
-      this.$http.post(url, { discountRate })
-        .then(({ data }) => {
-          this.lastBill = { ...data, date: moment(data.date) };
-        })
-        .catch(this.handleError)
-        .finally(() => {
-          this.billLoading = false;
-        });
+    handleChangeTab() {
+      this.successMessage = null;
     },
 
-    setEventIsBillable() {
-      this.error = null;
-      this.isLoading = true;
-      const { eventId } = this.$props;
-      const putData = { is_billable: true };
-      this.$http.put(`events/${eventId}`, putData)
-        .then(({ data }) => {
-          this.setData(data);
-          this.isLoading = false;
-        })
-        .catch(this.handleError);
+    async handleCreateEstimate(discountRate) {
+      if (this.isCreating || this.deletingId) {
+        return;
+      }
+
+      try {
+        this.error = null;
+        this.successMessage = null;
+        this.isCreating = true;
+
+        const { id } = this.event;
+        const { data } = await this.$http.post(`events/${id}/estimate`, { discountRate });
+
+        this.event.estimates.unshift(data);
+        this.lastEstimate = { ...data, date: moment(data.date) };
+        this.successMessage = this.$t('estimate-created');
+      } catch (error) {
+        this.handleError(error);
+      } finally {
+        this.isCreating = false;
+      }
     },
 
-    handleSaved(newData) {
+    async handleDeleteEstimate(id) {
+      if (this.deletingId || this.isCreating) {
+        return;
+      }
+
+      const { value } = await Alert.ConfirmDelete(this.$t, 'estimate', false);
+      if (!value) {
+        return;
+      }
+
+      try {
+        this.error = null;
+        this.successMessage = null;
+        this.deletingId = id;
+
+        const { data } = await this.$http.delete(`estimates/${id}`);
+
+        const { estimates } = this.event;
+        const newEstimatesList = estimates.filter((estimate) => (estimate.id !== data.id));
+        this.event.estimates = newEstimatesList;
+
+        const [lastOne] = newEstimatesList;
+        this.lastEstimate = lastOne;
+        this.successMessage = this.$t('estimate-deleted');
+      } catch (error) {
+        this.handleError(error);
+      } finally {
+        this.deletingId = null;
+      }
+    },
+
+    async handleCreateBill(discountRate) {
+      if (this.deletingId || this.isCreating) {
+        return;
+      }
+
+      try {
+        this.error = null;
+        this.successMessage = null;
+        this.isCreating = true;
+        const { eventId } = this.$props;
+        const url = `events/${eventId}/bill`;
+
+        const { data } = await this.$http.post(url, { discountRate });
+        this.lastBill = { ...data, date: moment(data.date) };
+        this.successMessage = this.$t('bill-created');
+      } catch (error) {
+        this.handleError(error);
+      } finally {
+        this.isCreating = false;
+      }
+    },
+
+    async setEventIsBillable() {
+      if (this.isLoading || this.deletingId || this.isCreating) {
+        return;
+      }
+
+      try {
+        this.error = null;
+        this.successMessage = null;
+        this.isLoading = true;
+        const { eventId } = this.$props;
+        const putData = { is_billable: true };
+
+        const { data } = await this.$http.put(`events/${eventId}`, putData);
+        this.setData(data);
+        this.successMessage = this.$t('event-is-now-billable');
+      } catch (error) {
+        this.handleError(error);
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    handleSavedFromHeader(newData) {
       this.error = null;
       this.setData(newData);
       // Ne fonctionne pas comme espéré, pffff
@@ -128,6 +212,12 @@ export default {
         this.assignees = data.assignees.map(
           (assignee) => ({ id: assignee.id, name: assignee.full_name }),
         );
+      }
+
+      if (data.estimates.length > 0) {
+        const [lastEstimate] = data.estimates;
+        this.lastEstimate = { ...lastEstimate, date: moment(lastEstimate.date) };
+        this.discountRate = lastEstimate ? lastEstimate.discount_rate : 0;
       }
 
       if (data.bills.length > 0) {

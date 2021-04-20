@@ -28,6 +28,10 @@
       flex: 1;
       padding: 1.5rem;
       background-color: $bg-color-body;
+
+      .Help {
+        margin-bottom: $content-padding-small-vertical;
+      }
     }
   }
 
@@ -98,6 +102,17 @@
   &__not-billable {
     font-size: 1.2rem;
     color: $text-warning-color;
+  }
+
+  .EventEstimates {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+    &__list {
+      width: 100%;
+      max-width: 600px;
+    }
   }
 
   &__totals {
