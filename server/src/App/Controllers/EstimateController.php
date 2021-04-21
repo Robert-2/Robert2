@@ -6,23 +6,23 @@ namespace Robert2\API\Controllers;
 use Robert2\API\Controllers\Traits\WithPdf;
 use Robert2\API\Errors;
 use Robert2\API\Services\Auth;
-use Robert2\API\Models\Bill;
+use Robert2\API\Models\Estimate;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-class BillController
+class EstimateController
 {
     use WithPdf;
 
     protected $container;
 
-    /** @var Bill */
+    /** @var Estimate */
     protected $model;
 
     public function __construct($container)
     {
         $this->container = $container;
-        $this->model = new Bill();
+        $this->model = new Estimate();
     }
 
     // ——————————————————————————————————————————————————————

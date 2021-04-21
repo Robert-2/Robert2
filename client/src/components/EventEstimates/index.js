@@ -1,6 +1,7 @@
+import moment from 'moment';
 import Config from '@/config/globalConfig';
-import formatAmount from '@/utils/formatAmount';
 import decimalRound from '@/utils/decimalRound';
+import formatAmount from '@/utils/formatAmount';
 import getEventGrandTotal from '@/utils/getEventGrandTotal';
 import getEventOneDayTotal from '@/utils/getEventOneDayTotal';
 import getDiscountRateFromLast from '@/utils/getDiscountRateFromLast';
@@ -8,26 +9,28 @@ import getEventOneDayTotalDiscountable from '@/utils/getEventOneDayTotalDiscount
 import BillEstimateCreationForm from '@/components/BillEstimateCreationForm/BillEstimateCreationForm.vue';
 
 export default {
-  name: 'EventBilling',
+  name: 'EventEstimates',
   components: { BillEstimateCreationForm },
   props: {
-    lastBill: Object,
-    lastEstimate: Object,
     beneficiaries: Array,
     materials: Array,
+    estimates: Array,
+    lastBill: Object,
     loading: Boolean,
+    deletingId: Number,
     start: Object,
     end: Object,
   },
   data() {
-    const discountRate = getDiscountRateFromLast(this.lastBill, this.lastEstimate);
+    const [lastEstimate] = this.estimates;
+    const discountRate = getDiscountRateFromLast(this.lastBill, lastEstimate);
 
     return {
       discountRate,
       duration: this.end ? this.end.diff(this.start, 'days') + 1 : 1,
       currency: Config.currency.symbol,
       isBillable: this.beneficiaries.length > 0,
-      displayCreateBill: false,
+      displayCreateEstimate: false,
     };
   },
   watch: {
@@ -38,12 +41,6 @@ export default {
   computed: {
     userCanEdit() {
       return this.$store.getters['auth/is'](['admin', 'member']);
-    },
-
-    pdfUrl() {
-      const { baseUrl } = Config;
-      const { id } = this.lastBill || { id: null };
-      return `${baseUrl}/bills/${id}/pdf`;
     },
 
     total() {
@@ -86,26 +83,45 @@ export default {
       }
     },
 
-    createBill() {
-      this.displayCreateBill = false;
+    createEstimate() {
+      this.displayCreateEstimate = false;
       if (this.loading) {
         return;
       }
 
-      this.$emit('createBill', this.discountRate);
+      this.$emit('createEstimate', this.discountRate);
     },
 
-    openBillRegeneration() {
-      this.displayCreateBill = true;
+    getPdfUrl(id) {
+      if (this.deletingId === id) {
+        return '#';
+      }
+
+      const { baseUrl } = Config;
+      return `${baseUrl}/estimates/${id}/pdf`;
     },
 
-    closeBillRegeneration() {
-      this.displayCreateBill = false;
+    openCreateEstimate() {
+      this.displayCreateEstimate = true;
+    },
+
+    closeCreateEstimate() {
+      this.displayCreateEstimate = false;
+
+      const [lastEstimate] = this.estimates;
       this.discountRate = getDiscountRateFromLast(
         this.lastBill,
-        this.lastEstimate,
+        lastEstimate,
         this.discountRate,
       );
+    },
+
+    formatDate(date) {
+      const momentDate = moment(date);
+      return {
+        date: momentDate.format('L'),
+        hour: momentDate.format('HH:mm'),
+      };
     },
 
     formatAmount(amount) {

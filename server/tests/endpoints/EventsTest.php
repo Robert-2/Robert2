@@ -381,6 +381,14 @@ final class EventsTest extends ApiTestCase
                     'due_amount' => 325.5,
                 ],
             ],
+            'estimates' => [
+                [
+                    'id' => 1,
+                    'date' => '2021-01-30 14:00:00',
+                    'discount_rate' => 50.0,
+                    'due_amount' => 325.5,
+                ],
+            ],
         ]);
     }
 
@@ -690,6 +698,14 @@ final class EventsTest extends ApiTestCase
                     'id' => 1,
                     'number' => '2020-00001',
                     'date' => '2020-01-30 14:00:00',
+                    'discount_rate' => 50.0,
+                    'due_amount' => 325.5,
+                ],
+            ],
+            'estimates' => [
+                [
+                    'id' => 1,
+                    'date' => '2021-01-30 14:00:00',
                     'discount_rate' => 50.0,
                     'due_amount' => 325.5,
                 ],

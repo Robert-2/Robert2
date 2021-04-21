@@ -8,16 +8,13 @@
       <Header
         :event="event"
         @close="$emit('close')"
-        @saved="handleSaved"
+        @saved="handleSavedFromHeader"
         @error="handleError"
       />
       <div class="EventDetails__content__body">
-        <Help
-          :message="help"
-          :error="error"
-        />
-        <tabs>
+        <tabs :onSelect="handleChangeTab">
           <tab title-slot="infos">
+            <Help :message="{ type: 'success', text: successMessage }" :error="error" />
             <div v-if="event.location" class="EventDetails__location">
               <i class="fas fa-map-marker-alt" />
               {{ $t('in') }}
@@ -93,6 +90,7 @@
             </div>
           </tab>
           <tab title-slot="materials" :disabled="!hasMaterials">
+            <Help :message="{ type: 'success', text: successMessage }" :error="error" />
             <EventMissingMaterials :eventId="event.id" />
             <EventMaterials
               v-if="hasMaterials"
@@ -103,15 +101,45 @@
               :hideDetails="event.materials.length > 16"
             />
           </tab>
+          <tab v-if="showBilling" title-slot="estimates" :disabled="!hasMaterials">
+            <Help :message="{ type: 'success', text: successMessage }" :error="error" />
+            <EventEstimates
+              v-if="hasMaterials && event.is_billable"
+              :beneficiaries="event.beneficiaries"
+              :materials="event.materials"
+              :estimates="event.estimates"
+              :lastBill="lastBill"
+              :start="event.startDate"
+              :end="event.endDate"
+              :loading="isCreating"
+              :deletingId="deletingId"
+              @discountRateChange="handleChangeDiscountRate"
+              @createEstimate="handleCreateEstimate"
+              @deleteEstimate="handleDeleteEstimate"
+            />
+            <div v-if="!event.is_billable" class="EventDetails__not-billable">
+              <p>
+                <i class="fas fa-ban" />
+                {{ $t('event-not-billable') }}
+              </p>
+              <p v-if="!event.is_confirmed && userCanEditBill">
+                <button @click="setEventIsBillable" class="success">
+                  {{ $t('enable-billable-event') }}
+                </button>
+              </p>
+            </div>
+          </tab>
           <tab v-if="showBilling" title-slot="billing" :disabled="!hasMaterials">
+            <Help :message="{ type: 'success', text: successMessage }" :error="error" />
             <EventBilling
               v-if="hasMaterials && event.is_billable"
               :beneficiaries="event.beneficiaries"
               :lastBill="lastBill"
+              :lastEstimate="lastEstimate"
               :materials="event.materials"
               :start="event.startDate"
               :end="event.endDate"
-              :loading="billLoading"
+              :loading="isCreating"
               @discountRateChange="handleChangeDiscountRate"
               @createBill="handleCreateBill"
             />
@@ -133,8 +161,11 @@
           <template slot="materials">
             <i class="fas fa-box" /> {{ $t('material') }}
           </template>
+          <template slot="estimates">
+            <i class="fas fa-file-signature" /> {{ $t('estimates') }}
+          </template>
           <template slot="billing">
-            <i class="fas fa-file-invoice-dollar" /> {{ $t('billing') }}
+            <i class="fas fa-file-invoice-dollar" /> {{ $t('bill') }}
           </template>
         </tabs>
         <div v-if="hasMaterials" class="EventDetails__totals">

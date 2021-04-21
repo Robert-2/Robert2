@@ -5,9 +5,8 @@ namespace Robert2\Lib\Domain;
 
 use Robert2\API\Config\Config;
 
-class EventBill
+class EventEstimate
 {
-    public $number;
     public $date;
     public $userId;
     public $eventId;
@@ -20,11 +19,11 @@ class EventBill
     protected $_eventData;
     protected $materials;
 
-    public function __construct(\DateTime $date, array $event, string $billNumber, ?int $userId = null)
+    public function __construct(\DateTime $date, array $event, ?int $userId = null)
     {
         if (empty($event) || empty($event['beneficiaries']) || empty($event['materials'])) {
             throw new \InvalidArgumentException(
-                "Cannot create EventBill value-object without complete event's data."
+                "Cannot create EventEstimate value-object without complete event's data."
             );
         }
 
@@ -36,7 +35,6 @@ class EventBill
         $this->eventId = $event['id'];
         $this->vatRate = (float)Config::getSettings('companyData')['vatRate'];
         $this->materials = $event['materials'];
-        $this->number = $billNumber;
 
         $this->_setDaysCount();
         $this->_setDegressiveRate();
@@ -62,6 +60,10 @@ class EventBill
 
     public function getDailyAmount(): float
     {
+        if (!$this->materials || count($this->materials) === 0) {
+            return 0.0;
+        }
+
         $total = 0.0;
         foreach ($this->materials as $material) {
             $total += $material['rental_price'] * $material['pivot']['quantity'];
@@ -71,6 +73,10 @@ class EventBill
 
     public function getDiscountableDailyAmount(): float
     {
+        if (!$this->materials || count($this->materials) === 0) {
+            return 0.0;
+        }
+
         $total = 0.0;
         foreach ($this->materials as $material) {
             if (!$material['is_discountable']) {
@@ -84,6 +90,10 @@ class EventBill
 
     public function getReplacementAmount(): float
     {
+        if (!$this->materials || count($this->materials) === 0) {
+            return 0.0;
+        }
+
         $total = 0.0;
         foreach ($this->materials as $material) {
             $total += $material['replacement_price'] * $material['pivot']['quantity'];
@@ -163,17 +173,17 @@ class EventBill
         $materials = [];
         foreach ($this->materials as $material) {
             $materials[] = [
-                'id'                => $material['id'],
-                'name'              => $material['name'],
-                'reference'         => $material['reference'],
-                'park_id'           => $material['park_id'],
-                'category_id'       => $material['category_id'],
-                'sub_category_id'   => $material['sub_category_id'],
-                'rental_price'      => $material['rental_price'],
+                'id' => $material['id'],
+                'name' => $material['name'],
+                'reference' => $material['reference'],
+                'park_id' => $material['park_id'],
+                'category_id' => $material['category_id'],
+                'sub_category_id' => $material['sub_category_id'],
+                'rental_price' => $material['rental_price'],
                 'replacement_price' => $material['replacement_price'],
                 'is_hidden_on_bill' => $material['is_hidden_on_bill'],
-                'is_discountable'   => $material['is_discountable'],
-                'quantity'          => $material['pivot']['quantity'],
+                'is_discountable' => $material['is_discountable'],
+                'quantity' => $material['pivot']['quantity'],
             ];
         }
 
@@ -185,18 +195,17 @@ class EventBill
         $totals = $this->_calcTotals();
 
         return [
-            'number'             => $this->number,
-            'date'               => $this->date->format('Y-m-d H:i:s'),
-            'event_id'           => $this->eventId,
-            'beneficiary_id'     => $this->beneficiaryId,
-            'materials'          => $this->getMaterials(),
-            'degressive_rate'    => (string)$this->degressiveRate,
-            'discount_rate'      => (string)$this->discountRate,
-            'vat_rate'           => (string)$this->vatRate,
-            'due_amount'         => (string)round($totals['dueAmount'], 2),
+            'date' => $this->date->format('Y-m-d H:i:s'),
+            'event_id' => $this->eventId,
+            'beneficiary_id' => $this->beneficiaryId,
+            'materials' => $this->getMaterials(),
+            'degressive_rate' => (string)$this->degressiveRate,
+            'discount_rate' => (string)$this->discountRate,
+            'vat_rate' => (string)$this->vatRate,
+            'due_amount' => (string)round($totals['dueAmount'], 2),
             'replacement_amount' => (string)$this->getReplacementAmount(),
-            'currency'           => Config::getSettings('currency')['iso'],
-            'user_id'            => $this->userId,
+            'currency' => Config::getSettings('currency')['iso'],
+            'user_id' => $this->userId,
         ];
     }
 
@@ -205,38 +214,28 @@ class EventBill
         $totals = $this->_calcTotals();
 
         return [
-            'number'                  => $this->number,
-            'date'                    => $this->date,
-            'event'                   => $this->_eventData,
-            'dailyAmount'             => $totals['dailyAmount'],
+            'date' => $this->date,
+            'event' => $this->_eventData,
+            'dailyAmount' => $totals['dailyAmount'],
             'discountableDailyAmount' => $totals['discountableDailyAmount'],
-            'daysCount'               => $this->daysCount,
-            'degressiveRate'          => $this->degressiveRate,
-            'discountRate'            => $this->discountRate / 100,
-            'discountAmount'          => $totals['discountAmount'],
-            'vatRate'                 => $this->vatRate / 100,
-            'totalDailyExclVat'       => round($totals['dailyTotal'], 2),
-            'totalDailyInclVat'       => round($totals['dailyTotalVat'], 2),
-            'totalExclVat'            => round($totals['dailyTotal'] * $this->degressiveRate, 2),
-            'vatAmount'               => round($totals['vatAmount'], 2),
-            'totalInclVat'            => round($totals['dailyTotalVat'] * $this->degressiveRate, 2),
-            'totalReplacement'        => $this->getReplacementAmount(),
-            'categoriesSubTotals'     => $this->getCategoriesTotals($categories),
+            'daysCount' => $this->daysCount,
+            'degressiveRate' => $this->degressiveRate,
+            'discountRate' => $this->discountRate / 100,
+            'discountAmount' => $totals['discountAmount'],
+            'vatRate' => $this->vatRate / 100,
+            'totalDailyExclVat' => round($totals['dailyTotal'], 2),
+            'totalDailyInclVat' => round($totals['dailyTotalVat'], 2),
+            'totalExclVat' => round($totals['dailyTotal'] * $this->degressiveRate, 2),
+            'vatAmount' => round($totals['vatAmount'], 2),
+            'totalInclVat' => round($totals['dailyTotalVat'] * $this->degressiveRate, 2),
+            'totalReplacement' => $this->getReplacementAmount(),
+            'categoriesSubTotals' => $this->getCategoriesTotals($categories),
             'materialBySubCategories' => $this->getMaterialBySubCategories($categories),
-            'company'                 => Config::getSettings('companyData'),
-            'locale'                  => Config::getSettings('defaultLang'),
-            'currency'                => Config::getSettings('currency')['iso'],
-            'currencyName'            => Config::getSettings('currency')['name'],
+            'company' => Config::getSettings('companyData'),
+            'locale' => Config::getSettings('defaultLang'),
+            'currency' => Config::getSettings('currency')['iso'],
+            'currencyName' => Config::getSettings('currency')['name'],
         ];
-    }
-
-    public static function createNumber(\DateTime $date, int $lastBillNumber): string
-    {
-        return sprintf(
-            '%s-%05d',
-            $date->format('Y'),
-            $lastBillNumber + 1
-        );
     }
 
     // ------------------------------------------------------

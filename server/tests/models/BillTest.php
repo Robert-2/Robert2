@@ -209,6 +209,13 @@ final class BillTest extends ModelTestCase
         $this->assertEquals($expected, $safeResult);
     }
 
+    public function testGetPdfName()
+    {
+        $result = $this->model->getPdfName(1);
+        $expected = 'TEST-Facture-Testing_corp.-2020-00001-Client_Benef.pdf';
+        $this->assertEquals($expected, $result);
+    }
+
     public function testGetPdfContent()
     {
         $result = $this->model->getPdfContent(1);

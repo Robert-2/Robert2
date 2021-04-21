@@ -136,6 +136,13 @@ class Event extends BaseModel
             ->orderBy('date', 'desc');
     }
 
+    public function Estimates()
+    {
+        return $this->hasMany('Robert2\API\Models\Estimate')
+            ->select(['estimates.id', 'date', 'discount_rate', 'due_amount'])
+            ->orderBy('date', 'desc');
+    }
+
     // ——————————————————————————————————————————————————————
     // —
     // —    Mutators

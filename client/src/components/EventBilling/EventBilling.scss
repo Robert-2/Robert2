@@ -1,93 +1,42 @@
 .EventBilling {
-  &__last-bill {
-    margin-bottom: $content-padding-large-vertical;
+  margin-bottom: $content-padding-large-vertical;
 
-    &__no-bill,
-    &__regenerate__text {
-      margin: 0 0 .5rem;
-      color: $text-light-color;
+  &__no-bill,
+  &__regenerate__text {
+    margin: 0 0 $content-padding-large-horizontal;
+    color: $text-light-color;
+    font-style: italic;
+  }
+
+  &__no-estimate {
+    margin: 0 0 $content-padding-large-horizontal;
+    color: $text-warning-color;
+    font-size: 1.1rem;
+  }
+
+  &__not-billable {
+    color: $text-danger-color;
+
+    &__text {
+      margin: 0;
       font-style: italic;
-      margin-bottom: $content-padding-large-vertical;
-    }
-
-    &__not-billable {
-      color: $text-danger-color;
-
-      &__text {
-        margin: 0;
-        font-style: italic;
-      }
-    }
-
-    &__discount-input .FormField__input {
-      max-width: 90px;
-    }
-
-    &__discount-target-input .FormField__input {
-      max-width: 110px;
-    }
-
-    &__beneficiary {
-      display: flex;
-      flex-direction: column;
-      margin-top: $content-padding-small-vertical;
-
-      &__label {
-        display: block;
-        padding: 5px 0;
-      }
-    }
-
-    &__save {
-      margin-top: 1.2rem;
-    }
-
-    &__download {
-      font-size: 1.1rem;
-      margin-bottom: 1rem;
-
-      &__text {
-        margin: 0 0 .5rem;
-      }
-
-      &__link {
-        display: inline-block;
-        margin-top: .5rem;
-        padding: 1rem 1rem 1rem .5rem;
-        border: 1px solid;
-        border-radius: $input-border-radius;
-      }
-    }
-
-    .fas {
-      width: 1.5rem;
-      margin-right: .5rem;
-      text-align: center;
     }
   }
 
-  @media(min-width: $screen-tablet) {
-    &__last-bill {
-      &__beneficiary {
-        flex-direction: row;
-        align-items: center;
-        height: 2.5rem;
+  &__download {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
 
-        &__label {
-          flex: 0 0 $form-label-width;
-          padding: 0 $input-padding-horizontal;
-          text-align: right;
-        }
+    &__text {
+      margin: 0 0 .5rem;
+    }
 
-        &__name {
-          flex: 1;
-        }
-      }
-
-      &__save {
-        margin-top: 1rem;
-        padding-left: $form-label-width;
-      }
+    &__link {
+      display: inline-block;
+      margin-top: .5rem;
+      padding: 1rem 1rem 1rem .5rem;
+      border: 1px solid;
+      border-radius: $input-border-radius;
     }
   }
 }
