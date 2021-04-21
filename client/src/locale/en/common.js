@@ -174,7 +174,7 @@ export default {
   'download': "Download",
   'download-pdf': "Download PDF file",
   'regenerate-bill-help': "You can regenerate the bill to change discount, or if the event has been modified.",
-  'regenerate-estimate-help': "You can create another estimate, if the event has changed, or if you want another discount rate.",
+  'create-new-estimate-help': "You can create another estimate, if the event has changed, or if you want another discount rate.",
   'click-here-to-regenerate-bill': "Click here to regenerate the bill.",
   'create-new-estimate': "Create a new estimate",
   'estimate-created': "Estimate created.",

@@ -55,7 +55,7 @@
       class="EventEstimates__regenerate"
     >
       <p class="EventEstimates__regenerate__text">
-        {{ $t('regenerate-estimate-help') }}
+        {{ $t('create-new-estimate-help') }}
       </p>
       <button
         v-if="!displayCreateEstimate"

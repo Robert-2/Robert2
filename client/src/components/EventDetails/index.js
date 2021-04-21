@@ -1,6 +1,7 @@
 import moment from 'moment';
 import { Tabs, Tab } from 'vue-slim-tabs';
 import Config from '@/config/globalConfig';
+import getDiscountRateFromLast from '@/utils/getDiscountRateFromLast';
 import Alert from '@/components/Alert';
 import Help from '@/components/Help/Help.vue';
 import EventMaterials from '@/components/EventMaterials/EventMaterials.vue';
@@ -79,6 +80,14 @@ export default {
 
     handleChangeTab() {
       this.successMessage = null;
+
+      if (!this.event) {
+        return;
+      }
+
+      const [lastBill] = this.event.bills;
+      const [lastEstimate] = this.event.estimates;
+      this.discountRate = getDiscountRateFromLast(lastBill, lastEstimate, this.discountRate);
     },
 
     async handleCreateEstimate(discountRate) {
@@ -214,17 +223,18 @@ export default {
         );
       }
 
-      if (data.estimates.length > 0) {
-        const [lastEstimate] = data.estimates;
-        this.lastEstimate = { ...lastEstimate, date: moment(lastEstimate.date) };
-        this.discountRate = lastEstimate ? lastEstimate.discount_rate : 0;
+      const [lastBill] = data.bills;
+      const [lastEstimate] = data.estimates;
+
+      if (lastBill) {
+        this.lastBill = { ...lastBill, date: moment(lastBill.date) };
       }
 
-      if (data.bills.length > 0) {
-        const [lastBill] = data.bills;
-        this.lastBill = { ...lastBill, date: moment(lastBill.date) };
-        this.discountRate = lastBill ? lastBill.discount_rate : 0;
+      if (lastEstimate) {
+        this.lastEstimate = { ...lastEstimate, date: moment(lastEstimate.date) };
       }
+
+      this.discountRate = getDiscountRateFromLast(lastBill, lastEstimate, this.discountRate);
     },
   },
 };

@@ -174,7 +174,7 @@ export default {
   'download': "Télécharger",
   'download-pdf': "Télécharger au format PDF",
   'regenerate-bill-help': "Vous pouvez re-générer la facture pour en changer la remise, ou si l'événement a été modifié.",
-  'regenerate-estimate-help': "Vous pouvez créer un autre devis si l'événement a été modifié, ou si vous voulez une remise différente.",
+  'create-new-estimate-help': "Vous pouvez créer un autre devis si l'événement a été modifié, ou si vous voulez une remise différente.",
   'click-here-to-regenerate-bill': "Cliquez ici pour refaire une facture.",
   'create-new-estimate': "Créer un nouveau devis",
   'estimate-created': "Le devis a bien été créé.",

@@ -1,11 +1,10 @@
 import Config from '@/config/globalConfig';
 import formatAmount from '@/utils/formatAmount';
-import getMaterialItemsCount from '@/utils/getMaterialItemsCount';
-import getEventOneDayTotal from '@/utils/getEventOneDayTotal';
-import getEventOneDayTotalDiscountable from '@/utils/getEventOneDayTotalDiscountable';
-import getEventGrandTotal from '@/utils/getEventGrandTotal';
-import getEventReplacementTotal from '@/utils/getEventReplacementTotal';
 import decimalRound from '@/utils/decimalRound';
+import getEventGrandTotal from '@/utils/getEventGrandTotal';
+import getEventOneDayTotal from '@/utils/getEventOneDayTotal';
+import getDiscountRateFromLast from '@/utils/getDiscountRateFromLast';
+import getEventOneDayTotalDiscountable from '@/utils/getEventOneDayTotalDiscountable';
 import BillEstimateCreationForm from '@/components/BillEstimateCreationForm/BillEstimateCreationForm.vue';
 
 export default {
@@ -21,16 +20,11 @@ export default {
     end: Object,
   },
   data() {
-    let discountRate = 0;
-    if (this.lastEstimate) {
-      discountRate = this.lastEstimate.discount_rate;
-    } else if (this.lastBill) {
-      discountRate = this.lastBill.discount_rate;
-    }
+    const discountRate = getDiscountRateFromLast(this.lastBill, this.lastEstimate);
 
     return {
-      duration: this.end ? this.end.diff(this.start, 'days') + 1 : 1,
       discountRate,
+      duration: this.end ? this.end.diff(this.start, 'days') + 1 : 1,
       currency: Config.currency.symbol,
       isBillable: this.beneficiaries.length > 0,
       displayCreateBill: false,
@@ -50,14 +44,6 @@ export default {
       const { baseUrl } = Config;
       const { id } = this.lastBill || { id: null };
       return `${baseUrl}/bills/${id}/pdf`;
-    },
-
-    ratio() {
-      return Config.degressiveRate(this.duration);
-    },
-
-    itemsCount() {
-      return getMaterialItemsCount(this.materials);
     },
 
     total() {
@@ -90,14 +76,6 @@ export default {
         this.discountRate = decimalRound(rate, 4);
       },
     },
-
-    grandTotalWithDiscount() {
-      return this.grandTotal - this.discountAmount;
-    },
-
-    replacementTotal() {
-      return getEventReplacementTotal(this.materials);
-    },
   },
   methods: {
     handleChangeDiscount({ field, value }) {
@@ -123,13 +101,11 @@ export default {
 
     closeBillRegeneration() {
       this.displayCreateBill = false;
-
-      if (this.lastEstimate) {
-        this.discountRate = this.lastEstimate.discount_rate;
-      }
-      if (this.lastBill) {
-        this.discountRate = this.lastBill.discount_rate;
-      }
+      this.discountRate = getDiscountRateFromLast(
+        this.lastBill,
+        this.lastEstimate,
+        this.discountRate,
+      );
     },
 
     formatAmount(amount) {

@@ -2502,7 +2502,7 @@ return [
     => "Bill",
 
     "Estimate"
-    => "Devis",
+    => "Estimate",
 
     "billTitle"
     => "Bill in %s, N° %s",

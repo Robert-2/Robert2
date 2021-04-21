@@ -1,7 +1,6 @@
 <template>
   <form
     class="Form BillEstimateCreationForm"
-    method="POST"
     @submit="handleSubmit"
   >
     <div class="Form__fieldset">

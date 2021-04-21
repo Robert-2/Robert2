@@ -1,6 +1,7 @@
 import moment from 'moment';
 import { Tabs, Tab } from 'vue-slim-tabs';
 import Config from '@/config/globalConfig';
+import getDiscountRateFromLast from '@/utils/getDiscountRateFromLast';
 import Alert from '@/components/Alert';
 import Help from '@/components/Help/Help.vue';
 import EventMaterials from '@/components/EventMaterials/EventMaterials.vue';
@@ -26,14 +27,6 @@ export default {
     const [lastBill] = this.event.bills;
     const [lastEstimate] = this.event.estimates;
 
-    let discountRate = 0;
-    if (lastEstimate) {
-      discountRate = lastEstimate.discount_rate;
-    }
-    if (lastBill) {
-      discountRate = lastBill.discount_rate;
-    }
-
     return {
       showBilling: Config.billingMode !== 'none',
       lastBill: lastBill ? { ...lastBill, date: moment(lastBill.date) } : null,
@@ -42,7 +35,7 @@ export default {
       deletingId: null,
       successMessage: null,
       error: null,
-      discountRate,
+      discountRate: getDiscountRateFromLast(lastBill, lastEstimate),
     };
   },
   computed: {
@@ -77,6 +70,10 @@ export default {
 
     handleChangeBillingTab() {
       this.successMessage = null;
+
+      const [lastBill] = this.event.bills;
+      const [lastEstimate] = this.event.estimates;
+      this.discountRate = getDiscountRateFromLast(lastBill, lastEstimate, this.discountRate);
     },
 
     async handleCreateEstimate(discountRate) {

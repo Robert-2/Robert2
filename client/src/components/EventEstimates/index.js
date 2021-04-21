@@ -1,12 +1,11 @@
 import moment from 'moment';
 import Config from '@/config/globalConfig';
-import formatAmount from '@/utils/formatAmount';
-import getMaterialItemsCount from '@/utils/getMaterialItemsCount';
-import getEventOneDayTotal from '@/utils/getEventOneDayTotal';
-import getEventOneDayTotalDiscountable from '@/utils/getEventOneDayTotalDiscountable';
-import getEventGrandTotal from '@/utils/getEventGrandTotal';
-import getEventReplacementTotal from '@/utils/getEventReplacementTotal';
 import decimalRound from '@/utils/decimalRound';
+import formatAmount from '@/utils/formatAmount';
+import getEventGrandTotal from '@/utils/getEventGrandTotal';
+import getEventOneDayTotal from '@/utils/getEventOneDayTotal';
+import getDiscountRateFromLast from '@/utils/getDiscountRateFromLast';
+import getEventOneDayTotalDiscountable from '@/utils/getEventOneDayTotalDiscountable';
 import BillEstimateCreationForm from '@/components/BillEstimateCreationForm/BillEstimateCreationForm.vue';
 
 export default {
@@ -24,10 +23,11 @@ export default {
   },
   data() {
     const [lastEstimate] = this.estimates;
+    const discountRate = getDiscountRateFromLast(this.lastBill, lastEstimate);
 
     return {
+      discountRate,
       duration: this.end ? this.end.diff(this.start, 'days') + 1 : 1,
-      discountRate: lastEstimate ? lastEstimate.discount_rate : 0,
       currency: Config.currency.symbol,
       isBillable: this.beneficiaries.length > 0,
       displayCreateEstimate: false,
@@ -41,14 +41,6 @@ export default {
   computed: {
     userCanEdit() {
       return this.$store.getters['auth/is'](['admin', 'member']);
-    },
-
-    ratio() {
-      return Config.degressiveRate(this.duration);
-    },
-
-    itemsCount() {
-      return getMaterialItemsCount(this.materials);
     },
 
     total() {
@@ -80,14 +72,6 @@ export default {
         const rate = 100 * (diff / this.grandTotalDiscountable);
         this.discountRate = decimalRound(rate, 4);
       },
-    },
-
-    grandTotalWithDiscount() {
-      return this.grandTotal - this.discountAmount;
-    },
-
-    replacementTotal() {
-      return getEventReplacementTotal(this.materials);
     },
   },
   methods: {
@@ -123,6 +107,13 @@ export default {
 
     closeCreateEstimate() {
       this.displayCreateEstimate = false;
+
+      const [lastEstimate] = this.estimates;
+      this.discountRate = getDiscountRateFromLast(
+        this.lastBill,
+        lastEstimate,
+        this.discountRate,
+      );
     },
 
     formatDate(date) {
