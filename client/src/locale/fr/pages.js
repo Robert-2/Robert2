@@ -300,6 +300,10 @@ export default {
     'saved': "Étiquette sauvegardée.",
     'deleted': "Étiquette supprimée.",
   },
+
+  'page-estimate': {
+    'confirm-delete': "Voulez-vous vraiment supprimer ce devis\u00a0?",
+  },
 };
 /* eslint-enable quotes */
 /* eslint-enable quote-props */

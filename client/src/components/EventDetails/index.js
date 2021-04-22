@@ -118,7 +118,7 @@ export default {
         return;
       }
 
-      const { value } = await Alert.ConfirmDelete(this.$t, 'estimate', false);
+      const { value } = await Alert.ConfirmDelete(this.$t, 'estimate');
       if (!value) {
         return;
       }

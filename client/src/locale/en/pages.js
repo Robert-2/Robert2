@@ -300,6 +300,10 @@ export default {
     'saved': "Tag saved.",
     'deleted': "Tag deleted.",
   },
+
+  'page-estimate': {
+    'confirm-delete': "Do you really want to delete this estimate?",
+  },
 };
 /* eslint-enable quotes */
 /* eslint-enable quote-props */
