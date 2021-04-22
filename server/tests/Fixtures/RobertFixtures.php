@@ -9,9 +9,9 @@ use Robert2\API\Config;
 
 class RobertFixtures
 {
-    const DUMP_DIR         = __DIR__ . '/tmp/';
-    const DATA_DUMP_FILE   = __DIR__ . '/tmp/data.sql';
-    const SCHEMA_DUMP_FILE = __DIR__ . '/tmp/schema.sql';
+    const DUMP_DIR         = __DIR__ . DS . 'tmp' . DS;
+    const DATA_DUMP_FILE   = __DIR__ . DS . 'tmp' . DS . 'data.sql';
+    const SCHEMA_DUMP_FILE = __DIR__ . DS . 'tmp' . DS . 'schema.sql';
 
     public static function getConnection(): \PDO
     {
@@ -50,7 +50,9 @@ class RobertFixtures
         echo "Running migrations for tests...\n";
 
         $output = [];
-        exec('src/vendor/bin/phinx --configuration=src/database/phinx.php --environment=test migrate', $output);
+        $phinxPath = 'src' . DS . 'vendor' . DS . 'bin' . DS . 'phinx';
+        $configPath = 'src' . DS . 'database' . DS . 'phinx.php';
+        exec($phinxPath . ' --configuration=' . $configPath . ' --environment=test migrate', $output);
 
         echo implode("\n", $output) . "\n\n";
     }

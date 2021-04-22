@@ -61,7 +61,7 @@ final class DocumentTest extends ModelTestCase
     {
         $document = $this->model::find(1);
         $this->assertEquals(
-            DATA_FOLDER . '/materials/1/User-manual.pdf',
+            DATA_FOLDER . DS . 'materials'. DS .'1'. DS .'User-manual.pdf',
             $document->file_path
         );
     }
@@ -90,7 +90,7 @@ final class DocumentTest extends ModelTestCase
     {
         $result = $this->model::getFilePath(1, 'file.pdf');
         $this->assertEquals(
-            DATA_FOLDER . '/materials/1/file.pdf',
+            DATA_FOLDER . DS . 'materials' . DS . '1' . DS . 'file.pdf',
             $result
         );
     }
