@@ -139,6 +139,7 @@
             :beneficiaries="event.beneficiaries"
             :lastBill="lastBill"
             :lastEstimate="lastEstimate"
+            :allBills="event.bills"
             :materials="event.materials"
             :start="startDate"
             :end="endDate"

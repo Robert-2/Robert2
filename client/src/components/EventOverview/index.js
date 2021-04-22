@@ -70,10 +70,7 @@ export default {
 
     handleChangeBillingTab() {
       this.successMessage = null;
-
-      const [lastBill] = this.event.bills;
-      const [lastEstimate] = this.event.estimates;
-      this.discountRate = getDiscountRateFromLast(lastBill, lastEstimate, this.discountRate);
+      this.updateDiscountRate();
     },
 
     async handleCreateEstimate(discountRate) {
@@ -91,6 +88,8 @@ export default {
 
         this.event.estimates.unshift(data);
         this.lastEstimate = { ...data, date: moment(data.date) };
+        this.updateDiscountRate();
+
         this.successMessage = this.$t('estimate-created');
       } catch (error) {
         this.error = error;
@@ -121,7 +120,9 @@ export default {
         this.event.estimates = newEstimatesList;
 
         const [lastOne] = newEstimatesList;
-        this.lastEstimate = lastOne;
+        this.lastEstimate = lastOne ? { ...lastOne, date: moment(lastOne.date) } : null;
+        this.updateDiscountRate();
+
         this.successMessage = this.$t('estimate-deleted');
       } catch (error) {
         this.error = error;
@@ -143,13 +144,20 @@ export default {
         const { id } = this.event;
         const { data } = await this.$http.post(`events/${id}/bill`, { discountRate });
 
+        this.event.bills.unshift(data);
         this.lastBill = { ...data, date: moment(data.date) };
+        this.updateDiscountRate();
+
         this.successMessage = this.$t('bill-created');
       } catch (error) {
         this.error = error;
       } finally {
         this.isCreating = false;
       }
+    },
+
+    updateDiscountRate() {
+      this.discountRate = getDiscountRateFromLast(this.lastBill, this.lastEstimate);
     },
   },
 };

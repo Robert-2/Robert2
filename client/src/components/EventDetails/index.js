@@ -4,6 +4,8 @@ import Config from '@/config/globalConfig';
 import getDiscountRateFromLast from '@/utils/getDiscountRateFromLast';
 import Alert from '@/components/Alert';
 import Help from '@/components/Help/Help.vue';
+import LocationText from '@/components/LocationText/LocationText.vue';
+import PersonsList from '@/components/PersonsList/PersonsList.vue';
 import EventMaterials from '@/components/EventMaterials/EventMaterials.vue';
 import EventMissingMaterials from '@/components/EventMissingMaterials/EventMissingMaterials.vue';
 import EventEstimates from '@/components/EventEstimates/EventEstimates.vue';
@@ -19,6 +21,8 @@ export default {
     Tabs,
     Tab,
     Help,
+    LocationText,
+    PersonsList,
     EventMaterials,
     EventMissingMaterials,
     EventEstimates,
@@ -74,20 +78,9 @@ export default {
       }
     },
 
-    handleChangeDiscountRate(discountRate) {
-      this.discountRate = discountRate;
-    },
-
     handleChangeTab() {
+      this.error = null;
       this.successMessage = null;
-
-      if (!this.event) {
-        return;
-      }
-
-      const [lastBill] = this.event.bills;
-      const [lastEstimate] = this.event.estimates;
-      this.discountRate = getDiscountRateFromLast(lastBill, lastEstimate, this.discountRate);
     },
 
     async handleCreateEstimate(discountRate) {
@@ -105,6 +98,8 @@ export default {
 
         this.event.estimates.unshift(data);
         this.lastEstimate = { ...data, date: moment(data.date) };
+        this.updateDiscountRate();
+
         this.successMessage = this.$t('estimate-created');
       } catch (error) {
         this.handleError(error);
@@ -135,7 +130,9 @@ export default {
         this.event.estimates = newEstimatesList;
 
         const [lastOne] = newEstimatesList;
-        this.lastEstimate = lastOne;
+        this.lastEstimate = lastOne ? { ...lastOne, date: moment(lastOne.date) } : null;
+        this.updateDiscountRate();
+
         this.successMessage = this.$t('estimate-deleted');
       } catch (error) {
         this.handleError(error);
@@ -157,7 +154,11 @@ export default {
         const url = `events/${eventId}/bill`;
 
         const { data } = await this.$http.post(url, { discountRate });
+
+        this.event.bills.unshift(data);
         this.lastBill = { ...data, date: moment(data.date) };
+        this.updateDiscountRate();
+
         this.successMessage = this.$t('bill-created');
       } catch (error) {
         this.handleError(error);
@@ -234,7 +235,11 @@ export default {
         this.lastEstimate = { ...lastEstimate, date: moment(lastEstimate.date) };
       }
 
-      this.discountRate = getDiscountRateFromLast(lastBill, lastEstimate, this.discountRate);
+      this.updateDiscountRate();
+    },
+
+    updateDiscountRate() {
+      this.discountRate = getDiscountRateFromLast(this.lastBill, this.lastEstimate);
     },
   },
 };
