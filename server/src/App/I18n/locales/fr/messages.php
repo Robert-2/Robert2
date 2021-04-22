@@ -2626,6 +2626,12 @@ return [
     "totalDue"
     => "Montant net à payer",
 
+    "estimateAcceptanceDate"
+    => "Date d'acceptation du devis :",
+
+    "estimateAcceptanceSignature"
+    => "Signature du bénéficiaire, précédée de la mention « bon pour accord » :",
+
     "billDetailsTitle"
     => "Détails de la facture N° %s",
 

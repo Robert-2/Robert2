@@ -2624,6 +2624,12 @@ return [
     "totalDue"
     => "Amount due",
 
+    "estimateAcceptanceDate"
+    => "Date of acceptance of the estimate:",
+
+    "estimateAcceptanceSignature"
+    => "Signature of the beneficiary, preceded by the mention « good for approval »:",
+
     "billDetailsTitle"
     => "Details of bill N° %s",
 
