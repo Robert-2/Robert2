@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Robert2\API\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Robert2\API\Config\Config;
 use Robert2\API\Errors;
 use Robert2\API\Validation\Validator as V;
 
@@ -17,8 +16,6 @@ class Document extends BaseModel
 
     public function __construct(array $attributes = [])
     {
-        Config::getCapsule();
-
         parent::__construct($attributes);
 
         $this->validation = [

@@ -5,7 +5,6 @@ namespace Robert2\API\Models;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Robert2\API\Validation\Validator as V;
-
 use Robert2\API\Models\Traits\Taggable;
 
 class Material extends BaseModel

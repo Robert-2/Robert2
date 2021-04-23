@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\DB;
 use Robert2\API\Config\Config;
 use Robert2\API\Models\Traits\Taggable;
 use Robert2\API\Validation\Validator as V;

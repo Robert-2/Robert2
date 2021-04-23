@@ -6,7 +6,6 @@ namespace Robert2\API\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Robert2\API\Validation\Validator as V;
-
 use Robert2\API\Errors;
 use Robert2\API\Config\Config;
 use Robert2\API\I18n\I18n;

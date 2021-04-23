@@ -5,7 +5,6 @@ namespace Robert2\API\Models\Traits;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
-
 use Robert2\API\Errors;
 use Robert2\API\Models\Tag;
 
