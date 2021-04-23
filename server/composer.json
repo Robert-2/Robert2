@@ -38,7 +38,7 @@
         "respect/validation": "^1.1.31",
         "illuminate/database": "^5.8.36",
         "illuminate/pagination": "^5.8.35",
-        "robmorgan/phinx": "^0.11.4",
+        "robmorgan/phinx": "^0.12.6",
         "delfimov/translate": "^2.6.0",
         "dompdf/dompdf": "^1.0.2",
         "twig/intl-extra": "^3.3.0",
