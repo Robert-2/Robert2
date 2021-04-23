@@ -24,6 +24,14 @@ final class FunctionsTest extends TestCase
         $this->assertEquals('SecondTest', snakeToCamelCase('second_test', true));
     }
 
+    public function testSnakeCase(): void
+    {
+        $this->assertEquals('un_test', snakeCase("un_test"));
+        $this->assertEquals('un_test', snakeCase("Un test"));
+        $this->assertEquals('un_test', snakeCase("UnTest"));
+        $this->assertEquals('un_test', snakeCase("unTest"));
+    }
+
     public function testSlugify(): void
     {
         $this->assertEquals('un_test', slugify("un test"));

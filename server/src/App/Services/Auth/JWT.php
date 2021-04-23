@@ -50,7 +50,7 @@ final class JWT implements AuthenticatorInterface
     {
         // - Tente de récupérer le token dans les headers HTTP.
         $headerName = $this->settings['httpAuthHeader'];
-        $header = $request->getHeaderLine(sprintf('HTTP_%s', strtoupper(snake_case($headerName))));
+        $header = $request->getHeaderLine(sprintf('HTTP_%s', strtoupper(\snakeCase($headerName))));
         if (!empty($header)) {
             if (preg_match('/Bearer\s+(.*)$/i', $header, $matches)) {
                 return $matches[1];

@@ -296,4 +296,10 @@ abstract class BaseModel extends Model
         }
         return $trimmedData;
     }
+
+    // @see https://laravel.com/docs/8.x/eloquent-serialization#customizing-the-default-date-format
+    protected function serializeDate(\DateTimeInterface $date)
+    {
+        return $date->format('Y-m-d H:i:s');
+    }
 }

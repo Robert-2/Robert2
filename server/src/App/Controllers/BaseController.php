@@ -137,7 +137,11 @@ abstract class BaseController
     {
         $result = $results->toArray();
         $data = $result['data'];
-        unset($result['data']);
+
+        unset(
+            $result['data'],
+            $result['links']
+        );
 
         return [
             'pagination' => $result,

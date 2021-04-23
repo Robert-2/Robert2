@@ -110,6 +110,22 @@ function snakeToCamelCase(string $str, bool $capitalizeFirstLetter = false): str
 }
 
 /**
+ * Transforme une chaîne de caractère en snake_case.
+ *
+ * @return string
+ */
+function snakeCase(string $value): string
+{
+    if (ctype_lower($value)) {
+        return $value;
+    }
+
+    $value = preg_replace('/\s+/u', '', ucwords($value));
+    $value = preg_replace('/(.)(?=[A-Z])/u', '$1_', $value);
+    return mb_strtolower($value, 'UTF-8');
+}
+
+/**
  * Transform any spaces (normal & unbreakable) in a string into underscores
  *
  * @param str string: The string to transform
