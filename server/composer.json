@@ -25,11 +25,11 @@
     "config": {
         "vendor-dir": "src/vendor",
         "platform": {
-            "php": "7.1.17"
+            "php": "7.3"
         }
     },
     "require": {
-        "php": ">=7.1.17",
+        "php": ">=7.3",
         "slim/slim": "^3.12.3",
         "slim/http-cache": "^0.4.0",
         "slim/twig-view": "^2.5.1",
