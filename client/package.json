@@ -8,13 +8,14 @@
     },
     "dependencies": {
         "@fortawesome/fontawesome-free": "~5.15.3",
+        "@robert/vis-timeline": "file:./vendors/vis-timeline",
         "axios": "~0.21.1",
-        "core-js": "~3.10.1",
+        "core-js": "~3.11.0",
         "debounce": "~1.2.1",
         "deep-freeze-strict": "~1.1.1",
         "js-cookie": "~2.2.1",
         "moment": "~2.29.1",
-        "sweetalert2": "~10.15.5",
+        "sweetalert2": "~10.16.6",
         "v-tooltip": "~2.1.3",
         "vue": "~2.6.12",
         "vue-click-outside": "~1.1.0",
@@ -23,12 +24,12 @@
         "vue-select": "~3.11.2",
         "vue-slim-tabs": "~0.4.0",
         "vue-tables-2": "~2.2.1",
-        "vue-visjs": "~0.4.2",
         "vuejs-datepicker": "~1.6.2",
         "vuex": "~3.6.2",
         "vuex-i18n": "~1.13.1"
     },
     "devDependencies": {
+        "@babel/core": "^7.13.16",
         "@vue/cli-plugin-babel": "^4.5.12",
         "@vue/cli-plugin-eslint": "^4.5.12",
         "@vue/cli-plugin-unit-jest": "^4.5.12",
@@ -43,8 +44,5 @@
         "node-sass": "^5.0.0",
         "sass-loader": "^10.1.1",
         "vue-template-compiler": "^2.6.12"
-    },
-    "resolutions": {
-        "vis-timeline": "7.3.9"
     }
 }
