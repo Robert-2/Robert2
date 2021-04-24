@@ -1,4 +1,5 @@
 {
+    "type": "project",
     "private": true,
     "authors": [
         {
@@ -24,6 +25,7 @@
     },
     "config": {
         "vendor-dir": "src/vendor",
+        "sort-packages": true,
         "platform": {
             "php": "7.3"
         }
@@ -34,17 +36,17 @@
         "slim/http-cache": "^0.4.0",
         "slim/twig-view": "^2.5.1",
         "projek-xyz/slim-monolog" : "^0.1.6",
-        "respect/validation": "^1.1.31",
-        "illuminate/database": "^8.38.0",
-        "illuminate/pagination": "^8.38.0",
-        "robmorgan/phinx": "^0.12.6",
+        "cocur/slugify": "^4.0.0",
         "delfimov/translate": "^2.6.0",
         "dompdf/dompdf": "^1.0.2",
+        "firebase/php-jwt": "5.2.1",
+        "illuminate/database": "^8.38.0",
+        "illuminate/pagination": "^8.38.0",
+        "respect/validation": "^1.1.31",
+        "robmorgan/phinx": "^0.12.6",
         "twig/intl-extra": "^3.3.0",
-        "cocur/slugify": "^4.0.0",
         "twig/extensions": "^1.5.4",
         "vlucas/phpdotenv": "^5.3.0"
-        "firebase/php-jwt": "5.2.1"
     },
    "require-dev": {
         "there4/slim-test-helpers": "^2.1.3",

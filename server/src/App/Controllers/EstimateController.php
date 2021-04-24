@@ -14,14 +14,11 @@ class EstimateController
 {
     use WithPdf;
 
-    protected $container;
-
     /** @var Estimate */
     protected $model;
 
-    public function __construct($container)
+    public function __construct()
     {
-        $this->container = $container;
         $this->model = new Estimate();
     }
 

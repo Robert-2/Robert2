@@ -5,7 +5,6 @@ namespace Robert2\API\Controllers\Traits;
 
 use Slim\Http\Request;
 use Slim\Http\Response;
-
 use Robert2\API\Errors;
 
 trait WithPdf

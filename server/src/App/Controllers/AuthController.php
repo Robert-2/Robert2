@@ -18,8 +18,6 @@ class AuthController
     public function __construct($container)
     {
         $this->container = $container;
-        $this->config = $container->get('settings');
-
         $this->user = new User;
     }
 

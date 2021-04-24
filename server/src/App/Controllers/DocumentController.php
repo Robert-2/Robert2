@@ -13,12 +13,10 @@ class DocumentController
 {
     use FileResponse;
 
-    protected $container;
     protected $model;
 
-    public function __construct($container)
+    public function __construct()
     {
-        $this->container = $container;
         $this->model = new Document();
     }
 
