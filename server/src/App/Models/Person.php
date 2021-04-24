@@ -3,14 +3,15 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\QueryException;
 use Robert2\API\Config\Config;
+use Robert2\API\Errors\ValidationException;
 use Robert2\API\Models\Traits\Taggable;
 use Robert2\API\Validation\Validator as V;
-use Robert2\API\Errors;
 
 class Person extends BaseModel
 {
@@ -37,8 +38,8 @@ class Person extends BaseModel
 
         $this->validation = [
             'user_id'     => V::optional(V::numeric()),
-            'first_name'  => V::notEmpty()->alpha(self::EXTRA_CHARS)->length(2, 96),
-            'last_name'   => V::notEmpty()->alpha(self::EXTRA_CHARS)->length(2, 96),
+            'first_name'  => V::notEmpty()->alpha(static::EXTRA_CHARS)->length(2, 96),
+            'last_name'   => V::notEmpty()->alpha(static::EXTRA_CHARS)->length(2, 96),
             'email'       => V::optional(V::email()->length(null, 191)),
             'phone'       => V::optional(V::phone()),
             'street'      => V::optional(V::length(null, 191)),
@@ -145,7 +146,7 @@ class Person extends BaseModel
         if ($builder) {
             $builder = $builder->orderBy($order, $direction);
         } else {
-            $builder = self::orderBy($order, $direction);
+            $builder = static::orderBy($order, $direction);
         }
 
         if ($order === 'companies.legal_name') {
@@ -176,10 +177,11 @@ class Person extends BaseModel
         'note',
     ];
 
-    public function edit(?int $id = null, array $data = []): Model
+    public function edit(?int $id = null, array $data = []): Person
     {
-        if ($id && !$this->exists($id)) {
-            throw new Errors\NotFoundException(sprintf("Edit failed, entity %d not found.", $id));
+        if ($id && !static::staticExists($id)) {
+            throw (new ModelNotFoundException)
+                ->setModel(get_class($this), $id);
         }
 
         $data = cleanEmptyFields($data);
@@ -190,7 +192,7 @@ class Person extends BaseModel
         }
 
         try {
-            $person = self::firstOrNew(compact('id'));
+            $person = static::firstOrNew(compact('id'));
             $person->fill($data)->validate()->save();
 
             if (!empty($data['tags'])) {
@@ -198,12 +200,11 @@ class Person extends BaseModel
             }
         } catch (QueryException $e) {
             if (!isDuplicateException($e)) {
-                $error = new Errors\ValidationException();
-                $error->setPDOValidationException($e);
-                throw $error;
+                throw (new ValidationException)
+                    ->setPDOValidationException($e);
             }
 
-            $person = self::where('email', $data['email'])->first();
+            $person = static::where('email', $data['email'])->first();
             $this->_setOtherTag($person);
         }
 

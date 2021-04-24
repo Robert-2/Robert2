@@ -210,7 +210,7 @@ class Event extends BaseModel
                 ]);
         };
 
-        $builder = self::orderBy('start_date', 'asc')
+        $builder = static::orderBy('start_date', 'asc')
             ->where($conditions);
 
         if ($withDeleted) {
@@ -220,14 +220,14 @@ class Event extends BaseModel
         return $builder;
     }
 
-    public function getMissingMaterials(int $id): ?array
+    public static function getMissingMaterials(int $id): ?array
     {
-        $event = $this->with('Materials')->find($id);
+        $event = static::with('Materials')->find($id);
         if (!$event || empty($event->materials)) {
             return null;
         }
 
-        $eventMaterials = (new Material())->recalcQuantitiesForPeriod(
+        $eventMaterials = Material::recalcQuantitiesForPeriod(
             $event->materials,
             $event->start_date,
             $event->end_date,
@@ -248,9 +248,9 @@ class Event extends BaseModel
         return empty($missingMaterials) ? null : array_values($missingMaterials);
     }
 
-    public function getParks(int $id): ?array
+    public static function getParks(int $id): ?array
     {
-        $event = $this->with('Materials')->find($id);
+        $event = static::with('Materials')->find($id);
         if (!$event) {
             return null;
         }
@@ -264,15 +264,11 @@ class Event extends BaseModel
 
     public function getPdfContent(int $id): string
     {
-        if (!$this->exists($id)) {
-            throw new Errors\NotFoundException;
-        }
-
         $event = $this
             ->with('Assignees')
             ->with('Beneficiaries')
             ->with('Materials')
-            ->find($id)
+            ->findOrFail($id)
             ->toArray();
 
         $date = new \DateTime();
@@ -308,6 +304,18 @@ class Event extends BaseModel
     // —
     // ——————————————————————————————————————————————————————
 
+    protected $fillable = [
+        'user_id',
+        'reference',
+        'title',
+        'description',
+        'start_date',
+        'end_date',
+        'is_confirmed',
+        'location',
+        'is_billable',
+    ];
+
     public function setPeriod(?string $start, ?string $end): Event
     {
         $thisYear = date('Y');
@@ -323,16 +331,4 @@ class Event extends BaseModel
 
         return $this;
     }
-
-    protected $fillable = [
-        'user_id',
-        'reference',
-        'title',
-        'description',
-        'start_date',
-        'end_date',
-        'is_confirmed',
-        'location',
-        'is_billable',
-    ];
 }

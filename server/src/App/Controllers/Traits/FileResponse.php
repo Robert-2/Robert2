@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Robert2\API\Controllers\Traits;
 
 use Slim\Http\Response;
-use Slim\Http\Stream;
+use Slim\Psr7\Stream;
 
 trait FileResponse
 {

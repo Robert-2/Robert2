@@ -20,7 +20,8 @@
                 <file>src/App/Config/database.dist.php</file>
                 <file>src/App/Config/settings.dist.php</file>
                 <file>src/App/Config/constants.php</file>
-                <file>src/App/Controllers/HomeController.php</file>
+                <file>src/App/Controllers/EntryController.php</file>
+                <file>src/App/Controllers/SetupController.php</file>
             </exclude>
         </whitelist>
     </filter>

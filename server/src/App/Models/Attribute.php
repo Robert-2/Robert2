@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Robert2\API\Models;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Robert2\API\Validation\Validator as V;
 
 class Attribute extends BaseModel
@@ -16,7 +16,7 @@ class Attribute extends BaseModel
         parent::__construct($attributes);
 
         $this->validation = [
-            'name' => V::notEmpty()->alnum(self::EXTRA_CHARS)->length(2, 64),
+            'name' => V::notEmpty()->alnum(static::EXTRA_CHARS)->length(2, 64),
             'type' => V::notEmpty()->oneOf(
                 v::equals('string'),
                 v::equals('integer'),
@@ -105,26 +105,20 @@ class Attribute extends BaseModel
     // —
     // ——————————————————————————————————————————————————————
 
-    public function edit(?int $id = null, array $data = []): Model
+    public function edit(?int $id = null, array $data = []): Attribute
     {
         if ($id) {
             $data = ['name' => $data['name']];
         }
-
         return parent::edit($id, $data);
     }
 
-    public function remove(int $id, array $options = []): ?Model
+    public function remove(int $id, array $options = []): ?Attribute
     {
-        $model = self::find($id);
-        if (empty($model)) {
-            throw new Errors\NotFoundException;
-        }
-
-        if (!$model->delete()) {
+        $attribute = static::findOrFail($id);
+        if (!$attribute->delete()) {
             throw new \RuntimeException(sprintf("Unable to delete the attribute %d.", $id));
         }
-
         return null;
     }
 }

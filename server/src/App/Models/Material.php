@@ -234,7 +234,7 @@ class Material extends BaseModel
     // -
     // ------------------------------------------------------
 
-    public function recalcQuantitiesForPeriod(
+    public static function recalcQuantitiesForPeriod(
         array $data,
         string $start,
         string $end,
@@ -244,7 +244,7 @@ class Material extends BaseModel
             return [];
         }
 
-        $events = (new Event())->setPeriod($start, $end)->getAll();
+        $events = (new Event)->setPeriod($start, $end)->getAll();
         if ($exceptEventId) {
             $events = $events->where('id', '!=', $exceptEventId);
         }

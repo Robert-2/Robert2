@@ -3,12 +3,16 @@ declare(strict_types=1);
 
 namespace Robert2\API\Controllers\Traits;
 
-use Slim\Http\Request;
+use Illuminate\Database\Eloquent\Builder;
+use Robert2\API\Controllers\Traits\WithModel;
+use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
-use Robert2\API\Errors;
+use Slim\Http\ServerRequest as Request;
 
 trait Taggable
 {
+    use WithModel;
+
     public function getAll(Request $request, Response $response): Response
     {
         $searchTerm = $request->getQueryParam('search', null);
@@ -19,28 +23,37 @@ trait Taggable
         $ascending = (bool)$request->getQueryParam('ascending', true);
         $withDeleted = (bool)$request->getQueryParam('deleted', false);
 
-        $results = $this->model
+        $model = $this->getModel();
+        if (!method_exists($model, 'getAllFilteredOrTagged')) {
+            throw new \LogicException("Missing `getAllFilteredOrTagged` method in model.");
+        }
+
+        /** @var Builder $query */
+        $query = $model
             ->setOrderBy($orderBy, $ascending)
             ->setSearch($searchTerm, $searchField)
-            ->getAllFilteredOrTagged([], $tags, $withDeleted)
-            ->paginate($limit ? (int)$limit : $this->itemsCount);
+            ->getAllFilteredOrTagged([], $tags, $withDeleted);
 
-        $basePath = $request->getUri()->getPath();
-        $params   = $request->getQueryParams();
-        $results  = $results->withPath($basePath)->appends($params);
-        $results  = $this->_formatPagination($results);
-
-        return $response->withJson($results);
+        $paginated = $this->paginate($request, $query, $limit);
+        return $response->withJson($paginated);
     }
 
     public function getTags(Request $request, Response $response): Response
     {
-        $id    = (int)$request->getAttribute('id');
-        $model = $this->model->find($id);
+        $id = (int)$request->getAttribute('id');
+        $model = $this->getModelClass()::find($id);
         if (!$model) {
-            throw new Errors\NotFoundException;
+            throw new HttpNotFoundException($request);
         }
 
         return $response->withJson($model->tags);
     }
+
+    // ------------------------------------------------------
+    // -
+    // -    Abstract methods
+    // -
+    // ------------------------------------------------------
+
+    abstract protected function paginate(Request $request, $query, ?int $limit = null): array;
 }

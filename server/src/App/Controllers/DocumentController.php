@@ -3,57 +3,39 @@ declare(strict_types=1);
 
 namespace Robert2\API\Controllers;
 
-use Robert2\API\Models\Document;
-use Robert2\API\Errors;
 use Robert2\API\Controllers\Traits\FileResponse;
-use Slim\Http\Request;
+use Robert2\API\Models\Document;
+use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
+use Slim\Http\ServerRequest as Request;
 
-class DocumentController
+class DocumentController extends BaseController
 {
     use FileResponse;
-
-    protected $model;
-
-    public function __construct()
-    {
-        $this->model = new Document();
-    }
-
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Getters
-    // —
-    // ——————————————————————————————————————————————————————
 
     public function getOne(Request $request, Response $response): Response
     {
         $id = (int)$request->getAttribute('id');
-        $model = $this->model->find($id);
+        $model = Document::find($id);
         if (!$model) {
-            throw new Errors\NotFoundException;
+            throw new HttpNotFoundException($request);
         }
 
         $filePath = Document::getFilePath((int)$model->material_id, $model->name);
 
         $fileContent = file_get_contents($filePath);
         if (!$fileContent) {
-            throw new Errors\NotFoundException("The file of the document cannot be found.");
+            throw new HttpNotFoundException($request, "The file of the document cannot be found.");
         }
 
         return $this->_responseWithFile($response, $model->name, $fileContent);
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Setters
-    // —
-    // ——————————————————————————————————————————————————————
-
     public function delete(Request $request, Response $response): Response
     {
         $id = (int)$request->getAttribute('id');
-        $this->model->remove($id);
+        Document::staticRemove($id);
+
         return $response->withJson(['destroyed' => true], SUCCESS_OK);
     }
 }

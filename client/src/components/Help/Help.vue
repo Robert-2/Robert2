@@ -86,11 +86,12 @@ export default {
       }
 
       const defaultError = {
-        requested: '',
         code: 500,
         message: 'Unknown error',
-        file: '',
-        stackTrace: [],
+        debug: {
+          file: '',
+          stackTrace: [],
+        },
       };
 
       return response.data?.error || defaultError;

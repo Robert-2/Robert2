@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace Robert2\Tests;
 
+use Robert2\API\App;
 use There4\Slim\Test\WebTestCase;
-use Robert2\API;
 
 class ApiTestCase extends WebTestCase
 {
@@ -12,7 +12,7 @@ class ApiTestCase extends WebTestCase
 
     public function getSlimInstance(): \Slim\App
     {
-        $app = (new API\App())->configureAndGet();
+        $app = new App();
         $app->add(new \Slim\HttpCache\Cache('private', 0));
         return $app;
     }

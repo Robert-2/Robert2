@@ -3,16 +3,19 @@ declare(strict_types=1);
 
 namespace Robert2\API\Middlewares;
 
-use Robert2\API\ApiRouter;
 use Robert2\API\Config;
 use Robert2\API\Services\Auth;
-use Slim\Http\Request;
+use Slim\Http\ServerRequest as Request;
 use Slim\Http\Response;
 
 class Acl
 {
     public function __invoke(Request $request, Response $response, callable $next)
     {
+        if ($request->isOptions()) {
+            return $next($request, $response);
+        }
+
         $currentRoute = $this->_getCurrentRoute($request);
         if (!preg_match('/^\/?api\//', $currentRoute)) {
             return $next($request, $response);
@@ -61,7 +64,7 @@ class Acl
             return [];
         }
 
-        $routesByMethod = (new ApiRouter())->getRoutes();
+        $routesByMethod = include __DIR__ . DS . 'Config' . DS . 'routes.php';
         if (!array_key_exists($method, $routesByMethod)) {
             return [];
         }

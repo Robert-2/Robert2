@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Robert2\API\Middlewares;
 
 use Illuminate\Pagination\Paginator;
-use Slim\Http\Request;
+use Slim\Http\ServerRequest as Request;
 use Slim\Http\Response;
 
 class Pagination

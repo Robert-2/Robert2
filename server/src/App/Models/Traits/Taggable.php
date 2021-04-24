@@ -5,14 +5,13 @@ namespace Robert2\API\Models\Traits;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
-use Robert2\API\Errors;
 use Robert2\API\Models\Tag;
 
 trait Taggable
 {
     public function Tags()
     {
-        return $this->morphToMany('Robert2\API\Models\Tag', 'taggable')
+        return $this->morphToMany(Tag::class, 'taggable')
             ->select(['id', 'name']);
     }
 
@@ -49,25 +48,22 @@ trait Taggable
 
     public function edit(?int $id = null, array $data = []): Model
     {
-        $Model = parent::edit($id, $data);
+        $entity = parent::edit($id, $data);
 
         if (array_key_exists('tags', $data)) {
-            $this->setTags($Model['id'], $data['tags']);
+            $this->setTags($entity['id'], $data['tags']);
         }
 
-        return $Model;
+        return $entity;
     }
 
     public function setTags(int $id, ?array $tagNames): array
     {
-        $Model = self::find($id);
-        if (!$Model) {
-            throw new Errors\NotFoundException;
-        }
+        $entity = static::findOrFail($id);
 
         if (empty($tagNames)) {
-            $Model->Tags()->sync([]);
-            return $Model->tags;
+            $entity->Tags()->sync([]);
+            return $entity->tags;
         }
 
         // - Filter list to keep only names
@@ -83,22 +79,22 @@ trait Taggable
             $tagsIds[] = $Tag->id;
         }
 
-        $Model->Tags()->sync($tagsIds);
-        return $Model->tags;
+        $entity->Tags()->sync($tagsIds);
+        return $entity->tags;
     }
 
     public function addTag(int $id, string $tagName): array
     {
-        $Model = self::find($id);
-        $tagName = trim($tagName);
+        $entity = static::findOrFail($id);
 
-        if (!$Model || empty($tagName)) {
-            throw new Errors\NotFoundException;
+        $tagName = trim($tagName);
+        if (empty($tagName)) {
+            throw new \InvalidArgumentException("The new tag should not be empty.");
         }
 
         $Tag = Tag::firstOrCreate(['name' => $tagName]);
 
-        $Model->Tags()->attach($Tag->id);
-        return $Model->tags;
+        $entity->Tags()->attach($Tag->id);
+        return $entity->tags;
     }
 }

@@ -3,8 +3,9 @@ declare(strict_types=1);
 
 namespace Robert2\Tests;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Robert2\API\Models;
-use Robert2\API\Errors;
+use Robert2\API\Errors\ValidationException;
 
 final class CompanyTest extends ModelTestCase
 {
@@ -142,21 +143,21 @@ final class CompanyTest extends ModelTestCase
 
     public function testCreateCompanyWithoutData(): void
     {
-        $this->expectException(Errors\ValidationException::class);
+        $this->expectException(ValidationException::class);
         $this->expectExceptionCode(ERROR_VALIDATION);
         $this->model->edit(null, []);
     }
 
     public function testCreateCompanyBadData(): void
     {
-        $this->expectException(Errors\ValidationException::class);
+        $this->expectException(ValidationException::class);
         $this->expectExceptionCode(ERROR_VALIDATION);
         $this->model->edit(null, ['foo' => 'bar']);
     }
 
     public function testCreateCompanyDuplicate(): void
     {
-        $this->expectException(Errors\ValidationException::class);
+        $this->expectException(ValidationException::class);
         $this->expectExceptionCode(ERROR_DUPLICATE);
         $this->model->edit(null, ['legal_name' => 'Testing, Inc']);
     }
@@ -248,7 +249,7 @@ final class CompanyTest extends ModelTestCase
 
     public function testAddPersonsToInexistant(): void
     {
-        $this->expectException(Errors\NotFoundException::class);
+        $this->expectException(ModelNotFoundException::class);
         $persons = [['first_name' => 'Laurent', 'last_name' => 'Bigboss']];
         $this->model->addPersons(999, $persons);
     }

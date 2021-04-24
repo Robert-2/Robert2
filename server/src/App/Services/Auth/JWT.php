@@ -7,7 +7,7 @@ use Firebase\JWT\JWT as JWTCore;
 use Robert2\API\Config\Config;
 use Robert2\API\Services\Auth;
 use Robert2\API\Models\User;
-use Slim\Http\Request;
+use Slim\Http\ServerRequest as Request;
 
 final class JWT implements AuthenticatorInterface
 {
