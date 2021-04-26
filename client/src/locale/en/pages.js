@@ -8,7 +8,7 @@ export default {
     'login-with-cas': "Login with CAS",
     'please-wait': "Authentication, please wait...",
     'bye': "See you\u00a0!",
-    'footer': "Robert2 is a free (as in 'freedom') software. You can copy and redistribute it freely, except for commercial purpose.",
+    'footer': "Robert2 «\u00a0Premium\u00a0» is a non-free version of the free software Robert2. Copying and redistribution of this version is forbidden.",
     'official-website': "Official website",
     'community-forum': "Community Forum",
 
