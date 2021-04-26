@@ -1,18 +1,21 @@
-import Config from '@/config/globalConfig';
-import formatAmount from '@/utils/formatAmount';
 import decimalRound from '@/utils/decimalRound';
 import getEventGrandTotal from '@/utils/getEventGrandTotal';
 import getEventOneDayTotal from '@/utils/getEventOneDayTotal';
 import getDiscountRateFromLast from '@/utils/getDiscountRateFromLast';
 import getEventOneDayTotalDiscountable from '@/utils/getEventOneDayTotalDiscountable';
 import BillEstimateCreationForm from '@/components/BillEstimateCreationForm/BillEstimateCreationForm.vue';
+import DisplayBill from './DisplayBill/DisplayBill.vue';
 
 export default {
   name: 'EventBilling',
-  components: { BillEstimateCreationForm },
+  components: {
+    DisplayBill,
+    BillEstimateCreationForm,
+  },
   props: {
     lastBill: Object,
     lastEstimate: Object,
+    allBills: Array,
     beneficiaries: Array,
     materials: Array,
     loading: Boolean,
@@ -25,7 +28,6 @@ export default {
     return {
       discountRate,
       duration: this.end ? this.end.diff(this.start, 'days') + 1 : 1,
-      currency: Config.currency.symbol,
       isBillable: this.beneficiaries.length > 0,
       displayCreateBill: false,
     };
@@ -38,12 +40,6 @@ export default {
   computed: {
     userCanEdit() {
       return this.$store.getters['auth/is'](['admin', 'member']);
-    },
-
-    pdfUrl() {
-      const { baseUrl } = Config;
-      const { id } = this.lastBill || { id: null };
-      return `${baseUrl}/bills/${id}/pdf`;
     },
 
     total() {
@@ -106,10 +102,6 @@ export default {
         this.lastEstimate,
         this.discountRate,
       );
-    },
-
-    formatAmount(amount) {
-      return formatAmount(amount);
     },
   },
 };

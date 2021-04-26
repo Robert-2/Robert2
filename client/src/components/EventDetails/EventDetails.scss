@@ -20,7 +20,7 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    min-height: 200px;
+    min-height: 520px;
     max-height: 100vh;
     overflow-y: auto;
 
@@ -35,20 +35,24 @@
     }
   }
 
-  &__error {
-    margin-bottom: $content-padding-small-vertical;
-    color: $text-danger-color;
+  &__base-infos {
+    display: flex;
+    flex-wrap: wrap;
+
+    .LocationText,
+    .PersonsList {
+      flex: 1 0 auto;
+      max-width: 100%;
+      margin-right: $content-padding-small-horizontal;
+      margin-bottom: $content-padding-large-vertical;
+    }
   }
 
-  &__location,
-  &__no-beneficiary,
-  &__beneficiaries,
-  &__assignees,
   &__description,
   &__confirmation,
   &__materials-empty {
     font-size: 1.2rem;
-    margin-bottom: $content-padding-small-vertical;;
+    margin-bottom: $content-padding-large-vertical;
 
     .fas {
       width: 1.5rem;
@@ -57,24 +61,11 @@
     }
   }
 
-  &__beneficiary,
-  &__assignee {
-    display: inline-block;
-  }
-
-  &__beneficiary + &__beneficiary,
-  &__assignee + &__assignee {
-    margin-left: .5rem;
-
-    &::before {
-      content: '|';
-      margin-right: .3rem;
-      color: $text-base-color;
-    }
-  }
-
-  &__no-beneficiary {
-    color: $text-danger-color;
+  &__description {
+    margin-top: 0;
+    color: $text-nav-color;
+    white-space: pre-wrap;
+    line-height: 1.5;
   }
 
   &__confirmation {
@@ -83,12 +74,6 @@
     &--confirmed {
       color: $text-success-color;
     }
-  }
-
-  &__description {
-    color: $text-nav-color;
-    white-space: pre-wrap;
-    line-height: 1.5;
   }
 
   &__materials-empty {
@@ -104,21 +89,8 @@
     color: $text-warning-color;
   }
 
-  .EventEstimates {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-
-    &__list {
-      width: 100%;
-      max-width: 600px;
-    }
-  }
-
-  &__totals {
-    .EventTotals {
-      padding: 0;
-      text-align: left;
-    }
+  .EventTotals {
+    padding: 0;
+    text-align: left;
   }
 }

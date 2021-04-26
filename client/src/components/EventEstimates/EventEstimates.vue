@@ -52,14 +52,14 @@
     </div>
     <div
       v-if="estimates.length > 0 && userCanEdit && !loading && !deletingId"
-      class="EventEstimates__regenerate"
+      class="EventEstimates__create-new"
     >
-      <p class="EventEstimates__regenerate__text">
+      <p class="EventEstimates__create-new__text">
         {{ $t('create-new-estimate-help') }}
       </p>
       <button
         v-if="!displayCreateEstimate"
-        class="EventEstimates__regenerate__button success"
+        class="EventEstimates__create-new__button success"
         @click="openCreateEstimate"
       >
         <i class="fas fa-plus" />

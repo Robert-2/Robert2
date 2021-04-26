@@ -1,33 +1,21 @@
 <template>
   <section class="EventBilling">
-    <div
+    <DisplayBill
       v-if="lastBill && !displayCreateBill && !loading"
-      class="EventBilling__download"
-    >
-      <p class="EventBilling__download__text">
-        {{ $t(
-          'bill-number-generated-at',
-          { number: lastBill.number, date: lastBill.date.format('L') }
-        ) }}
-        <span v-if="lastBill.discount_rate > 0">
-          {{ $t('with-discount', { rate: lastBill.discount_rate }) }},
-        </span>
-        <span v-if="lastBill.discount_rate === 0">{{ $t('without-discount') }},</span>
-        {{ $t('with-amount-of', { amount: formatAmount(lastBill.due_amount) }) }}.
-      </p>
-      <a :href="pdfUrl" class="EventBilling__download__link">
-        <i class="fas fa-download" />
-        {{ $t('download-pdf') }}
-      </a>
-    </div>
+      :data="lastBill"
+    />
     <div v-if="lastBill && userCanEdit" class="EventBilling__regenerate">
       <p class="EventBilling__regenerate__text">
         {{ $t('regenerate-bill-help') }}
       </p>
-      <a v-if="!displayCreateBill && !loading" href="#" @click="openBillRegeneration">
+      <button
+        v-if="!displayCreateBill && !loading"
+        class="EventBilling__regenerate__button"
+        @click="openBillRegeneration"
+      >
         <i class="fas fa-sync" />
         {{ $t('click-here-to-regenerate-bill') }}
-      </a>
+      </button>
     </div>
     <div v-if="!isBillable" class="EventBilling__not-billable">
       <h3 class="EventBilling__not-billable__title">
@@ -40,7 +28,7 @@
       </p>
     </div>
     <div v-if="!lastBill && isBillable">
-      <div v-if="userCanEdit && !lastEstimate" class="EventBilling__no-estimate">
+      <div v-if="userCanEdit && !lastEstimate" class="EventBilling__warning-no-estimate">
         {{ $t('warning-no-estimate-before-billing') }}
       </div>
       <p class="EventBilling__no-bill">
@@ -62,6 +50,19 @@
       @cancel="closeBillRegeneration"
       :loading="loading"
     />
+    <div v-if="allBills.length > 1 && !displayCreateBill && !loading">
+      <h3 class="EventBilling__list-title">{{ $t('previous-bills') }}</h3>
+      <ul class="EventBilling__list">
+        <li
+          v-for="(bill, index) in allBills"
+          :key="bill.id"
+          class="EventBilling__list__item"
+          :class="{ 'EventBilling__list__item--current': index === 0 }"
+        >
+          <DisplayBill v-if="bill && !displayCreateBill && !loading" :data="bill" />
+        </li>
+      </ul>
+    </div>
   </section>
 </template>
 

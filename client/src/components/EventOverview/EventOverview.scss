@@ -141,6 +141,11 @@
       min-width: 350px;
       padding: 0 $content-padding-large-horizontal;
       border-left: 3px solid #383838;
+
+      .DisplayBill__actions {
+        max-width: 140px;
+        text-align: center;
+      }
     }
 
     .Help {
