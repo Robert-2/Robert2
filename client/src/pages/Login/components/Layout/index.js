@@ -6,6 +6,7 @@ export default {
   components: { Logo },
   data() {
     return {
+      year: (new Date()).getFullYear(),
       apiVersion: Config.api.version,
     };
   },
