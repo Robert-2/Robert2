@@ -117,6 +117,8 @@ class RobertFixtures
         $dumpContent = str_replace('` text', '` varchar(1024)', $dumpContent);
         $dumpContent = str_replace('` json', '` varchar(1024)', $dumpContent);
         $dumpContent = str_replace('InnoDB', 'MEMORY', $dumpContent);
+        $dumpContent = str_replace('` longtext', '` varchar(1024)', $dumpContent);
+
 
         file_put_contents($dumpFile, $dumpContent);
 
