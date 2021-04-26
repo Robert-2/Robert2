@@ -6,6 +6,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 
 ## 0.13.0 (UNRELEASED)
 
+- Corrige un problème avec le nom de la base de données de test (#128 et #129).
 - Ajoute la création / suppression de devis pour les événements (#5).
 
 ## 0.12.0 (2021-03-29)

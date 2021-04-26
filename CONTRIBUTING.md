@@ -133,8 +133,11 @@ yarn test --watch
 ```
 
 Pour les tests unitaires côté back, nous utilisons __PHPUnit__. Pour ceux-ci, vous aurez besoin d'une
-base de données dédiée aux tests, nommée de la même manière que votre base de données Robert2, mais
-suffixée avec `_test` (par ex : `robert2_test`). Ensuite, vous pouvez exécuter les tests via :
+base de données dédiée aux tests. Par défaut, cette base s'appelle `robert2_test`, mais vous pouvez
+spécifier un autre nom en ajoutant la ligne `"testDatabase": "le_nom_que_vous_voulez"` dans le fichier
+`server/src/App/Config/settings.json`.
+
+Ensuite, vous pouvez exécuter les tests via :
 
 ```bash
 # - Se placer dans le dossier server/
