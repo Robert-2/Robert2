@@ -7,10 +7,8 @@
   padding-bottom: calc(60px + .1vh);
 
   &__logo {
+    position: relative;
     flex: 0 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     padding: 30px 20px;
     text-align: center;
 
@@ -20,9 +18,10 @@
     }
 
     &__premium {
-      margin-top: 26px;
-      padding-left: $content-padding-small-vertical;
-      font-size: 1.7rem;
+      position: absolute;
+      bottom: 30px;
+      right: calc(50% - 75px);
+      font-size: 1.1rem;
       color: $text-base-color;
     }
   }
@@ -51,8 +50,9 @@
       }
 
       &__premium {
-        margin-top: 45px;
-        font-size: 2rem;
+        bottom: 28px;
+        right: calc(50% - 115px);
+        font-size: 1.4rem;
       }
     }
   }
@@ -66,9 +66,9 @@
       }
 
       &__premium {
-        margin-top: 75px;
-        padding-left: $content-padding-large-vertical;
-        font-size: 3rem;
+        bottom: 35px;
+        right: calc(50% - 185px);
+        font-size: 1.8rem;
       }
     }
 

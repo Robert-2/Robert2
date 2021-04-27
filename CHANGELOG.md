@@ -9,6 +9,8 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Corrige un problème avec le nom de la base de données de test (#128 et #129).
 - Ajoute la création / suppression de devis pour les événements (#5).
 
+- Adapte la page de login avec le terme "Premium" sous le logo, et la licence fermée dans le footer.
+
 ## 0.12.2-premium (2021-04-19)
 
 - Corrige un bug sous Firefox avec le séparateur `/` dans les code-barres (rétro-compatible).
