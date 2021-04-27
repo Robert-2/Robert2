@@ -9,6 +9,7 @@ use Robert2\API\Validation\Validator as V;
 use Robert2\API\Errors\ValidationException;
 use Robert2\API\Services\Auth;
 use Robert2\API\Models\User;
+use \phpCAS;
 
 class AuthController
 {
@@ -56,6 +57,7 @@ class AuthController
                 throw new \Exception("L'authentification CAS a échoué (absence de redirection vers le serveur CAS).");
             }
         } catch (\Throwable $e) {
+            debug($e->getMessage(), ['log' => true, 'append' => false]);
             // TODO: Ajouter un message d'erreur passé au client (lorsqu'on aura un moyen de le faire)
             //       l'information du fait que la connexion a échoué.
         }
