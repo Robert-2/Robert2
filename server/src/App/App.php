@@ -159,6 +159,7 @@ class App
 
         // - Download files
         $this->app->get('/bills/{id:[0-9]+}/pdf[/]', 'BillController:getOnePdf')->setName('getBillPdf');
+        $this->app->get('/estimates/{id:[0-9]+}/pdf[/]', 'EstimateController:getOnePdf')->setName('getEstimatePdf');
         $this->app->get('/events/{id:[0-9]+}/pdf[/]', 'EventController:getOnePdf')->setName('getEventPdf');
         $this->app->get('/documents/{id:[0-9]+}/download[/]', 'DocumentController:getOne')->setName('getDocumentFile');
         $this->app->get('/material-units/{id:[0-9]+}/barcode', 'MaterialUnitController:barCode');

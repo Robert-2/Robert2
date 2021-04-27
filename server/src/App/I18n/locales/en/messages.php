@@ -2495,14 +2495,20 @@ return [
     => "Done!",
 
     //
-    // - Bills messages
+    // - Bills & estimates messages
     //
 
     "Bill"
     => "Bill",
 
+    "Estimate"
+    => "Estimate",
+
     "billTitle"
     => "Bill in %s, N° %s",
+
+    "estimateTitle"
+    => "Estimate in %s",
 
     "onDate"
     => "On %s",
@@ -2618,8 +2624,17 @@ return [
     "totalDue"
     => "Amount due",
 
+    "estimateAcceptanceDate"
+    => "Date of acceptance of the estimate:",
+
+    "estimateAcceptanceSignature"
+    => "Signature of the beneficiary, preceded by the mention « good for approval »:",
+
     "billDetailsTitle"
     => "Details of bill N° %s",
+
+    "estimateDetailsTitle"
+    => "Estimate details",
 
     "ref"
     => "Ref.",

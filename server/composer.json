@@ -19,6 +19,7 @@
         "test": "src/vendor/bin/phpunit --colors=always --coverage-html tests/coverage",
         "testapi": "src/vendor/bin/phpunit --colors=always --testsuite api --filter",
         "testmodels": "src/vendor/bin/phpunit --colors=always --testsuite models --filter",
+        "testlibs": "src/vendor/bin/phpunit --colors=always --testsuite libs --filter",
         "testother": "src/vendor/bin/phpunit --colors=always --testsuite other --filter"
     },
     "config": {

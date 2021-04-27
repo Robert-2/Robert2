@@ -103,17 +103,6 @@
       {{ $t('billing') }}
     </h3>
     <div class="EventOverview__billing">
-      <EventBilling
-        v-if="hasMaterials && showBilling && event.is_billable"
-        :beneficiaries="event.beneficiaries"
-        :lastBill="lastBill"
-        :materials="event.materials"
-        :start="startDate"
-        :end="endDate"
-        :loading="billLoading"
-        @discountRateChange="handleChangeDiscountRate"
-        @createBill="handleCreateBill"
-      />
       <EventTotals
         v-if="hasMaterials"
         :materials="event.materials"
@@ -122,6 +111,50 @@
         :start="startDate"
         :end="endDate"
       />
+      <tabs
+        v-if="showBilling && hasMaterials && event.is_billable"
+        :defaultIndex="lastBill ? 1 : 0"
+        :onSelect="handleChangeBillingTab"
+        class="EventOverview__billing__tabs"
+      >
+        <tab title-slot="estimates">
+          <EventEstimates
+            :beneficiaries="event.beneficiaries"
+            :materials="event.materials"
+            :estimates="event.estimates"
+            :lastBill="lastBill"
+            :start="startDate"
+            :end="endDate"
+            :loading="isCreating"
+            :deletingId="deletingId"
+            @discountRateChange="handleChangeDiscountRate"
+            @createEstimate="handleCreateEstimate"
+            @deleteEstimate="handleDeleteEstimate"
+          />
+          <Help :message="{ type: 'success', text: successMessage }" :error="error" />
+        </tab>
+        <tab title-slot="bill">
+          <Help :message="{ type: 'success', text: successMessage }" :error="error" />
+          <EventBilling
+            :beneficiaries="event.beneficiaries"
+            :lastBill="lastBill"
+            :lastEstimate="lastEstimate"
+            :allBills="event.bills"
+            :materials="event.materials"
+            :start="startDate"
+            :end="endDate"
+            :loading="isCreating"
+            @discountRateChange="handleChangeDiscountRate"
+            @createBill="handleCreateBill"
+          />
+        </tab>
+        <template slot="estimates">
+          <i class="fas fa-file-signature" /> {{ $t('estimates') }}
+        </template>
+        <template slot="bill">
+          <i class="fas fa-file-invoice-dollar" /> {{ $t('bill') }}
+        </template>
+      </tabs>
       <p v-if="!hasMaterials" class="EventOverview__materials__empty">
         <i class="fas fa-exclamation-triangle"></i>
         {{ $t('page-events.warning-no-material') }}

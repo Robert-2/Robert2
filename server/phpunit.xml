@@ -3,6 +3,9 @@
         <testsuite name="other">
             <directory>tests/other</directory>
         </testsuite>
+        <testsuite name="libs">
+            <directory>tests/libs</directory>
+        </testsuite>
         <testsuite name="models">
             <directory>tests/models</directory>
         </testsuite>

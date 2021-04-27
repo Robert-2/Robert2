@@ -14,7 +14,6 @@ module.exports = {
     'vue/require-default-prop': 'off',
     'vue/require-prop-types': 'off',
   },
-  ignorePatterns: ['service-worker.js'],
   parserOptions: {
     parser: 'babel-eslint',
   },

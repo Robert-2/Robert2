@@ -8,7 +8,7 @@ export default {
     'login-with-cas': "Connexion via CAS",
     'please-wait': "Authentification, merci de patienter...",
     'bye': "À bientôt\u00a0!",
-    'footer': "Robert2 est un logiciel libre. Vous pouvez le copier et le redistribuer librement, sauf pour une utilisation commerciale.",
+    'footer': "Robert2 «\u00a0Premium\u00a0» est une version non-libre du logiciel libre Robert2. La copie et la redistribution de cette version sont interdites.",
     'official-website': "Site web officiel",
     'community-forum': "Forum de la communauté",
 
@@ -323,6 +323,10 @@ export default {
     'confirm-restore': "Voulez-vous vraiment restaurer cette étiquette\u00a0?",
     'saved': "Étiquette sauvegardée.",
     'deleted': "Étiquette supprimée.",
+  },
+
+  'page-estimate': {
+    'confirm-delete': "Voulez-vous vraiment supprimer ce devis\u00a0?",
   },
 };
 /* eslint-enable quotes */

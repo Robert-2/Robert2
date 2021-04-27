@@ -44,7 +44,7 @@ doivent donc être rédigés en français uniquement.
 
 Le code, lui, à l'exception des commentaires, doit être exclusivement en anglais, pas de variable ou de nom de migration en français.
 
-Attention ⚠️ , cela ne veut pas dire que Robert n'est pas traduit : Robert2 est aussi disponible en anglais et doit continuer à l'être.  
+Attention ⚠️, cela ne veut pas dire que Robert n'est pas traduit : Robert2 est aussi disponible en anglais et doit continuer à l'être.  
 Merci donc de bien vouloir prendre en compte le fait que chaque texte affiché dans l'interface de Robert doit pouvoir être traduit et si possible,
 veuillez spécifier les traductions anglaises de vos ajouts en français dans vos pull requests.
 
@@ -118,35 +118,60 @@ composer rollback         # Annule la dernière migration exécutée sur votre b
 
 ## Tests unitaires
 
-Nous utilisons __Jest__ pour les tests unitaires côté front et __PHPUnit__ pour les tests unitaires côté back.  
-
-Pour pouvoir lancer les tests de la partie client, il n'y a pas de pre-requis, par contre pour les tests back, 
-vous aurez besoin d'une base de données dédiée aux tests, nommée de la même manière que votre base de données
-Robert2, mais suffixée avec `_test` (exemple : `robert2_test`).
-
-Une fois les indications ci-dessus suivis, exécutez les tests via :
+Nous utilisons __Jest__ pour les tests unitaires côté front. Il n'y a pas de pre-requis, il suffit
+de les lancer comme ceci :
 
 ```bash
-# - Pour la partie client
-yarn test [--watch]
+# - Se placer dans le dossier client/
+cd client
 
-# - Pour la partie serveur
+# - Lancer tous les tests
+yarn test
+
+# - Ou bien, en mode watch
+yarn test --watch
+```
+
+Pour les tests unitaires côté back, nous utilisons __PHPUnit__. Pour ceux-ci, vous aurez besoin d'une
+base de données dédiée aux tests. Par défaut, cette base s'appelle `robert2_test`, mais vous pouvez
+spécifier un autre nom en ajoutant la ligne `"testDatabase": "le_nom_que_vous_voulez"` dans le fichier
+`server/src/App/Config/settings.json`.
+
+Ensuite, vous pouvez exécuter les tests via :
+
+```bash
+# - Se placer dans le dossier server/
+cd server
+
+# - Lancer tous les tests
 composer test
+
+# - Pour ne lancer qu'une testSuite à la fois :
+composer testapi Test     # - testSuite des contrôleurs
+composer testmodels Test  # - testSuite des modèles
+composer testlibs Test    # - testSuite des libs
+composer testother Test   # - testSuite des "autres" (fonctions, config, install...)
+
+# - On peut aussi ne lancer qu'un seul fichier de test en particulier, par ex. :
+composer testmodels EventTest # - Lance les tests du fichier tests/models/EventTest.php
 ```
 
 ### Qu'est-ce que l'on teste ?
 
 Côté back, des tests unitaires doivent être mis en place au moins pour tous les modèles, les routes d'API   
-ainsi que pour les fonctions et classes utilitaires.  
+ainsi que pour les fonctions et classes utilitaires.
 
 Côté front, tous les utilitaires doivent être testés.
 
-N'hésitez pas, bien sûr, à tester aussi des parties du code qui ne sont pas spécifiées ci-dessus, plus il y a de test, mieux c'est !
+N'hésitez pas, bien sûr, à tester aussi des parties du code qui ne sont pas spécifiées ci-dessus,
+plus il y a de test, mieux c'est !
 
 ## Linting
 
-Le projet suit des règles strictes de linting (avec PHPCS pour la partie back et ESLint pour la partie Front).   
-Un fichier `.editorconfig` existe à la racine du projet pour permettre aux IDE d'automatiser la présentation de base du code.
+Le projet suit des règles strictes de linting (avec PHPCS pour le back et ESLint pour le Front).   
+Un fichier `.editorconfig` existe à la racine du projet pour permettre aux IDE d'automatiser la
+présentation de base du code (voir [editorconfig.org](https://editorconfig.org/), ainsi que
+[l'extension VSCode](https://marketplace.visualstudio.com/items?itemName=EditorConfig.EditorConfig) dédiée).
 
 Vous avez la possibilité de vérifier que votre code respecte bien ces conventions via :  
 
@@ -209,15 +234,16 @@ composer lint
     │   └── views                # - Dossier contenant les vues Twig de l'application.
     │   │   ├── blocks           # - Les blocks communs, comme le loading, etc.
     │   │   ├── install          # - Toutes les pages de l'assistant d'installation
-    │   │   └── pdf              # - Les vues des sorties PDF (factures, fiches d'événement, etc.)
-    │   │   └── webclient.twig   # - Point d'entrée de l'application Robert2 (front-end)
+    │   │   ├── pdf              # - Les vues des sorties PDF (factures, fiches d'événement, etc.)
+    │   │   ├── webclient.twig   # - Point d'entrée de l'application Robert2 (front-end)
     │   │   └── install.twig     # - Point d'entrée de l'assistant d'installation
-    └── tests
+    ├── tests
     │   ├── endpoints            # - Tests unitaires (PHPUnit) des controllers.
     │   ├── Fixtures
     │   │   ├── files            # - Fichiers associés aux données (voir server/data) à utiliser pour les fixtures.
     │   │   ├── seed             # - Données utilisées pour les tables de la DB de test, au format JSON.
     │   │   └── tmp              # - Dossier utilisé pour stocker la structure SQL (créée à la volée) de la DB de test, pour reset.
+    │   ├── libs                 # - Tests unitaires (PHPUnit) des libs.
     │   ├── models               # - Tests unitaires (PHPUnit) des modèles.
     │   └── other                # - Tests unitaires (PHPUnit) des fonctions utilitaires et autres classes.
 ```

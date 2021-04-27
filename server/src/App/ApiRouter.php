@@ -39,6 +39,7 @@ class ApiRouter
             '/events/{id:[0-9]+}[/]' => 'EventController:getOne',
             '/events/{id:[0-9]+}/missing-materials[/]' => 'EventController:getMissingMaterials',
             '/bills/{id:[0-9]+}[/]' => 'BillController:getOne',
+            '/estimates/{id:[0-9]+}[/]' => 'EstimateController:getOne',
         ],
         'post' => [
             '/session[/]' => 'AuthController:loginWithForm',
@@ -55,6 +56,7 @@ class ApiRouter
             '/attributes[/]' => 'AttributeController:create',
             '/events[/]' => 'EventController:create',
             '/events/{eventId:[0-9]+}/bill[/]' => 'BillController:create',
+            '/events/{eventId:[0-9]+}/estimate[/]' => 'EstimateController:create',
         ],
         'put' => [
             '/users/{id:[0-9]+}[/]' => 'UserController:update',
@@ -93,6 +95,7 @@ class ApiRouter
             '/events/{id:[0-9]+}[/]' => 'EventController:delete',
             '/bills/{id:[0-9]+}[/]' => 'BillController:delete',
             '/documents/{id:[0-9]+}[/]' => 'DocumentController:delete',
+            '/estimates/{id:[0-9]+}[/]' => 'EstimateController:delete',
         ],
     ];
 

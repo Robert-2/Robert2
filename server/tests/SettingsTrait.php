@@ -40,7 +40,9 @@ trait SettingsTrait
     {
         $localSettings = Config::getSettings();
 
-        $localSettings['db']['testDatabase'] = sprintf('%s_test', $localSettings['db']['database']);
+        if (!isset($localSettings['db']['testDatabase'])) {
+            $localSettings['db']['testDatabase'] = 'robert2_test';
+        }
 
         $this->settings = [
             'apiUrl'              => $localSettings['apiUrl'],
