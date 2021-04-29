@@ -9,6 +9,7 @@ export default new Vuex.Store({
     description: null,
     materials: [],
     isConfirmed: false,
+    isClosed: false,
     isBillable: true,
     isSaved: false,
   },
@@ -20,6 +21,7 @@ export default new Vuex.Store({
       state.description = null;
       state.materials = [];
       state.isConfirmed = false;
+      state.isClosed = false;
       state.isBillable = true;
       state.isSaved = true;
     },
@@ -32,6 +34,7 @@ export default new Vuex.Store({
       state.isBillable = event.is_billable;
       state.materials = event.materials;
       state.isConfirmed = event.is_confirmed;
+      state.isClosed = event.is_closed;
     },
 
     setIsSaved(state, isSaved) {
@@ -47,6 +50,7 @@ export default new Vuex.Store({
         && event.location === state.location
         && event.description === state.description
         && event.is_confirmed === state.isConfirmed
+        && event.is_closed === state.isClosed
         && event.is_billable === state.isBillable
       );
 

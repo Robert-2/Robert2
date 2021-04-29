@@ -43,6 +43,7 @@ class Event extends BaseModel
             'start_date'   => V::notEmpty()->date(),
             'end_date'     => V::callback([$this, 'checkEndDate']),
             'is_confirmed' => V::notOptional()->boolType(),
+            'is_closed'    => V::notOptional()->boolType(),
             'location'     => V::optional(V::length(2, 64)),
             'is_billable'  => V::optional(V::boolType()),
         ];
@@ -162,6 +163,7 @@ class Event extends BaseModel
         'start_date'   => 'string',
         'end_date'     => 'string',
         'is_confirmed' => 'boolean',
+        'is_closed'    => 'boolean',
         'location'     => 'string',
         'is_billable'  => 'boolean',
     ];
@@ -331,6 +333,7 @@ class Event extends BaseModel
         'start_date',
         'end_date',
         'is_confirmed',
+        'is_closed',
         'location',
         'is_billable',
     ];

@@ -15,6 +15,7 @@ const formatEvent = (dataEvent, translate) => {
     endDate: end,
     isPast,
     isConfirmed,
+    isClosed,
     hasMissingMaterials,
     beneficiaries,
     assignees,
@@ -24,8 +25,12 @@ const formatEvent = (dataEvent, translate) => {
   if (hasMissingMaterials) {
     content = withIcon('exclamation-triangle', content);
   }
-  if (isConfirmed) {
-    content = withIcon(isPast ? 'lock' : 'check', content);
+  if (isPast && isConfirmed) {
+    content = withIcon(isClosed ? 'check' : 'folder-open', content);
+  } else if (isPast && !isConfirmed) {
+    content = withIcon('times-circle', content);
+  } else {
+    content = withIcon(isConfirmed ? 'lock' : 'lock-open', content);
   }
 
   const locationText = withIcon('map-marker-alt', location || '?');

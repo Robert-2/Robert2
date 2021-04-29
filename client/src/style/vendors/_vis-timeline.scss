@@ -141,11 +141,15 @@ div.vis-tooltip {
     margin-bottom: 3px;
   }
 
-  .fa-exclamation-triangle {
+  .fa-exclamation-triangle,
+  .fa-lock-open,
+  .fa-times-circle,
+  .fa-folder-open {
     color: $text-danger-color;
   }
 
-  .fa-check {
+  .fa-check,
+  .fa-lock {
     color: $text-success-color;
   }
 }

@@ -6,6 +6,7 @@ export default {
   data() {
     return {
       isConfirming: false,
+      isClosing: false,
       fromToDates: {},
     };
   },
@@ -60,6 +61,31 @@ export default {
         })
         .finally(() => {
           this.isConfirming = false;
+        });
+    },
+
+    closeEvent() {
+      this.setEventClosed(true);
+    },
+
+    reopenEvent() {
+      this.setEventClosed(false);
+      this.setEventConfirmation(false);
+    },
+
+    setEventClosed(closed) {
+      const { id } = this.$props.event;
+      const url = `${this.$route.meta.resource}/${id}`;
+      this.isClosing = true;
+      this.$http.put(url, { id, is_closed: closed })
+        .then(({ data }) => {
+          this.$emit('saved', data);
+        })
+        .catch((error) => {
+          this.$emit('error', error);
+        })
+        .finally(() => {
+          this.isClosing = false;
         });
     },
   },

@@ -1,7 +1,9 @@
 .timeline-event {
+  font-size: 1.2em !important;
   .fas,
   .far {
-    width: 1.2rem;
+    font-size: 1.2em;
+    width: 1.75rem;
     text-align: center;
   }
 
@@ -9,19 +11,22 @@
     color: $text-danger-color;
   }
 
-  &--past {
-    background-color: $calendar-event-past-color !important;
+  &--closed {
+    background-color: $calendar-event-closed-color !important;
     color: $text-base-color !important;
 
     &.vis-selected {
-      background-color: lighten($calendar-event-past-color, 10%) !important;
+      background-color: lighten($calendar-event-closed-color, 10%) !important;
     }
   }
 
-  &--locked {
-  }
+  &--unclosed {
+    background-color: $calendar-event-unclosed-color !important;
+    color: $calendar-event-unclosed-text-color !important;
 
-  &--with-warning {
+    &.vis-selected {
+      background-color: lighten($calendar-event-unclosed-color, 10%) !important;
+    }
   }
 
   &--confirmed {
@@ -30,6 +35,26 @@
     &.vis-selected {
       background-color: lighten($calendar-event-confirmed-color, 10%) !important;
     }
+
+    .vis-item-content::before {
+      color: $text-base-color;
+    }
+  }
+
+  &--error {
+    background-color: $calendar-event-error-color !important;
+    color: $calendar-event-error-text-color !important;
+
+    &.vis-selected {
+      background-color: lighten($calendar-event-error-color, 5%) !important;
+    }
+
+    .fas { //}-exclamation-triangle {
+      color: $calendar-event-error-text-color;
+    }
+  }
+
+  &--with-warning {
   }
 
   &--current {

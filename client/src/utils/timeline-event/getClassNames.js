@@ -3,23 +3,24 @@ const getTimelineEventClassNames = (formattedEvent) => {
     isPast,
     isCurrent,
     isConfirmed,
+    isPastAndConfirmed,
+    isClosed,
     hasMissingMaterials,
   } = formattedEvent;
 
   const classNames = ['timeline-event'];
 
-  if (isPast) {
-    classNames.push('timeline-event--past');
-  }
-
-  if (isCurrent) {
-    classNames.push('timeline-event--current');
-  }
-
-  if (isConfirmed) {
-    classNames.push('timeline-event--locked');
-
-    if (!isPast) {
+  if (isPastAndConfirmed) { // Then event can be closed
+    classNames.push(isClosed ? 'timeline-event--closed' : 'timeline-event--unclosed');
+  } else { // event either not past or not isConfirmed
+    // Timing
+    if (isPast) {
+      classNames.push('timeline-event--error');
+    } else if (isCurrent) {
+      classNames.push('timeline-event--current');
+    }
+    // Confirmation
+    if (isConfirmed) {
       classNames.push('timeline-event--confirmed');
     }
   }

@@ -30,27 +30,52 @@
           <i class="fas fa-edit" /> {{ $t('action-edit') }}
         </button>
       </router-link>
-      <button
-        v-show="!isVisitor"
-        v-if="!event.isConfirmed"
-        class="success"
-        :disabled="event.materials && event.materials.length === 0"
-        @click="confirmEvent"
-      >
-        <i v-if="isConfirming" class="fas fa-circle-notch fa-spin" />
-        <i v-if="!isConfirming" class="fas fa-check" />
-        {{ $t('confirm') }}
-      </button>
-      <button
-        v-show="!isVisitor"
-        v-if="event.isConfirmed"
-        class="warning"
-        @click="unconfirmEvent"
-      >
-        <i v-if="isConfirming" class="fas fa-circle-notch fa-spin" />
-        <i v-if="!isConfirming" class="fas fa-hourglass-half" />
-        {{ $t('set-back-on-hold') }}
-      </button>
+      <template v-if="event.isPastAndConfirmed" >
+        <button
+          v-show="!isVisitor"
+          v-if="!event.isClosed"
+          class="success"
+          :disabled="event.materials && event.materials.length === 0"
+          @click="closeEvent"
+        >
+          <i v-if="isClosing" class="fas fa-circle-notch fa-spin" />
+          <i v-if="!isClosing" class="fas fa-check" />
+          {{ $t('close-event') }}
+        </button>
+        <button
+          v-show="!isVisitor"
+          v-if="event.isClosed"
+          class="danger"
+          @click="reopenEvent"
+        >
+          <i v-if="isClosing" class="fas fa-circle-notch fa-spin" />
+          <i v-if="!isClosing" class="fas fa-unlock-alt" />
+          {{ $t('re-open-event') }}
+        </button>
+      </template>
+      <template v-else>
+        <button
+          v-show="!isVisitor"
+          v-if="!event.isConfirmed"
+          class="success"
+          :disabled="event.materials && event.materials.length === 0"
+          @click="confirmEvent"
+        >
+          <i v-if="isConfirming" class="fas fa-circle-notch fa-spin" />
+          <i v-if="!isConfirming" class="fas fa-check" />
+          {{ $t('confirm-eventdetails') }}
+        </button>
+        <button
+          v-show="!isVisitor"
+          v-if="event.isConfirmed"
+          class="warning"
+          @click="unconfirmEvent"
+        >
+          <i v-if="isConfirming" class="fas fa-circle-notch fa-spin" />
+          <i v-if="!isConfirming" class="fas fa-hourglass-half" />
+          {{ $t('unconfirm-eventdetails') }}
+        </button>
+      </template>
       <a
         :href="eventSummaryPdfUrl"
         target="_blank"

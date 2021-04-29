@@ -64,6 +64,7 @@ export default {
         location: '',
         description: '',
         is_confirmed: false,
+        is_closed: false,
         user_id: currentUser.id,
         is_billable: true,
         beneficiaries: [],
