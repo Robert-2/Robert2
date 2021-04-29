@@ -12,7 +12,6 @@ use Robert2\API\Services\Auth;
 use Robert2\API\Models\User;
 use Slim\Http\Request;
 use \phpCAS;
-use RuntimeException;
 
 final class CAS implements AuthenticatorInterface
 {
@@ -193,14 +192,14 @@ final class CAS implements AuthenticatorInterface
             $group = array_reduce(
                 is_array($casGroups) ? $casGroups : [$casGroups],
                 function ($prevGroup, $casGroup) use ($robertGroups, $config) {
-                    if(!array_key_exists($casGroup, $config['groupsMapping'])) {
+                    if (!array_key_exists($casGroup, $config['groupsMapping'])) {
                         return $prevGroup;
                     }
                     
                     $currentGroup = $config['groupsMapping'][$casGroup];
                     if (!array_key_exists($currentGroup, $robertGroups)) {
                         throw new \RuntimeException(vsprintf(
-                            "Le groupe de destination `%s` mappé pour `%s` n'existe pas, " . 
+                            "Le groupe de destination `%s` mappé pour `%s` n'existe pas, " .
                             "veuillez vérifier la configuration CAS.",
                             [$currentGroup, $casGroup]
                         ));
