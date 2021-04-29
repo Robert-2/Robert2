@@ -12,6 +12,7 @@ use Robert2\API\Services\Auth;
 use Robert2\API\Models\User;
 use Slim\Http\Request;
 use \phpCAS;
+use RuntimeException;
 
 final class CAS implements AuthenticatorInterface
 {
@@ -102,7 +103,7 @@ final class CAS implements AuthenticatorInterface
         phpCAS::client(CAS_VERSION_3_0, $config['host'], $config['port'], '/cas');
 
         // - Patch l'URL de base qui n'est pas correctement définie par phpCAS lorsqu'on n'est pas en https.
-        $scheme = $config['cert'] !== false ? 'https' : 'http';
+        $scheme = $config['port'] == 443 ? 'https' : 'http';
         $baseUrl = sprintf('%s://%s', $scheme, $config['host']);
         if (!in_array($config['port'], [80, 443], true)) {
             $baseUrl .= sprintf(':%d', $config['port']);
@@ -183,18 +184,43 @@ final class CAS implements AuthenticatorInterface
         $email = $getAttribute('email') ?? sprintf('%s@%s', $pseudo, $config['host']);
 
         // - Group
-        // TODO: Créer un modèle `Group` et récupèrer ça dynamiquement ?
-        $availableGroups = ['admin', 'member', 'visitor'];
-        $group = $getAttribute('group') ?? null;
-        if (!empty($group) && !empty($config['groupsMapping'][$group])) {
-            $group = $config['groupsMapping'][$group];
+        $group = null;
+        $casGroups = $getAttribute('group') ?? null;
+        if (!empty($casGroups) || $casGroups === 0) {
+            // TODO: Récupérer ça depuis la table des groupes ?
+            // (Attention, il nous faut un ordre de priorité ascendant en valeur)
+            $robertGroups = array_flip(['visitor', 'member', 'admin']);
+            $group = array_reduce(
+                is_array($casGroups) ? $casGroups : [$casGroups],
+                function ($prevGroup, $casGroup) use ($robertGroups, $config) {
+                    if(!array_key_exists($casGroup, $config['groupsMapping'])) {
+                        return $prevGroup;
+                    }
+                    
+                    $currentGroup = $config['groupsMapping'][$casGroup];
+                    if (!array_key_exists($currentGroup, $robertGroups)) {
+                        throw new \RuntimeException(vsprintf(
+                            "Le groupe de destination `%s` mappé pour `%s` n'existe pas, " . 
+                            "veuillez vérifier la configuration CAS.",
+                            [$currentGroup, $casGroup]
+                        ));
+                        return $prevGroup;
+                    }
+
+                    if ($prevGroup !== null && $robertGroups[$prevGroup] >= $robertGroups[$currentGroup]) {
+                        return $prevGroup;
+                    }
+
+                    return $currentGroup;
+                },
+                null
+            );
         }
-        $group = !$group || !in_array($group, $availableGroups) ? 'member' : $group;
 
         return User::new([
             'pseudo'         => $pseudo,
             'email'          => $email,
-            'group_id'       => $group,
+            'group_id'       => $group ?? 'member',
             'password'       => Uuid::uuid4()->toString(),
             'cas_identifier' => $identifier,
         ]);
