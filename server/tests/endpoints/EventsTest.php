@@ -848,9 +848,8 @@ final class EventsTest extends ApiTestCase
         $this->assertStatusCode(404);
 
         // - Download event n°1 PDF file
-        $this->client->get('/events/1/pdf');
+        $responseStream = $this->client->get('/events/1/pdf');
         $this->assertStatusCode(200);
-        $responseStream = $this->client->response->getBody();
         $this->assertTrue($responseStream->isReadable());
     }
 }

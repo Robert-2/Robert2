@@ -179,9 +179,8 @@ final class BillsTest extends ApiTestCase
         $this->assertStatusCode(404);
 
         // - Download bill n°1 PDF file
-        $this->client->get('/bills/1/pdf');
+        $responseStream = $this->client->get('/bills/1/pdf');
         $this->assertStatusCode(200);
-        $responseStream = $this->client->response->getBody();
         $this->assertTrue($responseStream->isReadable());
     }
 }

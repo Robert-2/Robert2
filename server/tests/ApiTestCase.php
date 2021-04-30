@@ -4,17 +4,26 @@ declare(strict_types=1);
 namespace Robert2\Tests;
 
 use Robert2\API\App;
-use There4\Slim\Test\WebTestCase;
+use PHPUnit\Framework\TestCase;
 
-class ApiTestCase extends WebTestCase
+class ApiTestCase extends TestCase
 {
-    use SettingsTrait;
+    use SettingsTrait {
+        setUp as baseSetUp;
+    }
 
-    public function getSlimInstance(): \Slim\App
+    /** @var App */
+    protected $app;
+
+    /** @var ApiTestClient */
+    protected $client;
+
+    protected function setUp(): void
     {
-        $app = new App();
-        $app->add(new \Slim\HttpCache\Cache('private', 0));
-        return $app;
+        $this->baseSetUp();
+
+        $this->app = (new App)->add(new \Slim\HttpCache\Cache('private', 0));
+        $this->client = new ApiTestClient($this->app);
     }
 
     // ——————————————————————————————————————————————————————

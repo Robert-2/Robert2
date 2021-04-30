@@ -1,0 +1,70 @@
+<?php
+declare(strict_types=1);
+
+namespace Robert2\Tests;
+
+use Robert2\API\App;
+use Slim\Psr7\Factory\ServerRequestFactory;
+
+/**
+ * ApiTestClient.
+ *
+ * @method string get(string $uri, array $query = null)
+ * @method string post(string $uri, array $data = null)
+ * @method string patch(string $uri, array $data = null)
+ * @method string put(string $uri, array $data = null)
+ * @method string delete(string $uri, array $data = null)
+ * @method string head(string $uri, array $data = null)
+ * @method string options(string $uri, array $data = null)
+ */
+class ApiTestClient
+{
+    /** @var App */
+    public $app;
+
+    /** @var \Psr\Http\Message\ServerRequestInterface */
+    public $request;
+
+    /** @var Psr\Http\Message\ResponseInterface */
+    public $response;
+
+    public function __construct(App $app)
+    {
+        $this->app = $app;
+    }
+
+    public function __call($method, $arguments)
+    {
+        $methods = [ 'get', 'post', 'patch', 'put', 'delete', 'head', 'options'];
+        if (!in_array($method, $methods, true)) {
+            throw new \BadMethodCallException(sprintf("%s is not supported", strtoupper($method)));
+        }
+        return call_user_func_array([$this, 'request'], array_merge([$method, $arguments]));
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Internal methods
+    // -
+    // ------------------------------------------------------
+
+    protected function request(string $method, string $uri, ?array $data = null): string
+    {
+        // - Request
+        $method = strtoupper($method);
+        $request = (new ServerRequestFactory())->createServerRequest($method, $uri);
+        if ($data !== null) {
+            if ($method === 'GET') {
+                $request = $request->withQueryParams($data);
+            } else {
+                $request = $request->withParsedBody($data);
+                $request = $request->withHeader('Content-Type', 'application/json');
+            }
+        }
+        $this->request = $request;
+
+        // - Response
+        $this->response = $this->app->handle($this->request);
+        return (string)$this->response->getBody();
+    }
+}
