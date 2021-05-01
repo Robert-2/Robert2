@@ -1,14 +1,14 @@
 <?php
 declare(strict_types=1);
 
-use Robert2\API\Config\Config;
-use Slim\Http\Headers;
-use Slim\Http\Response;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\QueryException;
+use Psr\Http\Message\UploadedFileInterface;
 
 /**
  * Check wether current run is in TEST mode
  *
- * @return bool True if script is running in TEST mode
+ * @return bool True if script is running in TEST mode.
  */
 function isTestMode(): bool
 {
@@ -18,10 +18,13 @@ function isTestMode(): bool
 /**
  * Print a variable, and exit current script (or not)
  *
- * @param var mixed: Variable to monitor
- * @param options array: Options:
- *   - `log` (bool): Wether to log the debug in `/var/log` instead of direct output (default `false`)
- *   - `append` (bool): Wether to append to log file instead of replace (default `true`)
+ * Options:
+ * - `log` (bool): Wether to log the debug in `/var/log` instead of direct output (default `false`)
+ * - `append` (bool): Wether to append to log file instead of replace (default `true`)
+ *
+ * @param mixed $var     Variable to monitor.
+ * @param array $options See "Options" above.
+ *
  * @return void
  *
  * @codeCoverageIgnore
@@ -66,12 +69,13 @@ function debug($var = null, array $options = []): void
 /**
  * Add a line into SQL logs file
  *
- * @param var Builder: the Eloquent Query builder
+ * @param Builder $builder The Eloquent Query builder.
+ *
  * @return void
  *
  * @codeCoverageIgnore
  */
-function logSql($builder): void
+function logSql(Builder $builder): void
 {
     $logFile = VAR_FOLDER . DS . 'logs' . DS . 'sql.log';
     file_put_contents($logFile, $builder->toSql() . "\n", FILE_APPEND);
@@ -80,7 +84,8 @@ function logSql($builder): void
 /**
  * Get elapsed time since php script first launched, or a custom start microtime
  *
- * @param start float: A custom start microtime
+ * @param float $start A custom start microtime.
+ *
  * @return string The elapsed time, in seconds.
  */
 function getExecutionTime(?float $start = null): string
@@ -94,8 +99,9 @@ function getExecutionTime(?float $start = null): string
 /**
  * Transform any snake_case string into camelCase string
  *
- * @param str string: The string to transform
- * @param capitalizeFirstLetter bool: Wether to capitalize the first letter or not
+ * @param string $str                   The string to transform.
+ * @param bool   $capitalizeFirstLetter Wether to capitalize the first letter or not.
+ *
  * @return string
  */
 function snakeToCamelCase(string $str, bool $capitalizeFirstLetter = false): string
@@ -128,7 +134,8 @@ function snakeCase(string $value): string
 /**
  * Transform any spaces (normal & unbreakable) in a string into underscores
  *
- * @param str string: The string to transform
+ * @param string $str The string to transform.
+ *
  * @return string
  */
 function slugify(string $str): string
@@ -139,7 +146,8 @@ function slugify(string $str): string
 /**
  * Set all empty fields of an array to null
  *
- * @param data array: The array to clean
+ * @param array $data The array to clean.
+ *
  * @return array
  */
 function cleanEmptyFields(array $data): array
@@ -161,20 +169,27 @@ function normalizePhone(string $phone): string
     return preg_replace('/ /', '', $phone);
 }
 
+function alphanumericalize(string $string): string
+{
+    return (new Cocur\Slugify\Slugify())
+        ->slugify($string, ['separator' => '-']);
+}
+
 /**
  * Set all empty fields of an array to null
  *
- * @param e Illuminate\Database\QueryException: The PDO Exception thrown
+ * @param QueryException $e The PDO Exception thrown
+ *
  * @return bool
  */
-function isDuplicateException(Illuminate\Database\QueryException $e): bool
+function isDuplicateException(QueryException $e): bool
 {
     if ($e->getCode() != '23000') {
         return false;
     }
 
     $details = $e->getMessage();
-    $subCode = explode(" ", explode(": ", $details)[2]);
+    $subCode = explode(' ', explode(': ', $details)[2]);
 
     return $subCode[0] == '1062';
 }
@@ -229,11 +244,12 @@ function splitPeriods(array $slots): array
 /**
  * Déplace un fichier uploaded dans le dossier des data en sécurisant son nom
  *
- * @param string $directory dossier dans lequel placer le fichier (sera créé si inexistant)
- * @param UploadedFile $uploadedFile le fichier à placer
- * @return string le nom du fichier résultant
+ * @param string                $directory    Dossier dans lequel placer le fichier (sera créé si inexistant)
+ * @param UploadedFileInterface $uploadedFile Le fichier à placer
+ *
+ * @return string Le nom du fichier résultant.
  */
-function moveUploadedFile($directory, Slim\Http\UploadedFile $uploadedFile)
+function moveUploadedFile($directory, UploadedFileInterface $uploadedFile)
 {
     $name = $uploadedFile->getClientFilename();
 
@@ -247,27 +263,4 @@ function moveUploadedFile($directory, Slim\Http\UploadedFile $uploadedFile)
     $uploadedFile->moveTo($directory . DS . $nameSecure);
 
     return $nameSecure;
-}
-
-function alphanumericalize(string $string): string
-{
-    return (new Cocur\Slugify\Slugify())
-        ->slugify($string, ['separator' => '-']);
-}
-
-function buildResponse(int $status = 200): Response
-{
-    $headers = ['Content-Type' => 'text/html; charset=UTF-8'];
-
-    $isCORSEnabled = Config::getSettings('enableCORS');
-    if (!isTestMode() && $isCORSEnabled) {
-        $headers = array_merge($headers, [
-            'Access-Control-Allow-Origin'  => '*',
-            'Access-Control-Allow-Headers' => 'X-Requested-With, Content-Type, Accept, Origin, Authorization',
-            'Access-Control-Allow-Methods' => 'GET, POST, PUT, DELETE, OPTIONS'
-        ]);
-    }
-
-    return (new Response($status, new Headers($headers)))
-        ->withProtocolVersion('1.1');
 }

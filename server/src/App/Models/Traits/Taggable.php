@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models\Traits;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Robert2\API\Models\BaseModel;
 use Robert2\API\Models\Tag;
 
 trait Taggable
@@ -46,7 +46,7 @@ trait Taggable
     // —
     // ——————————————————————————————————————————————————————
 
-    public function edit(?int $id = null, array $data = []): Model
+    public function edit(?int $id = null, array $data = []): BaseModel
     {
         $entity = parent::edit($id, $data);
 

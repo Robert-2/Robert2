@@ -5,7 +5,7 @@ final class MainEntryPointTest extends ApiTestCase
 {
     public function testMainEntryPoint()
     {
-        $response = $this->client->get('/');
+        $response = (string)$this->client->get('/');
         $this->assertStatusCode(200);
         $this->assertNotEmpty($response);
 

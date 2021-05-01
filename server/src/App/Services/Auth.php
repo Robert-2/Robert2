@@ -6,8 +6,8 @@ namespace Robert2\API\Services;
 use Robert2\API\Config\Acl;
 use Robert2\API\Services\Auth\AuthenticatorInterface;
 use Robert2\API\Models\User;
-use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
+use Slim\Http\ServerRequest as Request;
 use Slim\Http\Response;
 
 final class Auth
@@ -146,7 +146,7 @@ final class Auth
             return $response->withRedirect('/login');
         }
 
-        $errorResponse = buildResponse(401);
+        $errorResponse = $this->response->withStatus(401);
         if (!$isApiRequest) {
             return $errorResponse;
         }

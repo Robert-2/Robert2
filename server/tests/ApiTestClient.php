@@ -3,19 +3,20 @@ declare(strict_types=1);
 
 namespace Robert2\Tests;
 
+use Psr\Http\Message\StreamInterface as Body;
 use Robert2\API\App;
 use Slim\Psr7\Factory\ServerRequestFactory;
 
 /**
  * ApiTestClient.
  *
- * @method string get(string $uri, array $query = null)
- * @method string post(string $uri, array $data = null)
- * @method string patch(string $uri, array $data = null)
- * @method string put(string $uri, array $data = null)
- * @method string delete(string $uri, array $data = null)
- * @method string head(string $uri, array $data = null)
- * @method string options(string $uri, array $data = null)
+ * @method Body get(string $uri, array $query = null)
+ * @method Body post(string $uri, array $data = null)
+ * @method Body patch(string $uri, array $data = null)
+ * @method Body put(string $uri, array $data = null)
+ * @method Body delete(string $uri, array $data = null)
+ * @method Body head(string $uri, array $data = null)
+ * @method Body options(string $uri, array $data = null)
  */
 class ApiTestClient
 {
@@ -25,7 +26,7 @@ class ApiTestClient
     /** @var \Psr\Http\Message\ServerRequestInterface */
     public $request;
 
-    /** @var Psr\Http\Message\ResponseInterface */
+    /** @var \Slim\Http\Response; */
     public $response;
 
     public function __construct(App $app)
@@ -48,7 +49,7 @@ class ApiTestClient
     // -
     // ------------------------------------------------------
 
-    protected function request(string $method, string $uri, ?array $data = null): string
+    protected function request(string $method, string $uri, ?array $data = null): Body
     {
         // - Request
         $method = strtoupper($method);
@@ -65,6 +66,6 @@ class ApiTestClient
 
         // - Response
         $this->response = $this->app->handle($this->request);
-        return (string)$this->response->getBody();
+        return $this->response->getBody();
     }
 }

@@ -4,17 +4,24 @@ declare(strict_types=1);
 namespace Robert2\API;
 
 use DI\Container;
-use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Robert2\API\Config\Config;
 use Robert2\API\Errors\ErrorHandler;
 use Robert2\API\Services\View;
+use Slim\Http\Response;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Factory\AppFactory;
 use Slim\Routing\RouteCollectorProxy;
 use Slim\Routing\RouteContext;
 
+/**
+ * App.
+ *
+ * @method self add(\Psr\Http\Server\MiddlewareInterface|string|callable $middleware)
+ * @method Response handle(Request $request)
+ * @method void run(Request|null $request = null)
+ */
 class App
 {
     private $container;

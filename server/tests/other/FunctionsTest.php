@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Robert2\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Slim\Http\UploadedFile;
+use Slim\Psr7\UploadedFile;
 
 final class FunctionsTest extends TestCase
 {

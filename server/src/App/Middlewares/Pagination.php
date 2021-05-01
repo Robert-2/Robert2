@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace Robert2\API\Middlewares;
 
 use Illuminate\Pagination\Paginator;
-use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
+use Slim\Http\ServerRequest as Request;
 
 class Pagination
 {
