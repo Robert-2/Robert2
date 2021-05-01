@@ -5,27 +5,29 @@ namespace Robert2\API\Middlewares;
 
 use Robert2\API\Config;
 use Robert2\API\Services\Auth;
-use Slim\Http\ServerRequest as Request;
-use Slim\Http\Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 
 class Acl
 {
-    public function __invoke(Request $request, Response $response, callable $next)
+    public function __invoke(Request $request, RequestHandler $handler)
     {
+        $response = $handler->handle($request);
+
         if ($request->isOptions()) {
-            return $next($request, $response);
+            return $response;
         }
 
         $currentRoute = $this->_getCurrentRoute($request);
         if (!preg_match('/^\/?api\//', $currentRoute)) {
-            return $next($request, $response);
+            return $response;
         }
 
         $groupId = Auth::isAuthenticated() ? Auth::user()->group_id : 'visitor';
         $method = strtolower($request->getMethod());
         $deniedRoutes = $this->_getDeniedRoutes($groupId, $method);
         if (empty($deniedRoutes)) {
-            return $next($request, $response);
+            return $response;
         }
 
         $currentRoute = preg_replace('/^\/api/', '', $currentRoute) . '[/]';
@@ -37,7 +39,7 @@ class Acl
             ]);
         }
 
-        return $next($request, $response);
+        return $response;
     }
 
     protected function _getCurrentRoute(Request $request): string

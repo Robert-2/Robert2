@@ -138,7 +138,7 @@ class Config
     ];
 
     /** @var string|null La version de l'application, mise en "cache". */
-    private $versionCached;
+    private static $versionCached;
 
     public static function getSettings(?string $setting = null)
     {

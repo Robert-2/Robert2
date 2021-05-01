@@ -6,7 +6,8 @@ namespace Robert2\API\Services;
 use Robert2\API\Config\Acl;
 use Robert2\API\Services\Auth\AuthenticatorInterface;
 use Robert2\API\Models\User;
-use Slim\Http\ServerRequest as Request;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Slim\Http\Response;
 
 final class Auth
@@ -27,18 +28,20 @@ final class Auth
         $this->authenticators = $authenticators;
     }
 
-    public function middleware(Request $request, Response $response, callable $next)
+    public function middleware(Request $request, RequestHandler $handler)
     {
+        $response = $handler->handle($request);
+
         if (!$this->needsAuthentication($request)) {
             $this->retrieveUser($request);
-            return $next($request, $response);
+            return $response;
         }
 
         if (!$this->retrieveUser($request)) {
             return $this->unauthenticated($request, $response);
         }
 
-        return $next($request, $response);
+        return $response;
     }
 
     public function logout()
