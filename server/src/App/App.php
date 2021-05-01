@@ -8,6 +8,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Robert2\API\Config\Config;
 use Robert2\API\Errors\ErrorHandler;
+use Robert2\API\Services\I18n;
 use Robert2\API\Services\View;
 use Slim\Http\Response;
 use Slim\Exception\HttpNotFoundException;
@@ -59,6 +60,7 @@ class App
         }
 
         $this->app->add(function (Request $request, RequestHandler $handler): Response {
+            /** @var \Slim\Http\Response */
             $response = $handler->handle($request);
 
             $response = $response->withHeader('Access-Control-Allow-Origin', '*');
@@ -201,6 +203,8 @@ class App
         //
         // - Services
         //
+
+        $container->set('i18n', I18n::class);
 
         $container->set('logger', function () use ($container) {
             $settings = $container->get('settings')['logger'] ?? [];

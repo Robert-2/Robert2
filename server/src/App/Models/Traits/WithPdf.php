@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models\Traits;
 
-use Robert2\Lib\Pdf\Pdf;
-use Robert2\API\I18n\I18n;
 use Robert2\API\Config\Config;
+use Robert2\API\Services\I18n;
+use Robert2\Lib\Pdf\Pdf;
 
 trait WithPdf
 {

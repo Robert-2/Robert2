@@ -5,11 +5,11 @@ namespace Robert2\API\Services;
 
 use Slim\Views\Twig;
 use Twig\TwigFunction;
-use Robert2\API\I18n\I18n;
 use Robert2\API\Config\Config;
 use Twig\Extra\Intl\IntlExtension;
 use Twig\Extra\String\StringExtension;
 use Psr\Http\Message\ResponseInterface as Response;
+use Robert2\API\Services\I18n;
 
 final class View
 {
@@ -19,10 +19,10 @@ final class View
     /**
      * Constructeur.
      */
-    public function __construct()
+    public function __construct(I18n $i18n)
     {
         $cachePath = false;
-        if (Config::getEnv() === 'production') {
+        if (!isTestMode() && Config::getEnv() === 'production') {
             $cachePath = VAR_FOLDER . DS . 'cache' . DS . 'views';
         }
         $this->view = Twig::create(VIEWS_FOLDER, ['cache' => $cachePath]);
@@ -44,12 +44,13 @@ final class View
         // - Functions
         //
 
-        $i18n = new I18n();
         $translate = new TwigFunction('translate', [$i18n, 'translate']);
+        $plural = new TwigFunction('plural', [$i18n, 'plural']);
         $version = new TwigFunction('version', $this->getVersion());
         $clientAssetFunction = new TwigFunction('client_asset', $this->getClientAsset());
 
         $this->view->getEnvironment()->addFunction($translate);
+        $this->view->getEnvironment()->addFunction($plural);
         $this->view->getEnvironment()->addFunction($version);
         $this->view->getEnvironment()->addFunction($clientAssetFunction);
     }
@@ -60,9 +61,14 @@ final class View
     // -
     // ------------------------------------------------------
 
+    public function fetch(string $template, array $data = []): string
+    {
+        return $this->view->fetch($template, $data);
+    }
+
     public function render(Response $response, string $template, array $data = []): Response
     {
-        $response->getBody()->write($this->view->fetch($template, $data));
+        $response->getBody()->write($this->fetch($template, $data));
         return $response;
     }
 

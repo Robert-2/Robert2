@@ -5,13 +5,14 @@ namespace Robert2\API\Middlewares;
 
 use Robert2\API\Config;
 use Robert2\API\Services\Auth;
-use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
+use Slim\Http\ServerRequest as Request;
 
 class Acl
 {
     public function __invoke(Request $request, RequestHandler $handler)
     {
+        /** @var \Slim\Http\Response */
         $response = $handler->handle($request);
 
         if ($request->isOptions()) {

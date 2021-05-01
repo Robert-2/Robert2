@@ -11,6 +11,7 @@ class Pagination
 {
     public function __invoke(Request $request, RequestHandler $handler)
     {
+        /** @var \Slim\Http\Response */
         $response = $handler->handle($request);
 
         Paginator::currentPageResolver(

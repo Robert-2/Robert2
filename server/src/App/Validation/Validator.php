@@ -2,10 +2,10 @@
 
 namespace Robert2\API\Validation;
 
-use Robert2\API\I18n\I18n;
+use Respect\Validation\Exceptions\NestedValidationException;
 use Respect\Validation\Factory;
 use Respect\Validation\Validator as CoreValidator;
-use Respect\Validation\Exceptions\NestedValidationException;
+use Robert2\API\Services\I18n;
 
 class Validator extends CoreValidator
 {
@@ -14,6 +14,7 @@ class Validator extends CoreValidator
         try {
             parent::assert($input);
         } catch (NestedValidationException $e) {
+            // TODO: Laisser le front gérer le traduction des messages de validation.
             $e->setParam('translator', [new I18n, 'translate']);
             throw $e;
         }

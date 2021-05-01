@@ -30,6 +30,7 @@ final class Auth
 
     public function middleware(Request $request, RequestHandler $handler)
     {
+        /** @var \Slim\Http\Response */
         $response = $handler->handle($request);
 
         if (!$this->needsAuthentication($request)) {

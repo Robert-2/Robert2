@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Robert2\API\Models;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Robert2\API\Validation\Validator as V;
 
 class Attribute extends BaseModel

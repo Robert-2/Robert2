@@ -6,9 +6,9 @@ namespace Robert2\API\Controllers;
 use DI\Container;
 use Robert2\API\Config\Config;
 use Robert2\API\Errors\ValidationException;
-use Robert2\API\I18n\I18n;
 use Robert2\API\Models\Category;
 use Robert2\API\Models\User;
+use Robert2\API\Services\I18n;
 use Robert2\API\Services\View;
 use Robert2\Install\Install;
 use Slim\Http\Response;
@@ -19,11 +19,15 @@ class SetupController extends BaseController
     /** @var View */
     private $view;
 
-    public function __construct(Container $container, View $view)
+    /** @var I18n */
+    private $i18n;
+
+    public function __construct(Container $container, View $view, I18n $i18n)
     {
         parent::__construct($container);
 
         $this->view = $view;
+        $this->i18n = $i18n;
     }
 
     public function index(Request $request, Response $response)
@@ -34,8 +38,7 @@ class SetupController extends BaseController
         $error = false;
         $validationErrors = null;
 
-        $i18n = new I18n();
-        $lang = $i18n->getCurrentLocale();
+        $lang = $this->i18n->getCurrentLocale();
         $allCurrencies = Install::getAllCurrencies();
 
         if ($request->isGet() && $currentStep === 'welcome') {

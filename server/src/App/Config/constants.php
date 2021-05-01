@@ -15,6 +15,9 @@ if (!defined('DATA_FOLDER')) {
 if (!defined('SRC_FOLDER')) {
     define('SRC_FOLDER', ROOT_FOLDER . DS . 'src');
 }
+if (!defined('LOCALES_FOLDER')) {
+    define('LOCALES_FOLDER', SRC_FOLDER . DS . 'locales');
+}
 if (!defined('PUBLIC_FOLDER')) {
     define('PUBLIC_FOLDER', SRC_FOLDER . DS . 'public');
 }
