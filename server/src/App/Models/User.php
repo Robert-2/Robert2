@@ -118,8 +118,6 @@ class User extends BaseModel
             throw new ModelNotFoundException(static::class);
         }
 
-        unset($user->password);
-
         return $user;
     }
 
@@ -136,7 +134,7 @@ class User extends BaseModel
         'password',
     ];
 
-    public function edit(?int $id = null, array $data = []): User
+    public function edit(?int $id = null, array $data = []): BaseModel
     {
         if (isset($data['password']) && !empty($data['password'])) {
             $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);

@@ -14,11 +14,15 @@ class EntryController extends BaseController
     /** @var View */
     private $view;
 
+    /** @var array */
+    private $settings;
+
     public function __construct(Container $container, View $view)
     {
         parent::__construct($container);
 
         $this->view = $view;
+        $this->settings = $container->get('settings');
     }
 
     public function index(Request $request, Response $response)
@@ -37,9 +41,9 @@ class EntryController extends BaseController
     // -
     // ------------------------------------------------------
 
-    protected function getServerConfig(): callable
+    protected function getServerConfig(): string
     {
-        $rawConfig = Config::getSettings();
+        $rawConfig = $this->settings;
         $config = [
             'baseUrl' => $rawConfig['apiUrl'],
             'api' => [
@@ -63,10 +67,11 @@ class EntryController extends BaseController
             ),
         ];
 
-        return function () use ($config): string {
-            $jsonConfig = json_encode($config, Config::JSON_OPTIONS);
-            $jsonConfig = preg_replace('/"degressiveRate": "/', '"degressiveRate": ', $jsonConfig);
-            return preg_replace('/}"/', '}', $jsonConfig);
-        };
+        // TODO: Passer la formule `$rawConfig['degressiveRateFunction']` directement au js
+        //       sans la wrappée dans une fonction et utiliser le filtre twig
+        //       `| json_encode(constant('Robert2\\API\\Config\\Config::JSON_OPTIONS'))`
+        $jsonConfig = json_encode($config, Config::JSON_OPTIONS);
+        $jsonConfig = preg_replace('/"degressiveRate": "/', '"degressiveRate": ', $jsonConfig);
+        return preg_replace('/}"/', '}', $jsonConfig);
     }
 }

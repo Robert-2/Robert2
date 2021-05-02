@@ -78,7 +78,7 @@ class UserSetting extends BaseModel
     }
 
     // - Prevents the deletion of a user's settings
-    public function remove(int $id, array $options = []): ?UserSetting
+    public function remove(int $id, array $options = []): ?BaseModel
     {
         return null;
     }

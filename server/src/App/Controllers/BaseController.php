@@ -9,7 +9,8 @@ use Slim\Http\ServerRequest as Request;
 
 abstract class BaseController
 {
-    protected Container $container;
+    /** @var Container */
+    protected $container;
 
     public function __construct(Container $container)
     {

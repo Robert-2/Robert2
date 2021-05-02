@@ -26,8 +26,6 @@ class UserController extends BaseController
             throw new HttpNotFoundException($request);
         }
 
-        unset($user->password); // TODO: utile ?
-
         return $response->withJson($user->toArray());
     }
 

@@ -13,7 +13,7 @@ use Robert2\API\Models\BaseModel;
 trait WithModel
 {
     /** @var string|BaseModel|null */
-    protected static ?string $modelClass = null;
+    protected static $modelClass = null;
 
     protected function getModel(): BaseModel
     {

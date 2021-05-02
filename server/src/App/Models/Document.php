@@ -81,7 +81,7 @@ class Document extends BaseModel
     // -
     // ------------------------------------------------------
 
-    public function remove(int $id, array $options = []): ?Document
+    public function remove(int $id, array $options = []): ?BaseModel
     {
         $document = static::findOrFail($id);
         if (!$document->forceDelete()) {

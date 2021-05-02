@@ -34,7 +34,7 @@ trait Taggable
             ->setSearch($searchTerm, $searchField)
             ->getAllFilteredOrTagged([], $tags, $withDeleted);
 
-        $paginated = $this->paginate($request, $query, $limit);
+        $paginated = $this->paginate($request, $query, $limit ? (int)$limit : null);
         return $response->withJson($paginated);
     }
 

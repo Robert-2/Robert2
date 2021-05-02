@@ -177,7 +177,7 @@ class Person extends BaseModel
         'note',
     ];
 
-    public function edit(?int $id = null, array $data = []): Person
+    public function edit(?int $id = null, array $data = []): BaseModel
     {
         if ($id && !static::staticExists($id)) {
             throw (new ModelNotFoundException)
