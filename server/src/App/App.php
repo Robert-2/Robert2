@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Robert2\API;
 
-use DI\Container;
 use DI\ContainerBuilder;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
@@ -13,7 +12,6 @@ use Slim\Exception\HttpNotFoundException;
 use Slim\Factory\AppFactory;
 use Slim\Http\Response;
 use Slim\Routing\RouteCollectorProxy;
-use Slim\Routing\RouteContext;
 
 /**
  * App.
@@ -34,10 +32,10 @@ class App
         $this->app = AppFactory::create(null, $this->container);
         $this->app->addBodyParsingMiddleware();
 
-        $this->configureCors();
         $this->configureRouter();
         $this->configureMiddlewares();
         $this->configureErrorHandlers();
+        $this->configureCors();
     }
 
     public function __call($name, $arguments)
@@ -68,11 +66,6 @@ class App
                 'Access-Control-Allow-Headers',
                 'X-Requested-With, Content-Type, Accept, Origin, Authorization'
             );
-
-            // - Allowed methods
-            $routingResults = RouteContext::fromRequest($request)->getRoutingResults();
-            $methods = $routingResults->getAllowedMethods();
-            $response = $response->withHeader('Access-Control-Allow-Methods', implode(',', $methods));
 
             return $response;
         });
@@ -149,9 +142,9 @@ class App
 
     protected function configureMiddlewares()
     {
-        $this->app->add(new Middlewares\Pagination);
         $this->app->add(new Middlewares\Acl);
         $this->app->add([$this->container->get('auth'), 'middleware']);
+        $this->app->add(new Middlewares\Pagination);
     }
 
     protected function configureErrorHandlers()

@@ -6,41 +6,35 @@ namespace Robert2\API\Middlewares;
 use Robert2\API\Config;
 use Robert2\API\Services\Auth;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
+use Slim\Exception\HttpUnauthorizedException;
 use Slim\Http\ServerRequest as Request;
 
 class Acl
 {
     public function __invoke(Request $request, RequestHandler $handler)
     {
-        /** @var \Slim\Http\Response */
-        $response = $handler->handle($request);
-
         if ($request->isOptions()) {
-            return $response;
+            return $handler->handle($request);
         }
 
         $currentRoute = $this->_getCurrentRoute($request);
         if (!preg_match('/^\/?api\//', $currentRoute)) {
-            return $response;
+            return $handler->handle($request);
         }
 
         $groupId = Auth::isAuthenticated() ? Auth::user()->group_id : 'visitor';
         $method = strtolower($request->getMethod());
         $deniedRoutes = $this->_getDeniedRoutes($groupId, $method);
         if (empty($deniedRoutes)) {
-            return $response;
+            return $handler->handle($request);
         }
 
         $currentRoute = preg_replace('/^\/api/', '', $currentRoute) . '[/]';
         if (in_array($currentRoute, $deniedRoutes)) {
-            $oldResponse = $response->withStatus(ERROR_UNAUTHORIZED);
-            return $oldResponse->withJson([
-                'error' => "Unauthorized by ACL: users of group '$groupId' "
-                . "are not allowed to access this API endpoint."
-            ]);
+            throw new HttpUnauthorizedException($request);
         }
 
-        return $response;
+        return $handler->handle($request);
     }
 
     protected function _getCurrentRoute(Request $request): string

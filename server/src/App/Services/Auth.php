@@ -3,12 +3,13 @@ declare(strict_types=1);
 
 namespace Robert2\API\Services;
 
-use Robert2\API\Config\Acl;
-use Robert2\API\Services\Auth\AuthenticatorInterface;
-use Robert2\API\Models\User;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
+use Robert2\API\Config\Acl;
+use Robert2\API\Models\User;
+use Robert2\API\Services\Auth\AuthenticatorInterface;
+use Slim\Exception\HttpUnauthorizedException;
 use Slim\Http\ServerRequest as Request;
-use Slim\Http\Response;
+use Slim\Psr7\Response;
 
 final class Auth
 {
@@ -30,19 +31,16 @@ final class Auth
 
     public function middleware(Request $request, RequestHandler $handler)
     {
-        /** @var \Slim\Http\Response */
-        $response = $handler->handle($request);
-
         if (!$this->needsAuthentication($request)) {
             $this->retrieveUser($request);
-            return $response;
+            return $handler->handle($request);
         }
 
         if (!$this->retrieveUser($request)) {
-            return $this->unauthenticated($request, $response);
+            return $this->unauthenticated($request, $handler);
         }
 
-        return $response;
+        return $handler->handle($request);
     }
 
     public function logout()
@@ -134,32 +132,20 @@ final class Auth
         return false;
     }
 
-    protected function unauthenticated(Request $request, Response $response): Response
+    protected function unauthenticated(Request $request, RequestHandler $handler): Response
     {
         if (static::isLoginRequest($request)) {
-            return $response;
+            return $handler->handle($request);
         }
 
         $isApiRequest = static::isApiRequest($request);
         $isNormalRequest = !$request->isXhr() && !$isApiRequest;
         if ($isNormalRequest) {
             // TODO: globalConfig['client_url'] . '/login' à la place de '/login' ?
-            return $response->withRedirect('/login');
+            return (new Response(302))->withHeader('Location', '/login');
         }
 
-        $errorResponse = $this->response->withStatus(401);
-        if (!$isApiRequest) {
-            return $errorResponse;
-        }
-
-        $data = [
-            'success' => false,
-            'error'   => [
-                'message' => 'Unauthorized',
-                'details' => null,
-            ],
-        ];
-        return $errorResponse->withJson($data, ERROR_UNAUTHORIZED);
+        throw new HttpUnauthorizedException($request);
     }
 
     protected static function requestMatch(Request $request, $paths): bool
