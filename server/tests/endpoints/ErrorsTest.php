@@ -6,9 +6,7 @@ final class ErrorsTest extends ApiTestCase
     public function testRouteNotFound()
     {
         $this->client->get('/api/inexistant-resource');
-
-        $this->assertStatusCode(ERROR_NOT_FOUND);
-        $this->assertErrorMessage("The required resource was not found.");
+        $this->assertNotFound();
     }
 
     public function testMethodNotAllowed()
@@ -16,6 +14,6 @@ final class ErrorsTest extends ApiTestCase
         $this->client->put('/not-a-get-route');
 
         $this->assertStatusCode(ERROR_NOT_ALLOWED);
-        $this->assertErrorMessage("Method not allowed");
+        $this->assertErrorMessage("Method not allowed. Must be one of: GET");
     }
 }

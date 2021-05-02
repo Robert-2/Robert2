@@ -124,8 +124,7 @@ final class UsersTest extends ApiTestCase
     public function testGetUserNotFound()
     {
         $this->client->get('/api/users/9999');
-        $this->assertStatusCode(ERROR_NOT_FOUND);
-        $this->assertNotFoundErrorMessage();
+        $this->assertNotFound();
     }
 
     public function testGetUser()
@@ -189,15 +188,13 @@ final class UsersTest extends ApiTestCase
     public function testGetUserSettingsNotFound()
     {
         $this->client->get('/api/users/9999/settings');
-        $this->assertStatusCode(ERROR_NOT_FOUND);
-        $this->assertNotFoundErrorMessage();
+        $this->assertNotFound();
     }
 
     public function testGetUserSettingsNoSettingFound()
     {
         $this->client->get('/api/users/3/settings');
-        $this->assertStatusCode(ERROR_NOT_FOUND);
-        $this->assertNotFoundErrorMessage();
+        $this->assertNotFound();
     }
 
     public function testGetUserSettings()
@@ -224,8 +221,7 @@ final class UsersTest extends ApiTestCase
     public function testSetUserSettingsNoUser()
     {
         $this->client->put('/api/users/999/settings', ['language' => 'FR']);
-        $this->assertStatusCode(ERROR_NOT_FOUND);
-        $this->assertNotFoundErrorMessage();
+        $this->assertNotFound();
     }
 
     public function testSetUserSettings()
@@ -355,7 +351,7 @@ final class UsersTest extends ApiTestCase
     public function testUpdateUserNotFound()
     {
         $this->client->put('/api/users/999', ['pseudo' => '__inexistant__']);
-        $this->assertStatusCode(ERROR_NOT_FOUND);
+        $this->assertNotFound();
     }
 
     public function testUpdateUser()
@@ -392,7 +388,7 @@ final class UsersTest extends ApiTestCase
     public function testRestoreUserNotFound()
     {
         $this->client->put('/api/users/restore/999');
-        $this->assertStatusCode(ERROR_NOT_FOUND);
+        $this->assertNotFound();
     }
 
     public function testRestoreUser()

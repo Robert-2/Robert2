@@ -3,8 +3,9 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
-use Robert2\API\Validation\Validator as V;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Robert2\API\Validation\Validator as V;
 
 class UserSetting extends BaseModel
 {
@@ -67,6 +68,11 @@ class UserSetting extends BaseModel
 
     public static function editByUser(User $user, array $data = []): UserSetting
     {
+        if (!$user->exists) {
+            throw (new ModelNotFoundException)
+                ->setModel(static::class);
+        }
+
         $settings = static::where('user_id', $user->id)->firstOrFail();
         return static::staticEdit($settings->id, $data);
     }

@@ -149,7 +149,6 @@ final class EstimateTest extends ModelTestCase
     public function testCreateFromEventNotFound()
     {
         $this->expectException(ModelNotFoundException::class);
-        $this->expectExceptionMessage("Event not found.");
         $this->model->createFromEvent(999, 1, 25);
     }
 

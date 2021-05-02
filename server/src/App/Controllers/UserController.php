@@ -26,7 +26,7 @@ class UserController extends BaseController
             throw new HttpNotFoundException($request);
         }
 
-        unset($user->password);
+        unset($user->password); // TODO: utile ?
 
         return $response->withJson($user->toArray());
     }
@@ -45,7 +45,7 @@ class UserController extends BaseController
 
     public function updateSettings(Request $request, Response $response): Response
     {
-        $postData = $request->getParsedBody();
+        $postData = (array)$request->getParsedBody();
         if (empty($postData)) {
             throw new \InvalidArgumentException(
                 "Missing request data to process validation",

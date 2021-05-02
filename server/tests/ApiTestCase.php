@@ -22,8 +22,11 @@ class ApiTestCase extends TestCase
     {
         $this->baseSetUp();
 
-        $this->app = (new App)->add(new \Slim\HttpCache\Cache('private', 0));
+        $this->app = new App();
         $this->client = new ApiTestClient($this->app);
+
+        // - Test specific configuration
+        $this->app->add(new \Slim\HttpCache\Cache('private', 0));
     }
 
     // ——————————————————————————————————————————————————————
@@ -38,10 +41,10 @@ class ApiTestCase extends TestCase
 
         if ($expectedCode !== 500 && $actualCode === 500) {
             $response = $this->_getResponseAsArray();
-            $message  = sprintf(
+            $message = sprintf(
                 "%s, in %s\n",
                 $response['error']['message'],
-                $response['error']['file']
+                $response['error']['debug']['file']
             );
             throw new \Exception($message, (int)$response['error']['code']);
         }
@@ -61,9 +64,10 @@ class ApiTestCase extends TestCase
         $this->assertEquals($message, $result['error']['message']);
     }
 
-    public function assertNotFoundErrorMessage(): void
+    public function assertNotFound(): void
     {
-        $this->assertErrorMessage("The required resource was not found.");
+        $this->assertStatusCode(ERROR_NOT_FOUND);
+        $this->assertErrorMessage("Not found.");
     }
 
     public function assertValidationErrorMessage(): void

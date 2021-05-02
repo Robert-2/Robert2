@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Robert2\Tests;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Robert2\API\Errors\ValidationException;
 use Robert2\API\Models;
 use Robert2\API\Models\User;
 
@@ -169,7 +170,6 @@ final class UserTest extends ModelTestCase
     public function testUpdateNotFound(): void
     {
         $this->expectException(ModelNotFoundException::class);
-        $this->expectExceptionCode(ERROR_NOT_FOUND);
         $this->model->edit(999, []);
     }
 
@@ -252,7 +252,6 @@ final class UserTest extends ModelTestCase
     public function testRemoveNotFound(): void
     {
         $this->expectException(ModelNotFoundException::class);
-        $this->expectExceptionCode(ERROR_NOT_FOUND);
         $this->model->remove(999);
     }
 

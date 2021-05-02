@@ -6,19 +6,24 @@ namespace Robert2\API\Controllers\Traits;
 use Robert2\API\Models\BaseModel;
 
 /**
- * @property string|BaseModel $modelClass
+ * WithModel.
+ *
  * @method string|BaseModel getModelClass()
  */
 trait WithModel
 {
+    /** @var string|BaseModel|null */
+    protected static ?string $modelClass = null;
+
     protected function getModel(): BaseModel
     {
-        return new $this->getModelClass();
+        $modelClass = $this->getModelClass();
+        return new $modelClass;
     }
 
     protected function getModelClass(): string
     {
-        if (property_exists(static::class, 'modelClass')) {
+        if (static::$modelClass !== null) {
             if (!is_subclass_of(static::$modelClass, BaseModel::class)) {
                 throw new \LogicException("Missing or invalid `modelClass` static property in controller.");
             }

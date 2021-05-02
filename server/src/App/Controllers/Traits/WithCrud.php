@@ -55,7 +55,7 @@ trait WithCrud
 
     public function create(Request $request, Response $response): Response
     {
-        $postData = $request->getParsedBody();
+        $postData = (array)$request->getParsedBody();
         if (empty($postData)) {
             throw new \InvalidArgumentException(
                 "Missing request data to process validation",
@@ -69,7 +69,7 @@ trait WithCrud
 
     public function update(Request $request, Response $response): Response
     {
-        $postData = $request->getParsedBody();
+        $postData = (array)$request->getParsedBody();
         if (empty($postData)) {
             throw new \InvalidArgumentException(
                 "Missing request data to process validation",
@@ -90,7 +90,7 @@ trait WithCrud
     public function delete(Request $request, Response $response): Response
     {
         $id = (int)$request->getAttribute('id');
-        $model = $this->getModelClass()->staticRemove($id);
+        $model = $this->getModelClass()::staticRemove($id);
 
         $data = $model ? $model->toArray() : ['destroyed' => true];
         return $response->withJson($data, SUCCESS_OK);
@@ -99,7 +99,7 @@ trait WithCrud
     public function restore(Request $request, Response $response): Response
     {
         $id = (int)$request->getAttribute('id');
-        $data = $this->getModelClass()->staticUnremove($id);
+        $data = $this->getModelClass()::staticUnremove($id);
 
         return $response->withJson($data, SUCCESS_OK);
     }

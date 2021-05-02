@@ -27,6 +27,9 @@ if (!defined('VAR_FOLDER')) {
 if (!defined('VIEWS_FOLDER')) {
     define('VIEWS_FOLDER', SRC_FOLDER . DS . 'views');
 }
+if (!defined('CONFIG_FOLDER')) {
+    define('CONFIG_FOLDER', SRC_FOLDER . DS . 'App' . DS . 'Config');
+}
 
 // - Errors codes
 define('ERROR_VALIDATION', 400);

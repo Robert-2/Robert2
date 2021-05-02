@@ -5,6 +5,7 @@ namespace Robert2\Tests;
 
 use Psr\Http\Message\StreamInterface as Body;
 use Robert2\API\App;
+use Slim\Http\ServerRequest;
 use Slim\Psr7\Factory\ServerRequestFactory;
 
 /**
@@ -23,7 +24,7 @@ class ApiTestClient
     /** @var App */
     public $app;
 
-    /** @var \Psr\Http\Message\ServerRequestInterface */
+    /** @var ServerRequest */
     public $request;
 
     /** @var \Slim\Http\Response; */
@@ -40,7 +41,7 @@ class ApiTestClient
         if (!in_array($method, $methods, true)) {
             throw new \BadMethodCallException(sprintf("%s is not supported", strtoupper($method)));
         }
-        return call_user_func_array([$this, 'request'], array_merge([$method, $arguments]));
+        return call_user_func_array([$this, 'request'], array_merge([$method], $arguments));
     }
 
     // ------------------------------------------------------
@@ -53,7 +54,7 @@ class ApiTestClient
     {
         // - Request
         $method = strtoupper($method);
-        $request = (new ServerRequestFactory())->createServerRequest($method, $uri);
+        $request = new ServerRequest((new ServerRequestFactory())->createServerRequest($method, $uri));
         if ($data !== null) {
             if ($method === 'GET') {
                 $request = $request->withQueryParams($data);

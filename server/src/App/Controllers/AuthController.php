@@ -30,8 +30,7 @@ class AuthController extends BaseController
 
     public function loginWithForm(Request $request, Response $response): Response
     {
-        $data = $request->getParsedBody();
-
+        $data = (array)$request->getParsedBody();
         $this->_validateAuthRequest($data);
 
         $user = User::fromLogin($data['identifier'], $data['password']);

@@ -47,7 +47,6 @@ final class PdfTest extends ModelTestCase
     {
         // - Template doesn't exist
         $this->expectException(\Twig\Error\LoaderError::class);
-        $this->expectExceptionCode(0);
         $this->expectExceptionMessage("Unable to find template \"pdf/_inexistant-template_.twig\"");
         Pdf::createFromTemplate('_inexistant-template_', [], $this->_pdfResultFile);
     }

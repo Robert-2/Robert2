@@ -71,7 +71,7 @@ class EventController extends BaseController
 
     public function create(Request $request, Response $response): Response
     {
-        $postData = $request->getParsedBody();
+        $postData = (array)$request->getParsedBody();
         $id = $this->_saveEvent(null, $postData);
 
         return $response->withJson($this->_getFormattedEvent($id), SUCCESS_CREATED);
@@ -84,7 +84,7 @@ class EventController extends BaseController
             throw new HttpNotFoundException($request);
         }
 
-        $postData = $request->getParsedBody();
+        $postData = (array)$request->getParsedBody();
         $id = $this->_saveEvent($id, $postData);
 
         return $response->withJson($this->_getFormattedEvent($id), SUCCESS_OK);

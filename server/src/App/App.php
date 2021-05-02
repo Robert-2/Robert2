@@ -111,7 +111,7 @@ class App
             }
 
             // - Toutes les routes d'API sont définies dans le fichier `Config/routes.php`.
-            $routeMethods = include __DIR__ . DS . 'Config' . DS . 'routes.php';
+            $routeMethods = include CONFIG_FOLDER . DS . 'routes.php';
             foreach ($routeMethods as $method => $routes) {
                 foreach ($routes as $route => $action) {
                     $group->$method($route, $getActionFqdn($action));

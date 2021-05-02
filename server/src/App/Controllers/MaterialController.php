@@ -108,8 +108,7 @@ class MaterialController extends BaseController
 
     public function create(Request $request, Response $response): Response
     {
-        $postData = $request->getParsedBody();
-
+        $postData = (array)$request->getParsedBody();
         $result = $this->_saveMaterial(null, $postData);
         return $response->withJson($result, SUCCESS_CREATED);
     }
@@ -121,8 +120,7 @@ class MaterialController extends BaseController
             throw new HttpNotFoundException($request);
         }
 
-        $postData = $request->getParsedBody();
-
+        $postData = (array)$request->getParsedBody();
         $result = $this->_saveMaterial($id, $postData);
         return $response->withJson($result, SUCCESS_OK);
     }
@@ -135,7 +133,7 @@ class MaterialController extends BaseController
 
     protected function _saveMaterial(?int $id, array $postData): array
     {
-        if (!is_array($postData) || empty($postData)) {
+        if (empty($postData)) {
             throw new \InvalidArgumentException(
                 "Missing request data to process validation",
                 ERROR_VALIDATION

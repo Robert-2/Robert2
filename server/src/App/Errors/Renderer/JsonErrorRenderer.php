@@ -35,7 +35,7 @@ class JsonErrorRenderer implements ErrorRendererInterface
 
         if ($exception instanceof ModelNotFoundException) {
             $output['code'] = ERROR_NOT_FOUND;
-            $output['message'] = "Entity not found.";
+            $output['message'] = "Not found."; // "Entity not found."
             return $output;
         }
 

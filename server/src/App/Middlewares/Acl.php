@@ -67,7 +67,7 @@ class Acl
             return [];
         }
 
-        $routesByMethod = include __DIR__ . DS . 'Config' . DS . 'routes.php';
+        $routesByMethod = include CONFIG_FOLDER . DS . 'routes.php';
         if (!array_key_exists($method, $routesByMethod)) {
             return [];
         }
