@@ -6,6 +6,7 @@ namespace Robert2\API\Services;
 use Slim\Views\Twig;
 use Twig\TwigFunction;
 use Robert2\API\Config\Config;
+use Twig\Extension\DebugExtension;
 use Twig\Extra\Intl\IntlExtension;
 use Twig\Extra\String\StringExtension;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -25,7 +26,10 @@ final class View
         if (!isTestMode() && Config::getEnv() === 'production') {
             $cachePath = VAR_FOLDER . DS . 'cache' . DS . 'views';
         }
-        $this->view = Twig::create(VIEWS_FOLDER, ['cache' => $cachePath]);
+        $this->view = Twig::create(VIEWS_FOLDER, [
+            'debug' => isTestMode() || Config::getEnv() !== 'production',
+            'cache' => $cachePath,
+        ]);
 
         //
         // - Global variables
@@ -39,6 +43,7 @@ final class View
 
         $this->view->addExtension(new IntlExtension());
         $this->view->addExtension(new StringExtension());
+        $this->view->addExtension(new DebugExtension());
 
         //
         // - Functions
