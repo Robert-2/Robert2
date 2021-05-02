@@ -4,15 +4,14 @@ declare(strict_types=1);
 namespace Robert2\API;
 
 use DI\Container;
+use DI\ContainerBuilder;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Robert2\API\Config\Config;
 use Robert2\API\Errors\ErrorHandler;
-use Robert2\API\Services\I18n;
-use Robert2\API\Services\View;
-use Slim\Http\Response;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Factory\AppFactory;
+use Slim\Http\Response;
 use Slim\Routing\RouteCollectorProxy;
 use Slim\Routing\RouteContext;
 
@@ -184,38 +183,16 @@ class App
 
     protected static function createContainer()
     {
-        $container = new Container();
+        $builder = new ContainerBuilder();
+        $builder->addDefinitions(CONFIG_FOLDER . DS . 'definitions.php');
+
+        $container = $builder->build();
 
         //
         // - Settings
         //
 
         $container->set('settings', Config::getSettings());
-
-        //
-        // - Http Cache Provider
-        //
-
-        $container->set('cache', function () {
-            return new \Slim\HttpCache\CacheProvider();
-        });
-
-        //
-        // - Services
-        //
-
-        $container->set('i18n', I18n::class);
-
-        $container->set('logger', function () use ($container) {
-            $settings = $container->get('settings')['logger'] ?? [];
-            return new Services\Logger($settings);
-        });
-
-        $container->set('auth', new Services\Auth([
-            new Services\Auth\JWT,
-        ]));
-
-        $container->set('view', View::class);
 
         return $container;
     }
