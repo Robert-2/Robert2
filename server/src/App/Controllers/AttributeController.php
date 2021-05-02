@@ -31,7 +31,7 @@ class AttributeController extends BaseController
 
     public function create(Request $request, Response $response): Response
     {
-        $postData = $request->getParsedBody();
+        $postData = (array)$request->getParsedBody();
         if (empty($postData)) {
             throw new \InvalidArgumentException(
                 "Missing request data to process validation",
