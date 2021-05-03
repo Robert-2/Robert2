@@ -22,12 +22,16 @@ class SetupController extends BaseController
     /** @var I18n */
     private $i18n;
 
+    /** @var array */
+    private $settings;
+
     public function __construct(Container $container, View $view, I18n $i18n)
     {
         parent::__construct($container);
 
         $this->view = $view;
         $this->i18n = $i18n;
+        $this->settings = $container->get('settings');
     }
 
     public function index(Request $request, Response $response)
@@ -148,7 +152,7 @@ class SetupController extends BaseController
             'error' => $error,
             'validationErrors' => $validationErrors,
             'stepData' => $stepData,
-            'config' => $this->config,
+            'config' => $this->settings,
         ]);
     }
 
@@ -165,7 +169,7 @@ class SetupController extends BaseController
             $phpVersion = substr(PHP_VERSION, 0, strpos(PHP_VERSION, '+'));
         }
 
-        $phpversionOK = version_compare(PHP_VERSION, '7.1.0') >= 0;
+        $phpversionOK = version_compare(PHP_VERSION, '7.3.0') >= 0;
         $loadedExtensions = get_loaded_extensions();
         $neededExstensions = Install::REQUIRED_EXTENSIONS;
         $missingExtensions = array_diff($neededExstensions, $loadedExtensions);

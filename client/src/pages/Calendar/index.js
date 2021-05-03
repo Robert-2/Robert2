@@ -59,8 +59,6 @@ export default {
         orientation: 'top',
         zoomMin: ONE_DAY * 7,
         zoomMax: ONE_DAY * 6 * 30,
-        tooltip: { followMouse: true, overflowMethod: 'flip' },
-        moment: (date) => moment(date),
       },
     };
   },

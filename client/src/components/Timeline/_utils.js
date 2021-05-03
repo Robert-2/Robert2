@@ -2,7 +2,7 @@
 // @see https://github.com/sjmallon/vue-visjs/blob/v0.4.2/src/utils.js
 /* eslint-disable import/prefer-default-export */
 
-import { DataSet, DataView } from '@robert/vis-timeline';
+import { DataSet, DataView } from '@robert2/vis-timeline';
 
 const arrayDiff = (arr1, arr2) => arr1.filter((x) => arr2.indexOf(x) === -1);
 

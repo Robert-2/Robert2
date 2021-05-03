@@ -1,5 +1,6 @@
-import '@robert/vis-timeline/index.scss';
-import { Timeline as TimelineCore, DataSet, DataView } from '@robert/vis-timeline';
+import '@robert2/vis-timeline/index.scss';
+import moment from 'moment';
+import { Timeline as TimelineCore, DataSet, DataView } from '@robert2/vis-timeline';
 import { mountVisData } from './_utils';
 
 const Timeline = {
@@ -15,6 +16,10 @@ const Timeline = {
   data: () => ({
     data: null,
   }),
+  created() {
+    // @see https://github.com/almende/vis/issues/2524
+    this.timeline = null;
+  },
   mounted() {
     this.data = mountVisData(this);
     this.timeline = new TimelineCore(
@@ -49,6 +54,20 @@ const Timeline = {
   computed: {
     fullOptions() {
       return {
+        xss: {
+          filterOptions: {
+            whiteList: {
+              i: 'class',
+              strong: 'class',
+              em: 'class',
+            },
+          },
+        },
+        tooltip: {
+          followMouse: true,
+          overflowMethod: 'flip',
+        },
+        moment: (date) => moment(date),
         ...(this.options || {}),
         onMove: (item, callback) => {
           this.$emit('item-moved', item, callback);
@@ -66,10 +85,6 @@ const Timeline = {
         this.timeline.setOptions(this.fullOptions);
       },
     },
-  },
-  created() {
-    // @see https://github.com/almende/vis/issues/2524
-    this.timeline = null;
   },
   beforeDestroy() {
     this.timeline.destroy();

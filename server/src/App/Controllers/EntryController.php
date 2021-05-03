@@ -44,10 +44,12 @@ class EntryController extends BaseController
     protected function getServerConfig(): string
     {
         $rawConfig = $this->settings;
+        $baseUrl = preg_replace('/\/$/', '', $rawConfig['apiUrl']);
+
         $config = [
-            'baseUrl' => $rawConfig['apiUrl'],
+            'baseUrl' => $baseUrl,
             'api' => [
-                'url' => $rawConfig['apiUrl'] . '/api',
+                'url' => $baseUrl . '/api',
                 'headers' => $rawConfig['apiHeaders'],
                 'version' => Config::getVersion(),
             ],

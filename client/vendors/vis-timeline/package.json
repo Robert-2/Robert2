@@ -1,5 +1,5 @@
 {
-    "name": "@robert/vis-timeline",
+    "name": "@robert2/vis-timeline",
     "version": "0.0.0",
     "main": "./index.js",
     "dependencies": {
@@ -12,8 +12,5 @@
         "vis-timeline": "7.4.7",
         "vis-util": "5.0.2",
         "xss": "1.0.8"
-    },
-    "peerDependencies": {
-        "moment": "^2.24.0"
     }
 }
