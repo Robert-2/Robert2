@@ -1,8 +1,8 @@
 $items-border-radius: 10px;
 
 // - L'obligation d'utiliser des !important est due au fait que lors du build,
-//   l'ordre final du CSS semble être inversé : le CSS de vis-timeline (importé d'office
-//   par vue-visjs) se retrouve après celui-ci
+//   l'ordre final du CSS semble être inversé : le CSS de vis-timeline se
+//   retrouve après celui-ci.
 .vis-timeline {
   border:none !important;
   background-color: $calendar-main-background-color;

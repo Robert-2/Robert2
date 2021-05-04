@@ -60,9 +60,8 @@ final class EventBillTest extends ModelTestCase
     public function testEmptyEvent()
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionCode(0);
         $this->expectExceptionMessage("Cannot create EventBill value-object without complete event's data.");
-        $empty = new EventBill($this->_date, [], $this->_number);
+        new EventBill($this->_date, [], $this->_number);
     }
 
     public function testNoBeneficiary()
@@ -78,9 +77,8 @@ final class EventBillTest extends ModelTestCase
             ],
         ];
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionCode(0);
         $this->expectExceptionMessage("Cannot create EventBill value-object without complete event's data.");
-        $noBeneficiaries = new EventBill($this->_date, $event, $this->_number);
+        new EventBill($this->_date, $event, $this->_number);
     }
 
     public function testNoMaterials()
@@ -96,9 +94,8 @@ final class EventBillTest extends ModelTestCase
             'materials' => [],
         ];
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionCode(0);
         $this->expectExceptionMessage("Cannot create EventBill value-object without complete event's data.");
-        $noMaterials = new EventBill($this->_date, $event, $this->_number);
+        new EventBill($this->_date, $event, $this->_number);
     }
 
     // ------------------------------------------------------

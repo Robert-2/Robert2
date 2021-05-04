@@ -1,10 +1,10 @@
 import moment from 'moment';
-import { Timeline } from 'vue-visjs';
 import { DATE_DB_FORMAT, DATE_QUERY_FORMAT } from '@/config/constants';
 import ModalConfig from '@/config/modalConfig';
 import Alert from '@/components/Alert';
 import Help from '@/components/Help/Help.vue';
 import EventDetails from '@/components/EventDetails/EventDetails.vue';
+import Timeline from '@/components/Timeline';
 import CalendarHeader from './Header/Header.vue';
 import formatEvent from './utils';
 
@@ -59,55 +59,6 @@ export default {
         orientation: 'top',
         zoomMin: ONE_DAY * 7,
         zoomMax: ONE_DAY * 6 * 30,
-        tooltip: { followMouse: true, overflowMethod: 'flip' },
-        moment: (date) => moment(date),
-        onMove: (item, callback) => {
-          if (isVisitor) {
-            return;
-          }
-
-          const url = `${this.$route.meta.resource}/${item.id}`;
-          const itemEnd = moment(item.end);
-          if (itemEnd.hour() === 0) {
-            itemEnd.subtract(1, 'day').endOf('day');
-          }
-          const data = {
-            start_date: moment(item.start).format(DATE_DB_FORMAT),
-            end_date: itemEnd.format(DATE_DB_FORMAT),
-          };
-
-          this.error = null;
-          this.isLoading = true;
-          this.$http.put(url, data)
-            .then(() => {
-              this.isLoading = false;
-              this.help = { type: 'success', text: 'page-calendar.event-saved' };
-              callback(item);
-              this.getEventsData();
-            })
-            .catch((error) => {
-              callback(null); // - Needed to cancel the move in timeline
-              this.showError(error);
-            });
-        },
-        onRemove: (item, callback) => {
-          if (isVisitor) {
-            return;
-          }
-
-          Alert.ConfirmDelete(this.$t, 'calendar')
-            .then((result) => {
-              if (!result.value) {
-                callback(null); // - Needed to cancel the deletion in timeline
-                return;
-              }
-
-              this.error = null;
-              this.isLoading = true;
-              const url = `${this.$route.meta.resource}/${item.id}`;
-              this.$http.delete(url).then(() => { callback(item); });
-            });
-        },
       },
     };
   },
@@ -157,28 +108,6 @@ export default {
         });
     },
 
-    onRangeChanged(newPeriod) {
-      localStorage.setItem('calendarStart', newPeriod.start);
-      localStorage.setItem('calendarEnd', newPeriod.end);
-
-      this.$refs.Header.changePeriod(newPeriod);
-
-      let needFetch = false;
-      if (this.fetchStart.isAfter(newPeriod.start)) {
-        this.fetchStart = moment(newPeriod.start).subtract(8, 'days').startOf('day');
-        needFetch = true;
-      }
-
-      if (this.fetchEnd.isBefore(newPeriod.end)) {
-        this.fetchEnd = moment(newPeriod.end).add(1, 'months').endOf('month');
-        needFetch = true;
-      }
-
-      if (needFetch) {
-        this.getEventsData();
-      }
-    },
-
     setCenterDate(date) {
       this.$refs.Timeline.moveTo(date);
     },
@@ -189,6 +118,67 @@ export default {
 
     onItemOut() {
       this.help = 'page-calendar.help';
+    },
+
+    onItemMoved(item, callback) {
+      const isVisitor = this.$store.getters['auth/is']('visitor');
+      if (isVisitor) {
+        return;
+      }
+
+      const url = `${this.$route.meta.resource}/${item.id}`;
+      const itemEnd = moment(item.end);
+      if (itemEnd.hour() === 0) {
+        itemEnd.subtract(1, 'day').endOf('day');
+      }
+      const data = {
+        start_date: moment(item.start).format(DATE_DB_FORMAT),
+        end_date: itemEnd.format(DATE_DB_FORMAT),
+      };
+
+      this.error = null;
+      this.isLoading = true;
+      this.$http.put(url, data)
+        .then(() => {
+          this.isLoading = false;
+          this.help = { type: 'success', text: 'page-calendar.event-saved' };
+          callback(item);
+          this.getEventsData();
+        })
+        .catch((error) => {
+          callback(null); // - Needed to cancel the move in timeline
+          this.showError(error);
+        });
+    },
+
+    onItemRemove(item, callback) {
+      const isVisitor = this.$store.getters['auth/is']('visitor');
+      if (isVisitor) {
+        return;
+      }
+
+      Alert.ConfirmDelete(this.$t, 'calendar')
+        .then((result) => {
+          if (!result.value) {
+            callback(null); // - Needed to cancel the deletion in timeline
+            return;
+          }
+
+          this.error = null;
+          this.isLoading = true;
+          const url = `${this.$route.meta.resource}/${item.id}`;
+          this.$http.delete(url).then(() => { callback(item); });
+        });
+    },
+
+    onItemRemoved() {
+      if (!this.isLoading) {
+        return;
+      }
+
+      this.help = { type: 'success', text: 'page-calendar.event-deleted' };
+      this.error = null;
+      this.isLoading = false;
     },
 
     onDoubleClick(e) {
@@ -212,6 +202,31 @@ export default {
       });
     },
 
+    onRangeChanged(newPeriod) {
+      const dates = Object.fromEntries(['start', 'end'].map(
+        (type) => [type, newPeriod[type].getTime()],
+      ));
+
+      localStorage.setItem('calendarStart', dates.start);
+      localStorage.setItem('calendarEnd', dates.end);
+      this.$refs.Header.changePeriod(dates);
+
+      let needFetch = false;
+      if (this.fetchStart.isAfter(dates.start)) {
+        this.fetchStart = moment(dates.start).subtract(8, 'days').startOf('day');
+        needFetch = true;
+      }
+
+      if (this.fetchEnd.isBefore(dates.end)) {
+        this.fetchEnd = moment(dates.end).add(1, 'months').endOf('month');
+        needFetch = true;
+      }
+
+      if (needFetch) {
+        this.getEventsData();
+      }
+    },
+
     openEventModal(eventId) {
       this.$modal.show(
         EventDetails,
@@ -223,16 +238,6 @@ export default {
           },
         },
       );
-    },
-
-    onRemoved() {
-      if (!this.isLoading) {
-        return;
-      }
-
-      this.help = { type: 'success', text: 'page-calendar.event-deleted' };
-      this.error = null;
-      this.isLoading = false;
     },
 
     showError(error) {

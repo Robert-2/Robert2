@@ -3,8 +3,9 @@ declare(strict_types=1);
 
 namespace Robert2\Tests;
 
-use Robert2\API\Errors;
-use Robert2\API\Models;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Robert2\API\Errors\ValidationException;
+use Robert2\API\Models\Material;
 
 final class MaterialTest extends ModelTestCase
 {
@@ -12,7 +13,7 @@ final class MaterialTest extends ModelTestCase
     {
         parent::setUp();
 
-        $this->model = new Models\Material();
+        $this->model = new Material();
     }
 
     public function testTableName(): void
@@ -72,7 +73,7 @@ final class MaterialTest extends ModelTestCase
 
         // - Calcul des quantités restantes de chaque matériel pour une période sans événement
         $data = $getData();
-        $result = $this->model->recalcQuantitiesForPeriod($data, '2018-12-01', '2018-12-02');
+        $result = Material::recalcQuantitiesForPeriod($data, '2018-12-01', '2018-12-02');
         $this->assertCount(7, $result);
         foreach ([4, 2, 30, 2, 32] as $index => $expected) {
             $this->assertEquals($expected, $result[$index]['remaining_quantity']);
@@ -80,7 +81,7 @@ final class MaterialTest extends ModelTestCase
 
         // - Calcul des quantités restantes de chaque matériel pour une période avec trois événements
         $data = $getData();
-        $result = $this->model->recalcQuantitiesForPeriod($data, '2018-12-15', '2018-12-20');
+        $result = Material::recalcQuantitiesForPeriod($data, '2018-12-15', '2018-12-20');
         $this->assertCount(7, $result);
         foreach ([0, 0, 20, 1, 20] as $index => $expected) {
             $this->assertEquals($expected, $result[$index]['remaining_quantity']);
@@ -88,7 +89,7 @@ final class MaterialTest extends ModelTestCase
 
         // - Calcul des quantités restantes de chaque matériel pour une période avec un seul événement
         $data = $getData();
-        $result = $this->model->recalcQuantitiesForPeriod($data, '2018-12-19', '2018-12-20');
+        $result = Material::recalcQuantitiesForPeriod($data, '2018-12-19', '2018-12-20');
         $this->assertCount(7, $result);
         foreach ([1, 0, 30, 2, 32] as $index => $expected) {
             $this->assertEquals($expected, $result[$index]['remaining_quantity']);
@@ -97,7 +98,7 @@ final class MaterialTest extends ModelTestCase
         // - Calcul des quantités restantes de chaque matériel pour une période avec trois événements
         // - en excluant l'événement n°2
         $data = $getData();
-        $result = $this->model->recalcQuantitiesForPeriod($data, '2018-12-15', '2018-12-20', 2);
+        $result = Material::recalcQuantitiesForPeriod($data, '2018-12-15', '2018-12-20', 2);
         $this->assertCount(7, $result);
         foreach ([3, 1, 20, 1, 20] as $index => $expected) {
             $this->assertEquals($expected, $result[$index]['remaining_quantity']);
@@ -270,7 +271,7 @@ final class MaterialTest extends ModelTestCase
 
     public function testSetTagsNotFound(): void
     {
-        $this->expectException(Errors\NotFoundException::class);
+        $this->expectException(ModelNotFoundException::class);
         $this->model->setTags(999, ['notFoundTag']);
     }
 
@@ -293,21 +294,21 @@ final class MaterialTest extends ModelTestCase
 
     public function testCreateMaterialWithoutData(): void
     {
-        $this->expectException(Errors\ValidationException::class);
+        $this->expectException(ValidationException::class);
         $this->expectExceptionCode(ERROR_VALIDATION);
         $this->model->edit(null, []);
     }
 
     public function testCreateMaterialBadData(): void
     {
-        $this->expectException(Errors\ValidationException::class);
+        $this->expectException(ValidationException::class);
         $this->expectExceptionCode(ERROR_VALIDATION);
         $this->model->edit(null, ['foo' => 'bar']);
     }
 
     public function testCreateMaterialDuplicate(): void
     {
-        $this->expectException(Errors\ValidationException::class);
+        $this->expectException(ValidationException::class);
         $this->expectExceptionCode(ERROR_DUPLICATE);
         $this->model->edit(null, [
             'name'           => 'Test duplicate ref. CL3',

@@ -2700,4 +2700,7 @@ return [
 
     "label"
     => "Étiquette",
+
+    "enable-javascript-message"
+    => "Veuillez activer JavaScript pour utiliser l'application.",
 ];

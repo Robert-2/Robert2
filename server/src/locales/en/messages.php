@@ -2698,4 +2698,7 @@ return [
 
     "label"
     => "Label",
+
+    "enable-javascript-message"
+    => "Please enable JavaScript to use this application.",
 ];

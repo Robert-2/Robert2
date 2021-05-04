@@ -3,37 +3,28 @@ declare(strict_types=1);
 
 namespace Robert2\API\Controllers;
 
-use Slim\Http\Request;
-use Slim\Http\Response;
-
-use Robert2\API\Errors;
 use Robert2\API\Controllers\Traits\Taggable;
+use Robert2\API\Controllers\Traits\WithCrud;
+use Robert2\API\Models\Company;
+use Slim\Exception\HttpNotFoundException;
+use Slim\Http\Response;
+use Slim\Http\ServerRequest as Request;
 
 class CompanyController extends BaseController
 {
-    use Taggable;
+    use WithCrud, Taggable {
+        Taggable::getAll insteadof WithCrud;
+    }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Model dedicated methods
-    // —
-    // ——————————————————————————————————————————————————————
-
-    public function getPersons(Request $request, Response $response)
+    public function getPersons(Request $request, Response $response): Response
     {
         $id = (int)$request->getAttribute('id');
-        if (!$this->model->exists($id)) {
-            throw new Errors\NotFoundException;
+        $company = Company::find($id);
+        if (!$company) {
+            throw new HttpNotFoundException($request);
         }
 
-        $Company = $this->model->find($id);
-        $persons = $Company->Persons()->paginate($this->itemsCount);
-
-        $basePath = $request->getUri()->getPath();
-        $persons->withPath($basePath);
-
-        $results = $this->_formatPagination($persons);
-
+        $results = $this->paginate($request, $company->Persons());
         return $response->withJson($results);
     }
 }

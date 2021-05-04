@@ -88,7 +88,7 @@ class Category extends BaseModel
 
     public function getIdsByNames(array $names): array
     {
-        $categories = self::whereIn('name', $names)->get();
+        $categories = static::whereIn('name', $names)->get();
         $ids = [];
         foreach ($categories as $category) {
             $ids[] = $category->id;
@@ -108,7 +108,7 @@ class Category extends BaseModel
     {
         $categories = array_map(
             function ($categoryName) {
-                $existingCategory = self::where('name', $categoryName)->first();
+                $existingCategory = static::where('name', $categoryName)->first();
                 if ($existingCategory) {
                     return $existingCategory;
                 }
@@ -129,9 +129,8 @@ class Category extends BaseModel
                     }
                 }
             } catch (QueryException $e) {
-                $error = new ValidationException();
-                $error->setPDOValidationException($e);
-                throw $error;
+                throw (new ValidationException)
+                    ->setPDOValidationException($e);
             }
         });
 

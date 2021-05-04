@@ -3,14 +3,11 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Robert2\API\Validation\Validator as V;
-
-use Robert2\API\Errors;
 use Robert2\API\Config\Config;
-use Robert2\API\I18n\I18n;
 use Robert2\API\Models\Traits\WithPdf;
+use Robert2\API\Services\I18n;
+use Robert2\API\Validation\Validator as V;
 use Robert2\Lib\Domain\EventBill;
 
 class Bill extends BaseModel
@@ -112,17 +109,12 @@ class Bill extends BaseModel
         'user_id',
     ];
 
-    public function createFromEvent(int $eventId, int $userId, float $discountRate = 0.0): Model
+    public function createFromEvent(int $eventId, int $userId, float $discountRate = 0.0): Bill
     {
-        $Event = new Event();
-        $billEvent = $Event
+        $billEvent = (new Event)
             ->with('Beneficiaries')
             ->with('Materials')
-            ->find($eventId);
-
-        if (!$billEvent) {
-            throw new Errors\NotFoundException("Event not found.");
-        }
+            ->findOrFail($eventId);
 
         $date = new \DateTime();
         $eventData = $billEvent->toArray();
@@ -147,11 +139,7 @@ class Bill extends BaseModel
 
     public function getPdfName(int $id): string
     {
-        $model = $this->withTrashed()->find($id);
-        if (!$model) {
-            throw new NotFoundException(sprintf('Record %d not found.', $id));
-        }
-
+        $bill = $this->withTrashed()->findOrFail($id);
         $company = Config::getSettings('companyData');
 
         $i18n = new I18n(Config::getSettings('defaultLang'));
@@ -159,8 +147,8 @@ class Bill extends BaseModel
             '%s-%s-%s-%s.pdf',
             $i18n->translate('Bill'),
             slugify($company['name']),
-            $model->number,
-            slugify($model->Beneficiary->full_name)
+            $bill->number,
+            slugify($bill->Beneficiary->full_name)
         );
         if (isTestMode()) {
             $fileName = sprintf('TEST-%s', $fileName);
@@ -171,16 +159,10 @@ class Bill extends BaseModel
 
     public function getPdfContent(int $id): string
     {
-        if (!$this->exists($id)) {
-            throw new Errors\NotFoundException;
-        }
-
-        $bill = self::find($id);
-
+        $bill = static::findOrFail($id);
         $date = new \DateTime($bill->date);
 
-        $Event = new Event();
-        $eventData = $Event
+        $eventData = (new Event)
             ->with('Beneficiaries')
             ->with('Materials')
             ->find($bill->event_id)
@@ -211,7 +193,7 @@ class Bill extends BaseModel
 
     public function deleteByNumber(string $number): void
     {
-        $bill = self::where('number', $number);
+        $bill = static::where('number', $number);
         if (!$bill) {
             return;
         }
@@ -221,7 +203,7 @@ class Bill extends BaseModel
 
     public function getLastBillNumber(): int
     {
-        $allBills = self::selectRaw('number')
+        $allBills = static::selectRaw('number')
             ->whereRaw(sprintf('YEAR(date) = %s', date('Y')))
             ->get();
 

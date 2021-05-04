@@ -48,7 +48,8 @@ export default {
   },
   computed: {
     groupId() {
-      return this.$store.state.auth.user.groupId;
+      const { user } = this.$store.state.auth;
+      return user ? user.groupId : '';
     },
   },
   mounted() {

@@ -207,8 +207,7 @@ final class PersonsTest extends ApiTestCase
     public function testGetPersonNotFound()
     {
         $this->client->get('/api/persons/999');
-        $this->assertStatusCode(ERROR_NOT_FOUND);
-        $this->assertNotFoundErrorMessage();
+        $this->assertNotFound();
     }
 
     public function testGetPerson()
@@ -262,8 +261,7 @@ final class PersonsTest extends ApiTestCase
     public function testGetTagsNotFound()
     {
         $this->client->get('/api/persons/999/tags');
-        $this->assertStatusCode(ERROR_NOT_FOUND);
-        $this->assertNotFoundErrorMessage();
+        $this->assertNotFound();
     }
 
     public function testGetTags()
@@ -491,7 +489,7 @@ final class PersonsTest extends ApiTestCase
     public function testRestorePersonNotFound()
     {
         $this->client->put('/api/persons/restore/999');
-        $this->assertStatusCode(ERROR_NOT_FOUND);
+        $this->assertNotFound();
     }
 
     public function testRestoreEvent()

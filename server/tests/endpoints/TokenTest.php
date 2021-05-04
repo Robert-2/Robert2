@@ -40,8 +40,7 @@ final class TokenTest extends ApiTestCase
             'identifier' => 'nobody@test.org',
             'password'   => 'testing',
         ]);
-        $this->assertStatusCode(ERROR_NOT_FOUND);
-        $this->assertNotFoundErrorMessage();
+        $this->assertNotFound();
     }
 
     public function testTokenWrongPassword()
@@ -50,8 +49,7 @@ final class TokenTest extends ApiTestCase
             'identifier' => 'tester@robertmanager.net',
             'password'   => 'wrongPassword',
         ]);
-        $this->assertStatusCode(ERROR_NOT_FOUND);
-        $this->assertNotFoundErrorMessage();
+        $this->assertNotFound();
     }
 
     public function testTokenAuthOK()

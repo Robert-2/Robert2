@@ -3,8 +3,9 @@ declare(strict_types=1);
 
 namespace Robert2\Tests;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Robert2\API\Models;
-use Robert2\API\Errors;
+use Robert2\API\Errors\ValidationException;
 
 final class PersonTest extends ModelTestCase
 {
@@ -155,7 +156,7 @@ final class PersonTest extends ModelTestCase
 
     public function testSetTagsNotFound(): void
     {
-        $this->expectException(Errors\NotFoundException::class);
+        $this->expectException(ModelNotFoundException::class);
         $this->model->setTags(999, ['notFoundTag']);
     }
 
@@ -178,14 +179,14 @@ final class PersonTest extends ModelTestCase
 
     public function testCreatePersonWithoutData(): void
     {
-        $this->expectException(Errors\ValidationException::class);
+        $this->expectException(ValidationException::class);
         $this->expectExceptionCode(ERROR_VALIDATION);
         $this->model->edit(null, []);
     }
 
     public function testCreatePersonBadData(): void
     {
-        $this->expectException(Errors\ValidationException::class);
+        $this->expectException(ValidationException::class);
         $this->expectExceptionCode(ERROR_VALIDATION);
         $this->model->edit(null, ['foo' => 'bar']);
     }

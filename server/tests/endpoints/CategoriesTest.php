@@ -79,8 +79,7 @@ final class CategoriesTest extends ApiTestCase
     public function testGetCategorieNotFound()
     {
         $this->client->get('/api/categories/999');
-        $this->assertStatusCode(ERROR_NOT_FOUND);
-        $this->assertNotFoundErrorMessage();
+        $this->assertNotFound();
     }
 
     public function testGetCategory()
@@ -132,7 +131,7 @@ final class CategoriesTest extends ApiTestCase
     public function testUpdateCategoryNotFound()
     {
         $this->client->put('/api/categories/999', ['name' => '__inexistant__']);
-        $this->assertStatusCode(ERROR_NOT_FOUND);
+        $this->assertNotFound();
     }
 
     public function testUpdateCategory()
@@ -177,7 +176,7 @@ final class CategoriesTest extends ApiTestCase
     public function testRestoreCategoryNotFound()
     {
         $this->client->put('/api/categories/restore/999');
-        $this->assertStatusCode(ERROR_NOT_FOUND);
+        $this->assertNotFound();
     }
 
     public function testRestoreCategory()

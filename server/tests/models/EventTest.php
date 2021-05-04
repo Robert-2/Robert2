@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace Robert2\Tests;
 
-use Robert2\API\Models;
 use Robert2\API\Errors;
+use Robert2\API\Models\Event;
 
 final class EventTest extends ModelTestCase
 {
@@ -12,7 +12,7 @@ final class EventTest extends ModelTestCase
     {
         parent::setUp();
 
-        $this->model = new Models\Event();
+        $this->model = new Event();
     }
 
     public function testTableName(): void
@@ -76,11 +76,11 @@ final class EventTest extends ModelTestCase
     public function testGetMissingMaterials(): void
     {
         // - No missing materials for event #3
-        $result = $this->model->getMissingMaterials(3);
+        $result = Event::getMissingMaterials(3);
         $this->assertNull($result);
 
         // - Get missing materials of event #1
-        $result = $this->model->getMissingMaterials(1);
+        $result = Event::getMissingMaterials(1);
         $this->assertNotNull($result);
         $this->assertCount(1, $result);
         $this->assertEquals('DBXPA2', $result[0]['reference']);
@@ -89,10 +89,10 @@ final class EventTest extends ModelTestCase
 
     public function testGetParks(): void
     {
-        $result = $this->model->getParks(1);
+        $result = Event::getParks(1);
         $this->assertEquals([1], $result);
 
-        $result = $this->model->getParks(4);
+        $result = Event::getParks(4);
         $this->assertEquals([null, 1], $result);
     }
 
@@ -298,7 +298,7 @@ final class EventTest extends ModelTestCase
             $data,
             ['end_date' => '2020-03-03 23:59:59']
         );
-        (new Models\Event($testData))->validate();
+        (new Event($testData))->validate();
 
         // - Validation fail: end date is after start date
         $this->expectException(Errors\ValidationException::class);
@@ -307,7 +307,7 @@ final class EventTest extends ModelTestCase
             $data,
             ['end_date' => '2020-02-20 23:59:59']
         );
-        (new Models\Event($testData))->validate();
+        (new Event($testData))->validate();
     }
 
     public function testValidateReference(): void
@@ -322,14 +322,14 @@ final class EventTest extends ModelTestCase
 
         foreach (['REF1', null] as $testValue) {
             $testData = array_merge($data, ['reference' => $testValue]);
-            (new Models\Event($testData))->validate();
+            (new Event($testData))->validate();
         }
 
         // - Validation fail: Reference is an empty string
         $this->expectException(Errors\ValidationException::class);
         $this->expectExceptionCode(ERROR_VALIDATION);
         $testData = array_merge($data, ['reference' => '']);
-        (new Models\Event($testData))->validate();
+        (new Event($testData))->validate();
     }
 
     public function testGetPdfContent()

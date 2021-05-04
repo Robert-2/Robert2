@@ -1,4 +1,5 @@
 {
+    "type": "project",
     "private": true,
     "authors": [
         {
@@ -24,32 +25,36 @@
     },
     "config": {
         "vendor-dir": "src/vendor",
+        "sort-packages": true,
         "platform": {
-            "php": "7.1.17"
+            "php": "7.3"
         }
     },
     "require": {
-        "php": ">=7.1.17",
-        "slim/slim": "^3.12.3",
-        "slim/http-cache": "^0.4.0",
-        "slim/twig-view": "^2.5.1",
-        "projek-xyz/slim-monolog" : "^0.1.6",
-        "tuupola/slim-jwt-auth": "^3.4.0",
-        "respect/validation": "^1.1.31",
-        "illuminate/database": "^5.8.36",
-        "illuminate/pagination": "^5.8.35",
-        "robmorgan/phinx": "^0.11.4",
-        "delfimov/translate": "^2.6.0",
-        "dompdf/dompdf": "^1.0.2",
-        "twig/intl-extra": "^3.3.0",
-        "cocur/slugify": "^4.0.0",
-        "twig/extensions": "^1.5.4",
-        "vlucas/phpdotenv": "^5.3.0"
+        "php": ">=7.3",
+        "cocur/slugify": "4.0.0",
+        "delfimov/translate": "2.6.0",
+        "dompdf/dompdf": "1.0.2",
+        "firebase/php-jwt": "5.2.1",
+        "illuminate/database": "8.40.0",
+        "illuminate/pagination": "8.40.0",
+        "monolog/monolog": "2.2.0",
+        "php-di/php-di": "6.3.3",
+        "respect/validation": "1.1.31",
+        "robmorgan/phinx": "0.12.6",
+        "slim/http": "1.2.0",
+        "slim/http-cache": "1.1.0",
+        "slim/psr7": "1.3.0",
+        "slim/slim": "4.7.1",
+        "slim/twig-view": "3.2.0",
+        "twig/intl-extra": "3.3.0",
+        "twig/string-extra": "3.3.0",
+        "vlucas/phpdotenv": "5.3.0"
     },
    "require-dev": {
-        "there4/slim-test-helpers": "^2.1.3",
-        "squizlabs/php_codesniffer": "^3.5.4",
-        "ifsnop/mysqldump-php": "^2.8.0"
+        "ifsnop/mysqldump-php": "2.9.0",
+        "phpunit/phpunit": "9.5.4",
+        "squizlabs/php_codesniffer": "3.6.0"
     },
     "autoload": {
         "psr-4": {

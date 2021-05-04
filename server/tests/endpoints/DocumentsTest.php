@@ -12,9 +12,8 @@ final class DocumentsTest extends ApiTestCase
         $this->assertStatusCode(404);
 
         // - Téléchargement du document #1
-        $this->client->get('/documents/1/download');
+        $responseStream = $this->client->get('/documents/1/download');
         $this->assertStatusCode(200);
-        $responseStream = $this->client->response->getBody();
         $this->assertTrue($responseStream->isReadable());
     }
 

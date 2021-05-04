@@ -1,11 +1,14 @@
 <?php
+declare(strict_types=1);
+
+use Robert2\API\Config\Config;
 
 require_once __DIR__ . '/../App/Config/Config.php';
 require_once __DIR__ . '/../App/Config/constants.php';
 require_once __DIR__ . '/../App/Config/functions.php';
 
-$config = Robert2\API\Config\Config::getSettings('db');
-$pdo = Robert2\API\Config\Config::getPDO();
+$config = Config::getSettings('db');
+$pdo = Config::getPDO();
 
 return [
     'paths' => [

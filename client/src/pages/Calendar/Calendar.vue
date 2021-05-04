@@ -17,17 +17,15 @@
         class="Calendar__timeline"
         :items="events"
         :options="timelineOptions"
-        :events="['itemover', 'itemout', 'doubleClick', 'items-remove', 'rangechanged']"
-        @itemover="onItemOver"
-        @itemout="onItemOut"
+        @item-over="onItemOver"
+        @item-out="onItemOut"
+        @item-moved="onItemMoved"
+        @item-remove="onItemRemove"
+        @item-removed="onItemRemoved"
         @double-click="onDoubleClick"
-        @items-remove="onRemoved"
-        @rangechanged="onRangeChanged"
+        @range-changed="onRangeChanged"
       />
-      <Help
-        :message="help"
-        :error="error"
-      />
+      <Help :message="help" :error="error" />
     </div>
   </div>
 </template>

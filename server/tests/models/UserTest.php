@@ -3,8 +3,10 @@ declare(strict_types=1);
 
 namespace Robert2\Tests;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Robert2\API\Errors\ValidationException;
 use Robert2\API\Models;
-use Robert2\API\Errors;
+use Robert2\API\Models\User;
 
 final class UserTest extends ModelTestCase
 {
@@ -12,7 +14,7 @@ final class UserTest extends ModelTestCase
     {
         parent::setUp();
 
-        $this->model = new Models\User();
+        $this->model = new User();
     }
 
     public function testTableName(): void
@@ -122,14 +124,13 @@ final class UserTest extends ModelTestCase
         $this->assertEquals($expected, $result);
     }
 
-    public function testgetLoginNotFound(): void
+    public function testFromLoginNotFound(): void
     {
-        $this->expectException(Errors\NotFoundException::class);
-        $this->expectExceptionCode(ERROR_NOT_FOUND);
-        $this->model->getLogin('foo', 'bar');
+        $this->expectException(ModelNotFoundException::class);
+        User::fromLogin('foo', 'bar');
     }
 
-    public function testGetLogin(): void
+    public function testFromLogin(): void
     {
         $expectedUserData = array_merge($this->expectedDataUser1, [
             'cas_identifier' => null,
@@ -144,32 +145,31 @@ final class UserTest extends ModelTestCase
         ]);
 
         // - Retourne l'utilisateur n°1 et sa personne associée en utilisant l'e-mail
-        $result = $this->model->getLogin('tester@robertmanager.net', 'testing-pw')->toArray();
+        $result = User::fromLogin('tester@robertmanager.net', 'testing-pw')->toArray();
         $this->assertEquals($expectedUserData, $result);
 
         // - Retourne l'utilisateur n°1 et sa personne associée en utilisant le pseudo
-        $result = $this->model->getLogin('test1', 'testing-pw')->toArray();
+        $result = User::fromLogin('test1', 'testing-pw')->toArray();
         $this->assertEquals($expectedUserData, $result);
     }
 
     public function testCreateWithoutData(): void
     {
-        $this->expectException(Errors\ValidationException::class);
+        $this->expectException(ValidationException::class);
         $this->expectExceptionCode(ERROR_VALIDATION);
         Models\User::new([]);
     }
 
     public function testCreateBadData(): void
     {
-        $this->expectException(Errors\ValidationException::class);
+        $this->expectException(ValidationException::class);
         $this->expectExceptionCode(ERROR_VALIDATION);
         Models\User::new(['foo' => 'bar']);
     }
 
     public function testUpdateNotFound(): void
     {
-        $this->expectException(Errors\NotFoundException::class);
-        $this->expectExceptionCode(ERROR_NOT_FOUND);
+        $this->expectException(ModelNotFoundException::class);
         $this->model->edit(999, []);
     }
 
@@ -251,8 +251,7 @@ final class UserTest extends ModelTestCase
 
     public function testRemoveNotFound(): void
     {
-        $this->expectException(Errors\NotFoundException::class);
-        $this->expectExceptionCode(ERROR_NOT_FOUND);
+        $this->expectException(ModelNotFoundException::class);
         $this->model->remove(999);
     }
 
@@ -288,37 +287,6 @@ final class UserTest extends ModelTestCase
             'auth_token_validity_duration' => 12,
             'created_at'                   => null,
             'updated_at'                   => null,
-        ], $result);
-    }
-
-    public function testSetSettingsNotFound(): void
-    {
-        $this->expectException(Errors\NotFoundException::class);
-        $this->expectExceptionCode(ERROR_NOT_FOUND);
-        $this->model->setSettings(999, ['language' => 'FR']);
-    }
-
-    public function testSetSettingsBadData(): void
-    {
-        $this->expectException(Errors\ValidationException::class);
-        $this->expectExceptionCode(ERROR_VALIDATION);
-        $this->model->setSettings(1, ['language' => '__invalid__']);
-    }
-
-    public function testSetSettings(): void
-    {
-        $result = $this->model->setSettings(1, [
-            'language'                     => 'FR',
-            'auth_token_validity_duration' => 33,
-        ]);
-        unset($result['created_at']);
-        unset($result['updated_at']);
-
-        $this->assertEquals([
-            'id'                           => 1,
-            'user_id'                      => 1,
-            'language'                     => 'FR',
-            'auth_token_validity_duration' => 33,
         ], $result);
     }
 

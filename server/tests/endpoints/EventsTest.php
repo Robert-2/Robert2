@@ -128,8 +128,7 @@ final class EventsTest extends ApiTestCase
     public function testGetEventNotFound()
     {
         $this->client->get('/api/events/999');
-        $this->assertStatusCode(ERROR_NOT_FOUND);
-        $this->assertNotFoundErrorMessage();
+        $this->assertNotFound();
     }
 
     public function testGetOneEvent()
@@ -445,7 +444,7 @@ final class EventsTest extends ApiTestCase
     public function testUpdateEventNotFound()
     {
         $this->client->put('/api/events/999', ['name' => '__inexistant__']);
-        $this->assertStatusCode(ERROR_NOT_FOUND);
+        $this->assertNotFound();
     }
 
     public function testUpdateEvent()
@@ -763,7 +762,7 @@ final class EventsTest extends ApiTestCase
     public function testRestoreEventNotFound()
     {
         $this->client->put('/api/events/restore/999');
-        $this->assertStatusCode(ERROR_NOT_FOUND);
+        $this->assertNotFound();
     }
 
     public function testRestoreEvent()
@@ -837,8 +836,7 @@ final class EventsTest extends ApiTestCase
 
         // - Event not found
         $this->client->get('/api/events/999/missing-materials');
-        $this->assertStatusCode(ERROR_NOT_FOUND);
-        $this->assertNotFoundErrorMessage();
+        $this->assertNotFound();
     }
 
     public function testDownloadPdf()
@@ -848,9 +846,8 @@ final class EventsTest extends ApiTestCase
         $this->assertStatusCode(404);
 
         // - Download event n°1 PDF file
-        $this->client->get('/events/1/pdf');
+        $responseStream = $this->client->get('/events/1/pdf');
         $this->assertStatusCode(200);
-        $responseStream = $this->client->response->getBody();
         $this->assertTrue($responseStream->isReadable());
     }
 }
