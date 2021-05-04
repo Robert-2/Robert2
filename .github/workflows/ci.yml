@@ -1,6 +1,10 @@
-name : CI
-on   : [pull_request]
-jobs :
+name: CI
+on:
+    push:
+        branches: [develop, master]
+    pull_request:
+        types: [opened]
+jobs:
     client-linting:
         name     : "Client: Linting"
         runs-on  : ubuntu-latest
