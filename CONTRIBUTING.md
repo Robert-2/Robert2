@@ -48,6 +48,25 @@ Attention ⚠️, cela ne veut pas dire que Robert n'est pas traduit : Robert2 e
 Merci donc de bien vouloir prendre en compte le fait que chaque texte affiché dans l'interface de Robert doit pouvoir être traduit et si possible,
 veuillez spécifier les traductions anglaises de vos ajouts en français dans vos pull requests.
 
+## Branches Git
+
+Pour nommer ses branches, le projet utilise le modèle appelé « Git Flow ».
+Voir [cette page](https://git-flow.readthedocs.io/fr/latest/presentation.html) pour plus de détails sur ce workflow,
+mais voici un tuto rapide :
+
+Les deux branches principales qui **existent en permanence** sont :
+- `master` : la branche sur laquelle se trouve l'application telle qu'elle a été releasée en dernier.
+  On ne peut y merger que des branches `release/x.x.x` ou `hotfix/x.x.x`. Aucun commit ne doit y être ajouté directement.
+  Cette branche est considérée comme la "branche stable releasée".
+- `develop` : la branche sur laquelle on merge toutes les branches de nouvelles fonctionnalités (nommées `feature/...`).
+  On peut aussi y faire quelques commits directs, uniquement quand il s'agit de petites corrections.
+  Cette branche est considérée comme la "branche stable non-releasée".
+
+Quand vous voulez modifier le code, commencez par créer une branche `feature/nom-de-la-fonctionnalité`, qui est basée sur `develop`.
+Ensuite, utilisez cette branche pour créer une pull-request dont la branche de destination est `develop`.
+Avant d'être mergée, le fonctionnement de l'application sur cette branche doit impérativement être stable et dépourvu de bug.
+Une fois la PR mergée, la branche doit être supprimée.
+
 ## Version et Changelog
 
 Robert2 utilise la nomenclature de version [Semantic Versionning (semver)](https://semver.org/) pour ses numéros de version. La version actuelle qui 
