@@ -8,7 +8,8 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 
 - Corrige un problème avec le nom de la base de données de test (#128 et #129).
 - Ajoute la création / suppression de devis pour les événements (#5).
-- __[CHANGEMENT CRITIQUE]__ Robert requiert maintenant au minimum PHP 7.3 pour fonctionner (#78).
+- __[CHANGEMENT CRITIQUE]__ Robert2 requiert maintenant au minimum PHP 7.3 pour fonctionner (#78).
+- Ajoute le support de la version 8.0 de PHP (#71).
 
 ## 0.12.0 (2021-03-29)
 
