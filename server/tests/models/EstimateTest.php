@@ -69,6 +69,7 @@ final class EstimateTest extends ModelTestCase
                 'user_id' => 1,
                 'first_name' => 'Jean',
                 'last_name' => 'Fountain',
+                'reference' => '0001',
                 'nickname' => null,
                 'email' => 'tester@robertmanager.net',
                 'phone' => null,

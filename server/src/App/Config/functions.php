@@ -39,13 +39,14 @@ function debug($var = null, array $options = []): void
     if ($options['log']) {
         $backtrace = debug_backtrace();
         $caller = array_shift($backtrace);
+        $displayVar = var_export($var, true);
 
         $debug = sprintf(
             "%s [%s] line %d: %s\n",
             date('d/m H:i'),
             basename($caller['file']),
             $caller['line'],
-            print_r($var, true)
+            $displayVar
         );
         $logFile = VAR_FOLDER . DS . 'logs' . DS . 'debug.log';
         file_put_contents($logFile, $debug, $options['append'] ? FILE_APPEND : 0);

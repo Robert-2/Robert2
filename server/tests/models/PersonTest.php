@@ -39,6 +39,13 @@ final class PersonTest extends ModelTestCase
         $this->assertCount(1, $result);
         $this->assertEquals('Jean Fountain', $result[0]['full_name']);
 
+        // - Search by reference
+        $this->model->setSearch('01');
+        $result = $this->model->getAll()->get()->toArray();
+        $this->assertCount(1, $result);
+        $this->assertEquals('Jean Fountain', $result[0]['full_name']);
+        $this->assertEquals('0001', $result[0]['reference']);
+
         // - Search by company name
         $this->model->setSearch('Testing');
         $result = $this->model->getAll()->get()->toArray();
@@ -63,48 +70,49 @@ final class PersonTest extends ModelTestCase
     {
         $Person = $this->model::find(1);
         $this->assertEquals([
-            'id'       => 1,
-            'pseudo'   => 'test1',
-            'email'    => 'tester@robertmanager.net',
+            'id' => 1,
+            'pseudo' => 'test1',
+            'email' => 'tester@robertmanager.net',
             'group_id' => 'admin',
-            'person'   => [
-                'id'          => 1,
-                'user_id'     => 1,
-                'first_name'  => 'Jean',
-                'last_name'   => 'Fountain',
-                'full_name'   => 'Jean Fountain',
-                'nickname'    => null,
-                'email'       => 'tester@robertmanager.net',
-                'phone'       => null,
-                'street'      => '1, somewhere av.',
+            'person' => [
+                'id' => 1,
+                'user_id' => 1,
+                'first_name' => 'Jean',
+                'last_name' => 'Fountain',
+                'full_name' => 'Jean Fountain',
+                'reference' => '0001',
+                'nickname' => null,
+                'email' => 'tester@robertmanager.net',
+                'phone' => null,
+                'street' => '1, somewhere av.',
                 'postal_code' => '1234',
-                'locality'    => 'Megacity',
-                'country_id'  => 1,
-                'company_id'  => 1,
-                'note'        => null,
-                'created_at'  => null,
-                'updated_at'  => null,
-                'deleted_at'  => null,
-                'company'     => [
-                    'id'          => 1,
-                    'legal_name'  => 'Testing, Inc',
-                    'street'      => '1, company st.',
+                'locality' => 'Megacity',
+                'country_id' => 1,
+                'company_id' => 1,
+                'note' => null,
+                'created_at' => null,
+                'updated_at' => null,
+                'deleted_at' => null,
+                'company' => [
+                    'id' => 1,
+                    'legal_name' => 'Testing, Inc',
+                    'street' => '1, company st.',
                     'postal_code' => '1234',
-                    'locality'    => 'Megacity',
-                    'country_id'  => 1,
-                    'phone'       => '+4123456789',
-                    'note'        => 'Just for tests',
-                    'created_at'  => null,
-                    'updated_at'  => null,
-                    'deleted_at'  => null,
-                    'country'     => [
-                        'id'   => 1,
+                    'locality' => 'Megacity',
+                    'country_id' => 1,
+                    'phone' => '+4123456789',
+                    'note' => 'Just for tests',
+                    'created_at' => null,
+                    'updated_at' => null,
+                    'deleted_at' => null,
+                    'country' => [
+                        'id' => 1,
                         'name' => 'France',
                         'code' => 'FR',
                     ],
                 ],
                 'country' => [
-                    'id'   => 1,
+                    'id' => 1,
                     'name' => 'France',
                     'code' => 'FR',
                 ],
@@ -198,7 +206,10 @@ final class PersonTest extends ModelTestCase
             'last_name' => 'Fountain',
             'email' => 'tester@robertmanager.net',
         ]);
-        $this->assertNotEmpty($result);
+        $resultData = $result->toArray();
+        $this->assertEquals('1, somewhere av.', $resultData['street']);
+        $this->assertEquals('1234', $resultData['postal_code']);
+        $this->assertEquals('Megacity', $resultData['locality']);
     }
 
     public function testCreatePerson(): void
@@ -248,43 +259,45 @@ final class PersonTest extends ModelTestCase
     {
         $result = $this->model->edit(1, [
             'first_name' => '  Jeannot ',
-            'nickname'   => ' testMan  ',
+            'nickname' => ' testMan  ',
+            'reference' => '0003',
         ]);
         $expected = [
-            'id'          => 1,
-            'user_id'     => 1,
-            'first_name'  => 'Jeannot',
-            'last_name'   => 'Fountain',
-            'full_name'   => 'Jeannot Fountain',
-            'nickname'    => 'testMan',
-            'email'       => 'tester@robertmanager.net',
-            'phone'       => null,
-            'street'      => '1, somewhere av.',
+            'id' => 1,
+            'user_id' => 1,
+            'first_name' => 'Jeannot',
+            'last_name' => 'Fountain',
+            'full_name' => 'Jeannot Fountain',
+            'reference' => '0003',
+            'nickname' => 'testMan',
+            'email' => 'tester@robertmanager.net',
+            'phone' => null,
+            'street' => '1, somewhere av.',
             'postal_code' => '1234',
-            'locality'    => 'Megacity',
-            'country_id'  => 1,
-            'company_id'  => 1,
-            'note'        => null,
-            'company'     => [
-                'id'          => 1,
-                'legal_name'  => 'Testing, Inc',
-                'street'      => '1, company st.',
+            'locality' => 'Megacity',
+            'country_id' => 1,
+            'company_id' => 1,
+            'note' => null,
+            'company' => [
+                'id' => 1,
+                'legal_name' => 'Testing, Inc',
+                'street' => '1, company st.',
                 'postal_code' => '1234',
-                'locality'    => 'Megacity',
-                'country_id'  => 1,
-                'phone'       => '+4123456789',
-                'note'        => 'Just for tests',
-                'created_at'  => null,
-                'updated_at'  => null,
-                'deleted_at'  => null,
-                'country'     => [
-                    'id'   => 1,
+                'locality' => 'Megacity',
+                'country_id' => 1,
+                'phone' => '+4123456789',
+                'note' => 'Just for tests',
+                'created_at' => null,
+                'updated_at' => null,
+                'deleted_at' => null,
+                'country' => [
+                    'id' => 1,
                     'name' => 'France',
                     'code' => 'FR',
                 ],
             ],
             'country' => [
-                'id'   => 1,
+                'id' => 1,
                 'name' => 'France',
                 'code' => 'FR',
             ],
@@ -293,5 +306,16 @@ final class PersonTest extends ModelTestCase
         unset($result->updated_at);
         unset($result->deleted_at);
         $this->assertEquals($expected, $result->toArray());
+    }
+
+    public function testUpdatePersonDuplicateRef(): void
+    {
+        $this->expectException(ValidationException::class);
+        $this->expectExceptionCode(ERROR_VALIDATION);
+        $this->model->edit(1, [
+            'first_name' => '  Jeannot ',
+            'nickname' => ' testMan  ',
+            'reference' => '0002',
+        ]);
     }
 }

@@ -1,0 +1,25 @@
+{% if person['company'] is not empty %}
+    {{ person['company']['legal_name'] }}<br>
+{% else %}
+    {{ person['full_name'] }}<br>
+{% endif %}
+
+{% if person['street'] is not empty %}
+    {{ person['street'] }}<br>
+{% endif %}
+
+{% if person['postal_code'] is not empty %}
+    {{ person['postal_code'] }} {{ person['locality'] }}<br>
+{% endif %}
+
+{% if person['reference'] is not empty %}
+    <small>({{ translate('beneficiaryReference', [person['reference']]) }})</small><br>
+{% endif %}
+
+{% if person['phone'] is not empty %}
+    <small>{{ translate('phone', [person['phone']]) }}</small><br>
+{% endif %}
+
+{% if person['email'] is not empty %}
+    <small>{{ translate('email', [person['email']]) }}</small><br>
+{% endif %}

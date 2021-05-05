@@ -10,6 +10,10 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Ajoute la création / suppression de devis pour les événements (#5).
 - __[CHANGEMENT CRITIQUE]__ Robert2 requiert maintenant au minimum PHP 7.3 pour fonctionner (#78).
 - Ajoute le support de la version 8.0 de PHP (#71).
+- Ajoute la possibilité de renseigner une référence (numéro client) aux bénéficiaires (#122).
+- Améliore les données affichées dans les PDF (fiches de sortie, devis et factures), en y ajoutant la référence
+  (numéro client) du bénéficiaire (voir #122) et les numéros de téléphone des techniciens et des bénéficiaires.
+- Corrige l'affichage des numéros légaux de l'entreprise (SIRET, etc.) sur les devis et factures.
 
 ## 0.12.0 (2021-03-29)
 
