@@ -115,10 +115,10 @@ final class FunctionsTest extends TestCase
         $destinationFolder = DATA_FOLDER . DS . 'materials' . DS . 'tests';
 
         // - Déplace le fichier de test d'upload dans
-        $file = new UploadedFile($sourceFile, 'Uploaded File for Tests', 'application/pdf', 13269);
+        $file = new UploadedFile($sourceFile, 'Uploaded File for Tests.pdf', 'application/pdf', 13269);
         // - Déplace le fichier de test d'upload dans le dossier d'un matériel
         $filename = moveUploadedFile($destinationFolder, $file);
-        $this->assertEquals('Uploaded-File-for-Tests', $filename);
+        $this->assertEquals('Uploaded-File-for-Tests.pdf', $filename);
         $destinationFile = $destinationFolder . DS . $filename;
         $this->assertTrue(file_exists($destinationFile));
         // - Remet le fichier dans son dossier d'origine

@@ -254,7 +254,10 @@ function moveUploadedFile($directory, UploadedFileInterface $uploadedFile)
 {
     $name = $uploadedFile->getClientFilename();
 
-    $slugify = new Cocur\Slugify\Slugify(['lowercase' => false]);
+    $slugify = new Cocur\Slugify\Slugify([
+        'regexp' => '/([^A-Za-z0-9\.]|-)+/',
+        'lowercase' => false,
+    ]);
     $nameSecure = $slugify->slugify($name);
 
     if (!is_dir($directory)) {
