@@ -85,7 +85,7 @@ class Event extends BaseModel
     public function Assignees()
     {
         return $this->belongsToMany('Robert2\API\Models\Person', 'event_assignees')
-            ->select(['persons.id', 'first_name', 'last_name', 'nickname'])
+            ->select(['persons.id', 'first_name', 'last_name', 'phone', 'nickname'])
             ->orderBy('last_name');
     }
 
@@ -96,6 +96,8 @@ class Event extends BaseModel
                 'persons.id',
                 'first_name',
                 'last_name',
+                'reference',
+                'phone',
                 'company_id',
                 'street',
                 'postal_code',

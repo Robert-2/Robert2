@@ -1,0 +1,31 @@
+<p class="size12 strong">
+    {{ company['name'] }}<br>
+    {{ company['street'] }}<br>
+    {{ company['zipCode'] }} {{ company['locality'] }}<br>
+    {{ company['country'] }}
+</p>
+
+{% if withLegalNumbers %}
+<p>
+    {% for legalNumber in company['legalNumbers'] %}
+        {% if legalNumber['value'] is not empty %}
+            {{ legalNumber['name'] }}: {{ legalNumber['value'] }}<br>
+        {% endif %}
+    {% endfor %}
+</p>
+{% endif %}
+
+<p>
+    {% if company['phone'] %}
+        {{ translate('phone', [company['phone']]) }}<br>
+    {% endif %}
+    {% if company['email'] %}
+        {{ translate('email', [company['email']]) }}
+    {% endif %}
+</p>
+
+{% if withLegalNumbers and company['vatNumber'] is not empty %}
+<p>
+    {{ translate('vatNumber', [company['vatNumber']]) }}
+</p>
+{% endif %}

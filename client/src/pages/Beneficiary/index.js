@@ -16,6 +16,7 @@ export default {
         email: '',
         first_name: '',
         last_name: '',
+        reference: '',
         company_id: '',
         nickname: '',
         phone: '',
@@ -28,6 +29,7 @@ export default {
       errors: {
         first_name: null,
         last_name: null,
+        reference: null,
         nickname: null,
         phone: null,
         street: null,

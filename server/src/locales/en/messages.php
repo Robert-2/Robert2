@@ -2457,6 +2457,9 @@ return [
     "endDateMustBeLater"
     => "End date must be later than start date",
 
+    "referenceAlreadyInUse"
+    => "This reference is already in use.",
+
     //
     // - Install messages
     //
@@ -2659,6 +2662,9 @@ return [
 
     "location"
     => "Location: %s",
+
+    "beneficiaryReference"
+    => "Ref. %s",
 
     "thisEventIsConfirmed"
     => "This event is confirmed.",

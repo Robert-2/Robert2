@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\QueryException;
 use Robert2\API\Config\Config;
+use Robert2\API\Services\I18n;
 use Robert2\API\Errors\ValidationException;
 use Robert2\API\Models\Traits\Taggable;
 use Robert2\API\Validation\Validator as V;
@@ -26,27 +27,29 @@ class Person extends BaseModel
         'first_name',
         'last_name',
         'full_name',
-        'full_name_or_company',
+        'reference',
+        'name_reference_or_company',
         'nickname',
         'email',
     ];
-    protected $searchField = 'full_name_or_company';
+    protected $searchField = 'name_reference_or_company';
 
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
 
         $this->validation = [
-            'user_id'     => V::optional(V::numeric()),
-            'first_name'  => V::notEmpty()->alpha(static::EXTRA_CHARS)->length(2, 96),
-            'last_name'   => V::notEmpty()->alpha(static::EXTRA_CHARS)->length(2, 96),
-            'email'       => V::optional(V::email()->length(null, 191)),
-            'phone'       => V::optional(V::phone()),
-            'street'      => V::optional(V::length(null, 191)),
+            'user_id' => V::optional(V::numeric()),
+            'first_name' => V::notEmpty()->alpha(static::EXTRA_CHARS)->length(2, 96),
+            'last_name' => V::notEmpty()->alpha(static::EXTRA_CHARS)->length(2, 96),
+            'reference' => V::optional(V::length(null, 191)),
+            'email' => V::optional(V::email()->length(null, 191)),
+            'phone' => V::optional(V::phone()),
+            'street' => V::optional(V::length(null, 191)),
             'postal_code' => V::optional(V::length(null, 10)),
-            'locality'    => V::optional(V::length(null, 191)),
-            'country_id'  => V::optional(V::numeric()),
-            'company_id'  => V::optional(V::numeric()),
+            'locality' => V::optional(V::length(null, 191)),
+            'country_id' => V::optional(V::numeric()),
+            'company_id' => V::optional(V::numeric()),
         ];
     }
 
@@ -86,18 +89,19 @@ class Person extends BaseModel
     // ——————————————————————————————————————————————————————
 
     protected $casts = [
-        'user_id'     => 'integer',
-        'first_name'  => 'string',
-        'last_name'   => 'string',
-        'nickname'    => 'string',
-        'email'       => 'string',
-        'phone'       => 'string',
-        'street'      => 'string',
+        'user_id' => 'integer',
+        'first_name' => 'string',
+        'last_name' => 'string',
+        'reference' => 'string',
+        'nickname' => 'string',
+        'email' => 'string',
+        'phone' => 'string',
+        'street' => 'string',
         'postal_code' => 'string',
-        'locality'    => 'string',
-        'country_id'  => 'integer',
-        'company_id'  => 'integer',
-        'note'        => 'string',
+        'locality' => 'string',
+        'country_id' => 'integer',
+        'company_id' => 'integer',
+        'note' => 'string',
     ];
 
     public function getFullNameAttribute()
@@ -166,6 +170,7 @@ class Person extends BaseModel
         'user_id',
         'first_name',
         'last_name',
+        'reference',
         'nickname',
         'email',
         'phone',
@@ -204,7 +209,23 @@ class Person extends BaseModel
                     ->setPDOValidationException($e);
             }
 
-            $person = static::where('email', $data['email'])->first();
+            if (preg_match('/persons\.reference/', $e->getMessage())) {
+                $i18n = new I18n(Config::getSettings('defaultLang'));
+                throw (new ValidationException)
+                    ->setValidationErrors([
+                        'reference' => [$i18n->translate('referenceAlreadyInUse')]
+                    ]);
+            }
+
+            if ($id) {
+                $person = static::where('id', $id)->first();
+            } elseif (array_key_exists('email', $data)) {
+                $person = static::where('email', $data['email'])->first();
+            } else {
+                throw (new ValidationException)
+                    ->setPDOValidationException($e);
+            }
+
             $this->_setOtherTag($person);
         }
 
@@ -218,7 +239,7 @@ class Person extends BaseModel
             return $tag['name'];
         }, $person->tags);
 
-        $diff = array_diff($defaultTags, $existingTags);
+        $diff = array_values(array_diff($defaultTags, $existingTags));
         if (empty($diff)) {
             return;
         }
@@ -242,10 +263,11 @@ class Person extends BaseModel
             return $builder->where($group);
         }
 
-        if ($this->searchField === 'full_name_or_company') {
+        if ($this->searchField === 'name_reference_or_company') {
             $group = function (Builder $query) use ($term) {
                 $query->orWhere('first_name', 'like', $term)
-                    ->orWhere('last_name', 'like', $term);
+                    ->orWhere('last_name', 'like', $term)
+                    ->orWhere('reference', 'like', $term);
             };
             return $builder
                 ->where($group)

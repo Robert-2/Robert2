@@ -8,6 +8,7 @@ export default {
     person: Object,
     errors: Object,
     withCompany: Boolean,
+    withReference: Boolean,
   },
   computed: {
     countriesOptions() {
