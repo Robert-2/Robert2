@@ -18,7 +18,7 @@ export default {
   },
   computed: {
     tags() {
-      return store.state.tags.list;
+      return store.getters['tags/publicList'];
     },
 
     isFetched() {
@@ -29,10 +29,6 @@ export default {
     store.dispatch('tags/fetch');
   },
   methods: {
-    isProtected(tagName) {
-      return store.getters['tags/isProtected'](tagName);
-    },
-
     addTag() {
       Alert.Prompt(this.$t, 'page-tags.prompt-add', {
         placeholder: 'page-tags.tag-name',

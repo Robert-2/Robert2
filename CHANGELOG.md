@@ -15,6 +15,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
   (numéro client) du bénéficiaire (voir #122) et les numéros de téléphone des techniciens et des bénéficiaires.
 - Corrige l'affichage des numéros légaux de l'entreprise (SIRET, etc.) sur les devis et factures.
 - Corrige le nom des fichiers uploadés comme documents du matériel pour qu'il conserve son extension (#132).
+- N'affiche plus les tags protégés (tags système) dans la page des étiquettes, pour éviter les confusions (#134).
 
 ## 0.12.0 (2021-03-29)
 
