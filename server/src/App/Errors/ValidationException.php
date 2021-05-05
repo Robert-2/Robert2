@@ -41,9 +41,10 @@ class ValidationException extends \Exception
         if (isDuplicateException($e)) {
             $this->code = ERROR_DUPLICATE;
             $offsetKeyName = strripos($details, "for key '") + strlen("for key '");
-            $offsetEnd = strripos($details, "' (SQL") + strlen("' (SQL");
-            $keyNameWithoutUnique = substr($details, $offsetKeyName, -$offsetEnd - 1);
-            $message = "Duplicate entry: index $keyNameWithoutUnique must be unique";
+            $offsetEnd = strripos($details, "' (SQL:");
+            $keyName = substr($details, $offsetKeyName, $offsetEnd - $offsetKeyName);
+            $keyNameWithoutUnique = str_replace('_UNIQUE', '', $keyName);
+            $message = "Duplicate entry: value for index '$keyNameWithoutUnique' must be unique";
         }
         $this->setValidationErrors([$message, $details]);
 

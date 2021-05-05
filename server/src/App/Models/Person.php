@@ -209,7 +209,7 @@ class Person extends BaseModel
                     ->setPDOValidationException($e);
             }
 
-            if (preg_match('/persons\.reference/', $e->getMessage())) {
+            if (preg_match('/(persons\.)?reference/', $e->getMessage())) {
                 $i18n = new I18n(Config::getSettings('defaultLang'));
                 throw (new ValidationException)
                     ->setValidationErrors([
@@ -240,7 +240,7 @@ class Person extends BaseModel
         }, $person->tags);
 
         $diff = array_values(array_diff($defaultTags, $existingTags));
-        if (empty($diff)) {
+        if (empty($diff) || empty($diff[0])) {
             return;
         }
 

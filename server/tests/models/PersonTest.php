@@ -212,6 +212,18 @@ final class PersonTest extends ModelTestCase
         $this->assertEquals('Megacity', $resultData['locality']);
     }
 
+    public function testCreatePersonDuplicateRef(): void
+    {
+        $this->expectException(ValidationException::class);
+        $this->expectExceptionCode(ERROR_VALIDATION);
+        $this->model->edit(null, [
+            'first_name' => 'Paul',
+            'last_name' => 'Newtests',
+            'email' => 'paul@tests.new',
+            'reference' => '0001',
+        ]);
+    }
+
     public function testCreatePerson(): void
     {
         // - Test d'ajout de personne, avec n° de téléphone et tags

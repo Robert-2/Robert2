@@ -12,7 +12,10 @@ class AddReferenceToPersons extends AbstractMigration
                 'after' => 'last_name',
                 'null' => true,
             ])
-            ->addIndex(['reference'], ['unique' => true])
+            ->addIndex(['reference'], [
+                'unique' => true,
+                'name' => 'reference_UNIQUE',
+            ])
             ->update();
     }
 
