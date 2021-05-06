@@ -153,7 +153,7 @@ export default {
 
     onItemRemove(item, callback) {
       const isVisitor = this.$store.getters['auth/is']('visitor');
-      if (isVisitor) {
+      if (isVisitor || item.isConfirmed) {
         return;
       }
 
