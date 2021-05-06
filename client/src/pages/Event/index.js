@@ -52,7 +52,7 @@ export default {
         {
           id: 5,
           name: this.$t('page-events.event-summary'),
-          fields: ['none'],
+          fields: ['title', 'start_date', 'end_date', 'beneficiaries', 'materials'],
         },
       ],
       currentStep: 1,

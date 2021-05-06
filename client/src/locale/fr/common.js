@@ -121,7 +121,10 @@ export default {
   'end-date': "Date de fin",
   'location': "Lieu",
   'duration': "Durée",
-  'duration-days': "Durée {duration} jours",
+  'duration-days': [
+    "Durée {duration} jour",
+    "Durée {duration} jours",
+  ],
   'confirmed': "Confirmé",
   'not-confirmed': "Non confirmé",
   'is-billable': "Est facturable\u00a0?",
@@ -193,7 +196,10 @@ export default {
   'total-amount-with-discount': "Total après remise",
   'replacement-total': "Valeur de remplacement totale",
   'day': "jour",
-  'days': "jours",
+  'days-count': [
+    '{duration} jour',
+    '{duration} jours',
+  ],
   'ratio': "coef.",
   'ratio-long': "Coefficient",
   'tags': "Étiquettes",

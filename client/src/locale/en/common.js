@@ -121,7 +121,10 @@ export default {
   'end-date': "End Date",
   'location': "Location",
   'duration': "Duration",
-  'duration-days': "Duration {duration} days",
+  'duration-days': [
+    "Duration {duration} day",
+    "Duration {duration} days",
+  ],
   'confirmed': "Confirmed",
   'not-confirmed': "Not confirmed",
   'is-billable': "Is billable?",
@@ -193,7 +196,10 @@ export default {
   'total-amount-with-discount': "Total with discount",
   'replacement-total': "Total replacement price",
   'day': "day",
-  'days': "days",
+  'days-count': [
+    '{duration} day',
+    '{duration} days',
+  ],
   'ratio': "ratio",
   'ratio-long': "Ratio",
   'tags': "Tags",

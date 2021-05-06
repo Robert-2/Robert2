@@ -79,7 +79,7 @@
             {{ $t('duration') }}
           </dt>
           <dd class="EventOverview__info__value">
-            {{ duration }} {{ $t('days') }}
+            {{ $t('days-count', { duration }, duration) }}
           </dd>
         </dl>
       </section>
