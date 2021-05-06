@@ -195,7 +195,7 @@ export default {
     'title': "Caractéristiques spéciales du matériel",
     'help': (
       `Ici vous pouvez ajouter les champs qui permettent de décrire votre matériel selon vos propres critères.
-      Une fois créée, une caractéristique spéciale ne pourra plus être modifiée (sauf son nom).`
+      Une fois créée, seul le nom de la caractéristique spéciale pourra modifié.`
     ),
     'go-back-to-material': "Retourner au matériel",
     'name': "Nom de la caractéristique",

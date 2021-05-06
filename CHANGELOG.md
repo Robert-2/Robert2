@@ -17,6 +17,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Corrige le nom des fichiers uploadés comme documents du matériel pour qu'il conserve son extension (#132).
 - N'affiche plus les tags protégés (tags système) dans la page des étiquettes, pour éviter les confusions (#134).
 - Accorde en nombre le terme "durée X jour(s)" dans les événements (#135).
+- Corrige les problèmes d'affichage de la page de gestion des caractéristiques spéciales de matériel (#133).
 
 ## 0.12.0 (2021-03-29)
 

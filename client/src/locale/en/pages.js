@@ -195,7 +195,7 @@ export default {
     'title': "Material special attributes",
     'help': (
       `Here you can add fields that allows you to describe your material according to your own criteria.
-      Once created, a special attribute cannot be modified (except for its name).`
+      Once created, only the name of a special attribute can be modified.`
     ),
     'go-back-to-material': "Back to material",
     'name': "Name of the attribute",
