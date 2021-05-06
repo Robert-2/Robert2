@@ -3,7 +3,7 @@
 {% block title %}{{ translate("releaseSheet") }}{% endblock %}
 
 {% block content %}
-<h1 class="center vspace10">
+<h1 class="center vspace5">
     {{ translate('releaseSheet') }}
 </h1>
 <table class="layout-table">
@@ -55,7 +55,7 @@
                 ]) }}
             </p>
             {% endif %}
-            <p class="vspace5">
+            <p>
                 {{ translate('onDate', [date|format_date('long', locale=locale)]) }}
             </p>
         </td>
@@ -90,6 +90,11 @@
         {% endif %}
     </tr>
 </table>
+
+<h2>{{ translate('descriptionNotes') }}</h2>
+<p>
+    {{ event['description']|nl2br }}
+</p>
 
 <h2 class="vspace2">{{ translate('materials') }}</h2>
 <table class="size9 listing-table">
