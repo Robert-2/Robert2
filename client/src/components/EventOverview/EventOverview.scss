@@ -16,10 +16,16 @@
   }
 
   &__description {
-    padding-top: 0;
-    padding-bottom: $info-spacing;
+    margin: 0 0 $info-spacing 22px;
+    padding-left: 5px;
     white-space: pre-wrap;
     line-height: 1.5;
+    border-left: 3px solid $tabs-bottom-border-color;
+    font-size: 1.1rem;
+
+    .fas {
+      margin-left: -30px;
+    }
   }
 
   &__dates-location,
@@ -101,6 +107,7 @@
     &__list-item {
       list-style: inside;
       margin-left: .2rem;
+      line-height: 1.4;
     }
 
     &--vertical {
