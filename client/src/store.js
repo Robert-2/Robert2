@@ -19,6 +19,7 @@ export default new Vuex.Store({
   mutations: {
     setPageTitle(state, pageTitle) {
       state.pageTitle = pageTitle;
+      state.pageSubTitle = '';
     },
     setPageSubTitle(state, pageSubTitle) {
       state.pageSubTitle = pageSubTitle;
