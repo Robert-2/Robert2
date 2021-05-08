@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Robert2\API;
 
 use DI\ContainerBuilder;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Robert2\API\Config\Config;
@@ -56,7 +57,7 @@ class App
             return;
         }
 
-        $this->app->add(function (Request $request, RequestHandler $handler): Response {
+        $this->app->add(function (Request $request, RequestHandler $handler): ResponseInterface {
             /** @var \Slim\Http\Response */
             $response = $handler->handle($request);
 
