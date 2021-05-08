@@ -54,22 +54,7 @@
           </div>
         </div>
         <div slot="address" slot-scope="beneficiary">
-          <div
-            v-if="beneficiary.row.street ||
-              beneficiary.row.postal_code &&
-              beneficiary.row.locality"
-          >
-            {{ beneficiary.row.street }}<br>
-            {{ beneficiary.row.postal_code }} {{ beneficiary.row.locality }}
-          </div>
-          <div
-            v-else-if="beneficiary.row.company &&
-              beneficiary.row.company.postal_code &&
-              beneficiary.row.company.locality"
-          >
-            {{ beneficiary.row.company.street }}<br>
-            {{ beneficiary.row.company.postal_code }} {{ beneficiary.row.company.locality }}
-          </div>
+          {{ getBeneficiaryAddress(beneficiary.row) }}
         </div>
         <div slot="note" slot-scope="beneficiary">
           <pre v-if="beneficiary.row.company">{{ beneficiary.row.company.note }}</pre>
