@@ -40,7 +40,7 @@ class Config
             'cookie' => 'auth',
             'CAS' => [
                 'enabled' => false,
-                'host' => 'cas.robert.local',
+                'host' => 'cas.robert2.local',
                 'port' => 8080,
                 'cert' => false, // /path/to/cachain.pem
                 'attributes' => [
