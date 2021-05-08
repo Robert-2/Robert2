@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Robert2\API\Services\Auth;
 
 use Robert2\API\Models\User;
-use Slim\Http\Request;
+use Slim\Http\ServerRequest as Request;
 
 interface AuthenticatorInterface
 {

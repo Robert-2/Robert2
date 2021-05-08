@@ -3,22 +3,22 @@ declare(strict_types=1);
 
 namespace Robert2\API\Controllers;
 
-use Robert2\API\Errors;
 use Robert2\API\Services\Auth;
 use Robert2\API\Config\Config;
-use Robert2\API\Models\Event;
-use Robert2\API\Models\Document;
-use Robert2\API\Models\Material;
 use Robert2\API\Controllers\Traits\Taggable;
-use Slim\Http\Request;
+use Robert2\API\Controllers\Traits\WithCrud;
+use Robert2\API\Models\Document;
+use Robert2\API\Models\Event;
+use Robert2\API\Models\Material;
+use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
+use Slim\Http\ServerRequest as Request;
 
 class MaterialController extends BaseController
 {
-    use Taggable;
-
-    /** @var Material */
-    protected $model;
+    use WithCrud, Taggable {
+        Taggable::getAll insteadof WithCrud;
+    }
 
     // ——————————————————————————————————————————————————————
     // —
@@ -52,7 +52,7 @@ class MaterialController extends BaseController
         $orderBy = $request->getQueryParam('orderBy', null);
         $ascending = (bool)$request->getQueryParam('ascending', true);
 
-        $model = $this->model
+        $model = (new Material)
             ->setOrderBy($orderBy, $ascending)
             ->setSearch($searchTerm, $searchField);
 
@@ -76,12 +76,7 @@ class MaterialController extends BaseController
             });
         }
 
-        $results = $model->paginate($this->itemsCount);
-
-        $basePath = $request->getUri()->getPath();
-        $params = $request->getQueryParams();
-        $results = $results->withPath($basePath)->appends($params);
-        $results = $this->_formatPagination($results);
+        $results = $this->paginate($request, $model);
 
         if (count($restrictedParks) > 0) {
             $results['data'] = array_map(function ($item) use ($restrictedParks) {
@@ -99,7 +94,7 @@ class MaterialController extends BaseController
         }
 
         if ($dateForQuantities) {
-            $results['data'] = $this->model->recalcQuantitiesForPeriod(
+            $results['data'] = Material::recalcQuantitiesForPeriod(
                 $results['data'],
                 $dateForQuantities,
                 $dateForQuantities,
@@ -114,22 +109,19 @@ class MaterialController extends BaseController
     {
         $eventId = (int)$request->getAttribute('eventId');
 
-        $Event = new Event();
-        $currentEvent = $Event->find($eventId);
+        $currentEvent = Event::find($eventId);
         if (!$currentEvent) {
-            throw new Errors\NotFoundException(
-                sprintf("Event #%d was not found.", $eventId)
-            );
+            throw new HttpNotFoundException($request);
         }
 
-        $results = $this->model
+        $results = (new Material)
             ->setOrderBy('reference', true)
             ->getAll()
             ->get()
             ->toArray();
 
         if ($results && count($results) > 0) {
-            $results = $this->model->recalcQuantitiesForPeriod(
+            $results = Material::recalcQuantitiesForPeriod(
                 $results,
                 $currentEvent->start_date,
                 $currentEvent->end_date,
@@ -143,7 +135,7 @@ class MaterialController extends BaseController
     public function getOne(Request $request, Response $response): Response
     {
         $id = (int)$request->getAttribute('id');
-        $material = $this->model->getOneForUser($id, Auth::user()->id);
+        $material = Material::getOneForUser($id, Auth::user()->id);
         return $response->withJson($material);
     }
 
@@ -155,8 +147,7 @@ class MaterialController extends BaseController
 
     public function create(Request $request, Response $response): Response
     {
-        $postData = $request->getParsedBody();
-
+        $postData = (array)$request->getParsedBody();
         $result = $this->_saveMaterial(null, $postData);
         return $response->withJson($result, SUCCESS_CREATED);
     }
@@ -164,13 +155,11 @@ class MaterialController extends BaseController
     public function update(Request $request, Response $response): Response
     {
         $id = (int)$request->getAttribute('id');
-        $model = $this->model->find($id);
-        if (!$model) {
-            throw new Errors\NotFoundException;
+        if (!Material::staticExists($id)) {
+            throw new HttpNotFoundException($request);
         }
 
-        $postData = $request->getParsedBody();
-
+        $postData = (array)$request->getParsedBody();
         $result = $this->_saveMaterial($id, $postData);
         return $response->withJson($result, SUCCESS_OK);
     }
@@ -217,7 +206,7 @@ class MaterialController extends BaseController
             $postData['out_of_order_quantity'] = null;
         }
 
-        $result = $this->model->edit($id, $postData);
+        $result = Material::staticEdit($id, $postData);
 
         if (isset($postData['attributes'])) {
             $attributes = [];
@@ -233,16 +222,15 @@ class MaterialController extends BaseController
             $result->Attributes()->sync($attributes);
         }
 
-        $model = $this->model->find($result->id);
-        return $model->toArray();
+        return Material::find($result->id)->toArray();
     }
 
     public function getAllDocuments(Request $request, Response $response): Response
     {
         $id = (int)$request->getAttribute('id');
-        $model = $this->model->find($id);
+        $model = Material::find($id);
         if (!$model) {
-            throw new Errors\NotFoundException;
+            throw new HttpNotFoundException($request);
         }
 
         return $response->withJson($model->documents, SUCCESS_OK);
@@ -251,9 +239,8 @@ class MaterialController extends BaseController
     public function handleUploadDocuments(Request $request, Response $response): Response
     {
         $id = (int)$request->getAttribute('id');
-        $model = $this->model->find($id);
-        if (!$model) {
-            throw new Errors\NotFoundException;
+        if (!Material::staticExists($id)) {
+            throw new HttpNotFoundException($request);
         }
 
         $uploadedFiles = $request->getUploadedFiles();
@@ -317,11 +304,11 @@ class MaterialController extends BaseController
     public function getEvents(Request $request, Response $response): Response
     {
         $id = (int)$request->getAttribute('id');
-        $model = $this->model->find($id);
-        if (!$model) {
-            throw new Errors\NotFoundException;
+        $material = Material::find($id);
+        if (!$material) {
+            throw new HttpNotFoundException($request);
         }
 
-        return $response->withJson($model->events, SUCCESS_OK);
+        return $response->withJson($material->events, SUCCESS_OK);
     }
 }

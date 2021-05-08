@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace Robert2\Tests;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Robert2\API\Models;
-use Robert2\API\Errors;
 
 final class DocumentTest extends ModelTestCase
 {
@@ -69,7 +69,7 @@ final class DocumentTest extends ModelTestCase
 
     public function testRemoveNotExists()
     {
-        $this->expectException(Errors\NotFoundException::class);
+        $this->expectException(ModelNotFoundException::class);
         $this->model->remove(9999);
     }
 

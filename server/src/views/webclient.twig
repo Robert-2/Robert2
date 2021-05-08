@@ -37,13 +37,13 @@
     <link rel="mask-icon" href="/img/icons/safari-pinned-tab.svg" color="#4DBA87">
 </head>
 <body>
-    <noscript><strong>Please enable JavaScript to continue.</strong></noscript>
+    <noscript><strong>{{ translate('enable-javascript-message') }}</strong></noscript>
     <div id="app">
         {{ include('blocks/loading.twig') }}
     </div>
     <script type="text/javascript">
 //<![CDATA[
-var __SERVER_CONFIG__ = {{serverConfig() | raw}};
+var __SERVER_CONFIG__ = {{ serverConfig|raw }};
 //]]>
     </script>
     <script src="{{ client_asset('/js/chunk-vendors.js') }}"></script>

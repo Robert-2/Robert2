@@ -3,16 +3,20 @@ declare(strict_types=1);
 
 namespace Robert2\API\Controllers;
 
-use Slim\Http\Request;
+use Robert2\API\Controllers\Traits\WithCrud;
+use Robert2\API\Models\Attribute;
 use Slim\Http\Response;
+use Slim\Http\ServerRequest as Request;
 
 class AttributeController extends BaseController
 {
+    use WithCrud;
+
     public function getAll(Request $request, Response $response): Response
     {
-        $categoryId = $request->getQueryParam('category', null);
+        $attributes = Attribute::orderBy('name', 'asc');
 
-        $attributes = $this->model->orderBy('name', 'asc');
+        $categoryId = $request->getQueryParam('category', null);
         if (!empty($categoryId)) {
             $attributes
                 ->whereDoesntHave('categories')
@@ -22,13 +26,12 @@ class AttributeController extends BaseController
         }
 
         $results = $attributes->with('categories')->get()->toArray();
-
         return $response->withJson($results);
     }
 
     public function create(Request $request, Response $response): Response
     {
-        $postData = $request->getParsedBody();
+        $postData = (array)$request->getParsedBody();
         if (empty($postData)) {
             throw new \InvalidArgumentException(
                 "Missing request data to process validation",
@@ -36,8 +39,7 @@ class AttributeController extends BaseController
             );
         }
 
-        $attribute = $this->model->edit(null, $postData);
-
+        $attribute = Attribute::new($postData);
         if (isset($postData['categories'])) {
             $attribute->Categories()->sync($postData['categories']);
         }

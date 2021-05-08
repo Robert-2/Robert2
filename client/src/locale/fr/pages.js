@@ -134,7 +134,10 @@ export default {
     'beneficiary-type': "Type de bénéficiaire",
     'person': "Personne physique (individu)",
     'company': "Personne morale (entreprise)",
-    'help-edit': "Seuls le nom et le prénom de la personne sont obligatoires.",
+    'help-edit': (
+      `Seuls le nom et le prénom de la personne sont obligatoires.
+      La «\u00a0référence\u00a0» est un numéro client ou adhérent pour votre gestion interne, qui apparaîtra sur les fiches de sorties, les devis et les factures. Il doit être unique.`
+    ),
     'confirm-delete': "Mettre ce bénéficiaire à la corbeille\u00a0?",
     'confirm-permanently-delete': "Voulez-vous vraiment supprimer définitivement ce bénéficiaire\u00a0?",
     'confirm-restore': "Voulez-vous vraiment restaurer ce bénéficiaire\u00a0?",

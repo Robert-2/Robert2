@@ -3,8 +3,9 @@ declare(strict_types=1);
 
 namespace Robert2\Tests;
 
-use Robert2\API\Errors;
-use Robert2\API\Models;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Robert2\API\Errors\ValidationException;
+use Robert2\API\Models\Material;
 
 final class MaterialTest extends ModelTestCase
 {
@@ -12,7 +13,7 @@ final class MaterialTest extends ModelTestCase
     {
         parent::setUp();
 
-        $this->model = new Models\Material();
+        $this->model = new Material();
     }
 
     public function testTableName(): void
@@ -77,7 +78,7 @@ final class MaterialTest extends ModelTestCase
 
         // - Calcul des quantités restantes de chaque matériel pour une période sans événement
         $data = $getData();
-        $result = $this->model->recalcQuantitiesForPeriod($data, '2018-12-01', '2018-12-02');
+        $result = Material::recalcQuantitiesForPeriod($data, '2018-12-01', '2018-12-02');
         $this->assertCount(8, $result);
         foreach ([4, 2, 30, 2, 32, 2, 1, 2] as $index => $expected) {
             $this->assertEquals($expected, $result[$index]['remaining_quantity']);
@@ -85,7 +86,7 @@ final class MaterialTest extends ModelTestCase
 
         // - Calcul des quantités restantes de chaque matériel pour une période avec trois événements
         $data = $getData();
-        $result = $this->model->recalcQuantitiesForPeriod($data, '2018-12-15', '2018-12-20');
+        $result = Material::recalcQuantitiesForPeriod($data, '2018-12-15', '2018-12-20');
         $this->assertCount(8, $result);
         foreach ([0, 0, 20, 1, 20, 2, 1, 2] as $index => $expected) {
             $this->assertEquals($expected, $result[$index]['remaining_quantity']);
@@ -93,7 +94,7 @@ final class MaterialTest extends ModelTestCase
 
         // - Calcul des quantités restantes de chaque matériel pour une période avec un seul événement
         $data = $getData();
-        $result = $this->model->recalcQuantitiesForPeriod($data, '2018-12-19', '2018-12-20');
+        $result = Material::recalcQuantitiesForPeriod($data, '2018-12-19', '2018-12-20');
         $this->assertCount(8, $result);
         foreach ([1, 0, 30, 2, 32, 2, 1, 2] as $index => $expected) {
             $this->assertEquals($expected, $result[$index]['remaining_quantity']);
@@ -102,7 +103,7 @@ final class MaterialTest extends ModelTestCase
         // - Calcul des quantités restantes de chaque matériel pour une période avec trois événements
         // - en excluant l'événement n°2
         $data = $getData();
-        $result = $this->model->recalcQuantitiesForPeriod($data, '2018-12-15', '2018-12-20', 2);
+        $result = Material::recalcQuantitiesForPeriod($data, '2018-12-15', '2018-12-20', 2);
         $this->assertCount(8, $result);
         foreach ([3, 1, 20, 1, 20, 2, 1, 2] as $index => $expected) {
             $this->assertEquals($expected, $result[$index]['remaining_quantity']);
@@ -111,7 +112,7 @@ final class MaterialTest extends ModelTestCase
         // - Calcul des quantités restantes de chaque matériel pour une période contenant
         //   un événement contenant un matériel avec gestion unitaire ajouté partiellement.
         $data = $getData();
-        $result = $this->model->recalcQuantitiesForPeriod($data, '2019-12-25', '2020-01-05');
+        $result = Material::recalcQuantitiesForPeriod($data, '2019-12-25', '2020-01-05');
         $this->assertCount(8, $result);
         foreach ([4, 2, 30, 2, 32, 2, 1, 1] as $index => $expected) {
             $this->assertEquals($expected, $result[$index]['remaining_quantity']);
@@ -295,15 +296,14 @@ final class MaterialTest extends ModelTestCase
 
     public function testGetOneForUserNotFound()
     {
-        $this->expectException(Errors\NotFoundException::class);
-        $this->expectExceptionMessage("The required resource was not found.");
-        $this->model->getOneForUser(9999, 1);
+        $this->expectException(ModelNotFoundException::class);
+        Material::getOneForUser(9999, 1);
     }
 
     public function testGetOneForUser()
     {
         // - Récupère le matériel #1 (qui n'est pas unitaire) pour l'utilisateur #1
-        $result = $this->model->getOneForUser(1, 1);
+        $result = Material::getOneForUser(1, 1);
         $expected = [
             'id' => 1,
             'name' => 'Console Yamaha CL3',
@@ -330,7 +330,7 @@ final class MaterialTest extends ModelTestCase
         $this->assertEquals($expected, $result);
 
         // - Récupère le matériel #6 (qui est unitaire) pour l'utilisateur #1
-        $result = $this->model->getOneForUser(6, 1);
+        $result = Material::getOneForUser(6, 1);
         $expected = [
             'id' => 6,
             'name' => 'Behringer X Air XR18',
@@ -377,7 +377,7 @@ final class MaterialTest extends ModelTestCase
 
         // - Récupère le matériel #6 (qui est unitaire) pour l'utilisateur #2
         // (utilisateur qui a des restrictions de parc)
-        $result = $this->model->getOneForUser(6, 2);
+        $result = Material::getOneForUser(6, 2);
         $expected = [
             'id' => 6,
             'name' => 'Behringer X Air XR18',
@@ -428,7 +428,7 @@ final class MaterialTest extends ModelTestCase
 
     public function testSetTagsNotFound(): void
     {
-        $this->expectException(Errors\NotFoundException::class);
+        $this->expectException(ModelNotFoundException::class);
         $this->model->setTags(999, ['notFoundTag']);
     }
 
@@ -451,21 +451,21 @@ final class MaterialTest extends ModelTestCase
 
     public function testCreateMaterialWithoutData(): void
     {
-        $this->expectException(Errors\ValidationException::class);
+        $this->expectException(ValidationException::class);
         $this->expectExceptionCode(ERROR_VALIDATION);
         $this->model->edit(null, []);
     }
 
     public function testCreateMaterialBadData(): void
     {
-        $this->expectException(Errors\ValidationException::class);
+        $this->expectException(ValidationException::class);
         $this->expectExceptionCode(ERROR_VALIDATION);
         $this->model->edit(null, ['foo' => 'bar']);
     }
 
     public function testCreateMaterialDuplicate(): void
     {
-        $this->expectException(Errors\ValidationException::class);
+        $this->expectException(ValidationException::class);
         $this->expectExceptionCode(ERROR_DUPLICATE);
         $this->model->edit(null, [
             'name'           => 'Test duplicate ref. CL3',

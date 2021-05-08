@@ -1,4 +1,21 @@
-<phpunit bootstrap="tests/bootstrap.php">
+<?xml version="1.0"?>
+<phpunit
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    bootstrap="tests/bootstrap.php"
+    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
+>
+    <coverage processUncoveredFiles="true">
+        <include>
+            <directory suffix=".php">src/App</directory>
+        </include>
+        <exclude>
+            <file>src/App/Config/database.dist.php</file>
+            <file>src/App/Config/settings.dist.php</file>
+            <file>src/App/Config/constants.php</file>
+            <file>src/App/Controllers/EntryController.php</file>
+            <file>src/App/Controllers/SetupController.php</file>
+        </exclude>
+    </coverage>
     <testsuites>
         <testsuite name="other">
             <directory>tests/other</directory>
@@ -13,15 +30,4 @@
             <directory>tests/endpoints</directory>
         </testsuite>
     </testsuites>
-    <filter>
-        <whitelist processUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">src/App</directory>
-            <exclude>
-                <file>src/App/Config/database.dist.php</file>
-                <file>src/App/Config/settings.dist.php</file>
-                <file>src/App/Config/constants.php</file>
-                <file>src/App/Controllers/HomeController.php</file>
-            </exclude>
-        </whitelist>
-    </filter>
 </phpunit>

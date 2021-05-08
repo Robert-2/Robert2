@@ -382,8 +382,7 @@ final class MaterialsTest extends ApiTestCase
     public function testGetMaterialNotFound()
     {
         $this->client->get('/api/materials/999');
-        $this->assertStatusCode(ERROR_NOT_FOUND);
-        $this->assertNotFoundErrorMessage();
+        $this->assertNotFound();
     }
 
     public function testGetMaterialsWhileEvent()
@@ -775,8 +774,7 @@ final class MaterialsTest extends ApiTestCase
     public function testGetTagsNotFound()
     {
         $this->client->get('/api/materials/999/tags');
-        $this->assertStatusCode(ERROR_NOT_FOUND);
-        $this->assertNotFoundErrorMessage();
+        $this->assertNotFound();
     }
 
     public function testGetTags()
@@ -876,6 +874,7 @@ final class MaterialsTest extends ApiTestCase
         ], $response['pagination']);
         $this->assertCount(2, $response['data']);
     }
+
     public function testGetMaterialsWithDateForQuantities()
     {
         // - Récupère le matériel avec les quantités qu'il reste pour un jour
@@ -1089,7 +1088,7 @@ final class MaterialsTest extends ApiTestCase
     public function testRestoreMaterialNotFound()
     {
         $this->client->put('/api/materials/restore/999');
-        $this->assertStatusCode(ERROR_NOT_FOUND);
+        $this->assertNotFound();
     }
 
     public function testRestoreMaterial()

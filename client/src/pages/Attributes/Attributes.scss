@@ -97,12 +97,13 @@
     }
 
     &__unit {
-      width: 80px;
+      width: 100px;
       text-align: center;
     }
 
     &__max-length {
-      width: 125px;
+      display: none;
+      width: 100px;
       text-align: center;
     }
 
@@ -120,6 +121,12 @@
 
     &--add {
       justify-content: flex-end;
+    }
+  }
+
+  @media(min-width: $screen-big-desktop) {
+    &__items__max-length {
+      display: table-cell;
     }
   }
 }

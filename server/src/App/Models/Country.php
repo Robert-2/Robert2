@@ -18,7 +18,7 @@ class Country extends BaseModel
         parent::__construct($attributes);
 
         $this->validation = [
-            'name' => V::notEmpty()->alpha(self::EXTRA_CHARS)->length(4, 96),
+            'name' => V::notEmpty()->alpha(static::EXTRA_CHARS)->length(4, 96),
             'code' => V::notEmpty()->alpha()->length(4, 4),
         ];
     }

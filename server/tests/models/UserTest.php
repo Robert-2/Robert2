@@ -3,8 +3,10 @@ declare(strict_types=1);
 
 namespace Robert2\Tests;
 
-use Robert2\API\Models;
-use Robert2\API\Errors;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Robert2\API\Errors\ValidationException;
+use Robert2\API\Models\User;
+use Robert2\API\Models\UserSetting;
 
 final class UserTest extends ModelTestCase
 {
@@ -12,7 +14,7 @@ final class UserTest extends ModelTestCase
     {
         parent::setUp();
 
-        $this->model = new Models\User();
+        $this->model = new User();
     }
 
     public function testTableName(): void
@@ -21,51 +23,52 @@ final class UserTest extends ModelTestCase
     }
 
     private $expectedDataUser1 = [
-        'id'         => 1,
-        'pseudo'     => 'test1',
-        'email'      => 'tester@robertmanager.net',
-        'group_id'   => 'admin',
+        'id' => 1,
+        'pseudo' => 'test1',
+        'email' => 'tester@robertmanager.net',
+        'group_id' => 'admin',
         'created_at' => null,
         'updated_at' => null,
         'deleted_at' => null,
-        'person'     => [
-            'id'          => 1,
-            'user_id'     => 1,
-            'first_name'  => 'Jean',
-            'last_name'   => 'Fountain',
-            'full_name'   => 'Jean Fountain',
-            'nickname'    => null,
-            'email'       => 'tester@robertmanager.net',
-            'phone'       => null,
-            'street'      => '1, somewhere av.',
+        'person' => [
+            'id' => 1,
+            'user_id' => 1,
+            'first_name' => 'Jean',
+            'last_name' => 'Fountain',
+            'full_name' => 'Jean Fountain',
+            'reference' => '0001',
+            'nickname' => null,
+            'email' => 'tester@robertmanager.net',
+            'phone' => null,
+            'street' => '1, somewhere av.',
             'postal_code' => '1234',
-            'locality'    => 'Megacity',
-            'country_id'  => 1,
-            'company_id'  => 1,
-            'note'        => null,
-            'created_at'  => null,
-            'updated_at'  => null,
-            'deleted_at'  => null,
-            'company'     => [
-                'id'          => 1,
-                'legal_name'  => 'Testing, Inc',
-                'street'      => '1, company st.',
+            'locality' => 'Megacity',
+            'country_id' => 1,
+            'company_id' => 1,
+            'note' => null,
+            'created_at' => null,
+            'updated_at' => null,
+            'deleted_at' => null,
+            'company' => [
+                'id' => 1,
+                'legal_name' => 'Testing, Inc',
+                'street' => '1, company st.',
                 'postal_code' => '1234',
-                'locality'    => 'Megacity',
-                'country_id'  => 1,
-                'phone'       => '+4123456789',
-                'note'        => 'Just for tests',
-                'created_at'  => null,
-                'updated_at'  => null,
-                'deleted_at'  => null,
-                'country'     => [
-                    'id'   => 1,
+                'locality' => 'Megacity',
+                'country_id' => 1,
+                'phone' => '+4123456789',
+                'note' => 'Just for tests',
+                'created_at' => null,
+                'updated_at' => null,
+                'deleted_at' => null,
+                'country' => [
+                    'id' => 1,
                     'name' => 'France',
                     'code' => 'FR',
                 ],
             ],
             'country' => [
-                'id'   => 1,
+                'id' => 1,
                 'name' => 'France',
                 'code' => 'FR',
             ],
@@ -78,98 +81,97 @@ final class UserTest extends ModelTestCase
         $result   = $this->model->getAll()->get()->toArray();
         $expected = [
             [
-                'id'         => 3,
-                'pseudo'     => 'nobody',
-                'email'      => 'nobody@robertmanager.net',
-                'group_id'   => 'member',
+                'id' => 3,
+                'pseudo' => 'nobody',
+                'email' => 'nobody@robertmanager.net',
+                'group_id' => 'member',
                 'created_at' => null,
                 'updated_at' => null,
                 'deleted_at' => null,
-                'person'     => null,
+                'person' => null,
             ],
             $this->expectedDataUser1,
             [
-                'id'         => 2,
-                'pseudo'     => 'test2',
-                'email'      => 'tester2@robertmanager.net',
-                'group_id'   => 'member',
+                'id' => 2,
+                'pseudo' => 'test2',
+                'email' => 'tester2@robertmanager.net',
+                'group_id' => 'member',
                 'created_at' => null,
                 'updated_at' => null,
                 'deleted_at' => null,
-                'person'     => [
-                    'id'          => 2,
-                    'user_id'     => 2,
-                    'first_name'  => 'Roger',
-                    'last_name'   => 'Rabbit',
-                    'full_name'   => 'Roger Rabbit',
-                    'nickname'    => 'Riri',
-                    'email'       => 'tester2@robertmanager.net',
-                    'phone'       => null,
-                    'street'      => null,
+                'person' => [
+                    'id' => 2,
+                    'user_id' => 2,
+                    'first_name' => 'Roger',
+                    'last_name' => 'Rabbit',
+                    'full_name' => 'Roger Rabbit',
+                    'reference' => '0002',
+                    'nickname' => 'Riri',
+                    'email' => 'tester2@robertmanager.net',
+                    'phone' => null,
+                    'street' => null,
                     'postal_code' => null,
-                    'locality'    => null,
-                    'country_id'  => null,
-                    'company_id'  => null,
-                    'note'        => null,
-                    'created_at'  => null,
-                    'updated_at'  => null,
-                    'deleted_at'  => null,
-                    'company'     => null,
-                    'country'     => null,
+                    'locality' => null,
+                    'country_id' => null,
+                    'company_id' => null,
+                    'note' => null,
+                    'created_at' => null,
+                    'updated_at' => null,
+                    'deleted_at' => null,
+                    'company' => null,
+                    'country' => null,
                 ],
             ],
         ];
         $this->assertEquals($expected, $result);
     }
 
-    public function testgetLoginNotFound(): void
+    public function testFromLoginNotFound(): void
     {
-        $this->expectException(Errors\NotFoundException::class);
-        $this->expectExceptionCode(ERROR_NOT_FOUND);
-        $this->model->getLogin('foo', 'bar');
+        $this->expectException(ModelNotFoundException::class);
+        User::fromLogin('foo', 'bar');
     }
 
-    public function testGetLogin(): void
+    public function testFromLogin(): void
     {
         $expectedUserData = array_merge($this->expectedDataUser1, [
             'cas_identifier' => null,
             'settings' => [
-                'id'                           => 1,
-                'user_id'                      => 1,
-                'language'                     => 'EN',
+                'id' => 1,
+                'user_id' => 1,
+                'language' => 'EN',
                 'auth_token_validity_duration' => 12,
-                'created_at'                   => null,
-                'updated_at'                   => null
+                'created_at' => null,
+                'updated_at' => null
             ],
         ]);
 
         // - Retourne l'utilisateur n°1 et sa personne associée en utilisant l'e-mail
-        $result = $this->model->getLogin('tester@robertmanager.net', 'testing-pw')->toArray();
+        $result = User::fromLogin('tester@robertmanager.net', 'testing-pw')->toArray();
         $this->assertEquals($expectedUserData, $result);
 
         // - Retourne l'utilisateur n°1 et sa personne associée en utilisant le pseudo
-        $result = $this->model->getLogin('test1', 'testing-pw')->toArray();
+        $result = User::fromLogin('test1', 'testing-pw')->toArray();
         $this->assertEquals($expectedUserData, $result);
     }
 
     public function testCreateWithoutData(): void
     {
-        $this->expectException(Errors\ValidationException::class);
+        $this->expectException(ValidationException::class);
         $this->expectExceptionCode(ERROR_VALIDATION);
-        Models\User::new([]);
+        User::new([]);
     }
 
     public function testCreateBadData(): void
     {
-        $this->expectException(Errors\ValidationException::class);
+        $this->expectException(ValidationException::class);
         $this->expectExceptionCode(ERROR_VALIDATION);
-        Models\User::new(['foo' => 'bar']);
+        User::new(['foo' => 'bar']);
     }
 
     public function testUpdateNotFound(): void
     {
-        $this->expectException(Errors\NotFoundException::class);
-        $this->expectExceptionCode(ERROR_NOT_FOUND);
+        $this->expectException(ModelNotFoundException::class);
         $this->model->edit(999, []);
     }
 
@@ -182,7 +184,7 @@ final class UserTest extends ModelTestCase
             'group_id' => 'member',
         ];
 
-        $result = Models\User::new($data);
+        $result = User::new($data);
         $expected = [
             'id' => 4,
             'pseudo' => 'testadd',
@@ -195,13 +197,13 @@ final class UserTest extends ModelTestCase
         $this->assertEquals($expected, $result->toArray());
 
         // - Vérifie que les settings ont été créé
-        $settings = Models\UserSetting::find(3);
+        $settings = UserSetting::find(3);
         unset($settings->created_at);
         unset($settings->updated_at);
         $this->assertEquals([
-            'id'                           => 3,
-            'user_id'                      => 4,
-            'language'                     => 'FR',
+            'id' => 3,
+            'user_id' => 4,
+            'language' => 'FR',
             'auth_token_validity_duration' => 12,
         ], $settings->toArray());
     }
@@ -209,18 +211,18 @@ final class UserTest extends ModelTestCase
     public function testCreateWithPerson(): void
     {
         $data = [
-            'pseudo'   => 'testNewPerson',
-            'email'    => 'testNewPerson@robertmanager.net',
+            'pseudo' => 'testNewPerson',
+            'email' => 'testNewPerson@robertmanager.net',
             'password' => 'testNewPerson',
             'group_id' => 'member',
-            'person'   => [
+            'person' => [
                 'first_name' => 'New',
-                'last_name'  => 'TestPerson',
-                'nickname'   => 'testNewPerson',
+                'last_name' => 'TestPerson',
+                'nickname' => 'testNewPerson',
             ],
         ];
 
-        $result = Models\User::new($data);
+        $result = User::new($data);
         $this->assertEquals(4, $result['person']['id']);
         $this->assertEquals(4, $result['person']['user_id']);
         $this->assertEquals('testNewPerson', $result['person']['nickname']);
@@ -236,7 +238,7 @@ final class UserTest extends ModelTestCase
             'restricted_parks' => [1, 2],
         ];
 
-        $result = Models\User::new($data);
+        $result = User::new($data);
         $this->assertEquals([2, 1], $result['restricted_parks']);
     }
 
@@ -244,7 +246,7 @@ final class UserTest extends ModelTestCase
     {
         $data = [
             'pseudo' => 'testUpdate',
-            'email'  => 'testUpdate@robertmanager.net',
+            'email' => 'testUpdate@robertmanager.net',
         ];
 
         $result = $this->model->edit(1, $data);
@@ -255,7 +257,7 @@ final class UserTest extends ModelTestCase
             'pseudo' => 'testEdit',
             'person' => [
                 'first_name' => 'Testing',
-                'last_name'  => 'Tester',
+                'last_name' => 'Tester',
             ],
         ];
         $result = $this->model->edit(3, $data);
@@ -270,8 +272,7 @@ final class UserTest extends ModelTestCase
 
     public function testRemoveNotFound(): void
     {
-        $this->expectException(Errors\NotFoundException::class);
-        $this->expectExceptionCode(ERROR_NOT_FOUND);
+        $this->expectException(ModelNotFoundException::class);
         $this->model->remove(999);
     }
 
@@ -301,43 +302,12 @@ final class UserTest extends ModelTestCase
         $User   = $this->model::find(1);
         $result = $User->settings;
         $this->assertEquals([
-            'id'                           => 1,
-            'user_id'                      => 1,
-            'language'                     => 'EN',
+            'id' => 1,
+            'user_id' => 1,
+            'language' => 'EN',
             'auth_token_validity_duration' => 12,
-            'created_at'                   => null,
-            'updated_at'                   => null,
-        ], $result);
-    }
-
-    public function testSetSettingsNotFound(): void
-    {
-        $this->expectException(Errors\NotFoundException::class);
-        $this->expectExceptionCode(ERROR_NOT_FOUND);
-        $this->model->setSettings(999, ['language' => 'FR']);
-    }
-
-    public function testSetSettingsBadData(): void
-    {
-        $this->expectException(Errors\ValidationException::class);
-        $this->expectExceptionCode(ERROR_VALIDATION);
-        $this->model->setSettings(1, ['language' => '__invalid__']);
-    }
-
-    public function testSetSettings(): void
-    {
-        $result = $this->model->setSettings(1, [
-            'language'                     => 'FR',
-            'auth_token_validity_duration' => 33,
-        ]);
-        unset($result['created_at']);
-        unset($result['updated_at']);
-
-        $this->assertEquals([
-            'id'                           => 1,
-            'user_id'                      => 1,
-            'language'                     => 'FR',
-            'auth_token_validity_duration' => 33,
+            'created_at' => null,
+            'updated_at' => null,
         ], $result);
     }
 
@@ -347,31 +317,31 @@ final class UserTest extends ModelTestCase
         $results = $User->Events;
         $this->assertEquals([
             [
-                'id'           => 3,
-                'title'        => 'Avant-premier événement',
-                'start_date'   => '2018-12-15 00:00:00',
-                'end_date'     => '2018-12-16 23:59:59',
+                'id' => 3,
+                'title' => 'Avant-premier événement',
+                'start_date' => '2018-12-15 00:00:00',
+                'end_date' => '2018-12-16 23:59:59',
                 'is_confirmed' => false,
             ],
             [
-                'id'           => 1,
-                'title'        => 'Premier événement',
-                'start_date'   => '2018-12-17 00:00:00',
-                'end_date'     => '2018-12-18 23:59:59',
+                'id' => 1,
+                'title' => 'Premier événement',
+                'start_date' => '2018-12-17 00:00:00',
+                'end_date' => '2018-12-18 23:59:59',
                 'is_confirmed' => false,
             ],
             [
-                'id'           => 2,
-                'title'        => 'Second événement',
-                'start_date'   => '2018-12-18 00:00:00',
-                'end_date'     => '2018-12-19 23:59:59',
+                'id' => 2,
+                'title' => 'Second événement',
+                'start_date' => '2018-12-18 00:00:00',
+                'end_date' => '2018-12-19 23:59:59',
                 'is_confirmed' => false,
             ],
             [
-                'id'           => 4,
-                'title'        => 'Concert X',
-                'start_date'   => '2019-03-01 00:00:00',
-                'end_date'     => '2019-04-10 23:59:59',
+                'id' => 4,
+                'title' => 'Concert X',
+                'start_date' => '2019-03-01 00:00:00',
+                'end_date' => '2019-04-10 23:59:59',
                 'is_confirmed' => false,
             ],
             [

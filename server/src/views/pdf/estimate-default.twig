@@ -1,4 +1,4 @@
-{% extends "base.twig" %}
+{% extends "pdf/base.twig" %}
 
 {% block title %}{{ translate("Estimate") }}{% endblock %}
 
@@ -6,26 +6,10 @@
 <table class="layout-table">
     <tr>
         <td class="half">
-            <h2>
-                {{ company['name'] }}<br>
-                {{ company['street'] }}<br>
-                {{ company['zipCode'] }} {{ company['locality'] }}<br>
-                {{ company['country'] }}
-            </h2>
-            <p>
-                {% for legalNumber in company['legalNumbers'] %}
-                {{ legalNumber['name'] }}: {{ legalNumber['value'] }}<br>
-                {% endfor %}
-            </p>
-            <p>
-                {{ translate('phone', [company['phone']]) }}<br>
-                {{ translate('email', [company['email']]) }}
-            </p>
-            {% if company['vatNumber'] %}
-            <p>
-                {{ translate('vatNumber', [company['vatNumber']]) }}
-            </p>
-            {% endif %}
+            {{ include('blocks/company-address.twig', {
+                company: company,
+                withLegalNumbers: true,
+            }) }}
         </td>
         <td class="half">
             <h2 class="box center">{{ translate('estimateTitle', [currencyName]) }}</h2>
@@ -39,13 +23,7 @@
                 {{ translate('beneficiary') }}
             </p>
             <h2 class="vspace10 indent5">
-                {% if event['beneficiaries'][0]['company'] %}
-                {{ event['beneficiaries'][0]['company']['legal_name'] }}<br>
-                {% else %}
-                {{ event['beneficiaries'][0]['full_name'] }}<br>
-                {% endif %}
-                {{ event['beneficiaries'][0]['street'] }}<br>
-                {{ event['beneficiaries'][0]['postal_code'] }} {{ event['beneficiaries'][0]['locality'] }}
+                {{ include('blocks/beneficiary-address.twig', { person: event['beneficiaries'][0] }) }}
             </h2>
         </td>
     </tr>

@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Robert2\API\Models\BaseModel;
 use BigFish\PDF417\PDF417;
 use BigFish\PDF417\Renderers\SvgRenderer;
 use Robert2\API\Validation\Validator as V;
@@ -137,14 +135,11 @@ class MaterialUnit extends BaseModel
     // -
     // ------------------------------------------------------
 
-    public function remove(int $id, array $options = []): ?Model
+    public function remove(int $id, array $options = []): ?BaseModel
     {
-        $model = self::find($id);
-        if (empty($model)) {
-            throw new Errors\NotFoundException;
-        }
+        $entity = static::findOrFail($id);
 
-        if (!$model->delete()) {
+        if (!$entity->delete()) {
             throw new \RuntimeException(sprintf("Unable to delete the record %d.", $id));
         }
 

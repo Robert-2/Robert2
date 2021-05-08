@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace Robert2\Tests;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Robert2\API\Models;
-use Robert2\API\Errors;
 
 final class EstimateTest extends ModelTestCase
 {
@@ -69,6 +69,7 @@ final class EstimateTest extends ModelTestCase
                 'user_id' => 1,
                 'first_name' => 'Jean',
                 'last_name' => 'Fountain',
+                'reference' => '0001',
                 'nickname' => null,
                 'email' => 'tester@robertmanager.net',
                 'phone' => null,
@@ -148,8 +149,7 @@ final class EstimateTest extends ModelTestCase
 
     public function testCreateFromEventNotFound()
     {
-        $this->expectException(Errors\NotFoundException::class);
-        $this->expectExceptionMessage("Event not found.");
+        $this->expectException(ModelNotFoundException::class);
         $this->model->createFromEvent(999, 1, 25);
     }
 

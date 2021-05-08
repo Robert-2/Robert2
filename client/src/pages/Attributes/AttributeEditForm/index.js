@@ -5,8 +5,8 @@ export default {
   props: { errors: Object },
   data() {
     return {
-      hasUnit: false,
-      hasMaxLength: true,
+      hasUnit: true,
+      hasMaxLength: false,
       categories: [],
     };
   },

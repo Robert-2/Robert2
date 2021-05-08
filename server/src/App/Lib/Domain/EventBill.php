@@ -271,7 +271,7 @@ class EventBill
         if (empty($jsFunction) || !strpos($jsFunction, 'daysCount')) {
             $this->degressiveRate = (float)$this->daysCount;
         }
-        $function = preg_replace('/daysCount/', $this->daysCount, $jsFunction);
+        $function = preg_replace('/daysCount/', (string)$this->daysCount, $jsFunction);
 
         $result = null;
         // phpcs:disable

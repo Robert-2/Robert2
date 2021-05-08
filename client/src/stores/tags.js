@@ -19,6 +19,10 @@ export default {
       state.list.filter((tag) => !getters.isProtected(tag.name)),
     ),
 
+    publicList: (state, getters) => state.list.filter(
+      (tag) => !getters.isProtected(tag.name),
+    ),
+
     isProtected: (state) => (tagName) => (
       state.protected.includes(tagName.toLowerCase())
     ),

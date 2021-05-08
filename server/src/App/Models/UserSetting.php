@@ -3,11 +3,9 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Robert2\API\Validation\Validator as V;
 use Illuminate\Database\Eloquent\Builder;
-
-use Robert2\API\Errors;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Robert2\API\Validation\Validator as V;
 
 class UserSetting extends BaseModel
 {
@@ -68,22 +66,19 @@ class UserSetting extends BaseModel
         'auth_token_validity_duration'
     ];
 
-    public function edit(?int $userId = null, array $data = []): Model
+    public static function editByUser(User $user, array $data = []): UserSetting
     {
-        if (!$userId) {
-            throw new Errors\NotFoundException("Cannot edit settings of an unknown user, please provide user id.");
+        if (!$user->exists) {
+            throw (new ModelNotFoundException)
+                ->setModel(static::class);
         }
 
-        $model = $this->where('user_id', $userId)->first();
-        if (!$model) {
-            throw new Errors\NotFoundException("User not found to edit settings of.");
-        }
-
-        return parent::edit($model->id, $data);
+        $settings = static::where('user_id', $user->id)->firstOrFail();
+        return static::staticEdit($settings->id, $data);
     }
 
     // - Prevents the deletion of a user's settings
-    public function remove(int $id, array $options = []): ?Model
+    public function remove(int $id, array $options = []): ?BaseModel
     {
         return null;
     }

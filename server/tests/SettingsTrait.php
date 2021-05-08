@@ -10,7 +10,7 @@ trait SettingsTrait
     protected $settings = [];
     protected $Fixtures = null;
 
-    public function setup(): void
+    protected function setUp(): void
     {
         parent::setUp();
 

@@ -3,12 +3,8 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Robert2\API\Validation\Validator as V;
-
-use Robert2\API\Errors;
 use Robert2\API\Models\Traits\Taggable;
 
 class Company extends BaseModel
@@ -102,7 +98,7 @@ class Company extends BaseModel
         'note',
     ];
 
-    public function edit(?int $id = null, array $data = []): Model
+    public function edit(?int $id = null, array $data = []): BaseModel
     {
         if (!empty($data['phone'])) {
             $data['phone'] = normalizePhone($data['phone']);
@@ -127,12 +123,7 @@ class Company extends BaseModel
             throw new \InvalidArgumentException("Missing persons data to add to company.");
         }
 
-        try {
-            $Company = self::findOrFail($id);
-        } catch (ModelNotFoundException $e) {
-            throw new Errors\NotFoundException;
-        }
-
+        $Company = static::findOrFail($id);
         foreach ($persons as $person) {
             $person['company_id'] = $Company->id;
             $Person = new Person;

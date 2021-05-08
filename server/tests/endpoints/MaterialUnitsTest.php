@@ -140,7 +140,7 @@ final class MaterialUnitsTest extends ApiTestCase
             'is_broken' => false,
         ];
         $this->client->post('/api/materials/1000/units', $data);
-        $this->assertStatusCode(ERROR_NOT_FOUND);
+        $this->assertNotFound();
     }
 
     public function testCreateUnitMaterialNotUnitary(): void
@@ -151,7 +151,7 @@ final class MaterialUnitsTest extends ApiTestCase
             'is_broken' => false,
         ];
         $this->client->post('/api/materials/1/units', $data);
-        $this->assertStatusCode(ERROR_NOT_FOUND);
+        $this->assertNotFound();
     }
 
     public function testUpdateUnit(): void

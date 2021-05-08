@@ -8,11 +8,23 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 
 Corrige un bug avec l'authentification CAS.
 
-## 0.13.0-premium (2021-04-27)
+## 0.13.0 (2021-04-27)
 
 - Corrige un problème avec le nom de la base de données de test (#128 et #129).
 - Ajoute la création / suppression de devis pour les événements (#5).
-
+- __[CHANGEMENT CRITIQUE]__ Robert2 requiert maintenant au minimum PHP 7.3 pour fonctionner (#78).
+- Ajoute le support de la version 8.0 de PHP (#71).
+- Ajoute la possibilité de renseigner une référence (numéro client) aux bénéficiaires (#122).
+- Améliore les données affichées dans les PDF (fiches de sortie, devis et factures), en y ajoutant la référence
+  (numéro client) du bénéficiaire (voir #122) et les numéros de téléphone des techniciens et des bénéficiaires.
+- Corrige l'affichage des numéros légaux de l'entreprise (SIRET, etc.) sur les devis et factures.
+- Corrige le nom des fichiers uploadés comme documents du matériel pour qu'il conserve son extension (#132).
+- N'affiche plus les tags protégés (tags système) dans la page des étiquettes, pour éviter les confusions (#134).
+- Accorde en nombre le terme "durée X jour(s)" dans les événements (#135).
+- Corrige les problèmes d'affichage de la page de gestion des caractéristiques spéciales de matériel (#133).
+- Empêche la suppression d'un événement si celui-ci est confirmé, même si la poubelle est affichée (#137).
+- Corrige un problème avec le nom de la base de données de test (#128 et #129).
+- Ajoute la création / suppression de devis pour les événements (#5).
 - Adapte la page de login avec le terme "Premium" sous le logo, et la licence fermée dans le footer.
 
 ## 0.12.2-premium (2021-04-19)
@@ -47,7 +59,6 @@ Corrige un bug avec l'authentification CAS.
 - Augmente le zoom maximum du calendrier à 6 mois pour élargir la vision globale de la frise temporelle (#118).
 - Ajoute le titre des pages dans l'onglet du navigateur.
 - Améliore le système de recherche des bénéficiaires pour inclure aussi le nom de la structure associée à la personne (#119).
-
 - Permet la gestion et l'identification unitaire du matériel (Premium #5).
 - Ajoute la restriction de l'accès des parcs à certains membres (Premium #11).
 - Ajoute la visualisation des disponibilités sous forme de timeline dans un onglet de la vue d'un matériel (Premium #8).

@@ -3,27 +3,26 @@ declare(strict_types=1);
 
 namespace Robert2\API\Controllers;
 
-use Robert2\API\Errors;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Robert2\API\Controllers\Traits\WithCrud;
 use Robert2\API\Controllers\Traits\WithPdf;
-use Robert2\API\Services\Auth;
-use Robert2\API\Models\Park;
+use Robert2\API\Models\Event;
 use Robert2\API\Models\Material;
 use Robert2\API\Models\MaterialUnit;
-use Robert2\API\Models\Event;
-use Slim\Http\Request;
+use Robert2\API\Models\Park;
+use Robert2\API\Services\Auth;
+use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Slim\Http\ServerRequest as Request;
 
 class EventController extends BaseController
 {
+    use WithCrud;
     use WithPdf;
-
-    /** @var Event */
-    protected $model;
 
     // ——————————————————————————————————————————————————————
     // —
-    // —    Getters
+    // —    Actions
     // —
     // ——————————————————————————————————————————————————————
 
@@ -33,7 +32,7 @@ class EventController extends BaseController
         $endDate = $request->getQueryParam('end', null);
         $deleted = (bool)$request->getQueryParam('deleted', false);
 
-        $results = $this->model
+        $results = (new Event)
             ->setPeriod($startDate, $endDate)
             ->getAll($deleted)
             ->with('Beneficiaries:persons.id,first_name,last_name')
@@ -45,12 +44,12 @@ class EventController extends BaseController
         $data = [];
         $events = $results->get()->toArray();
         foreach ($events as $event) {
-            $eventMissingMaterials = $this->model->getMissingMaterials($event['id']);
+            $eventMissingMaterials = Event::getMissingMaterials($event['id']);
             $event['has_missing_materials'] = !empty($eventMissingMaterials);
             $event['parks'] = null;
 
             if ($useMultipleParks) {
-                $event['parks'] = $this->model->getParks($event['id']);
+                $event['parks'] = Event::getParks($event['id']);
 
                 $parksCount = count($event['parks']);
                 $intersectCount = count(array_intersect($restrictedParks, $event['parks']));
@@ -67,8 +66,8 @@ class EventController extends BaseController
     public function getOne(Request $request, Response $response): Response
     {
         $id = (int)$request->getAttribute('id');
-        if (!$this->model->exists($id)) {
-            throw new Errors\NotFoundException;
+        if (!Event::staticExists($id)) {
+            throw new HttpNotFoundException($request);
         }
         return $response->withJson($this->_getFormattedEvent($id));
     }
@@ -76,11 +75,11 @@ class EventController extends BaseController
     public function getMissingMaterials(Request $request, Response $response): Response
     {
         $id = (int)$request->getAttribute('id');
-        if (!$this->model->exists($id)) {
-            throw new Errors\NotFoundException;
+        if (!Event::staticExists($id)) {
+            throw new HttpNotFoundException($request);
         }
 
-        $eventMissingMaterials = $this->model->getMissingMaterials($id);
+        $eventMissingMaterials = Event::getMissingMaterials($id);
         if (empty($eventMissingMaterials)) {
             return $response->withJson([]);
         }
@@ -88,15 +87,9 @@ class EventController extends BaseController
         return $response->withJson($eventMissingMaterials);
     }
 
-    // ------------------------------------------------------
-    // -
-    // -    Setters
-    // -
-    // ------------------------------------------------------
-
     public function create(Request $request, Response $response): Response
     {
-        $postData = $request->getParsedBody();
+        $postData = (array)$request->getParsedBody();
         $id = $this->_saveEvent(null, $postData);
 
         return $response->withJson($this->_getFormattedEvent($id), SUCCESS_CREATED);
@@ -105,12 +98,11 @@ class EventController extends BaseController
     public function update(Request $request, Response $response): Response
     {
         $id = (int)$request->getAttribute('id');
-        $model = $this->model->find($id);
-        if (!$model) {
-            throw new Errors\NotFoundException;
+        if (!Event::staticExists($id)) {
+            throw new HttpNotFoundException($request);
         }
 
-        $postData = $request->getParsedBody();
+        $postData = (array)$request->getParsedBody();
         $id = $this->_saveEvent($id, $postData);
 
         return $response->withJson($this->_getFormattedEvent($id), SUCCESS_OK);
@@ -131,7 +123,7 @@ class EventController extends BaseController
             );
         }
 
-        $event = $this->model->edit($id, $postData);
+        $event = Event::staticEdit($id, $postData);
 
         if (isset($postData['beneficiaries'])) {
             $event->Beneficiaries()->sync($postData['beneficiaries']);
@@ -234,7 +226,7 @@ class EventController extends BaseController
 
     protected function _getFormattedEvent(int $id): array
     {
-        $model = $this->model
+        $model = (new Event)
             ->with('User')
             ->with('Assignees')
             ->with('Beneficiaries')

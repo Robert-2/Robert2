@@ -33,7 +33,7 @@ const formatEvent = (dataEvent, translate) => {
     content = `${content} − ${locationText}`;
   }
 
-  const datesText = withIcon(
+  const dates = withIcon(
     'clock',
     translate('from-date-to-date', { from: start.format('L'), to: end.format('L') }),
   );
@@ -72,12 +72,7 @@ const formatEvent = (dataEvent, translate) => {
     className: getTimelineEventClassNames(formattedEvent).join(' '),
     title: [
       `<strong>${title}</strong>`,
-      '',
-      locationText,
-      datesText,
-      beneficiariesText,
-      assigneesText,
-      '',
+      `\n${locationText}\n${dates}\n${beneficiariesText}\n${assigneesText}\n`,
       statusesText,
     ].join('\n'),
   };

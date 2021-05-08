@@ -85,7 +85,7 @@ class Event extends BaseModel
     public function Assignees()
     {
         return $this->belongsToMany('Robert2\API\Models\Person', 'event_assignees')
-            ->select(['persons.id', 'first_name', 'last_name', 'nickname'])
+            ->select(['persons.id', 'first_name', 'last_name', 'phone', 'nickname'])
             ->orderBy('last_name');
     }
 
@@ -96,6 +96,8 @@ class Event extends BaseModel
                 'persons.id',
                 'first_name',
                 'last_name',
+                'reference',
+                'phone',
                 'company_id',
                 'street',
                 'postal_code',
@@ -210,7 +212,7 @@ class Event extends BaseModel
                 ]);
         };
 
-        $builder = self::orderBy('start_date', 'asc')
+        $builder = static::orderBy('start_date', 'asc')
             ->where($conditions);
 
         if ($withDeleted) {
@@ -220,14 +222,14 @@ class Event extends BaseModel
         return $builder;
     }
 
-    public function getMissingMaterials(int $id): ?array
+    public static function getMissingMaterials(int $id): ?array
     {
-        $event = $this->with('Materials')->find($id);
+        $event = static::with('Materials')->find($id);
         if (!$event || empty($event->materials)) {
             return null;
         }
 
-        $eventMaterials = (new Material())->recalcQuantitiesForPeriod(
+        $eventMaterials = Material::recalcQuantitiesForPeriod(
             $event->materials,
             $event->start_date,
             $event->end_date,
@@ -254,9 +256,9 @@ class Event extends BaseModel
         return empty($missingMaterials) ? null : array_values($missingMaterials);
     }
 
-    public function getParks(int $id): array
+    public static function getParks(int $id): array
     {
-        $event = $this->with('Materials')->find($id);
+        $event = static::with('Materials')->find($id);
         if (!$event) {
             return [];
         }
@@ -277,15 +279,11 @@ class Event extends BaseModel
 
     public function getPdfContent(int $id): string
     {
-        if (!$this->exists($id)) {
-            throw new Errors\NotFoundException;
-        }
-
         $event = $this
             ->with('Assignees')
             ->with('Beneficiaries')
             ->with('Materials')
-            ->find($id)
+            ->findOrFail($id)
             ->toArray();
 
         $date = new \DateTime();
@@ -351,6 +349,18 @@ class Event extends BaseModel
     // —
     // ——————————————————————————————————————————————————————
 
+    protected $fillable = [
+        'user_id',
+        'reference',
+        'title',
+        'description',
+        'start_date',
+        'end_date',
+        'is_confirmed',
+        'location',
+        'is_billable',
+    ];
+
     public function setPeriod(?string $start, ?string $end): Event
     {
         $thisYear = date('Y');
@@ -366,16 +376,4 @@ class Event extends BaseModel
 
         return $this;
     }
-
-    protected $fillable = [
-        'user_id',
-        'reference',
-        'title',
-        'description',
-        'start_date',
-        'end_date',
-        'is_confirmed',
-        'location',
-        'is_billable',
-    ];
 }

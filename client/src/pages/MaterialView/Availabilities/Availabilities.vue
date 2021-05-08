@@ -19,9 +19,8 @@
       class="MaterialViewAvailabilities__timeline"
       :items="materialEventsTimeline"
       :options="timelineOptions"
-      :events="['click', 'doubleClick']"
-      @double-click="handleDoubleClickTimelineItem"
-      @click="handleClickTimelineItem"
+      @double-click="handleDoubleClickTimeline"
+      @click="handleClickTimeline"
     />
   </div>
 </template>

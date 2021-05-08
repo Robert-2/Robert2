@@ -57,9 +57,8 @@ final class EventEstimateTest extends ModelTestCase
     public function testEmptyEvent()
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionCode(0);
         $this->expectExceptionMessage("Cannot create EventEstimate value-object without complete event's data.");
-        $empty = new EventEstimate($this->_date, []);
+        new EventEstimate($this->_date, []);
     }
 
     public function testNoBeneficiary()
@@ -75,9 +74,8 @@ final class EventEstimateTest extends ModelTestCase
             ],
         ];
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionCode(0);
         $this->expectExceptionMessage("Cannot create EventEstimate value-object without complete event's data.");
-        $noBeneficiaries = new EventEstimate($this->_date, $event);
+        new EventEstimate($this->_date, $event);
     }
 
     public function testNoMaterials()
@@ -93,9 +91,8 @@ final class EventEstimateTest extends ModelTestCase
             'materials' => [],
         ];
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionCode(0);
         $this->expectExceptionMessage("Cannot create EventEstimate value-object without complete event's data.");
-        $noMaterials = new EventEstimate($this->_date, $event);
+        new EventEstimate($this->_date, $event);
     }
 
     // ------------------------------------------------------

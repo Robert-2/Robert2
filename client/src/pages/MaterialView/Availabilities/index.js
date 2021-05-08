@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { Timeline } from 'vue-visjs';
+import Timeline from '@/components/Timeline';
 import ModalConfig from '@/config/modalConfig';
 import store from '@/store';
 import EventDetails from '@/components/EventDetails/EventDetails.vue';
@@ -38,8 +38,6 @@ export default {
         orientation: 'top',
         zoomMin: ONE_DAY * 7,
         zoomMax: ONE_DAY * 60,
-        tooltip: { followMouse: true, overflowMethod: 'flip' },
-        moment: (date) => moment(date),
       },
     };
   },
@@ -88,7 +86,7 @@ export default {
       );
     },
 
-    handleDoubleClickTimelineItem(e) {
+    handleDoubleClickTimeline(e) {
       // - Here we avoid double-call because of double-trigger of event,
       // - @see visjs bug here: https://github.com/visjs/vis-timeline/issues/301)
       if (this.isModalOpened) {
@@ -103,7 +101,7 @@ export default {
       this.openEventModal(eventId);
     },
 
-    handleClickTimelineItem(e) {
+    handleClickTimeline(e) {
       const eventId = e.item;
       if (!eventId) {
         return;

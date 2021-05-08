@@ -1812,7 +1812,7 @@ return [
     => "{{name}} doit être une date valide",
 
     "{{name}} must be a valid date. Sample format: {{format}}"
-    => "{{name}} doit être une date valide. Format : {{format}}",
+    => "{{name}} doit être une date valide. Format : {{format}}",
 
     "{{name}} must not be a valid date"
     => "{{name}} ne doit pas être une date valide",
@@ -2459,6 +2459,9 @@ return [
     "endDateMustBeLater"
     => "La date de fin doit être postérieure à la date de début",
 
+    "referenceAlreadyInUse"
+    => "Cette référence est déjà utilisée.",
+
     //
     // - Install messages
     //
@@ -2519,13 +2522,13 @@ return [
     => "Page %d",
 
     "phone"
-    => "Tél. : %s",
+    => "Tél. : %s",
 
     "email"
-    => "E-mail : %s",
+    => "E-mail : %s",
 
     "vatNumber"
-    => "N° TVA Intracom. : %s",
+    => "N° TVA Intracom. : %s",
 
     "assignees"
     => "Techniciens",
@@ -2537,7 +2540,7 @@ return [
     => "Autres bénéficiaires",
 
     "event"
-    => "Événement : %s",
+    => "Événement : %s",
 
     "onDate"
     => "Le %s",
@@ -2561,7 +2564,7 @@ return [
     => ["%d article", "%d articles"],
 
     "billNoteDetailNextPage"
-    => "Remarque : vous trouverez le détail du matériel aux pages suivantes.",
+    => "Remarque : vous trouverez le détail du matériel aux pages suivantes.",
 
     "dailyAmount"
     => "Tarif / jour",
@@ -2627,10 +2630,10 @@ return [
     => "Montant net à payer",
 
     "estimateAcceptanceDate"
-    => "Date d'acceptation du devis :",
+    => "Date d'acceptation du devis :",
 
     "estimateAcceptanceSignature"
-    => "Signature du bénéficiaire, précédée de la mention « bon pour accord » :",
+    => "Signature du bénéficiaire, précédée de la mention « bon pour accord » :",
 
     "billDetailsTitle"
     => "Détails de la facture N° %s",
@@ -2662,6 +2665,9 @@ return [
     "location"
     => "Lieu : %s",
 
+    "beneficiaryReference"
+    => "Réf. %s",
+
     "thisEventIsConfirmed"
     => "Cet événement est confirmé.",
 
@@ -2678,29 +2684,32 @@ return [
     => "Le %s",
 
     "eventTotalReplacementAmount"
-    => "Montant total de remplacement : %s",
+    => "Montant total de remplacement : %s",
 
     "output"
     => "Sortie",
 
     "outputScheduledFor"
-    => "Prévue le : %s",
+    => "Prévue le : %s",
 
     "return"
     => "Retour",
 
     "returnScheduledFor"
-    => "Prévu le : %s",
+    => "Prévu le : %s",
 
     "effectiveDate"
-    => "Date effective :",
+    => "Date effective :",
 
     "signature"
-    => "Signature :",
+    => "Signature :",
 
     "label"
     => "Étiquette",
 
     "park-value"
-    => "Parc : %s",
+    => "Parc : %s",
+
+    "enable-javascript-message"
+    => "Veuillez activer JavaScript pour utiliser l'application.",
 ];

@@ -1,4 +1,6 @@
 <?php
+use Robert2\API\App;
+
 require '../vendor/autoload.php';
 require '../App/Config/constants.php';
 require '../App/Config/functions.php';
@@ -9,8 +11,7 @@ putenv('PHP_ROBERT2_TESTING=NORMAL');
 $dotenv = Dotenv\Dotenv::createImmutable(ROOT_FOLDER);
 $dotenv->safeLoad();
 
-// - Init App
-$app = (new Robert2\API\App())->configureAndGet();
+// - Let's go !
+$app = new App();
 $app->add(new \Slim\HttpCache\Cache('private', 0));
-
 $app->run();

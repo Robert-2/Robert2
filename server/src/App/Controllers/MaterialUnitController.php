@@ -3,31 +3,41 @@ declare(strict_types=1);
 
 namespace Robert2\API\Controllers;
 
+use DI\Container;
 use Illuminate\Database\QueryException;
-use Robert2\API\Errors;
+use Robert2\API\Controllers\Traits\FileResponse;
+use Robert2\API\Controllers\Traits\WithCrud;
+use Robert2\API\Errors\ValidationException;
 use Robert2\API\Models\Material;
 use Robert2\API\Models\MaterialUnit;
-use Robert2\API\Controllers\Traits\FileResponse;
-use Slim\Http\Request;
-use Slim\Http\Response;
+use Robert2\API\Services\I18n;
 use Robert2\Lib\Pdf\Pdf;
-use Robert2\API\I18n\I18n;
+use Slim\Exception\HttpNotFoundException;
+use Slim\Http\Response;
+use Slim\Http\ServerRequest as Request;
 
 class MaterialUnitController extends BaseController
 {
+    use WithCrud;
     use FileResponse;
 
-    /** @var MaterialUnit */
-    protected $model;
+    /** @var I18n */
+    private $i18n;
+
+    /** @var array */
+    private $settings;
+
+    public function __construct(Container $container, I18n $i18n)
+    {
+        parent::__construct($container);
+
+        $this->i18n = $i18n;
+    }
 
     public function barCode(Request $request, Response $response): Response
     {
         $id = (int)$request->getAttribute('id');
-
-        $unit = $this->model->with('Material')->find($id);
-        if (!$unit) {
-            throw new Errors\NotFoundException;
-        }
+        $unit = MaterialUnit::with('Material')->findOrFail($id);
 
         $vars = [
             'name' => $unit->material['name'],
@@ -39,7 +49,7 @@ class MaterialUnitController extends BaseController
 
         $fileName = sprintf(
             '%s-%s-%s.pdf',
-            (new I18n())->translate('label'),
+            $this->i18n->translate('label'),
             slugify($unit->material['name']),
             slugify($unit->serial_number)
         );
@@ -56,9 +66,9 @@ class MaterialUnitController extends BaseController
     {
         $id = (int)$request->getAttribute('id');
 
-        $unit = $this->model->find($id);
+        $unit = MaterialUnit::find($id);
         if (!$unit) {
-            throw new Errors\NotFoundException;
+            throw new HttpNotFoundException($request);
         }
 
         $data = $unit->append('material')->toArray();
@@ -67,7 +77,7 @@ class MaterialUnitController extends BaseController
 
     public function create(Request $request, Response $response): Response
     {
-        $data = $request->getParsedBody();
+        $data = (array)$request->getParsedBody();
         if (empty($data)) {
             throw new \InvalidArgumentException(
                 "Aucun donnée n'a été fournie.",
@@ -77,12 +87,12 @@ class MaterialUnitController extends BaseController
 
         $materialId = (int)$request->getAttribute('materialId');
         if (!$materialId) {
-            throw new Errors\NotFoundException;
+            throw new HttpNotFoundException($request);
         }
 
         $material = Material::find($materialId);
         if (!$material || !$material->is_unitary) {
-            throw new Errors\NotFoundException;
+            throw new HttpNotFoundException($request);
         }
 
         $unit = new MaterialUnit(cleanEmptyFields($data));
@@ -91,9 +101,8 @@ class MaterialUnitController extends BaseController
         try {
             $material->Units()->save($unit);
         } catch (QueryException $e) {
-            $error = new Errors\ValidationException();
-            $error->setPDOValidationException($e);
-            throw $error;
+            throw (new ValidationException)
+                ->setPDOValidationException($e);
         }
 
         return $response->withJson($unit->refresh(), SUCCESS_CREATED);
@@ -102,7 +111,7 @@ class MaterialUnitController extends BaseController
     public function delete(Request $request, Response $response): Response
     {
         $id = (int)$request->getAttribute('id');
-        $this->model->remove($id);
+        MaterialUnit::staticRemove($id);
 
         return $response->withJson([], SUCCESS_OK);
     }

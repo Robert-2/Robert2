@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Robert2\API\Validation\Validator as V;
 use Robert2\API\Models\Traits\Taggable;
 use Robert2\API\Models\User;
-use Robert2\API\Errors;
 
 class Material extends BaseModel
 {
@@ -282,7 +281,7 @@ class Material extends BaseModel
     // -
     // ------------------------------------------------------
 
-    public function recalcQuantitiesForPeriod(
+    public static function recalcQuantitiesForPeriod(
         array $data,
         string $start,
         string $end,
@@ -292,7 +291,7 @@ class Material extends BaseModel
             return [];
         }
 
-        $events = (new Event())->setPeriod($start, $end)->getAll();
+        $events = (new Event)->setPeriod($start, $end)->getAll();
         if ($exceptEventId) {
             $events = $events->where('id', '!=', $exceptEventId);
         }
@@ -388,13 +387,9 @@ class Material extends BaseModel
         return $builder;
     }
 
-    public function getOneForUser(int $id, ?int $userId = null): array
+    public static function getOneForUser(int $id, ?int $userId = null): array
     {
-        $material = $this->find($id);
-        if (!$material) {
-            throw new Errors\NotFoundException;
-        }
-
+        $material = static::findOrFail($id);
         $materialData = $material->toArray();
 
         if ($userId !== null && $material->is_unitary) {

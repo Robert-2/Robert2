@@ -1,4 +1,4 @@
-{% extends "base.twig" %}
+{% extends "pdf/base.twig" %}
 
 {% block style %}
 @page {
@@ -63,14 +63,14 @@ html {
 {% block content %}
 <div class="bar-code">
     <div class="bar-code__header">
-        <div class="bar-code__title">{{ name|truncate(23) }}</div>
-        <div class="bar-code__reference">{{ translate('park-value', [park|truncate(10)]) }}</div>
+        <div class="bar-code__title">{{ name|u.truncate(23) }}</div>
+        <div class="bar-code__reference">{{ translate('park-value', [park|u.truncate(10)]) }}</div>
     </div>
     <div class="bar-code__body">
         <div class="bar-code__barcode">
             <img class="bar-code__barcode__image" src="{{ barcode }}" />
         </div>
-        <div class="bar-code__serial-number">{{ serialNumber|truncate(20) }}</div>
+        <div class="bar-code__serial-number">{{ serialNumber|u.truncate(20) }}</div>
     </div>
 </div>
 {% endblock %}

@@ -48,6 +48,25 @@ Attention ⚠️, cela ne veut pas dire que Robert n'est pas traduit : Robert2 e
 Merci donc de bien vouloir prendre en compte le fait que chaque texte affiché dans l'interface de Robert doit pouvoir être traduit et si possible,
 veuillez spécifier les traductions anglaises de vos ajouts en français dans vos pull requests.
 
+## Branches Git
+
+Pour nommer ses branches, le projet utilise le modèle appelé « Git Flow ».
+Voir [cette page](https://git-flow.readthedocs.io/fr/latest/presentation.html) pour plus de détails sur ce workflow,
+mais voici un tuto rapide :
+
+Les deux branches principales qui **existent en permanence** sont :
+- `master` : la branche sur laquelle se trouve l'application telle qu'elle a été releasée en dernier.
+  On ne peut y merger que des branches `release/x.x.x` ou `hotfix/x.x.x`. Aucun commit ne doit y être ajouté directement.
+  Cette branche est considérée comme la "branche stable releasée".
+- `develop` : la branche sur laquelle on merge toutes les branches de nouvelles fonctionnalités (nommées `feature/...`).
+  On peut aussi y faire quelques commits directs, uniquement quand il s'agit de petites corrections.
+  Cette branche est considérée comme la "branche stable non-releasée".
+
+Quand vous voulez modifier le code, commencez par créer une branche `feature/nom-de-la-fonctionnalité`, qui est basée sur `develop`.
+Ensuite, utilisez cette branche pour créer une pull-request dont la branche de destination est `develop`.
+Avant d'être mergée, le fonctionnement de l'application sur cette branche doit impérativement être stable et dépourvu de bug.
+Une fois la PR mergée, la branche doit être supprimée.
+
 ## Version et Changelog
 
 Robert2 utilise la nomenclature de version [Semantic Versionning (semver)](https://semver.org/) pour ses numéros de version. La version actuelle qui 
@@ -81,7 +100,7 @@ Cette commande vous permet de lancer un serveur de développement front-end, ave
 qui servira les sources JS, CSS et les assets, à l'adresse `http://localhost:8081/`.  
 
 Pour travailler, créez un fichier `.env` dans le dossier `server/` qui contient la variable `APP_ENV=development`,
-puis ouvrez l'application sur son serveur back-end (par ex. `http://robert.local`).
+puis ouvrez l'application sur son serveur back-end (par ex. `http://robert2.local`).
 
 #### `yarn build`
 
@@ -90,7 +109,7 @@ _(Pensez à exécuter cette commande et à commiter le résultat dans votre PR l
 
 ## URL de l'API en développement
 
-En développement, l'hôte par défaut utilisé par la partie client pour communiquer avec l'API est `http://robert.local`.  
+En développement, l'hôte par défaut utilisé par la partie client pour communiquer avec l'API est `http://robert2.local`.  
 
 Si vous souhaitez modifier ceci, vous pouvez créer un fichier `.env.development.local` à la racine du dossier
 client et surcharger la variable d'environnement `VUE_APP_API_URL` avec votre propre URL d'API (par

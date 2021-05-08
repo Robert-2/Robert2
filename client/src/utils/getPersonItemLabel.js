@@ -3,6 +3,7 @@ const getPersonItemLabel = (itemData) => {
     label: alreadySetLabel,
     first_name: firstName,
     last_name: lastName,
+    reference,
     company,
     locality,
   } = itemData;
@@ -12,6 +13,9 @@ const getPersonItemLabel = (itemData) => {
   }
 
   let label = `${lastName} ${firstName}`;
+  if (reference && reference.length > 0) {
+    label += ` (${reference})`;
+  }
   if (company && company.legal_name.length > 0) {
     label += ` − ${company.legal_name}`;
   }

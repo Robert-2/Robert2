@@ -3,44 +3,37 @@ declare(strict_types=1);
 
 namespace Robert2\API\Controllers;
 
-use Robert2\API\Errors;
-use Slim\Http\Request;
+use Robert2\API\Controllers\Traits\WithCrud;
+use Robert2\API\Models\Tag;
+use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
+use Slim\Http\ServerRequest as Request;
 
 class TagController extends BaseController
 {
+    use WithCrud;
+
     public function getPersons(Request $request, Response $response): Response
     {
         $id = (int)$request->getAttribute('id');
-        if (!$this->model->exists($id)) {
-            throw new Errors\NotFoundException;
+        $tag = Tag::find($id);
+        if (!$tag) {
+            throw new HttpNotFoundException($request);
         }
 
-        $Tag       = $this->model->find($id);
-        $materials = $Tag->Persons()->paginate($this->itemsCount);
-
-        $basePath = $request->getUri()->getPath();
-        $materials->withPath($basePath);
-
-        $results = $this->_formatPagination($materials);
-
+        $results = $this->paginate($request, $tag->Persons());
         return $response->withJson($results);
     }
 
     public function getMaterials(Request $request, Response $response): Response
     {
         $id = (int)$request->getAttribute('id');
-        if (!$this->model->exists($id)) {
-            throw new Errors\NotFoundException;
+        $tag = Tag::find($id);
+        if (!$tag) {
+            throw new HttpNotFoundException($request);
         }
 
-        $Tag       = $this->model->find($id);
-        $materials = $Tag->Materials()->paginate($this->itemsCount);
-
-        $basePath = $request->getUri()->getPath();
-        $materials->withPath($basePath);
-
-        $results = $this->_formatPagination($materials);
+        $results = $this->paginate($request, $tag->Materials());
         return $response->withJson($results);
     }
 }

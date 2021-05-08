@@ -19,6 +19,13 @@
         :errors="errors.last_name"
       />
       <FormField
+        v-if="withReference"
+        v-model="person.reference"
+        name="reference"
+        label="reference"
+        :errors="errors.reference"
+      />
+      <FormField
         v-if="!withCompany"
         v-model="person.nickname"
         name="nickname"
