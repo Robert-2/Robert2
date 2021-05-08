@@ -6,45 +6,36 @@
   color: $text-base-color;
   border-collapse: collapse;
 
+  &__name,
+  &__type,
+  &__unit,
+  &__max-length,
+  &__categories {
+    padding: .8rem .5rem;
+    vertical-align: top;
+  }
+
   &__name {
     width: 305px;
-    padding:
-      $content-padding-small-vertical
-      $content-padding-large-horizontal;
-    vertical-align: top;
   }
 
   &__type {
     width: 170px;
-    padding: $content-padding-small-vertical 0;
-    vertical-align: top;
   }
 
   &__unit {
     width: 100px;
-    padding:
-      $content-padding-small-vertical
-      0
-      $content-padding-small-vertical
-      $content-padding-large-horizontal;
-    vertical-align: top;
     text-align: center;
   }
 
   &__max-length {
     display: none;
     width: 100px;
-    padding: $content-padding-small-vertical 0;
-    vertical-align: top;
     text-align: center;
   }
 
   &__categories {
     width: auto;
-    padding:
-      $content-padding-small-vertical
-      $content-padding-large-horizontal;
-    vertical-align: top;
 
     &__item {
       margin-top: 4px;

@@ -16,7 +16,7 @@
         <table class="Attributes__items">
           <thead class="Attributes__items__header">
             <tr>
-              <th class="Attributes__items__name" colspan="2">
+              <th class="Attributes__items__name">
                 {{ $t('page-attributes.name') }}
               </th>
               <th class="Attributes__items__type">
@@ -36,29 +36,37 @@
           <tbody>
             <tr v-for="attribute in attributes" :key="attribute.id" class="Attributes__items__line">
               <td class="Attributes__items__name">
-                <div v-if="editAttribute === attribute.id">
-                  <input type="text" v-model="editAttributeName" />
-                  <div v-if="errors.name" class="Attributes__items__name-error">
-                    {{ errors.name[0] }}
+                <div class="Attributes__items__name__content" v-if="editAttribute === attribute.id">
+                  <div class="Attributes__items__name__text">
+                    <input
+                      class="Attributes__items__name__input"
+                      type="text"
+                      v-model="editAttributeName"
+                    />
+                    <div v-if="errors.name" class="Attributes__items__name__error">
+                      {{ errors.name[0] }}
+                    </div>
+                  </div>
+                  <div class="Attributes__items__name__actions">
+                    <button @click="cancelAttributeName()">
+                      <i class="fas fa-ban" />
+                    </button>
+                    <button class="success" @click="saveAttributeName(attribute.id)">
+                      <i class="fas fa-check" />
+                    </button>
                   </div>
                 </div>
-                <span v-else>{{ attribute.name }}</span>
-              </td>
-              <td class="Attributes__items__edit-name">
-                <button
-                  v-if="!editAttribute"
-                  class="Attributes__items__edit-name__edit-button info"
-                  @click="startEditAttribute(attribute.id, attribute.name)"
-                >
-                  <i class="fas fa-pen" />
-                </button>
-                <div v-if="editAttribute === attribute.id">
-                  <button @click="cancelAttributeName()">
-                    <i class="fas fa-ban" />
-                  </button>
-                  <button class="success" @click="saveAttributeName(attribute.id)">
-                    <i class="fas fa-check" />
-                  </button>
+                <div class="Attributes__items__name__content" v-else>
+                  <span class="Attributes__items__name__text">{{ attribute.name }}</span>
+                  <div class="Attributes__items__name__actions">
+                    <button
+                      v-if="!editAttribute"
+                      class="Attributes__items__name__edit-button info"
+                      @click="startEditAttribute(attribute.id, attribute.name)"
+                    >
+                      <i class="fas fa-pen" />
+                    </button>
+                  </div>
                 </div>
               </td>
               <td class="Attributes__items__type">
