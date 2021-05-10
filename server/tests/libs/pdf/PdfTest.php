@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Robert2\Tests;
 
 use Robert2\Lib\Pdf\Pdf;
-use Robert2\Lib\Domain\EventBill;
+use Robert2\Lib\Domain\EventData;
 use Robert2\API\Models\Event;
 use Robert2\API\Models\Category;
 use Robert2\Fixtures\RobertFixtures;
@@ -73,12 +73,12 @@ final class PdfTest extends ModelTestCase
             ->find(1)
             ->toArray();
 
-        $EventBill = new EventBill(new \DateTime('2020-02-10'), $billEvent, '2020-00002', 1);
-        $this->assertNotEmpty($EventBill);
+        $EventData = new EventData(new \DateTime('2020-02-10'), $billEvent, '2020-00002', 1);
+        $this->assertNotEmpty($EventData);
 
-        $EventBill->setDiscountRate(10.0);
+        $EventData->setDiscountRate(10.0);
         $categories = (new Category())->getAll()->get()->toArray();
-        $billData = $EventBill->toPdfTemplateArray($categories);
+        $billData = $EventData->toPdfTemplateArray($categories);
 
         $pdfContent = Pdf::createFromTemplate('bill-default', $billData, $this->_pdfResultFile);
         $this->assertNotEmpty($pdfContent);

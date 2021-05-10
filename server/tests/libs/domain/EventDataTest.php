@@ -3,19 +3,22 @@ declare(strict_types=1);
 
 namespace Robert2\Tests;
 
-use Robert2\Lib\Domain\EventEstimate;
+use Robert2\Lib\Domain\EventData;
 use Robert2\API\Config\Config;
 use Robert2\API\Models\Event;
 use Robert2\API\Models\Category;
+use Robert2\API\Models\Park;
 use Robert2\Fixtures\RobertFixtures;
 
-final class EventEstimateTest extends ModelTestCase
+final class EventDataTest extends ModelTestCase
 {
-    public $EventEstimate;
+    public $EventData;
 
     protected $_date;
     protected $_eventData;
+    protected $_number;
     protected $_categories;
+    protected $_parks;
 
     public function setUp(): void
     {
@@ -40,9 +43,12 @@ final class EventEstimateTest extends ModelTestCase
             }
             $this->_eventData = $event->toArray();
 
-            $this->_categories = (new Category())->getAll()->get()->toArray();
+            $this->_number = sprintf('%s-00001', $this->_date->format('Y'));
 
-            $this->EventEstimate = new EventEstimate($this->_date, $this->_eventData, 1);
+            $this->_categories = (new Category())->getAll()->get()->toArray();
+            $this->_parks = (new Park())->getAll()->get()->toArray();
+
+            $this->EventData = new EventData($this->_date, $this->_eventData, $this->_number, 1);
         } catch (\Exception $e) {
             $this->fail($e->getMessage());
         }
@@ -57,8 +63,8 @@ final class EventEstimateTest extends ModelTestCase
     public function testEmptyEvent()
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage("Cannot create EventEstimate value-object without complete event's data.");
-        new EventEstimate($this->_date, []);
+        $this->expectExceptionMessage("Cannot create EventData value-object without complete event's data.");
+        new EventData($this->_date, [], $this->_number);
     }
 
     public function testNoBeneficiary()
@@ -74,8 +80,8 @@ final class EventEstimateTest extends ModelTestCase
             ],
         ];
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage("Cannot create EventEstimate value-object without complete event's data.");
-        new EventEstimate($this->_date, $event);
+        $this->expectExceptionMessage("Cannot create EventData value-object without complete event's data.");
+        new EventData($this->_date, $event, $this->_number);
     }
 
     public function testNoMaterials()
@@ -91,8 +97,8 @@ final class EventEstimateTest extends ModelTestCase
             'materials' => [],
         ];
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage("Cannot create EventEstimate value-object without complete event's data.");
-        new EventEstimate($this->_date, $event);
+        $this->expectExceptionMessage("Cannot create EventData value-object without complete event's data.");
+        new EventData($this->_date, $event, $this->_number);
     }
 
     // ------------------------------------------------------
@@ -103,8 +109,19 @@ final class EventEstimateTest extends ModelTestCase
 
     public function testSetDiscountRate()
     {
-        $this->EventEstimate->setDiscountRate(33.33);
-        $this->assertEquals(33.33, $this->EventEstimate->discountRate);
+        $this->EventData->setDiscountRate(33.33);
+        $this->assertEquals(33.33, $this->EventData->discountRate);
+    }
+
+    public function testCreateBillNumber()
+    {
+        $date = new \DateTime();
+
+        $result = EventData::createBillNumber($date, 1);
+        $this->assertEquals(sprintf('%s-00002', date('Y')), $result);
+
+        $result = EventData::createBillNumber($date, 155);
+        $this->assertEquals(sprintf('%s-00156', date('Y')), $result);
     }
 
     // ------------------------------------------------------
@@ -115,22 +132,22 @@ final class EventEstimateTest extends ModelTestCase
 
     public function testGetDailyAmount()
     {
-        $this->assertEquals(341.45, $this->EventEstimate->getDailyAmount());
+        $this->assertEquals(341.45, $this->EventData->getDailyAmount());
     }
 
     public function testGetDiscountableDailyAmount()
     {
-        $this->assertEquals(41.45, $this->EventEstimate->getDiscountableDailyAmount());
+        $this->assertEquals(41.45, $this->EventData->getDiscountableDailyAmount());
     }
 
     public function testGetReplacementAmount()
     {
-        $this->assertEquals(19808.9, $this->EventEstimate->getReplacementAmount());
+        $this->assertEquals(19808.9, $this->EventData->getReplacementAmount());
     }
 
     public function testGetCategoriesTotals()
     {
-        $result = $this->EventEstimate->getCategoriesTotals($this->_categories);
+        $result = $this->EventData->getCategoriesTotals($this->_categories);
         $expected = [
             ['id' => 2, 'name' => "light", 'quantity' => 1, 'subTotal' => 15.95],
             ['id' => 1, 'name' => "sound", 'quantity' => 2, 'subTotal' => 325.5],
@@ -140,7 +157,7 @@ final class EventEstimateTest extends ModelTestCase
 
     public function testGetMaterialBySubCategories()
     {
-        $result = $this->EventEstimate->getMaterialBySubCategories($this->_categories);
+        $result = $this->EventData->getMaterialBySubCategories($this->_categories);
         $expected = [
             [
                 'id' => 1,
@@ -191,9 +208,50 @@ final class EventEstimateTest extends ModelTestCase
         $this->assertEquals($expected, $result);
     }
 
+    public function testGetMaterialByParks()
+    {
+        $result = $this->EventData->getMaterialByParks($this->_parks);
+        $expected = [
+            [
+                'id' => 1,
+                'name' => 'default',
+                'materials' => [
+                    [
+                        'reference' => 'SDS-6-01',
+                        'name' => 'Showtec SDS-6',
+                        'quantity' => 1,
+                        'rentalPrice' => 15.95,
+                        'replacementPrice' => 59.0,
+                        'total' => 15.95,
+                        'totalReplacementPrice' => 59.0,
+                    ],
+                    [
+                        'reference' => 'DBXPA2',
+                        'name' => 'Processeur DBX PA2',
+                        'quantity' => 1,
+                        'rentalPrice' => 25.5,
+                        'replacementPrice' => 349.9,
+                        'total' => 25.5,
+                        'totalReplacementPrice' => 349.9,
+                    ],
+                    [
+                        'reference' => 'CL3',
+                        'name' => 'Console Yamaha CL3',
+                        'quantity' => 1,
+                        'rentalPrice' => 300.0,
+                        'replacementPrice' => 19400.0,
+                        'total' => 300.0,
+                        'totalReplacementPrice' => 19400.0,
+                    ],
+                ],
+            ],
+        ];
+        $this->assertEquals($expected, $result);
+    }
+
     public function testGetMaterials()
     {
-        $result = $this->EventEstimate->getMaterials();
+        $result = $this->EventData->getMaterials();
         $expected = [
             [
                 'id' => 4,
@@ -240,8 +298,9 @@ final class EventEstimateTest extends ModelTestCase
 
     public function testToModelArray()
     {
-        $result = $this->EventEstimate->toModelArray();
+        $result = $this->EventData->toModelArray();
         $expected = [
+            'number' => $this->_number,
             'date' => $this->_date->format('Y-m-d H:i:s'),
             'event_id' => 1,
             'beneficiary_id' => 3,
@@ -299,9 +358,10 @@ final class EventEstimateTest extends ModelTestCase
 
     public function testToModelArrayWithDiscount()
     {
-        $this->EventEstimate->setDiscountRate(33.33);
-        $result = $this->EventEstimate->toModelArray();
+        $this->EventData->setDiscountRate(33.33);
+        $result = $this->EventData->toModelArray();
         $expected = [
+            'number' => $this->_number,
             'date' => $this->_date->format('Y-m-d H:i:s'),
             'event_id' => 1,
             'beneficiary_id' => 3,
@@ -359,8 +419,9 @@ final class EventEstimateTest extends ModelTestCase
 
     public function testToPdfTemplateArray()
     {
-        $result = $this->EventEstimate->toPdfTemplateArray($this->_categories);
+        $result = $this->EventData->toPdfTemplateArray($this->_categories);
         $expected = [
+            'number' => $this->_number,
             'date' => $this->_date,
             'event' => $this->_eventData,
             'dailyAmount' => 341.45,
@@ -380,7 +441,7 @@ final class EventEstimateTest extends ModelTestCase
                 ['id' => 2, 'name' => "light", 'quantity' => 1, 'subTotal' => 15.95],
                 ['id' => 1, 'name' => "sound", 'quantity' => 2, 'subTotal' => 325.5],
             ],
-            'materialBySubCategories' => [
+            'materialList' => [
                 [
                     'id' => 1,
                     'name' => "mixers",

@@ -87,6 +87,9 @@ trait SettingsTrait
                     ['name' => 'APE', 'value' => '947A'],
                 ],
             ],
+            'eventSummary' => [
+                'materialDisplayMode' => 'sub-categories',
+            ],
             'authorizedFileTypes' => [
                 'application/pdf',
                 'application/zip',

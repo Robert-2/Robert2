@@ -108,9 +108,10 @@
         </tr>
     </thead>
     <tbody>
-        {% for subCategory in materialBySubCategories %}
+        {% if materialDisplayMode == 'sub-categories' %}
+        {% for subCategory in materialList %}
             <tr>
-                <td class="sub-category-line" colspan="5">
+                <td class="lighter" style="padding-top: 4mm" colspan="5">
                     {% if subCategory['name'] == '---' %}
                     {{ translate('otherMaterials') }}
                     {% else %}
@@ -119,19 +120,25 @@
                 </td>
             </tr>
             {% for material in subCategory['materials'] %}
-            <tr>
-                <td>{{ material['reference'] }}</td>
-                <td>{{ material['name'] }}</td>
-                <td class="center">{{ material['quantity'] }}</td>
-                <td class="right lighter">
-                    {{ material['replacementPrice']|format_currency(currency, formatCurrencyOptions, locale) }}
-                </td>
-                <td class="right lighter">
-                    {{ material['totalReplacementPrice']|format_currency(currency, formatCurrencyOptions, locale) }}
-                </td>
-            </tr>
+                {{ include('blocks/materials/line-summary.twig', { material: material }) }}
             {% endfor %}
         {% endfor %}
+        {% elseif materialDisplayMode == 'parks' %}
+        {% for park in materialList %}
+            <tr>
+                <td class="lighter" style="padding-top: 4mm" colspan="5">
+                    {{ park['name'] }}
+                </td>
+            </tr>
+            {% for material in park['materials'] %}
+                {{ include('blocks/materials/line-summary.twig', { material: material }) }}
+            {% endfor %}
+        {% endfor %}
+        {% else %}
+            {% for material in materialList %}
+                {{ include('blocks/materials/line-summary.twig', { material: material }) }}
+            {% endfor %}
+        {% endif %}
     </tbody>
 </table>
 
