@@ -23,8 +23,8 @@ Corrige un bug avec l'authentification CAS.
 - Accorde en nombre le terme "durée X jour(s)" dans les événements (#135).
 - Corrige les problèmes d'affichage de la page de gestion des caractéristiques spéciales de matériel (#133).
 - Empêche la suppression d'un événement si celui-ci est confirmé, même si la poubelle est affichée (#137).
-- Corrige un problème avec le nom de la base de données de test (#128 et #129).
-- Ajoute la création / suppression de devis pour les événements (#5).
+- Corrige le problème d'affichage des titres des pages quand on change d'onglet (#142).
+
 - Adapte la page de login avec le terme "Premium" sous le logo, et la licence fermée dans le footer.
 
 ## 0.12.2-premium (2021-04-19)

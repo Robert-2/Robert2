@@ -53,4 +53,7 @@ export default {
       return `category=${this.material.category_id}&subCategory=${this.material.sub_category_id}`;
     },
   },
+  mounted() {
+    store.commit('setPageSubTitle', this.material.name);
+  },
 };
