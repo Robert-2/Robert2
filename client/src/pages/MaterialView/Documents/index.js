@@ -1,11 +1,15 @@
 import Alert from '@/components/Alert';
 import Help from '@/components/Help/Help.vue';
+import store from '@/store';
 import DocumentItem from './Item/Item.vue';
 import DocumentUpload from './Upload/Upload.vue';
 
 export default {
   name: 'MaterialViewDocuments',
   components: { Help, DocumentItem, DocumentUpload },
+  props: {
+    material: { required: true, type: Object },
+  },
   data() {
     return {
       help: '',
@@ -16,6 +20,8 @@ export default {
     };
   },
   mounted() {
+    store.commit('setPageSubTitle', this.material.name);
+
     this.fetchDocuments();
   },
   methods: {

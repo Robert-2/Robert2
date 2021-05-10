@@ -19,6 +19,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Accorde en nombre le terme "durée X jour(s)" dans les événements (#135).
 - Corrige les problèmes d'affichage de la page de gestion des caractéristiques spéciales de matériel (#133).
 - Empêche la suppression d'un événement si celui-ci est confirmé, même si la poubelle est affichée (#137).
+- Corrige le problème d'affichage des titres des pages quand on change d'onglet (#142).
 
 ## 0.12.0 (2021-03-29)
 
