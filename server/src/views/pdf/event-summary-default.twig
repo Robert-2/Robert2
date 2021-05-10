@@ -3,7 +3,7 @@
 {% block title %}{{ translate("releaseSheet") }}{% endblock %}
 
 {% block content %}
-<h1 class="center vspace10">
+<h1 class="center vspace5">
     {{ translate('releaseSheet') }}
 </h1>
 <table class="layout-table">
@@ -32,7 +32,7 @@
             <p>{{ translate('thisEventIsConfirmed') }}</p>
             {% endif %}
         </td>
-        <td class="third">
+        <td class="third indent5">
             {% if event['location'] %}
             <h2 class="spaceBottom5">{{ translate('location', [event['location']]) }}</h2>
             {% endif %}
@@ -55,7 +55,7 @@
                 ]) }}
             </p>
             {% endif %}
-            <p class="vspace5">
+            <p>
                 {{ translate('onDate', [date|format_date('long', locale=locale)]) }}
             </p>
         </td>
@@ -75,7 +75,7 @@
             {% endif %}
         </td>
         {% if event['beneficiaries'][1] is defined %}
-        <td class="third">
+        <td class="third indent5">
             <h3>{{ translate('otherBeneficiaries') }}</h3>
             <ul class="indent5 spaceBottom5">
                 {% for otherBeneficiary in event['beneficiaries'] %}
@@ -91,6 +91,11 @@
     </tr>
 </table>
 
+<h2>{{ translate('descriptionNotes') }}</h2>
+<p>
+    {{ event['description']|nl2br }}
+</p>
+
 <h2 class="vspace2">{{ translate('materials') }}</h2>
 <table class="size9 listing-table">
     <thead>
@@ -103,34 +108,37 @@
         </tr>
     </thead>
     <tbody>
-        {% for subCategory in materialBySubCategories %}
+        {% if materialDisplayMode == 'sub-categories' %}
+        {% for subCategory in materialList %}
             <tr>
-                <td></td>
-                <td class="sub-category-line">
+                <td class="section-title" colspan="5">
                     {% if subCategory['name'] == '---' %}
                     {{ translate('otherMaterials') }}
                     {% else %}
                     {{ subCategory['name'] }}
                     {% endif %}
                 </td>
-                <td></td>
-                <td></td>
-                <td></td>
             </tr>
             {% for material in subCategory['materials'] %}
-            <tr>
-                <td>{{ material['reference'] }}</td>
-                <td>{{ material['name'] }}</td>
-                <td class="center">{{ material['quantity'] }}</td>
-                <td class="right lighter">
-                    {{ material['replacementPrice']|format_currency(currency, formatCurrencyOptions, locale) }}
-                </td>
-                <td class="right lighter">
-                    {{ material['totalReplacementPrice']|format_currency(currency, formatCurrencyOptions, locale) }}
-                </td>
-            </tr>
+                {{ include('blocks/materials/line-summary.twig', { material: material }) }}
             {% endfor %}
         {% endfor %}
+        {% elseif materialDisplayMode == 'parks' %}
+        {% for park in materialList %}
+            <tr>
+                <td class="section-title" colspan="5">
+                    {{ park['name'] }}
+                </td>
+            </tr>
+            {% for material in park['materials'] %}
+                {{ include('blocks/materials/line-summary.twig', { material: material }) }}
+            {% endfor %}
+        {% endfor %}
+        {% else %}
+            {% for material in materialList %}
+                {{ include('blocks/materials/line-summary.twig', { material: material }) }}
+            {% endfor %}
+        {% endif %}
     </tbody>
 </table>
 

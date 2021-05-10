@@ -2669,6 +2669,9 @@ return [
     "thisEventIsConfirmed"
     => "This event is confirmed.",
 
+    "descriptionNotes"
+    => "Description / Notes",
+
     "materials"
     => "Materials",
 

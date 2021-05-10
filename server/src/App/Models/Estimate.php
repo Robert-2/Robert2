@@ -8,7 +8,7 @@ use Robert2\API\Config\Config;
 use Robert2\API\Models\Traits\WithPdf;
 use Robert2\API\Services\I18n;
 use Robert2\API\Validation\Validator as V;
-use Robert2\Lib\Domain\EventEstimate;
+use Robert2\Lib\Domain\EventData;
 
 class Estimate extends BaseModel
 {
@@ -120,10 +120,10 @@ class Estimate extends BaseModel
             throw new \InvalidArgumentException("Event is not billable.");
         }
 
-        $EventEstimate = new EventEstimate($date, $eventData, $userId);
-        $EventEstimate->setDiscountRate($discountRate);
+        $EventData = new EventData($date, $eventData, 'estimate', $userId);
+        $EventData->setDiscountRate($discountRate);
 
-        $newEstimateData = $EventEstimate->toModelArray();
+        $newEstimateData = $EventData->toModelArray();
 
         $newEstimate = new Estimate();
         $newEstimate->fill($newEstimateData)->save();
@@ -163,12 +163,15 @@ class Estimate extends BaseModel
             ->find($estimate->event_id)
             ->toArray();
 
-        $EventEstimate = new EventEstimate($date, $eventData, $estimate->user_id);
-        $EventEstimate->setDiscountRate($estimate->discount_rate);
-
         $categories = (new Category())->getAll()->get()->toArray();
+        $parks = (new Park())->getAll()->get()->toArray();
 
-        $estimatePdf = $this->_getPdfAsString($EventEstimate->toPdfTemplateArray($categories));
+        $EventData = new EventData($date, $eventData, 'estimate', $estimate->user_id);
+        $EventData->setDiscountRate($estimate->discount_rate)
+            ->setCategories($categories)
+            ->setParks($parks);
+
+        $estimatePdf = $this->_getPdfAsString($EventData->toPdfTemplateArray());
         if (!$estimatePdf) {
             $lastError = error_get_last();
             throw new \RuntimeException(sprintf(

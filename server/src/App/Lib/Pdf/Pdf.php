@@ -52,6 +52,9 @@ class Pdf
         $i18n = new I18n(Config::getSettings('defaultLang'));
         $template = sprintf('pdf/%s.twig', $templateName);
         $html = (new View($i18n))->fetch($template, $data);
+        // - Uncomment the following 2 lines to debug the PDF files content in the browser
+        // echo $html;
+        // exit;
         return (new static($html))->getResult();
     }
 }

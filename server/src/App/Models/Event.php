@@ -7,8 +7,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Builder;
 use Robert2\API\Config\Config;
 use Robert2\API\Models\Material;
+use Robert2\API\Models\Park;
 use Robert2\API\Models\Traits\WithPdf;
-use Robert2\Lib\Domain\EventBill;
+use Robert2\Lib\Domain\EventData;
 use Robert2\API\Validation\Validator as V;
 
 class Event extends BaseModel
@@ -287,8 +288,21 @@ class Event extends BaseModel
             ->toArray();
 
         $date = new \DateTime();
-        $EventBill = new EventBill($date, $event, 'summary', $event['user_id']);
+
         $categories = (new Category())->getAll()->get()->toArray();
+        $parks = (new Park())->getAll()->get()->toArray();
+
+        $EventData = new EventData($date, $event, 'summary', $event['user_id']);
+        $EventData->setCategories($categories)->setParks($parks);
+
+        $materialDisplayMode = Config::getSettings('eventSummary')['materialDisplayMode'];
+        if ($materialDisplayMode === 'sub-categories') {
+            $materialList = $EventData->getMaterialBySubCategories(true);
+        } elseif ($materialDisplayMode === 'parks' && count($parks) > 1) {
+            $materialList = $EventData->getMaterialByParks(true);
+        } else {
+            $materialList = $EventData->getMaterials();
+        }
 
         $data = [
             'event' => $event,
@@ -297,8 +311,9 @@ class Event extends BaseModel
             'company' => Config::getSettings('companyData'),
             'currency' => Config::getSettings('currency')['iso'],
             'currencyName' => Config::getSettings('currency')['name'],
-            'materialBySubCategories' => $EventBill->getMaterialBySubCategories($categories),
-            'replacementAmount' => $EventBill->getReplacementAmount(),
+            'materialList' => $materialList,
+            'materialDisplayMode' => $materialDisplayMode,
+            'replacementAmount' => $EventData->getReplacementAmount(),
         ];
 
         $eventPdf = $this->_getPdfAsString($data);

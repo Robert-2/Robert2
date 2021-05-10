@@ -24,6 +24,10 @@ Corrige un bug avec l'authentification CAS.
 - Corrige les problèmes d'affichage de la page de gestion des caractéristiques spéciales de matériel (#133).
 - Empêche la suppression d'un événement si celui-ci est confirmé, même si la poubelle est affichée (#137).
 - Corrige le problème d'affichage des titres des pages quand on change d'onglet (#142).
+- Affiche la description de l'événement dans la fiche de sortie en PDF et améliore son affichage à
+  l'étape 5 de la modification d'événement (#139).
+- Permet la configuration du type d'affichage du matériel dans les fiches de sortie, pour le classer soit par
+  sous-catégories, soit par parcs, ou bien sans classement particulier (#139).
 
 - Adapte la page de login avec le terme "Premium" sous le logo, et la licence fermée dans le footer.
 - Affiche un message dans la page des disponibilités quand le matériel n'est jamais sorti (Premium #35).

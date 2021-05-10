@@ -202,7 +202,7 @@
     </table>
 </div>
 
-<table class="size7">
+<table class="listing-table">
     <thead>
         <tr>
             <th>{{ translate('ref') }}</th>
@@ -214,32 +214,18 @@
         </tr>
     </thead>
     <tbody>
-        {% for subCategory in materialBySubCategories %}
+        {% for subCategory in materialList %}
             <tr>
-                <td></td>
-                <td class="lighter">{{ subCategory['name'] }}</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td class="section-title" colspan="6">
+                    {% if subCategory['name'] == '---' %}
+                    {{ translate('otherMaterials') }}
+                    {% else %}
+                    {{ subCategory['name'] }}
+                    {% endif %}
+                </td>
             </tr>
             {% for material in subCategory['materials'] %}
-            <tr>
-                <td style="border-top:none;">{{ material['reference'] }}</td>
-                <td style="border-top:none;">{{ material['name'] }}</td>
-                <td style="border-top:none;" class="center">
-                    {{ material['quantity'] }}
-                </td>
-                <td style="border-top:none;" class="right">
-                    {{ material['rentalPrice']|format_currency(currency, formatCurrencyOptions, locale) }}
-                </td>
-                <td style="border-top:none;" class="right">
-                    {{ material['replacementPrice']|format_currency(currency, formatCurrencyOptions, locale) }}
-                </td>
-                <td style="border-top:none;" class="right">
-                    {{ material['total']|format_currency(currency, formatCurrencyOptions, locale) }}
-                </td>
-            </tr>
+                {{ include('blocks/materials/line-bill-estimate.twig', { material: material }) }}
             {% endfor %}
         {% endfor %}
     </tbody>

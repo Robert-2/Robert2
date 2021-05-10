@@ -67,6 +67,10 @@
       &:first-child > td {
         border-top: 1px solid $list-left-border-color;
       }
+
+      &:hover {
+        background: rgba(#fff, .05);
+      }
     }
   }
 
