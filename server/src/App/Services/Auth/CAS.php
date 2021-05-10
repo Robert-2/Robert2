@@ -217,10 +217,10 @@ final class CAS implements AuthenticatorInterface
         }
 
         return User::new([
-            'pseudo'         => $pseudo,
-            'email'          => $email,
-            'group_id'       => $group ?? 'member',
-            'password'       => Uuid::uuid4()->toString(),
+            'pseudo' => $pseudo,
+            'email' => $email,
+            'group_id' => $group ?? 'visitor',
+            'password' => Uuid::uuid4()->toString(),
             'cas_identifier' => $identifier,
         ]);
     }
