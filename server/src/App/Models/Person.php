@@ -257,7 +257,8 @@ class Person extends BaseModel
 
         if ($this->searchField === 'full_name') {
             $group = function (Builder $query) use ($term) {
-                $query->orWhere('first_name', 'like', $term)
+                $query
+                    ->orWhere('first_name', 'like', $term)
                     ->orWhere('last_name', 'like', $term);
             };
             return $builder->where($group);
@@ -265,15 +266,21 @@ class Person extends BaseModel
 
         if ($this->searchField === 'name_reference_or_company') {
             $group = function (Builder $query) use ($term) {
-                $query->orWhere('first_name', 'like', $term)
-                    ->orWhere('last_name', 'like', $term)
-                    ->orWhere('reference', 'like', $term);
+                $subgroup = function (Builder $query) use ($term) {
+                    $query
+                        ->orWhere('first_name', 'like', $term)
+                        ->orWhere('last_name', 'like', $term)
+                        ->orWhere('nickname', 'like', $term)
+                        ->orWhere('reference', 'like', $term);
+                };
+
+                $query
+                    ->where($subgroup)
+                    ->orWhereHas('company', function (Builder $subQuery) use ($term) {
+                        $subQuery->where('companies.legal_name', 'like', $term);
+                    });
             };
-            return $builder
-                ->where($group)
-                ->orWhereHas('company', function (Builder $subQuery) use ($term) {
-                    $subQuery->where('companies.legal_name', 'like', $term);
-                });
+            return $builder->where($group);
         }
 
         return $builder->where($this->searchField, 'like', $term);

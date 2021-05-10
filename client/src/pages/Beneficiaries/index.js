@@ -70,6 +70,23 @@ export default {
     };
   },
   methods: {
+    getBeneficiaryAddress(beneficiary) {
+      const formatAddress = ({ street, postal_code: postalCode, locality }) => {
+        const localityFull = [postalCode, locality].filter(Boolean).join(' ');
+
+        return [street, localityFull]
+          .map((value) => (value ? value.trim() : value))
+          .filter(Boolean)
+          .join('\n');
+      };
+
+      if (beneficiary.street || beneficiary.postal_code || beneficiary.locality) {
+        return formatAddress(beneficiary);
+      }
+
+      return formatAddress(beneficiary.company || {});
+    },
+
     deleteBeneficiary(beneficiaryId) {
       const isSoft = !this.isTrashDisplayed;
       Alert.ConfirmDelete(this.$t, 'beneficiaries', isSoft)

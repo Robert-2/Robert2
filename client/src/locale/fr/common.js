@@ -138,7 +138,7 @@ export default {
   'set-event-confirmed': "Confirmer l'événement",
   'set-back-event-pending': "Remettre l'événement en attente",
   'print': "Imprimer",
-  'print-summary': "Imprimer ce récap",
+  'print-summary': "Imprimer ce récapitulatif",
   'in': "À",
   'open-in-openstreetmap': "Rechercher dans OpenStreetMap",
   'on-date': "Le {date}",
