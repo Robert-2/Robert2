@@ -20,6 +20,10 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Corrige les problèmes d'affichage de la page de gestion des caractéristiques spéciales de matériel (#133).
 - Empêche la suppression d'un événement si celui-ci est confirmé, même si la poubelle est affichée (#137).
 - Corrige le problème d'affichage des titres des pages quand on change d'onglet (#142).
+- Affiche la description de l'événement dans la fiche de sortie en PDF et améliore son affichage à
+  l'étape 5 de la modification d'événement (#139).
+- Permet la configuration du type d'affichage du matériel dans les fiches de sortie, pour le classer soit par
+  sous-catégories, soit par parcs, ou bien sans classement particulier (#139).
 
 ## 0.12.0 (2021-03-29)
 

@@ -5,8 +5,9 @@ namespace Robert2\Lib\Domain;
 
 use Robert2\API\Config\Config;
 
-class EventEstimate
+class EventData
 {
+    public $billNumber;
     public $date;
     public $userId;
     public $eventId;
@@ -19,11 +20,11 @@ class EventEstimate
     protected $_eventData;
     protected $materials;
 
-    public function __construct(\DateTime $date, array $event, ?int $userId = null)
+    public function __construct(\DateTime $date, array $event, string $billNumber, ?int $userId = null)
     {
         if (empty($event) || empty($event['beneficiaries']) || empty($event['materials'])) {
             throw new \InvalidArgumentException(
-                "Cannot create EventEstimate value-object without complete event's data."
+                "Cannot create EventData value-object without complete event's data."
             );
         }
 
@@ -35,6 +36,7 @@ class EventEstimate
         $this->eventId = $event['id'];
         $this->vatRate = (float)Config::getSettings('companyData')['vatRate'];
         $this->materials = $event['materials'];
+        $this->billNumber = $billNumber;
 
         $this->_setDaysCount();
         $this->_setDegressiveRate();
@@ -131,7 +133,7 @@ class EventEstimate
         return array_values($categoriesTotals);
     }
 
-    public function getMaterialBySubCategories(array $categories): array
+    public function getMaterialBySubCategories(array $categories, bool $withHidden = false): array
     {
         $subCategoriesMaterials = [];
         foreach ($this->materials as $material) {
@@ -139,7 +141,7 @@ class EventEstimate
 
             $isHidden = $material['is_hidden_on_bill'];
             $price = $material['rental_price'];
-            if ($isHidden && $price === 0.0) {
+            if ($isHidden && $price === 0.0 && !$withHidden) {
                 continue;
             }
 
@@ -166,6 +168,43 @@ class EventEstimate
         }
 
         return array_reverse(array_values($subCategoriesMaterials));
+    }
+
+    public function getMaterialByParks(array $parks, bool $withHidden = false)
+    {
+        $parksMaterials = [];
+        foreach ($this->materials as $material) {
+            $parkId = $material['park_id'];
+
+            $isHidden = $material['is_hidden_on_bill'];
+            $price = $material['rental_price'];
+            if ($isHidden && $price === 0.0 && !$withHidden) {
+                continue;
+            }
+
+            if (!isset($parksMaterials[$parkId])) {
+                $parksMaterials[$parkId] = [
+                    'id' => $parkId,
+                    'name' => static::getParkName($parks, $parkId),
+                    'materials' => [],
+                ];
+            }
+
+            $quantity = $material['pivot']['quantity'];
+            $replacementPrice = $material['replacement_price'];
+
+            $parksMaterials[$parkId]['materials'][] = [
+                'reference' => $material['reference'],
+                'name' => $material['name'],
+                'quantity' => $quantity,
+                'rentalPrice' => $price,
+                'replacementPrice' => $replacementPrice,
+                'total' => $price * $quantity,
+                'totalReplacementPrice' => $replacementPrice * $quantity,
+            ];
+        }
+
+        return array_values($parksMaterials);
     }
 
     public function getMaterials()
@@ -195,6 +234,7 @@ class EventEstimate
         $totals = $this->_calcTotals();
 
         return [
+            'number' => $this->billNumber,
             'date' => $this->date->format('Y-m-d H:i:s'),
             'event_id' => $this->eventId,
             'beneficiary_id' => $this->beneficiaryId,
@@ -214,6 +254,7 @@ class EventEstimate
         $totals = $this->_calcTotals();
 
         return [
+            'number' => $this->billNumber,
             'date' => $this->date,
             'event' => $this->_eventData,
             'dailyAmount' => $totals['dailyAmount'],
@@ -230,12 +271,21 @@ class EventEstimate
             'totalInclVat' => round($totals['dailyTotalVat'] * $this->degressiveRate, 2),
             'totalReplacement' => $this->getReplacementAmount(),
             'categoriesSubTotals' => $this->getCategoriesTotals($categories),
-            'materialBySubCategories' => $this->getMaterialBySubCategories($categories),
+            'materialList' => $this->getMaterialBySubCategories($categories),
             'company' => Config::getSettings('companyData'),
             'locale' => Config::getSettings('defaultLang'),
             'currency' => Config::getSettings('currency')['iso'],
             'currencyName' => Config::getSettings('currency')['name'],
         ];
+    }
+
+    public static function createBillNumber(\DateTime $date, int $lastBillNumber): string
+    {
+        return sprintf(
+            '%s-%05d',
+            $date->format('Y'),
+            $lastBillNumber + 1
+        );
     }
 
     // ------------------------------------------------------
@@ -322,9 +372,7 @@ class EventEstimate
     protected function getSubCategoryName(array $categories, int $subCategoryId): string
     {
         if (empty($categories)) {
-            throw new \InvalidArgumentException(
-                "Missing categories data."
-            );
+            throw new \InvalidArgumentException("Missing categories data.");
         }
 
         foreach ($categories as $category) {
@@ -332,6 +380,20 @@ class EventEstimate
                 if ($subCategoryId === $subCategory['id']) {
                     return $subCategory['name'];
                 }
+            }
+        }
+        return '---';
+    }
+
+    protected static function getParkName(array $parks, int $parkId): string
+    {
+        if (empty($parks)) {
+            throw new \InvalidArgumentException("Missing parks data.");
+        }
+
+        foreach ($parks as $park) {
+            if ($parkId === $park['id']) {
+                return $park['name'];
             }
         }
         return '---';

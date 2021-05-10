@@ -39,6 +39,9 @@ class Config
         'auth' => [
             'cookie' => 'auth',
         ],
+        'eventSummary' => [
+            'materialDisplayMode' => 'sub-categories', // - ['flat', 'sub-categories', 'parks']
+        ],
         'currency' => [
           'symbol' => '€',
           'name' => 'Euro',

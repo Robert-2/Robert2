@@ -8,7 +8,7 @@ use Robert2\API\Config\Config;
 use Robert2\API\Models\Traits\WithPdf;
 use Robert2\API\Services\I18n;
 use Robert2\API\Validation\Validator as V;
-use Robert2\Lib\Domain\EventBill;
+use Robert2\Lib\Domain\EventData;
 
 class Bill extends BaseModel
 {
@@ -123,11 +123,11 @@ class Bill extends BaseModel
             throw new \InvalidArgumentException("Event is not billable.");
         }
 
-        $newNumber = EventBill::createNumber($date, $this->getLastBillNumber());
-        $EventBill = new EventBill($date, $eventData, $newNumber, $userId);
-        $EventBill->setDiscountRate($discountRate);
+        $newNumber = EventData::createBillNumber($date, $this->getLastBillNumber());
+        $EventData = new EventData($date, $eventData, $newNumber, $userId);
+        $EventData->setDiscountRate($discountRate);
 
-        $newBillData = $EventBill->toModelArray();
+        $newBillData = $EventData->toModelArray();
 
         $this->deleteByNumber($newBillData['number']);
 
@@ -168,12 +168,12 @@ class Bill extends BaseModel
             ->find($bill->event_id)
             ->toArray();
 
-        $EventBill = new EventBill($date, $eventData, $bill->number, $bill->user_id);
-        $EventBill->setDiscountRate($bill->discount_rate);
+        $EventData = new EventData($date, $eventData, $bill->number, $bill->user_id);
+        $EventData->setDiscountRate($bill->discount_rate);
 
         $categories = (new Category())->getAll()->get()->toArray();
 
-        $billPdf = $this->_getPdfAsString($EventBill->toPdfTemplateArray($categories));
+        $billPdf = $this->_getPdfAsString($EventData->toPdfTemplateArray($categories));
         if (!$billPdf) {
             $lastError = error_get_last();
             throw new \RuntimeException(sprintf(
