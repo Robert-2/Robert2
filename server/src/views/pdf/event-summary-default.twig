@@ -32,7 +32,7 @@
             <p>{{ translate('thisEventIsConfirmed') }}</p>
             {% endif %}
         </td>
-        <td class="third">
+        <td class="third indent5">
             {% if event['location'] %}
             <h2 class="spaceBottom5">{{ translate('location', [event['location']]) }}</h2>
             {% endif %}
@@ -75,7 +75,7 @@
             {% endif %}
         </td>
         {% if event['beneficiaries'][1] is defined %}
-        <td class="third">
+        <td class="third indent5">
             <h3>{{ translate('otherBeneficiaries') }}</h3>
             <ul class="indent5 spaceBottom5">
                 {% for otherBeneficiary in event['beneficiaries'] %}
@@ -110,17 +110,13 @@
     <tbody>
         {% for subCategory in materialBySubCategories %}
             <tr>
-                <td></td>
-                <td class="sub-category-line">
+                <td class="sub-category-line" colspan="5">
                     {% if subCategory['name'] == '---' %}
                     {{ translate('otherMaterials') }}
                     {% else %}
                     {{ subCategory['name'] }}
                     {% endif %}
                 </td>
-                <td></td>
-                <td></td>
-                <td></td>
             </tr>
             {% for material in subCategory['materials'] %}
             <tr>
