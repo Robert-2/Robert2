@@ -204,6 +204,7 @@ export default {
       'currently-out': "Actuellement sorti",
       'done': "Terminé",
       'expected-to-be-out-on': "Sortie prévue le {date}",
+      'this-material-has-never-been-out-yet': "Ce matériel n'est encore jamais sorti.",
     },
     'add-unit': "Ajouter une unité",
   },

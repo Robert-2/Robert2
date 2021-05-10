@@ -26,6 +26,7 @@ Corrige un bug avec l'authentification CAS.
 - Corrige le problème d'affichage des titres des pages quand on change d'onglet (#142).
 
 - Adapte la page de login avec le terme "Premium" sous le logo, et la licence fermée dans le footer.
+- Affiche un message dans la page des disponibilités quand le matériel n'est jamais sorti (Premium #35).
 
 ## 0.12.2-premium (2021-04-19)
 

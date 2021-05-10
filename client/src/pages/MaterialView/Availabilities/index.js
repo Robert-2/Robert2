@@ -1,4 +1,5 @@
 import moment from 'moment';
+import Help from '@/components/Help/Help.vue';
 import Timeline from '@/components/Timeline';
 import ModalConfig from '@/config/modalConfig';
 import store from '@/store';
@@ -11,6 +12,7 @@ const ONE_DAY = 1000 * 3600 * 24;
 export default {
   name: 'MaterialViewAvailabilities',
   components: {
+    Help,
     Timeline,
     EventDetails,
     MaterialAvailabilitiesItem,
@@ -56,6 +58,7 @@ export default {
           this.materialEventsTimeline = data.map(
             (event) => formatEvent(event, this.$t),
           );
+          this.isLoading = false;
         })
         .catch((error) => {
           this.showError(error);
