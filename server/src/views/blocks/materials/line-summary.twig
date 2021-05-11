@@ -8,6 +8,19 @@
         {% if material['park'] is not null %}
             <em class="lighter">({{ material['park'] }})</em>
         {% endif %}
+
+        {% if material['units'] is not null %}
+            <ul style="margin: 1mm 0; padding-left: 6mm;">
+            {% for unit in material['units'] %}
+                <li>
+                    {{ unit['name'] }}
+                    {% if unit['park'] is not null %}
+                        <em class="lighter">({{ unit['park'] }})</em>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
     </td>
     <td class="center">
         {{ material['quantity'] }}

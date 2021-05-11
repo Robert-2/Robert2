@@ -171,12 +171,30 @@ class EventData
             $quantity = $material['pivot']['quantity'];
             $replacementPrice = $material['replacement_price'];
 
+            $units = null;
+            if ($material['is_unitary']) {
+                $units = [];
+                foreach ($material['pivot']['units'] as $unitId) {
+                    $unit = current(array_filter($material['units'], function ($unit) use ($unitId) {
+                        return $unit['id'] === $unitId;
+                    }));
+
+                    if ($unit) {
+                        $units[] = [
+                            'name' => $unit['serial_number'],
+                            'park' => count($this->parks) > 1 ? $this->getParkName($unit['park_id']) : null,
+                        ];
+                    }
+                }
+            }
+
             $withPark = count($this->parks) > 1 && !empty($material['park_id']);
 
             $subCategoriesMaterials[$subCategoryId]['materials'][$reference] = [
                 'reference' => $reference,
                 'name' => $material['name'],
                 'park' => $withPark ? $this->getParkName($material['park_id']) : null,
+                'units' => $units,
                 'quantity' => $quantity,
                 'rentalPrice' => $price,
                 'replacementPrice' => $replacementPrice,
@@ -205,6 +223,56 @@ class EventData
             $reference = $material['reference'];
             $replacementPrice = $material['replacement_price'];
 
+            if ($material['is_unitary']) {
+                $units = [];
+                foreach ($material['pivot']['units'] as $unitId) {
+                    $unit = current(array_filter($material['units'], function ($unit) use ($unitId) {
+                        return $unit['id'] === $unitId;
+                    }));
+
+                    if (!$unit) {
+                        continue;
+                    }
+
+                    $unitParkId = $unit['park_id'];
+
+                    if (!isset($parksMaterials[$unitParkId])) {
+                        $parksMaterials[$unitParkId] = [
+                            'id' => $unitParkId,
+                            'name' => $this->getParkName($unitParkId),
+                            'materials' => [],
+                        ];
+                    }
+
+                    $unitData = [
+                        'name' => $unit['serial_number'],
+                        'park' => null,
+                    ];
+
+                    $quantity = 1;
+                    if (isset($parksMaterials[$unitParkId]['materials'][$reference])) {
+                        $quantity += 1;
+                        $units[] = $unitData;
+                    } else {
+                        $units = [$unitData];
+                    }
+
+                    $parksMaterials[$unitParkId]['materials'][$reference] = [
+                        'reference' => $reference,
+                        'name' => $material['name'],
+                        'park' => null,
+                        'units' => $units,
+                        'quantity' => $quantity,
+                        'rentalPrice' => $price,
+                        'replacementPrice' => $replacementPrice,
+                        'total' => $price,
+                        'totalReplacementPrice' => $replacementPrice * $quantity,
+                    ];
+                }
+
+                continue;
+            }
+
             $parkId = $material['park_id'];
             $quantity = $material['pivot']['quantity'];
 
@@ -220,6 +288,7 @@ class EventData
                 'reference' => $reference,
                 'name' => $material['name'],
                 'park' => null,
+                'units' => null,
                 'quantity' => $quantity,
                 'rentalPrice' => $price,
                 'replacementPrice' => $replacementPrice,
