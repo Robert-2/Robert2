@@ -86,6 +86,8 @@ class Event extends BaseModel
     public function Assignees()
     {
         return $this->belongsToMany('Robert2\API\Models\Person', 'event_assignees')
+            ->using('Robert2\API\Models\EventAssignee')
+            ->withPivot('id', 'position')
             ->select(['persons.id', 'first_name', 'last_name', 'phone', 'nickname'])
             ->orderBy('last_name');
     }

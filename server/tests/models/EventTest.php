@@ -187,6 +187,41 @@ final class EventTest extends ModelTestCase
         $Event = $this->model::find(1);
         $results = $Event->assignees;
         $this->assertCount(2, $results);
+        $expected = [
+            [
+                'id' => 1,
+                'first_name' => 'Jean',
+                'last_name' => 'Fountain',
+                'phone' => null,
+                'nickname' => null,
+                'full_name' => 'Jean Fountain',
+                'country' => null,
+                'company' => null,
+                'pivot' => [
+                    'id' => 1,
+                    'event_id' => 1,
+                    'person_id' => 1,
+                    'position' => 'Régisseur',
+                ]
+            ],
+            [
+                'id' => 2,
+                'first_name' => 'Roger',
+                'last_name' => 'Rabbit',
+                'phone' => null,
+                'nickname' => 'Riri',
+                'full_name' => 'Roger Rabbit',
+                'country' => null,
+                'company' => null,
+                'pivot' => [
+                    'id' => 2,
+                    'event_id' => 1,
+                    'person_id' => 2,
+                    'position' => 'Technicien plateau',
+                ]
+            ],
+        ];
+        $this->assertEquals($expected, $results);
     }
 
     public function testGetBeneficiaries(): void

@@ -163,6 +163,7 @@ export default {
   'warning-no-estimate-before-billing': "Attention, cet événement n'a pas eu de devis\u00a0!",
   'warning-event-has-bill': "Attention, cet événement a déjà une facture\u00a0!",
   'missing-beneficiary': "Bénéficiaire manquant",
+  'position-held': "Poste occupé",
   'not-billable-help': "Vous ne pouvez pas créer de devis ou facture pour un événement qui n'a pas encore de bénéficiaire.",
   'click-edit-to-create-one': "Cliquez sur le bouton «\u00a0Modifier\u00a0» pour en ajouter un.",
   'bill-number-generated-at': "Facture n° {number}, générée le {date}",
