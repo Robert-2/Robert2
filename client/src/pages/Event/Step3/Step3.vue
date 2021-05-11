@@ -14,6 +14,9 @@
         createItemPath="/technicians/new"
         :formatOptions="formatItemOptions"
         :getItemLabel="getItemLabel"
+        pivotField="position"
+        :pivotPlaceholder="$t('position-held')"
+        @pivotsUpdated="updatePivots"
       />
     </section>
     <section class="Form__actions">

@@ -14,12 +14,20 @@ export default {
     createItemPath: String,
     formatOptions: Function,
     getItemLabel: Function,
+    pivotField: String,
+    pivotPlaceholder: String,
   },
   data() {
     const defaultItem = { value: null, label: this.$t('please-choose') };
 
+    let itemsPivots = [];
+    if (this.pivotField) {
+      itemsPivots = this.selectedItems.map((item) => item.pivot[this.pivotField]);
+    }
+
     return {
       itemsIds: this.selectedItems.map((item) => item.id),
+      itemsPivots,
       notSavedSelectedItems: [...this.selectedItems],
       minSearchCharacters: 2,
       askNewItem: false,
@@ -58,6 +66,11 @@ export default {
         });
     }, DEBOUNCE_WAIT),
 
+    handlePivotChange(index, value) {
+      this.itemsPivots[index] = value;
+      this.$emit('pivotsUpdated', this.itemsPivots);
+    },
+
     startAddItem(e) {
       e.preventDefault();
       this.askNewItem = true;
@@ -84,7 +97,7 @@ export default {
       this.newItem = this.defaultItem;
     },
 
-    removeItem(id) {
+    removeItem(id, index) {
       this.itemsIds = this.itemsIds.filter(
         (_id) => _id !== id,
       );
@@ -92,6 +105,13 @@ export default {
         (item) => item.id !== id,
       );
       this.$emit('itemsUpdated', this.itemsIds);
+
+      if (this.pivotField && this.itemsPivots.length > 0) {
+        this.itemsPivots = this.itemsPivots.filter(
+          (_value, _index) => _index !== index,
+        );
+        this.$emit('pivotsUpdated', this.itemsPivots);
+      }
     },
   },
 };
