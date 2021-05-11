@@ -163,12 +163,15 @@ class Estimate extends BaseModel
             ->find($estimate->event_id)
             ->toArray();
 
-        $EventData = new EventData($date, $eventData, 'estimate', $estimate->user_id);
-        $EventData->setDiscountRate($estimate->discount_rate);
-
         $categories = (new Category())->getAll()->get()->toArray();
+        $parks = (new Park())->getAll()->get()->toArray();
 
-        $estimatePdf = $this->_getPdfAsString($EventData->toPdfTemplateArray($categories));
+        $EventData = new EventData($date, $eventData, 'estimate', $estimate->user_id);
+        $EventData->setDiscountRate($estimate->discount_rate)
+            ->setCategories($categories)
+            ->setParks($parks);
+
+        $estimatePdf = $this->_getPdfAsString($EventData->toPdfTemplateArray());
         if (!$estimatePdf) {
             $lastError = error_get_last();
             throw new \RuntimeException(sprintf(

@@ -209,7 +209,7 @@
     </table>
 </div>
 
-<table class="size7">
+<table class="listing-table">
     <thead>
         <tr>
             <th>{{ translate('ref') }}</th>
@@ -223,7 +223,7 @@
     <tbody>
         {% for subCategory in materialList %}
             <tr>
-                <td class="lighter" style="border-bottom:1px solid #888;" colspan="6">
+                <td class="section-title" colspan="6">
                     {% if subCategory['name'] == '---' %}
                     {{ translate('otherMaterials') }}
                     {% else %}

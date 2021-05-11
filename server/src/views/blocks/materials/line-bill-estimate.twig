@@ -1,20 +1,20 @@
 <tr>
-    <td style="border-top:none;">
+    <td>
         {{ material['reference'] }}
     </td>
-    <td style="border-top:none;">
+    <td>
         {{ material['name'] }}
     </td>
-    <td style="border-top:none;" class="center">
+    <td class="center">
         {{ material['quantity'] }}
     </td>
-    <td style="border-top:none;" class="right">
+    <td class="right">
         {{ material['rentalPrice']|format_currency(currency, formatCurrencyOptions, locale) }}
     </td>
-    <td style="border-top:none;" class="right">
+    <td class="right">
         {{ material['replacementPrice']|format_currency(currency, formatCurrencyOptions, locale) }}
     </td>
-    <td style="border-top:none;" class="right">
+    <td class="right">
         {{ material['total']|format_currency(currency, formatCurrencyOptions, locale) }}
     </td>
 </tr>

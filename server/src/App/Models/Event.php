@@ -275,15 +275,18 @@ class Event extends BaseModel
             ->toArray();
 
         $date = new \DateTime();
-        $EventData = new EventData($date, $event, 'summary', $event['user_id']);
+
         $categories = (new Category())->getAll()->get()->toArray();
         $parks = (new Park())->getAll()->get()->toArray();
 
+        $EventData = new EventData($date, $event, 'summary', $event['user_id']);
+        $EventData->setCategories($categories)->setParks($parks);
+
         $materialDisplayMode = Config::getSettings('eventSummary')['materialDisplayMode'];
         if ($materialDisplayMode === 'sub-categories') {
-            $materialList = $EventData->getMaterialBySubCategories($categories, true);
+            $materialList = $EventData->getMaterialBySubCategories(true);
         } elseif ($materialDisplayMode === 'parks' && count($parks) > 1) {
-            $materialList = $EventData->getMaterialByParks($parks, true);
+            $materialList = $EventData->getMaterialByParks(true);
         } else {
             $materialList = $EventData->getMaterials();
         }

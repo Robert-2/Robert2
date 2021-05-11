@@ -111,7 +111,7 @@
         {% if materialDisplayMode == 'sub-categories' %}
         {% for subCategory in materialList %}
             <tr>
-                <td class="lighter" style="padding-top: 4mm" colspan="5">
+                <td class="section-title" colspan="5">
                     {% if subCategory['name'] == '---' %}
                     {{ translate('otherMaterials') }}
                     {% else %}
@@ -126,7 +126,7 @@
         {% elseif materialDisplayMode == 'parks' %}
         {% for park in materialList %}
             <tr>
-                <td class="lighter" style="padding-top: 4mm" colspan="5">
+                <td class="section-title" colspan="5">
                     {{ park['name'] }}
                 </td>
             </tr>

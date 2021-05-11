@@ -63,15 +63,30 @@
             border: none;
             padding: 0;
         }
+        .listing-table > thead > tr > th {
+            font-size: 9pt;
+            border-bottom: 1pt solid #888;
+        }
         .listing-table > tbody > tr > td {
             padding: 2mm;
+            font-size: 7pt;
+            border: none;
+            border-bottom: 1pt solid #ccc;
         }
-        .listing-table > tbody > tr:not(:first-child) > td {
-            border-top: 1pt solid #ccc;
+        .listing-table > tbody > tr > td.section-title {
+            padding: 4mm 2mm 2mm;
+            font-size: 9pt;
+            color: #888;
+        }
+        .listing-table > tbody > tr > td:first-child {
+            border-left: 1pt solid #888;
+        }
+        .listing-table > tbody > tr > td:last-child {
+            border-right: 1pt solid #888;
         }
         .inset {
             padding: 5mm 3mm 8mm !important;
-            border: 1px solid #999 !important;
+            border: 1pt solid #999 !important;
         }
         .half { width: 50%; }
         .third { width: 33.33%; }

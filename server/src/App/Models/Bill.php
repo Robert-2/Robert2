@@ -162,18 +162,21 @@ class Bill extends BaseModel
         $bill = static::findOrFail($id);
         $date = new \DateTime($bill->date);
 
-        $eventData = (new Event)
+        $event = (new Event)
             ->with('Beneficiaries')
             ->with('Materials')
             ->find($bill->event_id)
             ->toArray();
 
-        $EventData = new EventData($date, $eventData, $bill->number, $bill->user_id);
-        $EventData->setDiscountRate($bill->discount_rate);
-
         $categories = (new Category())->getAll()->get()->toArray();
+        $parks = (new Park())->getAll()->get()->toArray();
 
-        $billPdf = $this->_getPdfAsString($EventData->toPdfTemplateArray($categories));
+        $EventData = new EventData($date, $event, $bill->number, $bill->user_id);
+        $EventData->setDiscountRate($bill->discount_rate)
+            ->setCategories($categories)
+            ->setParks($parks);
+
+        $billPdf = $this->_getPdfAsString($EventData->toPdfTemplateArray());
         if (!$billPdf) {
             $lastError = error_get_last();
             throw new \RuntimeException(sprintf(

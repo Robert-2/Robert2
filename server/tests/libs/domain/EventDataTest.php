@@ -15,10 +15,8 @@ final class EventDataTest extends ModelTestCase
     public $EventData;
 
     protected $_date;
-    protected $_eventData;
+    protected $_event;
     protected $_number;
-    protected $_categories;
-    protected $_parks;
 
     public function setUp(): void
     {
@@ -41,14 +39,15 @@ final class EventDataTest extends ModelTestCase
             if (!$event) {
                 $this->fail("Unable to find event's data");
             }
-            $this->_eventData = $event->toArray();
+
+            $this->_event = $event->toArray();
 
             $this->_number = sprintf('%s-00001', $this->_date->format('Y'));
 
-            $this->_categories = (new Category())->getAll()->get()->toArray();
-            $this->_parks = (new Park())->getAll()->get()->toArray();
-
-            $this->EventData = new EventData($this->_date, $this->_eventData, $this->_number, 1);
+            $this->EventData = new EventData($this->_date, $this->_event, $this->_number, 1);
+            $this->EventData
+                ->setCategories((new Category())->getAll()->get()->toArray())
+                ->setParks((new Park())->getAll()->get()->toArray());
         } catch (\Exception $e) {
             $this->fail($e->getMessage());
         }
@@ -147,7 +146,7 @@ final class EventDataTest extends ModelTestCase
 
     public function testGetCategoriesTotals()
     {
-        $result = $this->EventData->getCategoriesTotals($this->_categories);
+        $result = $this->EventData->getCategoriesTotals();
         $expected = [
             ['id' => 2, 'name' => "light", 'quantity' => 1, 'subTotal' => 15.95],
             ['id' => 1, 'name' => "sound", 'quantity' => 2, 'subTotal' => 325.5],
@@ -157,15 +156,16 @@ final class EventDataTest extends ModelTestCase
 
     public function testGetMaterialBySubCategories()
     {
-        $result = $this->EventData->getMaterialBySubCategories($this->_categories);
+        $result = $this->EventData->getMaterialBySubCategories();
         $expected = [
             [
                 'id' => 1,
                 'name' => 'mixers',
                 'materials' => [
-                    [
+                    'CL3' => [
                         'reference' => 'CL3',
                         'name' => 'Console Yamaha CL3',
+                        'park' => 'default',
                         'quantity' => 1,
                         'rentalPrice' => 300.0,
                         'replacementPrice' => 19400.0,
@@ -178,9 +178,10 @@ final class EventDataTest extends ModelTestCase
                 'id' => 2,
                 'name' => 'processors',
                 'materials' => [
-                    [
+                    'DBXPA2' => [
                         'reference' => 'DBXPA2',
                         'name' => 'Processeur DBX PA2',
+                        'park' => 'default',
                         'quantity' => 1,
                         'rentalPrice' => 25.5,
                         'replacementPrice' => 349.9,
@@ -193,9 +194,10 @@ final class EventDataTest extends ModelTestCase
                 'id' => 4,
                 'name' => 'dimmers',
                 'materials' => [
-                    [
+                    'SDS-6-01' => [
                         'reference' => 'SDS-6-01',
                         'name' => 'Showtec SDS-6',
+                        'park' => 'default',
                         'quantity' => 1,
                         'rentalPrice' => 15.95,
                         'replacementPrice' => 59.0,
@@ -210,38 +212,41 @@ final class EventDataTest extends ModelTestCase
 
     public function testGetMaterialByParks()
     {
-        $result = $this->EventData->getMaterialByParks($this->_parks);
+        $result = $this->EventData->getMaterialByParks();
         $expected = [
             [
                 'id' => 1,
                 'name' => 'default',
                 'materials' => [
-                    [
-                        'reference' => 'SDS-6-01',
-                        'name' => 'Showtec SDS-6',
+                    'CL3' => [
+                        'reference' => 'CL3',
+                        'name' => 'Console Yamaha CL3',
+                        'park' => null,
                         'quantity' => 1,
-                        'rentalPrice' => 15.95,
-                        'replacementPrice' => 59.0,
-                        'total' => 15.95,
-                        'totalReplacementPrice' => 59.0,
+                        'rentalPrice' => 300.0,
+                        'replacementPrice' => 19400.0,
+                        'total' => 300.0,
+                        'totalReplacementPrice' => 19400.0,
                     ],
-                    [
+                    'DBXPA2' => [
                         'reference' => 'DBXPA2',
                         'name' => 'Processeur DBX PA2',
+                        'park' => null,
                         'quantity' => 1,
                         'rentalPrice' => 25.5,
                         'replacementPrice' => 349.9,
                         'total' => 25.5,
                         'totalReplacementPrice' => 349.9,
                     ],
-                    [
-                        'reference' => 'CL3',
-                        'name' => 'Console Yamaha CL3',
+                    'SDS-6-01' => [
+                        'reference' => 'SDS-6-01',
+                        'name' => 'Showtec SDS-6',
+                        'park' => null,
                         'quantity' => 1,
-                        'rentalPrice' => 300.0,
-                        'replacementPrice' => 19400.0,
-                        'total' => 300.0,
-                        'totalReplacementPrice' => 19400.0,
+                        'rentalPrice' => 15.95,
+                        'replacementPrice' => 59.0,
+                        'total' => 15.95,
+                        'totalReplacementPrice' => 59.0,
                     ],
                 ],
             ],
@@ -345,11 +350,11 @@ final class EventDataTest extends ModelTestCase
                     'quantity' => 1,
                 ],
             ],
-            'degressive_rate' => 1.75,
-            'discount_rate' => 0.0,
-            'vat_rate' => 20.0,
-            'due_amount' => 597.54,
-            'replacement_amount' => 19808.9,
+            'degressive_rate' => '1.75',
+            'discount_rate' => '0',
+            'vat_rate' => '20',
+            'due_amount' => '597.54',
+            'replacement_amount' => '19808.9',
             'currency' => Config::getSettings('currency')['iso'],
             'user_id' => 1,
         ];
@@ -419,11 +424,11 @@ final class EventDataTest extends ModelTestCase
 
     public function testToPdfTemplateArray()
     {
-        $result = $this->EventData->toPdfTemplateArray($this->_categories);
+        $result = $this->EventData->toPdfTemplateArray();
         $expected = [
             'number' => $this->_number,
             'date' => $this->_date,
-            'event' => $this->_eventData,
+            'event' => $this->_event,
             'dailyAmount' => 341.45,
             'discountableDailyAmount' => 41.45,
             'daysCount' => 2,
@@ -446,9 +451,10 @@ final class EventDataTest extends ModelTestCase
                     'id' => 1,
                     'name' => "mixers",
                     'materials' => [
-                        [
+                        'CL3' => [
                             'reference' => 'CL3',
                             'name' => 'Console Yamaha CL3',
+                            'park' => 'default',
                             'quantity' => 1,
                             'rentalPrice' => 300.0,
                             'replacementPrice' => 19400.0,
@@ -461,9 +467,10 @@ final class EventDataTest extends ModelTestCase
                     'id' => 2,
                     'name' => "processors",
                     'materials' => [
-                        [
+                        'DBXPA2' => [
                             'reference' => 'DBXPA2',
                             'name' => 'Processeur DBX PA2',
+                            'park' => 'default',
                             'quantity' => 1,
                             'rentalPrice' => 25.5,
                             'replacementPrice' => 349.9,
@@ -476,9 +483,10 @@ final class EventDataTest extends ModelTestCase
                     'id' => 4,
                     'name' => "dimmers",
                     'materials' => [
-                        [
+                        'SDS-6-01' => [
                             'reference' => 'SDS-6-01',
                             'name' => 'Showtec SDS-6',
+                            'park' => 'default',
                             'quantity' => 1,
                             'rentalPrice' => 15.95,
                             'replacementPrice' => 59.0,

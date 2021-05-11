@@ -19,6 +19,8 @@ class EventData
 
     protected $_eventData;
     protected $materials;
+    protected $categories;
+    protected $parks;
 
     public function __construct(\DateTime $date, array $event, string $billNumber, ?int $userId = null)
     {
@@ -51,6 +53,18 @@ class EventData
     public function setDiscountRate(float $rate): self
     {
         $this->discountRate = $rate;
+        return $this;
+    }
+
+    public function setCategories(array $categories): self
+    {
+        $this->categories = $categories;
+        return $this;
+    }
+
+    public function setParks(array $parks): self
+    {
+        $this->parks = $parks;
         return $this;
     }
 
@@ -103,7 +117,7 @@ class EventData
         return $total;
     }
 
-    public function getCategoriesTotals(array $categories): array
+    public function getCategoriesTotals(): array
     {
         $categoriesTotals = [];
         foreach ($this->materials as $material) {
@@ -119,7 +133,7 @@ class EventData
             if (!isset($categoriesTotals[$categoryId])) {
                 $categoriesTotals[$categoryId] = [
                     'id' => $categoryId,
-                    'name' => $this->getCategoryName($categories, $categoryId),
+                    'name' => $this->getCategoryName($categoryId),
                     'quantity' => $quantity,
                     'subTotal' => $quantity * $price,
                 ];
@@ -133,32 +147,36 @@ class EventData
         return array_values($categoriesTotals);
     }
 
-    public function getMaterialBySubCategories(array $categories, bool $withHidden = false): array
+    public function getMaterialBySubCategories(bool $withHidden = false): array
     {
         $subCategoriesMaterials = [];
         foreach ($this->materials as $material) {
-            $subCategoryId = $material['sub_category_id'] ?: 0;
-
             $isHidden = $material['is_hidden_on_bill'];
             $price = $material['rental_price'];
             if ($isHidden && $price === 0.0 && !$withHidden) {
                 continue;
             }
 
+            $subCategoryId = $material['sub_category_id'] ?: 0;
+
             if (!isset($subCategoriesMaterials[$subCategoryId])) {
                 $subCategoriesMaterials[$subCategoryId] = [
                     'id' => $subCategoryId,
-                    'name' => $this->getSubCategoryName($categories, $subCategoryId),
+                    'name' => $this->getSubCategoryName($subCategoryId),
                     'materials' => [],
                 ];
             }
 
+            $reference = $material['reference'];
             $quantity = $material['pivot']['quantity'];
             $replacementPrice = $material['replacement_price'];
 
-            $subCategoriesMaterials[$subCategoryId]['materials'][] = [
-                'reference' => $material['reference'],
+            $withPark = count($this->parks) > 1 && !empty($material['park_id']);
+
+            $subCategoriesMaterials[$subCategoryId]['materials'][$reference] = [
+                'reference' => $reference,
                 'name' => $material['name'],
+                'park' => $withPark ? $this->getParkName($material['park_id']) : null,
                 'quantity' => $quantity,
                 'rentalPrice' => $price,
                 'replacementPrice' => $replacementPrice,
@@ -167,41 +185,51 @@ class EventData
             ];
         }
 
+        foreach ($subCategoriesMaterials as $subCategoryId => $content) {
+            ksort($subCategoriesMaterials[$subCategoryId]['materials'], SORT_NATURAL | SORT_FLAG_CASE);
+        }
+
         return array_reverse(array_values($subCategoriesMaterials));
     }
 
-    public function getMaterialByParks(array $parks, bool $withHidden = false)
+    public function getMaterialByParks(bool $withHidden = false)
     {
         $parksMaterials = [];
         foreach ($this->materials as $material) {
-            $parkId = $material['park_id'];
-
             $isHidden = $material['is_hidden_on_bill'];
             $price = $material['rental_price'];
             if ($isHidden && $price === 0.0 && !$withHidden) {
                 continue;
             }
 
+            $reference = $material['reference'];
+            $replacementPrice = $material['replacement_price'];
+
+            $parkId = $material['park_id'];
+            $quantity = $material['pivot']['quantity'];
+
             if (!isset($parksMaterials[$parkId])) {
                 $parksMaterials[$parkId] = [
                     'id' => $parkId,
-                    'name' => static::getParkName($parks, $parkId),
+                    'name' => $this->getParkName($parkId),
                     'materials' => [],
                 ];
             }
 
-            $quantity = $material['pivot']['quantity'];
-            $replacementPrice = $material['replacement_price'];
-
-            $parksMaterials[$parkId]['materials'][] = [
-                'reference' => $material['reference'],
+            $parksMaterials[$parkId]['materials'][$reference] = [
+                'reference' => $reference,
                 'name' => $material['name'],
+                'park' => null,
                 'quantity' => $quantity,
                 'rentalPrice' => $price,
                 'replacementPrice' => $replacementPrice,
                 'total' => $price * $quantity,
                 'totalReplacementPrice' => $replacementPrice * $quantity,
             ];
+        }
+
+        foreach ($parksMaterials as $parkId => $park) {
+            ksort($parksMaterials[$parkId]['materials'], SORT_NATURAL | SORT_FLAG_CASE);
         }
 
         return array_values($parksMaterials);
@@ -249,7 +277,7 @@ class EventData
         ];
     }
 
-    public function toPdfTemplateArray(array $categories): array
+    public function toPdfTemplateArray(): array
     {
         $totals = $this->_calcTotals();
 
@@ -270,8 +298,8 @@ class EventData
             'vatAmount' => round($totals['vatAmount'], 2),
             'totalInclVat' => round($totals['dailyTotalVat'] * $this->degressiveRate, 2),
             'totalReplacement' => $this->getReplacementAmount(),
-            'categoriesSubTotals' => $this->getCategoriesTotals($categories),
-            'materialList' => $this->getMaterialBySubCategories($categories),
+            'categoriesSubTotals' => $this->getCategoriesTotals($this->categories),
+            'materialList' => $this->getMaterialBySubCategories(),
             'company' => Config::getSettings('companyData'),
             'locale' => Config::getSettings('defaultLang'),
             'currency' => Config::getSettings('currency')['iso'],
@@ -353,15 +381,13 @@ class EventData
         );
     }
 
-    protected function getCategoryName(array $categories, int $categoryId): ?string
+    protected function getCategoryName(int $categoryId): ?string
     {
-        if (empty($categories)) {
-            throw new \InvalidArgumentException(
-                "Missing categories data."
-            );
+        if (empty($this->categories)) {
+            throw new \InvalidArgumentException("Missing categories data.");
         }
 
-        foreach ($categories as $category) {
+        foreach ($this->categories as $category) {
             if ($categoryId === $category['id']) {
                 return $category['name'];
             }
@@ -369,13 +395,13 @@ class EventData
         return null;
     }
 
-    protected function getSubCategoryName(array $categories, int $subCategoryId): string
+    protected function getSubCategoryName(int $subCategoryId): string
     {
-        if (empty($categories)) {
+        if (empty($this->categories)) {
             throw new \InvalidArgumentException("Missing categories data.");
         }
 
-        foreach ($categories as $category) {
+        foreach ($this->categories as $category) {
             foreach ($category['sub_categories'] as $subCategory) {
                 if ($subCategoryId === $subCategory['id']) {
                     return $subCategory['name'];
@@ -385,13 +411,13 @@ class EventData
         return '---';
     }
 
-    protected static function getParkName(array $parks, int $parkId): string
+    protected function getParkName(int $parkId): string
     {
-        if (empty($parks)) {
+        if (empty($this->parks)) {
             throw new \InvalidArgumentException("Missing parks data.");
         }
 
-        foreach ($parks as $park) {
+        foreach ($this->parks as $park) {
             if ($parkId === $park['id']) {
                 return $park['name'];
             }
