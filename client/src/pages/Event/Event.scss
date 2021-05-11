@@ -38,19 +38,22 @@
   .EventStep3,
   .EventStep4,
   .EventStep5 {
-    margin-left: 180px;
+    width: 100%;
     min-width: 250px;
-    max-width: $form-max-width;
+    max-width: 600px;
+    margin-left: 180px;
+  }
+
+  .EventStep3 {
+    max-width: 700px;
   }
 
   .EventStep4 {
-    width: 100%;
     max-width: none;
   }
 
   .EventStep5 {
-    width: 100%;
-    max-width: 850px;
+    max-width: 900px;
   }
 }
 

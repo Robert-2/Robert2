@@ -158,6 +158,7 @@ export default {
   'warning-event-has-bill': "Warning, this event already have a bill!",
   'estimate-item-help': "Estimate of {date} at {hour}",
   'missing-beneficiary': "Missing beneficiary",
+  'position-held': "Position held",
   'not-billable-help': "You can't create a bill (or estimate) for an event without at least one beneficiary.",
   'click-edit-to-create-one': "Click on «\u00a0Edit\u00a0» button to add one.",
   'bill-number-generated-at': "Bill n° {number}, generated on {date}",

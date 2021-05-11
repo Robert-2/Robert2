@@ -1,8 +1,8 @@
 {% if person['company'] is not empty %}
-    {{ person['company']['legal_name'] }}<br>
-{% else %}
-    {{ person['full_name'] }}<br>
+    {{ person['company']['legal_name'] }} -
 {% endif %}
+
+{{ person['full_name'] }}<br>
 
 {% if person['street'] is not empty %}
     {{ person['street'] }}<br>

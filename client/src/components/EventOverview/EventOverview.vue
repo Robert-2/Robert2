@@ -1,14 +1,22 @@
 <template>
   <div class="EventOverview">
+    <h1 class="EventOverview__title">{{ event.title }}</h1>
     <div class="EventOverview__header">
-      <h1 class="EventOverview__title">{{ event.title }}</h1>
-      <h2 class="EventOverview__dates-location">
-        <i class="fas fa-map-marker-alt" />
-        <span v-if="event.location">
-          {{ $t('in') }} {{ event.location }},
-        </span>
-        {{ $t('from-date-to-date', fromToDates) }}
-      </h2>
+      <section class="EventOverview__section">
+        <h2 class="EventOverview__dates-location">
+          <i class="fas fa-map-marker-alt" />
+          <span v-if="event.location">
+            {{ $t('in') }} {{ event.location }},
+          </span>
+          {{ $t('from-date-to-date', fromToDates) }}
+        </h2>
+      </section>
+      <section class="EventOverview__section">
+        <h2 class="EventOverview__duration">
+          <i class="far fa-clock" />
+          {{ $t('duration') }} {{ $t('days-count', { duration }, duration) }}
+        </h2>
+      </section>
     </div>
     <p v-if="event.description" class="EventOverview__description">
       <i class="fas fa-clipboard" />
@@ -65,21 +73,13 @@
                   class="EventOverview__info__link"
                   :title="$t('action-edit')"
                 >
-                  {{technician.full_name}}
+                  {{ technician.full_name }}
                 </router-link>
+                <span v-if="technician.pivot.position">
+                  − {{ technician.pivot.position }}
+                </span>
               </li>
             </ul>
-          </dd>
-        </dl>
-      </section>
-      <section class="EventOverview__section">
-        <dl class="EventOverview__info">
-          <dt class="EventOverview__info__term">
-            <i class="far fa-clock" />
-            {{ $t('duration') }}
-          </dt>
-          <dd class="EventOverview__info__value">
-            {{ $t('days-count', { duration }, duration) }}
           </dd>
         </dl>
       </section>

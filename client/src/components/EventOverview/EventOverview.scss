@@ -7,11 +7,9 @@
     margin: $content-padding-small-vertical 0 $info-spacing;
   }
 
-  &__dates-location {
-    margin: 0 0 $info-spacing;
-  }
-
-  &__dates-location {
+  &__dates-location,
+  &__duration {
+    margin: 0;
     font-size: 1.2rem;
   }
 
@@ -29,14 +27,22 @@
   }
 
   &__dates-location,
+  &__duration,
   &__description {
-    .fas {
+    .fas,
+    .far {
       width: 1.5rem;
       margin-right: .5rem;
       margin-bottom: .5rem;
       font-size: 1.2rem;
       text-align: center;
     }
+  }
+
+  &__header,
+  &__main {
+    display: flex;
+    flex-wrap: wrap;
   }
 
   &__main,
@@ -48,11 +54,6 @@
 
   &__missing-materials {
     margin-bottom: $info-spacing;
-  }
-
-  &__main {
-    display: flex;
-    flex-wrap: wrap;
   }
 
   &__section {
