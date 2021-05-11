@@ -25,6 +25,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Permet la configuration du type d'affichage du matériel dans les fiches de sortie, pour le classer soit par
   sous-catégories, soit par parcs, ou bien sans classement particulier (#139).
 - Ajoute la possibilité de renseigner un poste occupé pour chaque technicien d'un événement (#140).
+- Permet l'ajout d'une photo associée au matériel (#138).
 
 ## 0.12.0 (2021-03-29)
 

@@ -111,6 +111,11 @@ class Config
             'application/msword',
             'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
         ],
+        'authorizedImageTypes' => [
+            'image/jpeg',
+            'image/png',
+            'image/webp',
+        ],
     ];
 
     public const SETTINGS_FILE = __DIR__ . '/settings.json';

@@ -43,6 +43,7 @@ return [
         '/parks[/]' => 'ParkController:create',
         '/materials[/]' => 'MaterialController:create',
         '/materials/{id:[0-9]+}/documents[/]' => 'MaterialController:handleUploadDocuments',
+        '/materials/{id:[0-9]+}/picture[/]' => 'MaterialController:handleUploadPicture',
         '/attributes[/]' => 'AttributeController:create',
         '/events[/]' => 'EventController:create',
         '/events/{eventId:[0-9]+}/bill[/]' => 'BillController:create',

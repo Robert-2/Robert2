@@ -324,32 +324,33 @@ final class MaterialTest extends ModelTestCase
     {
         // - Test d'ajout de matériel, avec tags
         $result = $this->model->edit(null, [
-            'name'              => 'Analog Mixing Console Yamaha RM800',
-            'reference'         => 'RM800',
-            'park_id'           => 1,
-            'category_id'       => 1,
-            'rental_price'      => '100.0',
+            'name' => 'Analog Mixing Console Yamaha RM800',
+            'reference' => 'RM800',
+            'park_id' => 1,
+            'category_id' => 1,
+            'rental_price' => '100.0',
             'replacement_price' => '100.6',
-            'stock_quantity'    => 1,
-            'tags'              => ['old matos', 'vintage'],
+            'stock_quantity' => 1,
+            'tags' => ['old matos', 'vintage'],
         ]);
         $expected = [
-            'id'                    => 8,
-            'name'                  => 'Analog Mixing Console Yamaha RM800',
-            'description'           => null,
-            'reference'             => 'RM800',
-            'is_unitary'            => false,
-            'park_id'               => 1,
-            'category_id'           => 1,
-            'sub_category_id'       => null,
+            'id' => 8,
+            'name' => 'Analog Mixing Console Yamaha RM800',
+            'description' => null,
+            'reference' => 'RM800',
+            'is_unitary' => false,
+            'park_id' => 1,
+            'category_id' => 1,
+            'sub_category_id' => null,
             'out_of_order_quantity' => null,
-            'rental_price'          => 100.0,
-            'replacement_price'     => 100.6,
-            'stock_quantity'        => 1,
-            'is_hidden_on_bill'     => false,
-            'is_discountable'       => true,
-            'note'                  => null,
-            'tags'                  => [
+            'rental_price' => 100.0,
+            'replacement_price' => 100.6,
+            'stock_quantity' => 1,
+            'is_hidden_on_bill' => false,
+            'is_discountable' => true,
+            'picture' => null,
+            'note' => null,
+            'tags' => [
                 ['id' => 4, 'name' => 'old matos'],
                 ['id' => 5, 'name' => 'vintage'],
             ],
@@ -357,5 +358,19 @@ final class MaterialTest extends ModelTestCase
         ];
         unset($result->created_at, $result->updated_at, $result->deleted_at);
         $this->assertEquals($expected, $result->toArray());
+    }
+
+    public function testGetPicturePath()
+    {
+        // - Without a picture name
+        $result = $this->model::getPicturePath(1);
+        $this->assertEquals(DATA_FOLDER . DS . 'materials' . DS . '1', $result);
+
+        // - With a picture name
+        $result = $this->model::getPicturePath(1, 'picture.jpg');
+        $this->assertEquals(
+            DATA_FOLDER . DS . 'materials' . DS . '1' . DS . 'picture.jpg',
+            $result
+        );
     }
 }
