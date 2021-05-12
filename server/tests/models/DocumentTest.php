@@ -89,6 +89,11 @@ final class DocumentTest extends ModelTestCase
 
     public function testGetFilePath()
     {
+        // - Without a filename
+        $result = $this->model::getFilePath(1);
+        $this->assertEquals(DATA_FOLDER . DS . 'materials' . DS . '1', $result);
+
+        // - With a filename
         $result = $this->model::getFilePath(1, 'file.pdf');
         $this->assertEquals(
             DATA_FOLDER . DS . 'materials' . DS . '1' . DS . 'file.pdf',

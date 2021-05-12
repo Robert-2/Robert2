@@ -133,6 +133,8 @@ class App
             ->setName('getEventPdf');
         $this->app->get('/documents/{id:[0-9]+}/download[/]', $getActionFqdn('DocumentController:getOne'))
             ->setName('getDocumentFile');
+        $this->app->get('/materials/{id:[0-9]+}/picture[/]', $getActionFqdn('MaterialController:getPicture'))
+            ->setName('getMaterialPicture');
         $this->app->get('/material-units/{id:[0-9]+}/barcode', $getActionFqdn('MaterialUnitController:barCode'));
 
         // - Login services

@@ -173,7 +173,8 @@ export default {
       `Utilisez un nom assez court pour le matériel, et la description pour entrer dans les détails.\n
       Si vous cochez la case «\u00a0identification unitaire\u00a0», vous aurez la possibilité de spécifier des
       unités de ce matériel dans l'onglet «\u00a0unités\u00a0» de la page du matériel, après avoir sauvegardé
-      le présent formulaire.`
+      le présent formulaire.\n
+      La photo du matériel doit être au format JPG, PNG ou WEBP, et ne doit pas dépasser 10\u00a0Mo.`
     ),
     'view': "Détails du matériel «\u00a0{pageSubTitle}\u00a0»",
     'confirm-delete': "Mettre ce matériel à la corbeille\u00a0?",
@@ -185,6 +186,9 @@ export default {
 
   'page-materials-view': {
     'title': "Détails du matériel",
+    'infos': {
+      'click-to-open-image': "Cliquez pour ouvrir l'image en grand dans un nouvel onglet.",
+    },
     'documents': {
       'no-document': "Aucun document pour le moment.",
       'drag-and-drop-files-here': "Glissez-déposez des fichiers ici ↓ pour les ajouter.",

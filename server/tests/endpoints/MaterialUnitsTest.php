@@ -28,6 +28,7 @@ final class MaterialUnitsTest extends ApiTestCase
                 'replacement_price' => 419,
                 'is_hidden_on_bill' => false,
                 'is_discountable' => false,
+                'picture' => null,
                 'note' => null,
                 'attributes' => [
                     [

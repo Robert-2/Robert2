@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
-use Robert2\API\Errors;
 use Robert2\API\Validation\Validator as V;
 
 class Document extends BaseModel

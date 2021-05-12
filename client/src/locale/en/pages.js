@@ -173,7 +173,8 @@ export default {
     'help-edit': (
       `Use a short name for the material and use the description field to enter details.\n
       If you check the box «\u00a0Unitary identification\u00a0», you will be able to specify units
-      of this material in the «\u00a0Units\u00a0» tab of the material page, after saving this form.`
+      of this material in the «\u00a0Units\u00a0» tab of the material page, after saving this form.\n
+      The material picture must be of type JPG, PNG or WEBP, and cannot exceed 10\u00a0MB.`
     ),
     'view': "Details of material «\u00a0{pageSubTitle}\u00a0»",
     'confirm-delete': "Move this material in trash bin?",
@@ -184,6 +185,9 @@ export default {
   },
 
   'page-materials-view': {
+    'infos': {
+      'click-to-open-image': "Click to open image in a new tab.",
+    },
     'documents': {
       'no-document': "No document yet.",
       'drag-and-drop-files-here': "Drag and drop files here ↓ to add them.",

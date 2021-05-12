@@ -29,6 +29,7 @@ Corrige un bug avec l'authentification CAS.
 - Permet la configuration du type d'affichage du matériel dans les fiches de sortie, pour le classer soit par
   sous-catégories, soit par parcs, ou bien sans classement particulier (#139).
 - Ajoute la possibilité de renseigner un poste occupé pour chaque technicien d'un événement (#140).
+- Permet l'ajout d'une photo associée au matériel (#138).
 
 - Adapte la page de login avec le terme "Premium" sous le logo, et la licence fermée dans le footer.
 - Affiche un message dans la page des disponibilités quand le matériel n'est jamais sorti (Premium #35).
