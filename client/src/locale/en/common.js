@@ -114,6 +114,9 @@ export default {
   'display-not-deleted-items': "Display not deleted items",
   'created-at': "Created at:",
   'updated-at': "Updated at:",
+  'add-a-picture': "Add a picture",
+  'change-the-picture': "Change the picture",
+  'remove-the-picture': "Remove the picture",
 
   'event-details': "Event's details",
   'title': "Title",

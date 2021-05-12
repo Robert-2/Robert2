@@ -166,7 +166,11 @@ export default {
     'add': "New material",
     'edit': "Modify material «\u00a0{pageSubTitle}\u00a0»",
     'edit-title': "Modify material",
-    'help-edit': "Give a short name, and use the description field to detail the material if needed.",
+    'help-edit': (
+      `Give a short name, and use the description field to detail the material if needed.
+
+      The material picture must be of type JPG, PNG or WEBP, and cannot exceed 10\u00a0MB.`
+    ),
     'view': "Details of material «\u00a0{pageSubTitle}\u00a0»",
     'confirm-delete': "Move this material in trash bin?",
     'confirm-permanently-delete': "Do you really want to permanently delete this material?",
@@ -176,6 +180,9 @@ export default {
   },
 
   'page-materials-view': {
+    'infos': {
+      'click-to-open-image': "Click to open image in a new tab.",
+    },
     'documents': {
       'no-document': "No document yet.",
       'drag-and-drop-files-here': "Drag and drop files here ↓ to add them.",

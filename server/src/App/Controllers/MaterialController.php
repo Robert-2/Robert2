@@ -159,6 +159,12 @@ class MaterialController extends BaseController
             }
         }
 
+        // - Removing `picture` field because it must be edited
+        //   using handleUploadPicture() method (see below)
+        if (array_key_exists('picture', $postData)) {
+            unset($postData['picture']);
+        }
+
         $result = Material::staticEdit($id, $postData);
 
         if (isset($postData['attributes'])) {
@@ -252,5 +258,73 @@ class MaterialController extends BaseController
             'errors' => $errors,
         ];
         return $response->withJson($result, SUCCESS_OK);
+    }
+
+    public function handleUploadPicture(Request $request, Response $response): Response
+    {
+        $id = (int)$request->getAttribute('id');
+        if (!Material::staticExists($id)) {
+            throw new HttpNotFoundException($request);
+        }
+
+        $file = $request->getUploadedFiles()['picture-0'];
+
+        if (empty($file) || $file->getError() !== UPLOAD_ERR_OK) {
+            throw new \Exception("File upload failed.");
+        }
+
+        $fileType = $file->getClientMediaType();
+        if (!in_array($fileType, Config::getSettings('authorizedImageTypes'))) {
+            throw new \Exception("This file type is not allowed.");
+        }
+
+        $destDirectory = Material::getPicturePath($id);
+        $filename = moveUploadedFile($destDirectory, $file);
+        if (!$filename) {
+            throw new \Exception("Saving file failed.");
+        }
+
+        $materialBefore = Material::find($id)->toArray();
+
+        try {
+            Material::staticEdit($id, ['picture' => $filename]);
+
+            $previousPicture = $materialBefore['picture'];
+            if ($previousPicture !== null && $filename !== $previousPicture) {
+                $filePath = Material::getPicturePath($id, $previousPicture);
+                unlink($filePath);
+            }
+        } catch (\Exception $e) {
+            $filePath = Material::getPicturePath($id, $filename);
+            unlink($filePath);
+            throw new \Exception(sprintf(
+                "Material picture could not be saved in database: %s",
+                $e->getMessage()
+            ));
+        }
+
+        $result = ['saved_files' => 1];
+
+        return $response->withJson($result, SUCCESS_OK);
+    }
+
+    public function getPicture(Request $request, Response $response): Response
+    {
+        $id = (int)$request->getAttribute('id');
+        $model = Material::find($id);
+        if (!$model) {
+            throw new HttpNotFoundException($request);
+        }
+
+        $picturePath = Material::getPicturePath($id, $model->picture);
+
+        $pictureContent = file_get_contents($picturePath);
+        if (!$pictureContent) {
+            throw new HttpNotFoundException($request, "The picture file cannot be found.");
+        }
+
+        $response = $response->write($pictureContent);
+        $mimeType = mime_content_type($picturePath);
+        return $response->withHeader('Content-Type', $mimeType);
     }
 }

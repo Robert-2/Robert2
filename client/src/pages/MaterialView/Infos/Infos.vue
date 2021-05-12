@@ -58,6 +58,19 @@
         <p>{{ material.note }}</p>
       </div>
     </section>
+    <section v-if="material.picture" class="MaterialViewInfos__picture">
+      <a
+        :href="pictureUrl"
+        target="blank"
+        :title="$t('page-materials-view.infos.click-to-open-image')"
+      >
+        <img
+          :src="pictureUrl"
+          :alt="material.picture"
+          class="MaterialViewInfos__picture__img"
+        />
+      </a>
+    </section>
     <section class="MaterialViewInfos__extras">
       <div class="MaterialViewInfos__actions">
         <router-link

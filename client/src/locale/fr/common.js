@@ -114,6 +114,9 @@ export default {
   'display-not-deleted-items': "Afficher les enregistrements non supprimés",
   'created-at': "Créé le\u00a0:",
   'updated-at': "Modifié le\u00a0:",
+  'add-a-picture': "Ajouter une photo",
+  'change-the-picture': "Changer la photo",
+  'remove-the-picture': "Supprimer la photo",
 
   'event-details': "Détails de l'événement",
   'title': "Titre",
