@@ -87,7 +87,7 @@ chmod 777 src/App/Config
 chmod 777 src/install
 
 echo -e "\e[1m\e[34mInstallation des dépendances back...\e[0m"
-query='del(."require-dev")|del(.autoload."psr-4"."Robert2\\Tests\\")|del(.autoload."psr-4"."Robert2\\Fixtures\\")|del(.scripts."create-migration")|del(.scripts."lint")|del(.scripts."test")|del(.scripts."testapi")|del(.scripts."testmodels")|del(.scripts."testother")'
+query='del(."require-dev")|del(.autoload."psr-4"."Robert2\\Tests\\")|del(.autoload."psr-4"."Robert2\\Fixtures\\")|del(.scripts."create-migration")|del(.scripts."lint")|del(.scripts."test")|del(.scripts."testapi")|del(.scripts."testmodels")|del(.scripts."testlibs")|del(.scripts."testother")'
 jq $query composer.json > tmp.composer.json
 mv tmp.composer.json composer.json
 composer update --lock --quiet
