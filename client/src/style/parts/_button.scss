@@ -78,6 +78,26 @@ button,
     }
   }
 
+  &.outline {
+    display: inline-block;
+    padding: calc(.55rem - 1px) calc(.78rem - 1px);
+    background-color: transparent;
+    border: 1px solid $link-base-color;
+    color: $link-base-color;
+    text-decoration: none;
+
+    &:hover, &:focus, &:visited {
+      background-color: darken($bg-color-button-default, 15%);
+      color: $link-hover-color !important;
+      outline: 0;
+    }
+
+    &:active {
+      background-color: darken($bg-color-button-default, 15%);
+      color: $link-base-color;
+    }
+  }
+
   &[disabled] {
     cursor: not-allowed;
     opacity: .6;

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Robert2\Tests;
 
-use Robert2\API\Models;
+use Robert2\API\Models\Attribute;
 
 final class AttributeTest extends ModelTestCase
 {
@@ -11,7 +11,7 @@ final class AttributeTest extends ModelTestCase
     {
         parent::setUp();
 
-        $this->model = new Models\Attribute();
+        $this->model = new Attribute();
     }
 
     public function testTableName(): void
@@ -113,7 +113,7 @@ final class AttributeTest extends ModelTestCase
 
     public function testGetMaterials(): void
     {
-        $Event = $this->model::find(4);
+        $Event = Attribute::find(4);
         $results = $Event->materials;
         $expected = [
             [
@@ -191,6 +191,6 @@ final class AttributeTest extends ModelTestCase
         // - Supprime une caractéristique spéciale
         $this->model->remove(3);
         // - Vérifie qu'elle a bien été supprimée
-        $this->assertEmpty(Models\Attribute::find(3));
+        $this->assertEmpty(Attribute::find(3));
     }
 }

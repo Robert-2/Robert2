@@ -82,7 +82,7 @@ class Tag extends BaseModel
 
     public function getIdsByNames(array $names): array
     {
-        $tags = self::whereIn('name', $names)->get();
+        $tags = static::whereIn('name', $names)->get();
         $ids  = [];
         foreach ($tags as $tag) {
             $ids[] = $tag->id;
@@ -102,7 +102,7 @@ class Tag extends BaseModel
     {
         $tags = array_map(
             function ($tagName) {
-                $existingTag = self::where('name', $tagName)->first();
+                $existingTag = static::where('name', $tagName)->first();
                 if ($existingTag) {
                     return $existingTag;
                 }
@@ -123,9 +123,8 @@ class Tag extends BaseModel
                     }
                 }
             } catch (QueryException $e) {
-                $error = new ValidationException();
-                $error->setPDOValidationException($e);
-                throw $error;
+                throw (new ValidationException)
+                    ->setPDOValidationException($e);
             }
         });
 

@@ -3,9 +3,6 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Robert2\API\Config\Config;
-use Robert2\API\Errors;
 use Robert2\API\Validation\Validator as V;
 
 class Document extends BaseModel
@@ -17,8 +14,6 @@ class Document extends BaseModel
 
     public function __construct(array $attributes = [])
     {
-        Config::getCapsule();
-
         parent::__construct($attributes);
 
         $this->validation = [
@@ -63,7 +58,7 @@ class Document extends BaseModel
 
     public function getFilePathAttribute()
     {
-        return self::getFilePath($this->material_id, $this->name);
+        return static::getFilePath($this->material_id, $this->name);
     }
 
     // ------------------------------------------------------
@@ -85,28 +80,23 @@ class Document extends BaseModel
     // -
     // ------------------------------------------------------
 
-    public function remove(int $id, array $options = []): ?Model
+    public function remove(int $id, array $options = []): ?BaseModel
     {
-        $model = self::find($id);
-        if (empty($model)) {
-            throw new Errors\NotFoundException;
-        }
-
-        $filePath = self::getFilePath((int)$model->material_id, $model->name);
-
-        if (!$model->forceDelete()) {
+        $document = static::findOrFail($id);
+        if (!$document->forceDelete()) {
             throw new \RuntimeException(
                 sprintf("Unable to delete document %d.", $id)
             );
         }
 
+        $filePath = static::getFilePath((int)$document->material_id, $document->name);
         if (!unlink($filePath)) {
             throw new \RuntimeException(
-                sprintf("Unable to delete file '%s' from data folder: %s", $model->name, $filePath)
+                sprintf("Unable to delete file '%s' from data folder: %s", $document->name, $filePath)
             );
         };
 
-        return $model;
+        return $document;
     }
 
     public static function getFilePath(int $materialId, ?string $name = null): string

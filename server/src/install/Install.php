@@ -7,7 +7,7 @@ use Robert2\API\Config as Config;
 
 class Install
 {
-    // See in HomeController for steps execution
+    // See in SetupController for steps execution
     const INSTALL_STEPS = [
         'welcome',
         'coreSettings',

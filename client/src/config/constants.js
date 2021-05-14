@@ -20,6 +20,12 @@ const AUTHORIZED_FILE_TYPES = [
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
 ];
 
+const ALLOWED_IMAGE_TYPES = [
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+];
+
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 
 export {
@@ -28,5 +34,6 @@ export {
   DATE_QUERY_FORMAT,
   DEBOUNCE_WAIT,
   AUTHORIZED_FILE_TYPES,
+  ALLOWED_IMAGE_TYPES,
   MAX_FILE_SIZE,
 };

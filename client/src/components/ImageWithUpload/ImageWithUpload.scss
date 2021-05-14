@@ -1,0 +1,34 @@
+.ImageWithUpload {
+  max-width: 350px;
+
+  &__img {
+    display: block;
+    width: 100%;
+    margin: $content-padding-large-vertical 0 $content-padding-small-vertical;
+  }
+
+  &__actions {
+    text-align: center;
+
+    button {
+      margin: $content-padding-small-horizontal;
+    }
+  }
+
+  &__upload-input {
+    display: none;
+  }
+
+  &__file-error {
+    color: $text-danger-color;
+    font-weight: 600;
+  }
+
+  .Help__loading {
+    justify-content: center;
+  }
+
+  &--empty {
+    max-width: 300px;
+  }
+}

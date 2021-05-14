@@ -17,20 +17,23 @@ class ValidationException extends \Exception
         parent::__construct($message, $code, null);
     }
 
-    public function setValidationErrors($validation)
+    // ------------------------------------------------------
+    // -
+    // -    Setters
+    // -
+    // ------------------------------------------------------
+
+    public function setValidationErrors($validation): self
     {
         $this->_validation = (array)$validation;
-    }
 
-    public function getValidationErrors()
-    {
-        return $this->_validation;
+        return $this;
     }
 
     /**
      * Parses PDO error codes to translate them into error exceptions
      */
-    public function setPDOValidationException(QueryException $e): void
+    public function setPDOValidationException(QueryException $e): self
     {
         $message = "";
         $details = $e->getMessage();
@@ -38,10 +41,24 @@ class ValidationException extends \Exception
         if (isDuplicateException($e)) {
             $this->code = ERROR_DUPLICATE;
             $offsetKeyName = strripos($details, "for key '") + strlen("for key '");
-            $keyNameWithoutUnique = substr($details, $offsetKeyName, - strlen("_UNIQUE'"));
-            $message = "Duplicate entry: index $keyNameWithoutUnique must be unique";
+            $offsetEnd = strripos($details, "' (SQL:");
+            $keyName = substr($details, $offsetKeyName, $offsetEnd - $offsetKeyName);
+            $keyNameWithoutUnique = str_replace('_UNIQUE', '', $keyName);
+            $message = "Duplicate entry: value for index '$keyNameWithoutUnique' must be unique";
         }
-
         $this->setValidationErrors([$message, $details]);
+
+        return $this;
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Getters
+    // -
+    // ------------------------------------------------------
+
+    public function getValidationErrors()
+    {
+        return $this->_validation;
     }
 }

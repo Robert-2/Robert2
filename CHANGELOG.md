@@ -4,6 +4,29 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.13.0 (2021-05-14)
+
+- Corrige un problème avec le nom de la base de données de test (#128 et #129).
+- Ajoute la création / suppression de devis pour les événements (#5).
+- __[CHANGEMENT CRITIQUE]__ Robert2 requiert maintenant au minimum PHP 7.3 pour fonctionner (#78).
+- Ajoute le support de la version 8.0 de PHP (#71).
+- Ajoute la possibilité de renseigner une référence (numéro client) aux bénéficiaires (#122).
+- Améliore les données affichées dans les PDF (fiches de sortie, devis et factures), en y ajoutant la référence
+  (numéro client) du bénéficiaire (voir #122) et les numéros de téléphone des techniciens et des bénéficiaires.
+- Corrige l'affichage des numéros légaux de l'entreprise (SIRET, etc.) sur les devis et factures.
+- Corrige le nom des fichiers uploadés comme documents du matériel pour qu'il conserve son extension (#132).
+- N'affiche plus les tags protégés (tags système) dans la page des étiquettes, pour éviter les confusions (#134).
+- Accorde en nombre le terme "durée X jour(s)" dans les événements (#135).
+- Corrige les problèmes d'affichage de la page de gestion des caractéristiques spéciales de matériel (#133).
+- Empêche la suppression d'un événement si celui-ci est confirmé, même si la poubelle est affichée (#137).
+- Corrige le problème d'affichage des titres des pages quand on change d'onglet (#142).
+- Affiche la description de l'événement dans la fiche de sortie en PDF et améliore son affichage à
+  l'étape 5 de la modification d'événement (#139).
+- Permet la configuration du type d'affichage du matériel dans les fiches de sortie, pour le classer soit par
+  sous-catégories, soit par parcs, ou bien sans classement particulier (#139).
+- Ajoute la possibilité de renseigner un poste occupé pour chaque technicien d'un événement (#140).
+- Permet l'ajout d'une photo associée au matériel (#138).
+
 ## 0.12.0 (2021-03-29)
 
 - Améliore le calcul du matériel restant dans les événements.

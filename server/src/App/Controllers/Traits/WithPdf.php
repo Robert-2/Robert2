@@ -3,32 +3,33 @@ declare(strict_types=1);
 
 namespace Robert2\API\Controllers\Traits;
 
-use Slim\Http\Request;
+use Robert2\API\Controllers\Traits\WithModel;
+use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
-
-use Robert2\API\Errors;
+use Slim\Http\ServerRequest as Request;
 
 trait WithPdf
 {
+    use WithModel;
     use FileResponse;
 
     public function getOnePdf(Request $request, Response $response): Response
     {
         $id = (int)$request->getAttribute('id');
-        $model = $this->model->find($id);
+        $model = $this->getModelClass()::find($id);
         if (!$model) {
-            throw new Errors\NotFoundException();
+            throw new HttpNotFoundException($request);
         }
 
-        if (!method_exists($this->model, 'getPdfName')) {
+        if (!method_exists($model, 'getPdfName')) {
             throw new \RuntimeException("Model used for PDF must implement getPdfName() method.");
         }
-        $fileName = $this->model->getPdfName($id);
+        $fileName = $model->getPdfName($id);
 
-        if (!method_exists($this->model, 'getPdfContent')) {
+        if (!method_exists($model, 'getPdfContent')) {
             throw new \RuntimeException("Model used for PDF must implement getPdfContent() method.");
         }
-        $fileContent = $this->model->getPdfContent($id);
+        $fileContent = $model->getPdfContent($id);
 
         return $this->_responseWithFile($response, $fileName, $fileContent);
     }

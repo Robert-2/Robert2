@@ -29,7 +29,11 @@ describe('formatOptions', () => {
         company: { id: 1, name: 'Testing' },
       },
     ];
-    const getLabel = ({ title, phone, company }) => `${title} ${phone} − ${company?.name || ''}`;
+    const getLabel = ({ title, phone, company }) => {
+      const companyName = company?.name || '';
+      return `${title} ${phone} − ${companyName}`;
+    };
+
     const options = formatOptions(entities, getLabel);
     expect(options).toEqual([
       { value: 1, label: 'test1 0123456789 − ' },

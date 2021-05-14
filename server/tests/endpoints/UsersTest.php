@@ -9,108 +9,110 @@ final class UsersTest extends ApiTestCase
         $this->assertStatusCode(SUCCESS_OK);
         $this->assertResponseData([
             'pagination' => [
-                'current_page'   => 1,
-                'from'           => 1,
-                'last_page'      => 1,
-                'path'           => '/api/users',
+                'current_page' => 1,
+                'from' => 1,
+                'last_page' => 1,
+                'path' => '/api/users',
                 'first_page_url' => '/api/users?page=1',
-                'next_page_url'  => null,
-                'prev_page_url'  => null,
-                'last_page_url'  => '/api/users?page=1',
-                'per_page'       => $this->settings['maxItemsPerPage'],
-                'to'             => 3,
-                'total'          => 3,
+                'next_page_url' => null,
+                'prev_page_url' => null,
+                'last_page_url' => '/api/users?page=1',
+                'per_page' => $this->settings['maxItemsPerPage'],
+                'to' => 3,
+                'total' => 3,
             ],
             'data' => [
                 [
-                    'id'         => 3,
-                    'pseudo'     => 'nobody',
-                    'email'      => 'nobody@robertmanager.net',
-                    'group_id'   => 'member',
+                    'id' => 3,
+                    'pseudo' => 'nobody',
+                    'email' => 'nobody@robertmanager.net',
+                    'group_id' => 'member',
                     'created_at' => null,
                     'updated_at' => null,
                     'deleted_at' => null,
-                    'person'     => null,
+                    'person' => null,
                 ],
                 [
-                    'id'         => 1,
-                    'pseudo'     => 'test1',
-                    'email'      => 'tester@robertmanager.net',
-                    'group_id'   => 'admin',
+                    'id' => 1,
+                    'pseudo' => 'test1',
+                    'email' => 'tester@robertmanager.net',
+                    'group_id' => 'admin',
                     'created_at' => null,
                     'updated_at' => null,
                     'deleted_at' => null,
-                    'person'     => [
-                        'id'          => 1,
-                        'user_id'     => 1,
-                        'first_name'  => 'Jean',
-                        'last_name'   => 'Fountain',
-                        'full_name'   => 'Jean Fountain',
-                        'nickname'    => null,
-                        'email'       => 'tester@robertmanager.net',
-                        'phone'       => null,
-                        'street'      => '1, somewhere av.',
+                    'person' => [
+                        'id' => 1,
+                        'user_id' => 1,
+                        'first_name' => 'Jean',
+                        'last_name' => 'Fountain',
+                        'full_name' => 'Jean Fountain',
+                        'reference' => '0001',
+                        'nickname' => null,
+                        'email' => 'tester@robertmanager.net',
+                        'phone' => null,
+                        'street' => '1, somewhere av.',
                         'postal_code' => '1234',
-                        'locality'    => 'Megacity',
-                        'country_id'  => 1,
-                        'company_id'  => 1,
-                        'note'        => null,
-                        'created_at'  => null,
-                        'updated_at'  => null,
-                        'deleted_at'  => null,
-                        'company'     => [
-                            'id'          => 1,
-                            'legal_name'  => 'Testing, Inc',
-                            'street'      => '1, company st.',
+                        'locality' => 'Megacity',
+                        'country_id' => 1,
+                        'company_id' => 1,
+                        'note' => null,
+                        'created_at' => null,
+                        'updated_at' => null,
+                        'deleted_at' => null,
+                        'company' => [
+                            'id' => 1,
+                            'legal_name' => 'Testing, Inc',
+                            'street' => '1, company st.',
                             'postal_code' => '1234',
-                            'locality'    => 'Megacity',
-                            'country_id'  => 1,
-                            'phone'       => '+4123456789',
-                            'note'        => 'Just for tests',
-                            'created_at'  => null,
-                            'updated_at'  => null,
-                            'deleted_at'  => null,
-                            'country'     => [
-                                'id'   => 1,
+                            'locality' => 'Megacity',
+                            'country_id' => 1,
+                            'phone' => '+4123456789',
+                            'note' => 'Just for tests',
+                            'created_at' => null,
+                            'updated_at' => null,
+                            'deleted_at' => null,
+                            'country' => [
+                                'id' => 1,
                                 'name' => 'France',
                                 'code' => 'FR',
                             ],
                         ],
                         'country' => [
-                            'id'   => 1,
+                            'id' => 1,
                             'name' => 'France',
                             'code' => 'FR',
                         ],
                     ],
                 ],
                 [
-                    'id'         => 2,
-                    'pseudo'     => 'test2',
-                    'email'      => 'tester2@robertmanager.net',
-                    'group_id'   => 'member',
+                    'id' => 2,
+                    'pseudo' => 'test2',
+                    'email' => 'tester2@robertmanager.net',
+                    'group_id' => 'member',
                     'created_at' => null,
                     'updated_at' => null,
                     'deleted_at' => null,
-                    'person'     => [
-                        'id'          => 2,
-                        'user_id'     => 2,
-                        'first_name'  => 'Roger',
-                        'last_name'   => 'Rabbit',
-                        'full_name'   => 'Roger Rabbit',
-                        'nickname'    => 'Riri',
-                        'email'       => 'tester2@robertmanager.net',
-                        'phone'       => null,
-                        'street'      => null,
+                    'person' => [
+                        'id' => 2,
+                        'user_id' => 2,
+                        'first_name' => 'Roger',
+                        'last_name' => 'Rabbit',
+                        'full_name' => 'Roger Rabbit',
+                        'reference' => '0002',
+                        'nickname' => 'Riri',
+                        'email' => 'tester2@robertmanager.net',
+                        'phone' => null,
+                        'street' => null,
                         'postal_code' => null,
-                        'locality'    => null,
-                        'country_id'  => null,
-                        'company_id'  => null,
-                        'note'        => null,
-                        'created_at'  => null,
-                        'updated_at'  => null,
-                        'deleted_at'  => null,
-                        'company'     => null,
-                        'country'     => null,
+                        'locality' => null,
+                        'country_id' => null,
+                        'company_id' => null,
+                        'note' => null,
+                        'created_at' => null,
+                        'updated_at' => null,
+                        'deleted_at' => null,
+                        'company' => null,
+                        'country' => null,
                     ],
                 ],
             ],
@@ -124,8 +126,7 @@ final class UsersTest extends ApiTestCase
     public function testGetUserNotFound()
     {
         $this->client->get('/api/users/9999');
-        $this->assertStatusCode(ERROR_NOT_FOUND);
-        $this->assertNotFoundErrorMessage();
+        $this->assertNotFound();
     }
 
     public function testGetUser()
@@ -133,52 +134,53 @@ final class UsersTest extends ApiTestCase
         $this->client->get('/api/users/1');
         $this->assertStatusCode(SUCCESS_OK);
         $this->assertResponseData([
-            'id'             => 1,
-            'pseudo'         => 'test1',
-            'email'          => 'tester@robertmanager.net',
-            'group_id'       => 'admin',
+            'id' => 1,
+            'pseudo' => 'test1',
+            'email' => 'tester@robertmanager.net',
+            'group_id' => 'admin',
             'cas_identifier' => null,
-            'created_at'     => null,
-            'updated_at'     => null,
-            'deleted_at'     => null,
-            'person'         => [
-                'id'          => 1,
-                'user_id'     => 1,
-                'first_name'  => 'Jean',
-                'last_name'   => 'Fountain',
-                'full_name'   => 'Jean Fountain',
-                'nickname'    => null,
-                'email'       => 'tester@robertmanager.net',
-                'phone'       => null,
-                'street'      => '1, somewhere av.',
+            'created_at' => null,
+            'updated_at' => null,
+            'deleted_at' => null,
+            'person' => [
+                'id' => 1,
+                'user_id' => 1,
+                'first_name' => 'Jean',
+                'last_name' => 'Fountain',
+                'full_name' => 'Jean Fountain',
+                'reference' => '0001',
+                'nickname' => null,
+                'email' => 'tester@robertmanager.net',
+                'phone' => null,
+                'street' => '1, somewhere av.',
                 'postal_code' => '1234',
-                'locality'    => 'Megacity',
-                'country_id'  => 1,
-                'company_id'  => 1,
-                'note'        => null,
-                'created_at'  => null,
-                'updated_at'  => null,
-                'deleted_at'  => null,
-                'company'     => [
-                    'id'          => 1,
-                    'legal_name'  => 'Testing, Inc',
-                    'street'      => '1, company st.',
+                'locality' => 'Megacity',
+                'country_id' => 1,
+                'company_id' => 1,
+                'note' => null,
+                'created_at' => null,
+                'updated_at' => null,
+                'deleted_at' => null,
+                'company' => [
+                    'id' => 1,
+                    'legal_name' => 'Testing, Inc',
+                    'street' => '1, company st.',
                     'postal_code' => '1234',
-                    'locality'    => 'Megacity',
-                    'country_id'  => 1,
-                    'phone'       => '+4123456789',
-                    'note'        => 'Just for tests',
-                    'created_at'  => null,
-                    'updated_at'  => null,
-                    'deleted_at'  => null,
-                    'country'     => [
-                        'id'   => 1,
+                    'locality' => 'Megacity',
+                    'country_id' => 1,
+                    'phone' => '+4123456789',
+                    'note' => 'Just for tests',
+                    'created_at' => null,
+                    'updated_at' => null,
+                    'deleted_at' => null,
+                    'country' => [
+                        'id' => 1,
                         'name' => 'France',
                         'code' => 'FR',
                     ],
                 ],
                 'country' => [
-                    'id'   => 1,
+                    'id' => 1,
                     'name' => 'France',
                     'code' => 'FR',
                 ],
@@ -189,15 +191,13 @@ final class UsersTest extends ApiTestCase
     public function testGetUserSettingsNotFound()
     {
         $this->client->get('/api/users/9999/settings');
-        $this->assertStatusCode(ERROR_NOT_FOUND);
-        $this->assertNotFoundErrorMessage();
+        $this->assertNotFound();
     }
 
     public function testGetUserSettingsNoSettingFound()
     {
         $this->client->get('/api/users/3/settings');
-        $this->assertStatusCode(ERROR_NOT_FOUND);
-        $this->assertNotFoundErrorMessage();
+        $this->assertNotFound();
     }
 
     public function testGetUserSettings()
@@ -205,12 +205,12 @@ final class UsersTest extends ApiTestCase
         $this->client->get('/api/users/1/settings');
         $this->assertStatusCode(SUCCESS_OK);
         $this->assertResponseData([
-            'id'                           => 1,
-            'user_id'                      => 1,
-            'language'                     => 'EN',
+            'id' => 1,
+            'user_id' => 1,
+            'language' => 'EN',
             'auth_token_validity_duration' => 12,
-            'created_at'                   => null,
-            'updated_at'                   => null,
+            'created_at' => null,
+            'updated_at' => null,
         ]);
     }
 
@@ -224,14 +224,13 @@ final class UsersTest extends ApiTestCase
     public function testSetUserSettingsNoUser()
     {
         $this->client->put('/api/users/999/settings', ['language' => 'FR']);
-        $this->assertStatusCode(ERROR_NOT_FOUND);
-        $this->assertNotFoundErrorMessage();
+        $this->assertNotFound();
     }
 
     public function testSetUserSettings()
     {
         $this->client->put('/api/users/1/settings', [
-            'language'                     => 'FR',
+            'language' => 'FR',
             'auth_token_validity_duration' => 72,
         ]);
         $this->assertStatusCode(SUCCESS_OK);
@@ -243,10 +242,10 @@ final class UsersTest extends ApiTestCase
     public function testUserSignupBadData()
     {
         $this->client->post('/api/users/signup', [
-            'email'  => '',
+            'email' => '',
             'person' => [
                 'first_name' => '',
-                'last_name'  => '',
+                'last_name' => '',
             ],
         ]);
         $this->assertStatusCode(ERROR_VALIDATION);
@@ -279,13 +278,13 @@ final class UsersTest extends ApiTestCase
     public function testUserSignup()
     {
         $this->client->post('/api/users/signup', [
-            'email'    => 'nobody@test.org',
-            'pseudo'   => 'signupTest',
+            'email' => 'nobody@test.org',
+            'pseudo' => 'signupTest',
             'password' => 'signupTest',
             'group_id' => 'member',
-            'person'   => [
+            'person' => [
                 'first_name' => 'Nobody',
-                'last_name'  => 'Testeur',
+                'last_name' => 'Testeur',
             ],
         ]);
         $this->assertStatusCode(SUCCESS_CREATED);
@@ -296,29 +295,30 @@ final class UsersTest extends ApiTestCase
         unset($response['person']['created_at']);
         unset($response['person']['updated_at']);
         $this->assertEquals([
-            'id'             => 4,
-            'email'          => 'nobody@test.org',
-            'pseudo'         => 'signupTest',
-            'group_id'       => 'member',
+            'id' => 4,
+            'email' => 'nobody@test.org',
+            'pseudo' => 'signupTest',
+            'group_id' => 'member',
             'cas_identifier' => null,
-            'person'         => [
-                'id'          => 4,
-                'first_name'  => 'Nobody',
-                'last_name'   => 'Testeur',
-                'full_name'   => 'Nobody Testeur',
-                'user_id'     => 4,
-                'nickname'    => null,
-                'email'       => null,
-                'phone'       => null,
-                'street'      => null,
+            'person' => [
+                'id' => 4,
+                'first_name' => 'Nobody',
+                'last_name' => 'Testeur',
+                'full_name' => 'Nobody Testeur',
+                'reference' => null,
+                'user_id' => 4,
+                'nickname' => null,
+                'email' => null,
+                'phone' => null,
+                'street' => null,
                 'postal_code' => null,
-                'locality'    => null,
-                'country_id'  => null,
-                'company_id'  => null,
-                'note'        => null,
-                'deleted_at'  => null,
-                'company'     => null,
-                'country'     => null,
+                'locality' => null,
+                'country_id' => null,
+                'company_id' => null,
+                'note' => null,
+                'deleted_at' => null,
+                'company' => null,
+                'country' => null,
             ],
         ], $response);
     }
@@ -326,22 +326,22 @@ final class UsersTest extends ApiTestCase
     public function testCreateUser()
     {
         $this->client->post('/api/users/signup', [
-            'pseudo'   => 'New User',
-            'email'    => 'test@testing.org',
+            'pseudo' => 'New User',
+            'email' => 'test@testing.org',
             'password' => 'test',
             'group_id' => 'member',
         ]);
         $this->assertStatusCode(SUCCESS_CREATED);
         $this->assertResponseData([
-            'id'             => 4,
-            'pseudo'         => 'New User',
-            'email'          => 'test@testing.org',
-            'group_id'       => 'member',
+            'id' => 4,
+            'pseudo' => 'New User',
+            'email' => 'test@testing.org',
+            'group_id' => 'member',
             'cas_identifier' => null,
-            'created_at'     => 'fakedTestContent',
-            'updated_at'     => 'fakedTestContent',
-            'deleted_at'     => null,
-            'person'         => null,
+            'created_at' => 'fakedTestContent',
+            'updated_at' => 'fakedTestContent',
+            'deleted_at' => null,
+            'person' => null,
         ], ['created_at', 'updated_at']);
     }
 
@@ -355,7 +355,7 @@ final class UsersTest extends ApiTestCase
     public function testUpdateUserNotFound()
     {
         $this->client->put('/api/users/999', ['pseudo' => '__inexistant__']);
-        $this->assertStatusCode(ERROR_NOT_FOUND);
+        $this->assertNotFound();
     }
 
     public function testUpdateUser()
@@ -364,7 +364,7 @@ final class UsersTest extends ApiTestCase
             'pseudo' => 'userEdited',
             'person' => [
                 'first_name' => 'Edited',
-                'last_name'  => 'Tester',
+                'last_name' => 'Tester',
             ],
         ]);
         $this->assertStatusCode(SUCCESS_OK);
@@ -392,7 +392,7 @@ final class UsersTest extends ApiTestCase
     public function testRestoreUserNotFound()
     {
         $this->client->put('/api/users/restore/999');
-        $this->assertStatusCode(ERROR_NOT_FOUND);
+        $this->assertNotFound();
     }
 
     public function testRestoreUser()

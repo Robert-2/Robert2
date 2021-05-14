@@ -7,7 +7,7 @@ use Firebase\JWT\JWT as JWTCore;
 use Robert2\API\Config\Config;
 use Robert2\API\Services\Auth;
 use Robert2\API\Models\User;
-use Slim\Http\Request;
+use Slim\Http\ServerRequest as Request;
 
 final class JWT implements AuthenticatorInterface
 {
@@ -48,9 +48,9 @@ final class JWT implements AuthenticatorInterface
 
     private function fetchToken(Request $request): string
     {
-        // - Tente de récupèrer le token dans les headers HTTP.
+        // - Tente de récupérer le token dans les headers HTTP.
         $headerName = $this->settings['httpAuthHeader'];
-        $header = $request->getHeaderLine(sprintf('HTTP_%s', strtoupper(snake_case($headerName))));
+        $header = $request->getHeaderLine(sprintf('HTTP_%s', strtoupper(\snakeCase($headerName))));
         if (!empty($header)) {
             if (preg_match('/Bearer\s+(.*)$/i', $header, $matches)) {
                 return $matches[1];
@@ -58,7 +58,7 @@ final class JWT implements AuthenticatorInterface
         }
 
         if (!Auth::isApiRequest($request)) {
-            // - Sinon tente de récupèrer le token dans les cookies.
+            // - Sinon tente de récupérer le token dans les cookies.
             $cookieName = $this->settings['auth']['cookie'];
             $cookieParams = $request->getCookieParams();
             if (isset($cookieParams[$cookieName])) {
@@ -66,7 +66,7 @@ final class JWT implements AuthenticatorInterface
                     return $matches[1];
                 }
                 return $cookieParams[$cookieName];
-            };
+            }
         }
 
         throw new \RuntimeException("Token introuvable.");

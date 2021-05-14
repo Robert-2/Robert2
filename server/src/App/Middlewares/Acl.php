@@ -3,38 +3,38 @@ declare(strict_types=1);
 
 namespace Robert2\API\Middlewares;
 
-use Robert2\API\ApiRouter;
 use Robert2\API\Config;
 use Robert2\API\Services\Auth;
-use Slim\Http\Request;
-use Slim\Http\Response;
+use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
+use Slim\Exception\HttpUnauthorizedException;
+use Slim\Http\ServerRequest as Request;
 
 class Acl
 {
-    public function __invoke(Request $request, Response $response, callable $next)
+    public function __invoke(Request $request, RequestHandler $handler)
     {
+        if ($request->isOptions()) {
+            return $handler->handle($request);
+        }
+
         $currentRoute = $this->_getCurrentRoute($request);
         if (!preg_match('/^\/?api\//', $currentRoute)) {
-            return $next($request, $response);
+            return $handler->handle($request);
         }
 
         $groupId = Auth::isAuthenticated() ? Auth::user()->group_id : 'visitor';
         $method = strtolower($request->getMethod());
         $deniedRoutes = $this->_getDeniedRoutes($groupId, $method);
         if (empty($deniedRoutes)) {
-            return $next($request, $response);
+            return $handler->handle($request);
         }
 
         $currentRoute = preg_replace('/^\/api/', '', $currentRoute) . '[/]';
         if (in_array($currentRoute, $deniedRoutes)) {
-            $oldResponse = $response->withStatus(ERROR_UNAUTHORIZED);
-            return $oldResponse->withJson([
-                'error' => "Unauthorized by ACL: users of group '$groupId' "
-                . "are not allowed to access this API endpoint."
-            ]);
+            throw new HttpUnauthorizedException($request);
         }
 
-        return $next($request, $response);
+        return $handler->handle($request);
     }
 
     protected function _getCurrentRoute(Request $request): string
@@ -61,7 +61,7 @@ class Acl
             return [];
         }
 
-        $routesByMethod = (new ApiRouter())->getRoutes();
+        $routesByMethod = include CONFIG_FOLDER . DS . 'routes.php';
         if (!array_key_exists($method, $routesByMethod)) {
             return [];
         }

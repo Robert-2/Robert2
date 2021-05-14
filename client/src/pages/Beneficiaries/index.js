@@ -15,6 +15,7 @@ export default {
       columns: [
         'last_name',
         'first_name',
+        'reference',
         'company',
         'email',
         'phone',
@@ -27,7 +28,7 @@ export default {
         preserveState: true,
         orderBy: { column: 'last_name', ascending: true },
         initialPage: this.$route.query.page || 1,
-        sortable: ['last_name', 'first_name', 'company', 'email'],
+        sortable: ['last_name', 'first_name', 'reference', 'company', 'email'],
         columnsDisplay: {
           // - This is a hack: init the table with hidden columns by default
           note: 'mobile',
@@ -35,6 +36,7 @@ export default {
         headings: {
           last_name: this.$t('last-name'),
           first_name: this.$t('first-name'),
+          reference: this.$t('reference'),
           company: this.$t('company'),
           email: this.$t('email'),
           phone: this.$t('phone'),
@@ -68,6 +70,23 @@ export default {
     };
   },
   methods: {
+    getBeneficiaryAddress(beneficiary) {
+      const formatAddress = ({ street, postal_code: postalCode, locality }) => {
+        const localityFull = [postalCode, locality].filter(Boolean).join(' ');
+
+        return [street, localityFull]
+          .map((value) => (value ? value.trim() : value))
+          .filter(Boolean)
+          .join('\n');
+      };
+
+      if (beneficiary.street || beneficiary.postal_code || beneficiary.locality) {
+        return formatAddress(beneficiary);
+      }
+
+      return formatAddress(beneficiary.company || {});
+    },
+
     deleteBeneficiary(beneficiaryId) {
       const isSoft = !this.isTrashDisplayed;
       Alert.ConfirmDelete(this.$t, 'beneficiaries', isSoft)

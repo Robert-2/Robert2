@@ -130,7 +130,10 @@ export default {
     'beneficiary-type': "Type de bénéficiaire",
     'person': "Personne physique (individu)",
     'company': "Personne morale (entreprise)",
-    'help-edit': "Seuls le nom et le prénom de la personne sont obligatoires.",
+    'help-edit': (
+      `Seuls le nom et le prénom de la personne sont obligatoires.
+      La «\u00a0référence\u00a0» est un numéro client ou adhérent pour votre gestion interne, qui apparaîtra sur les fiches de sorties, les devis et les factures. Il doit être unique.`
+    ),
     'confirm-delete': "Mettre ce bénéficiaire à la corbeille\u00a0?",
     'confirm-permanently-delete': "Voulez-vous vraiment supprimer définitivement ce bénéficiaire\u00a0?",
     'confirm-restore': "Voulez-vous vraiment restaurer ce bénéficiaire\u00a0?",
@@ -162,7 +165,11 @@ export default {
     'add': "Nouveau matériel",
     'edit': "Modifier le matériel «\u00a0{pageSubTitle}\u00a0»",
     'edit-title': "Modifier le matériel",
-    'help-edit': "Trouvez un nom assez court, et utilisez plutôt la description pour détailler le matériel si besoin.",
+    'help-edit': (
+      `Trouvez un nom assez court, et utilisez plutôt la description pour détailler le matériel si besoin.
+
+      La photo du matériel doit être au format JPG, PNG ou WEBP, et ne doit pas dépasser 10\u00a0Mo.`
+    ),
     'view': "Détails du matériel «\u00a0{pageSubTitle}\u00a0»",
     'confirm-delete': "Mettre ce matériel à la corbeille\u00a0?",
     'confirm-permanently-delete': "Voulez-vous vraiment supprimer définitivement ce matériel\u00a0?",
@@ -173,6 +180,9 @@ export default {
 
   'page-materials-view': {
     'title': "Détails du matériel",
+    'infos': {
+      'click-to-open-image': "Cliquez pour ouvrir l'image en grand dans un nouvel onglet.",
+    },
     'documents': {
       'no-document': "Aucun document pour le moment.",
       'drag-and-drop-files-here': "Glissez-déposez des fichiers ici ↓ pour les ajouter.",
@@ -192,7 +202,7 @@ export default {
     'title': "Caractéristiques spéciales du matériel",
     'help': (
       `Ici vous pouvez ajouter les champs qui permettent de décrire votre matériel selon vos propres critères.
-      Une fois créée, une caractéristique spéciale ne pourra plus être modifiée (sauf son nom).`
+      Une fois créée, seul le nom de la caractéristique spéciale pourra modifié.`
     ),
     'go-back-to-material': "Retourner au matériel",
     'name': "Nom de la caractéristique",
@@ -299,6 +309,10 @@ export default {
     'confirm-restore': "Voulez-vous vraiment restaurer cette étiquette\u00a0?",
     'saved': "Étiquette sauvegardée.",
     'deleted': "Étiquette supprimée.",
+  },
+
+  'page-estimate': {
+    'confirm-delete': "Voulez-vous vraiment supprimer ce devis\u00a0?",
   },
 };
 /* eslint-enable quotes */

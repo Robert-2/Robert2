@@ -6,6 +6,10 @@
     display: none;
   }
 
+  &__address {
+    white-space: pre-line;
+  }
+
   @media(min-width: $screen-mobile) {
     &__email {
       display: table-cell;

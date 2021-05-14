@@ -3,13 +3,13 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\QueryException;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\QueryException;
 use Respect\Validation\Exceptions\NestedValidationException;
-use InvalidArgumentException;
 use Robert2\API\Config\Config;
-use Robert2\API\Errors;
+use Robert2\API\Errors\ValidationException;
 
 abstract class BaseModel extends Model
 {
@@ -64,7 +64,7 @@ abstract class BaseModel extends Model
 
     public function getAllFiltered(array $conditions, bool $withDeleted = false): Builder
     {
-        $builder = self::where($conditions);
+        $builder = static::where($conditions);
 
         if (!empty($this->searchTerm)) {
             $builder = $this->_setSearchConditions($builder);
@@ -102,7 +102,7 @@ abstract class BaseModel extends Model
             $fields = !is_array($fields) ? explode('|', $fields) : $fields;
             foreach ($fields as $field) {
                 if (!in_array($field, $this->getAllowedSearchFields())) {
-                    throw new InvalidArgumentException("Search field « $field » not allowed.");
+                    throw new \InvalidArgumentException("Search field « $field » not allowed.");
                 }
                 $this->searchField = $field;
             }
@@ -118,64 +118,84 @@ abstract class BaseModel extends Model
     // —
     // ——————————————————————————————————————————————————————
 
-    public function edit(?int $id = null, array $data = []): Model
+    public static function new(array $data = []): BaseModel
     {
-        if ($id && !$this->exists($id)) {
-            throw new Errors\NotFoundException(sprintf("Edit failed, record %d not found.", $id));
+        // TODO: Migrer les éventuels overwrites de la méthode legacy dans les modèles.
+        //       puis déplacer l'implémentation depuis la methode legacy vers cette méthode.
+        return static::staticEdit(null, $data);
+    }
+
+    public static function staticEdit(?int $id = null, array $data = []): BaseModel
+    {
+        // TODO: Migrer les éventuels overwrites de la méthode legacy dans les modèles.
+        //       puis déplacer l'implémentation depuis la methode legacy vers cette méthode.
+        return (new static)->edit($id, $data);
+    }
+
+    public static function staticRemove(int $id, array $options = []): ?BaseModel
+    {
+        // TODO: Migrer les éventuels overwrites de la méthode legacy dans les modèles.
+        //       puis déplacer l'implémentation depuis la methode legacy vers cette méthode.
+        return (new static)->remove($id, $options);
+    }
+
+    public static function staticUnremove(int $id): BaseModel
+    {
+        // TODO: Migrer les éventuels overwrites de la méthode legacy dans les modèles.
+        //       puis déplacer l'implémentation depuis la methode legacy vers cette méthode.
+        return (new static)->unremove($id);
+    }
+
+    /** @deprecated Veuillez utiliser `new` ou `staticEdit`. */
+    public function edit(?int $id = null, array $data = []): BaseModel
+    {
+        if ($id && !static::staticExists($id)) {
+            throw (new ModelNotFoundException)
+                ->setModel(get_class($this), $id);
         }
 
         $data = cleanEmptyFields($data);
         $data = $this->_trimStringFields($data);
 
         try {
-            $model = self::firstOrNew(compact('id'));
+            $model = static::firstOrNew(compact('id'));
             $model->fill($data)->validate()->save();
         } catch (QueryException $e) {
-            $error = new Errors\ValidationException();
-            $error->setPDOValidationException($e);
-            throw $error;
+            throw (new ValidationException)
+                ->setPDOValidationException($e);
         }
 
         return $model->refresh();
     }
 
-    public function remove(int $id, array $options = []): ?Model
+    /** @deprecated Veuillez utiliser `staticRemove`. */
+    public function remove(int $id, array $options = []): ?BaseModel
     {
-        $options = array_merge([
-            'force' => false
-        ], $options);
+        $options = array_merge(['force' => false], $options);
 
-        $model = self::withTrashed()->find($id);
-        if (empty($model)) {
-            throw new Errors\NotFoundException;
-        }
-
-        if ($model->trashed() || $options['force'] === true) {
-            if (!$model->forceDelete()) {
+        $entity = static::withTrashed()->findOrFail($id);
+        if ($entity->trashed() || $options['force'] === true) {
+            if (!$entity->forceDelete()) {
                 throw new \RuntimeException(sprintf("Unable to destroy the record %d.", $id));
             }
             return null;
         }
 
-        if (!$model->delete()) {
+        if (!$entity->delete()) {
             throw new \RuntimeException(sprintf("Unable to delete the record %d.", $id));
         }
 
-        return $model;
+        return $entity;
     }
 
-    public function unremove(int $id): Model
+    /** @deprecated Veuillez utiliser `staticUnremove`. */
+    public function unremove(int $id): BaseModel
     {
-        $model = self::onlyTrashed()->find($id);
-        if (empty($model)) {
-            throw new Errors\NotFoundException;
-        }
-
-        if (!$model->restore()) {
+        $entity = static::onlyTrashed()->findOrFail($id);
+        if (!$entity->restore()) {
             throw new \RuntimeException(sprintf("Unable to restore the record %d.", $id));
         }
-
-        return $model;
+        return $entity;
     }
 
     // ——————————————————————————————————————————————————————
@@ -184,9 +204,17 @@ abstract class BaseModel extends Model
     // —
     // ——————————————————————————————————————————————————————
 
+    public static function staticExists(int $id): bool
+    {
+        // TODO: Migrer les éventuels overwrites de la méthode legacy dans les modèles.
+        //       puis déplacer l'implémentation depuis la methode legacy vers cette méthode.
+        return (new static)->exists($id);
+    }
+
+    /** @deprecated Veuillez utiliser `staticExists`. */
     public function exists(int $id): bool
     {
-        return self::where('id', $id)->exists();
+        return static::where('id', $id)->exists();
     }
 
     public function validate(): self
@@ -219,9 +247,8 @@ abstract class BaseModel extends Model
         }
 
         if (count($errors) > 0) {
-            $ex = new Errors\ValidationException();
-            $ex->setValidationErrors($errors);
-            throw $ex;
+            throw (new ValidationException)
+                ->setValidationErrors($errors);
         }
 
         return $this;
@@ -264,7 +291,7 @@ abstract class BaseModel extends Model
             return $builder->orderBy($order, $direction);
         }
 
-        return self::orderBy($order, $direction);
+        return static::orderBy($order, $direction);
     }
 
     protected function _setSearchConditions(Builder $builder): Builder
@@ -295,5 +322,11 @@ abstract class BaseModel extends Model
             $trimmedData[$field] = ($isString && $value) ? trim($value) : $value;
         }
         return $trimmedData;
+    }
+
+    // @see https://laravel.com/docs/8.x/eloquent-serialization#customizing-the-default-date-format
+    protected function serializeDate(\DateTimeInterface $date)
+    {
+        return $date->format('Y-m-d H:i:s');
     }
 }

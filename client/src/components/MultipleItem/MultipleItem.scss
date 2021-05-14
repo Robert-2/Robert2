@@ -1,4 +1,9 @@
 .MultipleItem {
+  &__item-pivot-field  {
+    width: 150px;
+    margin-left: .6rem;
+  }
+
   &__item-action-btn  {
     height: 35px;
     margin-left: .6rem;

@@ -7,8 +7,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Builder;
 use Robert2\API\Config\Config;
 use Robert2\API\Models\Material;
+use Robert2\API\Models\Park;
 use Robert2\API\Models\Traits\WithPdf;
-use Robert2\Lib\Domain\EventBill;
+use Robert2\Lib\Domain\EventData;
 use Robert2\API\Validation\Validator as V;
 
 class Event extends BaseModel
@@ -85,7 +86,9 @@ class Event extends BaseModel
     public function Assignees()
     {
         return $this->belongsToMany('Robert2\API\Models\Person', 'event_assignees')
-            ->select(['persons.id', 'first_name', 'last_name', 'nickname'])
+            ->using('Robert2\API\Models\EventAssignee')
+            ->withPivot('id', 'position')
+            ->select(['persons.id', 'first_name', 'last_name', 'phone', 'nickname'])
             ->orderBy('last_name');
     }
 
@@ -96,6 +99,8 @@ class Event extends BaseModel
                 'persons.id',
                 'first_name',
                 'last_name',
+                'reference',
+                'phone',
                 'company_id',
                 'street',
                 'postal_code',
@@ -133,6 +138,13 @@ class Event extends BaseModel
     {
         return $this->hasMany('Robert2\API\Models\Bill')
             ->select(['bills.id', 'number', 'date', 'discount_rate', 'due_amount'])
+            ->orderBy('date', 'desc');
+    }
+
+    public function Estimates()
+    {
+        return $this->hasMany('Robert2\API\Models\Estimate')
+            ->select(['estimates.id', 'date', 'discount_rate', 'due_amount'])
             ->orderBy('date', 'desc');
     }
 
@@ -203,7 +215,7 @@ class Event extends BaseModel
                 ]);
         };
 
-        $builder = self::orderBy('start_date', 'asc')
+        $builder = static::orderBy('start_date', 'asc')
             ->where($conditions);
 
         if ($withDeleted) {
@@ -213,14 +225,14 @@ class Event extends BaseModel
         return $builder;
     }
 
-    public function getMissingMaterials(int $id): ?array
+    public static function getMissingMaterials(int $id): ?array
     {
-        $event = $this->with('Materials')->find($id);
+        $event = static::with('Materials')->find($id);
         if (!$event || empty($event->materials)) {
             return null;
         }
 
-        $eventMaterials = (new Material())->recalcQuantitiesForPeriod(
+        $eventMaterials = Material::recalcQuantitiesForPeriod(
             $event->materials,
             $event->start_date,
             $event->end_date,
@@ -241,9 +253,9 @@ class Event extends BaseModel
         return empty($missingMaterials) ? null : array_values($missingMaterials);
     }
 
-    public function getParks(int $id): ?array
+    public static function getParks(int $id): ?array
     {
-        $event = $this->with('Materials')->find($id);
+        $event = static::with('Materials')->find($id);
         if (!$event) {
             return null;
         }
@@ -257,20 +269,29 @@ class Event extends BaseModel
 
     public function getPdfContent(int $id): string
     {
-        if (!$this->exists($id)) {
-            throw new Errors\NotFoundException;
-        }
-
         $event = $this
             ->with('Assignees')
             ->with('Beneficiaries')
             ->with('Materials')
-            ->find($id)
+            ->findOrFail($id)
             ->toArray();
 
         $date = new \DateTime();
-        $EventBill = new EventBill($date, $event, 'summary', $event['user_id']);
+
         $categories = (new Category())->getAll()->get()->toArray();
+        $parks = (new Park())->getAll()->get()->toArray();
+
+        $EventData = new EventData($date, $event, 'summary', $event['user_id']);
+        $EventData->setCategories($categories)->setParks($parks);
+
+        $materialDisplayMode = Config::getSettings('eventSummary')['materialDisplayMode'];
+        if ($materialDisplayMode === 'sub-categories') {
+            $materialList = $EventData->getMaterialBySubCategories(true);
+        } elseif ($materialDisplayMode === 'parks' && count($parks) > 1) {
+            $materialList = $EventData->getMaterialByParks(true);
+        } else {
+            $materialList = $EventData->getMaterials();
+        }
 
         $data = [
             'event' => $event,
@@ -279,8 +300,9 @@ class Event extends BaseModel
             'company' => Config::getSettings('companyData'),
             'currency' => Config::getSettings('currency')['iso'],
             'currencyName' => Config::getSettings('currency')['name'],
-            'materialBySubCategories' => $EventBill->getMaterialBySubCategories($categories),
-            'replacementAmount' => $EventBill->getReplacementAmount(),
+            'materialList' => $materialList,
+            'materialDisplayMode' => $materialDisplayMode,
+            'replacementAmount' => $EventData->getReplacementAmount(),
         ];
 
         $eventPdf = $this->_getPdfAsString($data);
@@ -301,6 +323,18 @@ class Event extends BaseModel
     // —
     // ——————————————————————————————————————————————————————
 
+    protected $fillable = [
+        'user_id',
+        'reference',
+        'title',
+        'description',
+        'start_date',
+        'end_date',
+        'is_confirmed',
+        'location',
+        'is_billable',
+    ];
+
     public function setPeriod(?string $start, ?string $end): Event
     {
         $thisYear = date('Y');
@@ -316,16 +350,4 @@ class Event extends BaseModel
 
         return $this;
     }
-
-    protected $fillable = [
-        'user_id',
-        'reference',
-        'title',
-        'description',
-        'start_date',
-        'end_date',
-        'is_confirmed',
-        'location',
-        'is_billable',
-    ];
 }

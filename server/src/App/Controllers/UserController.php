@@ -3,57 +3,47 @@ declare(strict_types=1);
 
 namespace Robert2\API\Controllers;
 
-use Slim\Http\Request;
-use Slim\Http\Response;
-use Robert2\API\Errors;
-use Robert2\API\Services\Auth;
+use Robert2\API\Controllers\Traits\WithCrud;
 use Robert2\API\Models\User;
+use Robert2\API\Models\UserSetting;
+use Robert2\API\Services\Auth;
+use Slim\Exception\HttpNotFoundException;
+use Slim\Http\Response;
+use Slim\Http\ServerRequest as Request;
 
 class UserController extends BaseController
 {
-    /** @var User */
-    protected $model;
-
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Model dedicated methods
-    // —
-    // ——————————————————————————————————————————————————————
+    use WithCrud {
+        delete as originalDelete;
+    }
 
     public function getOne(Request $request, Response $response): Response
     {
-        $id   = (int)$request->getAttribute('id');
-        $user = $this->model->find($id);
+        $id = (int)$request->getAttribute('id');
+        $user = User::find($id);
 
         if (!$user) {
-            throw new Errors\NotFoundException;
+            throw new HttpNotFoundException($request);
         }
-
-        unset($user->password);
 
         return $response->withJson($user->toArray());
     }
 
     public function getSettings(Request $request, Response $response): Response
     {
-        $id   = (int)$request->getAttribute('id');
-        $user = $this->model->find($id);
+        $id = (int)$request->getAttribute('id');
+        $user = User::find($id);
 
-        if (!$user) {
-            throw new Errors\NotFoundException;
+        if (!$user || !$user->settings) {
+            throw new HttpNotFoundException($request);
         }
 
-        $settings = $user->settings;
-        if (!$settings) {
-            throw new Errors\NotFoundException;
-        }
-
-        return $response->withJson($settings);
+        return $response->withJson($user->settings);
     }
 
     public function updateSettings(Request $request, Response $response): Response
     {
-        $postData = $request->getParsedBody();
+        $postData = (array)$request->getParsedBody();
         if (empty($postData)) {
             throw new \InvalidArgumentException(
                 "Missing request data to process validation",
@@ -62,12 +52,13 @@ class UserController extends BaseController
         }
 
         $id = (int)$request->getAttribute('id');
-        if (!$this->model->exists($id)) {
-            throw new Errors\NotFoundException;
+        $user = User::find($id);
+        if (!$user) {
+            throw new HttpNotFoundException($request);
         }
 
-        $result = $this->model->setSettings($id, $postData);
-        return $response->withJson($result, SUCCESS_OK);
+        $result = UserSetting::editByUser($user, $postData);
+        return $response->withJson($result->toArray(), SUCCESS_OK);
     }
 
     public function delete(Request $request, Response $response): Response
@@ -79,6 +70,6 @@ class UserController extends BaseController
                 ERROR_VALIDATION
             );
         }
-        return parent::delete($request, $response);
+        return $this->originalDelete($request, $response);
     }
 }

@@ -4,10 +4,9 @@ declare(strict_types=1);
 namespace Robert2\Lib\Pdf;
 
 use Dompdf\Dompdf;
-use Twig\Extra\Intl\IntlExtension;
-
-use Robert2\API\I18n\I18n;
 use Robert2\API\Config\Config;
+use Robert2\API\Services\I18n;
+use Robert2\API\Services\View;
 
 class Pdf
 {
@@ -50,25 +49,12 @@ class Pdf
             'grouping_used' => false
         ];
 
-        $baseTemplateDir = VIEWS_FOLDER . DS . 'pdf';
-        $loader = new \Twig\Loader\FilesystemLoader($baseTemplateDir);
-
-        $twig = new \Twig\Environment($loader, ['cache' => false]);
-        $twig->addExtension(new IntlExtension());
-        $twig->addExtension(new \Twig_Extensions_Extension_Text());
-
         $i18n = new I18n(Config::getSettings('defaultLang'));
-        $translateFunction = new \Twig\TwigFunction('translate', [$i18n, 'translate']);
-        $twig->addFunction($translateFunction);
-        $pluralFunction = new \Twig\TwigFunction('plural', [$i18n, 'plural']);
-        $twig->addFunction($pluralFunction);
-
-        $template = $twig->load(sprintf('%s.twig', $templateName));
-        $html = $template->render($data);
-
-        // debug($html); exit;
-
-        $pdf = new Pdf($html);
-        return $pdf->getResult();
+        $template = sprintf('pdf/%s.twig', $templateName);
+        $html = (new View($i18n))->fetch($template, $data);
+        // - Uncomment the following 2 lines to debug the PDF files content in the browser
+        // echo $html;
+        // exit;
+        return (new static($html))->getResult();
     }
 }

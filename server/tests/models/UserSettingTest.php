@@ -3,8 +3,9 @@ declare(strict_types=1);
 
 namespace Robert2\Tests;
 
-use Robert2\API\Models;
-use Robert2\API\Errors;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Robert2\API\Models\User;
+use Robert2\API\Models\UserSetting;
 
 final class UserSettingTest extends ModelTestCase
 {
@@ -12,7 +13,7 @@ final class UserSettingTest extends ModelTestCase
     {
         parent::setUp();
 
-        $this->model = new Models\UserSetting();
+        $this->model = new UserSetting();
     }
 
     public function testTableName(): void
@@ -27,23 +28,15 @@ final class UserSettingTest extends ModelTestCase
         $this->model->getAll();
     }
 
-    public function testEditNoUserId(): void
+    public function testEditByUserWithNewUser(): void
     {
-        $this->expectException(Errors\NotFoundException::class);
-        $this->expectExceptionCode(ERROR_NOT_FOUND);
-        $this->model->edit(null, []);
+        $this->expectException(ModelNotFoundException::class);
+        UserSetting::editByUser(new User(), []);
     }
 
-    public function testEditNotFound(): void
+    public function testEditByUser(): void
     {
-        $this->expectException(Errors\NotFoundException::class);
-        $this->expectExceptionCode(ERROR_NOT_FOUND);
-        $this->model->edit(999, []);
-    }
-
-    public function testEdit(): void
-    {
-        $result = $this->model->edit(1, [
+        $result = UserSetting::editByUser(User::find(1), [
             'language'                     => 'FR',
             'auth_token_validity_duration' => 133,
         ]);

@@ -4,12 +4,12 @@ declare(strict_types=1);
 namespace Robert2\API\Middlewares;
 
 use Illuminate\Pagination\Paginator;
-use Slim\Http\Request;
-use Slim\Http\Response;
+use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
+use Slim\Http\ServerRequest as Request;
 
 class Pagination
 {
-    public function __invoke(Request $request, Response $response, callable $next)
+    public function __invoke(Request $request, RequestHandler $handler)
     {
         Paginator::currentPageResolver(
             function () use ($request) {
@@ -17,6 +17,6 @@ class Pagination
             }
         );
 
-        return $next($request, $response);
+        return $handler->handle($request);
     }
 }

@@ -37,7 +37,7 @@
           />
         </div>
         <div v-if="duration > 0" class="EventStep1__dates__duration">
-          {{ $t('duration-days', { duration }) }}
+          {{ $t('duration-days', { duration }, duration) }}
         </div>
       </div>
     </section>

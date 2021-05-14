@@ -131,7 +131,10 @@ export default {
     'beneficiary-type': "Beneficiary type",
     'person': "Natural person (individual)",
     'company': "Legal entity (company)",
-    'help-edit': "Only first name and last name are mandatory.",
+    'help-edit': (
+      `Only first name and last name are mandatory.
+      The «\u00a0reference\u00a0» is a customer or member number for your internal management, which will appear on the output sheets, estimates and bills. It must be unique.`
+    ),
     'confirm-delete': "Move this beneficiary in trash bin?",
     'confirm-permanently-delete': "Do you really want to permanently delete this beneficiary?",
     'confirm-restore': "Do you really want to restore this beneficiary?",
@@ -163,7 +166,11 @@ export default {
     'add': "New material",
     'edit': "Modify material «\u00a0{pageSubTitle}\u00a0»",
     'edit-title': "Modify material",
-    'help-edit': "Give a short name, and use the description field to detail the material if needed.",
+    'help-edit': (
+      `Give a short name, and use the description field to detail the material if needed.
+
+      The material picture must be of type JPG, PNG or WEBP, and cannot exceed 10\u00a0MB.`
+    ),
     'view': "Details of material «\u00a0{pageSubTitle}\u00a0»",
     'confirm-delete': "Move this material in trash bin?",
     'confirm-permanently-delete': "Do you really want to permanently delete this material?",
@@ -173,6 +180,9 @@ export default {
   },
 
   'page-materials-view': {
+    'infos': {
+      'click-to-open-image': "Click to open image in a new tab.",
+    },
     'documents': {
       'no-document': "No document yet.",
       'drag-and-drop-files-here': "Drag and drop files here ↓ to add them.",
@@ -192,7 +202,7 @@ export default {
     'title': "Material special attributes",
     'help': (
       `Here you can add fields that allows you to describe your material according to your own criteria.
-      Once created, a special attribute cannot be modified (except for its name).`
+      Once created, only the name of a special attribute can be modified.`
     ),
     'go-back-to-material': "Back to material",
     'name': "Name of the attribute",
@@ -299,6 +309,10 @@ export default {
     'confirm-restore': "Do you really want to restore this tag?",
     'saved': "Tag saved.",
     'deleted': "Tag deleted.",
+  },
+
+  'page-estimate': {
+    'confirm-delete': "Do you really want to delete this estimate?",
   },
 };
 /* eslint-enable quotes */

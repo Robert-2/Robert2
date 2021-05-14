@@ -18,10 +18,18 @@
         </span>
         <span v-else>{{ getItemLabel(itemData) || 'N/A' }}</span>
       </div>
+      <input
+        v-if="pivotField"
+        type="text"
+        class="MultipleItem__item-pivot-field"
+        :placeholder="pivotPlaceholder"
+        :value="itemsPivots[index]"
+        @input="(e) => { handlePivotChange(index, e.currentTarget.value); }"
+      />
       <button
         class="MultipleItem__item-action-btn danger"
         :title="$t('remove-item', { item: $t(label) })"
-        @click="(e) => { e.preventDefault(); removeItem(itemData.id); }"
+        @click="(e) => { e.preventDefault(); removeItem(itemData.id, index); }"
       >
         <i class="fas fa-trash-alt" />
       </button>
