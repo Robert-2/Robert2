@@ -11,15 +11,12 @@ class Pagination
 {
     public function __invoke(Request $request, RequestHandler $handler)
     {
-        /** @var \Slim\Http\Response */
-        $response = $handler->handle($request);
-
         Paginator::currentPageResolver(
             function () use ($request) {
                 return $request->getParam('page');
             }
         );
 
-        return $response;
+        return $handler->handle($request);
     }
 }
