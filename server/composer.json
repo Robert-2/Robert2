@@ -12,10 +12,10 @@
         }
     ],
     "scripts": {
-        "create-migration": "src/vendor/bin/phinx --configuration=src/database/phinx.php create $1 --template=src/database/template",
-        "migration-status": "src/vendor/bin/phinx --configuration=src/database/phinx.php status",
-        "migrate": "src/vendor/bin/phinx --configuration=src/database/phinx.php migrate",
-        "rollback": "src/vendor/bin/phinx --configuration=src/database/phinx.php rollback",
+        "create-migration": "src/vendor/robmorgan/phinx/bin/phinx --configuration=src/database/phinx.php create $1 --template=src/database/template",
+        "migration-status": "src/vendor/robmorgan/phinx/bin/phinx --configuration=src/database/phinx.php status",
+        "migrate": "src/vendor/robmorgan/phinx/bin/phinx --configuration=src/database/phinx.php migrate",
+        "rollback": "src/vendor/robmorgan/phinx/bin/phinx --configuration=src/database/phinx.php rollback",
         "lint": "src/vendor/bin/phpcs -s --colors -p ./src/App/",
         "test": "src/vendor/bin/phpunit --colors=always --coverage-html tests/coverage",
         "testapi": "src/vendor/bin/phpunit --colors=always --testsuite api --filter",
