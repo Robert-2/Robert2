@@ -4,14 +4,8 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 0.13.1-premium (2021-04-27)
+## 0.14.0-premium (UNRELEASED)
 
-Corrige un bug avec l'authentification CAS.
-
-## 0.13.0 (2021-04-27)
-
-- Corrige un problème avec le nom de la base de données de test (#128 et #129).
-- Ajoute la création / suppression de devis pour les événements (#5).
 - __[CHANGEMENT CRITIQUE]__ Robert2 requiert maintenant au minimum PHP 7.3 pour fonctionner (#78).
 - Ajoute le support de la version 8.0 de PHP (#71).
 - Ajoute la possibilité de renseigner une référence (numéro client) aux bénéficiaires (#122).
@@ -31,8 +25,18 @@ Corrige un bug avec l'authentification CAS.
 - Ajoute la possibilité de renseigner un poste occupé pour chaque technicien d'un événement (#140).
 - Permet l'ajout d'une photo associée au matériel (#138).
 
-- Adapte la page de login avec le terme "Premium" sous le logo, et la licence fermée dans le footer.
 - Affiche un message dans la page des disponibilités quand le matériel n'est jamais sorti (Premium #35).
+
+## 0.13.1-premium (2021-04-27)
+
+Corrige un bug avec l'authentification CAS.
+
+## 0.13.0-premium (2021-04-27)
+
+- Corrige un problème avec le nom de la base de données de test (#128 et #129).
+- Ajoute la création / suppression de devis pour les événements (#5).
+
+- Adapte la page de login avec le terme "Premium" sous le logo, et la licence fermée dans le footer.
 
 ## 0.12.2-premium (2021-04-19)
 
