@@ -2459,6 +2459,9 @@ return [
     "endDateMustBeLater"
     => "La date de fin doit être postérieure à la date de début",
 
+    "eventCannotBeClosed"
+    => "Un événement ne peut pas être fermé s'il n'est pas passé et confirmé !",
+
     "referenceAlreadyInUse"
     => "Cette référence est déjà utilisée.",
 

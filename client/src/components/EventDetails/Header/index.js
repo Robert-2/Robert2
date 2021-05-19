@@ -70,14 +70,14 @@ export default {
 
     reopenEvent() {
       this.setEventClosed(false);
-      this.setEventConfirmation(false);
     },
 
-    setEventClosed(closed) {
+    setEventClosed(close) {
       const { id } = this.$props.event;
       const url = `${this.$route.meta.resource}/${id}`;
       this.isClosing = true;
-      this.$http.put(url, { id, is_closed: closed })
+      const newState = close ? { is_closed: true } : { is_closed: false, is_confirmed: false };
+      this.$http.put(url, { id, ...newState })
         .then(({ data }) => {
           this.$emit('saved', data);
         })

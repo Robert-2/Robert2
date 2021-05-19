@@ -41,16 +41,16 @@
     }
   }
 
-  &--error {
-    background-color: $calendar-event-error-color !important;
-    color: $calendar-event-error-text-color !important;
+  &--invalid {
+    background-color: $calendar-event-invalid-color !important;
+    color: $calendar-event-invalid-text-color !important;
 
     &.vis-selected {
-      background-color: lighten($calendar-event-error-color, 5%) !important;
+      background-color: lighten($calendar-event-invalid-color, 5%) !important;
     }
 
-    .fas { //}-exclamation-triangle {
-      color: $calendar-event-error-text-color;
+    .fas {
+      color: $calendar-event-invalid-text-color;
     }
   }
 

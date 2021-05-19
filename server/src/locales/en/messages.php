@@ -2457,6 +2457,9 @@ return [
     "endDateMustBeLater"
     => "End date must be later than start date",
 
+    "eventCannotBeClosed"
+    => "An event cannot be closed if it is not past and confirmed!",
+
     "referenceAlreadyInUse"
     => "This reference is already in use.",
 

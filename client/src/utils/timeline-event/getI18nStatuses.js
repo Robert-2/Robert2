@@ -33,7 +33,7 @@ const getTimelineEventI18nStatuses = (formattedEvent) => {
     // Event is either closed or unclosed
     eventStatuses.push({
       icon: isClosed ? 'check' : 'folder-open',
-      i18nKey: isClosed ? 'this-event-is-closed' : 'this-event-isnot-closed',
+      i18nKey: isClosed ? 'this-event-is-closed' : 'this-event-is-not-closed',
     });
   } else if (isPast && !isConfirmed) {
     // Danger state: past and not confirmed
@@ -45,7 +45,7 @@ const getTimelineEventI18nStatuses = (formattedEvent) => {
     // Event is current or future. It can be confirmed or not.
     eventStatuses.push({
       icon: isConfirmed ? 'lock' : 'lock-open',
-      i18nKey: isConfirmed ? 'this-event-is-confirmed' : 'this-event-isnot-confirmed',
+      i18nKey: isConfirmed ? 'this-event-is-confirmed' : 'this-event-is-not-confirmed',
     });
   }
 

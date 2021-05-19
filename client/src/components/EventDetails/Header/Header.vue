@@ -30,7 +30,7 @@
           <i class="fas fa-edit" /> {{ $t('action-edit') }}
         </button>
       </router-link>
-      <template v-if="event.isPastAndConfirmed" >
+      <template v-if="event.isPastAndConfirmed">
         <button
           v-show="!isVisitor"
           v-if="!event.isClosed"
@@ -63,7 +63,7 @@
         >
           <i v-if="isConfirming" class="fas fa-circle-notch fa-spin" />
           <i v-if="!isConfirming" class="fas fa-check" />
-          {{ $t('confirm-eventdetails') }}
+          {{ $t('confirm-event') }}
         </button>
         <button
           v-show="!isVisitor"
@@ -73,7 +73,7 @@
         >
           <i v-if="isConfirming" class="fas fa-circle-notch fa-spin" />
           <i v-if="!isConfirming" class="fas fa-hourglass-half" />
-          {{ $t('unconfirm-eventdetails') }}
+          {{ $t('unconfirm-event') }}
         </button>
       </template>
       <a

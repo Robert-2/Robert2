@@ -43,7 +43,7 @@ class Event extends BaseModel
             'start_date'   => V::notEmpty()->date(),
             'end_date'     => V::callback([$this, 'checkEndDate']),
             'is_confirmed' => V::notOptional()->boolType(),
-            'is_closed'    => V::notOptional()->boolType(),
+            'is_closed'    => V::callback([$this, 'checkClosedState']),
             'location'     => V::optional(V::length(2, 64)),
             'is_billable'  => V::optional(V::boolType()),
         ];
@@ -70,6 +70,25 @@ class Event extends BaseModel
         $endDate = new \DateTime($this->end_date);
 
         return $startDate < $endDate ?: 'endDateMustBeLater';
+    }
+
+    public function checkClosedState($value)
+    {
+        $boolChecker = V::notOptional()->boolType();
+        if (!$boolChecker->validate($value)
+        || !$boolChecker->validate($this->is_confirmed)) {
+            return false;
+        }
+
+        if (!$value) {
+            return true;
+        }
+
+        $endDate = new \DateTime($this->end_date);
+        $now     = new \DateTime();
+        $isPastAndConfirmed = $this->is_confirmed && ($endDate < $now);
+
+        return $isPastAndConfirmed ?: 'eventCannotBeClosed';
     }
 
     // ——————————————————————————————————————————————————————
