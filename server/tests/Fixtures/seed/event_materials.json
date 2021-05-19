@@ -1,68 +1,90 @@
 [
     {
-        "id"          : 1,
-        "event_id"    : 1,
+        "id" : 1,
+        "event_id" : 1,
         "material_id" : 1,
-        "quantity"    : 1
+        "quantity" : 1,
+        "quantity_returned": 1,
+        "quantity_broken": 0
     },
     {
-        "id"          : 2,
-        "event_id"    : 1,
+        "id" : 2,
+        "event_id" : 1,
         "material_id" : 2,
-        "quantity"    : 1
+        "quantity" : 1,
+        "quantity_returned": 1,
+        "quantity_broken": 0
     },
     {
-        "id"          : 3,
-        "event_id"    : 1,
+        "id" : 3,
+        "event_id" : 1,
         "material_id" : 4,
-        "quantity"    : 1
+        "quantity" : 1,
+        "quantity_returned": 1,
+        "quantity_broken": 1
     },
     {
-        "id"          : 4,
-        "event_id"    : 2,
+        "id" : 4,
+        "event_id" : 2,
         "material_id" : 1,
-        "quantity"    : 3
+        "quantity" : 3,
+        "quantity_returned": 0,
+        "quantity_broken": 0
     },
     {
-        "id"          : 5,
-        "event_id"    : 2,
+        "id" : 5,
+        "event_id" : 2,
         "material_id" : 2,
-        "quantity"    : 2
+        "quantity" : 2,
+        "quantity_returned": 0,
+        "quantity_broken": 0
     },
     {
-        "id"          : 6,
-        "event_id"    : 3,
+        "id" : 6,
+        "event_id" : 3,
         "material_id" : 3,
-        "quantity"    : 10
+        "quantity" : 10,
+        "quantity_returned": 0,
+        "quantity_broken": 0
     },
     {
-        "id"          : 7,
-        "event_id"    : 3,
+        "id" : 7,
+        "event_id" : 3,
         "material_id" : 2,
-        "quantity"    : 1
+        "quantity" : 1,
+        "quantity_returned": 0,
+        "quantity_broken": 0
     },
     {
-        "id"          : 8,
-        "event_id"    : 3,
+        "id" : 8,
+        "event_id" : 3,
         "material_id" : 5,
-        "quantity"    : 12
+        "quantity" : 12,
+        "quantity_returned": 0,
+        "quantity_broken": 0
     },
     {
-        "id"          : 9,
-        "event_id"    : 4,
+        "id" : 9,
+        "event_id" : 4,
         "material_id" : 1,
-        "quantity"    : 1
+        "quantity" : 1,
+        "quantity_returned": 0,
+        "quantity_broken": 0
     },
     {
-        "id"          : 10,
-        "event_id"    : 4,
+        "id" : 10,
+        "event_id" : 4,
         "material_id" : 6,
-        "quantity"    : 2
+        "quantity" : 2,
+        "quantity_returned": 0,
+        "quantity_broken": 0
     },
     {
-        "id"          : 11,
-        "event_id"    : 4,
+        "id" : 11,
+        "event_id" : 4,
         "material_id" : 7,
-        "quantity"    : 3
+        "quantity" : 3,
+        "quantity_returned": 0,
+        "quantity_broken": 0
     }
 ]

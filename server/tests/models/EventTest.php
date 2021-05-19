@@ -36,6 +36,7 @@ final class EventTest extends ModelTestCase
                 'is_confirmed' => false,
                 'location' => "Brousse",
                 'is_billable' => false,
+                'is_return_inventory_done' => false,
                 'created_at' => null,
                 'updated_at' => null,
                 'deleted_at' => null,
@@ -51,6 +52,7 @@ final class EventTest extends ModelTestCase
                 'is_confirmed' => false,
                 'location' => "Gap",
                 'is_billable' => true,
+                'is_return_inventory_done' => true,
                 'created_at' => null,
                 'updated_at' => null,
                 'deleted_at' => null,
@@ -66,6 +68,7 @@ final class EventTest extends ModelTestCase
                 'is_confirmed' => false,
                 'location' => "Lyon",
                 'is_billable' => true,
+                'is_return_inventory_done' => false,
                 'created_at' => null,
                 'updated_at' => null,
                 'deleted_at' => null,
@@ -145,6 +148,8 @@ final class EventTest extends ModelTestCase
                 'event_id' => 1,
                 'material_id' => 4,
                 'quantity' => 1,
+                'quantity_returned' => 1,
+                'quantity_broken' => 1,
             ],
         ];
         $this->assertEquals($expected, $results[0]);

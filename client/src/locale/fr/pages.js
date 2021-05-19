@@ -97,8 +97,35 @@ export default {
     'event-missing-materials-help': "Il s'agit du matériel manquant pour la période de l'événement, car il est utilisé dans un autre événement, le nombre voulu est trop important, ou quelques uns sont en panne. Ce matériel doit donc être ajouté au parc, ou bien loué auprès d'une autre société.",
     'warning-no-material': "Attention, cet événement est vide, il ne contient aucun matériel pour le moment\u00a0!",
     'warning-no-beneficiary': "Attention, cet événement n'a aucun bénéficiaire\u00a0!",
-    'missing-material-count': "Besoin de {quantity}, il en manque\u00a0{missing}\u00a0!",
     'beneficiary-billing-help': "Seul le premier bénéficiaire de la liste apparaîtra sur la facture.",
+    'missing-material-count': "Besoin de {quantity}, il en manque\u00a0{missing}\u00a0!",
+    'problems-on-returned-materials': "Problèmes sur le matériel retourné",
+    'return-inventory-not-done-yet': "L'inventaire du retour de matériel n'a pas été fait, ou n'est pas encore terminé.",
+    'do-or-terminate-return-inventory': "Faire ou terminer l'inventaire de retour du matériel",
+    'view-return-inventory': "Voir l'inventaire de retour en détail",
+    'not-returned-material-count': [
+      "{returned} retourné sur {out}\u00a0! Il en manque {missing}.",
+      "{returned} retournés sur {out}\u00a0! Il en manque {missing}.",
+    ],
+    'broken-material-count': [
+      "{broken} revenu en panne\u00a0!",
+      "{broken} revenus en panne\u00a0!",
+    ],
+  },
+
+  'page-event-return': {
+    'title': "Retour du matériel de l'événement «\u00a0{pageSubTitle}\u00a0»",
+    'help': "",
+    'this-event-is-not-past': "Cet événement n'est pas terminé, il n'est donc pas possible de vérifier son retour pour le moment.",
+    'warning-terminate': "Attention, une fois cet inventaire terminé, il ne sera plus modifiable.",
+    'confirm-terminate-title': "Voulez-vous vraiment terminer cet inventaire de retour\u00a0?",
+    'confirm-terminate': "Ceci aura pour effet de mettre à jour toutes les quantités «\u00a0en panne\u00a0» du matériel concerné, et il ne sera plus possible de modifier cet inventaire.",
+    'terminate-inventory': "Terminer cet inventaire",
+    'validation-error': "Certaines quantités ne sont pas correctes. Veuillez vérifier à nouveau la liste.",
+    'inventory-done': "Inventaire terminé",
+    'some-material-is-missing': "Du matériel n'est pas revenu de cet événement\u00a0!",
+    'all-material-returned': "Félicitations\u00a0! Tout le matériel a bien été retourné pour cet événement.",
+    'some-material-came-back-broken': "Du matériel est revenu en panne.",
   },
 
   'page-users': {

@@ -2,8 +2,9 @@
 /* eslint-disable quote-props */
 export default {
   errors: {
+    'generic': "Error: {message}",
     'api-unreachable': "Sorry, but Robert2 API is unreachable... Please check your access to network.",
-    'default': "Error {code}: {reason}",
+    'not-found': "This record does not exist.",
     'validation': "Please check form informations.",
     'already-exists': "This record already exists.",
     'show-details': "Show error details",

@@ -60,6 +60,17 @@
         <i class="fas fa-print" />
         {{ $t('print') }}
       </a>
+      <router-link
+        v-show="event.isPast && !isVisitor"
+        :to="`/event-return/${event.id}`"
+        v-slot="{ navigate }"
+        custom
+      >
+        <button @click="navigate" class="info" >
+          <i class="fas fa-exchange-alt" />
+          {{ $t('return-inventory') }}
+        </button>
+      </router-link>
     </div>
     <button class="close" @click="$emit('close')">
       <i class="fas fa-times" />

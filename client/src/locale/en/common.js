@@ -48,6 +48,7 @@ export default {
   'add': "Add",
   'saving': "Saving...",
   'saved': "{entity} saved.",
+  'terminate': "Terminate",
   'choose-date': "Choose this date",
   'reset-date': "Reset date",
   'actions': "Actions",
@@ -212,6 +213,16 @@ export default {
   'entity-name-tags': "Tags of « {entityName} »",
   'remove-all-tags': "Remove all tags",
   'remaining-count': "{count} remaining",
+  'return-inventory': "Return inventory",
+  'grouped-by': "Display grouped by:",
+  'not-grouped': "Not grouped",
+  'out': [
+    "Out:",
+    "Out:",
+  ],
+  'quantity-returned': "Qty returned",
+  'return-scheduled-on': "Return scheduled on",
+  'back-to-calendar': "Back to calendar",
 
   'event': "Event",
   'user': "User",
@@ -220,6 +231,7 @@ export default {
   'category': "Category",
   'sub-category': "Sub-category",
   'categories': "Categories",
+  'parks': "Parks",
   'technician': "Technicien",
 
   'this-feature-is-coming-soon': "This feature implementation is in progress.",

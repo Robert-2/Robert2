@@ -55,7 +55,13 @@
           </tab>
           <tab title-slot="materials" :disabled="!hasMaterials">
             <Help :message="{ type: 'success', text: successMessage }" :error="error" />
-            <EventMissingMaterials :eventId="event.id" />
+            <ReturnInventorySummary
+              v-if="event.isPast"
+              :eventId="event.id"
+              :isDone="event.is_return_inventory_done"
+              :materials="event.materials"
+            />
+            <EventMissingMaterials v-else :eventId="event.id" />
             <EventMaterials
               v-if="hasMaterials"
               :materials="event.materials"
