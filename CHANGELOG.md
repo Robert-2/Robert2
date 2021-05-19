@@ -4,6 +4,9 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.14.0 (UNRELEASED)
+
+
 ## 0.13.0 (2021-05-14)
 
 - Corrige un problème avec le nom de la base de données de test (#128 et #129).
