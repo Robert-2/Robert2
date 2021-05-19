@@ -352,19 +352,22 @@ final class MaterialTest extends ModelTestCase
             'units' => [
                 [
                     'id' => 1,
-                    'serial_number' => 'XR18-1',
+                    'reference' => 'XR18-1',
+                    'serial_number' => null,
                     'park_id' => 1,
                     'is_broken' => false,
                 ],
                 [
                     'id' => 2,
-                    'serial_number' => 'XR18-2',
+                    'reference' => 'XR18-2',
+                    'serial_number' => null,
                     'park_id' => 1,
                     'is_broken' => false,
                 ],
                 [
                     'id' => 3,
-                    'serial_number' => 'XR18-3',
+                    'reference' => 'XR18-3',
+                    'serial_number' => null,
                     'park_id' => 2,
                     'is_broken' => true,
                 ],
@@ -400,13 +403,15 @@ final class MaterialTest extends ModelTestCase
             'units' => [
                 [
                     'id' => 1,
-                    'serial_number' => 'XR18-1',
+                    'reference' => 'XR18-1',
+                    'serial_number' => null,
                     'park_id' => 1,
                     'is_broken' => false,
                 ],
                 [
                     'id' => 2,
-                    'serial_number' => 'XR18-2',
+                    'reference' => 'XR18-2',
+                    'serial_number' => null,
                     'park_id' => 1,
                     'is_broken' => false,
                 ],

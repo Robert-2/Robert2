@@ -7,17 +7,19 @@ export default {
   components: { FormField, Help },
   data() {
     return {
-      help: '',
+      help: 'page-material-units.help-edit',
       error: null,
       isLoading: false,
       material: null,
       ongoingPersist: null,
       unit: {
+        reference: '',
         serial_number: '',
         park_id: '',
         is_broken: false,
       },
       errors: {
+        reference: null,
         serial_number: null,
         park_id: null,
         is_broken: null,
@@ -67,7 +69,7 @@ export default {
     async fetchData() {
       this.isLoading = true;
       this.error = null;
-      this.help = '';
+      this.help = 'page-material-units.help-edit';
 
       try {
         if (!this.id) {
@@ -89,7 +91,7 @@ export default {
         const { data } = await this.$http.get(`material-units/${this.id}`);
         const { material, ...unit } = data;
 
-        store.commit('setPageSubTitle', `${unit.serial_number} (${material.name})`);
+        store.commit('setPageSubTitle', `${unit.reference} (${material.name})`);
         this.material = material;
         this.unit = unit;
 
@@ -142,7 +144,7 @@ export default {
         this.ongoingPersist = this.$http[method](url, { ...this.unit });
         const { data: unit } = await this.ongoingPersist;
         this.help = { type: 'success', text: 'page-material-units.saved' };
-        store.commit('setPageSubTitle', `${unit.serial_number} (${this.material.name})`);
+        store.commit('setPageSubTitle', `${unit.reference} (${this.material.name})`);
         this.unit = unit;
 
         const redirectRoute = { path: `/materials/${this.material.id}/view`, hash: '#units' };

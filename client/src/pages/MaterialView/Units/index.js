@@ -11,6 +11,7 @@ export default {
     return {
       deleteRequests: new Map(),
       columns: [
+        'reference',
         'serial_number',
         'park',
         'is_broken',
@@ -19,12 +20,14 @@ export default {
       options: {
         columnsDropdown: true,
         preserveState: true,
-        orderBy: { column: 'serial_number', ascending: true },
+        orderBy: { column: 'reference', ascending: true },
         sortable: [
+          'reference',
           'serial_number',
           'is_broken',
         ],
         headings: {
+          reference: this.$t('reference'),
           serial_number: this.$t('serial-number'),
           park: this.$t('park'),
           is_broken: this.$t('is-broken'),

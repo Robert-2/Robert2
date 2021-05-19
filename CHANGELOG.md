@@ -26,6 +26,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Permet l'ajout d'une photo associée au matériel (#138).
 
 - Affiche un message dans la page des disponibilités quand le matériel n'est jamais sorti (Premium #35).
+- Utilise une "référence" pour identifier les unités, en gardant le n° de série qui devient facultatif (Premium #22).
 
 ## 0.13.1-premium (2021-04-27)
 

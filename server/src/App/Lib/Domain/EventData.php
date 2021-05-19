@@ -181,7 +181,7 @@ class EventData
 
                     if ($unit) {
                         $units[] = [
-                            'name' => $unit['serial_number'],
+                            'name' => $unit['reference'],
                             'park' => count($this->parks) > 1 ? $this->getParkName($unit['park_id']) : null,
                         ];
                     }
@@ -245,7 +245,7 @@ class EventData
                     }
 
                     $unitData = [
-                        'name' => $unit['serial_number'],
+                        'name' => $unit['reference'],
                         'park' => null,
                     ];
 

@@ -40,7 +40,7 @@ export default {
     },
     unitsDisplay() {
       const usedUnits = this.units.filter((unit) => this.data.pivot.units.includes(unit.id));
-      return usedUnits.map((unit) => unit.serial_number).join(', ');
+      return usedUnits.map((unit) => unit.reference).join(', ');
     },
   },
   methods: {

@@ -218,6 +218,10 @@ export default {
     'edit': "Modifier l'unité «\u00a0{pageSubTitle}\u00a0»",
     'confirm-permanently-delete': "Voulez-vous vraiment supprimer définitivement cette unité\u00a0?",
     'saved': "Unité sauvegardée.",
+    'help-edit': (
+      `La référence est l'identifiant unique de l'unité.
+      Son numéro de série est facultatif.`
+    ),
   },
 
   'page-attributes': {

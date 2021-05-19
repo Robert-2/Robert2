@@ -159,7 +159,7 @@ class EventController extends BaseController
                         if (!is_array($unitIds)) {
                             throw new \InvalidArgumentException(
                                 sprintf(
-                                    "Le format des unités selectionnées pour le matériel ref. \"%s\" est invalide.",
+                                    "Le format des unités sélectionnées pour le matériel ref. \"%s\" est invalide.",
                                     $material->reference
                                 ),
                                 ERROR_VALIDATION
@@ -171,9 +171,9 @@ class EventController extends BaseController
                             if ($unit->material_id !== $material->id) {
                                 throw new \InvalidArgumentException(
                                     vsprintf(
-                                        "L'unité ref. \"%s\", séléctionnée pour le matériel " .
+                                        "L'unité ref. \"%s\", sélectionnée pour le matériel " .
                                         "ref. \"%s\" n'appartient pas à celui-ci.",
-                                        [$unit->serial_number, $material->reference]
+                                        [$unit->reference, $material->reference]
                                     ),
                                     ERROR_VALIDATION
                                 );
@@ -189,9 +189,9 @@ class EventController extends BaseController
                             if (in_array($unit->id, $concurrentlyUsedUnits, true)) {
                                 throw new \InvalidArgumentException(
                                     vsprintf(
-                                        "L'unité ref. \"%s\", séléctionnée pour le matériel " .
+                                        "L'unité ref. \"%s\", sélectionnée pour le matériel " .
                                         "ref. \"%s\" n'est pas disponible à cette période.",
-                                        [$unit->serial_number, $material->reference]
+                                        [$unit->reference, $material->reference]
                                     ),
                                     ERROR_VALIDATION
                                 );
