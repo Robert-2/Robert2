@@ -4,7 +4,7 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 0.13.0-premium (UNRELEASED)
+## 0.13.0-premium (2021-05-20)
 
 - Corrige un problème avec le nom de la base de données de test (#128 et #129).
 - Ajoute la création / suppression de devis pour les événements (#5).
