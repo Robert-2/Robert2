@@ -17,15 +17,6 @@ class AddReferenceToMaterialUnits extends AbstractMigration
                 'after' => 'reference'
             ])
             ->save();
-
-        $units = $this->fetchAll("SELECT `id`, `reference` FROM `material_units`");
-        foreach ($units as $unit) {
-            $this->execute(sprintf(
-                "UPDATE `material_units` SET `serial_number` = '%s' WHERE `id` = %d",
-                $unit['reference'],
-                $unit['id']
-            ));
-        }
     }
 
     public function down()

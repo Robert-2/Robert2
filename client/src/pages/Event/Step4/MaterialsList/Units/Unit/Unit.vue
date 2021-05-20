@@ -11,9 +11,6 @@
     <td class="MaterialsListUnit__col MaterialsListUnit__col--reference">
       {{data.reference}}
     </td>
-    <td class="MaterialsListUnit__col MaterialsListUnit__col--serial-number">
-      {{data.serial_number}}
-    </td>
     <td class="MaterialsListUnit__col MaterialsListUnit__col--is-broken">
       {{data.is_broken ? $t('yes') : $t('no')}}
     </td>
