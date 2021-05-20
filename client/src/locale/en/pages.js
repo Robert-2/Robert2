@@ -217,6 +217,10 @@ export default {
     'edit': "Modify unit «\u00a0{pageSubTitle}\u00a0»",
     'confirm-permanently-delete': "Do you really want to permanently delete this unit?",
     'saved': "Unit saved.",
+    'help-edit': (
+      `The reference is the unique identifier of the unit.
+      Its serial number is optional.`
+    ),
   },
 
   'page-attributes': {

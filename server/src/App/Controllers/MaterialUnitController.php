@@ -42,7 +42,7 @@ class MaterialUnitController extends BaseController
         $vars = [
             'name' => $unit->material['name'],
             'park' =>  $unit->park->name,
-            'serialNumber' => $unit->serial_number,
+            'reference' => $unit->reference,
             'barcode' => $unit->barcode,
         ];
         $pdf = Pdf::createFromTemplate('barcode', $vars);
@@ -51,7 +51,7 @@ class MaterialUnitController extends BaseController
             '%s-%s-%s.pdf',
             $this->i18n->translate('label'),
             slugify($unit->material['name']),
-            slugify($unit->serial_number)
+            slugify($unit->reference)
         );
         return $this->_responseWithFile($response, $fileName, $pdf);
     }

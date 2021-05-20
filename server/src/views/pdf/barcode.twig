@@ -53,7 +53,7 @@ html {
     width: 100%;
 }
 
-.bar-code__serial-number {
+.bar-code__reference {
     margin-top: .8mm;
     padding: 0 2mm;
     font-size: 3.5mm;
@@ -70,7 +70,7 @@ html {
         <div class="bar-code__barcode">
             <img class="bar-code__barcode__image" src="{{ barcode }}" />
         </div>
-        <div class="bar-code__serial-number">{{ serialNumber|u.truncate(20) }}</div>
+        <div class="bar-code__reference">{{ reference|u.truncate(20) }}</div>
     </div>
 </div>
 {% endblock %}

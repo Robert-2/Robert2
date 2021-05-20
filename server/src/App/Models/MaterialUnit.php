@@ -14,9 +14,10 @@ class MaterialUnit extends BaseModel
         parent::__construct($attributes);
 
         $this->validation = [
-            'park_id'       => V::notEmpty()->numeric(),
-            'serial_number' => V::notEmpty()->alnum('-+/*.')->length(2, 64),
-            'is_broken'     => V::optional(V::boolType()),
+            'park_id' => V::notEmpty()->numeric(),
+            'reference' => V::notEmpty()->alnum('-+/*.')->length(2, 64),
+            'serial_number' => V::optional(V::alnum('-+/*.')->length(2, 64)),
+            'is_broken' => V::optional(V::boolType()),
         ];
     }
 
@@ -54,10 +55,11 @@ class MaterialUnit extends BaseModel
     // ——————————————————————————————————————————————————————
 
     protected $casts = [
-        'park_id'       => 'integer',
-        'material_id'   => 'integer',
+        'park_id' => 'integer',
+        'material_id' => 'integer',
+        'reference' => 'string',
         'serial_number' => 'string',
-        'is_broken'     => 'boolean',
+        'is_broken' => 'boolean',
     ];
 
     public function getMaterialAttribute()
@@ -103,8 +105,8 @@ class MaterialUnit extends BaseModel
             $svg = $renderer->render($barcode);
         } catch (\Throwable $e) {
             throw new \RuntimeException(sprintf(
-                "Impossible de générer le code barre pour le numéro de série \"%s\".",
-                $this->serial_number
+                "Impossible de générer le code barre pour la référence \"%s\".",
+                $this->reference
             ));
         }
 
@@ -119,9 +121,16 @@ class MaterialUnit extends BaseModel
 
     protected $fillable = [
         'park_id',
+        'reference',
         'serial_number',
         'is_broken',
     ];
+
+    public function setReferenceAttribute($value)
+    {
+        $value = is_string($value) ? trim($value) : $value;
+        $this->attributes['reference'] = $value;
+    }
 
     public function setSerialNumberAttribute($value)
     {

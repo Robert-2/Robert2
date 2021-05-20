@@ -3,42 +3,48 @@
         "id": 1,
         "material_id": 6,
         "park_id": 1,
-        "serial_number": "XR18-1",
+        "reference": "XR18-1",
+        "serial_number": null,
         "is_broken": false
     },
     {
         "id": 2,
         "material_id": 6,
         "park_id": 1,
-        "serial_number": "XR18-2",
+        "reference": "XR18-2",
+        "serial_number": null,
         "is_broken": false
     },
     {
         "id": 3,
         "material_id": 6,
         "park_id": 2,
-        "serial_number": "XR18-3",
+        "reference": "XR18-3",
+        "serial_number": null,
         "is_broken": true
     },
     {
         "id": 4,
         "material_id": 7,
         "park_id": 2,
-        "serial_number": "VHCL-1",
+        "reference": "VHCL-1",
+        "serial_number": "123456-000789",
         "is_broken": false
     },
     {
         "id": 5,
         "material_id": 8,
         "park_id": 1,
-        "serial_number": "DECOR-FOREST-1",
+        "reference": "DECOR-FOREST-1",
+        "serial_number": null,
         "is_broken": false
     },
     {
         "id": 6,
         "material_id": 8,
         "park_id": 1,
-        "serial_number": "DECOR-FOREST-2",
+        "reference": "DECOR-FOREST-2",
+        "serial_number": null,
         "is_broken": false
     }
 ]
