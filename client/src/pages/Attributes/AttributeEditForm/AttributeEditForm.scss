@@ -1,33 +1,41 @@
 .AttributeEditForm {
-  display: flex;
+  width: 100%;
   min-width: 800px;
+  margin: 0;
   background-color: $bg-color-table-td;
+  color: $text-base-color;
+  border-collapse: collapse;
+
+  &__name,
+  &__type,
+  &__unit,
+  &__max-length,
+  &__categories {
+    padding: .8rem .5rem;
+    vertical-align: top;
+  }
 
   &__name {
-    flex: 0 0 220px;
-    padding: .8rem .5rem;
+    width: 305px;
   }
 
   &__type {
-    flex: 0 0 170px;
-    padding: .8rem .5rem;
+    width: 170px;
   }
 
   &__unit {
-    flex: 0 0 80px;
-    padding: .8rem .5rem;
+    width: 100px;
     text-align: center;
   }
 
   &__max-length {
-    flex: 0 0 115px;
-    padding: .8rem .5rem;
+    display: none;
+    width: 100px;
     text-align: center;
   }
 
   &__categories {
-    flex: 1;
-    padding: .8rem .5rem;
+    width: auto;
 
     &__item {
       margin-top: 4px;
@@ -53,6 +61,12 @@
 
     li {
       list-style: inside;
+    }
+  }
+
+  @media(min-width: $screen-big-desktop) {
+    &__max-length {
+      display: table-cell;
     }
   }
 }

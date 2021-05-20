@@ -44,7 +44,7 @@
           v-if="event.beneficiaries.length > 0"
           :href="eventSummaryPdfUrl"
           target="_blank"
-          class="EventStep5__confirmation__actions__print"
+          class="button outline"
         >
           <i class="fas fa-print" />
           {{ $t('print-summary') }}

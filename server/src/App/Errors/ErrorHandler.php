@@ -1,95 +1,54 @@
 <?php
+declare(strict_types=1);
+
 namespace Robert2\API\Errors;
 
-class ErrorHandler
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Robert2\API\Errors\Renderer\JsonErrorRenderer;
+use Slim\Exception\HttpException;
+use Slim\Handlers\ErrorHandler as CoreErrorHandler;
+
+class ErrorHandler extends CoreErrorHandler
 {
-    public function __construct($container)
-    {
-        $this->container = $container;
-    }
+    protected $defaultErrorRendererContentType = 'application/json';
+    protected $defaultErrorRenderer = JsonErrorRenderer::class;
 
-    public function __invoke($request, $response, $exception)
-    {
-        if ($this->container->settings["displayErrorDetails"] === true) {
-            return $this->developpementResponse($request, $response, $exception);
-        }
-        // @codeCoverageIgnoreStart
-        return $this->productionResponse($request, $response, $exception);
-        // @codeCoverageIgnoreEnd
-    }
+    protected $errorRenderers = [
+        'application/json' => JsonErrorRenderer::class,
+    ];
 
-    /**
-     * @codeCoverageIgnore
-     */
-    private function productionResponse($request, $response, $exception)
+    protected function determineStatusCode(): int
     {
-        $errorCode = $exception->getCode() ?: ERROR_SERVER;
-        $output = [
-            'success' => false,
-            'error'   => [
-                'code'    => $errorCode,
-                'message' => $exception->getMessage(),
-            ]
-        ];
-
-        if (method_exists($exception, 'getValidationErrors')) {
-            $output['error']['details'] = $exception->getValidationErrors();
+        if ($this->method === 'OPTIONS') {
+            return 200;
         }
 
-        $this->container->logger->error($exception->getMessage());
-        $this->container->logger->error($exception->getTraceAsString() . "\n");
+        if ($this->exception instanceof ModelNotFoundException) {
+            return 404;
+        }
 
+        if ($this->exception instanceof HttpException) {
+            return $this->exception->getCode();
+        }
+
+        $errorCode = $this->exception->getCode() ?: ERROR_SERVER;
         if ($errorCode >= 100 and $errorCode <= 599) {
-            return $response->withJson($output, $errorCode);
+            return $errorCode;
         }
 
-        return $response->withJson($output, ERROR_SERVER);
+        return ERROR_SERVER;
     }
 
-    private function developpementResponse($request, $response, $exception)
+    protected function writeToErrorLog(): void
     {
-        $requested = sprintf(
-            '(%s) %s',
-            $request->getMethod(),
-            $request->getUri()
+        $isIgnoredException = (
+            $this->exception instanceof HttpException ||
+            $this->exception instanceof ModelNotFoundException ||
+            $this->exception instanceof ValidationException
         );
-
-        $file = sprintf(
-            '%s, line %s.',
-            $exception->getFile(),
-            $exception->getLine()
-        );
-
-        $errorCode = $exception->getCode() ?: ERROR_SERVER;
-
-        $output = [
-            'success' => false,
-            'error'   => [
-                'requested'  => $requested,
-                'code'       => $errorCode,
-                'message'    => $exception->getMessage(),
-                'file'       => $file,
-                'stackTrace' => $exception->getTrace()
-            ]
-        ];
-
-        if (method_exists($exception, 'getValidationErrors')) {
-            $output['error'] = [
-                'code'    => $errorCode,
-                'message' => $exception->getMessage(),
-                'details' => $exception->getValidationErrors()
-            ];
+        if ($isIgnoredException) {
+            return;
         }
-
-        if ($errorCode < 100 || $errorCode > 599) {
-            $errorCode = ERROR_SERVER;
-        }
-
-        if ($errorCode === ERROR_NOT_FOUND) {
-            unset($output['error']['details']);
-            unset($output['error']['stackTrace']);
-        }
-
-        return $response->withJson($output, $errorCode);
+        parent::writeToErrorLog();
     }
 }

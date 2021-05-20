@@ -37,7 +37,7 @@
             />
           </tab>
           <tab title-slot="documents">
-            <Documents />
+            <Documents :material="material" />
           </tab>
           <tab title-slot="availabilities">
             <Availabilities :units="material.units" />

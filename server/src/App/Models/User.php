@@ -3,13 +3,11 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
-use Robert2\API\Config;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Robert2\API\Validation\Validator as V;
 use Illuminate\Database\Eloquent\Builder;
-
-use Robert2\API\Errors;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Robert2\API\Config;
+use Robert2\API\Validation\Validator as V;
 
 class User extends BaseModel
 {
@@ -128,29 +126,23 @@ class User extends BaseModel
         return parent::getAll($softDeleted)->select($fields);
     }
 
-    public function getLogin(string $identifier, string $password): User
+    public static function fromLogin(string $identifier, string $password): User
     {
-        $user = self::where('email', $identifier)
+        $user = static::where('email', $identifier)
             ->orWhere('pseudo', $identifier)
             ->with('settings')
-            ->first();
-
-        if (!$user) {
-            throw new Errors\NotFoundException;
-        }
+            ->firstOrFail();
 
         if (!password_verify($password, $user->password)) {
-            throw new Errors\NotFoundException;
+            throw new ModelNotFoundException(static::class);
         }
-
-        unset($user->password);
 
         return $user;
     }
 
     public static function withCasIdentifier($casIdentifier): ?User
     {
-        return self::where('cas_identifier', $casIdentifier)->first();
+        return static::where('cas_identifier', $casIdentifier)->first();
     }
 
     // ——————————————————————————————————————————————————————
@@ -167,24 +159,7 @@ class User extends BaseModel
         'cas_identifier',
     ];
 
-    public function setSettings(int $userId, array $data = []): array
-    {
-        if (!$this->exists($userId)) {
-            throw new Errors\NotFoundException("User not found, cannot modify settings.");
-        }
-
-        $UserSetting = new UserSetting();
-        $settings = $UserSetting->edit($userId, $data);
-
-        return $settings->toArray();
-    }
-
-    public static function new(array $data = []): User
-    {
-        return (new static())->edit(null, $data);
-    }
-
-    public function edit(?int $id = null, array $data = []): Model
+    public function edit(?int $id = null, array $data = []): BaseModel
     {
         if (isset($data['password']) && !empty($data['password'])) {
             $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
@@ -194,7 +169,7 @@ class User extends BaseModel
 
         $user = parent::edit($id, $data);
         $userId = (int)$user['id'];
-        $User = self::find($userId);
+        $User = static::find($userId);
 
         if (!$id) {
             $settings = Config\Config::getSettings();

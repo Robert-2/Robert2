@@ -7,6 +7,7 @@
           :errors="errors"
           @submit="saveBeneficiary"
           withCompany
+          withReference
         />
         <Help
           :message="help"

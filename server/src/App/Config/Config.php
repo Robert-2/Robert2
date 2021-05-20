@@ -25,7 +25,6 @@ class Config
         'displayErrorDetails' => false,
         'useRouterCache' => true,
         'useHTTPS' => USE_SSL,
-        'routerCacheFile' => VAR_FOLDER . DS . 'cache' . DS . 'routes.php',
         'JWTSecret' => 'super_secret_key_you_should_not_commit',
         'httpAuthHeader' => 'Authorization',
         'sessionExpireHours' => 12,
@@ -41,7 +40,7 @@ class Config
             'cookie' => 'auth',
             'CAS' => [
                 'enabled' => false,
-                'host' => 'cas.robert.local',
+                'host' => 'cas.robert2.local',
                 'port' => 8080,
                 'cert' => false, // /path/to/cachain.pem
                 'attributes' => [
@@ -51,6 +50,9 @@ class Config
                 ],
                 'groupsMapping' => [],
             ],
+        ],
+        'eventSummary' => [
+            'materialDisplayMode' => 'sub-categories', // - ['flat', 'sub-categories', 'parks']
         ],
         'currency' => [
           'symbol' => '€',
@@ -102,11 +104,8 @@ class Config
             'vatRate' => 0.0,
         ],
         'logger' => [
-            'directory' => VAR_FOLDER . DS . 'logs',
-            'filename' => 'robert2-api.log',
             'timezone' => 'Europe/Paris',
             'level' => 'debug',
-            'handlers' => [],
             'max_files' => 10,
         ],
         'handScanner' => [
@@ -126,6 +125,11 @@ class Config
             'application/vnd.oasis.opendocument.text',
             'application/msword',
             'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        ],
+        'authorizedImageTypes' => [
+            'image/jpeg',
+            'image/png',
+            'image/webp',
         ],
     ];
 
@@ -156,6 +160,9 @@ class Config
         'companyData' => 'array',
     ];
 
+    /** @var string|null La version de l'application, mise en "cache". */
+    private static $versionCached;
+
     public static function getSettings(?string $setting = null)
     {
         $settings = self::DEFAULT_SETTINGS;
@@ -170,11 +177,6 @@ class Config
         return $settings[$setting] ?? null;
     }
 
-    public static function customConfigExists(): bool
-    {
-        return file_exists(self::SETTINGS_FILE);
-    }
-
     public static function getEnv()
     {
         $env = $_ENV['APP_ENV'] ?? static::getSettings('env') ?? 'production';
@@ -185,6 +187,14 @@ class Config
         }
 
         return $env;
+    }
+
+    public static function getVersion()
+    {
+        if (!static::$versionCached) {
+            static::$versionCached = trim(file_get_contents(SRC_FOLDER . DS . 'VERSION'));
+        }
+        return static::$versionCached;
     }
 
     public static function getDbConfig(array $options = []): array
@@ -268,6 +278,11 @@ class Config
         // @codeCoverageIgnoreEnd
     }
 
+    public static function customConfigExists(): bool
+    {
+        return file_exists(self::SETTINGS_FILE);
+    }
+
     /**
      * @codeCoverageIgnore
      */
@@ -341,21 +356,6 @@ class Config
             throw new \RuntimeException("JSON settings file cannot be decoded. It may be malformed or corrupted.");
         }
 
-        return self::_normalizeSettings($settings);
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    private static function _normalizeSettings(array $settings): array
-    {
-        $settings = array_replace_recursive(self::DEFAULT_SETTINGS, $settings);
-
-        $settings['routerCacheFile'] = false;
-        if ($settings['useRouterCache']) {
-            $settings['routerCacheFile'] = VAR_FOLDER . DS . 'cache' . DS . 'routes.php';
-        }
-
-        return $settings;
+        return array_replace_recursive(self::DEFAULT_SETTINGS, $settings);
     }
 }

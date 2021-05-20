@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Robert2\API\Validation\Validator as V;
 use Robert2\API\Models\Traits\Taggable;
 use Robert2\API\Models\User;
-use Robert2\API\Errors;
 
 class Material extends BaseModel
 {
@@ -31,6 +30,7 @@ class Material extends BaseModel
         'replacement_price' => null,
         'is_hidden_on_bill' => false,
         'is_discountable' => true,
+        'picture' => null,
         'note' => null,
     ];
 
@@ -39,17 +39,18 @@ class Material extends BaseModel
         parent::__construct($attributes);
 
         $this->validation = [
-            'name'                  => V::notEmpty()->length(2, 191),
-            'reference'             => V::notEmpty()->alnum('.,-+/_ ')->length(2, 64),
-            'park_id'               => V::callback([$this, 'checkParkId']),
-            'category_id'           => V::notEmpty()->numeric(),
-            'sub_category_id'       => V::optional(V::numeric()),
-            'rental_price'          => V::floatVal()->max(999999.99, true),
-            'stock_quantity'        => V::callback([$this, 'checkStockQuantity']),
+            'name' => V::notEmpty()->length(2, 191),
+            'reference' => V::notEmpty()->alnum('.,-+/_ ')->length(2, 64),
+            'park_id' => V::callback([$this, 'checkParkId']),
+            'category_id' => V::notEmpty()->numeric(),
+            'sub_category_id' => V::optional(V::numeric()),
+            'rental_price' => V::floatVal()->max(999999.99, true),
+            'stock_quantity'  => V::callback([$this, 'checkStockQuantity']),
             'out_of_order_quantity' => V::callback([$this, 'checkOutOfOrderQuantity']),
-            'replacement_price'     => V::optional(V::floatVal()->max(999999.99, true)),
-            'is_hidden_on_bill'     => V::optional(V::boolType()),
-            'is_discountable'       => V::optional(V::boolType()),
+            'replacement_price' => V::optional(V::floatVal()->max(999999.99, true)),
+            'is_hidden_on_bill' => V::optional(V::boolType()),
+            'is_discountable' => V::optional(V::boolType()),
+            'picture' => V::optional(V::length(5, 191)),
         ];
     }
 
@@ -116,7 +117,7 @@ class Material extends BaseModel
     public function Units()
     {
         return $this->hasMany('Robert2\API\Models\MaterialUnit')
-            ->select(['id', 'serial_number', 'park_id', 'is_broken']);
+            ->select(['id', 'reference', 'serial_number', 'park_id', 'is_broken']);
     }
 
     public function Attributes()
@@ -150,20 +151,22 @@ class Material extends BaseModel
     // ——————————————————————————————————————————————————————
 
     protected $casts = [
-        'name'                  => 'string',
-        'reference'             => 'string',
-        'description'           => 'string',
-        'is_unitary'            => 'boolean',
-        'park_id'               => 'integer',
-        'category_id'           => 'integer',
-        'sub_category_id'       => 'integer',
-        'rental_price'          => 'float',
-        'stock_quantity'        => 'integer',
+        'name' => 'string',
+        'reference' => 'string',
+        'description' => 'string',
+        'is_unitary' => 'boolean',
+        'park_id' => 'integer',
+        'category_id' => 'integer',
+        'sub_category_id' => 'integer',
+        'rental_price' => 'float',
+        'stock_quantity' => 'integer',
         'out_of_order_quantity' => 'integer',
-        'replacement_price'     => 'float',
-        'is_hidden_on_bill'     => 'boolean',
-        'is_discountable'       => 'boolean',
-        'note'                  => 'string',
+        'replacement_price' => 'float',
+        'is_hidden_on_bill' => 'boolean',
+        'is_discountable' => 'boolean',
+        'picture' => 'string',
+        'picture_path' => 'string',
+        'note' => 'string',
     ];
 
     public function getStockQuantityAttribute($value)
@@ -273,6 +276,7 @@ class Material extends BaseModel
         'replacement_price',
         'is_hidden_on_bill',
         'is_discountable',
+        'picture',
         'note',
     ];
 
@@ -282,7 +286,7 @@ class Material extends BaseModel
     // -
     // ------------------------------------------------------
 
-    public function recalcQuantitiesForPeriod(
+    public static function recalcQuantitiesForPeriod(
         array $data,
         string $start,
         string $end,
@@ -292,7 +296,7 @@ class Material extends BaseModel
             return [];
         }
 
-        $events = (new Event())->setPeriod($start, $end)->getAll();
+        $events = (new Event)->setPeriod($start, $end)->getAll();
         if ($exceptEventId) {
             $events = $events->where('id', '!=', $exceptEventId);
         }
@@ -388,13 +392,9 @@ class Material extends BaseModel
         return $builder;
     }
 
-    public function getOneForUser(int $id, ?int $userId = null): array
+    public static function getOneForUser(int $id, ?int $userId = null): array
     {
-        $material = $this->find($id);
-        if (!$material) {
-            throw new Errors\NotFoundException;
-        }
-
+        $material = static::findOrFail($id);
         $materialData = $material->toArray();
 
         if ($userId !== null && $material->is_unitary) {
@@ -408,5 +408,14 @@ class Material extends BaseModel
         }
 
         return $materialData;
+    }
+
+    public static function getPicturePath(int $id, ?string $pictureName = null)
+    {
+        $path = DATA_FOLDER . DS . 'materials'. DS . $id;
+        if ($pictureName) {
+            $path .= DS . $pictureName;
+        }
+        return $path;
     }
 }

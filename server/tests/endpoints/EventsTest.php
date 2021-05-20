@@ -64,8 +64,10 @@ final class EventsTest extends ApiTestCase
                             'country' => null,
                             'company' => null,
                             'pivot' => [
+                                'id' => 1,
                                 'event_id' => 1,
                                 'person_id' => 1,
+                                'position' => 'Régisseur',
                             ],
                         ],
                         [
@@ -76,8 +78,10 @@ final class EventsTest extends ApiTestCase
                             'country' => null,
                             'company' => null,
                             'pivot' => [
+                                'id' => 2,
                                 'event_id' => 1,
                                 'person_id' => 2,
+                                'position' => 'Technicien plateau',
                             ],
                         ],
                     ],
@@ -128,8 +132,7 @@ final class EventsTest extends ApiTestCase
     public function testGetEventNotFound()
     {
         $this->client->get('/api/events/999');
-        $this->assertStatusCode(ERROR_NOT_FOUND);
-        $this->assertNotFoundErrorMessage();
+        $this->assertNotFound();
     }
 
     public function testGetOneEvent()
@@ -161,6 +164,7 @@ final class EventsTest extends ApiTestCase
                     'first_name' => 'Jean',
                     'last_name' => 'Fountain',
                     'full_name' => 'Jean Fountain',
+                    'reference' => '0001',
                     'nickname' => null,
                     'email' => 'tester@robertmanager.net',
                     'phone' => null,
@@ -205,9 +209,15 @@ final class EventsTest extends ApiTestCase
                     'last_name' => 'Fountain',
                     'nickname' => null,
                     'full_name' => 'Jean Fountain',
+                    'phone' => null,
                     'company' => null,
                     'country' => null,
-                    'pivot' => ['event_id' => '1', 'person_id' => '1'],
+                    'pivot' => [
+                        'id' => 1,
+                        'event_id' => 1,
+                        'person_id' => 1,
+                        'position' => 'Régisseur',
+                    ],
                 ],
                 [
                     'id' => 2,
@@ -215,9 +225,15 @@ final class EventsTest extends ApiTestCase
                     'last_name' => 'Rabbit',
                     'nickname' => 'Riri',
                     'full_name' => 'Roger Rabbit',
+                    'phone' => null,
                     'company' => null,
                     'country' => null,
-                    'pivot' => ['event_id' => '1', 'person_id' => '2'],
+                    'pivot' => [
+                        'id' => 2,
+                        'event_id' => 1,
+                        'person_id' => 2,
+                        'position' => 'Technicien plateau',
+                    ],
                 ],
             ],
             'beneficiaries' => [
@@ -226,6 +242,8 @@ final class EventsTest extends ApiTestCase
                     'first_name' => 'Client',
                     'last_name' => 'Benef',
                     'full_name' => 'Client Benef',
+                    'reference' => null,
+                    'phone' => '+33123456789',
                     'street' => '156 bis, avenue des tests poussés',
                     'postal_code' => '88080',
                     'locality' => 'Wazzaville',
@@ -423,7 +441,10 @@ final class EventsTest extends ApiTestCase
         $dataWithChildren = array_merge($data, [
             'title' => "Encore un événement",
             'beneficiaries' => [3],
-            'assignees' => [1, 2],
+            'assignees' => [
+                1 => ['position' => 'Régie générale'],
+                2 => ['position' => null],
+            ],
             'materials' => [
                 ['id' => 1, 'quantity' => 1],
                 ['id' => 2, 'quantity' => 1],
@@ -437,6 +458,7 @@ final class EventsTest extends ApiTestCase
         $this->assertEquals("Encore un événement", $response['title']);
         $this->assertCount(1, $response['beneficiaries']);
         $this->assertCount(2, $response['assignees']);
+        $this->assertEquals('Régie générale', $response['assignees'][0]['pivot']['position']);
         $this->assertCount(3, $response['materials']);
         $this->assertEquals(2, $response['materials'][0]['pivot']['quantity']);
     }
@@ -451,7 +473,7 @@ final class EventsTest extends ApiTestCase
     public function testUpdateEventNotFound()
     {
         $this->client->put('/api/events/999', ['name' => '__inexistant__']);
-        $this->assertStatusCode(ERROR_NOT_FOUND);
+        $this->assertNotFound();
     }
 
     public function testUpdateEvent()
@@ -470,6 +492,7 @@ final class EventsTest extends ApiTestCase
                     'user_id' => 1,
                     'first_name' => 'Jean',
                     'last_name' => 'Fountain',
+                    'reference' => '0001',
                     'nickname' => '',
                     'email' => 'tester@robertmanager.net',
                     'phone' => '',
@@ -523,11 +546,14 @@ final class EventsTest extends ApiTestCase
                     'last_name' => 'Fountain',
                     'nickname' => null,
                     'full_name' => 'Jean Fountain',
+                    'phone' => null,
                     'company' => null,
                     'country' => null,
                     'pivot' => [
-                        'event_id' => '1',
-                        'person_id' => '1',
+                        'id' => 1,
+                        'event_id' => 1,
+                        'person_id' => 1,
+                        'position' => 'Régisseur',
                     ],
                 ],
                 [
@@ -536,11 +562,14 @@ final class EventsTest extends ApiTestCase
                     'last_name' => 'Rabbit',
                     'nickname' => 'Riri',
                     'full_name' => 'Roger Rabbit',
+                    'phone' => null,
                     'company' => null,
                     'country' => null,
                     'pivot' => [
-                        'event_id' => '1',
-                        'person_id' => '2',
+                        'id' => 2,
+                        'event_id' => 1,
+                        'person_id' => 2,
+                        'position' => 'Technicien plateau',
                     ],
                 ],
             ],
@@ -550,6 +579,8 @@ final class EventsTest extends ApiTestCase
                     'first_name' => 'Client',
                     'last_name' => 'Benef',
                     'full_name' => 'Client Benef',
+                    'reference' => null,
+                    'phone' => '+33123456789',
                     'street' => '156 bis, avenue des tests poussés',
                     'postal_code' => '88080',
                     'locality' => 'Wazzaville',
@@ -775,7 +806,7 @@ final class EventsTest extends ApiTestCase
     public function testRestoreEventNotFound()
     {
         $this->client->put('/api/events/restore/999');
-        $this->assertStatusCode(ERROR_NOT_FOUND);
+        $this->assertNotFound();
     }
 
     public function testRestoreEvent()
@@ -851,8 +882,7 @@ final class EventsTest extends ApiTestCase
 
         // - Event not found
         $this->client->get('/api/events/999/missing-materials');
-        $this->assertStatusCode(ERROR_NOT_FOUND);
-        $this->assertNotFoundErrorMessage();
+        $this->assertNotFound();
     }
 
     public function testDownloadPdf()
@@ -862,9 +892,8 @@ final class EventsTest extends ApiTestCase
         $this->assertStatusCode(404);
 
         // - Download event n°1 PDF file
-        $this->client->get('/events/1/pdf');
+        $responseStream = $this->client->get('/events/1/pdf');
         $this->assertStatusCode(200);
-        $responseStream = $this->client->response->getBody();
         $this->assertTrue($responseStream->isReadable());
     }
 }

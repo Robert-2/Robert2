@@ -3,15 +3,12 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Robert2\API\Validation\Validator as V;
-
-use Robert2\API\Errors;
 use Robert2\API\Config\Config;
-use Robert2\API\I18n\I18n;
 use Robert2\API\Models\Traits\WithPdf;
-use Robert2\Lib\Domain\EventEstimate;
+use Robert2\API\Services\I18n;
+use Robert2\API\Validation\Validator as V;
+use Robert2\Lib\Domain\EventData;
 
 class Estimate extends BaseModel
 {
@@ -109,17 +106,12 @@ class Estimate extends BaseModel
         'user_id',
     ];
 
-    public function createFromEvent(int $eventId, int $userId, float $discountRate = 0.0): Model
+    public static function createFromEvent(int $eventId, int $userId, float $discountRate = 0.0): Estimate
     {
-        $Event = new Event();
-        $estimateEvent = $Event
+        $estimateEvent = (new Event)
             ->with('Beneficiaries')
             ->with('Materials')
-            ->find($eventId);
-
-        if (!$estimateEvent) {
-            throw new Errors\NotFoundException("Event not found.");
-        }
+            ->findOrFail($eventId);
 
         $date = new \DateTime();
         $eventData = $estimateEvent->toArray();
@@ -128,10 +120,10 @@ class Estimate extends BaseModel
             throw new \InvalidArgumentException("Event is not billable.");
         }
 
-        $EventEstimate = new EventEstimate($date, $eventData, $userId);
-        $EventEstimate->setDiscountRate($discountRate);
+        $EventData = new EventData($date, $eventData, 'estimate', $userId);
+        $EventData->setDiscountRate($discountRate);
 
-        $newEstimateData = $EventEstimate->toModelArray();
+        $newEstimateData = $EventData->toModelArray();
 
         $newEstimate = new Estimate();
         $newEstimate->fill($newEstimateData)->save();
@@ -141,13 +133,9 @@ class Estimate extends BaseModel
 
     public function getPdfName(int $id): string
     {
-        $model = $this->withTrashed()->find($id);
-        if (!$model) {
-            throw new NotFoundException(sprintf('Record %d not found.', $id));
-        }
-
+        $estimate = $this->withTrashed()->findOrFail($id);
         $company = Config::getSettings('companyData');
-        $date = new \DateTime($model->date);
+        $date = new \DateTime($estimate->date);
 
         $i18n = new I18n(Config::getSettings('defaultLang'));
         $fileName = sprintf(
@@ -155,7 +143,7 @@ class Estimate extends BaseModel
             $i18n->translate('Estimate'),
             slugify($company['name']),
             $date->format('Ymd-Hi'),
-            slugify($model->Beneficiary->full_name)
+            slugify($estimate->Beneficiary->full_name)
         );
         if (isTestMode()) {
             $fileName = sprintf('TEST-%s', $fileName);
@@ -166,27 +154,24 @@ class Estimate extends BaseModel
 
     public function getPdfContent(int $id): string
     {
-        if (!$this->exists($id)) {
-            throw new Errors\NotFoundException;
-        }
-
-        $estimate = self::find($id);
-
+        $estimate = static::findOrFail($id);
         $date = new \DateTime($estimate->date);
 
-        $Event = new Event();
-        $eventData = $Event
+        $eventData = (new Event)
             ->with('Beneficiaries')
             ->with('Materials')
             ->find($estimate->event_id)
             ->toArray();
 
-        $EventEstimate = new EventEstimate($date, $eventData, $estimate->user_id);
-        $EventEstimate->setDiscountRate($estimate->discount_rate);
-
         $categories = (new Category())->getAll()->get()->toArray();
+        $parks = (new Park())->getAll()->get()->toArray();
 
-        $estimatePdf = $this->_getPdfAsString($EventEstimate->toPdfTemplateArray($categories));
+        $EventData = new EventData($date, $eventData, 'estimate', $estimate->user_id);
+        $EventData->setDiscountRate($estimate->discount_rate)
+            ->setCategories($categories)
+            ->setParks($parks);
+
+        $estimatePdf = $this->_getPdfAsString($EventData->toPdfTemplateArray());
         if (!$estimatePdf) {
             $lastError = error_get_last();
             throw new \RuntimeException(sprintf(

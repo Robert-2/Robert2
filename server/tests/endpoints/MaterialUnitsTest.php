@@ -10,7 +10,8 @@ final class MaterialUnitsTest extends ApiTestCase
         $this->assertResponseData([
             'id' => 1,
             'material_id' => 6,
-            'serial_number' => 'XR18-1',
+            'reference' => 'XR18-1',
+            'serial_number' => null,
             'park_id' => 1,
             'is_broken' => false,
             'material' => [
@@ -28,6 +29,7 @@ final class MaterialUnitsTest extends ApiTestCase
                 'replacement_price' => 419,
                 'is_hidden_on_bill' => false,
                 'is_discountable' => false,
+                'picture' => null,
                 'note' => null,
                 'attributes' => [
                     [
@@ -40,22 +42,25 @@ final class MaterialUnitsTest extends ApiTestCase
                 ],
                 'units' => [
                     [
-                        'id'            => 1,
-                        'serial_number' => 'XR18-1',
-                        'park_id'       => 1,
-                        'is_broken'     => false,
+                        'id' => 1,
+                        'reference' => 'XR18-1',
+                        'serial_number' => null,
+                        'park_id' => 1,
+                        'is_broken' => false,
                     ],
                     [
-                        'id'            => 2,
-                        'serial_number' => 'XR18-2',
-                        'park_id'       => 1,
-                        'is_broken'     => false,
+                        'id' => 2,
+                        'reference' => 'XR18-2',
+                        'serial_number' => null,
+                        'park_id' => 1,
+                        'is_broken' => false,
                     ],
                     [
-                        'id'            => 3,
-                        'serial_number' => 'XR18-3',
-                        'park_id'       => 2,
-                        'is_broken'     => true,
+                        'id' => 3,
+                        'reference' => 'XR18-3',
+                        'serial_number' => null,
+                        'park_id' => 2,
+                        'is_broken' => true,
                     ]
                 ],
                 'tags' => [],
@@ -72,14 +77,16 @@ final class MaterialUnitsTest extends ApiTestCase
     {
         $data = [
             'park_id' => 1,
-            'serial_number' => 'VHCL-2',
+            'reference' => 'VHCL-2',
+            'serial_number' => '123456-000020',
             'is_broken' => true,
         ];
         $expectedData = [
             'id' => 7,
             'material_id' => 7,
             'park_id' => 1,
-            'serial_number' => 'VHCL-2',
+            'reference' => 'VHCL-2',
+            'serial_number' => '123456-000020',
             'is_broken' => true,
             'created_at' => 'fakedTestContent',
             'updated_at' => 'fakedTestContent',
@@ -95,14 +102,16 @@ final class MaterialUnitsTest extends ApiTestCase
             'id' => 1000,
             'material_id' => 6,
             'park_id' => 2,
-            'serial_number' => 'VHCL-3',
+            'reference' => 'VHCL-3',
+            'serial_number' => '123456-000030',
             'is_broken' => false,
         ];
         $expectedData = [
             'id' => 7,
             'material_id' => 7,
             'park_id' => 2,
-            'serial_number' => 'VHCL-3',
+            'reference' => 'VHCL-3',
+            'serial_number' => '123456-000030',
             'is_broken' => false,
             'created_at' => 'fakedTestContent',
             'updated_at' => 'fakedTestContent',
@@ -115,6 +124,7 @@ final class MaterialUnitsTest extends ApiTestCase
     public function testCreateUnitBadData()
     {
         $data = [
+            'reference' => 'INV&LÎD',
             'serial_number' => 'INV&LÎD',
             'is_broken' => false,
         ];
@@ -126,9 +136,12 @@ final class MaterialUnitsTest extends ApiTestCase
                 "park_id must not be empty",
                 "park_id must be numeric",
             ],
+            'reference' => [
+                'reference must contain only letters (a-z), digits (0-9) and "-+/*."',
+            ],
             'serial_number' => [
                 'serial_number must contain only letters (a-z), digits (0-9) and "-+/*."',
-            ]
+            ],
         ]);
     }
 
@@ -136,22 +149,24 @@ final class MaterialUnitsTest extends ApiTestCase
     {
         $data = [
             'park_id' => 1,
-            'serial_number' => 'UNKNOWN',
+            'reference' => 'UNKNOWN',
+            'serial_number' => null,
             'is_broken' => false,
         ];
         $this->client->post('/api/materials/1000/units', $data);
-        $this->assertStatusCode(ERROR_NOT_FOUND);
+        $this->assertNotFound();
     }
 
     public function testCreateUnitMaterialNotUnitary(): void
     {
         $data = [
             'park_id' => 1,
-            'serial_number' => 'NOT_UNITARY',
+            'reference' => 'NOT_UNITARY',
+            'serial_number' => null,
             'is_broken' => false,
         ];
         $this->client->post('/api/materials/1/units', $data);
-        $this->assertStatusCode(ERROR_NOT_FOUND);
+        $this->assertNotFound();
     }
 
     public function testUpdateUnit(): void
@@ -162,7 +177,8 @@ final class MaterialUnitsTest extends ApiTestCase
             'id' => 1,
             'material_id' => 6,
             'park_id' => 2,
-            'serial_number' => 'XR18-1',
+            'reference' => 'XR18-1',
+            'serial_number' => null,
             'is_broken' => true,
             'created_at' => null,
             'updated_at' => 'fakedTestContent',
@@ -177,7 +193,8 @@ final class MaterialUnitsTest extends ApiTestCase
             'id' => 5,
             'material_id' => 8,
             'park_id' => 1,
-            'serial_number' => 'DECOR-FOREST-1',
+            'reference' => 'DECOR-FOREST-1',
+            'serial_number' => null,
             'is_broken' => true,
             'created_at' => null,
             'updated_at' => 'fakedTestContent',

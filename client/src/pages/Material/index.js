@@ -3,10 +3,17 @@ import store from '@/store';
 import formatOptions from '@/utils/formatOptions';
 import Help from '@/components/Help/Help.vue';
 import FormField from '@/components/FormField/FormField.vue';
+import ImageWithUpload from '@/components/ImageWithUpload/ImageWithUpload.vue';
+import Progressbar from '@/components/Progressbar/Progressbar.vue';
 
 export default {
   name: 'Material',
-  components: { Help, FormField },
+  components: {
+    Help,
+    FormField,
+    ImageWithUpload,
+    Progressbar,
+  },
   data() {
     const showBilling = Config.billingMode !== 'none';
 
@@ -29,12 +36,18 @@ export default {
         sub_category_id: '',
         replacement_price: '',
         out_of_order_quantity: '0',
+        picture: null,
         note: '',
         is_hidden_on_bill: false,
         is_discountable: true,
         attributes: [],
       },
       materialAttributes: {},
+      initialPicture: null,
+      newPicture: null,
+      isUploading: false,
+      uploadProgress: 0,
+      uploadError: null,
       errors: {
         name: null,
         reference: null,
@@ -54,14 +67,23 @@ export default {
       const { parks, categories } = store.state;
       return (parks.isFetched && categories.isFetched) ? 'ready' : 'fetching';
     },
+
     parksOptions() {
       return store.getters['parks/options'];
     },
+
     firstPark() {
       return store.getters['parks/firstPark'];
     },
+
     categoriesOptions() {
       return store.getters['categories/options'];
+    },
+
+    pictureUrl() {
+      const { baseUrl } = Config;
+      const { id, picture } = this.material;
+      return picture ? `${baseUrl}/materials/${id}/picture` : null;
     },
   },
   mounted() {
@@ -156,19 +178,14 @@ export default {
       // avec les anciennes valeurs.
     },
 
-    saveMaterial(e) {
+    async saveMaterial(e) {
       e.preventDefault();
       this.resetHelpLoading();
 
       const { id } = this.material;
-      const { resource } = this.$route.meta;
 
-      let request = this.$http.post;
-      let route = resource;
-      if (id) {
-        request = this.$http.put;
-        route = `${resource}/${id}`;
-      }
+      const request = id ? this.$http.put : this.$http.post;
+      const route = id ? `materials/${id}` : 'materials';
 
       const attributes = Object.keys(this.materialAttributes).map((attributeId) => (
         { id: attributeId, value: this.materialAttributes[attributeId] }
@@ -181,17 +198,67 @@ export default {
         postData.out_of_order_quantity = null;
       }
 
-      request(route, postData)
-        .then(({ data }) => {
-          this.isLoading = false;
-          this.help = { type: 'success', text: 'page-materials.saved' };
-          this.setMaterialData(data);
+      try {
+        const response = await request(route, postData);
+        const { data } = response;
+        this.setMaterialData(data);
 
-          setTimeout(() => {
-            this.$router.push(`/materials/${data.id}/view`);
-          }, 300);
-        })
-        .catch(this.displayError);
+        await this.uploadNewPicture();
+
+        this.isLoading = false;
+        this.help = { type: 'success', text: 'page-materials.saved' };
+
+        setTimeout(() => {
+          this.$router.push(`/materials/${data.id}/view`);
+        }, 300);
+      } catch (error) {
+        this.displayError(error);
+      }
+    },
+
+    async uploadNewPicture() {
+      if (!this.newPicture) {
+        return;
+      }
+
+      const { id } = this.material;
+      if (!id) {
+        throw new Error('Cannot upload picture to anonymous material. Please save it before.');
+      }
+
+      this.isUploading = true;
+      this.uploadError = null;
+
+      const formData = new FormData();
+      formData.append('picture-0', this.newPicture);
+
+      const onUploadProgress = (event) => {
+        if (!event.lengthComputable) {
+          return;
+        }
+
+        const { loaded, total } = event;
+        this.uploadProgress = (loaded / total) * 100;
+      };
+
+      try {
+        await this.$http.post(`materials/${id}/picture`, formData, { onUploadProgress });
+      } catch (error) {
+        this.uploadError = error;
+        throw new Error('Upload failed.');
+      } finally {
+        this.isUploading = false;
+      }
+    },
+
+    handleChangePicture(newPicture) {
+      this.material.picture = newPicture?.name || null;
+      this.newPicture = newPicture;
+    },
+
+    handleResetPicture() {
+      this.material.picture = this.initialPicture;
+      this.newPicture = null;
     },
 
     resetHelpLoading() {
@@ -213,6 +280,7 @@ export default {
 
     setMaterialData(data) {
       this.material = data;
+      this.initialPicture = data.picture;
       store.commit('setPageSubTitle', this.material.name);
       this.updateSubCategories();
       this.setMaterialAttributes();

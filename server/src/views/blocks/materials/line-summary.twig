@@ -1,0 +1,34 @@
+<tr>
+    <td>
+        {{ material['reference'] }}
+    </td>
+    <td>
+        {{ material['name'] }}
+
+        {% if material['park'] is not null %}
+            <em class="lighter">({{ material['park'] }})</em>
+        {% endif %}
+
+        {% if material['units'] is not null %}
+            <ul style="margin: 1mm 0 0;">
+            {% for unit in material['units'] %}
+                <li>
+                    {{ unit['name'] }}
+                    {% if unit['park'] is not null %}
+                        <em class="lighter">({{ unit['park'] }})</em>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </td>
+    <td class="center">
+        {{ material['quantity'] }}
+    </td>
+    <td class="right lighter">
+        {{ material['replacementPrice']|format_currency(currency, formatCurrencyOptions, locale) }}
+    </td>
+    <td class="right lighter">
+        {{ material['totalReplacementPrice']|format_currency(currency, formatCurrencyOptions, locale) }}
+    </td>
+</tr>

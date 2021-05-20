@@ -135,7 +135,10 @@ export default {
     'beneficiary-type': "Beneficiary type",
     'person': "Natural person (individual)",
     'company': "Legal entity (company)",
-    'help-edit': "Only first name and last name are mandatory.",
+    'help-edit': (
+      `Only first name and last name are mandatory.
+      The «\u00a0reference\u00a0» is a customer or member number for your internal management, which will appear on the output sheets, estimates and bills. It must be unique.`
+    ),
     'confirm-delete': "Move this beneficiary in trash bin?",
     'confirm-permanently-delete': "Do you really want to permanently delete this beneficiary?",
     'confirm-restore': "Do you really want to restore this beneficiary?",
@@ -170,7 +173,8 @@ export default {
     'help-edit': (
       `Use a short name for the material and use the description field to enter details.\n
       If you check the box «\u00a0Unitary identification\u00a0», you will be able to specify units
-      of this material in the «\u00a0Units\u00a0» tab of the material page, after saving this form.`
+      of this material in the «\u00a0Units\u00a0» tab of the material page, after saving this form.\n
+      The material picture must be of type JPG, PNG or WEBP, and cannot exceed 10\u00a0MB.`
     ),
     'view': "Details of material «\u00a0{pageSubTitle}\u00a0»",
     'confirm-delete': "Move this material in trash bin?",
@@ -181,6 +185,9 @@ export default {
   },
 
   'page-materials-view': {
+    'infos': {
+      'click-to-open-image': "Click to open image in a new tab.",
+    },
     'documents': {
       'no-document': "No document yet.",
       'drag-and-drop-files-here': "Drag and drop files here ↓ to add them.",
@@ -196,10 +203,11 @@ export default {
     },
     'booking-periods': {
       'title': "Booking periods",
-      'used-units': "Unités utilisées",
-      'currently-out': "Actuellement sorti",
-      'done': "Terminé",
-      'expected-to-be-out-on': "Sortie prévue le {date}",
+      'used-units': "Used units",
+      'currently-out': "Currently out",
+      'done': "Done",
+      'expected-to-be-out-on': "Outing planned for {date}",
+      'this-material-has-never-been-out-yet': "This material has never been out yet.",
     },
     'add-unit': "Add a new unit",
   },
@@ -209,6 +217,10 @@ export default {
     'edit': "Modify unit «\u00a0{pageSubTitle}\u00a0»",
     'confirm-permanently-delete': "Do you really want to permanently delete this unit?",
     'saved': "Unit saved.",
+    'help-edit': (
+      `The reference is the unique identifier of the unit.
+      Its serial number is optional.`
+    ),
   },
 
   'page-attributes': {

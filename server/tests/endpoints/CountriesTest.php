@@ -40,8 +40,7 @@ final class CountriesTest extends ApiTestCase
     public function testGetCountryNotFound()
     {
         $this->client->get('/api/countries/999');
-        $this->assertStatusCode(ERROR_NOT_FOUND);
-        $this->assertNotFoundErrorMessage();
+        $this->assertNotFound();
     }
 
     public function testGetCountry()

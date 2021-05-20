@@ -79,19 +79,22 @@ final class SubCategoryTest extends ModelTestCase
                 'units' => [
                     [
                         'id' => 1,
-                        'serial_number' => 'XR18-1',
+                        'reference' => 'XR18-1',
+                        'serial_number' => null,
                         'is_broken' => false,
                         'park_id' => 1,
                     ],
                     [
                         'id' => 2,
-                        'serial_number' => 'XR18-2',
+                        'reference' => 'XR18-2',
+                        'serial_number' => null,
                         'is_broken' => false,
                         'park_id' => 1,
                     ],
                     [
                         'id' => 3,
-                        'serial_number' => 'XR18-3',
+                        'reference' => 'XR18-3',
+                        'serial_number' => null,
                         'is_broken' => true,
                         'park_id' => 2,
                     ],

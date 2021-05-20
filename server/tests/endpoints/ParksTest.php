@@ -79,8 +79,7 @@ final class ParksTest extends ApiTestCase
     public function testGetParkNotFound()
     {
         $this->client->get('/api/parks/999');
-        $this->assertStatusCode(ERROR_NOT_FOUND);
-        $this->assertNotFoundErrorMessage();
+        $this->assertNotFound();
     }
 
     public function testGetPark()

@@ -65,8 +65,7 @@ final class CompaniesTest extends ApiTestCase
     public function testGetCompanyNotFound()
     {
         $this->client->get('/api/companies/999');
-        $this->assertStatusCode(ERROR_NOT_FOUND);
-        $this->assertNotFoundErrorMessage();
+        $this->assertNotFound();
     }
 
     public function testGetCompany()
@@ -137,8 +136,7 @@ final class CompaniesTest extends ApiTestCase
     public function testGetPersonsNotFound()
     {
         $this->client->get('/api/companies/999/persons');
-        $this->assertStatusCode(ERROR_NOT_FOUND);
-        $this->assertNotFoundErrorMessage();
+        $this->assertNotFound();
     }
 
     public function testGetPersons()
@@ -259,7 +257,7 @@ final class CompaniesTest extends ApiTestCase
     public function testRestoreCompanyNotFound()
     {
         $this->client->put('/api/companies/restore/999');
-        $this->assertStatusCode(ERROR_NOT_FOUND);
+        $this->assertNotFound();
     }
 
     public function testRestoreCompany()

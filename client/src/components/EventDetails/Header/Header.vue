@@ -55,7 +55,7 @@
         :href="eventSummaryPdfUrl"
         target="_blank"
         v-if="isPrintable"
-        class="EventDetailsHeader__actions__print"
+        class="button outline"
       >
         <i class="fas fa-print" />
         {{ $t('print') }}

@@ -5,6 +5,16 @@
   flex-direction: column;
   height: 100%;
 
+  &__empty {
+    flex: 3 1 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-style: italic;
+    color: $text-light-color;
+  }
+
   &__listing {
     flex: 3 1 0;
     overflow: auto;

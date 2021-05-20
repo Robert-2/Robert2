@@ -8,10 +8,10 @@
               {{ $t('informations') }}
             </h4>
             <FormField
-              v-model="unit.serial_number"
-              name="serial_number"
-              label="serial-number"
-              :errors="errors.serial_number"
+              v-model="unit.reference"
+              name="reference"
+              label="reference"
+              :errors="errors.reference"
               required
             />
             <FormField
@@ -22,6 +22,12 @@
               :options="parksOptions"
               :errors="errors.park_id"
               required
+            />
+            <FormField
+              v-model="unit.serial_number"
+              name="serial_number"
+              label="serial-number"
+              :errors="errors.serial_number"
             />
             <FormField
               v-model="unit.is_broken"

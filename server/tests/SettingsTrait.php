@@ -10,7 +10,7 @@ trait SettingsTrait
     protected $settings = [];
     protected $Fixtures = null;
 
-    public function setup(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -86,6 +86,9 @@ trait SettingsTrait
                     ['name' => 'SIRET', 'value' => '543 210 080 20145'],
                     ['name' => 'APE', 'value' => '947A'],
                 ],
+            ],
+            'eventSummary' => [
+                'materialDisplayMode' => 'sub-categories',
             ],
             'authorizedFileTypes' => [
                 'application/pdf',

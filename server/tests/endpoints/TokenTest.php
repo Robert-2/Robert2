@@ -21,13 +21,13 @@ final class TokenTest extends ApiTestCase
     {
         $this->client->post('/api/session', [
             'identifier' => 'foo',
-            'password'   => '',
+            'password' => '',
         ]);
         $this->assertStatusCode(ERROR_VALIDATION);
         $this->assertValidationErrorMessage();
         $this->assertErrorDetails([
             'identifier' => [],
-            'password'   => [
+            'password' => [
                 "Password must not be empty",
                 "Password must have a length greater than 4",
             ],
@@ -38,82 +38,81 @@ final class TokenTest extends ApiTestCase
     {
         $this->client->post('/api/session', [
             'identifier' => 'nobody@test.org',
-            'password'   => 'testing',
+            'password' => 'testing',
         ]);
-        $this->assertStatusCode(ERROR_NOT_FOUND);
-        $this->assertNotFoundErrorMessage();
+        $this->assertNotFound();
     }
 
     public function testTokenWrongPassword()
     {
         $this->client->post('/api/session', [
             'identifier' => 'tester@robertmanager.net',
-            'password'   => 'wrongPassword',
+            'password' => 'wrongPassword',
         ]);
-        $this->assertStatusCode(ERROR_NOT_FOUND);
-        $this->assertNotFoundErrorMessage();
+        $this->assertNotFound();
     }
 
     public function testTokenAuthOK()
     {
         $expectedUserData = [
-            'id'             => 1,
-            'email'          => 'tester@robertmanager.net',
-            'pseudo'         => 'test1',
-            'group_id'       => 'admin',
+            'id' => 1,
+            'email' => 'tester@robertmanager.net',
+            'pseudo' => 'test1',
+            'group_id' => 'admin',
             'cas_identifier' => null,
-            'created_at'     => null,
-            'updated_at'     => null,
-            'deleted_at'     => null,
-            'person'         => [
-                'id'          => 1,
-                'user_id'     => 1,
-                'first_name'  => 'Jean',
-                'last_name'   => 'Fountain',
-                'full_name'   => 'Jean Fountain',
-                'nickname'    => null,
-                'email'       => 'tester@robertmanager.net',
-                'phone'       => null,
-                'street'      => '1, somewhere av.',
+            'created_at' => null,
+            'updated_at' => null,
+            'deleted_at' => null,
+            'person' => [
+                'id' => 1,
+                'user_id' => 1,
+                'first_name' => 'Jean',
+                'last_name' => 'Fountain',
+                'full_name' => 'Jean Fountain',
+                'reference' => '0001',
+                'nickname' => null,
+                'email' => 'tester@robertmanager.net',
+                'phone' => null,
+                'street' => '1, somewhere av.',
                 'postal_code' => '1234',
-                'locality'    => 'Megacity',
-                'country_id'  => 1,
-                'company_id'  => 1,
-                'note'        => null,
-                'created_at'  => null,
-                'updated_at'  => null,
-                'deleted_at'  => null,
-                'company'     => [
-                    'id'          => 1,
-                    'legal_name'  => 'Testing, Inc',
-                    'street'      => '1, company st.',
+                'locality' => 'Megacity',
+                'country_id' => 1,
+                'company_id' => 1,
+                'note' => null,
+                'created_at' => null,
+                'updated_at' => null,
+                'deleted_at' => null,
+                'company' => [
+                    'id' => 1,
+                    'legal_name' => 'Testing, Inc',
+                    'street' => '1, company st.',
                     'postal_code' => '1234',
-                    'locality'    => 'Megacity',
-                    'country_id'  => 1,
-                    'phone'       => '+4123456789',
-                    'note'        => 'Just for tests',
-                    'created_at'  => null,
-                    'updated_at'  => null,
-                    'deleted_at'  => null,
-                    'country'     => [
-                        'id'   => 1,
+                    'locality' => 'Megacity',
+                    'country_id' => 1,
+                    'phone' => '+4123456789',
+                    'note' => 'Just for tests',
+                    'created_at' => null,
+                    'updated_at' => null,
+                    'deleted_at' => null,
+                    'country' => [
+                        'id' => 1,
                         'name' => 'France',
                         'code' => 'FR',
                     ],
                 ],
                 'country' => [
-                    'id'   => 1,
+                    'id' => 1,
                     'name' => 'France',
                     'code' => 'FR',
                 ],
             ],
             'settings' => [
-                'id'                           => 1,
-                'user_id'                      => 1,
-                'language'                     => 'EN',
+                'id' => 1,
+                'user_id' => 1,
+                'language' => 'EN',
                 'auth_token_validity_duration' => 12,
-                'created_at'                   => null,
-                'updated_at'                   => null
+                'created_at' => null,
+                'updated_at' => null
             ],
             'restricted_parks' => [],
         ];
@@ -121,23 +120,23 @@ final class TokenTest extends ApiTestCase
         // - Test auth with e-mail address
         $this->client->post('/api/session', [
             'identifier' => 'tester@robertmanager.net',
-            'password'   => 'testing-pw',
+            'password' => 'testing-pw',
         ]);
         $this->assertStatusCode(SUCCESS_OK);
         $this->assertResponseData([
             'token' => 'fakedTestContent',
-            'user'  => $expectedUserData,
+            'user' => $expectedUserData,
         ], ['token']);
 
         // - Test auth with pseudo
         $this->client->post('/api/session', [
             'identifier' => 'test1',
-            'password'   => 'testing-pw',
+            'password' => 'testing-pw',
         ]);
         $this->assertStatusCode(SUCCESS_OK);
         $this->assertResponseData([
             'token' => 'fakedTestContent',
-            'user'  => $expectedUserData,
+            'user' => $expectedUserData,
         ], ['token']);
     }
 }

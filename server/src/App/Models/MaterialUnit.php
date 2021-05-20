@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Robert2\API\Models\BaseModel;
 use BigFish\PDF417\PDF417;
 use BigFish\PDF417\Renderers\SvgRenderer;
 use Robert2\API\Validation\Validator as V;
@@ -16,9 +14,10 @@ class MaterialUnit extends BaseModel
         parent::__construct($attributes);
 
         $this->validation = [
-            'park_id'       => V::notEmpty()->numeric(),
-            'serial_number' => V::notEmpty()->alnum('-+/*.')->length(2, 64),
-            'is_broken'     => V::optional(V::boolType()),
+            'park_id' => V::notEmpty()->numeric(),
+            'reference' => V::notEmpty()->alnum('-+/*.')->length(2, 64),
+            'serial_number' => V::optional(V::alnum('-+/*.')->length(2, 64)),
+            'is_broken' => V::optional(V::boolType()),
         ];
     }
 
@@ -56,10 +55,11 @@ class MaterialUnit extends BaseModel
     // ——————————————————————————————————————————————————————
 
     protected $casts = [
-        'park_id'       => 'integer',
-        'material_id'   => 'integer',
+        'park_id' => 'integer',
+        'material_id' => 'integer',
+        'reference' => 'string',
         'serial_number' => 'string',
-        'is_broken'     => 'boolean',
+        'is_broken' => 'boolean',
     ];
 
     public function getMaterialAttribute()
@@ -105,8 +105,8 @@ class MaterialUnit extends BaseModel
             $svg = $renderer->render($barcode);
         } catch (\Throwable $e) {
             throw new \RuntimeException(sprintf(
-                "Impossible de générer le code barre pour le numéro de série \"%s\".",
-                $this->serial_number
+                "Impossible de générer le code barre pour la référence \"%s\".",
+                $this->reference
             ));
         }
 
@@ -121,9 +121,16 @@ class MaterialUnit extends BaseModel
 
     protected $fillable = [
         'park_id',
+        'reference',
         'serial_number',
         'is_broken',
     ];
+
+    public function setReferenceAttribute($value)
+    {
+        $value = is_string($value) ? trim($value) : $value;
+        $this->attributes['reference'] = $value;
+    }
 
     public function setSerialNumberAttribute($value)
     {
@@ -137,14 +144,11 @@ class MaterialUnit extends BaseModel
     // -
     // ------------------------------------------------------
 
-    public function remove(int $id, array $options = []): ?Model
+    public function remove(int $id, array $options = []): ?BaseModel
     {
-        $model = self::find($id);
-        if (empty($model)) {
-            throw new Errors\NotFoundException;
-        }
+        $entity = static::findOrFail($id);
 
-        if (!$model->delete()) {
+        if (!$entity->delete()) {
             throw new \RuntimeException(sprintf("Unable to delete the record %d.", $id));
         }
 

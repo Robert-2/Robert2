@@ -11,6 +11,7 @@ export default {
   data() {
     return {
       assigneesIds: this.event.assignees.map((assignee) => assignee.id),
+      assigneesPositions: this.event.assignees.map((assignee) => assignee.pivot.position),
       fetchParams: { tags: [Config.technicianTagName] },
       errors: {},
     };
@@ -22,10 +23,21 @@ export default {
     updateItems(ids) {
       this.assigneesIds = ids;
 
-      const savedList = this.event.beneficiaries.map((benef) => benef.id);
+      const savedList = this.event.assignees.map((assignee) => assignee.id);
       const listDifference = ids
         .filter((id) => !savedList.includes(id))
         .concat(savedList.filter((id) => !ids.includes(id)));
+
+      EventStore.commit('setIsSaved', listDifference.length === 0);
+    },
+
+    updatePivots(positions) {
+      this.assigneesPositions = positions;
+
+      const savedList = this.event.assignees.map((assignee) => assignee.pivot.position);
+      const listDifference = positions
+        .filter((position) => !savedList.includes(position))
+        .concat(savedList.filter((position) => !positions.includes(position)));
 
       EventStore.commit('setIsSaved', listDifference.length === 0);
     },
@@ -61,9 +73,15 @@ export default {
       this.$emit('loading');
       const { id } = this.event;
       const { resource } = this.$route.meta;
-      const postData = { assignees: this.assigneesIds };
 
-      this.$http.put(`${resource}/${id}`, postData)
+      const assignees = {};
+      this.assigneesIds.forEach((assigneeId, index) => {
+        assignees[assigneeId] = {
+          position: this.assigneesPositions[index],
+        };
+      });
+
+      this.$http.put(`${resource}/${id}`, { assignees })
         .then(({ data }) => {
           const { gotoStep } = options;
           if (!gotoStep) {

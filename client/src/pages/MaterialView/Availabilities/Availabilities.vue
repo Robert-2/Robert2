@@ -1,7 +1,18 @@
 <template>
   <div class="MaterialViewAvailabilities">
+    <div v-if="materialEvents.length === 0" class="MaterialViewAvailabilities__empty">
+      <Help
+        message=""
+        :error="error"
+        :isLoading="isLoading"
+      />
+      <p v-if="!isLoading">
+        {{ $t('page-materials-view.booking-periods.this-material-has-never-been-out-yet') }}
+      </p>
+    </div>
     <ul
       ref="MaterialAvailabilitiesList"
+      v-if="materialEvents.length > 0"
       class="MaterialViewAvailabilities__listing"
     >
       <MaterialAvailabilitiesItem
@@ -19,9 +30,8 @@
       class="MaterialViewAvailabilities__timeline"
       :items="materialEventsTimeline"
       :options="timelineOptions"
-      :events="['click', 'doubleClick']"
-      @double-click="handleDoubleClickTimelineItem"
-      @click="handleClickTimelineItem"
+      @double-click="handleDoubleClickTimeline"
+      @click="handleClickTimeline"
     />
   </div>
 </template>

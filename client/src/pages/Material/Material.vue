@@ -3,7 +3,7 @@
     <div class="content__main-view">
       <div class="Material">
         <form
-          class="Form Form--fixed-actions"
+          class="Form Form--fixed-actions Material__form"
           method="POST"
           @submit="saveMaterial"
           :key="entitiesState"
@@ -180,11 +180,25 @@
             </button>
           </section>
         </form>
-        <Help
-          :message="help"
-          :error="error"
-          :isLoading="isLoading"
-        />
+        <section class="Material__side">
+          <Help
+            :message="help"
+            :error="error"
+            :isLoading="isLoading"
+          />
+          <ImageWithUpload
+            :url="pictureUrl"
+            :name="material.picture"
+            @changePicture="handleChangePicture"
+            @resetPicture="handleResetPicture"
+            :isLoading="isUploading"
+            :error="uploadError"
+          />
+          <Progressbar
+            v-if="isUploading"
+            :percent="uploadProgress"
+          />
+        </section>
       </div>
     </div>
   </div>

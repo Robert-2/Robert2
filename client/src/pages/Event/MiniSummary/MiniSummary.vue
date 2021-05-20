@@ -27,7 +27,7 @@
         {{ $t('from-date-to-date', fromToDates) }}
       </span>
       <br>
-      {{ $t('duration-days', { duration }) }}
+      {{ $t('duration-days', { duration }, duration) }}
       <br>
       <span v-if="showPrices">
         {{ $t('ratio') }} {{ ratio }}

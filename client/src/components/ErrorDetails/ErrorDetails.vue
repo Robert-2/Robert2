@@ -18,18 +18,18 @@
         {{ $t('errors.details-intro3') }}
         <a href="https://github.com/Robert-2/Robert2/issues" target="_blank">Github</a>.
       </p>
-      <p v-if="!data.requested" class="ErrorDetails__no-details-info">
+      <p v-if="!data.debug" class="ErrorDetails__no-details-info">
         <i class="fas fa-info-circle" />
         {{ $t('errors.details-intro-not-detailed') }}
       </p>
       <hr />
       <div class="ErrorDetails__content" ref="errorContent">
-        <div v-if="data.requested">
+        <div v-if="requested">
           <h3 class="ErrorDetails__subtitle">
             #### {{ $t('errors.details-request') }}
           </h3>
           <p class="ErrorDetails__request">
-            `{{ data.requested }}`
+            `{{ requested }}`
           </p>
         </div>
         <h3 class="ErrorDetails__subtitle">
@@ -111,16 +111,21 @@ export default {
     };
   },
   computed: {
+    requested() {
+      return this.data.debug?.requested;
+    },
+
     file() {
-      return cleanFilePath(this.data.file);
+      return cleanFilePath(this.data.debug?.file);
     },
 
     trace() {
-      if (!this.data.stackTrace) {
+      const stackTrace = this.data.debug?.stackTrace;
+      if (!stackTrace) {
         return [];
       }
 
-      return this.data.stackTrace.map((traceItem) => {
+      return stackTrace.map((traceItem) => {
         const { file } = traceItem;
         return { ...traceItem, file: cleanFilePath(file) };
       });

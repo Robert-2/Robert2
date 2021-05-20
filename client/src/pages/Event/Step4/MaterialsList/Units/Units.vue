@@ -5,8 +5,8 @@
         <thead>
           <tr>
             <th class="MaterialsListUnits__heading MaterialsListUnits__heading--selector"></th>
-            <th class="MaterialsListUnits__heading MaterialsListUnits__heading--serial-number">
-              {{ $t('serial-number') }}
+            <th class="MaterialsListUnits__heading MaterialsListUnits__heading--reference">
+              {{ $t('reference') }}
             </th>
             <th class="MaterialsListUnits__heading MaterialsListUnits__heading--is-broken">
               {{ $t('is-broken') }}

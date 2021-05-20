@@ -29,18 +29,12 @@
       <h3 v-if="tags.length === 0" class="Tags__empty">
         {{ $t('page-tags.no-item') }}
       </h3>
-      <div
-        v-for="tag in tags"
-        :key="tag.id"
-        class="Tags__item"
-        :class="{ 'Tags__item--protected': isProtected(tag.name) }"
-      >
+      <div v-for="tag in tags" :key="tag.id" class="Tags__item">
         <span class="Tags__item__name">
           <i class="fas fa-tag" />
           {{ tag.name }}
         </span>
         <button
-          v-if="!isProtected(tag.name)"
           v-tooltip="$t('action-edit')"
           class="Tags__edit-button info"
           @click="edit(tag.id, tag.name)"
@@ -48,7 +42,6 @@
           <i class="fas fa-edit" />
         </button>
         <button
-          v-if="!isProtected(tag.name)"
           v-tooltip="$t('action-trash')"
           class="Tags__edit-button warning"
           @click="remove(tag.id)"

@@ -134,7 +134,10 @@ export default {
     'beneficiary-type': "Type de bénéficiaire",
     'person': "Personne physique (individu)",
     'company': "Personne morale (entreprise)",
-    'help-edit': "Seuls le nom et le prénom de la personne sont obligatoires.",
+    'help-edit': (
+      `Seuls le nom et le prénom de la personne sont obligatoires.
+      La «\u00a0référence\u00a0» est un numéro client ou adhérent pour votre gestion interne, qui apparaîtra sur les fiches de sorties, les devis et les factures. Il doit être unique.`
+    ),
     'confirm-delete': "Mettre ce bénéficiaire à la corbeille\u00a0?",
     'confirm-permanently-delete': "Voulez-vous vraiment supprimer définitivement ce bénéficiaire\u00a0?",
     'confirm-restore': "Voulez-vous vraiment restaurer ce bénéficiaire\u00a0?",
@@ -170,7 +173,8 @@ export default {
       `Utilisez un nom assez court pour le matériel, et la description pour entrer dans les détails.\n
       Si vous cochez la case «\u00a0identification unitaire\u00a0», vous aurez la possibilité de spécifier des
       unités de ce matériel dans l'onglet «\u00a0unités\u00a0» de la page du matériel, après avoir sauvegardé
-      le présent formulaire.`
+      le présent formulaire.\n
+      La photo du matériel doit être au format JPG, PNG ou WEBP, et ne doit pas dépasser 10\u00a0Mo.`
     ),
     'view': "Détails du matériel «\u00a0{pageSubTitle}\u00a0»",
     'confirm-delete': "Mettre ce matériel à la corbeille\u00a0?",
@@ -182,6 +186,9 @@ export default {
 
   'page-materials-view': {
     'title': "Détails du matériel",
+    'infos': {
+      'click-to-open-image': "Cliquez pour ouvrir l'image en grand dans un nouvel onglet.",
+    },
     'documents': {
       'no-document': "Aucun document pour le moment.",
       'drag-and-drop-files-here': "Glissez-déposez des fichiers ici ↓ pour les ajouter.",
@@ -201,6 +208,7 @@ export default {
       'currently-out': "Actuellement sorti",
       'done': "Terminé",
       'expected-to-be-out-on': "Sortie prévue le {date}",
+      'this-material-has-never-been-out-yet': "Ce matériel n'est encore jamais sorti.",
     },
     'add-unit': "Ajouter une unité",
   },
@@ -210,6 +218,10 @@ export default {
     'edit': "Modifier l'unité «\u00a0{pageSubTitle}\u00a0»",
     'confirm-permanently-delete': "Voulez-vous vraiment supprimer définitivement cette unité\u00a0?",
     'saved': "Unité sauvegardée.",
+    'help-edit': (
+      `La référence est l'identifiant unique de l'unité.
+      Son numéro de série est facultatif.`
+    ),
   },
 
   'page-attributes': {

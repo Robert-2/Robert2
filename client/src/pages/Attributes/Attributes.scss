@@ -34,24 +34,41 @@
     }
 
     &__name,
-    &__edit-name,
     &__type,
     &__unit,
     &__max-length,
     &__categories,
     &__delete {
+      height: 45px;
       padding: .8rem .5rem;
       border-bottom: 1px solid $bg-color-body;
     }
 
-    &__name-error {
-      color: $text-danger-color;
-      font-weight: 400;
-    }
+    &__name {
+      width: 305px;
+      font-weight: bold;
 
-    &__edit-name {
-      height: 45px;
-      text-align: center;
+      &__content {
+        display: flex;
+        align-items: center;
+      }
+
+      &__text {
+        flex: 1;
+      }
+
+      &__actions {
+        margin-left: 10px;
+      }
+
+      &__input {
+        width: 100%;
+      }
+
+      &__error {
+        color: $text-danger-color;
+        font-weight: 400;
+      }
 
       &__edit-button {
         visibility: hidden;
@@ -77,19 +94,10 @@
     }
 
     &__line:hover {
-      .Attributes__items__edit-name__edit-button,
+      .Attributes__items__name__edit-button,
       .Attributes__items__delete__button {
         visibility: visible;
       }
-    }
-
-    &__name {
-      width: 220px;
-      font-weight: bold;
-    }
-
-    &__edit-name {
-      width: 85px;
     }
 
     &__type {
@@ -97,12 +105,13 @@
     }
 
     &__unit {
-      width: 80px;
+      width: 100px;
       text-align: center;
     }
 
     &__max-length {
-      width: 125px;
+      display: none;
+      width: 100px;
       text-align: center;
     }
 
@@ -120,6 +129,12 @@
 
     &--add {
       justify-content: flex-end;
+    }
+  }
+
+  @media(min-width: $screen-big-desktop) {
+    &__items__max-length {
+      display: table-cell;
     }
   }
 }

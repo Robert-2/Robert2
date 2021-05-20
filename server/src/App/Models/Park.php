@@ -38,7 +38,7 @@ class Park extends BaseModel
 
     public function getAllForUser(int $userId): Builder
     {
-        $builder = self::whereDoesntHave(
+        $builder = static::whereDoesntHave(
             'Users',
             function (Builder $query) use ($userId) {
                 $query->where('user_id', $userId);

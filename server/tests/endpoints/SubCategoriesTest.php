@@ -43,7 +43,7 @@ final class SubCategoriesTest extends ApiTestCase
     public function testUpdateSubCategoryNotFound()
     {
         $this->client->put('/api/subcategories/999', ['something' => '__inexistant__']);
-        $this->assertStatusCode(ERROR_NOT_FOUND);
+        $this->assertNotFound();
     }
 
     public function testUpdateSubCategory()
@@ -77,7 +77,7 @@ final class SubCategoriesTest extends ApiTestCase
     public function testRestoreSubCategoryNotFound()
     {
         $this->client->put('/api/subcategories/restore/999');
-        $this->assertStatusCode(ERROR_NOT_FOUND);
+        $this->assertNotFound();
     }
 
     public function testRestoreSubCategory()

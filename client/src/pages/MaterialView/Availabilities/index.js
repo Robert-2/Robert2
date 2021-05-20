@@ -1,5 +1,6 @@
 import moment from 'moment';
-import { Timeline } from 'vue-visjs';
+import Help from '@/components/Help/Help.vue';
+import Timeline from '@/components/Timeline';
 import ModalConfig from '@/config/modalConfig';
 import store from '@/store';
 import EventDetails from '@/components/EventDetails/EventDetails.vue';
@@ -11,6 +12,7 @@ const ONE_DAY = 1000 * 3600 * 24;
 export default {
   name: 'MaterialViewAvailabilities',
   components: {
+    Help,
     Timeline,
     EventDetails,
     MaterialAvailabilitiesItem,
@@ -38,8 +40,6 @@ export default {
         orientation: 'top',
         zoomMin: ONE_DAY * 7,
         zoomMax: ONE_DAY * 60,
-        tooltip: { followMouse: true, overflowMethod: 'flip' },
-        moment: (date) => moment(date),
       },
     };
   },
@@ -58,6 +58,7 @@ export default {
           this.materialEventsTimeline = data.map(
             (event) => formatEvent(event, this.$t),
           );
+          this.isLoading = false;
         })
         .catch((error) => {
           this.showError(error);
@@ -88,7 +89,7 @@ export default {
       );
     },
 
-    handleDoubleClickTimelineItem(e) {
+    handleDoubleClickTimeline(e) {
       // - Here we avoid double-call because of double-trigger of event,
       // - @see visjs bug here: https://github.com/visjs/vis-timeline/issues/301)
       if (this.isModalOpened) {
@@ -103,7 +104,7 @@ export default {
       this.openEventModal(eventId);
     },
 
-    handleClickTimelineItem(e) {
+    handleClickTimeline(e) {
       const eventId = e.item;
       if (!eventId) {
         return;

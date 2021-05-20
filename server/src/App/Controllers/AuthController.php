@@ -3,25 +3,29 @@ declare(strict_types=1);
 
 namespace Robert2\API\Controllers;
 
-use Slim\Http\Request;
-use Slim\Http\Response;
-use Robert2\API\Validation\Validator as V;
+use DI\Container;
 use Robert2\API\Errors\ValidationException;
-use Robert2\API\Services\Auth;
 use Robert2\API\Models\User;
+use Robert2\API\Services\Auth;
+use Robert2\API\Validation\Validator as V;
+use Slim\Http\Response;
+use Slim\Http\ServerRequest as Request;
 use \phpCAS;
 
-class AuthController
+class AuthController extends BaseController
 {
-    /** @var User */
-    protected $user;
+    /** @var Auth */
+    protected $auth;
 
-    public function __construct($container)
+    /** @var array */
+    private $settings;
+
+    public function __construct(Container $container, Auth $auth)
     {
-        $this->container = $container;
-        $this->config = $container->get('settings');
+        parent::__construct($container);
 
-        $this->user = new User;
+        $this->auth = $auth;
+        $this->settings = $container->get('settings');
     }
 
     public function getSelf(Request $request, Response $response): Response
@@ -31,11 +35,10 @@ class AuthController
 
     public function loginWithForm(Request $request, Response $response): Response
     {
-        $data = $request->getParsedBody();
-
+        $data = (array)$request->getParsedBody();
         $this->_validateAuthRequest($data);
 
-        $user = $this->user->getLogin($data['identifier'], $data['password']);
+        $user = User::fromLogin($data['identifier'], $data['password']);
 
         $responseData['user'] = $user->append('restricted_parks')->toArray();
         $responseData['token'] = Auth\JWT::generateToken($user);
@@ -45,7 +48,7 @@ class AuthController
 
     public function loginWithCAS(Request $request, Response $response): Response
     {
-        if (!$this->config['auth']['CAS']['enabled']) {
+        if (!$this->settings['auth']['CAS']['enabled']) {
             return $response->withRedirect('/');
         }
 
@@ -68,8 +71,7 @@ class AuthController
 
     public function logout(Request $request, Response $response)
     {
-        $auth = $this->container->get('auth');
-        if (!$auth->logout()) {
+        if (!$this->auth->logout()) {
             // TODO: Ajouter un message d'erreur passé au client (lorsqu'on aura un moyen de le faire)
             //       l'informant du fait qu'il n'a pas été complétement
             //       déconnécté.
@@ -86,7 +88,6 @@ class AuthController
 
     protected function _validateAuthRequest(array $data): void
     {
-        $ex     = new ValidationException;
         $valid  = true;
         $errors = ['identifier' => [], 'password' => []];
 
@@ -106,8 +107,8 @@ class AuthController
         }
 
         if (!$valid) {
-            $ex->setValidationErrors($errors);
-            throw $ex;
+            throw (new ValidationException)
+                ->setValidationErrors($errors);
         }
     }
 }

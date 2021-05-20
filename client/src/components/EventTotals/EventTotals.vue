@@ -12,7 +12,7 @@
         </span>
         <span class="EventTotals__duration">
           <i class="fas fa-times" />
-          {{ duration }} {{ duration > 1 ? $t('days') : $t('day') }}
+          {{ $t('days-count', { duration }, duration) }}
         </span>
         <span class="EventTotals__ratio">
           <i class="fas fa-arrow-right" />
