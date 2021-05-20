@@ -216,6 +216,7 @@ final class MaterialTest extends ModelTestCase
             'start_date'   => '2018-12-18 00:00:00',
             'end_date'     => '2018-12-19 23:59:59',
             'is_confirmed' => false,
+            'is_closed'    => false,
             'pivot'        => [
                 'id'          => 4,
                 'material_id' => 1,
@@ -229,6 +230,7 @@ final class MaterialTest extends ModelTestCase
             'start_date'   => '2018-12-17 00:00:00',
             'end_date'     => '2018-12-18 23:59:59',
             'is_confirmed' => false,
+            'is_closed'    => false,
             'pivot'        => [
                 'id'          => 1,
                 'material_id' => 1,

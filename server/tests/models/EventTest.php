@@ -34,6 +34,7 @@ final class EventTest extends ModelTestCase
                 'start_date' => "2018-12-15 00:00:00",
                 'end_date' => "2018-12-16 23:59:59",
                 'is_confirmed' => false,
+                'is_closed' => false,
                 'location' => "Brousse",
                 'is_billable' => false,
                 'created_at' => null,
@@ -49,6 +50,7 @@ final class EventTest extends ModelTestCase
                 'start_date' => "2018-12-17 00:00:00",
                 'end_date' => "2018-12-18 23:59:59",
                 'is_confirmed' => false,
+                'is_closed' => false,
                 'location' => "Gap",
                 'is_billable' => true,
                 'created_at' => null,
@@ -64,6 +66,7 @@ final class EventTest extends ModelTestCase
                 'start_date' => "2018-12-18 00:00:00",
                 'end_date' => "2018-12-19 23:59:59",
                 'is_confirmed' => false,
+                'is_closed' => false,
                 'location' => "Lyon",
                 'is_billable' => true,
                 'created_at' => null,
@@ -329,6 +332,7 @@ final class EventTest extends ModelTestCase
             'title' => "Test dates validation",
             'start_date' => '2020-03-01 00:00:00',
             'is_confirmed' => false,
+            'is_closed' => false,
         ];
 
         // - Validation pass: dates are OK
@@ -356,6 +360,7 @@ final class EventTest extends ModelTestCase
             'start_date' => '2020-03-01 00:00:00',
             'end_date' => '2020-03-03 23:59:59',
             'is_confirmed' => false,
+            'is_closed' => false,
         ];
 
         foreach (['REF1', null] as $testValue) {

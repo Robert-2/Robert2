@@ -18,6 +18,7 @@ final class EventsTest extends ApiTestCase
                     'start_date' => "2018-12-15 00:00:00",
                     'end_date' => "2018-12-16 23:59:59",
                     'is_confirmed' => false,
+                    'is_closed' => false,
                     'location' => "Brousse",
                     'is_billable' => false,
                     'has_missing_materials' => false,
@@ -37,6 +38,7 @@ final class EventsTest extends ApiTestCase
                     'start_date' => "2018-12-17 00:00:00",
                     'end_date' => "2018-12-18 23:59:59",
                     'is_confirmed' => false,
+                    'is_closed' => false,
                     'location' => "Gap",
                     'is_billable' => true,
                     'has_missing_materials' => true,
@@ -98,6 +100,7 @@ final class EventsTest extends ApiTestCase
                     'start_date' => "2018-12-18 00:00:00",
                     'end_date' => "2018-12-19 23:59:59",
                     'is_confirmed' => false,
+                    'is_closed' => false,
                     'location' => "Lyon",
                     'is_billable' => true,
                     'has_missing_materials' => true,
@@ -148,6 +151,7 @@ final class EventsTest extends ApiTestCase
             'start_date' => "2018-12-17 00:00:00",
             'end_date' => "2018-12-18 23:59:59",
             'is_confirmed' => false,
+            'is_closed' => false,
             'location' => "Gap",
             'is_billable' => true,
             'created_at' => null,
@@ -420,6 +424,7 @@ final class EventsTest extends ApiTestCase
             'start_date' => '2019-09-01 00:00:00',
             'end_date' => '2019-09-03 23:59:59',
             'is_confirmed' => true,
+            'is_closed' => false,
             'location' => 'Avignon',
         ];
         $this->client->post('/api/events', $data);
@@ -531,6 +536,7 @@ final class EventsTest extends ApiTestCase
             'start_date' => '2018-12-17 00:00:00',
             'end_date' => '2018-12-18 00:00:00',
             'is_confirmed' => true,
+            'is_closed' => false,
             'location' => 'Gap et Briançon',
             'is_billable' => false,
             'assignees' => [
@@ -755,6 +761,7 @@ final class EventsTest extends ApiTestCase
             'start_date' => '2018-12-17 00:00:00',
             'end_date' => '2018-12-18 00:00:00',
             'is_confirmed' => true,
+            'is_closed' => false,
             'location' => 'Gap et Briançon',
             'is_billable' => false,
         ];
