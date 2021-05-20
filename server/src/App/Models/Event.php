@@ -84,6 +84,11 @@ class Event extends BaseModel
             return true;
         }
 
+        $dateChecker = V::notEmpty()->date();
+        if (!$dateChecker->validate($this->end_date)) {
+            return false;
+        }
+
         $endDate = new \DateTime($this->end_date);
         $now     = new \DateTime();
         $isPastAndConfirmed = $this->is_confirmed && ($endDate < $now);

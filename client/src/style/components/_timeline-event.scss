@@ -1,9 +1,7 @@
 .timeline-event {
-  font-size: 1.2em !important;
   .fas,
   .far {
-    font-size: 1.2em;
-    width: 1.75rem;
+    width: 1.2rem;
     text-align: center;
   }
 
@@ -52,9 +50,6 @@
     .fas {
       color: $calendar-event-invalid-text-color;
     }
-  }
-
-  &--with-warning {
   }
 
   &--current {

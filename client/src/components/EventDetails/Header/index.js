@@ -72,21 +72,22 @@ export default {
       this.setEventClosed(false);
     },
 
-    setEventClosed(close) {
+    async setEventClosed(close) {
       const { id } = this.$props.event;
-      const url = `${this.$route.meta.resource}/${id}`;
+      const newState = close
+        ? { is_closed: true }
+        : { is_closed: false, is_confirmed: false };
+
       this.isClosing = true;
-      const newState = close ? { is_closed: true } : { is_closed: false, is_confirmed: false };
-      this.$http.put(url, { id, ...newState })
-        .then(({ data }) => {
-          this.$emit('saved', data);
-        })
-        .catch((error) => {
-          this.$emit('error', error);
-        })
-        .finally(() => {
-          this.isClosing = false;
-        });
+      try {
+        const url = `${this.$route.meta.resource}/${id}`;
+        const { data } = await this.$http.put(url, { id, ...newState });
+        this.$emit('saved', data);
+      } catch (error) {
+        this.$emit('error', error);
+      } finally {
+        this.isClosing = false;
+      }
     },
   },
 };
