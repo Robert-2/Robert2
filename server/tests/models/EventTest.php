@@ -325,14 +325,15 @@ final class EventTest extends ModelTestCase
         $this->assertEquals('Second événement', $results[0]['title']);
     }
 
-    public function testValidate(): void
+    public function testValidateEventDates(): void
     {
+        /*** First check dates validation procedure ***/
         $data = [
             'user_id' => 1,
             'title' => "Test dates validation",
             'start_date' => '2020-03-01 00:00:00',
             'is_confirmed' => false,
-            'is_closed' => false,
+            'is_closed'    => false,
         ];
 
         // - Validation pass: dates are OK
@@ -350,6 +351,59 @@ final class EventTest extends ModelTestCase
             ['end_date' => '2020-02-20 23:59:59']
         );
         (new Event($testData))->validate();
+    }
+
+    public function testValidateEventState(): void
+    {
+        /*** Second check confirmation and closing validation procedure ***/
+        $dataClose = [
+            'user_id' => 1,
+            'title' => "Test is_closed validation",
+            'start_date' => '2020-03-01 00:00:00',
+            'end_date'   => '2020-03-03 23:59:59',
+        ];
+
+        // - Validation pass: event is past and confirmed
+        $testData = array_merge(
+            $dataClose,
+            ['is_confirmed' => true,
+             'is_closed'    => true]
+        );
+        (new Event($testData))->validate();
+
+        // - Validation pass: event is not closed
+        $testData = array_merge(
+            $dataClose,
+            ['is_confirmed' => true,
+             'is_closed'    => false]
+        );
+        (new Event($testData))->validate();
+
+        // - Validation fails: event is not confirmed
+        $this->expectException(Errors\ValidationException::class);
+        $this->expectExceptionCode(ERROR_VALIDATION);
+        $testData = array_merge(
+            $dataClose,
+            ['is_confirmed' => false,
+             'is_closed'    => true]
+        );
+        (new Event($testData))->validate();
+    }
+
+    public function testFailureOfClosedCurrentEvent(): void
+    {
+        // - Validation fails: event is current
+        $this->expectException(Errors\ValidationException::class);
+        $this->expectExceptionCode(ERROR_VALIDATION);
+        $currentEvent = [
+            'user_id' => 1,
+            'title' => "Test closed current event validation failure",
+            'start_date' => '2020-03-01 00:00:00',
+            'end_date'   => '2120-03-03 23:59:59',
+            'is_confirmed' => true,
+            'is_closed'    => true
+        ];
+        (new Event($currentEvent))->validate();
     }
 
     public function testValidateReference(): void
