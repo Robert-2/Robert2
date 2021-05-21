@@ -4,6 +4,10 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.13.1-premium (UNRELEASED)
+
+- Améliore la prise en charge des scanettes.
+
 ## 0.13.0-premium (2021-05-20)
 
 - Corrige un problème avec le nom de la base de données de test (#128 et #129).
