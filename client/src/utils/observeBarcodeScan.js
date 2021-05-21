@@ -4,7 +4,7 @@ import decodeKeyEvent from '@/utils/decodeKeyEvent';
 const PREFIX_KEYCODES = Object.freeze([]);
 const SUFFIX_KEYCODES = Object.freeze([9, 13]); // Tab, Enter.
 
-const SCAN_DELAY = 40; // - Millisecondes.
+const SCAN_DELAY = 80; // - Millisecondes.
 
 const BARCODE_PREFIX = '^#[';
 const BARCODE_SUFFIX = ']#$';
