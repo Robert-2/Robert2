@@ -32,7 +32,7 @@ const getTimelineEventI18nStatuses = (formattedEvent) => {
   if (isPastAndConfirmed) {
     // Event is either closed or unclosed
     eventStatuses.push({
-      icon: isClosed ? 'check' : 'folder-open',
+      icon: isClosed ? 'check' : 'lock',
       i18nKey: isClosed ? 'this-event-is-closed' : 'this-event-is-not-closed',
     });
   } else if (isPast && !isConfirmed) {
@@ -44,7 +44,7 @@ const getTimelineEventI18nStatuses = (formattedEvent) => {
   } else {
     // Event is current or future. It can be confirmed or not.
     eventStatuses.push({
-      icon: isConfirmed ? 'lock' : 'lock-open',
+      icon: isConfirmed ? 'lock' : 'question',
       i18nKey: isConfirmed ? 'this-event-is-confirmed' : 'this-event-is-not-confirmed',
     });
   }

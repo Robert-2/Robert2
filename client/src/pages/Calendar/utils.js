@@ -26,11 +26,11 @@ const formatEvent = (dataEvent, translate) => {
     content = withIcon('exclamation-triangle', content);
   }
   if (isPast && isConfirmed) {
-    content = withIcon(isClosed ? 'check' : 'folder-open', content);
+    content = withIcon(isClosed ? 'check' : 'lock', content);
   } else if (isPast && !isConfirmed) {
     content = withIcon('times-circle', content);
   } else {
-    content = withIcon(isConfirmed ? 'lock' : 'lock-open', content);
+    content = withIcon(isConfirmed ? 'lock' : 'question', content);
   }
 
   const locationText = withIcon('map-marker-alt', location || '?');

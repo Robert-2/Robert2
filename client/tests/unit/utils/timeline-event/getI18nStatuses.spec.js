@@ -20,7 +20,7 @@ describe('getTimelineEventI18nStatuses', () => {
     const result = getTimelineEventI18nStatuses(formatTestEvent(testEvent));
     expect(result).toEqual([
       { icon: 'arrow-right', i18nKey: 'this-event-is-future' },
-      { icon: 'lock-open', i18nKey: 'this-event-is-not-confirmed' },
+      { icon: 'question', i18nKey: 'this-event-is-not-confirmed' },
     ]);
   });
 
@@ -35,7 +35,7 @@ describe('getTimelineEventI18nStatuses', () => {
     const result = getTimelineEventI18nStatuses(formatTestEvent(testEvent));
     expect(result).toEqual([
       { icon: 'running', i18nKey: 'this-event-is-currently-running' },
-      { icon: 'lock-open', i18nKey: 'this-event-is-not-confirmed' },
+      { icon: 'question', i18nKey: 'this-event-is-not-confirmed' },
     ]);
   });
 
@@ -95,7 +95,7 @@ describe('getTimelineEventI18nStatuses', () => {
     const result = getTimelineEventI18nStatuses(formatTestEvent(testEvent));
     expect(result).toEqual([
       { icon: 'history', i18nKey: 'this-event-is-past' },
-      { icon: 'folder-open', i18nKey: 'this-event-is-not-closed' },
+      { icon: 'lock', i18nKey: 'this-event-is-not-closed' },
     ]);
   });
 
@@ -125,7 +125,7 @@ describe('getTimelineEventI18nStatuses', () => {
     const result = getTimelineEventI18nStatuses(formatTestEvent(testEvent));
     expect(result).toEqual([
       { icon: 'arrow-right', i18nKey: 'this-event-is-future' },
-      { icon: 'lock-open', i18nKey: 'this-event-is-not-confirmed' },
+      { icon: 'question', i18nKey: 'this-event-is-not-confirmed' },
       { icon: 'exclamation-triangle', i18nKey: 'this-event-has-missing-materials' },
     ]);
   });
@@ -141,7 +141,7 @@ describe('getTimelineEventI18nStatuses', () => {
     const result = getTimelineEventI18nStatuses(formatTestEvent(testEvent));
     expect(result).toEqual([
       { icon: 'running', i18nKey: 'this-event-is-currently-running' },
-      { icon: 'lock-open', i18nKey: 'this-event-is-not-confirmed' },
+      { icon: 'question', i18nKey: 'this-event-is-not-confirmed' },
       { icon: 'exclamation-triangle', i18nKey: 'this-event-has-missing-materials' },
     ]);
   });
@@ -205,7 +205,7 @@ describe('getTimelineEventI18nStatuses', () => {
     const result = getTimelineEventI18nStatuses(formatTestEvent(testEvent));
     expect(result).toEqual([
       { icon: 'history', i18nKey: 'this-event-is-past' },
-      { icon: 'folder-open', i18nKey: 'this-event-is-not-closed' },
+      { icon: 'lock', i18nKey: 'this-event-is-not-closed' },
       { icon: 'exclamation-triangle', i18nKey: 'this-event-has-missing-materials' },
     ]);
   });
