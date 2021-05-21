@@ -39,7 +39,7 @@ const decodeKeyEvent = (event, inputLayout) => {
   // - Cas particuliers
   if (inputLayout === 'qwerty' && !event.altKey && !event.shiftKey) {
     // - Left bracket ?
-    if (keyCode === '221' && event.code === 'BracketLeft') {
+    if (['219', '221'].includes(keyCode) && event.code === 'BracketLeft') {
       return '[';
     }
 
@@ -70,14 +70,17 @@ const decodeKeyEvent = (event, inputLayout) => {
     }
   }
 
-  const keyData = LAYOUT_MAP[inputLayout][keyCode];
-  if (!keyData) {
-    return '';
-  }
-
   let format = 'base';
   if (event.shiftKey || event.altKey) {
     format = event.shiftKey ? 'shift' : 'alt';
+  }
+
+  const keyData = LAYOUT_MAP[inputLayout][keyCode];
+  if (!keyData || !(format in keyData) || event.key === 'Dead') {
+    if (['/', '|', '^', '#', '$', '[', ']'].includes(event.key)) {
+      return event.key;
+    }
+    return '';
   }
 
   return keyData[format] ?? '';
