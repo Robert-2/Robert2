@@ -9,6 +9,7 @@ describe('formatTimelineEvent', () => {
       start_date: '2021-02-25 00:00:00',
       end_date: '2021-02-28 23:59:59',
       is_confirmed: true,
+      is_closed: false,
       has_missing_materials: false,
       location: 'Testville',
     };
@@ -20,6 +21,8 @@ describe('formatTimelineEvent', () => {
     expect(result.isConfirmed).toBe(true);
     expect(result.isCurrent).toBe(false);
     expect(result.isPast).toBe(true);
+    expect(result.isClosed).toBe(false);
+    expect(result.isPastAndConfirmed).toBe(true);
     expect(result.hasMissingMaterials).toBe(false);
     expect(result.startDate).toBeInstanceOf(moment);
     expect(result.endDate).toBeInstanceOf(moment);

@@ -16,7 +16,7 @@ const formatTimelineEvent = (dataEvent) => {
   const isCurrent = now.isBetween(startDate, endDate, 'day', '[]');
 
   // Only past and confirmed events can be closed.
-  // Past and confirmed events cannot be unconfirmed.
+  // Closed events cannot be unconfirmed.
   const isPastAndConfirmed = isPast && isConfirmed;
 
   return {
