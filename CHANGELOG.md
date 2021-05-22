@@ -4,6 +4,10 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.13.2-premium (UNRELEASED)
+
+- Corrige le filtrage par parc pour les unités (Premium #37).
+
 ## 0.13.1-premium (2021-05-21)
 
 - Améliore la prise en charge des scanettes.

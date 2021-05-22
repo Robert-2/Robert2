@@ -94,7 +94,12 @@ export default {
         customFilters: [
           {
             name: 'park',
-            callback: (row, parkId) => row.park_id === parkId,
+            callback: (row, parkId) => {
+              if (!row.is_unitary) {
+                return row.park_id === parkId;
+              }
+              return row.units.some((unit) => unit.park_id === parkId);
+            },
           },
           {
             name: 'category',
