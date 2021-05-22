@@ -1,20 +1,22 @@
+import MaterialsFilter from '@/components/MaterialsFilters/MaterialsFilters.vue';
+import SwitchToggle from '@/components/SwitchToggle/SwitchToggle.vue';
 import Config from '@/config/globalConfig';
 import formatAmount from '@/utils/formatAmount';
 import isValidInteger from '@/utils/isValidInteger';
-import MaterialsFilter from '@/components/MaterialsFilters/MaterialsFilters.vue';
-import SwitchToggle from '@/components/SwitchToggle/SwitchToggle.vue';
-import Quantity from './Quantity/Quantity.vue';
 import MaterialsStore from './MaterialsStore';
+import Quantity from './Quantity/Quantity.vue';
 
 const noPaginationLimit = 100000;
 
 export default {
   name: 'MaterialsList',
-  components: { MaterialsFilter, SwitchToggle, Quantity },
+  components: {
+    MaterialsFilter,
+    SwitchToggle,
+    Quantity,
+  },
   props: {
-    eventId: Number,
-    initialList: Array,
-    eventIsBillable: Boolean,
+    event: Object,
   },
   data() {
     const columns = [
@@ -27,13 +29,13 @@ export default {
       'amount',
       'actions',
     ].filter((column) => {
-      if (Config.billingMode === 'none' || !this.eventIsBillable) {
+      if (Config.billingMode === 'none' || !this.event.is_billable) {
         return !['price', 'amount'].includes(column);
       }
       return true;
     });
 
-    const hasMaterial = this.initialList.length > 0;
+    const hasMaterial = this.event.materials.length > 0;
 
     return {
       error: null,
@@ -43,10 +45,11 @@ export default {
       isLoading: true,
       columns,
       materials: [],
+      manualOrder: [],
       tableOptions: {
         columnsDropdown: false,
         preserveState: false,
-        orderBy: { column: 'reference', ascending: true },
+        orderBy: { column: 'custom', ascending: true },
         initialPage: 1,
         perPage: hasMaterial ? noPaginationLimit : Config.defaultPaginationLimit,
         columnsClasses: {
@@ -60,6 +63,28 @@ export default {
           actions: 'MaterialsList__actions',
         },
         initFilters: this.getFilters(),
+        customSorting: {
+          custom: (ascending) => (a, b) => {
+            let result = null;
+
+            // - Si on est en mode "sélectionnés uniquement" et qu'au moins l'un
+            //   des deux à un ordre manuellement défini, on l'utilise.
+            if (this.showSelectedOnly) {
+              const aManualOrderIndex = this.manualOrder.indexOf(a.id);
+              const bManualOrderIndex = this.manualOrder.indexOf(b.id);
+              if (aManualOrderIndex !== -1 || bManualOrderIndex !== -1) {
+                result = aManualOrderIndex > bManualOrderIndex ? -1 : 1;
+              }
+            }
+
+            // - Sinon on fallback sur le tri par reference.
+            if (result === null) {
+              result = a.reference.localeCompare(b.reference, { ignorePunctuation: true });
+            }
+
+            return ascending || result === 0 ? result : -result;
+          },
+        },
         customFilters: [
           {
             name: 'park',
@@ -82,7 +107,7 @@ export default {
           {
             name: 'onlySelected',
             callback: (row, isOnlySelected) => (
-              !isOnlySelected || this.getQuantity(row.id) > 0
+              !isOnlySelected || this.getQuantity(row) > 0
             ),
           },
         ],
@@ -90,17 +115,22 @@ export default {
     };
   },
   created() {
-    MaterialsStore.commit('init', this.initialList);
+    MaterialsStore.commit('init', this.event.materials);
   },
   mounted() {
     this.fetchMaterials();
+  },
+  computed: {
+    isFiltered() {
+      return Object.keys(this.getFilters(false)).length !== 0;
+    },
   },
   methods: {
     async fetchMaterials() {
       try {
         this.isLoading = true;
         this.$refs.DataTable.setLoadingState(true);
-        const { data } = await this.$http.get(`materials/while-event/${this.eventId}`);
+        const { data } = await this.$http.get(`materials/while-event/${this.event.id}`);
         this.materials = data;
       } catch (error) {
         this.showError(error);
@@ -110,10 +140,12 @@ export default {
       }
     },
 
-    getFilters() {
-      const filters = {
-        onlySelected: this.showSelectedOnly,
-      };
+    getFilters(extended = true) {
+      const filters = {};
+
+      if (extended) {
+        filters.onlySelected = this.showSelectedOnly;
+      }
 
       if (this.$route.query.park && isValidInteger(this.$route.query.park)) {
         filters.park = parseInt(this.$route.query.park, 10);
@@ -134,58 +166,58 @@ export default {
       return filters;
     },
 
-    handleToggleSelectedOnly(newValue) {
-      this.$refs.DataTable.setCustomFilters({ onlySelected: newValue });
+    setSelectedOnly(onlySelected) {
+      this.$refs.DataTable.setCustomFilters({ onlySelected });
       this.$refs.DataTable.setLimit(
-        newValue ? noPaginationLimit : Config.defaultPaginationLimit,
+        onlySelected ? noPaginationLimit : Config.defaultPaginationLimit,
       );
-      this.showSelectedOnly = newValue;
+      this.showSelectedOnly = onlySelected;
     },
 
-    setFilters(filters) {
+    getQuantity(material) {
+      return MaterialsStore.getters.getQuantity(material.id);
+    },
+
+    getRemainingQuantity(material) {
+      return material.remaining_quantity - this.getQuantity(material);
+    },
+
+    setQuantity(material, value) {
+      const quantity = parseInt(value, 10) || 0;
+      MaterialsStore.commit('setQuantity', { material, quantity });
+      this.handleChanges();
+    },
+
+    decrement(material) {
+      MaterialsStore.commit('decrement', material);
+      this.handleChanges();
+    },
+
+    increment(material) {
+      MaterialsStore.commit('increment', material);
+      this.handleChanges();
+    },
+
+    handleFiltersChanges(filters) {
       const onlySelected = this.showSelectedOnly;
       const newFilters = { ...filters, onlySelected };
       this.$refs.DataTable.setCustomFilters(newFilters);
     },
 
-    getQuantity(materialId) {
-      return MaterialsStore.getters.getQuantity(materialId);
-    },
-
-    getRemainingQuantity(material) {
-      return material.remaining_quantity - MaterialsStore.getters.getQuantity(material.id);
-    },
-
-    setQuantity(id, value) {
-      const quantity = parseInt(value, 10) || 0;
-      MaterialsStore.commit('setQuantity', { id, quantity });
-      this.handleQuantitiesChange();
-    },
-
-    decrement(id) {
-      MaterialsStore.commit('decrement', id);
-      this.handleQuantitiesChange();
-    },
-
-    increment(id) {
-      MaterialsStore.commit('increment', id);
-      this.handleQuantitiesChange();
-    },
-
-    handleQuantitiesChange() {
+    handleChanges() {
       // - This hack is necessary because Vue-table-2 does not re-render the cells
       // - when quantities are changing.
       this.renderId += 1;
 
-      const materialIds = Object.keys(MaterialsStore.state.quantities);
+      const materialIds = Object.keys(MaterialsStore.state.materials);
 
       this.hasMaterial = materialIds.length > 0;
       if (!this.hasMaterial) {
-        this.handleToggleSelectedOnly(false);
+        this.setSelectedOnly(false);
       }
 
-      const materials = materialIds.map(
-        (id) => ({ id: parseInt(id, 10), quantity: MaterialsStore.getters.getQuantity(id) }),
+      const materials = Object.entries(MaterialsStore.state.materials).map(
+        ([id, { quantity }]) => ({ id: parseInt(id, 10), quantity }),
       );
       this.$emit('change', materials);
     },
