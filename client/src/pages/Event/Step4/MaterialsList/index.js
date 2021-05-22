@@ -2,11 +2,11 @@ import MaterialsFilter from '@/components/MaterialsFilters/MaterialsFilters.vue'
 import SwitchToggle from '@/components/SwitchToggle/SwitchToggle.vue';
 import Config from '@/config/globalConfig';
 import formatAmount from '@/utils/formatAmount';
-import isValidInteger from '@/utils/isValidInteger';
 import observeBarcodeScan from '@/utils/observeBarcodeScan';
 import MaterialsStore from './MaterialsStore';
 import Quantity from './Quantity/Quantity.vue';
 import Units from './Units/Units.vue';
+import { normalizeFilters } from './_utils';
 
 const noPaginationLimit = 100000;
 
@@ -68,7 +68,7 @@ export default {
           amount: 'MaterialsList__amount',
           actions: 'MaterialsList__actions',
         },
-        initFilters: this.getFilters(),
+        initFilters: this.getFilters(true, true),
         customSorting: {
           custom: (ascending) => (a, b) => {
             let result = null;
@@ -200,34 +200,30 @@ export default {
       document.querySelector('.content').scrollTo(0, 0);
     },
 
-    getFilters(extended = true) {
+    getFilters(extended = true, isInit = false) {
       const filters = {};
 
       if (extended) {
-        filters.onlySelected = this.showSelectedOnly;
+        filters.onlySelected = isInit
+          ? this.event.materials.length
+          : this.showSelectedOnly;
       }
 
-      if (this.$route.query.park && isValidInteger(this.$route.query.park)) {
-        filters.park = parseInt(this.$route.query.park, 10);
-      }
-
-      if (this.$route.query.category) {
-        filters.category = this.$route.query.category;
-      }
-
-      if (this.$route.query.subCategory) {
-        filters.subCategory = this.$route.query.subCategory;
-      }
+      ['park', 'category', 'subCategory'].forEach((key) => {
+        if (key in this.$route.query) {
+          filters[key] = this.$route.query[key];
+        }
+      });
 
       if (this.$route.query.tags) {
         filters.tags = JSON.parse(this.$route.query.tags);
       }
 
-      return filters;
+      return normalizeFilters(filters, extended);
     },
 
     setSelectedOnly(onlySelected) {
-      this.$refs.DataTable.setCustomFilters({ onlySelected });
+      this.$refs.DataTable.setCustomFilters({ ...this.getFilters(), onlySelected });
       this.$refs.DataTable.setLimit(
         onlySelected ? noPaginationLimit : Config.defaultPaginationLimit,
       );
@@ -287,7 +283,7 @@ export default {
 
     handleFiltersChanges(filters) {
       const onlySelected = this.showSelectedOnly;
-      const newFilters = { ...filters, onlySelected };
+      const newFilters = normalizeFilters({ ...filters, onlySelected });
       this.$refs.DataTable.setCustomFilters(newFilters);
     },
 

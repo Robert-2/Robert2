@@ -6,6 +6,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 
 ## 0.13.2-premium (UNRELEASED)
 
+- Corrige le fonctionnement des filtres à l'étape 4 de l'edition d'un événement.
 - Corrige le filtrage par parc pour les unités (Premium #37).
 
 ## 0.13.1-premium (2021-05-21)
