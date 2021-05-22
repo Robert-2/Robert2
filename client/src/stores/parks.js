@@ -39,18 +39,26 @@ export default {
     },
   },
   actions: {
-    fetch({ state, commit }) {
+    async fetch({ state, commit }, shouldThrow = false) {
       if (state.isFetched) {
-        return;
+        return state.list;
       }
 
-      axios.get('parks')
-        .then(({ data }) => {
-          commit('init', data.data);
-        })
-        .catch((error) => {
-          commit('setError', error);
-        });
+      let data;
+      try {
+        data = (await axios.get('parks')).data;
+        commit('init', data.data);
+      } catch (error) {
+        commit('setError', error);
+
+        if (shouldThrow) {
+          throw error;
+        }
+
+        data = [];
+      }
+
+      return data;
     },
 
     refresh({ state, commit }) {
