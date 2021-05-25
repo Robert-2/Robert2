@@ -39,14 +39,14 @@
       v-model="filters.subCategory"
       class="MaterialsFilters__item"
       :class="{ 'MaterialsFilters__item--is-active': filters.subCategory !== '' }"
-      :disabled="selectedCategory.sub_categories.length === 0"
+      :disabled="subCategories.length === 0"
       @change="changeSubCategory"
     >
       <option value="">
         {{ $t('all-sub-categories') }}
       </option>
       <option
-        v-for="subCategory in selectedCategory.sub_categories"
+        v-for="subCategory in subCategories"
         :key="subCategory.id"
         :value="subCategory.id"
       >
