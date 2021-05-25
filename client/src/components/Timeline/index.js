@@ -4,6 +4,7 @@ import { Timeline as TimelineCore, DataSet, DataView } from '@robert2/vis-timeli
 import { mountVisData } from './_utils';
 
 const Timeline = {
+  name: 'Timeline',
   props: {
     items: {
       type: [Array, DataSet, DataView],

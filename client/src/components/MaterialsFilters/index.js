@@ -15,7 +15,6 @@ export default {
         subCategory: this.$route.query.subCategory || '',
         tags: [],
       },
-      selectedCategory: { sub_categories: [] },
     };
   },
   computed: {
@@ -25,6 +24,20 @@ export default {
 
     categories() {
       return store.state.categories.list;
+    },
+
+    subCategories() {
+      const selectedCategoryIdRaw = this.filters.category;
+      if (selectedCategoryIdRaw === '') {
+        return [];
+      }
+
+      const selectedCategoryId = parseInt(selectedCategoryIdRaw, 10);
+      const selectedCategory = this.categories.find(
+        (category) => category.id === selectedCategoryId,
+      );
+
+      return selectedCategory?.sub_categories || [];
     },
 
     isFilterEmpty() {
@@ -41,16 +54,6 @@ export default {
     store.dispatch('categories/fetch');
     store.dispatch('tags/fetch');
   },
-  watch: {
-    categories() {
-      const { category, subCategory } = this.filters;
-      if (subCategory.length > 0 && this.categories.length > 0) {
-        this.selectedCategory = this.categories.find(
-          (_category) => _category.id === parseInt(category, 10),
-        ) || { sub_categories: [] };
-      }
-    },
-  },
   methods: {
     changePark(e) {
       this.filters.park = parseInt(e.currentTarget.value, 10) || '';
@@ -58,15 +61,7 @@ export default {
     },
 
     changeCategory(e) {
-      const categoryId = parseInt(e.currentTarget.value, 10) || '';
-      if (categoryId) {
-        this.selectedCategory = this.categories.find(
-          (category) => category.id === categoryId,
-        );
-      } else {
-        this.selectedCategory = { sub_categories: [] };
-      }
-      this.filters.category = categoryId;
+      this.filters.category = parseInt(e.currentTarget.value, 10) || '';
       this.filters.subCategory = '';
       this.setQueryFilters();
     },
@@ -77,7 +72,6 @@ export default {
     },
 
     clearFilters() {
-      this.selectedCategory = { sub_categories: [] };
       this.filters = {
         park: '',
         category: '',

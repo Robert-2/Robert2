@@ -3,7 +3,7 @@ on:
     push:
         branches: [develop, master]
     pull_request:
-        types: [opened]
+        types: [opened, synchronize, reopened]
 jobs:
     client-linting:
         name     : "Client: Linting"
