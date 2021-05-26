@@ -3,7 +3,9 @@ const getTimelineEventI18nStatuses = (formattedEvent) => {
     isPast,
     isCurrent,
     isConfirmed,
+    isInventoryDone,
     hasMissingMaterials,
+    hasNotReturnedMaterials,
   } = formattedEvent;
 
   const eventStatuses = [];
@@ -25,7 +27,7 @@ const getTimelineEventI18nStatuses = (formattedEvent) => {
   if (isConfirmed) {
     eventStatuses.push({
       icon: isPast ? 'lock' : 'check',
-      i18nKey: isPast ? 'this-event-is-locked-past-confirmed' : 'this-event-is-confirmed',
+      i18nKey: isPast ? 'this-event-is-locked' : 'this-event-is-confirmed',
     });
   }
 
@@ -33,6 +35,20 @@ const getTimelineEventI18nStatuses = (formattedEvent) => {
     eventStatuses.push({
       icon: 'exclamation-triangle',
       i18nKey: 'this-event-has-missing-materials',
+    });
+  }
+
+  if (isPast && !isInventoryDone) {
+    eventStatuses.push({
+      icon: 'exclamation-triangle',
+      i18nKey: 'this-event-needs-its-return-inventory',
+    });
+  }
+
+  if (isPast && hasNotReturnedMaterials) {
+    eventStatuses.push({
+      icon: 'exclamation-triangle',
+      i18nKey: 'this-event-has-not-returned-materials',
     });
   }
 

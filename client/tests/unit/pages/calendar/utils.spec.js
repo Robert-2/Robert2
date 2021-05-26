@@ -9,7 +9,9 @@ describe('Calendar/utils.formatEvent', () => {
       start_date: '2019-10-01 00:00:00',
       end_date: '2019-10-02 23:59:59',
       is_confirmed: false,
-      has_missing_materials: true,
+      has_missing_materials: null,
+      is_return_inventory_done: false,
+      has_not_returned_materials: true,
       location: 'Testville',
       beneficiaries: [
         { id: 1, full_name: 'Jean Benef' },
@@ -29,17 +31,20 @@ describe('Calendar/utils.formatEvent', () => {
       + '\n<i class="fas fa-address-book"></i> for Jean Benef'
       + '\n<i class="fas fa-people-carry"></i> with Marc Tekos'
       + '\n\n<i class="fas fa-history"></i> page-calendar.this-event-is-past'
-      + '\n<i class="fas fa-exclamation-triangle"></i> page-calendar.this-event-has-missing-materials',
+      + '\n<i class="fas fa-exclamation-triangle"></i> page-calendar.this-event-needs-its-return-inventory'
+      + '\n<i class="fas fa-exclamation-triangle"></i> page-calendar.this-event-has-not-returned-materials',
     );
     expect(result.content).toEqual(
-      '<i class="fas fa-exclamation-triangle"></i> Test event − '
+      '<i class="fas fa-question"></i> <i class="fas fa-exclamation-triangle"></i> Test event − '
       + '<i class="fas fa-map-marker-alt"></i> Testville',
     );
     expect(result.className).toEqual(
-      'timeline-event timeline-event--past timeline-event--with-warning',
+      'timeline-event timeline-event--past timeline-event--not-confirmed timeline-event--with-warning',
     );
     expect(result.editable).toBe(true);
-    expect(result.hasMissingMaterials).toBe(true);
+    expect(result.hasMissingMaterials).toBe(null);
+    expect(result.isInventoryDone).toBe(false);
+    expect(result.hasNotReturnedMaterials).toBe(true);
     expect(result.start).toBeInstanceOf(moment);
     expect(result.end).toBeInstanceOf(moment);
   });

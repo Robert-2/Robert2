@@ -69,7 +69,7 @@ export default {
       if (!this.error?.response) {
         return {
           code: '',
-          message: this.$t('errors.api-unreachable'),
+          message: this.$t('errors.generic', { message: this.error?.message || 'unknown' }),
         };
       }
 
@@ -79,6 +79,10 @@ export default {
       if (status === 400) {
         const { details } = response.data?.error || { details: {} };
         return { code: '', message: this.$t('errors.validation'), details };
+      }
+
+      if (status === 404) {
+        return { code: '', message: this.$t('errors.not-found') };
       }
 
       if (status === 409) {

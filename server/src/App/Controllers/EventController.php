@@ -11,6 +11,7 @@ use Robert2\API\Models\Material;
 use Robert2\API\Models\MaterialUnit;
 use Robert2\API\Models\Park;
 use Robert2\API\Services\Auth;
+use Robert2\API\Errors\ValidationException;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
 use Slim\Http\ServerRequest as Request;
@@ -43,11 +44,20 @@ class EventController extends BaseController
 
         $data = [];
         $events = $results->get()->toArray();
+        $today = (new \DateTime())->setTime(0, 0, 0);
         foreach ($events as $event) {
-            $eventMissingMaterials = Event::getMissingMaterials($event['id']);
-            $event['has_missing_materials'] = !empty($eventMissingMaterials);
-            $event['parks'] = null;
+            $event['has_missing_materials'] = null;
+            $event['has_not_returned_materials'] = null;
 
+            $eventEndDate = new \DateTime($event['end_date']);
+            if ($eventEndDate >= $today) {
+                $eventMissingMaterials = Event::getMissingMaterials($event['id']);
+                $event['has_missing_materials'] = !empty($eventMissingMaterials);
+            } elseif ($event['is_return_inventory_done']) {
+                $event['has_not_returned_materials'] = Event::hasNotReturnedMaterials($event['id']);
+            }
+
+            $event['parks'] = null;
             if ($useMultipleParks) {
                 $event['parks'] = Event::getParks($event['id']);
 
@@ -69,7 +79,22 @@ class EventController extends BaseController
         if (!Event::staticExists($id)) {
             throw new HttpNotFoundException($request);
         }
-        return $response->withJson($this->_getFormattedEvent($id));
+
+        $eventData = $this->_getFormattedEvent($id);
+
+        $eventData['has_missing_materials'] = null;
+        $eventData['has_not_returned_materials'] = null;
+
+        $today = (new \DateTime())->setTime(0, 0, 0);
+        $eventEndDate = new \DateTime($eventData['end_date']);
+        if ($eventEndDate >= $today) {
+            $eventMissingMaterials = Event::getMissingMaterials($eventData['id']);
+            $eventData['has_missing_materials'] = !empty($eventMissingMaterials);
+        } elseif ($eventData['is_return_inventory_done']) {
+            $eventData['has_not_returned_materials'] = Event::hasNotReturnedMaterials($eventData['id']);
+        }
+
+        return $response->withJson($eventData);
     }
 
     public function getMissingMaterials(Request $request, Response $response): Response
@@ -104,6 +129,39 @@ class EventController extends BaseController
 
         $postData = (array)$request->getParsedBody();
         $id = $this->_saveEvent($id, $postData);
+
+        return $response->withJson($this->_getFormattedEvent($id), SUCCESS_OK);
+    }
+
+    public function updateMaterialReturn(Request $request, Response $response): Response
+    {
+        $id = (int)$request->getAttribute('id');
+        if (!Event::staticExists($id)) {
+            throw new HttpNotFoundException($request);
+        }
+
+        $data = (array)$request->getParsedBody();
+        $this->_saveReturnQuantities($id, $data);
+
+        return $response->withJson($this->_getFormattedEvent($id), SUCCESS_OK);
+    }
+
+    public function updateMaterialTerminate(Request $request, Response $response): Response
+    {
+        $id = (int)$request->getAttribute('id');
+        if (!Event::staticExists($id)) {
+            throw new HttpNotFoundException($request);
+        }
+
+        $data = (array)$request->getParsedBody();
+        $this->_saveReturnQuantities($id, $data);
+
+        Event::staticEdit($id, [
+            'is_confirmed' => true,
+            'is_return_inventory_done' => true,
+        ]);
+
+        $this->_setBrokenMaterialsQuantities($data);
 
         return $response->withJson($this->_getFormattedEvent($id), SUCCESS_OK);
     }
@@ -222,6 +280,80 @@ class EventController extends BaseController
         }
 
         return $event->id;
+    }
+
+    protected function _saveReturnQuantities(int $id, array $data): void
+    {
+        $event = Event::find($id);
+
+        $eventMaterials = $event->Materials()->get()->toArray();
+        $eventMaterialsQuantities = [];
+        foreach ($eventMaterials as $material) {
+            $eventMaterialsQuantities[$material['id']] = $material['pivot']['quantity'];
+        };
+
+        $quantities = [];
+        $errors = [];
+        foreach ($data as $quantity) {
+            $materialId = $quantity['id'];
+            $returned = (int)$quantity['returned'];
+            $broken = (int)$quantity['broken'];
+
+            if ($returned < 0 || $broken < 0) {
+                $errors[] = [
+                    'id' => $materialId,
+                    'message' => "Quantities cannot be negative."
+                ];
+                continue;
+            }
+
+            if ($returned > $eventMaterialsQuantities[$materialId]) {
+                $errors[] = [
+                    'id' => $materialId,
+                    'message' => "Returned quantity cannot be greater than quantity out."
+                ];
+                continue;
+            }
+
+            if ($broken > $returned) {
+                $errors[] = [
+                    'id' => $materialId,
+                    'message' => "Broken quantity cannot be greater than returned quantity."
+                ];
+                continue;
+            }
+
+            $quantities[$materialId] = [
+                'quantity_returned' => $returned,
+                'quantity_broken' => $broken,
+            ];
+        }
+
+        if (!empty($errors)) {
+            $error = new ValidationException();
+            $error->setValidationErrors($errors);
+            throw $error;
+        }
+
+        $event->Materials()->sync($quantities);
+    }
+
+    protected function _setBrokenMaterialsQuantities(array $data): void
+    {
+        foreach ($data as $quantities) {
+            $broken = (int)$quantities['broken'];
+            if ($broken === 0) {
+                continue;
+            }
+
+            $material = Material::find($quantities['id']);
+            if (!$material) {
+                continue;
+            }
+
+            $material->out_of_order_quantity += (int)$quantities['broken'];
+            $material->save();
+        }
     }
 
     protected function _getFormattedEvent(int $id): array

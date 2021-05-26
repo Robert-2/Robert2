@@ -7,9 +7,14 @@ describe('getTimelineEventClassNames', () => {
       isCurrent: false,
       isConfirmed: false,
       hasMissingMaterials: false,
+      isInventoryDone: false,
+      hasNotReturnedMaterials: false,
     };
     const result = getTimelineEventClassNames(formattedEvent);
-    expect(result).toEqual(['timeline-event']);
+    expect(result).toEqual([
+      'timeline-event',
+      'timeline-event--not-confirmed',
+    ]);
   });
 
   test('When event is current, and not confirmed', () => {
@@ -18,11 +23,14 @@ describe('getTimelineEventClassNames', () => {
       isCurrent: true,
       isConfirmed: false,
       hasMissingMaterials: false,
+      isInventoryDone: false,
+      hasNotReturnedMaterials: false,
     };
     const result = getTimelineEventClassNames(formattedEvent);
     expect(result).toEqual([
       'timeline-event',
       'timeline-event--current',
+      'timeline-event--not-confirmed',
     ]);
   });
 
@@ -31,12 +39,15 @@ describe('getTimelineEventClassNames', () => {
       isPast: true,
       isCurrent: false,
       isConfirmed: false,
-      hasMissingMaterials: false,
+      hasMissingMaterials: null,
+      isInventoryDone: false,
+      hasNotReturnedMaterials: false,
     };
     const result = getTimelineEventClassNames(formattedEvent);
     expect(result).toEqual([
       'timeline-event',
       'timeline-event--past',
+      'timeline-event--not-confirmed',
     ]);
   });
 
@@ -46,12 +57,12 @@ describe('getTimelineEventClassNames', () => {
       isCurrent: false,
       isConfirmed: true,
       hasMissingMaterials: false,
+      isInventoryDone: false,
+      hasNotReturnedMaterials: false,
     };
     const result = getTimelineEventClassNames(formattedEvent);
     expect(result).toEqual([
       'timeline-event',
-      'timeline-event--locked',
-      'timeline-event--confirmed',
     ]);
   });
 
@@ -61,13 +72,13 @@ describe('getTimelineEventClassNames', () => {
       isCurrent: true,
       isConfirmed: true,
       hasMissingMaterials: false,
+      isInventoryDone: false,
+      hasNotReturnedMaterials: false,
     };
     const result = getTimelineEventClassNames(formattedEvent);
     expect(result).toEqual([
       'timeline-event',
       'timeline-event--current',
-      'timeline-event--locked',
-      'timeline-event--confirmed',
     ]);
   });
 
@@ -76,13 +87,15 @@ describe('getTimelineEventClassNames', () => {
       isPast: true,
       isCurrent: false,
       isConfirmed: true,
-      hasMissingMaterials: false,
+      hasMissingMaterials: null,
+      isInventoryDone: false,
+      hasNotReturnedMaterials: false,
     };
     const result = getTimelineEventClassNames(formattedEvent);
     expect(result).toEqual([
       'timeline-event',
       'timeline-event--past',
-      'timeline-event--locked',
+      'timeline-event--no-return-inventory',
     ]);
   });
 
@@ -92,10 +105,13 @@ describe('getTimelineEventClassNames', () => {
       isCurrent: false,
       isConfirmed: false,
       hasMissingMaterials: true,
+      isInventoryDone: false,
+      hasNotReturnedMaterials: false,
     };
     const result = getTimelineEventClassNames(formattedEvent);
     expect(result).toEqual([
       'timeline-event',
+      'timeline-event--not-confirmed',
       'timeline-event--with-warning',
     ]);
   });
@@ -106,11 +122,14 @@ describe('getTimelineEventClassNames', () => {
       isCurrent: true,
       isConfirmed: false,
       hasMissingMaterials: true,
+      isInventoryDone: false,
+      hasNotReturnedMaterials: false,
     };
     const result = getTimelineEventClassNames(formattedEvent);
     expect(result).toEqual([
       'timeline-event',
       'timeline-event--current',
+      'timeline-event--not-confirmed',
       'timeline-event--with-warning',
     ]);
   });
@@ -120,13 +139,15 @@ describe('getTimelineEventClassNames', () => {
       isPast: true,
       isCurrent: false,
       isConfirmed: false,
-      hasMissingMaterials: true,
+      hasMissingMaterials: null,
+      isInventoryDone: false,
+      hasNotReturnedMaterials: false,
     };
     const result = getTimelineEventClassNames(formattedEvent);
     expect(result).toEqual([
       'timeline-event',
       'timeline-event--past',
-      'timeline-event--with-warning',
+      'timeline-event--not-confirmed',
     ]);
   });
 
@@ -136,12 +157,12 @@ describe('getTimelineEventClassNames', () => {
       isCurrent: false,
       isConfirmed: true,
       hasMissingMaterials: true,
+      isInventoryDone: false,
+      hasNotReturnedMaterials: false,
     };
     const result = getTimelineEventClassNames(formattedEvent);
     expect(result).toEqual([
       'timeline-event',
-      'timeline-event--locked',
-      'timeline-event--confirmed',
       'timeline-event--with-warning',
     ]);
   });
@@ -152,13 +173,13 @@ describe('getTimelineEventClassNames', () => {
       isCurrent: true,
       isConfirmed: true,
       hasMissingMaterials: true,
+      isInventoryDone: false,
+      hasNotReturnedMaterials: false,
     };
     const result = getTimelineEventClassNames(formattedEvent);
     expect(result).toEqual([
       'timeline-event',
       'timeline-event--current',
-      'timeline-event--locked',
-      'timeline-event--confirmed',
       'timeline-event--with-warning',
     ]);
   });
@@ -168,13 +189,31 @@ describe('getTimelineEventClassNames', () => {
       isPast: true,
       isCurrent: false,
       isConfirmed: true,
-      hasMissingMaterials: true,
+      hasMissingMaterials: null,
+      isInventoryDone: false,
+      hasNotReturnedMaterials: false,
     };
     const result = getTimelineEventClassNames(formattedEvent);
     expect(result).toEqual([
       'timeline-event',
       'timeline-event--past',
-      'timeline-event--locked',
+      'timeline-event--no-return-inventory',
+    ]);
+  });
+
+  test('When event is past, confirmed, inventory done, and has materials not returned', () => {
+    const formattedEvent = {
+      isPast: true,
+      isCurrent: false,
+      isConfirmed: true,
+      hasMissingMaterials: null,
+      isInventoryDone: true,
+      hasNotReturnedMaterials: true,
+    };
+    const result = getTimelineEventClassNames(formattedEvent);
+    expect(result).toEqual([
+      'timeline-event',
+      'timeline-event--past',
       'timeline-event--with-warning',
     ]);
   });

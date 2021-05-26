@@ -10,6 +10,7 @@ use Robert2\API\Controllers\Traits\WithCrud;
 use Robert2\API\Models\Document;
 use Robert2\API\Models\Event;
 use Robert2\API\Models\Material;
+use Robert2\API\Models\Park;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
 use Slim\Http\ServerRequest as Request;
@@ -315,7 +316,32 @@ class MaterialController extends BaseController
             throw new HttpNotFoundException($request);
         }
 
-        return $response->withJson($material->events, SUCCESS_OK);
+        $restrictedParks = Auth::user()->restricted_parks;
+        $useMultipleParks = Park::count() > 1;
+
+        $data = [];
+        $today = (new \DateTime())->setTime(0, 0, 0);
+        foreach ($material->events as $event) {
+            $eventEndDate = new \DateTime($event['end_date']);
+            if ($eventEndDate < $today && $event['is_return_inventory_done']) {
+                // TODO: ne mettre ce champ à true que si LE MATÉRIEL demandé n'a pas été retourné.
+                $event['has_not_returned_materials'] = Event::hasNotReturnedMaterials($event['id']);
+            }
+
+            $event['parks'] = null;
+            if ($useMultipleParks) {
+                $event['parks'] = Event::getParks($event['id']);
+
+                $parksCount = count($event['parks']);
+                $intersectCount = count(array_intersect($restrictedParks, $event['parks']));
+                if ($parksCount > 0 && $parksCount === $intersectCount) {
+                    continue;
+                }
+            }
+            $data[] = $event;
+        }
+
+        return $response->withJson($data, SUCCESS_OK);
     }
 
     public function handleUploadPicture(Request $request, Response $response): Response

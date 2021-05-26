@@ -1,0 +1,34 @@
+@import '../../../themes/default';
+
+.ReturnInventoryItem {
+  list-style: none;
+  display: flex;
+  margin-bottom: $content-padding-small-vertical;
+  padding-bottom: 2px;
+  border-bottom: 1px dashed $list-left-border-color;
+
+  &__name {
+    flex: 1;
+
+    a:not(button),
+    a:not(button):visited,
+    a:not(button):active {
+      color: $text-base-color;
+    }
+
+    a:not(button):hover {
+      color: $link-hover-color;
+    }
+  }
+
+  &__missing {
+    flex: 0 0 250px;
+    margin: 0;
+    color: $text-danger-color;
+  }
+
+  &__broken {
+    flex: 0 0 150px;
+    color: $text-warning-color;
+  }
+}

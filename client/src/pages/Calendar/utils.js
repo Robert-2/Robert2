@@ -1,10 +1,11 @@
 import formatTimelineEvent from '@/utils/timeline-event/format';
+import getMainIcon from '@/utils/timeline-event/getMainIcon';
 import getTimelineEventClassNames from '@/utils/timeline-event/getClassNames';
 import getTimelineEventI18nStatuses from '@/utils/timeline-event/getI18nStatuses';
 
 const formatEvent = (dataEvent, translate) => {
   const withIcon = (iconName, text) => (
-    `<i class="fas fa-${iconName}"></i> ${text}`
+    iconName ? `<i class="fas fa-${iconName}"></i> ${text}` : text
   );
 
   const formattedEvent = formatTimelineEvent(dataEvent);
@@ -16,17 +17,18 @@ const formatEvent = (dataEvent, translate) => {
     isPast,
     isConfirmed,
     hasMissingMaterials,
+    isInventoryDone,
+    hasNotReturnedMaterials,
     beneficiaries,
     assignees,
   } = formattedEvent;
 
-  let content = title;
-  if (hasMissingMaterials) {
-    content = withIcon('exclamation-triangle', content);
+  let baseContent = title;
+  if (hasMissingMaterials || hasNotReturnedMaterials) {
+    baseContent = withIcon('exclamation-triangle', baseContent);
   }
-  if (isConfirmed) {
-    content = withIcon(isPast ? 'lock' : 'check', content);
-  }
+
+  let content = withIcon(getMainIcon(formattedEvent), baseContent);
 
   const locationText = withIcon('map-marker-alt', location || '?');
   if (location) {
@@ -68,7 +70,7 @@ const formatEvent = (dataEvent, translate) => {
     content,
     start,
     end,
-    editable: !isConfirmed,
+    editable: !isConfirmed || (isPast && !isConfirmed && !isInventoryDone),
     className: getTimelineEventClassNames(formattedEvent).join(' '),
     title: [
       `<strong>${title}</strong>`,

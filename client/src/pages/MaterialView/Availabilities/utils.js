@@ -1,10 +1,11 @@
 import formatTimelineEvent from '@/utils/timeline-event/format';
 import getTimelineEventClassNames from '@/utils/timeline-event/getClassNames';
 import getTimelineEventI18nStatuses from '@/utils/timeline-event/getI18nStatuses';
+import getMainIcon from '@/utils/timeline-event/getMainIcon';
 
 const formatEvent = (dataEvent, translate) => {
   const withIcon = (iconName, text) => (
-    `<i class="fas fa-${iconName}"></i> ${text}`
+    iconName ? `<i class="fas fa-${iconName}"></i> ${text}` : text
   );
 
   const formattedEvent = formatTimelineEvent(dataEvent);
@@ -14,12 +15,18 @@ const formatEvent = (dataEvent, translate) => {
     startDate: start,
     endDate: end,
     pivot,
+    hasNotReturnedMaterials,
   } = formattedEvent;
 
   const { quantity: count } = pivot;
   const countText = translate('used-count', { count }, count);
 
-  const content = `${title} (${countText})`;
+  let baseContent = `${title} (${countText})`;
+  if (hasNotReturnedMaterials) {
+    baseContent = withIcon('exclamation-triangle', baseContent);
+  }
+
+  const content = withIcon(getMainIcon(formattedEvent), baseContent);
 
   const locationText = withIcon('map-marker-alt', location || '?');
 

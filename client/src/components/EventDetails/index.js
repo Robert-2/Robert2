@@ -8,6 +8,7 @@ import LocationText from '@/components/LocationText/LocationText.vue';
 import PersonsList from '@/components/PersonsList/PersonsList.vue';
 import EventMaterials from '@/components/EventMaterials/EventMaterials.vue';
 import EventMissingMaterials from '@/components/EventMissingMaterials/EventMissingMaterials.vue';
+import ReturnInventorySummary from '@/components/ReturnInventorySummary';
 import EventEstimates from '@/components/EventEstimates/EventEstimates.vue';
 import EventBilling from '@/components/EventBilling/EventBilling.vue';
 import EventTotals from '@/components/EventTotals/EventTotals.vue';
@@ -25,6 +26,7 @@ export default {
     PersonsList,
     EventMaterials,
     EventMissingMaterials,
+    ReturnInventorySummary,
     EventEstimates,
     EventBilling,
     EventTotals,

@@ -1,8 +1,9 @@
 import moment from 'moment';
+import store from '@/store';
+import ModalConfig from '@/config/modalConfig';
+import formatTimelineEvent from '@/utils/timeline-event/format';
 import Help from '@/components/Help/Help.vue';
 import Timeline from '@/components/Timeline';
-import ModalConfig from '@/config/modalConfig';
-import store from '@/store';
 import EventDetails from '@/components/EventDetails/EventDetails.vue';
 import MaterialAvailabilitiesItem from './Item/Item.vue';
 import formatEvent from './utils';
@@ -54,7 +55,7 @@ export default {
 
       this.$http.get(`materials/${this.materialId}/events`)
         .then(({ data }) => {
-          this.materialEvents = data;
+          this.materialEvents = data.map(formatTimelineEvent);
           this.materialEventsTimeline = data.map(
             (event) => formatEvent(event, this.$t),
           );

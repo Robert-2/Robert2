@@ -1,6 +1,6 @@
 import store from '@/store';
 import formatAmount from '@/utils/formatAmount';
-import dispatchMaterialInCategories from '@/utils/dispatchMaterialInCategories';
+import dispatchMaterialInSections from '@/utils/dispatchMaterialInSections';
 
 export default {
   name: 'EventMaterials',
@@ -17,7 +17,12 @@ export default {
   computed: {
     categories() {
       const categoryNameGetter = store.getters['categories/categoryName'];
-      return dispatchMaterialInCategories(this.materials, categoryNameGetter);
+      return dispatchMaterialInSections(
+        this.materials,
+        'category_id',
+        categoryNameGetter,
+        'price',
+      );
     },
   },
   created() {

@@ -1,4 +1,5 @@
 import moment from 'moment';
+import getMainIcon from '@/utils/timeline-event/getMainIcon';
 
 export default {
   name: 'MaterialAvailabilitiesItem',
@@ -41,6 +42,9 @@ export default {
     unitsDisplay() {
       const usedUnits = this.units.filter((unit) => this.data.pivot.units.includes(unit.id));
       return usedUnits.map((unit) => unit.reference).join(', ');
+    },
+    mainIcon() {
+      return getMainIcon(this.data);
     },
   },
   methods: {

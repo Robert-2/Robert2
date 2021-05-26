@@ -36,15 +36,16 @@ class Event extends BaseModel
         $this->_endDate = new \DateTime("$thisYear-12-31");
 
         $this->validation = [
-            'user_id'      => V::notEmpty()->numeric(),
-            'title'        => V::notEmpty()->length(2, 191),
-            'description'  => V::optional(V::length(null, 255)),
-            'reference'    => V::oneOf(V::nullType(), V::alnum('.,-/_ ')->length(1, 64)),
-            'start_date'   => V::notEmpty()->date(),
-            'end_date'     => V::callback([$this, 'checkEndDate']),
+            'user_id' => V::notEmpty()->numeric(),
+            'title' => V::notEmpty()->length(2, 191),
+            'description' => V::optional(V::length(null, 255)),
+            'reference' => V::oneOf(V::nullType(), V::alnum('.,-/_ ')->length(1, 64)),
+            'start_date' => V::notEmpty()->date(),
+            'end_date' => V::callback([$this, 'checkEndDate']),
             'is_confirmed' => V::notOptional()->boolType(),
-            'location'     => V::optional(V::length(2, 64)),
-            'is_billable'  => V::optional(V::boolType()),
+            'location' => V::optional(V::length(2, 64)),
+            'is_billable' => V::optional(V::boolType()),
+            'is_return_inventory_done' => V::optional(V::boolType()),
         ];
     }
 
@@ -130,7 +131,7 @@ class Event extends BaseModel
 
         return $this->belongsToMany('Robert2\API\Models\Material', 'event_materials')
             ->using('Robert2\API\Models\EventMaterial')
-            ->withPivot('id', 'quantity')
+            ->withPivot('id', 'quantity', 'quantity_returned', 'quantity_broken')
             ->select($fields);
     }
 
@@ -155,15 +156,16 @@ class Event extends BaseModel
     // ——————————————————————————————————————————————————————
 
     protected $casts = [
-        'user_id'      => 'integer',
-        'reference'    => 'string',
-        'title'        => 'string',
-        'description'  => 'string',
-        'start_date'   => 'string',
-        'end_date'     => 'string',
+        'user_id' => 'integer',
+        'reference' => 'string',
+        'title' => 'string',
+        'description' => 'string',
+        'start_date' => 'string',
+        'end_date' => 'string',
         'is_confirmed' => 'boolean',
-        'location'     => 'string',
-        'is_billable'  => 'boolean',
+        'location' => 'string',
+        'is_billable' => 'boolean',
+        'is_return_inventory_done' => 'boolean',
     ];
 
     public function getUserAttribute()
@@ -257,6 +259,24 @@ class Event extends BaseModel
         }
 
         return empty($missingMaterials) ? null : array_values($missingMaterials);
+    }
+
+    public static function hasNotReturnedMaterials(int $id): bool
+    {
+        $event = static::with('Materials')->find($id);
+        if (!$event || empty($event->materials) || !$event->is_return_inventory_done) {
+            return false;
+        }
+
+        $hasNotReturnedMaterials = false;
+        foreach ($event->materials as $material) {
+            $missing = $material['pivot']['quantity'] - $material['pivot']['quantity_returned'];
+            if ($missing > 0) {
+                $hasNotReturnedMaterials = true;
+            }
+        }
+
+        return $hasNotReturnedMaterials;
     }
 
     public static function getParks(int $id): array
@@ -376,6 +396,7 @@ class Event extends BaseModel
         'is_confirmed',
         'location',
         'is_billable',
+        'is_return_inventory_done',
     ];
 
     public function setPeriod(?string $start, ?string $end): Event

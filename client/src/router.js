@@ -8,6 +8,7 @@ import UserProfile from '@/pages/UserProfile/UserProfile.vue';
 import UserSettings from '@/pages/UserSettings/UserSettings.vue';
 import Calendar from '@/pages/Calendar/Calendar.vue';
 import Event from '@/pages/Event/Event.vue';
+import EventReturn from '@/pages/EventReturn/EventReturn.vue';
 import Users from '@/pages/Users/Users.vue';
 import User from '@/pages/User/User.vue';
 import Beneficiaries from '@/pages/Beneficiaries/Beneficiaries.vue';
@@ -95,6 +96,18 @@ const router = new Router({
         resource: 'events',
         title: 'page-events.edit-event',
         readableName: 'page-events.edit',
+        requiresAuth: true,
+        requiresGroups: ['admin', 'member'],
+      },
+    },
+    {
+      path: '/event-return/:id',
+      name: 'eventReturnMaterial',
+      component: EventReturn,
+      meta: {
+        resource: 'events',
+        title: 'page-event-return.title',
+        readableName: 'page-event-return.title',
         requiresAuth: true,
         requiresGroups: ['admin', 'member'],
       },

@@ -20,7 +20,9 @@ final class EventsTest extends ApiTestCase
                     'is_confirmed' => false,
                     'location' => "Brousse",
                     'is_billable' => false,
+                    'is_return_inventory_done' => false,
                     'has_missing_materials' => false,
+                    'has_not_returned_materials' => null,
                     'parks' => [1],
                     'beneficiaries' => [],
                     'assignees' => [],
@@ -39,7 +41,9 @@ final class EventsTest extends ApiTestCase
                     'is_confirmed' => false,
                     'location' => "Gap",
                     'is_billable' => true,
-                    'has_missing_materials' => true,
+                    'is_return_inventory_done' => true,
+                    'has_missing_materials' => null,
+                    'has_not_returned_materials' => false,
                     'parks' => [1],
                     'beneficiaries' => [
                         [
@@ -100,7 +104,9 @@ final class EventsTest extends ApiTestCase
                     'is_confirmed' => false,
                     'location' => "Lyon",
                     'is_billable' => true,
-                    'has_missing_materials' => true,
+                    'is_return_inventory_done' => true,
+                    'has_missing_materials' => null,
+                    'has_not_returned_materials' => true,
                     'parks' => [1],
                     'beneficiaries' => [
                         [
@@ -150,6 +156,9 @@ final class EventsTest extends ApiTestCase
             'is_confirmed' => false,
             'location' => "Gap",
             'is_billable' => true,
+            'is_return_inventory_done' => true,
+            'has_missing_materials' => null,
+            'has_not_returned_materials' => false,
             'created_at' => null,
             'updated_at' => null,
             'deleted_at' => null,
@@ -300,6 +309,8 @@ final class EventsTest extends ApiTestCase
                         'material_id' => 4,
                         'quantity' => 1,
                         'units' => [],
+                        'quantity_returned' => 1,
+                        'quantity_broken' => 1,
                     ],
                 ],
                 [
@@ -343,6 +354,8 @@ final class EventsTest extends ApiTestCase
                         'material_id' => 2,
                         'quantity' => 1,
                         'units' => [],
+                        'quantity_returned' => 1,
+                        'quantity_broken' => 0,
                     ],
                 ],
                 [
@@ -393,6 +406,8 @@ final class EventsTest extends ApiTestCase
                         'material_id' => 1,
                         'quantity' => 1,
                         'units' => [],
+                        'quantity_returned' => 1,
+                        'quantity_broken' => 0,
                     ],
                 ],
             ],
@@ -539,6 +554,7 @@ final class EventsTest extends ApiTestCase
             'is_confirmed' => true,
             'location' => 'Gap et Briançon',
             'is_billable' => false,
+            'is_return_inventory_done' => true,
             'assignees' => [
                 [
                     'id' => 1,
@@ -640,6 +656,8 @@ final class EventsTest extends ApiTestCase
                         'material_id' => 4,
                         'quantity' => 1,
                         'units' => [],
+                        'quantity_returned' => 1,
+                        'quantity_broken' => 1,
                     ],
                 ],
                 [
@@ -683,6 +701,8 @@ final class EventsTest extends ApiTestCase
                         'material_id' => 2,
                         'quantity' => 1,
                         'units' => [],
+                        'quantity_returned' => 1,
+                        'quantity_broken' => 0,
                     ],
                 ],
                 [
@@ -733,6 +753,8 @@ final class EventsTest extends ApiTestCase
                         'material_id' => 1,
                         'quantity' => 1,
                         'units' => [],
+                        'quantity_returned' => 1,
+                        'quantity_broken' => 0,
                     ],
                 ],
             ],
@@ -787,6 +809,96 @@ final class EventsTest extends ApiTestCase
         $this->client->put('/api/events/1', $dataWithChildren);
         $this->assertStatusCode(SUCCESS_OK);
         $this->assertResponseData($expected, ['updated_at']);
+    }
+
+    public function testUpdateMaterialReturnNotFound()
+    {
+        $this->client->put('/api/events/999/return');
+        $this->assertNotFound();
+    }
+
+    public function testUpdateMaterialReturn()
+    {
+        $data = [
+            ['id' => 1, 'out' => 3, 'returned' => 2, 'broken' => 0],
+            ['id' => 2, 'out' => 2, 'returned' => 2, 'broken' => 1],
+        ];
+        $this->client->put('/api/events/2/return', $data);
+        $this->assertStatusCode(SUCCESS_OK);
+        $response = $this->_getResponseAsArray();
+
+        $expectedFirst = [
+            'event_id' => 2,
+            'material_id' => 2,
+            'id' => 5,
+            'quantity' => 2,
+            'quantity_returned' => 2,
+            'quantity_broken' => 1,
+        ];
+        $this->assertEquals($expectedFirst, $response['materials'][0]['pivot']);
+
+        $expectedSecond = [
+            'event_id' => 2,
+            'material_id' => 1,
+            'id' => 4,
+            'quantity' => 3,
+            'quantity_returned' => 2,
+            'quantity_broken' => 0,
+        ];
+        $this->assertEquals($expectedSecond, $response['materials'][1]['pivot']);
+    }
+
+    public function testUpdateMaterialReturnBadData()
+    {
+        $data = [
+            ['id' => 1, 'out' => 3, 'returned' => 2, 'broken' => 3],
+            ['id' => 2, 'out' => 2, 'returned' => 3, 'broken' => 0],
+        ];
+        $this->client->put('/api/events/2/return', $data);
+        $this->assertStatusCode(ERROR_VALIDATION);
+        $this->assertValidationErrorMessage();
+        $response = $this->_getResponseAsArray();
+        $expected = [
+            [ 'id' => 1, 'message' => "Broken quantity cannot be greater than returned quantity." ],
+            [ 'id' => 2, 'message' => "Returned quantity cannot be greater than quantity out." ],
+        ];
+        $this->assertEquals($expected, $response['error']['details']);
+    }
+
+    public function testUpdateMaterialTerminate()
+    {
+        $data = [
+            ['id' => 1, 'out' => 3, 'returned' => 3, 'broken' => 0],
+            ['id' => 2, 'out' => 2, 'returned' => 2, 'broken' => 1],
+        ];
+        $this->client->put('/api/events/2/terminate', $data);
+        $this->assertStatusCode(SUCCESS_OK);
+        $response = $this->_getResponseAsArray();
+
+        $this->assertTrue($response['is_confirmed']);
+        $this->assertTrue($response['is_return_inventory_done']);
+
+        $expectedFirst = [
+            'event_id' => 2,
+            'material_id' => 2,
+            'id' => 5,
+            'quantity' => 2,
+            'quantity_returned' => 2,
+            'quantity_broken' => 1,
+        ];
+        $this->assertEquals($expectedFirst, $response['materials'][0]['pivot']);
+        $this->assertEquals(1, $response['materials'][0]['out_of_order_quantity']);
+
+        $expectedSecond = [
+            'event_id' => 2,
+            'material_id' => 1,
+            'id' => 4,
+            'quantity' => 3,
+            'quantity_returned' => 3,
+            'quantity_broken' => 0,
+        ];
+        $this->assertEquals($expectedSecond, $response['materials'][1]['pivot']);
+        $this->assertEquals(1, $response['materials'][1]['out_of_order_quantity']);
     }
 
     public function testDeleteAndDestroyEvent()
@@ -876,6 +988,8 @@ final class EventsTest extends ApiTestCase
                     'material_id' => 2,
                     'quantity' => 1,
                     'units' => [],
+                    'quantity_returned' => 1,
+                    'quantity_broken' => 0,
                 ],
             ],
         ]);
