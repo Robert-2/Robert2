@@ -1,5 +1,12 @@
 {% extends "pdf/base.twig" %}
 
+{% set titleLength = name|length %}
+{% set titleFontSize = (
+    titleLength > 25 ? 2.7 :
+    titleLength > 22 ? 3 :
+    titleLength > 19 ? 3.5 : 4
+) %}
+
 {% block style %}
 @page {
     size: 50mm 25mm;
@@ -7,13 +14,12 @@
 }
 
 html {
-    background: #000;
-    color: #fff;
-}
-
-html {
     margin: 0;
-    font-size: 3mm;
+    background: #000;
+    font-family: 'DejaVu Sans Mono', monospace;
+    font-weight: 400;
+    font-size: {{ min(titleFontSize * 0.9|round(2, 'floor'), 3) }}mm;
+    color: #fff;
 }
 
 .bar-code {
@@ -23,7 +29,7 @@ html {
     height: 25mm;
     width: 50mm;
     box-sizing: border-box;
-    padding: 2mm 0;
+    padding: 1.5mm 0;
     background: #fff;
     color: #000;
     text-align: center;
@@ -33,44 +39,44 @@ html {
 .bar-code * {
     white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 .bar-code__header {
-    height: 7.378mm;
+    height: 8.8mm;
     padding: 0 2mm;
-    margin-bottom: 2mm;
+    margin-bottom: 1.5mm;
+    line-height: 3mm;
 }
 
 .bar-code__title {
-    font-size: 4mm;
+    font-size: {{ titleFontSize }}mm;
     font-weight: bold;
     margin-bottom: .5mm;
-}
-
-.bar-code__barcode {
-    height: 8mm;
-    width: 100%;
 }
 
 .bar-code__reference {
     margin-top: .8mm;
     padding: 0 2mm;
-    font-size: 3.5mm;
+    font-size: 1.16rem;
     letter-spacing: .1mm;
+}
+
+.bar-code__barcode {
+    height: 7mm;
+    width: 100%;
 }
 {% endblock %}
 {% block content %}
 <div class="bar-code">
     <div class="bar-code__header">
-        <div class="bar-code__title">{{ name|u.truncate(23) }}</div>
-        <div class="bar-code__reference">{{ translate('park-value', [park|u.truncate(10)]) }}</div>
+        <div class="bar-code__title">{{ name|u.truncate(28, '…') }}</div>
+        <div class="bar-code__park">{{ translate('park-value', [park|u.truncate(18, '…')]) }}</div>
     </div>
     <div class="bar-code__body">
         <div class="bar-code__barcode">
             <img class="bar-code__barcode__image" src="{{ barcode }}" />
         </div>
-        <div class="bar-code__reference">{{ reference|u.truncate(20) }}</div>
+        <div class="bar-code__reference">{{ reference|u.truncate(20, '…') }}</div>
     </div>
 </div>
 {% endblock %}
