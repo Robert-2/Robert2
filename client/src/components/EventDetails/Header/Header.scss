@@ -10,8 +10,8 @@
     padding: 0 1rem 0 0;
     font-size: 2rem;
 
-    .fa-check {
-      color: $calendar-event-confirmed-color;
+    .fa-exclamation-triangle {
+      color: $text-danger-color;
     }
   }
 

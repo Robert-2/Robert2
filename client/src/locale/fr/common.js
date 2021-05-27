@@ -45,6 +45,7 @@ export default {
   'locked': "verrouillé",
 
   'save': "Sauvegarder",
+  'save-draft': "Sauvegarder le brouillon",
   'add': "Ajouter",
   'saving': "Sauvegarde...",
   'saved': "{entity} sauvegardé.",
@@ -212,6 +213,16 @@ export default {
   'entity-name-tags': "Étiquettes de « {entityName} »",
   'remove-all-tags': "Enlever tous les tags",
   'remaining-count': "reste {count}",
+  'return-inventory': "Inventaire de retour",
+  'grouped-by': "Voir groupé par\u00a0:",
+  'not-grouped': "Non groupé",
+  'out': [
+    "Sorti\u00a0:",
+    "Sortis\u00a0:",
+  ],
+  'quantity-returned': "Qté retournée",
+  'return-scheduled-on': "Retour prévu le",
+  'back-to-calendar': "Retour au calendrier",
 
   'event': "Événement",
   'user': "Utilisateur",
@@ -220,6 +231,7 @@ export default {
   'category': "Catégorie",
   'sub-category': "Sous-catégorie",
   'categories': "Catégories",
+  'parks': "Parcs",
   'technician': "Technicien",
 
   'this-feature-is-coming-soon': "Cette fonctionnalité est en cours de développement.",

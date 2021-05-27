@@ -70,6 +70,8 @@ return [
         '/attributes/{id:[0-9]+}[/]' => 'AttributeController:update',
         '/events/{id:[0-9]+}[/]' => 'EventController:update',
         '/events/restore/{id:[0-9]+}[/]' => 'EventController:restore',
+        '/events/{id:[0-9]+}/return[/]' => 'EventController:updateMaterialReturn',
+        '/events/{id:[0-9]+}/terminate[/]' => 'EventController:updateMaterialTerminate',
     ],
     'delete' => [
         '/users/{id:[0-9]+}[/]' => 'UserController:delete',

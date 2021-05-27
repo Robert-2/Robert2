@@ -2,6 +2,7 @@ export default [
   {
     id: 31,
     category_id: 1,
+    park_id: 1,
     rental_price: 10,
     replacement_price: 350,
     is_discountable: true,
@@ -10,6 +11,7 @@ export default [
   {
     id: 32,
     category_id: 1,
+    park_id: 1,
     rental_price: 10,
     replacement_price: 125,
     is_discountable: true,
@@ -18,6 +20,7 @@ export default [
   {
     id: 33,
     category_id: 2,
+    park_id: 1,
     rental_price: 5,
     replacement_price: 150,
     is_discountable: true,
@@ -26,6 +29,7 @@ export default [
   {
     id: 34,
     category_id: 3,
+    park_id: 2,
     rental_price: 15,
     replacement_price: 200,
     is_discountable: false,

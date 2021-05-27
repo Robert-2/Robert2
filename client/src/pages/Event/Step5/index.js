@@ -24,10 +24,6 @@ export default {
       this.setEventConfirmation(false);
     },
 
-    printEvent() {
-      console.log('TODO: PRINT EVENT');
-    },
-
     setEventConfirmation(confirmed) {
       const { id } = this.$props.event;
       const url = `${this.$route.meta.resource}/${id}`;

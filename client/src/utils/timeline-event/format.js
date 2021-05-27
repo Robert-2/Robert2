@@ -6,6 +6,8 @@ const formatTimelineEvent = (dataEvent) => {
     end_date: rawEndDate,
     is_confirmed: isConfirmed,
     has_missing_materials: hasMissingMaterials,
+    is_return_inventory_done: isInventoryDone,
+    has_not_returned_materials: hasNotReturnedMaterials,
   } = dataEvent;
 
   const now = moment();
@@ -22,6 +24,8 @@ const formatTimelineEvent = (dataEvent) => {
     isPast,
     isCurrent,
     hasMissingMaterials,
+    hasNotReturnedMaterials,
+    isInventoryDone,
   };
 };
 
