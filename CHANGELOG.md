@@ -4,6 +4,10 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.13.3-premium (UNRELEASED)
+
+- Corrige l'affichage des étiquettes et utilise une police monospaced (Premium #42).
+
 ## 0.13.2-premium (2021-05-25)
 
 - Corrige le fonctionnement des filtres à l'étape 4 de l'edition d'un événement.
