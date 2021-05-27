@@ -225,6 +225,7 @@ class EventData
 
             if ($material['is_unitary']) {
                 $units = [];
+                $quantity = 1;
                 foreach ($material['pivot']['units'] as $unitId) {
                     $unit = current(array_filter($material['units'], function ($unit) use ($unitId) {
                         return $unit['id'] === $unitId;
@@ -249,11 +250,11 @@ class EventData
                         'park' => null,
                     ];
 
-                    $quantity = 1;
                     if (isset($parksMaterials[$unitParkId]['materials'][$reference])) {
                         $quantity += 1;
                         $units[] = $unitData;
                     } else {
+                        $quantity = 1;
                         $units = [$unitData];
                     }
 
