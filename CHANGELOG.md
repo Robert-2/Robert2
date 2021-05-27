@@ -7,6 +7,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 ## 0.13.3-premium (UNRELEASED)
 
 - Corrige l'affichage des étiquettes et utilise une police monospaced (Premium #42).
+- Corrige les quantités des unités affichées dans la fiche de sortie en PDF quand le mode d'affichage est `parks` (Premium #43).
 
 ## 0.13.2-premium (2021-05-25)
 
