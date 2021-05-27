@@ -22,6 +22,7 @@ final class EventsTest extends ApiTestCase
                     'is_billable' => false,
                     'is_return_inventory_done' => false,
                     'has_missing_materials' => false,
+                    'has_not_returned_materials' => null,
                     'parks' => [1],
                     'beneficiaries' => [],
                     'assignees' => [],
@@ -41,7 +42,8 @@ final class EventsTest extends ApiTestCase
                     'location' => "Gap",
                     'is_billable' => true,
                     'is_return_inventory_done' => true,
-                    'has_missing_materials' => true,
+                    'has_missing_materials' => null,
+                    'has_not_returned_materials' => false,
                     'parks' => [1],
                     'beneficiaries' => [
                         [
@@ -102,8 +104,9 @@ final class EventsTest extends ApiTestCase
                     'is_confirmed' => false,
                     'location' => "Lyon",
                     'is_billable' => true,
-                    'is_return_inventory_done' => false,
-                    'has_missing_materials' => true,
+                    'is_return_inventory_done' => true,
+                    'has_missing_materials' => null,
+                    'has_not_returned_materials' => true,
                     'parks' => [1],
                     'beneficiaries' => [
                         [
@@ -154,6 +157,8 @@ final class EventsTest extends ApiTestCase
             'location' => "Gap",
             'is_billable' => true,
             'is_return_inventory_done' => true,
+            'has_missing_materials' => null,
+            'has_not_returned_materials' => false,
             'created_at' => null,
             'updated_at' => null,
             'deleted_at' => null,
@@ -858,6 +863,7 @@ final class EventsTest extends ApiTestCase
         $this->assertStatusCode(SUCCESS_OK);
         $response = $this->_getResponseAsArray();
 
+        $this->assertTrue($response['is_confirmed']);
         $this->assertTrue($response['is_return_inventory_done']);
 
         $expectedFirst = [

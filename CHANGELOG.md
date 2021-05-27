@@ -7,6 +7,8 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 ## 0.14.0 (UNRELEASED)
 
 - Ajoute la possibilité de vérifier que tout le matériel est bien retourné à la fin d'un événement (#4).
+- Simplifie la signification des couleurs des événements dans le calendrier.
+- Utilise des icônes cohérents pour le statut des événements dans le calendrier et la fenêtre d'événement.
 
 ## 0.13.1 (2021-05-25)
 

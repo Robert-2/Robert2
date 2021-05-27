@@ -45,10 +45,10 @@ export default {
   'locked': "verrouillé",
 
   'save': "Sauvegarder",
+  'save-draft': "Sauvegarder le brouillon",
   'add': "Ajouter",
   'saving': "Sauvegarde...",
   'saved': "{entity} sauvegardé.",
-  'terminate': "Terminer",
   'choose-date': "Choisir cette date",
   'reset-date': "Réinitialiser la date",
   'actions': "Actions",

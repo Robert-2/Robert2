@@ -136,6 +136,10 @@
           </template>
           <template slot="materials">
             <i class="fas fa-box" /> {{ $t('material') }}
+            <i
+              v-if="event.hasMissingMaterials || event.hasNotReturnedMaterials"
+              class="fas fa-exclamation-triangle"
+            />
           </template>
           <template slot="estimates">
             <i class="fas fa-file-signature" /> {{ $t('estimates') }}

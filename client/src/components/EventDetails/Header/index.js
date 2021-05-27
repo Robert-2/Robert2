@@ -1,4 +1,5 @@
 import Config from '@/config/globalConfig';
+import getMainIcon from '@/utils/timeline-event/getMainIcon';
 
 export default {
   name: 'CalendarEventDetailsHeader',
@@ -10,6 +11,11 @@ export default {
     };
   },
   computed: {
+    mainIcon() {
+      const withProblem = this.event.hasMissingMaterials || this.event.hasNotReturnedMaterials;
+      return withProblem ? 'exclamation-triangle' : getMainIcon(this.event);
+    },
+
     isPrintable() {
       return (
         this.event.materials
@@ -18,9 +24,21 @@ export default {
         && this.event.beneficiaries.length > 0
       );
     },
+
     isVisitor() {
       return this.$store.getters['auth/is']('visitor');
     },
+
+    canModify() {
+      const { isPast, isConfirmed, isInventoryDone } = this.event;
+
+      return !(
+        this.isVisitor
+        || (isPast && isInventoryDone)
+        || (isPast && isConfirmed)
+      );
+    },
+
     eventSummaryPdfUrl() {
       const { baseUrl } = Config;
       const { id } = this.event || { id: null };

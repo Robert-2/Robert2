@@ -51,7 +51,7 @@
                 <i class="fas fa-circle-notch fa-spin" /> {{ $t('saving') }}
               </span>
               <span v-else>
-                <i class="fas fa-save" /> {{ $t('save') }}
+                <i class="fas fa-save" /> {{ $t('save-draft') }}
               </span>
             </button>
             <button
@@ -65,7 +65,7 @@
                 <i class="fas fa-circle-notch fa-spin" /> {{ $t('saving') }}
               </span>
               <span v-else>
-                <i class="fas fa-check" /> {{ $t('terminate') }}
+                <i class="fas fa-check" /> {{ $t('page-event-return.terminate-inventory') }}
               </span>
             </button>
           </template>

@@ -38,9 +38,19 @@ class EventController extends BaseController
 
         $data = $results->get()->toArray();
         $useMultipleParks = Park::count() > 1;
+        $today = (new \DateTime())->setTime(0, 0, 0);
         foreach ($data as $index => $event) {
-            $eventMissingMaterials = Event::getMissingMaterials($event['id']);
-            $data[$index]['has_missing_materials'] = !empty($eventMissingMaterials);
+            $data[$index]['has_missing_materials'] = null;
+            $data[$index]['has_not_returned_materials'] = null;
+
+            $eventEndDate = new \DateTime($event['end_date']);
+            if ($eventEndDate >= $today) {
+                $eventMissingMaterials = Event::getMissingMaterials($event['id']);
+                $data[$index]['has_missing_materials'] = !empty($eventMissingMaterials);
+            } elseif ($event['is_return_inventory_done']) {
+                $data[$index]['has_not_returned_materials'] = Event::hasNotReturnedMaterials($event['id']);
+            }
+
             $data[$index]['parks'] = $useMultipleParks ? Event::getParks($event['id']) : null;
         }
 
@@ -53,7 +63,22 @@ class EventController extends BaseController
         if (!Event::staticExists($id)) {
             throw new HttpNotFoundException($request);
         }
-        return $response->withJson($this->_getFormattedEvent($id));
+
+        $eventData = $this->_getFormattedEvent($id);
+
+        $eventData['has_missing_materials'] = null;
+        $eventData['has_not_returned_materials'] = null;
+
+        $today = (new \DateTime())->setTime(0, 0, 0);
+        $eventEndDate = new \DateTime($eventData['end_date']);
+        if ($eventEndDate >= $today) {
+            $eventMissingMaterials = Event::getMissingMaterials($eventData['id']);
+            $eventData['has_missing_materials'] = !empty($eventMissingMaterials);
+        } elseif ($eventData['is_return_inventory_done']) {
+            $eventData['has_not_returned_materials'] = Event::hasNotReturnedMaterials($eventData['id']);
+        }
+
+        return $response->withJson($eventData);
     }
 
     public function getMissingMaterials(Request $request, Response $response): Response
@@ -115,7 +140,10 @@ class EventController extends BaseController
         $data = (array)$request->getParsedBody();
         $this->_saveReturnQuantities($id, $data);
 
-        Event::staticEdit($id, ['is_return_inventory_done' => true]);
+        Event::staticEdit($id, [
+            'is_confirmed' => true,
+            'is_return_inventory_done' => true,
+        ]);
 
         $this->_setBrokenMaterialsQuantities($data);
 

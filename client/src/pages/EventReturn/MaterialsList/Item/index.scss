@@ -51,10 +51,6 @@
     margin-left: $content-padding-large-vertical;
   }
 
-  &:hover {
-    background: rgba(#fff, .1);
-  }
-
   &--locked {
     .EventReturnMaterialItem__quantity-returned,
     .EventReturnMaterialItem__quantity-broken {
@@ -72,10 +68,6 @@
       font-weight: 600;
       color: $text-base-color;
     }
-
-    &:hover {
-      background: rgba($text-success-color, .35);
-    }
   }
 
   &--warning {
@@ -90,10 +82,6 @@
       font-weight: 600;
       color: $text-danger-color;
     }
-
-    &:hover {
-      background: rgba($text-warning-color, .35);
-    }
   }
 
   &--error {
@@ -102,10 +90,6 @@
     .EventReturnMaterialItem__quantity-returned {
       font-weight: 600;
       color: $text-danger-color;
-    }
-
-    &:hover {
-      background: rgba($text-danger-color, .35);
     }
   }
 }

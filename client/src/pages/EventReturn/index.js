@@ -140,9 +140,13 @@ const EventReturnPage = {
         return;
       }
 
+      const hasBroken = this.quantities.some(({ broken }) => broken > 0);
+
       const response = await Swal.fire({
         title: this.$t('page-event-return.confirm-terminate-title'),
-        text: this.$t('page-event-return.confirm-terminate'),
+        text: hasBroken
+          ? this.$t('page-event-return.confirm-terminate-text-with-broken')
+          : this.$t('page-event-return.confirm-terminate-text'),
         icon: 'warning',
         showCancelButton: true,
         customClass: {

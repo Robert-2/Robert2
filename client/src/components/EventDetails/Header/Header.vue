@@ -1,11 +1,7 @@
 <template>
   <header class="EventDetailsHeader">
-    <div
-      v-tooltip.bottom="event.isConfirmed ? $t('confirmed') : $t('not-confirmed')"
-      class="EventDetailsHeader__status"
-    >
-      <i v-if="!event.isConfirmed" class="far fa-calendar-times" />
-      <i v-if="event.isConfirmed" class="fas fa-check" />
+    <div class="EventDetailsHeader__status">
+      <i :class="`fas fa-${mainIcon}`" />
     </div>
     <div class="EventDetailsHeader__details">
       <h4 class="EventDetailsHeader__details__title">
@@ -20,9 +16,8 @@
     </div>
     <div class="EventDetailsHeader__actions">
       <router-link
-        v-show="!isVisitor"
+        v-show="canModify"
         :to="`/events/${event.id}`"
-        :disabled="event.isConfirmed"
         v-slot="{ navigate }"
         custom
       >
@@ -31,7 +26,7 @@
         </button>
       </router-link>
       <button
-        v-show="!isVisitor"
+        v-show="!isVisitor && !event.isPast"
         v-if="!event.isConfirmed"
         class="success"
         :disabled="event.materials && event.materials.length === 0"
@@ -42,7 +37,7 @@
         {{ $t('confirm') }}
       </button>
       <button
-        v-show="!isVisitor"
+        v-show="!isVisitor && !event.isPast"
         v-if="event.isConfirmed"
         class="warning"
         @click="unconfirmEvent"
@@ -67,7 +62,7 @@
         custom
       >
         <button @click="navigate" class="info" >
-          <i class="fas fa-exchange-alt" />
+          <i class="fas fa-tasks" />
           {{ $t('return-inventory') }}
         </button>
       </router-link>

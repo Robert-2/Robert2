@@ -255,6 +255,24 @@ class Event extends BaseModel
         return empty($missingMaterials) ? null : array_values($missingMaterials);
     }
 
+    public static function hasNotReturnedMaterials(int $id): bool
+    {
+        $event = static::with('Materials')->find($id);
+        if (!$event || empty($event->materials) || !$event->is_return_inventory_done) {
+            return false;
+        }
+
+        $hasNotReturnedMaterials = false;
+        foreach ($event->materials as $material) {
+            $missing = $material['pivot']['quantity'] - $material['pivot']['quantity_returned'];
+            if ($missing > 0) {
+                $hasNotReturnedMaterials = true;
+            }
+        }
+
+        return $hasNotReturnedMaterials;
+    }
+
     public static function getParks(int $id): ?array
     {
         $event = static::with('Materials')->find($id);

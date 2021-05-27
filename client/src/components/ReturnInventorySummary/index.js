@@ -51,7 +51,7 @@ const ReturnInventorySummary = {
             </p>
             {!isVisitor && (
               <router-link to={`/event-return/${eventId}`} class="ReturnInventorySummary__link">
-                <i class="fas fa-exchange-alt" />{' '}
+                <i class="fas fa-tasks" />{' '}
                 {__('page-events.do-or-terminate-return-inventory')}
               </router-link>
             )}
@@ -72,7 +72,7 @@ const ReturnInventorySummary = {
               </ul>
             )}
             <router-link to={`/event-return/${eventId}`} class="ReturnInventorySummary__link">
-              <i class="fas fa-exchange-alt" />{' '}
+              <i class="fas fa-tasks" />{' '}
               {__('page-events.view-return-inventory')}
             </router-link>
           </div>

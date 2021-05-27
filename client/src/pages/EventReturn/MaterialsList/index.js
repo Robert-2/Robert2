@@ -12,15 +12,11 @@ export default {
   },
   computed: {
     isAllReturned() {
-      return this.quantities.every(({ out, returned }) => (
-        out === returned
-      ));
+      return this.quantities.every(({ out, returned }) => out === returned);
     },
 
     hasBroken() {
-      return this.quantities.some(({ broken }) => (
-        broken > 0
-      ));
+      return this.quantities.some(({ broken }) => broken > 0);
     },
   },
   methods: {

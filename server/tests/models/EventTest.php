@@ -68,7 +68,7 @@ final class EventTest extends ModelTestCase
                 'is_confirmed' => false,
                 'location' => "Lyon",
                 'is_billable' => true,
-                'is_return_inventory_done' => false,
+                'is_return_inventory_done' => true,
                 'created_at' => null,
                 'updated_at' => null,
                 'deleted_at' => null,
@@ -88,6 +88,17 @@ final class EventTest extends ModelTestCase
         $this->assertCount(1, $result);
         $this->assertEquals('DBXPA2', $result[0]['reference']);
         $this->assertEquals(1, $result[0]['missing_quantity']);
+    }
+
+    public function testHasNotReturnedMaterials(): void
+    {
+        // - Event #1 does not have material not returned
+        $result = Event::hasNotReturnedMaterials(1);
+        $this->assertFalse($result);
+
+        // - Event #2 have some materials not returned
+        $result = Event::hasNotReturnedMaterials(2);
+        $this->assertTrue($result);
     }
 
     public function testGetParks(): void

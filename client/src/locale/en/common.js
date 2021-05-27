@@ -45,10 +45,10 @@ export default {
   'locked': "locked",
 
   'save': "Save",
+  'save-draft': "Save draft",
   'add': "Add",
   'saving': "Saving...",
   'saved': "{entity} saved.",
-  'terminate': "Terminate",
   'choose-date': "Choose this date",
   'reset-date': "Reset date",
   'actions': "Actions",
