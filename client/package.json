@@ -13,6 +13,7 @@
         "debounce": "1.2.1",
         "deep-freeze-strict": "1.1.1",
         "js-cookie": "2.2.1",
+        "lodash.times": "4.3.2",
         "moment": "2.29.1",
         "sweetalert2": "10.16.7",
         "v-tooltip": "2.1.3",
