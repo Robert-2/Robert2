@@ -2459,6 +2459,9 @@ return [
     "endDateMustBeLater"
     => "La date de fin doit être postérieure à la date de début",
 
+    "eventCannotBeArchived"
+    => "Un événement ne peut pas être archivé si son inventaire de retour n'a pas encore été effectué !",
+
     "referenceAlreadyInUse"
     => "Cette référence est déjà utilisée.",
 

@@ -6,6 +6,7 @@ describe('getMainIcon', () => {
       isPast: false,
       isCurrent: false,
       isConfirmed: false,
+      isArchived: false,
       isInventoryDone: false,
       hasNotReturnedMaterials: false,
     };
@@ -18,6 +19,7 @@ describe('getMainIcon', () => {
       isPast: false,
       isCurrent: false,
       isConfirmed: true,
+      isArchived: false,
       isInventoryDone: false,
       hasNotReturnedMaterials: false,
     };
@@ -30,6 +32,7 @@ describe('getMainIcon', () => {
       isPast: true,
       isCurrent: false,
       isConfirmed: false,
+      isArchived: false,
       isInventoryDone: false,
       hasNotReturnedMaterials: false,
     };
@@ -42,6 +45,7 @@ describe('getMainIcon', () => {
       isPast: true,
       isCurrent: false,
       isConfirmed: true,
+      isArchived: false,
       isInventoryDone: false,
       hasNotReturnedMaterials: false,
     };
@@ -54,6 +58,7 @@ describe('getMainIcon', () => {
       isPast: true,
       isCurrent: false,
       isConfirmed: true,
+      isArchived: false,
       isInventoryDone: true,
       hasNotReturnedMaterials: false,
     };
@@ -66,6 +71,7 @@ describe('getMainIcon', () => {
       isPast: true,
       isCurrent: false,
       isConfirmed: true,
+      isArchived: false,
       isInventoryDone: true,
       hasNotReturnedMaterials: true,
     };
@@ -78,10 +84,24 @@ describe('getMainIcon', () => {
       isPast: true,
       isCurrent: false,
       isConfirmed: true,
+      isArchived: false,
       isInventoryDone: false,
       hasNotReturnedMaterials: false,
     };
     const result = getMainIcon(formattedEvent);
     expect(result).toBe('clock');
+  });
+
+  test('When event is archived', () => {
+    const formattedEvent = {
+      isPast: false,
+      isCurrent: false,
+      isConfirmed: false,
+      isArchived: true,
+      isInventoryDone: false,
+      hasNotReturnedMaterials: false,
+    };
+    const result = getMainIcon(formattedEvent);
+    expect(result).toEqual('box');
   });
 });

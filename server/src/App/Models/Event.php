@@ -43,6 +43,7 @@ class Event extends BaseModel
             'start_date' => V::notEmpty()->date(),
             'end_date' => V::callback([$this, 'checkEndDate']),
             'is_confirmed' => V::notOptional()->boolType(),
+            'is_archived' => V::callback([$this, 'checkIsArchived']),
             'location' => V::optional(V::length(2, 64)),
             'is_billable' => V::optional(V::boolType()),
             'is_return_inventory_done' => V::optional(V::boolType()),
@@ -70,6 +71,29 @@ class Event extends BaseModel
         $endDate = new \DateTime($this->end_date);
 
         return $startDate < $endDate ?: 'endDateMustBeLater';
+    }
+
+    public function checkIsArchived($value)
+    {
+        if (!$value) {
+            return true;
+        }
+
+        $boolChecker = V::notOptional()->boolType();
+        if (!$boolChecker->validate($value)) {
+            return false;
+        }
+
+        $dateChecker = V::notEmpty()->date();
+        if (!$dateChecker->validate($this->end_date)) {
+            return false;
+        }
+
+        $now = new \DateTime();
+        $endDate = new \DateTime($this->end_date);
+        $isPastAndInventoryDone = $endDate < $now && (bool)$this->is_return_inventory_done;
+
+        return $isPastAndInventoryDone ?: 'eventCannotBeArchived';
     }
 
     // ——————————————————————————————————————————————————————
@@ -163,6 +187,7 @@ class Event extends BaseModel
         'start_date' => 'string',
         'end_date' => 'string',
         'is_confirmed' => 'boolean',
+        'is_archived' => 'boolean',
         'location' => 'string',
         'is_billable' => 'boolean',
         'is_return_inventory_done' => 'boolean',
@@ -351,6 +376,7 @@ class Event extends BaseModel
         'start_date',
         'end_date',
         'is_confirmed',
+        'is_archived',
         'location',
         'is_billable',
         'is_return_inventory_done',
