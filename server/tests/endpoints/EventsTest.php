@@ -834,6 +834,7 @@ final class EventsTest extends ApiTestCase
             'quantity' => 2,
             'quantity_returned' => 2,
             'quantity_broken' => 1,
+            'units' => [],
         ];
         $this->assertEquals($expectedFirst, $response['materials'][0]['pivot']);
 
@@ -844,6 +845,7 @@ final class EventsTest extends ApiTestCase
             'quantity' => 3,
             'quantity_returned' => 2,
             'quantity_broken' => 0,
+            'units' => [],
         ];
         $this->assertEquals($expectedSecond, $response['materials'][1]['pivot']);
     }
@@ -885,6 +887,7 @@ final class EventsTest extends ApiTestCase
             'quantity' => 2,
             'quantity_returned' => 2,
             'quantity_broken' => 1,
+            'units' => [],
         ];
         $this->assertEquals($expectedFirst, $response['materials'][0]['pivot']);
         $this->assertEquals(1, $response['materials'][0]['out_of_order_quantity']);
@@ -896,6 +899,7 @@ final class EventsTest extends ApiTestCase
             'quantity' => 3,
             'quantity_returned' => 3,
             'quantity_broken' => 0,
+            'units' => [],
         ];
         $this->assertEquals($expectedSecond, $response['materials'][1]['pivot']);
         $this->assertEquals(1, $response['materials'][1]['out_of_order_quantity']);

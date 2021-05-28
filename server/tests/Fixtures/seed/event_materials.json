@@ -83,6 +83,7 @@
         "id": 11,
         "event_id": 4,
         "material_id": 7,
+        "quantity": 3,
         "quantity_returned": 0,
         "quantity_broken": 0
     },

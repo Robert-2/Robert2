@@ -241,33 +241,35 @@ final class MaterialTest extends ModelTestCase
         $results = $Material->Events;
         $this->assertCount(3, $results);
         $this->assertEquals([
-            'id'           => 2,
-            'title'        => 'Second événement',
-            'start_date'   => '2018-12-18 00:00:00',
-            'end_date'     => '2018-12-19 23:59:59',
-            'location'     => 'Lyon',
+            'id' => 2,
+            'title' => 'Second événement',
+            'start_date' => '2018-12-18 00:00:00',
+            'end_date' => '2018-12-19 23:59:59',
+            'location' => 'Lyon',
             'is_confirmed' => false,
-            'pivot'        => [
-                'id'          => 4,
+            'is_return_inventory_done' => true,
+            'pivot' => [
+                'id' => 4,
                 'material_id' => 1,
-                'event_id'    => 2,
-                'quantity'    => 3,
-                'units'       => [],
+                'event_id' => 2,
+                'quantity' => 3,
+                'units' => [],
             ],
         ], $results[1]);
         $this->assertEquals([
-            'id'           => 1,
-            'title'        => 'Premier événement',
-            'start_date'   => '2018-12-17 00:00:00',
-            'end_date'     => '2018-12-18 23:59:59',
-            'location'     => 'Gap',
+            'id' => 1,
+            'title' => 'Premier événement',
+            'start_date' => '2018-12-17 00:00:00',
+            'end_date' => '2018-12-18 23:59:59',
+            'location' => 'Gap',
             'is_confirmed' => false,
-            'pivot'        => [
-                'id'          => 1,
+            'is_return_inventory_done' => true,
+            'pivot' => [
+                'id' => 1,
                 'material_id' => 1,
-                'event_id'    => 1,
-                'quantity'    => 1,
-                'units'       => [],
+                'event_id' => 1,
+                'quantity' => 1,
+                'units' => [],
             ],
         ], $results[2]);
     }
