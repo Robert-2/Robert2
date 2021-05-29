@@ -4,16 +4,39 @@ const getTimelineEventI18nStatuses = (formattedEvent) => {
     isCurrent,
     isConfirmed,
     isInventoryDone,
+    isArchived,
     hasMissingMaterials,
     hasNotReturnedMaterials,
   } = formattedEvent;
 
   const eventStatuses = [];
 
+  if (isPast && hasNotReturnedMaterials) {
+    eventStatuses.push({
+      icon: 'exclamation-triangle',
+      i18nKey: 'this-event-has-not-returned-materials',
+    });
+  }
+
+  if (isArchived) {
+    eventStatuses.push({
+      icon: 'box',
+      i18nKey: 'this-event-is-archived',
+    });
+    return eventStatuses;
+  }
+
   if (isPast && !isConfirmed) {
     eventStatuses.push({
       icon: 'history',
       i18nKey: 'this-event-is-past',
+    });
+  }
+
+  if (!isPast && !isConfirmed) {
+    eventStatuses.push({
+      icon: 'question',
+      i18nKey: 'this-event-is-not-confirmed',
     });
   }
 
@@ -42,13 +65,6 @@ const getTimelineEventI18nStatuses = (formattedEvent) => {
     eventStatuses.push({
       icon: 'exclamation-triangle',
       i18nKey: 'this-event-needs-its-return-inventory',
-    });
-  }
-
-  if (isPast && hasNotReturnedMaterials) {
-    eventStatuses.push({
-      icon: 'exclamation-triangle',
-      i18nKey: 'this-event-has-not-returned-materials',
     });
   }
 

@@ -56,7 +56,7 @@
         {{ $t('print') }}
       </a>
       <router-link
-        v-show="event.isPast && !isVisitor"
+        v-show="event.isPast && !event.isArchived && !isVisitor"
         :to="`/event-return/${event.id}`"
         v-slot="{ navigate }"
         custom
@@ -66,6 +66,25 @@
           {{ $t('return-inventory') }}
         </button>
       </router-link>
+      <button
+        v-show="!isVisitor && event.isInventoryDone"
+        v-if="!event.isArchived"
+        class="info"
+        @click="archiveEvent"
+      >
+        <i v-if="isArchiving" class="fas fa-circle-notch fa-spin" />
+        <i v-if="!isArchiving" class="fas fa-box" />
+        {{ $t('archive-event') }}
+      </button>
+      <button
+        v-show="!isVisitor && event.isInventoryDone"
+        v-if="event.isArchived"
+        @click="unarchiveEvent"
+      >
+        <i v-if="isArchiving" class="fas fa-circle-notch fa-spin" />
+        <i v-if="!isArchiving" class="fas fa-box" />
+        {{ $t('unarchive-event') }}
+      </button>
     </div>
     <button class="close" @click="$emit('close')">
       <i class="fas fa-times" />

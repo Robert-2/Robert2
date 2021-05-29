@@ -42,6 +42,11 @@ class EventController extends BaseController
         foreach ($data as $index => $event) {
             $data[$index]['has_missing_materials'] = null;
             $data[$index]['has_not_returned_materials'] = null;
+            $data[$index]['parks'] = $useMultipleParks ? Event::getParks($event['id']) : null;
+
+            if ($event['is_archived']) {
+                continue;
+            }
 
             $eventEndDate = new \DateTime($event['end_date']);
             if ($eventEndDate >= $today) {
@@ -50,8 +55,6 @@ class EventController extends BaseController
             } elseif ($event['is_return_inventory_done']) {
                 $data[$index]['has_not_returned_materials'] = Event::hasNotReturnedMaterials($event['id']);
             }
-
-            $data[$index]['parks'] = $useMultipleParks ? Event::getParks($event['id']) : null;
         }
 
         return $response->withJson([ 'data' => $data ]);
