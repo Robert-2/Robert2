@@ -322,13 +322,10 @@ class MaterialController extends BaseController
         $data = [];
         $today = (new \DateTime())->setTime(0, 0, 0);
         foreach ($material->events as $event) {
-            $eventEndDate = new \DateTime($event['end_date']);
-            if ($eventEndDate < $today && $event['is_return_inventory_done']) {
-                // TODO: ne mettre ce champ à true que si LE MATÉRIEL demandé n'a pas été retourné.
-                $event['has_not_returned_materials'] = Event::hasNotReturnedMaterials($event['id']);
-            }
-
+            $event['has_missing_materials'] = null;
+            $event['has_not_returned_materials'] = null;
             $event['parks'] = null;
+
             if ($useMultipleParks) {
                 $event['parks'] = Event::getParks($event['id']);
 
@@ -338,6 +335,18 @@ class MaterialController extends BaseController
                     continue;
                 }
             }
+
+            if ($event['is_archived']) {
+                $data[] = $event;
+                continue;
+            }
+
+            $eventEndDate = new \DateTime($event['end_date']);
+            if ($eventEndDate < $today && $event['is_return_inventory_done']) {
+                // TODO: ne mettre ce champ à true que si c'est LE matériel actuel ($id) qui n'a pas été retourné.
+                $event['has_not_returned_materials'] = Event::hasNotReturnedMaterials($event['id']);
+            }
+
             $data[] = $event;
         }
 

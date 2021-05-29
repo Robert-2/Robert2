@@ -48,16 +48,8 @@ class EventController extends BaseController
         foreach ($events as $event) {
             $event['has_missing_materials'] = null;
             $event['has_not_returned_materials'] = null;
-
-            $eventEndDate = new \DateTime($event['end_date']);
-            if ($eventEndDate >= $today) {
-                $eventMissingMaterials = Event::getMissingMaterials($event['id']);
-                $event['has_missing_materials'] = !empty($eventMissingMaterials);
-            } elseif ($event['is_return_inventory_done']) {
-                $event['has_not_returned_materials'] = Event::hasNotReturnedMaterials($event['id']);
-            }
-
             $event['parks'] = null;
+
             if ($useMultipleParks) {
                 $event['parks'] = Event::getParks($event['id']);
 
@@ -67,6 +59,20 @@ class EventController extends BaseController
                     continue;
                 }
             }
+
+            if ($event['is_archived']) {
+                $data[] = $event;
+                continue;
+            }
+
+            $eventEndDate = new \DateTime($event['end_date']);
+            if ($eventEndDate >= $today) {
+                $eventMissingMaterials = Event::getMissingMaterials($event['id']);
+                $event['has_missing_materials'] = !empty($eventMissingMaterials);
+            } elseif ($event['is_return_inventory_done']) {
+                $event['has_not_returned_materials'] = Event::hasNotReturnedMaterials($event['id']);
+            }
+
             $data[] = $event;
         }
 

@@ -247,6 +247,7 @@ final class MaterialTest extends ModelTestCase
             'end_date' => '2018-12-19 23:59:59',
             'location' => 'Lyon',
             'is_confirmed' => false,
+            'is_archived' => false,
             'is_return_inventory_done' => true,
             'pivot' => [
                 'id' => 4,
@@ -263,6 +264,7 @@ final class MaterialTest extends ModelTestCase
             'end_date' => '2018-12-18 23:59:59',
             'location' => 'Gap',
             'is_confirmed' => false,
+            'is_archived' => false,
             'is_return_inventory_done' => true,
             'pivot' => [
                 'id' => 1,

@@ -65,6 +65,8 @@ export default {
     'this-event-is-past': "This event is past.",
     'this-event-is-currently-running': "This event is currently running.",
     'this-event-is-confirmed': "This event is confirmed.",
+    'this-event-is-not-confirmed': "This event is not confirmed yet!",
+    'this-event-is-archived': "This event is archived.",
     'this-event-is-locked': "This event is locked because it's confirmed or its return inventory is done.",
     'this-event-has-missing-materials': "This event has missing materials.",
     'this-event-needs-its-return-inventory': "It's necessary to make the return inventory of this event!",

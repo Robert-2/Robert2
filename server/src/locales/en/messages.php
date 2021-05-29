@@ -2457,6 +2457,9 @@ return [
     "endDateMustBeLater"
     => "End date must be later than start date",
 
+    "eventCannotBeArchived"
+    => "An event cannot be archived if its return inventory is not done!",
+
     "referenceAlreadyInUse"
     => "This reference is already in use.",
 

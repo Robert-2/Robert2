@@ -56,8 +56,16 @@ class User extends BaseModel
 
     public function Events()
     {
+        $selectFields = [
+            'events.id',
+            'title',
+            'start_date',
+            'end_date',
+            'is_confirmed',
+            'is_archived',
+        ];
         return $this->hasMany('Robert2\API\Models\Event')
-            ->select(['events.id', 'title', 'start_date', 'end_date', 'is_confirmed'])
+            ->select($selectFields)
             ->orderBy('start_date');
     }
 

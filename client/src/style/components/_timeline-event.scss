@@ -33,6 +33,15 @@
     }
   }
 
+  &--archived {
+    background-color: $calendar-event-archived-color !important;
+    color: $calendar-event-archived-text-color !important;
+
+    &.vis-selected {
+      background-color: lighten($calendar-event-archived-color, 5%) !important;
+    }
+  }
+
   &--current {
     background-size: 40px 40px;
     background-image: linear-gradient(

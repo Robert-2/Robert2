@@ -34,6 +34,10 @@
     .fa-exclamation-triangle {
       color: $text-danger-color;
     }
+
+    .fas + .fas {
+      margin-left: $content-padding-small-horizontal;
+    }
   }
 
   &__main {

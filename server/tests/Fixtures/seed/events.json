@@ -7,6 +7,7 @@
         "start_date": "2018-12-17 00:00:00",
         "end_date": "2018-12-18 23:59:59",
         "is_confirmed": false,
+        "is_archived": false,
         "location": "Gap",
         "is_billable": true,
         "is_return_inventory_done": true
@@ -19,6 +20,7 @@
         "start_date": "2018-12-18 00:00:00",
         "end_date": "2018-12-19 23:59:59",
         "is_confirmed": false,
+        "is_archived": false,
         "location": "Lyon",
         "is_billable": true,
         "is_return_inventory_done": true
@@ -31,6 +33,7 @@
         "start_date": "2018-12-15 00:00:00",
         "end_date": "2018-12-16 23:59:59",
         "is_confirmed": false,
+        "is_archived": true,
         "location": "Brousse",
         "is_billable": false,
         "is_return_inventory_done": false
@@ -43,6 +46,7 @@
         "start_date": "2019-03-01 00:00:00",
         "end_date": "2019-04-10 23:59:59",
         "is_confirmed": false,
+        "is_archived": false,
         "location": "Moon",
         "is_billable": false,
         "is_return_inventory_done": false
@@ -55,6 +59,7 @@
         "start_date": "2020-01-01 00:00:00",
         "end_date": "2020-01-01 23:59:59",
         "is_confirmed": false,
+        "is_archived": false,
         "location": "Saint-Jean-la-Forêt",
         "is_billable": false,
         "is_return_inventory_done": false
@@ -67,6 +72,7 @@
         "start_date": "2019-03-15 00:00:00",
         "end_date": "2019-04-01 23:59:59",
         "is_confirmed": false,
+        "is_archived": false,
         "location": "La Clusaz",
         "is_billable": false,
         "is_return_inventory_done": false

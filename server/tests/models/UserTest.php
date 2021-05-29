@@ -322,6 +322,7 @@ final class UserTest extends ModelTestCase
                 'start_date' => '2018-12-15 00:00:00',
                 'end_date' => '2018-12-16 23:59:59',
                 'is_confirmed' => false,
+                'is_archived' => true,
             ],
             [
                 'id' => 1,
@@ -329,6 +330,7 @@ final class UserTest extends ModelTestCase
                 'start_date' => '2018-12-17 00:00:00',
                 'end_date' => '2018-12-18 23:59:59',
                 'is_confirmed' => false,
+                'is_archived' => false,
             ],
             [
                 'id' => 2,
@@ -336,6 +338,7 @@ final class UserTest extends ModelTestCase
                 'start_date' => '2018-12-18 00:00:00',
                 'end_date' => '2018-12-19 23:59:59',
                 'is_confirmed' => false,
+                'is_archived' => false,
             ],
             [
                 'id' => 4,
@@ -343,20 +346,23 @@ final class UserTest extends ModelTestCase
                 'start_date' => '2019-03-01 00:00:00',
                 'end_date' => '2019-04-10 23:59:59',
                 'is_confirmed' => false,
+                'is_archived' => false,
             ],
             [
-                "id"           => 6,
-                "title"        => "Un événement sans inspiration",
-                "start_date"   => "2019-03-15 00:00:00",
-                "end_date"     => "2019-04-01 23:59:59",
+                "id" => 6,
+                "title" => "Un événement sans inspiration",
+                "start_date" => "2019-03-15 00:00:00",
+                "end_date" => "2019-04-01 23:59:59",
                 "is_confirmed" => false,
+                'is_archived' => false,
             ],
             [
-                'id'           => 5,
-                'title'        => 'Kermesse de l\'école des trois cailloux',
-                'start_date'   => '2020-01-01 00:00:00',
-                'end_date'     => '2020-01-01 23:59:59',
+                'id' => 5,
+                'title' => 'Kermesse de l\'école des trois cailloux',
+                'start_date' => '2020-01-01 00:00:00',
+                'end_date' => '2020-01-01 23:59:59',
                 'is_confirmed' => false,
+                'is_archived' => false,
             ]
         ], $results);
     }

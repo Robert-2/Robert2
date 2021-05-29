@@ -1173,7 +1173,10 @@ final class MaterialsTest extends ApiTestCase
                 'end_date' => '2019-04-10 23:59:59',
                 'location' => 'Moon',
                 'is_confirmed' => false,
+                'is_archived' => false,
                 'is_return_inventory_done' => false,
+                'has_missing_materials' => null,
+                'has_not_returned_materials' => null,
                 'parks' => [2, 1],
                 'pivot' => [
                     'id' => 9,
@@ -1190,7 +1193,9 @@ final class MaterialsTest extends ApiTestCase
                 'end_date' => '2018-12-19 23:59:59',
                 'location' => 'Lyon',
                 'is_confirmed' => false,
+                'is_archived' => false,
                 'is_return_inventory_done' => true,
+                'has_missing_materials' => null,
                 'has_not_returned_materials' => true,
                 'parks' => [1],
                 'pivot' => [
@@ -1208,7 +1213,9 @@ final class MaterialsTest extends ApiTestCase
                 'end_date' => '2018-12-18 23:59:59',
                 'location' => 'Gap',
                 'is_confirmed' => false,
+                'is_archived' => false,
                 'is_return_inventory_done' => true,
+                'has_missing_materials' => null,
                 'has_not_returned_materials' => false,
                 'parks' => [1],
                 'pivot' => [

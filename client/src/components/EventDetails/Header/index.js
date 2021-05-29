@@ -7,6 +7,7 @@ export default {
   data() {
     return {
       isConfirming: false,
+      isArchiving: false,
       fromToDates: {},
     };
   },
@@ -79,6 +80,30 @@ export default {
         .finally(() => {
           this.isConfirming = false;
         });
+    },
+
+    archiveEvent() {
+      this.setEventArchived(true);
+    },
+
+    unarchiveEvent() {
+      this.setEventArchived(false);
+    },
+
+    async setEventArchived(isArchived) {
+      this.isArchiving = true;
+
+      const { id } = this.$props.event;
+
+      try {
+        const url = `${this.$route.meta.resource}/${id}`;
+        const { data } = await this.$http.put(url, { id, is_archived: isArchived });
+        this.$emit('saved', data);
+      } catch (error) {
+        this.$emit('error', error);
+      } finally {
+        this.isArchiving = false;
+      }
     },
   },
 };

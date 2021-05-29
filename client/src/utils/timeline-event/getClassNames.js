@@ -3,6 +3,7 @@ const getTimelineEventClassNames = (formattedEvent) => {
     isPast,
     isCurrent,
     isConfirmed,
+    isArchived,
     hasMissingMaterials,
     isInventoryDone,
     hasNotReturnedMaterials,
@@ -16,6 +17,10 @@ const getTimelineEventClassNames = (formattedEvent) => {
     if (isConfirmed && !isInventoryDone) {
       classNames.push('timeline-event--no-return-inventory');
     }
+  }
+
+  if (isArchived) {
+    classNames.push('timeline-event--archived');
   }
 
   if (isCurrent) {

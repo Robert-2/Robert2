@@ -29,9 +29,9 @@ describe('MaterialView/Availabilities/utils.formatEvent', () => {
       '<strong>Test event</strong>, used-count'
       + '\n\n<i class="fas fa-map-marker-alt"></i> TestVille'
       + '\n<i class="fas fa-clock"></i> from-date-to-date'
-      + '\n\n<i class="fas fa-lock"></i> page-calendar.this-event-is-locked'
-      + '\n<i class="fas fa-exclamation-triangle"></i> page-calendar.this-event-needs-its-return-inventory'
-      + '\n<i class="fas fa-exclamation-triangle"></i> page-calendar.this-event-has-not-returned-materials',
+      + '\n\n<i class="fas fa-exclamation-triangle"></i> page-calendar.this-event-has-not-returned-materials'
+      + '\n<i class="fas fa-lock"></i> page-calendar.this-event-is-locked'
+      + '\n<i class="fas fa-exclamation-triangle"></i> page-calendar.this-event-needs-its-return-inventory',
     );
     expect(result.content).toBe(
       '<i class="fas fa-clock"></i> <i class="fas fa-exclamation-triangle"></i> Test event (used-count)',
