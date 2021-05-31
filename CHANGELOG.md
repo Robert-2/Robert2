@@ -11,6 +11,10 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Utilise des icônes cohérents pour le statut des événements dans le calendrier et la fenêtre d'événement.
 - Ajoute la possibilité d'archiver un événement, s'il est passé et que son inventaire de retour a été effectué (#152) (👏 @adamlarat).
 
+## 0.13.2 (2021-05-31)
+
+- Corrige l'affichage de la valeur de remplacement du matériel dans les fiches de sortie en mode "flat" (#156).
+
 ## 0.13.1 (2021-05-25)
 
 - Corrige le fonctionnement des filtres à l'étape 4 de l'edition d'un événement.

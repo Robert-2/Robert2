@@ -235,6 +235,39 @@ class EventData
         return array_values($parksMaterials);
     }
 
+    public function getMaterialsFlat(bool $withHidden = false)
+    {
+        $flatMaterials = [];
+        foreach ($this->materials as $material) {
+            $isHidden = $material['is_hidden_on_bill'];
+            $price = $material['rental_price'];
+            if ($isHidden && $price === 0.0 && !$withHidden) {
+                continue;
+            }
+
+            $withPark = count($this->parks) > 1 && !empty($material['park_id']);
+
+            $reference = $material['reference'];
+            $quantity = $material['pivot']['quantity'];
+            $replacementPrice = $material['replacement_price'];
+
+            $flatMaterials[$reference] = [
+                'reference' => $reference,
+                'name' => $material['name'],
+                'park' => $withPark ? $this->getParkName($material['park_id']) : null,
+                'quantity' => $quantity,
+                'rentalPrice' => $price,
+                'replacementPrice' => $replacementPrice,
+                'total' => $price * $quantity,
+                'totalReplacementPrice' => $replacementPrice * $quantity,
+            ];
+        }
+
+        ksort($flatMaterials, SORT_NATURAL | SORT_FLAG_CASE);
+
+        return $flatMaterials;
+    }
+
     public function getMaterials()
     {
         $materials = [];
