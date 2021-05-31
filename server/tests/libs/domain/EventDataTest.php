@@ -260,6 +260,44 @@ final class EventDataTest extends ModelTestCase
         $this->assertEquals($expected, $result);
     }
 
+    public function testGetMaterialsFlat()
+    {
+        $result = $this->EventData->getMaterialsFlat();
+        $expected = [
+            'CL3' => [
+                'name' => 'Console Yamaha CL3',
+                'reference' => 'CL3',
+                'park' => 'default',
+                'quantity' => 1,
+                'rentalPrice' => 300.0,
+                'total' => 300.0,
+                'replacementPrice' => 19400.0,
+                'totalReplacementPrice' => 19400.0,
+            ],
+            'DBXPA2' => [
+                'name' => 'Processeur DBX PA2',
+                'reference' => 'DBXPA2',
+                'park' => 'default',
+                'quantity' => 1,
+                'rentalPrice' => 25.5,
+                'total' => 25.5,
+                'replacementPrice' => 349.9,
+                'totalReplacementPrice' => 349.9,
+            ],
+            'SDS-6-01' => [
+                'name' => 'Showtec SDS-6',
+                'reference' => 'SDS-6-01',
+                'park' => 'default',
+                'quantity' => 1,
+                'rentalPrice' => 15.95,
+                'total' => 15.95,
+                'replacementPrice' => 59.0,
+                'totalReplacementPrice' => 59.0,
+            ],
+        ];
+        $this->assertEquals($expected, $result);
+    }
+
     public function testGetMaterials()
     {
         $result = $this->EventData->getMaterials();

@@ -6,6 +6,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 
 ## 0.14.0 (UNRELEASED)
 
+- Corrige l'affichage de la valeur de remplacement du matériel dans les fiches de sortie en mode "flat" (#156).
 - Ajoute la possibilité de vérifier que tout le matériel est bien retourné à la fin d'un événement (#4).
 - Simplifie la signification des couleurs des événements dans le calendrier.
 - Utilise des icônes cohérents pour le statut des événements dans le calendrier et la fenêtre d'événement.
