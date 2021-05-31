@@ -1,3 +1,4 @@
+import moment from 'moment';
 import store from '@/store';
 import Alert from '@/components/Alert';
 import Config from '@/config/globalConfig';
@@ -15,6 +16,9 @@ export default {
         'serial_number',
         'park',
         'is_broken',
+        'is_lost',
+        'material_unit_state_id',
+        'purchase_date',
         'actions',
       ],
       options: {
@@ -25,12 +29,18 @@ export default {
           'reference',
           'serial_number',
           'is_broken',
+          'material_unit_state_id',
+          'purchase_date',
+          'is_lost',
         ],
         headings: {
           reference: this.$t('reference'),
           serial_number: this.$t('serial-number'),
           park: this.$t('park'),
           is_broken: this.$t('is-broken'),
+          is_lost: this.$t('is-lost'),
+          material_unit_state_id: this.$t('state'),
+          purchase_date: this.$t('purchase-date'),
           actions: '',
         },
       },
@@ -38,10 +48,15 @@ export default {
   },
   mounted() {
     store.dispatch('parks/fetch');
+    store.dispatch('unitStates/fetch');
   },
   methods: {
     getParkName(parkId) {
       return store.getters['parks/parkName'](parkId);
+    },
+
+    getUnitStateName(unitStateId) {
+      return store.getters['unitStates/unitStateName'](unitStateId) || '?';
     },
 
     getFileUrl(unitId) {
@@ -69,6 +84,13 @@ export default {
       } finally {
         this.deleteRequests.delete(unitId);
       }
+    },
+
+    formatDate(date) {
+      if (!date) {
+        return null;
+      }
+      return moment(date).format('L');
     },
   },
 };

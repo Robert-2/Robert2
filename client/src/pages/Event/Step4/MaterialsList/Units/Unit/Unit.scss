@@ -29,13 +29,15 @@
       width: 5rem;
     }
 
-    &--is-broken {
-      width: 15rem;
+    &--is-broken,
+    &--is-lost {
+      width: 100px;
       text-align: center;
     }
 
-    &--reference {
-      width: 30%
+    &--park,
+    &--state {
+      width: 20%;
     }
   }
 
@@ -46,6 +48,13 @@
   &--broken {
     .MaterialsListUnit__col--is-broken {
       color: $text-warning-color !important;
+    }
+  }
+
+  &--lost {
+    .MaterialsListUnit__col--is-lost {
+      color: $text-danger-color !important;
+      font-weight: 600;
     }
   }
 

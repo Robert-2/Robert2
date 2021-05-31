@@ -28,13 +28,15 @@
       width: 5rem;
     }
 
-    &--reference {
-      width: 30%
+    &--is-broken,
+    &--is-lost {
+      width: 100px;
+      text-align: center !important;
     }
 
-    &--is-broken {
-      width: 15rem;
-      text-align: center !important;
+    &--park,
+    &--state {
+      width: 20%;
     }
   }
 

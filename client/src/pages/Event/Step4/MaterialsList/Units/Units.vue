@@ -11,6 +11,12 @@
             <th class="MaterialsListUnits__heading MaterialsListUnits__heading--is-broken">
               {{ $t('is-broken') }}
             </th>
+            <th class="MaterialsListUnits__heading MaterialsListUnits__heading--is-lost">
+              {{ $t('is-lost') }}
+            </th>
+            <th class="MaterialsListUnits__heading MaterialsListUnits__heading--state">
+              {{ $t('state') }}
+            </th>
             <th class="MaterialsListUnits__heading MaterialsListUnits__heading--park">
               {{ $t('park') }}
             </th>
