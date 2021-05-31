@@ -290,7 +290,7 @@ class Event extends BaseModel
         } elseif ($materialDisplayMode === 'parks' && count($parks) > 1) {
             $materialList = $EventData->getMaterialByParks(true);
         } else {
-            $materialList = $EventData->getMaterials();
+            $materialList = $EventData->getMaterialsFlat(true);
         }
 
         $data = [
