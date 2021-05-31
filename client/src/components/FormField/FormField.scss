@@ -1,9 +1,11 @@
+@use 'sass:math';
+
 .FormField {
   flex: 1;
 
   &__label {
     display: block;
-    padding: ($input-padding-vertical / 1.8) 0;
+    padding: math.div($input-padding-vertical, 1.8) 0;
 
     &__required {
       color: $text-danger-color;

@@ -14,6 +14,7 @@
   font-size: 1.5rem;
 }
 
+.swal2-html-container,
 .swal2-content {
   color: $text-base-color;
   white-space: pre-line;
@@ -51,6 +52,7 @@
 
   &:hover, &:focus {
     background-color: lighten($bg-color-button-info, 8%) !important;
+    box-shadow: none !important;
   }
 
   &:active {
@@ -103,6 +105,7 @@
 
   &:hover, &:focus {
     background-color: lighten($bg-color-button-default, 8%) !important;
+    box-shadow: none !important;
   }
 
   &:active {
