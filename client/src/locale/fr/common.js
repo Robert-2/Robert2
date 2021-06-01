@@ -246,6 +246,8 @@ export default {
   'parks': "Parcs",
   'technician': "Technicien",
 
+  'settings': "Paramètres",
+
   'this-feature-is-coming-soon': "Cette fonctionnalité est en cours de développement.",
 
   'french': "Français",
