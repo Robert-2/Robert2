@@ -369,6 +369,13 @@ export default {
 
   'page-settings': {
     'title': "Application settings",
+    'material-units': {
+      'title': "Material units",
+      'help': "",
+      'states': "States of material units",
+      'add': "Add a state",
+      'confirm-permanently-delete': "Do you really want to delete this material unit state?",
+    },
   },
 
   'page-estimate': {

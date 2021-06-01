@@ -1,0 +1,15 @@
+@import '../../../../themes/default';
+
+.MaterialUnitStateItem {
+  &__icon {
+    width: 30px;
+  }
+
+  &__name {
+    color: $text-base-color;
+  }
+
+  &__actions {
+    width: 80px;
+  }
+}

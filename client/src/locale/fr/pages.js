@@ -371,6 +371,13 @@ export default {
 
   'page-settings': {
     'title': "Paramètres de l'application",
+    'material-units': {
+      'title': "Unités de matériel",
+      'help': "",
+      'states': "États des unités de matériel",
+      'add': "Ajouter un état",
+      'confirm-permanently-delete': "Voulez-vous vraiment supprimer définitivement cet état d'unité\u00a0?",
+    },
   },
 
   'page-estimate': {

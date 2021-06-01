@@ -1,0 +1,25 @@
+@import '../../../themes/default';
+
+.MaterialUnitSettings {
+  display: flex;
+  flex-wrap: wrap;
+
+  &__content {
+    flex: 0 1 350px;
+    margin: 0 $content-padding-large-horizontal $content-padding-large-vertical 0;
+  }
+
+  &__help {
+    flex: 1
+  }
+
+  &__title {
+    margin: 0 0 $content-padding-large-horizontal;
+  }
+
+  &__states {
+    width: 100%;
+    margin-bottom: $content-padding-large-horizontal;
+    line-height: 2.8;
+  }
+}
