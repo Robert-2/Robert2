@@ -24,6 +24,7 @@ import Technician from '@/pages/Technician/Technician.vue';
 import Categories from '@/pages/Categories/Categories.vue';
 import Parks from '@/pages/Parks/Parks.vue';
 import Park from '@/pages/Park/Park.vue';
+import Settings from '@/pages/Settings/Settings.vue';
 
 Vue.use(Router);
 
@@ -52,13 +53,13 @@ const router = new Router({
       },
     },
     {
-      path: '/settings',
+      path: '/user-settings',
       name: 'user-settings',
       component: UserSettings,
       meta: {
         resource: 'users',
-        title: 'page-settings.title',
-        readableName: 'page-settings.title',
+        title: 'page-user-settings.title',
+        readableName: 'page-user-settings.title',
         requiresAuth: true,
         requiresGroups: ['admin', 'member', 'visitor'],
       },
@@ -359,6 +360,18 @@ const router = new Router({
         resource: 'parks',
         title: 'page-parks.edit-title',
         readableName: 'page-parks.edit',
+        requiresAuth: true,
+        requiresGroups: ['admin'],
+      },
+    },
+    {
+      path: '/settings',
+      name: 'settings',
+      component: Settings,
+      meta: {
+        resource: 'settings',
+        title: 'page-settings.title',
+        readableName: 'page-settings.title',
         requiresAuth: true,
         requiresGroups: ['admin'],
       },

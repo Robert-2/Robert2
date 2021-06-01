@@ -20,7 +20,7 @@
           {{$t('your-profile')}}
         </li>
       </router-link>
-      <router-link to="/settings" custom v-slot="{ navigate, isActive }">
+      <router-link to="/user-settings" custom v-slot="{ navigate, isActive }">
         <li
           @click="navigate"
           class="TopMenu__dropdown__item"

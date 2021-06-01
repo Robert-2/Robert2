@@ -29,7 +29,7 @@ export default {
     'saved': "Your profile was saved.",
   },
 
-  'page-settings': {
+  'page-user-settings': {
     'title': "Your settings",
     'help': "The « duration of a session » is the time allowed before you're automatically logged out.",
     'auth-token-validity-duration': "Max. duration of a session",
@@ -342,6 +342,10 @@ export default {
     'confirm-restore': "Do you really want to restore this tag?",
     'saved': "Tag saved.",
     'deleted': "Tag deleted.",
+  },
+
+  'page-settings': {
+    'title': "Application settings",
   },
 
   'page-estimate': {
