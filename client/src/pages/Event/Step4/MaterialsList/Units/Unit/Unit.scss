@@ -33,6 +33,7 @@
     &--is-lost {
       width: 100px;
       text-align: center;
+      color: $text-light-color !important;
     }
 
     &--park,
@@ -48,18 +49,44 @@
   &--broken {
     .MaterialsListUnit__col--is-broken {
       color: $text-warning-color !important;
+      font-weight: 600;
     }
   }
 
   &--lost {
-    .MaterialsListUnit__col--is-lost {
-      color: $text-danger-color !important;
-      font-weight: 600;
+    .MaterialsListUnit__col {
+      &--reference {
+        color: $text-danger-color !important;
+      }
+
+      &--is-lost {
+        color: $text-danger-color !important;
+        font-weight: 600;
+      }
+    }
+
+    &.MaterialsListUnit--selected {
+      .MaterialsListUnit__col {
+        border-top: 1px solid $text-danger-color !important;
+        border-bottom: 1px solid $text-danger-color !important;
+
+        &:first-child {
+          border-left: 1px solid $text-danger-color !important;
+        }
+
+        &:last-child {
+          border-right: 1px solid $text-danger-color !important;
+        }
+      }
     }
   }
 
   &--unavailable {
     opacity: .3;
+
+    &:not(.MaterialsListUnit--selected) {
+      cursor: default;
+    }
   }
 
   &--selected {

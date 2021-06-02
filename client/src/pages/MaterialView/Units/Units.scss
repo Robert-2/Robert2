@@ -8,10 +8,12 @@
 
   &__yes-warning {
     color: $text-warning-color;
+    font-weight: 600;
   }
 
   &__yes-danger {
     color: $text-danger-color;
+    font-weight: 600;
   }
 
   &__no-ok {

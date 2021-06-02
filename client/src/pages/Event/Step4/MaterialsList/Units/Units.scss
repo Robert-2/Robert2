@@ -40,6 +40,15 @@
     }
   }
 
+  &__mini-action-button,
+  &__mini-action-button:hover,
+  &__mini-action-button:focus,
+  &__mini-action-button:active {
+    background: none;
+    padding: 0 .2rem;
+    color: $text-nav-color;
+  }
+
   &__body {
     max-height: 350px;
     overflow-y: auto;
