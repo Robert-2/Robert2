@@ -31,6 +31,7 @@ return [
         '/events/{id:[0-9]+}/missing-materials[/]' => 'EventController:getMissingMaterials',
         '/bills/{id:[0-9]+}[/]' => 'BillController:getOne',
         '/estimates/{id:[0-9]+}[/]' => 'EstimateController:getOne',
+        '/settings[/]' => 'SettingController:getAll',
     ],
     'post' => [
         '/session[/]' => 'AuthController:loginWithForm',
@@ -72,6 +73,7 @@ return [
         '/events/restore/{id:[0-9]+}[/]' => 'EventController:restore',
         '/events/{id:[0-9]+}/return[/]' => 'EventController:updateMaterialReturn',
         '/events/{id:[0-9]+}/terminate[/]' => 'EventController:updateMaterialTerminate',
+        '/settings[/]' => 'SettingController:update',
     ],
     'delete' => [
         '/users/{id:[0-9]+}[/]' => 'UserController:delete',

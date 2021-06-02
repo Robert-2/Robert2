@@ -1,11 +1,11 @@
 import { Tabs, Tab } from 'vue-slim-tabs';
-import MaterialUnitSettings from './MaterialUnit';
+import EventSummarySettings from './EventSummary';
 
 export default {
   name: 'Settings',
   components: {
     Tabs,
     Tab,
-    MaterialUnitSettings,
+    EventSummarySettings,
   },
 };
