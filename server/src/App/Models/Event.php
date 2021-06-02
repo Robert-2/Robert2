@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Builder;
 use Robert2\API\Config\Config;
 use Robert2\API\Models\Material;
+use Robert2\API\Models\MaterialUnit;
 use Robert2\API\Models\Park;
 use Robert2\API\Models\Traits\WithPdf;
 use Robert2\Lib\Domain\EventData;
@@ -270,7 +271,13 @@ class Event extends BaseModel
         foreach ($eventMaterials as $material) {
             $availableQuantity = $material['remaining_quantity'];
             if ($material['is_unitary']) {
-                $availableQuantity = count($material['pivot']['units']);
+                $availableQuantity = 0;
+                foreach ($material['pivot']['units'] as $unitId) {
+                    $unit = MaterialUnit::find($unitId);
+                    if ($unit && !$unit->is_lost) {
+                        $availableQuantity += 1;
+                    }
+                }
             }
 
             $material['missing_quantity'] = $material['pivot']['quantity'] - $availableQuantity;

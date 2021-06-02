@@ -193,7 +193,7 @@ class Material extends BaseModel
     public function getStockQuantityAttribute($value)
     {
         if ($this->is_unitary) {
-            $value = $this->Units()->count();
+            $value = $this->Units()->where('is_lost', '!=', true)->count();
         }
         return $this->castAttribute('stock_quantity', $value);
     }
