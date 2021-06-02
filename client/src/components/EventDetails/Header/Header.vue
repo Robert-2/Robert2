@@ -34,7 +34,7 @@
       >
         <i v-if="isConfirming" class="fas fa-circle-notch fa-spin" />
         <i v-if="!isConfirming" class="fas fa-check" />
-        {{ $t('confirm') }}
+        {{ $t('confirm-event') }}
       </button>
       <button
         v-show="!isVisitor && !event.isPast"
@@ -44,7 +44,7 @@
       >
         <i v-if="isConfirming" class="fas fa-circle-notch fa-spin" />
         <i v-if="!isConfirming" class="fas fa-hourglass-half" />
-        {{ $t('set-back-on-hold') }}
+        {{ $t('unconfirm-event') }}
       </button>
       <a
         :href="eventSummaryPdfUrl"
