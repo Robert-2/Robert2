@@ -57,7 +57,7 @@ export default {
         .then(({ data }) => {
           this.materialEvents = data.map(formatTimelineEvent);
           this.materialEventsTimeline = data.map(
-            (event) => formatEvent(event, this.$t),
+            (event) => formatEvent(event, this.units, this.$t),
           );
           this.isLoading = false;
         })

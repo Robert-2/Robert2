@@ -17,12 +17,18 @@ describe('MaterialView/Availabilities/utils.formatEvent', () => {
         id: 1,
         material_id: 1,
         quantity: 3,
+        units: [1, 2, 3],
         quantity_returned: 1,
         quantity_broken: 0,
       },
     };
 
-    const result = formatEvent(rawEvent, (s) => s);
+    const units = [
+      { id: 1, is_broken: false, is_lost: false },
+      { id: 2, is_broken: false, is_lost: false },
+      { id: 3, is_broken: false, is_lost: true },
+    ];
+    const result = formatEvent(rawEvent, units, (s) => s);
     expect(result).toBeDefined();
 
     expect(result.title).toBe(
@@ -31,6 +37,7 @@ describe('MaterialView/Availabilities/utils.formatEvent', () => {
       + '\n<i class="fas fa-clock"></i> from-date-to-date'
       + '\n\n<i class="fas fa-exclamation-triangle"></i> page-calendar.this-event-has-not-returned-materials'
       + '\n<i class="fas fa-lock"></i> page-calendar.this-event-is-locked'
+      + '\n<i class="fas fa-exclamation-triangle"></i> page-calendar.this-event-has-missing-materials'
       + '\n<i class="fas fa-exclamation-triangle"></i> page-calendar.this-event-needs-its-return-inventory',
     );
     expect(result.content).toBe(

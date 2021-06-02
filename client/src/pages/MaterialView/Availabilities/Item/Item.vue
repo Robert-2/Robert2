@@ -14,7 +14,7 @@
     </div>
     <div class="MaterialAvailabilitiesItem__icon">
       <i :class="`fas fa-${mainIcon}`" />
-      <i v-if="data.hasNotReturnedMaterials" class="fas fa-exclamation-triangle" />
+      <i v-if="hasWarning" class="fas fa-exclamation-triangle" />
     </div>
     <div class="MaterialAvailabilitiesItem__main">
       <h3 class="MaterialAvailabilitiesItem__main__title">

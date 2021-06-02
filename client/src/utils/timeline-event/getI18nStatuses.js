@@ -6,6 +6,7 @@ const getTimelineEventI18nStatuses = (formattedEvent) => {
     isInventoryDone,
     isArchived,
     hasMissingMaterials,
+    hasMissingUnits = false,
     hasNotReturnedMaterials,
   } = formattedEvent;
 
@@ -54,7 +55,7 @@ const getTimelineEventI18nStatuses = (formattedEvent) => {
     });
   }
 
-  if (hasMissingMaterials) {
+  if (hasMissingMaterials || hasMissingUnits) {
     eventStatuses.push({
       icon: 'exclamation-triangle',
       i18nKey: 'this-event-has-missing-materials',
