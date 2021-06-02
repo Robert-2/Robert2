@@ -28,14 +28,25 @@
       width: 5rem;
     }
 
-    &--reference {
-      width: 30%
-    }
-
-    &--is-broken {
-      width: 15rem;
+    &--is-broken,
+    &--is-lost {
+      width: 100px;
       text-align: center !important;
     }
+
+    &--park,
+    &--state {
+      width: 20%;
+    }
+  }
+
+  &__mini-action-button,
+  &__mini-action-button:hover,
+  &__mini-action-button:focus,
+  &__mini-action-button:active {
+    background: none;
+    padding: 0 .2rem;
+    color: $text-nav-color;
   }
 
   &__body {

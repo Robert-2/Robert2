@@ -2,7 +2,7 @@
   <div class="content">
     <div class="content__main-view UserSettings">
       <h3 class="UserSettings__title">
-        {{ $t('page-settings.interface') }}
+        {{ $t('page-user-settings.interface') }}
       </h3>
       <div class="UserSettings__content">
         <form class="Form" method="POST" @submit.prevent="save">
@@ -10,7 +10,7 @@
             <FormField
               v-model="settings.language"
               name="language"
-              label="page-settings.language"
+              label="page-user-settings.language"
               type="select"
               :options="langsOptions"
               :errors="errors.language"
@@ -18,7 +18,7 @@
             <FormField
               v-model="settings.auth_token_validity_duration"
               name="auth_token_validity_duration"
-              label="page-settings.auth-token-validity-duration"
+              label="page-user-settings.auth-token-validity-duration"
               type="number"
               class="UserSettings__hours"
               :addon="$t('hours')"

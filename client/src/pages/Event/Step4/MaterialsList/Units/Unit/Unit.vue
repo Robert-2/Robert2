@@ -3,19 +3,25 @@
     <td class="MaterialsListUnit__col MaterialsListUnit__col--selector">
       <input
         type="checkbox"
-        :disabled="!isAvailable"
+        :disabled="!isAvailable && !isSelected"
         :checked="isSelected"
         @input="handleCheckbox"
       />
     </td>
     <td class="MaterialsListUnit__col MaterialsListUnit__col--reference">
-      {{data.reference}}
+      {{ data.reference }}
     </td>
     <td class="MaterialsListUnit__col MaterialsListUnit__col--is-broken">
-      {{data.is_broken ? $t('yes') : $t('no')}}
+      {{ data.is_broken ? $t('yes') : $t('no') }}
+    </td>
+    <td class="MaterialsListUnit__col MaterialsListUnit__col--is-lost">
+      {{ data.is_lost ? $t('yes') : $t('no') }}
+    </td>
+    <td class="MaterialsListUnit__col MaterialsListUnit__col--state">
+      {{ unitState }}
     </td>
     <td class="MaterialsListUnit__col MaterialsListUnit__col--park">
-      {{park}}
+      {{ park }}
     </td>
   </tr>
 </template>

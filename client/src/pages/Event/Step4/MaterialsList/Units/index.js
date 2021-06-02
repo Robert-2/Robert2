@@ -12,7 +12,10 @@ export default {
   data() {
     const initialMaterial = this.event.materials?.find(({ id }) => id === this.material.id);
     const initialUnits = initialMaterial ? [...initialMaterial.pivot.units] : [];
-    return { initialUnits };
+    return {
+      initialUnits,
+      withUnavailable: false,
+    };
   },
   watch: {
     event(newEvent) {
@@ -31,12 +34,10 @@ export default {
     selected() {
       return store.getters.getUnits(this.material.id);
     },
-    units() {
-      // eslint-disable-next-line prefer-destructuring
-      const initialUnits = this.initialUnits;
 
+    units() {
       return this.material.units.filter((unit) => {
-        if (initialUnits.includes(unit.id)) {
+        if (this.initialUnits.includes(unit.id)) {
           return true;
         }
 
@@ -44,7 +45,7 @@ export default {
           return false;
         }
 
-        return unit.is_available && !unit.is_broken;
+        return this.withUnavailable || (unit.is_available && !unit.is_broken);
       });
     },
   },
@@ -52,6 +53,12 @@ export default {
     handleToggleUnit(id) {
       store.commit('toggleUnit', { material: this.material, unitId: id });
       this.$emit('change');
+    },
+
+    toggleWithUnavailable(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      this.withUnavailable = !this.withUnavailable;
     },
   },
 };

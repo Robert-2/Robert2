@@ -116,8 +116,19 @@ class Material extends BaseModel
 
     public function Units()
     {
+        $selectFields = [
+            'id',
+            'reference',
+            'serial_number',
+            'park_id',
+            'is_broken',
+            'is_lost',
+            'material_unit_state_id',
+            'purchase_date',
+            'notes',
+        ];
         return $this->hasMany('Robert2\API\Models\MaterialUnit')
-            ->select(['id', 'reference', 'serial_number', 'park_id', 'is_broken']);
+            ->select($selectFields);
     }
 
     public function Attributes()
@@ -182,7 +193,7 @@ class Material extends BaseModel
     public function getStockQuantityAttribute($value)
     {
         if ($this->is_unitary) {
-            $value = $this->Units()->count();
+            $value = $this->Units()->where('is_lost', '!=', true)->count();
         }
         return $this->castAttribute('stock_quantity', $value);
     }
@@ -327,13 +338,16 @@ class Material extends BaseModel
                 }
 
                 // - Ajoute le champ `is_available` aux unités des matériels
-                // + Supprime les unités marquées comme "utilisé" qui sont cassées.
+                // + Supprime les unités marquées comme "utilisé" qui sont cassées ou perdues.
                 //   (=> Elles ne comptent pas dans le calcul des unités utilisées)
                 if (array_key_exists('units', $material)) {
                     foreach ($material['units'] as &$unit) {
-                        $unit['is_available'] = !in_array($unit['id'], $usedUnits, true);
+                        $unit['is_available'] = (
+                            !in_array($unit['id'], $usedUnits, true)
+                            && $unit['is_lost'] !== true
+                        );
 
-                        if ($unit['is_broken']) {
+                        if ($unit['is_broken'] || $unit['is_lost']) {
                             $usedUnits = array_diff($usedUnits, [$unit['id']]);
                         }
                     }

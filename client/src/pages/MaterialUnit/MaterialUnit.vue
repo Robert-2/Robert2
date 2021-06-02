@@ -36,6 +36,36 @@
               type="switch"
               :errors="errors.is_broken"
             />
+            <FormField
+              v-model="unit.is_lost"
+              name="is_lost"
+              label="is-lost"
+              type="switch"
+              :errors="errors.is_lost"
+            />
+            <FormField
+              v-model="unit.material_unit_state_id"
+              name="material_unit_state_id"
+              label="state"
+              type="select"
+              :options="statesOptions"
+              :errors="errors.material_unit_state_id"
+            />
+            <FormField
+              v-model="unit.purchase_date"
+              name="purchase_date"
+              label="purchase-date"
+              type="date"
+              :errors="errors.purchase_date"
+              :datepicker-options="datepickerOptions"
+            />
+            <FormField
+              v-model="unit.notes"
+              name="notes"
+              label="notes"
+              type="textarea"
+              :errors="errors.notes"
+            />
           </section>
           <section class="Form__actions">
             <button class="Form__actions__save success" type="submit">

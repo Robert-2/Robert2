@@ -30,7 +30,7 @@ export default {
     'saved': "Votre profil a bien été sauvegardé.",
   },
 
-  'page-settings': {
+  'page-user-settings': {
     'title': "Vos paramètres",
     'help': "La « durée d'une session » est le temps imparti avant votre déconnexion automatique de l'application.",
     'auth-token-validity-duration': "Durée max. d'une session",
@@ -367,6 +367,17 @@ export default {
     'confirm-restore': "Voulez-vous vraiment restaurer cette étiquette\u00a0?",
     'saved': "Étiquette sauvegardée.",
     'deleted': "Étiquette supprimée.",
+  },
+
+  'page-settings': {
+    'title': "Paramètres de l'application",
+    'material-units': {
+      'title': "Unités de matériel",
+      'help': "",
+      'states': "États des unités de matériel",
+      'add': "Ajouter un état",
+      'confirm-permanently-delete': "Voulez-vous vraiment supprimer définitivement cet état d'unité\u00a0?",
+    },
   },
 
   'page-estimate': {

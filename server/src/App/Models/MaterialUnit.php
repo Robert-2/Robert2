@@ -18,6 +18,9 @@ class MaterialUnit extends BaseModel
             'reference' => V::notEmpty()->alnum('-+/*.')->length(2, 64),
             'serial_number' => V::optional(V::alnum('-+/*.')->length(2, 64)),
             'is_broken' => V::optional(V::boolType()),
+            'is_lost' => V::optional(V::boolType()),
+            'material_unit_state_id' => V::optional(V::numeric()),
+            'purchase_date' => V::optional(V::date()),
         ];
     }
 
@@ -26,6 +29,10 @@ class MaterialUnit extends BaseModel
     // —    Relations
     // —
     // ——————————————————————————————————————————————————————
+
+    protected $appends = [
+        'state',
+    ];
 
     public function Material()
     {
@@ -48,6 +55,11 @@ class MaterialUnit extends BaseModel
         return $relation->using('Robert2\API\Models\EventMaterialUnit');
     }
 
+    public function MaterialUnitState()
+    {
+        return $this->belongsTo('Robert2\API\Models\MaterialUnitState');
+    }
+
     // ——————————————————————————————————————————————————————
     // —
     // —    Mutators
@@ -60,6 +72,10 @@ class MaterialUnit extends BaseModel
         'reference' => 'string',
         'serial_number' => 'string',
         'is_broken' => 'boolean',
+        'is_lost' => 'boolean',
+        'material_unit_state_id' => 'integer',
+        'purchase_date' => 'string',
+        'notes' => 'string',
     ];
 
     public function getMaterialAttribute()
@@ -113,6 +129,12 @@ class MaterialUnit extends BaseModel
         return sprintf('data:image/svg+xml;base64,%s', base64_encode($svg));
     }
 
+    public function getStateAttribute()
+    {
+        $state = $this->MaterialUnitState()->first();
+        return $state ? $state->toArray() : null;
+    }
+
     // ——————————————————————————————————————————————————————
     // —
     // —    Setters
@@ -124,6 +146,10 @@ class MaterialUnit extends BaseModel
         'reference',
         'serial_number',
         'is_broken',
+        'is_lost',
+        'material_unit_state_id',
+        'purchase_date',
+        'notes',
     ];
 
     public function setReferenceAttribute($value)

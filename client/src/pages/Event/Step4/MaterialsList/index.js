@@ -255,14 +255,14 @@ export default {
           return false;
         }
 
-        if (filters.park && unit.park_id !== filters.park) {
-          return false;
-        }
-
-        return !selectedUnits.includes(unit.id);
+        return !(
+          filters.park
+          && unit.park_id !== filters.park
+          && !selectedUnits.includes(unit.id)
+        );
       });
 
-      return availableUnits.length;
+      return availableUnits.length - selectedUnits.length;
     },
 
     setQuantity(material, value) {

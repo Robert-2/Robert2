@@ -11,6 +11,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Simplifie la signification des couleurs des événements dans le calendrier.
 - Utilise des icônes cohérents pour le statut des événements dans le calendrier et la fenêtre d'événement.
 - Ajoute la possibilité d'archiver un événement, s'il est passé et que son inventaire de retour a été effectué (#152) (👏 @adamlarat).
+- Ajoute des données aux unités de matériel, ainsi que la gestion de leurs états (Premium #21).
 
 ## 0.13.3-premium (2021-05-27)
 

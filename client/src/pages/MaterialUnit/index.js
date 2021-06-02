@@ -1,3 +1,4 @@
+import moment from 'moment';
 import FormField from '@/components/FormField/FormField.vue';
 import Help from '@/components/Help/Help.vue';
 import store from '@/store';
@@ -12,17 +13,31 @@ export default {
       isLoading: false,
       material: null,
       ongoingPersist: null,
+      datepickerOptions: {
+        format: 'd MMMM yyyy',
+        disabled: {
+          from: new Date(),
+        },
+      },
       unit: {
         reference: '',
         serial_number: '',
         park_id: '',
         is_broken: false,
+        is_lost: false,
+        material_unit_state_id: '',
+        purchase_date: '',
+        notes: '',
       },
       errors: {
         reference: null,
         serial_number: null,
         park_id: null,
         is_broken: null,
+        is_lost: null,
+        material_unit_state_id: null,
+        purchase_date: null,
+        notes: null,
       },
     };
   },
@@ -34,6 +49,7 @@ export default {
       }
       return id && id !== 'new' ? id : null;
     },
+
     materialId() {
       let { materialId } = this.$route.params;
       if (!Number.isNaN(materialId) && Number.isFinite(parseInt(materialId, 10))) {
@@ -41,15 +57,22 @@ export default {
       }
       return materialId || null;
     },
+
     parksOptions() {
       return store.getters['parks/options'];
     },
+
+    statesOptions() {
+      return store.getters['unitStates/options'];
+    },
+
     firstPark() {
       return store.getters['parks/firstPark'];
     },
   },
   mounted() {
     store.dispatch('parks/fetch');
+    store.dispatch('unitStates/fetch');
 
     this.fetchData();
     this.setDefaultPark();
@@ -141,7 +164,13 @@ export default {
         : `materials/${this.materialId}/units`;
 
       try {
-        this.ongoingPersist = this.$http[method](url, { ...this.unit });
+        const { purchase_date: purchaseDate } = this.unit;
+        const unitData = {
+          ...this.unit,
+          purchase_date: purchaseDate ? moment(purchaseDate).format('YYYY-MM-DD') : null,
+        };
+
+        this.ongoingPersist = this.$http[method](url, unitData);
         const { data: unit } = await this.ongoingPersist;
         this.help = { type: 'success', text: 'page-material-units.saved' };
         store.commit('setPageSubTitle', `${unit.reference} (${this.material.name})`);

@@ -14,6 +14,17 @@ final class MaterialUnitsTest extends ApiTestCase
             'serial_number' => null,
             'park_id' => 1,
             'is_broken' => false,
+            'is_lost' => false,
+            'material_unit_state_id' => 1,
+            'purchase_date' => '2020-02-01',
+            'notes' => 'Ce bon vieux XR-18',
+            'state' => [
+                'id' => 1,
+                'name' => 'Bon état',
+                'created_at' => null,
+                'updated_at' => null,
+                'deleted_at' => null,
+            ],
             'material' => [
                 'id' => 6,
                 'name' => 'Behringer X Air XR18',
@@ -47,6 +58,17 @@ final class MaterialUnitsTest extends ApiTestCase
                         'serial_number' => null,
                         'park_id' => 1,
                         'is_broken' => false,
+                        'is_lost' => false,
+                        'material_unit_state_id' => 1,
+                        'purchase_date' => '2020-02-01',
+                        'notes' => 'Ce bon vieux XR-18',
+                        'state' => [
+                            'id' => 1,
+                            'name' => 'Bon état',
+                            'created_at' => null,
+                            'updated_at' => null,
+                            'deleted_at' => null,
+                        ],
                     ],
                     [
                         'id' => 2,
@@ -54,6 +76,17 @@ final class MaterialUnitsTest extends ApiTestCase
                         'serial_number' => null,
                         'park_id' => 1,
                         'is_broken' => false,
+                        'is_lost' => false,
+                        'material_unit_state_id' => 2,
+                        'purchase_date' => null,
+                        'notes' => null,
+                        'state' => [
+                            'id' => 2,
+                            'name' => 'État médiocre',
+                            'created_at' => null,
+                            'updated_at' => null,
+                            'deleted_at' => null,
+                        ],
                     ],
                     [
                         'id' => 3,
@@ -61,6 +94,11 @@ final class MaterialUnitsTest extends ApiTestCase
                         'serial_number' => null,
                         'park_id' => 2,
                         'is_broken' => true,
+                        'is_lost' => false,
+                        'material_unit_state_id' => null,
+                        'purchase_date' => null,
+                        'notes' => null,
+                        'state' => null,
                     ]
                 ],
                 'tags' => [],
@@ -88,6 +126,11 @@ final class MaterialUnitsTest extends ApiTestCase
             'reference' => 'VHCL-2',
             'serial_number' => '123456-000020',
             'is_broken' => true,
+            'is_lost' => false,
+            'material_unit_state_id' => null,
+            'purchase_date' => null,
+            'notes' => null,
+            'state' => null,
             'created_at' => 'fakedTestContent',
             'updated_at' => 'fakedTestContent',
         ];
@@ -105,6 +148,10 @@ final class MaterialUnitsTest extends ApiTestCase
             'reference' => 'VHCL-3',
             'serial_number' => '123456-000030',
             'is_broken' => false,
+            'is_lost' => true,
+            'material_unit_state_id' => 2,
+            'purchase_date' => '2020-02-02',
+            'notes' => 'On a perdu ceci!',
         ];
         $expectedData = [
             'id' => 7,
@@ -113,6 +160,17 @@ final class MaterialUnitsTest extends ApiTestCase
             'reference' => 'VHCL-3',
             'serial_number' => '123456-000030',
             'is_broken' => false,
+            'is_lost' => true,
+            'material_unit_state_id' => 2,
+            'purchase_date' => '2020-02-02',
+            'notes' => 'On a perdu ceci!',
+            'state' => [
+                'id' => 2,
+                'name' => 'État médiocre',
+                'created_at' => null,
+                'updated_at' => null,
+                'deleted_at' => null,
+            ],
             'created_at' => 'fakedTestContent',
             'updated_at' => 'fakedTestContent',
         ];
@@ -127,6 +185,8 @@ final class MaterialUnitsTest extends ApiTestCase
             'reference' => 'INV&LÎD',
             'serial_number' => 'INV&LÎD',
             'is_broken' => false,
+            'is_lost' => false,
+            'purchase_date' => 'Not a date',
         ];
         $this->client->post('/api/materials/7/units', $data);
         $this->assertStatusCode(ERROR_VALIDATION);
@@ -141,6 +201,9 @@ final class MaterialUnitsTest extends ApiTestCase
             ],
             'serial_number' => [
                 'serial_number must contain only letters (a-z), digits (0-9) and "-+/*."',
+            ],
+            'purchase_date' => [
+                'purchase_date must be a valid date',
             ],
         ]);
     }
@@ -172,7 +235,13 @@ final class MaterialUnitsTest extends ApiTestCase
     public function testUpdateUnit(): void
     {
         // - Test simple.
-        $data = ['is_broken' => true, 'park_id' => 2];
+        $data = [
+            'is_broken' => true,
+            'park_id' => 2,
+            'material_unit_state_id' => 1,
+            'purchase_date' => '2020-05-31',
+            'notes' => 'Une petite note',
+        ];
         $expectedData = [
             'id' => 1,
             'material_id' => 6,
@@ -180,6 +249,17 @@ final class MaterialUnitsTest extends ApiTestCase
             'reference' => 'XR18-1',
             'serial_number' => null,
             'is_broken' => true,
+            'is_lost' => false,
+            'material_unit_state_id' => 1,
+            'purchase_date' => '2020-05-31',
+            'notes' => 'Une petite note',
+            'state' => [
+                'id' => 1,
+                'name' => 'Bon état',
+                'created_at' => null,
+                'updated_at' => null,
+                'deleted_at' => null,
+            ],
             'created_at' => null,
             'updated_at' => 'fakedTestContent',
         ];
@@ -196,6 +276,11 @@ final class MaterialUnitsTest extends ApiTestCase
             'reference' => 'DECOR-FOREST-1',
             'serial_number' => null,
             'is_broken' => true,
+            'is_lost' => false,
+            'material_unit_state_id' => null,
+            'purchase_date' => null,
+            'notes' => null,
+            'state' => null,
             'created_at' => null,
             'updated_at' => 'fakedTestContent',
         ];
