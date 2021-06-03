@@ -2521,6 +2521,15 @@ return [
     "onDate"
     => "Le %s",
 
+    "asOfDate"
+    => "Au %s",
+
+    "forPark"
+    => "pour le parc :",
+
+    "allParks"
+    => "tous les parcs",
+
     "page"
     => "Page %d",
 
@@ -2545,9 +2554,6 @@ return [
     "event"
     => "Événement : %s",
 
-    "onDate"
-    => "Le %s",
-
     "fromToDates"
     => "Du %s au %s",
 
@@ -2559,6 +2565,15 @@ return [
 
     "quantity"
     => "Quantité",
+
+    "stockQuantity"
+    => "Quantité en stock",
+
+    "recountQuantity"
+    => "Quantité recomptée",
+
+    "unknownPark"
+    => "Parc inconnu",
 
     "qty"
     => "Qté",
@@ -2647,6 +2662,9 @@ return [
     "ref"
     => "Réf.",
 
+    "reference"
+    => "Référence",
+
     "designation"
     => "Désignation",
 
@@ -2662,8 +2680,14 @@ return [
     "eventSummary"
     => "Récapitulatif de l'événement",
 
+    "materialsList"
+    => "Liste du matériel",
+
     "title"
     => "Titre : « %s »",
+
+    "notes"
+    => "Notes",
 
     "location"
     => "Lieu : %s",
@@ -2685,9 +2709,6 @@ return [
 
     "Event"
     => "Fiche de sortie",
-
-    "onDate"
-    => "Le %s",
 
     "eventTotalReplacementAmount"
     => "Montant total de remplacement : %s",

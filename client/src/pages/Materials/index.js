@@ -28,7 +28,9 @@ export default {
       'actions',
     ];
 
-    if (Config.billingMode === 'none') {
+    const { billingMode, baseUrl } = Config;
+
+    if (billingMode === 'none') {
       columns = columns.filter((column) => column !== 'rental_price');
     }
 
@@ -42,6 +44,7 @@ export default {
       isTrashDisplayed: false,
       quantityColumnIndex,
       dateForQuantities: null,
+      baseUrl,
       columns,
       options: {
         columnsDropdown: true,
@@ -109,6 +112,11 @@ export default {
         },
       },
     };
+  },
+  computed: {
+    isAdmin() {
+      return store.getters['auth/is']('admin');
+    },
   },
   mounted() {
     store.dispatch('categories/fetch');

@@ -6,16 +6,22 @@ namespace Robert2\API\Controllers;
 use Robert2\API\Config\Config;
 use Robert2\API\Controllers\Traits\Taggable;
 use Robert2\API\Controllers\Traits\WithCrud;
+use Robert2\API\Controllers\Traits\FileResponse;
+use Robert2\Lib\Pdf\Pdf;
+use Robert2\Lib\Domain\MaterialsData;
 use Robert2\API\Models\Document;
 use Robert2\API\Models\Event;
 use Robert2\API\Models\Material;
+use Robert2\API\Models\Category;
+use Robert2\API\Models\Park;
+use Robert2\API\Services\I18n;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
 use Slim\Http\ServerRequest as Request;
 
 class MaterialController extends BaseController
 {
-    use WithCrud, Taggable {
+    use WithCrud, FileResponse, Taggable {
         Taggable::getAll insteadof WithCrud;
     }
 
@@ -326,5 +332,70 @@ class MaterialController extends BaseController
         $response = $response->write($pictureContent);
         $mimeType = mime_content_type($picturePath);
         return $response->withHeader('Content-Type', $mimeType);
+    }
+
+    public function getAllPdf(Request $request, Response $response): Response
+    {
+        $onlyParkId = $request->getQueryParam('park', null);
+
+        $categories = (new Category())->getAll()->get()->toArray();
+        $parks = (new Park())->with('materials')->get()->toArray();
+
+        $parksMaterials = [];
+        foreach ($parks as $park) {
+            if ($onlyParkId && (int)$onlyParkId !== $park['id']) {
+                continue;
+            }
+
+            if (empty($park['materials'])) {
+                continue;
+            }
+
+            $materialsData = new MaterialsData($park['materials']);
+            $materialsData->setParks($parks)->setCategories($categories);
+            $parksMaterials[] = [
+                'id' => $park['id'],
+                'name' => $park['name'],
+                'materials' => $materialsData->getBySubCategories(true),
+            ];
+        }
+
+        usort($parksMaterials, function ($a, $b) {
+            return strcmp($a['name'], $b['name'] ?: '');
+        });
+
+        $company = Config::getSettings('companyData');
+        $locale = Config::getSettings('defaultLang');
+        $i18n = new I18n($locale);
+
+        $parkOnlyName = null;
+        if ($onlyParkId) {
+            $parkKey = array_search($onlyParkId, array_column($parks, 'id'));
+            if ($parkKey) {
+                $parkOnlyName = $parks[$parkKey]['name'];
+            }
+        }
+
+        $fileName = sprintf(
+            '%s-%s-%s.pdf',
+            slugify($i18n->translate('materialsList')),
+            slugify($parkOnlyName ?: $company['name']),
+            (new \DateTime())->format('Y-m-d')
+        );
+        if (isTestMode()) {
+            $fileName = sprintf('TEST-%s', $fileName);
+        }
+
+        $data = [
+            'locale' => $locale,
+            'company' => $company,
+            'parkOnlyName' => $parkOnlyName,
+            'currency' => Config::getSettings('currency')['iso'],
+            'parksMaterialsList' => $parksMaterials,
+        ];
+
+        $fileContent = Pdf::createFromTemplate('materials-list', $data);
+
+        return $this->_responseWithFile($response, $fileName, $fileContent);
     }
 }

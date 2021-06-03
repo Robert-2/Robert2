@@ -135,6 +135,8 @@ class App
             ->setName('getDocumentFile');
         $this->app->get('/materials/{id:[0-9]+}/picture[/]', $getActionFqdn('MaterialController:getPicture'))
             ->setName('getMaterialPicture');
+        $this->app->get('/materials/listing-pdf[/]', $getActionFqdn('MaterialController:getAllPdf'))
+            ->setName('getMaterialsListPdf');
 
         // - Login services
         $this->app->get('/logout', $getActionFqdn('AuthController:logout'));

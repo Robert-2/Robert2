@@ -997,4 +997,11 @@ final class MaterialsTest extends ApiTestCase
         $this->assertStatusCode(SUCCESS_OK);
         $this->assertResponseData([]);
     }
+
+    public function testGetAllPdf()
+    {
+        $responseStream = $this->client->get('/materials/listing-pdf');
+        $this->assertStatusCode(200);
+        $this->assertTrue($responseStream->isReadable());
+    }
 }

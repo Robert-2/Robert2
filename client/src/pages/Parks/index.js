@@ -1,4 +1,5 @@
 import store from '@/store';
+import Config from '@/config/globalConfig';
 import formatAmount from '@/utils/formatAmount';
 import Alert from '@/components/Alert';
 import Help from '@/components/Help/Help.vue';
@@ -7,12 +8,15 @@ export default {
   name: 'Parks',
   components: { Help },
   data() {
+    const { baseUrl } = Config;
+
     return {
       help: 'page-parks.help',
       error: null,
       isLoading: false,
       isDisplayTrashed: false,
       isTrashDisplayed: false,
+      baseUrl,
       columns: [
         'name',
         'address',

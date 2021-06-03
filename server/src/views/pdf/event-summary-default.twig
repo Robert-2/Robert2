@@ -130,7 +130,11 @@
         {% for park in materialList %}
             <tr>
                 <td class="section-title" colspan="5">
-                    {{ park['name'] }}
+                    {% if park['name'] is not empty %}
+                        {{ park['name'] }}
+                    {% else %}
+                        ({{ translate('unknownPark') }})
+                    {% endif %}
                 </td>
             </tr>
             {% for material in park['materials'] %}
