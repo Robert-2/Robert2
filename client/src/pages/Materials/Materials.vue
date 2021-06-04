@@ -15,12 +15,21 @@
             {{ $t('page-materials.action-add') }}
           </button>
         </router-link>
-        <router-link to="/attributes" v-slot="{ navigate }" custom>
+        <router-link v-if="isAdmin" to="/attributes" v-slot="{ navigate }" custom>
           <button @click="navigate">
             <i class="fas fa-cog" />
             {{ $t('page-materials.manage-attributes') }}
           </button>
         </router-link>
+        <a
+          :href="downloadListingUrl"
+          target="_blank"
+          v-if="isAdmin"
+          class="button Materials__print-button"
+        >
+          <i class="fas fa-print" />
+          {{ $t('page-materials.print-complete-list') }}
+        </a>
       </div>
     </div>
 

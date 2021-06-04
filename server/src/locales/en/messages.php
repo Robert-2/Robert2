@@ -2519,6 +2519,15 @@ return [
     "onDate"
     => "On %s",
 
+    "as-of-date"
+    => "As of %s",
+
+    "for-park"
+    => "for park:",
+
+    "all-parks"
+    => "all parks",
+
     "page"
     => "Page %d",
 
@@ -2543,9 +2552,6 @@ return [
     "event"
     => "Event: %s",
 
-    "onDate"
-    => "On %s",
-
     "fromToDates"
     => "From %s to %s",
 
@@ -2557,6 +2563,15 @@ return [
 
     "quantity"
     => "Quantity",
+
+    "stock-quantity"
+    => "Stock quantity",
+
+    "recount-quantity"
+    => "Recount quantity",
+
+    "unknown-park"
+    => "Unknown park",
 
     "qty"
     => "Qty",
@@ -2645,6 +2660,9 @@ return [
     "ref"
     => "Ref.",
 
+    "reference"
+    => "Reference",
+
     "designation"
     => "Designation",
 
@@ -2657,11 +2675,17 @@ return [
     "releaseSheet"
     => "Release sheet",
 
+    "materials-list"
+    => "Materials list",
+
     "eventSummary"
     => "Event summary",
 
     "title"
     => "Title: « %s »",
+
+    "notes"
+    => "Notes",
 
     "location"
     => "Location: %s",
@@ -2683,9 +2707,6 @@ return [
 
     "Event"
     => "Release sheet",
-
-    "onDate"
-    => "On %s",
 
     "eventTotalReplacementAmount"
     => "Total replacement amount: %s",

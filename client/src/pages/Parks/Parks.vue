@@ -52,6 +52,15 @@
           <pre>{{ park.row.note }}</pre>
         </div>
         <div slot="actions" slot-scope="park" class="Parks__actions">
+          <a
+            v-if="park.row.total_stock_quantity > 0"
+            :href="getDownloadListingUrl(park.row.id)"
+            target="_blank"
+            class="button item-actions__button Parks__print-button"
+            v-tooltip="$t('page-parks.print-materials-of-this-park')"
+          >
+            <i class="fas fa-clipboard-list" />
+          </a>
           <router-link
             v-if="!isTrashDisplayed"
             v-tooltip="$t('action-edit')"

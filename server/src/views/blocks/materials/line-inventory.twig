@@ -6,13 +6,11 @@
         <em class="lighter">({{ material['park'] }})</em>
         {% endif %}
     </td>
-    <td class="center">
-        {{ material['quantity'] }}
-    </td>
     <td class="right lighter">
         {{ material['replacementPrice']|format_currency(currency, formatCurrencyOptions, locale) }}
     </td>
-    <td class="right lighter">
-        {{ material['totalReplacementPrice']|format_currency(currency, formatCurrencyOptions, locale) }}
+    <td class="center">
+        {{ material['stockQuantity'] }}
     </td>
+    <td></td>
 </tr>

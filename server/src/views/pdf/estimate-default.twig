@@ -224,7 +224,7 @@
         {% for subCategory in materialList %}
             <tr>
                 <td class="section-title" colspan="6">
-                    {% if subCategory['name'] == '---' %}
+                    {% if subCategory['name'] is null %}
                     {{ translate('otherMaterials') }}
                     {% else %}
                     {{ subCategory['name'] }}
