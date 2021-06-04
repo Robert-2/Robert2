@@ -5,29 +5,27 @@ class CreateSettings extends AbstractMigration
 {
     public function up()
     {
-        $table = $this->table('settings');
+        $table = $this->table('settings', ['id' => false, 'primary_key' => 'key']);
         $table
-            ->addColumn('event_summary_material_display_mode', 'enum', [
-                'null' => false,
-                'values' => ['sub-categories', 'parks', 'flat'],
-                'default' => 'sub-categories',
-            ])
-            ->addColumn('event_summary_custom_text_title', 'string', [
-                'null' => true,
-                'length' => 191,
-            ])
-            ->addColumn('event_summary_custom_text', 'text', [
-                'null' => true,
-            ])
-            ->addColumn('created_at', 'datetime', ['null' => true])
-            ->addColumn('updated_at', 'datetime', ['null' => true])
+            ->addColumn('key', 'string', ['null' => false, 'length' => 64])
+            ->addColumn('value', 'text', ['null' => true])
             ->create();
 
-        $table->insert([
-            'event_summary_material_display_mode' => 'sub-categories',
-            'created_at' => (new \DateTime())->format('Y-m-d H:i:s'),
-        ]);
-        $table->saveData();
+        $settingsData = [
+            [
+                'key' => 'event_summary_material_display_mode',
+                'value' => 'sub-categories',
+            ],
+            [
+                'key' => 'event_summary_custom_text_title',
+                'value' => null,
+            ],
+            [
+                'key' => 'event_summary_custom_text',
+                'value' => null,
+            ],
+        ];
+        $this->table('settings')->insert($settingsData)->save();
     }
 
     public function down()

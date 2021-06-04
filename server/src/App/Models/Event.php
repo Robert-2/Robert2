@@ -329,7 +329,7 @@ class Event extends BaseModel
         $EventData = new EventData($date, $event, 'summary', $event['user_id']);
         $EventData->setCategories($categories)->setParks($parks);
 
-        $materialDisplayMode = Setting::getCurrent('event_summary_material_display_mode');
+        $materialDisplayMode = Setting::getWithKey('event_summary_material_display_mode');
         if ($materialDisplayMode === 'sub-categories') {
             $materialList = $EventData->getMaterialBySubCategories(true);
         } elseif ($materialDisplayMode === 'parks' && count($parks) > 1) {
@@ -338,8 +338,8 @@ class Event extends BaseModel
             $materialList = $EventData->getMaterialsFlat(true);
         }
 
-        $customTextTitle = Setting::getCurrent('event_summary_custom_text_title');
-        $customText = Setting::getCurrent('event_summary_custom_text');
+        $customTextTitle = Setting::getWithKey('event_summary_custom_text_title');
+        $customText = Setting::getWithKey('event_summary_custom_text');
 
         $data = [
             'event' => $event,

@@ -3,13 +3,13 @@ import EventSummarySettingsForm from './Form';
 
 export default {
   name: 'EventSummarySettings',
-  components: { Help, EventSummarySettingsForm },
   data() {
     return {
       help: 'page-settings.event-summary.help',
       settings: null,
       isLoading: false,
       error: null,
+      errors: null,
     };
   },
   mounted() {
@@ -18,6 +18,7 @@ export default {
   methods: {
     async fetchSettings() {
       this.isLoading = true;
+      this.error = null;
 
       try {
         const { data } = await this.$http.get('settings');
@@ -31,6 +32,8 @@ export default {
 
     async handleSave(newData) {
       this.isLoading = true;
+      this.error = null;
+      this.errors = null;
 
       try {
         const { data } = await this.$http.put('settings', newData);
@@ -38,6 +41,11 @@ export default {
         this.help = { type: 'success', text: 'page-settings.event-summary.saved' };
       } catch (error) {
         this.error = error;
+
+        const { code, details } = error.response?.data?.error || { code: 0, details: {} };
+        if (code === 400) {
+          this.errors = { ...details };
+        }
       } finally {
         this.isLoading = false;
       }
@@ -50,6 +58,7 @@ export default {
       error,
       settings,
       handleSave,
+      errors,
     } = this;
 
     return (
@@ -63,6 +72,7 @@ export default {
           settings={settings}
           onSave={handleSave}
           isSaving={isLoading}
+          errors={errors}
         />
       </div>
     );

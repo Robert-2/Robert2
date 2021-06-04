@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Robert2\API\Controllers;
 
 use Robert2\API\Controllers\Traits\WithModel;
+use Robert2\API\Models\Setting;
 use Slim\Http\Response;
 use Slim\Http\ServerRequest as Request;
 
@@ -19,7 +20,7 @@ class SettingController extends BaseController
 
     public function getAll(Request $request, Response $response): Response
     {
-        $settings = $this->getModelClass()::getList();
+        $settings = Setting::getList();
         return $response->withJson($settings);
     }
 
@@ -39,7 +40,9 @@ class SettingController extends BaseController
             );
         }
 
-        $result = $this->getModelClass()::staticEdit(1, $postData);
-        return $response->withJson($result->toArray(), SUCCESS_OK);
+        Setting::staticEdit(null, $postData);
+
+        $settings = Setting::getList();
+        return $response->withJson($settings, SUCCESS_OK);
     }
 }

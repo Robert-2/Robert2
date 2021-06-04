@@ -8,30 +8,45 @@ final class SettingsTest extends ApiTestCase
         $this->client->get('/api/settings');
         $this->assertStatusCode(SUCCESS_OK);
         $this->assertResponseData([
-            'id' => 1,
             'event_summary_material_display_mode' => 'sub-categories',
             'event_summary_custom_text_title' => "Contrat",
             'event_summary_custom_text' => "Un petit contrat de test.",
-            'created_at' => null,
-            'updated_at' => null,
         ]);
     }
 
-    public function testUpdateBadData(): void
+    public function testUpdateBadKey(): void
     {
         $this->client->put('/api/settings', [
-            'event_summary_material_display_mode' => 'not-valid',
+            'inexistant_settings' => 'some-value',
             'event_summary_custom_text_title' => null,
         ]);
         $this->assertStatusCode(ERROR_VALIDATION);
         $this->assertValidationErrorMessage();
         $this->assertErrorDetails([
+            'key' => [
+                "This setting does not exists.",
+            ],
+        ]);
+    }
+
+    public function testUpdateBadValue(): void
+    {
+        $this->client->put('/api/settings', [
+            'event_summary_material_display_mode' => 'not-valid',
+            'event_summary_custom_text_title' => str_repeat('A', 192),
+        ]);
+        $this->assertStatusCode(ERROR_VALIDATION);
+        $this->assertValidationErrorMessage();
+        $this->assertErrorDetails([
             'event_summary_material_display_mode' => [
-                "At least one of these rules must pass for event_summary_material_display_mode",
-                'event_summary_material_display_mode must be equals "sub-categories"',
-                'event_summary_material_display_mode must be equals "parks"',
-                'event_summary_material_display_mode must be equals "flat"',
-            ]
+                'At least one of these rules must pass for value',
+                'value must be equals "sub-categories"',
+                'value must be equals "parks"',
+                'value must be equals "flat"',
+            ],
+            'event_summary_custom_text_title' => [
+                'value must have a length lower than 191',
+            ],
         ]);
     }
 
@@ -44,12 +59,9 @@ final class SettingsTest extends ApiTestCase
         ]);
         $this->assertStatusCode(SUCCESS_OK);
         $this->assertResponseData([
-            'id' => 1,
             'event_summary_material_display_mode' => 'flat',
             'event_summary_custom_text_title' => null,
             'event_summary_custom_text' => null,
-            'created_at' => null,
-            'updated_at' => 'fakedTestContent',
-        ], ['updated_at']);
+        ]);
     }
 }

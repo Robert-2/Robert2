@@ -1,7 +1,14 @@
 [
     {
-        "event_summary_material_display_mode": "sub-categories",
-        "event_summary_custom_text_title": "Contrat",
-        "event_summary_custom_text": "Un petit contrat de test."
+        "key": "event_summary_material_display_mode",
+        "value": "sub-categories"
+    },
+    {
+        "key": "event_summary_custom_text_title",
+        "value": "Contrat"
+    },
+    {
+        "key": "event_summary_custom_text",
+        "value": "Un petit contrat de test."
     }
 ]

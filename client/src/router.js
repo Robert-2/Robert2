@@ -24,7 +24,7 @@ import Technician from '@/pages/Technician/Technician.vue';
 import Categories from '@/pages/Categories/Categories.vue';
 import Parks from '@/pages/Parks/Parks.vue';
 import Park from '@/pages/Park/Park.vue';
-import Settings from '@/pages/Settings/Settings.vue';
+import Settings from '@/pages/Settings';
 
 Vue.use(Router);
 

@@ -1,17 +1,17 @@
 import './index.scss';
-import store from '@/store';
 import FormField from '@/components/FormField/FormField.vue';
+
+const LIST_MODES = ['sub-categories', 'parks', 'flat'];
 
 export default {
   name: 'EventSummarySettingsForm',
-  components: { FormField },
   props: {
     settings: Object,
     isSaving: Boolean,
+    errors: Object,
   },
   data() {
-    const listModes = ['sub-categories', 'parks', 'flat'];
-    const initialListModeOptions = listModes.map((mode) => (
+    const initialListModeOptions = LIST_MODES.map((mode) => (
       { value: mode, label: `page-settings.event-summary.list-display-mode-${mode}` }
     ));
 
@@ -22,7 +22,7 @@ export default {
   },
   computed: {
     listModeOptions() {
-      const parks = store.state.parks.list;
+      const parks = this.$store.state.parks.list;
 
       return this.initialListModeOptions.filter((mode) => (
         mode.value !== 'parks' || parks.length > 1
@@ -30,7 +30,7 @@ export default {
     },
   },
   mounted() {
-    store.dispatch('parks/fetch');
+    this.$store.dispatch('parks/fetch');
   },
   methods: {
     handleSubmit(e) {
@@ -48,6 +48,7 @@ export default {
       defaultListMode,
       handleSubmit,
       isSaving,
+      errors,
     } = this;
 
     return (
@@ -60,6 +61,7 @@ export default {
             name="event_summary_material_display_mode"
             options={listModeOptions}
             value={settings?.event_summary_material_display_mode || defaultListMode}
+            errors={errors?.event_summary_material_display_mode}
           />
         </section>
         <section class="EventSummarySettingsForm__section">
@@ -69,12 +71,14 @@ export default {
             label="page-settings.event-summary.custom-text-title"
             name="event_summary_custom_text_title"
             value={settings?.event_summary_custom_text_title || ''}
+            errors={errors?.event_summary_custom_text_title}
           />
           <FormField
             type="textarea"
             label="page-settings.event-summary.custom-text-content"
             name="event_summary_custom_text"
             value={settings?.event_summary_custom_text || ''}
+            errors={errors?.event_summary_custom_text}
           />
         </section>
         <section class="EventSummarySettingsForm__actions">
