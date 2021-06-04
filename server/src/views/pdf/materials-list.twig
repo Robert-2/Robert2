@@ -1,7 +1,5 @@
 {% extends "pdf/base.twig" %}
 
-{% block title %}{{ translate("materialsList") }}{% endblock %}
-
 {% block style %}
 .listing-title {
     page-break-after: avoid;
@@ -33,17 +31,17 @@
             {{ include('blocks/company-address.twig', { company: company }) }}
         </td>
         <td class="two-third">
-            <h1 class="box center">{{ translate('materialsList') }}</h1>
+            <h1 class="box center">{{ translate('materials-list') }}</h1>
             <h3 class="center">
-                {{ translate('asOfDate', date|format_date('long', locale=locale)) }}
+                {{ translate('as-of-date', date|format_date('long', locale=locale)) }}
                 {% if parkOnlyName is not null %}
-                    {{ translate('forPark') }}
+                {{ translate('for-park') }}
                 {% else %}
-                    ({{ translate('allParks') }})
+                ({{ translate('all-parks') }})
                 {% endif %}
             </h3>
             {% if parkOnlyName is not null %}
-                <h2 class="center">{{ parkOnlyName }}</h2>
+            <h2 class="center">{{ parkOnlyName }}</h2>
             {% endif %}
         </td>
     </tr>
@@ -51,13 +49,13 @@
 
 {% for park in parksMaterialsList %}
     {% if parkOnlyName is null %}
-        <h3 class="listing-title">
-            {% if park['name'] is not empty %}
-                {{ park['name'] }}
-            {% else %}
-                ({{ translate('unknownPark') }})
-            {% endif %}
-        </h3>
+    <h3 class="listing-title">
+        {% if park['name'] is not empty %}
+        {{ park['name'] }}
+        {% else %}
+        ({{ translate('unknown-park') }})
+        {% endif %}
+    </h3>
     {% endif %}
     <table class="listing-table">
         <thead>
@@ -65,15 +63,15 @@
                 <th style="width: 30mm;">{{ translate('reference') }}</th>
                 <th>{{ translate('designation') }}</th>
                 <th style="width: 20mm;">{{ translate('replacementValue') }}</th>
-                <th style="width: 16mm;">{{ translate('stockQuantity') }}</th>
-                <th style="width: 25mm;">{{ translate('recountQuantity') }}</th>
+                <th style="width: 16mm;">{{ translate('stock-quantity') }}</th>
+                <th style="width: 25mm;">{{ translate('recount-quantity') }}</th>
             </tr>
         </thead>
         <tbody>
             {% for subCategory in park['materials'] %}
                 <tr>
                     <td class="section-title" colspan="5">
-                        {% if subCategory['name'] == '---' %}
+                        {% if subCategory['name'] is null %}
                         {{ translate('otherMaterials') }}
                         {% else %}
                         {{ subCategory['name'] }}

@@ -324,7 +324,6 @@ export default {
     'saved': "Parc sauvegardé.",
     'total-items': 'Totaux',
     'display-events-for-park': "Voir les événements",
-    'print-all-materials': "Imprimer tout le matériel",
     'print-materials-of-this-park': "Imprimer la liste de ce parc",
   },
 

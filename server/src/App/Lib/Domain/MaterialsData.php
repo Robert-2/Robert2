@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace Robert2\Lib\Domain;
 
-use Robert2\API\Config\Config;
-
 class MaterialsData
 {
     protected $materials;
@@ -54,7 +52,7 @@ class MaterialsData
 
             if (!isset($subCategoriesMaterials[$subCategoryId])) {
                 $subCategoriesMaterials[$subCategoryId] = [
-                    'id' => $subCategoryId,
+                    'id' => $subCategoryId ?: null,
                     'name' => $this->getSubCategoryName($subCategoryId),
                     'materials' => [],
                 ];
@@ -172,7 +170,7 @@ class MaterialsData
     // -
     // ------------------------------------------------------
 
-    protected function getSubCategoryName(int $subCategoryId): string
+    protected function getSubCategoryName(int $subCategoryId): ?string
     {
         if (empty($this->categories)) {
             throw new \InvalidArgumentException("Missing categories data.");
@@ -185,10 +183,11 @@ class MaterialsData
                 }
             }
         }
-        return '---';
+
+        return null;
     }
 
-    protected function getParkName(int $parkId): string
+    protected function getParkName(int $parkId): ?string
     {
         if (empty($this->parks)) {
             throw new \InvalidArgumentException("Missing parks data.");
@@ -199,6 +198,7 @@ class MaterialsData
                 return $park['name'];
             }
         }
-        return '---';
+
+        return null;
     }
 }

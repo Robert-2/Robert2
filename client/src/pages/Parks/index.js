@@ -8,15 +8,12 @@ export default {
   name: 'Parks',
   components: { Help },
   data() {
-    const { baseUrl } = Config;
-
     return {
       help: 'page-parks.help',
       error: null,
       isLoading: false,
       isDisplayTrashed: false,
       isTrashDisplayed: false,
-      baseUrl,
       columns: [
         'name',
         'address',
@@ -75,6 +72,11 @@ export default {
     },
   },
   methods: {
+    getDownloadListingUrl(parkId) {
+      const { baseUrl } = Config;
+      return `${baseUrl}/materials/pdf?park=${parkId}`;
+    },
+
     deletePark(parkId) {
       const isSoft = !this.isTrashDisplayed;
       Alert.ConfirmDelete(this.$t, 'parks', isSoft)

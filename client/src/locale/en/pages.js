@@ -323,7 +323,6 @@ export default {
     'saved': "Park saved.",
     'total-items': 'Totals',
     'display-events-for-park': "See events",
-    'print-all-materials': "Print all materials",
     'print-materials-of-this-park': "Print list of this park",
   },
 

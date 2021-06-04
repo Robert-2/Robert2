@@ -22,7 +22,7 @@
           </button>
         </router-link>
         <a
-          :href="`${baseUrl}/materials/listing-pdf`"
+          :href="downloadListingUrl"
           target="_blank"
           v-if="isAdmin"
           class="button Materials__print-button"

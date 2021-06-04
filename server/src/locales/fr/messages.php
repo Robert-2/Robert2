@@ -2521,13 +2521,13 @@ return [
     "onDate"
     => "Le %s",
 
-    "asOfDate"
+    "as-of-date"
     => "Au %s",
 
-    "forPark"
+    "for-park"
     => "pour le parc :",
 
-    "allParks"
+    "all-parks"
     => "tous les parcs",
 
     "page"
@@ -2566,13 +2566,13 @@ return [
     "quantity"
     => "Quantité",
 
-    "stockQuantity"
+    "stock-quantity"
     => "Quantité en stock",
 
-    "recountQuantity"
+    "recount-quantity"
     => "Quantité recomptée",
 
-    "unknownPark"
+    "unknown-park"
     => "Parc inconnu",
 
     "qty"
@@ -2680,7 +2680,7 @@ return [
     "eventSummary"
     => "Récapitulatif de l'événement",
 
-    "materialsList"
+    "materials-list"
     => "Liste du matériel",
 
     "title"

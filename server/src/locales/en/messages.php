@@ -2519,13 +2519,13 @@ return [
     "onDate"
     => "On %s",
 
-    "asOfDate"
+    "as-of-date"
     => "As of %s",
 
-    "forPark"
+    "for-park"
     => "for park:",
 
-    "allParks"
+    "all-parks"
     => "all parks",
 
     "page"
@@ -2564,13 +2564,13 @@ return [
     "quantity"
     => "Quantity",
 
-    "stockQuantity"
+    "stock-quantity"
     => "Stock quantity",
 
-    "recountQuantity"
+    "recount-quantity"
     => "Recount quantity",
 
-    "unknownPark"
+    "unknown-park"
     => "Unknown park",
 
     "qty"
@@ -2675,8 +2675,8 @@ return [
     "releaseSheet"
     => "Release sheet",
 
-    "materialsList"
-    => "Liste du matériel",
+    "materials-list"
+    => "Materials list",
 
     "eventSummary"
     => "Event summary",

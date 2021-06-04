@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Robert2\API\Controllers;
 
+use DI\Container;
 use Robert2\API\Config\Config;
 use Robert2\API\Controllers\Traits\Taggable;
 use Robert2\API\Controllers\Traits\WithCrud;
@@ -23,6 +24,16 @@ class MaterialController extends BaseController
 {
     use WithCrud, FileResponse, Taggable {
         Taggable::getAll insteadof WithCrud;
+    }
+
+    /** @var I18n */
+    private $i18n;
+
+    public function __construct(Container $container, I18n $i18n)
+    {
+        parent::__construct($container);
+
+        $this->i18n = $i18n;
     }
 
     // ——————————————————————————————————————————————————————
@@ -338,8 +349,8 @@ class MaterialController extends BaseController
     {
         $onlyParkId = $request->getQueryParam('park', null);
 
-        $categories = (new Category())->getAll()->get()->toArray();
-        $parks = (new Park())->with('materials')->get()->toArray();
+        $categories = Category::get()->toArray();
+        $parks = Park::with('materials')->get()->toArray();
 
         $parksMaterials = [];
         foreach ($parks as $park) {
@@ -365,8 +376,6 @@ class MaterialController extends BaseController
         });
 
         $company = Config::getSettings('companyData');
-        $locale = Config::getSettings('defaultLang');
-        $i18n = new I18n($locale);
 
         $parkOnlyName = null;
         if ($onlyParkId) {
@@ -378,7 +387,7 @@ class MaterialController extends BaseController
 
         $fileName = sprintf(
             '%s-%s-%s.pdf',
-            slugify($i18n->translate('materialsList')),
+            slugify($this->i18n->translate('materials-list')),
             slugify($parkOnlyName ?: $company['name']),
             (new \DateTime())->format('Y-m-d')
         );
@@ -387,7 +396,7 @@ class MaterialController extends BaseController
         }
 
         $data = [
-            'locale' => $locale,
+            'locale' => Config::getSettings('defaultLang'),
             'company' => $company,
             'parkOnlyName' => $parkOnlyName,
             'currency' => Config::getSettings('currency')['iso'],

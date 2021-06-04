@@ -15,14 +15,6 @@
             {{ $t('page-parks.action-add') }}
           </button>
         </router-link>
-        <a
-          :href="`${baseUrl}/materials/listing-pdf`"
-          target="_blank"
-          class="button Parks__print-button"
-        >
-          <i class="fas fa-print" />
-          {{ $t('page-parks.print-all-materials') }}
-        </a>
       </div>
     </div>
 
@@ -62,12 +54,12 @@
         <div slot="actions" slot-scope="park" class="Parks__actions">
           <a
             v-if="park.row.total_stock_quantity > 0"
-            :href="`${baseUrl}/materials/listing-pdf?park=${park.row.id}`"
+            :href="getDownloadListingUrl(park.row.id)"
             target="_blank"
             class="button item-actions__button Parks__print-button"
             v-tooltip="$t('page-parks.print-materials-of-this-park')"
           >
-            <i class="fas fa-print" />
+            <i class="fas fa-clipboard-list" />
           </a>
           <router-link
             v-if="!isTrashDisplayed"

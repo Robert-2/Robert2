@@ -32,8 +32,8 @@ final class MaterialsDataTest extends ModelTestCase
 
             $this->MaterialsData = new MaterialsData($materials);
             $this->MaterialsData
-                ->setCategories((new Category())->getAll()->get()->toArray())
-                ->setParks((new Park())->getAll()->get()->toArray());
+                ->setCategories(Category::get()->toArray())
+                ->setParks(Park::get()->toArray());
         } catch (\Exception $e) {
             $this->fail($e->getMessage());
         }
@@ -44,8 +44,8 @@ final class MaterialsDataTest extends ModelTestCase
         $result = $this->MaterialsData->getBySubCategories();
         $expected = [
             [
-                'id' => 0,
-                'name' => '---',
+                'id' => null,
+                'name' => null,
                 'materials' => [
                     'Transporter' => [
                         'reference' => 'Transporter',
