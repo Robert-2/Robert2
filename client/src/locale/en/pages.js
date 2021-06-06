@@ -29,7 +29,7 @@ export default {
     'saved': "Your profile was saved.",
   },
 
-  'page-settings': {
+  'page-user-settings': {
     'title': "Your settings",
     'help': "The « duration of a session » is the time allowed before you're automatically logged out.",
     'auth-token-validity-duration': "Max. duration of a session",
@@ -342,6 +342,23 @@ export default {
     'confirm-restore': "Do you really want to restore this tag?",
     'saved': "Tag saved.",
     'deleted': "Tag deleted.",
+  },
+
+  'page-settings': {
+    'title': "Application settings",
+    'event-summary': {
+      'title': "Event summaries",
+      'help': "Here you can customize the PDF event summaries",
+      'material-list': "Materials list",
+      'display-mode': "Display mode",
+      'list-display-mode-sub-categories': "Sorted by sub-categories",
+      'list-display-mode-parks': "Sorted by parks",
+      'list-display-mode-flat': "Not sorted",
+      'custom-text': "Custom text (bottom of page)",
+      'custom-text-title': "Text title",
+      'custom-text-content': "Text content",
+      'saved': "Event summaries settings were successfully saved.",
+    },
   },
 
   'page-estimate': {

@@ -29,7 +29,7 @@ export default {
     'saved': "Votre profil a bien été sauvegardé.",
   },
 
-  'page-settings': {
+  'page-user-settings': {
     'title': "Vos paramètres",
     'help': "La « durée d'une session » est le temps imparti avant votre déconnexion automatique de l'application.",
     'auth-token-validity-duration': "Durée max. d'une session",
@@ -343,6 +343,23 @@ export default {
     'confirm-restore': "Voulez-vous vraiment restaurer cette étiquette\u00a0?",
     'saved': "Étiquette sauvegardée.",
     'deleted': "Étiquette supprimée.",
+  },
+
+  'page-settings': {
+    'title': "Paramètres de l'application",
+    'event-summary': {
+      'title': "Fiches de sortie",
+      'help': "Ici, vous pouvez personnaliser les fiches de sortie des événements.",
+      'material-list': "Liste du matériel",
+      'display-mode': "Mode de présentation",
+      'list-display-mode-sub-categories': "Triée par sous-catégories",
+      'list-display-mode-parks': "Triée par parcs",
+      'list-display-mode-flat': "Liste non-triée",
+      'custom-text': "Texte personnalisé (bas de page)",
+      'custom-text-title': "Titre du texte",
+      'custom-text-content': "Contenu du texte",
+      'saved': "Les paramètres des fiches de sortie ont bien été sauvegardés.",
+    },
   },
 
   'page-estimate': {

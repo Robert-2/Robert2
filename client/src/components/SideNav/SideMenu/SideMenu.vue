@@ -120,6 +120,21 @@
         <span class="SideMenu__item__title">{{$t('page-users.title')}}</span>
       </li>
     </router-link>
+    <router-link
+      v-if="isAdmin"
+      to="/settings"
+      custom
+      v-slot="{ navigate, isActive }"
+    >
+      <li
+        @click="navigate"
+        class="SideMenu__item"
+        :class="{ 'SideMenu__item--active': isActive }"
+      >
+        <i class="fas fa-sliders-h" /><br>
+        <span class="SideMenu__item__title">{{$t('settings')}}</span>
+      </li>
+    </router-link>
   </div>
 </template>
 
