@@ -165,6 +165,7 @@ final class EventDataTest extends ModelTestCase
                     'CL3' => [
                         'reference' => 'CL3',
                         'name' => 'Console Yamaha CL3',
+                        'stockQuantity' => 5,
                         'park' => 'default',
                         'units' => null,
                         'quantity' => 1,
@@ -172,6 +173,7 @@ final class EventDataTest extends ModelTestCase
                         'replacementPrice' => 19400.0,
                         'total' => 300.0,
                         'totalReplacementPrice' => 19400.0,
+                        'stockQuantity' => 5,
                     ],
                 ],
             ],
@@ -182,6 +184,7 @@ final class EventDataTest extends ModelTestCase
                     'DBXPA2' => [
                         'reference' => 'DBXPA2',
                         'name' => 'Processeur DBX PA2',
+                        'stockQuantity' => 2,
                         'park' => 'default',
                         'units' => null,
                         'quantity' => 1,
@@ -189,6 +192,7 @@ final class EventDataTest extends ModelTestCase
                         'replacementPrice' => 349.9,
                         'total' => 25.5,
                         'totalReplacementPrice' => 349.9,
+                        'stockQuantity' => 2,
                     ],
                 ],
             ],
@@ -199,6 +203,7 @@ final class EventDataTest extends ModelTestCase
                     'SDS-6-01' => [
                         'reference' => 'SDS-6-01',
                         'name' => 'Showtec SDS-6',
+                        'stockQuantity' => 2,
                         'park' => 'default',
                         'units' => null,
                         'quantity' => 1,
@@ -206,6 +211,7 @@ final class EventDataTest extends ModelTestCase
                         'replacementPrice' => 59.0,
                         'total' => 15.95,
                         'totalReplacementPrice' => 59.0,
+                        'stockQuantity' => 2,
                     ],
                 ],
             ],
@@ -224,6 +230,7 @@ final class EventDataTest extends ModelTestCase
                     'CL3' => [
                         'reference' => 'CL3',
                         'name' => 'Console Yamaha CL3',
+                        'stockQuantity' => 5,
                         'park' => null,
                         'units' => null,
                         'quantity' => 1,
@@ -235,6 +242,7 @@ final class EventDataTest extends ModelTestCase
                     'DBXPA2' => [
                         'reference' => 'DBXPA2',
                         'name' => 'Processeur DBX PA2',
+                        'stockQuantity' => 2,
                         'park' => null,
                         'units' => null,
                         'quantity' => 1,
@@ -246,6 +254,7 @@ final class EventDataTest extends ModelTestCase
                     'SDS-6-01' => [
                         'reference' => 'SDS-6-01',
                         'name' => 'Showtec SDS-6',
+                        'stockQuantity' => 2,
                         'park' => null,
                         'units' => null,
                         'quantity' => 1,
@@ -267,6 +276,7 @@ final class EventDataTest extends ModelTestCase
             'CL3' => [
                 'name' => 'Console Yamaha CL3',
                 'reference' => 'CL3',
+                'stockQuantity' => 5,
                 'park' => 'default',
                 'quantity' => 1,
                 'rentalPrice' => 300.0,
@@ -277,6 +287,7 @@ final class EventDataTest extends ModelTestCase
             'DBXPA2' => [
                 'name' => 'Processeur DBX PA2',
                 'reference' => 'DBXPA2',
+                'stockQuantity' => 2,
                 'park' => 'default',
                 'quantity' => 1,
                 'rentalPrice' => 25.5,
@@ -287,6 +298,7 @@ final class EventDataTest extends ModelTestCase
             'SDS-6-01' => [
                 'name' => 'Showtec SDS-6',
                 'reference' => 'SDS-6-01',
+                'stockQuantity' => 2,
                 'park' => 'default',
                 'quantity' => 1,
                 'rentalPrice' => 15.95,
@@ -505,6 +517,7 @@ final class EventDataTest extends ModelTestCase
                             'replacementPrice' => 19400.0,
                             'total' => 300.0,
                             'totalReplacementPrice' => 19400.0,
+                            'stockQuantity' => 5,
                         ],
                     ],
                 ],
@@ -522,6 +535,7 @@ final class EventDataTest extends ModelTestCase
                             'replacementPrice' => 349.9,
                             'total' => 25.5,
                             'totalReplacementPrice' => 349.9,
+                            'stockQuantity' => 2,
                         ],
                     ],
                 ],
@@ -539,6 +553,7 @@ final class EventDataTest extends ModelTestCase
                             'replacementPrice' => 59.0,
                             'total' => 15.95,
                             'totalReplacementPrice' => 59.0,
+                            'stockQuantity' => 2,
                         ],
                     ],
                 ],

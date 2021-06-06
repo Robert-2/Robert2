@@ -213,6 +213,7 @@ export default {
     'confirm-restore': "Do you really want to restore this material?",
     'saved': "Material saved.",
     'clear-filters': "Clear filters",
+    'print-complete-list': "Print the complete list",
   },
 
   'page-materials-view': {
@@ -347,6 +348,7 @@ export default {
     'saved': "Park saved.",
     'total-items': 'Totals',
     'display-events-for-park': "See events",
+    'print-materials-of-this-park': "Print list of this park",
   },
 
   'page-tags': {

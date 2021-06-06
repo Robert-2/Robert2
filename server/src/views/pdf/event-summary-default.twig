@@ -115,7 +115,7 @@
         {% for subCategory in materialList %}
             <tr>
                 <td class="section-title" colspan="5">
-                    {% if subCategory['name'] == '---' %}
+                    {% if subCategory['name'] is null %}
                     {{ translate('otherMaterials') }}
                     {% else %}
                     {{ subCategory['name'] }}
@@ -130,7 +130,11 @@
         {% for park in materialList %}
             <tr>
                 <td class="section-title" colspan="5">
-                    {{ park['name'] }}
+                    {% if park['name'] is not empty %}
+                        {{ park['name'] }}
+                    {% else %}
+                        ({{ translate('unknown-park') }})
+                    {% endif %}
                 </td>
             </tr>
             {% for material in park['materials'] %}

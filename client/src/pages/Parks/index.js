@@ -1,4 +1,5 @@
 import store from '@/store';
+import Config from '@/config/globalConfig';
 import formatAmount from '@/utils/formatAmount';
 import Alert from '@/components/Alert';
 import Help from '@/components/Help/Help.vue';
@@ -71,6 +72,11 @@ export default {
     },
   },
   methods: {
+    getDownloadListingUrl(parkId) {
+      const { baseUrl } = Config;
+      return `${baseUrl}/materials/pdf?park=${parkId}`;
+    },
+
     deletePark(parkId) {
       const isSoft = !this.isTrashDisplayed;
       Alert.ConfirmDelete(this.$t, 'parks', isSoft)

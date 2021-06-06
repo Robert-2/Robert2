@@ -214,6 +214,7 @@ export default {
     'confirm-restore': "Voulez-vous vraiment restaurer ce matériel\u00a0?",
     'saved': "Matériel sauvegardé.",
     'clear-filters': "Réinitialiser les filtres",
+    'print-complete-list': "Imprimer la liste complète",
   },
 
   'page-materials-view': {
@@ -349,6 +350,7 @@ export default {
     'saved': "Parc sauvegardé.",
     'total-items': 'Totaux',
     'display-events-for-park': "Voir les événements",
+    'print-materials-of-this-park': "Imprimer la liste de ce parc",
   },
 
   'page-tags': {

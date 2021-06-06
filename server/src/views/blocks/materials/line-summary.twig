@@ -1,12 +1,9 @@
 <tr>
-    <td>
-        {{ material['reference'] }}
-    </td>
+    <td>{{ material['reference'] }}</td>
     <td>
         {{ material['name'] }}
-
         {% if material['park'] is not null %}
-            <em class="lighter">({{ material['park'] }})</em>
+        <em class="lighter">({{ material['park'] }})</em>
         {% endif %}
 
         {% if material['units'] is not null %}

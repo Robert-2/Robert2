@@ -1,0 +1,16 @@
+<tr>
+    <td>{{ material['reference'] }}</td>
+    <td>
+        {{ material['name'] }}
+        {% if material['park'] is not null %}
+        <em class="lighter">({{ material['park'] }})</em>
+        {% endif %}
+    </td>
+    <td class="right lighter">
+        {{ material['replacementPrice']|format_currency(currency, formatCurrencyOptions, locale) }}
+    </td>
+    <td class="center">
+        {{ material['stockQuantity'] }}
+    </td>
+    <td></td>
+</tr>
