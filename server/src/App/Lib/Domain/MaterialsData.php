@@ -67,8 +67,9 @@ class MaterialsData
             $subCategoriesMaterials[$subCategoryId]['materials'][$reference] = [
                 'reference' => $reference,
                 'name' => $material['name'],
-                'park' => $withPark ? $this->getParkName($material['park_id']) : null,
                 'stockQuantity' => $material['stock_quantity'],
+                'attributes' => $material['attributes'],
+                'park' => $withPark ? $this->getParkName($material['park_id']) : null,
                 'quantity' => $quantity,
                 'rentalPrice' => $price,
                 'replacementPrice' => $replacementPrice,
@@ -111,6 +112,8 @@ class MaterialsData
             $parksMaterials[$parkId]['materials'][$reference] = [
                 'reference' => $reference,
                 'name' => $material['name'],
+                'stockQuantity' => $material['stock_quantity'],
+                'attributes' => $material['attributes'],
                 'park' => null,
                 'quantity' => $quantity,
                 'rentalPrice' => $price,
@@ -150,6 +153,8 @@ class MaterialsData
             $flatMaterials[$reference] = [
                 'reference' => $reference,
                 'name' => $material['name'],
+                'stockQuantity' => $material['stock_quantity'],
+                'attributes' => $material['attributes'],
                 'park' => $withPark ? $this->getParkName($material['park_id']) : null,
                 'quantity' => $quantity,
                 'rentalPrice' => $price,
