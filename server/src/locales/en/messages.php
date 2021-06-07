@@ -2734,4 +2734,10 @@ return [
 
     "enable-javascript-message"
     => "Please enable JavaScript to use this application.",
+
+    "yes"
+    => "Yes",
+
+    "no"
+    => "No",
 ];
