@@ -45,6 +45,7 @@ export default {
     'help': (
       `Click and drag to move timeline.
       Use mouse wheel to zoom in / out.
+      Hover an event with your mouse to display details about it.
       Double-click on an empty column to create an event with start date pre-filled.`
     ),
     'help-center-view-on-today': "Center calendar on today",
@@ -74,6 +75,18 @@ export default {
     'all-events': "All events",
     'event-with-missing-material-only': "Events with missing material only?",
     'display-all-parks': "All parks",
+    'caption': {
+      'title': "Caption:",
+      'archived': "Archived",
+      'past-and-ok': "Past, inventory done and OK",
+      'past-material-not-returned': "Material not returned!",
+      'past-no-inventory': "Past without inventory",
+      'past-not-confirmed': "Past and not confirmed",
+      'current-confirmed': "Current and confirmed",
+      'current-not-confirmed': "Current not confirmed",
+      'future-confirmed': "Future and confirmed",
+      'future-not-confirmed': "Future not confirmed",
+    },
   },
 
   'page-events': {

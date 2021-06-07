@@ -45,6 +45,7 @@ export default {
     'help': (
       `Cliquez-glissez pour déplacer la frise temporelle.
       Utilisez la molette pour zoomer / dézoomer.
+      Survolez un événement avec la souris pour en voir les détails.
       Double-cliquez sur une colonne vide pour créer un événement avec la date de départ pré-remplie.`
     ),
     'help-center-view-on-today': "Centrer le calendrier sur aujourd'hui",
@@ -74,6 +75,18 @@ export default {
     'all-events': "Tous les événements",
     'event-with-missing-material-only': "Événements en manque de matériel uniquement\u00a0?",
     'display-all-parks': "Tous les parcs",
+    'caption': {
+      'title': "Légende\u00a0:",
+      'archived': "Archivé",
+      'past-and-ok': "Passé, inventaire fait et OK",
+      'past-material-not-returned': "Matériel non retourné\u00a0!",
+      'past-no-inventory': "Passé sans inventaire",
+      'past-not-confirmed': "Passé et non confirmé",
+      'current-confirmed': "Actuel et confirmé",
+      'current-not-confirmed': "Actuel non confirmé",
+      'future-confirmed': "Futur et confirmé",
+      'future-not-confirmed': "Futur non confirmé",
+    },
   },
 
   'page-events': {
