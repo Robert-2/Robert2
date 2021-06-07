@@ -2530,6 +2530,9 @@ return [
     "all-parks"
     => "tous les parcs",
 
+    "park-name"
+    => "Parc %s",
+
     "page"
     => "Page %d",
 

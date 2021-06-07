@@ -61,7 +61,12 @@
         <thead>
             <tr>
                 <th style="width: 30mm;">{{ translate('reference') }}</th>
-                <th>{{ translate('designation') }}</th>
+                <th>
+                    {{ translate('designation') }}
+                    {% if park['name'] is not empty %}
+                    <span class="normal lightest">- {{ translate('park-name', park['name']) }}</span>
+                    {% endif %}
+                </th>
                 <th style="width: 20mm;">{{ translate('replacementValue') }}</th>
                 <th style="width: 16mm;">{{ translate('stock-quantity') }}</th>
                 <th style="width: 25mm;">{{ translate('recount-quantity') }}</th>

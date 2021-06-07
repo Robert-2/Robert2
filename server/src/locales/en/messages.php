@@ -2528,6 +2528,9 @@ return [
     "all-parks"
     => "all parks",
 
+    "park-name"
+    => "Park %s",
+
     "page"
     => "Page %d",
 
