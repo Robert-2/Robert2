@@ -51,9 +51,6 @@ class Config
                 'groupsMapping' => [],
             ],
         ],
-        'eventSummary' => [
-            'materialDisplayMode' => 'sub-categories', // - ['flat', 'sub-categories', 'parks']
-        ],
         'currency' => [
           'symbol' => '€',
           'name' => 'Euro',

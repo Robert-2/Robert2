@@ -149,7 +149,16 @@
     </tbody>
 </table>
 
+
 <table class="layout-table">
+    {% if customText is not empty %}
+    <tr>
+        <td style="padding: 3mm 0;" colspan="2">
+            <h2>{{ customTextTitle }}</h2>
+            <p>{{ customText|nl2br }}</p>
+        </td>
+    </tr>
+    {% endif %}
     <tr>
         <td class="half inset">
             <h3 class="center">{{ translate('output') }}</h3>

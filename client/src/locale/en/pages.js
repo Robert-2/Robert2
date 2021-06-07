@@ -371,6 +371,19 @@ export default {
 
   'page-settings': {
     'title': "Application settings",
+    'event-summary': {
+      'title': "Event summaries",
+      'help': "Here you can customize the PDF event summaries",
+      'material-list': "Materials list",
+      'display-mode': "Display mode",
+      'list-display-mode-sub-categories': "Sorted by sub-categories",
+      'list-display-mode-parks': "Sorted by parks",
+      'list-display-mode-flat': "Not sorted",
+      'custom-text': "Custom text (bottom of page)",
+      'custom-text-title': "Text title",
+      'custom-text-content': "Text content",
+      'saved': "Event summaries settings were successfully saved.",
+    },
     'material-units': {
       'title': "Material units",
       'help': "",

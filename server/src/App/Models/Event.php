@@ -349,7 +349,7 @@ class Event extends BaseModel
         $EventData = new EventData($date, $event, 'summary', $event['user_id']);
         $EventData->setCategories($categories)->setParks($parks);
 
-        $materialDisplayMode = Config::getSettings('eventSummary')['materialDisplayMode'];
+        $materialDisplayMode = Setting::getWithKey('event_summary_material_display_mode');
         if ($materialDisplayMode === 'sub-categories') {
             $materialList = $EventData->getMaterialBySubCategories(true);
         } elseif ($materialDisplayMode === 'parks' && count($parks) > 1) {
@@ -357,6 +357,9 @@ class Event extends BaseModel
         } else {
             $materialList = $EventData->getMaterialsFlat(true);
         }
+
+        $customTextTitle = Setting::getWithKey('event_summary_custom_text_title');
+        $customText = Setting::getWithKey('event_summary_custom_text');
 
         $data = [
             'event' => $event,
@@ -368,6 +371,8 @@ class Event extends BaseModel
             'materialList' => $materialList,
             'materialDisplayMode' => $materialDisplayMode,
             'replacementAmount' => $EventData->getReplacementAmount(),
+            'customTextTitle' => $customTextTitle,
+            'customText' => $customText,
         ];
 
         $eventPdf = $this->_getPdfAsString($data);

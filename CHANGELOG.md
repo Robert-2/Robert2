@@ -13,6 +13,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Ajoute la possibilité d'imprimer (en PDF) une liste de tout le matériel (ou de chaque parc séparément), à des fins d'inventaire (#149).
 - Ajoute la possibilité d'archiver un événement, s'il est passé et que son inventaire de retour a été effectué (#152) (👏 @adamlarat).
 - Ajoute des données aux unités de matériel, ainsi que la gestion de leurs états (Premium #21).
+- Ajoute la gestion des paramètres des fiches de sortie, en ajoutant la possibilité de mettre un texte personnalisé en bas de page des fiches de sortie (#150).
 
 ## 0.13.3-premium (2021-05-27)
 
