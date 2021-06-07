@@ -2528,6 +2528,9 @@ return [
     "all-parks"
     => "all parks",
 
+    "park-name"
+    => "Park %s",
+
     "page"
     => "Page %d",
 
@@ -2737,4 +2740,10 @@ return [
 
     "enable-javascript-message"
     => "Please enable JavaScript to use this application.",
+
+    "yes"
+    => "Yes",
+
+    "no"
+    => "No",
 ];

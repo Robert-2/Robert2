@@ -68,14 +68,15 @@ class MaterialsData
                 $units = [];
                 $stockQuantity = 0;
 
-                if (array_key_exists('pivot', $material)) {
-                    $material['units'] = array_filter($material['units'], function ($unit) use ($material) {
-                        return in_array($unit['id'], $material['pivot']['units']);
-                    });
-                }
-
                 foreach ($material['units'] as $unit) {
                     $stockQuantity += 1;
+
+                    if (array_key_exists('pivot', $material)
+                        && !in_array($unit['id'], $material['pivot']['units'])
+                    ) {
+                        continue;
+                    }
+
                     $units[] = [
                         'name' => $unit['reference'],
                         'park' => count($this->parks) > 1 ? $this->getParkName($unit['park_id']) : null,
@@ -88,8 +89,9 @@ class MaterialsData
             $subCategoriesMaterials[$subCategoryId]['materials'][$reference] = [
                 'reference' => $reference,
                 'name' => $material['name'],
-                'park' => $withPark ? $this->getParkName($material['park_id']) : null,
                 'stockQuantity' => $stockQuantity,
+                'attributes' => $material['attributes'],
+                'park' => $withPark ? $this->getParkName($material['park_id']) : null,
                 'quantity' => $quantity,
                 'units' => $units,
                 'rentalPrice' => $price,
@@ -117,18 +119,17 @@ class MaterialsData
             }
 
             $reference = $material['reference'];
+            $stockQuantity = $material['stock_quantity'];
             $quantity = array_key_exists('pivot', $material) ? $material['pivot']['quantity'] : 0;
             $replacementPrice = $material['replacement_price'];
 
-            if ($material['is_unitary'] && array_key_exists('pivot', $material)) {
+            if ($material['is_unitary']) {
                 $units = [];
-                $quantity = 1;
-                foreach ($material['pivot']['units'] as $unitId) {
-                    $unit = current(array_filter($material['units'], function ($unit) use ($unitId) {
-                        return $unit['id'] === $unitId;
-                    }));
 
-                    if (!$unit) {
+                foreach ($material['units'] as $unit) {
+                    if (array_key_exists('pivot', $material)
+                        && !in_array($unit['id'], $material['pivot']['units'])
+                    ) {
                         continue;
                     }
 
@@ -158,13 +159,14 @@ class MaterialsData
                     $parksMaterials[$unitParkId]['materials'][$reference] = [
                         'reference' => $reference,
                         'name' => $material['name'],
-                        'stockQuantity' => $material['stock_quantity'],
+                        'stockQuantity' => $stockQuantity,
+                        'attributes' => $material['attributes'],
                         'park' => null,
                         'units' => $units,
                         'quantity' => $quantity,
                         'rentalPrice' => $price,
                         'replacementPrice' => $replacementPrice,
-                        'total' => $price,
+                        'total' => $price * $quantity,
                         'totalReplacementPrice' => $replacementPrice * $quantity,
                     ];
                 }
@@ -185,7 +187,8 @@ class MaterialsData
             $parksMaterials[$parkId]['materials'][$reference] = [
                 'reference' => $reference,
                 'name' => $material['name'],
-                'stockQuantity' => $material['stock_quantity'],
+                'stockQuantity' => $stockQuantity,
+                'attributes' => $material['attributes'],
                 'park' => null,
                 'units' => null,
                 'quantity' => $quantity,
@@ -223,10 +226,33 @@ class MaterialsData
             $quantity = array_key_exists('pivot', $material) ? $material['pivot']['quantity'] : 0;
             $replacementPrice = $material['replacement_price'];
 
+            $units = null;
+            if ($material['is_unitary']) {
+                $units = [];
+                $stockQuantity = 0;
+
+                foreach ($material['units'] as $unit) {
+                    $stockQuantity += 1;
+
+                    if (array_key_exists('pivot', $material)
+                        && !in_array($unit['id'], $material['pivot']['units'])
+                    ) {
+                        continue;
+                    }
+
+                    $units[] = [
+                        'name' => $unit['reference'],
+                        'park' => count($this->parks) > 1 ? $this->getParkName($unit['park_id']) : null,
+                    ];
+                }
+            }
+
             $flatMaterials[$reference] = [
                 'reference' => $reference,
                 'name' => $material['name'],
                 'stockQuantity' => $material['stock_quantity'],
+                'attributes' => $material['attributes'],
+                'units' => $units,
                 'park' => $withPark ? $this->getParkName($material['park_id']) : null,
                 'quantity' => $quantity,
                 'rentalPrice' => $price,

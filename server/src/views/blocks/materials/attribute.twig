@@ -1,0 +1,11 @@
+<span class="lighter" style="margin-right: 2mm;">
+    {{ attribute['name'] }} :
+    {% if attribute['type'] == 'boolean' %}
+    {{ attribute['value'] == '1' ? translate("yes") : translate("no") }}
+    {% elseif attribute['type'] == 'date' %}
+    {{ attribute['value']|format_date('short', locale=locale) }}
+    {% else %}
+    {{ attribute['value'] }}
+    {% endif %}
+    {{ attribute['unit'] }}
+</span>

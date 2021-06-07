@@ -2,6 +2,12 @@
     <td>{{ material['reference'] }}</td>
     <td>
         {{ material['name'] }}
+        {% if material['attributes'] is not empty %}
+        <br />
+        {% for attribute in material['attributes'] %}
+            {{ include('blocks/materials/attribute.twig', { attribute: attribute }) }}
+        {% endfor %}
+        {% endif %}
 
         {% if material['units'] is not empty %}
         <ul style="margin: 1mm 0 0;">
