@@ -73,11 +73,11 @@ final class EventDataWithUnitsTest extends ModelTestCase
                     'XR18' => [
                         'reference' => 'XR18',
                         'name' => 'Behringer X Air XR18',
-                        'stockQuantity' => 3,
+                        'stockQuantity' => 2,
                         'park' => null,
                         'units' => [
-                            ['name' => 'XR18-3', 'park' => 'spare'],
                             ['name' => 'XR18-1', 'park' => 'default'],
+                            ['name' => 'XR18-3', 'park' => 'spare'],
                         ],
                         'quantity' => 2,
                         'rentalPrice' => 49.99,
@@ -336,11 +336,11 @@ final class EventDataWithUnitsTest extends ModelTestCase
                         'XR18' => [
                             'reference' => 'XR18',
                             'name' => 'Behringer X Air XR18',
-                            'stockQuantity' => 3,
+                            'stockQuantity' => 2,
                             'park' => null,
                             'units' => [
-                                ['name' => 'XR18-3', 'park' => 'spare'],
                                 ['name' => 'XR18-1', 'park' => 'default'],
+                                ['name' => 'XR18-3', 'park' => 'spare'],
                             ],
                             'quantity' => 2,
                             'rentalPrice' => 49.99,

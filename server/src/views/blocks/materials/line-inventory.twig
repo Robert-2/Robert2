@@ -2,8 +2,13 @@
     <td>{{ material['reference'] }}</td>
     <td>
         {{ material['name'] }}
-        {% if material['park'] is not null %}
-        <em class="lighter">({{ material['park'] }})</em>
+
+        {% if material['units'] is not empty %}
+        <ul style="margin: 1mm 0 0;">
+        {% for unit in material['units'] %}
+            <li>{{ unit['name'] }}</li>
+        {% endfor %}
+        </ul>
         {% endif %}
     </td>
     <td class="right lighter">

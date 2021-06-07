@@ -442,7 +442,7 @@ class MaterialController extends BaseController
         $onlyParkId = $request->getQueryParam('park', null);
 
         $categories = Category::get()->toArray();
-        $parks = Park::with('materials')->get()->toArray();
+        $parks = Park::with('materials', 'materialUnits')->get()->toArray();
 
         $parksMaterials = [];
         foreach ($parks as $park) {
@@ -450,11 +450,29 @@ class MaterialController extends BaseController
                 continue;
             }
 
+            if (!empty($park['material_units'])) {
+                foreach ($park['material_units'] as $unit) {
+                    $materialIdentifier = sprintf('materialId-%d', $unit['material_id']);
+                    if (array_key_exists($materialIdentifier, $park['materials'])) {
+                        continue;
+                    }
+
+                    $material = Material::find($unit['material_id'])->toArray();
+                    $material['units'] = array_filter(
+                        $material['units'],
+                        function ($materialUnit) use ($park) {
+                            return $park['id'] === $materialUnit['park_id'] && !$materialUnit['is_lost'];
+                        }
+                    );
+                    $park['materials'][$materialIdentifier] = $material;
+                }
+            }
+
             if (empty($park['materials'])) {
                 continue;
             }
 
-            $materialsData = new MaterialsData($park['materials']);
+            $materialsData = new MaterialsData(array_values($park['materials']));
             $materialsData->setParks($parks)->setCategories($categories);
             $parksMaterials[] = [
                 'id' => $park['id'],
