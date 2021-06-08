@@ -19,8 +19,11 @@
     padding-bottom: 3rem;
   }
 
-  .FormField + .FormField {
-    margin-top: 1rem;
+  .FormField + .FormField,
+  .SelectSearch + .SelectSearch,
+  .FormField + .SelectSearch,
+  .SelectSearch + .FormField  {
+    margin-top: $content-padding-small-vertical;
   }
 
   input + input {

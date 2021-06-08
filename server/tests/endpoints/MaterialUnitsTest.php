@@ -1,10 +1,14 @@
 <?php
 namespace Robert2\Tests;
 
+use Robert2\API\Models\Person;
+
 final class MaterialUnitsTest extends ApiTestCase
 {
     public function testGetUnit()
     {
+        $unitOwner = Person::find(1)->toArray();
+
         $this->client->get('/api/material-units/1');
         $this->assertStatusCode(SUCCESS_OK);
         $this->assertResponseData([
@@ -13,11 +17,13 @@ final class MaterialUnitsTest extends ApiTestCase
             'reference' => 'XR18-1',
             'serial_number' => null,
             'park_id' => 1,
+            'person_id' => 1,
             'is_broken' => false,
             'is_lost' => false,
             'material_unit_state_id' => 1,
             'purchase_date' => '2020-02-01',
             'notes' => 'Ce bon vieux XR-18',
+            'owner' => $unitOwner,
             'state' => [
                 'id' => 1,
                 'name' => 'Bon état',
@@ -57,11 +63,13 @@ final class MaterialUnitsTest extends ApiTestCase
                         'reference' => 'XR18-1',
                         'serial_number' => null,
                         'park_id' => 1,
+                        'person_id' => 1,
                         'is_broken' => false,
                         'is_lost' => false,
                         'material_unit_state_id' => 1,
                         'purchase_date' => '2020-02-01',
                         'notes' => 'Ce bon vieux XR-18',
+                        'owner' => $unitOwner,
                         'state' => [
                             'id' => 1,
                             'name' => 'Bon état',
@@ -75,11 +83,13 @@ final class MaterialUnitsTest extends ApiTestCase
                         'reference' => 'XR18-2',
                         'serial_number' => null,
                         'park_id' => 1,
+                        'person_id' => null,
                         'is_broken' => false,
                         'is_lost' => false,
                         'material_unit_state_id' => 2,
                         'purchase_date' => null,
                         'notes' => null,
+                        'owner' => null,
                         'state' => [
                             'id' => 2,
                             'name' => 'État médiocre',
@@ -93,11 +103,13 @@ final class MaterialUnitsTest extends ApiTestCase
                         'reference' => 'XR18-3',
                         'serial_number' => null,
                         'park_id' => 2,
+                        'person_id' => null,
                         'is_broken' => true,
                         'is_lost' => false,
                         'material_unit_state_id' => null,
                         'purchase_date' => null,
                         'notes' => null,
+                        'owner' => null,
                         'state' => null,
                     ]
                 ],
@@ -123,6 +135,7 @@ final class MaterialUnitsTest extends ApiTestCase
             'id' => 7,
             'material_id' => 7,
             'park_id' => 1,
+            'person_id' => null,
             'reference' => 'VHCL-2',
             'serial_number' => '123456-000020',
             'is_broken' => true,
@@ -130,6 +143,7 @@ final class MaterialUnitsTest extends ApiTestCase
             'material_unit_state_id' => null,
             'purchase_date' => null,
             'notes' => null,
+            'owner' => null,
             'state' => null,
             'created_at' => 'fakedTestContent',
             'updated_at' => 'fakedTestContent',
@@ -145,6 +159,7 @@ final class MaterialUnitsTest extends ApiTestCase
             'id' => 1000,
             'material_id' => 6,
             'park_id' => 2,
+            'person_id' => null,
             'reference' => 'VHCL-3',
             'serial_number' => '123456-000030',
             'is_broken' => false,
@@ -157,6 +172,7 @@ final class MaterialUnitsTest extends ApiTestCase
             'id' => 7,
             'material_id' => 7,
             'park_id' => 2,
+            'person_id' => null,
             'reference' => 'VHCL-3',
             'serial_number' => '123456-000030',
             'is_broken' => false,
@@ -164,6 +180,7 @@ final class MaterialUnitsTest extends ApiTestCase
             'material_unit_state_id' => 2,
             'purchase_date' => '2020-02-02',
             'notes' => 'On a perdu ceci!',
+            'owner' => null,
             'state' => [
                 'id' => 2,
                 'name' => 'État médiocre',
@@ -238,6 +255,7 @@ final class MaterialUnitsTest extends ApiTestCase
         $data = [
             'is_broken' => true,
             'park_id' => 2,
+            'person_id' => null,
             'material_unit_state_id' => 1,
             'purchase_date' => '2020-05-31',
             'notes' => 'Une petite note',
@@ -246,6 +264,7 @@ final class MaterialUnitsTest extends ApiTestCase
             'id' => 1,
             'material_id' => 6,
             'park_id' => 2,
+            'person_id' => null,
             'reference' => 'XR18-1',
             'serial_number' => null,
             'is_broken' => true,
@@ -253,6 +272,7 @@ final class MaterialUnitsTest extends ApiTestCase
             'material_unit_state_id' => 1,
             'purchase_date' => '2020-05-31',
             'notes' => 'Une petite note',
+            'owner' => null,
             'state' => [
                 'id' => 1,
                 'name' => 'Bon état',
@@ -273,6 +293,7 @@ final class MaterialUnitsTest extends ApiTestCase
             'id' => 5,
             'material_id' => 8,
             'park_id' => 1,
+            'person_id' => null,
             'reference' => 'DECOR-FOREST-1',
             'serial_number' => null,
             'is_broken' => true,
@@ -280,6 +301,7 @@ final class MaterialUnitsTest extends ApiTestCase
             'material_unit_state_id' => null,
             'purchase_date' => null,
             'notes' => null,
+            'owner' => null,
             'state' => null,
             'created_at' => null,
             'updated_at' => 'fakedTestContent',

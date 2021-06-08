@@ -121,6 +121,7 @@ class Material extends BaseModel
             'reference',
             'serial_number',
             'park_id',
+            'person_id',
             'is_broken',
             'is_lost',
             'material_unit_state_id',

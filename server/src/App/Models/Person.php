@@ -82,6 +82,11 @@ class Person extends BaseModel
         return $this->belongsTo('Robert2\API\Models\Company');
     }
 
+    public function MaterialUnits()
+    {
+        return $this->hasMany('Robert2\API\Models\MaterialUnit');
+    }
+
     // ——————————————————————————————————————————————————————
     // —
     // —    Mutators

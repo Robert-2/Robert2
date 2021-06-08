@@ -3,8 +3,9 @@ declare(strict_types=1);
 
 namespace Robert2\Tests;
 
-use Robert2\API\Models;
 use Robert2\API\Errors;
+use Robert2\API\Models\SubCategory;
+use Robert2\API\Models\Person;
 
 final class SubCategoryTest extends ModelTestCase
 {
@@ -12,7 +13,7 @@ final class SubCategoryTest extends ModelTestCase
     {
         parent::setUp();
 
-        $this->model = new Models\SubCategory();
+        $this->model = new SubCategory();
     }
 
     public function testTableName(): void
@@ -52,6 +53,8 @@ final class SubCategoryTest extends ModelTestCase
 
     public function testGetMaterials(): void
     {
+        $unitOwner = Person::find(1)->toArray();
+
         $SubCategory = $this->model::find(1);
         $results = $SubCategory->materials;
         $this->assertEquals([
@@ -82,11 +85,13 @@ final class SubCategoryTest extends ModelTestCase
                         'reference' => 'XR18-1',
                         'serial_number' => null,
                         'park_id' => 1,
+                        'person_id' => 1,
                         'is_broken' => false,
                         'is_lost' => false,
                         'material_unit_state_id' => 1,
                         'purchase_date' => '2020-02-01',
                         'notes' => 'Ce bon vieux XR-18',
+                        'owner' => $unitOwner,
                         'state' => [
                             'id' => 1,
                             'name' => 'Bon état',
@@ -100,11 +105,13 @@ final class SubCategoryTest extends ModelTestCase
                         'reference' => 'XR18-2',
                         'serial_number' => null,
                         'park_id' => 1,
+                        'person_id' => null,
                         'is_broken' => false,
                         'is_lost' => false,
                         'material_unit_state_id' => 2,
                         'purchase_date' => null,
                         'notes' => null,
+                        'owner' => null,
                         'state' => [
                             'id' => 2,
                             'name' => 'État médiocre',
@@ -118,11 +125,13 @@ final class SubCategoryTest extends ModelTestCase
                         'reference' => 'XR18-3',
                         'serial_number' => null,
                         'park_id' => 2,
+                        'person_id' => null,
                         'is_broken' => true,
                         'is_lost' => false,
                         'material_unit_state_id' => null,
                         'purchase_date' => null,
                         'notes' => null,
+                        'owner' => null,
                         'state' => null,
                     ],
                 ],
