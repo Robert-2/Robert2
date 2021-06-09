@@ -1,5 +1,4 @@
 import { Tabs, Tab } from 'vue-slim-tabs';
-import store from '@/store';
 import Help from '@/components/Help/Help.vue';
 import Infos from './Infos/Infos.vue';
 import Documents from './Documents/Documents.vue';
@@ -37,7 +36,7 @@ export default {
     }
   },
   mounted() {
-    store.dispatch('categories/fetch');
+    this.$store.dispatch('categories/fetch');
 
     this.fetchMaterial();
   },
@@ -78,7 +77,7 @@ export default {
 
     setMaterialData(data) {
       this.material = data;
-      store.commit('setPageSubTitle', this.material.name);
+      this.$store.commit('setPageSubTitle', this.material.name);
     },
   },
 };

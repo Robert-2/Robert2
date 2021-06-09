@@ -1,5 +1,4 @@
 import moment from 'moment';
-import store from '@/store';
 import ModalConfig from '@/config/modalConfig';
 import formatTimelineEvent from '@/utils/timeline-event/format';
 import Help from '@/components/Help/Help.vue';
@@ -36,7 +35,7 @@ export default {
         start,
         end,
         editable: false,
-        locale: store.state.i18n.locale,
+        locale: this.$store.state.i18n.locale,
         height: '100%',
         orientation: 'top',
         zoomMin: ONE_DAY * 7,

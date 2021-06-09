@@ -1,6 +1,5 @@
 import './index.scss';
 import moment from 'moment';
-import store from '@/store';
 import Help from '@/components/Help/Help.vue';
 import MultiSwitch from '@/components/MultiSwitch';
 
@@ -28,8 +27,8 @@ const EventReturnHeader = {
     },
   },
   created() {
-    store.dispatch('categories/fetch');
-    store.dispatch('parks/fetch');
+    this.$store.dispatch('categories/fetch');
+    this.$store.dispatch('parks/fetch');
   },
   methods: {
     setDisplayGroup(group) {

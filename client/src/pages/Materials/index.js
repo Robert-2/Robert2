@@ -4,7 +4,7 @@ import ModalConfig from '@/config/modalConfig';
 import Alert from '@/components/Alert';
 import Help from '@/components/Help/Help.vue';
 import isValidInteger from '@/utils/isValidInteger';
-import PromptDate from '@/components/PromptDate/PromptDate.vue';
+import PromptDate from '@/components/PromptDate';
 import AssignTags from '@/components/AssignTags/AssignTags.vue';
 import MaterialsFilters from '@/components/MaterialsFilters/MaterialsFilters.vue';
 import MaterialTags from '@/components/MaterialTags/MaterialTags.vue';

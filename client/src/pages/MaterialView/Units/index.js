@@ -1,5 +1,4 @@
 import moment from 'moment';
-import store from '@/store';
 import Alert from '@/components/Alert';
 import Config from '@/config/globalConfig';
 
@@ -49,16 +48,16 @@ export default {
     };
   },
   mounted() {
-    store.dispatch('parks/fetch');
-    store.dispatch('unitStates/fetch');
+    this.$store.dispatch('parks/fetch');
+    this.$store.dispatch('unitStates/fetch');
   },
   methods: {
     getParkName(parkId) {
-      return store.getters['parks/parkName'](parkId);
+      return this.$store.getters['parks/parkName'](parkId);
     },
 
     getUnitStateName(unitStateId) {
-      return store.getters['unitStates/unitStateName'](unitStateId) || '?';
+      return this.$store.getters['unitStates/unitStateName'](unitStateId) || '?';
     },
 
     getFileUrl(unitId) {

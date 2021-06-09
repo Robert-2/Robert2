@@ -1,5 +1,3 @@
-import store from '@/store';
-
 export default {
   name: 'MaterialsListUnit',
   props: {
@@ -7,12 +5,12 @@ export default {
     isSelected: Boolean,
   },
   mounted() {
-    store.dispatch('parks/fetch');
+    this.$store.dispatch('parks/fetch');
   },
   computed: {
     park() {
       const parkId = this.data.park_id;
-      return store.getters['parks/parkName'](parkId);
+      return this.$store.getters['parks/parkName'](parkId);
     },
 
     isAvailable() {

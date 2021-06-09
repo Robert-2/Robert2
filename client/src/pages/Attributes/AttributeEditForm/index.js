@@ -1,5 +1,3 @@
-import store from '@/store';
-
 export default {
   name: 'AttributeEditForm',
   props: { errors: Object },
@@ -12,12 +10,12 @@ export default {
   },
   computed: {
     categoriesOptions() {
-      return store.getters['categories/options']
+      return this.$store.getters['categories/options']
         .filter(({ value }) => value !== '');
     },
   },
   mounted() {
-    store.dispatch('categories/fetch');
+    this.$store.dispatch('categories/fetch');
   },
   methods: {
     handleTypeChange(e) {

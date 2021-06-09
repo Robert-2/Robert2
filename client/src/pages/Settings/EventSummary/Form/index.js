@@ -1,5 +1,5 @@
 import './index.scss';
-import FormField from '@/components/FormField/FormField.vue';
+import FormField from '@/components/FormField';
 
 const LIST_MODES = ['sub-categories', 'parks', 'flat'];
 

@@ -1,5 +1,4 @@
 import './index.scss';
-import store from '@/store';
 import Help from '@/components/Help/Help.vue';
 import StateItem from './StateItem';
 
@@ -42,7 +41,7 @@ export default {
       this.isLoading = false;
       this.startNew = false;
       this.fetchUnitStates();
-      store.dispatch('unitStates/refresh');
+      this.$store.dispatch('unitStates/refresh');
     },
 
     handleCancel() {

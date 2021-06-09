@@ -1,5 +1,4 @@
 import Unit from './Unit/Unit.vue';
-import store from '../MaterialsStore';
 
 export default {
   name: 'MaterialsListUnits',
@@ -32,7 +31,7 @@ export default {
   },
   computed: {
     selected() {
-      return store.getters.getUnits(this.material.id);
+      return this.$store.getters.getUnits(this.material.id);
     },
 
     units() {
@@ -51,7 +50,7 @@ export default {
   },
   methods: {
     handleToggleUnit(id) {
-      store.commit('toggleUnit', { material: this.material, unitId: id });
+      this.$store.commit('toggleUnit', { material: this.material, unitId: id });
       this.$emit('change');
     },
 

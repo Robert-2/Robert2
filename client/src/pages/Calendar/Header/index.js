@@ -1,5 +1,5 @@
 import moment from 'moment';
-import FormField from '@/components/FormField/FormField.vue';
+import FormField from '@/components/FormField';
 import SwitchToggle from '@/components/SwitchToggle/SwitchToggle.vue';
 import Help from '@/components/Help/Help.vue';
 

@@ -1,5 +1,5 @@
 import './index.scss';
-import FormField from '@/components/FormField/FormField.vue';
+import FormField from '@/components/FormField';
 import Alert from '@/components/Alert';
 
 export default {

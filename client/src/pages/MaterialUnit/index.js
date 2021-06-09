@@ -1,7 +1,7 @@
 import moment from 'moment';
 import getPersonItemLabel from '@/utils/getPersonItemLabel';
 import formatOptions from '@/utils/formatOptions';
-import FormField from '@/components/FormField/FormField.vue';
+import FormField from '@/components/FormField';
 import SelectSearch from '@/components/SelectSearch';
 import Help from '@/components/Help/Help.vue';
 

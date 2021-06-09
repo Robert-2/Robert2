@@ -4,11 +4,11 @@ import Config from '@/config/globalConfig';
 import getDiscountRateFromLast from '@/utils/getDiscountRateFromLast';
 import Alert from '@/components/Alert';
 import Help from '@/components/Help/Help.vue';
-import EventMaterials from '@/components/EventMaterials/EventMaterials.vue';
+import EventMaterials from '@/components/EventMaterials';
 import EventMissingMaterials from '@/components/EventMissingMaterials/EventMissingMaterials.vue';
 import EventBilling from '@/components/EventBilling/EventBilling.vue';
 import EventEstimates from '@/components/EventEstimates/EventEstimates.vue';
-import EventTotals from '@/components/EventTotals/EventTotals.vue';
+import EventTotals from '@/components/EventTotals';
 
 export default {
   name: 'EventOverview',
