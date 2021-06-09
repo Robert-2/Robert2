@@ -6,12 +6,12 @@ import Alert from '@/components/Alert';
 import Help from '@/components/Help/Help.vue';
 import LocationText from '@/components/LocationText/LocationText.vue';
 import PersonsList from '@/components/PersonsList/PersonsList.vue';
-import EventMaterials from '@/components/EventMaterials/EventMaterials.vue';
+import EventMaterials from '@/components/EventMaterials';
 import EventMissingMaterials from '@/components/EventMissingMaterials/EventMissingMaterials.vue';
 import ReturnInventorySummary from '@/components/ReturnInventorySummary';
 import EventEstimates from '@/components/EventEstimates/EventEstimates.vue';
 import EventBilling from '@/components/EventBilling/EventBilling.vue';
-import EventTotals from '@/components/EventTotals/EventTotals.vue';
+import EventTotals from '@/components/EventTotals';
 import formatTimelineEvent from '@/utils/timeline-event/format';
 import Header from './Header/Header.vue';
 

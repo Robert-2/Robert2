@@ -1,4 +1,4 @@
-import store from '@/store';
+import './index.scss';
 import Config from '@/config/globalConfig';
 import formatAmount from '@/utils/formatAmount';
 import getMaterialItemsCount from '@/utils/getMaterialItemsCount';
@@ -7,11 +7,9 @@ import getEventOneDayTotalDiscountable from '@/utils/getEventOneDayTotalDiscount
 import getEventGrandTotal from '@/utils/getEventGrandTotal';
 import getEventReplacementTotal from '@/utils/getEventReplacementTotal';
 import decimalRound from '@/utils/decimalRound';
-import FormField from '@/components/FormField/FormField.vue';
 
 export default {
   name: 'EventTotals',
-  components: { FormField },
   props: {
     materials: Array,
     withRentalPrices: Boolean,
@@ -26,7 +24,7 @@ export default {
     };
   },
   created() {
-    store.dispatch('categories/fetch');
+    this.$store.dispatch('categories/fetch');
   },
   computed: {
     ratio() {
@@ -80,9 +78,75 @@ export default {
     recalcDiscountRate(newVal) {
       this.discountTarget = parseFloat(newVal);
     },
+  },
+  render() {
+    const {
+      $t: __,
+      withRentalPrices,
+      itemsCount,
+      total,
+      duration,
+      ratio,
+      grandTotal,
+      discountRate,
+      totalDiscountable,
+      grandTotalDiscountable,
+      discountAmount,
+      grandTotalWithDiscount,
+      replacementTotal,
+    } = this;
 
-    formatAmount(amount) {
-      return formatAmount(amount);
-    },
+    return (
+      <section class="EventTotals">
+        {withRentalPrices && (
+          <div class="EventTotals__rental-prices">
+            <div class="EventTotals__base">
+              {__('total')}:
+              <span class="EventTotals__items-count">
+                {__('items-count', { count: itemsCount }, itemsCount)}
+              </span>
+              <span class="EventTotals__daily-total">
+                <i class="fas fa-arrow-right" /> {formatAmount(total)}
+              </span>
+              <span class="EventTotals__duration">
+                <i class="fas fa-times" /> {__('days-count', { duration }, duration)}
+              </span>
+              <span class="EventTotals__ratio">
+                <i class="fas fa-arrow-right" /> {__('ratio')}&nbsp;{ratio}
+              </span>
+            </div>
+            <div class="EventTotals__grand">
+              {__('total-amount')}:&nbsp;{formatAmount(grandTotal)}
+            </div>
+            {(discountRate > 0 && totalDiscountable !== total) && (
+              <div class="EventTotals__discountable">
+                {__('total-discountable')}:
+                {formatAmount(totalDiscountable)}&nbsp;/&nbsp;{__('day')}
+                <i class="fas fa-arrow-right" /> {formatAmount(grandTotalDiscountable)}
+              </div>
+            )}
+            {discountRate > 0 && (
+              <div class="EventTotals__discount">
+                {__('discount')} {{ discountRate }} %
+                <i class="fas fa-arrow-right" /> - {formatAmount(discountAmount)}
+              </div>
+            )}
+            {discountRate > 0 && (
+              <div class="EventTotals__grand-discount">
+                {__('total-amount-with-discount')}: {formatAmount(grandTotalWithDiscount)}
+              </div>
+            )}
+            {duration > 1 && (
+              <div class="EventTotals__daily">
+                ({formatAmount(grandTotalWithDiscount / duration)}&nbsp;/&nbsp;{__('day')})
+              </div>
+            )}
+          </div>
+        )}
+        <div class="EventTotals__replacement">
+          {__('replacement-total')}: {formatAmount(replacementTotal)}
+        </div>
+      </section>
+    );
   },
 };

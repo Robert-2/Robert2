@@ -1,5 +1,4 @@
-import FormField from '@/components/FormField/FormField.vue';
-import store from '@/store';
+import FormField from '@/components/FormField';
 
 export default {
   name: 'PersonForm',
@@ -12,16 +11,16 @@ export default {
   },
   computed: {
     countriesOptions() {
-      return store.getters['countries/options'];
+      return this.$store.getters['countries/options'];
     },
 
     companiesOptions() {
-      return store.getters['companies/options'];
+      return this.$store.getters['companies/options'];
     },
   },
   mounted() {
-    store.dispatch('countries/fetch');
-    store.dispatch('companies/fetch');
+    this.$store.dispatch('countries/fetch');
+    this.$store.dispatch('companies/fetch');
   },
   methods: {
     doSubmit(e) {

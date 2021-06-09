@@ -17,7 +17,7 @@
 
 <script>
 import Vue from 'vue';
-import MainHeader from '@/components/MainHeader/MainHeader.vue';
+import MainHeader from '@/components/MainHeader';
 import SideNav from '@/components/SideNav/SideNav.vue';
 
 export default {

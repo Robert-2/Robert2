@@ -1,7 +1,7 @@
 import moment from 'moment';
 import Config from '@/config/globalConfig';
 import { DATE_DB_FORMAT } from '@/config/constants';
-import FormField from '@/components/FormField/FormField.vue';
+import FormField from '@/components/FormField';
 import EventStore from '../EventStore';
 
 export default {

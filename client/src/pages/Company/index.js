@@ -1,7 +1,7 @@
 import Config from '@/config/globalConfig';
 import store from '@/store';
 import Help from '@/components/Help/Help.vue';
-import CompanyForm from '@/components/CompanyForm/CompanyForm.vue';
+import CompanyForm from '@/components/CompanyForm';
 
 export default {
   name: 'Company',
@@ -71,8 +71,7 @@ export default {
         .catch(this.displayError);
     },
 
-    saveCompany(e) {
-      e.preventDefault();
+    saveCompany() {
       this.resetHelpLoading();
 
       const { id } = this.company;

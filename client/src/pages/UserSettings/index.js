@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Help from '@/components/Help/Help.vue';
-import FormField from '@/components/FormField/FormField.vue';
+import FormField from '@/components/FormField';
 
 export default {
   name: 'UserSettings',
