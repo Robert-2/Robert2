@@ -1,7 +1,6 @@
 import './EventReturn.scss';
 import moment from 'moment';
 import Swal from 'sweetalert2/dist/sweetalert2';
-import store from '@/store';
 import dispatchMaterialInSections from '@/utils/dispatchMaterialInSections';
 import formatAmount from '@/utils/formatAmount';
 import EventReturnHeader from './Header';
@@ -30,8 +29,8 @@ const EventReturnPage = {
   },
   computed: {
     listData() {
-      const categoryNameGetter = store.getters['categories/categoryName'];
-      const parkNameGetter = store.getters['parks/parkName'];
+      const categoryNameGetter = this.$store.getters['categories/categoryName'];
+      const parkNameGetter = this.$store.getters['parks/parkName'];
 
       switch (this.displayGroup) {
         case 'categories':
@@ -91,7 +90,7 @@ const EventReturnPage = {
 
       this.initQuantities();
 
-      store.commit('setPageSubTitle', data.title);
+      this.$store.commit('setPageSubTitle', data.title);
     },
 
     initQuantities() {

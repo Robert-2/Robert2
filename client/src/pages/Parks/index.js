@@ -1,4 +1,3 @@
-import store from '@/store';
 import Config from '@/config/globalConfig';
 import formatAmount from '@/utils/formatAmount';
 import Alert from '@/components/Alert';
@@ -68,7 +67,7 @@ export default {
   },
   computed: {
     parksCount() {
-      return store.state.parks.list.length;
+      return this.$store.state.parks.list.length;
     },
   },
   methods: {
@@ -114,7 +113,7 @@ export default {
       this.error = null;
       this.isLoading = true;
       this.$refs.DataTable.refresh();
-      store.dispatch('parks/refresh');
+      this.$store.dispatch('parks/refresh');
     },
 
     showTrashed() {

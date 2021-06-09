@@ -1,7 +1,6 @@
 import moment from 'moment';
 import Config from '@/config/globalConfig';
 import formatAmount from '@/utils/formatAmount';
-import store from '@/store';
 import MaterialTags from '@/components/MaterialTags/MaterialTags.vue';
 import Attributes from './Attributes/Attributes.vue';
 
@@ -32,13 +31,13 @@ export default {
 
     categoryName() {
       const { category_id: categoryId } = this.material;
-      const categoryNameGetter = store.getters['categories/categoryName'];
+      const categoryNameGetter = this.$store.getters['categories/categoryName'];
       return categoryNameGetter(categoryId);
     },
 
     subCategoryName() {
       const { sub_category_id: subCategoryId } = this.material;
-      const subCategoryNameGetter = store.getters['categories/subCategoryName'];
+      const subCategoryNameGetter = this.$store.getters['categories/subCategoryName'];
       return subCategoryNameGetter(subCategoryId);
     },
 
@@ -67,6 +66,6 @@ export default {
     },
   },
   mounted() {
-    store.commit('setPageSubTitle', this.material.name);
+    this.$store.commit('setPageSubTitle', this.material.name);
   },
 };

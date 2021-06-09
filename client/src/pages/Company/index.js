@@ -1,5 +1,4 @@
 import Config from '@/config/globalConfig';
-import store from '@/store';
 import Help from '@/components/Help/Help.vue';
 import CompanyForm from '@/components/CompanyForm';
 
@@ -94,7 +93,7 @@ export default {
           this.isLoading = false;
           this.help = { type: 'success', text: 'page-companies.saved' };
           this.setCompany(data);
-          store.dispatch('companies/refresh');
+          this.$store.dispatch('companies/refresh');
 
           setTimeout(() => {
             this.$router.back();
@@ -122,7 +121,7 @@ export default {
 
     setCompany(data) {
       this.company = data;
-      store.commit('setPageSubTitle', data.legal_name);
+      this.$store.commit('setPageSubTitle', data.legal_name);
     },
   },
 };
