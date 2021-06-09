@@ -23,6 +23,14 @@
               :errors="errors.park_id"
               required
             />
+            <SelectSearch
+              :key="renderKey"
+              v-model="unit.person_id"
+              :selectedItemLabel="unit.owner ? unit.owner.full_name : null"
+              label="owner"
+              :formatOptions="formatOwnerOptions"
+              fetchEntity="persons"
+            />
             <FormField
               v-model="unit.serial_number"
               name="serial_number"

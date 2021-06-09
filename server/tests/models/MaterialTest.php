@@ -6,6 +6,7 @@ namespace Robert2\Tests;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Robert2\API\Errors\ValidationException;
 use Robert2\API\Models\Material;
+use Robert2\API\Models\Person;
 
 final class MaterialTest extends ModelTestCase
 {
@@ -334,6 +335,8 @@ final class MaterialTest extends ModelTestCase
         unset($result['attributes']);
         $this->assertEquals($expected, $result);
 
+        $owner = Person::find(1)->toArray();
+
         // - Récupère le matériel #6 (qui est unitaire) pour l'utilisateur #1
         $result = Material::getOneForUser(6, 1);
         $expected = [
@@ -359,11 +362,13 @@ final class MaterialTest extends ModelTestCase
                     'reference' => 'XR18-1',
                     'serial_number' => null,
                     'park_id' => 1,
+                    'person_id' => 1,
                     'is_broken' => false,
                     'is_lost' => false,
                     'material_unit_state_id' => 1,
                     'purchase_date' => '2020-02-01',
                     'notes' => 'Ce bon vieux XR-18',
+                    'owner' => $owner,
                     'state' => [
                         'id' => 1,
                         'name' => 'Bon état',
@@ -377,11 +382,13 @@ final class MaterialTest extends ModelTestCase
                     'reference' => 'XR18-2',
                     'serial_number' => null,
                     'park_id' => 1,
+                    'person_id' => null,
                     'is_broken' => false,
                     'is_lost' => false,
                     'material_unit_state_id' => 2,
                     'purchase_date' => null,
                     'notes' => null,
+                    'owner' => null,
                     'state' => [
                         'id' => 2,
                         'name' => 'État médiocre',
@@ -395,11 +402,13 @@ final class MaterialTest extends ModelTestCase
                     'reference' => 'XR18-3',
                     'serial_number' => null,
                     'park_id' => 2,
+                    'person_id' => null,
                     'is_broken' => true,
                     'is_lost' => false,
                     'material_unit_state_id' => null,
                     'purchase_date' => null,
                     'notes' => null,
+                    'owner' => null,
                     'state' => null,
                 ],
             ],
@@ -437,11 +446,13 @@ final class MaterialTest extends ModelTestCase
                     'reference' => 'XR18-1',
                     'serial_number' => null,
                     'park_id' => 1,
+                    'person_id' => 1,
                     'is_broken' => false,
                     'is_lost' => false,
                     'material_unit_state_id' => 1,
                     'purchase_date' => '2020-02-01',
                     'notes' => 'Ce bon vieux XR-18',
+                    'owner' => $owner,
                     'state' => [
                         'id' => 1,
                         'name' => 'Bon état',
@@ -455,11 +466,13 @@ final class MaterialTest extends ModelTestCase
                     'reference' => 'XR18-2',
                     'serial_number' => null,
                     'park_id' => 1,
+                    'person_id' => null,
                     'is_broken' => false,
                     'is_lost' => false,
                     'material_unit_state_id' => 2,
                     'purchase_date' => null,
                     'notes' => null,
+                    'owner' => null,
                     'state' => [
                         'id' => 2,
                         'name' => 'État médiocre',

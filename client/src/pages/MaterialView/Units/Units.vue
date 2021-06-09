@@ -4,6 +4,11 @@
       <template #park="unit">
         {{ getParkName(unit.row.park_id) }}
       </template>
+      <template #owner="unit">
+        <span v-if="unit.row.owner">
+          {{ unit.row.owner.full_name }}
+        </span>
+      </template>
       <template #is_broken="unit">
         <span v-if="unit.row.is_broken" class="MaterialViewUnits__yes-warning">
           {{ $t('yes') }}

@@ -85,6 +85,7 @@ export default {
   'admin': "Administrateur",
   'member': "Membre",
   'visitor': "Visiteur",
+  'owner': "Propriétaire",
   'opening-hours': "Horaires d'ouverture",
   'notes': "Notes",
   'description': "Description",

@@ -17,6 +17,7 @@ class MaterialUnit extends BaseModel
             'park_id' => V::notEmpty()->numeric(),
             'reference' => V::notEmpty()->alnum('-+/*.')->length(2, 64),
             'serial_number' => V::optional(V::alnum('-+/*.')->length(2, 64)),
+            'person_id' => V::optional(V::numeric()),
             'is_broken' => V::optional(V::boolType()),
             'is_lost' => V::optional(V::boolType()),
             'material_unit_state_id' => V::optional(V::numeric()),
@@ -31,6 +32,7 @@ class MaterialUnit extends BaseModel
     // ——————————————————————————————————————————————————————
 
     protected $appends = [
+        'owner',
         'state',
     ];
 
@@ -60,6 +62,11 @@ class MaterialUnit extends BaseModel
         return $this->belongsTo('Robert2\API\Models\MaterialUnitState');
     }
 
+    public function Person()
+    {
+        return $this->belongsTo('Robert2\API\Models\Person');
+    }
+
     // ——————————————————————————————————————————————————————
     // —
     // —    Mutators
@@ -71,6 +78,7 @@ class MaterialUnit extends BaseModel
         'material_id' => 'integer',
         'reference' => 'string',
         'serial_number' => 'string',
+        'person_id' => 'integer',
         'is_broken' => 'boolean',
         'is_lost' => 'boolean',
         'material_unit_state_id' => 'integer',
@@ -135,6 +143,12 @@ class MaterialUnit extends BaseModel
         return $state ? $state->toArray() : null;
     }
 
+    public function getOwnerAttribute()
+    {
+        $owner = $this->Person()->first();
+        return $owner ? $owner->toArray() : null;
+    }
+
     // ——————————————————————————————————————————————————————
     // —
     // —    Setters
@@ -145,6 +159,7 @@ class MaterialUnit extends BaseModel
         'park_id',
         'reference',
         'serial_number',
+        'person_id',
         'is_broken',
         'is_lost',
         'material_unit_state_id',
