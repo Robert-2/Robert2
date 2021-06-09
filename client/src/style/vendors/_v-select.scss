@@ -34,11 +34,11 @@
   }
 
   &__selected-options {
-    padding: .4rem 2px 0;
+    padding: 0 2px;
 
     .vs__selected {
       padding: .3rem .7rem;
-      margin-bottom: .4rem;
+      margin: .4rem 0;
       background-color: $bg-color-tooltip;
     }
 
@@ -75,6 +75,10 @@
     border: none;
     line-height: normal;
     font-size: $input-font-size;
+
+    &::placeholder {
+      color: $text-light-color;
+    }
   }
 
   &__actions {

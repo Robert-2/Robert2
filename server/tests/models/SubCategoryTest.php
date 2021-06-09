@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace Robert2\Tests;
 
-use Robert2\API\Models;
 use Robert2\API\Errors;
+use Robert2\API\Models\SubCategory;
 
 final class SubCategoryTest extends ModelTestCase
 {
@@ -12,7 +12,7 @@ final class SubCategoryTest extends ModelTestCase
     {
         parent::setUp();
 
-        $this->model = new Models\SubCategory();
+        $this->model = new SubCategory();
     }
 
     public function testTableName(): void
