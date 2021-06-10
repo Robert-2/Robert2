@@ -3,6 +3,7 @@ import Config from '@/config/globalConfig';
 import ModalConfig from '@/config/modalConfig';
 import Alert from '@/components/Alert';
 import Help from '@/components/Help/Help.vue';
+import Dropdown, { getItemClassnames } from '@/components/Dropdown';
 import isValidInteger from '@/utils/isValidInteger';
 import PromptDate from '@/components/PromptDate';
 import AssignTags from '@/components/AssignTags/AssignTags.vue';
@@ -12,7 +13,12 @@ import formatAmount from '@/utils/formatAmount';
 
 export default {
   name: 'Materials',
-  components: { Help, MaterialsFilters, MaterialTags },
+  components: {
+    Help,
+    Dropdown,
+    MaterialsFilters,
+    MaterialTags,
+  },
   data() {
     let columns = [
       'reference',
@@ -120,6 +126,10 @@ export default {
     downloadListingUrl() {
       const { baseUrl } = Config;
       return `${baseUrl}/materials/pdf`;
+    },
+
+    dropdownItemClass() {
+      return getItemClassnames();
     },
   },
   mounted() {

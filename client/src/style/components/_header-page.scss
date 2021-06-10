@@ -23,6 +23,8 @@
     min-width: $form-min-width;
     padding: .55rem 0;
 
+    button + .Dropdown,
+    .Dropdown + button,
     button + button {
       margin: 0 0 0 $content-padding-small-vertical;
     }

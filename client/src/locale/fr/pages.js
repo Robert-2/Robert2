@@ -227,7 +227,7 @@ export default {
     'confirm-restore': "Voulez-vous vraiment restaurer ce matériel\u00a0?",
     'saved': "Matériel sauvegardé.",
     'clear-filters': "Réinitialiser les filtres",
-    'print-complete-list': "Imprimer la liste complète",
+    'print-complete-list': "Imprimer la liste complète du matériel",
   },
 
   'page-materials-view': {
