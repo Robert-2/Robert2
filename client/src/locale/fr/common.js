@@ -1,7 +1,7 @@
 /* eslint-disable quotes */
 /* eslint-disable quote-props */
 export default {
-  'hello-nick': "Bonjour {nick}\u00a0!",
+  'hello-pseudo': "Bonjour {pseudo}\u00a0!",
   'your-profile': "Votre profil",
   'your-settings': "Vos paramètres",
   'logout-quit': "Quitter Robert",

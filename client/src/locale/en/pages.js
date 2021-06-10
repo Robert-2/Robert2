@@ -221,7 +221,7 @@ export default {
     'confirm-restore': "Do you really want to restore this material?",
     'saved': "Material saved.",
     'clear-filters': "Clear filters",
-    'print-complete-list': "Print the complete list",
+    'print-complete-list': "Print the complete materials list",
   },
 
   'page-materials-view': {
