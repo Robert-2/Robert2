@@ -99,8 +99,13 @@ export default {
       renderKey,
     } = this;
 
+    const classNames = ['FormField', {
+      'FormField--with-addon': !!addon,
+      'FormField--with-error': errors && errors.length > 0,
+    }];
+
     return (
-      <div class={{ FormField: true, 'FormField--with-addon': !!addon }}>
+      <div class={classNames}>
         {label && (
           <label class="FormField__label">
             {__(label)} {required && <span class="FormField__label__required">*</span>}
@@ -129,6 +134,7 @@ export default {
           <select
             key={renderKey}
             name={name}
+            class="FormField__select"
             value={value}
             disabled={disabled}
             onInput={handleInput}
