@@ -55,7 +55,7 @@
       />
       <div class="MaterialViewInfos__notes" v-if="material.note">
         <h3>{{ $t('notes') }}</h3>
-        <p>{{ material.note }}</p>
+        <p class="MaterialViewInfos__notes">{{ material.note }}</p>
       </div>
     </section>
     <section v-if="material.picture" class="MaterialViewInfos__picture">

@@ -79,6 +79,10 @@ export default {
       return this.$store.getters['categories/options'];
     },
 
+    isAdmin() {
+      return this.$store.getters['auth/is']('admin');
+    },
+
     pictureUrl() {
       const { baseUrl } = Config;
       const { id, picture } = this.material;
@@ -118,7 +122,7 @@ export default {
     },
 
     setDefaultPark() {
-      if (this.material.id === null) {
+      if (this.material.id === null && this.parksOptions.length === 1) {
         this.material.park_id = this.firstPark?.id || '';
       }
     },

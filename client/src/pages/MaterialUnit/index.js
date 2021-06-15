@@ -206,7 +206,7 @@ export default {
     },
 
     setDefaultPark() {
-      if (this.id === null) {
+      if (this.id === null && this.parksOptions.length === 1) {
         this.unit.park_id = this.firstPark?.id || '';
       }
     },

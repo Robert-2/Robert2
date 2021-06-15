@@ -17,6 +17,9 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Ajoute des données aux unités de matériel, ainsi que la gestion de leurs états (Premium #21).
 - Ajoute les propriétaires des unités de matériel (Premium #34).
 - Ajoute la gestion des paramètres des fiches de sortie, en ajoutant la possibilité de mettre un texte personnalisé en bas de page des fiches de sortie (#150).
+- Permet la suppression des utilisateurs qui ont déjà créé des événements (#159).
+- À la création d'un matériel, le champ "parc" est pré-rempli uniquement si il n'existe qu'un seul parc dans la liste (#162).
+- Met en valeur les champs qui ont des erreurs de validation avec une bordure rouge (#161).
 
 ## 0.13.3-premium (2021-05-27)
 

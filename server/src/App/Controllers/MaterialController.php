@@ -225,7 +225,7 @@ class MaterialController extends BaseController
 
         // - Removing `picture` field because it must be edited
         //   using handleUploadPicture() method (see below)
-        if (array_key_exists('picture', $postData)) {
+        if (array_key_exists('picture', $postData) && !empty($postData['picture'])) {
             unset($postData['picture']);
         }
 

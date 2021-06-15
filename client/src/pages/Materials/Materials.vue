@@ -15,15 +15,15 @@
             {{ $t('page-materials.action-add') }}
           </button>
         </router-link>
-        <Dropdown>
+        <Dropdown v-if="isAdmin">
           <template #items>
-            <router-link v-if="isAdmin" to="/attributes" v-slot="{ navigate }" custom>
+            <router-link to="/attributes" v-slot="{ navigate }" custom>
               <li :class="dropdownItemClass" @click="navigate">
                 <i class="fas fa-cog" />
                 {{ $t('page-materials.manage-attributes') }}
               </li>
             </router-link>
-            <a v-if="isAdmin" :class="dropdownItemClass" :href="downloadListingUrl" target="_blank">
+            <a :class="dropdownItemClass" :href="downloadListingUrl" target="_blank">
               <i class="fas fa-print" />
               {{ $t('page-materials.print-complete-list') }}
             </a>
