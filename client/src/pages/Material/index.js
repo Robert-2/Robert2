@@ -78,6 +78,10 @@ export default {
       return this.$store.getters['categories/options'];
     },
 
+    isAdmin() {
+      return this.$store.getters['auth/is']('admin');
+    },
+
     pictureUrl() {
       const { baseUrl } = Config;
       const { id, picture } = this.material;
