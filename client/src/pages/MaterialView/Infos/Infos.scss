@@ -47,6 +47,10 @@
     margin-top: 1.5rem;
   }
 
+  &__notes {
+    white-space: pre-wrap;
+  }
+
   @media screen and (min-width: $screen-tablet) {
     flex-direction: row;
     justify-content: flex-start;
