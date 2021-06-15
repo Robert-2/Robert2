@@ -15,8 +15,8 @@ class MaterialUnit extends BaseModel
 
         $this->validation = [
             'park_id' => V::notEmpty()->numeric(),
-            'reference' => V::notEmpty()->alnum('-+/*.')->length(2, 64),
-            'serial_number' => V::optional(V::alnum('-+/*.')->length(2, 64)),
+            'reference' => V::notEmpty()->alnum('-+/*._')->length(2, 64),
+            'serial_number' => V::optional(V::alnum('-+/*._')->length(2, 64)),
             'person_id' => V::optional(V::numeric()),
             'is_broken' => V::optional(V::boolType()),
             'is_lost' => V::optional(V::boolType()),

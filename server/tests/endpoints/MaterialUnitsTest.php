@@ -214,10 +214,10 @@ final class MaterialUnitsTest extends ApiTestCase
                 "park_id must be numeric",
             ],
             'reference' => [
-                'reference must contain only letters (a-z), digits (0-9) and "-+/*."',
+                'reference must contain only letters (a-z), digits (0-9) and "-+/*._"',
             ],
             'serial_number' => [
-                'serial_number must contain only letters (a-z), digits (0-9) and "-+/*."',
+                'serial_number must contain only letters (a-z), digits (0-9) and "-+/*._"',
             ],
             'purchase_date' => [
                 'purchase_date must be a valid date',

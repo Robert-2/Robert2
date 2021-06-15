@@ -16,6 +16,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Ajoute la possibilité d'archiver un événement, s'il est passé et que son inventaire de retour a été effectué (#152) (👏 @adamlarat).
 - Ajoute des données aux unités de matériel, ainsi que la gestion de leurs états (Premium #21).
 - Ajoute les propriétaires des unités de matériel (Premium #34).
+- Accepte le "_" pour le champs "référence" et "n° de série" des unités de matériel (Premium #47).
 - Ajoute la gestion des paramètres des fiches de sortie, en ajoutant la possibilité de mettre un texte personnalisé en bas de page des fiches de sortie (#150).
 - Permet la suppression des utilisateurs qui ont déjà créé des événements (#159).
 - À la création d'un matériel, le champ "parc" est pré-rempli uniquement si il n'existe qu'un seul parc dans la liste (#162).
