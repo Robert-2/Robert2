@@ -15,6 +15,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Ajoute la possibilité d'archiver un événement, s'il est passé et que son inventaire de retour a été effectué (#152) (👏 @adamlarat).
 - Ajoute la gestion des paramètres des fiches de sortie, en ajoutant la possibilité de mettre un texte personnalisé en bas de page des fiches de sortie (#150).
 - Permet la suppression des utilisateurs qui ont déjà créé des événements (#159).
+- À la création d'un matériel, le champ "parc" est pré-rempli uniquement si il n'existe qu'un seul parc dans la liste (#162).
 
 ## 0.13.2 (2021-05-31)
 

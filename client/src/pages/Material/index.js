@@ -121,7 +121,7 @@ export default {
     },
 
     setDefaultPark() {
-      if (this.material.id === null) {
+      if (this.material.id === null && this.parksOptions.length === 1) {
         this.material.park_id = this.firstPark?.id || '';
       }
     },
