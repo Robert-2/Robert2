@@ -141,6 +141,7 @@ export default {
   'unconfirm-event': "Remettre l'événement en attente",
   'archive-event': "Archiver l'événement",
   'unarchive-event': "Désarchiver l'événement",
+  'delete-event': "Supprimer l'événement",
   'print': "Imprimer",
   'print-summary': "Imprimer ce récapitulatif",
   'in': "À",

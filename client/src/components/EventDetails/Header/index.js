@@ -49,6 +49,7 @@ export default {
         <Actions
           event={event}
           onSaved={(data) => { this.$emit('saved', data); }}
+          onDeleted={(id) => { this.$emit('deleted', id); }}
           onError={(error) => { this.$emit('error', error); }}
         />
         <button class="close" onClick={() => { this.$emit('close'); }}>

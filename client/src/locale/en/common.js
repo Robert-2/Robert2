@@ -141,6 +141,7 @@ export default {
   'unconfirm-event': "Set event back on hold",
   'archive-event': "Archive event",
   'unarchive-event': "Unarchive event",
+  'delete-event': "Delete event",
   'print': "Print",
   'print-summary': "Print this summary",
   'in': "In",

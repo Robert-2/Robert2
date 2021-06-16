@@ -1,5 +1,6 @@
 import './index.scss';
 import Config from '@/config/globalConfig';
+import Alert from '@/components/Alert';
 import Dropdown from '@/components/Dropdown';
 
 export default {
@@ -11,6 +12,7 @@ export default {
     return {
       isConfirming: false,
       isArchiving: false,
+      isDeleting: false,
     };
   },
   computed: {
@@ -27,10 +29,14 @@ export default {
       return this.$store.getters['auth/is']('visitor');
     },
 
-    isModifiable() {
+    isEditable() {
       const { isPast, isConfirmed, isInventoryDone } = this.event;
+      return !isPast || !(isInventoryDone || isConfirmed);
+    },
 
-      return !((isPast && isInventoryDone) || (isPast && isConfirmed));
+    isRemovable() {
+      const { isConfirmed, isInventoryDone } = this.event;
+      return !(isConfirmed || isInventoryDone);
     },
 
     isConfirmable() {
@@ -54,7 +60,7 @@ export default {
       }
       this.isConfirming = true;
 
-      const { id } = this.$props.event;
+      const { id } = this.event;
 
       try {
         const url = `events/${id}`;
@@ -77,7 +83,7 @@ export default {
       }
       this.isArchiving = true;
 
-      const { id } = this.$props.event;
+      const { id } = this.event;
 
       try {
         const url = `events/${id}`;
@@ -89,19 +95,47 @@ export default {
         this.isArchiving = false;
       }
     },
+
+    async handleDelete() {
+      const { isVisitor, isRemovable, isDeleting } = this;
+      if (isVisitor || !isRemovable || isDeleting) {
+        return;
+      }
+
+      const result = await Alert.ConfirmDelete(this.$t, 'calendar');
+      if (!result.value) {
+        return;
+      }
+      this.isDeleting = true;
+
+      const { id } = this.event;
+
+      try {
+        const url = `events/${id}`;
+        await this.$http.delete(url);
+        this.$emit('deleted', id);
+      } catch (error) {
+        this.$emit('error', error);
+      } finally {
+        this.isDeleting = false;
+      }
+    },
   },
   render() {
     const {
       $t: __,
       isVisitor,
-      isModifiable,
+      isEditable,
       isConfirmable,
       isPrintable,
+      isRemovable,
       eventSummaryPdfUrl,
       isArchiving,
       isConfirming,
+      isDeleting,
       toggleConfirmed,
       toggleArchived,
+      handleDelete,
     } = this;
 
     if (isVisitor) {
@@ -127,7 +161,7 @@ export default {
             <i class="fas fa-print" /> {__('print')}
           </a>
         )}
-        {isModifiable && (
+        {isEditable && (
           <router-link to={`/events/${id}`} custom>
             {({ navigate }) => (
               <button class="info" onClick={navigate}>
@@ -145,7 +179,7 @@ export default {
             )}
           </router-link>
         )}
-        {(!isPast || (isPast && isInventoryDone)) && (
+        {(!isPast || (isPast && isInventoryDone) || isRemovable) && (
           <Dropdown>
             <template slot="items">
               {!isPast && (
@@ -165,6 +199,13 @@ export default {
                   {!isArchiving && <i class="fas fa-box" />}
                   {isArchiving && <i class="fas fa-circle-notch fa-spin" />}
                   {' '}{isArchived ? __('unarchive-event') : __('archive-event')}
+                </button>
+              )}
+              {isRemovable && (
+                <button class="danger" onClick={handleDelete}>
+                  {!isDeleting && <i class="fas fa-trash" />}
+                  {isDeleting && <i class="fas fa-circle-notch fa-spin" />}
+                  {' '}{__('delete-event')}
                 </button>
               )}
             </template>

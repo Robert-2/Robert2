@@ -198,6 +198,11 @@ export default {
       this.$emit('event-updated', newData);
     },
 
+    handleDeletedFromHeader() {
+      this.error = null;
+      this.$emit('close');
+    },
+
     handleError(error) {
       this.error = error;
       this.isLoading = false;
