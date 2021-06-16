@@ -1,0 +1,28 @@
+@import '../../../../themes/default/index';
+
+.EventDetailsHeaderActions {
+  display: flex;
+
+  .Dropdown {
+    margin-left: $content-padding-small-horizontal;
+
+    &__menu {
+      margin-top: $content-padding-small-horizontal;
+
+      &__items {
+        display: flex;
+        flex-direction: column;
+
+        button {
+          display: flex;
+          align-items: center;
+          justify-content: space-evenly;
+        }
+
+        button + button {
+          margin: $content-padding-small-horizontal 0 0;
+        }
+      }
+    }
+  }
+}
