@@ -8,7 +8,7 @@ const getMainIcon = (statuses) => {
   } = statuses;
 
   if (isArchived) {
-    return 'box';
+    return 'archive';
   }
 
   if (!isConfirmed) {

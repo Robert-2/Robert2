@@ -12,7 +12,7 @@ export default {
             { __('page-calendar.caption.title') }
           </h4>
           <div class="timeline-event timeline-event--past timeline-event--archived">
-            <i class="fas fa-box" />{' '}
+            <i class="fas fa-archive" />{' '}
             { __('page-calendar.caption.archived') }
           </div>
         </div>

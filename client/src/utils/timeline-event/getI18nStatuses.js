@@ -20,7 +20,7 @@ const getTimelineEventI18nStatuses = (formattedEvent) => {
 
   if (isArchived) {
     eventStatuses.push({
-      icon: 'box',
+      icon: 'archive',
       i18nKey: 'this-event-is-archived',
     });
     return eventStatuses;

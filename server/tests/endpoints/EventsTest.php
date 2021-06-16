@@ -806,6 +806,52 @@ final class EventsTest extends ApiTestCase
         $this->assertResponseData($expected, ['updated_at']);
     }
 
+    public function testDuplicateEvent()
+    {
+        // - Duplication de l'événement n°1
+        $data = [
+            'user_id' => 1,
+            'start_date' => '2021-07-01 00:00:00',
+            'end_date' => '2021-07-03 23:59:59',
+        ];
+        $this->client->post('/api/events/1/duplicate', $data);
+        $this->assertStatusCode(SUCCESS_CREATED);
+        $response = $this->_getResponseAsArray();
+        $this->assertEquals(5, $response['id']);
+        $this->assertEquals("Premier événement", $response['title']);
+        $this->assertEquals('2021-07-01 00:00:00', $response['start_date']);
+        $this->assertEquals('2021-07-03 23:59:59', $response['end_date']);
+        $this->assertCount(1, $response['beneficiaries']);
+        $this->assertCount(2, $response['assignees']);
+        $this->assertEquals('Régisseur', $response['assignees'][0]['pivot']['position']);
+        $this->assertEquals('Technicien plateau', $response['assignees'][1]['pivot']['position']);
+        $this->assertCount(3, $response['materials']);
+        $this->assertEquals(1, $response['materials'][0]['pivot']['quantity']);
+        $this->assertEquals(1, $response['materials'][1]['pivot']['quantity']);
+        $this->assertEquals(1, $response['materials'][2]['pivot']['quantity']);
+        $this->assertFalse($response['is_confirmed']);
+        $this->assertFalse($response['is_archived']);
+        $this->assertFalse($response['is_return_inventory_done']);
+        $this->assertTrue($response['is_billable']);
+
+        // - Duplication de l'événement n°3
+        $data = [
+            'user_id' => 1,
+            'start_date' => '2021-07-04 00:00:00',
+            'end_date' => '2021-07-04 23:59:59',
+        ];
+        $this->client->post('/api/events/3/duplicate', $data);
+        $this->assertStatusCode(SUCCESS_CREATED);
+        $response = $this->_getResponseAsArray();
+        $this->assertEquals(6, $response['id']);
+        $this->assertEquals("Avant-premier événement", $response['title']);
+        $this->assertEquals('2021-07-04 00:00:00', $response['start_date']);
+        $this->assertEquals('2021-07-04 23:59:59', $response['end_date']);
+        $this->assertFalse($response['is_archived']);
+        $this->assertFalse($response['is_return_inventory_done']);
+        $this->assertFalse($response['is_billable']);
+    }
+
     public function testUpdateMaterialReturnNotFound()
     {
         $this->client->put('/api/events/999/return');

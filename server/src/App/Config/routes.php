@@ -47,6 +47,7 @@ return [
         '/materials/{id:[0-9]+}/picture[/]' => 'MaterialController:handleUploadPicture',
         '/attributes[/]' => 'AttributeController:create',
         '/events[/]' => 'EventController:create',
+        '/events/{id:[0-9]+}/duplicate[/]' => 'EventController:duplicate',
         '/events/{eventId:[0-9]+}/bill[/]' => 'BillController:create',
         '/events/{eventId:[0-9]+}/estimate[/]' => 'EstimateController:create',
     ],

@@ -1,7 +1,9 @@
 import './index.scss';
 import Config from '@/config/globalConfig';
+import ModalConfig from '@/config/modalConfig';
 import Alert from '@/components/Alert';
 import Dropdown from '@/components/Dropdown';
+import DuplicateEvent from '@/components/DuplicateEvent';
 
 export default {
   name: 'CalendarEventDetailsHeaderActions',
@@ -120,6 +122,20 @@ export default {
         this.isDeleting = false;
       }
     },
+
+    askDuplicate() {
+      const { event } = this;
+
+      const modalConfig = {
+        ...ModalConfig,
+        name: 'duplicateEventStartDateModal',
+        width: 600,
+        draggable: true,
+        clickToClose: false,
+      };
+
+      this.$modal.show(DuplicateEvent, { event }, modalConfig);
+    },
   },
   render() {
     const {
@@ -136,6 +152,7 @@ export default {
       toggleConfirmed,
       toggleArchived,
       handleDelete,
+      askDuplicate,
     } = this;
 
     if (isVisitor) {
@@ -179,38 +196,39 @@ export default {
             )}
           </router-link>
         )}
-        {(!isPast || (isPast && isInventoryDone) || isRemovable) && (
-          <Dropdown>
-            <template slot="items">
-              {!isPast && (
-                <button
-                  class={{ warning: isConfirmed, success: !isConfirmed }}
-                  disabled={isConfirmable}
-                  onClick={toggleConfirmed}
-                >
-                  {!isConfirming && isConfirmed && <i class="fas fa-check" />}
-                  {!isConfirming && !isConfirmed && <i class="fas fa-hourglass-half" />}
-                  {isConfirming && <i class="fas fa-circle-notch fa-spin" />}
-                  {' '}{isConfirmed ? __('unconfirm-event') : __('confirm-event')}
-                </button>
-              )}
-              {isPast && isInventoryDone && (
-                <button class={{ info: !isArchived }} onClick={toggleArchived}>
-                  {!isArchiving && <i class="fas fa-box" />}
-                  {isArchiving && <i class="fas fa-circle-notch fa-spin" />}
-                  {' '}{isArchived ? __('unarchive-event') : __('archive-event')}
-                </button>
-              )}
-              {isRemovable && (
-                <button class="danger" onClick={handleDelete}>
-                  {!isDeleting && <i class="fas fa-trash" />}
-                  {isDeleting && <i class="fas fa-circle-notch fa-spin" />}
-                  {' '}{__('delete-event')}
-                </button>
-              )}
-            </template>
-          </Dropdown>
-        )}
+        <Dropdown>
+          <template slot="items">
+            {!isPast && (
+              <button
+                class={{ info: isConfirmed, success: !isConfirmed }}
+                disabled={isConfirmable}
+                onClick={toggleConfirmed}
+              >
+                {!isConfirming && !isConfirmed && <i class="fas fa-check" />}
+                {!isConfirming && isConfirmed && <i class="fas fa-hourglass-half" />}
+                {isConfirming && <i class="fas fa-circle-notch fa-spin" />}
+                {' '}{isConfirmed ? __('unconfirm-event') : __('confirm-event')}
+              </button>
+            )}
+            {isPast && isInventoryDone && (
+              <button class={{ info: !isArchived }} onClick={toggleArchived}>
+                {!isArchiving && <i class="fas fa-archive" />}
+                {isArchiving && <i class="fas fa-circle-notch fa-spin" />}
+                {' '}{isArchived ? __('unarchive-event') : __('archive-event')}
+              </button>
+            )}
+            <button class="warning" onClick={askDuplicate}>
+              <i class="fas fa-copy" /> {__('duplicate-event')}
+            </button>
+            {isRemovable && (
+              <button class="danger" onClick={handleDelete}>
+                {!isDeleting && <i class="fas fa-trash" />}
+                {isDeleting && <i class="fas fa-circle-notch fa-spin" />}
+                {' '}{__('delete-event')}
+              </button>
+            )}
+          </template>
+        </Dropdown>
       </div>
     );
   },

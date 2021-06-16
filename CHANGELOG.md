@@ -19,6 +19,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Met en valeur les champs qui ont des erreurs de validation avec une bordure rouge (#161).
 - Regroupe les boutons d'actions secondaires de la fenêtre des événements dans un menu.
 - Ajoute une action secondaire dans la fenêtre des événements pour supprimer l'événement.
+- Ajoute une action secondaire dans la fenêtre des événements pour cloner l'événement avec de nouvelles dates (#120).
 
 ## 0.13.2 (2021-05-31)
 

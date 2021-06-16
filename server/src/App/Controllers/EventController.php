@@ -120,6 +120,55 @@ class EventController extends BaseController
         return $response->withJson($this->_getFormattedEvent($id), SUCCESS_OK);
     }
 
+    public function duplicate(Request $request, Response $response): Response
+    {
+        $id = (int)$request->getAttribute('id');
+        if (!Event::staticExists($id)) {
+            throw new HttpNotFoundException($request);
+        }
+
+        $originalEventData = Event::find($id);
+
+        $originalBeneficiaries = array_map(function ($beneficiary) {
+            return $beneficiary['id'];
+        }, $originalEventData['beneficiaries']);
+
+        $originalAssignees = [];
+        foreach ($originalEventData['assignees'] as $assignee) {
+            $originalAssignees[$assignee['id']] = [
+                'position' => $assignee['pivot']['position'],
+            ];
+        }
+
+        $originalMaterials = array_map(function ($material) {
+            return [
+                'id' => $material['id'],
+                'quantity' => $material['pivot']['quantity'],
+            ];
+        }, $originalEventData['materials']);
+
+        $postData = (array)$request->getParsedBody();
+        $newEventData = array_merge($postData, [
+            'user_id' => $postData['user_id'],
+            'title' => $originalEventData['title'],
+            'description' => $originalEventData['description'],
+            'start_date' => $postData['start_date'],
+            'end_date' => $postData['end_date'],
+            'is_confirmed' => false,
+            'is_archived' => false,
+            'location' => $originalEventData['location'],
+            'is_billable' => $originalEventData['is_billable'],
+            'is_return_inventory_done' => false,
+            'beneficiaries' => $originalBeneficiaries,
+            'assignees' => $originalAssignees,
+            'materials' => $originalMaterials,
+        ]);
+
+        $newId = $this->_saveEvent(null, $newEventData);
+
+        return $response->withJson($this->_getFormattedEvent($newId), SUCCESS_CREATED);
+    }
+
     public function updateMaterialReturn(Request $request, Response $response): Response
     {
         $id = (int)$request->getAttribute('id');
