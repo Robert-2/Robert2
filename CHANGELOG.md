@@ -21,6 +21,9 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Permet la suppression des utilisateurs qui ont déjà créé des événements (#159).
 - À la création d'un matériel, le champ "parc" est pré-rempli uniquement si il n'existe qu'un seul parc dans la liste (#162).
 - Met en valeur les champs qui ont des erreurs de validation avec une bordure rouge (#161).
+- Regroupe les boutons d'actions secondaires de la fenêtre des événements dans un menu.
+- Ajoute une action secondaire dans la fenêtre des événements pour supprimer l'événement.
+- Ajoute une action secondaire dans la fenêtre des événements pour cloner l'événement avec de nouvelles dates (#120).
 
 ## 0.13.3-premium (2021-05-27)
 

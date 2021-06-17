@@ -112,7 +112,7 @@ describe('getTimelineEventI18nStatuses', () => {
     };
     const result = getTimelineEventI18nStatuses(formattedEvent);
     expect(result).toEqual([
-      { icon: 'box', i18nKey: 'this-event-is-archived' },
+      { icon: 'archive', i18nKey: 'this-event-is-archived' },
     ]);
   });
 
@@ -266,7 +266,7 @@ describe('getTimelineEventI18nStatuses', () => {
     const result = getTimelineEventI18nStatuses(formattedEvent);
     expect(result).toEqual([
       { icon: 'exclamation-triangle', i18nKey: 'this-event-has-not-returned-materials' },
-      { icon: 'box', i18nKey: 'this-event-is-archived' },
+      { icon: 'archive', i18nKey: 'this-event-is-archived' },
     ]);
   });
 });
