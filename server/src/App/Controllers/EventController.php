@@ -161,6 +161,7 @@ class EventController extends BaseController
             return [
                 'id' => $material['id'],
                 'quantity' => $material['pivot']['quantity'],
+                'units' => $material['pivot']['units'],
             ];
         }, $originalEventData['materials']);
 

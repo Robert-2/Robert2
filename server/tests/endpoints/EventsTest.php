@@ -887,6 +887,27 @@ final class EventsTest extends ApiTestCase
         $this->assertFalse($response['is_archived']);
         $this->assertFalse($response['is_return_inventory_done']);
         $this->assertFalse($response['is_billable']);
+
+        // - Duplication de l'événement n°4 (avec unités)
+        $data = [
+            'user_id' => 1,
+            'start_date' => '2021-07-04 00:00:00',
+            'end_date' => '2021-07-04 23:59:59',
+        ];
+        $this->client->post('/api/events/4/duplicate', $data);
+        $this->assertStatusCode(SUCCESS_CREATED);
+        $response = $this->_getResponseAsArray();
+        $this->assertEquals(9, $response['id']);
+        $this->assertEquals("Concert X", $response['title']);
+        $this->assertEquals('2021-07-04 00:00:00', $response['start_date']);
+        $this->assertEquals('2021-07-04 23:59:59', $response['end_date']);
+        $this->assertCount(3, $response['materials']);
+        $this->assertCount(0, $response['materials'][0]['pivot']['units']);
+        $this->assertCount(2, $response['materials'][1]['pivot']['units']);
+        $this->assertCount(1, $response['materials'][2]['pivot']['units']);
+        $this->assertFalse($response['is_archived']);
+        $this->assertFalse($response['is_return_inventory_done']);
+        $this->assertFalse($response['is_billable']);
     }
 
     public function testUpdateMaterialReturnNotFound()
