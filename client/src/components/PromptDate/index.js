@@ -71,7 +71,7 @@ export default {
             onInput={handleChange}
           />
         </div>
-        <hr />
+        <hr class="PromptDate__separator" />
         <div class="PromptDate__footer">
           <button onClick={handleSubmit} class="success">
             <i class="fas fa-check" /> {__('choose-date')}

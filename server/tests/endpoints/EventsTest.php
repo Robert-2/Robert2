@@ -806,6 +806,31 @@ final class EventsTest extends ApiTestCase
         $this->assertResponseData($expected, ['updated_at']);
     }
 
+    public function testDuplicateEventNotFound()
+    {
+        $this->client->post('/api/events/999/duplicate', []);
+        $this->assertNotFound();
+    }
+
+    public function testDuplicateEventBadData()
+    {
+        $data = ['user_id' => 1];
+        $this->client->post('/api/events/1/duplicate', $data);
+        $this->assertStatusCode(ERROR_VALIDATION);
+        $this->assertValidationErrorMessage();
+        $response = $this->_getResponseAsArray();
+        $expected = [
+            'start_date' => [
+                'start_date must not be empty',
+                'start_date must be a valid date',
+            ],
+            'end_date' => [
+                'end_date must be valid',
+            ],
+        ];
+        $this->assertEquals($expected, $response['error']['details']);
+    }
+
     public function testDuplicateEvent()
     {
         // - Duplication de l'événement n°1

@@ -2,7 +2,7 @@ import './index.scss';
 import Config from '@/config/globalConfig';
 import ModalConfig from '@/config/modalConfig';
 import Alert from '@/components/Alert';
-import Dropdown from '@/components/Dropdown';
+import Dropdown, { getItemClassnames } from '@/components/Dropdown';
 import DuplicateEvent from '@/components/DuplicateEvent';
 
 export default {
@@ -196,11 +196,11 @@ export default {
             )}
           </router-link>
         )}
-        <Dropdown>
+        <Dropdown variant="actions">
           <template slot="items">
             {!isPast && (
               <button
-                class={{ info: isConfirmed, success: !isConfirmed }}
+                class={{ ...getItemClassnames(), info: isConfirmed, success: !isConfirmed }}
                 disabled={isConfirmable}
                 onClick={toggleConfirmed}
               >
@@ -211,17 +211,26 @@ export default {
               </button>
             )}
             {isPast && isInventoryDone && (
-              <button class={{ info: !isArchived }} onClick={toggleArchived}>
+              <button
+                class={{ ...getItemClassnames(), info: !isArchived }}
+                onClick={toggleArchived}
+              >
                 {!isArchiving && <i class="fas fa-archive" />}
                 {isArchiving && <i class="fas fa-circle-notch fa-spin" />}
                 {' '}{isArchived ? __('unarchive-event') : __('archive-event')}
               </button>
             )}
-            <button class="warning" onClick={askDuplicate}>
+            <button
+              class={{ ...getItemClassnames(), warning: true }}
+              onClick={askDuplicate}
+            >
               <i class="fas fa-copy" /> {__('duplicate-event')}
             </button>
             {isRemovable && (
-              <button class="danger" onClick={handleDelete}>
+              <button
+                class={{ ...getItemClassnames(), danger: true }}
+                onClick={handleDelete}
+              >
                 {!isDeleting && <i class="fas fa-trash" />}
                 {isDeleting && <i class="fas fa-circle-notch fa-spin" />}
                 {' '}{__('delete-event')}

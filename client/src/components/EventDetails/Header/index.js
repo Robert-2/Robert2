@@ -34,14 +34,14 @@ export default {
           <i class={`fas fa-${mainIcon}`} />
         </div>
         <div class="EventDetailsHeader__details">
-          <h4 class="EventDetailsHeader__details__title">
+          <h1 class="EventDetailsHeader__details__title">
             {event.title}
-          </h4>
+          </h1>
           <div class="EventDetailsHeader__details__location-dates">
             {__('from-date-to-date', fromToDates)}
             {event.isCurrent && (
               <span class="EventDetailsHeader__details__in-progress">
-                {' '}({__('in-progress')})
+                ({__('in-progress')})
               </span>
             )}
           </div>

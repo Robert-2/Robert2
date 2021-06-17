@@ -15,7 +15,7 @@
             {{ $t('page-materials.action-add') }}
           </button>
         </router-link>
-        <Dropdown v-if="isAdmin">
+        <Dropdown variant="actions" v-if="isAdmin">
           <template #items>
             <router-link to="/attributes" v-slot="{ navigate }" custom>
               <li :class="dropdownItemClass" @click="navigate">

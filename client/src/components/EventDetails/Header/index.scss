@@ -34,8 +34,9 @@
     }
 
     &__in-progress {
+      margin-left: $content-padding-small-horizontal;
       color: $text-success-color;
-      font-size: 1rem;
+      font-size: 1.1rem;
     }
   }
 

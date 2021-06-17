@@ -9,6 +9,7 @@ use Robert2\API\Models\Park;
 use Robert2\API\Models\Event;
 use Robert2\API\Models\Material;
 use Robert2\API\Errors\ValidationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\ServerRequest as Request;
 use Slim\Http\Response;
@@ -123,15 +124,13 @@ class EventController extends BaseController
     public function duplicate(Request $request, Response $response): Response
     {
         $id = (int)$request->getAttribute('id');
-        if (!Event::staticExists($id)) {
+        try {
+            $originalEventData = Event::findOrFail($id);
+        } catch (ModelNotFoundException $e) {
             throw new HttpNotFoundException($request);
         }
 
-        $originalEventData = Event::find($id);
-
-        $originalBeneficiaries = array_map(function ($beneficiary) {
-            return $beneficiary['id'];
-        }, $originalEventData['beneficiaries']);
+        $originalBeneficiaries = array_column($originalEventData['beneficiaries'], 'id');
 
         $originalAssignees = [];
         foreach ($originalEventData['assignees'] as $assignee) {
@@ -149,11 +148,11 @@ class EventController extends BaseController
 
         $postData = (array)$request->getParsedBody();
         $newEventData = array_merge($postData, [
-            'user_id' => $postData['user_id'],
+            'user_id' => $postData['user_id'] ?? null,
             'title' => $originalEventData['title'],
             'description' => $originalEventData['description'],
-            'start_date' => $postData['start_date'],
-            'end_date' => $postData['end_date'],
+            'start_date' => $postData['start_date'] ?? null,
+            'end_date' => $postData['end_date'] ?? null,
             'is_confirmed' => false,
             'is_archived' => false,
             'location' => $originalEventData['location'],

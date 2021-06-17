@@ -1,7 +1,7 @@
 import './index.scss';
 import ClickOutside from 'vue-click-outside';
 
-export const getItemClassnames = (isActive) => ({
+export const getItemClassnames = (isActive = false) => ({
   Dropdown__item: true,
   'Dropdown__item--active': isActive,
 });
@@ -9,6 +9,9 @@ export const getItemClassnames = (isActive) => ({
 export default {
   name: 'Dropdown',
   directives: { ClickOutside },
+  props: {
+    variant: { type: String, default: 'default' },
+  },
   data() {
     return {
       isOpen: false,
@@ -29,11 +32,22 @@ export default {
     },
   },
   render() {
-    const { isOpen, toggleDropdown, closeDropdown } = this;
+    const {
+      isOpen,
+      toggleDropdown,
+      closeDropdown,
+      variant,
+    } = this;
+
     const { buttonText, title, items } = this.$slots;
 
+    const classNames = ['Dropdown', {
+      'Dropdown--open': isOpen,
+      'Dropdown--actions': variant === 'actions',
+    }];
+
     return (
-      <div class={{ Dropdown: true, 'Dropdown--open': isOpen }} vClickOutside={closeDropdown}>
+      <div class={classNames} vClickOutside={closeDropdown}>
         <div class="Dropdown__button" onClick={toggleDropdown}>
           <span class="Dropdown__button__text">
             {buttonText || <i class="Dropdown__button__icon fas fa-ellipsis-h" />}

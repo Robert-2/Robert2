@@ -86,9 +86,7 @@ export default {
 
       try {
         const url = `events/${this.event.id}/duplicate`;
-        const { data } = await this.$http.post(url, newEventData);
-
-        console.log(data);
+        await this.$http.post(url, newEventData);
 
         this.$emit('close');
       } catch (error) {
@@ -134,7 +132,7 @@ export default {
       <div class="DuplicateEvent">
         <div class="DuplicateEvent__header">
           <h2 class="DuplicateEvent__header__title">
-            {this.$t('duplicate-the-event', { title })}
+            {__('duplicate-the-event', { title })}
           </h2>
           <button class="DuplicateEvent__header__btn-close" onClick={handleClose}>
             <i class="fas fa-times" />
@@ -142,7 +140,7 @@ export default {
         </div>
         <div class="DuplicateEvent__main">
           <h4 class="DuplicateEvent__main__help">
-            {this.$t('dates-of-duplicated-event')}
+            {__('dates-of-duplicated-event')}
           </h4>
           <div class="DuplicateEvent__main__dates">
             <div class="DuplicateEvent__main__dates__fields">
@@ -198,7 +196,7 @@ export default {
             </p>
           )}
         </div>
-        <hr />
+        <hr class="DuplicateEvent__separator" />
         <div class="DuplicateEvent__footer">
           <button onClick={handleSubmit} class="success">
             <i class="fas fa-check" /> {__('duplicate-event')}
