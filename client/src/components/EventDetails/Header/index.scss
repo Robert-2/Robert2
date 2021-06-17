@@ -1,3 +1,5 @@
+@import '../../../themes/default/index';
+
 .EventDetailsHeader {
   flex: 0 0 auto;
   display: flex;
@@ -32,12 +34,13 @@
     }
 
     &__in-progress {
+      margin-left: $content-padding-small-horizontal;
       color: $text-success-color;
-      font-size: 1rem;
+      font-size: 1.1rem;
     }
   }
 
-  &__actions {
+  .EventDetailsHeaderActions {
     flex: 0 0 auto;
     margin: 0 1rem;
   }

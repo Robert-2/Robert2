@@ -13,7 +13,7 @@ import EventEstimates from '@/components/EventEstimates/EventEstimates.vue';
 import EventBilling from '@/components/EventBilling/EventBilling.vue';
 import EventTotals from '@/components/EventTotals';
 import formatTimelineEvent from '@/utils/timeline-event/format';
-import Header from './Header/Header.vue';
+import Header from './Header';
 
 export default {
   name: 'EventDetails',
@@ -196,6 +196,11 @@ export default {
       this.setData(newData);
       // Ne fonctionne pas comme espéré, pffff
       this.$emit('event-updated', newData);
+    },
+
+    handleDeletedFromHeader() {
+      this.error = null;
+      this.$emit('close');
     },
 
     handleError(error) {

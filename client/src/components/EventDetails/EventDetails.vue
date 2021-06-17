@@ -9,6 +9,7 @@
         :event="event"
         @close="$emit('close')"
         @saved="handleSavedFromHeader"
+        @deleted="handleDeletedFromHeader"
         @error="handleError"
       />
       <div class="EventDetails__content__body">

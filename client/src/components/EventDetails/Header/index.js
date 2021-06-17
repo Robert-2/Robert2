@@ -1,15 +1,11 @@
-import Config from '@/config/globalConfig';
+import './index.scss';
 import getMainIcon from '@/utils/timeline-event/getMainIcon';
+import Actions from './Actions';
 
 export default {
   name: 'CalendarEventDetailsHeader',
-  props: ['event', 'onSaved', 'onError'],
-  data() {
-    return {
-      isConfirming: false,
-      isArchiving: false,
-      fromToDates: {},
-    };
+  props: {
+    event: { type: Object, required: true },
   },
   computed: {
     mainIcon() {
@@ -17,93 +13,49 @@ export default {
       return withProblem ? 'exclamation-triangle' : getMainIcon(this.event);
     },
 
-    isPrintable() {
-      return (
-        this.event.materials
-        && this.event.materials.length > 0
-        && this.event.beneficiaries
-        && this.event.beneficiaries.length > 0
-      );
-    },
-
-    isVisitor() {
-      return this.$store.getters['auth/is']('visitor');
-    },
-
-    canModify() {
-      const { isPast, isConfirmed, isInventoryDone } = this.event;
-
-      return !(
-        this.isVisitor
-        || (isPast && isInventoryDone)
-        || (isPast && isConfirmed)
-      );
-    },
-
-    eventSummaryPdfUrl() {
-      const { baseUrl } = Config;
-      const { id } = this.event || { id: null };
-      return `${baseUrl}/events/${id}/pdf`;
+    fromToDates() {
+      return {
+        from: this.event?.startDate.format('L') || '?',
+        to: this.event?.endDate.format('L') || '?',
+      };
     },
   },
-  created() {
-    const { event } = this.$props;
-    if (!event) {
-      return;
-    }
+  render() {
+    const {
+      $t: __,
+      event,
+      mainIcon,
+      fromToDates,
+    } = this;
 
-    this.fromToDates = {
-      from: event.startDate.format('L'),
-      to: event.endDate.format('L'),
-    };
-  },
-  methods: {
-    confirmEvent() {
-      this.setEventConfirmation(true);
-    },
-
-    unconfirmEvent() {
-      this.setEventConfirmation(false);
-    },
-
-    setEventConfirmation(confirmed) {
-      const { id } = this.$props.event;
-      const url = `events/${id}`;
-      this.isConfirming = true;
-      this.$http.put(url, { id, is_confirmed: confirmed })
-        .then(({ data }) => {
-          this.$emit('saved', data);
-        })
-        .catch((error) => {
-          this.$emit('error', error);
-        })
-        .finally(() => {
-          this.isConfirming = false;
-        });
-    },
-
-    archiveEvent() {
-      this.setEventArchived(true);
-    },
-
-    unarchiveEvent() {
-      this.setEventArchived(false);
-    },
-
-    async setEventArchived(isArchived) {
-      this.isArchiving = true;
-
-      const { id } = this.$props.event;
-
-      try {
-        const url = `${this.$route.meta.resource}/${id}`;
-        const { data } = await this.$http.put(url, { id, is_archived: isArchived });
-        this.$emit('saved', data);
-      } catch (error) {
-        this.$emit('error', error);
-      } finally {
-        this.isArchiving = false;
-      }
-    },
+    return (
+      <header class="EventDetailsHeader">
+        <div class="EventDetailsHeader__status">
+          <i class={`fas fa-${mainIcon}`} />
+        </div>
+        <div class="EventDetailsHeader__details">
+          <h1 class="EventDetailsHeader__details__title">
+            {event.title}
+          </h1>
+          <div class="EventDetailsHeader__details__location-dates">
+            {__('from-date-to-date', fromToDates)}
+            {event.isCurrent && (
+              <span class="EventDetailsHeader__details__in-progress">
+                ({__('in-progress')})
+              </span>
+            )}
+          </div>
+        </div>
+        <Actions
+          event={event}
+          onSaved={(data) => { this.$emit('saved', data); }}
+          onDeleted={(id) => { this.$emit('deleted', id); }}
+          onError={(error) => { this.$emit('error', error); }}
+        />
+        <button class="close" onClick={() => { this.$emit('close'); }}>
+          <i class="fas fa-times" />
+        </button>
+      </header>
+    );
   },
 };

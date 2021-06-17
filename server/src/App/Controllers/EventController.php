@@ -9,6 +9,7 @@ use Robert2\API\Models\Park;
 use Robert2\API\Models\Event;
 use Robert2\API\Models\Material;
 use Robert2\API\Errors\ValidationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\ServerRequest as Request;
 use Slim\Http\Response;
@@ -118,6 +119,53 @@ class EventController extends BaseController
         $id = $this->_saveEvent($id, $postData);
 
         return $response->withJson($this->_getFormattedEvent($id), SUCCESS_OK);
+    }
+
+    public function duplicate(Request $request, Response $response): Response
+    {
+        $id = (int)$request->getAttribute('id');
+        try {
+            $originalEventData = Event::findOrFail($id);
+        } catch (ModelNotFoundException $e) {
+            throw new HttpNotFoundException($request);
+        }
+
+        $originalBeneficiaries = array_column($originalEventData['beneficiaries'], 'id');
+
+        $originalAssignees = [];
+        foreach ($originalEventData['assignees'] as $assignee) {
+            $originalAssignees[$assignee['id']] = [
+                'position' => $assignee['pivot']['position'],
+            ];
+        }
+
+        $originalMaterials = array_map(function ($material) {
+            return [
+                'id' => $material['id'],
+                'quantity' => $material['pivot']['quantity'],
+            ];
+        }, $originalEventData['materials']);
+
+        $postData = (array)$request->getParsedBody();
+        $newEventData = array_merge($postData, [
+            'user_id' => $postData['user_id'] ?? null,
+            'title' => $originalEventData['title'],
+            'description' => $originalEventData['description'],
+            'start_date' => $postData['start_date'] ?? null,
+            'end_date' => $postData['end_date'] ?? null,
+            'is_confirmed' => false,
+            'is_archived' => false,
+            'location' => $originalEventData['location'],
+            'is_billable' => $originalEventData['is_billable'],
+            'is_return_inventory_done' => false,
+            'beneficiaries' => $originalBeneficiaries,
+            'assignees' => $originalAssignees,
+            'materials' => $originalMaterials,
+        ]);
+
+        $newId = $this->_saveEvent(null, $newEventData);
+
+        return $response->withJson($this->_getFormattedEvent($newId), SUCCESS_CREATED);
     }
 
     public function updateMaterialReturn(Request $request, Response $response): Response

@@ -102,6 +102,6 @@ describe('getMainIcon', () => {
       hasNotReturnedMaterials: false,
     };
     const result = getMainIcon(formattedEvent);
-    expect(result).toEqual('box');
+    expect(result).toEqual('archive');
   });
 });

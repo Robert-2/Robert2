@@ -101,7 +101,7 @@ export default {
         {withRentalPrices && (
           <div class="EventTotals__rental-prices">
             <div class="EventTotals__base">
-              {__('total')}:
+              {__('total')}{' '}
               <span class="EventTotals__items-count">
                 {__('items-count', { count: itemsCount }, itemsCount)}
               </span>
