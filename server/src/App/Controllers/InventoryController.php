@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Robert2\API\Controllers;
 
+use Robert2\API\Controllers\Traits\WithPdf;
 use Robert2\API\Models\Inventory;
 use Robert2\API\Models\Park;
 use Robert2\API\Services\Auth;
@@ -13,10 +14,7 @@ use Slim\Http\ServerRequest as Request;
 
 class InventoryController extends BaseController
 {
-    public function getPdf()
-    {
-        // TODO: Utiliser le trait `WithPdf`.
-    }
+    use WithPdf;
 
     // ------------------------------------------------------
     // -

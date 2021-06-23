@@ -3,14 +3,21 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
+use Robert2\API\Config\Config;
 use Robert2\API\Errors\ValidationException;
+use Robert2\API\Models\Traits\WithPdf;
+use Robert2\API\Services\I18n;
 use Robert2\API\Validation\Validator as V;
 
 class Inventory extends BaseModel
 {
+    use WithPdf;
+
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
+
+        $this->pdfTemplate = 'inventory-default';
 
         $this->validation = [
             'date' => V::callback([$this, 'checkDate']),
@@ -466,5 +473,111 @@ class Inventory extends BaseModel
         $this->update(['is_tmp' => false, 'date' => new \DateTime]);
 
         return $this->refresh();
+    }
+
+    public function getPdfName(int $id): string
+    {
+        $inventory = static::findOrFail($id);
+        if ($inventory->is_tmp) {
+            throw new \LogicException("Impossible de sortir le PDF d'un inventaire non terminé.");
+        }
+
+        $i18n = new I18n(Config::getSettings('defaultLang'));
+        $date = $inventory->date ?: new \DateTime();
+
+        $fileName = sprintf(
+            '%s-%s-%s.pdf',
+            $i18n->translate('Inventory'),
+            slugify($inventory->park->name),
+            $date->format('Y-m-d')
+        );
+        if (isTestMode()) {
+            $fileName = sprintf('TEST-%s', $fileName);
+        }
+
+        return $fileName;
+    }
+
+    public function getPdfContent(int $id): string
+    {
+        $inventory = static::findOrFail($id);
+        if ($inventory->is_tmp) {
+            throw new \LogicException("Impossible de sortir le PDF d'un inventaire non terminé.");
+        }
+
+        $totals = [
+            'previous' => 0,
+            'difference' => 0,
+            'current' => 0,
+            'broken' => 0,
+        ];
+
+        $inventoryMaterials = $inventory->materials->toArray();
+        foreach ($inventoryMaterials as &$material) {
+            $hasMissingUnits = false;
+            $hasBrokenUnits = false;
+            $newUnitsCount = 0;
+
+            if ($material['is_unitary']) {
+                $hasMissingUnits = in_array(true, array_column($material['units'], 'is_lost_current'));
+                $hasBrokenUnits = in_array(true, array_column($material['units'], 'is_broken_current'));
+                $newUnitsCount = count(array_filter($material['units'], function ($unit) {
+                    return (bool)$unit['is_new'];
+                }));
+                $foundUnitsCount = count(array_filter($material['units'], function ($unit) {
+                    return $unit['is_lost_previous'] && !$unit['is_lost_current'];
+                }));
+                $material['stock_quantity_previous'] = count($material['units']) - $newUnitsCount - $foundUnitsCount;
+            }
+
+            $countDifference = $material['stock_quantity_current'] - $material['stock_quantity_previous'];
+
+            $totals['previous'] += $material['stock_quantity_previous'];
+            $totals['difference'] += $countDifference;
+            $totals['current'] += $material['stock_quantity_current'];
+            $totals['broken'] += $material['out_of_order_quantity_current'];
+
+            $material = array_merge($material, [
+                'hasMissing' => (
+                    $material['stock_quantity_current'] < $material['stock_quantity_previous'] ||
+                    $hasMissingUnits
+                ),
+                'hasBroken' => (
+                    $material['out_of_order_quantity_current'] > 0 ||
+                    $material['out_of_order_quantity_previous'] > 0 && (
+                        $material['out_of_order_quantity_previous'] <= $material['out_of_order_quantity_current']
+                    ) ||
+                    $hasBrokenUnits
+                ),
+                'countDifference' => $countDifference,
+            ]);
+        }
+
+        usort($inventoryMaterials, function ($a, $b) {
+            return strcmp($a['reference'], $b['reference']);
+        });
+
+        $pdfData = [
+            'date' => $inventory->date ?: new \DateTime(),
+            'locale' => Config::getSettings('defaultLang'),
+            'company' => Config::getSettings('companyData'),
+            'currency' => Config::getSettings('currency')['iso'],
+            'currencyName' => Config::getSettings('currency')['name'],
+            'parkName' => $inventory->park->name,
+            'author' => $inventory->author ? $inventory->author->person()->first()->full_name : null,
+            'materials' => $inventoryMaterials,
+            'totals' => $totals,
+        ];
+
+        $billPdf = $this->_getPdfAsString($pdfData);
+        if (!$billPdf) {
+            $lastError = error_get_last();
+            throw new \RuntimeException(sprintf(
+                "Unable to create PDF file. Reason: %s",
+                $lastError['message']
+            ));
+        }
+
+        return $billPdf;
     }
 }
