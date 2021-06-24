@@ -93,6 +93,12 @@
     }
   }
 
+  &__row {
+    &--warning > td {
+      background-color: rgba($text-warning-color, .25);
+    }
+  }
+
   &__no-results td {
     padding: .78rem;
     text-align: center;

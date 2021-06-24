@@ -59,8 +59,8 @@ class InventoryController extends BaseController
         }
 
         $inventories = Inventory::where('park_id', $parkId)
-            ->where('is_tmp', false)
-            ->orderBy('date', 'desc')
+            ->with('author')
+            ->orderBy('created_at', 'desc')
             ->get();
 
         return $response->withJson($inventories);

@@ -68,6 +68,7 @@
             <i class="fas fa-clipboard-list" />
           </a>
           <router-link
+            v-if="park.row.total_stock_quantity > 0"
             :to="{ name: 'park-inventories', params: { parkId: park.row.id } }"
             v-slot="{ navigate }"
             v-tooltip="$t('inventories')"
