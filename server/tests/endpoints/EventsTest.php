@@ -919,8 +919,8 @@ final class EventsTest extends ApiTestCase
     public function testUpdateMaterialReturn()
     {
         $data = [
-            ['id' => 1, 'out' => 3, 'returned' => 2, 'broken' => 0],
-            ['id' => 2, 'out' => 2, 'returned' => 2, 'broken' => 1],
+            ['id' => 1, 'actual' => 2, 'broken' => 0],
+            ['id' => 2, 'actual' => 2, 'broken' => 1],
         ];
         $this->client->put('/api/events/2/return', $data);
         $this->assertStatusCode(SUCCESS_OK);
@@ -952,16 +952,16 @@ final class EventsTest extends ApiTestCase
     public function testUpdateMaterialReturnBadData()
     {
         $data = [
-            ['id' => 1, 'out' => 3, 'returned' => 2, 'broken' => 3],
-            ['id' => 2, 'out' => 2, 'returned' => 3, 'broken' => 0],
+            ['id' => 1, 'actual' => 2, 'broken' => 3],
+            ['id' => 2, 'actual' => 3, 'broken' => 0],
         ];
         $this->client->put('/api/events/2/return', $data);
         $this->assertStatusCode(ERROR_VALIDATION);
         $this->assertValidationErrorMessage();
         $response = $this->_getResponseAsArray();
         $expected = [
-            [ 'id' => 1, 'message' => "Broken quantity cannot be greater than returned quantity." ],
-            [ 'id' => 2, 'message' => "Returned quantity cannot be greater than quantity out." ],
+            ['id' => 1, 'message' => "La quantité en panne ne peut pas être supérieure à la quantité retournée."],
+            ['id' => 2, 'message' => "La quantité retournée ne peut pas être supérieure à la quantité sortie."],
         ];
         $this->assertEquals($expected, $response['error']['details']);
     }
@@ -969,8 +969,8 @@ final class EventsTest extends ApiTestCase
     public function testUpdateMaterialTerminate()
     {
         $data = [
-            ['id' => 1, 'out' => 3, 'returned' => 3, 'broken' => 0],
-            ['id' => 2, 'out' => 2, 'returned' => 2, 'broken' => 1],
+            ['id' => 1, 'actual' => 3, 'broken' => 0],
+            ['id' => 2, 'actual' => 2, 'broken' => 1],
         ];
         $this->client->put('/api/events/2/terminate', $data);
         $this->assertStatusCode(SUCCESS_OK);

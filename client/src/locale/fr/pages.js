@@ -136,12 +136,9 @@ export default {
     'title': "Retour du matériel de l'événement «\u00a0{pageSubTitle}\u00a0»",
     'help': "",
     'this-event-is-not-past': "Cet événement n'est pas terminé, il n'est donc pas possible de vérifier son retour pour le moment.",
-    'warning-terminate': "Attention, une fois cet inventaire terminé, il ne sera plus modifiable.",
     'confirm-terminate-title': "Voulez-vous vraiment terminer cet inventaire de retour\u00a0?",
     'confirm-terminate-text': "Veuillez noter qu'il ne sera plus possible de le modifier.",
     'confirm-terminate-text-with-broken': "Ceci aura pour effet de mettre à jour toutes les quantités «\u00a0en panne\u00a0» du matériel concerné, et il ne sera plus possible de modifier cet inventaire.",
-    'terminate-inventory': "Terminer cet inventaire",
-    'validation-error': "Certaines quantités ne sont pas correctes. Veuillez vérifier à nouveau la liste.",
     'inventory-done': "Inventaire terminé",
     'some-material-is-missing': "Du matériel n'est pas revenu de cet événement\u00a0!",
     'all-material-returned': "Félicitations\u00a0! Tout le matériel a bien été retourné pour cet événement.",
@@ -159,7 +156,6 @@ export default {
     'action-add': "Nouvel utilisateur",
     'add': "Nouvel utilisateur",
     'edit': "Modifier l'utilisateur «\u00a0{pageSubTitle}\u00a0»",
-    'edit-title': "Modifier l'utilisateur",
     'confirm-delete': "Mettre cet utilisateur à la corbeille\u00a0?",
     'confirm-permanently-delete': "Voulez-vous vraiment supprimer définitivement cet utilisateur\u00a0?",
     'confirm-restore': "Voulez-vous vraiment restaurer cet utilisateur\u00a0?",
@@ -175,7 +171,6 @@ export default {
     'action-add': "Nouveau bénéficiaire",
     'add': "Nouveau bénéficiaire",
     'edit': "Modifier le bénéficiaire «\u00a0{pageSubTitle}\u00a0»",
-    'edit-title': "Modifier le bénéficiaire",
     'beneficiary-type': "Type de bénéficiaire",
     'person': "Personne physique (individu)",
     'company': "Personne morale (entreprise)",
@@ -193,7 +188,6 @@ export default {
     'title': "Sociétés",
     'add': "Nouvelle société",
     'edit': "Modifier la société «\u00a0{pageSubTitle}\u00a0»",
-    'edit-title': "Modifier la société",
     'edit-btn': "Modifier la société",
     'create-new': "Ajouter une nouvelle société",
     'help-edit': "La raison sociale (nom de la société) est obligatoire.",
@@ -213,7 +207,6 @@ export default {
     ),
     'add': "Nouveau matériel",
     'edit': "Modifier le matériel «\u00a0{pageSubTitle}\u00a0»",
-    'edit-title': "Modifier le matériel",
     'help-edit': (
       `Utilisez un nom assez court pour le matériel, et la description pour entrer dans les détails.\n
       Si vous cochez la case «\u00a0identification unitaire\u00a0», vous aurez la possibilité de spécifier des
@@ -231,7 +224,6 @@ export default {
   },
 
   'page-materials-view': {
-    'title': "Détails du matériel",
     'infos': {
       'click-to-open-image': "Cliquez pour ouvrir l'image en grand dans un nouvel onglet.",
     },
@@ -341,7 +333,6 @@ export default {
     'action-add': "Nouveau technicien",
     'add': "Nouveau technicien",
     'edit': "Modifier le technicien «\u00a0{pageSubTitle}\u00a0»",
-    'edit-title': "Modifier le technicien",
     'help-edit': "Seuls le nom et le prénom de la personne sont obligatoires.",
     'confirm-delete': "Mettre ce technicien à la corbeille\u00a0?",
     'confirm-permanently-delete': "Voulez-vous vraiment supprimer définitivement ce technicien\u00a0?",
@@ -355,7 +346,6 @@ export default {
     'action-add': "Nouveau parc de matériel",
     'add': "Nouveau parc de matériel",
     'edit': "Modifier le parc «\u00a0{pageSubTitle}\u00a0»",
-    'edit-title': "Modifier le parc",
     'help-edit': "Seul le nom du parc est obligatoire.",
     'confirm-delete': "Mettre ce parc à la corbeille\u00a0? Cela ne supprimera pas le matériel qu'il contient.",
     'confirm-permanently-delete': "Voulez-vous vraiment supprimer définitivement ce parc\u00a0? ATTENTION, cela supprimera tout le matériel contenu dans ce parc\u00a0!!",
@@ -410,6 +400,29 @@ export default {
 
   'page-estimate': {
     'confirm-delete': "Voulez-vous vraiment supprimer ce devis\u00a0?",
+  },
+
+  'page-inventories': {
+    'title': "Inventaires",
+    'title-with-park': "Inventaires du parc «\u00a0{park}\u00a0»",
+    'tab-latest': "Dernier inventaire",
+    'tab-archives': "Inventaires précédents",
+    'select-park-intro': "Pour pouvoir accèder aux inventaires, veuillez sélectionner le parc concerné.",
+    'no-parks': "Veuillez ajouter un parc avant de pouvoir accèder à la gestion des inventaires.",
+    'add-park': "Ajouter un parc",
+    'add': "Nouvel inventaire pour ce parc",
+  },
+
+  'page-inventory': {
+    'title': "Nouvel inventaire",
+    'title-with-park': "Nouvel inventaire pour le parc «\u00a0{park}\u00a0»",
+    'confirm-terminate-title': "Voulez-vous vraiment terminer cet inventaire\u00a0?",
+    'confirm-terminate-text': [
+      "En plus de clôturer l'inventaire (et donc le rendre non modifiable), cette action aura les conséquences suivantes\u00a0:\n",
+      "- Les quantités «\u00a0en stock\u00a0» et «\u00a0en panne\u00a0» des matériels du parc seront mises à jour.",
+      "- Les unités absentes seront marquées comme «\u00a0perdues\u00a0» et ne seront donc plus utilisables dans les événements (et inversement pour les quantités «\u00a0retrouvées\u00a0»).",
+      "- L'état des unités et leur statut «\u00a0en panne\u00a0», ou non, sera mis à jour.",
+    ].join('\n'),
   },
 };
 /* eslint-enable quotes */

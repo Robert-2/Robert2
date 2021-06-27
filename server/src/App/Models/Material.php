@@ -3,11 +3,11 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Builder;
-use Robert2\API\Validation\Validator as V;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Robert2\API\Models\Traits\Taggable;
 use Robert2\API\Models\User;
+use Robert2\API\Validation\Validator as V;
 
 class Material extends BaseModel
 {
@@ -127,6 +127,7 @@ class Material extends BaseModel
             'material_unit_state_id',
             'purchase_date',
             'notes',
+            'created_at',
         ];
         return $this->hasMany('Robert2\API\Models\MaterialUnit')
             ->select($selectFields);
@@ -399,15 +400,23 @@ class Material extends BaseModel
 
         if ($parkId) {
             $builder->where(function ($query) use ($parkId, $ignoreUnitaries) {
-                $query->where('park_id', $parkId);
+                $query->where(function ($subQuery) use ($parkId) {
+                    $subQuery
+                        ->where('is_unitary', false)
+                        ->where('park_id', $parkId);
+                });
 
                 if (!$ignoreUnitaries) {
-                    $query->orWhereHas(
-                        'units',
-                        function ($subQuery) use ($parkId) {
-                            $subQuery->where('park_id', $parkId);
-                        }
-                    );
+                    $query->orWhere(function ($subQuery) use ($parkId) {
+                        $subQuery
+                            ->where('is_unitary', true)
+                            ->whereHas(
+                                'units',
+                                function ($subSubQuery) use ($parkId) {
+                                    $subSubQuery->where('park_id', $parkId);
+                                }
+                            );
+                    });
                 } else {
                     $query->orWhere('is_unitary', true);
                 }
@@ -415,6 +424,56 @@ class Material extends BaseModel
         }
 
         return $builder;
+    }
+
+    /**
+     * @param integer $parkId
+     *
+     * @return Material[]
+     */
+    public static function getParkAll(int $parkId): array
+    {
+        $materials = static::query()
+            ->where(function ($query) use ($parkId) {
+                $query->where(function ($subQuery) use ($parkId) {
+                    $subQuery
+                        ->where('is_unitary', false)
+                        ->where('park_id', $parkId);
+                });
+
+                $query->orWhere(function ($subQuery) use ($parkId) {
+                    $subQuery
+                        ->where('is_unitary', true)
+                        ->whereHas(
+                            'units',
+                            function ($subSubQuery) use ($parkId) {
+                                $subSubQuery->where('park_id', $parkId);
+                            }
+                        );
+                });
+            })
+            ->get();
+
+        $materials = array_map(
+            function ($material) use ($parkId) {
+                if ($material['is_unitary']) {
+                    $material['park_id'] = null;
+                    $material['units'] = array_values(array_filter(
+                        $material['units'],
+                        function ($unit) use ($parkId) {
+                            return $unit['park_id'] === $parkId;
+                        },
+                    ));
+                    $material['stock_quantity'] = count($material['units']);
+                } else {
+                    $material['units'] = [];
+                }
+                return $material;
+            },
+            $materials->toArray(),
+        );
+
+        return $materials;
     }
 
     public static function getOneForUser(int $id, ?int $userId = null): array

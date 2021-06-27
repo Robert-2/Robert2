@@ -19,7 +19,7 @@ export default {
   'yes': "Oui",
   'no': "Non",
 
-  'help-loading': "Chargement...",
+  'loading': "Chargement en cours...",
   'please-confirm': "Veuillez confirmer...",
   'yes-delete': "Oui, mettre à la corbeille",
   'yes-permanently-delete': "Oui, supprimer définitivement",
@@ -29,6 +29,7 @@ export default {
   'copy-to-clipboard': "Copier dans le presse-papier",
   'copied-in-clipboard': "Copié dans le presse-papier\u00a0!",
   'almost-done': "Presque terminé...",
+  'refresh-page': "Actualiser la page",
 
   'please-choose': "Veuillez choisir...",
   'start-typing-to-search': "Commencez à écrire pour rechercher...",
@@ -86,6 +87,7 @@ export default {
   'member': "Membre",
   'visitor': "Visiteur",
   'owner': "Propriétaire",
+  'owner-key': "Propriétaire\u00a0:",
   'opening-hours': "Horaires d'ouverture",
   'notes': "Notes",
   'description': "Description",
@@ -233,13 +235,15 @@ export default {
   'return-inventory': "Inventaire de retour",
   'grouped-by': "Voir groupé par\u00a0:",
   'not-grouped': "Non groupé",
-  'out': [
-    "Sorti\u00a0:",
-    "Sortis\u00a0:",
-  ],
-  'quantity-returned': "Qté retournée",
+  'awaited-quantity': "Qté attendue\u00a0:",
+  'actual-quantity': "Qté effective",
   'return-scheduled-on': "Retour prévu le",
   'back-to-calendar': "Retour au calendrier",
+
+  'inventories': "Inventaires",
+  'terminate-inventory': "Terminer l'inventaire",
+  'warning-terminate-inventory': "Attention, une fois cet inventaire terminé, il ne sera plus modifiable.",
+  'inventory-validation-error': "Certaines quantités ne sont pas correctes. Veuillez vérifier à nouveau la liste.",
 
   'event': "Événement",
   'user': "Utilisateur",

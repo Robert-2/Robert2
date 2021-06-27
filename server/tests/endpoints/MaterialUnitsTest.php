@@ -77,6 +77,7 @@ final class MaterialUnitsTest extends ApiTestCase
                             'updated_at' => null,
                             'deleted_at' => null,
                         ],
+                        'created_at' => null,
                     ],
                     [
                         'id' => 2,
@@ -97,6 +98,7 @@ final class MaterialUnitsTest extends ApiTestCase
                             'updated_at' => null,
                             'deleted_at' => null,
                         ],
+                        'created_at' => null,
                     ],
                     [
                         'id' => 3,
@@ -111,6 +113,7 @@ final class MaterialUnitsTest extends ApiTestCase
                         'notes' => null,
                         'owner' => null,
                         'state' => null,
+                        'created_at' => null,
                     ]
                 ],
                 'tags' => [],

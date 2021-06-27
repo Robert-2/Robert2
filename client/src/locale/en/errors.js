@@ -5,6 +5,7 @@ export default {
     'generic': "Error: {message}",
     'api-unreachable': "Sorry, but Robert2 API is unreachable... Please check your access to network.",
     'not-found': "This record does not exist.",
+    'unknown': "Unknown error.",
     'validation': "Please check form informations.",
     'already-exists': "This record already exists.",
     'show-details': "Show error details",
@@ -18,6 +19,10 @@ export default {
     'details-message': "Error message",
     'details-file': "File:",
     'details-stacktrace': "Stack trace:",
+    'critical': [
+      "A critical error has occured, please refresh the page.",
+      "If the problem persists, please contact an administrator.",
+    ].join('\n'),
 
     'file-type-not-allowed': "Type '{type}' not supported.",
     'file-size-exceeded': "File too large. Maximum {max}.",

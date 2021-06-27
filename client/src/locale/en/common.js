@@ -19,7 +19,7 @@ export default {
   'yes': "Yes",
   'no': "No",
 
-  'help-loading': "Loading...",
+  'loading': "Loading...",
   'please-confirm': "Please confirm...",
   'yes-delete': "Yes, move in trash bin",
   'yes-permanently-delete': "Yes, permanently delete",
@@ -29,6 +29,7 @@ export default {
   'copy-to-clipboard': "Copy to clipboard",
   'copied-in-clipboard': "Copied in clipboard!",
   'almost-done': "Almost done...",
+  'refresh-page': "Refresh the page",
 
   'please-choose': "Please choose...",
   'start-typing-to-search': "Start typing to search...",
@@ -86,6 +87,7 @@ export default {
   'member': "Member",
   'visitor': "Visitor",
   'owner': "Owner",
+  'owner-key': "Owner:",
   'opening-hours': "Opening hours",
   'notes': "Notes",
   'description': "Description",
@@ -233,13 +235,15 @@ export default {
   'return-inventory': "Return inventory",
   'grouped-by': "Display grouped by:",
   'not-grouped': "Not grouped",
-  'out': [
-    "Out:",
-    "Out:",
-  ],
-  'quantity-returned': "Qty returned",
+  'awaited-quantity': "Awaited qty:",
+  'actual-quantity': "Actual qty",
   'return-scheduled-on': "Return scheduled on",
   'back-to-calendar': "Back to calendar",
+
+  'inventories': "Inventories",
+  'terminate-inventory': "Terminate inventory",
+  'warning-terminate-inventory': "Beware, once this inventory terminated, it will no longer be modifiable.",
+  'inventory-validation-error': "Some quantities are not valid. Please double-check the list.",
 
   'event': "Event",
   'user': "User",

@@ -15,6 +15,12 @@
             {{ $t('page-parks.action-add') }}
           </button>
         </router-link>
+        <router-link to="/inventories" v-slot="{ navigate }" custom>
+          <button @click="navigate">
+            <i class="fas fa-boxes" />
+            {{ $t('inventories') }}
+          </button>
+        </router-link>
       </div>
     </div>
 
@@ -51,7 +57,7 @@
         <div slot="note" slot-scope="park">
           <pre>{{ park.row.note }}</pre>
         </div>
-        <div slot="actions" slot-scope="park" class="Parks__actions">
+        <template slot="actions" slot-scope="park" class="Parks__actions">
           <a
             v-if="park.row.total_stock_quantity > 0"
             :href="getDownloadListingUrl(park.row.id)"
@@ -61,6 +67,16 @@
           >
             <i class="fas fa-clipboard-list" />
           </a>
+          <router-link
+            :to="{ name: 'park-inventories', params: { parkId: park.row.id } }"
+            v-slot="{ navigate }"
+            v-tooltip="$t('inventories')"
+            custom
+          >
+            <button @click="navigate" class="item-actions__button">
+              <i class="fas fa-boxes" />
+            </button>
+          </router-link>
           <router-link
             v-if="!isTrashDisplayed"
             v-tooltip="$t('action-edit')"
@@ -96,7 +112,7 @@
           >
             <i class="fas fa-trash-alt" />
           </button>
-        </div>
+        </template>
       </v-server-table>
     </div>
     <div class="content__footer">

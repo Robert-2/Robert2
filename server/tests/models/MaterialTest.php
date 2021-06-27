@@ -376,6 +376,7 @@ final class MaterialTest extends ModelTestCase
                         'updated_at' => null,
                         'deleted_at' => null,
                     ],
+                    'created_at' => null,
                 ],
                 [
                     'id' => 2,
@@ -396,6 +397,7 @@ final class MaterialTest extends ModelTestCase
                         'updated_at' => null,
                         'deleted_at' => null,
                     ],
+                    'created_at' => null,
                 ],
                 [
                     'id' => 3,
@@ -410,6 +412,7 @@ final class MaterialTest extends ModelTestCase
                     'notes' => null,
                     'owner' => null,
                     'state' => null,
+                    'created_at' => null,
                 ],
             ],
             'created_at' => null,
@@ -460,6 +463,7 @@ final class MaterialTest extends ModelTestCase
                         'updated_at' => null,
                         'deleted_at' => null,
                     ],
+                    'created_at' => null,
                 ],
                 [
                     'id' => 2,
@@ -480,6 +484,7 @@ final class MaterialTest extends ModelTestCase
                         'updated_at' => null,
                         'deleted_at' => null,
                     ],
+                    'created_at' => null,
                 ],
             ],
             'created_at' => null,

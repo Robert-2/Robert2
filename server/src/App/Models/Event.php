@@ -253,6 +253,17 @@ class Event extends BaseModel
         return $builder;
     }
 
+    public static function getOngoing(): Builder
+    {
+        $now = date('Y-m-d H:i:s');
+
+        return static::orderBy('start_date', 'asc')
+            ->where([
+                ['end_date', '>', $now],
+                ['start_date', '<', $now],
+            ]);
+    }
+
     public static function getMissingMaterials(int $id): ?array
     {
         $event = static::with('Materials')->find($id);

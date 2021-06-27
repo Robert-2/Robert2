@@ -74,6 +74,7 @@ final class MaterialsTest extends ApiTestCase
                                 'updated_at' => null,
                                 'deleted_at' => null,
                             ],
+                            'created_at' => null,
                         ],
                         [
                             'id' => 2,
@@ -94,6 +95,7 @@ final class MaterialsTest extends ApiTestCase
                                 'updated_at' => null,
                                 'deleted_at' => null,
                             ],
+                            'created_at' => null,
                         ],
                         [
                             'id' => 3,
@@ -108,6 +110,7 @@ final class MaterialsTest extends ApiTestCase
                             'notes' => null,
                             'owner' => null,
                             'state' => null,
+                            'created_at' => null,
                         ],
                     ],
                 ],
@@ -219,6 +222,7 @@ final class MaterialsTest extends ApiTestCase
                             'notes' => null,
                             'owner' => null,
                             'state' => null,
+                            'created_at' => null,
                         ],
                         [
                             'id' => 6,
@@ -233,6 +237,7 @@ final class MaterialsTest extends ApiTestCase
                             'notes' => 'Attention à la marche !',
                             'owner' => null,
                             'state' => null,
+                            'created_at' => null,
                         ],
                     ]
                 ],
@@ -400,6 +405,7 @@ final class MaterialsTest extends ApiTestCase
                             'notes' => null,
                             'owner' => null,
                             'state' => null,
+                            'created_at' => null,
                         ]
                     ],
                 ],
@@ -588,6 +594,7 @@ final class MaterialsTest extends ApiTestCase
                         'owner' => null,
                         'state' => null,
                         'is_available' => true,
+                        'created_at' => null,
                     ],
                     [
                         'id' => 6,
@@ -603,6 +610,7 @@ final class MaterialsTest extends ApiTestCase
                         'owner' => null,
                         'state' => null,
                         'is_available' => true,
+                        'created_at' => null,
                     ],
                 ],
                 'attributes' => [],
@@ -732,6 +740,7 @@ final class MaterialsTest extends ApiTestCase
                         'state' => null,
                         'owner' => null,
                         'is_available' => true,
+                        'created_at' => null,
                     ],
                 ],
                 'attributes' => [],
@@ -804,6 +813,7 @@ final class MaterialsTest extends ApiTestCase
                             'deleted_at' => null,
                         ],
                         'is_available' => true,
+                        'created_at' => null,
                     ],
                     [
                         'id' => 2,
@@ -825,6 +835,7 @@ final class MaterialsTest extends ApiTestCase
                             'deleted_at' => null,
                         ],
                         'is_available' => true,
+                        'created_at' => null,
                     ],
                     [
                         'id' => 3,
@@ -840,6 +851,7 @@ final class MaterialsTest extends ApiTestCase
                         'owner' => null,
                         'state' => null,
                         'is_available' => true,
+                        'created_at' => null,
                     ],
                 ],
                 'attributes' => [

@@ -1,18 +1,46 @@
 import './index.scss';
-import Item from './Item';
+import Inventory from '@/components/Inventory';
 
 export default {
   name: 'EventReturnMaterialsList',
-  components: { Item },
   props: {
-    listData: Array,
+    materials: Array,
     quantities: Array,
     errors: Array,
     isLocked: Boolean,
+    displayGroup: {
+      default: 'categories',
+      validator: (value) => (
+        ['categories', 'parks', 'none'].includes(value)
+      ),
+    },
   },
   computed: {
+    awaitedMaterials() {
+      return this.materials.map(({ pivot, ...material }) => {
+        let units = [];
+        if (material.is_unitary) {
+          units = material.units.filter((unit) => (
+            pivot.units.includes(unit.id)
+          ));
+        }
+
+        return {
+          ...material,
+          awaited_quantity: pivot.quantity,
+          awaited_units: units,
+        };
+      });
+    },
+
     isAllReturned() {
-      return this.quantities.every(({ out, returned }) => out === returned);
+      return this.materials.every((material) => {
+        const _quantities = this.quantities.find(({ id }) => material.id === id);
+        if (!_quantities) {
+          return false;
+        }
+        return _quantities.actual === material.awaited_quantity;
+      });
     },
 
     hasBroken() {
@@ -20,46 +48,20 @@ export default {
     },
   },
   methods: {
-    handleChangeQuantityReturned({ id, quantity }) {
-      const index = this.quantities.findIndex(({ id: _id }) => id === _id);
-      if (index < 0) {
-        return;
-      }
-
-      this.$emit('setReturned', { index, quantity });
-    },
-
-    handleChangeQuantityBroken({ id, quantity }) {
-      const index = this.quantities.findIndex(({ id: _id }) => id === _id);
-      if (index < 0) {
-        return;
-      }
-
-      this.$emit('setBroken', { index, quantity });
-    },
-
-    getMaterialQuantities(materialId) {
-      return this.quantities.find(({ id }) => id === materialId);
-    },
-
-    getError(materialId) {
-      if (!this.errors) {
-        return null;
-      }
-      return this.errors.find(({ id }) => id === materialId);
+    handleChange(id, quantities) {
+      this.$emit('change', id, quantities);
     },
   },
   render() {
     const {
       $t: __,
-      listData,
+      quantities,
+      awaitedMaterials,
       isLocked,
-      getMaterialQuantities,
-      getError,
-      handleChangeQuantityReturned,
-      handleChangeQuantityBroken,
       isAllReturned,
+      displayGroup,
       hasBroken,
+      handleChange,
     } = this;
 
     return (
@@ -69,36 +71,15 @@ export default {
             {__('page-event-return.some-material-is-missing')}
           </div>
         )}
-        {listData.map(({ id: sectionId, name: sectionName, materials }) => (
-          <div key={sectionId} class="EventReturnMaterialsList__section">
-            <div class="EventReturnMaterialsList__section__header">
-              <h3 class="EventReturnMaterialsList__section__title">
-                {sectionId !== 'flat' ? sectionName : ''}
-              </h3>
-              <h3 class="EventReturnMaterialsList__section__quantity-title">
-                {__('quantity-returned')}
-              </h3>
-              <h3 class="EventReturnMaterialsList__section__quantity-title">
-                {__('quantity-out-of-order')}
-              </h3>
-            </div>
-            <ul class="EventReturnMaterialsList__list">
-              {materials.map(({ id, name, reference }) => (
-                <Item
-                  key={id}
-                  id={id}
-                  reference={reference}
-                  name={name}
-                  quantities={getMaterialQuantities(id)}
-                  error={getError(id)}
-                  isLocked={isLocked}
-                  onUpdateQuantityReturned={handleChangeQuantityReturned}
-                  onUpdateQuantityBroken={handleChangeQuantityBroken}
-                />
-              ))}
-            </ul>
-          </div>
-        ))}
+        <Inventory
+          quantities={quantities}
+          materials={awaitedMaterials}
+          displayGroup={displayGroup}
+          errors={this.errors}
+          onChange={handleChange}
+          locked={isLocked}
+          strict
+        />
         {isAllReturned && (
           <div class="EventReturnMaterialsList__all-returned">
             {__('page-event-return.all-material-returned')}

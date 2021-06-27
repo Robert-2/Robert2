@@ -1,4 +1,4 @@
-const getMaterialItemsCount = (materials) => {
+const getEventMaterialItemsCount = (materials) => {
   if (!materials || materials.length === 0) {
     return 0;
   }
@@ -8,4 +8,4 @@ const getMaterialItemsCount = (materials) => {
   ), 0);
 };
 
-export default getMaterialItemsCount;
+export default getEventMaterialItemsCount;

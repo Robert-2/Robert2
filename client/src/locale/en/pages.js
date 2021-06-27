@@ -136,12 +136,9 @@ export default {
     'title': "Return of the material of event «\u00a0{pageSubTitle}\u00a0»",
     'help': "",
     'this-event-is-not-past': "This event is not finished, so it is not possible to check its return at the moment.",
-    'warning-terminate': "Beware, once this return inventory terminated, it will no longer be modifiable.",
     'confirm-terminate-title': "Do you really want to terminate this return inventory?",
     'confirm-terminate-text': "Please note that it will no longer be possible to modify it.",
     'confirm-terminate-text-with-broken': "This will update all the «\u00a0out of order\u00a0» quantities for the concerned materials, and it will no longer be possible to modify this inventory.",
-    'terminate-inventory': "Terminate this inventory",
-    'validation-error': "Some quantities are not valid. Please double-check the list.",
     'inventory-done': "Inventory done",
     'some-material-is-missing': "Some materials did not return from this event!",
     'all-material-returned': "Congratulations! All materials were returned for this event.",
@@ -159,7 +156,6 @@ export default {
     'action-add': "New user",
     'add': "New user",
     'edit': "Modify user «\u00a0{pageSubTitle}\u00a0»",
-    'edit-title': "Modify user",
     'confirm-delete': "Move this user in trash bin?",
     'confirm-permanently-delete': "Do you really want to permanently delete this user?",
     'confirm-restore': "Do you really want to restore this user?",
@@ -175,7 +171,6 @@ export default {
     'action-add': "New beneficiary",
     'add': "New beneficiary",
     'edit': "Modify beneficiary «\u00a0{pageSubTitle}\u00a0»",
-    'edit-title': "Modify beneficiary",
     'beneficiary-type': "Beneficiary type",
     'person': "Natural person (individual)",
     'company': "Legal entity (company)",
@@ -193,7 +188,6 @@ export default {
     'title': "Companies",
     'add': "New company",
     'edit': "Modify company «\u00a0{pageSubTitle}\u00a0»",
-    'edit-title': "Modify company",
     'edit-btn': "Modify company",
     'create-new': "Add a new company",
     'help-edit': "The legal name of the company is mandatory.",
@@ -213,7 +207,6 @@ export default {
     ),
     'add': "New material",
     'edit': "Modify material «\u00a0{pageSubTitle}\u00a0»",
-    'edit-title': "Modify material",
     'help-edit': (
       `Use a short name for the material and use the description field to enter details.\n
       If you check the box «\u00a0Unitary identification\u00a0», you will be able to specify units
@@ -339,7 +332,6 @@ export default {
     'action-add': "New technician",
     'add': "New technician",
     'edit': "Modify technician «\u00a0{pageSubTitle}\u00a0»",
-    'edit-title': "Modify technician",
     'help-edit': "Only first name and last name are mandatory.",
     'confirm-delete': "Move this technician in trash bin?",
     'confirm-permanently-delete': "Do you really want to permanently delete this technician?",
@@ -353,7 +345,6 @@ export default {
     'action-add': "New materials park",
     'add': "New materials park",
     'edit': "Modify park «\u00a0{pageSubTitle}\u00a0»",
-    'edit-title': "Modify park",
     'help-edit': "Only the name of the park is mandatory.",
     'confirm-delete': "Move this park in trash bin? This won't delete materials in this park.",
     'confirm-permanently-delete': "Do you really want to permanently delete this park? WARNING: this will delete all materials of this park!!",
@@ -408,6 +399,29 @@ export default {
 
   'page-estimate': {
     'confirm-delete': "Do you really want to delete this estimate?",
+  },
+
+  'page-inventories': {
+    'title': "Inventories",
+    'title-with-park': "Inventories for the \"{park}\" park",
+    'tab-latest': "Latest inventory",
+    'tab-archives': "Previous inventories",
+    'select-park-intro': "To access the inventories, please select the involved park.",
+    'no-parks': "Please add a park before for being able to access the inventory management.",
+    'add-park': "Add a park",
+    'add': "New inventory for this park",
+  },
+
+  'page-inventory': {
+    'title': "New inventory",
+    'title-with-park': "New inventory for the \"{park}\" park",
+    'confirm-terminate-title': "Do you really want to terminate this inventory?",
+    'confirm-terminate-text': [
+      "Besides closing the inventory (and making it uneditable), this action will have the following consequences:\n",
+      "- The \"in stock\" and \"out of order\" quantities of the park's material will be updated.",
+      "- Missing units will be marked as \"lost\" and will therefore no longer be usable in events.",
+      "- The units state and their \"out of order\" status will be updated.",
+    ].join('\n'),
   },
 };
 /* eslint-enable quotes */

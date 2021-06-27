@@ -1,0 +1,46 @@
+@import '../../../../../themes/default/index';
+
+.InventoryItemUnitsItem {
+  &__col {
+    padding: 5px 8px;
+    height: 30px;
+    background: rgba(#fff, .05);
+    vertical-align: middle;
+
+    &--checkbox {
+      width: 30px;
+      padding-left: 15px;
+      padding-right: 15px;
+    }
+
+    &--owner {
+      width: 250px;
+    }
+
+    &--actions {
+      width: 55px;
+      text-align: right;
+    }
+
+    &--switch {
+      width: 95px;
+      box-sizing: content-box;
+      text-align: center;
+      padding-right: 0;
+      padding-left: 0;
+
+      &--broken {
+        padding-left: 2rem;
+      }
+    }
+  }
+
+  &__checkbox {
+    margin: 0;
+    vertical-align: -2px;
+  }
+
+  &__state--error {
+      color: $text-danger-color;
+  }
+}

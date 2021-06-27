@@ -1,9 +1,8 @@
 @import '../../../../themes/default/index';
 
-.EventReturnMaterialItem {
+.InventoryItemMaterial {
   display: flex;
   align-items: center;
-  list-style: none;
   width: 100%;
   padding: 0;
   border-radius: $input-border-radius;
@@ -12,12 +11,12 @@
 
   &__reference,
   &__name,
-  &__quantity-out {
+  &__awaited-quantity {
     padding: 0 $content-padding-large-horizontal;
   }
 
   &__reference {
-    flex: 0 0 150px;
+    flex: 0 0 200px;
   }
 
   &__name {
@@ -30,7 +29,9 @@
     color: $text-danger-color;
   }
 
-  &__quantity-out {
+  &__awaited-quantity {
+    display: inline-flex;
+    justify-content: center;
     flex: 0 0 auto;
     text-align: right;
     color: $text-nav-color;
@@ -38,10 +39,11 @@
     &__count {
       color: $text-base-color;
       font-size: 1.1rem;
+      margin-left: .3rem;
     }
   }
 
-  &__quantity-returned,
+  &__actual-quantity,
   &__quantity-broken {
     flex: 0 0 auto;
     text-align: center;
@@ -51,9 +53,9 @@
     margin-left: $content-padding-large-vertical;
   }
 
-  &--locked {
-    .EventReturnMaterialItem__quantity-returned,
-    .EventReturnMaterialItem__quantity-broken {
+  &--read-only {
+    .InventoryItemMaterial__actual-quantity,
+    .InventoryItemMaterial__quantity-broken {
       flex: 0 0 95px;
       font-size: 1.1rem;
       color: $text-light-color;
@@ -64,7 +66,7 @@
   &--complete {
     background: rgba($text-success-color, .25);
 
-    .EventReturnMaterialItem__quantity-returned {
+    .InventoryItemMaterial__actual-quantity {
       font-weight: 600;
       color: $text-base-color;
     }
@@ -73,12 +75,12 @@
   &--warning {
     background: rgba($text-warning-color, .25);
 
-    .EventReturnMaterialItem__quantity-returned {
+    .InventoryItemMaterial__actual-quantity {
       font-weight: 600;
       color: $text-warning-color;
     }
 
-    .EventReturnMaterialItem__quantity-broken {
+    .InventoryItemMaterial__quantity-broken {
       font-weight: 600;
       color: $text-danger-color;
     }
@@ -87,7 +89,7 @@
   &--error {
     background: rgba($text-danger-color, .25);
 
-    .EventReturnMaterialItem__quantity-returned {
+    .InventoryItemMaterial__actual-quantity {
       font-weight: 600;
       color: $text-danger-color;
     }

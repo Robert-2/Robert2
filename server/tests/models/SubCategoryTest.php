@@ -99,6 +99,7 @@ final class SubCategoryTest extends ModelTestCase
                             'updated_at' => null,
                             'deleted_at' => null,
                         ],
+                        'created_at' => null,
                     ],
                     [
                         'id' => 2,
@@ -119,6 +120,7 @@ final class SubCategoryTest extends ModelTestCase
                             'updated_at' => null,
                             'deleted_at' => null,
                         ],
+                        'created_at' => null,
                     ],
                     [
                         'id' => 3,
@@ -133,6 +135,7 @@ final class SubCategoryTest extends ModelTestCase
                         'notes' => null,
                         'owner' => null,
                         'state' => null,
+                        'created_at' => null,
                     ],
                 ],
             ],

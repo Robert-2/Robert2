@@ -149,6 +149,17 @@ class MaterialController extends BaseController
         return $response->withJson($results);
     }
 
+    public function getParkAll(Request $request, Response $response): Response
+    {
+        $parkId = (int)$request->getAttribute('parkId');
+        if (!Park::staticExists($parkId)) {
+            throw new HttpNotFoundException($request);
+        }
+
+        $materials = Material::getParkAll($parkId);
+        return $response->withJson($materials);
+    }
+
     public function getOne(Request $request, Response $response): Response
     {
         $id = (int)$request->getAttribute('id');
