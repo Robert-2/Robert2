@@ -410,6 +410,11 @@ export default {
     'no-parks': "Please add a park before for being able to access the inventory management.",
     'add-park': "Add a park",
     'add': "New inventory for this park",
+    'created-at': "Started on",
+    'is-terminated': "Terminated?",
+    'terminated-at': "Terminated on",
+    'author': "Created by",
+    'continue': "Continue",
   },
 
   'page-inventory': {

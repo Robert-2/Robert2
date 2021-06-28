@@ -1,3 +1,5 @@
+@import '../../../themes/default/index';
+
 .Inventories {
   position: relative;
 
@@ -11,5 +13,20 @@
     bottom: 0;
     right: 0;
     left: 0;
+  }
+
+  .VueTables__search {
+    display: none;
+  }
+
+  &__actions {
+    width: 55px;
+    min-width: 55px;
+  }
+
+  &__action {
+    width: calc(100% - 6px);
+    text-align: center;
+    margin: 0 3px;
   }
 }

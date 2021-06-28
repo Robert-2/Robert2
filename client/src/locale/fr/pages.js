@@ -411,6 +411,11 @@ export default {
     'no-parks': "Veuillez ajouter un parc avant de pouvoir accèder à la gestion des inventaires.",
     'add-park': "Ajouter un parc",
     'add': "Nouvel inventaire pour ce parc",
+    'created-at': "Commencé le",
+    'is-terminated': "Terminé ?",
+    'terminated-at': "Terminé le",
+    'author': "Créé par",
+    'continue': "Continuer",
   },
 
   'page-inventory': {

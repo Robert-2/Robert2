@@ -5,6 +5,7 @@ const Page = {
   props: {
     name: { type: String, required: true },
     title: String,
+    actions: Array,
     render: Function,
   },
   watch: {
@@ -19,12 +20,19 @@ const Page = {
     this.$store.commit('setPageRawTitle', null);
   },
   render() {
-    const content = this.$props.render
-      ? this.$props.render()
-      : this.$slots.default;
+    const { actions, render } = this.$props;
+    const content = render ? render() : this.$slots.default;
 
     return (
       <div class="content">
+        {actions && actions.length > 0 && (
+          <div class="content__header header-page">
+            <div class="header-page__help"></div>
+            <nav class="header-page__actions">
+              {actions}
+            </nav>
+          </div>
+        )}
         <div class="content__main-view">
           <div class={['Page', `Page--${this.name}`]}>
             {content}

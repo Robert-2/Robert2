@@ -76,7 +76,28 @@ const InventoriesPage = {
       ? __('page-inventories.title-with-park', { park: this.park.name })
       : __('page-inventories.title');
 
-    return <Page name="inventories" title={title} render={render} />;
+    const actions = [];
+    if (this.park !== null) {
+      actions.push(
+        <router-link to={`/parks/${this.park.id}/inventories/new`} custom>
+          {({ navigate }) => (
+            <button class="info" onClick={navigate}>
+              <i class="fas fa-plus" />&nbsp;
+              {__('page-inventories.add')}
+            </button>
+          )}
+        </router-link>,
+      );
+    }
+
+    return (
+      <Page
+        name="inventories"
+        title={title}
+        actions={actions}
+        render={render}
+      />
+    );
   },
 };
 
