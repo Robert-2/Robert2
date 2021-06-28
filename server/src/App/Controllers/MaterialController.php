@@ -468,7 +468,11 @@ class MaterialController extends BaseController
                         continue;
                     }
 
-                    $material = Material::find($unit['material_id'])->toArray();
+                    $material = Material::find($unit['material_id']);
+                    if (!$material) {
+                        continue;
+                    }
+                    $material = $material->toArray();
                     $material['units'] = array_filter(
                         $material['units'],
                         function ($materialUnit) use ($park) {
