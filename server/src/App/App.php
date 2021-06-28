@@ -141,7 +141,10 @@ class App
             ->setName('getMaterialPicture');
         $this->app->get('/materials/pdf[/]', $getActionFqdn('MaterialController:getAllPdf'))
             ->setName('getMaterialsListPdf');
-        $this->app->get('/material-units/{id:[0-9]+}/barcode', $getActionFqdn('MaterialUnitController:barCode'));
+        $this->app->get('/material-units/{id:[0-9]+}/barcode', $getActionFqdn('MaterialUnitController:barCode'))
+            ->setName('getMaterialUnitBarcode');
+        $this->app->get('/inventories/{id:[0-9]+}/pdf', $getActionFqdn('InventoryController:getOnePdf'))
+            ->setName('getInventoryPdf');
 
         // - Login services
         $this->app->get('/login/cas', $getActionFqdn('AuthController:loginWithCAS'));

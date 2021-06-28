@@ -50,6 +50,7 @@
         "slim/psr7": "1.4.0",
         "slim/slim": "4.8.0",
         "slim/twig-view": "3.2.0",
+        "twig/html-extra": "^3.3",
         "twig/intl-extra": "3.3.0",
         "twig/string-extra": "3.3.1",
         "vlucas/phpdotenv": "5.3.0"

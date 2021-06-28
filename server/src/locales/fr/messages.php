@@ -2572,8 +2572,32 @@ return [
     "stock-quantity"
     => "Quantité en stock",
 
+    "previous-quantity"
+    => "Quantité précédente",
+
     "recount-quantity"
     => "Quantité recomptée",
+
+    "current-quantity"
+    => "Quantité actuelle",
+
+    "out-of-order-quantity"
+    => "Quantité en panne",
+
+    "is-new"
+    => "a été ajouté !",
+
+    "is-lost"
+    => "est perdu !",
+
+    "is-broken"
+    => "est en panne !",
+
+    "has-been-found"
+    => "a été retrouvé !",
+
+    "has-been-repaired"
+    => "a été réparé !",
 
     "unknown-park"
     => "Parc inconnu",
@@ -2739,6 +2763,12 @@ return [
 
     "park-value"
     => "Parc : %s",
+
+    "Inventory"
+    => "Inventaire",
+
+    "inventory-created-by"
+    => "Inventaire créé par",
 
     "enable-javascript-message"
     => "Veuillez activer JavaScript pour utiliser l'application.",

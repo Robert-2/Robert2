@@ -524,7 +524,7 @@ class MaterialController extends BaseController
             'parksMaterialsList' => $parksMaterials,
         ];
 
-        $fileContent = Pdf::createFromTemplate('materials-list', $data);
+        $fileContent = Pdf::createFromTemplate('materials-list-default', $data);
 
         return $this->_responseWithFile($response, $fileName, $fileContent);
     }

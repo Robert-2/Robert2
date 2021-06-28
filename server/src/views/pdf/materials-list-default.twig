@@ -5,19 +5,6 @@
     page-break-after: avoid;
 }
 
-.listing-table {
-    margin-bottom: 8mm;
-}
-
-.listing-table > thead > tr {
-    page-break-after: avoid;
-}
-
-.listing-table > thead > tr > th,
-.listing-table > tbody > tr > td {
-    vertical-align: middle;
-}
-
 .listing-table > tbody > tr > td {
     height: 6mm;
     font-size: 8pt;
@@ -73,20 +60,20 @@
             </tr>
         </thead>
         <tbody>
-            {% for subCategory in park['materials'] %}
-                <tr>
-                    <td class="section-title" colspan="5">
-                        {% if subCategory['name'] is null %}
-                        {{ translate('otherMaterials') }}
-                        {% else %}
-                        {{ subCategory['name'] }}
-                        {% endif %}
-                    </td>
-                </tr>
-                {% for material in subCategory['materials'] %}
-                    {{ include('blocks/materials/line-inventory.twig', { material: material }) }}
-                {% endfor %}
+        {% for subCategory in park['materials'] %}
+            <tr>
+                <td class="section-title" colspan="5">
+                    {% if subCategory['name'] is null %}
+                    {{ translate('otherMaterials') }}
+                    {% else %}
+                    {{ subCategory['name'] }}
+                    {% endif %}
+                </td>
+            </tr>
+            {% for material in subCategory['materials'] %}
+                {{ include('blocks/materials/line-list.twig', { material: material }) }}
             {% endfor %}
+        {% endfor %}
         </tbody>
     </table>
 {% endfor %}
