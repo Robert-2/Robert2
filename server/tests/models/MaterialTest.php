@@ -256,6 +256,7 @@ final class MaterialTest extends ModelTestCase
                 'event_id' => 2,
                 'quantity' => 3,
                 'units' => [],
+                'units_with_return' => [],
             ],
         ], $results[1]);
         $this->assertEquals([
@@ -273,6 +274,7 @@ final class MaterialTest extends ModelTestCase
                 'event_id' => 1,
                 'quantity' => 1,
                 'units' => [],
+                'units_with_return' => [],
             ],
         ], $results[2]);
     }

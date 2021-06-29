@@ -79,11 +79,17 @@ const EventReturnPage = {
     initQuantities() {
       const { materials } = this.event;
 
-      this.quantities = materials.map(({ id, pivot }) => ({
+      this.quantities = materials.map(({ id, is_unitary: isUnitary, pivot }) => ({
         id,
+        awaited_quantity: pivot.quantity || 0,
         actual: pivot.quantity_returned || 0,
         broken: pivot.quantity_broken || 0,
-        units: [], // TODO: Prendre en charge le retour unités.
+        is_unitary: isUnitary,
+        units: pivot.units_with_return.map((unit) => ({
+          id: unit.id,
+          isLost: !unit.is_returned,
+          isBroken: !!unit.is_returned_broken,
+        })),
       }));
     },
 
@@ -92,7 +98,8 @@ const EventReturnPage = {
       if (index < 0) {
         return;
       }
-      this.$set(this.quantities, index, { id, ...quantities });
+      const prevQuantity = this.quantities[index];
+      this.$set(this.quantities, index, { ...prevQuantity, ...quantities });
     },
 
     setDisplayGroup(group) {

@@ -9,6 +9,6 @@ describe('getEventOneDayTotal', () => {
   });
 
   it('calculates the total of a set of materials for ONE day', () => {
-    expect(getEventOneDayTotal(eventMaterials)).toBe(80);
+    expect(getEventOneDayTotal(eventMaterials)).toBe(215);
   });
 });

@@ -399,11 +399,11 @@ class Event extends BaseModel
     }
 
     /**
-     * Permet de récuperer les ids des unités utilisées pendant l'événement
+     * Permet de récupérer les ids des unités utilisées pendant l'événement
      * représenté par l'instance courante.
      *
      * Seules les unités utilisées dans les autres événements au même moment
-     * seront récuprées, et non pas celles utilisées par l'événement lui-même.
+     * seront récupérées, et non pas celles utilisées par l'événement lui-même.
      *
      * @return array - La liste d'unités utilisées au même moment que l'événement.
      */

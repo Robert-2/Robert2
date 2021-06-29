@@ -462,7 +462,7 @@ class Material extends BaseModel
                         $material['units'],
                         function ($unit) use ($parkId) {
                             return $unit['park_id'] === $parkId;
-                        },
+                        }
                     ));
                     $material['stock_quantity'] = count($material['units']);
                 } else {
@@ -470,7 +470,7 @@ class Material extends BaseModel
                 }
                 return $material;
             },
-            $materials->toArray(),
+            $materials->toArray()
         );
 
         return $materials;

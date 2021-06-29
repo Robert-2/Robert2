@@ -9,6 +9,11 @@
     margin-bottom: $content-padding-large-horizontal;
   }
 
+  &__all-returned,
+  &__has-broken {
+    margin-top: $content-padding-large-vertical;
+  }
+
   &__all-returned {
     color: $text-success-color;
   }

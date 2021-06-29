@@ -194,6 +194,7 @@ final class EventTest extends ModelTestCase
                 'material_id' => 4,
                 'quantity' => 1,
                 'units' => [],
+                'units_with_return' => [],
                 'quantity_returned' => 1,
                 'quantity_broken' => 1,
             ],

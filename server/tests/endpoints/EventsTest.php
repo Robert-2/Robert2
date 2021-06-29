@@ -313,6 +313,7 @@ final class EventsTest extends ApiTestCase
                         'material_id' => 4,
                         'quantity' => 1,
                         'units' => [],
+                        'units_with_return' => [],
                         'quantity_returned' => 1,
                         'quantity_broken' => 1,
                     ],
@@ -358,6 +359,7 @@ final class EventsTest extends ApiTestCase
                         'material_id' => 2,
                         'quantity' => 1,
                         'units' => [],
+                        'units_with_return' => [],
                         'quantity_returned' => 1,
                         'quantity_broken' => 0,
                     ],
@@ -410,6 +412,7 @@ final class EventsTest extends ApiTestCase
                         'material_id' => 1,
                         'quantity' => 1,
                         'units' => [],
+                        'units_with_return' => [],
                         'quantity_returned' => 1,
                         'quantity_broken' => 0,
                     ],
@@ -662,6 +665,7 @@ final class EventsTest extends ApiTestCase
                         'material_id' => 4,
                         'quantity' => 1,
                         'units' => [],
+                        'units_with_return' => [],
                         'quantity_returned' => 1,
                         'quantity_broken' => 1,
                     ],
@@ -707,6 +711,7 @@ final class EventsTest extends ApiTestCase
                         'material_id' => 2,
                         'quantity' => 1,
                         'units' => [],
+                        'units_with_return' => [],
                         'quantity_returned' => 1,
                         'quantity_broken' => 0,
                     ],
@@ -759,6 +764,7 @@ final class EventsTest extends ApiTestCase
                         'material_id' => 1,
                         'quantity' => 1,
                         'units' => [],
+                        'units_with_return' => [],
                         'quantity_returned' => 1,
                         'quantity_broken' => 0,
                     ],
@@ -919,8 +925,8 @@ final class EventsTest extends ApiTestCase
     public function testUpdateMaterialReturn()
     {
         $data = [
-            ['id' => 1, 'actual' => 2, 'broken' => 0],
-            ['id' => 2, 'actual' => 2, 'broken' => 1],
+            ['id' => 1, 'is_unitary' => false, 'actual' => 2, 'broken' => 0],
+            ['id' => 2, 'is_unitary' => false, 'actual' => 2, 'broken' => 1],
         ];
         $this->client->put('/api/events/2/return', $data);
         $this->assertStatusCode(SUCCESS_OK);
@@ -934,6 +940,7 @@ final class EventsTest extends ApiTestCase
             'quantity_returned' => 2,
             'quantity_broken' => 1,
             'units' => [],
+            'units_with_return' => [],
         ];
         $this->assertEquals($expectedFirst, $response['materials'][0]['pivot']);
 
@@ -945,6 +952,7 @@ final class EventsTest extends ApiTestCase
             'quantity_returned' => 2,
             'quantity_broken' => 0,
             'units' => [],
+            'units_with_return' => [],
         ];
         $this->assertEquals($expectedSecond, $response['materials'][1]['pivot']);
     }
@@ -952,8 +960,8 @@ final class EventsTest extends ApiTestCase
     public function testUpdateMaterialReturnBadData()
     {
         $data = [
-            ['id' => 1, 'actual' => 2, 'broken' => 3],
-            ['id' => 2, 'actual' => 3, 'broken' => 0],
+            ['id' => 1, 'is_unitary' => false, 'actual' => 2, 'broken' => 3],
+            ['id' => 2, 'is_unitary' => false, 'actual' => 3, 'broken' => 0],
         ];
         $this->client->put('/api/events/2/return', $data);
         $this->assertStatusCode(ERROR_VALIDATION);
@@ -969,8 +977,8 @@ final class EventsTest extends ApiTestCase
     public function testUpdateMaterialTerminate()
     {
         $data = [
-            ['id' => 1, 'actual' => 3, 'broken' => 0],
-            ['id' => 2, 'actual' => 2, 'broken' => 1],
+            ['id' => 1, 'is_unitary' => false, 'actual' => 3, 'broken' => 0],
+            ['id' => 2, 'is_unitary' => false, 'actual' => 2, 'broken' => 1],
         ];
         $this->client->put('/api/events/2/terminate', $data);
         $this->assertStatusCode(SUCCESS_OK);
@@ -987,6 +995,7 @@ final class EventsTest extends ApiTestCase
             'quantity_returned' => 2,
             'quantity_broken' => 1,
             'units' => [],
+            'units_with_return' => [],
         ];
         $this->assertEquals($expectedFirst, $response['materials'][0]['pivot']);
         $this->assertEquals(1, $response['materials'][0]['out_of_order_quantity']);
@@ -999,6 +1008,7 @@ final class EventsTest extends ApiTestCase
             'quantity_returned' => 3,
             'quantity_broken' => 0,
             'units' => [],
+            'units_with_return' => [],
         ];
         $this->assertEquals($expectedSecond, $response['materials'][1]['pivot']);
         $this->assertEquals(1, $response['materials'][1]['out_of_order_quantity']);
@@ -1091,6 +1101,7 @@ final class EventsTest extends ApiTestCase
                     'material_id' => 2,
                     'quantity' => 1,
                     'units' => [],
+                    'units_with_return' => [],
                     'quantity_returned' => 1,
                     'quantity_broken' => 0,
                 ],
