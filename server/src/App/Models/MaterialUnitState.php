@@ -3,23 +3,12 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
-use Robert2\API\Validation\Validator as V;
-use Illuminate\Database\Eloquent\SoftDeletes;
-
 class MaterialUnitState extends BaseModel
 {
-    use SoftDeletes;
+    protected $primaryKey = 'name';
 
-    protected $orderField = 'name';
-
-    public function __construct(array $attributes = [])
-    {
-        parent::__construct($attributes);
-
-        $this->validation = [
-            'name' => V::notEmpty()->alnum(static::EXTRA_CHARS)->length(2, 64),
-        ];
-    }
+    public $incrementing = false;
+    public $timestamps = false;
 
     // ——————————————————————————————————————————————————————
     // —
@@ -29,7 +18,7 @@ class MaterialUnitState extends BaseModel
 
     public function MaterialUnits()
     {
-        return $this->hasMany('Robert2\API\Models\MaterialUnit');
+        return $this->hasMany('Robert2\API\Models\MaterialUnit', 'state', 'name');
     }
 
     // ——————————————————————————————————————————————————————
@@ -40,6 +29,7 @@ class MaterialUnitState extends BaseModel
 
     protected $casts = [
         'name' => 'string',
+        'order' => 'integer',
     ];
 
     // ——————————————————————————————————————————————————————
@@ -48,7 +38,5 @@ class MaterialUnitState extends BaseModel
     // —
     // ——————————————————————————————————————————————————————
 
-    protected $fillable = [
-        'name',
-    ];
+    protected $fillable = [];
 }

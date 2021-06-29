@@ -17,7 +17,7 @@ export default {
         'owner',
         'is_broken',
         'is_lost',
-        'material_unit_state_id',
+        'state',
         'purchase_date',
         'actions',
       ],
@@ -29,7 +29,7 @@ export default {
           'reference',
           'serial_number',
           'is_broken',
-          'material_unit_state_id',
+          'state',
           'purchase_date',
           'is_lost',
         ],
@@ -40,7 +40,7 @@ export default {
           owner: this.$t('owner'),
           is_broken: this.$t('is-broken'),
           is_lost: this.$t('is-lost'),
-          material_unit_state_id: this.$t('state'),
+          state: this.$t('state'),
           purchase_date: this.$t('purchase-date'),
           actions: '',
         },
@@ -56,8 +56,8 @@ export default {
       return this.$store.getters['parks/parkName'](parkId);
     },
 
-    getUnitStateName(unitStateId) {
-      return this.$store.getters['unitStates/unitStateName'](unitStateId) || '?';
+    getUnitStateName(unitStateName) {
+      return this.$store.getters['unitStates/unitStateName'](unitStateName) || '?';
     },
 
     getFileUrl(unitId) {

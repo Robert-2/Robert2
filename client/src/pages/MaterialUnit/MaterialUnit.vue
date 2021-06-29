@@ -52,12 +52,12 @@
               :errors="errors.is_lost"
             />
             <FormField
-              v-model="unit.material_unit_state_id"
-              name="material_unit_state_id"
+              v-model="unit.state"
+              name="state"
               label="state"
               type="select"
               :options="statesOptions"
-              :errors="errors.material_unit_state_id"
+              :errors="errors.state"
             />
             <FormField
               v-model="unit.purchase_date"

@@ -124,7 +124,7 @@ class Material extends BaseModel
             'person_id',
             'is_broken',
             'is_lost',
-            'material_unit_state_id',
+            'state',
             'purchase_date',
             'notes',
             'created_at',
