@@ -1306,6 +1306,7 @@ final class MaterialsTest extends ApiTestCase
                     'event_id' => 4,
                     'quantity' => 1,
                     'units' => [],
+                    'units_with_return' => [],
                 ],
             ],
             [
@@ -1326,6 +1327,7 @@ final class MaterialsTest extends ApiTestCase
                     'event_id' => 2,
                     'quantity' => 3,
                     'units' => [],
+                    'units_with_return' => [],
                 ],
             ],
             [
@@ -1346,6 +1348,7 @@ final class MaterialsTest extends ApiTestCase
                     'event_id' => 1,
                     'quantity' => 1,
                     'units' => [],
+                    'units_with_return' => [],
                 ],
             ]
         ]);

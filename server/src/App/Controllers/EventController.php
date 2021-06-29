@@ -347,6 +347,7 @@ class EventController extends BaseController
         };
 
         $quantities = [];
+        $unitsQuantities = [];
         $errors = [];
         foreach ($data as $quantity) {
             if (!array_key_exists('id', $quantity)) {
@@ -394,6 +395,15 @@ class EventController extends BaseController
                 'quantity_returned' => $actual,
                 'quantity_broken' => $broken,
             ];
+
+            if ($quantity['is_unitary']) {
+                foreach ($quantity['units'] as $unit) {
+                    $unitsQuantities[$materialId][$unit['id']] = [
+                        'is_returned' => !$unit['isLost'] || $unit['isBroken'],
+                        'is_returned_broken' => $unit['isBroken'],
+                    ];
+                }
+            }
         }
 
         if (!empty($errors)) {
@@ -403,6 +413,13 @@ class EventController extends BaseController
         }
 
         $event->Materials()->sync($quantities);
+
+        // - Synchronisation des unités.
+        $materials = $event->Materials()->get();
+        foreach ($materials as $material) {
+            $units = $unitsQuantities[$material->id] ?? [];
+            $material->pivot->Units()->sync($units);
+        }
     }
 
     protected function _setBrokenMaterialsQuantities(array $data): void
@@ -415,6 +432,23 @@ class EventController extends BaseController
 
             $material = Material::find($quantities['id']);
             if (!$material) {
+                continue;
+            }
+
+            if ($material->is_unitary) {
+                $newQuantityBroken = 0;
+                foreach ($quantities['units'] as $unitQuantities) {
+                    $unit = MaterialUnit::find($unitQuantities['id']);
+                    if (!$unit) {
+                        continue;
+                    }
+                    $newQuantityBroken += (int)$unitQuantities['isBroken'];
+                    $unit->is_broken = $unitQuantities['isBroken'];
+                    $unit->save();
+                }
+
+                $material->out_of_order_quantity = $newQuantityBroken;
+                $material->save();
                 continue;
             }
 

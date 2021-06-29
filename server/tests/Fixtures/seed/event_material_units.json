@@ -1,22 +1,30 @@
 [
     {
-        "id"                : 1,
-        "event_material_id" : 10,
-        "material_unit_id"  : 1
+        "id": 1,
+        "event_material_id": 10,
+        "material_unit_id": 1,
+        "is_returned": false,
+        "is_returned_broken": false
     },
     {
-        "id"                : 2,
-        "event_material_id" : 10,
-        "material_unit_id"  : 3
+        "id": 2,
+        "event_material_id": 10,
+        "material_unit_id": 3,
+        "is_returned": true,
+        "is_returned_broken": false
     },
     {
-        "id"                : 3,
-        "event_material_id" : 11,
-        "material_unit_id"  : 4
+        "id": 3,
+        "event_material_id": 11,
+        "material_unit_id": 4,
+        "is_returned": false,
+        "is_returned_broken": false
     },
     {
-        "id"                : 4,
-        "event_material_id" : 12,
-        "material_unit_id"  : 5
+        "id": 4,
+        "event_material_id": 12,
+        "material_unit_id": 5,
+        "is_returned": false,
+        "is_returned_broken": false
     }
 ]

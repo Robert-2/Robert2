@@ -39,7 +39,7 @@ export default {
         if (!_quantities) {
           return false;
         }
-        return _quantities.actual === material.awaited_quantity;
+        return _quantities.actual === _quantities.awaited_quantity;
       });
     },
 
