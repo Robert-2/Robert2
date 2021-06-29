@@ -9,6 +9,6 @@ describe('getEventReplacementTotal', () => {
   });
 
   it('calculates the total replacement price of the material for ONE day', () => {
-    expect(getEventReplacementTotal(eventMaterials)).toBe(1350);
+    expect(getEventReplacementTotal(eventMaterials)).toBe(3300);
   });
 });

@@ -10,6 +10,10 @@ const getMaterialQuantity = (material) => {
   );
 };
 
+const getMaterialUnits = (material) => (
+  'awaited_units' in material ? material.awaited_units : material.units
+);
+
 const compareString = (a, b) => (
   a.localeCompare(b, undefined, {
     ignorePunctuation: true,
@@ -31,6 +35,63 @@ const dispatchMaterialInSections = (
   materials.forEach((material) => {
     if (!Object.prototype.hasOwnProperty.call(material, sectionIdentifier)) {
       throw new Error(`Identifier '${sectionIdentifier}' doesn't exist in material data.`);
+    }
+
+    if (sectionIdentifier === 'park_id' && material.is_unitary) {
+      const units = getMaterialUnits(material);
+
+      units.forEach((unit) => {
+        const unitParkId = unit.park_id;
+        const unitParkName = sectionNameGetter(unitParkId);
+
+        if (!sections.has(unitParkId)) {
+          sections.set(unitParkId, {
+            id: unitParkId,
+            name: unitParkName,
+            materials: [],
+            subTotal: 0,
+          });
+        }
+
+        const section = sections.get(unitParkId);
+
+        const sectionMaterialIndex = section.materials.findIndex((sectionMaterial) => (
+          sectionMaterial.id === material.id
+        ));
+        if (sectionMaterialIndex > -1) {
+          return;
+        }
+
+        const materialUnitsForPark = units.filter((_unit) => (
+          _unit.park_id === unitParkId
+        ));
+
+        const materialWithUnits = { ...material };
+        if ('awaited_units' in material) {
+          materialWithUnits.awaited_units = materialUnitsForPark;
+        } else {
+          materialWithUnits.units = materialUnitsForPark;
+        }
+
+        if (material.pivot) {
+          materialWithUnits.pivot = {
+            ...material.pivot,
+            quantity: materialUnitsForPark.length,
+            units: materialUnitsForPark.map((_unit) => _unit.id),
+          };
+        }
+
+        if ('awaited_units' in material) {
+          materialWithUnits.awaited_quantity = materialUnitsForPark.length;
+        }
+
+        section.materials.push(materialWithUnits);
+
+        const quantity = materialUnitsForPark.length;
+        section.subTotal += (quantity * material.rental_price);
+      });
+
+      return;
     }
 
     const sectionId = material[sectionIdentifier];

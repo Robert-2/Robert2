@@ -9,6 +9,6 @@ describe('getEventOneDayTotalDiscountable', () => {
   });
 
   it('calculates the total discountable of a set of materials for ONE day', () => {
-    expect(getEventOneDayTotalDiscountable(eventMaterials)).toBe(35);
+    expect(getEventOneDayTotalDiscountable(eventMaterials)).toBe(170);
   });
 });

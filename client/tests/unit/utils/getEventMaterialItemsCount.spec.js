@@ -9,6 +9,6 @@ describe('getEventMaterialItemsCount', () => {
   });
 
   it('calculates the total count of items in a set of materials', () => {
-    expect(getEventMaterialItemsCount(eventMaterials)).toBe(7);
+    expect(getEventMaterialItemsCount(eventMaterials)).toBe(10);
   });
 });
