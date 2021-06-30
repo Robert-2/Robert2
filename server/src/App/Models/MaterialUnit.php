@@ -20,7 +20,7 @@ class MaterialUnit extends BaseModel
             'person_id' => V::optional(V::numeric()),
             'is_broken' => V::optional(V::boolType()),
             'is_lost' => V::optional(V::boolType()),
-            'material_unit_state_id' => V::optional(V::numeric()),
+            'state' => V::optional(V::alnum('-')->length(2, 64)),
             'purchase_date' => V::optional(V::date()),
         ];
     }
@@ -59,7 +59,7 @@ class MaterialUnit extends BaseModel
 
     public function MaterialUnitState()
     {
-        return $this->belongsTo('Robert2\API\Models\MaterialUnitState');
+        return $this->belongsTo('Robert2\API\Models\MaterialUnitState', 'state', 'name');
     }
 
     public function Person()
@@ -81,7 +81,7 @@ class MaterialUnit extends BaseModel
         'person_id' => 'integer',
         'is_broken' => 'boolean',
         'is_lost' => 'boolean',
-        'material_unit_state_id' => 'integer',
+        'state' => 'string',
         'purchase_date' => 'string',
         'notes' => 'string',
     ];
@@ -139,8 +139,10 @@ class MaterialUnit extends BaseModel
 
     public function getStateAttribute()
     {
-        $state = $this->MaterialUnitState()->first();
-        return $state ? $state->toArray() : null;
+        if (!isset($this->attributes['state'])) {
+            return null;
+        }
+        return $this->attributes['state'];
     }
 
     public function getOwnerAttribute()
@@ -162,7 +164,7 @@ class MaterialUnit extends BaseModel
         'person_id',
         'is_broken',
         'is_lost',
-        'material_unit_state_id',
+        'state',
         'purchase_date',
         'notes',
     ];

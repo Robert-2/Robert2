@@ -8,7 +8,7 @@
         "serial_number": null,
         "is_broken": false,
         "is_lost": false,
-        "material_unit_state_id": 1,
+        "state": "state-of-use",
         "purchase_date": "2020-02-01",
         "notes": "Ce bon vieux XR-18"
     },
@@ -21,7 +21,7 @@
         "serial_number": null,
         "is_broken": false,
         "is_lost": false,
-        "material_unit_state_id": 2,
+        "state": "excellent",
         "purchase_date": null,
         "notes": null
     },
@@ -34,7 +34,7 @@
         "serial_number": null,
         "is_broken": true,
         "is_lost": false,
-        "material_unit_state_id": null,
+        "state": "bad",
         "purchase_date": null,
         "notes": null
     },
@@ -47,7 +47,7 @@
         "serial_number": "123456-000789",
         "is_broken": false,
         "is_lost": false,
-        "material_unit_state_id": null,
+        "state": null,
         "purchase_date": null,
         "notes": null
     },
@@ -60,7 +60,7 @@
         "serial_number": null,
         "is_broken": false,
         "is_lost": false,
-        "material_unit_state_id": null,
+        "state": null,
         "purchase_date": null,
         "notes": null
     },
@@ -73,7 +73,7 @@
         "serial_number": null,
         "is_broken": false,
         "is_lost": false,
-        "material_unit_state_id": null,
+        "state": null,
         "purchase_date": null,
         "notes": "Attention à la marche !"
     }

@@ -1,6 +1,5 @@
 /* eslint-disable import/no-cycle */
 import axios from '@/axios';
-import formatOptions from '@/utils/formatOptions';
 
 export default {
   namespaced: true,
@@ -12,14 +11,19 @@ export default {
   getters: {
     options: (state, getters, rootState) => {
       const { locale, translations } = rootState.i18n;
-      return formatOptions(state.list, null, translations[locale]['please-choose']);
+      return state.list.map(({ name }) => ({
+        value: name,
+        label: translations[locale][`unit-state.${name}`] ?? '-- trad. manquante --',
+      }));
     },
 
-    unitStateName: (state) => (unitStateId) => {
-      const unitState = state.list.find(
-        (_unitState) => _unitState.id === unitStateId,
-      );
-      return unitState ? unitState.name : null;
+    unitStateName: (state, getters, rootState) => (name) => {
+      const unitState = state.list.find((_unitState) => _unitState.name === name);
+      if (!unitState) {
+        return null;
+      }
+      const { locale, translations } = rootState.i18n;
+      return translations[locale][`unit-state.${name}`] ?? null;
     },
   },
   mutations: {

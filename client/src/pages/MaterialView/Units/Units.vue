@@ -21,8 +21,8 @@
         </span>
         <span v-else class="MaterialViewUnits__no-ok">{{ $t('no') }}</span>
       </template>
-      <template #material_unit_state_id="unit">
-        {{ getUnitStateName(unit.row.material_unit_state_id) }}
+      <template #state="unit">
+        {{ getUnitStateName(unit.row.state) }}
       </template>
       <template #purchase_date="unit">
         {{ formatDate(unit.row.purchase_date) }}

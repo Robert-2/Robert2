@@ -1,10 +1,22 @@
 [
     {
-        "id": 1,
-        "name": "Bon état"
+        "name": "state-of-use",
+        "order": 1
     },
     {
-        "id": 2,
-        "name": "État médiocre"
+        "name": "excellent",
+        "order": 2
+    },
+    {
+        "name": "brand-new",
+        "order": 3
+    },
+    {
+        "name": "bad",
+        "order": 4
+    },
+    {
+        "name": "outdated",
+        "order": 5
     }
 ]

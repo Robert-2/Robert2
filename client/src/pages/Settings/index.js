@@ -1,6 +1,5 @@
 import { Tabs, Tab } from 'vue-slim-tabs';
 import EventSummarySettings from './EventSummary';
-import MaterialUnitSettings from './MaterialUnit';
 
 export default {
   name: 'Settings',
@@ -20,9 +19,6 @@ export default {
               </template>
               <Tab title-slot="event-summary">
                 <EventSummarySettings />
-              </Tab>
-              <Tab title-slot="material-units">
-                <MaterialUnitSettings />
               </Tab>
             </Tabs>
           </div>

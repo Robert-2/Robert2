@@ -255,6 +255,14 @@ export default {
   'parks': "Parks",
   'technician': "Technicien",
 
+  'unit-state': {
+    'state-of-use': "State of use",
+    'excellent': "Excellent",
+    'brand-new': "Brand new",
+    'bad': "Bad",
+    'outdated': "Outdated",
+  },
+
   'settings': "Settings",
 
   'this-feature-is-coming-soon': "This feature implementation is in progress.",
