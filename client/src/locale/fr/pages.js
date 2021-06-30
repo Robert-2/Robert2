@@ -405,8 +405,7 @@ export default {
   'page-inventories': {
     'title': "Inventaires",
     'title-with-park': "Inventaires du parc «\u00a0{park}\u00a0»",
-    'tab-latest': "Dernier inventaire",
-    'tab-archives': "Inventaires précédents",
+    'title-current': "Inventaire en cours",
     'select-park-intro': "Pour pouvoir accèder aux inventaires, veuillez sélectionner le parc concerné.",
     'no-parks': "Veuillez ajouter un parc avant de pouvoir accèder à la gestion des inventaires.",
     'add-park': "Ajouter un parc",

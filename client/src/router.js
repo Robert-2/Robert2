@@ -332,6 +332,7 @@ const router = new Router({
       name: 'inventories',
       component: Inventories,
       meta: {
+        title: 'page-inventories.title',
         requiresAuth: true,
         requiresGroups: ['admin', 'member'],
       },
@@ -374,6 +375,7 @@ const router = new Router({
       name: 'park-inventories',
       component: Inventories,
       meta: {
+        title: 'page-inventories.title',
         requiresAuth: true,
         requiresGroups: ['admin', 'member'],
       },
@@ -383,6 +385,7 @@ const router = new Router({
       name: 'park-inventories-new',
       component: Inventory,
       meta: {
+        title: 'page-inventories.title-current',
         requiresAuth: true,
         requiresGroups: ['admin', 'member'],
       },

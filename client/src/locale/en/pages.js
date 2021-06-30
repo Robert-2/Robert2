@@ -404,8 +404,7 @@ export default {
   'page-inventories': {
     'title': "Inventories",
     'title-with-park': "Inventories for the \"{park}\" park",
-    'tab-latest': "Latest inventory",
-    'tab-archives': "Previous inventories",
+    'title-current': "Current inventory",
     'select-park-intro': "To access the inventories, please select the involved park.",
     'no-parks': "Please add a park before for being able to access the inventory management.",
     'add-park': "Add a park",
