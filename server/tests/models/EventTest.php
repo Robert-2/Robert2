@@ -91,6 +91,13 @@ final class EventTest extends ModelTestCase
         $this->assertCount(1, $result);
         $this->assertEquals('DBXPA2', $result[0]['reference']);
         $this->assertEquals(1, $result[0]['missing_quantity']);
+
+        // - Get missing materials of event #4
+        $result = Event::getMissingMaterials(4);
+        $this->assertNotNull($result);
+        $this->assertCount(2, $result);
+        $this->assertEquals('Transporter', $result[0]['reference']);
+        $this->assertEquals(3, $result[0]['missing_quantity']);
     }
 
     public function testHasNotReturnedMaterials(): void
@@ -106,11 +113,27 @@ final class EventTest extends ModelTestCase
 
     public function testGetParks(): void
     {
+        // - Non-existant event
+        $result = Event::getParks(999);
+        $this->assertEquals([], $result);
+
+        // - Events with material from one park
         $result = Event::getParks(1);
         $this->assertEquals([1], $result);
+        $result = Event::getParks(2);
+        $this->assertEquals([1], $result);
+        $result = Event::getParks(3);
+        $this->assertEquals([1], $result);
+        $result = Event::getParks(5);
+        $this->assertEquals([], $result);
 
+        // - Event with material from two parks
         $result = Event::getParks(4);
-        $this->assertEquals([null, 1], $result);
+        $this->assertEquals([1], $result);
+
+        // - Event without material (so without park)
+        $result = Event::getParks(6);
+        $this->assertEquals([], $result);
     }
 
     public function testGetMaterials(): void

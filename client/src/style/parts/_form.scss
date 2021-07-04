@@ -20,7 +20,10 @@
     padding-bottom: 40px;
   }
 
-  .FormField + .FormField {
+  .FormField + .FormField,
+  .SelectSearch + .SelectSearch,
+  .FormField + .SelectSearch,
+  .SelectSearch + .FormField  {
     margin-top: $content-padding-small-vertical;;
   }
 

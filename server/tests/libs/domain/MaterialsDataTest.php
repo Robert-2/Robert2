@@ -50,7 +50,7 @@ final class MaterialsDataTest extends ModelTestCase
                     'Transporter' => [
                         'reference' => 'Transporter',
                         'name' => 'Volkswagen Transporter',
-                        'park' => null,
+                        'park' => 'default',
                         'stockQuantity' => 0,
                         'attributes' => [],
                         'quantity' => 0,
@@ -233,7 +233,7 @@ final class MaterialsDataTest extends ModelTestCase
                                 'unit' => null,
                             ],
                         ],
-                        'park' => null,
+                        'park' => 'default',
                         'quantity' => 0,
                         'rentalPrice' => 49.99,
                         'replacementPrice' => 419.0,
@@ -251,8 +251,8 @@ final class MaterialsDataTest extends ModelTestCase
         $result = $this->MaterialsData->getByParks();
         $expected = [
             [
-                'id' => null,
-                'name' => null,
+                'id' => 1,
+                'name' => 'default',
                 'materials' => [
                     'Transporter' => [
                         'reference' => 'Transporter',
@@ -286,12 +286,6 @@ final class MaterialsDataTest extends ModelTestCase
                         'total' => 0.0,
                         'totalReplacementPrice' => 0.0,
                     ],
-                ],
-            ],
-            [
-                'id' => 1,
-                'name' => 'default',
-                'materials' => [
                     'CL3' => [
                         'reference' => 'CL3',
                         'name' => 'Console Yamaha CL3',
@@ -569,7 +563,7 @@ final class MaterialsDataTest extends ModelTestCase
                 'name' => 'Volkswagen Transporter',
                 'stockQuantity' => 0,
                 'attributes' => [],
-                'park' => null,
+                'park' => 'default',
                 'quantity' => 0,
                 'rentalPrice' => 300.0,
                 'replacementPrice' => 32000.0,
@@ -601,7 +595,7 @@ final class MaterialsDataTest extends ModelTestCase
                         'unit' => null,
                     ],
                 ],
-                'park' => null,
+                'park' => 'default',
                 'quantity' => 0,
                 'rentalPrice' => 49.99,
                 'replacementPrice' => 419.0,

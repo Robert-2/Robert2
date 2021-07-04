@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace Robert2\API\Models;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Robert2\API\Validation\Validator as V;
 use Robert2\API\Models\Traits\Taggable;
+use Robert2\API\Validation\Validator as V;
 
 class Material extends BaseModel
 {
@@ -105,7 +105,7 @@ class Material extends BaseModel
             ->using('Robert2\API\Models\EventMaterial')
             ->withPivot('id', 'quantity')
             ->select($selectFields)
-            ->orderBy('start_date');
+            ->orderBy('start_date', 'desc');
     }
 
     public function Documents()
@@ -295,6 +295,16 @@ class Material extends BaseModel
         }
 
         return $data;
+    }
+
+    /**
+     * @param integer $parkId
+     *
+     * @return Material[]
+     */
+    public static function getParkAll(int $parkId): array
+    {
+        return static::where('park_id', $parkId)->get()->toArray();
     }
 
     public static function getPicturePath(int $id, ?string $pictureName = null)

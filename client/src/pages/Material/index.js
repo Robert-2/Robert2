@@ -26,7 +26,7 @@ export default {
         id: this.$route.params.id || null,
         name: '',
         reference: '',
-        park_id: '',
+        park_id: this.$route.query.parkId || '',
         category_id: '',
         rental_price: showBilling ? '' : 0,
         stock_quantity: '1',

@@ -6,11 +6,13 @@ export default {
   name: 'MainHeader',
   computed: {
     pageTitle() {
-      return this.$store.state.pageTitle;
-    },
+      const { pageTitle, pageSubTitle, pageRawTitle } = this.$store.state;
 
-    pageSubTitle() {
-      return this.$store.state.pageSubTitle;
+      if (pageRawTitle !== null) {
+        return pageRawTitle;
+      }
+
+      return this.$t(pageTitle, { pageSubTitle });
     },
   },
   watch: {
@@ -24,12 +26,7 @@ export default {
     },
   },
   render() {
-    const {
-      $t: __,
-      pageTitle,
-      pageSubTitle,
-      toggleMenu,
-    } = this;
+    const { pageTitle, toggleMenu } = this;
 
     return (
       <div class="MainHeader">
@@ -37,10 +34,10 @@ export default {
           <Logo minimalist />
         </div>
         <div class="MainHeader__menu-toggle" onClick={toggleMenu}>
-          <i class="fas fa-bars fa-2x"></i>
+          <i class="fas fa-bars fa-2x" />
         </div>
         <div class="MainHeader__title">
-          {__(pageTitle, { pageSubTitle })}
+          {pageTitle}
         </div>
         <TopMenu class="MainHeader__menu" />
       </div>

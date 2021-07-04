@@ -4,6 +4,7 @@ import ModalConfig from '@/config/modalConfig';
 import Alert from '@/components/Alert';
 import Help from '@/components/Help/Help.vue';
 import Dropdown, { getItemClassnames } from '@/components/Dropdown';
+import isValidInteger from '@/utils/isValidInteger';
 import PromptDate from '@/components/PromptDate';
 import AssignTags from '@/components/AssignTags/AssignTags.vue';
 import MaterialsFilters from '@/components/MaterialsFilters/MaterialsFilters.vue';
@@ -150,8 +151,9 @@ export default {
 
     getFilters() {
       const params = {};
-      if (this.$route.query.park) {
-        params.park = this.$route.query.park;
+
+      if (this.$route.query.park && isValidInteger(this.$route.query.park)) {
+        params.park = parseInt(this.$route.query.park, 10);
       }
 
       if (this.$route.query.category) {
@@ -257,6 +259,10 @@ export default {
 
     formatAmount(value) {
       return value !== null ? formatAmount(value) : '';
+    },
+
+    getStockQuantity(material) {
+      return material.stock_quantity;
     },
 
     async showQuantityAtDateModal() {

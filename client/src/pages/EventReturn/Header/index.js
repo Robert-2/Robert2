@@ -53,7 +53,7 @@ const EventReturnHeader = {
       endDate,
       displayGroup,
       setDisplayGroup,
-      hasMultipleParks,
+      // hasMultipleParks,
     } = this;
 
     return (
@@ -92,7 +92,8 @@ const EventReturnHeader = {
             <MultiSwitch
               options={[
                 { value: 'categories', label: __('categories') },
-                { value: 'parks', label: __('parks'), isDisplayed: hasMultipleParks },
+                // FIXME: Réhabiliter le groupage par parc pour le faire fonctionner avec les unités
+                // { value: 'parks', label: __('parks'), isDisplayed: hasMultipleParks },
                 { value: null, label: __('not-grouped') },
               ]}
               value={displayGroup}

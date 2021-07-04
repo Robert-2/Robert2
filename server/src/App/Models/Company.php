@@ -98,7 +98,7 @@ class Company extends BaseModel
         'note',
     ];
 
-    public function edit(?int $id = null, array $data = []): BaseModel
+    public function edit($id = null, array $data = []): BaseModel
     {
         if (!empty($data['phone'])) {
             $data['phone'] = normalizePhone($data['phone']);

@@ -4,7 +4,7 @@ import { DATE_DB_FORMAT } from '@/config/constants';
 import FormField from '@/components/FormField';
 import LocationText from '@/components/LocationText/LocationText.vue';
 import PersonsList from '@/components/PersonsList/PersonsList.vue';
-import getMaterialItemsCount from '@/utils/getMaterialItemsCount';
+import getEventMaterialItemsCount from '@/utils/getEventMaterialItemsCount';
 
 export default {
   name: 'DuplicateEvent',
@@ -40,7 +40,7 @@ export default {
     },
 
     itemsCount() {
-      return getMaterialItemsCount(this.event.materials);
+      return getEventMaterialItemsCount(this.event.materials);
     },
   },
   methods: {

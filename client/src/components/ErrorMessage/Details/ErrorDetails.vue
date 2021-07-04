@@ -18,7 +18,7 @@
         {{ $t('errors.details-intro3') }}
         <a href="https://github.com/Robert-2/Robert2/issues" target="_blank">Github</a>.
       </p>
-      <p v-if="!data.debug" class="ErrorDetails__no-details-info">
+      <p v-if="!details" class="ErrorDetails__no-details-info">
         <i class="fas fa-info-circle" />
         {{ $t('errors.details-intro-not-detailed') }}
       </p>
@@ -34,10 +34,10 @@
         </div>
         <h3 class="ErrorDetails__subtitle">
           #### {{ $t('errors.details-message') }}
-          (<span class="ErrorDetails__code">{{ data.code }}</span>) :
+          (<span class="ErrorDetails__code">{{ code }}</span>) :
         </h3>
         <p class="ErrorDetails__message">
-          `{{ data.message }}`
+          `{{ message }}`
         </p>
         <div v-if="file.length > 0">
           <h3 class="ErrorDetails__subtitle">
@@ -88,7 +88,7 @@
 </template>
 
 <style lang="scss">
-  @import '../../themes/default/index';
+  @import '../../../themes/default/index';
   @import './ErrorDetails';
 </style>
 
@@ -104,7 +104,11 @@ const cleanFilePath = (path) => {
 
 export default {
   name: 'ErrorDetails',
-  props: ['data'],
+  props: {
+    code: { type: Number, required: true },
+    message: { type: String, required: true },
+    details: { type: Object, default: null },
+  },
   data() {
     return {
       isCopied: false,
@@ -112,15 +116,15 @@ export default {
   },
   computed: {
     requested() {
-      return this.data.debug?.requested;
+      return this.details?.requested;
     },
 
     file() {
-      return cleanFilePath(this.data.debug?.file);
+      return cleanFilePath(this.details?.file);
     },
 
     trace() {
-      const stackTrace = this.data.debug?.stackTrace;
+      const stackTrace = this.details?.stackTrace;
       if (!stackTrace) {
         return [];
       }

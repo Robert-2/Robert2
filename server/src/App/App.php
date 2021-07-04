@@ -75,8 +75,12 @@ class App
     protected function configureRouter()
     {
         $settings = $this->container->get('settings');
-        $useRouterCache = (bool)$settings['useRouterCache'] && !isTestMode();
         $isCORSEnabled = (bool)$settings['enableCORS'] && !isTestMode();
+        $useRouterCache = (
+            (bool)$settings['useRouterCache']
+            && !isTestMode()
+            && Config::getEnv() !== 'development'
+        );
 
         // - Route cache
         if ($useRouterCache) {
@@ -154,12 +158,12 @@ class App
 
     protected function configureErrorHandlers()
     {
-        $shouldLog = true;
-        $displayErrorDetails = (bool)$this->container->get('settings')['displayErrorDetails'];
-        if (isTestMode()) {
-            $shouldLog = false;
-            $displayErrorDetails = true;
-        }
+        $shouldLog = !isTestMode();
+        $displayErrorDetails = (
+            (bool)$this->container->get('settings')['displayErrorDetails']
+            || isTestMode()
+            || Config::getEnv() === 'development'
+        );
 
         $logger = $this->container->get('logger')->createLogger('error');
         $errorMiddleware = $this->app->addErrorMiddleware($displayErrorDetails, $shouldLog, $shouldLog, $logger);

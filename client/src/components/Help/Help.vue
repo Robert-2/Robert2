@@ -2,18 +2,9 @@
   <div class="Help" :class="`Help--${modifier}`">
     <div v-if="isLoading" class="Help__loading">
       <i class="fas fa-circle-notch fa-spin" />
-      {{ $t('help-loading') }}
+      {{ $t('loading') }}
     </div>
-    <div v-if="!isLoading && error" class="Help__error">
-      <i class="fas fa-exclamation-triangle" />
-      {{ errorData.message }}
-      <p v-if="errorData.code === 500">
-        <a class="Help__error-details-button" @click="displayErrorDetails">
-          <i class="fas fa-external-link-alt" />
-          {{ $t('errors.show-details') }}
-        </a>
-      </p>
-    </div>
+    <ErrorMessage v-if="!isLoading && error" :error="error" />
     <div v-if="$t(messageText) && !error && !isLoading" class="Help__message">
       {{ $t(messageText) }}
     </div>
@@ -26,20 +17,15 @@
 </style>
 
 <script>
-import ModalConfig from '@/config/modalConfig';
-import ErrorDetails from '@/components/ErrorDetails/ErrorDetails.vue';
+import ErrorMessage from '@/components/ErrorMessage';
 
 export default {
   name: 'Help',
+  components: { ErrorMessage },
   props: {
     message: { required: true, default: '' },
     error: { type: Error, default: null },
     isLoading: { type: Boolean, default: false },
-  },
-  data() {
-    return {
-      errorDetailsModalOpened: false,
-    };
   },
   computed: {
     modifier() {
@@ -56,68 +42,6 @@ export default {
 
     messageText() {
       return this.message.text ? this.message.text : this.message;
-    },
-
-    networkError() {
-      return {
-        code: this.error?.response?.status || 0,
-        text: this.error?.response?.statusText || this.$t('errors.api-unreachable'),
-      };
-    },
-
-    errorData() {
-      if (!this.error?.response) {
-        return {
-          code: '',
-          message: this.$t('errors.generic', { message: this.error?.message || 'unknown' }),
-        };
-      }
-
-      const { response } = this.error;
-      const { status } = response;
-
-      if (status === 400) {
-        const { details } = response.data?.error || { details: {} };
-        return { code: '', message: this.$t('errors.validation'), details };
-      }
-
-      if (status === 404) {
-        return { code: '', message: this.$t('errors.not-found') };
-      }
-
-      if (status === 409) {
-        return { code: '', message: this.$t('errors.already-exists') };
-      }
-
-      const defaultError = {
-        code: 500,
-        message: 'Unknown error',
-        debug: {
-          file: '',
-          stackTrace: [],
-        },
-      };
-
-      return response.data?.error || defaultError;
-    },
-  },
-  methods: {
-    displayErrorDetails() {
-      if (this.errorDetailsModalOpened) {
-        return;
-      }
-      this.errorDetailsModalOpened = true;
-
-      this.$modal.show(
-        ErrorDetails,
-        { data: this.errorData },
-        ModalConfig,
-        {
-          'before-close': () => {
-            this.errorDetailsModalOpened = false;
-          },
-        },
-      );
     },
   },
 };

@@ -129,6 +129,27 @@ class Park extends BaseModel
         return $country ? $country->toArray() : null;
     }
 
+    public function getHasOngoingEventAttribute()
+    {
+        if (!$this->exists || !$this->id) {
+            return false;
+        }
+
+        $ongoingEvents = Event::getOngoing()
+            ->with('Materials')
+            ->get();
+
+        foreach ($ongoingEvents as $ongoingEvent) {
+            foreach ($ongoingEvent->materials as $material) {
+                if ($material['park_id'] === $this->id) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     // ——————————————————————————————————————————————————————
     // —
     // —    Setters

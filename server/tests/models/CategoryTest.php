@@ -22,7 +22,7 @@ final class CategoryTest extends ModelTestCase
     public function testGetAll(): void
     {
         $result = $this->model->getAll()->get()->toArray();
-        $this->assertCount(3, $result);
+        $this->assertCount(4, $result);
     }
 
     public function testGetSubCategories(): void

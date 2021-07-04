@@ -1,5 +1,5 @@
 import getEventReplacementTotal from '@/utils/getEventReplacementTotal';
-import materials from './data/materials';
+import eventMaterials from './data/event-materials';
 
 describe('getEventReplacementTotal', () => {
   it('returns 0 with empty values', () => {
@@ -9,6 +9,6 @@ describe('getEventReplacementTotal', () => {
   });
 
   it('calculates the total replacement price of the material for ONE day', () => {
-    expect(getEventReplacementTotal(materials)).toBe(1350);
+    expect(getEventReplacementTotal(eventMaterials)).toBe(1350);
   });
 });

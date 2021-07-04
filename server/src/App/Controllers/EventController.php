@@ -5,14 +5,14 @@ namespace Robert2\API\Controllers;
 
 use Robert2\API\Controllers\Traits\WithCrud;
 use Robert2\API\Controllers\Traits\WithPdf;
-use Robert2\API\Models\Park;
 use Robert2\API\Models\Event;
 use Robert2\API\Models\Material;
+use Robert2\API\Models\Park;
 use Robert2\API\Errors\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Slim\Exception\HttpNotFoundException;
-use Slim\Http\ServerRequest as Request;
 use Slim\Http\Response;
+use Slim\Http\ServerRequest as Request;
 
 class EventController extends BaseController
 {
@@ -58,7 +58,7 @@ class EventController extends BaseController
             }
         }
 
-        return $response->withJson([ 'data' => $data ]);
+        return $response->withJson(compact('data'));
     }
 
     public function getOne(Request $request, Response $response): Response
@@ -228,15 +228,16 @@ class EventController extends BaseController
 
         if (isset($postData['materials'])) {
             $materials = [];
-            foreach ($postData['materials'] as $material) {
-                if ((int)$material['quantity'] <= 0) {
+            foreach ($postData['materials'] as $materialData) {
+                if ((int)$materialData['quantity'] <= 0) {
                     continue;
                 }
 
-                $materials[$material['id']] = [
-                    'quantity' => $material['quantity']
+                $materials[$materialData['id']] = [
+                    'quantity' => $materialData['quantity']
                 ];
             }
+
             $event->Materials()->sync($materials);
         }
 
@@ -256,36 +257,49 @@ class EventController extends BaseController
         $quantities = [];
         $errors = [];
         foreach ($data as $quantity) {
+            if (!array_key_exists('id', $quantity)) {
+                continue;
+            }
             $materialId = $quantity['id'];
-            $returned = (int)$quantity['returned'];
+
+            if (!array_key_exists('actual', $quantity) || !is_integer($quantity['actual'])) {
+                $errors[] = ['id' => $materialId, 'message' => "Quantité retournée invalide."];
+                continue;
+            }
+            $actual = (int)$quantity['actual'];
+
+            if (!array_key_exists('broken', $quantity) || !is_integer($quantity['broken'])) {
+                $errors[] = ['id' => $materialId, 'message' => "Quantité en panne invalide."];
+                continue;
+            }
             $broken = (int)$quantity['broken'];
 
-            if ($returned < 0 || $broken < 0) {
+            if ($actual < 0 || $broken < 0) {
                 $errors[] = [
                     'id' => $materialId,
-                    'message' => "Quantities cannot be negative."
+                    'message' => "Les quantités ne peuvent pas être négatives."
                 ];
                 continue;
             }
 
-            if ($returned > $eventMaterialsQuantities[$materialId]) {
+            if ($actual > $eventMaterialsQuantities[$materialId]) {
                 $errors[] = [
                     'id' => $materialId,
-                    'message' => "Returned quantity cannot be greater than quantity out."
+                    'message' => "La quantité retournée ne peut pas être supérieure à la quantité sortie."
                 ];
                 continue;
             }
 
-            if ($broken > $returned) {
+            if ($broken > $actual) {
                 $errors[] = [
                     'id' => $materialId,
-                    'message' => "Broken quantity cannot be greater than returned quantity."
+                    'message' => "La quantité en panne ne peut pas être supérieure à la quantité retournée."
                 ];
                 continue;
             }
 
             $quantities[$materialId] = [
-                'quantity_returned' => $returned,
+                'quantity_returned' => $actual,
                 'quantity_broken' => $broken,
             ];
         }
