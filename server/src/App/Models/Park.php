@@ -71,6 +71,7 @@ class Park extends BaseModel
         return Inventory::where('park_id', $this->id)
             ->where('is_tmp', true)
             ->with('materials')
+            ->with('author')
             ->orderBy('date', 'desc')
             ->first();
     }

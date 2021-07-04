@@ -1,4 +1,5 @@
 import './index.scss';
+import invariant from 'invariant';
 import Item from './Item';
 
 const InventoryItemUnits = {
@@ -6,7 +7,7 @@ const InventoryItemUnits = {
   props: {
     material: { type: Object, required: true },
     quantities: { type: Object, required: true },
-    locked: { type: Boolean, default: false },
+    locked: { type: [Boolean, Array], default: false },
     strict: { type: Boolean, default: false },
   },
   computed: {
@@ -24,12 +25,29 @@ const InventoryItemUnits = {
   },
   methods: {
     getValues(unitId) {
-      const values = this.units.find(({ id }) => id === unitId);
-      return values ?? { id: unitId, isLost: true, isBroken: false };
+      const originalValues = this.awaitedUnits.find(({ id }) => id === unitId);
+      invariant(originalValues, "L'unité demandée ne fait pas partie du matériel de l'inventaire.");
+      const originalState = originalValues.state;
+
+      const existingValues = this.units.find(({ id }) => id === unitId);
+      if (!existingValues) {
+        return {
+          id: unitId,
+          state: originalState,
+          isLost: true,
+          isBroken: false,
+        };
+      }
+
+      const isBroken = existingValues.isBroken ?? false;
+      const isLost = isBroken ? false : (existingValues.isLost ?? true);
+      const state = isLost ? originalState : (existingValues.state ?? originalState);
+
+      return { id: unitId, state, isLost, isBroken };
     },
 
     handleChange(id, values) {
-      if (this.locked) {
+      if (this.locked === true) {
         return;
       }
 
@@ -49,7 +67,11 @@ const InventoryItemUnits = {
           broken += !values.isBroken ? -1 : 1;
         }
 
-        return { id: unit.id, ...values };
+        // - Si les états des unités sont lockés, on force la précédente valeur.
+        // eslint-disable-next-line prefer-destructuring
+        const state = (this.locked !== 'unit-state' ? values : prevValues).state;
+
+        return { id: unit.id, ...values, state };
       });
 
       this.$emit('change', { actual, broken, units });

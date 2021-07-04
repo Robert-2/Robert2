@@ -3,6 +3,7 @@ import Page from '@/components/Page';
 import Loading from '@/components/Loading';
 import CriticalError from '@/components/CriticalError';
 import Inventory from './Inventory';
+import Lock from './Lock';
 
 const InventoryPage = {
   name: 'InventoryPage',
@@ -42,6 +43,10 @@ const InventoryPage = {
       // TODO: Rediriger vers la vue view (#53) ?
       // @see https://github.com/Robert-2/Robert2-Premium/issues/53
       this.$router.replace({ name: 'park-inventories', params: { parkId: this.parkId } });
+    },
+
+    handleUnlock() {
+      this.acquireLock(true);
     },
 
     // ------------------------------------------------------
@@ -92,7 +97,9 @@ const InventoryPage = {
       $t: __,
       materials,
       park,
+      parkId,
       inventory,
+      handleUnlock,
       handleChange,
       handleFinished,
     } = this;
@@ -103,11 +110,7 @@ const InventoryPage = {
       }
 
       if (this.isAlreadyLocked) {
-        // TODO: Terminer ça.
-        // -> Fetché le ongoing event dans le component chargé d'afficher l'alerte.
-        // -> Si admin, permettre de prendre la main.
-        // -> Si `author_id` === null, permettre de prendre la main, même pour les membres.
-        return <p>Déjà locké par quelqu'un d'autre ...</p>;
+        return <Lock parkId={parkId} onUnlock={handleUnlock} />;
       }
 
       if (!this.isDataLoaded || !this.isLockAcquired) {

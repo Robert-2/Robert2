@@ -2465,6 +2465,9 @@ return [
     "referenceAlreadyInUse"
     => "Cette référence est déjà utilisée.",
 
+    "invalid-value"
+    => "Valeur invalide.",
+
     //
     // - Install messages
     //
@@ -2778,4 +2781,12 @@ return [
 
     "no"
     => "Non",
+
+    'unit-state' => [
+        'state-of-use' => "État d'usage",
+        'excellent' => "Excellent",
+        'brand-new' => "Neuf",
+        'bad' => "Mauvais",
+        'outdated' => "Obsolète",
+    ],
 ];

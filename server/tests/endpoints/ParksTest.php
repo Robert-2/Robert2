@@ -103,6 +103,8 @@ final class ParksTest extends ApiTestCase
             'created_at' => null,
             'updated_at' => null,
             'deleted_at' => null,
+            'has_ongoing_inventory' => false,
+            'has_ongoing_event' => false,
         ]);
     }
 }

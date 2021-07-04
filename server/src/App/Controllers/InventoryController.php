@@ -8,6 +8,7 @@ use Robert2\API\Models\Inventory;
 use Robert2\API\Models\Park;
 use Robert2\API\Services\Auth;
 use Slim\Exception\HttpException;
+use Slim\Exception\HttpForbiddenException;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
 use Slim\Http\ServerRequest as Request;
@@ -25,6 +26,9 @@ class InventoryController extends BaseController
     public function getParkOne(Request $request, Response $response): Response
     {
         $parkId = (int)$request->getAttribute('parkId');
+        if (!Auth::user()->hasAccessToPark($parkId)) {
+            throw new HttpNotFoundException($request);
+        }
 
         /** @var Park */
         $park = Park::findOrFail($parkId);
@@ -52,13 +56,18 @@ class InventoryController extends BaseController
     public function getParkAll(Request $request, Response $response): Response
     {
         $parkId = (int)$request->getAttribute('parkId');
+        if (!Auth::user()->hasAccessToPark($parkId)) {
+            throw new HttpNotFoundException($request);
+        }
+
         if (!Park::staticExists($parkId)) {
             throw new HttpNotFoundException($request);
         }
 
         $inventories = Inventory::where('park_id', $parkId)
             ->with('author')
-            ->orderBy('created_at', 'desc')
+            ->where('is_tmp', false)
+            ->orderBy('date', 'desc')
             ->get();
 
         return $response->withJson($inventories);
@@ -67,6 +76,10 @@ class InventoryController extends BaseController
     public function create(Request $request, Response $response): Response
     {
         $parkId = (int)$request->getAttribute('parkId');
+        if (!Auth::user()->hasAccessToPark($parkId)) {
+            throw new HttpNotFoundException($request);
+        }
+
         $force = (bool)$request->getQueryParam('force', false);
         $park = Park::findOrFail($parkId);
 
@@ -102,29 +115,19 @@ class InventoryController extends BaseController
         return $response->withJson($inventory, SUCCESS_OK);
     }
 
-    public function patch(Request $request, Response $response): Response
-    {
-        $id = (int)$request->getAttribute('id');
-        $inventory = Inventory::findOrFail($id)->append('materials');
-
-        $data = (array)$request->getParsedBody();
-        // phpcs:ignore PSR2.ControlStructures.ControlStructureSpacing
-        if (
-            !array_key_exists('materialId', $data) ||
-            !array_key_exists('quantities', $data) ||
-            !is_array($data['quantities'])
-        ) {
-            throw new \InvalidArgumentException("Données invalides.");
-        }
-
-        $inventoryMaterial = $inventory->saveMaterialQuantities($data['materialId'], $data['quantities']);
-        return $response->withJson($inventoryMaterial, SUCCESS_OK);
-    }
-
     public function update(Request $request, Response $response): Response
     {
         $id = (int)$request->getAttribute('id');
         $inventory = Inventory::findOrFail($id)->append('materials');
+
+        if (!$inventory->is_tmp) {
+            throw new HttpNotFoundException($request);
+        }
+
+        // - On vérifie que c'est bien le "propriétaire" de l'inventaire.
+        if ($inventory->author_id !== Auth::user()->id) {
+            throw new HttpForbiddenException($request);
+        }
 
         $quantities = (array)$request->getParsedBody();
         if (!is_array($quantities)) {
@@ -139,6 +142,15 @@ class InventoryController extends BaseController
     {
         $id = (int)$request->getAttribute('id');
         $inventory = Inventory::findOrFail($id)->append('materials');
+
+        if (!$inventory->is_tmp) {
+            throw new HttpNotFoundException($request);
+        }
+
+        // - On vérifie que c'est bien le "propriétaire" de l'inventaire.
+        if ($inventory->author_id !== Auth::user()->id) {
+            throw new HttpForbiddenException($request);
+        }
 
         $quantities = (array)$request->getParsedBody();
         if (!is_array($quantities)) {

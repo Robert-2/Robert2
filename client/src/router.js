@@ -332,7 +332,6 @@ const router = new Router({
       name: 'inventories',
       component: Inventories,
       meta: {
-        title: 'page-inventories.title',
         requiresAuth: true,
         requiresGroups: ['admin', 'member'],
       },
@@ -375,7 +374,6 @@ const router = new Router({
       name: 'park-inventories',
       component: Inventories,
       meta: {
-        title: 'page-inventories.title',
         requiresAuth: true,
         requiresGroups: ['admin', 'member'],
       },
@@ -385,7 +383,6 @@ const router = new Router({
       name: 'park-inventories-new',
       component: Inventory,
       meta: {
-        title: 'page-inventories.title-current',
         requiresAuth: true,
         requiresGroups: ['admin', 'member'],
       },
@@ -471,7 +468,6 @@ router.beforeEach((to, from, next) => {
   }
 
   if (restrictAccess) {
-    window.localStorage.removeItem('lastVisited');
     store.dispatch('auth/logout').then(() => {
       next({ path: '/login', hash: 'restricted' });
     });
@@ -481,12 +477,10 @@ router.beforeEach((to, from, next) => {
   next();
 });
 
-router.afterEach(({ name, fullPath, matched }) => {
+router.afterEach(({ name, matched }) => {
   if (name === 'login') {
     return;
   }
-
-  window.localStorage.setItem('lastVisited', fullPath);
 
   const { title } = matched[0].meta;
   store.commit('setPageTitle', title ?? '');

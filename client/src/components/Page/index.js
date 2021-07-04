@@ -1,4 +1,5 @@
 import './index.scss';
+import { APP_NAME } from '@/config/constants';
 
 const Page = {
   name: 'Page',
@@ -10,14 +11,20 @@ const Page = {
   },
   watch: {
     title(newTitle) {
-      this.$store.commit('setPageRawTitle', newTitle ?? null);
+      this.updateTitle(newTitle);
     },
   },
   mounted() {
-    this.$store.commit('setPageRawTitle', this.title ?? null);
+    this.updateTitle(this.title);
   },
   beforeDestroy() {
     this.$store.commit('setPageRawTitle', null);
+  },
+  methods: {
+    updateTitle(newTitle) {
+      this.$store.commit('setPageRawTitle', newTitle ?? null);
+      document.title = [newTitle, APP_NAME].filter(Boolean).join(' - ');
+    },
   },
   render() {
     const { actions, render } = this.$props;

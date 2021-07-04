@@ -7,7 +7,7 @@ const InventoryItem = {
     material: { type: Object, required: true },
     quantities: { type: Object, required: true },
     error: Object,
-    locked: { type: Boolean, default: false },
+    locked: { type: [Boolean, Array], default: false },
     strict: { type: Boolean, default: false },
   },
   computed: {
@@ -17,7 +17,7 @@ const InventoryItem = {
   },
   methods: {
     handleChange(quantities) {
-      if (this.locked) {
+      if (this.locked === true) {
         return;
       }
       this.$emit('change', this.id, quantities);
@@ -45,7 +45,7 @@ const InventoryItem = {
           quantities={quantities}
           error={error}
           strict={strict}
-          locked={locked}
+          locked={locked === true}
           onChange={handleChange}
         />
         {isUnitary && (

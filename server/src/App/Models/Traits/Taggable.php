@@ -50,7 +50,7 @@ trait Taggable
     // —
     // ——————————————————————————————————————————————————————
 
-    public function edit(?int $id = null, array $data = []): BaseModel
+    public function edit($id = null, array $data = []): BaseModel
     {
         $entity = parent::edit($id, $data);
 
@@ -61,7 +61,7 @@ trait Taggable
         return $entity;
     }
 
-    public function setTags(int $id, ?array $tagNames): array
+    public function setTags($id, ?array $tagNames): array
     {
         $entity = static::findOrFail($id);
 
@@ -87,7 +87,7 @@ trait Taggable
         return $entity->tags;
     }
 
-    public function addTag(int $id, string $tagName): array
+    public function addTag($id, string $tagName): array
     {
         $entity = static::findOrFail($id);
 

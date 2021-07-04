@@ -9,23 +9,28 @@ final class MaterialUnitStatesTest extends ApiTestCase
         $this->assertStatusCode(SUCCESS_OK);
         $this->assertResponseData([
             [
-                'name' => 'state-of-use',
+                'id' => 'state-of-use',
+                'name' => 'State of use',
                 'order' => 1,
             ],
             [
-                'name' => 'excellent',
+                'id' => 'excellent',
+                'name' => 'Excellent',
                 'order' => 2,
             ],
             [
-                'name' => 'brand-new',
+                'id' => 'brand-new',
+                'name' => 'Brand new',
                 'order' => 3,
             ],
             [
-                'name' => 'bad',
+                'id' => 'bad',
+                'name' => 'Bad',
                 'order' => 4,
             ],
             [
-                'name' => 'outdated',
+                'id' => 'outdated',
+                'name' => 'Outdated',
                 'order' => 5,
             ],
         ]);

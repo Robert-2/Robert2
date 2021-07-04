@@ -23,4 +23,15 @@
       margin-left: $content-padding-small-vertical;
     }
   }
+
+  //
+  // - Empty (pas de matériel)
+  //
+
+  &--empty {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
 }

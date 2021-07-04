@@ -407,11 +407,18 @@ export default {
     'title-current': "Current inventory",
     'select-park-intro': "To access the inventories, please select the involved park.",
     'no-parks': "Please add a park before for being able to access the inventory management.",
+    'empty': "No inventory has been done for this park at this time.",
+    'underway-events-alert-title': "Some events are underway...",
+    'underway-events-alert-text': [
+      'Some events are underway with material belonging to this park.',
+      'Therefore, you will probably not be able to make an exhaustive inventory of all the material in the park.\n',
+      'Are you sure you want to start an inventory under such conditions?',
+    ].join('\n'),
+    'underway-events-alert-confirm': "Start the inventory anyway",
     'add-park': "Add a park",
     'add': "New inventory for this park",
     'created-at': "Started on",
-    'is-terminated': "Terminated?",
-    'terminated-at': "Terminated on",
+    'date': "Date",
     'author': "Created by",
     'continue': "Continue",
   },
@@ -419,6 +426,21 @@ export default {
   'page-inventory': {
     'title': "New inventory",
     'title-with-park': "New inventory for the \"{park}\" park",
+    'no-materials': "There are no materials in the park, please add some to continue the inventory.",
+    'add-material': "Add material to the park",
+    'back-to-inventories-list': "Back to the list of park's inventories",
+    'locked-message': [
+      "An inventory started by \"{author}\" ({email}) on {date} is already in progress for this park.",
+      "It is not possible to create two inventories at the same time for the same park.",
+    ].join('\n'),
+    'locked-message-no-author': [
+      "An inventory started on {date} is already in progress for this park.",
+      "It is not possible to create two inventories at the same time for the same park.",
+    ].join('\n'),
+    'locked-message-unlock-warning': [
+      "You can take control of the inventory of this park but this will make it inaccessible to its previous \"owner\".",
+      "(if he is in the process of filling the inventory when you take control, his changes will NOT be saved)",
+    ].join('\n'),
     'confirm-terminate-title': "Do you really want to terminate this inventory?",
     'confirm-terminate-text': [
       "Besides closing the inventory (and making it uneditable), this action will have the following consequences:\n",

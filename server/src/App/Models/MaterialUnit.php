@@ -20,9 +20,15 @@ class MaterialUnit extends BaseModel
             'person_id' => V::optional(V::numeric()),
             'is_broken' => V::optional(V::boolType()),
             'is_lost' => V::optional(V::boolType()),
-            'state' => V::optional(V::alnum('-')->length(2, 64)),
+            'state' => V::callback([$this, 'checkState']),
             'purchase_date' => V::optional(V::date()),
         ];
+    }
+
+    public function checkState($value)
+    {
+        $isValueValid = ($value || is_numeric($value)) && MaterialUnitState::staticExists($value);
+        return $isValueValid ?: 'invalid-value';
     }
 
     // ——————————————————————————————————————————————————————
@@ -30,11 +36,6 @@ class MaterialUnit extends BaseModel
     // —    Relations
     // —
     // ——————————————————————————————————————————————————————
-
-    protected $appends = [
-        'owner',
-        'state',
-    ];
 
     public function Material()
     {
@@ -59,7 +60,7 @@ class MaterialUnit extends BaseModel
 
     public function MaterialUnitState()
     {
-        return $this->belongsTo('Robert2\API\Models\MaterialUnitState', 'state', 'name');
+        return $this->belongsTo('Robert2\API\Models\MaterialUnitState', 'state');
     }
 
     public function Person()
@@ -72,6 +73,8 @@ class MaterialUnit extends BaseModel
     // —    Mutators
     // —
     // ——————————————————————————————————————————————————————
+
+    protected $appends = ['owner'];
 
     protected $casts = [
         'park_id' => 'integer',
@@ -137,14 +140,6 @@ class MaterialUnit extends BaseModel
         return sprintf('data:image/svg+xml;base64,%s', base64_encode($svg));
     }
 
-    public function getStateAttribute()
-    {
-        if (!isset($this->attributes['state'])) {
-            return null;
-        }
-        return $this->attributes['state'];
-    }
-
     public function getOwnerAttribute()
     {
         $owner = $this->Person()->first();
@@ -187,7 +182,7 @@ class MaterialUnit extends BaseModel
     // -
     // ------------------------------------------------------
 
-    public function remove(int $id, array $options = []): ?BaseModel
+    public function remove($id, array $options = []): ?BaseModel
     {
         $entity = static::findOrFail($id);
 

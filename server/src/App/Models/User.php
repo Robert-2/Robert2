@@ -111,13 +111,7 @@ class User extends BaseModel
     public function getRestrictedParksAttribute()
     {
         $restrictedParks = $this->RestrictedParks()->get();
-        if (!$restrictedParks) {
-            return [];
-        }
-
-        return array_map(function ($restrictedPark) {
-            return (int)$restrictedPark['id'];
-        }, $restrictedParks->toArray());
+        return $restrictedParks->pluck('id')->toArray();
     }
 
     // ——————————————————————————————————————————————————————
@@ -167,7 +161,7 @@ class User extends BaseModel
         'cas_identifier',
     ];
 
-    public function edit(?int $id = null, array $data = []): BaseModel
+    public function edit($id = null, array $data = []): BaseModel
     {
         if (isset($data['password']) && !empty($data['password'])) {
             $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
@@ -204,5 +198,16 @@ class User extends BaseModel
         unset($user['password']);
 
         return $user;
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Public methods
+    // -
+    // ------------------------------------------------------
+
+    public function hasAccessToPark(int $id): bool
+    {
+        return !in_array($id, $this->restricted_parks, true);
     }
 }

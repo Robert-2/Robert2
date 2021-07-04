@@ -13,45 +13,30 @@ class ChangeMaterialUnitStates extends AbstractMigration
 
         $this->table('material_unit_states')->drop()->save();
 
-        $unitStatesTable = $this->table('material_unit_states', ['id' => false, 'primary_key' => 'name']);
+        $unitStatesTable = $this->table('material_unit_states', ['id' => false, 'primary_key' => 'id']);
         $unitStatesTable
-            ->addColumn('name', 'string', ['length' => 64])
+            ->addColumn('id', 'string', ['length' => 64])
             ->addColumn('order', 'integer', ['signed' => false])
             ->create();
 
         $states = [
-            [
-                'name' => 'state-of-use',
-                'order' => 1,
-            ],
-            [
-                'name' => 'excellent',
-                'order' => 2,
-            ],
-            [
-                'name' => 'brand-new',
-                'order' => 3,
-            ],
-            [
-                'name' => 'bad',
-                'order' => 4,
-            ],
-            [
-                'name' => 'outdated',
-                'order' => 5,
-            ],
+            ['id' => 'state-of-use', 'order' => 1],
+            ['id' => 'excellent', 'order' => 2],
+            ['id' => 'brand-new', 'order' => 3],
+            ['id' => 'bad', 'order' => 4],
+            ['id' => 'outdated', 'order' => 5],
         ];
         $unitStatesTable->insert($states)->save();
 
         $materialUnitsTable
             ->addColumn('state', 'string', [
-                'null' => true,
+                'default' => 'state-of-use',
                 'length' => 64,
                 'after' => 'is_lost',
             ])
             ->addIndex(['state'])
-            ->addForeignKey('state', 'material_unit_states', 'name', [
-                'delete' => 'SET_NULL',
+            ->addForeignKey('state', 'material_unit_states', 'id', [
+                'delete' => 'RESTRICT',
                 'update' => 'NO_ACTION',
                 'constraint' => 'fk_material_units_state',
             ])
@@ -79,7 +64,6 @@ class ChangeMaterialUnitStates extends AbstractMigration
                 'name' => 'name_UNIQUE'
             ])
             ->create();
-
 
         $materialUnitsTable
             ->addColumn('material_unit_state_id', 'integer', [

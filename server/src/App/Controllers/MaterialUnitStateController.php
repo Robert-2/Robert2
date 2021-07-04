@@ -11,7 +11,7 @@ class MaterialUnitStateController extends BaseController
 {
     public function getAll(Request $request, Response $response): Response
     {
-        $states = MaterialUnitState::orderBy('order', 'asc')->get(['name', 'order'])->toArray();
+        $states = MaterialUnitState::orderBy('order', 'asc')->get();
         return $response->withJson($states, SUCCESS_OK);
     }
 }

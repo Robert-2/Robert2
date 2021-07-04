@@ -1,6 +1,7 @@
 import './index.scss';
 import Inventory from '@/components/Inventory';
 import ErrorMessage from '@/components/ErrorMessage';
+import EmptyMessage from '@/components/EmptyMessage';
 import { confirm } from '@/utils/alert';
 import { Fragment } from 'vue-fragment';
 
@@ -37,6 +38,10 @@ const InventoryPageInventory = {
         awaited_quantity: material.stock_quantity,
         awaited_units: material.is_unitary ? material.units : [],
       }));
+    },
+
+    isEmpty() {
+      return this.awaitedMaterials.length === 0;
     },
   },
   methods: {
@@ -147,14 +152,15 @@ const InventoryPageInventory = {
         };
 
         if (material.is_unitary) {
-          quantities.units = material.units.map(({ id }) => {
+          quantities.units = material.units.map(({ id, state: originalState }) => {
             const existingUnit = inventoryMaterial?.units.find(
               (_unit) => _unit.material_unit_id === id,
             );
 
             const isLost = existingUnit?.is_lost_current ?? true;
             const isBroken = existingUnit?.is_broken_current ?? false;
-            return { id, isBroken, isLost };
+            const state = existingUnit?.state_current ?? originalState;
+            return { id, isBroken, isLost, state };
           });
         }
 
@@ -178,6 +184,7 @@ const InventoryPageInventory = {
   render() {
     const {
       $t: __,
+      isEmpty,
       isSaving,
       isTerminating,
       quantities,
@@ -189,39 +196,58 @@ const InventoryPageInventory = {
       handleSave,
     } = this;
 
-    return (
-      <div class="InventoryPageInventory">
-        {saveError && <ErrorMessage error={this.saveError} />}
-        <Inventory
-          locked={isTerminating}
-          errors={validationErrors}
-          quantities={quantities}
-          materials={awaitedMaterials}
-          onChange={handleChange}
-        />
-        <footer class="InventoryPageInventory__footer">
-          <button
-            type="button"
-            class="InventoryPageInventory__footer__action success"
-            onClick={handleSave}
-            disabled={isSaving || isTerminating}
-          >
-            {isSaving && <Fragment><i class="fas fa-circle-notch fa-spin" /> {__('saving')}</Fragment>}
-            {!isSaving && <Fragment><i class="fas fa-save" /> {__('save-draft')}</Fragment>}
-          </button>
-          <button
-            type="button"
-            class="InventoryPageInventory__footer__action info"
-            onClick={handleTerminate}
-            disabled={isSaving || isTerminating}
-            title={__('warning-terminate-inventory')}
-          >
-            {isTerminating && <Fragment><i class="fas fa-circle-notch fa-spin" /> {__('saving')}</Fragment>}
-            {!isTerminating && <Fragment><i class="fas fa-check" /> {__('terminate-inventory')}</Fragment>}
-          </button>
-        </footer>
-      </div>
-    );
+    const classNames = ['InventoryPageInventory', {
+      'InventoryPageInventory--empty': isEmpty,
+    }];
+
+    const render = () => {
+      if (isEmpty) {
+        return (
+          <EmptyMessage
+            message={__('page-inventory.no-materials')}
+            action={{
+              label: __('page-inventory.add-material'),
+              url: { name: 'addMaterial', query: { parkId: this.inventory.park_id } },
+            }}
+          />
+        );
+      }
+
+      return (
+        <Fragment>
+          {saveError && <ErrorMessage error={this.saveError} />}
+          <Inventory
+            locked={isTerminating}
+            errors={validationErrors}
+            quantities={quantities}
+            materials={awaitedMaterials}
+            onChange={handleChange}
+          />
+          <footer class="InventoryPageInventory__footer">
+            <button
+              type="button"
+              class="InventoryPageInventory__footer__action success"
+              onClick={handleSave}
+              disabled={isSaving || isTerminating}
+            >
+              {isSaving && <Fragment><i class="fas fa-circle-notch fa-spin" /> {__('saving')}</Fragment>}
+              {!isSaving && <Fragment><i class="fas fa-save" /> {__('save-draft')}</Fragment>}
+            </button>
+            <button
+              type="button"
+              class="InventoryPageInventory__footer__action info"
+              onClick={handleTerminate}
+              disabled={isSaving || isTerminating}
+              title={__('warning-terminate-inventory')}
+            >
+              {isTerminating && <Fragment><i class="fas fa-circle-notch fa-spin" /> {__('saving')}</Fragment>}
+              {!isTerminating && <Fragment><i class="fas fa-check" /> {__('terminate-inventory')}</Fragment>}
+            </button>
+          </footer>
+        </Fragment>
+      );
+    };
+    return <div class={classNames}>{render()}</div>;
   },
 };
 

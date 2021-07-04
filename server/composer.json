@@ -32,6 +32,7 @@
     },
     "require": {
         "php": ">=7.3",
+        "adbario/php-dot-notation": "2.2.0",
         "bigfish/pdf417": "0.3.0",
         "cocur/slugify": "4.0.0",
         "delfimov/translate": "2.6.0",

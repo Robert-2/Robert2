@@ -17,6 +17,11 @@
       width: 250px;
     }
 
+    &--state {
+      width: 200px;
+      text-align: right;
+    }
+
     &--actions {
       width: 55px;
       text-align: right;
@@ -38,6 +43,17 @@
   &__checkbox {
     margin: 0;
     vertical-align: -2px;
+  }
+
+  &__state {
+    &__label {
+      margin-right: 5px;
+    }
+
+    &__select {
+      width: 130px;
+      padding: 5px 10px;
+    }
   }
 
   &__state--error {

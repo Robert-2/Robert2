@@ -10,14 +10,22 @@ export const normalizeUnitsQuantities = (material, units = []) => {
     return [];
   }
 
-  const normalizedUnits = awaitedUnits.map(({ id }) => {
+  const normalizedUnits = awaitedUnits.map(({ id, state: originalState }) => {
     const existingUnit = units.find((unit) => unit.id === id);
     if (!existingUnit) {
-      return { id, isLost: true, isBroken: false };
+      return {
+        id,
+        state: originalState,
+        isLost: true,
+        isBroken: false,
+      };
     }
 
-    const { isLost = true, isBroken = false } = existingUnit;
-    return { id, isLost: isLost && !isBroken, isBroken };
+    const isBroken = existingUnit.isBroken ?? false;
+    const isLost = isBroken ? false : (existingUnit.isLost ?? true);
+    const state = isLost ? originalState : (existingUnit.state ?? originalState);
+
+    return { id, state, isLost, isBroken };
   });
 
   return normalizedUnits;

@@ -68,7 +68,6 @@
             <i class="fas fa-clipboard-list" />
           </a>
           <router-link
-            v-if="park.row.total_stock_quantity > 0"
             :to="{ name: 'park-inventories', params: { parkId: park.row.id } }"
             v-slot="{ navigate }"
             v-tooltip="$t('inventories')"
@@ -85,7 +84,7 @@
             v-slot="{ navigate }"
             custom
           >
-            <button @click="navigate" class="item-actions__button info" >
+            <button @click="navigate" class="item-actions__button info">
               <i class="fas fa-edit" />
             </button>
           </router-link>

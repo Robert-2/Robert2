@@ -7,7 +7,7 @@ const InventoryItemUnitsItem = {
   name: 'InventoryItemUnitsItem',
   props: {
     unit: { type: Object, required: true },
-    locked: { type: Boolean, default: false },
+    locked: { type: [Boolean, Array], default: false },
     values: Object,
   },
   computed: {
@@ -26,20 +26,57 @@ const InventoryItemUnitsItem = {
       return this.values?.isLost ?? true;
     },
 
+    state() {
+      if (this.isLost) {
+        return this.unit.state;
+      }
+      return this.values?.state ?? this.unit.state;
+    },
+
+    readableState() {
+      return this.$store.getters['unitStates/unitStateName'](this.state) || '?';
+    },
+
+    isStateLocked() {
+      if (Array.isArray(this.locked)) {
+        return this.locked.includes('unit-state');
+      }
+      return this.locked;
+    },
+
     barcodeUrl() {
       const { baseUrl } = Config;
       return `${baseUrl}/material-units/${this.id}/barcode`;
     },
+
+    statesOptions() {
+      return this.$store.getters['unitStates/options'];
+    },
+  },
+  mounted() {
+    this.$store.dispatch('unitStates/fetch');
   },
   methods: {
     handleFoundChange(isFound) {
       const isBroken = isFound ? this.isBroken : false;
-      this.$emit('change', this.id, { isLost: !isFound, isBroken });
+      this.$emit('change', this.id, { isLost: !isFound, isBroken, state: this.state });
     },
 
     handleBrokenChange(isBroken) {
       const isLost = isBroken ? false : this.isLost;
-      this.$emit('change', this.id, { isLost, isBroken });
+      this.$emit('change', this.id, { isLost, isBroken, state: this.state });
+    },
+
+    handleStateChange(e) {
+      const { isLost, isBroken } = this;
+      if (this.isStateLocked || isLost) {
+        this.$forceUpdate();
+        return;
+      }
+
+      const { value } = e.currentTarget;
+      this.$emit('change', this.id, { isLost, isBroken, state: value });
+      this.$forceUpdate();
     },
 
     handleCheckbox(e) {
@@ -56,10 +93,15 @@ const InventoryItemUnitsItem = {
       $t: __,
       unit,
       locked,
+      state,
       isLost,
       isBroken,
+      readableState,
+      isStateLocked,
       barcodeUrl,
+      statesOptions,
       handleCheckbox,
+      handleStateChange,
       handleFoundChange,
       handleBrokenChange,
     } = this;
@@ -73,15 +115,31 @@ const InventoryItemUnitsItem = {
             class="InventoryItemUnitsItem__checkbox"
             checked={!isLost}
             onInput={handleCheckbox}
-            disabled={locked}
+            disabled={locked === true}
           />
         </td>
         <td class="InventoryItemUnitsItem__col">{reference}</td>
         <td class="InventoryItemUnitsItem__col InventoryItemUnitsItem__col--owner">
           {!!owner && <Fragment><strong>{__('owner-key')}</strong> {owner.full_name}</Fragment>}
         </td>
+        <td class="InventoryItemUnitsItem__col InventoryItemUnitsItem__col--state InventoryItemUnitsItem__state">
+          <strong class="InventoryItemUnitsItem__state__label">{__('state')}&nbsp;:</strong>
+          {isStateLocked && <span class="InventoryItemUnitsItem__state__value">{readableState}</span>}
+          {!isStateLocked && (
+            <select
+              value={state}
+              disabled={isLost}
+              onChange={handleStateChange}
+              class="InventoryItemUnitsItem__state__select"
+            >
+              {statesOptions.map(({ value, label }) => (
+                <option key={value} value={value}>{label}</option>
+              ))}
+            </select>
+          )}
+        </td>
         <td class="InventoryItemUnitsItem__col InventoryItemUnitsItem__col--actions">
-          {!locked && (
+          {locked !== true && (
             <a
               target="_blank"
               href={barcodeUrl}
@@ -99,8 +157,10 @@ const InventoryItemUnitsItem = {
             'InventoryItemUnitsItem__col--switch--found',
           ]}
         >
-          {!locked && <SwitchToggle value={!isLost} onInput={handleFoundChange} hideLabel />}
-          {locked && (
+          {locked !== true && (
+            <SwitchToggle value={!isLost} onInput={handleFoundChange} hideLabel />
+          )}
+          {locked === true && (
             <span
               class={[
                 'InventoryItemUnitsItem__state',
@@ -118,8 +178,10 @@ const InventoryItemUnitsItem = {
             'InventoryItemUnitsItem__col--switch--broken',
           ]}
         >
-          {!locked && <SwitchToggle value={isBroken} onInput={handleBrokenChange} hideLabel />}
-          {locked && (
+          {locked !== true && (
+            <SwitchToggle value={isBroken} onInput={handleBrokenChange} hideLabel />
+          )}
+          {locked === true && (
             <span
               class={[
                 'InventoryItemUnitsItem__state',

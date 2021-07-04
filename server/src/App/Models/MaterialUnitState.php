@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
+use Robert2\API\Services\I18n;
+
 class MaterialUnitState extends BaseModel
 {
-    protected $primaryKey = 'name';
-
     public $incrementing = false;
     public $timestamps = false;
 
@@ -18,7 +18,7 @@ class MaterialUnitState extends BaseModel
 
     public function MaterialUnits()
     {
-        return $this->hasMany('Robert2\API\Models\MaterialUnit', 'state', 'name');
+        return $this->hasMany('Robert2\API\Models\MaterialUnit', 'state');
     }
 
     // ——————————————————————————————————————————————————————
@@ -27,10 +27,17 @@ class MaterialUnitState extends BaseModel
     // —
     // ——————————————————————————————————————————————————————
 
+    protected $appends = ['name'];
+
     protected $casts = [
-        'name' => 'string',
+        'id' => 'string',
         'order' => 'integer',
     ];
+
+    protected function getNameAttribute()
+    {
+        return (new I18n)->translate(sprintf('unit-state.%s', $this->id));
+    }
 
     // ——————————————————————————————————————————————————————
     // —

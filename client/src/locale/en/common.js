@@ -30,6 +30,7 @@ export default {
   'copied-in-clipboard': "Copied in clipboard!",
   'almost-done': "Almost done...",
   'refresh-page': "Refresh the page",
+  'take-control': "Take control",
 
   'please-choose': "Please choose...",
   'start-typing-to-search': "Start typing to search...",
@@ -37,6 +38,7 @@ export default {
     "Type again, at least {count} character to search...",
     "Type again, at least {count} characters to search...",
   ],
+  'empty-state': "There are no records to display at this time.",
   'no-result-found-try-another-search': "No results. Try another search term.",
   'create-select-item-label': "Create a {label}",
   'add-item': "Add a {item}",
@@ -254,14 +256,6 @@ export default {
   'categories': "Categories",
   'parks': "Parks",
   'technician': "Technicien",
-
-  'unit-state': {
-    'state-of-use': "State of use",
-    'excellent': "Excellent",
-    'brand-new': "Brand new",
-    'bad': "Bad",
-    'outdated': "Outdated",
-  },
 
   'settings': "Settings",
 

@@ -111,6 +111,7 @@ final class MaterialUnitsTest extends ApiTestCase
             'reference' => 'VHCL-2',
             'serial_number' => '123456-000020',
             'is_broken' => true,
+            'state' => 'brand-new',
         ];
         $expectedData = [
             'id' => 7,
@@ -121,7 +122,7 @@ final class MaterialUnitsTest extends ApiTestCase
             'serial_number' => '123456-000020',
             'is_broken' => true,
             'is_lost' => false,
-            'state' => null,
+            'state' => 'brand-new',
             'purchase_date' => null,
             'notes' => null,
             'owner' => null,
@@ -195,6 +196,9 @@ final class MaterialUnitsTest extends ApiTestCase
             'purchase_date' => [
                 'purchase_date must be a valid date',
             ],
+            'state' => [
+                'Invalid value.'
+            ]
         ]);
     }
 
@@ -254,7 +258,12 @@ final class MaterialUnitsTest extends ApiTestCase
         $this->assertResponseData($expectedData, ['updated_at']);
 
         // - Test qu'on ne peut pas mettre à jour les données sensibles.
-        $data = ['id' => 1000, 'material_id' => 7, 'is_broken' => true];
+        $data = [
+            'id' => 1000,
+            'material_id' => 7,
+            'state' => 'state-of-use',
+            'is_broken' => true
+        ];
         $expectedData = [
             'id' => 5,
             'material_id' => 8,
@@ -264,7 +273,7 @@ final class MaterialUnitsTest extends ApiTestCase
             'serial_number' => null,
             'is_broken' => true,
             'is_lost' => false,
-            'state' => null,
+            'state' => 'state-of-use',
             'purchase_date' => null,
             'notes' => null,
             'owner' => null,

@@ -77,7 +77,7 @@ export default {
           displayGroup={displayGroup}
           errors={this.errors}
           onChange={handleChange}
-          locked={isLocked}
+          locked={isLocked || ['unit-state']}
           strict
         />
         {isAllReturned && (

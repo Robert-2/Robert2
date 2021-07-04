@@ -408,11 +408,18 @@ export default {
     'title-current': "Inventaire en cours",
     'select-park-intro': "Pour pouvoir accèder aux inventaires, veuillez sélectionner le parc concerné.",
     'no-parks': "Veuillez ajouter un parc avant de pouvoir accèder à la gestion des inventaires.",
+    'empty': "Aucun inventaire n'a été effectué pour ce parc pour le moment.",
+    'underway-events-alert-title': "Des événements sont en cours...",
+    'underway-events-alert-text': [
+      'Des événements sont en cours avec du matériel appartenant à ce parc.',
+      'Vous ne pourrez donc sans doute pas effectuer un inventaire exhaustif de tout le matériel du parc.\n',
+      'Étes-vous sûr de vouloir commencer un inventaire dans ces conditions\u00a0?',
+    ].join('\n'),
+    'underway-events-alert-confirm': "Commencer l'inventaire malgré tout",
     'add-park': "Ajouter un parc",
     'add': "Nouvel inventaire pour ce parc",
     'created-at': "Commencé le",
-    'is-terminated': "Terminé ?",
-    'terminated-at': "Terminé le",
+    'date': "Date",
     'author': "Créé par",
     'continue': "Continuer",
   },
@@ -420,6 +427,21 @@ export default {
   'page-inventory': {
     'title': "Nouvel inventaire",
     'title-with-park': "Nouvel inventaire pour le parc «\u00a0{park}\u00a0»",
+    'no-materials': "Le parc ne contient aucun matériel, veuillez en ajouter pour poursuivre l'inventaire.",
+    'add-material': "Ajouter du matériel dans le parc",
+    'back-to-inventories-list': "Retour à la liste des inventaires du parc",
+    'locked-message': [
+      "Un inventaire débuté par «\u00a0{author}\u00a0» ({email}) le {date} est déjà en cours pour ce parc.",
+      "Il n'est pas possible de créer deux inventaires en même temps pour le même parc.",
+    ].join('\n'),
+    'locked-message-no-author': [
+      "Un inventaire débuté le {date} est déjà en cours pour ce parc.",
+      "Il n'est pas possible de créer deux inventaires en même temps pour le même parc.",
+    ].join('\n'),
+    'locked-message-unlock-warning': [
+      "Vous pouvez prendre la main sur l'inventaire de ce parc, mais ceci aura pour effet de le rendre inaccessible par son précédent «\u00a0propriétaire\u00a0».",
+      "(si celui-ci est en cours de remplissage de l'inventaire au moment où vous prenez la main, ses modifications ne pourront PAS être sauvegardées)",
+    ].join('\n'),
     'confirm-terminate-title': "Voulez-vous vraiment terminer cet inventaire\u00a0?",
     'confirm-terminate-text': [
       "En plus de clôturer l'inventaire (et donc le rendre non modifiable), cette action aura les conséquences suivantes\u00a0:\n",

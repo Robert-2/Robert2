@@ -11,7 +11,7 @@ const Inventory = {
     materials: { type: Array, required: true },
     quantities: { type: Array, required: true },
     errors: { type: Array, default: () => [] },
-    locked: { type: Boolean, default: false },
+    locked: { type: [Boolean, Array], default: false },
     strict: { type: Boolean, default: false },
     displayGroup: {
       default: 'categories',
@@ -50,7 +50,7 @@ const Inventory = {
   },
   methods: {
     handleChange(id, quantities) {
-      if (this.locked) {
+      if (this.locked === true) {
         return;
       }
       this.$emit('change', id, quantities);
@@ -80,7 +80,7 @@ const Inventory = {
         return;
       }
 
-      if (!this.locked && quantities.units[index].isLost) {
+      if (this.locked !== true && quantities.units[index].isLost) {
         quantities.actual += 1;
         quantities.units[index].isLost = false;
         this.$emit('change', id, quantities);

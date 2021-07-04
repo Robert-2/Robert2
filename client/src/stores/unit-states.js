@@ -1,5 +1,6 @@
 /* eslint-disable import/no-cycle */
 import axios from '@/axios';
+import formatOptions from '@/utils/formatOptions';
 
 export default {
   namespaced: true,
@@ -9,21 +10,11 @@ export default {
     error: null,
   },
   getters: {
-    options: (state, getters, rootState) => {
-      const { locale, translations } = rootState.i18n;
-      return state.list.map(({ name }) => ({
-        value: name,
-        label: translations[locale][`unit-state.${name}`] ?? '-- trad. manquante --',
-      }));
-    },
+    options: (state) => formatOptions(state.list),
 
-    unitStateName: (state, getters, rootState) => (name) => {
-      const unitState = state.list.find((_unitState) => _unitState.name === name);
-      if (!unitState) {
-        return null;
-      }
-      const { locale, translations } = rootState.i18n;
-      return translations[locale][`unit-state.${name}`] ?? null;
+    unitStateName: (state) => (id) => {
+      const unitState = state.list.find((_unitState) => _unitState.id === id);
+      return unitState ? unitState.name : null;
     },
   },
   mutations: {
@@ -44,11 +35,34 @@ export default {
     },
   },
   actions: {
-    async fetch({ state, commit }, shouldThrow = false) {
+    async fetch({ state, dispatch }, shouldThrow = false) {
       if (state.isFetched) {
         return state.list;
       }
 
+      const hadOngoingFetch = !!this.ongoingFetch;
+      if (!hadOngoingFetch) {
+        this.ongoingFetch = dispatch('internalFetch', true);
+      }
+
+      let data;
+      try {
+        data = await this.ongoingFetch;
+      } catch (error) {
+        if (shouldThrow) {
+          throw error;
+        }
+        data = [];
+      } finally {
+        if (!hadOngoingFetch) {
+          this.ongoingFetch = null;
+        }
+      }
+
+      return data;
+    },
+
+    async internalFetch({ commit }, shouldThrow = false) {
       let data;
       try {
         data = (await axios.get('unit-states')).data;
@@ -66,16 +80,9 @@ export default {
       return data;
     },
 
-    refresh({ state, commit }) {
+    refresh({ state, dispatch }, shouldThrow = false) {
       state.isFetched = false;
-
-      axios.get('unit-states')
-        .then(({ data }) => {
-          commit('init', data);
-        })
-        .catch((error) => {
-          commit('setError', error);
-        });
+      return dispatch('internalFetch', shouldThrow);
     },
   },
 };

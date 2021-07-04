@@ -5,7 +5,7 @@
     <td>{{ material['reference'] }}</td>
     <td>
         {{ material['name'] }}
-        {% if material['units'] is not empty %}
+        {% if material['is_unitary'] and material['units'] is not empty %}
         <ul style="margin: 1mm 0 0;">
         {% for unit in material['units'] %}
             <li class="{{ html_classes('LineInventory__unit', {

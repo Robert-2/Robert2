@@ -105,7 +105,7 @@ class Setting extends BaseModel
 
     protected $fillable = ['value'];
 
-    public static function staticEdit(?int $id = null, array $data = []): BaseModel
+    public static function staticEdit($id = null, array $data = []): BaseModel
     {
         if (empty($data)) {
             throw new \InvalidArgumentException("No setting to update", ERROR_VALIDATION);
@@ -136,12 +136,12 @@ class Setting extends BaseModel
         return new static;
     }
 
-    public function remove(int $id, array $options = []): ?BaseModel
+    public function remove($id, array $options = []): ?BaseModel
     {
         throw new \InvalidArgumentException("Settings cannot be deleted.");
     }
 
-    public function unremove(int $id): BaseModel
+    public function unremove($id): BaseModel
     {
         throw new \InvalidArgumentException("Settings cannot be restored.");
     }

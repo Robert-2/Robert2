@@ -1,10 +1,9 @@
 import './index.scss';
-import classnames from 'classnames';
 import moment from 'moment';
 import Config from '@/config/globalConfig';
 import Loading from '@/components/Loading';
-import Help from '@/components/Help/Help.vue';
-import { Fragment } from 'vue-fragment';
+import EmptyMessage from '@/components/EmptyMessage';
+import CriticalError from '@/components/CriticalError';
 
 const Inventories = {
   name: 'Inventories',
@@ -14,78 +13,62 @@ const Inventories = {
   data() {
     return {
       isLoading: true,
-      error: null,
+      hasCriticalError: false,
       inventories: [],
-      columns: ['created_at', 'is_tmp', 'date', 'author', 'actions'],
+      columns: ['date', 'author', 'actions'],
       tableOptions: {
         columnsDropdown: false,
         preserveState: true,
-        orderBy: { column: 'created_at', ascending: false },
+        orderBy: { column: 'date', ascending: false },
         initialPage: 1,
         perPage: Config.defaultPaginationLimit,
-        sortable: ['created_at', 'date'],
+        sortable: ['date'],
         headings: {
-          created_at: this.$t('page-inventories.created-at'),
-          is_tmp: this.$t('page-inventories.is-terminated'),
-          date: this.$t('page-inventories.terminated-at'),
+          date: this.$t('page-inventories.date'),
           author: this.$t('page-inventories.author'),
-          actions: this.$t('actions'),
+          actions: null,
         },
         columnsClasses: {
           actions: 'Inventories__actions',
         },
-        rowClassCallback: (row) => classnames({
-          'VueTables__row--warning': row.is_tmp,
-        }),
         templates: {
-          created_at: (h, row) => moment(row.created_at).format('L'),
-          is_tmp: (h, row) => (row.is_tmp ? this.$t('no') : this.$t('yes')),
-          date: (h, { date }) => (date ? moment(date).format('L') : this.$t('in-progress')),
+          date: (h, { date }) => moment(date).format('L'),
           author: (h, { author }) => (author?.person?.full_name || ''),
           actions: (h, row) => (
-            <Fragment>
-              {!row.is_tmp && (
-                <a
-                  href={this.getDownloadUrl(row.id)}
-                  download
-                  class="button Inventories__action"
-                  v-tooltip={this.$t('print')}
-                >
-                  <i class="fas fa-print" />
-                </a>
-              )}
-              {row.is_tmp && (
-                <router-link to={`/parks/${this.parkId}/inventories/new`} custom>
-                  {({ navigate }) => (
-                    <button
-                      class="info Inventories__action"
-                      onClick={navigate}
-                      v-tooltip={this.$t('page-inventories.continue')}
-                    >
-                      <i class="fas fa-edit" />
-                    </button>
-                  )}
-                </router-link>
-              )}
-            </Fragment>
+              <a
+                href={this.getDownloadUrl(row.id)}
+                v-tooltip={this.$t('print')}
+                class="button"
+                download
+              >
+                <i class="fas fa-print" />
+              </a>
           ),
         },
       },
     };
   },
+  computed: {
+    isEmpty() {
+      return this.inventories.length === 0;
+    },
+  },
   async mounted() {
     await this.fetchData();
   },
   methods: {
+    handleAddClick() {
+      this.$emit('addClick');
+    },
+
     async fetchData() {
       this.isLoading = true;
-      this.error = null;
 
       try {
         const { data } = await this.$http.get(`parks/${this.parkId}/inventories`);
         this.inventories = data;
-      } catch (error) {
-        this.error = error;
+      } catch {
+        this.hasCriticalError = true;
       } finally {
         this.isLoading = false;
       }
@@ -97,22 +80,48 @@ const Inventories = {
     },
   },
   render() {
-    const { isLoading, error, inventories, columns, tableOptions } = this;
+    const {
+      $t: __,
+      isEmpty,
+      isLoading,
+      hasCriticalError,
+      inventories,
+      columns,
+      tableOptions,
+      handleAddClick,
+    } = this;
 
-    return (
-      <div class="Inventories">
-        {isLoading && <Loading />}
-        {!isLoading && error && <Help message="" error={error} />}
-        {!isLoading && !error && (
-          <v-client-table
-            name="inventoriesTable"
-            data={inventories}
-            columns={columns}
-            options={tableOptions}
+    const render = () => {
+      if (hasCriticalError) {
+        return <CriticalError />;
+      }
+
+      if (isLoading) {
+        return <Loading />;
+      }
+
+      if (isEmpty) {
+        return (
+          <EmptyMessage
+            message={__('page-inventories.empty')}
+            action={{
+              label: __('page-inventories.add'),
+              onClick: handleAddClick,
+            }}
           />
-        )}
-      </div>
-    );
+        );
+      }
+
+      return (
+        <v-client-table
+          name="inventoriesTable"
+          data={inventories}
+          columns={columns}
+          options={tableOptions}
+        />
+      );
+    };
+    return <div class="Inventories">{render()}</div>;
   },
 };
 

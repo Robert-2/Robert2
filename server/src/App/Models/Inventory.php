@@ -78,7 +78,8 @@ class Inventory extends BaseModel
 
     public function Author()
     {
-        return $this->belongsTo(User::class, 'author_id');
+        return $this->belongsTo(User::class, 'author_id')
+            ->select(['users.id', 'pseudo', 'email', 'group_id']);
     }
 
     public function Materials()
@@ -148,6 +149,7 @@ class Inventory extends BaseModel
 
         $data = [];
         $errors = [];
+        $availableUnitStates = MaterialUnitState::pluck('id')->toArray();
         foreach ($rawQuantities as $quantity) {
             if (!array_key_exists('id', $quantity)) {
                 continue;
@@ -245,11 +247,20 @@ class Inventory extends BaseModel
                         ? $savedInventoryUnits[$unitQuantity['id']]
                         : null;
 
-                    $unitQuantity = array_replace(['isLost' => true, 'isBroken' => false], $unitQuantity);
+                    $defaults = ['isLost' => true, 'isBroken' => false, 'state' => $unit['state']];
+                    $unitQuantity = array_replace($defaults, $unitQuantity);
                     if ($unitQuantity['isLost'] && $unitQuantity['isBroken']) {
                         $errors[] = [
                             'id' => $material->id,
                             'message' => "Les unités ne peuvent pas être \"en panne\" et \"perdues\" au même moment."
+                        ];
+                        continue 2;
+                    }
+
+                    if (!in_array($unitQuantity['state'], $availableUnitStates, true)) {
+                        $errors[] = [
+                            'id' => $material->id,
+                            'message' => "Certains états d'unité sont invalides."
                         ];
                         continue 2;
                     }
@@ -266,7 +277,9 @@ class Inventory extends BaseModel
                         'is_lost_previous' => null,
                         'is_lost_current' => (bool)$unitQuantity['isLost'],
                         'is_broken_previous' => null,
-                        'is_broken_current' => (bool)$unitQuantity['isBroken']
+                        'is_broken_current' => (bool)$unitQuantity['isBroken'],
+                        'state_previous' => null,
+                        'state_current' => $unitQuantity['state'],
                     ]);
                 }
 
@@ -407,6 +420,7 @@ class Inventory extends BaseModel
                         'reference' => $unit['reference'],
                         'is_lost_previous' => !$savedUnit->is_new ? $unit['is_lost'] : null,
                         'is_broken_previous' => !$savedUnit->is_new ? $unit['is_broken'] : null,
+                        'state_previous' => !$savedUnit->is_new ? $unit['state'] : null,
                     ]);
 
                     $units[] = $savedUnit;
@@ -462,6 +476,7 @@ class Inventory extends BaseModel
                     $originalUnit->update([
                         'is_lost' => $inventoryUnit->is_lost_current,
                         'is_broken' => $inventoryUnit->is_broken_current,
+                        'state' => $inventoryUnit->state_current,
                     ]);
                 }
             } else {

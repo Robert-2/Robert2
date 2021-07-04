@@ -30,6 +30,7 @@ export default {
   'copied-in-clipboard': "Copié dans le presse-papier\u00a0!",
   'almost-done': "Presque terminé...",
   'refresh-page': "Actualiser la page",
+  'take-control': "Prendre la main",
 
   'please-choose': "Veuillez choisir...",
   'start-typing-to-search': "Commencez à écrire pour rechercher...",
@@ -37,6 +38,7 @@ export default {
     "Entrez encore au moins {count} lettre pour rechercher...",
     "Entrez encore au moins {count} lettres pour rechercher...",
   ],
+  'empty-state': "Il n'y a aucun enregistrement à afficher pour le moment.",
   'no-result-found-try-another-search': "Aucun résultat. Essayez avec une autre recherche.",
   'create-select-item-label': "Créer un {label}",
   'add-item': "Ajouter un {item}",
@@ -254,14 +256,6 @@ export default {
   'categories': "Catégories",
   'parks': "Parcs",
   'technician': "Technicien",
-
-  'unit-state': {
-    'state-of-use': "État d'usage",
-    'excellent': "Excellent",
-    'brand-new': "Neuf",
-    'bad': "Mauvais",
-    'outdated': "Obsolète",
-  },
 
   'settings': "Paramètres",
 
