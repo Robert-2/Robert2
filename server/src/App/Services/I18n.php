@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Robert2\API\Services;
 
 use DElfimov\Translate\Translate;
-use DElfimov\Translate\Loader\PhpFilesLoader;
+use Robert2\API\Services\I18n\Loader;
 
 class I18n
 {
@@ -17,8 +17,7 @@ class I18n
 
     public function __construct(?string $lang = null)
     {
-        $translationsPath = new PhpFilesLoader(LOCALES_FOLDER);
-        $this->translator = new Translate($translationsPath, $this->config);
+        $this->translator = new Translate(new Loader(LOCALES_FOLDER), $this->config);
 
         // - Overwrite Accept-Language header if needed
         if ($lang && in_array($lang, $this->config['available'])) {

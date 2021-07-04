@@ -1,42 +1,17 @@
 @import '../../../themes/default/index';
 
 .EventReturnMaterialsList {
-  &__section {
-    margin-bottom: $content-padding-large-vertical;
-
-    &__header {
-      display: flex;
-      align-items: flex-end;
-    }
-
-    &__title {
-      flex: 1;
-    }
-
-    &__quantity-title {
-      flex: 0 0 95px;
-      text-align: center;
-      font-size: 1rem;
-      margin-left: $content-padding-large-vertical;
-    }
-  }
-
-  &__list {
-    margin: 0;
-    padding: 0 0 0 $content-padding-small-horizontal;
-    border-left: 3px solid $list-left-border-color;
-  }
-
-  .EventReturnMaterialItem {
-    margin-bottom: $content-padding-small-horizontal;
-  }
-
-  &__all-returned,
   &__missing,
+  &__all-returned,
   &__has-broken {
     text-align: center;
     font-size: 1.2rem;
-    margin-bottom: $content-padding-large-horizontal;;
+    margin-bottom: $content-padding-large-horizontal;
+  }
+
+  &__all-returned,
+  &__has-broken {
+    margin-top: $content-padding-large-vertical;
   }
 
   &__all-returned {

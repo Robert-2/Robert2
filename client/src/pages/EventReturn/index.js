@@ -1,7 +1,6 @@
 import './EventReturn.scss';
 import moment from 'moment';
-import Swal from 'sweetalert2/dist/sweetalert2';
-import dispatchMaterialInSections from '@/utils/dispatchMaterialInSections';
+import { confirm } from '@/utils/alert';
 import formatAmount from '@/utils/formatAmount';
 import EventReturnHeader from './Header';
 import MaterialsList from './MaterialsList';
@@ -28,22 +27,6 @@ const EventReturnPage = {
     };
   },
   computed: {
-    listData() {
-      const categoryNameGetter = this.$store.getters['categories/categoryName'];
-      const parkNameGetter = this.$store.getters['parks/parkName'];
-
-      switch (this.displayGroup) {
-        case 'categories':
-          return dispatchMaterialInSections(this.event.materials, 'category_id', categoryNameGetter);
-        case 'parks':
-          return dispatchMaterialInSections(this.event.materials, 'park_id', parkNameGetter);
-        default:
-          return [
-            { id: 'flat', name: null, materials: this.event.materials },
-          ];
-      }
-    },
-
     isPast() {
       return this.endDate ? this.endDate.isBefore(new Date()) : false;
     },
@@ -96,20 +79,21 @@ const EventReturnPage = {
     initQuantities() {
       const { materials } = this.event;
 
-      this.quantities = materials.map(({ id, pivot }) => ({
+      this.quantities = materials.map(({ id, is_unitary: isUnitary, pivot }) => ({
         id,
-        out: pivot.quantity,
-        returned: pivot.quantity_returned || 0,
+        awaited_quantity: pivot.quantity || 0,
+        actual: pivot.quantity_returned || 0,
         broken: pivot.quantity_broken || 0,
       }));
     },
 
-    setReturned({ index, quantity }) {
-      this.quantities[index].returned = quantity;
-    },
-
-    setBroken({ index, quantity }) {
-      this.quantities[index].broken = quantity;
+    handleChange(id, quantities) {
+      const index = this.quantities.findIndex(({ id: _id }) => id === _id);
+      if (index < 0) {
+        return;
+      }
+      const prevQuantity = this.quantities[index];
+      this.$set(this.quantities, index, { ...prevQuantity, ...quantities });
     },
 
     setDisplayGroup(group) {
@@ -141,18 +125,12 @@ const EventReturnPage = {
 
       const hasBroken = this.quantities.some(({ broken }) => broken > 0);
 
-      const response = await Swal.fire({
+      const response = await confirm({
         title: this.$t('page-event-return.confirm-terminate-title'),
         text: hasBroken
           ? this.$t('page-event-return.confirm-terminate-text-with-broken')
           : this.$t('page-event-return.confirm-terminate-text'),
-        icon: 'warning',
-        showCancelButton: true,
-        customClass: {
-          confirmButton: 'swal2-confirm--info',
-        },
-        confirmButtonText: this.$t('page-event-return.terminate-inventory'),
-        cancelButtonText: this.$t('cancel'),
+        confirmButtonText: this.$t('terminate-inventory'),
       });
 
       if (!response.isConfirmed) {
@@ -177,7 +155,7 @@ const EventReturnPage = {
       this.isTerminating = false;
 
       if (error.response.status === 400) {
-        this.error = new Error(this.$t('page-event-return.validation-error'));
+        this.error = new Error(this.$t('inventory-validation-error'));
         this.validationErrors = error.response.data.error.details;
         return;
       }

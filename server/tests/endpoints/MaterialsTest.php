@@ -1,6 +1,8 @@
 <?php
 namespace Robert2\Tests;
 
+use Robert2\API\Models\Person;
+
 final class MaterialsTest extends ApiTestCase
 {
     public function testGetMaterials()
@@ -27,8 +29,8 @@ final class MaterialsTest extends ApiTestCase
                     'name' => 'Behringer X Air XR18',
                     'description' => 'Mélangeur numérique 18 canaux',
                     'reference' => 'XR18',
-                    'is_unitary' => true,
-                    'park_id' => null,
+                    'is_unitary' => false,
+                    'park_id' => 1,
                     'category_id' => 1,
                     'sub_category_id' => 1,
                     'rental_price' => 49.99,
@@ -253,8 +255,8 @@ final class MaterialsTest extends ApiTestCase
                     'name' => 'Volkswagen Transporter',
                     'description' => 'Volume utile : 9.3 m3',
                     'reference' => 'Transporter',
-                    'is_unitary' => true,
-                    'park_id' => null,
+                    'is_unitary' => false,
+                    'park_id' => 1,
                     'category_id' => 3,
                     'sub_category_id' => null,
                     'rental_price' => 300,
@@ -508,8 +510,8 @@ final class MaterialsTest extends ApiTestCase
                 'name' => 'Volkswagen Transporter',
                 'description' => 'Volume utile : 9.3 m3',
                 'reference' => 'Transporter',
-                'is_unitary' => true,
-                'park_id' => null,
+                'is_unitary' => false,
+                'park_id' => 1,
                 'category_id' => 3,
                 'sub_category_id' => null,
                 'rental_price' => 300,
@@ -556,8 +558,8 @@ final class MaterialsTest extends ApiTestCase
                 'name' => 'Behringer X Air XR18',
                 'description' => 'Mélangeur numérique 18 canaux',
                 'reference' => 'XR18',
-                'is_unitary' => true,
-                'park_id' => null,
+                'is_unitary' => false,
+                'park_id' => 1,
                 'category_id' => 1,
                 'sub_category_id' => 1,
                 'rental_price' => 49.99,
@@ -996,6 +998,71 @@ final class MaterialsTest extends ApiTestCase
         $this->client->get('/api/materials/2/documents');
         $this->assertStatusCode(SUCCESS_OK);
         $this->assertResponseData([]);
+    }
+
+    public function testGetEvents()
+    {
+        $this->client->get('/api/materials/1/events');
+        $this->assertStatusCode(SUCCESS_OK);
+        $this->assertResponseData([
+            [
+                'id' => 4,
+                'title' => 'Concert X',
+                'start_date' => '2019-03-01 00:00:00',
+                'end_date' => '2019-04-10 23:59:59',
+                'location' => 'Moon',
+                'is_confirmed' => false,
+                'is_archived' => false,
+                'is_return_inventory_done' => false,
+                'has_missing_materials' => null,
+                'has_not_returned_materials' => null,
+                'parks' => [1],
+                'pivot' => [
+                    'id' => 9,
+                    'material_id' => 1,
+                    'event_id' => 4,
+                    'quantity' => 1,
+                ],
+            ],
+            [
+                'id' => 2,
+                'title' => 'Second événement',
+                'start_date' => '2018-12-18 00:00:00',
+                'end_date' => '2018-12-19 23:59:59',
+                'location' => 'Lyon',
+                'is_confirmed' => false,
+                'is_archived' => false,
+                'is_return_inventory_done' => true,
+                'has_missing_materials' => null,
+                'has_not_returned_materials' => true,
+                'parks' => [1],
+                'pivot' => [
+                    'id' => 4,
+                    'material_id' => 1,
+                    'event_id' => 2,
+                    'quantity' => 3,
+                ],
+            ],
+            [
+                'id' => 1,
+                'title' => 'Premier événement',
+                'start_date' => '2018-12-17 00:00:00',
+                'end_date' => '2018-12-18 23:59:59',
+                'location' => 'Gap',
+                'is_confirmed' => false,
+                'is_archived' => false,
+                'is_return_inventory_done' => true,
+                'has_missing_materials' => null,
+                'has_not_returned_materials' => false,
+                'parks' => [1],
+                'pivot' => [
+                    'id' => 1,
+                    'material_id' => 1,
+                    'event_id' => 1,
+                    'quantity' => 1,
+                ],
+            ]
+        ]);
     }
 
     public function testGetAllPdf()

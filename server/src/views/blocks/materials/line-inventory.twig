@@ -1,19 +1,29 @@
-<tr>
+<tr class="{{ html_classes('LineInventory', {
+    'LineInventory--with-missing': material['hasMissing'],
+    'LineInventory--with-broken' : material['hasBroken']
+}) }}">
     <td>{{ material['reference'] }}</td>
     <td>
         {{ material['name'] }}
-        {% if material['attributes'] is not empty %}
-        <br />
-        {% for attribute in material['attributes'] %}
-            {{ include('blocks/materials/attribute.twig', { attribute: attribute }) }}
-        {% endfor %}
+    </td>
+    <td class="center lighter">
+        {{ material['stock_quantity_previous'] }}
+    </td>
+    <td class="center lightest">
+        {% if material['countDifference'] < 0 %}
+            <span class="LineInventory__negative-diff">
+                {{ material['countDifference'] }}
+            </span>
+        {% elseif material['countDifference'] > 0 %}
+            <span class="LineInventory__positive-diff">
+                +{{ material['countDifference'] }}
+            </span>
         {% endif %}
     </td>
-    <td class="right lighter">
-        {{ material['replacementPrice']|format_currency(currency, formatCurrencyOptions, locale) }}
+    <td class="LineInventory__current-quantity center">
+        {{ material['stock_quantity_current'] }}
     </td>
-    <td class="center">
-        {{ material['stockQuantity'] }}
+    <td class="LineInventory__broken-quantity center lightest">
+        {{ material['out_of_order_quantity_current'] ?: 0 }}
     </td>
-    <td></td>
 </tr>

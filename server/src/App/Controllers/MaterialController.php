@@ -117,6 +117,17 @@ class MaterialController extends BaseController
         return $response->withJson($results);
     }
 
+    public function getParkAll(Request $request, Response $response): Response
+    {
+        $parkId = (int)$request->getAttribute('parkId');
+        if (!Park::staticExists($parkId)) {
+            throw new HttpNotFoundException($request);
+        }
+
+        $materials = Material::getParkAll($parkId);
+        return $response->withJson($materials);
+    }
+
     // ------------------------------------------------------
     // -
     // -    Setters
@@ -148,9 +159,9 @@ class MaterialController extends BaseController
     // —
     // ------------------------------------------------------
 
-    protected function _saveMaterial(?int $id, array $postData): array
+    protected function _saveMaterial(?int $id, $postData): array
     {
-        if (empty($postData)) {
+        if (!is_array($postData) || empty($postData)) {
             throw new \InvalidArgumentException(
                 "Missing request data to process validation",
                 ERROR_VALIDATION
@@ -325,6 +336,44 @@ class MaterialController extends BaseController
         return $response->withJson($result, SUCCESS_OK);
     }
 
+    public function getEvents(Request $request, Response $response): Response
+    {
+        $id = (int)$request->getAttribute('id');
+        $material = Material::find($id);
+        if (!$material) {
+            throw new HttpNotFoundException($request);
+        }
+
+        $useMultipleParks = Park::count() > 1;
+
+        $data = [];
+        $today = (new \DateTime())->setTime(0, 0, 0);
+        foreach ($material->events as $event) {
+            $event['has_missing_materials'] = null;
+            $event['has_not_returned_materials'] = null;
+            $event['parks'] = null;
+
+            if ($useMultipleParks) {
+                $event['parks'] = Event::getParks($event['id']);
+            }
+
+            if ($event['is_archived']) {
+                $data[] = $event;
+                continue;
+            }
+
+            $eventEndDate = new \DateTime($event['end_date']);
+            if ($eventEndDate < $today && $event['is_return_inventory_done']) {
+                // TODO: ne mettre ce champ à true que si c'est LE matériel actuel ($id) qui n'a pas été retourné.
+                $event['has_not_returned_materials'] = Event::hasNotReturnedMaterials($event['id']);
+            }
+
+            $data[] = $event;
+        }
+
+        return $response->withJson($data, SUCCESS_OK);
+    }
+
     public function getPicture(Request $request, Response $response): Response
     {
         $id = (int)$request->getAttribute('id');
@@ -362,7 +411,7 @@ class MaterialController extends BaseController
                 continue;
             }
 
-            $materialsData = new MaterialsData($park['materials']);
+            $materialsData = new MaterialsData(array_values($park['materials']));
             $materialsData->setParks($parks)->setCategories($categories);
             $parksMaterials[] = [
                 'id' => $park['id'],
@@ -403,7 +452,7 @@ class MaterialController extends BaseController
             'parksMaterialsList' => $parksMaterials,
         ];
 
-        $fileContent = Pdf::createFromTemplate('materials-list', $data);
+        $fileContent = Pdf::createFromTemplate('materials-list-default', $data);
 
         return $this->_responseWithFile($response, $fileName, $fileContent);
     }

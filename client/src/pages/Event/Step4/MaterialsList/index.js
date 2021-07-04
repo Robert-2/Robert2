@@ -1,5 +1,5 @@
 import MaterialsFilter from '@/components/MaterialsFilters/MaterialsFilters.vue';
-import SwitchToggle from '@/components/SwitchToggle/SwitchToggle.vue';
+import SwitchToggle from '@/components/SwitchToggle';
 import Config from '@/config/globalConfig';
 import formatAmount from '@/utils/formatAmount';
 import MaterialsStore from './MaterialsStore';

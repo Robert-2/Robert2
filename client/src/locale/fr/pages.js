@@ -134,12 +134,9 @@ export default {
     'title': "Retour du matériel de l'événement «\u00a0{pageSubTitle}\u00a0»",
     'help': "",
     'this-event-is-not-past': "Cet événement n'est pas terminé, il n'est donc pas possible de vérifier son retour pour le moment.",
-    'warning-terminate': "Attention, une fois cet inventaire terminé, il ne sera plus modifiable.",
     'confirm-terminate-title': "Voulez-vous vraiment terminer cet inventaire de retour\u00a0?",
     'confirm-terminate-text': "Veuillez noter qu'il ne sera plus possible de le modifier.",
     'confirm-terminate-text-with-broken': "Ceci aura pour effet de mettre à jour toutes les quantités «\u00a0en panne\u00a0» du matériel concerné, et il ne sera plus possible de modifier cet inventaire.",
-    'terminate-inventory': "Terminer cet inventaire",
-    'validation-error': "Certaines quantités ne sont pas correctes. Veuillez vérifier à nouveau la liste.",
     'inventory-done': "Inventaire terminé",
     'some-material-is-missing': "Du matériel n'est pas revenu de cet événement\u00a0!",
     'all-material-returned': "Félicitations\u00a0! Tout le matériel a bien été retourné pour cet événement.",
@@ -209,7 +206,6 @@ export default {
     ),
     'add': "Nouveau matériel",
     'edit': "Modifier le matériel «\u00a0{pageSubTitle}\u00a0»",
-    'edit-title': "Modifier le matériel",
     'help-edit': (
       `Trouvez un nom assez court, et utilisez plutôt la description pour détailler le matériel si besoin.
 
@@ -225,7 +221,6 @@ export default {
   },
 
   'page-materials-view': {
-    'title': "Détails du matériel",
     'infos': {
       'click-to-open-image': "Cliquez pour ouvrir l'image en grand dans un nouvel onglet.",
     },
@@ -248,7 +243,7 @@ export default {
     'title': "Caractéristiques spéciales du matériel",
     'help': (
       `Ici vous pouvez ajouter les champs qui permettent de décrire votre matériel selon vos propres critères.
-      Une fois créée, seul le nom de la caractéristique spéciale pourra modifié.`
+      Une fois créée, une caractéristique spéciale ne pourra plus être modifiée (sauf son nom).`
     ),
     'go-back-to-material': "Retourner au matériel",
     'name': "Nom de la caractéristique",

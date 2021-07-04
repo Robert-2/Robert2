@@ -1,7 +1,7 @@
 import './index.scss';
 import Config from '@/config/globalConfig';
 import formatAmount from '@/utils/formatAmount';
-import getMaterialItemsCount from '@/utils/getMaterialItemsCount';
+import getEventMaterialItemsCount from '@/utils/getEventMaterialItemsCount';
 import getEventOneDayTotal from '@/utils/getEventOneDayTotal';
 import getEventOneDayTotalDiscountable from '@/utils/getEventOneDayTotalDiscountable';
 import getEventGrandTotal from '@/utils/getEventGrandTotal';
@@ -32,7 +32,7 @@ export default {
     },
 
     itemsCount() {
-      return getMaterialItemsCount(this.materials);
+      return getEventMaterialItemsCount(this.materials);
     },
 
     total() {

@@ -10,6 +10,9 @@ module.exports = {
   rules: {
     'no-console': 'off',
     'no-debugger': 'off',
+    'no-underscore-dangle': 'off',
+    'no-param-reassign': 'off',
+    'object-curly-newline': 'off',
     'vue/max-attributes-per-line': 'off',
     'vue/require-default-prop': 'off',
     'vue/require-prop-types': 'off',
