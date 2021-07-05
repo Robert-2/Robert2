@@ -2586,19 +2586,25 @@ return [
     => "Out-of-order quantity",
 
     "is-new"
-    => "has beed added !",
+    => "Added",
 
     "is-lost"
-    => "is lost!",
+    => "Lost",
 
     "is-broken"
-    => "is broken!",
+    => "Broken",
 
     "has-been-found"
-    => "has been found!",
+    => "Retrieved",
 
     "has-been-repaired"
-    => "has been repaired!",
+    => "Repaired",
+
+    'owner'
+    => "Owner:",
+
+    'purchased-on'
+    => "Purchased on",
 
     "unknown-park"
     => "Unknown park",
@@ -2696,10 +2702,10 @@ return [
     "designation"
     => "Designation",
 
-    "replacementValue"
+    "replacement-value"
     => "Repl. Val.",
 
-    "totalReplacementValue"
+    "total-replacement-value"
     => "Total Repl. Val.",
 
     "releaseSheet"
@@ -2779,6 +2785,9 @@ return [
 
     "no"
     => "No",
+
+    'state'
+    => "State",
 
     'unit-state' => [
         'state-of-use' => "State of use",
