@@ -1,0 +1,15 @@
+@import '../../themes/default/index';
+
+.ErrorMessage {
+  text-align: center;
+  color: $text-danger-color;
+  font-weight: 600;
+
+  &__show-details {
+    display: block;
+    padding: 0 20px;
+    font-size: .9rem;
+    font-style: italic;
+    font-weight: 400;
+  }
+}

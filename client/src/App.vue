@@ -4,7 +4,7 @@
       <MainHeader v-if="isLogged" @toggleMenu="toggleSideNav" />
       <div class="main__body">
         <SideNav v-if="isLogged" :isOpen="isOpenedSideNav" />
-        <router-view />
+        <router-view :key="$route.path" />
       </div>
     </div>
   </div>

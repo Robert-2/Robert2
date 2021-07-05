@@ -1,0 +1,97 @@
+@import '../../../../themes/default/index';
+
+.InventoryItemMaterial {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0;
+  border-radius: $input-border-radius;
+  color: $text-base-color;
+  background: rgba(#fff, .05);
+
+  &__reference,
+  &__name,
+  &__awaited-quantity {
+    padding: 0 $content-padding-large-horizontal;
+  }
+
+  &__reference {
+    flex: 0 0 200px;
+  }
+
+  &__name {
+    flex: 1;
+    color: $text-nav-color;
+  }
+
+  &__error {
+    flex: 1;
+    color: $text-danger-color;
+  }
+
+  &__awaited-quantity {
+    display: inline-flex;
+    justify-content: center;
+    flex: 0 0 auto;
+    text-align: right;
+    color: $text-nav-color;
+
+    &__count {
+      color: $text-base-color;
+      font-size: 1.1rem;
+      margin-left: .3rem;
+    }
+  }
+
+  &__actual-quantity,
+  &__quantity-broken {
+    flex: 0 0 auto;
+    text-align: center;
+  }
+
+  &__quantity-broken {
+    margin-left: $content-padding-large-vertical;
+  }
+
+  &--read-only {
+    .InventoryItemMaterial__actual-quantity,
+    .InventoryItemMaterial__quantity-broken {
+      flex: 0 0 95px;
+      font-size: 1.1rem;
+      color: $text-light-color;
+      padding: $content-padding-small-horizontal 0;
+    }
+  }
+
+  &--complete {
+    background: rgba($text-success-color, .25);
+
+    .InventoryItemMaterial__actual-quantity {
+      font-weight: 600;
+      color: $text-base-color;
+    }
+  }
+
+  &--warning {
+    background: rgba($text-warning-color, .25);
+
+    .InventoryItemMaterial__actual-quantity {
+      font-weight: 600;
+      color: $text-warning-color;
+    }
+
+    .InventoryItemMaterial__quantity-broken {
+      font-weight: 600;
+      color: $text-danger-color;
+    }
+  }
+
+  &--error {
+    background: rgba($text-danger-color, .25);
+
+    .InventoryItemMaterial__actual-quantity {
+      font-weight: 600;
+      color: $text-danger-color;
+    }
+  }
+}

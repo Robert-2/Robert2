@@ -4,48 +4,63 @@ const QuantityInput = {
   name: 'QuantityInput',
   props: {
     quantity: Number,
-    limit: Number,
-    allowOverflow: { type: Boolean, default: true },
-    material: Object,
+    limit: [Number, Object],
+  },
+  computed: {
+    min() {
+      if (typeof this.limit !== 'object') {
+        return 0;
+      }
+      return this.limit?.min ?? 0;
+    },
+    max() {
+      if (typeof this.limit !== 'object') {
+        return this.limit;
+      }
+      return this.limit?.max;
+    },
   },
   methods: {
-    setQuantity(event) {
-      let newValue = Number.parseInt(event.target.value, 10);
-      if (!newValue || Number.isNaN(newValue) || newValue <= 0) {
-        newValue = 0;
-      } else if (newValue >= this.limit && !this.allowOverflow) {
-        newValue = this.limit;
+    handleInputChange(event) {
+      let value = Number.parseInt(event.target.value, 10);
+
+      if ((!value && value !== 0) || Number.isNaN(value) || !Number.isFinite(value)) {
+        value = this.min;
       }
 
-      this.$emit('quantityChange', this.material, newValue);
-    },
+      if (value < this.min) {
+        value = this.min;
+      }
 
-    decrement() {
-      if (this.quantity <= 0) {
+      if (this.max != null && value > this.limit) {
+        value = this.max;
+      }
+
+      this.$emit('quantityChange', value);
+    },
+    handleDecrement() {
+      const value = this.quantity - 1;
+      if (value < this.min) {
         return;
       }
-
-      const newValue = this.quantity - 1;
-      this.$emit('quantityChange', this.material, newValue);
+      this.$emit('quantityChange', value);
     },
-
-    increment() {
-      if (this.quantity >= this.limit && !this.allowOverflow) {
+    handleIncrement() {
+      const value = this.quantity + 1;
+      if (this.max != null && value > this.max) {
         return;
       }
-
-      const newValue = this.quantity + 1;
-      this.$emit('quantityChange', this.material, newValue);
+      this.$emit('quantityChange', value);
     },
   },
   render() {
     const {
+      min,
+      max,
       quantity,
-      limit,
-      allowOverflow,
-      decrement,
-      setQuantity,
-      increment,
+      handleDecrement,
+      handleIncrement,
+      handleInputChange,
     } = this;
 
     return (
@@ -54,8 +69,8 @@ const QuantityInput = {
           type="button"
           role="button"
           class="QuantityInput__button"
-          disabled={quantity === 0}
-          onClick={decrement}
+          disabled={quantity <= min}
+          onClick={handleDecrement}
         >
           <i class="fas fa-minus" />
         </button>
@@ -63,10 +78,10 @@ const QuantityInput = {
           type="number"
           class="QuantityInput__input"
           step={1}
-          min={0}
-          max={limit}
+          min={min}
+          max={max}
           value={quantity}
-          onInput={setQuantity}
+          onInput={handleInputChange}
           onFocus={(event) => { event.target.select(); }}
         />
         <button
@@ -74,10 +89,10 @@ const QuantityInput = {
           role="button"
           class={{
             QuantityInput__button: true,
-            info: quantity < limit,
+            info: max == null || quantity < max,
           }}
-          disabled={quantity >= limit && !allowOverflow}
-          onClick={increment}
+          disabled={max != null && quantity >= max}
+          onClick={handleIncrement}
         >
           <i class="fas fa-plus" />
         </button>

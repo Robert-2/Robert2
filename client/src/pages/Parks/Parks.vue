@@ -51,7 +51,7 @@
         <div slot="note" slot-scope="park">
           <pre>{{ park.row.note }}</pre>
         </div>
-        <div slot="actions" slot-scope="park" class="Parks__actions">
+        <template slot="actions" slot-scope="park" class="Parks__actions">
           <a
             v-if="park.row.total_stock_quantity > 0"
             :href="getDownloadListingUrl(park.row.id)"
@@ -68,7 +68,7 @@
             v-slot="{ navigate }"
             custom
           >
-            <button @click="navigate" class="item-actions__button info" >
+            <button @click="navigate" class="item-actions__button info">
               <i class="fas fa-edit" />
             </button>
           </router-link>
@@ -96,7 +96,7 @@
           >
             <i class="fas fa-trash-alt" />
           </button>
-        </div>
+        </template>
       </v-server-table>
     </div>
     <div class="content__footer">

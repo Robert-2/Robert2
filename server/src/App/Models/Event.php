@@ -252,6 +252,17 @@ class Event extends BaseModel
         return $builder;
     }
 
+    public static function getOngoing(): Builder
+    {
+        $now = date('Y-m-d H:i:s');
+
+        return static::orderBy('start_date', 'asc')
+            ->where([
+                ['end_date', '>', $now],
+                ['start_date', '<', $now],
+            ]);
+    }
+
     public static function getMissingMaterials(int $id): ?array
     {
         $event = static::with('Materials')->find($id);
@@ -298,11 +309,11 @@ class Event extends BaseModel
         return $hasNotReturnedMaterials;
     }
 
-    public static function getParks(int $id): ?array
+    public static function getParks(int $id): array
     {
         $event = static::with('Materials')->find($id);
         if (!$event) {
-            return null;
+            return [];
         }
 
         $materialParks = array_map(function ($material) {

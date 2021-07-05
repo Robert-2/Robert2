@@ -445,7 +445,7 @@ final class EventsTest extends ApiTestCase
         $this->client->post('/api/events', $data);
         $this->assertStatusCode(SUCCESS_CREATED);
         $response = $this->_getResponseAsArray();
-        $this->assertEquals(5, $response['id']);
+        $this->assertEquals(7, $response['id']);
         $this->assertEquals("Un nouvel événement", $response['title']);
         $this->assertEmpty($response['beneficiaries']);
         $this->assertEmpty($response['assignees']);
@@ -468,7 +468,7 @@ final class EventsTest extends ApiTestCase
         $this->client->post('/api/events', $dataWithChildren);
         $this->assertStatusCode(SUCCESS_CREATED);
         $response = $this->_getResponseAsArray();
-        $this->assertEquals(6, $response['id']);
+        $this->assertEquals(8, $response['id']);
         $this->assertEquals("Encore un événement", $response['title']);
         $this->assertCount(1, $response['beneficiaries']);
         $this->assertCount(2, $response['assignees']);
@@ -842,7 +842,7 @@ final class EventsTest extends ApiTestCase
         $this->client->post('/api/events/1/duplicate', $data);
         $this->assertStatusCode(SUCCESS_CREATED);
         $response = $this->_getResponseAsArray();
-        $this->assertEquals(5, $response['id']);
+        $this->assertEquals(7, $response['id']);
         $this->assertEquals("Premier événement", $response['title']);
         $this->assertEquals('2021-07-01 00:00:00', $response['start_date']);
         $this->assertEquals('2021-07-03 23:59:59', $response['end_date']);
@@ -868,7 +868,7 @@ final class EventsTest extends ApiTestCase
         $this->client->post('/api/events/3/duplicate', $data);
         $this->assertStatusCode(SUCCESS_CREATED);
         $response = $this->_getResponseAsArray();
-        $this->assertEquals(6, $response['id']);
+        $this->assertEquals(8, $response['id']);
         $this->assertEquals("Avant-premier événement", $response['title']);
         $this->assertEquals('2021-07-04 00:00:00', $response['start_date']);
         $this->assertEquals('2021-07-04 23:59:59', $response['end_date']);
@@ -886,8 +886,8 @@ final class EventsTest extends ApiTestCase
     public function testUpdateMaterialReturn()
     {
         $data = [
-            ['id' => 1, 'out' => 3, 'returned' => 2, 'broken' => 0],
-            ['id' => 2, 'out' => 2, 'returned' => 2, 'broken' => 1],
+            ['id' => 1, 'actual' => 2, 'broken' => 0],
+            ['id' => 2, 'actual' => 2, 'broken' => 1],
         ];
         $this->client->put('/api/events/2/return', $data);
         $this->assertStatusCode(SUCCESS_OK);
@@ -917,16 +917,16 @@ final class EventsTest extends ApiTestCase
     public function testUpdateMaterialReturnBadData()
     {
         $data = [
-            ['id' => 1, 'out' => 3, 'returned' => 2, 'broken' => 3],
-            ['id' => 2, 'out' => 2, 'returned' => 3, 'broken' => 0],
+            ['id' => 1, 'actual' => 2, 'broken' => 3],
+            ['id' => 2, 'actual' => 3, 'broken' => 0],
         ];
         $this->client->put('/api/events/2/return', $data);
         $this->assertStatusCode(ERROR_VALIDATION);
         $this->assertValidationErrorMessage();
         $response = $this->_getResponseAsArray();
         $expected = [
-            [ 'id' => 1, 'message' => "Broken quantity cannot be greater than returned quantity." ],
-            [ 'id' => 2, 'message' => "Returned quantity cannot be greater than quantity out." ],
+            ['id' => 1, 'message' => "La quantité en panne ne peut pas être supérieure à la quantité retournée."],
+            ['id' => 2, 'message' => "La quantité retournée ne peut pas être supérieure à la quantité sortie."],
         ];
         $this->assertEquals($expected, $response['error']['details']);
     }
@@ -934,8 +934,8 @@ final class EventsTest extends ApiTestCase
     public function testUpdateMaterialTerminate()
     {
         $data = [
-            ['id' => 1, 'out' => 3, 'returned' => 3, 'broken' => 0],
-            ['id' => 2, 'out' => 2, 'returned' => 2, 'broken' => 1],
+            ['id' => 1, 'actual' => 3, 'broken' => 0],
+            ['id' => 2, 'actual' => 2, 'broken' => 1],
         ];
         $this->client->put('/api/events/2/terminate', $data);
         $this->assertStatusCode(SUCCESS_OK);

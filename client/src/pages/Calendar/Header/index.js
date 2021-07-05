@@ -1,6 +1,6 @@
 import moment from 'moment';
 import FormField from '@/components/FormField';
-import SwitchToggle from '@/components/SwitchToggle/SwitchToggle.vue';
+import SwitchToggle from '@/components/SwitchToggle';
 import Help from '@/components/Help/Help.vue';
 
 export default {

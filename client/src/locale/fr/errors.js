@@ -6,6 +6,7 @@ export default {
     'api-unreachable': "Désolé, mais l'API de Robert2 est inaccessible... Veuillez vérifier votre accès au réseau.",
     'not-found': "Cet enregistrement n'existe pas.",
     'validation': "Veuillez vérifier les informations du formulaire.",
+    'unknown': "Erreur inconnue.",
     'already-exists': "Cet enregistrement existe déjà.",
     'show-details': "Voir le détail de l'erreur",
     'details-title': "Détails de l'erreur",
@@ -18,6 +19,10 @@ export default {
     'details-message': "Message de l'erreur",
     'details-file': "Fichier\u00a0:",
     'details-stacktrace': "Trace de la pile\u00a0:",
+    'critical': [
+      "Une erreur s'est produite, veuillez actualiser la page.",
+      "Si le problème persiste, veuillez contacter un administrateur.",
+    ].join('\n'),
 
     'file-type-not-allowed': "Le type '{type}' n'est pas pris en charge.",
     'file-size-exceeded': "Fichier trop gros. Maximum {max}.",

@@ -134,12 +134,9 @@ export default {
     'title': "Return of the material of event «\u00a0{pageSubTitle}\u00a0»",
     'help': "",
     'this-event-is-not-past': "This event is not finished, so it is not possible to check its return at the moment.",
-    'warning-terminate': "Beware, once this return inventory terminated, it will no longer be modifiable.",
     'confirm-terminate-title': "Do you really want to terminate this return inventory?",
     'confirm-terminate-text': "Please note that it will no longer be possible to modify it.",
     'confirm-terminate-text-with-broken': "This will update all the «\u00a0out of order\u00a0» quantities for the concerned materials, and it will no longer be possible to modify this inventory.",
-    'terminate-inventory': "Terminate this inventory",
-    'validation-error': "Some quantities are not valid. Please double-check the list.",
     'inventory-done': "Inventory done",
     'some-material-is-missing': "Some materials did not return from this event!",
     'all-material-returned': "Congratulations! All materials were returned for this event.",
@@ -209,13 +206,11 @@ export default {
     ),
     'add': "New material",
     'edit': "Modify material «\u00a0{pageSubTitle}\u00a0»",
-    'edit-title': "Modify material",
     'help-edit': (
       `Give a short name, and use the description field to detail the material if needed.
 
       The material picture must be of type JPG, PNG or WEBP, and cannot exceed 10\u00a0MB.`
     ),
-    'view': "Details of material «\u00a0{pageSubTitle}\u00a0»",
     'confirm-delete': "Move this material in trash bin?",
     'confirm-permanently-delete': "Do you really want to permanently delete this material?",
     'confirm-restore': "Do you really want to restore this material?",
@@ -225,6 +220,7 @@ export default {
   },
 
   'page-materials-view': {
+    'title': "Details of material «\u00a0{pageSubTitle}\u00a0»",
     'infos': {
       'click-to-open-image': "Click to open image in a new tab.",
     },
@@ -247,7 +243,7 @@ export default {
     'title': "Material special attributes",
     'help': (
       `Here you can add fields that allows you to describe your material according to your own criteria.
-      Once created, only the name of a special attribute can be modified.`
+      Once created, a special attribute cannot be modified (except for its name).`
     ),
     'go-back-to-material': "Back to material",
     'name': "Name of the attribute",

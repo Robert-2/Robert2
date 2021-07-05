@@ -100,6 +100,7 @@ export default {
       }
 
       commit('setUser', null);
+      commit('parks/reset', undefined, { root: true });
 
       Cookies.remove(Config.auth.cookie);
     },

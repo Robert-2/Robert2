@@ -46,6 +46,7 @@ export default {
           opening_hours: 'Parks__opening-hours',
           events: 'Parks__events',
           note: 'Parks__note',
+          actions: 'Parks__actions',
         },
         requestFunction: (pagination) => {
           this.error = null;

@@ -35,6 +35,7 @@ const Timeline = {
       itemout: 'item-out',
       rangechanged: 'range-changed',
       doubleClick: 'double-click',
+      click: 'click',
     };
     Object.entries(globalsEvents).forEach(([originalName, name]) => {
       this.timeline.on(originalName, (props) => { this.$emit(name, props); });

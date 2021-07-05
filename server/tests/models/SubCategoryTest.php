@@ -60,10 +60,10 @@ final class SubCategoryTest extends ModelTestCase
                 'name' => 'Behringer X Air XR18',
                 'description' => 'Mélangeur numérique 18 canaux',
                 'reference' => 'XR18',
-                'park_id' => null,
+                'park_id' => 1,
                 'rental_price' => 49.99,
-                'stock_quantity' => null,
-                'out_of_order_quantity' => null,
+                'stock_quantity' => 0,
+                'out_of_order_quantity' => 0,
                 'replacement_price' => 419.0,
                 'tags' => [],
                 'attributes' => [

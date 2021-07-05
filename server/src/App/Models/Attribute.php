@@ -104,7 +104,7 @@ class Attribute extends BaseModel
     // —
     // ——————————————————————————————————————————————————————
 
-    public function edit(?int $id = null, array $data = []): BaseModel
+    public function edit($id = null, array $data = []): BaseModel
     {
         if ($id) {
             $data = ['name' => $data['name']];
@@ -112,7 +112,7 @@ class Attribute extends BaseModel
         return parent::edit($id, $data);
     }
 
-    public function remove(int $id, array $options = []): ?BaseModel
+    public function remove($id, array $options = []): ?BaseModel
     {
         $attribute = static::findOrFail($id);
         if (!$attribute->delete()) {

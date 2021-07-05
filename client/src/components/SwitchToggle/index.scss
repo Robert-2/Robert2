@@ -1,7 +1,9 @@
+@import '../../themes/default/index';
+
 .SwitchToggle {
   $switch-base-size: 1.7rem;
 
-  display: flex;
+  display: inline-flex;
   align-items: center;
 
   &__slide {
@@ -41,6 +43,7 @@
 
     &__locked {
       font-style: italic;
+      margin-left: $content-padding-small-horizontal;
     }
   }
 

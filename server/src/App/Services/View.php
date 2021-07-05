@@ -7,6 +7,7 @@ use Slim\Views\Twig;
 use Twig\TwigFunction;
 use Robert2\API\Config\Config;
 use Twig\Extension\DebugExtension;
+use Twig\Extra\Html\HtmlExtension;
 use Twig\Extra\Intl\IntlExtension;
 use Twig\Extra\String\StringExtension;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -41,6 +42,7 @@ final class View
         // - Extensions
         //
 
+        $this->view->addExtension(new HtmlExtension());
         $this->view->addExtension(new IntlExtension());
         $this->view->addExtension(new StringExtension());
         $this->view->addExtension(new DebugExtension());

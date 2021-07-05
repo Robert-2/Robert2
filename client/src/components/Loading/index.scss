@@ -1,0 +1,51 @@
+.Loading {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.2rem;
+
+  &__spinner {
+    width: 2.5em;
+    height: 2.5em;
+    animation: Loading--rotate 2s linear infinite;
+
+    &__path {
+      stroke: currentColor;
+      stroke-linecap: round;
+      stroke-width: 4;
+      animation: Loading--dash 1.5s ease-in-out infinite;
+    }
+  }
+
+  &__text {
+    margin-top: 10px;
+    font-style: italic;
+    font-weight: 300;
+  }
+}
+
+//
+// - Animation
+//
+
+@keyframes Loading--rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes Loading--dash {
+  0% {
+    stroke-dasharray: 1, 150;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -35;
+  }
+  100% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -124;
+  }
+}

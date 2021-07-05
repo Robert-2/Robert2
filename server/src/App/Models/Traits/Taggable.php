@@ -29,7 +29,11 @@ trait Taggable
 
     public function getAllFilteredOrTagged(array $conditions, array $tags = [], bool $withDeleted = false): Builder
     {
-        $builder = $this->getAllFiltered($conditions, $withDeleted);
+        $otherArgs = array_slice(func_get_args(), 3);
+        $builder = call_user_func_array(
+            [$this, 'getAllFiltered'],
+            array_merge([$conditions, $withDeleted], $otherArgs)
+        );
 
         if (!empty($tags)) {
             $builder = $builder->whereHas('tags', function ($query) use ($tags) {
@@ -46,7 +50,7 @@ trait Taggable
     // —
     // ——————————————————————————————————————————————————————
 
-    public function edit(?int $id = null, array $data = []): BaseModel
+    public function edit($id = null, array $data = []): BaseModel
     {
         $entity = parent::edit($id, $data);
 
@@ -57,7 +61,7 @@ trait Taggable
         return $entity;
     }
 
-    public function setTags(int $id, ?array $tagNames): array
+    public function setTags($id, ?array $tagNames): array
     {
         $entity = static::findOrFail($id);
 
@@ -83,7 +87,7 @@ trait Taggable
         return $entity->tags;
     }
 
-    public function addTag(int $id, string $tagName): array
+    public function addTag($id, string $tagName): array
     {
         $entity = static::findOrFail($id);
 

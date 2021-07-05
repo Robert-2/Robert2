@@ -33,7 +33,7 @@ final class ParksTest extends ApiTestCase
                     'country_id' => 1,
                     'opening_hours' => "Du lundi au vendredi, de 09:00 à 19:00.",
                     'note' => null,
-                    'total_items' => 5,
+                    'total_items' => 7,
                     'total_amount' => 101223.80,
                     'total_stock_quantity' => 83,
                     'created_at' => null,
@@ -66,6 +66,16 @@ final class ParksTest extends ApiTestCase
         $this->assertResponsePaginatedData(0, '/api/parks', 'deleted=1');
     }
 
+    public function testGetParksList()
+    {
+        $this->client->get('/api/parks/list');
+        $this->assertStatusCode(SUCCESS_OK);
+        $this->assertResponseData([
+            ['id' => 1, 'name' => 'default'],
+            ['id' => 2, 'name' => 'spare'],
+        ]);
+    }
+
     public function testGetParkNotFound()
     {
         $this->client->get('/api/parks/999');
@@ -87,12 +97,13 @@ final class ParksTest extends ApiTestCase
             'country_id' => 1,
             'opening_hours' => "Du lundi au vendredi, de 09:00 à 19:00.",
             'note' => null,
-            'total_items' => 5,
+            'total_items' => 7,
             'total_amount' => 101223.80,
             'total_stock_quantity' => 83,
             'created_at' => null,
             'updated_at' => null,
             'deleted_at' => null,
+            'has_ongoing_event' => false,
         ]);
     }
 }

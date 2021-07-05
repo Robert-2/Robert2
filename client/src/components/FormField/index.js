@@ -2,7 +2,7 @@ import './index.scss';
 import Datepicker from 'vuejs-datepicker';
 import moment from 'moment';
 import * as lang from 'vuejs-datepicker/src/locale';
-import SwitchToggle from '@/components/SwitchToggle/SwitchToggle.vue';
+import SwitchToggle from '@/components/SwitchToggle';
 
 const ALLOWED_TYPES = [
   'text',
@@ -173,7 +173,7 @@ export default {
         {type === 'switch' && (
           <div class="FormField__switch">
             <SwitchToggle
-              value={value}
+              value={value ?? false}
               locked={disabled}
               lockedReason={disabledReason}
               onInput={handleSwitchChange}

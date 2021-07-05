@@ -25,12 +25,12 @@
       </div>
       <template v-if="!isLoading && isPast">
         <MaterialsList
-          :listData="listData"
+          :materials="this.event.materials"
+          :displayGroup="this.displayGroup"
           :quantities="quantities"
           :errors="validationErrors"
           :isLocked="isDone"
-          @setReturned="setReturned"
-          @setBroken="setBroken"
+          @change="handleChange"
         />
         <div class="EventReturn__footer">
           <div v-if="isDone" class="EventReturn__done">
@@ -59,13 +59,13 @@
               class="EventReturn__action info"
               @click="terminate"
               :disabled="isSaving || isTerminating"
-              :title="$t('page-event-return.warning-terminate')"
+              :title="$t('warning-terminate-inventory')"
             >
               <span v-if="isTerminating">
                 <i class="fas fa-circle-notch fa-spin" /> {{ $t('saving') }}
               </span>
               <span v-else>
-                <i class="fas fa-check" /> {{ $t('page-event-return.terminate-inventory') }}
+                <i class="fas fa-check" /> {{ $t('terminate-inventory') }}
               </span>
             </button>
           </template>
