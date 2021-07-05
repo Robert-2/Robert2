@@ -211,7 +211,6 @@ export default {
 
       La photo du matériel doit être au format JPG, PNG ou WEBP, et ne doit pas dépasser 10\u00a0Mo.`
     ),
-    'view': "Détails du matériel «\u00a0{pageSubTitle}\u00a0»",
     'confirm-delete': "Mettre ce matériel à la corbeille\u00a0?",
     'confirm-permanently-delete': "Voulez-vous vraiment supprimer définitivement ce matériel\u00a0?",
     'confirm-restore': "Voulez-vous vraiment restaurer ce matériel\u00a0?",
@@ -221,6 +220,7 @@ export default {
   },
 
   'page-materials-view': {
+    'title': "Détails du matériel «\u00a0{pageSubTitle}\u00a0»",
     'infos': {
       'click-to-open-image': "Cliquez pour ouvrir l'image en grand dans un nouvel onglet.",
     },

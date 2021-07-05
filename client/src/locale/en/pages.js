@@ -211,7 +211,6 @@ export default {
 
       The material picture must be of type JPG, PNG or WEBP, and cannot exceed 10\u00a0MB.`
     ),
-    'view': "Details of material «\u00a0{pageSubTitle}\u00a0»",
     'confirm-delete': "Move this material in trash bin?",
     'confirm-permanently-delete': "Do you really want to permanently delete this material?",
     'confirm-restore': "Do you really want to restore this material?",
@@ -221,6 +220,7 @@ export default {
   },
 
   'page-materials-view': {
+    'title': "Details of material «\u00a0{pageSubTitle}\u00a0»",
     'infos': {
       'click-to-open-image': "Click to open image in a new tab.",
     },

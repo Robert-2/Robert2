@@ -8,6 +8,9 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 
 - Ajoute la possibilité de vérifier que tout le matériel est bien retourné à la fin d'un événement (#4).
 - Simplifie la signification des couleurs des événements dans le calendrier.
+- Désactive le cache des routes d'API pour l'environnement de développement.
+- Désactive quelques règles ESlint pour faciliter le développement.
+- Améliore et corrige le système d'affichage du titre des pages.
 - Utilise des icônes cohérents pour le statut des événements dans le calendrier et la fenêtre d'événement.
 - Ajoute une petite légende sous le calendrier pour expliquer les couleurs et icônes des événements (#155).
 - Affiche les caractéristiques spéciales du matériel dans les fiches de sortie (#147).

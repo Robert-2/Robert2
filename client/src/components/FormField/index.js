@@ -173,7 +173,7 @@ export default {
         {type === 'switch' && (
           <div class="FormField__switch">
             <SwitchToggle
-              value={value}
+              value={value ?? false}
               locked={disabled}
               lockedReason={disabledReason}
               onInput={handleSwitchChange}

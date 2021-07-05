@@ -241,6 +241,10 @@ export default {
   'return-scheduled-on': "Return scheduled on",
   'back-to-calendar': "Back to calendar",
 
+  'terminate-inventory': "Terminate inventory",
+  'warning-terminate-inventory': "Beware, once this inventory terminated, it will no longer be modifiable.",
+  'inventory-validation-error': "Some quantities are not valid. Please double-check the list.",
+
   'event': "Event",
   'user': "User",
   'beneficiary': "Beneficiary",
