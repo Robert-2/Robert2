@@ -1,9 +1,11 @@
 {% extends "pdf/base.twig" %}
 
 {% block style %}
+.listing-table > thead > tr > th {
+    font-size: 7.5pt;
+}
 .listing-table > tbody > tr > td {
-    height: 6mm;
-    font-size: 8pt;
+    height: 5mm;
 }
 
 .LineInventory--with-broken {
@@ -14,6 +16,15 @@
 }
 .LineInventory__totals {
     background-color: #eee;
+}
+
+.listing-table > tbody > tr.LineInventory__unit > td:first-child {
+    padding-left: 4mm;
+    border-left: 1.5mm solid #ccc;
+}
+
+.listing-table > tbody > tr.LineInventory__unit > td:last-child {
+    border-right: 1.5mm solid #ccc;
 }
 
 .LineInventory--with-broken > .LineInventory__broken-quantity,
@@ -70,14 +81,16 @@
 <table class="listing-table">
     <thead>
         <tr>
-            <th style="width: 30mm;">{{ translate('reference') }}</th>
+            <th style="width: 25mm;">{{ translate('reference') }}</th>
             <th>
                 {{ translate('designation') }}
             </th>
-            <th style="width: 20mm;">{{ translate('previous-quantity') }}</th>
-            <th style="width: 7mm;"> > </th>
-            <th style="width: 20mm;">{{ translate('current-quantity') }}</th>
-            <th style="width: 20mm;">{{ translate('out-of-order-quantity') }}</th>
+            <th style="width: 16mm;">{{ translate('state') }} / {{ translate('previous-quantity') }}</th>
+            <th style="width: 12mm;"> > </th>
+            <th style="width: 16mm;">{{ translate('state') }} / {{ translate('current-quantity') }}</th>
+            <th style="width: 14mm;">{{ translate('out-of-order-quantity') }}</th>
+            <th style="width: 16mm;">{{ translate('replacement-value') }}</th>
+            <th style="width: 16mm;">{{ translate('total-replacement-value') }}</th>
         </tr>
     </thead>
     <tbody>
@@ -101,6 +114,9 @@
             <td class="center strong">{{ totals['current'] }}</td>
             <td class="{{ html_classes('center', { 'LineInventory__totals__broken': totals['broken'] > 0 }) }}">
                 {{ totals['broken'] }}
+            </td>
+            <td class="right light" colspan="2">
+                {{ totals['replacementValue']|format_currency(currency, formatCurrencyOptions, locale) }}
             </td>
         </tr>
     </tbody>

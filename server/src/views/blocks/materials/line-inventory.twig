@@ -3,39 +3,7 @@
     'LineInventory--with-broken' : material['hasBroken']
 }) }}">
     <td>{{ material['reference'] }}</td>
-    <td>
-        {{ material['name'] }}
-        {% if material['is_unitary'] and material['units'] is not empty %}
-        <ul style="margin: 1mm 0 0;">
-        {% for unit in material['units'] %}
-            <li class="{{ html_classes('LineInventory__unit', {
-                'LineInventory__unit--broken': unit['is_broken_current'],
-                'LineInventory__unit--lost': unit['is_lost_current'],
-                'LineInventory__unit--with-success': (
-                    unit['is_new']
-                    or (unit['is_lost_previous'] and not unit['is_lost_current'])
-                    or (unit['is_broken_previous'] and not unit['is_broken_current'])
-                )
-            }) }}">
-                    {{ unit['reference'] }}
-                {% if unit['is_new'] %}
-                    -> {{ translate('is-new') }}
-                {% endif %}
-                {% if unit['is_lost_current'] %}
-                    -> {{ translate('is-lost') }}
-                {% elseif unit['is_lost_previous'] %}
-                    -> {{ translate('has-been-found') }}
-                {% endif %}
-                {% if unit['is_broken_current'] %}
-                    -> {{ translate('is-broken') }}
-                {% elseif unit['is_broken_previous'] %}
-                    -> {{ translate('has-been-repaired') }}
-                {% endif %}
-            </li>
-        {% endfor %}
-        </ul>
-        {% endif %}
-    </td>
+    <td>{{ material['name'] }}</td>
     <td class="center lighter">
         {{ material['stock_quantity_previous'] }}
     </td>
@@ -56,4 +24,63 @@
     <td class="LineInventory__broken-quantity center lightest">
         {{ material['out_of_order_quantity_current'] ?: 0 }}
     </td>
+    <td class="center lighter">
+        {{ material['replacementPrice']|format_currency(currency, formatCurrencyOptions, locale) }}
+    </td>
+    <td class="center lighter">
+        {{ material['totalReplacementPrice']|format_currency(currency, formatCurrencyOptions, locale) }}
+    </td>
 </tr>
+
+{% if material['is_unitary'] and material['units'] is not empty %}
+{% for unit in material['units'] %}
+    <tr class="{{ html_classes('LineInventory__unit', {
+        'LineInventory__unit--broken': unit['is_broken_current'],
+        'LineInventory__unit--lost': unit['is_lost_current'],
+        'LineInventory__unit--with-success': (
+            unit['is_new']
+            or (unit['is_lost_previous'] and not unit['is_lost_current'])
+            or (unit['is_broken_previous'] and not unit['is_broken_current'])
+        )
+    }) }}">
+        <td>-> {{ unit['reference'] }}</td>
+        <td>
+            {% if unit['owner'] %}
+                {{ translate('owner') }} {{ unit['owner'] }}
+            {% endif %}
+            {% if unit['purchaseDate'] %}
+                <br />
+                {{ translate('purchased-on') }} {{ unit['purchaseDate']|format_date('short', locale=locale) }}
+            {% endif %}
+        </td>
+        <td class="center lighter">{{ translate("unit-state.#{unit['state_previous']}") }}</td>
+        <td class="center">
+            {% if unit['is_new'] %}
+                {{ translate('is-new') }}
+            {% endif %}
+            {% if unit['is_lost_current'] %}
+                {{ translate('is-lost') }}
+            {% elseif unit['is_lost_previous'] %}
+                {{ translate('has-been-found') }}
+            {% endif %}
+            {% if unit['is_broken_current'] %}
+                {{ translate('is-broken') }}
+            {% elseif unit['is_broken_previous'] %}
+                {{ translate('has-been-repaired') }}
+            {% endif %}
+        </td>
+        <td class="center">
+            {% if not unit['is_lost_current'] %}
+                {{ translate("unit-state.#{unit['state_current']}") }}
+            {% endif %}
+        </td>
+        <td class="LineInventory__unit--broken center lightest">
+            {% if unit['is_broken_current'] %}
+                1
+            {% endif %}
+        </td>
+        <td></td>
+        <td></td>
+    </tr>
+{% endfor %}
+{% endif %}

@@ -48,6 +48,7 @@ export default {
     };
   },
   mounted() {
+    this.$store.commit('setPageSubTitle', this.material.name);
     this.$store.dispatch('parks/fetch');
     this.$store.dispatch('unitStates/fetch');
   },

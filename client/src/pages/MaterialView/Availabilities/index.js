@@ -19,6 +19,7 @@ export default {
   },
   props: {
     units: Array,
+    materialName: String,
   },
   data() {
     const start = moment().subtract(7, 'days').startOf('day');
@@ -44,6 +45,7 @@ export default {
     };
   },
   mounted() {
+    this.$store.commit('setPageSubTitle', this.materialName);
     this.getMaterialEventsData();
   },
   methods: {

@@ -543,16 +543,30 @@ class Inventory extends BaseModel
                     return $unit['is_lost_previous'] && !$unit['is_lost_current'];
                 }));
                 $material['stock_quantity_previous'] = count($material['units']) - $newUnitsCount - $foundUnitsCount;
+
+                foreach ($material['units'] as &$unit) {
+                    $unitExtraInfos = MaterialUnit::find($unit['material_unit_id']);
+                    $unit = array_merge($unit, [
+                        'owner' => $unitExtraInfos->owner['full_name'],
+                        'purchaseDate' => $unitExtraInfos->purchase_date,
+                    ]);
+                }
             }
 
             $countDifference = $material['stock_quantity_current'] - $material['stock_quantity_previous'];
+
+            $materialExtraInfos = Material::find($material['material_id']);
+            $replacementValue = $materialExtraInfos->replacement_price * $material['stock_quantity_current'];
 
             $totals['previous'] += $material['stock_quantity_previous'];
             $totals['difference'] += $countDifference;
             $totals['current'] += $material['stock_quantity_current'];
             $totals['broken'] += $material['out_of_order_quantity_current'];
+            $totals['replacementValue'] += $replacementValue;
 
             $material = array_merge($material, [
+                'replacementPrice' => $materialExtraInfos->replacement_price,
+                'totalReplacementPrice' => $replacementValue,
                 'hasMissing' => (
                     $material['stock_quantity_current'] < $material['stock_quantity_previous'] ||
                     $hasMissingUnits

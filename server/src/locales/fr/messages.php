@@ -2588,19 +2588,25 @@ return [
     => "Quantité en panne",
 
     "is-new"
-    => "a été ajouté !",
+    => "Ajouté",
 
     "is-lost"
-    => "est perdu !",
+    => "Perdu",
 
     "is-broken"
-    => "est en panne !",
+    => "En panne",
 
     "has-been-found"
-    => "a été retrouvé !",
+    => "Retrouvé",
 
     "has-been-repaired"
-    => "a été réparé !",
+    => "Réparé",
+
+    'owner'
+    => "Propriétaire :",
+
+    'purchased-on'
+    => "Acheté le",
 
     "unknown-park"
     => "Parc inconnu",
@@ -2698,10 +2704,10 @@ return [
     "designation"
     => "Désignation",
 
-    "replacementValue"
+    "replacement-value"
     => "Val. Remp.",
 
-    "totalReplacementValue"
+    "total-replacement-value"
     => "Val. Remp. Totale",
 
     "releaseSheet"
@@ -2781,6 +2787,9 @@ return [
 
     "no"
     => "Non",
+
+    'state'
+    => "État",
 
     'unit-state' => [
         'state-of-use' => "État d'usage",
