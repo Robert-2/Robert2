@@ -45,6 +45,10 @@ export default {
       return this.event.materials?.length === 0;
     },
 
+    isEndToday() {
+      return this.event.endDate.isSame(new Date(), 'day');
+    },
+
     eventSummaryPdfUrl() {
       const { baseUrl } = Config;
       const { id } = this.event || { id: null };
@@ -145,6 +149,7 @@ export default {
       isConfirmable,
       isPrintable,
       isRemovable,
+      isEndToday,
       eventSummaryPdfUrl,
       isArchiving,
       isConfirming,
@@ -187,7 +192,7 @@ export default {
             )}
           </router-link>
         )}
-        {isPast && !isArchived && (
+        {(isPast || isEndToday) && !isArchived && (
           <router-link to={`/event-return/${id}`} custom>
             {({ navigate }) => (
               <button class="info" onClick={navigate}>

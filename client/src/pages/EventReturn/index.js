@@ -28,7 +28,7 @@ const EventReturnPage = {
   },
   computed: {
     isPast() {
-      return this.endDate ? this.endDate.isBefore(new Date()) : false;
+      return this.endDate ? this.endDate.isSameOrBefore(new Date(), 'day') : false;
     },
 
     isDone() {

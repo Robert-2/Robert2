@@ -256,7 +256,7 @@ const router = new Router({
       component: MaterialView,
       meta: {
         resource: 'materials',
-        title: 'page-materials.view',
+        title: 'page-materials-view.title',
         requiresAuth: true,
         requiresGroups: ['admin', 'member'],
       },
@@ -433,7 +433,7 @@ router.beforeEach((to, from, next) => {
   const { title, requiresGroups } = to.matched[0].meta;
 
   if (title) {
-    const translatedName = Vue.i18n.translate(title);
+    const translatedName = Vue.i18n.translate(title, { pageSubTitle: '' });
     document.title = `${translatedName} − ${APP_NAME}`;
   } else {
     document.title = APP_NAME;

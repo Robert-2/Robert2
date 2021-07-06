@@ -57,7 +57,7 @@
           <tab title-slot="materials" :disabled="!hasMaterials">
             <Help :message="{ type: 'success', text: successMessage }" :error="error" />
             <ReturnInventorySummary
-              v-if="event.isPast"
+              v-if="event.is_return_inventory_done"
               :eventId="event.id"
               :isDone="event.is_return_inventory_done"
               :materials="event.materials"
@@ -138,7 +138,7 @@
           <template slot="materials">
             <i class="fas fa-box" /> {{ $t('material') }}
             <i
-              v-if="event.hasMissingMaterials || event.hasNotReturnedMaterials"
+              v-if="hasMaterialsProblems"
               class="fas fa-exclamation-triangle"
             />
           </template>
