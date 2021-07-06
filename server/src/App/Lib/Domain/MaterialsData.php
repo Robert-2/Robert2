@@ -38,6 +38,54 @@ class MaterialsData
     // -
     // ------------------------------------------------------
 
+    public function getByCategories(bool $withHidden = false): array
+    {
+        $categoriesMaterials = [];
+        foreach ($this->materials as $material) {
+            $isHidden = $material['is_hidden_on_bill'];
+            $price = $material['rental_price'];
+            if ($isHidden && $price === 0.0 && !$withHidden) {
+                continue;
+            }
+
+            $categoryId = $material['category_id'] ?: 0;
+
+            if (!isset($categoriesMaterials[$categoryId])) {
+                $categoriesMaterials[$categoryId] = [
+                    'id' => $categoryId ?: null,
+                    'name' => $this->getCategoryName($categoryId),
+                    'materials' => [],
+                ];
+            }
+
+            $reference = $material['reference'];
+            $stockQuantity = $material['stock_quantity'];
+            $quantity = array_key_exists('pivot', $material) ? $material['pivot']['quantity'] : 0;
+            $replacementPrice = $material['replacement_price'];
+
+            $withPark = count($this->parks) > 1 && !empty($material['park_id']);
+
+            $categoriesMaterials[$categoryId]['materials'][$reference] = [
+                'reference' => $reference,
+                'name' => $material['name'],
+                'stockQuantity' => $stockQuantity,
+                'attributes' => $material['attributes'],
+                'park' => $withPark ? $this->getParkName($material['park_id']) : null,
+                'quantity' => $quantity,
+                'rentalPrice' => $price,
+                'replacementPrice' => $replacementPrice,
+                'total' => $price * $quantity,
+                'totalReplacementPrice' => $replacementPrice * $quantity,
+            ];
+        }
+
+        foreach ($categoriesMaterials as $categoryId => $content) {
+            ksort($categoriesMaterials[$categoryId]['materials'], SORT_NATURAL | SORT_FLAG_CASE);
+        }
+
+        return array_reverse(array_values($categoriesMaterials));
+    }
+
     public function getBySubCategories(bool $withHidden = false): array
     {
         $subCategoriesMaterials = [];
@@ -174,6 +222,21 @@ class MaterialsData
     // -    Internal Methods
     // -
     // ------------------------------------------------------
+
+    protected function getCategoryName(int $categoryId): ?string
+    {
+        if (empty($this->categories)) {
+            throw new \InvalidArgumentException("Missing categories data.");
+        }
+
+        foreach ($this->categories as $category) {
+            if ($categoryId === $category['id']) {
+                return $category['name'];
+            }
+        }
+
+        return null;
+    }
 
     protected function getSubCategoryName(int $subCategoryId): ?string
     {

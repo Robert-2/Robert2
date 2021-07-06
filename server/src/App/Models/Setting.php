@@ -49,6 +49,7 @@ class Setting extends BaseModel
     {
         $valuesValidation = [
             'event_summary_material_display_mode' => V::notEmpty()->oneOf(
+                V::equals('categories'),
                 V::equals('sub-categories'),
                 V::equals('parks'),
                 V::equals('flat')

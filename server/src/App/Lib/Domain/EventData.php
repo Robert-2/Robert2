@@ -147,6 +147,14 @@ class EventData
         return array_values($categoriesTotals);
     }
 
+    public function getMaterialByCategories(bool $withHidden = false): array
+    {
+        $materialsData = new MaterialsData($this->materials);
+        $materialsData->setParks($this->parks)->setCategories($this->categories);
+
+        return $materialsData->getByCategories($withHidden);
+    }
+
     public function getMaterialBySubCategories(bool $withHidden = false): array
     {
         $materialsData = new MaterialsData($this->materials);

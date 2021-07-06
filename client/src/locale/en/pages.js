@@ -360,6 +360,7 @@ export default {
       'help': "Here you can customize the PDF event summaries",
       'material-list': "Materials list",
       'display-mode': "Display mode",
+      'list-display-mode-categories': "Sorted by categories",
       'list-display-mode-sub-categories': "Sorted by sub-categories",
       'list-display-mode-parks': "Sorted by parks",
       'list-display-mode-flat': "Not sorted",
