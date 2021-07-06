@@ -31,7 +31,7 @@ export default {
 
   'page-user-settings': {
     'title': "Your settings",
-    'help': "The « duration of a session » is the time allowed before you're automatically logged out.",
+    'help': "The \"duration of a session\" is the time allowed before you're automatically logged out.",
     'auth-token-validity-duration': "Max. duration of a session",
     'interface': "Interface",
     'language': "Language",
@@ -92,7 +92,7 @@ export default {
     'help-edit': "",
     'back-to-calendar': "Back to calendar",
     'add': "New event",
-    'edit': "Modify event «\u00a0{pageSubTitle}\u00a0»",
+    'edit': "Modify event \"{pageSubTitle}\"",
     'edit-event': "Modify event",
     'save-and-back-to-calendar': "Save and back to calendar",
     'save-and-continue': "Save and continue",
@@ -131,12 +131,12 @@ export default {
   },
 
   'page-event-return': {
-    'title': "Return of the material of event «\u00a0{pageSubTitle}\u00a0»",
+    'title': "Return of the material of event \"{pageSubTitle}\"",
     'help': "",
     'this-event-is-not-past': "This event is not finished, so it is not possible to check its return at the moment.",
     'confirm-terminate-title': "Do you really want to terminate this return inventory?",
     'confirm-terminate-text': "Please note that it will no longer be possible to modify it.",
-    'confirm-terminate-text-with-broken': "This will update all the «\u00a0out of order\u00a0» quantities for the concerned materials, and it will no longer be possible to modify this inventory.",
+    'confirm-terminate-text-with-broken': "This will update all the \"out of order\" quantities for the concerned materials, and it will no longer be possible to modify this inventory.",
     'inventory-done': "Inventory done",
     'some-material-is-missing': "Some materials did not return from this event!",
     'all-material-returned': "Congratulations! All materials were returned for this event.",
@@ -147,13 +147,13 @@ export default {
     'title': "Users",
     'help': "You can send an email to an user by clicking on his/her address.",
     'help-edit': (
-      `- Group «\u00a0Administrator\u00a0» group gives all access rights to user.
-      - Group «\u00a0Member\u00a0» allow user to use most parts of Robert application.
-      - Group «\u00a0Visitor\u00a0» group gives a limited access to some data.`
+      `- Group "Administrator" group gives all access rights to user.
+      - Group "Member" allow user to use most parts of Robert application.
+      - Group "Visitor" group gives a limited access to some data.`
     ),
     'action-add': "New user",
     'add': "New user",
-    'edit': "Modify user «\u00a0{pageSubTitle}\u00a0»",
+    'edit': "Modify user \"{pageSubTitle}\"",
     'edit-title': "Modify user",
     'confirm-delete': "Move this user in trash bin?",
     'confirm-permanently-delete': "Do you really want to permanently delete this user?",
@@ -167,14 +167,14 @@ export default {
     'help': "You can send an email to a beneficiary by clicking on his/her address.",
     'action-add': "New beneficiary",
     'add': "New beneficiary",
-    'edit': "Modify beneficiary «\u00a0{pageSubTitle}\u00a0»",
+    'edit': "Modify beneficiary \"{pageSubTitle}\"",
     'edit-title': "Modify beneficiary",
     'beneficiary-type': "Beneficiary type",
     'person': "Natural person (individual)",
     'company': "Legal entity (company)",
     'help-edit': (
       `Only first name and last name are mandatory.
-      The «\u00a0reference\u00a0» is a customer or member number for your internal management, which will appear on the output sheets, estimates and bills. It must be unique.`
+      The "reference" is a customer or member number for your internal management, which will appear on the output sheets, estimates and bills. It must be unique.`
     ),
     'confirm-delete': "Move this beneficiary in trash bin?",
     'confirm-permanently-delete': "Do you really want to permanently delete this beneficiary?",
@@ -185,7 +185,7 @@ export default {
   'page-companies': {
     'title': "Companies",
     'add': "New company",
-    'edit': "Modify company «\u00a0{pageSubTitle}\u00a0»",
+    'edit': "Modify company \"{pageSubTitle}\"",
     'edit-title': "Modify company",
     'edit-btn': "Modify company",
     'create-new': "Add a new company",
@@ -205,7 +205,7 @@ export default {
       on {date}`
     ),
     'add': "New material",
-    'edit': "Modify material «\u00a0{pageSubTitle}\u00a0»",
+    'edit': "Modify material \"{pageSubTitle}\"",
     'help-edit': (
       `Give a short name, and use the description field to detail the material if needed.
 
@@ -220,7 +220,7 @@ export default {
   },
 
   'page-materials-view': {
-    'title': "Details of material «\u00a0{pageSubTitle}\u00a0»",
+    'title': "Details of material \"{pageSubTitle}\"",
     'infos': {
       'click-to-open-image': "Click to open image in a new tab.",
     },
@@ -292,7 +292,7 @@ export default {
 
   'page-subcategories': {
     'add': "Do you really want to delete this category?",
-    'prompt-add': "New sub-category of «\u00a0{categoryName}\u00a0»",
+    'prompt-add': "New sub-category of \"{categoryName}\"",
     'sub-category-name': "Sub-category name",
     'create': "Create sub-category",
     'prompt-modify': "Modify sub-category",
@@ -309,7 +309,7 @@ export default {
     'help': "You can send an email to a technician by clicking on his/her address.",
     'action-add': "New technician",
     'add': "New technician",
-    'edit': "Modify technician «\u00a0{pageSubTitle}\u00a0»",
+    'edit': "Modify technician \"{pageSubTitle}\"",
     'edit-title': "Modify technician",
     'help-edit': "Only first name and last name are mandatory.",
     'confirm-delete': "Move this technician in trash bin?",
@@ -323,7 +323,7 @@ export default {
     'help': "You can click on the number of items in the park to display the list.",
     'action-add': "New materials park",
     'add': "New materials park",
-    'edit': "Modify park «\u00a0{pageSubTitle}\u00a0»",
+    'edit': "Modify park \"{pageSubTitle}\"",
     'edit-title': "Modify park",
     'help-edit': "Only the name of the park is mandatory.",
     'confirm-delete': "Move this park in trash bin? This won't delete materials in this park.",

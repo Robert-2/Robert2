@@ -6,7 +6,7 @@ export default {
   name: 'MainHeader',
   computed: {
     pageTitle() {
-      const { pageTitle, pageSubTitle, pageRawTitle } = this.$store.state;
+      const { pageTitle, pageSubTitle = '', pageRawTitle } = this.$store.state;
 
       if (pageRawTitle !== null) {
         return pageRawTitle;

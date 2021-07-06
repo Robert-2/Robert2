@@ -381,7 +381,7 @@ router.beforeEach((to, from, next) => {
   const { title, requiresGroups } = to.matched[0].meta;
 
   if (title) {
-    const translatedName = Vue.i18n.translate(title);
+    const translatedName = Vue.i18n.translate(title, { pageSubTitle: '' });
     document.title = `${translatedName} − ${APP_NAME}`;
   } else {
     document.title = APP_NAME;
