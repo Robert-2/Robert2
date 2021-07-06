@@ -113,7 +113,7 @@
         </tr>
     </thead>
     <tbody>
-        {% if materialDisplayMode == 'sub-categories' %}
+        {% if materialDisplayMode == 'categories' or materialDisplayMode == 'sub-categories' %}
         {% for subCategory in materialList %}
             <tr>
                 <td class="section-title" colspan="5">

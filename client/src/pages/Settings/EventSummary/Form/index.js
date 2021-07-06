@@ -1,7 +1,7 @@
 import './index.scss';
 import FormField from '@/components/FormField';
 
-const LIST_MODES = ['sub-categories', 'parks', 'flat'];
+const LIST_MODES = ['categories', 'sub-categories', 'parks', 'flat'];
 
 export default {
   name: 'EventSummarySettingsForm',

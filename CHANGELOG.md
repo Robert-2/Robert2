@@ -19,7 +19,9 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Accepte le "_" pour le champs "référence" et "n° de série" des unités de matériel (Premium #47).
 - Ajoute la création des inventaires des parcs de matériel (Premium #32).
 - Ajoute l'impression des inventaires et la page de listing des inventaires d'un parc (Premium #49).
-- Ajoute la gestion des paramètres des fiches de sortie, en ajoutant la possibilité de mettre un texte personnalisé en bas de page des fiches de sortie (#150).
+- Ajoute la gestion des paramètres des fiches de sortie (#150), permettant de :
+  - Choisir le type de classement pour la liste du matériel (par catégories, sous-catégories, par parc ou bien non classé).
+  - Mettre un texte personnalisé en bas de page des fiches de sortie.
 - Permet la suppression des utilisateurs qui ont déjà créé des événements (#159).
 - À la création d'un matériel, le champ "parc" est pré-rempli uniquement si il n'existe qu'un seul parc dans la liste (#162).
 - Met en valeur les champs qui ont des erreurs de validation avec une bordure rouge (#161).

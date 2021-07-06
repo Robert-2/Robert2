@@ -381,6 +381,7 @@ export default {
       'help': "Ici, vous pouvez personnaliser les fiches de sortie des événements.",
       'material-list': "Liste du matériel",
       'display-mode': "Mode de présentation",
+      'list-display-mode-categories': "Triée par catégories",
       'list-display-mode-sub-categories': "Triée par sous-catégories",
       'list-display-mode-parks': "Triée par parcs",
       'list-display-mode-flat': "Liste non-triée",

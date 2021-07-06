@@ -40,6 +40,7 @@ final class SettingsTest extends ApiTestCase
         $this->assertErrorDetails([
             'event_summary_material_display_mode' => [
                 'At least one of these rules must pass for value',
+                'value must be equals "categories"',
                 'value must be equals "sub-categories"',
                 'value must be equals "parks"',
                 'value must be equals "flat"',

@@ -361,7 +361,9 @@ class Event extends BaseModel
         $EventData->setCategories($categories)->setParks($parks);
 
         $materialDisplayMode = Setting::getWithKey('event_summary_material_display_mode');
-        if ($materialDisplayMode === 'sub-categories') {
+        if ($materialDisplayMode === 'categories') {
+            $materialList = $EventData->getMaterialByCategories(true);
+        } elseif ($materialDisplayMode === 'sub-categories') {
             $materialList = $EventData->getMaterialBySubCategories(true);
         } elseif ($materialDisplayMode === 'parks' && count($parks) > 1) {
             $materialList = $EventData->getMaterialByParks(true);
