@@ -57,6 +57,14 @@ export default {
     hasMaterials() {
       return this.event?.materials?.length > 0;
     },
+
+    hasMaterialsProblems() {
+      return (
+        (this.event?.hasMissingMaterials && !this.event?.is_return_inventory_done)
+        || this.event?.hasNotReturnedMaterials
+      );
+    },
+
     userCanEditBill() {
       return this.$store.getters['auth/is'](['admin', 'member']);
     },
