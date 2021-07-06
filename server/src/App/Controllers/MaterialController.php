@@ -399,7 +399,7 @@ class MaterialController extends BaseController
         $onlyParkId = $request->getQueryParam('park', null);
 
         $categories = Category::get()->toArray();
-        $parks = Park::with('materials')->get()->toArray();
+        $parks = Park::with('materials')->get()->each->setAppends([])->toArray();
 
         $parksMaterials = [];
         foreach ($parks as $park) {
@@ -429,7 +429,7 @@ class MaterialController extends BaseController
         $parkOnlyName = null;
         if ($onlyParkId) {
             $parkKey = array_search($onlyParkId, array_column($parks, 'id'));
-            if ($parkKey) {
+            if ($parkKey !== false) {
                 $parkOnlyName = $parks[$parkKey]['name'];
             }
         }

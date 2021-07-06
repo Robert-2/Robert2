@@ -1,5 +1,6 @@
 import Help from '@/components/Help/Help.vue';
 import FormField from '@/components/FormField';
+import formatAmount from '@/utils/formatAmount';
 
 export default {
   name: 'Material',
@@ -16,6 +17,7 @@ export default {
         postal_code: '',
         locality: '',
         country_id: '',
+        total_amount: 0,
         note: '',
       },
       errors: {
@@ -30,6 +32,10 @@ export default {
   computed: {
     countriesOptions() {
       return this.$store.getters['countries/options'];
+    },
+
+    totalAmount() {
+      return formatAmount(this.park.total_amount);
     },
   },
   mounted() {

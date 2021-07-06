@@ -1,11 +1,11 @@
 import Config from '@/config/globalConfig';
-import formatAmount from '@/utils/formatAmount';
 import Alert from '@/components/Alert';
 import Help from '@/components/Help/Help.vue';
+import ParkTotalAmount from './TotalAmount';
 
 export default {
   name: 'Parks',
-  components: { Help },
+  components: { Help, ParkTotalAmount },
   data() {
     return {
       help: 'page-parks.help',
@@ -18,8 +18,9 @@ export default {
         'address',
         'opening_hours',
         'totalItems',
-        'events',
+        'totalAmount',
         'note',
+        'events',
         'actions',
       ],
       options: {
@@ -31,21 +32,25 @@ export default {
         columnsDisplay: {
           // - This is a hack: init the table with hidden columns by default
           note: 'mobile',
+          totalAmount: 'desktop',
+          events: 'desktop',
         },
         headings: {
           name: this.$t('name'),
           address: this.$t('address'),
           opening_hours: this.$t('opening-hours'),
           totalItems: this.$t('page-parks.total-items'),
-          events: '',
+          totalAmount: this.$t('total-amount'),
           note: this.$t('notes'),
+          events: '',
           actions: '',
         },
         columnsClasses: {
           address: 'Parks__address',
           opening_hours: 'Parks__opening-hours',
-          events: 'Parks__events',
+          totalAmount: 'Parks__total-amount',
           note: 'Parks__note',
+          events: 'Parks__events',
           actions: 'Parks__actions',
         },
         requestFunction: (pagination) => {
@@ -70,6 +75,9 @@ export default {
     parksCount() {
       return this.$store.state.parks.list.length;
     },
+  },
+  mounted() {
+    this.$store.dispatch('parks/fetch');
   },
   methods: {
     getDownloadListingUrl(parkId) {
@@ -104,10 +112,6 @@ export default {
             .then(this.refreshTable)
             .catch(this.showError);
         });
-    },
-
-    formatAmount(amount) {
-      return formatAmount(amount);
     },
 
     refreshTable() {

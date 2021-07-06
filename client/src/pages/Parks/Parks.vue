@@ -33,23 +33,34 @@
           {{ park.row.postal_code }} {{ park.row.locality }}
         </div>
         <div slot="totalItems" slot-scope="park">
-          <router-link :to="`/materials?park=${park.row.id}`">
+          <router-link
+            v-if="park.row.total_items > 0"
+            :to="`/materials?park=${park.row.id}`"
+            v-tooltip="$t('page-parks.display-materials-of-this-park')"
+          >
             {{ $t('items-count', { count: park.row.total_items }, park.row.total_items) }}
           </router-link>
+          <span v-else class="Parks__no-items">{{ $t('no-items') }}</span>
           <span v-if="park.row.total_items > 0" class="Parks__total-stock">
             ({{ $t('stock-items-count', { count: park.row.total_stock_quantity }) }})
           </span>
-          <span class="Parks__total-amount">
-            ({{ formatAmount(park.row.total_amount) }})
-          </span>
         </div>
-        <div slot="events" slot-scope="park">
-          <router-link :to="`/?park=${park.row.id}`" v-if="parksCount > 1">
-            {{ $t('page-parks.display-events-for-park') }}
-          </router-link>
-        </div>
+        <ParkTotalAmount
+          v-if="park.row.total_items > 0"
+          slot="totalAmount"
+          slot-scope="park"
+          :parkId="park.row.id"
+        />
         <div slot="note" slot-scope="park">
           <pre>{{ park.row.note }}</pre>
+        </div>
+        <div slot="events" slot-scope="park">
+          <router-link
+            :to="`/?park=${park.row.id}`"
+            v-if="parksCount > 1 && park.row.total_items > 0"
+          >
+            {{ $t('page-parks.display-events-for-park') }}
+          </router-link>
         </div>
         <template slot="actions" slot-scope="park" class="Parks__actions">
           <a

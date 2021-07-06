@@ -38,7 +38,6 @@ class Park extends BaseModel
     protected $appends = [
         'total_items',
         'total_stock_quantity',
-        'total_amount',
     ];
 
     public function Materials()
@@ -103,11 +102,13 @@ class Park extends BaseModel
 
     public function getTotalAmountAttribute()
     {
-        $materials = $this->Materials()->get(['stock_quantity', 'replacement_price']);
         $total = 0;
+
+        $materials = Material::getParkAll($this->id);
         foreach ($materials as $material) {
-            $total += ($material->replacement_price * (int)$material->stock_quantity);
+            $total += ($material['replacement_price'] * (int)$material['stock_quantity']);
         }
+
         return $total;
     }
 

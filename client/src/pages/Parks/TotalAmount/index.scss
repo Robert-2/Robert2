@@ -1,0 +1,17 @@
+@import '../../../themes/default';
+
+.ParkTotalAmount {
+  text-align: center;
+
+  &__calc-button {
+    background: none;
+    border: none;
+    color: $text-light-color;
+    width: 100%;
+  }
+
+  &__amount {
+    padding: 7px 10px;
+    text-align: right;
+  }
+}
