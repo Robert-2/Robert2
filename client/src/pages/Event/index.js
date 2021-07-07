@@ -1,4 +1,3 @@
-import store from '@/store';
 import Help from '@/components/Help/Help.vue';
 import EventStore from './EventStore';
 import Breadcrumb from './Breadcrumb/Breadcrumb.vue';
@@ -102,7 +101,7 @@ export default {
       this.error = null;
       this.isLoading = false;
       this.event = data;
-      store.commit('setPageSubTitle', this.event.title);
+      this.$store.commit('setPageSubTitle', this.event.title);
       EventStore.commit('init', this.event);
     },
 

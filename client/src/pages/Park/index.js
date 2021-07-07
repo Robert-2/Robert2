@@ -1,6 +1,6 @@
-import store from '@/store';
 import Help from '@/components/Help/Help.vue';
-import FormField from '@/components/FormField/FormField.vue';
+import FormField from '@/components/FormField';
+import formatAmount from '@/utils/formatAmount';
 
 export default {
   name: 'Material',
@@ -17,6 +17,7 @@ export default {
         postal_code: '',
         locality: '',
         country_id: '',
+        total_amount: 0,
         note: '',
       },
       errors: {
@@ -30,11 +31,15 @@ export default {
   },
   computed: {
     countriesOptions() {
-      return store.getters['countries/options'];
+      return this.$store.getters['countries/options'];
+    },
+
+    totalAmount() {
+      return formatAmount(this.park.total_amount);
     },
   },
   mounted() {
-    store.dispatch('countries/fetch');
+    this.$store.dispatch('countries/fetch');
     this.getParkData();
   },
   methods: {
@@ -74,7 +79,7 @@ export default {
           this.isLoading = false;
           this.help = { type: 'success', text: 'page-parks.saved' };
           this.setParkData(data);
-          store.dispatch('parks/refresh');
+          this.$store.dispatch('parks/refresh');
 
           setTimeout(() => {
             this.$router.push('/parks');
@@ -102,7 +107,7 @@ export default {
 
     setParkData(data) {
       this.park = data;
-      store.commit('setPageSubTitle', this.park.name);
+      this.$store.commit('setPageSubTitle', this.park.name);
     },
   },
 };

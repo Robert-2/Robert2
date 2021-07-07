@@ -1,6 +1,5 @@
-import store from '@/store';
 import Help from '@/components/Help/Help.vue';
-import FormField from '@/components/FormField/FormField.vue';
+import FormField from '@/components/FormField';
 
 export default {
   name: 'User',
@@ -126,7 +125,7 @@ export default {
           locality: '',
         };
       }
-      store.commit('setPageSubTitle', this.user.pseudo);
+      this.$store.commit('setPageSubTitle', this.user.pseudo);
     },
   },
 };

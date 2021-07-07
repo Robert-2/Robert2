@@ -1,6 +1,5 @@
 import Alert from '@/components/Alert';
 import Help from '@/components/Help/Help.vue';
-import store from '@/store';
 import DocumentItem from './Item/Item.vue';
 import DocumentUpload from './Upload/Upload.vue';
 
@@ -20,7 +19,7 @@ export default {
     };
   },
   mounted() {
-    store.commit('setPageSubTitle', this.material.name);
+    this.$store.commit('setPageSubTitle', this.material.name);
 
     this.fetchDocuments();
   },

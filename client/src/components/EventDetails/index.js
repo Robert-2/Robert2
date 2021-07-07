@@ -6,13 +6,14 @@ import Alert from '@/components/Alert';
 import Help from '@/components/Help/Help.vue';
 import LocationText from '@/components/LocationText/LocationText.vue';
 import PersonsList from '@/components/PersonsList/PersonsList.vue';
-import EventMaterials from '@/components/EventMaterials/EventMaterials.vue';
+import EventMaterials from '@/components/EventMaterials';
 import EventMissingMaterials from '@/components/EventMissingMaterials/EventMissingMaterials.vue';
+import ReturnInventorySummary from '@/components/ReturnInventorySummary';
 import EventEstimates from '@/components/EventEstimates/EventEstimates.vue';
 import EventBilling from '@/components/EventBilling/EventBilling.vue';
-import EventTotals from '@/components/EventTotals/EventTotals.vue';
+import EventTotals from '@/components/EventTotals';
 import formatTimelineEvent from '@/utils/timeline-event/format';
-import Header from './Header/Header.vue';
+import Header from './Header';
 
 export default {
   name: 'EventDetails',
@@ -25,6 +26,7 @@ export default {
     PersonsList,
     EventMaterials,
     EventMissingMaterials,
+    ReturnInventorySummary,
     EventEstimates,
     EventBilling,
     EventTotals,
@@ -55,6 +57,14 @@ export default {
     hasMaterials() {
       return this.event?.materials?.length > 0;
     },
+
+    hasMaterialsProblems() {
+      return (
+        (this.event?.hasMissingMaterials && !this.event?.is_return_inventory_done)
+        || this.event?.hasNotReturnedMaterials
+      );
+    },
+
     userCanEditBill() {
       return this.$store.getters['auth/is'](['admin', 'member']);
     },
@@ -194,6 +204,11 @@ export default {
       this.setData(newData);
       // Ne fonctionne pas comme espéré, pffff
       this.$emit('event-updated', newData);
+    },
+
+    handleDeletedFromHeader() {
+      this.error = null;
+      this.$emit('close');
     },
 
     handleError(error) {

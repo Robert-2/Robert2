@@ -2459,8 +2459,14 @@ return [
     "endDateMustBeLater"
     => "La date de fin doit être postérieure à la date de début",
 
+    "eventCannotBeArchived"
+    => "Un événement ne peut pas être archivé si son inventaire de retour n'a pas encore été effectué !",
+
     "referenceAlreadyInUse"
     => "Cette référence est déjà utilisée.",
+
+    "invalid-value"
+    => "Valeur invalide.",
 
     //
     // - Install messages
@@ -2518,6 +2524,18 @@ return [
     "onDate"
     => "Le %s",
 
+    "as-of-date"
+    => "Au %s",
+
+    "for-park"
+    => "pour le parc :",
+
+    "all-parks"
+    => "tous les parcs",
+
+    "park-name"
+    => "Parc %s",
+
     "page"
     => "Page %d",
 
@@ -2542,9 +2560,6 @@ return [
     "event"
     => "Événement : %s",
 
-    "onDate"
-    => "Le %s",
-
     "fromToDates"
     => "Du %s au %s",
 
@@ -2556,6 +2571,39 @@ return [
 
     "quantity"
     => "Quantité",
+
+    "stock-quantity"
+    => "Quantité en stock",
+
+    "previous-quantity"
+    => "Quantité précédente",
+
+    "recount-quantity"
+    => "Quantité recomptée",
+
+    "current-quantity"
+    => "Quantité actuelle",
+
+    "out-of-order-quantity"
+    => "Quantité en panne",
+
+    "is-new"
+    => "a été ajouté !",
+
+    "is-lost"
+    => "est perdu !",
+
+    "is-broken"
+    => "est en panne !",
+
+    "has-been-found"
+    => "a été retrouvé !",
+
+    "has-been-repaired"
+    => "a été réparé !",
+
+    "unknown-park"
+    => "Parc inconnu",
 
     "qty"
     => "Qté",
@@ -2644,6 +2692,9 @@ return [
     "ref"
     => "Réf.",
 
+    "reference"
+    => "Référence",
+
     "designation"
     => "Désignation",
 
@@ -2659,8 +2710,14 @@ return [
     "eventSummary"
     => "Récapitulatif de l'événement",
 
+    "materials-list"
+    => "Liste du matériel",
+
     "title"
     => "Titre : « %s »",
+
+    "notes"
+    => "Notes",
 
     "location"
     => "Lieu : %s",
@@ -2682,9 +2739,6 @@ return [
 
     "Event"
     => "Fiche de sortie",
-
-    "onDate"
-    => "Le %s",
 
     "eventTotalReplacementAmount"
     => "Montant total de remplacement : %s",
@@ -2710,6 +2764,21 @@ return [
     "label"
     => "Étiquette",
 
+    "park-value"
+    => "Parc : %s",
+
+    "Inventory"
+    => "Inventaire",
+
+    "inventory-created-by"
+    => "Inventaire créé par",
+
     "enable-javascript-message"
     => "Veuillez activer JavaScript pour utiliser l'application.",
+
+    "yes"
+    => "Oui",
+
+    "no"
+    => "Non",
 ];

@@ -6,6 +6,7 @@ import Help from '@/components/Help/Help.vue';
 import EventDetails from '@/components/EventDetails/EventDetails.vue';
 import Timeline from '@/components/Timeline';
 import CalendarHeader from './Header/Header.vue';
+import CalendarCaption from './Caption';
 import formatEvent from './utils';
 
 const ONE_DAY = 1000 * 3600 * 24;
@@ -17,6 +18,7 @@ export default {
     Timeline,
     EventDetails,
     Help,
+    CalendarCaption,
   },
   data() {
     let start = moment().subtract(2, 'days').startOf('day');

@@ -1,5 +1,4 @@
 import Config from '@/config/globalConfig';
-import store from '@/store';
 import Help from '@/components/Help/Help.vue';
 import PersonForm from '@/components/PersonForm/PersonForm.vue';
 
@@ -108,7 +107,7 @@ export default {
     setPerson(data) {
       this.person = data;
       const fullName = data.full_name || `${data.first_name} ${data.last_name}`;
-      store.commit('setPageSubTitle', fullName);
+      this.$store.commit('setPageSubTitle', fullName);
     },
   },
 };

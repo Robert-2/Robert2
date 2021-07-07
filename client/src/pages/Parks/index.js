@@ -1,11 +1,11 @@
-import store from '@/store';
-import formatAmount from '@/utils/formatAmount';
+import Config from '@/config/globalConfig';
 import Alert from '@/components/Alert';
 import Help from '@/components/Help/Help.vue';
+import ParkTotalAmount from './TotalAmount';
 
 export default {
   name: 'Parks',
-  components: { Help },
+  components: { Help, ParkTotalAmount },
   data() {
     return {
       help: 'page-parks.help',
@@ -18,8 +18,9 @@ export default {
         'address',
         'opening_hours',
         'totalItems',
-        'events',
+        'totalAmount',
         'note',
+        'events',
         'actions',
       ],
       options: {
@@ -31,21 +32,26 @@ export default {
         columnsDisplay: {
           // - This is a hack: init the table with hidden columns by default
           note: 'mobile',
+          totalAmount: 'desktop',
+          events: 'desktop',
         },
         headings: {
           name: this.$t('name'),
           address: this.$t('address'),
           opening_hours: this.$t('opening-hours'),
           totalItems: this.$t('page-parks.total-items'),
-          events: '',
+          totalAmount: this.$t('total-amount'),
           note: this.$t('notes'),
+          events: '',
           actions: '',
         },
         columnsClasses: {
           address: 'Parks__address',
           opening_hours: 'Parks__opening-hours',
-          events: 'Parks__events',
+          totalAmount: 'Parks__total-amount',
           note: 'Parks__note',
+          events: 'Parks__events',
+          actions: 'Parks__actions',
         },
         requestFunction: (pagination) => {
           this.error = null;
@@ -67,10 +73,18 @@ export default {
   },
   computed: {
     parksCount() {
-      return store.state.parks.list.length;
+      return this.$store.state.parks.list.length;
     },
   },
+  mounted() {
+    this.$store.dispatch('parks/fetch');
+  },
   methods: {
+    getDownloadListingUrl(parkId) {
+      const { baseUrl } = Config;
+      return `${baseUrl}/materials/pdf?park=${parkId}`;
+    },
+
     deletePark(parkId) {
       const isSoft = !this.isTrashDisplayed;
       Alert.ConfirmDelete(this.$t, 'parks', isSoft)
@@ -100,15 +114,11 @@ export default {
         });
     },
 
-    formatAmount(amount) {
-      return formatAmount(amount);
-    },
-
     refreshTable() {
       this.error = null;
       this.isLoading = true;
       this.$refs.DataTable.refresh();
-      store.dispatch('parks/refresh');
+      this.$store.dispatch('parks/refresh');
     },
 
     showTrashed() {

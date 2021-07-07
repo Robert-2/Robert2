@@ -94,10 +94,12 @@
     </tr>
 </table>
 
+{% if event['description'] is not empty %}
 <h2>{{ translate('descriptionNotes') }}</h2>
 <p>
     {{ event['description']|nl2br }}
 </p>
+{% endif %}
 
 <h2 class="vspace2">{{ translate('materials') }}</h2>
 <table class="size9 listing-table">
@@ -111,11 +113,11 @@
         </tr>
     </thead>
     <tbody>
-        {% if materialDisplayMode == 'sub-categories' %}
+        {% if materialDisplayMode == 'categories' or materialDisplayMode == 'sub-categories' %}
         {% for subCategory in materialList %}
             <tr>
                 <td class="section-title" colspan="5">
-                    {% if subCategory['name'] == '---' %}
+                    {% if subCategory['name'] is null %}
                     {{ translate('otherMaterials') }}
                     {% else %}
                     {{ subCategory['name'] }}
@@ -130,7 +132,11 @@
         {% for park in materialList %}
             <tr>
                 <td class="section-title" colspan="5">
-                    {{ park['name'] }}
+                    {% if park['name'] is not empty %}
+                        {{ park['name'] }}
+                    {% else %}
+                        ({{ translate('unknown-park') }})
+                    {% endif %}
                 </td>
             </tr>
             {% for material in park['materials'] %}
@@ -145,7 +151,16 @@
     </tbody>
 </table>
 
+
 <table class="layout-table">
+    {% if customText is not empty %}
+    <tr>
+        <td style="padding: 3mm 0;" colspan="2">
+            <h2>{{ customTextTitle }}</h2>
+            <p>{{ customText|nl2br }}</p>
+        </td>
+    </tr>
+    {% endif %}
     <tr>
         <td class="half inset">
             <h3 class="center">{{ translate('output') }}</h3>

@@ -1,18 +1,18 @@
 version: 2
 updates:
-    - package-ecosystem: 'npm'
-        directory: '/client'
-        schedule:
-        interval: 'weekly'
-        target-branch: 'develop'
-        labels:
-            - 'Interface'
-            - 'dependencies'
-    - package-ecosystem: 'composer'
-        directory: '/server'
-        schedule:
-        interval: 'weekly'
-        target-branch: 'develop'
-        labels:
-            - 'API'
-            - 'dependencies'
+  - package-ecosystem: 'npm'
+    directory: '/client'
+    schedule:
+      interval: 'weekly'
+    target-branch: 'develop'
+    labels:
+      - 'Interface'
+      - 'dependencies'
+  - package-ecosystem: 'composer'
+    directory: '/server'
+    schedule:
+      interval: 'weekly'
+    target-branch: 'develop'
+    labels:
+      - 'API'
+      - 'dependencies'

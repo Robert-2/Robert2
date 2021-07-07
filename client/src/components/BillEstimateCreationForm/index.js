@@ -1,5 +1,5 @@
 import Config from '@/config/globalConfig';
-import FormField from '@/components/FormField/FormField.vue';
+import FormField from '@/components/FormField';
 
 export default {
   name: 'BillEstimateCreationForm',

@@ -34,8 +34,10 @@ final class EventTest extends ModelTestCase
                 'start_date' => "2018-12-15 00:00:00",
                 'end_date' => "2018-12-16 23:59:59",
                 'is_confirmed' => false,
+                'is_archived' => true,
                 'location' => "Brousse",
                 'is_billable' => false,
+                'is_return_inventory_done' => false,
                 'created_at' => null,
                 'updated_at' => null,
                 'deleted_at' => null,
@@ -49,8 +51,10 @@ final class EventTest extends ModelTestCase
                 'start_date' => "2018-12-17 00:00:00",
                 'end_date' => "2018-12-18 23:59:59",
                 'is_confirmed' => false,
+                'is_archived' => false,
                 'location' => "Gap",
                 'is_billable' => true,
+                'is_return_inventory_done' => true,
                 'created_at' => null,
                 'updated_at' => null,
                 'deleted_at' => null,
@@ -64,8 +68,10 @@ final class EventTest extends ModelTestCase
                 'start_date' => "2018-12-18 00:00:00",
                 'end_date' => "2018-12-19 23:59:59",
                 'is_confirmed' => false,
+                'is_archived' => false,
                 'location' => "Lyon",
                 'is_billable' => true,
+                'is_return_inventory_done' => true,
                 'created_at' => null,
                 'updated_at' => null,
                 'deleted_at' => null,
@@ -85,15 +91,49 @@ final class EventTest extends ModelTestCase
         $this->assertCount(1, $result);
         $this->assertEquals('DBXPA2', $result[0]['reference']);
         $this->assertEquals(1, $result[0]['missing_quantity']);
+
+        // - Get missing materials of event #4
+        $result = Event::getMissingMaterials(4);
+        $this->assertNotNull($result);
+        $this->assertCount(2, $result);
+        $this->assertEquals('Transporter', $result[0]['reference']);
+        $this->assertEquals(3, $result[0]['missing_quantity']);
+    }
+
+    public function testHasNotReturnedMaterials(): void
+    {
+        // - Event #1 does not have material not returned
+        $result = Event::hasNotReturnedMaterials(1);
+        $this->assertFalse($result);
+
+        // - Event #2 have some materials not returned
+        $result = Event::hasNotReturnedMaterials(2);
+        $this->assertTrue($result);
     }
 
     public function testGetParks(): void
     {
+        // - Non-existant event
+        $result = Event::getParks(999);
+        $this->assertEquals([], $result);
+
+        // - Events with material from one park
         $result = Event::getParks(1);
         $this->assertEquals([1], $result);
+        $result = Event::getParks(2);
+        $this->assertEquals([1], $result);
+        $result = Event::getParks(3);
+        $this->assertEquals([1], $result);
+        $result = Event::getParks(5);
+        $this->assertEquals([], $result);
 
+        // - Event with material from two parks
         $result = Event::getParks(4);
-        $this->assertEquals([null, 1], $result);
+        $this->assertEquals([1], $result);
+
+        // - Event without material (so without park)
+        $result = Event::getParks(6);
+        $this->assertEquals([], $result);
     }
 
     public function testGetMaterials(): void
@@ -145,6 +185,8 @@ final class EventTest extends ModelTestCase
                 'event_id' => 1,
                 'material_id' => 4,
                 'quantity' => 1,
+                'quantity_returned' => 1,
+                'quantity_broken' => 1,
             ],
         ];
         $this->assertEquals($expected, $results[0]);
@@ -322,7 +364,7 @@ final class EventTest extends ModelTestCase
         $this->assertEquals('Second événement', $results[0]['title']);
     }
 
-    public function testValidate(): void
+    public function testValidateEventDates(): void
     {
         $data = [
             'user_id' => 1,
@@ -346,6 +388,56 @@ final class EventTest extends ModelTestCase
             ['end_date' => '2020-02-20 23:59:59']
         );
         (new Event($testData))->validate();
+    }
+
+    public function testValidateIsArchived(): void
+    {
+        $dataClose = [
+            'user_id' => 1,
+            'title' => "Test is_archived validation",
+            'start_date' => '2020-03-01 00:00:00',
+            'end_date' => '2020-03-03 23:59:59',
+            'is_confirmed' => false,
+        ];
+
+        // - Validation pass: event has a return inventory
+        $testData = array_merge($dataClose, [
+            'is_return_inventory_done' => true,
+            'is_archived' => true,
+        ]);
+        (new Event($testData))->validate();
+
+        // - Validation pass: event is not archived
+        $testData = array_merge($dataClose, [
+            'is_return_inventory_done' => true,
+            'is_archived' => false,
+        ]);
+        (new Event($testData))->validate();
+
+        // - Validation fails: event hos no return inventory
+        $this->expectException(Errors\ValidationException::class);
+        $this->expectExceptionCode(ERROR_VALIDATION);
+        $testData = array_merge($dataClose, [
+            'is_return_inventory_done' => false,
+            'is_archived' => true,
+        ]);
+        (new Event($testData))->validate();
+    }
+
+    public function testValidateIsArchivedNotPast(): void
+    {
+        // - Validation fails: event is not past
+        $this->expectException(Errors\ValidationException::class);
+        $this->expectExceptionCode(ERROR_VALIDATION);
+        $currentEvent = [
+            'user_id' => 1,
+            'title' => "Test is_archive validation failure",
+            'start_date' => '2120-03-01 00:00:00',
+            'end_date' => '2120-03-03 23:59:59',
+            'is_confirmed' => true,
+            'is_archived' => true,
+        ];
+        (new Event($currentEvent))->validate();
     }
 
     public function testValidateReference(): void

@@ -1,0 +1,101 @@
+@use 'sass:math';
+@import '../../themes/default/index';
+
+.FormField {
+  flex: 1;
+
+  &__label {
+    display: block;
+    padding: math.div($input-padding-vertical, 1.8) 0;
+
+    &__required {
+      color: $text-danger-color;
+    }
+  }
+
+  &__input-wrapper {
+    flex: 1;
+    display: flex;
+    flex-wrap: nowrap;
+  }
+
+  &__input,
+  &__textarea,
+  &__datepicker {
+    width: 90%;
+  }
+
+  &__addon {
+    display: inline-block;
+    min-width: 2.7rem;
+    padding: $input-padding-vertical $input-padding-horizontal;
+    background-color: $bg-color-input-normal;
+    color: $color-input;
+    border: $input-border-size solid $bg-color-input-normal;
+    border-radius: 0 $input-border-radius $input-border-radius 0;
+    border-left: 0;
+  }
+
+  &__textarea {
+    min-height: 50px;
+  }
+
+  &__error {
+    flex: 0 0 100%;
+    margin-top: .3rem;
+    color: $text-danger-color;
+
+    &__text {
+      padding-left: $form-label-width;
+    }
+  }
+
+  &__datepicker {
+    &__input {
+      width: 100%;
+      max-width: 300px;
+    }
+  }
+
+  &--with-addon {
+    .FormField__input {
+      display: inline-block;
+      padding-right: 0;
+      border-radius: $input-border-radius 0 0 $input-border-radius;
+      border-right: 0;
+    }
+  }
+
+  &--with-error {
+    .FormField__input:not(:focus),
+    .FormField__datepicker__input:not(:focus),
+    .FormField__select:not(:focus),
+    .FormField__textarea:not(:focus),
+    .FormField__addon, {
+      border-color: $input-error-border-color;
+    }
+  }
+
+  @media screen and (min-width: $screen-tablet) {
+    display: flex;
+    flex-direction: column;
+    flex-flow: row wrap;
+    align-items: center;
+
+    &__label {
+      flex: 0 0 $form-label-width;
+      text-align: right;
+      padding: 0 $input-padding-horizontal;
+    }
+
+    &__input,
+    &__textarea,
+    &__datepicker {
+      flex: 1;
+    }
+
+    &__addon {
+      flex: 0 0 auto;
+    }
+  }
+}

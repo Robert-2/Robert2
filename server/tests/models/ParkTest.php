@@ -29,13 +29,13 @@ final class ParkTest extends ModelTestCase
     {
         $Park = $this->model::find(1);
         $results = $Park->materials;
-        $this->assertCount(5, $results);
+        $this->assertCount(7, $results);
     }
 
     public function testGetTotalItems(): void
     {
         $Park = $this->model::find(1);
-        $this->assertEquals(5, $Park->total_items);
+        $this->assertEquals(7, $Park->total_items);
     }
 
     public function testGetTotalAmount(): void

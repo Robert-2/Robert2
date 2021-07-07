@@ -13,12 +13,22 @@
     flex: 1;
   }
 
-  .Help {
+  &__footer {
     flex: 0 0 50px;
-  }
+    display: flex;
+    flex-wrap: wrap;
 
-  .Help {
-    margin: 1rem 0;
+    .Help {
+      flex: 1;
+      min-width: 300px;
+      padding: $content-padding-small-vertical $content-padding-small-horizontal;
+    }
+
+    .CalendarCaption {
+      flex: 0 0 auto;
+      max-width: 100%;
+      padding: $content-padding-small-vertical 0;
+    }
   }
 }
 

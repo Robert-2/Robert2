@@ -1,13 +1,13 @@
 import Vue from 'vue';
 import Help from '@/components/Help/Help.vue';
-import FormField from '@/components/FormField/FormField.vue';
+import FormField from '@/components/FormField';
 
 export default {
   name: 'UserSettings',
   components: { Help, FormField },
   data() {
     return {
-      help: 'page-settings.help',
+      help: 'page-user-settings.help',
       error: null,
       isLoading: true,
       langsOptions: [
@@ -30,11 +30,10 @@ export default {
   methods: {
     async fetch() {
       const { id } = this.$store.state.auth.user;
-      const { resource } = this.$route.meta;
       this.isLoading = true;
 
       try {
-        const { data } = await this.$http.get(`${resource}/${id}/settings`);
+        const { data } = await this.$http.get(`users/${id}/settings`);
         this.settings = data;
       } catch (error) {
         this.displayError(error);
@@ -45,13 +44,12 @@ export default {
 
     async save() {
       const { id } = this.$store.state.auth.user;
-      const { resource } = this.$route.meta;
       this.isLoading = true;
 
       try {
-        const { data } = await this.$http.put(`${resource}/${id}/settings`, this.settings);
+        const { data } = await this.$http.put(`users/${id}/settings`, this.settings);
         this.settings = data;
-        this.help = { type: 'success', text: 'page-settings.saved' };
+        this.help = { type: 'success', text: 'page-user-settings.saved' };
 
         const userLocale = data.language.toLowerCase();
         localStorage.setItem('userLocale', userLocale);
@@ -65,7 +63,7 @@ export default {
     },
 
     displayError(error) {
-      this.help = 'page-settings.help';
+      this.help = 'page-user-settings.help';
       this.error = error;
 
       const { code, details } = error.response?.data?.error || { code: 0, details: {} };

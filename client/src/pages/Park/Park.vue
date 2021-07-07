@@ -75,11 +75,33 @@
             </button>
           </section>
         </form>
-        <Help
-          :message="help"
-          :error="error"
-          :isLoading="isLoading"
-        />
+        <div class="Park__sidebar">
+          <Help
+            :message="help"
+            :error="error"
+            :isLoading="isLoading"
+          />
+          <div class="Park__totals">
+            <h3>{{ $t('page-parks.total-items') }}</h3>
+            <div v-if="park.total_items > 0" class="Park__totals__items">
+              <strong>
+                {{ $t('items-count', { count: park.total_items }, park.total_items) }}
+              </strong>
+              <span class="Park__totals__stock">
+                ({{ $t('stock-items-count', { count: park.total_stock_quantity }) }})
+              </span>
+              <br />
+              <br />
+              <router-link :to="`/materials?park=${park.id}`">
+                {{ $t('page-parks.display-materials-of-this-park') }}
+              </router-link>
+            </div>
+            <div v-if="park.total_items > 0" class="Park__totals__amount">
+              <strong>{{ $t('total-amount') }} {{ totalAmount }}</strong>
+            </div>
+            <div v-else class="Park__totals__no-items">{{ $t('no-items') }}</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

@@ -32,7 +32,7 @@ final class MaterialTest extends ModelTestCase
         // - Récupération du matériel associé au parc n°1
         $options = ['park_id' => 1];
         $result = $this->model->getAllFiltered($options)->get()->toArray();
-        $this->assertCount(5, $result);
+        $this->assertCount(7, $result);
 
         // - Récupération du matériel associé à la catégorie n°1
         $options = ['category_id' => 1];
@@ -138,8 +138,7 @@ final class MaterialTest extends ModelTestCase
         $this->assertEquals([
             'id' => 1,
             'name' => "default",
-            'total_items' => 5,
-            'total_amount' => 101223.80,
+            'total_items' => 7,
             'total_stock_quantity' => 83,
         ], $result);
     }
@@ -211,31 +210,37 @@ final class MaterialTest extends ModelTestCase
         $results = $Material->Events;
         $this->assertCount(3, $results);
         $this->assertEquals([
-            'id'           => 2,
-            'title'        => 'Second événement',
-            'start_date'   => '2018-12-18 00:00:00',
-            'end_date'     => '2018-12-19 23:59:59',
+            'id' => 4,
+            'title' => 'Concert X',
+            'start_date' => '2019-03-01 00:00:00',
+            'end_date' => '2019-04-10 23:59:59',
             'is_confirmed' => false,
-            'pivot'        => [
-                'id'          => 4,
+            'is_archived' => false,
+            'location' => 'Moon',
+            'is_return_inventory_done' => false,
+            'pivot' => [
+                'id' => 9,
                 'material_id' => 1,
-                'event_id'    => 2,
-                'quantity'    => 3
+                'event_id' => 4,
+                'quantity' => 1
+            ],
+        ], $results[0]);
+        $this->assertEquals([
+            'id' => 2,
+            'title' => 'Second événement',
+            'start_date' => '2018-12-18 00:00:00',
+            'end_date' => '2018-12-19 23:59:59',
+            'is_confirmed' => false,
+            'is_archived' => false,
+            'location' => 'Lyon',
+            'is_return_inventory_done' => true,
+            'pivot' => [
+                'id' => 4,
+                'material_id' => 1,
+                'event_id' => 2,
+                'quantity' => 3
             ],
         ], $results[1]);
-        $this->assertEquals([
-            'id'           => 1,
-            'title'        => 'Premier événement',
-            'start_date'   => '2018-12-17 00:00:00',
-            'end_date'     => '2018-12-18 23:59:59',
-            'is_confirmed' => false,
-            'pivot'        => [
-                'id'          => 1,
-                'material_id' => 1,
-                'event_id'    => 1,
-                'quantity'    => 1
-            ],
-        ], $results[2]);
     }
 
     public function testGetDocuments()

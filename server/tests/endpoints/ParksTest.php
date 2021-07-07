@@ -33,8 +33,7 @@ final class ParksTest extends ApiTestCase
                     'country_id' => 1,
                     'opening_hours' => "Du lundi au vendredi, de 09:00 à 19:00.",
                     'note' => null,
-                    'total_items' => 5,
-                    'total_amount' => 101223.80,
+                    'total_items' => 7,
                     'total_stock_quantity' => 83,
                     'created_at' => null,
                     'updated_at' => null,
@@ -52,7 +51,6 @@ final class ParksTest extends ApiTestCase
                     'opening_hours' => null,
                     'note' => "Les bidouilles de fond de tiroir",
                     'total_items' => 0,
-                    'total_amount' => 0,
                     'total_stock_quantity'  => 0,
                     'created_at' => null,
                     'updated_at' => null,
@@ -64,6 +62,16 @@ final class ParksTest extends ApiTestCase
         $this->client->get('/api/parks?deleted=1');
         $this->assertStatusCode(SUCCESS_OK);
         $this->assertResponsePaginatedData(0, '/api/parks', 'deleted=1');
+    }
+
+    public function testGetParksList()
+    {
+        $this->client->get('/api/parks/list');
+        $this->assertStatusCode(SUCCESS_OK);
+        $this->assertResponseData([
+            ['id' => 1, 'name' => 'default'],
+            ['id' => 2, 'name' => 'spare'],
+        ]);
     }
 
     public function testGetParkNotFound()
@@ -87,12 +95,29 @@ final class ParksTest extends ApiTestCase
             'country_id' => 1,
             'opening_hours' => "Du lundi au vendredi, de 09:00 à 19:00.",
             'note' => null,
-            'total_items' => 5,
+            'total_items' => 7,
             'total_amount' => 101223.80,
             'total_stock_quantity' => 83,
             'created_at' => null,
             'updated_at' => null,
             'deleted_at' => null,
+            'has_ongoing_event' => false,
+        ]);
+    }
+
+    public function testGetTotalAmountNotFound()
+    {
+        $this->client->get('/api/parks/999/total-amount');
+        $this->assertNotFound();
+    }
+
+    public function testGetTotalAmount()
+    {
+        $this->client->get('/api/parks/1/total-amount');
+        $this->assertStatusCode(SUCCESS_OK);
+        $this->assertResponseData([
+            'id' => 1,
+            'totalAmount' => 101223.80,
         ]);
     }
 }

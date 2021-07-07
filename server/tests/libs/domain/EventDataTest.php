@@ -165,6 +165,12 @@ final class EventDataTest extends ModelTestCase
                     'CL3' => [
                         'reference' => 'CL3',
                         'name' => 'Console Yamaha CL3',
+                        'stockQuantity' => 5,
+                        'attributes' => [
+                            ['id' => 3, 'name' => 'Puissance', 'type' => 'integer', 'value' => 850, 'unit' => 'W'],
+                            ['id' => 2, 'name' => 'Couleur', 'type' => 'string', 'value' => 'Grise', 'unit' => null],
+                            ['id' => 1, 'name' => 'Poids', 'type' => 'float', 'value' => 36.5, 'unit' => 'kg'],
+                        ],
                         'park' => 'default',
                         'quantity' => 1,
                         'rentalPrice' => 300.0,
@@ -181,6 +187,11 @@ final class EventDataTest extends ModelTestCase
                     'DBXPA2' => [
                         'reference' => 'DBXPA2',
                         'name' => 'Processeur DBX PA2',
+                        'stockQuantity' => 2,
+                        'attributes' => [
+                            ['id' => 3, 'name' => 'Puissance', 'type' => 'integer', 'value' => 35, 'unit' => 'W'],
+                            ['id' => 1, 'name' => 'Poids', 'type' => 'float', 'value' => 2.2, 'unit' => 'kg'],
+                        ],
                         'park' => 'default',
                         'quantity' => 1,
                         'rentalPrice' => 25.5,
@@ -197,6 +208,12 @@ final class EventDataTest extends ModelTestCase
                     'SDS-6-01' => [
                         'reference' => 'SDS-6-01',
                         'name' => 'Showtec SDS-6',
+                        'stockQuantity' => 2,
+                        'attributes' => [
+                            ['id' => 4, 'name' => 'Conforme', 'type' => 'boolean', 'value' => true, 'unit' => null],
+                            ['id' => 3, 'name' => 'Puissance', 'type' => 'integer', 'value' => 60, 'unit' => 'W'],
+                            ['id' => 1, 'name' => 'Poids', 'type' => 'float', 'value' => 3.15, 'unit' => 'kg'],
+                        ],
                         'park' => 'default',
                         'quantity' => 1,
                         'rentalPrice' => 15.95,
@@ -221,6 +238,12 @@ final class EventDataTest extends ModelTestCase
                     'CL3' => [
                         'reference' => 'CL3',
                         'name' => 'Console Yamaha CL3',
+                        'stockQuantity' => 5,
+                        'attributes' => [
+                            ['id' => 3, 'name' => 'Puissance', 'type' => 'integer', 'value' => 850, 'unit' => 'W'],
+                            ['id' => 2, 'name' => 'Couleur', 'type' => 'string', 'value' => 'Grise', 'unit' => null],
+                            ['id' => 1, 'name' => 'Poids', 'type' => 'float', 'value' => 36.5, 'unit' => 'kg'],
+                        ],
                         'park' => null,
                         'quantity' => 1,
                         'rentalPrice' => 300.0,
@@ -231,6 +254,11 @@ final class EventDataTest extends ModelTestCase
                     'DBXPA2' => [
                         'reference' => 'DBXPA2',
                         'name' => 'Processeur DBX PA2',
+                        'stockQuantity' => 2,
+                        'attributes' => [
+                            ['id' => 3, 'name' => 'Puissance', 'type' => 'integer', 'value' => 35, 'unit' => 'W'],
+                            ['id' => 1, 'name' => 'Poids', 'type' => 'float', 'value' => 2.2, 'unit' => 'kg'],
+                        ],
                         'park' => null,
                         'quantity' => 1,
                         'rentalPrice' => 25.5,
@@ -241,6 +269,12 @@ final class EventDataTest extends ModelTestCase
                     'SDS-6-01' => [
                         'reference' => 'SDS-6-01',
                         'name' => 'Showtec SDS-6',
+                        'stockQuantity' => 2,
+                        'attributes' => [
+                            ['id' => 4, 'name' => 'Conforme', 'type' => 'boolean', 'value' => true, 'unit' => null],
+                            ['id' => 3, 'name' => 'Puissance', 'type' => 'integer', 'value' => 60, 'unit' => 'W'],
+                            ['id' => 1, 'name' => 'Poids', 'type' => 'float', 'value' => 3.15, 'unit' => 'kg'],
+                        ],
                         'park' => null,
                         'quantity' => 1,
                         'rentalPrice' => 15.95,
@@ -261,6 +295,12 @@ final class EventDataTest extends ModelTestCase
             'CL3' => [
                 'name' => 'Console Yamaha CL3',
                 'reference' => 'CL3',
+                'stockQuantity' => 5,
+                'attributes' => [
+                    ['id' => 3, 'name' => 'Puissance', 'type' => 'integer', 'value' => 850, 'unit' => 'W'],
+                    ['id' => 2, 'name' => 'Couleur', 'type' => 'string', 'value' => 'Grise', 'unit' => null],
+                    ['id' => 1, 'name' => 'Poids', 'type' => 'float', 'value' => 36.5, 'unit' => 'kg'],
+                ],
                 'park' => 'default',
                 'quantity' => 1,
                 'rentalPrice' => 300.0,
@@ -271,6 +311,11 @@ final class EventDataTest extends ModelTestCase
             'DBXPA2' => [
                 'name' => 'Processeur DBX PA2',
                 'reference' => 'DBXPA2',
+                'stockQuantity' => 2,
+                'attributes' => [
+                    ['id' => 3, 'name' => 'Puissance', 'type' => 'integer', 'value' => 35, 'unit' => 'W'],
+                    ['id' => 1, 'name' => 'Poids', 'type' => 'float', 'value' => 2.2, 'unit' => 'kg'],
+                ],
                 'park' => 'default',
                 'quantity' => 1,
                 'rentalPrice' => 25.5,
@@ -281,6 +326,12 @@ final class EventDataTest extends ModelTestCase
             'SDS-6-01' => [
                 'name' => 'Showtec SDS-6',
                 'reference' => 'SDS-6-01',
+                'stockQuantity' => 2,
+                'attributes' => [
+                    ['id' => 4, 'name' => 'Conforme', 'type' => 'boolean', 'value' => true, 'unit' => null],
+                    ['id' => 3, 'name' => 'Puissance', 'type' => 'integer', 'value' => 60, 'unit' => 'W'],
+                    ['id' => 1, 'name' => 'Poids', 'type' => 'float', 'value' => 3.15, 'unit' => 'kg'],
+                ],
                 'park' => 'default',
                 'quantity' => 1,
                 'rentalPrice' => 15.95,
@@ -492,6 +543,33 @@ final class EventDataTest extends ModelTestCase
                         'CL3' => [
                             'reference' => 'CL3',
                             'name' => 'Console Yamaha CL3',
+                            'stockQuantity' => 5,
+                            'attributes' => [
+                                [
+                                    'id' => 3,
+                                    'name' =>
+                                    'Puissance',
+                                    'type' => 'integer',
+                                    'value' => 850,
+                                    'unit' => 'W',
+                                ],
+                                [
+                                    'id' => 2,
+                                    'name' =>
+                                    'Couleur',
+                                    'type' => 'string',
+                                    'value' => 'Grise',
+                                    'unit' => null,
+                                ],
+                                [
+                                    'id' => 1,
+                                    'name' =>
+                                    'Poids',
+                                    'type' => 'float',
+                                    'value' => 36.5,
+                                    'unit' => 'kg',
+                                ],
+                            ],
                             'park' => 'default',
                             'quantity' => 1,
                             'rentalPrice' => 300.0,
@@ -508,6 +586,23 @@ final class EventDataTest extends ModelTestCase
                         'DBXPA2' => [
                             'reference' => 'DBXPA2',
                             'name' => 'Processeur DBX PA2',
+                            'stockQuantity' => 2,
+                            'attributes' => [
+                                [
+                                    'id' => 3,
+                                    'name' => 'Puissance',
+                                    'type' => 'integer',
+                                    'value' => 35,
+                                    'unit' => 'W',
+                                ],
+                                [
+                                    'id' => 1,
+                                    'name' => 'Poids',
+                                    'type' => 'float',
+                                    'value' => 2.2,
+                                    'unit' => 'kg',
+                                ],
+                            ],
                             'park' => 'default',
                             'quantity' => 1,
                             'rentalPrice' => 25.5,
@@ -524,6 +619,30 @@ final class EventDataTest extends ModelTestCase
                         'SDS-6-01' => [
                             'reference' => 'SDS-6-01',
                             'name' => 'Showtec SDS-6',
+                            'stockQuantity' => 2,
+                            'attributes' => [
+                                [
+                                    'id' => 4,
+                                    'name' => 'Conforme',
+                                    'type' => 'boolean',
+                                    'value' => true,
+                                    'unit' => null,
+                                ],
+                                [
+                                    'id' => 3,
+                                    'name' => 'Puissance',
+                                    'type' => 'integer',
+                                    'value' => 60,
+                                    'unit' => 'W',
+                                ],
+                                [
+                                    'id' => 1,
+                                    'name' => 'Poids',
+                                    'type' => 'float',
+                                    'value' => 3.15,
+                                    'unit' => 'kg',
+                                ],
+                            ],
                             'park' => 'default',
                             'quantity' => 1,
                             'rentalPrice' => 15.95,

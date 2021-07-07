@@ -29,9 +29,9 @@ export default {
     'saved': "Your profile was saved.",
   },
 
-  'page-settings': {
+  'page-user-settings': {
     'title': "Your settings",
-    'help': "The « duration of a session » is the time allowed before you're automatically logged out.",
+    'help': "The \"duration of a session\" is the time allowed before you're automatically logged out.",
     'auth-token-validity-duration': "Max. duration of a session",
     'interface': "Interface",
     'language': "Language",
@@ -44,6 +44,7 @@ export default {
     'help': (
       `Click and drag to move timeline.
       Use mouse wheel to zoom in / out.
+      Hover an event with your mouse to display details about it.
       Double-click on an empty column to create an event with start date pre-filled.`
     ),
     'help-center-view-on-today': "Center calendar on today",
@@ -64,19 +65,34 @@ export default {
     'this-event-is-past': "This event is past.",
     'this-event-is-currently-running': "This event is currently running.",
     'this-event-is-confirmed': "This event is confirmed.",
-    'this-event-is-locked-past-confirmed': "This event is locked because it's confirmed, and past.",
+    'this-event-is-not-confirmed': "This event is not confirmed yet!",
+    'this-event-is-archived': "This event is archived.",
+    'this-event-is-locked': "This event is locked because it's confirmed or its return inventory is done.",
     'this-event-has-missing-materials': "This event has missing materials.",
+    'this-event-needs-its-return-inventory': "It's necessary to make the return inventory of this event!",
+    'this-event-has-not-returned-materials': "This event has some not-returned materials.",
     'all-events': "All events",
     'event-with-missing-material-only': "Events with missing material only?",
     'display-all-parks': "All parks",
+    'caption': {
+      'title': "Caption:",
+      'archived': "Archived",
+      'past-and-ok': "Past, inventory done and OK",
+      'past-material-not-returned': "Material not returned!",
+      'past-no-inventory': "Past without inventory",
+      'past-not-confirmed': "Past and not confirmed",
+      'current-confirmed': "Current and confirmed",
+      'current-not-confirmed': "Current not confirmed",
+      'future-confirmed': "Future and confirmed",
+      'future-not-confirmed': "Future not confirmed",
+    },
   },
 
   'page-events': {
     'help-edit': "",
     'back-to-calendar': "Back to calendar",
     'add': "New event",
-    'edit': "Modify event «\u00a0{pageSubTitle}\u00a0»",
-    'edit-title': "Modify event",
+    'edit': "Modify event \"{pageSubTitle}\"",
     'edit-event': "Modify event",
     'save-and-back-to-calendar': "Save and back to calendar",
     'save-and-continue': "Save and continue",
@@ -98,21 +114,46 @@ export default {
     'event-missing-materials-help': "These are the missing materials for the period of the event, because it is used in another event, the number needed is too high, or there are some out of order. These materials must therefore be added to the park, or rented from another company.",
     'warning-no-material': "Warning: this event is empty, there is no material at the moment!",
     'warning-no-beneficiary': "Warning: this event has no beneficiaries!",
-    'missing-material-count': "Need {quantity}, missing\u00a0{missing}!",
     'beneficiary-billing-help': "Only the first beneficiary in the list will be displayed on the bill.",
+    'missing-material-count': "Need {quantity}, missing\u00a0{missing}!",
+    'problems-on-returned-materials': "Problems on returned materials",
+    'return-inventory-not-done-yet': "Materials return inventory hasn't been done yet, or is not finished.",
+    'do-or-terminate-return-inventory': "Do or finish the return inventory",
+    'view-return-inventory': "View the return inventory in details",
+    'not-returned-material-count': [
+      "{returned} returned on {out}\u00a0! Missing {missing}.",
+      "{returned} returned on {out}\u00a0! Missing {missing}.",
+    ],
+    'broken-material-count': [
+      "{broken} returned broken\u00a0!",
+      "{broken} returned broken\u00a0!",
+    ],
+  },
+
+  'page-event-return': {
+    'title': "Return of the material of event \"{pageSubTitle}\"",
+    'help': "",
+    'this-event-is-not-past': "This event is not finished, so it is not possible to check its return at the moment.",
+    'confirm-terminate-title': "Do you really want to terminate this return inventory?",
+    'confirm-terminate-text': "Please note that it will no longer be possible to modify it.",
+    'confirm-terminate-text-with-broken': "This will update all the \"out of order\" quantities for the concerned materials, and it will no longer be possible to modify this inventory.",
+    'inventory-done': "Inventory done",
+    'some-material-is-missing': "Some materials did not return from this event!",
+    'all-material-returned': "Congratulations! All materials were returned for this event.",
+    'some-material-came-back-broken': "Some materials came back broken.",
   },
 
   'page-users': {
     'title': "Users",
     'help': "You can send an email to an user by clicking on his/her address.",
     'help-edit': (
-      `- Group «\u00a0Administrator\u00a0» group gives all access rights to user.
-      - Group «\u00a0Member\u00a0» allow user to use most parts of Robert application.
-      - Group «\u00a0Visitor\u00a0» group gives a limited access to some data.`
+      `- Group "Administrator" group gives all access rights to user.
+      - Group "Member" allow user to use most parts of Robert application.
+      - Group "Visitor" group gives a limited access to some data.`
     ),
     'action-add': "New user",
     'add': "New user",
-    'edit': "Modify user «\u00a0{pageSubTitle}\u00a0»",
+    'edit': "Modify user \"{pageSubTitle}\"",
     'edit-title': "Modify user",
     'confirm-delete': "Move this user in trash bin?",
     'confirm-permanently-delete': "Do you really want to permanently delete this user?",
@@ -126,14 +167,14 @@ export default {
     'help': "You can send an email to a beneficiary by clicking on his/her address.",
     'action-add': "New beneficiary",
     'add': "New beneficiary",
-    'edit': "Modify beneficiary «\u00a0{pageSubTitle}\u00a0»",
+    'edit': "Modify beneficiary \"{pageSubTitle}\"",
     'edit-title': "Modify beneficiary",
     'beneficiary-type': "Beneficiary type",
     'person': "Natural person (individual)",
     'company': "Legal entity (company)",
     'help-edit': (
       `Only first name and last name are mandatory.
-      The «\u00a0reference\u00a0» is a customer or member number for your internal management, which will appear on the output sheets, estimates and bills. It must be unique.`
+      The "reference" is a customer or member number for your internal management, which will appear on the output sheets, estimates and bills. It must be unique.`
     ),
     'confirm-delete': "Move this beneficiary in trash bin?",
     'confirm-permanently-delete': "Do you really want to permanently delete this beneficiary?",
@@ -144,7 +185,7 @@ export default {
   'page-companies': {
     'title': "Companies",
     'add': "New company",
-    'edit': "Modify company «\u00a0{pageSubTitle}\u00a0»",
+    'edit': "Modify company \"{pageSubTitle}\"",
     'edit-title': "Modify company",
     'edit-btn': "Modify company",
     'create-new': "Add a new company",
@@ -164,22 +205,22 @@ export default {
       on {date}`
     ),
     'add': "New material",
-    'edit': "Modify material «\u00a0{pageSubTitle}\u00a0»",
-    'edit-title': "Modify material",
+    'edit': "Modify material \"{pageSubTitle}\"",
     'help-edit': (
       `Give a short name, and use the description field to detail the material if needed.
 
       The material picture must be of type JPG, PNG or WEBP, and cannot exceed 10\u00a0MB.`
     ),
-    'view': "Details of material «\u00a0{pageSubTitle}\u00a0»",
     'confirm-delete': "Move this material in trash bin?",
     'confirm-permanently-delete': "Do you really want to permanently delete this material?",
     'confirm-restore': "Do you really want to restore this material?",
     'saved': "Material saved.",
     'clear-filters': "Clear filters",
+    'print-complete-list': "Print the complete materials list",
   },
 
   'page-materials-view': {
+    'title': "Details of material \"{pageSubTitle}\"",
     'infos': {
       'click-to-open-image': "Click to open image in a new tab.",
     },
@@ -202,7 +243,7 @@ export default {
     'title': "Material special attributes",
     'help': (
       `Here you can add fields that allows you to describe your material according to your own criteria.
-      Once created, only the name of a special attribute can be modified.`
+      Once created, a special attribute cannot be modified (except for its name).`
     ),
     'go-back-to-material': "Back to material",
     'name': "Name of the attribute",
@@ -251,7 +292,7 @@ export default {
 
   'page-subcategories': {
     'add': "Do you really want to delete this category?",
-    'prompt-add': "New sub-category of «\u00a0{categoryName}\u00a0»",
+    'prompt-add': "New sub-category of \"{categoryName}\"",
     'sub-category-name': "Sub-category name",
     'create': "Create sub-category",
     'prompt-modify': "Modify sub-category",
@@ -268,7 +309,7 @@ export default {
     'help': "You can send an email to a technician by clicking on his/her address.",
     'action-add': "New technician",
     'add': "New technician",
-    'edit': "Modify technician «\u00a0{pageSubTitle}\u00a0»",
+    'edit': "Modify technician \"{pageSubTitle}\"",
     'edit-title': "Modify technician",
     'help-edit': "Only first name and last name are mandatory.",
     'confirm-delete': "Move this technician in trash bin?",
@@ -282,7 +323,7 @@ export default {
     'help': "You can click on the number of items in the park to display the list.",
     'action-add': "New materials park",
     'add': "New materials park",
-    'edit': "Modify park «\u00a0{pageSubTitle}\u00a0»",
+    'edit': "Modify park \"{pageSubTitle}\"",
     'edit-title': "Modify park",
     'help-edit': "Only the name of the park is mandatory.",
     'confirm-delete': "Move this park in trash bin? This won't delete materials in this park.",
@@ -291,6 +332,8 @@ export default {
     'saved': "Park saved.",
     'total-items': 'Totals',
     'display-events-for-park': "See events",
+    'display-materials-of-this-park': "See materials list of this park",
+    'print-materials-of-this-park': "Print list of this park",
   },
 
   'page-tags': {
@@ -309,6 +352,24 @@ export default {
     'confirm-restore': "Do you really want to restore this tag?",
     'saved': "Tag saved.",
     'deleted': "Tag deleted.",
+  },
+
+  'page-settings': {
+    'title': "Application settings",
+    'event-summary': {
+      'title': "Event summaries",
+      'help': "Here you can customize the PDF event summaries",
+      'material-list': "Materials list",
+      'display-mode': "Display mode",
+      'list-display-mode-categories': "Sorted by categories",
+      'list-display-mode-sub-categories': "Sorted by sub-categories",
+      'list-display-mode-parks': "Sorted by parks",
+      'list-display-mode-flat': "Not sorted",
+      'custom-text': "Custom text (bottom of page)",
+      'custom-text-title': "Text title",
+      'custom-text-content': "Text content",
+      'saved': "Event summaries settings were successfully saved.",
+    },
   },
 
   'page-estimate': {

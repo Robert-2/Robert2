@@ -9,26 +9,36 @@
     color: $text-danger-color;
   }
 
+  &--not-confirmed {
+    opacity: .58;
+  }
+
+  &--with-warning {
+    font-weight: 600;
+  }
+
   &--past {
     background-color: $calendar-event-past-color !important;
-    color: $text-base-color !important;
 
     &.vis-selected {
       background-color: lighten($calendar-event-past-color, 10%) !important;
     }
   }
 
-  &--locked {
-  }
-
-  &--with-warning {
-  }
-
-  &--confirmed {
-    background-color: $calendar-event-confirmed-color !important;
+  &--no-return-inventory {
+    background-color: $calendar-event-no-return-inventory-color !important;
 
     &.vis-selected {
-      background-color: lighten($calendar-event-confirmed-color, 10%) !important;
+      background-color: lighten($calendar-event-no-return-inventory-color, 10%) !important;
+    }
+  }
+
+  &--archived {
+    background-color: $calendar-event-archived-color !important;
+    color: $calendar-event-archived-text-color !important;
+
+    &.vis-selected {
+      background-color: lighten($calendar-event-archived-color, 5%) !important;
     }
   }
 

@@ -16,8 +16,10 @@ class EventMaterial extends Pivot
     // ——————————————————————————————————————————————————————
 
     protected $casts = [
-        'event_id'    => 'integer',
+        'event_id' => 'integer',
         'material_id' => 'integer',
-        'quantity'    => 'integer',
+        'quantity' => 'integer',
+        'quantity_returned' => 'integer',
+        'quantity_broken' => 'integer',
     ];
 }

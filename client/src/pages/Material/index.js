@@ -1,8 +1,7 @@
 import Config from '@/config/globalConfig';
-import store from '@/store';
 import formatOptions from '@/utils/formatOptions';
 import Help from '@/components/Help/Help.vue';
-import FormField from '@/components/FormField/FormField.vue';
+import FormField from '@/components/FormField';
 import ImageWithUpload from '@/components/ImageWithUpload/ImageWithUpload.vue';
 import Progressbar from '@/components/Progressbar/Progressbar.vue';
 
@@ -27,7 +26,7 @@ export default {
         id: this.$route.params.id || null,
         name: '',
         reference: '',
-        park_id: '',
+        park_id: this.$route.query.parkId || '',
         category_id: '',
         rental_price: showBilling ? '' : 0,
         stock_quantity: '1',
@@ -63,20 +62,24 @@ export default {
   },
   computed: {
     entitiesState() {
-      const { parks, categories } = store.state;
+      const { parks, categories } = this.$store.state;
       return (parks.isFetched && categories.isFetched) ? 'ready' : 'fetching';
     },
 
     parksOptions() {
-      return store.getters['parks/options'];
+      return this.$store.getters['parks/options'];
     },
 
     firstPark() {
-      return store.getters['parks/firstPark'];
+      return this.$store.getters['parks/firstPark'];
     },
 
     categoriesOptions() {
-      return store.getters['categories/options'];
+      return this.$store.getters['categories/options'];
+    },
+
+    isAdmin() {
+      return this.$store.getters['auth/is']('admin');
     },
 
     pictureUrl() {
@@ -86,8 +89,8 @@ export default {
     },
   },
   mounted() {
-    store.dispatch('parks/fetch');
-    store.dispatch('categories/fetch');
+    this.$store.dispatch('parks/fetch');
+    this.$store.dispatch('categories/fetch');
 
     this.fetchMaterial();
     this.setDefaultPark();
@@ -118,7 +121,7 @@ export default {
     },
 
     setDefaultPark() {
-      if (this.material.id === null) {
+      if (this.material.id === null && this.parksOptions.length === 1) {
         this.material.park_id = this.firstPark?.id || '';
       }
     },
@@ -263,7 +266,7 @@ export default {
     setMaterialData(data) {
       this.material = data;
       this.initialPicture = data.picture;
-      store.commit('setPageSubTitle', this.material.name);
+      this.$store.commit('setPageSubTitle', this.material.name);
       this.updateSubCategories();
       this.setMaterialAttributes();
     },
@@ -280,7 +283,7 @@ export default {
     },
 
     updateSubCategories() {
-      const categories = store.state.categories.list;
+      const categories = this.$store.state.categories.list;
       const category = categories.find(
         (_category) => parseInt(_category.id, 10) === parseInt(this.material.category_id, 10),
       );

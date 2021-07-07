@@ -1,3 +1,5 @@
+@use 'sass:math';
+
 .MaterialsFilters {
   display: flex;
   align-items: center;
@@ -7,7 +9,7 @@
   &__reset {
     margin-left: 0;
     margin-bottom: $content-padding-large-horizontal;
-    margin-right: $content-padding-small-vertical / 2;
+    margin-right: math.div($content-padding-small-vertical, 2);
     padding: 8px 10px;
   }
 
@@ -15,7 +17,7 @@
     flex: 0 0 auto;
     min-width: 150px;
     margin-bottom: $content-padding-large-horizontal;
-    margin-right: $content-padding-small-vertical / 2;
+    margin-right: math.div($content-padding-small-vertical, 2);
     padding: 5.5px 10px;
 
     .vs__selected-options {

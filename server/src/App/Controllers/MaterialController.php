@@ -3,20 +3,37 @@ declare(strict_types=1);
 
 namespace Robert2\API\Controllers;
 
+use DI\Container;
 use Robert2\API\Config\Config;
 use Robert2\API\Controllers\Traits\Taggable;
 use Robert2\API\Controllers\Traits\WithCrud;
+use Robert2\API\Controllers\Traits\FileResponse;
+use Robert2\Lib\Pdf\Pdf;
+use Robert2\Lib\Domain\MaterialsData;
 use Robert2\API\Models\Document;
 use Robert2\API\Models\Event;
 use Robert2\API\Models\Material;
+use Robert2\API\Models\Category;
+use Robert2\API\Models\Park;
+use Robert2\API\Services\I18n;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
 use Slim\Http\ServerRequest as Request;
 
 class MaterialController extends BaseController
 {
-    use WithCrud, Taggable {
+    use WithCrud, FileResponse, Taggable {
         Taggable::getAll insteadof WithCrud;
+    }
+
+    /** @var I18n */
+    private $i18n;
+
+    public function __construct(Container $container, I18n $i18n)
+    {
+        parent::__construct($container);
+
+        $this->i18n = $i18n;
     }
 
     // ——————————————————————————————————————————————————————
@@ -100,6 +117,17 @@ class MaterialController extends BaseController
         return $response->withJson($results);
     }
 
+    public function getParkAll(Request $request, Response $response): Response
+    {
+        $parkId = (int)$request->getAttribute('parkId');
+        if (!Park::staticExists($parkId)) {
+            throw new HttpNotFoundException($request);
+        }
+
+        $materials = Material::getParkAll($parkId);
+        return $response->withJson($materials);
+    }
+
     // ------------------------------------------------------
     // -
     // -    Setters
@@ -131,9 +159,9 @@ class MaterialController extends BaseController
     // —
     // ------------------------------------------------------
 
-    protected function _saveMaterial(?int $id, array $postData): array
+    protected function _saveMaterial(?int $id, $postData): array
     {
-        if (empty($postData)) {
+        if (!is_array($postData) || empty($postData)) {
             throw new \InvalidArgumentException(
                 "Missing request data to process validation",
                 ERROR_VALIDATION
@@ -161,7 +189,7 @@ class MaterialController extends BaseController
 
         // - Removing `picture` field because it must be edited
         //   using handleUploadPicture() method (see below)
-        if (array_key_exists('picture', $postData)) {
+        if (array_key_exists('picture', $postData) && !empty($postData['picture'])) {
             unset($postData['picture']);
         }
 
@@ -308,6 +336,44 @@ class MaterialController extends BaseController
         return $response->withJson($result, SUCCESS_OK);
     }
 
+    public function getEvents(Request $request, Response $response): Response
+    {
+        $id = (int)$request->getAttribute('id');
+        $material = Material::find($id);
+        if (!$material) {
+            throw new HttpNotFoundException($request);
+        }
+
+        $useMultipleParks = Park::count() > 1;
+
+        $data = [];
+        $today = (new \DateTime())->setTime(0, 0, 0);
+        foreach ($material->events as $event) {
+            $event['has_missing_materials'] = null;
+            $event['has_not_returned_materials'] = null;
+            $event['parks'] = null;
+
+            if ($useMultipleParks) {
+                $event['parks'] = Event::getParks($event['id']);
+            }
+
+            if ($event['is_archived']) {
+                $data[] = $event;
+                continue;
+            }
+
+            $eventEndDate = new \DateTime($event['end_date']);
+            if ($eventEndDate < $today && $event['is_return_inventory_done']) {
+                // TODO: ne mettre ce champ à true que si c'est LE matériel actuel ($id) qui n'a pas été retourné.
+                $event['has_not_returned_materials'] = Event::hasNotReturnedMaterials($event['id']);
+            }
+
+            $data[] = $event;
+        }
+
+        return $response->withJson($data, SUCCESS_OK);
+    }
+
     public function getPicture(Request $request, Response $response): Response
     {
         $id = (int)$request->getAttribute('id');
@@ -326,5 +392,68 @@ class MaterialController extends BaseController
         $response = $response->write($pictureContent);
         $mimeType = mime_content_type($picturePath);
         return $response->withHeader('Content-Type', $mimeType);
+    }
+
+    public function getAllPdf(Request $request, Response $response): Response
+    {
+        $onlyParkId = $request->getQueryParam('park', null);
+
+        $categories = Category::get()->toArray();
+        $parks = Park::with('materials')->get()->each->setAppends([])->toArray();
+
+        $parksMaterials = [];
+        foreach ($parks as $park) {
+            if ($onlyParkId && (int)$onlyParkId !== $park['id']) {
+                continue;
+            }
+
+            if (empty($park['materials'])) {
+                continue;
+            }
+
+            $materialsData = new MaterialsData(array_values($park['materials']));
+            $materialsData->setParks($parks)->setCategories($categories);
+            $parksMaterials[] = [
+                'id' => $park['id'],
+                'name' => $park['name'],
+                'materials' => $materialsData->getBySubCategories(true),
+            ];
+        }
+
+        usort($parksMaterials, function ($a, $b) {
+            return strcmp($a['name'], $b['name'] ?: '');
+        });
+
+        $company = Config::getSettings('companyData');
+
+        $parkOnlyName = null;
+        if ($onlyParkId) {
+            $parkKey = array_search($onlyParkId, array_column($parks, 'id'));
+            if ($parkKey !== false) {
+                $parkOnlyName = $parks[$parkKey]['name'];
+            }
+        }
+
+        $fileName = sprintf(
+            '%s-%s-%s.pdf',
+            slugify($this->i18n->translate('materials-list')),
+            slugify($parkOnlyName ?: $company['name']),
+            (new \DateTime())->format('Y-m-d')
+        );
+        if (isTestMode()) {
+            $fileName = sprintf('TEST-%s', $fileName);
+        }
+
+        $data = [
+            'locale' => Config::getSettings('defaultLang'),
+            'company' => $company,
+            'parkOnlyName' => $parkOnlyName,
+            'currency' => Config::getSettings('currency')['iso'],
+            'parksMaterialsList' => $parksMaterials,
+        ];
+
+        $fileContent = Pdf::createFromTemplate('materials-list-default', $data);
+
+        return $this->_responseWithFile($response, $fileName, $fileContent);
     }
 }

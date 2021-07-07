@@ -29,7 +29,7 @@ export default {
     'saved': "Votre profil a bien été sauvegardé.",
   },
 
-  'page-settings': {
+  'page-user-settings': {
     'title': "Vos paramètres",
     'help': "La « durée d'une session » est le temps imparti avant votre déconnexion automatique de l'application.",
     'auth-token-validity-duration': "Durée max. d'une session",
@@ -44,6 +44,7 @@ export default {
     'help': (
       `Cliquez-glissez pour déplacer la frise temporelle.
       Utilisez la molette pour zoomer / dézoomer.
+      Survolez un événement avec la souris pour en voir les détails.
       Double-cliquez sur une colonne vide pour créer un événement avec la date de départ pré-remplie.`
     ),
     'help-center-view-on-today': "Centrer le calendrier sur aujourd'hui",
@@ -64,11 +65,27 @@ export default {
     'this-event-is-past': "Cet événement est passé.",
     'this-event-is-currently-running': "Cet événement se déroule en ce moment.",
     'this-event-is-confirmed': "Cet événement est confirmé.",
-    'this-event-is-locked-past-confirmed': "Cet événement est verrouillé car il est confirmé, et déjà passé.",
+    'this-event-is-not-confirmed': "Cet événement n'est pas encore confirmé\u00a0!",
+    'this-event-is-archived': "Cet événement est archivé.",
+    'this-event-is-locked': "Cet événement est verrouillé parce qu'il est confirmé ou que son inventaire de retour a été effectué.",
     'this-event-has-missing-materials': "Cet événement a du matériel manquant.",
+    'this-event-needs-its-return-inventory': "Il faut faire l'inventaire de retour de cet événement\u00a0!",
+    'this-event-has-not-returned-materials': "Cet événement a du matériel qui n'a pas été retourné.",
     'all-events': "Tous les événements",
     'event-with-missing-material-only': "Événements en manque de matériel uniquement\u00a0?",
     'display-all-parks': "Tous les parcs",
+    'caption': {
+      'title': "Légende\u00a0:",
+      'archived': "Archivé",
+      'past-and-ok': "Passé, inventaire fait et OK",
+      'past-material-not-returned': "Matériel non retourné\u00a0!",
+      'past-no-inventory': "Passé sans inventaire",
+      'past-not-confirmed': "Passé et non confirmé",
+      'current-confirmed': "Actuel et confirmé",
+      'current-not-confirmed': "Actuel non confirmé",
+      'future-confirmed': "Futur et confirmé",
+      'future-not-confirmed': "Futur non confirmé",
+    },
   },
 
   'page-events': {
@@ -97,8 +114,33 @@ export default {
     'event-missing-materials-help': "Il s'agit du matériel manquant pour la période de l'événement, car il est utilisé dans un autre événement, le nombre voulu est trop important, ou quelques uns sont en panne. Ce matériel doit donc être ajouté au parc, ou bien loué auprès d'une autre société.",
     'warning-no-material': "Attention, cet événement est vide, il ne contient aucun matériel pour le moment\u00a0!",
     'warning-no-beneficiary': "Attention, cet événement n'a aucun bénéficiaire\u00a0!",
-    'missing-material-count': "Besoin de {quantity}, il en manque\u00a0{missing}\u00a0!",
     'beneficiary-billing-help': "Seul le premier bénéficiaire de la liste apparaîtra sur la facture.",
+    'missing-material-count': "Besoin de {quantity}, il en manque\u00a0{missing}\u00a0!",
+    'problems-on-returned-materials': "Problèmes sur le matériel retourné",
+    'return-inventory-not-done-yet': "L'inventaire du retour de matériel n'a pas été fait, ou n'est pas encore terminé.",
+    'do-or-terminate-return-inventory': "Faire ou terminer l'inventaire de retour du matériel",
+    'view-return-inventory': "Voir l'inventaire de retour en détail",
+    'not-returned-material-count': [
+      "{returned} retourné sur {out}\u00a0! Il en manque {missing}.",
+      "{returned} retournés sur {out}\u00a0! Il en manque {missing}.",
+    ],
+    'broken-material-count': [
+      "{broken} revenu en panne\u00a0!",
+      "{broken} revenus en panne\u00a0!",
+    ],
+  },
+
+  'page-event-return': {
+    'title': "Retour du matériel de l'événement «\u00a0{pageSubTitle}\u00a0»",
+    'help': "",
+    'this-event-is-not-past': "Cet événement n'est pas terminé, il n'est donc pas possible de vérifier son retour pour le moment.",
+    'confirm-terminate-title': "Voulez-vous vraiment terminer cet inventaire de retour\u00a0?",
+    'confirm-terminate-text': "Veuillez noter qu'il ne sera plus possible de le modifier.",
+    'confirm-terminate-text-with-broken': "Ceci aura pour effet de mettre à jour toutes les quantités «\u00a0en panne\u00a0» du matériel concerné, et il ne sera plus possible de modifier cet inventaire.",
+    'inventory-done': "Inventaire terminé",
+    'some-material-is-missing': "Du matériel n'est pas revenu de cet événement\u00a0!",
+    'all-material-returned': "Félicitations\u00a0! Tout le matériel a bien été retourné pour cet événement.",
+    'some-material-came-back-broken': "Du matériel est revenu en panne.",
   },
 
   'page-users': {
@@ -164,22 +206,21 @@ export default {
     ),
     'add': "Nouveau matériel",
     'edit': "Modifier le matériel «\u00a0{pageSubTitle}\u00a0»",
-    'edit-title': "Modifier le matériel",
     'help-edit': (
       `Trouvez un nom assez court, et utilisez plutôt la description pour détailler le matériel si besoin.
 
       La photo du matériel doit être au format JPG, PNG ou WEBP, et ne doit pas dépasser 10\u00a0Mo.`
     ),
-    'view': "Détails du matériel «\u00a0{pageSubTitle}\u00a0»",
     'confirm-delete': "Mettre ce matériel à la corbeille\u00a0?",
     'confirm-permanently-delete': "Voulez-vous vraiment supprimer définitivement ce matériel\u00a0?",
     'confirm-restore': "Voulez-vous vraiment restaurer ce matériel\u00a0?",
     'saved': "Matériel sauvegardé.",
     'clear-filters': "Réinitialiser les filtres",
+    'print-complete-list': "Imprimer la liste complète du matériel",
   },
 
   'page-materials-view': {
-    'title': "Détails du matériel",
+    'title': "Détails du matériel «\u00a0{pageSubTitle}\u00a0»",
     'infos': {
       'click-to-open-image': "Cliquez pour ouvrir l'image en grand dans un nouvel onglet.",
     },
@@ -202,7 +243,7 @@ export default {
     'title': "Caractéristiques spéciales du matériel",
     'help': (
       `Ici vous pouvez ajouter les champs qui permettent de décrire votre matériel selon vos propres critères.
-      Une fois créée, seul le nom de la caractéristique spéciale pourra modifié.`
+      Une fois créée, une caractéristique spéciale ne pourra plus être modifiée (sauf son nom).`
     ),
     'go-back-to-material': "Retourner au matériel",
     'name': "Nom de la caractéristique",
@@ -291,6 +332,8 @@ export default {
     'saved': "Parc sauvegardé.",
     'total-items': 'Totaux',
     'display-events-for-park': "Voir les événements",
+    'display-materials-of-this-park': "Voir le matériel de ce parc",
+    'print-materials-of-this-park': "Imprimer la liste de ce parc",
   },
 
   'page-tags': {
@@ -309,6 +352,24 @@ export default {
     'confirm-restore': "Voulez-vous vraiment restaurer cette étiquette\u00a0?",
     'saved': "Étiquette sauvegardée.",
     'deleted': "Étiquette supprimée.",
+  },
+
+  'page-settings': {
+    'title': "Paramètres de l'application",
+    'event-summary': {
+      'title': "Fiches de sortie",
+      'help': "Ici, vous pouvez personnaliser les fiches de sortie des événements.",
+      'material-list': "Liste du matériel",
+      'display-mode': "Mode de présentation",
+      'list-display-mode-categories': "Triée par catégories",
+      'list-display-mode-sub-categories': "Triée par sous-catégories",
+      'list-display-mode-parks': "Triée par parcs",
+      'list-display-mode-flat': "Liste non-triée",
+      'custom-text': "Texte personnalisé (bas de page)",
+      'custom-text-title': "Titre du texte",
+      'custom-text-content': "Contenu du texte",
+      'saved': "Les paramètres des fiches de sortie ont bien été sauvegardés.",
+    },
   },
 
   'page-estimate': {

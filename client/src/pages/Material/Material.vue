@@ -156,7 +156,7 @@
                 @change="handleAttributeChange"
               />
             </div>
-            <router-link to="/attributes" class="Material__modify-attribute-link">
+            <router-link v-if="isAdmin" to="/attributes" class="Material__modify-attribute-link">
               <i class="fas fa-plus" /> {{ $t('page-attributes.add-attributes') }}
             </router-link>
           </section>

@@ -8,6 +8,7 @@ import UserProfile from '@/pages/UserProfile/UserProfile.vue';
 import UserSettings from '@/pages/UserSettings/UserSettings.vue';
 import Calendar from '@/pages/Calendar/Calendar.vue';
 import Event from '@/pages/Event/Event.vue';
+import EventReturn from '@/pages/EventReturn/EventReturn.vue';
 import Users from '@/pages/Users/Users.vue';
 import User from '@/pages/User/User.vue';
 import Beneficiaries from '@/pages/Beneficiaries/Beneficiaries.vue';
@@ -23,6 +24,7 @@ import Technician from '@/pages/Technician/Technician.vue';
 import Categories from '@/pages/Categories/Categories.vue';
 import Parks from '@/pages/Parks/Parks.vue';
 import Park from '@/pages/Park/Park.vue';
+import Settings from '@/pages/Settings';
 
 Vue.use(Router);
 
@@ -34,7 +36,6 @@ const router = new Router({
       name: 'login',
       component: Login,
       meta: {
-        title: 'page-login.title',
         requiresAuth: false,
       },
     },
@@ -45,19 +46,17 @@ const router = new Router({
       meta: {
         resource: 'users',
         title: 'page-profile.title',
-        readableName: 'page-profile.title',
         requiresAuth: true,
         requiresGroups: ['admin', 'member', 'visitor'],
       },
     },
     {
-      path: '/settings',
+      path: '/user-settings',
       name: 'user-settings',
       component: UserSettings,
       meta: {
         resource: 'users',
-        title: 'page-settings.title',
-        readableName: 'page-settings.title',
+        title: 'page-user-settings.title',
         requiresAuth: true,
         requiresGroups: ['admin', 'member', 'visitor'],
       },
@@ -69,7 +68,6 @@ const router = new Router({
       meta: {
         resource: 'events',
         title: 'page-calendar.title',
-        readableName: 'page-calendar.title',
         requiresAuth: true,
         requiresGroups: ['admin', 'member', 'visitor'],
       },
@@ -81,7 +79,6 @@ const router = new Router({
       meta: {
         resource: 'events',
         title: 'page-events.add',
-        readableName: 'page-events.add',
         requiresAuth: true,
         requiresGroups: ['admin', 'member'],
       },
@@ -92,8 +89,18 @@ const router = new Router({
       component: Event,
       meta: {
         resource: 'events',
-        title: 'page-events.edit-event',
-        readableName: 'page-events.edit',
+        title: 'page-events.edit',
+        requiresAuth: true,
+        requiresGroups: ['admin', 'member'],
+      },
+    },
+    {
+      path: '/event-return/:id',
+      name: 'eventReturnMaterial',
+      component: EventReturn,
+      meta: {
+        resource: 'events',
+        title: 'page-event-return.title',
         requiresAuth: true,
         requiresGroups: ['admin', 'member'],
       },
@@ -105,7 +112,6 @@ const router = new Router({
       meta: {
         resource: 'users',
         title: 'page-users.title',
-        readableName: 'page-users.title',
         requiresAuth: true,
         requiresGroups: ['admin'],
       },
@@ -117,7 +123,6 @@ const router = new Router({
       meta: {
         resource: 'users',
         title: 'page-users.add',
-        readableName: 'page-users.add',
         requiresAuth: true,
         requiresGroups: ['admin'],
       },
@@ -128,8 +133,7 @@ const router = new Router({
       component: User,
       meta: {
         resource: 'users',
-        title: 'page-users.edit-title',
-        readableName: 'page-users.edit',
+        title: 'page-users.edit',
         requiresAuth: true,
         requiresGroups: ['admin'],
       },
@@ -141,7 +145,6 @@ const router = new Router({
       meta: {
         resource: 'persons',
         title: 'page-beneficiaries.title',
-        readableName: 'page-beneficiaries.title',
         requiresAuth: true,
         requiresGroups: ['admin', 'member'],
       },
@@ -153,7 +156,6 @@ const router = new Router({
       meta: {
         resource: 'persons',
         title: 'page-beneficiaries.add',
-        readableName: 'page-beneficiaries.add',
         requiresAuth: true,
         requiresGroups: ['admin', 'member'],
       },
@@ -164,8 +166,7 @@ const router = new Router({
       component: Beneficiary,
       meta: {
         resource: 'persons',
-        title: 'page-beneficiaries.edit-title',
-        readableName: 'page-beneficiaries.edit',
+        title: 'page-beneficiaries.edit',
         requiresAuth: true,
         requiresGroups: ['admin', 'member'],
       },
@@ -177,7 +178,6 @@ const router = new Router({
       meta: {
         resource: 'companies',
         title: 'page-companies.add',
-        readableName: 'page-companies.add',
         requiresAuth: true,
         requiresGroups: ['admin', 'member'],
       },
@@ -188,8 +188,7 @@ const router = new Router({
       component: Company,
       meta: {
         resource: 'companies',
-        title: 'page-companies.edit-title',
-        readableName: 'page-companies.edit',
+        title: 'page-companies.edit',
         requiresAuth: true,
         requiresGroups: ['admin', 'member'],
       },
@@ -201,7 +200,6 @@ const router = new Router({
       meta: {
         resource: 'materials',
         title: 'page-materials.title',
-        readableName: 'page-materials.title',
         requiresAuth: true,
         requiresGroups: ['admin', 'member'],
       },
@@ -213,7 +211,6 @@ const router = new Router({
       meta: {
         resource: 'materials',
         title: 'page-materials.add',
-        readableName: 'page-materials.add',
         requiresAuth: true,
         requiresGroups: ['admin', 'member'],
       },
@@ -225,7 +222,6 @@ const router = new Router({
       meta: {
         resource: 'materials',
         title: 'page-materials.edit',
-        readableName: 'page-materials.edit',
         requiresAuth: true,
         requiresGroups: ['admin', 'member'],
       },
@@ -237,7 +233,6 @@ const router = new Router({
       meta: {
         resource: 'materials',
         title: 'page-materials-view.title',
-        readableName: 'page-materials.view',
         requiresAuth: true,
         requiresGroups: ['admin', 'member'],
       },
@@ -249,7 +244,6 @@ const router = new Router({
       meta: {
         resource: 'attributes',
         title: 'page-attributes.title',
-        readableName: 'page-attributes.title',
         requiresAuth: true,
         requiresGroups: ['admin'],
       },
@@ -261,7 +255,6 @@ const router = new Router({
       meta: {
         resource: 'categories',
         title: 'page-categories.title',
-        readableName: 'page-categories.title',
         requiresAuth: true,
         requiresGroups: ['admin'],
       },
@@ -273,7 +266,6 @@ const router = new Router({
       meta: {
         resource: 'persons',
         title: 'page-technicians.title',
-        readableName: 'page-technicians.title',
         requiresAuth: true,
         requiresGroups: ['admin', 'member'],
       },
@@ -285,7 +277,6 @@ const router = new Router({
       meta: {
         resource: 'persons',
         title: 'page-technicians.add',
-        readableName: 'page-technicians.add',
         requiresAuth: true,
         requiresGroups: ['admin', 'member'],
       },
@@ -296,8 +287,7 @@ const router = new Router({
       component: Technician,
       meta: {
         resource: 'persons',
-        title: 'page-technicians.edit-title',
-        readableName: 'page-technicians.edit',
+        title: 'page-technicians.edit',
         requiresAuth: true,
         requiresGroups: ['admin', 'member'],
       },
@@ -309,7 +299,6 @@ const router = new Router({
       meta: {
         resource: 'tags',
         title: 'page-tags.title',
-        readableName: 'page-tags.title',
         requiresAuth: true,
         requiresGroups: ['admin'],
       },
@@ -321,7 +310,6 @@ const router = new Router({
       meta: {
         resource: 'parks',
         title: 'page-parks.title',
-        readableName: 'page-parks.title',
         requiresAuth: true,
         requiresGroups: ['admin'],
       },
@@ -333,7 +321,6 @@ const router = new Router({
       meta: {
         resource: 'parks',
         title: 'page-parks.add',
-        readableName: 'page-parks.add',
         requiresAuth: true,
         requiresGroups: ['admin'],
       },
@@ -344,8 +331,18 @@ const router = new Router({
       component: Park,
       meta: {
         resource: 'parks',
-        title: 'page-parks.edit-title',
-        readableName: 'page-parks.edit',
+        title: 'page-parks.edit',
+        requiresAuth: true,
+        requiresGroups: ['admin'],
+      },
+    },
+    {
+      path: '/settings',
+      name: 'settings',
+      component: Settings,
+      meta: {
+        resource: 'settings',
+        title: 'page-settings.title',
         requiresAuth: true,
         requiresGroups: ['admin'],
       },
@@ -384,7 +381,7 @@ router.beforeEach((to, from, next) => {
   const { title, requiresGroups } = to.matched[0].meta;
 
   if (title) {
-    const translatedName = Vue.i18n.translate(title);
+    const translatedName = Vue.i18n.translate(title, { pageSubTitle: '' });
     document.title = `${translatedName} − ${APP_NAME}`;
   } else {
     document.title = APP_NAME;
@@ -419,7 +416,6 @@ router.beforeEach((to, from, next) => {
   }
 
   if (restrictAccess) {
-    window.localStorage.removeItem('lastVisited');
     store.dispatch('auth/logout').then(() => {
       next({ path: '/login', hash: 'restricted' });
     });
@@ -429,15 +425,13 @@ router.beforeEach((to, from, next) => {
   next();
 });
 
-router.afterEach(({ name, fullPath, matched }) => {
+router.afterEach(({ name, matched }) => {
   if (name === 'login') {
     return;
   }
 
-  window.localStorage.setItem('lastVisited', fullPath);
-
-  const { readableName } = matched[0].meta;
-  store.commit('setPageTitle', readableName);
+  const { title } = matched[0].meta;
+  store.commit('setPageTitle', title ?? '');
 });
 
 export default router;

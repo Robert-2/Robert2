@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Robert2\API\Config;
-use Robert2\API\Errors;
 use Robert2\API\Validation\Validator as V;
 
 class User extends BaseModel
@@ -57,8 +56,16 @@ class User extends BaseModel
 
     public function Events()
     {
+        $selectFields = [
+            'events.id',
+            'title',
+            'start_date',
+            'end_date',
+            'is_confirmed',
+            'is_archived',
+        ];
         return $this->hasMany('Robert2\API\Models\Event')
-            ->select(['events.id', 'title', 'start_date', 'end_date', 'is_confirmed'])
+            ->select($selectFields)
             ->orderBy('start_date');
     }
 
@@ -134,7 +141,7 @@ class User extends BaseModel
         'password',
     ];
 
-    public function edit(?int $id = null, array $data = []): BaseModel
+    public function edit($id = null, array $data = []): BaseModel
     {
         if (isset($data['password']) && !empty($data['password'])) {
             $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);

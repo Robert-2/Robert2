@@ -31,7 +31,7 @@ class ErrorHandler extends CoreErrorHandler
             return $this->exception->getCode();
         }
 
-        $errorCode = $this->exception->getCode() ?: ERROR_SERVER;
+        $errorCode = (int)($this->exception->getCode() ?: ERROR_SERVER);
         if ($errorCode >= 100 and $errorCode <= 599) {
             return $errorCode;
         }

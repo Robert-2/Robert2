@@ -15,12 +15,20 @@
             {{ $t('page-materials.action-add') }}
           </button>
         </router-link>
-        <router-link to="/attributes" v-slot="{ navigate }" custom>
-          <button @click="navigate">
-            <i class="fas fa-cog" />
-            {{ $t('page-materials.manage-attributes') }}
-          </button>
-        </router-link>
+        <Dropdown variant="actions" v-if="isAdmin">
+          <template #items>
+            <router-link to="/attributes" v-slot="{ navigate }" custom>
+              <li :class="dropdownItemClass" @click="navigate">
+                <i class="fas fa-cog" />
+                {{ $t('page-materials.manage-attributes') }}
+              </li>
+            </router-link>
+            <a :class="dropdownItemClass" :href="downloadListingUrl" target="_blank">
+              <i class="fas fa-print" />
+              {{ $t('page-materials.print-complete-list') }}
+            </a>
+          </template>
+        </Dropdown>
       </div>
     </div>
 
@@ -75,6 +83,12 @@
         </div>
         <div slot="replacement_price" slot-scope="material">
           {{ formatAmount(material.row.replacement_price) }}
+        </div>
+        <template #stock_quantity="{ row: material }">
+          {{ getStockQuantity(material) }}
+        </template>
+        <div slot="out_of_order_quantity" slot-scope="material">
+          {{ material.row.out_of_order_quantity || '' }}
         </div>
         <div
           slot="tags"

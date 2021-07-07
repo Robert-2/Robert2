@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace Robert2\Tests;
 
-use Robert2\API\Models;
 use Robert2\API\Errors;
+use Robert2\API\Models\SubCategory;
 
 final class SubCategoryTest extends ModelTestCase
 {
@@ -12,7 +12,7 @@ final class SubCategoryTest extends ModelTestCase
     {
         parent::setUp();
 
-        $this->model = new Models\SubCategory();
+        $this->model = new SubCategory();
     }
 
     public function testTableName(): void
@@ -60,10 +60,10 @@ final class SubCategoryTest extends ModelTestCase
                 'name' => 'Behringer X Air XR18',
                 'description' => 'Mélangeur numérique 18 canaux',
                 'reference' => 'XR18',
-                'park_id' => null,
+                'park_id' => 1,
                 'rental_price' => 49.99,
-                'stock_quantity' => null,
-                'out_of_order_quantity' => null,
+                'stock_quantity' => 0,
+                'out_of_order_quantity' => 0,
                 'replacement_price' => 419.0,
                 'tags' => [],
                 'attributes' => [

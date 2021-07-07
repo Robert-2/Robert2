@@ -5,8 +5,8 @@ namespace Robert2\Tests;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Robert2\API\Errors\ValidationException;
-use Robert2\API\Models;
 use Robert2\API\Models\User;
+use Robert2\API\Models\UserSetting;
 
 final class UserTest extends ModelTestCase
 {
@@ -159,14 +159,14 @@ final class UserTest extends ModelTestCase
     {
         $this->expectException(ValidationException::class);
         $this->expectExceptionCode(ERROR_VALIDATION);
-        Models\User::new([]);
+        User::new([]);
     }
 
     public function testCreateBadData(): void
     {
         $this->expectException(ValidationException::class);
         $this->expectExceptionCode(ERROR_VALIDATION);
-        Models\User::new(['foo' => 'bar']);
+        User::new(['foo' => 'bar']);
     }
 
     public function testUpdateNotFound(): void
@@ -184,7 +184,7 @@ final class UserTest extends ModelTestCase
             'group_id' => 'member',
         ];
 
-        $result = Models\User::new($data);
+        $result = User::new($data);
         $expected = [
             'id' => 4,
             'pseudo' => 'testadd',
@@ -197,7 +197,7 @@ final class UserTest extends ModelTestCase
         $this->assertEquals($expected, $result->toArray());
 
         // - Vérifie que les settings ont été créé
-        $settings = Models\UserSetting::find(3);
+        $settings = UserSetting::find(3);
         unset($settings->created_at);
         unset($settings->updated_at);
         $this->assertEquals([
@@ -222,7 +222,7 @@ final class UserTest extends ModelTestCase
             ],
         ];
 
-        $result = Models\User::new($data);
+        $result = User::new($data);
         $this->assertEquals(4, $result['person']['id']);
         $this->assertEquals(4, $result['person']['user_id']);
         $this->assertEquals('testNewPerson', $result['person']['nickname']);
@@ -303,6 +303,7 @@ final class UserTest extends ModelTestCase
                 'start_date' => '2018-12-15 00:00:00',
                 'end_date' => '2018-12-16 23:59:59',
                 'is_confirmed' => false,
+                'is_archived' => true,
             ],
             [
                 'id' => 1,
@@ -310,6 +311,7 @@ final class UserTest extends ModelTestCase
                 'start_date' => '2018-12-17 00:00:00',
                 'end_date' => '2018-12-18 23:59:59',
                 'is_confirmed' => false,
+                'is_archived' => false,
             ],
             [
                 'id' => 2,
@@ -317,14 +319,32 @@ final class UserTest extends ModelTestCase
                 'start_date' => '2018-12-18 00:00:00',
                 'end_date' => '2018-12-19 23:59:59',
                 'is_confirmed' => false,
+                'is_archived' => false,
             ],
             [
                 'id' => 4,
                 'title' => 'Concert X',
                 'start_date' => '2019-03-01 00:00:00',
-                'end_date' => '2019-02-10 23:59:59',
+                'end_date' => '2019-04-10 23:59:59',
                 'is_confirmed' => false,
+                'is_archived' => false,
             ],
+            [
+                "id" => 6,
+                "title" => "Un événement sans inspiration",
+                "start_date" => "2019-03-15 00:00:00",
+                "end_date" => "2019-04-01 23:59:59",
+                "is_confirmed" => false,
+                'is_archived' => false,
+            ],
+            [
+                'id' => 5,
+                'title' => 'Kermesse de l\'école des trois cailloux',
+                'start_date' => '2020-01-01 00:00:00',
+                'end_date' => '2020-01-01 23:59:59',
+                'is_confirmed' => false,
+                'is_archived' => false,
+            ]
         ], $results);
     }
 }

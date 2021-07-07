@@ -18,7 +18,7 @@
 
 <script>
 import Config from '@/config/globalConfig';
-import Logo from '@/components/Logo/Logo.vue';
+import Logo from '@/components/Logo';
 import SideMenu from './SideMenu/SideMenu.vue';
 
 export default {

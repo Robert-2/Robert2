@@ -69,15 +69,23 @@
             border: none;
             padding: 0;
         }
+        .listing-table {
+            margin-bottom: 8mm;
+        }
+        .listing-table > thead > tr {
+            page-break-after: avoid;
+        }
         .listing-table > thead > tr > th {
             font-size: 9pt;
             border-bottom: 1pt solid #888;
+            vertical-align: middle;
         }
         .listing-table > tbody > tr > td {
             padding: 2mm;
             font-size: 7pt;
             border: none;
             border-bottom: 1pt solid #ccc;
+            vertical-align: middle;
         }
         .listing-table > tbody > tr > td.section-title {
             padding: 4mm 2mm 2mm;
@@ -119,8 +127,10 @@
             border-radius: 3pt;
         }
         .strong { font-weight: bold; }
+        .normal { font-weight: normal; }
         .light { color: #333; }
         .lighter { color: #666; }
+        .lightest { color: #aaa; }
         .changePage { page-break-before: always; }
 
         {% block style %}{% endblock %}
