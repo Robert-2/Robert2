@@ -4,7 +4,7 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 0.14.0 (UNRELEASED)
+## 0.14.0-premium (2021-07-07)
 
 - Corrige l'affichage de la valeur de remplacement du matériel dans les fiches de sortie en mode "flat" (#156).
 - Ajoute la possibilité de vérifier que tout le matériel est bien retourné à la fin d'un événement (#4).
