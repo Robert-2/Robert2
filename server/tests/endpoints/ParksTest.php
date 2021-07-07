@@ -34,7 +34,6 @@ final class ParksTest extends ApiTestCase
                     'opening_hours' => "Du lundi au vendredi, de 09:00 à 19:00.",
                     'note' => null,
                     'total_items' => 7,
-                    'total_amount' => 119061.80,
                     'total_stock_quantity' => 87,
                     'created_at' => null,
                     'updated_at' => null,
@@ -52,7 +51,6 @@ final class ParksTest extends ApiTestCase
                     'opening_hours' => null,
                     'note' => "Les bidouilles de fond de tiroir",
                     'total_items' => 2,
-                    'total_amount' => 32419,
                     'total_stock_quantity' => 2,
                     'created_at' => null,
                     'updated_at' => null,
@@ -105,6 +103,22 @@ final class ParksTest extends ApiTestCase
             'deleted_at' => null,
             'has_ongoing_inventory' => false,
             'has_ongoing_event' => false,
+        ]);
+    }
+
+    public function testGetTotalAmountNotFound()
+    {
+        $this->client->get('/api/parks/999/total-amount');
+        $this->assertNotFound();
+    }
+
+    public function testGetTotalAmount()
+    {
+        $this->client->get('/api/parks/1/total-amount');
+        $this->assertStatusCode(SUCCESS_OK);
+        $this->assertResponseData([
+            'id' => 1,
+            'totalAmount' => 119061.80,
         ]);
     }
 }

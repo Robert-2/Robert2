@@ -353,6 +353,7 @@ export default {
     'saved': "Parc sauvegardé.",
     'total-items': 'Totaux',
     'display-events-for-park': "Voir les événements",
+    'display-materials-of-this-park': "Voir le matériel de ce parc",
     'print-materials-of-this-park': "Imprimer la liste de ce parc",
   },
 

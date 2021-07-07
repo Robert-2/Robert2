@@ -28,6 +28,8 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Regroupe les boutons d'actions secondaires de la fenêtre des événements dans un menu.
 - Ajoute une action secondaire dans la fenêtre des événements pour supprimer l'événement.
 - Ajoute une action secondaire dans la fenêtre des événements pour cloner l'événement avec de nouvelles dates (#120).
+- Optimise le chargement de la liste des parcs en ajoutant un bouton qui récupère le montant total du parc (#171).
+- Affiche les totaux du parc dans son formulaire de modification.
 
 ## 0.13.3-premium (2021-05-27)
 

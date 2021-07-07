@@ -170,7 +170,6 @@ final class MaterialTest extends ModelTestCase
             'id' => 1,
             'name' => "default",
             'total_items' => 7,
-            'total_amount' => 119061.80,
             'total_stock_quantity' => 87,
         ], $result);
     }

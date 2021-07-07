@@ -35,19 +35,19 @@ const InventoriesPage = {
           return;
         }
 
-        this.setPark(parkId, false);
+        this.setPark(parkId);
         return;
       }
 
       if (this.parks.length === 1) {
         const park = this.parks.slice(0, 1).shift();
-        this.setPark(park.id);
+        this.handleParkChange(park);
       }
     }
   },
   methods: {
     handleParkChange(park) {
-      this.setPark(park.id);
+      this.$router.replace({ name: 'park-inventories', params: { parkId: park.id } });
     },
 
     async handleAddClick() {
@@ -71,16 +71,12 @@ const InventoriesPage = {
       this.$router.push({ name: 'park-inventories-new', params: { parkId: this.park.id } });
     },
 
-    async setPark(id, updateUrl = true) {
+    async setPark(id) {
       this.isLoading = true;
 
       try {
         const { data: park } = await this.$http.get(`parks/${id}`);
         this.park = park;
-
-        if (updateUrl) {
-          this.$router.replace({ name: 'park-inventories', params: { parkId: this.park.id } });
-        }
       } catch {
         this.hasError = true;
       } finally {

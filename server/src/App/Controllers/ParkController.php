@@ -24,6 +24,7 @@ class ParkController extends BaseController
         $park = Park::findOrFail($id)->append([
             'has_ongoing_inventory',
             'has_ongoing_event',
+            'total_amount',
         ]);
         return $response->withJson($park);
     }
@@ -34,5 +35,14 @@ class ParkController extends BaseController
         $results = $parks->get()->each->setAppends([])->toArray();
 
         return $response->withJson($results);
+    }
+
+    public function getTotalAmount(Request $request, Response $response): Response
+    {
+        $id = (int)$request->getAttribute('id');
+
+        $park = Park::withTrashed()->findOrFail($id)->append(['total_amount']);
+        $totalAmount = $park->total_amount;
+        return $response->withJson(compact('id', 'totalAmount'));
     }
 }

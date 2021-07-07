@@ -85,7 +85,6 @@ class Park extends BaseModel
     protected $appends = [
         'total_items',
         'total_stock_quantity',
-        'total_amount',
     ];
 
     public function Materials()
@@ -198,20 +197,16 @@ class Park extends BaseModel
     {
         $total = 0;
 
-        // - Matériel (non unitaire)
-        $materials = $this->Materials()->get(['stock_quantity', 'is_unitary', 'replacement_price']);
+        $materials = Material::getParkAll($this->id);
         foreach ($materials as $material) {
-            // - Si unitaire, ne devrait pas avoir de `park_id`.
-            if ($material->is_unitary) {
+            if (!$material['is_unitary']) {
+                $total += ($material['replacement_price'] * (int)$material['stock_quantity']);
                 continue;
             }
-            $total += ($material->replacement_price * (int)$material->stock_quantity);
-        }
 
-        // - Unités
-        $units = $this->MaterialUnits()->get();
-        foreach ($units as $unit) {
-            $total += $unit->material['replacement_price'];
+            foreach ($material['units'] as $unit) {
+                $total += $material['replacement_price'];
+            }
         }
 
         return $total;

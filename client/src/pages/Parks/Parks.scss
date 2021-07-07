@@ -10,12 +10,22 @@
   }
 
   &__total-stock {
+    display: block;
     color: $text-light-color;
   }
 
   &__total-amount {
-    display: block;
+    width: 105px;
+    text-align: center !important;
+  }
+
+  &__events {
+    text-align: center;
+  }
+
+  &__no-items {
     color: $text-light-color;
+    font-style: italic;
   }
 
   &__actions {
