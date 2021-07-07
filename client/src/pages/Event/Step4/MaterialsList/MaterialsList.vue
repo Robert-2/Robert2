@@ -17,7 +17,7 @@
     <div class="MaterialsList__main">
       <div v-if="isLoading" class="MaterialsList__loading">
         <i class="fas fa-circle-notch fa-spin fa-2x" />
-        {{ $t('help-loading') }}
+        {{ $t('loading') }}
       </div>
       <v-client-table
         ref="DataTable"

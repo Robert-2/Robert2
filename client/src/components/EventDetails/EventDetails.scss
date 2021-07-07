@@ -32,6 +32,12 @@
       .Help {
         margin-bottom: $content-padding-small-vertical;
       }
+
+      .vue-tablist {
+        .fa-exclamation-triangle {
+          color: $text-danger-color;
+        }
+      }
     }
   }
 

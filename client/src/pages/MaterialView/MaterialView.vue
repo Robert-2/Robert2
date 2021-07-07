@@ -40,7 +40,7 @@
             <Documents :material="material" />
           </tab>
           <tab title-slot="availabilities">
-            <Availabilities :units="material.units" />
+            <Availabilities :materialName="material.name" :units="material.units" />
           </tab>
 
           <!-- Menu contextuel droit -->

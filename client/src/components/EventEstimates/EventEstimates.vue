@@ -45,7 +45,7 @@
     </ul>
     <div v-if="loading || deletingId" class="EventEstimates__loading">
       <i class="fas fa-circle-notch fa-spin" />
-      {{ $t('help-loading') }}
+      {{ $t('loading') }}
     </div>
     <div v-if="userCanEdit && lastBill" class="EventEstimates__warning-has-bill">
       {{ $t('warning-event-has-bill') }}

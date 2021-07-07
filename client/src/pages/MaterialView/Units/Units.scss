@@ -5,4 +5,18 @@
   .VueTables__actions {
     width: 8.7rem;
   }
+
+  &__yes-warning {
+    color: $text-warning-color;
+    font-weight: 600;
+  }
+
+  &__yes-danger {
+    color: $text-danger-color;
+    font-weight: 600;
+  }
+
+  &__no-ok {
+    color: $text-light-color;
+  }
 }

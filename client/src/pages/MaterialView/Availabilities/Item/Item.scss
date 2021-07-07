@@ -16,8 +16,8 @@
 
   &__quantity {
     flex: 0 0 45px;
-    margin: 0 $content-padding-large-vertical 0 0;
-    padding: 0 0 0 $content-padding-large-horizontal;
+    margin: 0 $content-padding-large-horizontal 0 0;
+    padding-left: $content-padding-small-horizontal;
     font-size: 2rem;
     text-align: right;
     color: $text-base-color;
@@ -27,17 +27,26 @@
     flex: 0 0 auto;
   }
 
+  &__icon {
+    flex: 0 0 auto;
+    margin: 0 $content-padding-large-horizontal 0 $content-padding-large-horizontal;
+
+    .fa-exclamation-triangle {
+      color: $text-danger-color;
+    }
+
+    .fas + .fas {
+      margin-left: $content-padding-small-horizontal;
+    }
+  }
+
   &__main {
     flex: 1;
-    margin: 0 $content-padding-large-vertical;
+    margin: 0 $content-padding-large-vertical 0 0;
 
     &__title {
       margin: 0 0 $content-padding-small-horizontal;
       color: $text-base-color;
-    }
-
-    &__icon {
-      margin: 0 $content-padding-small-horizontal;
     }
   }
 
@@ -69,7 +78,7 @@
 
     .MaterialAvailabilitiesItem__quantity,
     .MaterialAvailabilitiesItem__main__title {
-      color: $text-info-color;
+      color: $link-base-color;
     }
   }
 
@@ -82,19 +91,6 @@
 
     &:hover {
       background-color: darken($calendar-event-normal-color, 7%);
-    }
-  }
-
-  &--confirmed {
-    .MaterialAvailabilitiesItem__main__icon {
-      color: $calendar-event-confirmed-color;
-    }
-
-    &.MaterialAvailabilitiesItem--future {
-      .MaterialAvailabilitiesItem__quantity,
-      .MaterialAvailabilitiesItem__main__title {
-        color: $calendar-event-confirmed-color;
-      }
     }
   }
 }

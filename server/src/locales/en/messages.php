@@ -2457,8 +2457,14 @@ return [
     "endDateMustBeLater"
     => "End date must be later than start date",
 
+    "eventCannotBeArchived"
+    => "An event cannot be archived if its return inventory is not done!",
+
     "referenceAlreadyInUse"
     => "This reference is already in use.",
+
+    "invalid-value"
+    => "Invalid value.",
 
     //
     // - Install messages
@@ -2516,6 +2522,18 @@ return [
     "onDate"
     => "On %s",
 
+    "as-of-date"
+    => "As of %s",
+
+    "for-park"
+    => "for park:",
+
+    "all-parks"
+    => "all parks",
+
+    "park-name"
+    => "Park %s",
+
     "page"
     => "Page %d",
 
@@ -2540,9 +2558,6 @@ return [
     "event"
     => "Event: %s",
 
-    "onDate"
-    => "On %s",
-
     "fromToDates"
     => "From %s to %s",
 
@@ -2554,6 +2569,45 @@ return [
 
     "quantity"
     => "Quantity",
+
+    "stock-quantity"
+    => "Stock quantity",
+
+    "previous-quantity"
+    => "Previous quantity",
+
+    "recount-quantity"
+    => "Recount quantity",
+
+    "current-quantity"
+    => "Current quantity",
+
+    "out-of-order-quantity"
+    => "Out-of-order quantity",
+
+    "is-new"
+    => "Added",
+
+    "is-lost"
+    => "Lost",
+
+    "is-broken"
+    => "Broken",
+
+    "has-been-found"
+    => "Retrieved",
+
+    "has-been-repaired"
+    => "Repaired",
+
+    'owner'
+    => "Owner:",
+
+    'purchased-on'
+    => "Purchased on",
+
+    "unknown-park"
+    => "Unknown park",
 
     "qty"
     => "Qty",
@@ -2642,23 +2696,32 @@ return [
     "ref"
     => "Ref.",
 
+    "reference"
+    => "Reference",
+
     "designation"
     => "Designation",
 
-    "replacementValue"
+    "replacement-value"
     => "Repl. Val.",
 
-    "totalReplacementValue"
+    "total-replacement-value"
     => "Total Repl. Val.",
 
     "releaseSheet"
     => "Release sheet",
+
+    "materials-list"
+    => "Materials list",
 
     "eventSummary"
     => "Event summary",
 
     "title"
     => "Title: « %s »",
+
+    "notes"
+    => "Notes",
 
     "location"
     => "Location: %s",
@@ -2680,9 +2743,6 @@ return [
 
     "Event"
     => "Release sheet",
-
-    "onDate"
-    => "On %s",
 
     "eventTotalReplacementAmount"
     => "Total replacement amount: %s",
@@ -2711,6 +2771,29 @@ return [
     "park-value"
     => "Park: %s",
 
+    "Inventory"
+    => "Inventory",
+
+    "inventory-created-by"
+    => "Inventory created by",
+
     "enable-javascript-message"
     => "Please enable JavaScript to use this application.",
+
+    "yes"
+    => "Yes",
+
+    "no"
+    => "No",
+
+    'state'
+    => "State",
+
+    'unit-state' => [
+        'state-of-use' => "State of use",
+        'excellent' => "Excellent",
+        'brand-new' => "Brand new",
+        'bad' => "Bad",
+        'outdated' => "Outdated",
+    ],
 ];

@@ -15,6 +15,12 @@
             {{ $t('page-parks.action-add') }}
           </button>
         </router-link>
+        <router-link to="/inventories" v-slot="{ navigate }" custom>
+          <button @click="navigate">
+            <i class="fas fa-boxes" />
+            {{ $t('inventories') }}
+          </button>
+        </router-link>
       </div>
     </div>
 
@@ -33,25 +39,55 @@
           {{ park.row.postal_code }} {{ park.row.locality }}
         </div>
         <div slot="totalItems" slot-scope="park">
-          <router-link :to="`/materials?park=${park.row.id}`">
+          <router-link
+            v-if="park.row.total_items > 0"
+            :to="`/materials?park=${park.row.id}`"
+            v-tooltip="$t('page-parks.display-materials-of-this-park')"
+          >
             {{ $t('items-count', { count: park.row.total_items }, park.row.total_items) }}
           </router-link>
+          <span v-else class="Parks__no-items">{{ $t('no-items') }}</span>
           <span v-if="park.row.total_items > 0" class="Parks__total-stock">
             ({{ $t('stock-items-count', { count: park.row.total_stock_quantity }) }})
           </span>
-          <span class="Parks__total-amount">
-            ({{ formatAmount(park.row.total_amount) }})
-          </span>
         </div>
-        <div slot="events" slot-scope="park">
-          <router-link :to="`/?park=${park.row.id}`" v-if="parksCount > 1">
-            {{ $t('page-parks.display-events-for-park') }}
-          </router-link>
-        </div>
+        <ParkTotalAmount
+          v-if="park.row.total_items > 0"
+          slot="totalAmount"
+          slot-scope="park"
+          :parkId="park.row.id"
+        />
         <div slot="note" slot-scope="park">
           <pre>{{ park.row.note }}</pre>
         </div>
-        <div slot="actions" slot-scope="park" class="Parks__actions">
+        <div slot="events" slot-scope="park">
+          <router-link
+            :to="`/?park=${park.row.id}`"
+            v-if="parksCount > 1 && park.row.total_items > 0"
+          >
+            {{ $t('page-parks.display-events-for-park') }}
+          </router-link>
+        </div>
+        <template slot="actions" slot-scope="park" class="Parks__actions">
+          <a
+            v-if="park.row.total_stock_quantity > 0"
+            :href="getDownloadListingUrl(park.row.id)"
+            target="_blank"
+            class="button item-actions__button Parks__print-button"
+            v-tooltip="$t('page-parks.print-materials-of-this-park')"
+          >
+            <i class="fas fa-clipboard-list" />
+          </a>
+          <router-link
+            :to="{ name: 'park-inventories', params: { parkId: park.row.id } }"
+            v-slot="{ navigate }"
+            v-tooltip="$t('inventories')"
+            custom
+          >
+            <button @click="navigate" class="item-actions__button">
+              <i class="fas fa-boxes" />
+            </button>
+          </router-link>
           <router-link
             v-if="!isTrashDisplayed"
             v-tooltip="$t('action-edit')"
@@ -59,7 +95,7 @@
             v-slot="{ navigate }"
             custom
           >
-            <button @click="navigate" class="item-actions__button info" >
+            <button @click="navigate" class="item-actions__button info">
               <i class="fas fa-edit" />
             </button>
           </router-link>
@@ -87,7 +123,7 @@
           >
             <i class="fas fa-trash-alt" />
           </button>
-        </div>
+        </template>
       </v-server-table>
     </div>
     <div class="content__footer">

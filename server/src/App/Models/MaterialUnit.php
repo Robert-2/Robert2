@@ -15,10 +15,20 @@ class MaterialUnit extends BaseModel
 
         $this->validation = [
             'park_id' => V::notEmpty()->numeric(),
-            'reference' => V::notEmpty()->alnum('-+/*.')->length(2, 64),
-            'serial_number' => V::optional(V::alnum('-+/*.')->length(2, 64)),
+            'reference' => V::notEmpty()->alnum('-+/*._')->length(2, 64),
+            'serial_number' => V::optional(V::alnum('-+/*._')->length(2, 64)),
+            'person_id' => V::optional(V::numeric()),
             'is_broken' => V::optional(V::boolType()),
+            'is_lost' => V::optional(V::boolType()),
+            'state' => V::callback([$this, 'checkState']),
+            'purchase_date' => V::optional(V::date()),
         ];
+    }
+
+    public function checkState($value)
+    {
+        $isValueValid = ($value || is_numeric($value)) && MaterialUnitState::staticExists($value);
+        return $isValueValid ?: 'invalid-value';
     }
 
     // ——————————————————————————————————————————————————————
@@ -48,18 +58,35 @@ class MaterialUnit extends BaseModel
         return $relation->using('Robert2\API\Models\EventMaterialUnit');
     }
 
+    public function MaterialUnitState()
+    {
+        return $this->belongsTo('Robert2\API\Models\MaterialUnitState', 'state');
+    }
+
+    public function Person()
+    {
+        return $this->belongsTo('Robert2\API\Models\Person');
+    }
+
     // ——————————————————————————————————————————————————————
     // —
     // —    Mutators
     // —
     // ——————————————————————————————————————————————————————
 
+    protected $appends = ['owner'];
+
     protected $casts = [
         'park_id' => 'integer',
         'material_id' => 'integer',
         'reference' => 'string',
         'serial_number' => 'string',
+        'person_id' => 'integer',
         'is_broken' => 'boolean',
+        'is_lost' => 'boolean',
+        'state' => 'string',
+        'purchase_date' => 'string',
+        'notes' => 'string',
     ];
 
     public function getMaterialAttribute()
@@ -113,6 +140,12 @@ class MaterialUnit extends BaseModel
         return sprintf('data:image/svg+xml;base64,%s', base64_encode($svg));
     }
 
+    public function getOwnerAttribute()
+    {
+        $owner = $this->Person()->first();
+        return $owner ? $owner->toArray() : null;
+    }
+
     // ——————————————————————————————————————————————————————
     // —
     // —    Setters
@@ -123,7 +156,12 @@ class MaterialUnit extends BaseModel
         'park_id',
         'reference',
         'serial_number',
+        'person_id',
         'is_broken',
+        'is_lost',
+        'state',
+        'purchase_date',
+        'notes',
     ];
 
     public function setReferenceAttribute($value)
@@ -144,7 +182,7 @@ class MaterialUnit extends BaseModel
     // -
     // ------------------------------------------------------
 
-    public function remove(int $id, array $options = []): ?BaseModel
+    public function remove($id, array $options = []): ?BaseModel
     {
         $entity = static::findOrFail($id);
 

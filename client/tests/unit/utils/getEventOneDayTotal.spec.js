@@ -1,5 +1,5 @@
 import getEventOneDayTotal from '@/utils/getEventOneDayTotal';
-import materials from './data/materials';
+import eventMaterials from './data/event-materials';
 
 describe('getEventOneDayTotal', () => {
   it('returns 0 with empty values', () => {
@@ -9,6 +9,6 @@ describe('getEventOneDayTotal', () => {
   });
 
   it('calculates the total of a set of materials for ONE day', () => {
-    expect(getEventOneDayTotal(materials)).toBe(80);
+    expect(getEventOneDayTotal(eventMaterials)).toBe(215);
   });
 });

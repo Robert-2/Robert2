@@ -1,5 +1,5 @@
 import getEventOneDayTotalDiscountable from '@/utils/getEventOneDayTotalDiscountable';
-import materials from './data/materials';
+import eventMaterials from './data/event-materials';
 
 describe('getEventOneDayTotalDiscountable', () => {
   it('returns 0 with empty values', () => {
@@ -9,6 +9,6 @@ describe('getEventOneDayTotalDiscountable', () => {
   });
 
   it('calculates the total discountable of a set of materials for ONE day', () => {
-    expect(getEventOneDayTotalDiscountable(materials)).toBe(35);
+    expect(getEventOneDayTotalDiscountable(eventMaterials)).toBe(170);
   });
 });

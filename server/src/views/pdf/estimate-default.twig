@@ -216,7 +216,7 @@
             <th>{{ translate('designation') }}</th>
             <th>{{ translate('qty') }}</th>
             <th>{{ translate(vatRate > 0 ? 'unitPriceExclVat' : 'unitPrice') }}</th>
-            <th>{{ translate('replacementValue') }}</th>
+            <th>{{ translate('replacement-value') }}</th>
             <th>{{ translate(vatRate > 0 ? 'totalExclVat' : 'total') }}</th>
         </tr>
     </thead>
@@ -224,7 +224,7 @@
         {% for subCategory in materialList %}
             <tr>
                 <td class="section-title" colspan="6">
-                    {% if subCategory['name'] == '---' %}
+                    {% if subCategory['name'] is null %}
                     {{ translate('otherMaterials') }}
                     {% else %}
                     {{ subCategory['name'] }}

@@ -1,8 +1,8 @@
 import moment from 'moment';
+import ModalConfig from '@/config/modalConfig';
+import formatTimelineEvent from '@/utils/timeline-event/format';
 import Help from '@/components/Help/Help.vue';
 import Timeline from '@/components/Timeline';
-import ModalConfig from '@/config/modalConfig';
-import store from '@/store';
 import EventDetails from '@/components/EventDetails/EventDetails.vue';
 import MaterialAvailabilitiesItem from './Item/Item.vue';
 import formatEvent from './utils';
@@ -19,6 +19,7 @@ export default {
   },
   props: {
     units: Array,
+    materialName: String,
   },
   data() {
     const start = moment().subtract(7, 'days').startOf('day');
@@ -35,7 +36,7 @@ export default {
         start,
         end,
         editable: false,
-        locale: store.state.i18n.locale,
+        locale: this.$store.state.i18n.locale,
         height: '100%',
         orientation: 'top',
         zoomMin: ONE_DAY * 7,
@@ -44,6 +45,7 @@ export default {
     };
   },
   mounted() {
+    this.$store.commit('setPageSubTitle', this.materialName);
     this.getMaterialEventsData();
   },
   methods: {
@@ -54,9 +56,9 @@ export default {
 
       this.$http.get(`materials/${this.materialId}/events`)
         .then(({ data }) => {
-          this.materialEvents = data;
+          this.materialEvents = data.map(formatTimelineEvent);
           this.materialEventsTimeline = data.map(
-            (event) => formatEvent(event, this.$t),
+            (event) => formatEvent(event, this.units, this.$t),
           );
           this.isLoading = false;
         })

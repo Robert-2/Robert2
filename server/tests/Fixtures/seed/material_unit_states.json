@@ -1,0 +1,22 @@
+[
+    {
+        "id": "state-of-use",
+        "order": 1
+    },
+    {
+        "id": "excellent",
+        "order": 2
+    },
+    {
+        "id": "brand-new",
+        "order": 3
+    },
+    {
+        "id": "bad",
+        "order": 4
+    },
+    {
+        "id": "outdated",
+        "order": 5
+    }
+]

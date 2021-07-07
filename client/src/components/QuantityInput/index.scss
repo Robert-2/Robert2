@@ -1,0 +1,42 @@
+@import '../../themes/default/index';
+
+.QuantityInput {
+  display: inline-flex;
+  width: auto;
+  height: 28px;
+
+  &__button {
+    flex: 0 0 auto;
+    padding: 6px 8px;
+    border-radius: 0;
+
+    &:disabled {
+      background-color: $bg-color-input-normal;
+      opacity: 1;
+      color: $text-light-color;
+    }
+
+    &:first-child {
+      border-radius: 2px 0 0 2px;
+    }
+
+    &:last-child {
+      border-radius: 0 2px 2px 0;
+    }
+  }
+
+  &__input {
+    flex: 0 0 auto;
+    width: 3rem;
+    margin: 0;
+    padding: 5px 8px;
+    border-radius: 0;
+    -moz-appearance: textfield;
+
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+  }
+}

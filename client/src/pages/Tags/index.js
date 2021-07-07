@@ -1,4 +1,3 @@
-import store from '@/store';
 import Alert from '@/components/Alert';
 import Help from '@/components/Help/Help.vue';
 
@@ -18,15 +17,15 @@ export default {
   },
   computed: {
     tags() {
-      return store.getters['tags/publicList'];
+      return this.$store.getters['tags/publicList'];
     },
 
     isFetched() {
-      return store.state.tags.isFetched;
+      return this.$store.state.tags.isFetched;
     },
   },
   mounted() {
-    store.dispatch('tags/fetch');
+    this.$store.dispatch('tags/fetch');
   },
   methods: {
     addTag() {
@@ -67,7 +66,7 @@ export default {
         .then(() => {
           this.help = { type: 'success', text: 'page-tags.saved' };
           this.isLoading = false;
-          store.dispatch('tags/refresh');
+          this.$store.dispatch('tags/refresh');
         }).catch(this.displayError);
     },
 
@@ -88,7 +87,7 @@ export default {
               if (this.isTrashDisplayed) {
                 this.fetchDeleted();
               } else {
-                store.dispatch('tags/refresh');
+                this.$store.dispatch('tags/refresh');
               }
             })
             .catch(this.displayError);
@@ -107,7 +106,7 @@ export default {
           this.$http.put(`${this.$route.meta.resource}/restore/${id}`)
             .then(() => {
               this.fetchDeleted();
-              store.dispatch('tags/refresh');
+              this.$store.dispatch('tags/refresh');
             })
             .catch(this.showError);
         });
@@ -118,7 +117,7 @@ export default {
       if (this.isDisplayTrashed) {
         this.fetchDeleted();
       } else {
-        store.dispatch('tags/refresh');
+        this.$store.dispatch('tags/refresh');
         this.isTrashDisplayed = false;
       }
     },

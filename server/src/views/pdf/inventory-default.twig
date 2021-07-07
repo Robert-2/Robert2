@@ -1,0 +1,124 @@
+{% extends "pdf/base.twig" %}
+
+{% block style %}
+.listing-table > thead > tr > th {
+    font-size: 7.5pt;
+}
+.listing-table > tbody > tr > td {
+    height: 5mm;
+}
+
+.LineInventory--with-broken {
+    background-color: #fff1dc;
+}
+.LineInventory--with-missing {
+    background-color: #ffe6e6;
+}
+.LineInventory__totals {
+    background-color: #eee;
+}
+
+.listing-table > tbody > tr.LineInventory__unit > td:first-child {
+    padding-left: 4mm;
+    border-left: 1.5mm solid #ccc;
+}
+
+.listing-table > tbody > tr.LineInventory__unit > td:last-child {
+    border-right: 1.5mm solid #ccc;
+}
+
+.LineInventory--with-broken > .LineInventory__broken-quantity,
+.LineInventory__totals__broken,
+.LineInventory__unit--broken {
+    color: #cc7b00;
+    font-weight: bold;
+}
+.LineInventory--with-missing > .LineInventory__current-quantity,
+.LineInventory__unit--lost {
+    color: #e60000;
+    font-weight: bold;
+}
+
+.LineInventory__negative-diff,
+.LineInventory__positive-diff {
+    font-size: 7pt;
+}
+.LineInventory__negative-diff {
+    color: #e60000;
+}
+.LineInventory__positive-diff {
+    color: #009200;
+}
+
+.LineInventory__unit--with-success {
+    color: #009200;
+    font-weight: bold;
+}
+{% endblock %}
+
+{% block content %}
+<table class="layout-table">
+    <tr>
+        <td class="third">
+            {{ include('blocks/company-address.twig', { company: company }) }}
+            {% if author is not null %}
+                {{ translate('inventory-created-by') }} {{ author }}
+            {% endif %}
+        </td>
+        <td class="two-third">
+            <h1 class="box center">
+                {{ translate('Inventory') }}
+                {{ translate('for-park') }}
+                {{ parkName }}
+            </h1>
+            <h2 class="center">
+                {{ translate('as-of-date', date|format_date('full', locale=locale)) }}
+            </h2>
+        </td>
+    </tr>
+</table>
+
+<table class="listing-table">
+    <thead>
+        <tr>
+            <th style="width: 25mm;">{{ translate('reference') }}</th>
+            <th>
+                {{ translate('designation') }}
+            </th>
+            <th style="width: 16mm;">{{ translate('state') }} / {{ translate('previous-quantity') }}</th>
+            <th style="width: 12mm;"> > </th>
+            <th style="width: 16mm;">{{ translate('state') }} / {{ translate('current-quantity') }}</th>
+            <th style="width: 14mm;">{{ translate('out-of-order-quantity') }}</th>
+            <th style="width: 16mm;">{{ translate('replacement-value') }}</th>
+            <th style="width: 16mm;">{{ translate('total-replacement-value') }}</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for material in materials %}
+        {{ include('blocks/materials/line-inventory.twig', { material: material }) }}
+    {% endfor %}
+        <tr class="LineInventory__totals">
+            <td class="right strong" colspan="2">{{ translate('totals') }}</td>
+            <td class="center lighter">{{ totals['previous'] }}</td>
+            <td class="center">
+                {% if totals['difference'] < 0 %}
+                    <span class="LineInventory__negative-diff">
+                        {{ totals['difference'] }}
+                    </span>
+                {% elseif totals['difference'] > 0 %}
+                    <span class="LineInventory__positive-diff">
+                        +{{ totals['difference'] }}
+                    </span>
+                {% endif %}
+            </td>
+            <td class="center strong">{{ totals['current'] }}</td>
+            <td class="{{ html_classes('center', { 'LineInventory__totals__broken': totals['broken'] > 0 }) }}">
+                {{ totals['broken'] }}
+            </td>
+            <td class="right light" colspan="2">
+                {{ totals['replacementValue']|format_currency(currency, formatCurrencyOptions, locale) }}
+            </td>
+        </tr>
+    </tbody>
+</table>
+{% endblock %}

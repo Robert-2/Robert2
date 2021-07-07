@@ -3,8 +3,9 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Robert2\API\Models\Inventory;
 use Robert2\API\Validation\Validator as V;
 
 class Park extends BaseModel
@@ -48,6 +49,33 @@ class Park extends BaseModel
         return $builder;
     }
 
+    public function getLatestInventory(): ?Inventory
+    {
+        if (!$this->exists || !$this->id) {
+            return null;
+        }
+
+        return Inventory::where('park_id', $this->id)
+            ->where('is_tmp', false)
+            ->with('materials')
+            ->orderBy('date', 'desc')
+            ->first();
+    }
+
+    public function getOngoingInventory(): ?Inventory
+    {
+        if (!$this->exists || !$this->id) {
+            return null;
+        }
+
+        return Inventory::where('park_id', $this->id)
+            ->where('is_tmp', true)
+            ->with('materials')
+            ->with('author')
+            ->orderBy('date', 'desc')
+            ->first();
+    }
+
     // ——————————————————————————————————————————————————————
     // —
     // —    Relations
@@ -57,7 +85,6 @@ class Park extends BaseModel
     protected $appends = [
         'total_items',
         'total_stock_quantity',
-        'total_amount',
     ];
 
     public function Materials()
@@ -68,6 +95,12 @@ class Park extends BaseModel
     public function MaterialUnits()
     {
         return $this->hasMany('Robert2\API\Models\MaterialUnit');
+    }
+
+    public function Inventories()
+    {
+        return $this->hasMany(Inventory::class)
+            ->orderBy('date', 'asc');
     }
 
     public function Person()
@@ -117,6 +150,12 @@ class Park extends BaseModel
         return $materials ? $materials->toArray() : null;
     }
 
+    public function getInventoriesAttribute()
+    {
+        $inventories = $this->Inventories()->get();
+        return $inventories ? $inventories->toArray() : [];
+    }
+
     public function getMaterialUnitsAttribute()
     {
         $materialUnits = $this->MaterialUnits()->get();
@@ -158,20 +197,16 @@ class Park extends BaseModel
     {
         $total = 0;
 
-        // - Matériel (non unitaire)
-        $materials = $this->Materials()->get(['stock_quantity', 'is_unitary', 'replacement_price']);
+        $materials = Material::getParkAll($this->id);
         foreach ($materials as $material) {
-            // - Si unitaire, ne devrait pas avoir de `park_id`.
-            if ($material->is_unitary) {
+            if (!$material['is_unitary']) {
+                $total += ($material['replacement_price'] * (int)$material['stock_quantity']);
                 continue;
             }
-            $total += ($material->replacement_price * (int)$material->stock_quantity);
-        }
 
-        // - Unités
-        $units = $this->MaterialUnits()->get();
-        foreach ($units as $unit) {
-            $total += $unit->material['replacement_price'];
+            foreach ($material['units'] as $unit) {
+                $total += $material['replacement_price'];
+            }
         }
 
         return $total;
@@ -199,6 +234,43 @@ class Park extends BaseModel
     {
         $users = $this->Users()->get();
         return $users ? $users->toArray() : null;
+    }
+
+    public function getHasOngoingInventoryAttribute()
+    {
+        return $this->Inventories()
+            ->where('is_tmp', true)
+            ->count() > 0;
+    }
+
+    public function getHasOngoingEventAttribute()
+    {
+        if (!$this->exists || !$this->id) {
+            return false;
+        }
+
+        $ongoingEvents = Event::getOngoing()
+            ->with('Materials')
+            ->get();
+
+        foreach ($ongoingEvents as $ongoingEvent) {
+            foreach ($ongoingEvent->materials as $material) {
+                if (!$material['is_unitary']) {
+                    if ($material['park_id'] === $this->id) {
+                        return true;
+                    }
+                    continue;
+                }
+
+                foreach ($material['units'] as $unit) {
+                    if ($unit['park_id'] === $this->id) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 
     // ——————————————————————————————————————————————————————

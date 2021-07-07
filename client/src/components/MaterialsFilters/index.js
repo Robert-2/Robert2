@@ -1,5 +1,4 @@
 import VueSelect from 'vue-select';
-import store from '@/store';
 
 export default {
   name: 'MaterialsFilters',
@@ -19,11 +18,11 @@ export default {
   },
   computed: {
     parks() {
-      return store.state.parks.list;
+      return this.$store.state.parks.list;
     },
 
     categories() {
-      return store.state.categories.list;
+      return this.$store.state.categories.list;
     },
 
     subCategories() {
@@ -50,9 +49,9 @@ export default {
     },
   },
   mounted() {
-    store.dispatch('parks/fetch');
-    store.dispatch('categories/fetch');
-    store.dispatch('tags/fetch');
+    this.$store.dispatch('parks/fetch');
+    this.$store.dispatch('categories/fetch');
+    this.$store.dispatch('tags/fetch');
   },
   methods: {
     changePark(e) {

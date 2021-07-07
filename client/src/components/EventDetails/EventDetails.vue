@@ -9,6 +9,7 @@
         :event="event"
         @close="$emit('close')"
         @saved="handleSavedFromHeader"
+        @deleted="handleDeletedFromHeader"
         @error="handleError"
       />
       <div class="EventDetails__content__body">
@@ -55,7 +56,13 @@
           </tab>
           <tab title-slot="materials" :disabled="!hasMaterials">
             <Help :message="{ type: 'success', text: successMessage }" :error="error" />
-            <EventMissingMaterials :eventId="event.id" />
+            <ReturnInventorySummary
+              v-if="event.is_return_inventory_done"
+              :eventId="event.id"
+              :isDone="event.is_return_inventory_done"
+              :materials="event.materials"
+            />
+            <EventMissingMaterials v-else :eventId="event.id" />
             <EventMaterials
               v-if="hasMaterials"
               :materials="event.materials"
@@ -130,6 +137,10 @@
           </template>
           <template slot="materials">
             <i class="fas fa-box" /> {{ $t('material') }}
+            <i
+              v-if="hasMaterialsProblems"
+              class="fas fa-exclamation-triangle"
+            />
           </template>
           <template slot="estimates">
             <i class="fas fa-file-signature" /> {{ $t('estimates') }}

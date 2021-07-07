@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <path fill="#131313" d="M10 8a4 4 0 000-8 4 4 0 000 8z"/>
+  <path fill="#131313" d="M7.5 64a3.5 3.5 0 100-7 3.5 3.5 0 100 7z"/>
+  <path fill="#131313" d="M62 20.5a4.5 4.5 0 00-4.5-4.5H44a4 4 0 010-8h2a4 4 0 000-8H22a4 4 0 000 8h2a3 3 0 110 6H10.5a3.5 3.5 0 100 7H13a3 3 0 110 6H8a5 5 0 000 10h5.5a3.5 3.5 0 110 7H9a4 4 0 000 8h8.5a2.5 2.5 0 110 5 3.5 3.5 0 100 7h30a3.5 3.5 0 100-7H47a2 2 0 110-4h7a4 4 0 000-8h-6.5a2.5 2.5 0 110-5h.5a4 4 0 000-8h-1.5a3.5 3.5 0 110-7h11a4.5 4.5 0 004.5-4.5z"/>
+  <path fill="#131313" d="M59 40a4 4 0 010-8 4 4 0 010 8z"/>
+  <linearGradient id="e" x1="32" x2="32" y1="6" y2="29" gradientUnits="userSpaceOnUse" spreadMethod="reflect">
+    <stop offset="0" stop-color="#a4a4a4"/>
+    <stop offset=".63" stop-color="#7f7f7f"/>
+    <stop offset="1" stop-color="#6f6f6f"/>
+    <stop offset="1" stop-color="#6f6f6f"/>
+  </linearGradient>
+  <path fill="url(#e)" d="M32 6c-7.18 0-13 5.82-13 13v10h5V19c0-4.411 3.589-8 8-8s8 3.589 8 8v10h5V19c0-7.18-5.82-13-13-13z"/>
+  <path fill="currentColor" d="M49 57H15a3 3 0 01-3-3V35c0-5.523 4.477-10 10-10h20c5.523 0 10 4.477 10 10v19a3 3 0 01-3 3z"/>
+  <path fill="#131313" d="M37 39a5 5 0 00-10 0 4.998 4.998 0 003 4.578V48a2 2 0 104 0v-4.422A4.998 4.998 0 0037 39z"/>
+</svg>

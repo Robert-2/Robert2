@@ -1,12 +1,15 @@
 <tr>
-    <td>
-        {{ material['reference'] }}
-    </td>
+    <td>{{ material['reference'] }}</td>
     <td>
         {{ material['name'] }}
-
         {% if material['park'] is not null %}
-            <em class="lighter">({{ material['park'] }})</em>
+        <em class="lighter">({{ material['park'] }})</em>
+        {% endif %}
+        {% if material['attributes'] is not empty %}
+        <br />
+        {% for attribute in material['attributes'] %}
+            {{ include('blocks/materials/attribute.twig', { attribute: attribute }) }}
+        {% endfor %}
         {% endif %}
 
         {% if material['units'] is not null %}

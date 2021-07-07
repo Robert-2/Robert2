@@ -1,5 +1,3 @@
-import store from '@/store';
-
 export default {
   name: 'ParkChooser',
   props: {
@@ -12,11 +10,11 @@ export default {
   },
   computed: {
     allParks() {
-      return store.state.parks.list;
+      return this.$store.state.parks.list;
     },
   },
   mounted() {
-    store.dispatch('parks/fetch');
+    this.$store.dispatch('parks/fetch');
     this.selectedParks = this.initialSelection;
   },
   methods: {

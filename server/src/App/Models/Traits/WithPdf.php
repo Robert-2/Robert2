@@ -17,7 +17,7 @@ trait WithPdf
     // -
     // ------------------------------------------------------
 
-    public function getPdfName(int $id): string
+    public function getPdfName($id): string
     {
         $model = static::withTrashed()->findOrFail($id);
 

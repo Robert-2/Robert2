@@ -3,6 +3,10 @@
     position: relative;
   }
 
+  &__print-button {
+    text-decoration: none;
+  }
+
   &__filters {
     display: flex;
     flex-wrap: wrap;

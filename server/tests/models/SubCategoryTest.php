@@ -3,8 +3,9 @@ declare(strict_types=1);
 
 namespace Robert2\Tests;
 
-use Robert2\API\Models;
 use Robert2\API\Errors;
+use Robert2\API\Models\SubCategory;
+use Robert2\API\Models\Person;
 
 final class SubCategoryTest extends ModelTestCase
 {
@@ -12,7 +13,7 @@ final class SubCategoryTest extends ModelTestCase
     {
         parent::setUp();
 
-        $this->model = new Models\SubCategory();
+        $this->model = new SubCategory();
     }
 
     public function testTableName(): void
@@ -52,6 +53,8 @@ final class SubCategoryTest extends ModelTestCase
 
     public function testGetMaterials(): void
     {
+        $unitOwner = Person::find(1)->toArray();
+
         $SubCategory = $this->model::find(1);
         $results = $SubCategory->materials;
         $this->assertEquals([
@@ -81,22 +84,43 @@ final class SubCategoryTest extends ModelTestCase
                         'id' => 1,
                         'reference' => 'XR18-1',
                         'serial_number' => null,
-                        'is_broken' => false,
                         'park_id' => 1,
+                        'person_id' => 1,
+                        'is_broken' => false,
+                        'is_lost' => false,
+                        'state' => 'state-of-use',
+                        'purchase_date' => '2020-02-01',
+                        'notes' => 'Ce bon vieux XR-18',
+                        'owner' => $unitOwner,
+                        'created_at' => null,
                     ],
                     [
                         'id' => 2,
                         'reference' => 'XR18-2',
                         'serial_number' => null,
-                        'is_broken' => false,
                         'park_id' => 1,
+                        'person_id' => null,
+                        'is_broken' => false,
+                        'is_lost' => false,
+                        'state' => 'excellent',
+                        'purchase_date' => null,
+                        'notes' => null,
+                        'owner' => null,
+                        'created_at' => null,
                     ],
                     [
                         'id' => 3,
                         'reference' => 'XR18-3',
                         'serial_number' => null,
-                        'is_broken' => true,
                         'park_id' => 2,
+                        'person_id' => null,
+                        'is_broken' => true,
+                        'is_lost' => false,
+                        'state' => 'bad',
+                        'purchase_date' => null,
+                        'notes' => null,
+                        'owner' => null,
+                        'created_at' => null,
                     ],
                 ],
             ],

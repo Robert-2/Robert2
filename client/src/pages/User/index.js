@@ -1,6 +1,5 @@
-import store from '@/store';
 import Help from '@/components/Help/Help.vue';
-import FormField from '@/components/FormField/FormField.vue';
+import FormField from '@/components/FormField';
 import ParkChooser from './ParkChooser/ParkChooser.vue';
 
 export default {
@@ -56,11 +55,11 @@ export default {
       return this.user.group_id === 'admin';
     },
     hasMultipleParks() {
-      return store.state.parks.list.length > 1;
+      return this.$store.state.parks.list.length > 1;
     },
   },
   mounted() {
-    store.dispatch('parks/fetch');
+    this.$store.dispatch('parks/fetch');
     this.getUserData();
   },
   methods: {
@@ -155,7 +154,7 @@ export default {
           locality: '',
         };
       }
-      store.commit('setPageSubTitle', this.user.pseudo);
+      this.$store.commit('setPageSubTitle', this.user.pseudo);
     },
   },
 };

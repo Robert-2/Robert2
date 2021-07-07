@@ -73,10 +73,20 @@ final class EventDataWithUnitsTest extends ModelTestCase
                     'XR18' => [
                         'reference' => 'XR18',
                         'name' => 'Behringer X Air XR18',
+                        'stockQuantity' => 3,
+                        'attributes' => [
+                            [
+                                'id' => 5,
+                                'name' => "Date d'achat",
+                                'type' => 'date',
+                                'value' => '2021-01-28',
+                                'unit' => null,
+                            ],
+                        ],
                         'park' => null,
                         'units' => [
-                            ['name' => 'XR18-3', 'park' => 'spare'],
                             ['name' => 'XR18-1', 'park' => 'default'],
+                            ['name' => 'XR18-3', 'park' => 'spare'],
                         ],
                         'quantity' => 2,
                         'rentalPrice' => 49.99,
@@ -87,6 +97,33 @@ final class EventDataWithUnitsTest extends ModelTestCase
                     'CL3' => [
                         'reference' => 'CL3',
                         'name' => 'Console Yamaha CL3',
+                        'stockQuantity' => 5,
+                        'attributes' => [
+                            [
+                                'id' => 3,
+                                'name' =>
+                                'Puissance',
+                                'type' => 'integer',
+                                'value' => 850,
+                                'unit' => 'W',
+                            ],
+                            [
+                                'id' => 2,
+                                'name' =>
+                                'Couleur',
+                                'type' => 'string',
+                                'value' => 'Grise',
+                                'unit' => null,
+                            ],
+                            [
+                                'id' => 1,
+                                'name' =>
+                                'Poids',
+                                'type' => 'float',
+                                'value' => 36.5,
+                                'unit' => 'kg',
+                            ],
+                        ],
                         'park' => 'default',
                         'units' => null,
                         'quantity' => 1,
@@ -98,12 +135,14 @@ final class EventDataWithUnitsTest extends ModelTestCase
                 ],
             ],
             [
-                'id' => 0,
-                'name' => '---',
+                'id' => null,
+                'name' => null,
                 'materials' => [
                     'Transporter' => [
                         'reference' => 'Transporter',
                         'name' => 'Volkswagen Transporter',
+                        'stockQuantity' => 1,
+                        'attributes' => [],
                         'park' => null,
                         'units' => [
                             ['name' => 'VHCL-1', 'park' => 'spare'],
@@ -125,44 +164,22 @@ final class EventDataWithUnitsTest extends ModelTestCase
         $result = $this->EventData->getMaterialByParks();
         $expected = [
             [
-                'id' => 2,
-                'name' => 'spare',
-                'materials' => [
-                    'XR18' => [
-                        'reference' => 'XR18',
-                        'name' => 'Behringer X Air XR18',
-                        'park' => null,
-                        'units' => [
-                            ['name' => 'XR18-3', 'park' => null],
-                        ],
-                        'quantity' => 1,
-                        'rentalPrice' => 49.99,
-                        'replacementPrice' => 419.0,
-                        'total' => 49.99,
-                        'totalReplacementPrice' => 419.0,
-                    ],
-                    'Transporter' => [
-                        'reference' => 'Transporter',
-                        'name' => 'Volkswagen Transporter',
-                        'park' => null,
-                        'units' => [
-                            ['name' => 'VHCL-1', 'park' => null],
-                        ],
-                        'quantity' => 1,
-                        'rentalPrice' => 300,
-                        'replacementPrice' => 32000,
-                        'total' => 300,
-                        'totalReplacementPrice' => 32000,
-                    ],
-                ],
-            ],
-            [
                 'id' => 1,
                 'name' => 'default',
                 'materials' => [
                     'XR18' => [
                         'reference' => 'XR18',
                         'name' => 'Behringer X Air XR18',
+                        'stockQuantity' => 3,
+                        'attributes' => [
+                            [
+                                'id' => 5,
+                                'name' => "Date d'achat",
+                                'type' => 'date',
+                                'value' => '2021-01-28',
+                                'unit' => null,
+                            ],
+                        ],
                         'park' => null,
                         'units' => [
                             ['name' => 'XR18-1', 'park' => null],
@@ -176,6 +193,33 @@ final class EventDataWithUnitsTest extends ModelTestCase
                     'CL3' => [
                         'reference' => 'CL3',
                         'name' => 'Console Yamaha CL3',
+                        'stockQuantity' => 5,
+                        'attributes' => [
+                            [
+                                'id' => 3,
+                                'name' =>
+                                'Puissance',
+                                'type' => 'integer',
+                                'value' => 850,
+                                'unit' => 'W',
+                            ],
+                            [
+                                'id' => 2,
+                                'name' =>
+                                'Couleur',
+                                'type' => 'string',
+                                'value' => 'Grise',
+                                'unit' => null,
+                            ],
+                            [
+                                'id' => 1,
+                                'name' =>
+                                'Poids',
+                                'type' => 'float',
+                                'value' => 36.5,
+                                'unit' => 'kg',
+                            ],
+                        ],
                         'park' => null,
                         'units' => null,
                         'quantity' => 1,
@@ -183,6 +227,50 @@ final class EventDataWithUnitsTest extends ModelTestCase
                         'replacementPrice' => 19400.0,
                         'total' => 300.0,
                         'totalReplacementPrice' => 19400.0,
+                    ],
+                ],
+            ],
+            [
+                'id' => 2,
+                'name' => 'spare',
+                'materials' => [
+                    'XR18' => [
+                        'reference' => 'XR18',
+                        'name' => 'Behringer X Air XR18',
+                        'stockQuantity' => 3,
+                        'attributes' => [
+                            [
+                                'id' => 5,
+                                'name' => "Date d'achat",
+                                'type' => 'date',
+                                'value' => '2021-01-28',
+                                'unit' => null,
+                            ],
+                        ],
+                        'park' => null,
+                        'units' => [
+                            ['name' => 'XR18-3', 'park' => null],
+                        ],
+                        'quantity' => 1,
+                        'rentalPrice' => 49.99,
+                        'replacementPrice' => 419.0,
+                        'total' => 49.99,
+                        'totalReplacementPrice' => 419.0,
+                    ],
+                    'Transporter' => [
+                        'reference' => 'Transporter',
+                        'name' => 'Volkswagen Transporter',
+                        'stockQuantity' => 1,
+                        'attributes' => [],
+                        'park' => null,
+                        'units' => [
+                            ['name' => 'VHCL-1', 'park' => null],
+                        ],
+                        'quantity' => 1,
+                        'rentalPrice' => 300.0,
+                        'replacementPrice' => 32000.0,
+                        'total' => 300,
+                        'totalReplacementPrice' => 32000.0,
                     ],
                 ],
             ],
@@ -329,10 +417,20 @@ final class EventDataWithUnitsTest extends ModelTestCase
                         'XR18' => [
                             'reference' => 'XR18',
                             'name' => 'Behringer X Air XR18',
+                            'stockQuantity' => 3,
+                            'attributes' => [
+                                [
+                                    'id' => 5,
+                                    'name' => "Date d'achat",
+                                    'type' => 'date',
+                                    'value' => '2021-01-28',
+                                    'unit' => null,
+                                ],
+                            ],
                             'park' => null,
                             'units' => [
-                                ['name' => 'XR18-3', 'park' => 'spare'],
                                 ['name' => 'XR18-1', 'park' => 'default'],
+                                ['name' => 'XR18-3', 'park' => 'spare'],
                             ],
                             'quantity' => 2,
                             'rentalPrice' => 49.99,
@@ -343,6 +441,33 @@ final class EventDataWithUnitsTest extends ModelTestCase
                         'CL3' => [
                             'reference' => 'CL3',
                             'name' => 'Console Yamaha CL3',
+                            'stockQuantity' => 5,
+                            'attributes' => [
+                                [
+                                    'id' => 3,
+                                    'name' =>
+                                    'Puissance',
+                                    'type' => 'integer',
+                                    'value' => 850,
+                                    'unit' => 'W',
+                                ],
+                                [
+                                    'id' => 2,
+                                    'name' =>
+                                    'Couleur',
+                                    'type' => 'string',
+                                    'value' => 'Grise',
+                                    'unit' => null,
+                                ],
+                                [
+                                    'id' => 1,
+                                    'name' =>
+                                    'Poids',
+                                    'type' => 'float',
+                                    'value' => 36.5,
+                                    'unit' => 'kg',
+                                ],
+                            ],
                             'park' => 'default',
                             'units' => null,
                             'quantity' => 1,
@@ -354,12 +479,14 @@ final class EventDataWithUnitsTest extends ModelTestCase
                     ],
                 ],
                 [
-                    'id' => 0,
-                    'name' => '---',
+                    'id' => null,
+                    'name' => null,
                     'materials' => [
                         'Transporter' => [
                             'reference' => 'Transporter',
                             'name' => 'Volkswagen Transporter',
+                            'stockQuantity' => 1,
+                            'attributes' => [],
                             'park' => null,
                             'units' => [
                                 ['name' => 'VHCL-1', 'park' => 'spare'],

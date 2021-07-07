@@ -3,11 +3,11 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Builder;
-use Robert2\API\Validation\Validator as V;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Robert2\API\Models\Traits\Taggable;
 use Robert2\API\Models\User;
+use Robert2\API\Validation\Validator as V;
 
 class Material extends BaseModel
 {
@@ -116,8 +116,21 @@ class Material extends BaseModel
 
     public function Units()
     {
+        $selectFields = [
+            'id',
+            'reference',
+            'serial_number',
+            'park_id',
+            'person_id',
+            'is_broken',
+            'is_lost',
+            'state',
+            'purchase_date',
+            'notes',
+            'created_at',
+        ];
         return $this->hasMany('Robert2\API\Models\MaterialUnit')
-            ->select(['id', 'reference', 'serial_number', 'park_id', 'is_broken']);
+            ->select($selectFields);
     }
 
     public function Attributes()
@@ -130,11 +143,21 @@ class Material extends BaseModel
 
     public function Events()
     {
+        $selectFields = [
+            'events.id',
+            'title',
+            'start_date',
+            'end_date',
+            'location',
+            'is_confirmed',
+            'is_archived',
+            'is_return_inventory_done',
+        ];
         return $this->belongsToMany('Robert2\API\Models\Event', 'event_materials')
             ->using('Robert2\API\Models\EventMaterial')
             ->withPivot('id', 'quantity')
-            ->orderBy('start_date', 'desc')
-            ->select(['events.id', 'title', 'start_date', 'end_date', 'location', 'is_confirmed']);
+            ->select($selectFields)
+            ->orderBy('start_date', 'desc');
     }
 
     public function Documents()
@@ -172,7 +195,7 @@ class Material extends BaseModel
     public function getStockQuantityAttribute($value)
     {
         if ($this->is_unitary) {
-            $value = $this->Units()->count();
+            $value = $this->Units()->where('is_lost', '!=', true)->count();
         }
         return $this->castAttribute('stock_quantity', $value);
     }
@@ -317,13 +340,16 @@ class Material extends BaseModel
                 }
 
                 // - Ajoute le champ `is_available` aux unités des matériels
-                // + Supprime les unités marquées comme "utilisé" qui sont cassées.
+                // + Supprime les unités marquées comme "utilisé" qui sont cassées ou perdues.
                 //   (=> Elles ne comptent pas dans le calcul des unités utilisées)
                 if (array_key_exists('units', $material)) {
                     foreach ($material['units'] as &$unit) {
-                        $unit['is_available'] = !in_array($unit['id'], $usedUnits, true);
+                        $unit['is_available'] = (
+                            !in_array($unit['id'], $usedUnits, true)
+                            && $unit['is_lost'] !== true
+                        );
 
-                        if ($unit['is_broken']) {
+                        if ($unit['is_broken'] || $unit['is_lost']) {
                             $usedUnits = array_diff($usedUnits, [$unit['id']]);
                         }
                     }
@@ -374,15 +400,23 @@ class Material extends BaseModel
 
         if ($parkId) {
             $builder->where(function ($query) use ($parkId, $ignoreUnitaries) {
-                $query->where('park_id', $parkId);
+                $query->where(function ($subQuery) use ($parkId) {
+                    $subQuery
+                        ->where('is_unitary', false)
+                        ->where('park_id', $parkId);
+                });
 
                 if (!$ignoreUnitaries) {
-                    $query->orWhereHas(
-                        'units',
-                        function ($subQuery) use ($parkId) {
-                            $subQuery->where('park_id', $parkId);
-                        }
-                    );
+                    $query->orWhere(function ($subQuery) use ($parkId) {
+                        $subQuery
+                            ->where('is_unitary', true)
+                            ->whereHas(
+                                'units',
+                                function ($subSubQuery) use ($parkId) {
+                                    $subSubQuery->where('park_id', $parkId);
+                                }
+                            );
+                    });
                 } else {
                     $query->orWhere('is_unitary', true);
                 }
@@ -390,6 +424,56 @@ class Material extends BaseModel
         }
 
         return $builder;
+    }
+
+    /**
+     * @param integer $parkId
+     *
+     * @return Material[]
+     */
+    public static function getParkAll(int $parkId): array
+    {
+        $materials = static::query()
+            ->where(function ($query) use ($parkId) {
+                $query->where(function ($subQuery) use ($parkId) {
+                    $subQuery
+                        ->where('is_unitary', false)
+                        ->where('park_id', $parkId);
+                });
+
+                $query->orWhere(function ($subQuery) use ($parkId) {
+                    $subQuery
+                        ->where('is_unitary', true)
+                        ->whereHas(
+                            'units',
+                            function ($subSubQuery) use ($parkId) {
+                                $subSubQuery->where('park_id', $parkId);
+                            }
+                        );
+                });
+            })
+            ->get();
+
+        $materials = array_map(
+            function ($material) use ($parkId) {
+                if ($material['is_unitary']) {
+                    $material['park_id'] = null;
+                    $material['units'] = array_values(array_filter(
+                        $material['units'],
+                        function ($unit) use ($parkId) {
+                            return $unit['park_id'] === $parkId;
+                        }
+                    ));
+                    $material['stock_quantity'] = count($material['units']);
+                } else {
+                    $material['units'] = [];
+                }
+                return $material;
+            },
+            $materials->toArray()
+        );
+
+        return $materials;
     }
 
     public static function getOneForUser(int $id, ?int $userId = null): array

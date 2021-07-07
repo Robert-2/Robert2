@@ -23,6 +23,14 @@
               :errors="errors.park_id"
               required
             />
+            <SelectSearch
+              :key="renderKey"
+              v-model="unit.person_id"
+              :selectedItemLabel="unit.owner ? unit.owner.full_name : null"
+              label="owner"
+              :formatOptions="formatOwnerOptions"
+              fetchEntity="persons"
+            />
             <FormField
               v-model="unit.serial_number"
               name="serial_number"
@@ -35,6 +43,36 @@
               label="is-broken"
               type="switch"
               :errors="errors.is_broken"
+            />
+            <FormField
+              v-model="unit.is_lost"
+              name="is_lost"
+              label="is-lost"
+              type="switch"
+              :errors="errors.is_lost"
+            />
+            <FormField
+              v-model="unit.state"
+              name="state"
+              label="state"
+              type="select"
+              :options="statesOptions"
+              :errors="errors.state"
+            />
+            <FormField
+              v-model="unit.purchase_date"
+              name="purchase_date"
+              label="purchase-date"
+              type="date"
+              :errors="errors.purchase_date"
+              :datepicker-options="datepickerOptions"
+            />
+            <FormField
+              v-model="unit.notes"
+              name="notes"
+              label="notes"
+              type="textarea"
+              :errors="errors.notes"
             />
           </section>
           <section class="Form__actions">

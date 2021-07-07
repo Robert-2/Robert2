@@ -10,6 +10,20 @@
             </th>
             <th class="MaterialsListUnits__heading MaterialsListUnits__heading--is-broken">
               {{ $t('is-broken') }}
+              <button class="MaterialsListUnits__mini-action-button" @click="toggleWithUnavailable">
+                <i v-if="!withUnavailable" class="fas fa-eye" />
+                <i v-else class="fas fa-eye-slash" />
+              </button>
+            </th>
+            <th class="MaterialsListUnits__heading MaterialsListUnits__heading--is-lost">
+              {{ $t('is-lost') }}
+              <button class="MaterialsListUnits__mini-action-button" @click="toggleWithUnavailable">
+                <i v-if="!withUnavailable" class="fas fa-eye" />
+                <i v-else class="fas fa-eye-slash" />
+              </button>
+            </th>
+            <th class="MaterialsListUnits__heading MaterialsListUnits__heading--state">
+              {{ $t('state') }}
             </th>
             <th class="MaterialsListUnits__heading MaterialsListUnits__heading--park">
               {{ $t('park') }}

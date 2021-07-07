@@ -1,4 +1,3 @@
-import store from '@/store';
 import Alert from '@/components/Alert';
 import Help from '@/components/Help/Help.vue';
 
@@ -15,15 +14,15 @@ export default {
   },
   computed: {
     categories() {
-      return store.state.categories.list;
+      return this.$store.state.categories.list;
     },
 
     isFetched() {
-      return store.state.categories.isFetched;
+      return this.$store.state.categories.isFetched;
     },
   },
   mounted() {
-    store.dispatch('categories/fetch');
+    this.$store.dispatch('categories/fetch');
   },
   methods: {
     addCategory() {
@@ -91,7 +90,7 @@ export default {
         .then(() => {
           this.isLoading = false;
           this.help = { type: 'success', text: saveMessage };
-          store.dispatch('categories/refresh');
+          this.$store.dispatch('categories/refresh');
         })
         .catch(this.displayError);
     },
@@ -102,7 +101,7 @@ export default {
         .then(() => {
           this.isLoading = false;
           this.help = { type: 'success', text: 'page-subcategories.saved' };
-          store.dispatch('categories/refresh');
+          this.$store.dispatch('categories/refresh');
         })
         .catch(this.displayError);
     },
@@ -124,7 +123,7 @@ export default {
           this.$http.delete(`${entity}/${id}`)
             .then(() => {
               this.help = { type: 'success', text: saveMessage };
-              store.dispatch('categories/refresh');
+              this.$store.dispatch('categories/refresh');
             })
             .catch(this.displayError);
         });

@@ -17,6 +17,8 @@ class EventMaterialUnit extends Pivot
 
     protected $casts = [
         'event_material_id' => 'integer',
-        'material_unit_id'  => 'integer',
+        'material_unit_id' => 'integer',
+        'is_returned' => 'boolean',
+        'is_returned_broken' => 'boolean',
     ];
 }

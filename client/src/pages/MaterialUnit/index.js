@@ -1,10 +1,13 @@
-import FormField from '@/components/FormField/FormField.vue';
+import moment from 'moment';
+import getPersonItemLabel from '@/utils/getPersonItemLabel';
+import formatOptions from '@/utils/formatOptions';
+import FormField from '@/components/FormField';
+import SelectSearch from '@/components/SelectSearch';
 import Help from '@/components/Help/Help.vue';
-import store from '@/store';
 
 export default {
   name: 'MaterialUnit',
-  components: { FormField, Help },
+  components: { FormField, SelectSearch, Help },
   data() {
     return {
       help: 'page-material-units.help-edit',
@@ -12,18 +15,36 @@ export default {
       isLoading: false,
       material: null,
       ongoingPersist: null,
+      datepickerOptions: {
+        format: 'd MMMM yyyy',
+        disabled: {
+          from: new Date(),
+        },
+      },
       unit: {
         reference: '',
         serial_number: '',
         park_id: '',
+        person_id: null,
         is_broken: false,
+        is_lost: false,
+        state: 'state-of-use',
+        purchase_date: '',
+        notes: '',
+        owner: null,
       },
       errors: {
         reference: null,
         serial_number: null,
         park_id: null,
+        person_id: null,
         is_broken: null,
+        is_lost: null,
+        state: null,
+        purchase_date: null,
+        notes: null,
       },
+      renderKey: 1,
     };
   },
   computed: {
@@ -34,6 +55,7 @@ export default {
       }
       return id && id !== 'new' ? id : null;
     },
+
     materialId() {
       let { materialId } = this.$route.params;
       if (!Number.isNaN(materialId) && Number.isFinite(parseInt(materialId, 10))) {
@@ -41,15 +63,22 @@ export default {
       }
       return materialId || null;
     },
+
     parksOptions() {
-      return store.getters['parks/options'];
+      return this.$store.getters['parks/options'];
     },
+
+    statesOptions() {
+      return this.$store.getters['unitStates/options'];
+    },
+
     firstPark() {
-      return store.getters['parks/firstPark'];
+      return this.$store.getters['parks/firstPark'];
     },
   },
   mounted() {
-    store.dispatch('parks/fetch');
+    this.$store.dispatch('parks/fetch');
+    this.$store.dispatch('unitStates/fetch');
 
     this.fetchData();
     this.setDefaultPark();
@@ -57,6 +86,10 @@ export default {
   watch: {
     firstPark() {
       this.setDefaultPark();
+    },
+
+    unit() {
+      this.renderKey += 1;
     },
   },
   methods: {
@@ -91,7 +124,7 @@ export default {
         const { data } = await this.$http.get(`material-units/${this.id}`);
         const { material, ...unit } = data;
 
-        store.commit('setPageSubTitle', `${unit.reference} (${material.name})`);
+        this.$store.commit('setPageSubTitle', `${unit.reference} (${material.name})`);
         this.material = material;
         this.unit = unit;
 
@@ -111,7 +144,7 @@ export default {
 
       try {
         const { data: material } = await this.$http.get(`materials/${this.materialId}`);
-        store.commit('setPageSubTitle', material.name);
+        this.$store.commit('setPageSubTitle', material.name);
         this.material = material;
       } catch (error) {
         this.error = error;
@@ -141,10 +174,16 @@ export default {
         : `materials/${this.materialId}/units`;
 
       try {
-        this.ongoingPersist = this.$http[method](url, { ...this.unit });
+        const { purchase_date: purchaseDate } = this.unit;
+        const unitData = {
+          ...this.unit,
+          purchase_date: purchaseDate ? moment(purchaseDate).format('YYYY-MM-DD') : null,
+        };
+
+        this.ongoingPersist = this.$http[method](url, unitData);
         const { data: unit } = await this.ongoingPersist;
         this.help = { type: 'success', text: 'page-material-units.saved' };
-        store.commit('setPageSubTitle', `${unit.reference} (${this.material.name})`);
+        this.$store.commit('setPageSubTitle', `${unit.reference} (${this.material.name})`);
         this.unit = unit;
 
         const redirectRoute = { path: `/materials/${this.material.id}/view`, hash: '#units' };
@@ -162,8 +201,12 @@ export default {
       }
     },
 
+    formatOwnerOptions(data) {
+      return formatOptions(data, getPersonItemLabel);
+    },
+
     setDefaultPark() {
-      if (this.id === null) {
+      if (this.id === null && this.parksOptions.length === 1) {
         this.unit.park_id = this.firstPark?.id || '';
       }
     },

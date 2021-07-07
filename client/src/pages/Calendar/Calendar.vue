@@ -25,7 +25,10 @@
         @double-click="onDoubleClick"
         @range-changed="onRangeChanged"
       />
-      <Help :message="help" :error="error" />
+      <div class="Calendar__footer">
+        <Help :message="help" :error="error" />
+        <CalendarCaption />
+      </div>
     </div>
   </div>
 </template>

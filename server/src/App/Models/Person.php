@@ -82,6 +82,11 @@ class Person extends BaseModel
         return $this->belongsTo('Robert2\API\Models\Company');
     }
 
+    public function MaterialUnits()
+    {
+        return $this->hasMany('Robert2\API\Models\MaterialUnit');
+    }
+
     // ——————————————————————————————————————————————————————
     // —
     // —    Mutators
@@ -182,7 +187,7 @@ class Person extends BaseModel
         'note',
     ];
 
-    public function edit(?int $id = null, array $data = []): BaseModel
+    public function edit($id = null, array $data = []): BaseModel
     {
         if ($id && !static::staticExists($id)) {
             throw (new ModelNotFoundException)

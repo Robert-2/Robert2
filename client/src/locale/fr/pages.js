@@ -30,7 +30,7 @@ export default {
     'saved': "Votre profil a bien été sauvegardé.",
   },
 
-  'page-settings': {
+  'page-user-settings': {
     'title': "Vos paramètres",
     'help': "La « durée d'une session » est le temps imparti avant votre déconnexion automatique de l'application.",
     'auth-token-validity-duration': "Durée max. d'une session",
@@ -45,6 +45,7 @@ export default {
     'help': (
       `Cliquez-glissez pour déplacer la frise temporelle.
       Utilisez la molette pour zoomer / dézoomer.
+      Survolez un événement avec la souris pour en voir les détails.
       Double-cliquez sur une colonne vide pour créer un événement avec la date de départ pré-remplie.`
     ),
     'help-center-view-on-today': "Centrer le calendrier sur aujourd'hui",
@@ -65,11 +66,27 @@ export default {
     'this-event-is-past': "Cet événement est passé.",
     'this-event-is-currently-running': "Cet événement se déroule en ce moment.",
     'this-event-is-confirmed': "Cet événement est confirmé.",
-    'this-event-is-locked-past-confirmed': "Cet événement est verrouillé car il est confirmé, et déjà passé.",
+    'this-event-is-not-confirmed': "Cet événement n'est pas encore confirmé\u00a0!",
+    'this-event-is-archived': "Cet événement est archivé.",
+    'this-event-is-locked': "Cet événement est verrouillé parce qu'il est confirmé ou que son inventaire de retour a été effectué.",
     'this-event-has-missing-materials': "Cet événement a du matériel manquant.",
+    'this-event-needs-its-return-inventory': "Il faut faire l'inventaire de retour de cet événement\u00a0!",
+    'this-event-has-not-returned-materials': "Cet événement a du matériel qui n'a pas été retourné.",
     'all-events': "Tous les événements",
     'event-with-missing-material-only': "Événements en manque de matériel uniquement\u00a0?",
     'display-all-parks': "Tous les parcs",
+    'caption': {
+      'title': "Légende\u00a0:",
+      'archived': "Archivé",
+      'past-and-ok': "Passé, inventaire fait et OK",
+      'past-material-not-returned': "Matériel non retourné\u00a0!",
+      'past-no-inventory': "Passé sans inventaire",
+      'past-not-confirmed': "Passé et non confirmé",
+      'current-confirmed': "Actuel et confirmé",
+      'current-not-confirmed': "Actuel non confirmé",
+      'future-confirmed': "Futur et confirmé",
+      'future-not-confirmed': "Futur non confirmé",
+    },
   },
 
   'page-events': {
@@ -98,9 +115,34 @@ export default {
     'event-missing-materials-help': "Il s'agit du matériel manquant pour la période de l'événement, car il est utilisé dans un autre événement, le nombre voulu est trop important, ou quelques uns sont en panne. Ce matériel doit donc être ajouté au parc, ou bien loué auprès d'une autre société.",
     'warning-no-material': "Attention, cet événement est vide, il ne contient aucun matériel pour le moment\u00a0!",
     'warning-no-beneficiary': "Attention, cet événement n'a aucun bénéficiaire\u00a0!",
-    'missing-material-count': "Besoin de {quantity}, il en manque\u00a0{missing}\u00a0!",
     'beneficiary-billing-help': "Seul le premier bénéficiaire de la liste apparaîtra sur la facture.",
+    'missing-material-count': "Besoin de {quantity}, il en manque\u00a0{missing}\u00a0!",
     'no-units-available': "Aucune unité disponible pendant cet événement pour ce matériel.",
+    'problems-on-returned-materials': "Problèmes sur le matériel retourné",
+    'return-inventory-not-done-yet': "L'inventaire du retour de matériel n'a pas été fait, ou n'est pas encore terminé.",
+    'do-or-terminate-return-inventory': "Faire ou terminer l'inventaire de retour du matériel",
+    'view-return-inventory': "Voir l'inventaire de retour en détail",
+    'not-returned-material-count': [
+      "{returned} retourné sur {out}\u00a0! Il en manque {missing}.",
+      "{returned} retournés sur {out}\u00a0! Il en manque {missing}.",
+    ],
+    'broken-material-count': [
+      "{broken} revenu en panne\u00a0!",
+      "{broken} revenus en panne\u00a0!",
+    ],
+  },
+
+  'page-event-return': {
+    'title': "Retour du matériel de l'événement «\u00a0{pageSubTitle}\u00a0»",
+    'help': "",
+    'this-event-is-not-past': "Cet événement n'est pas terminé, il n'est donc pas possible de vérifier son retour pour le moment.",
+    'confirm-terminate-title': "Voulez-vous vraiment terminer cet inventaire de retour\u00a0?",
+    'confirm-terminate-text': "Veuillez noter qu'il ne sera plus possible de le modifier.",
+    'confirm-terminate-text-with-broken': "Ceci aura pour effet de mettre à jour toutes les quantités «\u00a0en panne\u00a0» du matériel concerné, et il ne sera plus possible de modifier cet inventaire.",
+    'inventory-done': "Inventaire terminé",
+    'some-material-is-missing': "Du matériel n'est pas revenu de cet événement\u00a0!",
+    'all-material-returned': "Félicitations\u00a0! Tout le matériel a bien été retourné pour cet événement.",
+    'some-material-came-back-broken': "Du matériel est revenu en panne.",
   },
 
   'page-users': {
@@ -114,7 +156,6 @@ export default {
     'action-add': "Nouvel utilisateur",
     'add': "Nouvel utilisateur",
     'edit': "Modifier l'utilisateur «\u00a0{pageSubTitle}\u00a0»",
-    'edit-title': "Modifier l'utilisateur",
     'confirm-delete': "Mettre cet utilisateur à la corbeille\u00a0?",
     'confirm-permanently-delete': "Voulez-vous vraiment supprimer définitivement cet utilisateur\u00a0?",
     'confirm-restore': "Voulez-vous vraiment restaurer cet utilisateur\u00a0?",
@@ -130,7 +171,6 @@ export default {
     'action-add': "Nouveau bénéficiaire",
     'add': "Nouveau bénéficiaire",
     'edit': "Modifier le bénéficiaire «\u00a0{pageSubTitle}\u00a0»",
-    'edit-title': "Modifier le bénéficiaire",
     'beneficiary-type': "Type de bénéficiaire",
     'person': "Personne physique (individu)",
     'company': "Personne morale (entreprise)",
@@ -148,7 +188,6 @@ export default {
     'title': "Sociétés",
     'add': "Nouvelle société",
     'edit': "Modifier la société «\u00a0{pageSubTitle}\u00a0»",
-    'edit-title': "Modifier la société",
     'edit-btn': "Modifier la société",
     'create-new': "Ajouter une nouvelle société",
     'help-edit': "La raison sociale (nom de la société) est obligatoire.",
@@ -168,7 +207,6 @@ export default {
     ),
     'add': "Nouveau matériel",
     'edit': "Modifier le matériel «\u00a0{pageSubTitle}\u00a0»",
-    'edit-title': "Modifier le matériel",
     'help-edit': (
       `Utilisez un nom assez court pour le matériel, et la description pour entrer dans les détails.\n
       Si vous cochez la case «\u00a0identification unitaire\u00a0», vous aurez la possibilité de spécifier des
@@ -176,16 +214,16 @@ export default {
       le présent formulaire.\n
       La photo du matériel doit être au format JPG, PNG ou WEBP, et ne doit pas dépasser 10\u00a0Mo.`
     ),
-    'view': "Détails du matériel «\u00a0{pageSubTitle}\u00a0»",
     'confirm-delete': "Mettre ce matériel à la corbeille\u00a0?",
     'confirm-permanently-delete': "Voulez-vous vraiment supprimer définitivement ce matériel\u00a0?",
     'confirm-restore': "Voulez-vous vraiment restaurer ce matériel\u00a0?",
     'saved': "Matériel sauvegardé.",
     'clear-filters': "Réinitialiser les filtres",
+    'print-complete-list': "Imprimer la liste complète du matériel",
   },
 
   'page-materials-view': {
-    'title': "Détails du matériel",
+    'title': "Détails du matériel «\u00a0{pageSubTitle}\u00a0»",
     'infos': {
       'click-to-open-image': "Cliquez pour ouvrir l'image en grand dans un nouvel onglet.",
     },
@@ -295,7 +333,6 @@ export default {
     'action-add': "Nouveau technicien",
     'add': "Nouveau technicien",
     'edit': "Modifier le technicien «\u00a0{pageSubTitle}\u00a0»",
-    'edit-title': "Modifier le technicien",
     'help-edit': "Seuls le nom et le prénom de la personne sont obligatoires.",
     'confirm-delete': "Mettre ce technicien à la corbeille\u00a0?",
     'confirm-permanently-delete': "Voulez-vous vraiment supprimer définitivement ce technicien\u00a0?",
@@ -309,7 +346,6 @@ export default {
     'action-add': "Nouveau parc de matériel",
     'add': "Nouveau parc de matériel",
     'edit': "Modifier le parc «\u00a0{pageSubTitle}\u00a0»",
-    'edit-title': "Modifier le parc",
     'help-edit': "Seul le nom du parc est obligatoire.",
     'confirm-delete': "Mettre ce parc à la corbeille\u00a0? Cela ne supprimera pas le matériel qu'il contient.",
     'confirm-permanently-delete': "Voulez-vous vraiment supprimer définitivement ce parc\u00a0? ATTENTION, cela supprimera tout le matériel contenu dans ce parc\u00a0!!",
@@ -317,6 +353,8 @@ export default {
     'saved': "Parc sauvegardé.",
     'total-items': 'Totaux',
     'display-events-for-park': "Voir les événements",
+    'display-materials-of-this-park': "Voir le matériel de ce parc",
+    'print-materials-of-this-park': "Imprimer la liste de ce parc",
   },
 
   'page-tags': {
@@ -337,8 +375,82 @@ export default {
     'deleted': "Étiquette supprimée.",
   },
 
+  'page-settings': {
+    'title': "Paramètres de l'application",
+    'event-summary': {
+      'title': "Fiches de sortie",
+      'help': "Ici, vous pouvez personnaliser les fiches de sortie des événements.",
+      'material-list': "Liste du matériel",
+      'display-mode': "Mode de présentation",
+      'list-display-mode-categories': "Triée par catégories",
+      'list-display-mode-sub-categories': "Triée par sous-catégories",
+      'list-display-mode-parks': "Triée par parcs",
+      'list-display-mode-flat': "Liste non-triée",
+      'custom-text': "Texte personnalisé (bas de page)",
+      'custom-text-title': "Titre du texte",
+      'custom-text-content': "Contenu du texte",
+      'saved': "Les paramètres des fiches de sortie ont bien été sauvegardés.",
+    },
+    'material-units': {
+      'title': "Unités de matériel",
+      'help': "",
+      'states': "États des unités de matériel",
+      'add': "Ajouter un état",
+      'confirm-permanently-delete': "Voulez-vous vraiment supprimer définitivement cet état d'unité\u00a0?",
+    },
+  },
+
   'page-estimate': {
     'confirm-delete': "Voulez-vous vraiment supprimer ce devis\u00a0?",
+  },
+
+  'page-inventories': {
+    'title': "Inventaires",
+    'title-with-park': "Inventaires du parc «\u00a0{park}\u00a0»",
+    'title-current': "Inventaire en cours",
+    'select-park-intro': "Pour pouvoir accèder aux inventaires, veuillez sélectionner le parc concerné.",
+    'no-parks': "Veuillez ajouter un parc avant de pouvoir accèder à la gestion des inventaires.",
+    'empty': "Aucun inventaire n'a été effectué pour ce parc pour le moment.",
+    'underway-events-alert-title': "Des événements sont en cours...",
+    'underway-events-alert-text': [
+      'Des événements sont en cours avec du matériel appartenant à ce parc.',
+      'Vous ne pourrez donc sans doute pas effectuer un inventaire exhaustif de tout le matériel du parc.\n',
+      'Étes-vous sûr de vouloir commencer un inventaire dans ces conditions\u00a0?',
+    ].join('\n'),
+    'underway-events-alert-confirm': "Commencer l'inventaire malgré tout",
+    'add-park': "Ajouter un parc",
+    'add': "Nouvel inventaire pour ce parc",
+    'created-at': "Commencé le",
+    'date': "Date",
+    'author': "Créé par",
+    'continue': "Continuer",
+  },
+
+  'page-inventory': {
+    'title': "Nouvel inventaire",
+    'title-with-park': "Nouvel inventaire pour le parc «\u00a0{park}\u00a0»",
+    'no-materials': "Le parc ne contient aucun matériel, veuillez en ajouter pour poursuivre l'inventaire.",
+    'add-material': "Ajouter du matériel dans le parc",
+    'back-to-inventories-list': "Retour à la liste des inventaires du parc",
+    'locked-message': [
+      "Un inventaire débuté par «\u00a0{author}\u00a0» ({email}) le {date} est déjà en cours pour ce parc.",
+      "Il n'est pas possible de créer deux inventaires en même temps pour le même parc.",
+    ].join('\n'),
+    'locked-message-no-author': [
+      "Un inventaire débuté le {date} est déjà en cours pour ce parc.",
+      "Il n'est pas possible de créer deux inventaires en même temps pour le même parc.",
+    ].join('\n'),
+    'locked-message-unlock-warning': [
+      "Vous pouvez prendre la main sur l'inventaire de ce parc, mais ceci aura pour effet de le rendre inaccessible par son précédent «\u00a0propriétaire\u00a0».",
+      "(si celui-ci est en cours de remplissage de l'inventaire au moment où vous prenez la main, ses modifications ne pourront PAS être sauvegardées)",
+    ].join('\n'),
+    'confirm-terminate-title': "Voulez-vous vraiment terminer cet inventaire\u00a0?",
+    'confirm-terminate-text': [
+      "En plus de clôturer l'inventaire (et donc le rendre non modifiable), cette action aura les conséquences suivantes\u00a0:\n",
+      "- Les quantités «\u00a0en stock\u00a0» et «\u00a0en panne\u00a0» des matériels du parc seront mises à jour.",
+      "- Les unités absentes seront marquées comme «\u00a0perdues\u00a0» et ne seront donc plus utilisables dans les événements (et inversement pour les quantités «\u00a0retrouvées\u00a0»).",
+      "- L'état des unités et leur statut «\u00a0en panne\u00a0», ou non, sera mis à jour.",
+    ].join('\n'),
   },
 };
 /* eslint-enable quotes */

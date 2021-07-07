@@ -34,10 +34,6 @@
     }
   }
 
-  &__error-details-button {
-    font-weight: 400;
-  }
-
   &--success {
     color: $text-success-color;
 
@@ -55,5 +51,12 @@
   &--error {
     color: $text-danger-color;
     font-weight: 600;
+
+    .ErrorMessage {
+      margin: 0;
+      text-align: left;
+      color: inherit;
+      font-weight: inherit;
+    }
   }
 }

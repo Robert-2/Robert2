@@ -6,6 +6,7 @@ namespace Robert2\Tests;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Robert2\API\Errors\ValidationException;
 use Robert2\API\Models\Material;
+use Robert2\API\Models\Person;
 
 final class MaterialTest extends ModelTestCase
 {
@@ -169,7 +170,6 @@ final class MaterialTest extends ModelTestCase
             'id' => 1,
             'name' => "default",
             'total_items' => 7,
-            'total_amount' => 119061.80,
             'total_stock_quantity' => 87,
         ], $result);
     }
@@ -241,33 +241,39 @@ final class MaterialTest extends ModelTestCase
         $results = $Material->Events;
         $this->assertCount(3, $results);
         $this->assertEquals([
-            'id'           => 2,
-            'title'        => 'Second événement',
-            'start_date'   => '2018-12-18 00:00:00',
-            'end_date'     => '2018-12-19 23:59:59',
-            'location'     => 'Lyon',
+            'id' => 2,
+            'title' => 'Second événement',
+            'start_date' => '2018-12-18 00:00:00',
+            'end_date' => '2018-12-19 23:59:59',
+            'location' => 'Lyon',
             'is_confirmed' => false,
-            'pivot'        => [
-                'id'          => 4,
+            'is_archived' => false,
+            'is_return_inventory_done' => true,
+            'pivot' => [
+                'id' => 4,
                 'material_id' => 1,
-                'event_id'    => 2,
-                'quantity'    => 3,
-                'units'       => [],
+                'event_id' => 2,
+                'quantity' => 3,
+                'units' => [],
+                'units_with_return' => [],
             ],
         ], $results[1]);
         $this->assertEquals([
-            'id'           => 1,
-            'title'        => 'Premier événement',
-            'start_date'   => '2018-12-17 00:00:00',
-            'end_date'     => '2018-12-18 23:59:59',
-            'location'     => 'Gap',
+            'id' => 1,
+            'title' => 'Premier événement',
+            'start_date' => '2018-12-17 00:00:00',
+            'end_date' => '2018-12-18 23:59:59',
+            'location' => 'Gap',
             'is_confirmed' => false,
-            'pivot'        => [
-                'id'          => 1,
+            'is_archived' => false,
+            'is_return_inventory_done' => true,
+            'pivot' => [
+                'id' => 1,
                 'material_id' => 1,
-                'event_id'    => 1,
-                'quantity'    => 1,
-                'units'       => [],
+                'event_id' => 1,
+                'quantity' => 1,
+                'units' => [],
+                'units_with_return' => [],
             ],
         ], $results[2]);
     }
@@ -330,6 +336,8 @@ final class MaterialTest extends ModelTestCase
         unset($result['attributes']);
         $this->assertEquals($expected, $result);
 
+        $owner = Person::find(1)->toArray();
+
         // - Récupère le matériel #6 (qui est unitaire) pour l'utilisateur #1
         $result = Material::getOneForUser(6, 1);
         $expected = [
@@ -355,21 +363,42 @@ final class MaterialTest extends ModelTestCase
                     'reference' => 'XR18-1',
                     'serial_number' => null,
                     'park_id' => 1,
+                    'person_id' => 1,
                     'is_broken' => false,
+                    'is_lost' => false,
+                    'state' => 'state-of-use',
+                    'purchase_date' => '2020-02-01',
+                    'notes' => 'Ce bon vieux XR-18',
+                    'owner' => $owner,
+                    'created_at' => null,
                 ],
                 [
                     'id' => 2,
                     'reference' => 'XR18-2',
                     'serial_number' => null,
                     'park_id' => 1,
+                    'person_id' => null,
                     'is_broken' => false,
+                    'is_lost' => false,
+                    'state' => 'excellent',
+                    'purchase_date' => null,
+                    'notes' => null,
+                    'owner' => null,
+                    'created_at' => null,
                 ],
                 [
                     'id' => 3,
                     'reference' => 'XR18-3',
                     'serial_number' => null,
                     'park_id' => 2,
+                    'person_id' => null,
                     'is_broken' => true,
+                    'is_lost' => false,
+                    'state' => 'bad',
+                    'purchase_date' => null,
+                    'notes' => null,
+                    'owner' => null,
+                    'created_at' => null,
                 ],
             ],
             'created_at' => null,
@@ -406,14 +435,28 @@ final class MaterialTest extends ModelTestCase
                     'reference' => 'XR18-1',
                     'serial_number' => null,
                     'park_id' => 1,
+                    'person_id' => 1,
                     'is_broken' => false,
+                    'is_lost' => false,
+                    'state' => 'state-of-use',
+                    'purchase_date' => '2020-02-01',
+                    'notes' => 'Ce bon vieux XR-18',
+                    'owner' => $owner,
+                    'created_at' => null,
                 ],
                 [
                     'id' => 2,
                     'reference' => 'XR18-2',
                     'serial_number' => null,
                     'park_id' => 1,
+                    'person_id' => null,
                     'is_broken' => false,
+                    'is_lost' => false,
+                    'state' => 'excellent',
+                    'purchase_date' => null,
+                    'notes' => null,
+                    'owner' => null,
+                    'created_at' => null,
                 ],
             ],
             'created_at' => null,

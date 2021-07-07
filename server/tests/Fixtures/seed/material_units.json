@@ -3,48 +3,78 @@
         "id": 1,
         "material_id": 6,
         "park_id": 1,
+        "person_id": 1,
         "reference": "XR18-1",
         "serial_number": null,
-        "is_broken": false
+        "is_broken": false,
+        "is_lost": false,
+        "state": "state-of-use",
+        "purchase_date": "2020-02-01",
+        "notes": "Ce bon vieux XR-18"
     },
     {
         "id": 2,
         "material_id": 6,
         "park_id": 1,
+        "person_id": null,
         "reference": "XR18-2",
         "serial_number": null,
-        "is_broken": false
+        "is_broken": false,
+        "is_lost": false,
+        "state": "excellent",
+        "purchase_date": null,
+        "notes": null
     },
     {
         "id": 3,
         "material_id": 6,
         "park_id": 2,
+        "person_id": null,
         "reference": "XR18-3",
         "serial_number": null,
-        "is_broken": true
+        "is_broken": true,
+        "is_lost": false,
+        "state": "bad",
+        "purchase_date": null,
+        "notes": null
     },
     {
         "id": 4,
         "material_id": 7,
         "park_id": 2,
+        "person_id": null,
         "reference": "VHCL-1",
         "serial_number": "123456-000789",
-        "is_broken": false
+        "is_broken": false,
+        "is_lost": false,
+        "state": null,
+        "purchase_date": null,
+        "notes": null
     },
     {
         "id": 5,
         "material_id": 8,
         "park_id": 1,
+        "person_id": null,
         "reference": "DECOR-FOREST-1",
         "serial_number": null,
-        "is_broken": false
+        "is_broken": false,
+        "is_lost": false,
+        "state": null,
+        "purchase_date": null,
+        "notes": null
     },
     {
         "id": 6,
         "material_id": 8,
         "park_id": 1,
+        "person_id": null,
         "reference": "DECOR-FOREST-2",
         "serial_number": null,
-        "is_broken": false
+        "is_broken": false,
+        "is_lost": false,
+        "state": null,
+        "purchase_date": null,
+        "notes": "Attention à la marche !"
     }
 ]

@@ -1,10 +1,14 @@
 <?php
 namespace Robert2\Tests;
 
+use Robert2\API\Models\Person;
+
 final class MaterialUnitsTest extends ApiTestCase
 {
     public function testGetUnit()
     {
+        $unitOwner = Person::find(1)->toArray();
+
         $this->client->get('/api/material-units/1');
         $this->assertStatusCode(SUCCESS_OK);
         $this->assertResponseData([
@@ -13,7 +17,13 @@ final class MaterialUnitsTest extends ApiTestCase
             'reference' => 'XR18-1',
             'serial_number' => null,
             'park_id' => 1,
+            'person_id' => 1,
             'is_broken' => false,
+            'is_lost' => false,
+            'state' => 'state-of-use',
+            'purchase_date' => '2020-02-01',
+            'notes' => 'Ce bon vieux XR-18',
+            'owner' => $unitOwner,
             'material' => [
                 'id' => 6,
                 'name' => 'Behringer X Air XR18',
@@ -46,21 +56,42 @@ final class MaterialUnitsTest extends ApiTestCase
                         'reference' => 'XR18-1',
                         'serial_number' => null,
                         'park_id' => 1,
+                        'person_id' => 1,
                         'is_broken' => false,
+                        'is_lost' => false,
+                        'state' => 'state-of-use',
+                        'purchase_date' => '2020-02-01',
+                        'notes' => 'Ce bon vieux XR-18',
+                        'owner' => $unitOwner,
+                        'created_at' => null,
                     ],
                     [
                         'id' => 2,
                         'reference' => 'XR18-2',
                         'serial_number' => null,
                         'park_id' => 1,
+                        'person_id' => null,
                         'is_broken' => false,
+                        'is_lost' => false,
+                        'state' => 'excellent',
+                        'purchase_date' => null,
+                        'notes' => null,
+                        'owner' => null,
+                        'created_at' => null,
                     ],
                     [
                         'id' => 3,
                         'reference' => 'XR18-3',
                         'serial_number' => null,
                         'park_id' => 2,
+                        'person_id' => null,
                         'is_broken' => true,
+                        'is_lost' => false,
+                        'state' => 'bad',
+                        'purchase_date' => null,
+                        'notes' => null,
+                        'owner' => null,
+                        'created_at' => null,
                     ]
                 ],
                 'tags' => [],
@@ -80,14 +111,21 @@ final class MaterialUnitsTest extends ApiTestCase
             'reference' => 'VHCL-2',
             'serial_number' => '123456-000020',
             'is_broken' => true,
+            'state' => 'brand-new',
         ];
         $expectedData = [
             'id' => 7,
             'material_id' => 7,
             'park_id' => 1,
+            'person_id' => null,
             'reference' => 'VHCL-2',
             'serial_number' => '123456-000020',
             'is_broken' => true,
+            'is_lost' => false,
+            'state' => 'brand-new',
+            'purchase_date' => null,
+            'notes' => null,
+            'owner' => null,
             'created_at' => 'fakedTestContent',
             'updated_at' => 'fakedTestContent',
         ];
@@ -102,17 +140,28 @@ final class MaterialUnitsTest extends ApiTestCase
             'id' => 1000,
             'material_id' => 6,
             'park_id' => 2,
+            'person_id' => null,
             'reference' => 'VHCL-3',
             'serial_number' => '123456-000030',
             'is_broken' => false,
+            'is_lost' => true,
+            'state' => 'excellent',
+            'purchase_date' => '2020-02-02',
+            'notes' => 'On a perdu ceci!',
         ];
         $expectedData = [
             'id' => 7,
             'material_id' => 7,
             'park_id' => 2,
+            'person_id' => null,
             'reference' => 'VHCL-3',
             'serial_number' => '123456-000030',
             'is_broken' => false,
+            'is_lost' => true,
+            'state' => 'excellent',
+            'purchase_date' => '2020-02-02',
+            'notes' => 'On a perdu ceci!',
+            'owner' => null,
             'created_at' => 'fakedTestContent',
             'updated_at' => 'fakedTestContent',
         ];
@@ -127,6 +176,8 @@ final class MaterialUnitsTest extends ApiTestCase
             'reference' => 'INV&LÎD',
             'serial_number' => 'INV&LÎD',
             'is_broken' => false,
+            'is_lost' => false,
+            'purchase_date' => 'Not a date',
         ];
         $this->client->post('/api/materials/7/units', $data);
         $this->assertStatusCode(ERROR_VALIDATION);
@@ -137,11 +188,17 @@ final class MaterialUnitsTest extends ApiTestCase
                 "park_id must be numeric",
             ],
             'reference' => [
-                'reference must contain only letters (a-z), digits (0-9) and "-+/*."',
+                'reference must contain only letters (a-z), digits (0-9) and "-+/*._"',
             ],
             'serial_number' => [
-                'serial_number must contain only letters (a-z), digits (0-9) and "-+/*."',
+                'serial_number must contain only letters (a-z), digits (0-9) and "-+/*._"',
             ],
+            'purchase_date' => [
+                'purchase_date must be a valid date',
+            ],
+            'state' => [
+                'Invalid value.'
+            ]
         ]);
     }
 
@@ -172,14 +229,27 @@ final class MaterialUnitsTest extends ApiTestCase
     public function testUpdateUnit(): void
     {
         // - Test simple.
-        $data = ['is_broken' => true, 'park_id' => 2];
+        $data = [
+            'is_broken' => true,
+            'park_id' => 2,
+            'person_id' => null,
+            'state' => 'bad',
+            'purchase_date' => '2020-05-31',
+            'notes' => 'Une petite note',
+        ];
         $expectedData = [
             'id' => 1,
             'material_id' => 6,
             'park_id' => 2,
+            'person_id' => null,
             'reference' => 'XR18-1',
             'serial_number' => null,
             'is_broken' => true,
+            'is_lost' => false,
+            'state' => 'bad',
+            'purchase_date' => '2020-05-31',
+            'notes' => 'Une petite note',
+            'owner' => null,
             'created_at' => null,
             'updated_at' => 'fakedTestContent',
         ];
@@ -188,14 +258,25 @@ final class MaterialUnitsTest extends ApiTestCase
         $this->assertResponseData($expectedData, ['updated_at']);
 
         // - Test qu'on ne peut pas mettre à jour les données sensibles.
-        $data = ['id' => 1000, 'material_id' => 7, 'is_broken' => true];
+        $data = [
+            'id' => 1000,
+            'material_id' => 7,
+            'state' => 'state-of-use',
+            'is_broken' => true
+        ];
         $expectedData = [
             'id' => 5,
             'material_id' => 8,
             'park_id' => 1,
+            'person_id' => null,
             'reference' => 'DECOR-FOREST-1',
             'serial_number' => null,
             'is_broken' => true,
+            'is_lost' => false,
+            'state' => 'state-of-use',
+            'purchase_date' => null,
+            'notes' => null,
+            'owner' => null,
             'created_at' => null,
             'updated_at' => 'fakedTestContent',
         ];

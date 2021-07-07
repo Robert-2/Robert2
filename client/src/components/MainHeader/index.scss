@@ -1,0 +1,64 @@
+@import '../../themes/default/index';
+
+.MainHeader {
+  display: flex;
+  flex: 0 0 $main-header-height;
+  max-height: $main-header-height;
+  flex-flow: row nowrap;
+  align-items: center;
+  background-color: $bg-color-main-header;
+
+  &__logo {
+    display: none;
+    flex: 0 0 $side-nav-width;
+    text-align: center;
+    padding: .2rem .2rem 0;
+
+    img {
+      height: 3rem;
+    }
+  }
+
+  &__menu-toggle {
+    flex: 0 0 auto;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 0 $content-padding-large-vertical;
+    align-self: stretch;
+  }
+
+  &__title {
+    flex: 1;
+    color: #fff;
+    font-size: 1.6rem;
+    font-weight: 400;
+  }
+
+  &__menu {
+    flex: 0 0 auto;
+    display: flex;
+    flex-flow: row nowrap;
+    align-self: stretch;
+  }
+
+  @media(min-width: $screen-mobile) {
+    &__logo {
+      display: block;
+    }
+
+    &__menu-toggle {
+      display: none;
+    }
+
+    &__title {
+      padding-left: $content-padding-small-vertical;
+    }
+  }
+
+  @media(min-width: $screen-desktop) {
+    &__logo {
+      flex: 0 0 $side-nav-full-width;
+    }
+  }
+}

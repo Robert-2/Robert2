@@ -1,0 +1,21 @@
+.Inventories {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  > .VueTables {
+    flex: 1;
+    width: 100%;
+  }
+
+  .VueTables__search {
+    display: none;
+  }
+
+  &__actions {
+    width: 1%;
+    white-space: nowrap;
+    text-align: right;
+  }
+}

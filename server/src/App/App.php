@@ -75,8 +75,12 @@ class App
     protected function configureRouter()
     {
         $settings = $this->container->get('settings');
-        $useRouterCache = (bool)$settings['useRouterCache'] && !isTestMode();
         $isCORSEnabled = (bool)$settings['enableCORS'] && !isTestMode();
+        $useRouterCache = (
+            (bool)$settings['useRouterCache']
+            && !isTestMode()
+            && Config::getEnv() !== 'development'
+        );
 
         // - Route cache
         if ($useRouterCache) {
@@ -135,7 +139,12 @@ class App
             ->setName('getDocumentFile');
         $this->app->get('/materials/{id:[0-9]+}/picture[/]', $getActionFqdn('MaterialController:getPicture'))
             ->setName('getMaterialPicture');
-        $this->app->get('/material-units/{id:[0-9]+}/barcode', $getActionFqdn('MaterialUnitController:barCode'));
+        $this->app->get('/materials/pdf[/]', $getActionFqdn('MaterialController:getAllPdf'))
+            ->setName('getMaterialsListPdf');
+        $this->app->get('/material-units/{id:[0-9]+}/barcode', $getActionFqdn('MaterialUnitController:barCode'))
+            ->setName('getMaterialUnitBarcode');
+        $this->app->get('/inventories/{id:[0-9]+}/pdf', $getActionFqdn('InventoryController:getOnePdf'))
+            ->setName('getInventoryPdf');
 
         // - Login services
         $this->app->get('/login/cas', $getActionFqdn('AuthController:loginWithCAS'));
@@ -154,12 +163,12 @@ class App
 
     protected function configureErrorHandlers()
     {
-        $shouldLog = true;
-        $displayErrorDetails = (bool)$this->container->get('settings')['displayErrorDetails'];
-        if (isTestMode()) {
-            $shouldLog = false;
-            $displayErrorDetails = true;
-        }
+        $shouldLog = !isTestMode();
+        $displayErrorDetails = (
+            (bool)$this->container->get('settings')['displayErrorDetails']
+            || isTestMode()
+            || Config::getEnv() === 'development'
+        );
 
         $logger = $this->container->get('logger')->createLogger('error');
         $errorMiddleware = $this->app->addErrorMiddleware($displayErrorDetails, $shouldLog, $shouldLog, $logger);

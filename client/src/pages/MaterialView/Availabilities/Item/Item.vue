@@ -12,13 +12,13 @@
     <div class="MaterialAvailabilitiesItem__quantity-text">
       {{ $t('into') }}
     </div>
+    <div class="MaterialAvailabilitiesItem__icon">
+      <i :class="`fas fa-${mainIcon}`" />
+      <i v-if="hasWarning" class="fas fa-exclamation-triangle" />
+    </div>
     <div class="MaterialAvailabilitiesItem__main">
       <h3 class="MaterialAvailabilitiesItem__main__title">
         {{ data.title }} <span v-if="data.location">({{ data.location }})</span>
-        <span class="MaterialAvailabilitiesItem__main__icon">
-          <i v-if="!data.is_confirmed" class="far fa-calendar-times" />
-          <i v-if="data.is_confirmed" class="fas fa-check" />
-        </span>
       </h3>
       <div class="MaterialAvailabilitiesItem__main__dates">
         <span v-if="isMultipleDayLong" >

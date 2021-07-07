@@ -4,7 +4,7 @@
       <MainHeader v-if="isLogged" @toggleMenu="toggleSideNav" />
       <div class="main__body">
         <SideNav v-if="isLogged" :isOpen="isOpenedSideNav" />
-        <router-view />
+        <router-view :key="$route.path" />
       </div>
     </div>
   </div>
@@ -17,7 +17,7 @@
 
 <script>
 import Vue from 'vue';
-import MainHeader from '@/components/MainHeader/MainHeader.vue';
+import MainHeader from '@/components/MainHeader';
 import SideNav from '@/components/SideNav/SideNav.vue';
 
 export default {

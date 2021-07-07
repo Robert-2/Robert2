@@ -4,6 +4,33 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.14.0-premium (2021-07-07)
+
+- Corrige l'affichage de la valeur de remplacement du matériel dans les fiches de sortie en mode "flat" (#156).
+- Ajoute la possibilité de vérifier que tout le matériel est bien retourné à la fin d'un événement (#4).
+- Simplifie la signification des couleurs des événements dans le calendrier.
+- Utilise des icônes cohérents pour le statut des événements dans le calendrier et la fenêtre d'événement.
+- Ajoute une petite légende sous le calendrier pour expliquer les couleurs et icônes des événements (#155).
+- Affiche les caractéristiques spéciales du matériel dans les fiches de sortie (#147).
+- Ajoute la possibilité d'imprimer (en PDF) une liste de tout le matériel (ou de chaque parc séparément), à des fins d'inventaire (#149).
+- Ajoute la possibilité d'archiver un événement, s'il est passé et que son inventaire de retour a été effectué (#152) (👏 @adamlarat).
+- Ajoute des données aux unités de matériel, ainsi que la gestion de leurs états (Premium #21).
+- Ajoute les propriétaires des unités de matériel (Premium #34).
+- Accepte le "_" pour le champs "référence" et "n° de série" des unités de matériel (Premium #47).
+- Ajoute la création des inventaires des parcs de matériel (Premium #32).
+- Ajoute l'impression des inventaires et la page de listing des inventaires d'un parc (Premium #49).
+- Ajoute la gestion des paramètres des fiches de sortie (#150), permettant de :
+  - Choisir le type de classement pour la liste du matériel (par catégories, sous-catégories, par parc ou bien non classé).
+  - Mettre un texte personnalisé en bas de page des fiches de sortie.
+- Permet la suppression des utilisateurs qui ont déjà créé des événements (#159).
+- À la création d'un matériel, le champ "parc" est pré-rempli uniquement si il n'existe qu'un seul parc dans la liste (#162).
+- Met en valeur les champs qui ont des erreurs de validation avec une bordure rouge (#161).
+- Regroupe les boutons d'actions secondaires de la fenêtre des événements dans un menu.
+- Ajoute une action secondaire dans la fenêtre des événements pour supprimer l'événement.
+- Ajoute une action secondaire dans la fenêtre des événements pour cloner l'événement avec de nouvelles dates (#120).
+- Optimise le chargement de la liste des parcs en ajoutant un bouton qui récupère le montant total du parc (#171).
+- Affiche les totaux du parc dans son formulaire de modification.
+
 ## 0.13.3-premium (2021-05-27)
 
 - Corrige l'affichage des étiquettes et utilise une police monospaced (Premium #42).

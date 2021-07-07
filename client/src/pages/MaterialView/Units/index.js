@@ -1,4 +1,4 @@
-import store from '@/store';
+import moment from 'moment';
 import Alert from '@/components/Alert';
 import Config from '@/config/globalConfig';
 
@@ -14,7 +14,11 @@ export default {
         'reference',
         'serial_number',
         'park',
+        'owner',
         'is_broken',
+        'is_lost',
+        'state',
+        'purchase_date',
         'actions',
       ],
       options: {
@@ -25,23 +29,36 @@ export default {
           'reference',
           'serial_number',
           'is_broken',
+          'state',
+          'purchase_date',
+          'is_lost',
         ],
         headings: {
           reference: this.$t('reference'),
           serial_number: this.$t('serial-number'),
           park: this.$t('park'),
+          owner: this.$t('owner'),
           is_broken: this.$t('is-broken'),
+          is_lost: this.$t('is-lost'),
+          state: this.$t('state'),
+          purchase_date: this.$t('purchase-date'),
           actions: '',
         },
       },
     };
   },
   mounted() {
-    store.dispatch('parks/fetch');
+    this.$store.commit('setPageSubTitle', this.material.name);
+    this.$store.dispatch('parks/fetch');
+    this.$store.dispatch('unitStates/fetch');
   },
   methods: {
     getParkName(parkId) {
-      return store.getters['parks/parkName'](parkId);
+      return this.$store.getters['parks/parkName'](parkId);
+    },
+
+    getUnitStateName(unitStateName) {
+      return this.$store.getters['unitStates/unitStateName'](unitStateName) || '?';
     },
 
     getFileUrl(unitId) {
@@ -69,6 +86,13 @@ export default {
       } finally {
         this.deleteRequests.delete(unitId);
       }
+    },
+
+    formatDate(date) {
+      if (!date) {
+        return null;
+      }
+      return moment(date).format('L');
     },
   },
 };

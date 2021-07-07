@@ -1,11 +1,11 @@
 import moment from 'moment';
 import Config from '@/config/globalConfig';
 import ModalConfig from '@/config/modalConfig';
-import store from '@/store';
 import Alert from '@/components/Alert';
 import Help from '@/components/Help/Help.vue';
+import Dropdown, { getItemClassnames } from '@/components/Dropdown';
 import isValidInteger from '@/utils/isValidInteger';
-import PromptDate from '@/components/PromptDate/PromptDate.vue';
+import PromptDate from '@/components/PromptDate';
 import AssignTags from '@/components/AssignTags/AssignTags.vue';
 import MaterialsFilters from '@/components/MaterialsFilters/MaterialsFilters.vue';
 import MaterialTags from '@/components/MaterialTags/MaterialTags.vue';
@@ -13,7 +13,12 @@ import formatAmount from '@/utils/formatAmount';
 
 export default {
   name: 'Materials',
-  components: { Help, MaterialsFilters, MaterialTags },
+  components: {
+    Help,
+    Dropdown,
+    MaterialsFilters,
+    MaterialTags,
+  },
   data() {
     let columns = [
       'reference',
@@ -29,7 +34,9 @@ export default {
       'actions',
     ];
 
-    if (Config.billingMode === 'none') {
+    const { billingMode } = Config;
+
+    if (billingMode === 'none') {
       columns = columns.filter((column) => column !== 'rental_price');
     }
 
@@ -111,21 +118,35 @@ export default {
       },
     };
   },
+  computed: {
+    isAdmin() {
+      return this.$store.getters['auth/is']('admin');
+    },
+
+    downloadListingUrl() {
+      const { baseUrl } = Config;
+      return `${baseUrl}/materials/pdf`;
+    },
+
+    dropdownItemClass() {
+      return getItemClassnames();
+    },
+  },
   mounted() {
-    store.dispatch('categories/fetch');
-    store.dispatch('tags/fetch');
+    this.$store.dispatch('categories/fetch');
+    this.$store.dispatch('tags/fetch');
   },
   methods: {
     getParkName(parkId) {
-      return store.getters['parks/parkName'](parkId) || '--';
+      return this.$store.getters['parks/parkName'](parkId) || '--';
     },
 
     getCategoryName(categoryId) {
-      return store.getters['categories/categoryName'](categoryId);
+      return this.$store.getters['categories/categoryName'](categoryId);
     },
 
     getSubCategoryName(subCategoryId) {
-      return store.getters['categories/subCategoryName'](subCategoryId);
+      return this.$store.getters['categories/subCategoryName'](subCategoryId);
     },
 
     getFilters() {

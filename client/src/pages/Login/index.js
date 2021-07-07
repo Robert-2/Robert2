@@ -1,5 +1,5 @@
 import Config from '@/config/globalConfig';
-import Layout from './components/Layout/Layout.vue';
+import Layout from './Layout';
 
 export default {
   name: 'Login',
@@ -51,10 +51,7 @@ export default {
 
       try {
         await this.$store.dispatch('auth/login', { ...this.credentials });
-
-        const lastVisited = window.localStorage.getItem('lastVisited');
-        const redirect = (!lastVisited || lastVisited === '/login') ? '/' : lastVisited;
-        this.$router.replace(redirect || '/');
+        this.$router.replace('/');
       } catch (error) {
         if (!error.response) {
           this.errorMessage({ code: 0, message: 'network error' });

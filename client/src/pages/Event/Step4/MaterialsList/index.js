@@ -1,5 +1,5 @@
 import MaterialsFilter from '@/components/MaterialsFilters/MaterialsFilters.vue';
-import SwitchToggle from '@/components/SwitchToggle/SwitchToggle.vue';
+import SwitchToggle from '@/components/SwitchToggle';
 import Config from '@/config/globalConfig';
 import formatAmount from '@/utils/formatAmount';
 import observeBarcodeScan from '@/utils/observeBarcodeScan';
@@ -164,7 +164,7 @@ export default {
       }
 
       const material = this.materials.find((_material) => _material.id === id);
-      if (!material) {
+      if (!material || !material.is_unitary) {
         return;
       }
 
@@ -255,14 +255,14 @@ export default {
           return false;
         }
 
-        if (filters.park && unit.park_id !== filters.park) {
-          return false;
-        }
-
-        return !selectedUnits.includes(unit.id);
+        return !(
+          filters.park
+          && unit.park_id !== filters.park
+          && !selectedUnits.includes(unit.id)
+        );
       });
 
-      return availableUnits.length;
+      return availableUnits.length - selectedUnits.length;
     },
 
     setQuantity(material, value) {

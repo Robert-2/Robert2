@@ -29,7 +29,7 @@
         >
           <i v-if="isConfirming" class="fas fa-circle-notch fa-spin" />
           <i v-if="!isConfirming" class="fas fa-check" />
-          {{ $t('set-event-confirmed') }}
+          {{ $t('confirm-event') }}
         </button>
         <button
           v-if="event.is_confirmed"
@@ -38,7 +38,7 @@
         >
           <i v-if="isConfirming" class="fas fa-circle-notch fa-spin" />
           <i v-if="!isConfirming" class="fas fa-hourglass-half" />
-          {{ $t('set-back-event-pending') }}
+          {{ $t('unconfirm-event') }}
         </button>
         <a
           v-if="event.beneficiaries.length > 0"

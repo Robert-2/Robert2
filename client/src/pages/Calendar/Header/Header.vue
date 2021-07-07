@@ -69,7 +69,7 @@
     <div class="CalendarHeader__loading-container">
       <div v-if="isLoading" class="CalendarHeader__loading">
         <i class="fas fa-circle-notch fa-spin" />
-        {{ $t('help-loading') }}
+        {{ $t('loading') }}
       </div>
     </div>
     <div class="CalendarHeader__actions">

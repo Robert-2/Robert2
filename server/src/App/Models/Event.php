@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Builder;
 use Robert2\API\Config\Config;
 use Robert2\API\Models\Material;
+use Robert2\API\Models\MaterialUnit;
 use Robert2\API\Models\Park;
 use Robert2\API\Models\Traits\WithPdf;
 use Robert2\Lib\Domain\EventData;
@@ -36,15 +37,17 @@ class Event extends BaseModel
         $this->_endDate = new \DateTime("$thisYear-12-31");
 
         $this->validation = [
-            'user_id'      => V::notEmpty()->numeric(),
-            'title'        => V::notEmpty()->length(2, 191),
-            'description'  => V::optional(V::length(null, 255)),
-            'reference'    => V::oneOf(V::nullType(), V::alnum('.,-/_ ')->length(1, 64)),
-            'start_date'   => V::notEmpty()->date(),
-            'end_date'     => V::callback([$this, 'checkEndDate']),
+            'user_id' => V::optional(V::numeric()),
+            'title' => V::notEmpty()->length(2, 191),
+            'description' => V::optional(V::length(null, 255)),
+            'reference' => V::oneOf(V::nullType(), V::alnum('.,-/_ ')->length(1, 64)),
+            'start_date' => V::notEmpty()->date(),
+            'end_date' => V::callback([$this, 'checkEndDate']),
             'is_confirmed' => V::notOptional()->boolType(),
-            'location'     => V::optional(V::length(2, 64)),
-            'is_billable'  => V::optional(V::boolType()),
+            'is_archived' => V::callback([$this, 'checkIsArchived']),
+            'location' => V::optional(V::length(2, 64)),
+            'is_billable' => V::optional(V::boolType()),
+            'is_return_inventory_done' => V::optional(V::boolType()),
         ];
     }
 
@@ -69,6 +72,29 @@ class Event extends BaseModel
         $endDate = new \DateTime($this->end_date);
 
         return $startDate < $endDate ?: 'endDateMustBeLater';
+    }
+
+    public function checkIsArchived($value)
+    {
+        if (!$value) {
+            return true;
+        }
+
+        $boolChecker = V::notOptional()->boolType();
+        if (!$boolChecker->validate($value)) {
+            return false;
+        }
+
+        $dateChecker = V::notEmpty()->date();
+        if (!$dateChecker->validate($this->end_date)) {
+            return false;
+        }
+
+        $now = new \DateTime();
+        $endDate = new \DateTime($this->end_date);
+        $isPastAndInventoryDone = $endDate < $now && (bool)$this->is_return_inventory_done;
+
+        return $isPastAndInventoryDone ?: 'eventCannotBeArchived';
     }
 
     // ——————————————————————————————————————————————————————
@@ -130,7 +156,7 @@ class Event extends BaseModel
 
         return $this->belongsToMany('Robert2\API\Models\Material', 'event_materials')
             ->using('Robert2\API\Models\EventMaterial')
-            ->withPivot('id', 'quantity')
+            ->withPivot('id', 'quantity', 'quantity_returned', 'quantity_broken')
             ->select($fields);
     }
 
@@ -155,15 +181,17 @@ class Event extends BaseModel
     // ——————————————————————————————————————————————————————
 
     protected $casts = [
-        'user_id'      => 'integer',
-        'reference'    => 'string',
-        'title'        => 'string',
-        'description'  => 'string',
-        'start_date'   => 'string',
-        'end_date'     => 'string',
+        'user_id' => 'integer',
+        'reference' => 'string',
+        'title' => 'string',
+        'description' => 'string',
+        'start_date' => 'string',
+        'end_date' => 'string',
         'is_confirmed' => 'boolean',
-        'location'     => 'string',
-        'is_billable'  => 'boolean',
+        'is_archived' => 'boolean',
+        'location' => 'string',
+        'is_billable' => 'boolean',
+        'is_return_inventory_done' => 'boolean',
     ];
 
     public function getUserAttribute()
@@ -225,6 +253,17 @@ class Event extends BaseModel
         return $builder;
     }
 
+    public static function getOngoing(): Builder
+    {
+        $now = date('Y-m-d H:i:s');
+
+        return static::orderBy('start_date', 'asc')
+            ->where([
+                ['end_date', '>', $now],
+                ['start_date', '<', $now],
+            ]);
+    }
+
     public static function getMissingMaterials(int $id): ?array
     {
         $event = static::with('Materials')->find($id);
@@ -243,7 +282,13 @@ class Event extends BaseModel
         foreach ($eventMaterials as $material) {
             $availableQuantity = $material['remaining_quantity'];
             if ($material['is_unitary']) {
-                $availableQuantity = count($material['pivot']['units']);
+                $availableQuantity = 0;
+                foreach ($material['pivot']['units'] as $unitId) {
+                    $unit = MaterialUnit::find($unitId);
+                    if ($unit && !$unit->is_lost) {
+                        $availableQuantity += 1;
+                    }
+                }
             }
 
             $material['missing_quantity'] = $material['pivot']['quantity'] - $availableQuantity;
@@ -257,6 +302,24 @@ class Event extends BaseModel
         }
 
         return empty($missingMaterials) ? null : array_values($missingMaterials);
+    }
+
+    public static function hasNotReturnedMaterials(int $id): bool
+    {
+        $event = static::with('Materials')->find($id);
+        if (!$event || empty($event->materials) || !$event->is_return_inventory_done) {
+            return false;
+        }
+
+        $hasNotReturnedMaterials = false;
+        foreach ($event->materials as $material) {
+            $missing = $material['pivot']['quantity'] - $material['pivot']['quantity_returned'];
+            if ($missing > 0) {
+                $hasNotReturnedMaterials = true;
+            }
+        }
+
+        return $hasNotReturnedMaterials;
     }
 
     public static function getParks(int $id): array
@@ -297,14 +360,19 @@ class Event extends BaseModel
         $EventData = new EventData($date, $event, 'summary', $event['user_id']);
         $EventData->setCategories($categories)->setParks($parks);
 
-        $materialDisplayMode = Config::getSettings('eventSummary')['materialDisplayMode'];
-        if ($materialDisplayMode === 'sub-categories') {
+        $materialDisplayMode = Setting::getWithKey('event_summary_material_display_mode');
+        if ($materialDisplayMode === 'categories') {
+            $materialList = $EventData->getMaterialByCategories(true);
+        } elseif ($materialDisplayMode === 'sub-categories') {
             $materialList = $EventData->getMaterialBySubCategories(true);
         } elseif ($materialDisplayMode === 'parks' && count($parks) > 1) {
             $materialList = $EventData->getMaterialByParks(true);
         } else {
-            $materialList = $EventData->getMaterials();
+            $materialList = $EventData->getMaterialsFlat(true);
         }
+
+        $customTextTitle = Setting::getWithKey('event_summary_custom_text_title');
+        $customText = Setting::getWithKey('event_summary_custom_text');
 
         $data = [
             'event' => $event,
@@ -316,6 +384,8 @@ class Event extends BaseModel
             'materialList' => $materialList,
             'materialDisplayMode' => $materialDisplayMode,
             'replacementAmount' => $EventData->getReplacementAmount(),
+            'customTextTitle' => $customTextTitle,
+            'customText' => $customText,
         ];
 
         $eventPdf = $this->_getPdfAsString($data);
@@ -331,11 +401,11 @@ class Event extends BaseModel
     }
 
     /**
-     * Permet de récuperer les ids des unités utilisées pendant l'événement
+     * Permet de récupérer les ids des unités utilisées pendant l'événement
      * représenté par l'instance courante.
      *
      * Seules les unités utilisées dans les autres événements au même moment
-     * seront récuprées, et non pas celles utilisées par l'événement lui-même.
+     * seront récupérées, et non pas celles utilisées par l'événement lui-même.
      *
      * @return array - La liste d'unités utilisées au même moment que l'événement.
      */
@@ -374,8 +444,10 @@ class Event extends BaseModel
         'start_date',
         'end_date',
         'is_confirmed',
+        'is_archived',
         'location',
         'is_billable',
+        'is_return_inventory_done',
     ];
 
     public function setPeriod(?string $start, ?string $end): Event
