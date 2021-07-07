@@ -1,4 +1,4 @@
-import Layout from './components/Layout/Layout.vue';
+import Layout from './Layout';
 
 export default {
   name: 'Login',
