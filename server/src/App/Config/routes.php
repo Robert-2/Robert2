@@ -22,6 +22,7 @@ return [
         '/parks[/]' => 'ParkController:getAll',
         '/parks/list[/]' => 'ParkController:getList',
         '/parks/{id:[0-9]+}[/]' => 'ParkController:getOne',
+        '/parks/{id:[0-9]+}/total-amount' => 'ParkController:getTotalAmount',
         '/parks/{parkId:[0-9]+}/materials' => 'MaterialController:getParkAll',
         '/materials[/]' => 'MaterialController:getAll',
         '/materials/{id:[0-9]+}[/]' => 'MaterialController:getOne',

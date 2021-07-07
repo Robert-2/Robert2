@@ -1,6 +1,6 @@
 import Config from '@/config/globalConfig';
 
-const formatAmount = (amount) => {
+const formatAmount = (amount = 0) => {
   const { iso } = Config.currency;
 
   return amount.toLocaleString(undefined, {
