@@ -1,8 +1,3 @@
-<template>
-  <img :src="src" alt="Robert²" />
-</template>
-
-<script>
 import minimalistLogoSrc from './assets/logo-R.svg';
 import logoSrc from './assets/logo.svg';
 
@@ -16,5 +11,9 @@ export default {
       return this.minimalist ? minimalistLogoSrc : logoSrc;
     },
   },
+  render() {
+    const { src } = this;
+
+    return <img class="Logo" src={src} alt='Robert²' />;
+  },
 };
-</script>

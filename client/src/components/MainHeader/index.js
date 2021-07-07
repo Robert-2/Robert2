@@ -1,5 +1,5 @@
 import './index.scss';
-import Logo from '@/components/Logo/Logo.vue';
+import Logo from '@/components/Logo';
 import TopMenu from './TopMenu';
 
 export default {

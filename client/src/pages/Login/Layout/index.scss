@@ -1,3 +1,5 @@
+@import '../../../themes/default';
+
 .LoginLayout {
   position: relative;
   flex: 1;
@@ -12,7 +14,7 @@
     padding: 30px 20px;
     text-align: center;
 
-    img {
+    .Logo {
       max-height: 80px;
       max-width: 100%;
     }
@@ -45,7 +47,7 @@
 
   @media(min-width: $screen-mobile) {
     &__logo {
-      img {
+      .Logo {
         max-height: 120px;
       }
 
@@ -61,7 +63,7 @@
     justify-content: center;
 
     &__logo {
-      img {
+      .Logo {
         max-height: 200px;
       }
 
