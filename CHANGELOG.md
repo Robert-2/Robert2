@@ -4,6 +4,10 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.14.1-premium (2021-07-08)
+
+- Corrige une migration qui posait problème (#196).
+
 ## 0.14.0-premium (2021-07-07)
 
 - Corrige l'affichage de la valeur de remplacement du matériel dans les fiches de sortie en mode "flat" (#156).
