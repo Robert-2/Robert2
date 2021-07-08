@@ -4,6 +4,10 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.14.1 (2021-07-08)
+
+- Corrige une migration qui posait problème (#196).
+
 ## 0.14.0 (2021-07-07)
 
 - Ajoute la possibilité de vérifier que tout le matériel est bien retourné à la fin d'un événement (#4).
