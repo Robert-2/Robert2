@@ -45,8 +45,17 @@ class AddStateToInventoryMaterialUnits extends AbstractMigration
         }
 
         $inventoryMaterialUnitsTable
+            ->dropForeignKey('state_current')
+            ->save();
+
+        $inventoryMaterialUnitsTable
             ->changeColumn('state_current', 'string', ['length' => 64])
-            ->update();
+            ->addForeignKey('state_current', 'material_unit_states', 'id', [
+                'delete' => 'RESTRICT',
+                'update' => 'NO_ACTION',
+                'constraint' => 'fk_material_units_state_current',
+            ])
+            ->save();
     }
 
     public function down()
