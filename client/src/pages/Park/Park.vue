@@ -97,7 +97,8 @@
               </router-link>
             </div>
             <div v-if="park.total_items > 0" class="Park__totals__amount">
-              <strong>{{ $t('total-amount') }} {{ totalAmount }}</strong>
+              <span class="Park__totals__amount__title">{{ $t('total-amount') }} :</span>
+              <ParkTotalAmount v-if="park.total_items > 0" :parkId="park.id" />
             </div>
             <div v-else class="Park__totals__no-items">{{ $t('no-items') }}</div>
           </div>
