@@ -96,7 +96,6 @@ final class ParksTest extends ApiTestCase
             'opening_hours' => "Du lundi au vendredi, de 09:00 à 19:00.",
             'note' => null,
             'total_items' => 7,
-            'total_amount' => 101223.80,
             'total_stock_quantity' => 83,
             'created_at' => null,
             'updated_at' => null,

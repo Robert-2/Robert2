@@ -4,6 +4,10 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.14.2 (2021-07-09)
+
+- Améliore les perfs des parcs : pas d'injection du montant total même pour le getOne().
+
 ## 0.14.1 (2021-07-08)
 
 - Corrige une migration qui posait problème (#196).

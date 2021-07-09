@@ -18,7 +18,6 @@ class ParkController extends BaseController
 
         $park = Park::findOrFail($id)->append([
             'has_ongoing_event',
-            'total_amount',
         ]);
         return $response->withJson($park);
     }

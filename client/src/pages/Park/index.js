@@ -1,10 +1,10 @@
 import Help from '@/components/Help/Help.vue';
 import FormField from '@/components/FormField';
-import formatAmount from '@/utils/formatAmount';
+import ParkTotalAmount from '../Parks/TotalAmount';
 
 export default {
   name: 'Material',
-  components: { Help, FormField },
+  components: { Help, FormField, ParkTotalAmount },
   data() {
     return {
       help: 'page-parks.help-edit',
@@ -32,10 +32,6 @@ export default {
   computed: {
     countriesOptions() {
       return this.$store.getters['countries/options'];
-    },
-
-    totalAmount() {
-      return formatAmount(this.park.total_amount);
     },
   },
   mounted() {
