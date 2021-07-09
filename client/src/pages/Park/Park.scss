@@ -31,7 +31,19 @@
     }
 
     &__amount {
-      margin-top: $content-padding-small-vertical;
+      margin-top: $content-padding-small-horizontal;
+
+      &__title {
+        padding: 7px 0;
+      }
+
+      .ParkTotalAmount {
+        display: inline-block;
+
+        &__amount {
+          font-weight: 600;
+        }
+      }
     }
   }
 }
