@@ -1,6 +1,8 @@
 <?php
 use Phinx\Migration\AbstractMigration;
 
+use Robert2\API\Config as Config;
+
 class AddStateToInventoryMaterialUnits extends AbstractMigration
 {
     public function up()
@@ -31,16 +33,21 @@ class AddStateToInventoryMaterialUnits extends AbstractMigration
             ])
             ->save();
 
-        $units = $this->fetchAll(
-            "SELECT imu.`id`, mu.`state`
-             FROM inventory_material_units AS imu
-             LEFT JOIN material_units AS mu ON imu.`material_unit_id` = mu.`id`"
-        );
+        $prefix = Config\Config::getSettings('db')['prefix'];
+
+        $units = $this->fetchAll(sprintf(
+            'SELECT imu.`id`, mu.`state`
+            FROM `%1$sinventory_material_units` AS imu
+            LEFT JOIN `%1$smaterial_units` AS mu ON imu.`material_unit_id` = mu.`id`',
+            $prefix
+        ));
         foreach ($units as $unit) {
-            $this->execute(vsprintf(
-                // phpcs:ignore Generic.Files.LineLength
-                'UPDATE `inventory_material_units` SET `state_previous`="%2$s", `state_current`="%2$s" WHERE `id` = %1$d',
-                [$unit['id'], $unit['state']]
+            $this->execute(sprintf(
+                'UPDATE `%1$sinventory_material_units`
+                SET `state_previous` = "%3$s", `state_current` = "%3$s" WHERE `id` = %2$d',
+                $prefix,
+                $unit['id'],
+                $unit['state']
             ));
         }
 
