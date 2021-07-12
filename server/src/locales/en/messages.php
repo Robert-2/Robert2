@@ -2454,10 +2454,10 @@ return [
     "Missing value"
     => "Missing value",
 
-    "endDateMustBeLater"
+    "end-date-must-be-later"
     => "End date must be later than start date",
 
-    "eventCannotBeArchived"
+    "event-cannot-be-archived"
     => "An event cannot be archived if its return inventory is not done!",
 
     "referenceAlreadyInUse"
@@ -2465,6 +2465,12 @@ return [
 
     "invalid-value"
     => "Invalid value.",
+
+    "technician-assignation-before-event"
+    => "Assignment of this technician begins before the event.",
+
+    "technician-assignation-after-event"
+    => "Assignment of this technician ends after the event.",
 
     //
     // - Install messages
@@ -2546,7 +2552,7 @@ return [
     "vatNumber"
     => "VAT number: %s",
 
-    "assignees"
+    "technicians"
     => "Technicians",
 
     "beneficiary"

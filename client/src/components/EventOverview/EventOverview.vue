@@ -54,7 +54,7 @@
           </dd>
         </dl>
       </section>
-      <section v-if="event.assignees.length > 0" class="EventOverview__section">
+      <section v-if="event.technicians.length > 0" class="EventOverview__section">
         <dl class="EventOverview__info EventOverview__info--vertical">
           <dt class="EventOverview__info__term">
             <i class="fas fa-people-carry" />
@@ -63,7 +63,7 @@
           <dd class="EventOverview__info__value">
             <ul class="EventOverview__info__list">
               <li
-                v-for="technician in event.assignees"
+                v-for="technician in event.technicians"
                 :key="technician.id"
                 class="EventOverview__info__list-item"
               >

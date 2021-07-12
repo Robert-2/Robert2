@@ -9,7 +9,7 @@
         field="full_name"
         fetchEntity="persons"
         :fetchParams="fetchParams"
-        :selectedItems="event.assignees"
+        :selectedItems="event.technicians"
         @itemsUpdated="updateItems"
         createItemPath="/technicians/new"
         :formatOptions="formatItemOptions"

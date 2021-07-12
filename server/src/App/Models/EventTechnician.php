@@ -5,7 +5,7 @@ namespace Robert2\API\Models;
 
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
-class EventAssignee extends Pivot
+class EventTechnician extends Pivot
 {
     public $incrementing = true;
 
@@ -17,7 +17,9 @@ class EventAssignee extends Pivot
 
     protected $casts = [
         'event_id' => 'integer',
-        'person_id' => 'integer',
+        'technician_id' => 'integer',
+        'start_time' => 'string',
+        'end_time' => 'string',
         'position' => 'string',
     ];
 }

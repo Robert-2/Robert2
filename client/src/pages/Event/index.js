@@ -41,7 +41,7 @@ export default {
         {
           id: 3,
           name: this.$t('page-events.event-technicians'),
-          fields: ['assignees'],
+          fields: ['technicians'],
         },
         {
           id: 4,

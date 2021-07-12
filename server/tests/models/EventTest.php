@@ -192,10 +192,10 @@ final class EventTest extends ModelTestCase
         $this->assertEquals($expected, $results[0]);
     }
 
-    public function testGetAssignees(): void
+    public function testGetTechnicians(): void
     {
         $Event = $this->model::find(1);
-        $results = $Event->assignees;
+        $results = $Event->technicians;
         $this->assertCount(2, $results);
         $expected = [
             [
@@ -210,7 +210,9 @@ final class EventTest extends ModelTestCase
                 'pivot' => [
                     'id' => 1,
                     'event_id' => 1,
-                    'person_id' => 1,
+                    'technician_id' => 1,
+                    'start_time' => '2018-12-17 09:00:00',
+                    'end_time' => '2018-12-18 22:00:00',
                     'position' => 'Régisseur',
                 ]
             ],
@@ -226,7 +228,9 @@ final class EventTest extends ModelTestCase
                 'pivot' => [
                     'id' => 2,
                     'event_id' => 1,
-                    'person_id' => 2,
+                    'technician_id' => 2,
+                    'start_time' => '2018-12-18 14:00:00',
+                    'end_time' => '2018-12-18 18:00:00',
                     'position' => 'Technicien plateau',
                 ]
             ],
@@ -466,5 +470,103 @@ final class EventTest extends ModelTestCase
     {
         $result = $this->model->getPdfContent(1);
         $this->assertNotEmpty($result);
+    }
+
+    public function testSaveRelations()
+    {
+        $data = [
+            'beneficiaries' => [3],
+        ];
+
+        $event = Event::findOrFail(3);
+        $event->saveRelations($data);
+        $this->assertEquals(1, count($event->beneficiaries));
+        $this->assertEquals('Client Benef', $event->beneficiaries[0]['full_name']);
+
+        $data = [
+            'technicians' => [
+                [
+                    'id' => 1,
+                    'start_time' => '2018-12-15 10:00:00',
+                    'end_time' => '2018-12-16 19:00:00',
+                    'position' => ' Testeur ',
+                ],
+            ],
+        ];
+        $event->saveRelations($data);
+        $this->assertEquals(1, count($event->technicians));
+        $this->assertEquals('Jean Fountain', $event->technicians[0]['full_name']);
+        $this->assertEquals('2018-12-15 10:00:00', $event->technicians[0]['pivot']['start_time']);
+        $this->assertEquals('2018-12-16 19:00:00', $event->technicians[0]['pivot']['end_time']);
+        $this->assertEquals('Testeur', $event->technicians[0]['pivot']['position']);
+
+        $data = [
+            'materials' => [
+                [ 'id' => 3, 'quantity' => 20 ],
+                [ 'id' => 2, 'quantity' => 3 ],
+                [ 'id' => 5, 'quantity' => 14 ],
+                [ 'id' => 1, 'quantity' => 8 ],
+            ],
+        ];
+        $event->saveRelations($data);
+        $this->assertEquals(4, count($event->materials));
+        $this->assertEquals(1, $event->materials[0]['id']);
+        $this->assertEquals(8, $event->materials[0]['pivot']['quantity']);
+        $this->assertEquals(5, $event->materials[1]['id']);
+        $this->assertEquals(14, $event->materials[1]['pivot']['quantity']);
+        $this->assertEquals(2, $event->materials[2]['id']);
+        $this->assertEquals(3, $event->materials[2]['pivot']['quantity']);
+        $this->assertEquals(3, $event->materials[3]['id']);
+        $this->assertEquals(20, $event->materials[3]['pivot']['quantity']);
+    }
+
+    public function testSyncTechnicians()
+    {
+        $technicians = [
+            [
+                'id' => 1,
+                'start_time' => '2018-12-15 10:00:00',
+                'end_time' => '2018-12-16 19:00:00',
+                'position' => ' Testeur ',
+            ],
+            [
+                'id' => 2,
+                'start_time' => '2018-12-15 10:00:00',
+                'end_time' => '2018-12-15 16:00:00',
+                'position' => 'Stagiaire observateur',
+            ],
+        ];
+        $event = Event::findOrFail(3);
+        $event->syncTechnicians($technicians);
+        $this->assertEquals(2, count($event->technicians));
+        $this->assertEquals('Jean Fountain', $event->technicians[0]['full_name']);
+        $this->assertEquals('2018-12-15 10:00:00', $event->technicians[0]['pivot']['start_time']);
+        $this->assertEquals('2018-12-16 19:00:00', $event->technicians[0]['pivot']['end_time']);
+        $this->assertEquals('Testeur', $event->technicians[0]['pivot']['position']);
+        $this->assertEquals('Roger Rabbit', $event->technicians[1]['full_name']);
+        $this->assertEquals('2018-12-15 10:00:00', $event->technicians[1]['pivot']['start_time']);
+        $this->assertEquals('2018-12-15 16:00:00', $event->technicians[1]['pivot']['end_time']);
+        $this->assertEquals('Stagiaire observateur', $event->technicians[1]['pivot']['position']);
+    }
+
+    public function testSyncMaterials()
+    {
+        $materials = [
+            [ 'id' => 3, 'quantity' => 20 ],
+            [ 'id' => 2, 'quantity' => 3 ],
+            [ 'id' => 5, 'quantity' => 14 ],
+            [ 'id' => 1, 'quantity' => 8 ],
+        ];
+        $event = Event::findOrFail(3);
+        $event->syncMaterials($materials);
+        $this->assertEquals(4, count($event->materials));
+        $this->assertEquals(1, $event->materials[0]['id']);
+        $this->assertEquals(8, $event->materials[0]['pivot']['quantity']);
+        $this->assertEquals(5, $event->materials[1]['id']);
+        $this->assertEquals(14, $event->materials[1]['pivot']['quantity']);
+        $this->assertEquals(2, $event->materials[2]['id']);
+        $this->assertEquals(3, $event->materials[2]['pivot']['quantity']);
+        $this->assertEquals(3, $event->materials[3]['id']);
+        $this->assertEquals(20, $event->materials[3]['pivot']['quantity']);
     }
 }

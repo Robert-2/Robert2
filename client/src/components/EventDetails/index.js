@@ -39,7 +39,7 @@ export default {
       event: null,
       beneficiaries: [],
       discountRate: 0,
-      assignees: [],
+      technicians: [],
       showBilling: Config.billingMode !== 'none',
       lastBill: null,
       lastEstimate: null,
@@ -233,9 +233,9 @@ export default {
         );
       }
 
-      if (data.assignees) {
-        this.assignees = data.assignees.map(
-          (assignee) => ({ id: assignee.id, name: assignee.full_name }),
+      if (data.technicians) {
+        this.technicians = data.technicians.map(
+          (technician) => ({ id: technician.id, name: technician.full_name }),
         );
       }
 

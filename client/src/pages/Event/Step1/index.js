@@ -114,7 +114,7 @@ export default {
       const {
         user,
         beneficiaries,
-        assignees,
+        technicians,
         materials,
         ...saveData
       } = this.event;

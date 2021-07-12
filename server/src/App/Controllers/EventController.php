@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Robert2\API\Controllers;
 
+use DateTime;
 use Robert2\API\Controllers\Traits\WithCrud;
 use Robert2\API\Controllers\Traits\WithPdf;
 use Robert2\API\Models\Event;
@@ -10,6 +11,7 @@ use Robert2\API\Models\Material;
 use Robert2\API\Models\Park;
 use Robert2\API\Errors\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use InvalidArgumentException;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
 use Slim\Http\ServerRequest as Request;
@@ -35,7 +37,7 @@ class EventController extends BaseController
             ->setPeriod($startDate, $endDate)
             ->getAll($deleted)
             ->with('Beneficiaries:persons.id,first_name,last_name')
-            ->with('Assignees:persons.id,first_name,last_name');
+            ->with('Technicians:persons.id,first_name,last_name');
 
         $data = $results->get()->toArray();
         $useMultipleParks = Park::count() > 1;
@@ -130,14 +132,24 @@ class EventController extends BaseController
             throw new HttpNotFoundException($request);
         }
 
+        $postData = (array)$request->getParsedBody();
+
         $originalBeneficiaries = array_column($originalEventData['beneficiaries'], 'id');
 
-        $originalAssignees = [];
-        foreach ($originalEventData['assignees'] as $assignee) {
-            $originalAssignees[$assignee['id']] = [
-                'position' => $assignee['pivot']['position'],
+        $originalStartDate = new \DateTime($originalEventData['start_date']);
+        $newStartDate = new \DateTime($postData['start_date'] ?? '');
+        $offsetInterval = $originalStartDate->diff($newStartDate);
+
+        $originalTechnicians = array_map(function ($technician) use ($offsetInterval) {
+            $startTime = (new DateTime($technician['pivot']['start_time']))->add($offsetInterval);
+            $endTime = (new DateTime($technician['pivot']['end_time']))->add($offsetInterval);
+            return [
+                'id' => $technician['id'],
+                'start_time' => $startTime->format('Y-m-d H:i:s'),
+                'end_time' => $endTime->format('Y-m-d H:i:s'),
+                'position' => $technician['pivot']['position'],
             ];
-        }
+        }, $originalEventData['technicians']);
 
         $originalMaterials = array_map(function ($material) {
             return [
@@ -146,7 +158,6 @@ class EventController extends BaseController
             ];
         }, $originalEventData['materials']);
 
-        $postData = (array)$request->getParsedBody();
         $newEventData = array_merge($postData, [
             'user_id' => $postData['user_id'] ?? null,
             'title' => $originalEventData['title'],
@@ -159,7 +170,7 @@ class EventController extends BaseController
             'is_billable' => $originalEventData['is_billable'],
             'is_return_inventory_done' => false,
             'beneficiaries' => $originalBeneficiaries,
-            'assignees' => $originalAssignees,
+            'technicians' => $originalTechnicians,
             'materials' => $originalMaterials,
         ]);
 
@@ -217,29 +228,7 @@ class EventController extends BaseController
         }
 
         $event = Event::staticEdit($id, $postData);
-
-        if (isset($postData['beneficiaries'])) {
-            $event->Beneficiaries()->sync($postData['beneficiaries']);
-        }
-
-        if (isset($postData['assignees'])) {
-            $event->Assignees()->sync($postData['assignees']);
-        }
-
-        if (isset($postData['materials'])) {
-            $materials = [];
-            foreach ($postData['materials'] as $materialData) {
-                if ((int)$materialData['quantity'] <= 0) {
-                    continue;
-                }
-
-                $materials[$materialData['id']] = [
-                    'quantity' => $materialData['quantity']
-                ];
-            }
-
-            $event->Materials()->sync($materials);
-        }
+        $event->saveRelations($postData);
 
         return $event->id;
     }
@@ -335,7 +324,7 @@ class EventController extends BaseController
     {
         $model = (new Event)
             ->with('User')
-            ->with('Assignees')
+            ->with('Technicians')
             ->with('Beneficiaries')
             ->with('Materials')
             ->with('Bills')

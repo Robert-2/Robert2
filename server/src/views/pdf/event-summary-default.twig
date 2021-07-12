@@ -60,17 +60,17 @@
             </p>
         </td>
         <td>
-            {% if event['assignees'] %}
-            <h3>{{ translate('assignees') }}</h3>
+            {% if event['technicians'] %}
+            <h3>{{ translate('technicians') }}</h3>
             <ul class="spaceBottom5">
-                {% for assignee in event['assignees'] %}
+                {% for technician in event['technicians'] %}
                 <li class="spaceBottom2">
-                    {{ assignee['full_name'] }}
-                    {% if assignee['pivot']['position'] is not empty %}
-                    <span class="lighter">- {{ assignee['pivot']['position'] }}</span>
+                    {{ technician['full_name'] }}
+                    {% if technician['pivot']['position'] is not empty %}
+                    <span class="lighter">- {{ technician['pivot']['position'] }}</span>
                     {% endif %}
-                    {% if assignee['phone'] is not empty %}
-                    <br />{{ assignee['phone'] }}
+                    {% if technician['phone'] is not empty %}
+                    <br />{{ technician['phone'] }}
                     {% endif %}
                 </li>
                 {% endfor %}

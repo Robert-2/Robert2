@@ -6,10 +6,12 @@ namespace Robert2\API\Models;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Builder;
 use Robert2\API\Config\Config;
+use Robert2\API\Errors\ValidationException;
 use Robert2\API\Models\Material;
 use Robert2\API\Models\Park;
 use Robert2\API\Models\Traits\WithPdf;
 use Robert2\Lib\Domain\EventData;
+use Robert2\API\Services\I18n;
 use Robert2\API\Validation\Validator as V;
 
 class Event extends BaseModel
@@ -70,7 +72,7 @@ class Event extends BaseModel
         $startDate = new \DateTime($this->start_date);
         $endDate = new \DateTime($this->end_date);
 
-        return $startDate < $endDate ?: 'endDateMustBeLater';
+        return $startDate < $endDate ?: 'end-date-must-be-later';
     }
 
     public function checkIsArchived($value)
@@ -93,7 +95,7 @@ class Event extends BaseModel
         $endDate = new \DateTime($this->end_date);
         $isPastAndInventoryDone = $endDate < $now && (bool)$this->is_return_inventory_done;
 
-        return $isPastAndInventoryDone ?: 'eventCannotBeArchived';
+        return $isPastAndInventoryDone ?: 'event-cannot-be-archived';
     }
 
     // ——————————————————————————————————————————————————————
@@ -108,11 +110,11 @@ class Event extends BaseModel
             ->select(['users.id', 'pseudo', 'email', 'group_id']);
     }
 
-    public function Assignees()
+    public function Technicians()
     {
-        return $this->belongsToMany('Robert2\API\Models\Person', 'event_assignees')
-            ->using('Robert2\API\Models\EventAssignee')
-            ->withPivot('id', 'position')
+        return $this->belongsToMany('Robert2\API\Models\Person', 'event_technicians', 'event_id', 'technician_id')
+            ->using('Robert2\API\Models\EventTechnician')
+            ->withPivot('id', 'start_time', 'end_time', 'position')
             ->select(['persons.id', 'first_name', 'last_name', 'phone', 'nickname'])
             ->orderBy('last_name');
     }
@@ -199,10 +201,10 @@ class Event extends BaseModel
         return $user ? $user->toArray() : null;
     }
 
-    public function getAssigneesAttribute()
+    public function getTechniciansAttribute()
     {
-        $assignees = $this->Assignees()->get();
-        return $assignees ? $assignees->toArray() : null;
+        $technicians = $this->Technicians()->get();
+        return $technicians ? $technicians->toArray() : null;
     }
 
     public function getBeneficiariesAttribute()
@@ -326,7 +328,7 @@ class Event extends BaseModel
     public function getPdfContent(int $id): string
     {
         $event = $this
-            ->with('Assignees')
+            ->with('Technicians')
             ->with('Beneficiaries')
             ->with('Materials')
             ->findOrFail($id)
@@ -399,6 +401,93 @@ class Event extends BaseModel
         'is_billable',
         'is_return_inventory_done',
     ];
+
+    public function setReferenceAttribute($value)
+    {
+        $value = is_string($value) ? trim($value) : $value;
+        $this->attributes['reference'] = $value;
+    }
+
+    public function saveRelations(array $data)
+    {
+        if (isset($data['beneficiaries'])) {
+            $this->Beneficiaries()->sync($data['beneficiaries']);
+        }
+
+        if (isset($data['technicians'])) {
+            $this->syncTechnicians($data['technicians']);
+        }
+
+        if (isset($data['materials'])) {
+            $this->syncMaterials($data['materials']);
+        }
+    }
+
+    public function syncTechnicians(array $techniciansData)
+    {
+        $eventStart = new \DateTime($this->start_date);
+        $eventEnd = new \DateTime($this->end_date);
+
+        $errors = [];
+        $technicians = [];
+        foreach ($techniciansData as $technician) {
+            $technicianErrors = [];
+            $technicianStart = new \DateTime($technician['start_time']);
+            $technicianEnd = new \DateTime($technician['end_time']);
+            if ($technicianStart > $technicianEnd) {
+                $technicianErrors[] = 'end-date-must-be-later';
+            }
+            if ($technicianStart < $eventStart || $technicianEnd < $eventStart) {
+                $technicianErrors[] = 'technician-assignation-before-event';
+            }
+            if ($technicianStart > $eventEnd || $technicianEnd > $eventEnd) {
+                $technicianErrors[] = 'technician-assignation-after-event';
+            }
+
+            if (!empty($technicianErrors)) {
+                $i18n = new I18n(Config::getSettings('defaultLang'));
+                $errors[] = [
+                    'id' => $technician['id'],
+                    'messages' => array_map(function ($message) use ($i18n) {
+                        return $i18n->translate($message);
+                    }, $technicianErrors),
+                ];
+                continue;
+            }
+
+            $position = is_string($technician['position']) ? trim($technician['position']) : null;
+
+            $technicians[$technician['id']] = [
+                'start_time' => $technician['start_time'],
+                'end_time' => $technician['end_time'],
+                'position' => $position,
+            ];
+        }
+
+        if (!empty($errors)) {
+            $exception = new ValidationException();
+            $exception->setValidationErrors($errors);
+            throw $exception;
+        }
+
+        $this->Technicians()->sync($technicians);
+    }
+
+    public function syncMaterials(array $materialsData)
+    {
+        $materials = [];
+        foreach ($materialsData as $material) {
+            if ((int)$material['quantity'] <= 0) {
+                continue;
+            }
+
+            $materials[$material['id']] = [
+                'quantity' => $material['quantity']
+            ];
+        }
+
+        $this->Materials()->sync($materials);
+    }
 
     public function setPeriod(?string $start, ?string $end): Event
     {
