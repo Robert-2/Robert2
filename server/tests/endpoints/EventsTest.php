@@ -64,34 +64,38 @@ final class EventsTest extends ApiTestCase
                     'technicians' => [
                         [
                             'id' => 1,
-                            'first_name' => 'Jean',
-                            'last_name' => 'Fountain',
-                            'full_name' => 'Jean Fountain',
-                            'country' => null,
-                            'company' => null,
-                            'pivot' => [
+                            'event_id' => 1,
+                            'technician_id' => 1,
+                            'start_time' => '2018-12-17 09:00:00',
+                            'end_time' => '2018-12-18 22:00:00',
+                            'position' => 'Régisseur',
+                            'technician' => [
                                 'id' => 1,
-                                'event_id' => 1,
-                                'technician_id' => 1,
-                                'start_time' => '2018-12-17 09:00:00',
-                                'end_time' => '2018-12-18 22:00:00',
-                                'position' => 'Régisseur',
+                                'first_name' => 'Jean',
+                                'last_name' => 'Fountain',
+                                'full_name' => 'Jean Fountain',
+                                'nickname' => null,
+                                'phone' => null,
+                                'country' => null,
+                                'company' => null,
                             ],
                         ],
                         [
                             'id' => 2,
-                            'first_name' => 'Roger',
-                            'last_name' => 'Rabbit',
-                            'full_name' => 'Roger Rabbit',
-                            'country' => null,
-                            'company' => null,
-                            'pivot' => [
+                            'event_id' => 1,
+                            'technician_id' => 2,
+                            'start_time' => '2018-12-18 14:00:00',
+                            'end_time' => '2018-12-18 18:00:00',
+                            'position' => 'Technicien plateau',
+                            'technician' => [
                                 'id' => 2,
-                                'event_id' => 1,
-                                'technician_id' => 2,
-                                'start_time' => '2018-12-18 14:00:00',
-                                'end_time' => '2018-12-18 18:00:00',
-                                'position' => 'Technicien plateau',
+                                'first_name' => 'Roger',
+                                'last_name' => 'Rabbit',
+                                'full_name' => 'Roger Rabbit',
+                                'nickname' => 'Riri',
+                                'phone' => null,
+                                'country' => null,
+                                'company' => null,
                             ],
                         ],
                     ],
@@ -222,38 +226,38 @@ final class EventsTest extends ApiTestCase
             'technicians' => [
                 [
                     'id' => 1,
-                    'first_name' => 'Jean',
-                    'last_name' => 'Fountain',
-                    'nickname' => null,
-                    'full_name' => 'Jean Fountain',
-                    'phone' => null,
-                    'company' => null,
-                    'country' => null,
-                    'pivot' => [
+                    'event_id' => 1,
+                    'technician_id' => 1,
+                    'start_time' => '2018-12-17 09:00:00',
+                    'end_time' => '2018-12-18 22:00:00',
+                    'position' => 'Régisseur',
+                    'technician' => [
                         'id' => 1,
-                        'event_id' => 1,
-                        'technician_id' => 1,
-                        'start_time' => '2018-12-17 09:00:00',
-                        'end_time' => '2018-12-18 22:00:00',
-                        'position' => 'Régisseur',
+                        'first_name' => 'Jean',
+                        'last_name' => 'Fountain',
+                        'nickname' => null,
+                        'full_name' => 'Jean Fountain',
+                        'phone' => null,
+                        'company' => null,
+                        'country' => null,
                     ],
                 ],
                 [
                     'id' => 2,
-                    'first_name' => 'Roger',
-                    'last_name' => 'Rabbit',
-                    'nickname' => 'Riri',
-                    'full_name' => 'Roger Rabbit',
-                    'phone' => null,
-                    'company' => null,
-                    'country' => null,
-                    'pivot' => [
+                    'event_id' => 1,
+                    'technician_id' => 2,
+                    'start_time' => '2018-12-18 14:00:00',
+                    'end_time' => '2018-12-18 18:00:00',
+                    'position' => 'Technicien plateau',
+                    'technician' => [
                         'id' => 2,
-                        'event_id' => 1,
-                        'technician_id' => 2,
-                        'start_time' => '2018-12-18 14:00:00',
-                        'end_time' => '2018-12-18 18:00:00',
-                        'position' => 'Technicien plateau',
+                        'first_name' => 'Roger',
+                        'last_name' => 'Rabbit',
+                        'nickname' => 'Riri',
+                        'full_name' => 'Roger Rabbit',
+                        'phone' => null,
+                        'company' => null,
+                        'country' => null,
                     ],
                 ],
             ],
@@ -466,14 +470,14 @@ final class EventsTest extends ApiTestCase
             'technicians' => [
                 [
                     'id' => 1,
-                    'start_time' => '2019-09-01 00:00:00',
-                    'end_time' => '2019-09-03 23:59:59',
+                    'start_time' => '2019-09-01 10:00:00',
+                    'end_time' => '2019-09-03 20:00:00',
                     'position' => 'Régie générale',
                 ],
                 [
                     'id' => 2,
-                    'start_time' => '2019-09-01 00:00:00',
-                    'end_time' => '2019-09-03 23:59:59',
+                    'start_time' => '2019-09-01 08:00:00',
+                    'end_time' => '2019-09-03 22:00:00',
                     'position' => null,
                 ],
             ],
@@ -490,7 +494,8 @@ final class EventsTest extends ApiTestCase
         $this->assertEquals("Encore un événement", $response['title']);
         $this->assertCount(1, $response['beneficiaries']);
         $this->assertCount(2, $response['technicians']);
-        $this->assertEquals('Régie générale', $response['technicians'][0]['pivot']['position']);
+        $this->assertNull($response['technicians'][0]['position']);
+        $this->assertEquals('Régie générale', $response['technicians'][1]['position']);
         $this->assertCount(3, $response['materials']);
         $this->assertEquals(2, $response['materials'][0]['pivot']['quantity']);
     }
@@ -576,38 +581,38 @@ final class EventsTest extends ApiTestCase
             'technicians' => [
                 [
                     'id' => 1,
-                    'first_name' => 'Jean',
-                    'last_name' => 'Fountain',
-                    'nickname' => null,
-                    'full_name' => 'Jean Fountain',
-                    'phone' => null,
-                    'company' => null,
-                    'country' => null,
-                    'pivot' => [
+                    'event_id' => 1,
+                    'technician_id' => 1,
+                    'start_time' => '2018-12-17 09:00:00',
+                    'end_time' => '2018-12-18 22:00:00',
+                    'position' => 'Régisseur',
+                    'technician' => [
                         'id' => 1,
-                        'event_id' => 1,
-                        'technician_id' => 1,
-                        'start_time' => '2018-12-17 09:00:00',
-                        'end_time' => '2018-12-18 22:00:00',
-                        'position' => 'Régisseur',
+                        'first_name' => 'Jean',
+                        'last_name' => 'Fountain',
+                        'nickname' => null,
+                        'full_name' => 'Jean Fountain',
+                        'phone' => null,
+                        'company' => null,
+                        'country' => null,
                     ],
                 ],
                 [
                     'id' => 2,
-                    'first_name' => 'Roger',
-                    'last_name' => 'Rabbit',
-                    'nickname' => 'Riri',
-                    'full_name' => 'Roger Rabbit',
-                    'phone' => null,
-                    'company' => null,
-                    'country' => null,
-                    'pivot' => [
+                    'event_id' => 1,
+                    'technician_id' => 2,
+                    'start_time' => '2018-12-18 14:00:00',
+                    'end_time' => '2018-12-18 18:00:00',
+                    'position' => 'Technicien plateau',
+                    'technician' => [
                         'id' => 2,
-                        'event_id' => 1,
-                        'technician_id' => 2,
-                        'start_time' => '2018-12-18 14:00:00',
-                        'end_time' => '2018-12-18 18:00:00',
-                        'position' => 'Technicien plateau',
+                        'first_name' => 'Roger',
+                        'last_name' => 'Rabbit',
+                        'nickname' => 'Riri',
+                        'full_name' => 'Roger Rabbit',
+                        'phone' => null,
+                        'company' => null,
+                        'country' => null,
                     ],
                 ],
             ],
@@ -842,14 +847,14 @@ final class EventsTest extends ApiTestCase
         $this->assertEquals(2, $response['beneficiaries'][0]['id']);
         $this->assertEquals('Showtec SDS-6', $response['materials'][0]['name']);
         $this->assertEquals(3, $response['materials'][0]['pivot']['quantity']);
-        $this->assertEquals('Jean Fountain', $response['technicians'][0]['full_name']);
-        $this->assertEquals('2018-12-17 10:30:00', $response['technicians'][0]['pivot']['start_time']);
-        $this->assertEquals('2018-12-18 23:30:00', $response['technicians'][0]['pivot']['end_time']);
-        $this->assertEquals('Régisseur général', $response['technicians'][0]['pivot']['position']);
-        $this->assertEquals('Roger Rabbit', $response['technicians'][1]['full_name']);
-        $this->assertEquals('2018-12-18 13:30:00', $response['technicians'][1]['pivot']['start_time']);
-        $this->assertEquals('2018-12-18 23:30:00', $response['technicians'][1]['pivot']['end_time']);
-        $this->assertEquals('Technicien polyvalent', $response['technicians'][1]['pivot']['position']);
+        $this->assertEquals('Jean Fountain', $response['technicians'][0]['technician']['full_name']);
+        $this->assertEquals('2018-12-17 10:30:00', $response['technicians'][0]['start_time']);
+        $this->assertEquals('2018-12-18 23:30:00', $response['technicians'][0]['end_time']);
+        $this->assertEquals('Régisseur général', $response['technicians'][0]['position']);
+        $this->assertEquals('Roger Rabbit', $response['technicians'][1]['technician']['full_name']);
+        $this->assertEquals('2018-12-18 13:30:00', $response['technicians'][1]['start_time']);
+        $this->assertEquals('2018-12-18 23:30:00', $response['technicians'][1]['end_time']);
+        $this->assertEquals('Technicien polyvalent', $response['technicians'][1]['position']);
     }
 
     public function testDuplicateEventNotFound()
@@ -894,12 +899,12 @@ final class EventsTest extends ApiTestCase
         $this->assertEquals('2021-07-03 23:59:59', $response['end_date']);
         $this->assertCount(1, $response['beneficiaries']);
         $this->assertCount(2, $response['technicians']);
-        $this->assertEquals('2021-07-01 09:00:00', $response['technicians'][0]['pivot']['start_time']);
-        $this->assertEquals('2021-07-02 22:00:00', $response['technicians'][0]['pivot']['end_time']);
-        $this->assertEquals('Régisseur', $response['technicians'][0]['pivot']['position']);
-        $this->assertEquals('2021-07-02 14:00:00', $response['technicians'][1]['pivot']['start_time']);
-        $this->assertEquals('2021-07-02 18:00:00', $response['technicians'][1]['pivot']['end_time']);
-        $this->assertEquals('Technicien plateau', $response['technicians'][1]['pivot']['position']);
+        $this->assertEquals('2021-07-01 09:00:00', $response['technicians'][0]['start_time']);
+        $this->assertEquals('2021-07-02 22:00:00', $response['technicians'][0]['end_time']);
+        $this->assertEquals('Régisseur', $response['technicians'][0]['position']);
+        $this->assertEquals('2021-07-02 14:00:00', $response['technicians'][1]['start_time']);
+        $this->assertEquals('2021-07-02 18:00:00', $response['technicians'][1]['end_time']);
+        $this->assertEquals('Technicien plateau', $response['technicians'][1]['position']);
         $this->assertCount(3, $response['materials']);
         $this->assertEquals(1, $response['materials'][0]['pivot']['quantity']);
         $this->assertEquals(1, $response['materials'][1]['pivot']['quantity']);

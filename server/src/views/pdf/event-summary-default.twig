@@ -65,12 +65,12 @@
             <ul class="spaceBottom5">
                 {% for technician in event['technicians'] %}
                 <li class="spaceBottom2">
-                    {{ technician['full_name'] }}
-                    {% if technician['pivot']['position'] is not empty %}
-                    <span class="lighter">- {{ technician['pivot']['position'] }}</span>
+                    {{ technician['technician']['full_name'] }}
+                    {% if technician['position'] is not empty %}
+                    <span class="lighter">- {{ technician['position'] }}</span>
                     {% endif %}
-                    {% if technician['phone'] is not empty %}
-                    <br />{{ technician['phone'] }}
+                    {% if technician['technician']['phone'] is not empty %}
+                    <br />{{ technician['technician']['phone'] }}
                     {% endif %}
                 </li>
                 {% endfor %}

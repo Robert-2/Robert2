@@ -37,7 +37,7 @@ class EventController extends BaseController
             ->setPeriod($startDate, $endDate)
             ->getAll($deleted)
             ->with('Beneficiaries:persons.id,first_name,last_name')
-            ->with('Technicians:persons.id,first_name,last_name');
+            ->with('Technicians');
 
         $data = $results->get()->toArray();
         $useMultipleParks = Park::count() > 1;
@@ -141,13 +141,13 @@ class EventController extends BaseController
         $offsetInterval = $originalStartDate->diff($newStartDate);
 
         $originalTechnicians = array_map(function ($technician) use ($offsetInterval) {
-            $startTime = (new DateTime($technician['pivot']['start_time']))->add($offsetInterval);
-            $endTime = (new DateTime($technician['pivot']['end_time']))->add($offsetInterval);
+            $startTime = (new DateTime($technician['start_time']))->add($offsetInterval);
+            $endTime = (new DateTime($technician['end_time']))->add($offsetInterval);
             return [
-                'id' => $technician['id'],
+                'id' => $technician['technician_id'],
                 'start_time' => $startTime->format('Y-m-d H:i:s'),
                 'end_time' => $endTime->format('Y-m-d H:i:s'),
-                'position' => $technician['pivot']['position'],
+                'position' => $technician['position'],
             ];
         }, $originalEventData['technicians']);
 
@@ -228,7 +228,6 @@ class EventController extends BaseController
         }
 
         $event = Event::staticEdit($id, $postData);
-        $event->saveRelations($postData);
 
         return $event->id;
     }

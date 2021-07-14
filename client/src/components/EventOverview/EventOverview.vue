@@ -64,19 +64,19 @@
             <ul class="EventOverview__info__list">
               <li
                 v-for="technician in event.technicians"
-                :key="technician.id"
+                :key="technician.technician_id"
                 class="EventOverview__info__list-item"
               >
                 <router-link
-                  :key="technician.id"
-                  :to="`/technicians/${technician.id}`"
+                  :key="technician.technician_id"
+                  :to="`/technicians/${technician.technician_id}`"
                   class="EventOverview__info__link"
                   :title="$t('action-edit')"
                 >
-                  {{ technician.full_name }}
+                  {{ technician.technician.full_name }}
                 </router-link>
-                <span v-if="technician.pivot.position">
-                  − {{ technician.pivot.position }}
+                <span v-if="technician.position">
+                  − {{ technician.position }}
                 </span>
               </li>
             </ul>

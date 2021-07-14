@@ -235,7 +235,7 @@ export default {
 
       if (data.technicians) {
         this.technicians = data.technicians.map(
-          (technician) => ({ id: technician.id, name: technician.full_name }),
+          ({ technician }) => ({ id: technician.id, name: technician.full_name }),
         );
       }
 

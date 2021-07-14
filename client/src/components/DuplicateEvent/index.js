@@ -183,7 +183,9 @@ export default {
               />
               <PersonsList
                 type="technicians"
-                persons={technicians.map(({ id, full_name: name }) => ({ id, name }))}
+                persons={technicians.map(({ technician }) => (
+                  { id: technician.id, name: technician.full_name }
+                ))}
               />
               <div class="DuplicateEvent__main__infos__items-count">
                 <i class="fas fa-box" />{' '}

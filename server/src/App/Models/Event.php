@@ -112,11 +112,8 @@ class Event extends BaseModel
 
     public function Technicians()
     {
-        return $this->belongsToMany('Robert2\API\Models\Person', 'event_technicians', 'event_id', 'technician_id')
-            ->using('Robert2\API\Models\EventTechnician')
-            ->withPivot('id', 'start_time', 'end_time', 'position')
-            ->select(['persons.id', 'first_name', 'last_name', 'phone', 'nickname'])
-            ->orderBy('last_name');
+        return $this->hasMany(EventTechnician::class, 'event_id')
+            ->orderBy('start_time');
     }
 
     public function Beneficiaries()
@@ -408,69 +405,82 @@ class Event extends BaseModel
         $this->attributes['reference'] = $value;
     }
 
-    public function saveRelations(array $data)
+    public static function staticEdit($id = null, array $data = []): BaseModel
     {
-        if (isset($data['beneficiaries'])) {
-            $this->Beneficiaries()->sync($data['beneficiaries']);
+        if ($id && !static::staticExists($id)) {
+            throw (new ModelNotFoundException)
+                ->setModel(get_class(), $id);
         }
 
-        if (isset($data['technicians'])) {
-            $this->syncTechnicians($data['technicians']);
+        try {
+            $event = static::firstOrNew(compact('id'));
+
+            $data = cleanEmptyFields($data);
+            $data = $event->_trimStringFields($data);
+
+            $event->fill($data)->validate()->save();
+
+            if (isset($data['beneficiaries'])) {
+                if (!is_array($data['beneficiaries'])) {
+                    throw new \InvalidArgumentException("Key 'beneficiaries' must be an array.");
+                }
+                $event->syncBeneficiaries($data['beneficiaries']);
+            }
+
+            if (isset($data['technicians'])) {
+                if (!is_array($data['technicians'])) {
+                    throw new \InvalidArgumentException("Key 'technicians' must be an array.");
+                }
+                $event->syncTechnicians($data['technicians']);
+            }
+
+            if (isset($data['materials'])) {
+                if (!is_array($data['materials'])) {
+                    throw new \InvalidArgumentException("Key 'materials' must be an array.");
+                }
+                $event->syncMaterials($data['materials']);
+            }
+        } catch (QueryException $e) {
+            throw (new ValidationException)
+                ->setPDOValidationException($e);
         }
 
-        if (isset($data['materials'])) {
-            $this->syncMaterials($data['materials']);
-        }
+        return $event->refresh();
+    }
+
+    public function syncBeneficiaries(array $beneficiariesIds)
+    {
+        $this->Beneficiaries()->sync($beneficiariesIds);
     }
 
     public function syncTechnicians(array $techniciansData)
     {
-        $eventStart = new \DateTime($this->start_date);
-        $eventEnd = new \DateTime($this->end_date);
-
         $errors = [];
         $technicians = [];
-        foreach ($techniciansData as $technician) {
-            $technicianErrors = [];
-            $technicianStart = new \DateTime($technician['start_time']);
-            $technicianEnd = new \DateTime($technician['end_time']);
-            if ($technicianStart > $technicianEnd) {
-                $technicianErrors[] = 'end-date-must-be-later';
+        foreach ($techniciansData as $technicianData) {
+            try {
+                $technician = new EventTechnician([
+                    'event_id' => $this->id,
+                    'technician_id' => $technicianData['id'],
+                    'start_time' => $technicianData['start_time'],
+                    'end_time' => $technicianData['end_time'],
+                    'position' => $technicianData['position'],
+                ]);
+                $technicians[] = $technician->validate();
+            } catch (ValidationException $e) {
+                $errors[$technicianData['id']] = $e->getValidationErrors();
             }
-            if ($technicianStart < $eventStart || $technicianEnd < $eventStart) {
-                $technicianErrors[] = 'technician-assignation-before-event';
-            }
-            if ($technicianStart > $eventEnd || $technicianEnd > $eventEnd) {
-                $technicianErrors[] = 'technician-assignation-after-event';
-            }
-
-            if (!empty($technicianErrors)) {
-                $i18n = new I18n(Config::getSettings('defaultLang'));
-                $errors[] = [
-                    'id' => $technician['id'],
-                    'messages' => array_map(function ($message) use ($i18n) {
-                        return $i18n->translate($message);
-                    }, $technicianErrors),
-                ];
-                continue;
-            }
-
-            $position = is_string($technician['position']) ? trim($technician['position']) : null;
-
-            $technicians[$technician['id']] = [
-                'start_time' => $technician['start_time'],
-                'end_time' => $technician['end_time'],
-                'position' => $position,
-            ];
         }
 
         if (!empty($errors)) {
-            $exception = new ValidationException();
-            $exception->setValidationErrors($errors);
-            throw $exception;
+            throw (new ValidationException())
+                ->setValidationErrors($errors);
         }
 
-        $this->Technicians()->sync($technicians);
+        EventTechnician::flushForEvent($this->id);
+        foreach ($technicians as $technician) {
+            $technician->save();
+        }
     }
 
     public function syncMaterials(array $materialsData)

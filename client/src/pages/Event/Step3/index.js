@@ -9,9 +9,14 @@ export default {
   components: { MultipleItem },
   props: ['event'],
   data() {
+    const { technicians } = this.event;
+
     return {
-      techniciansIds: this.event.technicians.map((technician) => technician.id),
-      techniciansPositions: this.event.technicians.map((technician) => technician.pivot.position),
+      technicians: technicians.map(({ position, technician }) => (
+        { ...technician, pivot: { position } }
+      )),
+      techniciansIds: technicians.map(({ technician }) => technician.id),
+      techniciansPositions: technicians.map((eventTechnician) => eventTechnician.position),
       fetchParams: { tags: [Config.technicianTagName] },
       errors: {},
     };
@@ -23,7 +28,7 @@ export default {
     updateItems(ids) {
       this.techniciansIds = ids;
 
-      const savedList = this.event.technicians.map((technician) => technician.id);
+      const savedList = this.event.technicians.map(({ technician }) => technician.id);
       const listDifference = ids
         .filter((id) => !savedList.includes(id))
         .concat(savedList.filter((id) => !ids.includes(id)));
@@ -31,10 +36,10 @@ export default {
       EventStore.commit('setIsSaved', listDifference.length === 0);
     },
 
-    updatePivots(positions) {
+    updatePositions(positions) {
       this.techniciansPositions = positions;
 
-      const savedList = this.event.technicians.map((technician) => technician.pivot.position);
+      const savedList = this.event.technicians.map((eventTechnician) => eventTechnician.position);
       const listDifference = positions
         .filter((position) => !savedList.includes(position))
         .concat(savedList.filter((position) => !positions.includes(position)));

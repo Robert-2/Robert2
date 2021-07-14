@@ -54,7 +54,7 @@ const formatEvent = (dataEvent, translate) => {
 
   let techniciansText = '';
   if (technicians.length > 0) {
-    const techniciansNames = technicians.map((technician) => technician.full_name);
+    const techniciansNames = technicians.map(({ technician }) => technician.full_name);
     techniciansText = withIcon(
       'people-carry',
       `${translate('with')} ${techniciansNames.join(', ')}`,
