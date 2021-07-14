@@ -41,6 +41,17 @@
         <div slot="actions" slot-scope="technician" class="Technicians__actions">
           <router-link
             v-if="!isTrashDisplayed"
+            v-tooltip="$t('action-view')"
+            :to="`/technicians/${technician.row.id}/view#infos`"
+            v-slot="{ navigate }"
+            custom
+          >
+            <button @click="navigate" class="item-actions__button success">
+              <i class="fas fa-eye" />
+            </button>
+          </router-link>
+          <router-link
+            v-if="!isTrashDisplayed"
             v-tooltip="$t('action-edit')"
             :to="`/technicians/${technician.row.id}`"
             v-slot="{ navigate }"

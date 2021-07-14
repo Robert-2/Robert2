@@ -21,6 +21,7 @@ import Attributes from '@/pages/Attributes/Attributes.vue';
 import Tags from '@/pages/Tags/Tags.vue';
 import Technicians from '@/pages/Technicians/Technicians.vue';
 import Technician from '@/pages/Technician/Technician.vue';
+import TechnicianView from '@/pages/TechnicianView';
 import Categories from '@/pages/Categories/Categories.vue';
 import Parks from '@/pages/Parks/Parks.vue';
 import Park from '@/pages/Park/Park.vue';
@@ -288,6 +289,17 @@ const router = new Router({
       meta: {
         resource: 'persons',
         title: 'page-technicians.edit',
+        requiresAuth: true,
+        requiresGroups: ['admin', 'member'],
+      },
+    },
+    {
+      path: '/technicians/:id/view',
+      name: 'viewTechnician',
+      component: TechnicianView,
+      meta: {
+        resource: 'persons',
+        title: 'technician',
         requiresAuth: true,
         requiresGroups: ['admin', 'member'],
       },
