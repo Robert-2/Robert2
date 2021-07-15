@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Robert2\API\Controllers;
 
-use DateTime;
 use Robert2\API\Controllers\Traits\WithCrud;
 use Robert2\API\Controllers\Traits\WithPdf;
 use Robert2\API\Models\Event;
@@ -11,7 +10,6 @@ use Robert2\API\Models\Material;
 use Robert2\API\Models\Park;
 use Robert2\API\Errors\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use InvalidArgumentException;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
 use Slim\Http\ServerRequest as Request;
@@ -34,7 +32,7 @@ class EventController extends BaseController
         $deleted = (bool)$request->getQueryParam('deleted', false);
 
         $results = (new Event)
-            ->setPeriod($startDate, $endDate)
+            ->setSearchPeriod($startDate, $endDate)
             ->getAll($deleted)
             ->with('Beneficiaries:persons.id,first_name,last_name')
             ->with('Technicians');
@@ -125,58 +123,16 @@ class EventController extends BaseController
 
     public function duplicate(Request $request, Response $response): Response
     {
-        $id = (int)$request->getAttribute('id');
+        $originalId = (int)$request->getAttribute('id');
+        $postData = (array)$request->getParsedBody();
+
         try {
-            $originalEventData = Event::findOrFail($id);
+            $newEvent = Event::duplicate($originalId, $postData);
         } catch (ModelNotFoundException $e) {
             throw new HttpNotFoundException($request);
         }
 
-        $postData = (array)$request->getParsedBody();
-
-        $originalBeneficiaries = array_column($originalEventData['beneficiaries'], 'id');
-
-        $originalStartDate = new \DateTime($originalEventData['start_date']);
-        $newStartDate = new \DateTime($postData['start_date'] ?? '');
-        $offsetInterval = $originalStartDate->diff($newStartDate);
-
-        $originalTechnicians = array_map(function ($technician) use ($offsetInterval) {
-            $startTime = (new DateTime($technician['start_time']))->add($offsetInterval);
-            $endTime = (new DateTime($technician['end_time']))->add($offsetInterval);
-            return [
-                'id' => $technician['technician_id'],
-                'start_time' => $startTime->format('Y-m-d H:i:s'),
-                'end_time' => $endTime->format('Y-m-d H:i:s'),
-                'position' => $technician['position'],
-            ];
-        }, $originalEventData['technicians']);
-
-        $originalMaterials = array_map(function ($material) {
-            return [
-                'id' => $material['id'],
-                'quantity' => $material['pivot']['quantity'],
-            ];
-        }, $originalEventData['materials']);
-
-        $newEventData = array_merge($postData, [
-            'user_id' => $postData['user_id'] ?? null,
-            'title' => $originalEventData['title'],
-            'description' => $originalEventData['description'],
-            'start_date' => $postData['start_date'] ?? null,
-            'end_date' => $postData['end_date'] ?? null,
-            'is_confirmed' => false,
-            'is_archived' => false,
-            'location' => $originalEventData['location'],
-            'is_billable' => $originalEventData['is_billable'],
-            'is_return_inventory_done' => false,
-            'beneficiaries' => $originalBeneficiaries,
-            'technicians' => $originalTechnicians,
-            'materials' => $originalMaterials,
-        ]);
-
-        $newId = $this->_saveEvent(null, $newEventData);
-
-        return $response->withJson($this->_getFormattedEvent($newId), SUCCESS_CREATED);
+        return $response->withJson($this->_getFormattedEvent($newEvent->id), SUCCESS_CREATED);
     }
 
     public function updateMaterialReturn(Request $request, Response $response): Response

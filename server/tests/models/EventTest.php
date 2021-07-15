@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Robert2\Tests;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Robert2\API\Errors;
 use Robert2\API\Errors\ValidationException;
 use Robert2\API\Models\Event;
@@ -23,7 +24,7 @@ final class EventTest extends ModelTestCase
 
     public function testGetAll(): void
     {
-        $this->model->setPeriod('2018-01-15', '2018-12-19');
+        $this->model->setSearchPeriod('2018-01-15', '2018-12-19');
         $result = $this->model->getAll()->get()->toArray();
         $this->assertEquals([
             [
@@ -352,18 +353,18 @@ final class EventTest extends ModelTestCase
     public function testSetPeriod()
     {
         // - Set period to current year
-        $this->model->setPeriod(null, null);
+        $this->model->setSearchPeriod(null, null);
         $results = $this->model->getAll()->get()->toArray();
         $this->assertCount(0, $results);
 
         // - Set period to 2018
-        $this->model->setPeriod('2018-01-01', '2018-12-31');
+        $this->model->setSearchPeriod('2018-01-01', '2018-12-31');
         $results = $this->model->getAll()->get()->toArray();
         $this->assertCount(3, $results);
         $this->assertEquals('Avant-premier événement', $results[0]['title']);
 
         // - Set period to last dec. 2018
-        $this->model->setPeriod('2018-12-19', '2018-12-31');
+        $this->model->setSearchPeriod('2018-12-19', '2018-12-31');
         $results = $this->model->getAll()->get()->toArray();
         $this->assertCount(1, $results);
         $this->assertEquals('Second événement', $results[0]['title']);
@@ -652,5 +653,104 @@ final class EventTest extends ModelTestCase
         $this->assertEquals(4, $event->materials[0]['pivot']['quantity']);
         $this->assertEquals(1, $event->materials[1]['id']);
         $this->assertEquals(7, $event->materials[1]['pivot']['quantity']);
+    }
+
+    public function testDuplicateNotFound()
+    {
+        $this->expectException(ModelNotFoundException::class);
+        Event::duplicate(999, []);
+    }
+
+    public function testDuplicateBadData()
+    {
+        $newEventData = ['user_id' => 1];
+        $this->expectException(ValidationException::class);
+        Event::duplicate(1, $newEventData);
+    }
+
+    public function testDuplicate()
+    {
+        $newEventData = [
+            'user_id' => 1,
+            'start_date' => '2021-08-01 00:00:00',
+            'end_date' => '2021-08-02 23:59:59',
+        ];
+        $newEvent = Event::duplicate(1, $newEventData);
+        $expected = [
+            'id' => 7,
+            'user_id' => 1,
+            'title' => 'Premier événement',
+            'description' => null,
+            'start_date' => '2021-08-01 00:00:00',
+            'end_date' => '2021-08-02 23:59:59',
+            'is_confirmed' => false,
+            'is_archived' => false,
+            'location' => 'Gap',
+            'is_billable' => true,
+            'is_return_inventory_done' => false,
+        ];
+        $newEventData = $newEvent->toArray();
+        unset($newEventData['created_at']);
+        unset($newEventData['updated_at']);
+        $this->assertEquals($expected, $newEventData);
+        $this->assertCount(1, $newEvent->beneficiaries);
+        $this->assertCount(2, $newEvent->technicians);
+        $this->assertCount(3, $newEvent->materials);
+    }
+
+    public function testDuplicateLonger()
+    {
+        $newEventData = [
+            'user_id' => 1,
+            'start_date' => '2021-08-01 00:00:00',
+            'end_date' => '2021-08-03 23:59:59', // - Un jour de plus que l'original
+        ];
+        $newEvent = Event::duplicate(1, $newEventData);
+        $this->assertCount(2, $newEvent->technicians);
+        $this->assertEquals('Jean Fountain', $newEvent->technicians[0]['technician']['full_name']);
+        $this->assertEquals('2021-08-01 09:00:00', $newEvent->technicians[0]['start_time']);
+        $this->assertEquals('2021-08-02 22:00:00', $newEvent->technicians[0]['end_time']);
+        $this->assertEquals('Roger Rabbit', $newEvent->technicians[1]['technician']['full_name']);
+        $this->assertEquals('2021-08-02 14:00:00', $newEvent->technicians[1]['start_time']);
+        $this->assertEquals('2021-08-02 18:00:00', $newEvent->technicians[1]['end_time']);
+    }
+
+    public function testDuplicateHalfTime()
+    {
+        $newEventData = [
+            'user_id' => 1,
+            'start_date' => '2021-08-01 00:00:00',
+            'end_date' => '2021-08-01 23:59:59', // - Un jour de moins que l'original
+        ];
+        $newEvent = Event::duplicate(1, $newEventData);
+        $this->assertCount(1, $newEvent->technicians);
+        $this->assertEquals('Jean Fountain', $newEvent->technicians[0]['technician']['full_name']);
+        $this->assertEquals('2021-08-01 09:00:00', $newEvent->technicians[0]['start_time']);
+        $this->assertEquals('2021-08-01 23:59:59', $newEvent->technicians[0]['end_time']);
+    }
+
+    public function testChangeDatesLonger()
+    {
+        $event = Event::staticEdit(1, [
+            'end_date' => '2018-12-19 23:59:59', // - Un jour de plus
+        ]);
+        $this->assertCount(2, $event->technicians);
+        $this->assertEquals('Jean Fountain', $event->technicians[0]['technician']['full_name']);
+        $this->assertEquals('2018-12-17 09:00:00', $event->technicians[0]['start_time']);
+        $this->assertEquals('2018-12-18 22:00:00', $event->technicians[0]['end_time']);
+        $this->assertEquals('Roger Rabbit', $event->technicians[1]['technician']['full_name']);
+        $this->assertEquals('2018-12-18 14:00:00', $event->technicians[1]['start_time']);
+        $this->assertEquals('2018-12-18 18:00:00', $event->technicians[1]['end_time']);
+    }
+
+    public function testChangeDatesHalfTime()
+    {
+        $event = Event::staticEdit(1, [
+            'end_date' => '2018-12-17 23:59:59', // - Un jour de moins
+        ]);
+        $this->assertCount(1, $event->technicians);
+        $this->assertEquals('Jean Fountain', $event->technicians[0]['technician']['full_name']);
+        $this->assertEquals('2018-12-17 09:00:00', $event->technicians[0]['start_time']);
+        $this->assertEquals('2018-12-17 23:59:59', $event->technicians[0]['end_time']);
     }
 }

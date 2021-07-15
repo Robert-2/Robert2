@@ -97,6 +97,48 @@ class EventTechnician extends BaseModel
 
     // ——————————————————————————————————————————————————————
     // —
+    // —    Getters
+    // —
+    // ——————————————————————————————————————————————————————
+
+    public static function getForNewDates(array $eventTechnicians, \DateTime $prevStartDate, array $newEventData): array
+    {
+        $newStartDate = new \DateTime($newEventData['start_date']);
+        $newEndDate = new \DateTime($newEventData['end_date']);
+        $offsetInterval = $prevStartDate->diff($newStartDate);
+
+        $technicians = [];
+        foreach ($eventTechnicians as $technician) {
+            $technicianStartTime = (new \DateTime($technician['start_time']))->add($offsetInterval);
+            $technicianEndTime = (new \DateTime($technician['end_time']))->add($offsetInterval);
+
+            if ($technicianStartTime > $newEndDate) {
+                continue;
+            }
+            if ($technicianEndTime < $newStartDate) {
+                continue;
+            }
+            if ($technicianStartTime < $newStartDate) {
+                $technicianStartTime = $newStartDate;
+            }
+            if ($technicianEndTime > $newEndDate) {
+                $technicianEndTime = $newEndDate;
+            }
+
+            $technicians[] = [
+                'id' => $technician['technician_id'],
+                'start_time' => $technicianStartTime->format('Y-m-d H:i:s'),
+                'end_time' => $technicianEndTime->format('Y-m-d H:i:s'),
+                'position' => $technician['position'],
+            ];
+        }
+
+        return $technicians;
+    }
+
+
+    // ——————————————————————————————————————————————————————
+    // —
     // —    Setters
     // —
     // ——————————————————————————————————————————————————————

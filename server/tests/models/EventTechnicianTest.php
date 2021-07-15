@@ -4,7 +4,8 @@ declare(strict_types=1);
 namespace Robert2\Tests;
 
 use Robert2\API\Errors\ValidationException;
-use Robert2\API\Models;
+use Robert2\API\Models\Event;
+use Robert2\API\Models\EventTechnician;
 
 final class EventTechnicianTest extends ModelTestCase
 {
@@ -12,7 +13,7 @@ final class EventTechnicianTest extends ModelTestCase
     {
         parent::setUp();
 
-        $this->model = new Models\EventTechnician();
+        $this->model = new EventTechnician();
     }
 
     public function testTableName(): void
@@ -101,5 +102,68 @@ final class EventTechnicianTest extends ModelTestCase
             'end_time' => ['Assignment of this technician ends after the event.'],
         ];
         $this->assertEquals($expectedErrors, $errors);
+    }
+
+    public function testGetForNewDates()
+    {
+        $event = Event::findOrFail(1);
+        $originalStartDate = new \DateTime($event->start_date);
+
+        // - Avec un offset de -1 mois, et une durée égale
+        $newTechnicians = EventTechnician::getForNewDates($event->technicians, $originalStartDate, [
+            'start_date' => '2018-11-17 00:00:00',
+            'end_date' => '2018-11-18 23:59:59',
+        ]);
+        $expected = [
+            [
+                'id' => 1,
+                'start_time' => '2018-11-17 09:00:00',
+                'end_time' => '2018-11-18 22:00:00',
+                'position' => 'Régisseur',
+            ],
+            [
+                'id' => 2,
+                'start_time' => '2018-11-18 14:00:00',
+                'end_time' => '2018-11-18 18:00:00',
+                'position' => 'Technicien plateau',
+            ]
+        ];
+        $this->assertEquals($expected, $newTechnicians);
+
+        // - Avec un offset de +1 mois, et une durée d'un jour de plus
+        $newTechnicians = EventTechnician::getForNewDates($event->technicians, $originalStartDate, [
+            'start_date' => '2019-01-17 00:00:00',
+            'end_date' => '2019-01-19 23:59:59',
+        ]);
+        $expected = [
+            [
+                'id' => 1,
+                'start_time' => '2019-01-17 09:00:00',
+                'end_time' => '2019-01-18 22:00:00',
+                'position' => 'Régisseur',
+            ],
+            [
+                'id' => 2,
+                'start_time' => '2019-01-18 14:00:00',
+                'end_time' => '2019-01-18 18:00:00',
+                'position' => 'Technicien plateau',
+            ]
+        ];
+        $this->assertEquals($expected, $newTechnicians);
+
+        // - Sans offset, et une durée d'un jour de moins
+        $newTechnicians = EventTechnician::getForNewDates($event->technicians, $originalStartDate, [
+            'start_date' => '2019-01-17 00:00:00',
+            'end_date' => '2019-01-17 23:59:59',
+        ]);
+        $expected = [
+            [
+                'id' => 1,
+                'start_time' => '2019-01-17 09:00:00',
+                'end_time' => '2019-01-17 23:59:59',
+                'position' => 'Régisseur',
+            ],
+        ];
+        $this->assertEquals($expected, $newTechnicians);
     }
 }
