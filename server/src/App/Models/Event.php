@@ -6,6 +6,7 @@ namespace Robert2\API\Models;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Builder;
 use Robert2\API\Config\Config;
+use Robert2\API\Errors\ValidationException;
 use Robert2\API\Models\Material;
 use Robert2\API\Models\Park;
 use Robert2\API\Models\Traits\WithPdf;
@@ -19,8 +20,8 @@ class Event extends BaseModel
 
     protected $orderField = 'start_date';
 
-    protected $_startDate;
-    protected $_endDate;
+    protected $_searchStartDate;
+    protected $_searchEndDate;
 
     protected $allowedSearchFields = ['title', 'start_date', 'end_date', 'location'];
     protected $searchField = 'title';
@@ -32,8 +33,8 @@ class Event extends BaseModel
         $this->pdfTemplate = 'event-summary-default';
 
         $thisYear = date('Y');
-        $this->_startDate = new \DateTime("$thisYear-01-01");
-        $this->_endDate = new \DateTime("$thisYear-12-31");
+        $this->_searchStartDate = new \DateTime("$thisYear-01-01");
+        $this->_searchEndDate = new \DateTime("$thisYear-12-31");
 
         $this->validation = [
             'user_id' => V::optional(V::numeric()),
@@ -70,7 +71,7 @@ class Event extends BaseModel
         $startDate = new \DateTime($this->start_date);
         $endDate = new \DateTime($this->end_date);
 
-        return $startDate < $endDate ?: 'endDateMustBeLater';
+        return $startDate < $endDate ?: 'end-date-must-be-later';
     }
 
     public function checkIsArchived($value)
@@ -93,7 +94,7 @@ class Event extends BaseModel
         $endDate = new \DateTime($this->end_date);
         $isPastAndInventoryDone = $endDate < $now && (bool)$this->is_return_inventory_done;
 
-        return $isPastAndInventoryDone ?: 'eventCannotBeArchived';
+        return $isPastAndInventoryDone ?: 'event-cannot-be-archived';
     }
 
     // ——————————————————————————————————————————————————————
@@ -108,13 +109,10 @@ class Event extends BaseModel
             ->select(['users.id', 'pseudo', 'email', 'group_id']);
     }
 
-    public function Assignees()
+    public function Technicians()
     {
-        return $this->belongsToMany('Robert2\API\Models\Person', 'event_assignees')
-            ->using('Robert2\API\Models\EventAssignee')
-            ->withPivot('id', 'position')
-            ->select(['persons.id', 'first_name', 'last_name', 'phone', 'nickname'])
-            ->orderBy('last_name');
+        return $this->hasMany(EventTechnician::class, 'event_id')
+            ->orderBy('start_time');
     }
 
     public function Beneficiaries()
@@ -199,10 +197,10 @@ class Event extends BaseModel
         return $user ? $user->toArray() : null;
     }
 
-    public function getAssigneesAttribute()
+    public function getTechniciansAttribute()
     {
-        $assignees = $this->Assignees()->get();
-        return $assignees ? $assignees->toArray() : null;
+        $technicians = $this->Technicians()->get();
+        return $technicians ? $technicians->toArray() : null;
     }
 
     public function getBeneficiariesAttribute()
@@ -231,8 +229,8 @@ class Event extends BaseModel
 
     public function getAll(bool $withDeleted = false): Builder
     {
-        $start = $this->_startDate->format('Y-m-d H:i:s');
-        $end = $this->_endDate->format('Y-m-d H:i:s');
+        $start = $this->_searchStartDate->format('Y-m-d H:i:s');
+        $end = $this->_searchEndDate->format('Y-m-d H:i:s');
 
         $conditions = function (Builder $query) use ($start, $end) {
             $query
@@ -326,7 +324,7 @@ class Event extends BaseModel
     public function getPdfContent(int $id): string
     {
         $event = $this
-            ->with('Assignees')
+            ->with('Technicians')
             ->with('Beneficiaries')
             ->with('Materials')
             ->findOrFail($id)
@@ -400,7 +398,121 @@ class Event extends BaseModel
         'is_return_inventory_done',
     ];
 
-    public function setPeriod(?string $start, ?string $end): Event
+    public function setReferenceAttribute($value)
+    {
+        $value = is_string($value) ? trim($value) : $value;
+        $this->attributes['reference'] = $value;
+    }
+
+    public static function staticEdit($id = null, array $data = []): BaseModel
+    {
+        if ($id && !static::staticExists($id)) {
+            throw (new ModelNotFoundException)
+                ->setModel(get_class(), $id);
+        }
+
+        try {
+            $event = static::firstOrNew(compact('id'));
+
+            $originalStartDate = $event->getOriginal('start_date');
+            $originalEndDate = $event->getOriginal('end_date');
+
+            $data = cleanEmptyFields($data);
+            $data = $event->_trimStringFields($data);
+
+            $event->fill($data)->validate()->save();
+
+            if (isset($data['beneficiaries'])) {
+                if (!is_array($data['beneficiaries'])) {
+                    throw new \InvalidArgumentException("Key 'beneficiaries' must be an array.");
+                }
+                $event->syncBeneficiaries($data['beneficiaries']);
+            }
+
+            $technicians = null;
+            if (isset($data['technicians'])) {
+                if (!is_array($data['technicians'])) {
+                    throw new \InvalidArgumentException("Key 'technicians' must be an array.");
+                }
+                $technicians = $data['technicians'];
+            } elseif (!empty($originalStartDate) && (
+                $originalStartDate !== $event->start_date ||
+                $originalEndDate !== $event->end_date
+            )) {
+                $technicians = EventTechnician::getForNewDates(
+                    $event->technicians,
+                    new \DateTime($originalStartDate),
+                    ['start_date' => $event->start_date, 'end_date' => $event->end_date]
+                );
+            }
+            if ($technicians) {
+                $event->syncTechnicians($technicians);
+            }
+
+            if (isset($data['materials'])) {
+                if (!is_array($data['materials'])) {
+                    throw new \InvalidArgumentException("Key 'materials' must be an array.");
+                }
+                $event->syncMaterials($data['materials']);
+            }
+        } catch (QueryException $e) {
+            throw (new ValidationException)
+                ->setPDOValidationException($e);
+        }
+
+        return $event->refresh();
+    }
+
+    public function syncBeneficiaries(array $beneficiariesIds)
+    {
+        $this->Beneficiaries()->sync($beneficiariesIds);
+    }
+
+    public function syncTechnicians(array $techniciansData)
+    {
+        $errors = [];
+        $technicians = [];
+        foreach ($techniciansData as $technicianData) {
+            try {
+                $technician = new EventTechnician([
+                    'event_id' => $this->id,
+                    'technician_id' => $technicianData['id'],
+                    'start_time' => $technicianData['start_time'],
+                    'end_time' => $technicianData['end_time'],
+                    'position' => $technicianData['position'],
+                ]);
+                $technicians[] = $technician->validate();
+            } catch (ValidationException $e) {
+                $errors[$technicianData['id']] = $e->getValidationErrors();
+            }
+        }
+
+        if (!empty($errors)) {
+            throw (new ValidationException())
+                ->setValidationErrors($errors);
+        }
+
+        EventTechnician::flushForEvent($this->id);
+        $this->Technicians()->saveMany($technicians);
+    }
+
+    public function syncMaterials(array $materialsData)
+    {
+        $materials = [];
+        foreach ($materialsData as $material) {
+            if ((int)$material['quantity'] <= 0) {
+                continue;
+            }
+
+            $materials[$material['id']] = [
+                'quantity' => $material['quantity']
+            ];
+        }
+
+        $this->Materials()->sync($materials);
+    }
+
+    public function setSearchPeriod(?string $start, ?string $end): Event
     {
         $thisYear = date('Y');
         if (empty($start)) {
@@ -410,9 +522,50 @@ class Event extends BaseModel
             $end = "$thisYear-12-31 23:59:59";
         }
 
-        $this->_startDate = new \DateTime($start);
-        $this->_endDate = new \DateTime($end);
+        $this->_searchStartDate = new \DateTime($start);
+        $this->_searchEndDate = new \DateTime($end);
 
         return $this;
+    }
+
+    public static function duplicate(int $originalId, array $newEventData): BaseModel
+    {
+        $originalEvent = static::findOrFail($originalId);
+
+        $newEvent = new self([
+            'user_id' => $newEventData['user_id'] ?? null,
+            'title' => $originalEvent->title,
+            'description' => $originalEvent->description,
+            'start_date' => $newEventData['start_date'] ?? null,
+            'end_date' => $newEventData['end_date'] ?? null,
+            'is_confirmed' => false,
+            'is_archived' => false,
+            'location' => $originalEvent->location,
+            'is_billable' => $originalEvent->is_billable,
+            'is_return_inventory_done' => false,
+        ]);
+        $newEvent->validate();
+
+        $beneficiaries = array_column($originalEvent->beneficiaries, 'id');
+
+        $technicians = EventTechnician::getForNewDates(
+            $originalEvent->technicians,
+            new \DateTime($originalEvent->start_date),
+            $newEventData
+        );
+
+        $materials = array_map(function ($material) {
+            return [
+                'id' => $material['id'],
+                'quantity' => $material['pivot']['quantity'],
+            ];
+        }, $originalEvent->materials);
+
+        $newEvent->save();
+        $newEvent->syncBeneficiaries($beneficiaries);
+        $newEvent->syncTechnicians($technicians);
+        $newEvent->syncMaterials($materials);
+
+        return $newEvent;
     }
 }

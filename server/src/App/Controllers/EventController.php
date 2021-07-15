@@ -32,10 +32,10 @@ class EventController extends BaseController
         $deleted = (bool)$request->getQueryParam('deleted', false);
 
         $results = (new Event)
-            ->setPeriod($startDate, $endDate)
+            ->setSearchPeriod($startDate, $endDate)
             ->getAll($deleted)
             ->with('Beneficiaries:persons.id,first_name,last_name')
-            ->with('Assignees:persons.id,first_name,last_name');
+            ->with('Technicians');
 
         $data = $results->get()->toArray();
         $useMultipleParks = Park::count() > 1;
@@ -123,49 +123,16 @@ class EventController extends BaseController
 
     public function duplicate(Request $request, Response $response): Response
     {
-        $id = (int)$request->getAttribute('id');
+        $originalId = (int)$request->getAttribute('id');
+        $postData = (array)$request->getParsedBody();
+
         try {
-            $originalEventData = Event::findOrFail($id);
+            $newEvent = Event::duplicate($originalId, $postData);
         } catch (ModelNotFoundException $e) {
             throw new HttpNotFoundException($request);
         }
 
-        $originalBeneficiaries = array_column($originalEventData['beneficiaries'], 'id');
-
-        $originalAssignees = [];
-        foreach ($originalEventData['assignees'] as $assignee) {
-            $originalAssignees[$assignee['id']] = [
-                'position' => $assignee['pivot']['position'],
-            ];
-        }
-
-        $originalMaterials = array_map(function ($material) {
-            return [
-                'id' => $material['id'],
-                'quantity' => $material['pivot']['quantity'],
-            ];
-        }, $originalEventData['materials']);
-
-        $postData = (array)$request->getParsedBody();
-        $newEventData = array_merge($postData, [
-            'user_id' => $postData['user_id'] ?? null,
-            'title' => $originalEventData['title'],
-            'description' => $originalEventData['description'],
-            'start_date' => $postData['start_date'] ?? null,
-            'end_date' => $postData['end_date'] ?? null,
-            'is_confirmed' => false,
-            'is_archived' => false,
-            'location' => $originalEventData['location'],
-            'is_billable' => $originalEventData['is_billable'],
-            'is_return_inventory_done' => false,
-            'beneficiaries' => $originalBeneficiaries,
-            'assignees' => $originalAssignees,
-            'materials' => $originalMaterials,
-        ]);
-
-        $newId = $this->_saveEvent(null, $newEventData);
-
-        return $response->withJson($this->_getFormattedEvent($newId), SUCCESS_CREATED);
+        return $response->withJson($this->_getFormattedEvent($newEvent->id), SUCCESS_CREATED);
     }
 
     public function updateMaterialReturn(Request $request, Response $response): Response
@@ -217,29 +184,6 @@ class EventController extends BaseController
         }
 
         $event = Event::staticEdit($id, $postData);
-
-        if (isset($postData['beneficiaries'])) {
-            $event->Beneficiaries()->sync($postData['beneficiaries']);
-        }
-
-        if (isset($postData['assignees'])) {
-            $event->Assignees()->sync($postData['assignees']);
-        }
-
-        if (isset($postData['materials'])) {
-            $materials = [];
-            foreach ($postData['materials'] as $materialData) {
-                if ((int)$materialData['quantity'] <= 0) {
-                    continue;
-                }
-
-                $materials[$materialData['id']] = [
-                    'quantity' => $materialData['quantity']
-                ];
-            }
-
-            $event->Materials()->sync($materials);
-        }
 
         return $event->id;
     }
@@ -335,7 +279,7 @@ class EventController extends BaseController
     {
         $model = (new Event)
             ->with('User')
-            ->with('Assignees')
+            ->with('Technicians')
             ->with('Beneficiaries')
             ->with('Materials')
             ->with('Bills')

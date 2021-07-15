@@ -20,7 +20,7 @@ const formatEvent = (dataEvent, translate) => {
     isInventoryDone,
     hasNotReturnedMaterials,
     beneficiaries,
-    assignees,
+    technicians,
   } = formattedEvent;
 
   let baseContent = title;
@@ -52,12 +52,12 @@ const formatEvent = (dataEvent, translate) => {
     );
   }
 
-  let assigneesText = '';
-  if (assignees.length > 0) {
-    const assigneesNames = assignees.map((beneficiary) => beneficiary.full_name);
-    assigneesText = withIcon(
+  let techniciansText = '';
+  if (technicians.length > 0) {
+    const techniciansNames = technicians.map(({ technician }) => technician.full_name);
+    techniciansText = withIcon(
       'people-carry',
-      `${translate('with')} ${assigneesNames.join(', ')}`,
+      `${translate('with')} ${techniciansNames.join(', ')}`,
     );
   }
 
@@ -74,7 +74,7 @@ const formatEvent = (dataEvent, translate) => {
     className: getTimelineEventClassNames(formattedEvent).join(' '),
     title: [
       `<strong>${title}</strong>`,
-      `\n${locationText}\n${dates}\n${beneficiariesText}\n${assigneesText}\n`,
+      `\n${locationText}\n${dates}\n${beneficiariesText}\n${techniciansText}\n`,
       statusesText,
     ].join('\n'),
   };

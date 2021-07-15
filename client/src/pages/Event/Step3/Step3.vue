@@ -9,14 +9,14 @@
         field="full_name"
         fetchEntity="persons"
         :fetchParams="fetchParams"
-        :selectedItems="event.assignees"
+        :selectedItems="technicians"
         @itemsUpdated="updateItems"
         createItemPath="/technicians/new"
         :formatOptions="formatItemOptions"
         :getItemLabel="getItemLabel"
         pivotField="position"
         :pivotPlaceholder="$t('position-held')"
-        @pivotsUpdated="updatePivots"
+        @pivotsUpdated="updatePositions"
       />
     </section>
     <section class="Form__actions">

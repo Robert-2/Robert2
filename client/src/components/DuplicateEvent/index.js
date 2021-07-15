@@ -125,7 +125,7 @@ export default {
       title,
       location,
       beneficiaries,
-      assignees,
+      technicians,
     } = this.event;
 
     return (
@@ -183,7 +183,9 @@ export default {
               />
               <PersonsList
                 type="technicians"
-                persons={assignees.map(({ id, full_name: name }) => ({ id, name }))}
+                persons={technicians.map(({ technician }) => (
+                  { id: technician.id, name: technician.full_name }
+                ))}
               />
               <div class="DuplicateEvent__main__infos__items-count">
                 <i class="fas fa-box" />{' '}

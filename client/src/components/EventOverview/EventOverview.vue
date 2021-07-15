@@ -54,7 +54,7 @@
           </dd>
         </dl>
       </section>
-      <section v-if="event.assignees.length > 0" class="EventOverview__section">
+      <section v-if="event.technicians.length > 0" class="EventOverview__section">
         <dl class="EventOverview__info EventOverview__info--vertical">
           <dt class="EventOverview__info__term">
             <i class="fas fa-people-carry" />
@@ -63,20 +63,20 @@
           <dd class="EventOverview__info__value">
             <ul class="EventOverview__info__list">
               <li
-                v-for="technician in event.assignees"
-                :key="technician.id"
+                v-for="technician in event.technicians"
+                :key="technician.technician_id"
                 class="EventOverview__info__list-item"
               >
                 <router-link
-                  :key="technician.id"
-                  :to="`/technicians/${technician.id}`"
+                  :key="technician.technician_id"
+                  :to="`/technicians/${technician.technician_id}`"
                   class="EventOverview__info__link"
                   :title="$t('action-edit')"
                 >
-                  {{ technician.full_name }}
+                  {{ technician.technician.full_name }}
                 </router-link>
-                <span v-if="technician.pivot.position">
-                  − {{ technician.pivot.position }}
+                <span v-if="technician.position">
+                  − {{ technician.position }}
                 </span>
               </li>
             </ul>

@@ -26,7 +26,7 @@ final class EventsTest extends ApiTestCase
                     'has_not_returned_materials' => null,
                     'parks' => [1],
                     'beneficiaries' => [],
-                    'assignees' => [],
+                    'technicians' => [],
                     'created_at' => null,
                     'updated_at' => null,
                     'deleted_at' => null,
@@ -61,33 +61,41 @@ final class EventsTest extends ApiTestCase
                             ],
                         ],
                     ],
-                    'assignees' => [
+                    'technicians' => [
                         [
                             'id' => 1,
-                            'first_name' => 'Jean',
-                            'last_name' => 'Fountain',
-                            'full_name' => 'Jean Fountain',
-                            'country' => null,
-                            'company' => null,
-                            'pivot' => [
+                            'event_id' => 1,
+                            'technician_id' => 1,
+                            'start_time' => '2018-12-17 09:00:00',
+                            'end_time' => '2018-12-18 22:00:00',
+                            'position' => 'Régisseur',
+                            'technician' => [
                                 'id' => 1,
-                                'event_id' => 1,
-                                'person_id' => 1,
-                                'position' => 'Régisseur',
+                                'first_name' => 'Jean',
+                                'last_name' => 'Fountain',
+                                'full_name' => 'Jean Fountain',
+                                'nickname' => null,
+                                'phone' => null,
+                                'country' => null,
+                                'company' => null,
                             ],
                         ],
                         [
                             'id' => 2,
-                            'first_name' => 'Roger',
-                            'last_name' => 'Rabbit',
-                            'full_name' => 'Roger Rabbit',
-                            'country' => null,
-                            'company' => null,
-                            'pivot' => [
+                            'event_id' => 1,
+                            'technician_id' => 2,
+                            'start_time' => '2018-12-18 14:00:00',
+                            'end_time' => '2018-12-18 18:00:00',
+                            'position' => 'Technicien plateau',
+                            'technician' => [
                                 'id' => 2,
-                                'event_id' => 1,
-                                'person_id' => 2,
-                                'position' => 'Technicien plateau',
+                                'first_name' => 'Roger',
+                                'last_name' => 'Rabbit',
+                                'full_name' => 'Roger Rabbit',
+                                'nickname' => 'Riri',
+                                'phone' => null,
+                                'country' => null,
+                                'company' => null,
                             ],
                         ],
                     ],
@@ -125,7 +133,7 @@ final class EventsTest extends ApiTestCase
                             ],
                         ],
                     ],
-                    'assignees' => [],
+                    'technicians' => [],
                     'created_at' => null,
                     'updated_at' => null,
                     'deleted_at' => null,
@@ -215,37 +223,41 @@ final class EventsTest extends ApiTestCase
                     ]
                 ],
             ],
-            'assignees' => [
+            'technicians' => [
                 [
                     'id' => 1,
-                    'first_name' => 'Jean',
-                    'last_name' => 'Fountain',
-                    'nickname' => null,
-                    'full_name' => 'Jean Fountain',
-                    'phone' => null,
-                    'company' => null,
-                    'country' => null,
-                    'pivot' => [
+                    'event_id' => 1,
+                    'technician_id' => 1,
+                    'start_time' => '2018-12-17 09:00:00',
+                    'end_time' => '2018-12-18 22:00:00',
+                    'position' => 'Régisseur',
+                    'technician' => [
                         'id' => 1,
-                        'event_id' => 1,
-                        'person_id' => 1,
-                        'position' => 'Régisseur',
+                        'first_name' => 'Jean',
+                        'last_name' => 'Fountain',
+                        'nickname' => null,
+                        'full_name' => 'Jean Fountain',
+                        'phone' => null,
+                        'company' => null,
+                        'country' => null,
                     ],
                 ],
                 [
                     'id' => 2,
-                    'first_name' => 'Roger',
-                    'last_name' => 'Rabbit',
-                    'nickname' => 'Riri',
-                    'full_name' => 'Roger Rabbit',
-                    'phone' => null,
-                    'company' => null,
-                    'country' => null,
-                    'pivot' => [
+                    'event_id' => 1,
+                    'technician_id' => 2,
+                    'start_time' => '2018-12-18 14:00:00',
+                    'end_time' => '2018-12-18 18:00:00',
+                    'position' => 'Technicien plateau',
+                    'technician' => [
                         'id' => 2,
-                        'event_id' => 1,
-                        'person_id' => 2,
-                        'position' => 'Technicien plateau',
+                        'first_name' => 'Roger',
+                        'last_name' => 'Rabbit',
+                        'nickname' => 'Riri',
+                        'full_name' => 'Roger Rabbit',
+                        'phone' => null,
+                        'company' => null,
+                        'country' => null,
                     ],
                 ],
             ],
@@ -448,16 +460,26 @@ final class EventsTest extends ApiTestCase
         $this->assertEquals(7, $response['id']);
         $this->assertEquals("Un nouvel événement", $response['title']);
         $this->assertEmpty($response['beneficiaries']);
-        $this->assertEmpty($response['assignees']);
+        $this->assertEmpty($response['technicians']);
         $this->assertEmpty($response['materials']);
 
         // - Test avec des données qui contiennent les sous-entités (hasMany)
         $dataWithChildren = array_merge($data, [
             'title' => "Encore un événement",
             'beneficiaries' => [3],
-            'assignees' => [
-                1 => ['position' => 'Régie générale'],
-                2 => ['position' => null],
+            'technicians' => [
+                [
+                    'id' => 1,
+                    'start_time' => '2019-09-01 10:00:00',
+                    'end_time' => '2019-09-03 20:00:00',
+                    'position' => 'Régie générale',
+                ],
+                [
+                    'id' => 2,
+                    'start_time' => '2019-09-01 08:00:00',
+                    'end_time' => '2019-09-03 22:00:00',
+                    'position' => null,
+                ],
             ],
             'materials' => [
                 ['id' => 1, 'quantity' => 1],
@@ -471,8 +493,9 @@ final class EventsTest extends ApiTestCase
         $this->assertEquals(8, $response['id']);
         $this->assertEquals("Encore un événement", $response['title']);
         $this->assertCount(1, $response['beneficiaries']);
-        $this->assertCount(2, $response['assignees']);
-        $this->assertEquals('Régie générale', $response['assignees'][0]['pivot']['position']);
+        $this->assertCount(2, $response['technicians']);
+        $this->assertNull($response['technicians'][0]['position']);
+        $this->assertEquals('Régie générale', $response['technicians'][1]['position']);
         $this->assertCount(3, $response['materials']);
         $this->assertEquals(2, $response['materials'][0]['pivot']['quantity']);
     }
@@ -549,43 +572,47 @@ final class EventsTest extends ApiTestCase
             'description' => null,
             'reference' => null,
             'start_date' => '2018-12-17 00:00:00',
-            'end_date' => '2018-12-18 00:00:00',
+            'end_date' => '2018-12-18 23:59:59',
             'is_confirmed' => true,
             'is_archived' => false,
             'location' => 'Gap et Briançon',
             'is_billable' => false,
             'is_return_inventory_done' => true,
-            'assignees' => [
+            'technicians' => [
                 [
                     'id' => 1,
-                    'first_name' => 'Jean',
-                    'last_name' => 'Fountain',
-                    'nickname' => null,
-                    'full_name' => 'Jean Fountain',
-                    'phone' => null,
-                    'company' => null,
-                    'country' => null,
-                    'pivot' => [
+                    'event_id' => 1,
+                    'technician_id' => 1,
+                    'start_time' => '2018-12-17 09:00:00',
+                    'end_time' => '2018-12-18 22:00:00',
+                    'position' => 'Régisseur',
+                    'technician' => [
                         'id' => 1,
-                        'event_id' => 1,
-                        'person_id' => 1,
-                        'position' => 'Régisseur',
+                        'first_name' => 'Jean',
+                        'last_name' => 'Fountain',
+                        'nickname' => null,
+                        'full_name' => 'Jean Fountain',
+                        'phone' => null,
+                        'company' => null,
+                        'country' => null,
                     ],
                 ],
                 [
                     'id' => 2,
-                    'first_name' => 'Roger',
-                    'last_name' => 'Rabbit',
-                    'nickname' => 'Riri',
-                    'full_name' => 'Roger Rabbit',
-                    'phone' => null,
-                    'company' => null,
-                    'country' => null,
-                    'pivot' => [
+                    'event_id' => 1,
+                    'technician_id' => 2,
+                    'start_time' => '2018-12-18 14:00:00',
+                    'end_time' => '2018-12-18 18:00:00',
+                    'position' => 'Technicien plateau',
+                    'technician' => [
                         'id' => 2,
-                        'event_id' => 1,
-                        'person_id' => 2,
-                        'position' => 'Technicien plateau',
+                        'first_name' => 'Roger',
+                        'last_name' => 'Rabbit',
+                        'nickname' => 'Riri',
+                        'full_name' => 'Roger Rabbit',
+                        'phone' => null,
+                        'company' => null,
+                        'country' => null,
                     ],
                 ],
             ],
@@ -781,7 +808,7 @@ final class EventsTest extends ApiTestCase
             'title' => "Premier événement modifié",
             'description' => null,
             'start_date' => '2018-12-17 00:00:00',
-            'end_date' => '2018-12-18 00:00:00',
+            'end_date' => '2018-12-18 23:59:59',
             'is_confirmed' => true,
             'is_archived' => false,
             'location' => 'Gap et Briançon',
@@ -793,17 +820,41 @@ final class EventsTest extends ApiTestCase
 
         // - Test avec des données qui contiennent les sous-entités (hasMany)
         $dataWithChildren = array_merge($data, [
-            'beneficiaries' => [3],
-            'assignees' => [1, 2],
+            'beneficiaries' => [2],
+            'technicians' => [
+                [
+                    'id' => 1,
+                    'start_time' => '2018-12-17 10:30:00',
+                    'end_time' => '2018-12-18 23:30:00',
+                    'position' => 'Régisseur général',
+                ],
+                [
+                    'id' => 2,
+                    'start_time' => '2018-12-18 13:30:00',
+                    'end_time' => '2018-12-18 23:30:00',
+                    'position' => 'Technicien polyvalent',
+                ],
+            ],
             'materials' => [
-                ['id' => 1, 'quantity' => 1],
-                ['id' => 2, 'quantity' => 1],
-                ['id' => 4, 'quantity' => 1],
+                ['id' => 1, 'quantity' => 2],
+                ['id' => 2, 'quantity' => 4],
+                ['id' => 4, 'quantity' => 3],
             ],
         ]);
         $this->client->put('/api/events/1', $dataWithChildren);
         $this->assertStatusCode(SUCCESS_OK);
-        $this->assertResponseData($expected, ['updated_at']);
+        $response = $this->_getResponseAsArray();
+        $this->assertEquals(2, $response['beneficiaries'][0]['id']);
+        $this->assertEquals('Showtec SDS-6', $response['materials'][0]['name']);
+        $this->assertEquals(3, $response['materials'][0]['pivot']['quantity']);
+        $this->assertEquals('Jean Fountain', $response['technicians'][0]['technician']['full_name']);
+        $this->assertEquals('2018-12-17 10:30:00', $response['technicians'][0]['start_time']);
+        $this->assertEquals('2018-12-18 23:30:00', $response['technicians'][0]['end_time']);
+        $this->assertEquals('Régisseur général', $response['technicians'][0]['position']);
+        $this->assertEquals('Roger Rabbit', $response['technicians'][1]['technician']['full_name']);
+        $this->assertEquals('2018-12-18 13:30:00', $response['technicians'][1]['start_time']);
+        $this->assertEquals('2018-12-18 23:30:00', $response['technicians'][1]['end_time']);
+        $this->assertEquals('Technicien polyvalent', $response['technicians'][1]['position']);
     }
 
     public function testDuplicateEventNotFound()
@@ -847,9 +898,13 @@ final class EventsTest extends ApiTestCase
         $this->assertEquals('2021-07-01 00:00:00', $response['start_date']);
         $this->assertEquals('2021-07-03 23:59:59', $response['end_date']);
         $this->assertCount(1, $response['beneficiaries']);
-        $this->assertCount(2, $response['assignees']);
-        $this->assertEquals('Régisseur', $response['assignees'][0]['pivot']['position']);
-        $this->assertEquals('Technicien plateau', $response['assignees'][1]['pivot']['position']);
+        $this->assertCount(2, $response['technicians']);
+        $this->assertEquals('2021-07-01 09:00:00', $response['technicians'][0]['start_time']);
+        $this->assertEquals('2021-07-02 22:00:00', $response['technicians'][0]['end_time']);
+        $this->assertEquals('Régisseur', $response['technicians'][0]['position']);
+        $this->assertEquals('2021-07-02 14:00:00', $response['technicians'][1]['start_time']);
+        $this->assertEquals('2021-07-02 18:00:00', $response['technicians'][1]['end_time']);
+        $this->assertEquals('Technicien plateau', $response['technicians'][1]['position']);
         $this->assertCount(3, $response['materials']);
         $this->assertEquals(1, $response['materials'][0]['pivot']['quantity']);
         $this->assertEquals(1, $response['materials'][1]['pivot']['quantity']);

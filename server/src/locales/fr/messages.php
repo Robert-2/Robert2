@@ -2456,10 +2456,10 @@ return [
     "Missing value"
     => "Valeur manquante",
 
-    "endDateMustBeLater"
+    "end-date-must-be-later"
     => "La date de fin doit être postérieure à la date de début",
 
-    "eventCannotBeArchived"
+    "event-cannot-be-archived"
     => "Un événement ne peut pas être archivé si son inventaire de retour n'a pas encore été effectué !",
 
     "referenceAlreadyInUse"
@@ -2467,6 +2467,12 @@ return [
 
     "invalid-value"
     => "Valeur invalide.",
+
+    "technician-assignation-before-event"
+    => "L'assignation de ce technicien commence avant l'événement.",
+
+    "technician-assignation-after-event"
+    => "L'assignation de ce technicien se termine après l'événement.",
 
     //
     // - Install messages
@@ -2548,7 +2554,7 @@ return [
     "vatNumber"
     => "N° TVA Intracom. : %s",
 
-    "assignees"
+    "technicians"
     => "Techniciens",
 
     "beneficiary"
