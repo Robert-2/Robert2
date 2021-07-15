@@ -319,7 +319,7 @@ class Material extends BaseModel
             return [];
         }
 
-        $events = (new Event)->setPeriod($start, $end)->getAll();
+        $events = (new Event)->setSearchPeriod($start, $end)->getAll();
         if ($exceptEventId) {
             $events = $events->where('id', '!=', $exceptEventId);
         }

@@ -9,9 +9,14 @@ export default {
   components: { MultipleItem },
   props: ['event'],
   data() {
+    const { technicians } = this.event;
+
     return {
-      assigneesIds: this.event.assignees.map((assignee) => assignee.id),
-      assigneesPositions: this.event.assignees.map((assignee) => assignee.pivot.position),
+      technicians: technicians.map(({ position, technician }) => (
+        { ...technician, pivot: { position } }
+      )),
+      techniciansIds: technicians.map(({ technician }) => technician.id),
+      techniciansPositions: technicians.map((eventTechnician) => eventTechnician.position),
       fetchParams: { tags: [Config.technicianTagName] },
       errors: {},
     };
@@ -21,9 +26,9 @@ export default {
   },
   methods: {
     updateItems(ids) {
-      this.assigneesIds = ids;
+      this.techniciansIds = ids;
 
-      const savedList = this.event.assignees.map((assignee) => assignee.id);
+      const savedList = this.event.technicians.map(({ technician }) => technician.id);
       const listDifference = ids
         .filter((id) => !savedList.includes(id))
         .concat(savedList.filter((id) => !ids.includes(id)));
@@ -31,10 +36,10 @@ export default {
       EventStore.commit('setIsSaved', listDifference.length === 0);
     },
 
-    updatePivots(positions) {
-      this.assigneesPositions = positions;
+    updatePositions(positions) {
+      this.techniciansPositions = positions;
 
-      const savedList = this.event.assignees.map((assignee) => assignee.pivot.position);
+      const savedList = this.event.technicians.map((eventTechnician) => eventTechnician.position);
       const listDifference = positions
         .filter((position) => !savedList.includes(position))
         .concat(savedList.filter((position) => !positions.includes(position)));
@@ -71,17 +76,17 @@ export default {
 
     save(options) {
       this.$emit('loading');
-      const { id } = this.event;
+      const { id, start_date: startDate, end_date: endDate } = this.event;
       const { resource } = this.$route.meta;
 
-      const assignees = {};
-      this.assigneesIds.forEach((assigneeId, index) => {
-        assignees[assigneeId] = {
-          position: this.assigneesPositions[index],
-        };
-      });
+      const technicians = this.techniciansIds.map((technicianId, index) => ({
+        id: technicianId,
+        start_time: startDate,
+        end_time: endDate,
+        position: this.techniciansPositions[index],
+      }));
 
-      this.$http.put(`${resource}/${id}`, { assignees })
+      this.$http.put(`${resource}/${id}`, { technicians })
         .then(({ data }) => {
           const { gotoStep } = options;
           if (!gotoStep) {

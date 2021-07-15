@@ -17,8 +17,19 @@ describe('Calendar/utils.formatEvent', () => {
       beneficiaries: [
         { id: 1, full_name: 'Jean Benef' },
       ],
-      assignees: [
-        { id: 1, full_name: 'Marc Tekos' },
+      technicians: [
+        {
+          id: 1,
+          start_time: '2019-10-01 08:00:00',
+          end_time: '2019-10-02 23:00:00',
+          position: 'Régisseur',
+          technician: {
+            id: 1,
+            first_name: 'Marc',
+            last_name: 'Tekos',
+            full_name: 'Marc Tekos',
+          },
+        },
       ],
     };
 

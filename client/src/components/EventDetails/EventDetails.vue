@@ -25,7 +25,7 @@
               />
               <PersonsList
                 type="technicians"
-                :persons="assignees"
+                :persons="technicians"
               />
             </div>
             <p v-if="event.description" class="EventDetails__description">
