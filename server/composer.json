@@ -38,7 +38,7 @@
         "dompdf/dompdf": "1.0.2",
         "firebase/php-jwt": "5.4.0",
         "illuminate/database": "8.49.2",
-        "illuminate/pagination": "8.49.2",
+        "illuminate/pagination": "8.50.0",
         "monolog/monolog": "2.3.0",
         "php-di/php-di": "6.3.4",
         "respect/validation": "1.1.31",
