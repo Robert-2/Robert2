@@ -318,6 +318,11 @@ export default {
     'saved': "Technicien sauvegardé.",
   },
 
+  'page-technician-view': {
+    'title': "Technicien «\u00a0{name}\u00a0»",
+    'modify-associated-user': "Modifier l'utilisateur associé",
+  },
+
   'page-parks': {
     'title': "Parcs de matériel",
     'help': "Vous pouvez cliquer sur le nombre d'articles que contient le parc pour en afficher la liste.",

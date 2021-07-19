@@ -64,6 +64,7 @@ export default {
   'documents': "Documents",
   'billing': "Facturation",
   'special-attributes': "Caractéristiques spéciales",
+  'schedule': "Agenda",
   'pseudo': "Pseudo",
   'email-address-or-pseudo': "Adresse e-mail ou Pseudo",
   'password': "Mot de passe",

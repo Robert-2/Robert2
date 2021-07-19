@@ -81,7 +81,7 @@ export default {
           this.setPerson(data);
 
           setTimeout(() => {
-            this.$router.push('/technicians');
+            this.$router.push(`/technicians/${data.id}/view#infos`);
           }, 300);
         })
         .catch(this.displayError);
