@@ -15,8 +15,8 @@
       </span>
       <div v-for="person in persons" class="PersonsList__item" :key="person.id">
         <router-link
-          :to="`/${type}/${person.id}`"
-          :title="$t('action-edit')"
+          :to="`/${type}/${person.id}${type === 'technicians' ? '/view#infos' : ''}`"
+          :title="type === 'technicians' ? $t('action-view') : $t('action-edit')"
         >
           {{ person.name }}
         </router-link>
