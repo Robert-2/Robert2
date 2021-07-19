@@ -6,6 +6,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 
 ## 0.15.0-premium (UNRELEASED)
 
+- Ajoute une page qui affiche les informations d'un technicien (#188).
 
 ## 0.14.2-premium (2021-07-09)
 

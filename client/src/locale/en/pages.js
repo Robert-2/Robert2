@@ -339,6 +339,11 @@ export default {
     'saved': "Technician saved.",
   },
 
+  'page-technician-view': {
+    'title': "Technicien \"{name}\"",
+    'modify-associated-user': "Modify associated user",
+  },
+
   'page-parks': {
     'title': "Material parks",
     'help': "You can click on the number of items in the park to display the list.",
