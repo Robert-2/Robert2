@@ -14,6 +14,7 @@ return [
         '/persons[/]' => 'PersonController:getAll',
         '/persons/{id:[0-9]+}[/]' => 'PersonController:getOne',
         '/persons/{id:[0-9]+}/tags[/]' => 'PersonController:getTags',
+        '/technicians[/]' => 'TechnicianController:getAll',
         '/technicians/{id:[0-9]+}/events[/]' => 'TechnicianController:getEvents',
         '/countries[/]' => 'CountryController:getAll',
         '/countries/{id:[0-9]+}[/]' => 'CountryController:getOne',

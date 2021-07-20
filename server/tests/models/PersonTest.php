@@ -56,8 +56,8 @@ final class PersonTest extends ModelTestCase
 
     public function testGetAllFilteredOrTagged(): void
     {
-        // - Récupération du matériel associées au tag "pro"
-        $tags = ['customers'];
+        // - Récupération du matériel associées au tag "Beneficiary"
+        $tags = ['Beneficiary'];
         $result = $this->model->getAllFilteredOrTagged([], $tags)->get()->toArray();
         $this->assertCount(1, $result);
 
@@ -147,8 +147,8 @@ final class PersonTest extends ModelTestCase
     {
         $Person   = $this->model::find(2);
         $expected = [
-            ['id' => 1, 'name' => 'tag 01'],
-            ['id' => 2, 'name' => 'customers'],
+            ['id' => 1, 'name' => 'Technician'],
+            ['id' => 2, 'name' => 'Beneficiary'],
         ];
         $this->assertEquals($expected, $Person->tags);
     }
@@ -176,9 +176,9 @@ final class PersonTest extends ModelTestCase
         $this->assertEquals($expected, $result);
 
         // - Set tags : one existing, and two new tags
-        $result = $this->model->setTags(2, ['customers', 'testTag', 'Last tag on the road']);
+        $result = $this->model->setTags(2, ['Beneficiary', 'testTag', 'Last tag on the road']);
         $expected = [
-            ['id' => 2, 'name' => 'customers'],
+            ['id' => 2, 'name' => 'Beneficiary'],
             ['id' => 4, 'name' => 'testTag'],
             ['id' => 5, 'name' => 'Last tag on the road'],
         ];
