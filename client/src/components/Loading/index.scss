@@ -1,3 +1,5 @@
+@import '../../themes/default/index';
+
 .Loading {
   display: inline-flex;
   flex-direction: column;
@@ -22,6 +24,17 @@
     margin-top: 10px;
     font-style: italic;
     font-weight: 300;
+  }
+
+  &--horizontal {
+    flex-direction: row;
+    color: $text-nav-color;
+    font-size: 1.1rem;
+
+    .Loading__text {
+      margin-top: 0;
+      margin-left: 10px;
+    }
   }
 }
 

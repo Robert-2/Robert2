@@ -1,12 +1,18 @@
 import './index.scss';
 import { APP_NAME } from '@/config/constants';
+import Loading from '@/components/Loading';
+import ErrorMessage from '@/components/ErrorMessage';
 
 const Page = {
   name: 'Page',
   props: {
     name: { type: String, required: true },
     title: String,
+    help: String,
+    error: String,
+    isLoading: Boolean,
     actions: Array,
+    footerActions: Array,
     render: Function,
   },
   watch: {
@@ -27,14 +33,18 @@ const Page = {
     },
   },
   render() {
-    const { actions, render } = this.$props;
+    const { help, actions, error, isLoading, footerActions, render } = this.$props;
     const content = render ? render() : this.$slots.default;
 
     return (
       <div class="content">
         {actions && actions.length > 0 && (
           <div class="content__header header-page">
-            <div class="header-page__help"></div>
+            <div class="header-page__help">
+              {isLoading && <Loading horizontal />}
+              {!isLoading && error && <ErrorMessage error={error} />}
+              {!isLoading && !error && help}
+            </div>
             <nav class="header-page__actions">
               {actions}
             </nav>
@@ -45,6 +55,11 @@ const Page = {
             {content}
           </div>
         </div>
+        {footerActions && footerActions.length > 0 && (
+          <div class="content__footer">
+            {footerActions}
+          </div>
+        )}
       </div>
     );
   },

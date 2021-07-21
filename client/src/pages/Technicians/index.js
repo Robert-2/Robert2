@@ -1,6 +1,8 @@
-import Config from '@/config/globalConfig';
+import './index.scss';
 import Alert from '@/components/Alert';
 import Help from '@/components/Help/Help.vue';
+import Page from '@/components/Page';
+import ItemActions from './Actions';
 
 export default {
   name: 'Technicians',
@@ -47,17 +49,17 @@ export default {
           email: 'Technicians__email',
           address: 'Technicians__address',
           note: 'Technicians__note',
+          actions: 'Technicians__actions',
         },
         requestFunction: (pagination) => {
           this.error = null;
           this.isLoading = true;
           const params = {
             ...pagination,
-            tags: [Config.technicianTagName],
             deleted: this.isDisplayTrashed ? '1' : '0',
           };
           return this.$http
-            .get(this.$route.meta.resource, { params })
+            .get('technicians', { params })
             .catch(this.showError)
             .finally(() => {
               this.isTrashDisplayed = this.isDisplayTrashed;
@@ -68,35 +70,47 @@ export default {
     };
   },
   methods: {
-    deleteTechnician(technicianId) {
-      const isSoft = !this.isTrashDisplayed;
-      Alert.ConfirmDelete(this.$t, 'technicians', isSoft)
-        .then((result) => {
-          if (!result.value) {
-            return;
-          }
+    remove(id) {
+      return async () => {
+        const isSoft = !this.isTrashDisplayed;
+        const { value } = await Alert.ConfirmDelete(this.$t, 'technicians', isSoft);
+        if (!value) {
+          return;
+        }
 
-          this.error = null;
-          this.isLoading = true;
-          this.$http.delete(`${this.$route.meta.resource}/${technicianId}`)
-            .then(this.refreshTable)
-            .catch(this.showError);
-        });
+        this.error = null;
+        this.isLoading = true;
+
+        try {
+          await this.$http.delete(`${this.$route.meta.resource}/${id}`);
+          this.refreshTable();
+        } catch (error) {
+          this.error = error;
+        } finally {
+          this.isLoading = false;
+        }
+      };
     },
 
-    restoreTechnician(technicianId) {
-      Alert.ConfirmRestore(this.$t, 'technicians')
-        .then((result) => {
-          if (!result.value) {
-            return;
-          }
+    restore(id) {
+      return async () => {
+        const { value } = await Alert.ConfirmRestore(this.$t, 'technicians');
+        if (!value) {
+          return;
+        }
 
-          this.error = null;
-          this.isLoading = true;
-          this.$http.put(`${this.$route.meta.resource}/restore/${technicianId}`)
-            .then(this.refreshTable)
-            .catch(this.showError);
-        });
+        this.error = null;
+        this.isLoading = true;
+
+        try {
+          await this.$http.put(`${this.$route.meta.resource}/restore/${id}`);
+          this.refreshTable();
+        } catch (error) {
+          this.error = error;
+        } finally {
+          this.isLoading = false;
+        }
+      };
     },
 
     refreshTable() {
@@ -115,5 +129,72 @@ export default {
       this.isLoading = false;
       this.error = error;
     },
+  },
+  render() {
+    const {
+      $t: __,
+      help,
+      error,
+      isLoading,
+      columns,
+      options,
+      restore,
+      remove,
+      isTrashDisplayed,
+      showTrashed,
+    } = this;
+
+    const headerActions = [
+      <router-link to="/technicians/new" custom>
+        {({ navigate }) => (
+          <button onClick={navigate} class="Technicians__create success">
+            <i class="fas fa-user-plus" /> {__('page-technicians.action-add')}
+          </button>
+        )}
+      </router-link>,
+    ];
+
+    const footerActions = [
+      <button class={isTrashDisplayed ? 'info' : 'warning'} onClick={showTrashed}>
+        <i class={['fas', { 'fa-trash': !isTrashDisplayed, 'fa-eye"': isTrashDisplayed }]} />{' '}
+        {isTrashDisplayed ? __('display-not-deleted-items') : __('open-trash-bin')}
+      </button>,
+    ];
+
+    return (
+      <Page
+        name="technicians"
+        title={__('page-technicians.title')}
+        help={__(help)}
+        error={error}
+        isLoading={isLoading}
+        actions={headerActions}
+        footerActions={footerActions}
+      >
+        <v-server-table
+          ref="DataTable"
+          name="techniciansTable"
+          columns={columns}
+          options={options}
+          scopedSlots={{
+            email: ({ row }) => <a href={`mailto:${row.email}`}>{row.email}</a>,
+            address: ({ row }) => (
+              <div>
+                {row.street}<br />
+                {row.postal_code} {row.locality}
+              </div>
+            ),
+            actions: ({ row }) => (
+              <ItemActions
+                isTrashMode={isTrashDisplayed}
+                id={row.id}
+                remove={remove}
+                restore={restore}
+              />
+            ),
+          }}
+        />
+      </Page>
+    );
   },
 };
