@@ -133,6 +133,8 @@ export default {
 
   'event-details': "Event's details",
   'title': "Title",
+  'dates': "Dates",
+  'start-end-dates': "Start and end dates",
   'start-date': "Start Date",
   'end-date': "End Date",
   'location': "Location",
@@ -141,6 +143,7 @@ export default {
     "Duration {duration} day",
     "Duration {duration} days",
   ],
+  'please-choose-dates': "Please choose dates",
   'confirmed': "Confirmed",
   'not-confirmed': "Not confirmed",
   'is-billable': "Is billable?",

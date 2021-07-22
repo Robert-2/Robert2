@@ -16,24 +16,13 @@
       <div class="EventStep1__dates">
         <div class="EventStep1__dates__fields">
           <FormField
-            v-model="event.start_date"
-            name="start_date"
-            label="start-date"
+            v-model="dates"
+            label="dates"
             type="date"
             required
-            :errors="errors.start_date"
-            :datepicker-options="startDatepickerOptions"
-            @change="handleStartDateChange"
-          />
-          <FormField
-            v-model="event.end_date"
-            name="end_date"
-            label="end-date"
-            type="date"
-            required
-            :errors="errors.end_date"
-            :datepicker-options="endDatepickerOptions"
-            @change="refreshDatesLimits"
+            :errors="errors.start_date || errors.end_date"
+            :datepicker-options="datepickerOptions"
+            @change="setEventDates"
           />
         </div>
         <div class="EventStep1__dates__duration">
