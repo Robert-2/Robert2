@@ -4,10 +4,7 @@ import { Fragment } from 'vue-fragment';
 const TechnicianViewInfos = {
   name: 'TechnicianViewInfos',
   props: {
-    data: { type: Object, required: true },
-  },
-  mounted() {
-    this.$store.commit('setPageSubTitle', 'Damn');
+    technician: { type: Object, required: true },
   },
   render() {
     const { $t: __ } = this;
@@ -24,7 +21,7 @@ const TechnicianViewInfos = {
       locality,
       country,
       note,
-    } = this.data;
+    } = this.technician;
 
     return (
       <div class="TechnicianViewInfos">

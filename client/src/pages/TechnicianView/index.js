@@ -1,8 +1,10 @@
+import './index.scss';
 import { Tabs, Tab } from 'vue-slim-tabs';
-import ErrorMessage from '@/components/ErrorMessage';
+import CriticalError from '@/components/CriticalError';
 import Loading from '@/components/Loading';
 import Page from '@/components/Page';
 import TechnicianInfos from './Infos';
+import TechnicianSchedule from './Schedule';
 
 const TechnicianViewPage = {
   name: 'TechnicianViewPage',
@@ -63,25 +65,29 @@ const TechnicianViewPage = {
       pageTitle = __('page-technician-view.title', { name: technician.full_name });
     }
 
-    const tabsTitles = {
-      infos: <span><i class="fas fa-info-circle" /> {__('informations')}</span>,
-      schedule: <span><i class="fas fa-calendar-alt" /> {__('schedule')}</span>,
+    const getContent = () => {
+      if (error) {
+        return <CriticalError message={error.message} />;
+      }
+
+      if (isLoading || !technician) {
+        return <Loading />;
+      }
+
+      return (
+        <Tabs defaultIndex={selectedTabIndex} class="TechnicianView">
+          <Tab title={<span><i class="fas fa-info-circle" /> {__('informations')}</span>}>
+            <TechnicianInfos technician={technician} />
+          </Tab>
+          <Tab title={<span><i class="fas fa-calendar-alt" /> {__('schedule')}</span>}>
+            <TechnicianSchedule technician={technician} />
+          </Tab>
+        </Tabs>
+      );
     };
 
     return (
-      <Page name="technician-view" title={pageTitle}>
-        <div class="TechnicianView">
-          <Tabs class="TechnicianView__body" defaultIndex={selectedTabIndex}>
-            <Tab title={tabsTitles.infos}>
-              {isLoading && <Loading />}
-              {error && <ErrorMessage error={error} />}
-              {!isLoading && !error && technician && (
-                <TechnicianInfos data={technician} />
-              )}
-            </Tab>
-          </Tabs>
-        </div>
-      </Page>
+      <Page name="technician-view" title={pageTitle} render={getContent} />
     );
   },
 };
