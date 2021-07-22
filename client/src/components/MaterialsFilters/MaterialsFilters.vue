@@ -65,7 +65,7 @@
     <button
       v-if="!isFilterEmpty"
       class="MaterialsFilters__reset warning"
-      v-tooltip="$t('page-materials.clear-filters')"
+      v-tooltip="$t('clear-filters')"
       @click="clearFilters"
     >
       <i class="fas fa-backspace" />

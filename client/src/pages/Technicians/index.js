@@ -1,7 +1,9 @@
 import './index.scss';
+import moment from 'moment';
 import Alert from '@/components/Alert';
 import Help from '@/components/Help/Help.vue';
 import Page from '@/components/Page';
+import Datepicker from '@/components/Datepicker';
 import ItemActions from './Actions';
 
 export default {
@@ -14,6 +16,7 @@ export default {
       isLoading: false,
       isDisplayTrashed: false,
       isTrashDisplayed: false,
+      periodFilter: null,
       columns: [
         'last_name',
         'first_name',
@@ -54,10 +57,17 @@ export default {
         requestFunction: (pagination) => {
           this.error = null;
           this.isLoading = true;
+
           const params = {
             ...pagination,
             deleted: this.isDisplayTrashed ? '1' : '0',
           };
+          if (this.periodFilter) {
+            const [start, end] = this.periodFilter;
+            params.startDate = moment(start).format();
+            params.endDate = moment(end).endOf('day').format();
+          }
+
           return this.$http
             .get('technicians', { params })
             .catch(this.showError)
@@ -120,6 +130,10 @@ export default {
       this.$refs.DataTable.refresh();
     },
 
+    clearFilters() {
+      this.periodFilter = null;
+    },
+
     showTrashed() {
       this.isDisplayTrashed = !this.isDisplayTrashed;
       this.refreshTable();
@@ -128,6 +142,11 @@ export default {
     showError(error) {
       this.isLoading = false;
       this.error = error;
+    },
+  },
+  watch: {
+    periodFilter() {
+      this.refreshTable();
     },
   },
   render() {
@@ -140,6 +159,8 @@ export default {
       options,
       restore,
       remove,
+      periodFilter,
+      clearFilters,
       isTrashDisplayed,
       showTrashed,
     } = this;
@@ -171,6 +192,22 @@ export default {
         actions={headerActions}
         footerActions={footerActions}
       >
+        <div class="Technicians__filters">
+          <Datepicker
+            vModel={this.periodFilter}
+            isRange
+            placeholder={__('page-technicians.period-of-availability')}
+          />
+          {periodFilter && (
+            <button
+              class="Technicians__filters__clear-button warning"
+              vTooltip={__('clear-filters')}
+              onClick={clearFilters}
+            >
+              <i class="fas fa-backspace" />
+            </button>
+          )}
+        </div>
         <v-server-table
           ref="DataTable"
           name="techniciansTable"

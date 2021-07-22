@@ -46,6 +46,7 @@ export default {
   'cancel-add-item': "Annuler l'ajout de {item}",
   'item-not-found': "{item} introuvable. Peut-être a-t-il été supprimé\u00a0?",
   'locked': "verrouillé",
+  'clear-filters': "Réinitialiser les filtres",
 
   'save': "Sauvegarder",
   'save-draft': "Sauvegarder le brouillon",

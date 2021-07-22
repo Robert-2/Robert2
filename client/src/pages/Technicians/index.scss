@@ -1,6 +1,20 @@
 @import '../../themes/default/index';
 
 .Technicians {
+  &__filters {
+    position: absolute;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    left: 240px;
+    right: calc(#{$content-padding-large-vertical} + 45px + #{$content-padding-small-vertical});
+    z-index: 1;
+
+    &__clear-button {
+      margin-left: $content-padding-small-horizontal;
+    }
+  }
+
   &__nickname,
   &__email,
   &__address,

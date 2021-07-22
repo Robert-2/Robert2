@@ -46,6 +46,7 @@ export default {
   'cancel-add-item': "Cancel adding {item}",
   'item-not-found': "{item} not found. Element may have been deleted.",
   'locked': "locked",
+  'clear-filters': "Clear filters",
 
   'save': "Save",
   'save-draft': "Save draft",
