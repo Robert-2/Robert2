@@ -54,9 +54,13 @@ $time-hover-background-color: $calendar-time-cursor-color;
   background-color: $bg-color-input-normal;
 }
 
-
 .#{$namespace}-table-date {
   .cell.not-current-month {
+    color: $text-nav-color;
+  }
+
+  .cell.disabled {
     color: $text-muted-color;
+    background-color: $bg-color-input-normal;
   }
 }

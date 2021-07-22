@@ -13,18 +13,10 @@ export default {
   data() {
     return {
       startDatepickerOptions: {
-        format: 'd MMMM yyyy',
-        disabled: {
-          from: null,
-          to: null,
-        },
+        disabled: { from: null, to: null },
       },
       endDatepickerOptions: {
-        format: 'd MMMM yyyy',
-        disabled: {
-          from: null,
-          to: null,
-        },
+        disabled: { from: null, to: null },
       },
       duration: 0,
       showIsBillable: Config.billingMode === 'partial',

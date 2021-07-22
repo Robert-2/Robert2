@@ -36,8 +36,10 @@
             @change="refreshDatesLimits"
           />
         </div>
-        <div v-if="duration > 0" class="EventStep1__dates__duration">
-          {{ $t('duration-days', { duration }, duration) }}
+        <div class="EventStep1__dates__duration">
+          <span v-if="duration > 0">
+            {{ $t('duration-days', { duration }, duration) }}
+          </span>
         </div>
       </div>
     </section>

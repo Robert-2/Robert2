@@ -18,12 +18,10 @@ export default {
         endDate: null,
       },
       startDatepickerOptions: {
-        format: 'd MMMM yyyy',
         disabled: { from: null, to: new Date() },
       },
       endDatepickerOptions: {
-        format: 'd MMMM yyyy',
-        disabled: { from: null, to: null },
+        disabled: { from: null, to: new Date() },
       },
       error: null,
       validationErrors: null,

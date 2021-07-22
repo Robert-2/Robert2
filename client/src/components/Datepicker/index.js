@@ -12,6 +12,7 @@ export default {
     isClearable: { type: Boolean, default: false },
     displayFormat: { type: String, default: 'LL' },
     placeholder: String,
+    disabledDates: Object,
   },
   data() {
     const { locale } = this.$store.state.i18n;
@@ -27,9 +28,32 @@ export default {
     handleInput(newValue) {
       this.$emit('input', newValue);
     },
+
+    getDisabledDates(chosenDate) {
+      if (!this.disabledDates) {
+        return false;
+      }
+
+      const { from, to } = this.disabledDates;
+      const date = moment(chosenDate);
+
+      if (from && to) {
+        return date.isAfter(from, 'day') && date.isBefore(to, 'day');
+      }
+
+      if (from) {
+        return date.isAfter(from, 'day');
+      }
+
+      if (to) {
+        return date.isBefore(to, 'day');
+      }
+
+      return false;
+    },
   },
   render() {
-    const { $props, lang, formatter, handleInput } = this;
+    const { $props, lang, formatter, handleInput, getDisabledDates } = this;
     const { value, withTime, isRange, isClearable, displayFormat, placeholder } = $props;
 
     return (
@@ -46,6 +70,7 @@ export default {
         placeholder={placeholder}
         formatter={formatter}
         format={withTime ? `${displayFormat} HH:mm` : displayFormat}
+        disabledDate={getDisabledDates}
       />
     );
   },

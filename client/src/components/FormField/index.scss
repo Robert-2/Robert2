@@ -50,13 +50,6 @@
     }
   }
 
-  &__datepicker {
-    &__input {
-      width: 100%;
-      max-width: 300px;
-    }
-  }
-
   &--with-addon {
     .FormField__input {
       display: inline-block;
