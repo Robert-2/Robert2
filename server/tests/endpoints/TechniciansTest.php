@@ -3,6 +3,12 @@ namespace Robert2\Tests;
 
 final class TechniciansTest extends ApiTestCase
 {
+    public function testGetEventNotFound()
+    {
+        $this->client->get('/api/technicians/999/events');
+        $this->assertNotFound();
+    }
+
     public function testGetEvents()
     {
         $this->client->get('/api/technicians/1/events');

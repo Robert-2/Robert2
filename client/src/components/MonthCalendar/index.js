@@ -20,12 +20,12 @@ export default {
     },
   },
   methods: {
-    handlePrevMonth() {
+    handlePrevMonthClick() {
       const newDate = moment(this.currentDate).subtract(1, 'month');
       this.currentDate = newDate.toDate();
     },
 
-    handleNextMonth() {
+    handleNextMonthClick() {
       const newDate = moment(this.currentDate).add(1, 'month');
       this.currentDate = newDate.toDate();
     },
@@ -40,8 +40,8 @@ export default {
       events,
       currentDate,
       currentMonth,
-      handlePrevMonth,
-      handleNextMonth,
+      handlePrevMonthClick,
+      handleNextMonthClick,
       handleClickItem,
       withTotal,
     } = this;
@@ -49,13 +49,13 @@ export default {
     return (
       <div class="MonthCalendar">
         <header class="MonthCalendar__header">
-          <button class="info" vTooltip={__('previous-month')} onClick={handlePrevMonth}>
+          <button class="info" vTooltip={__('previous-month')} onClick={handlePrevMonthClick}>
             <i class="fas fa-arrow-left" />
           </button>
           <span class="MonthCalendar__header__current-month">
             {currentMonth}
           </span>
-          <button class="info" vTooltip={__('next-month')} onClick={handleNextMonth}>
+          <button class="info" vTooltip={__('next-month')} onClick={handleNextMonthClick}>
             <i class="fas fa-arrow-right" />
           </button>
           {withTotal && (

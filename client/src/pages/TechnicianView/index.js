@@ -1,6 +1,6 @@
 import './index.scss';
 import { Tabs, Tab } from 'vue-slim-tabs';
-import ErrorMessage from '@/components/ErrorMessage';
+import CriticalError from '@/components/CriticalError';
 import Loading from '@/components/Loading';
 import Page from '@/components/Page';
 import TechnicianInfos from './Infos';
@@ -65,36 +65,29 @@ const TechnicianViewPage = {
       pageTitle = __('page-technician-view.title', { name: technician.full_name });
     }
 
-    const tabsTitles = {
-      infos: <span><i class="fas fa-info-circle" /> {__('informations')}</span>,
-      schedule: <span><i class="fas fa-calendar-alt" /> {__('schedule')}</span>,
-    };
+    const getContent = () => {
+      if (error) {
+        return <CriticalError message={error.message} />;
+      }
 
-    const renderTab = (TabContent) => {
-      if (isLoading) {
+      if (isLoading || !technician) {
         return <Loading />;
       }
-      if (error) {
-        return <ErrorMessage error={error} />;
-      }
-      if (!technician) {
-        return null;
-      }
 
-      return <TabContent technician={technician} />;
+      return (
+        <Tabs defaultIndex={selectedTabIndex} class="TechnicianView">
+          <Tab title={<span><i class="fas fa-info-circle" /> {__('informations')}</span>}>
+            <TechnicianInfos technician={technician} />
+          </Tab>
+          <Tab title={<span><i class="fas fa-calendar-alt" /> {__('schedule')}</span>}>
+            <TechnicianSchedule technician={technician} />
+          </Tab>
+        </Tabs>
+      );
     };
 
     return (
-      <Page name="technician-view" title={pageTitle}>
-        <Tabs defaultIndex={selectedTabIndex} class="TechnicianView">
-          <Tab title={tabsTitles.infos}>
-            {renderTab(TechnicianInfos)}
-          </Tab>
-          <Tab title={tabsTitles.schedule}>
-            {renderTab(TechnicianSchedule)}
-          </Tab>
-        </Tabs>
-      </Page>
+      <Page name="technician-view" title={pageTitle} render={getContent} />
     );
   },
 };

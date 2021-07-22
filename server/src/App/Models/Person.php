@@ -85,6 +85,7 @@ class Person extends BaseModel
     public function Events()
     {
         return $this->hasMany(EventTechnician::class, 'technician_id')
+            ->with('Event')
             ->orderBy('start_time');
     }
 
@@ -141,7 +142,7 @@ class Person extends BaseModel
 
     public function getEventsAttribute()
     {
-        return $this->Events()->with('Event')->get()->each->setAppends(['event']);
+        return $this->Events()->get()->each->setAppends(['event']);
     }
 
     // ——————————————————————————————————————————————————————
