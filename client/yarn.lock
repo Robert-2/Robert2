@@ -10862,6 +10862,14 @@ vue-select@3.11.2:
   resolved "https://registry.yarnpkg.com/vue-select/-/vue-select-3.11.2.tgz#3ef93e3f2707e133c2df0b2920a05eea78764d18"
   integrity sha512-pIOcY8ajWNSwg8Ns4eHVr5ZWwqKCSZeQRymTnlUI8i+3QiQXF6JIM4lylK6mVfbccs4S6vOyxB7zmJBpp7tDUg==
 
+vue-simple-calendar@5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/vue-simple-calendar/-/vue-simple-calendar-5.0.0.tgz#2a5a0815f41b9143b46c9c6c144a349baecbe93c"
+  integrity sha512-UQl+Jn3TyRm2+6ao5DBIO3iwyk8peghkApogSrEruAA8wy+x5zheVQuhqnSDMTkFiLmpE9mlDDaHYvVTmOXsoA==
+  dependencies:
+    core-js "^3.6.5"
+    vue "^2.6.12"
+
 vue-slim-tabs@0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/vue-slim-tabs/-/vue-slim-tabs-0.4.0.tgz#b07face4ad54aaa227f5706b60c17767783d66be"
@@ -10909,7 +10917,7 @@ vue-template-es2015-compiler@^1.6.0, vue-template-es2015-compiler@^1.9.0:
   resolved "https://registry.yarnpkg.com/vue-template-es2015-compiler/-/vue-template-es2015-compiler-1.9.1.tgz#1ee3bc9a16ecbf5118be334bb15f9c46f82f5825"
   integrity sha512-4gDntzrifFnCEvyoO8PqyJDmguXgVPxKiIxrBKjIowvL9l+N66196+72XVYR8BBf1Uv1Fgt3bGevJ+sEmxfZzw==
 
-vue@2.6.14, vue@>=2.0.0, vue@^2.6.10:
+vue@2.6.14, vue@>=2.0.0, vue@^2.6.10, vue@^2.6.12:
   version "2.6.14"
   resolved "https://registry.yarnpkg.com/vue/-/vue-2.6.14.tgz#e51aa5250250d569a3fbad3a8a5a687d6036e235"
   integrity sha512-x2284lgYvjOMj3Za7kqzRcUSxBboHqtgRE2zlos1qWaOye5yUmHn42LB1250NJBLRwEcdrB0JRwyPTEPhfQjiQ==

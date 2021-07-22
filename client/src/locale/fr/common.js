@@ -216,6 +216,10 @@ export default {
     "{count} utilisés",
   ],
   'no-items': "Aucun article",
+  'events-count-total': [
+    "{count} événement au total",
+    "{count} événements au total",
+  ],
   'stock-items-count': "{count} en stock",
   'out-of-order-items-count': "{count} en panne",
   'sub-total': "Sous-total",
@@ -243,6 +247,8 @@ export default {
   'actual-quantity': "Qté effective",
   'return-scheduled-on': "Retour prévu le",
   'back-to-calendar': "Retour au calendrier",
+  'previous-month': "Mois précédent",
+  'next-month': "Mois suivant",
 
   'terminate-inventory': "Terminer l'inventaire",
   'warning-terminate-inventory': "Attention, une fois cet inventaire terminé, il ne sera plus modifiable.",

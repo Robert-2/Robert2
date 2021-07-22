@@ -1,0 +1,23 @@
+@import '../../themes/default/index';
+
+.Page--technician-view {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  .TechnicianView {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    .vue-tablist {
+      margin-bottom: $content-padding-small-vertical;
+    }
+
+    .vue-tabpanel {
+      flex: 1;
+    }
+  }
+}

@@ -10,7 +10,7 @@
   }
 
   &--not-confirmed {
-    opacity: .58;
+    opacity: $calendar-event-not-confirmed-opacity;
   }
 
   &--with-warning {

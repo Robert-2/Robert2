@@ -25,6 +25,7 @@
         "vue-js-modal": "2.0.0-rc.6",
         "vue-router": "3.5.2",
         "vue-select": "3.11.2",
+        "vue-simple-calendar": "5.0.0",
         "vue-slim-tabs": "0.4.0",
         "vue-tables-2": "2.3.1",
         "vuejs-datepicker": "1.6.2",
