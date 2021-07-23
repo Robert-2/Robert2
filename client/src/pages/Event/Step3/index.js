@@ -1,12 +1,12 @@
+import './index.scss';
 import Config from '@/config/globalConfig';
 import MultipleItem from '@/components/MultipleItem/MultipleItem.vue';
 import getPersonItemLabel from '@/utils/getPersonItemLabel';
 import formatOptions from '@/utils/formatOptions';
 import EventStore from '../EventStore';
 
-export default {
+const EventStep3 = {
   name: 'EventStep3',
-  components: { MultipleItem },
   props: ['event'],
   data() {
     const { technicians } = this.event;
@@ -25,7 +25,25 @@ export default {
     EventStore.commit('setIsSaved', true);
   },
   methods: {
-    updateItems(ids) {
+    // ------------------------------------------------------
+    // -
+    // -    Handlers
+    // -
+    // ------------------------------------------------------
+
+    handleSubmit(e) {
+      e.preventDefault();
+
+      this.save({ gotoStep: 4 });
+    },
+
+    handleSubmitNext(e) {
+      e.preventDefault();
+
+      this.save({ gotoStep: 4 });
+    },
+
+    handleUpdatedItems(ids) {
       this.techniciansIds = ids;
 
       const savedList = this.event.technicians.map(({ technician }) => technician.id);
@@ -36,7 +54,7 @@ export default {
       EventStore.commit('setIsSaved', listDifference.length === 0);
     },
 
-    updatePositions(positions) {
+    handleUpdatedPositions(positions) {
       this.techniciansPositions = positions;
 
       const savedList = this.event.technicians.map((eventTechnician) => eventTechnician.position);
@@ -47,22 +65,18 @@ export default {
       EventStore.commit('setIsSaved', listDifference.length === 0);
     },
 
+    // ------------------------------------------------------
+    // -
+    // -    Internal
+    // -
+    // ------------------------------------------------------
+
     formatItemOptions(data) {
       return formatOptions(data, getPersonItemLabel);
     },
 
     getItemLabel(itemData) {
       return getPersonItemLabel(itemData);
-    },
-
-    saveAndBack(e) {
-      e.preventDefault();
-      this.save({ gotoStep: false });
-    },
-
-    saveAndNext(e) {
-      e.preventDefault();
-      this.save({ gotoStep: 4 });
     },
 
     displayError(error) {
@@ -100,4 +114,53 @@ export default {
         .catch(this.displayError);
     },
   },
+  render() {
+    const {
+      $t: __,
+      technicians,
+      fetchParams,
+      formatItemOptions,
+      getItemLabel,
+      handleSubmit,
+      handleSubmitNext,
+      handleUpdatedItems,
+      handleUpdatedPositions,
+    } = this;
+
+    return (
+      <form class="Form EventStep3" method="POST" onSubmit={handleSubmit}>
+        <section class="Form__fieldset">
+          <h4 class="Form__fieldset__title">
+            {__('page-events.event-technicians')}
+          </h4>
+          <MultipleItem
+            label="technician"
+            field="full_name"
+            fetchEntity="persons"
+            fetchParams={fetchParams}
+            selectedItems={technicians}
+            createItemPath="/technicians/new"
+            formatOptions={formatItemOptions}
+            getItemLabel={getItemLabel}
+            pivotField="position"
+            pivotPlaceholder={__('position-held')}
+            onItemsUpdated={handleUpdatedItems}
+            onPivotsUpdated={handleUpdatedPositions}
+          />
+        </section>
+        <section class="Form__actions">
+          <button class="EventStep3__save-btn info" type="submit">
+            <i class="fas fa-arrow-left" />
+            {__('page-events.save-and-back-to-calendar')}
+          </button>
+          <button class="EventStep3__save-btn success" onClick={handleSubmitNext}>
+            {__('page-events.save-and-continue')}
+            <i class="fas fa-arrow-right" />
+          </button>
+        </section>
+      </form>
+    );
+  },
 };
+
+export default EventStep3;

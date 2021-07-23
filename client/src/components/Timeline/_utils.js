@@ -6,9 +6,9 @@ import { DataSet, DataView } from '@robert2/vis-timeline';
 
 const arrayDiff = (arr1, arr2) => arr1.filter((x) => arr2.indexOf(x) === -1);
 
-export const mountVisData = (vm) => {
-  if (vm.items instanceof DataSet || vm.items instanceof DataView) {
-    return vm.items;
+export const mountVisData = (vm, prop, stateProp) => {
+  if (vm[prop] instanceof DataSet || vm[prop] instanceof DataView) {
+    return vm[prop];
   }
 
   // We attach deep watcher on the prop to propagate changes in the DataSet
@@ -17,12 +17,20 @@ export const mountVisData = (vm) => {
       return;
     }
 
-    const newIds = new DataSet(value).getIds();
-    const diff = arrayDiff(vm.data.getIds(), newIds);
-    vm.data.update(value);
-    vm.data.remove(diff);
-  };
-  vm.$watch('items', callback, { deep: true });
+    if (!(vm[stateProp] instanceof DataSet)) {
+      vm[stateProp] = new DataSet([]);
+      vm.timeline.setGroups(vm[stateProp]);
+    }
 
-  return new DataSet(vm.items);
+    const newIds = new DataSet(value).getIds();
+    const removed = arrayDiff(vm[stateProp].getIds(), newIds);
+
+    vm[stateProp].update(value);
+    vm[stateProp].remove(removed);
+  };
+  vm.$watch(prop, callback, { deep: true });
+
+  return vm[prop] !== undefined
+    ? new DataSet(vm[prop] ?? [])
+    : undefined;
 };

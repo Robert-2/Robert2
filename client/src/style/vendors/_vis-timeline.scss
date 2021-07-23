@@ -4,7 +4,7 @@ $items-border-radius: 10px;
 //   l'ordre final du CSS semble être inversé : le CSS de vis-timeline se
 //   retrouve après celui-ci.
 .vis-timeline {
-  border:none !important;
+  border: none !important;
   background-color: $calendar-main-background-color;
 
   .vis-panel {
@@ -13,7 +13,7 @@ $items-border-radius: 10px;
     &.vis-left,
     &.vis-right,
     &.vis-top {
-      border:none;
+      border: none;
     }
   }
 
@@ -52,21 +52,56 @@ $items-border-radius: 10px;
     margin-top: 42px;
     background-color: $calendar-time-cursor-color;
   }
+
+  .vis-label {
+    color: $text-base-color;
+
+    .vis-inner {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 100%;
+      min-height: max(100%, 55px);
+      word-break: break-all;
+      padding: 10px;
+    }
+  }
 }
 
 .vis-item {
   margin: 0;
   padding: 1.2rem 1.1rem;
   border: none !important;
-  border-radius: $items-border-radius !important;
-  box-shadow: 1px 2px 3px rgba(#000, .5);
   font-size: 1rem;
 
-  .vis-item-content {
-    padding: 0 0 .1rem 0 !important;
+  &.vis-range {
+    box-shadow: 1px 2px 3px rgba(#000, .5);
+    border-radius: $items-border-radius !important;
+    background-color: $calendar-event-normal-color;
+    color: $calendar-event-text-color;
+
+    &.vis-selected {
+      background-color: lighten($calendar-event-normal-color, 10%);
+    }
   }
 
-  &:not(.vis-readonly) {
+  &.vis-background {
+    padding: .5rem .8rem;
+    color: rgba(255, 255, 255, .5);
+    background-color: rgba(31, 31, 31, .6);
+  }
+
+  .vis-item-overflow {
+    display: flex;
+    align-items: center;
+  }
+
+  .vis-item-content {
+    white-space: pre-line;
+    padding: 0 !important;
+  }
+
+  &:not(.vis-readonly):not(.vis-background) {
     cursor: pointer;
 
     .vis-drag-left,
@@ -108,18 +143,6 @@ $items-border-radius: 10px;
       font-weight: 900 !important;
       font-size: 1.7rem !important;
     }
-  }
-}
-
-// - Pour éviter d'avoir à définir des !important pour les couleurs,
-//   car elles sont potentiellement écrasées par les modifiers de .timeline-event,
-//   en fonction du statut de l'événement.
-.vis-group > .vis-item {
-  background-color: $calendar-event-normal-color;
-  color: $calendar-event-text-color;
-
-  &.vis-selected {
-    background-color: lighten($calendar-event-normal-color, 10%);
   }
 }
 

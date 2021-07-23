@@ -129,14 +129,14 @@ export default {
     async fetchMaterials() {
       try {
         this.isLoading = true;
-        this.$refs.DataTable.setLoadingState(true);
+        this.$refs.DataTable?.setLoadingState(true);
         const { data } = await this.$http.get(`materials/while-event/${this.event.id}`);
         this.materials = data;
       } catch (error) {
         this.showError(error);
       } finally {
         this.isLoading = false;
-        this.$refs.DataTable.setLoadingState(false);
+        this.$refs.DataTable?.setLoadingState(false);
       }
     },
 

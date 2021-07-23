@@ -235,8 +235,8 @@ class Event extends BaseModel
         $conditions = function (Builder $query) use ($start, $end) {
             $query
                 ->where([
-                    ['end_date', '>', $start],
-                    ['start_date', '<', $end],
+                    ['end_date', '>=', $start],
+                    ['start_date', '<=', $end],
                 ]);
         };
 
@@ -256,8 +256,8 @@ class Event extends BaseModel
 
         return static::orderBy('start_date', 'asc')
             ->where([
-                ['end_date', '>', $now],
-                ['start_date', '<', $now],
+                ['end_date', '>=', $now],
+                ['start_date', '<=', $now],
             ]);
     }
 
