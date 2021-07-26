@@ -1,3 +1,7 @@
+{% if withLogo and company['logo'] is not empty %}
+  <img src="{{ baseUrl }}/img/{{ company['logo'] }}" style="width: 75mm;" />
+{% endif %}
+
 <p class="size12 strong">
     {{ company['name'] }}<br>
     {{ company['street'] }}<br>

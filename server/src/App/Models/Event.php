@@ -382,6 +382,7 @@ class Event extends BaseModel
             'materialList' => $materialList,
             'materialDisplayMode' => $materialDisplayMode,
             'replacementAmount' => $EventData->getReplacementAmount(),
+            'technicians' => $EventData->getTechnicians(),
             'customTextTitle' => $customTextTitle,
             'customText' => $customText,
         ];
