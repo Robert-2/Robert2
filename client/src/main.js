@@ -27,7 +27,13 @@ Vue.prototype.$http = axios;
 Vue.use(VueJsModal, {
   dialog: true,
   dynamic: true,
-  dynamicDefaults: {},
+  dynamicDefaults: {
+    width: 900,
+    height: 'auto',
+    adaptive: true,
+    minHeight: 300,
+    draggable: false,
+  },
 });
 
 // Tooltips

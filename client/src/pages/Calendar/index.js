@@ -1,6 +1,5 @@
 import moment from 'moment';
 import { DATE_DB_FORMAT, DATE_QUERY_FORMAT } from '@/config/constants';
-import ModalConfig from '@/config/modalConfig';
 import Alert from '@/components/Alert';
 import Help from '@/components/Help/Help.vue';
 import EventDetails from '@/components/EventDetails/EventDetails.vue';
@@ -174,7 +173,7 @@ export default {
     },
 
     onDoubleClick(e) {
-      // - Here we avoid double-call because of double-trigger of event,
+      // - On évite le double-call à cause d'un bug qui trigger l'event en double.
       // - @see visjs bug here: https://github.com/visjs/vis-timeline/issues/301)
       if (this.isModalOpened) {
         return;
@@ -223,7 +222,7 @@ export default {
       this.$modal.show(
         EventDetails,
         { eventId },
-        ModalConfig,
+        undefined,
         {
           'before-close': () => {
             this.getEventsData();
