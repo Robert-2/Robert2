@@ -1,9 +1,7 @@
 .Categories {
-  &__items {
-    display: flex;
-    flex-wrap: wrap;
-    // !important: overwrite padding of .content__main-view
-    padding-right: 0 !important;
+  .content__main-view {
+    flex-flow: row wrap;
+    padding-right: 0;
   }
 
   &__category {

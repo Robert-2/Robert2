@@ -1,4 +1,5 @@
 import moment from 'moment';
+import pick from 'lodash.pick';
 import Config from '@/config/globalConfig';
 import { DATE_DB_FORMAT } from '@/config/constants';
 import FormField from '@/components/FormField';
@@ -12,20 +13,11 @@ export default {
   },
   data() {
     return {
-      startDatepickerOptions: {
-        format: 'd MMMM yyyy',
-        disabled: {
-          from: null,
-          to: null,
-        },
+      datepickerOptions: {
+        disabled: { from: null, to: null },
+        isRange: true,
       },
-      endDatepickerOptions: {
-        format: 'd MMMM yyyy',
-        disabled: {
-          from: null,
-          to: null,
-        },
-      },
+      dates: null,
       duration: 0,
       showIsBillable: Config.billingMode === 'partial',
       errors: {
@@ -37,38 +29,41 @@ export default {
       },
     };
   },
-  mounted() {
-    this.refreshDatesLimits();
-  },
   watch: {
-    event: 'refreshDatesLimits',
-  },
-  methods: {
-    refreshDatesLimits() {
-      const { start_date: startDate } = this.event;
-      if (startDate) {
-        this.endDatepickerOptions.disabled.to = moment(startDate).toDate();
-      }
-
+    event() {
+      this.initDatesFromEvent();
       this.calcDuration();
       this.checkIsSavedEvent();
     },
-
-    handleStartDateChange({ newDate }) {
-      const { end_date: endDate } = this.event;
-      if (endDate) {
-        const start = moment(newDate);
-        const end = moment(endDate);
-        if (end.isBefore(start)) {
-          this.event.end_date = start.toDate();
-        }
+  },
+  mounted() {
+    this.initDatesFromEvent();
+  },
+  methods: {
+    initDatesFromEvent() {
+      if (this.dates) {
+        return;
       }
 
-      this.refreshDatesLimits();
+      const { start_date: startDate = null, end_date: endDate = null } = this.event;
+      if (!startDate || !endDate) {
+        return;
+      }
+
+      this.dates = [
+        moment(startDate).toDate(),
+        moment(endDate).toDate(),
+      ];
+    },
+
+    setEventDates() {
+      const [startDate, endDate] = this.dates;
+      this.event.start_date = moment(startDate).format();
+      this.event.end_date = moment(endDate).format();
     },
 
     calcDuration() {
-      const { start_date: startDate, end_date: endDate } = this.event;
+      const [startDate, endDate] = this.dates;
       if (startDate && endDate) {
         this.duration = moment(endDate).diff(startDate, 'days') + 1;
       }
@@ -109,15 +104,15 @@ export default {
         route = `${resource}/${id}`;
       }
 
-      // - We use "Object Rest Spread" operator here,
-      // - to omit unnecessary data before sending to API
-      const {
-        user,
-        beneficiaries,
-        technicians,
-        materials,
-        ...saveData
-      } = this.event;
+      const saveData = pick(this.event, [
+        'title',
+        'start_date',
+        'end_date',
+        'location',
+        'description',
+        'is_billable',
+        'is_confirmed',
+      ]);
 
       const postData = {
         ...saveData,

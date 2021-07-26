@@ -58,8 +58,8 @@ export default {
       event: {
         id: this.$route.params.id || null,
         title: '',
-        start_date: this.$route.query.startDate || '',
-        end_date: '',
+        start_date: this.$route.query.atDate || '',
+        end_date: this.$route.query.atDate || '',
         location: '',
         description: '',
         is_confirmed: false,

@@ -20,7 +20,7 @@ import MaterialUnit from '@/pages/MaterialUnit/MaterialUnit.vue';
 import MaterialView from '@/pages/MaterialView/MaterialView.vue';
 import Attributes from '@/pages/Attributes/Attributes.vue';
 import Tags from '@/pages/Tags/Tags.vue';
-import Technicians from '@/pages/Technicians/Technicians.vue';
+import Technicians from '@/pages/Technicians';
 import Technician from '@/pages/Technician/Technician.vue';
 import TechnicianView from '@/pages/TechnicianView';
 import Categories from '@/pages/Categories/Categories.vue';

@@ -218,7 +218,6 @@ export default {
     'confirm-permanently-delete': "Voulez-vous vraiment supprimer définitivement ce matériel\u00a0?",
     'confirm-restore': "Voulez-vous vraiment restaurer ce matériel\u00a0?",
     'saved': "Matériel sauvegardé.",
-    'clear-filters': "Réinitialiser les filtres",
     'print-complete-list': "Imprimer la liste complète du matériel",
   },
 
@@ -338,6 +337,7 @@ export default {
     'confirm-permanently-delete': "Voulez-vous vraiment supprimer définitivement ce technicien\u00a0?",
     'confirm-restore': "Voulez-vous vraiment restaurer ce technicien\u00a0?",
     'saved': "Technicien sauvegardé.",
+    'period-of-availability': "Période de disponibilité",
   },
 
   'page-technician-view': {

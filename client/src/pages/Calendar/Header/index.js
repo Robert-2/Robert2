@@ -10,9 +10,6 @@ export default {
   data() {
     return {
       centerDate: '',
-      datepickerOptions: {
-        format: 'd MMMM yyyy',
-      },
       filters: {
         park: this.$route.query.park || '',
         hasMissingMaterials: false,

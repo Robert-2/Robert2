@@ -46,6 +46,7 @@ export default {
   'cancel-add-item': "Annuler l'ajout de {item}",
   'item-not-found': "{item} introuvable. Peut-être a-t-il été supprimé\u00a0?",
   'locked': "verrouillé",
+  'clear-filters': "Réinitialiser les filtres",
 
   'save': "Sauvegarder",
   'save-draft': "Sauvegarder le brouillon",
@@ -133,6 +134,8 @@ export default {
 
   'event-details': "Détails de l'événement",
   'title': "Titre",
+  'dates': "Dates",
+  'start-end-dates': "Dates de début et fin",
   'start-date': "Date de début",
   'end-date': "Date de fin",
   'location': "Lieu",
@@ -141,6 +144,7 @@ export default {
     "Durée {duration} jour",
     "Durée {duration} jours",
   ],
+  'please-choose-dates': "Veuillez choisir les dates",
   'confirmed': "Confirmé",
   'not-confirmed': "Non confirmé",
   'is-billable': "Est facturable\u00a0?",

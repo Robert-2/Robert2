@@ -217,7 +217,6 @@ export default {
     'confirm-permanently-delete': "Do you really want to permanently delete this material?",
     'confirm-restore': "Do you really want to restore this material?",
     'saved': "Material saved.",
-    'clear-filters': "Clear filters",
     'print-complete-list': "Print the complete materials list",
   },
 
@@ -337,6 +336,7 @@ export default {
     'confirm-permanently-delete': "Do you really want to permanently delete this technician?",
     'confirm-restore': "Do you really want to restore this technician?",
     'saved': "Technician saved.",
+    'period-of-availability': "Period of availability",
   },
 
   'page-technician-view': {

@@ -9,36 +9,36 @@ final class TagsTest extends ApiTestCase
         $this->assertStatusCode(SUCCESS_OK);
         $this->assertResponseData([
             'pagination' => [
-                'current_page'   => 1,
-                'from'           => 1,
-                'last_page'      => 1,
-                'path'           => '/api/tags',
+                'current_page' => 1,
+                'from' => 1,
+                'last_page' => 1,
+                'path' => '/api/tags',
                 'first_page_url' => '/api/tags?page=1',
-                'next_page_url'  => null,
-                'prev_page_url'  => null,
-                'last_page_url'  => '/api/tags?page=1',
-                'per_page'       => $this->settings['maxItemsPerPage'],
-                'to'             => 3,
-                'total'          => 3,
+                'next_page_url' => null,
+                'prev_page_url' => null,
+                'last_page_url' => '/api/tags?page=1',
+                'per_page' => $this->settings['maxItemsPerPage'],
+                'to' => 3,
+                'total' => 3,
             ],
             'data' => [
                 [
-                    'id'         => 2,
-                    'name'       => 'customers',
+                    'id' => 2,
+                    'name' => 'Beneficiary',
                     'created_at' => null,
                     'updated_at' => null,
                     'deleted_at' => null,
                 ],
                 [
-                    'id'         => 3,
-                    'name'       => 'pro',
+                    'id' => 3,
+                    'name' => 'pro',
                     'created_at' => null,
                     'updated_at' => null,
                     'deleted_at' => null,
                 ],
                 [
-                    'id'         => 1,
-                    'name'       => 'tag 01',
+                    'id' => 1,
+                    'name' => 'Technician',
                     'created_at' => null,
                     'updated_at' => null,
                     'deleted_at' => null,
@@ -73,7 +73,7 @@ final class TagsTest extends ApiTestCase
 
     public function testCreateTagDuplicate()
     {
-        $this->client->post('/api/tags', ['name' => 'customers']);
+        $this->client->post('/api/tags', ['name' => 'Beneficiary']);
         $this->assertStatusCode(ERROR_DUPLICATE);
         $this->assertValidationErrorMessage();
     }

@@ -163,7 +163,6 @@
                 :label="extraAttribute.name"
                 :addon="extraAttribute.unit"
                 :type="getAttributeType(extraAttribute.type)"
-                :datepickerOptions="{ format: 'dd/MM/yyyy' }"
                 @change="handleAttributeChange"
               />
             </div>

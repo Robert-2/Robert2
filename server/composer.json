@@ -38,10 +38,10 @@
         "delfimov/translate": "2.6.0",
         "dompdf/dompdf": "1.0.2",
         "firebase/php-jwt": "5.4.0",
-        "illuminate/database": "8.49.2",
-        "illuminate/pagination": "8.49.2",
+        "illuminate/database": "8.51.0",
+        "illuminate/pagination": "8.51.0",
         "jasig/phpcas": "1.4.0",
-        "monolog/monolog": "2.3.0",
+        "monolog/monolog": "2.3.2",
         "php-di/php-di": "6.3.4",
         "ramsey/uuid": "4.1.1",
         "respect/validation": "1.1.31",
@@ -51,14 +51,14 @@
         "slim/psr7": "1.4.0",
         "slim/slim": "4.8.1",
         "slim/twig-view": "3.2.0",
-        "twig/html-extra": "^3.3",
+        "twig/html-extra": "3.3.0",
         "twig/intl-extra": "3.3.0",
         "twig/string-extra": "3.3.1",
         "vlucas/phpdotenv": "5.3.0"
     },
     "require-dev": {
         "ifsnop/mysqldump-php": "2.9.0",
-        "phpunit/phpunit": "9.5.6",
+        "phpunit/phpunit": "9.5.7",
         "squizlabs/php_codesniffer": "3.6.0"
     },
     "autoload": {

@@ -7,7 +7,6 @@
           name="centerDate"
           label="page-calendar.center-on"
           type="date"
-          :datepicker-options="datepickerOptions"
           @change="setCenterDate"
         />
       </div>

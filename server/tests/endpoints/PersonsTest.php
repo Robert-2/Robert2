@@ -275,8 +275,8 @@ final class PersonsTest extends ApiTestCase
         $this->client->get('/api/persons/2/tags');
         $this->assertStatusCode(SUCCESS_OK);
         $this->assertResponseData([
-            ['id' => 1, 'name' => 'tag 01'],
-            ['id' => 2, 'name' => 'customers'],
+            ['id' => 1, 'name' => 'Technician'],
+            ['id' => 2, 'name' => 'Beneficiary'],
         ]);
     }
 
@@ -305,9 +305,9 @@ final class PersonsTest extends ApiTestCase
 
     public function testGetPersonsByTags()
     {
-        $this->client->get('/api/persons?tags[0]=customers');
+        $this->client->get('/api/persons?tags[0]=Technician');
         $this->assertStatusCode(SUCCESS_OK);
-        $pagesUrl = '/api/persons?tags%5B0%5D=customers&page=1';
+        $pagesUrl = '/api/persons?tags%5B0%5D=Technician&page=1';
         $this->assertResponseData([
             'pagination' => [
                 'current_page' => 1,

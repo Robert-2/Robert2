@@ -1,33 +1,19 @@
 import './index.scss';
-import moment from 'moment';
-import Datepicker from 'vuejs-datepicker';
-import * as lang from 'vuejs-datepicker/src/locale';
+import Datepicker from '@/components/Datepicker';
 
 export default {
   name: 'PromptDate',
   props: {
     title: String,
     defaultDate: [String, Date],
-    format: String,
     placeholder: String,
   },
   data() {
-    const { locale } = this.$store.state.i18n;
-
     return {
       currentDate: this.defaultDate,
-      datepickerLang: lang[locale],
     };
   },
   methods: {
-    formatDate(date) {
-      return this.format || moment(date).format('LL');
-    },
-
-    handleChange(newDate) {
-      this.currentDate = newDate;
-    },
-
     handleSubmit() {
       this.$emit('close', { date: this.currentDate });
     },
@@ -37,17 +23,8 @@ export default {
     },
   },
   render() {
-    const {
-      $t: __,
-      title,
-      currentDate,
-      datepickerLang,
-      formatDate,
-      placeholder,
-      handleChange,
-      handleSubmit,
-      handleClose,
-    } = this;
+    const { $props, $t: __, handleSubmit, handleClose } = this;
+    const { title, placeholder } = $props;
 
     return (
       <div class="PromptDate">
@@ -61,14 +38,9 @@ export default {
         </div>
         <div class="PromptDate__main">
           <Datepicker
-            value={currentDate}
-            language={datepickerLang}
-            format={formatDate}
-            placeholder={__(placeholder)}
+            v-model={this.currentDate}
+            placeholder={placeholder}
             class="PromptDate__datepicker"
-            input-class="PromptDate__datepicker__input"
-            monday-first
-            onInput={handleChange}
           />
         </div>
         <hr class="PromptDate__separator" />

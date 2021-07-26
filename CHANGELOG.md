@@ -8,6 +8,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 
 - Ajoute une page qui affiche les informations d'un technicien (#188).
 - Ajoute un onglet "Agenda" dans la page des techniciens qui montre un calendrier avec toutes les assignations du technicien (#188).
+- Ajoute un filtre dans la liste des techniciens permettant de n'afficher que ceux qui sont disponibles dans une période donnée (#189).
 
 ## 0.14.2-premium (2021-07-09)
 

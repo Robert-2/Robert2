@@ -1,7 +1,6 @@
 import './index.scss';
-import Datepicker from 'vuejs-datepicker';
 import moment from 'moment';
-import * as lang from 'vuejs-datepicker/src/locale';
+import Datepicker from '@/components/Datepicker';
 import SwitchToggle from '@/components/SwitchToggle';
 
 const ALLOWED_TYPES = [
@@ -29,7 +28,7 @@ export default {
     disabled: Boolean,
     disabledReason: String,
     placeholder: String,
-    value: [String, Number, Date, Boolean],
+    value: [String, Number, Date, Array, Boolean],
     step: Number,
     min: Number,
     max: Number,
@@ -39,10 +38,7 @@ export default {
     datepickerOptions: Object,
   },
   data() {
-    const { locale } = this.$store.state.i18n;
-
     return {
-      datepickerLang: lang[locale],
       renderKey: 1,
     };
   },
@@ -89,7 +85,6 @@ export default {
       step,
       min,
       max,
-      datepickerLang,
       datepickerOptions,
       handleInput,
       handleChange,
@@ -159,14 +154,12 @@ export default {
         )}
         {type === 'date' && (
           <Datepicker
-            value={value}
-            language={datepickerLang}
-            format={datepickerOptions.format}
-            disabled-dates={datepickerOptions.disabled}
+            value={typeof value === 'string' ? moment(value).toDate() : value}
+            displayFormat={datepickerOptions?.format}
+            disabledDates={datepickerOptions?.disabled}
+            isRange={datepickerOptions?.isRange}
             placeholder={__(placeholder)}
             class="FormField__datepicker"
-            input-class="FormField__datepicker__input"
-            monday-first
             onInput={handleDatepickerChange}
           />
         )}
