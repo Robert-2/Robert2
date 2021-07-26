@@ -49,13 +49,13 @@ export default {
     return (
       <div class="MonthCalendar">
         <header class="MonthCalendar__header">
-          <button class="info" vTooltip={__('previous-month')} onClick={handlePrevMonthClick}>
+          <button class="info" v-tooltip={__('previous-month')} onClick={handlePrevMonthClick}>
             <i class="fas fa-arrow-left" />
           </button>
           <span class="MonthCalendar__header__current-month">
             {currentMonth}
           </span>
-          <button class="info" vTooltip={__('next-month')} onClick={handleNextMonthClick}>
+          <button class="info" v-tooltip={__('next-month')} onClick={handleNextMonthClick}>
             <i class="fas fa-arrow-right" />
           </button>
           {withTotal && (

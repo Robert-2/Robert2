@@ -71,6 +71,7 @@ export default {
         formatter={formatter}
         format={withTime ? `${displayFormat} HH:mm` : displayFormat}
         disabledDate={getDisabledDates}
+        rangeSeparator=" ⇒ "
       />
     );
   },

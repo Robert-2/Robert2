@@ -27,7 +27,7 @@ class TechnicianController extends BaseController
         $startDate = $request->getQueryParam('startDate', null);
         $endDate = $request->getQueryParam('endDate', null);
 
-        $technicianTag = Config::getSettings('defaultTags')['technician'];
+        $technicianTag = $this->container->get('settings')['defaultTags']['technician'];
 
         $builder = (new Person())
             ->setOrderBy($orderBy, $ascending)

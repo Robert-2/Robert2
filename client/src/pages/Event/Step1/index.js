@@ -45,7 +45,7 @@ export default {
         return;
       }
 
-      const { start_date: startDate = null, end_date: endDate = null } = this.$props.event;
+      const { start_date: startDate = null, end_date: endDate = null } = this.event;
       if (!startDate || !endDate) {
         return;
       }

@@ -38,7 +38,7 @@ export default {
         </div>
         <div class="PromptDate__main">
           <Datepicker
-            vModel={this.currentDate}
+            v-model={this.currentDate}
             placeholder={placeholder}
             class="PromptDate__datepicker"
           />

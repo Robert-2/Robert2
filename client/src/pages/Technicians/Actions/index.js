@@ -3,27 +3,25 @@ export default {
   props: {
     id: { type: Number, required: true },
     isTrashMode: Boolean,
-    remove: Function,
-    restore: Function,
   },
   render() {
     const { $t: __, $props } = this;
-    const { isTrashMode, id, remove, restore } = $props;
+    const { isTrashMode, id } = $props;
 
     if (isTrashMode) {
       return (
         <div>
           <button
-            vTooltip={__('action-restore')}
+            v-tooltip={__('action-restore')}
             class="item-actions__button info"
-            onClick={restore(id)}
+            onClick={() => { this.$emit('restore', id); }}
           >
             <i class="fas fa-trash-restore" />
           </button>
           <button
             v-tooltip={__('action-delete')}
             class="item-actions__button danger"
-            onClick={remove(id)}
+            onClick={() => { this.$emit('remove', id); }}
           >
             <i class="fas fa-trash-alt" />
           </button>
@@ -34,31 +32,23 @@ export default {
     return (
       <div>
         <router-link
-          vTooltip={__('action-view')}
+          v-tooltip={__('action-view')}
           to={`/technicians/${id}/view#infos`}
-          custom
+          class="button success item-actions__button"
         >
-          {({ navigate }) => (
-            <button onClick={navigate} class="item-actions__button success">
-              <i class="fas fa-eye" />
-            </button>
-          )}
+          <i class="fas fa-eye" />
         </router-link>
         <router-link
-          vTooltip={__('action-edit')}
+          v-tooltip={__('action-edit')}
           to={`/technicians/${id}`}
-          custom
+          class="button info item-actions__button"
         >
-          {({ navigate }) => (
-            <button onClick={navigate} class="item-actions__button info">
-              <i class="fas fa-edit" />
-            </button>
-          )}
+          <i class="fas fa-edit" />
         </router-link>
         <button
-          vTooltip={__('action-trash')}
+          v-tooltip={__('action-trash')}
           class="item-actions__button warning"
-          onClick={remove(id)}
+          onClick={() => { this.$emit('remove', id); }}
         >
           <i class="fas fa-trash" />
         </button>

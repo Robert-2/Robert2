@@ -80,47 +80,43 @@ export default {
     };
   },
   methods: {
-    remove(id) {
-      return async () => {
-        const isSoft = !this.isTrashDisplayed;
-        const { value } = await Alert.ConfirmDelete(this.$t, 'technicians', isSoft);
-        if (!value) {
-          return;
-        }
+    async handleRemove(id) {
+      const isSoft = !this.isTrashDisplayed;
+      const { value: isConfirmed } = await Alert.ConfirmDelete(this.$t, 'technicians', isSoft);
+      if (!isConfirmed) {
+        return;
+      }
 
-        this.error = null;
-        this.isLoading = true;
+      this.error = null;
+      this.isLoading = true;
 
-        try {
-          await this.$http.delete(`${this.$route.meta.resource}/${id}`);
-          this.refreshTable();
-        } catch (error) {
-          this.error = error;
-        } finally {
-          this.isLoading = false;
-        }
-      };
+      try {
+        await this.$http.delete(`${this.$route.meta.resource}/${id}`);
+        this.refreshTable();
+      } catch (error) {
+        this.error = error;
+      } finally {
+        this.isLoading = false;
+      }
     },
 
-    restore(id) {
-      return async () => {
-        const { value } = await Alert.ConfirmRestore(this.$t, 'technicians');
-        if (!value) {
-          return;
-        }
+    async handleRestore(id) {
+      const { value: isConfirmed } = await Alert.ConfirmRestore(this.$t, 'technicians');
+      if (!isConfirmed) {
+        return;
+      }
 
-        this.error = null;
-        this.isLoading = true;
+      this.error = null;
+      this.isLoading = true;
 
-        try {
-          await this.$http.put(`${this.$route.meta.resource}/restore/${id}`);
-          this.refreshTable();
-        } catch (error) {
-          this.error = error;
-        } finally {
-          this.isLoading = false;
-        }
-      };
+      try {
+        await this.$http.put(`${this.$route.meta.resource}/restore/${id}`);
+        this.refreshTable();
+      } catch (error) {
+        this.error = error;
+      } finally {
+        this.isLoading = false;
+      }
     },
 
     refreshTable() {
@@ -157,8 +153,8 @@ export default {
       isLoading,
       columns,
       options,
-      restore,
-      remove,
+      handleRestore,
+      handleRemove,
       periodFilter,
       clearFilters,
       isTrashDisplayed,
@@ -166,20 +162,9 @@ export default {
     } = this;
 
     const headerActions = [
-      <router-link to="/technicians/new" custom>
-        {({ navigate }) => (
-          <button onClick={navigate} class="Technicians__create success">
-            <i class="fas fa-user-plus" /> {__('page-technicians.action-add')}
-          </button>
-        )}
+      <router-link to="/technicians/new" class="button success">
+        <i class="fas fa-user-plus" /> {__('page-technicians.action-add')}
       </router-link>,
-    ];
-
-    const footerActions = [
-      <button class={isTrashDisplayed ? 'info' : 'warning'} onClick={showTrashed}>
-        <i class={['fas', { 'fa-trash': !isTrashDisplayed, 'fa-eye"': isTrashDisplayed }]} />{' '}
-        {isTrashDisplayed ? __('display-not-deleted-items') : __('open-trash-bin')}
-      </button>,
     ];
 
     return (
@@ -190,18 +175,17 @@ export default {
         error={error}
         isLoading={isLoading}
         actions={headerActions}
-        footerActions={footerActions}
       >
         <div class="Technicians__filters">
           <Datepicker
-            vModel={this.periodFilter}
+            v-model={this.periodFilter}
             isRange
             placeholder={__('page-technicians.period-of-availability')}
           />
           {periodFilter && (
             <button
               class="Technicians__filters__clear-button warning"
-              vTooltip={__('clear-filters')}
+              v-tooltip={__('clear-filters')}
               onClick={clearFilters}
             >
               <i class="fas fa-backspace" />
@@ -225,12 +209,18 @@ export default {
               <ItemActions
                 isTrashMode={isTrashDisplayed}
                 id={row.id}
-                remove={remove}
-                restore={restore}
+                onRemove={handleRemove}
+                onRestore={handleRestore}
               />
             ),
           }}
         />
+        <div class="content__footer">
+          <button class={isTrashDisplayed ? 'info' : 'warning'} onClick={showTrashed}>
+            <i class={['fas', { 'fa-trash': !isTrashDisplayed, 'fa-eye"': isTrashDisplayed }]} />{' '}
+            {isTrashDisplayed ? __('display-not-deleted-items') : __('open-trash-bin')}
+          </button>
+        </div>
       </Page>
     );
   },
