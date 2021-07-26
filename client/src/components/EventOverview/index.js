@@ -2,7 +2,7 @@ import moment from 'moment';
 import { Tabs, Tab } from 'vue-slim-tabs';
 import Config from '@/config/globalConfig';
 import getDiscountRateFromLast from '@/utils/getDiscountRateFromLast';
-import formatEventTechnicians from '@/utils/formatEventTechnicians';
+import formatEventTechniciansList from '@/utils/formatEventTechniciansList';
 import Alert from '@/components/Alert';
 import Help from '@/components/Help/Help.vue';
 import EventMaterials from '@/components/EventMaterials';
@@ -49,7 +49,7 @@ export default {
     },
 
     technicians() {
-      return formatEventTechnicians(this.event.technicians);
+      return formatEventTechniciansList(this.event.technicians);
     },
 
     hasMaterials() {

@@ -16,6 +16,7 @@ return [
         '/persons/{id:[0-9]+}/tags[/]' => 'PersonController:getTags',
         '/technicians[/]' => 'TechnicianController:getAll',
         '/technicians/{id:[0-9]+}/events[/]' => 'TechnicianController:getEvents',
+        '/technicians/while-event/{eventId:[0-9]+}[/]' => 'TechnicianController:getAllWhileEvent',
         '/countries[/]' => 'CountryController:getAll',
         '/countries/{id:[0-9]+}[/]' => 'CountryController:getOne',
         '/companies[/]' => 'CompanyController:getAll',
@@ -56,6 +57,7 @@ return [
         '/events/{id:[0-9]+}/duplicate[/]' => 'EventController:duplicate',
         '/events/{eventId:[0-9]+}/bill[/]' => 'BillController:create',
         '/events/{eventId:[0-9]+}/estimate[/]' => 'EstimateController:create',
+        '/events/{id:[0-9]+}/technician/{technicianId:[0-9]+}[/]' => 'EventController:assignTechnician',
     ],
     'put' => [
         '/users/{id:[0-9]+}[/]' => 'UserController:update',

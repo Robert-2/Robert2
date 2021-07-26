@@ -1,7 +1,7 @@
 import moment from 'moment';
 
-const formatTechnicianEvent = (technicianEvent) => {
-  const { id, start_time: start, end_time: end, position, event } = technicianEvent;
+const formatEventTechnician = (eventTechnician) => {
+  const { id, start_time: start, end_time: end, position, event } = eventTechnician;
   const { title: eventTitle } = event;
 
   let title = eventTitle;
@@ -22,4 +22,4 @@ const formatTechnicianEvent = (technicianEvent) => {
   return { id, start, end, title };
 };
 
-export default formatTechnicianEvent;
+export default formatEventTechnician;

@@ -71,19 +71,27 @@ export default {
       },
     };
   },
+  computed: {
+    isNew() {
+      const { id } = this.event;
+      return !id || id === 'new';
+    },
+  },
   mounted() {
     this.getEventData();
     EventStore.commit('reset');
   },
   methods: {
     getEventData() {
-      const { id } = this.event;
-      if (!id || id === 'new') {
+      if (this.isNew) {
         return;
       }
 
       this.startLoading();
+
+      const { id } = this.event;
       const { resource } = this.$route.meta;
+
       this.$http.get(`${resource}/${id}`)
         .then(({ data }) => {
           this.setEventData(data, { from: 'get' });

@@ -1,28 +1,112 @@
 import './index.scss';
-import Config from '@/config/globalConfig';
-import MultipleItem from '@/components/MultipleItem/MultipleItem.vue';
+import moment from 'moment';
+import { TECHNICIAN_EVENT_STEP, TECHNICIAN_EVENT_MIN_DURATION } from '@/config/constants';
+import CriticalError from '@/components/CriticalError';
+import Loading from '@/components/Loading';
+import Timeline from '@/components/Timeline';
 import getPersonItemLabel from '@/utils/getPersonItemLabel';
-import formatOptions from '@/utils/formatOptions';
+import formatEventTechnician from '@/utils/formatEventTechnician';
 import EventStore from '../EventStore';
+import Modal from './Modal';
+
+const getClosestStepTime = (requestedTime, roundMethod = 'floor') => {
+  const time = moment(requestedTime).startOf('minute');
+  return moment(Math[roundMethod]((+time) / (+TECHNICIAN_EVENT_STEP)) * (+TECHNICIAN_EVENT_STEP));
+};
 
 const EventStep3 = {
   name: 'EventStep3',
-  props: ['event'],
+  props: {
+    event: Object,
+  },
   data() {
-    const { technicians } = this.event;
-
     return {
-      technicians: technicians.map(({ position, technician }) => (
-        { ...technician, pivot: { position } }
-      )),
-      techniciansIds: technicians.map(({ technician }) => technician.id),
-      techniciansPositions: technicians.map((eventTechnician) => eventTechnician.position),
-      fetchParams: { tags: [Config.technicianTagName] },
-      errors: {},
+      technicians: null,
+      isLoading: false,
+      isModalOpened: false,
+      hasCriticalError: false,
     };
+  },
+  computed: {
+    techniciansCount() {
+      return this.technicians?.length || 0;
+    },
+
+    groups() {
+      if (this.techniciansCount === 0) {
+        return null;
+      }
+
+      return this.technicians.map(
+        (technician) => ({
+          id: technician.id,
+          content: getPersonItemLabel(technician),
+        }),
+      );
+    },
+
+    events() {
+      if (this.technicians === null) {
+        return null;
+      }
+
+      const eventSlots = (this.event?.technicians ?? []).map(
+        (eventTechnician) => {
+          const { technician_id: technicianId } = eventTechnician;
+          const { id, start, end, title: content } = formatEventTechnician(
+            { ...eventTechnician, event: this.event },
+          );
+
+          return {
+            id,
+            start,
+            end,
+            content,
+            group: technicianId,
+            editable: true,
+            type: 'range',
+          };
+        },
+      );
+
+      const otherSlots = this.technicians.map((technician) => (
+        (technician?.events ?? []).map((eventTechnician) => {
+          const { id, start, end, title: content } = formatEventTechnician(eventTechnician);
+
+          return {
+            id,
+            start,
+            end,
+            content,
+            group: technician.id,
+            editable: false,
+            type: 'background',
+          };
+        })
+      ));
+
+      return [...eventSlots, ...otherSlots.flat()];
+    },
+
+    timelineOptions() {
+      const { start_date: startDate, end_date: endDate } = this.event;
+
+      return {
+        min: startDate,
+        max: endDate,
+        showCurrentTime: false,
+        margin: { axis: 0 },
+        type: 'background',
+        zoomMin: 1000 * 3600, // 1h
+        selectable: true,
+        orientation: this.techniciansCount >= 15 ? 'both' : 'top',
+      };
+    },
   },
   mounted() {
     EventStore.commit('setIsSaved', true);
+
+    this.fetchAllTechnicians();
   },
   methods: {
     // ------------------------------------------------------
@@ -31,134 +115,199 @@ const EventStep3 = {
     // -
     // ------------------------------------------------------
 
-    handleSubmit(e) {
-      e.preventDefault();
+    handleDoubleClick(e) {
+      // - On évite le double-call à cause d'un bug qui trigger l'event en double.
+      // - @see visjs bug here: https://github.com/visjs/vis-timeline/issues/301)
+      if (this.isModalOpened) {
+        return;
+      }
 
-      this.save({ gotoStep: 4 });
+      //
+      // - Édition d'une assignation
+      //
+      const eventTechnician = (e.item && (this.event?.technicians ?? [])
+        .find(({ id }) => id === e.item)) ?? undefined;
+      if (eventTechnician !== undefined) {
+        this.openModal(eventTechnician.id);
+        return;
+      }
+
+      //
+      // - Création d'une assignation
+      //
+
+      if (!e.group || !e.time) {
+        return;
+      }
+
+      const technician = this.technicians.find(({ id }) => id === e.group);
+      if (technician === undefined) {
+        return;
+      }
+
+      const requestedTime = getClosestStepTime(e.time);
+      let time = requestedTime.clone();
+      const isRequestedTimeAvailable = !(technician?.events ?? []).some(
+        ({ start_time: start, end_time: end }) => {
+          if (requestedTime.isBetween(start, end, undefined, '[)')) {
+            return true;
+          }
+
+          // - Si l'heure demandée est trop proche de l'événement suivant pour pouvoir y caser
+          //   la durée min. d'un événement, on décale l'heure pour que ça rentre.
+          const startTimeOffset = moment(start).subtract(TECHNICIAN_EVENT_MIN_DURATION);
+          if (requestedTime.isBetween(startTimeOffset, start, undefined, '[]') && time.isAfter(startTimeOffset)) {
+            time = startTimeOffset;
+          }
+
+          return false;
+        },
+      );
+      if (!isRequestedTimeAvailable) {
+        return;
+      }
+
+      // - On vérifie que l'heure ajustée est bien disponible.
+      if (!requestedTime.isSame(time)) {
+        const isAdjustedTimeAvailable = !(technician?.events ?? []).some(
+          ({ start_time: start, end_time: end }) => {
+            const startTimeOffset = moment(start).subtract(TECHNICIAN_EVENT_MIN_DURATION);
+            return time.isBetween(startTimeOffset, end, undefined, '()');
+          },
+        );
+        if (!isAdjustedTimeAvailable) {
+          return;
+        }
+      }
+
+      this.openModal({
+        technician,
+        eventId: this.event.id,
+        startTime: time.format('YYYY-MM-DD HH:mm:ss'),
+      });
     },
 
-    handleSubmitNext(e) {
-      e.preventDefault();
-
-      this.save({ gotoStep: 4 });
+    handleBackToCalendarClick() {
+      this.$router.push('/');
     },
 
-    handleUpdatedItems(ids) {
-      this.techniciansIds = ids;
-
-      const savedList = this.event.technicians.map(({ technician }) => technician.id);
-      const listDifference = ids
-        .filter((id) => !savedList.includes(id))
-        .concat(savedList.filter((id) => !ids.includes(id)));
-
-      EventStore.commit('setIsSaved', listDifference.length === 0);
-    },
-
-    handleUpdatedPositions(positions) {
-      this.techniciansPositions = positions;
-
-      const savedList = this.event.technicians.map((eventTechnician) => eventTechnician.position);
-      const listDifference = positions
-        .filter((position) => !savedList.includes(position))
-        .concat(savedList.filter((position) => !positions.includes(position)));
-
-      EventStore.commit('setIsSaved', listDifference.length === 0);
+    handleNextClick() {
+      this.$emit('gotoStep', 4);
     },
 
     // ------------------------------------------------------
     // -
-    // -    Internal
+    // -    Methods
     // -
     // ------------------------------------------------------
 
-    formatItemOptions(data) {
-      return formatOptions(data, getPersonItemLabel);
-    },
+    async fetchAllTechnicians() {
+      this.isLoading = true;
 
-    getItemLabel(itemData) {
-      return getPersonItemLabel(itemData);
-    },
-
-    displayError(error) {
-      this.$emit('error', error);
-
-      const { code, details } = error.response?.data?.error || { code: 0, details: {} };
-      if (code === 400) {
-        this.errors = { ...details };
+      try {
+        const { data } = await this.$http.get(`technicians/while-event/${this.event.id}`);
+        this.technicians = data;
+      } catch {
+        this.hasCriticalError = true;
+      } finally {
+        this.isLoading = false;
       }
     },
 
-    save(options) {
-      this.$emit('loading');
-      const { id, start_date: startDate, end_date: endDate } = this.event;
-      const { resource } = this.$route.meta;
+    async updateEvent() {
+      try {
+        const { data } = await this.$http.get(`events/${this.event.id}`);
+        this.$emit('updateEvent', data, { save: true });
+      } catch {
+        this.hasCriticalError = true;
+      } finally {
+        this.isLoading = false;
+      }
+    },
 
-      const technicians = this.techniciansIds.map((technicianId, index) => ({
-        id: technicianId,
-        start_time: startDate,
-        end_time: endDate,
-        position: this.techniciansPositions[index],
-      }));
+    openModal(data) {
+      const { start_date: start, end_date: end } = this.event;
+      const eventDates = { start, end };
 
-      this.$http.put(`${resource}/${id}`, { technicians })
-        .then(({ data }) => {
-          const { gotoStep } = options;
-          if (!gotoStep) {
-            this.$router.push('/');
-            return;
-          }
-          EventStore.commit('setIsSaved', true);
-          this.$emit('updateEvent', data);
-          this.$emit('gotoStep', gotoStep);
-        })
-        .catch(this.displayError);
+      this.isModalOpened = true;
+      this.$modal.show(Modal, { data, eventDates }, { clickToClose: false, width: 600 }, {
+        'before-close': () => {
+          this.isLoading = true;
+          this.isModalOpened = false;
+          this.updateEvent();
+        },
+      });
     },
   },
   render() {
     const {
       $t: __,
-      technicians,
-      fetchParams,
-      formatItemOptions,
-      getItemLabel,
-      handleSubmit,
-      handleSubmitNext,
-      handleUpdatedItems,
-      handleUpdatedPositions,
+      isLoading,
+      hasCriticalError,
+      events,
+      techniciansCount,
+      groups,
+      timelineOptions,
+      handleNextClick,
+      handleDoubleClick,
+      handleBackToCalendarClick,
     } = this;
 
+    const renderContent = () => {
+      if (hasCriticalError) {
+        return <CriticalError />;
+      }
+
+      if (techniciansCount === 0 && !isLoading) {
+        return (
+          <div class="EventStep3__no-technician">
+            <p class="EventStep3__no-technician__message">
+              {__('page-events.no-technician-pass-this-step')}
+            </p>
+            <button type="button" class="success" onClick={handleNextClick}>
+              {__('page-events.continue')} <i class="fas fa-arrow-right" />
+            </button>
+          </div>
+        );
+      }
+
+      return (
+        <Timeline
+          class="EventStep3__timeline"
+          items={events}
+          groups={groups}
+          options={timelineOptions}
+          onDoubleClick={handleDoubleClick}
+          // TODO: Prendre charge la suppression des slots technicien pour l'événement en cours.
+          // TODO: Afficher la tooltip avec les données du slot (utile pour les petits slots).
+          // TODO: Prendre en charge le resizing
+          // TODO: Prendre en charge le déplacement
+        />
+      );
+    };
+
     return (
-      <form class="Form EventStep3" method="POST" onSubmit={handleSubmit}>
-        <section class="Form__fieldset">
-          <h4 class="Form__fieldset__title">
-            {__('page-events.event-technicians')}
-          </h4>
-          <MultipleItem
-            label="technician"
-            field="full_name"
-            fetchEntity="persons"
-            fetchParams={fetchParams}
-            selectedItems={technicians}
-            createItemPath="/technicians/new"
-            formatOptions={formatItemOptions}
-            getItemLabel={getItemLabel}
-            pivotField="position"
-            pivotPlaceholder={__('position-held')}
-            onItemsUpdated={handleUpdatedItems}
-            onPivotsUpdated={handleUpdatedPositions}
-          />
-        </section>
-        <section class="Form__actions">
-          <button class="EventStep3__save-btn info" type="submit">
-            <i class="fas fa-arrow-left" />
+      <div class="EventStep3">
+        <header class="EventStep3__header">
+          <h1 class="EventStep3__title">{__('page-events.event-technicians')}</h1>
+          {isLoading && <Loading horizontal />}
+        </header>
+        <div class="EventStep3__content">
+          {renderContent()}
+        </div>
+        <section class="EventStep3__footer">
+          <button type="button" class="info" onClick={handleBackToCalendarClick}>
+            <i class="fas fa-arrow-left" />{' '}
             {__('page-events.save-and-back-to-calendar')}
           </button>
-          <button class="EventStep3__save-btn success" onClick={handleSubmitNext}>
-            {__('page-events.save-and-continue')}
-            <i class="fas fa-arrow-right" />
-          </button>
+          {!isLoading && techniciansCount > 0 && (
+            <button type="button" class="success" onClick={handleNextClick}>
+              {__('page-events.save-and-continue')}{' '}
+              <i class="fas fa-arrow-right" />
+            </button>
+          )}
         </section>
-      </form>
+      </div>
     );
   },
 };

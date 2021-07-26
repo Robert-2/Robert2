@@ -3,13 +3,15 @@ declare(strict_types=1);
 
 namespace Robert2\API\Controllers;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Robert2\API\Controllers\Traits\WithCrud;
 use Robert2\API\Controllers\Traits\WithPdf;
+use Robert2\API\Errors\ValidationException;
 use Robert2\API\Models\Event;
+use Robert2\API\Models\EventTechnician;
 use Robert2\API\Models\Material;
 use Robert2\API\Models\Park;
-use Robert2\API\Errors\ValidationException;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Robert2\API\Models\Person;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
 use Slim\Http\ServerRequest as Request;
@@ -166,6 +168,32 @@ class EventController extends BaseController
         $this->_setBrokenMaterialsQuantities($data);
 
         return $response->withJson($this->_getFormattedEvent($id), SUCCESS_OK);
+    }
+
+    public function assignTechnician(Request $request, Response $response): Response
+    {
+        $id = (int)$request->getAttribute('id');
+        if (!Event::staticExists($id)) {
+            throw new HttpNotFoundException($request);
+        }
+
+        $technicianId = (int)$request->getAttribute('technicianId');
+        if (!Person::staticExists($technicianId)) {
+            throw new HttpNotFoundException($request);
+        }
+
+        $postData = (array)$request->getParsedBody();
+        $eventTechnician = new EventTechnician([
+            'event_id' => $id,
+            'technician_id' => $technicianId,
+            'start_time' => $postData['start'],
+            'end_time' => $postData['end'],
+            'position' => $postData['position'],
+        ]);
+
+        $eventTechnician->validate()->save();
+
+        return $response->withJson(['success' => true], SUCCESS_OK);
     }
 
     // ——————————————————————————————————————————————————————

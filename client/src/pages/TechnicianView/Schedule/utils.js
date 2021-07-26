@@ -1,10 +1,10 @@
 /* eslint-disable import/prefer-default-export */
 
 import moment from 'moment';
-import formatTechnicianEventBase from '@/utils/formatTechnicianEvent';
+import formatEventTechnician from '@/utils/formatEventTechnician';
 
 export const formatTechnicianEvent = (technicianEvent) => {
-  const { id, title, start: startDate, end: endDate } = formatTechnicianEventBase(technicianEvent);
+  const { id, title, start: startDate, end: endDate } = formatEventTechnician(technicianEvent);
   const { is_confirmed: isConfirmed } = technicianEvent.event;
 
   const classes = [];

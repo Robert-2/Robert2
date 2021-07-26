@@ -34,8 +34,13 @@ export default {
         return false;
       }
 
-      const { from, to } = this.disabledDates;
+      const { from, to, notBetween } = this.disabledDates;
       const date = moment(chosenDate);
+
+      if (Array.isArray(notBetween) && notBetween.length === 2) {
+        const [start, end] = notBetween;
+        return date.isBefore(start, 'day') || date.isAfter(end, 'day');
+      }
 
       if (from && to) {
         return date.isAfter(from, 'day') && date.isBefore(to, 'day');

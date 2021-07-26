@@ -96,6 +96,7 @@ export default {
     'edit-event': "Modifier l'événement",
     'save-and-back-to-calendar': "Sauvegarder et retour au calendrier",
     'save-and-continue': "Sauvegarder et continuer",
+    'continue': "Continuer",
     'step': "Étape",
     'event-informations': "Informations",
     'event-beneficiaries': "Bénéficiaires",
@@ -103,6 +104,14 @@ export default {
     'event-materials': "Matériel",
     'event-summary': "Récapitulatif",
     'event-confirmation': "Confirmation",
+    'no-technician-pass-this-step': (
+      `Il n'y a aucun technicien disponible pour cette période.
+      Vous pouvez passer cette étape.`
+    ),
+    'assign-technician': "Assigner {name} en tant que technicien(ne)",
+    'assign-this-technician': "Assigner ce technicien",
+    'period-assigned': "Période assignée",
+    'start-end-dates-and-time': "Dates et heures de début et fin",
     'saved': "Événement sauvegardé.",
     'not-saved': "L'événement comporte des modifications non sauvegardées",
     'display-only-selected-materials': "Afficher uniquement le matériel de l'événement\u00a0?",

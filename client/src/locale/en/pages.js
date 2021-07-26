@@ -96,6 +96,7 @@ export default {
     'edit-event': "Modify event",
     'save-and-back-to-calendar': "Save and back to calendar",
     'save-and-continue': "Save and continue",
+    'continue': "Continue",
     'step': "Step",
     'event-informations': "Informations",
     'event-beneficiaries': "Beneficiaries",
@@ -103,6 +104,14 @@ export default {
     'event-materials': "Materials",
     'event-summary': "Summary",
     'event-confirmation': "Confirmation",
+    'no-technician-pass-this-step': (
+      `There is no technician available for this period.
+      You can skip this step.`
+    ),
+    'assign-technician': "Assign {name} as a technician",
+    'assign-this-technician': "Assign this technician",
+    'period-assigned': "Assigned period",
+    'start-end-dates-and-time': "Start and End dates and times",
     'saved': "Event saved.",
     'not-saved': "Event has not saved modifications",
     'display-only-selected-materials': "Display event's selected materials only?",
