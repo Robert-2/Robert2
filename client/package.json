@@ -34,7 +34,7 @@
         "warning": "4.0.3"
     },
     "devDependencies": {
-        "@babel/core": "7.14.6",
+        "@babel/core": "7.14.8",
         "@vue/cli-plugin-babel": "4.5.13",
         "@vue/cli-plugin-eslint": "4.5.13",
         "@vue/cli-plugin-unit-jest": "4.5.13",
