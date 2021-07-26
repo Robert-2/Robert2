@@ -1,5 +1,5 @@
 <template>
-  <div class="MultipleItem">
+  <div :class="['MultipleItem', { 'MultipleItem--empty': !hasItems }]">
     <div
       v-for="(itemData, index) in notSavedSelectedItems"
       :key="itemData.id || `unknown-${index}`"
