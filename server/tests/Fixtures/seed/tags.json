@@ -1,11 +1,11 @@
 [
     {
         "id"   : 1,
-        "name" : "tag 01"
+        "name" : "Technician"
     },
     {
         "id"   : 2,
-        "name" : "customers"
+        "name" : "Beneficiary"
     },
     {
         "id"   : 3,

@@ -26,31 +26,21 @@
     padding: $content-padding-large-vertical $content-padding-small-vertical;
 
     &__dates {
-      &__fields {
-        flex: 0 0 280px;
+      .FormField {
+        flex-direction: column;
 
-        .FormField__datepicker {
-          width: 100%;
-        }
+        &__error {
+          flex: 0 0 auto;
 
-        .FormField + .FormField {
-          margin-top: $content-padding-small-vertical;
-        }
-      }
-
-      &__duration {
-        margin-top: $content-padding-small-vertical;
-        text-align: center;
-
-        .fas {
-          width: 1.5rem;
-          margin-right: 0.5rem;
-          text-align: center;
+          &__text {
+            padding: 0;
+          }
         }
       }
     }
 
     &__infos {
+      min-width: 300px;
       margin-top: $content-padding-small-vertical;
 
       .LocationText,
@@ -59,6 +49,7 @@
         margin-top: $content-padding-small-vertical;
       }
 
+      &__duration,
       &__items-count {
         margin-top: $content-padding-small-vertical;
 
@@ -96,17 +87,5 @@
   &__footer {
     padding: $content-padding-large-vertical;
     text-align: center;
-  }
-
-  @media screen and (min-width: $screen-tablet) {
-    &__main__dates {
-      display: flex;
-      align-items: center;
-
-      &__duration {
-        width: 140px;
-        margin-top: 0;
-      }
-    }
   }
 }

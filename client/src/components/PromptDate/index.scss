@@ -20,19 +20,10 @@
   }
 
   &__main {
-    padding: $content-padding-large-vertical $content-padding-small-vertical;
-  }
-
-  &__datepicker {
     display: flex;
     align-items: center;
     justify-content: center;
-
-    &__input {
-      width: 100%;
-      max-width: 300px;
-      font-size: 1.1rem;
-    }
+    padding: $content-padding-large-vertical $content-padding-small-vertical;
   }
 
   &__separator {

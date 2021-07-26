@@ -197,10 +197,10 @@ export default {
         return;
       }
 
-      const startDate = moment(e.time).startOf('day').format(DATE_QUERY_FORMAT);
+      const atDate = moment(e.time).startOf('day').format(DATE_QUERY_FORMAT);
       this.$router.push({
         path: '/events/new',
-        query: { startDate },
+        query: { atDate },
       });
     },
 

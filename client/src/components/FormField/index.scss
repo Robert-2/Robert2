@@ -50,13 +50,6 @@
     }
   }
 
-  &__datepicker {
-    &__input {
-      width: 100%;
-      max-width: 300px;
-    }
-  }
-
   &--with-addon {
     .FormField__input {
       display: inline-block;
@@ -68,7 +61,7 @@
 
   &--with-error {
     .FormField__input:not(:focus),
-    .FormField__datepicker__input:not(:focus),
+    .FormField__datepicker .mx-input:not(:focus),
     .FormField__select:not(:focus),
     .FormField__textarea:not(:focus),
     .FormField__addon, {

@@ -3,6 +3,68 @@ namespace Robert2\Tests;
 
 final class TechniciansTest extends ApiTestCase
 {
+    public function testGetAll()
+    {
+        $this->client->get('/api/technicians');
+        $this->assertStatusCode(SUCCESS_OK);
+        $this->assertResponseData([
+            'pagination' => [
+                'current_page' => 1,
+                'from' => 1,
+                'last_page' => 1,
+                'path' => '/api/technicians',
+                'first_page_url' => '/api/technicians?page=1',
+                'next_page_url' => null,
+                'prev_page_url' => null,
+                'last_page_url' => '/api/technicians?page=1',
+                'per_page' => $this->settings['maxItemsPerPage'],
+                'to' => 1,
+                'total' => 1,
+            ],
+            'data' => [
+                [
+                    'id' => 2,
+                    'user_id' => 2,
+                    'first_name' => 'Roger',
+                    'last_name' => 'Rabbit',
+                    'reference' => '0002',
+                    'nickname' => 'Riri',
+                    'email' => 'tester2@robertmanager.net',
+                    'phone' => null,
+                    'street' => null,
+                    'postal_code' => null,
+                    'locality' => null,
+                    'country_id' => null,
+                    'company_id' => null,
+                    'note' => null,
+                    'created_at' => null,
+                    'updated_at' => null,
+                    'deleted_at' => null,
+                    'full_name' => 'Roger Rabbit',
+                    'country' => null,
+                    'company' => null,
+                ],
+            ],
+        ]);
+    }
+
+    public function testGetAllInPeriod()
+    {
+        // - Aucun technicien n'est disponible pendant ces dates
+        $this->client->get('/api/technicians?startDate=2018-12-15&endDate=2018-12-20');
+        $this->assertStatusCode(SUCCESS_OK);
+        $response = $this->_getResponseAsArray();
+        $this->assertEquals(0, $response['pagination']['total']);
+        $this->assertCount(0, $response['data']);
+
+        // - Un technicien est disponible pendant ces dates
+        $this->client->get('/api/technicians?startDate=2019-01-02&endDate=2019-01-06');
+        $this->assertStatusCode(SUCCESS_OK);
+        $response = $this->_getResponseAsArray();
+        $this->assertEquals(1, $response['pagination']['total']);
+        $this->assertCount(1, $response['data']);
+    }
+
     public function testGetEventNotFound()
     {
         $this->client->get('/api/technicians/999/events');

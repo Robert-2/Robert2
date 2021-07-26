@@ -9,6 +9,10 @@
     display: none;
     flex: 1;
     color: $help-text-color;
+
+    .ErrorMessage {
+      text-align: left;
+    }
   }
 
   &__error {

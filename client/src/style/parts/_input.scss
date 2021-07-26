@@ -11,7 +11,7 @@ textarea {
   outline: 0;
 
   &:focus {
-    border-color: $bg-color-button-info;
+    border-color: $input-focus-border-color;
   }
 
   &:disabled {

@@ -13,17 +13,10 @@ export default {
   },
   data() {
     return {
-      dates: {
-        startDate: null,
-        endDate: null,
-      },
-      startDatepickerOptions: {
-        format: 'd MMMM yyyy',
+      dates: [null, null],
+      datepickerOptions: {
         disabled: { from: null, to: new Date() },
-      },
-      endDatepickerOptions: {
-        format: 'd MMMM yyyy',
-        disabled: { from: null, to: null },
+        isRange: true,
       },
       error: null,
       validationErrors: null,
@@ -32,7 +25,7 @@ export default {
   },
   computed: {
     duration() {
-      const { startDate, endDate } = this.dates;
+      const [startDate, endDate] = this.dates;
       if (!startDate || !endDate) {
         return null;
       }
@@ -44,31 +37,16 @@ export default {
     },
   },
   methods: {
-    refreshDatesLimits() {
-      const { startDate } = this.dates;
-      if (!startDate) {
+    async handleSubmit() {
+      if (this.isSaving) {
         return;
       }
 
-      this.endDatepickerOptions.disabled.to = moment(startDate).toDate();
-    },
-
-    handleStartDateChange({ newDate }) {
-      const { endDate } = this.dates;
-
-      if (endDate) {
-        const start = moment(newDate);
-        const end = moment(endDate);
-        if (end.isBefore(start)) {
-          this.dates.endDate = start.toDate();
-        }
-      }
-
-      this.refreshDatesLimits();
-    },
-
-    async handleSubmit() {
-      if (this.isSaving) {
+      const [startDate, endDate] = this.dates;
+      if (!startDate || !endDate) {
+        this.validationErrors = {
+          start_date: [this.$t('please-choose-dates')],
+        };
         return;
       }
 
@@ -76,12 +54,12 @@ export default {
       this.error = false;
       this.validationErrors = false;
 
-      const currentUser = this.$store.state.auth.user;
+      const { id: userId } = this.$store.state.auth.user;
 
       const newEventData = {
-        user_id: currentUser.id,
-        start_date: moment(this.dates.startDate).startOf('day').format(DATE_DB_FORMAT),
-        end_date: moment(this.dates.endDate).endOf('day').format(DATE_DB_FORMAT),
+        user_id: userId,
+        start_date: moment(startDate).startOf('day').format(DATE_DB_FORMAT),
+        end_date: moment(endDate).endOf('day').format(DATE_DB_FORMAT),
       };
 
       try {
@@ -108,15 +86,11 @@ export default {
   render() {
     const {
       $t: __,
-      dates,
       duration,
       itemsCount,
       error,
       validationErrors,
-      startDatepickerOptions,
-      endDatepickerOptions,
-      refreshDatesLimits,
-      handleStartDateChange,
+      datepickerOptions,
       handleSubmit,
       handleClose,
     } = this;
@@ -143,54 +117,36 @@ export default {
             {__('dates-of-duplicated-event')}
           </h4>
           <div class="DuplicateEvent__main__dates">
-            <div class="DuplicateEvent__main__dates__fields">
-              <FormField
-                v-model={dates.startDate}
-                name="start_date"
-                label="start-date"
-                type="date"
-                required
-                errors={validationErrors?.start_date}
-                datepickerOptions={startDatepickerOptions}
-                onChange={handleStartDateChange}
-              />
-              <FormField
-                v-model={dates.endDate}
-                name="end_date"
-                label="end-date"
-                type="date"
-                required
-                errors={validationErrors?.end_date}
-                datepickerOptions={endDatepickerOptions}
-                onChange={refreshDatesLimits}
-              />
-            </div>
-            <div class="DuplicateEvent__main__dates__duration">
-              {duration && (
-                <span>
-                  <i class="fas fa-clock" />{' '}
-                  {__('duration-days', { duration }, duration)}
-                </span>
-              )}
-            </div>
+            <FormField
+              v-model={this.dates}
+              type="date"
+              required
+              errors={validationErrors?.start_date || validationErrors?.end_date}
+              datepickerOptions={datepickerOptions}
+              placeholder="start-end-dates"
+            />
           </div>
           <div class="DuplicateEvent__main__infos">
-              {location && <LocationText location={location} />}
-              <PersonsList
-                type="beneficiaries"
-                persons={beneficiaries.map(({ id, full_name: name }) => ({ id, name }))}
-                warningEmptyText={__('page-events.warning-no-beneficiary')}
-              />
-              <PersonsList
-                type="technicians"
-                persons={technicians.map(({ technician }) => (
-                  { id: technician.id, name: technician.full_name }
-                ))}
-              />
-              <div class="DuplicateEvent__main__infos__items-count">
-                <i class="fas fa-box" />{' '}
-                {__('items-count', { count: itemsCount }, itemsCount)}
-              </div>
+            <div class="DuplicateEvent__main__infos__duration">
+              <i class="fas fa-clock" />{' '}
+              {duration ? __('duration-days', { duration }, duration) : `${__('duration')} ?`}
+            </div>
+            {location && <LocationText location={location} />}
+            <PersonsList
+              type="beneficiaries"
+              persons={beneficiaries.map(({ id, full_name: name }) => ({ id, name }))}
+              warningEmptyText={__('page-events.warning-no-beneficiary')}
+            />
+            <PersonsList
+              type="technicians"
+              persons={technicians.map(({ technician }) => (
+                { id: technician.id, name: technician.full_name }
+              ))}
+            />
+            <div class="DuplicateEvent__main__infos__items-count">
+              <i class="fas fa-box" />{' '}
+              {__('items-count', { count: itemsCount }, itemsCount)}
+            </div>
           </div>
           {error && (
             <p class="DuplicateEvent__main__error">

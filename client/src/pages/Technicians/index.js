@@ -1,6 +1,10 @@
-import Config from '@/config/globalConfig';
+import './index.scss';
+import moment from 'moment';
 import Alert from '@/components/Alert';
 import Help from '@/components/Help/Help.vue';
+import Page from '@/components/Page';
+import Datepicker from '@/components/Datepicker';
+import ItemActions from './Actions';
 
 export default {
   name: 'Technicians',
@@ -12,6 +16,7 @@ export default {
       isLoading: false,
       isDisplayTrashed: false,
       isTrashDisplayed: false,
+      periodFilter: null,
       columns: [
         'last_name',
         'first_name',
@@ -47,17 +52,24 @@ export default {
           email: 'Technicians__email',
           address: 'Technicians__address',
           note: 'Technicians__note',
+          actions: 'Technicians__actions',
         },
         requestFunction: (pagination) => {
           this.error = null;
           this.isLoading = true;
+
           const params = {
             ...pagination,
-            tags: [Config.technicianTagName],
             deleted: this.isDisplayTrashed ? '1' : '0',
           };
+          if (this.periodFilter) {
+            const [start, end] = this.periodFilter;
+            params.startDate = moment(start).format();
+            params.endDate = moment(end).endOf('day').format();
+          }
+
           return this.$http
-            .get(this.$route.meta.resource, { params })
+            .get('technicians', { params })
             .catch(this.showError)
             .finally(() => {
               this.isTrashDisplayed = this.isDisplayTrashed;
@@ -68,35 +80,43 @@ export default {
     };
   },
   methods: {
-    deleteTechnician(technicianId) {
+    async handleRemove(id) {
       const isSoft = !this.isTrashDisplayed;
-      Alert.ConfirmDelete(this.$t, 'technicians', isSoft)
-        .then((result) => {
-          if (!result.value) {
-            return;
-          }
+      const { value: isConfirmed } = await Alert.ConfirmDelete(this.$t, 'technicians', isSoft);
+      if (!isConfirmed) {
+        return;
+      }
 
-          this.error = null;
-          this.isLoading = true;
-          this.$http.delete(`${this.$route.meta.resource}/${technicianId}`)
-            .then(this.refreshTable)
-            .catch(this.showError);
-        });
+      this.error = null;
+      this.isLoading = true;
+
+      try {
+        await this.$http.delete(`${this.$route.meta.resource}/${id}`);
+        this.refreshTable();
+      } catch (error) {
+        this.error = error;
+      } finally {
+        this.isLoading = false;
+      }
     },
 
-    restoreTechnician(technicianId) {
-      Alert.ConfirmRestore(this.$t, 'technicians')
-        .then((result) => {
-          if (!result.value) {
-            return;
-          }
+    async handleRestore(id) {
+      const { value: isConfirmed } = await Alert.ConfirmRestore(this.$t, 'technicians');
+      if (!isConfirmed) {
+        return;
+      }
 
-          this.error = null;
-          this.isLoading = true;
-          this.$http.put(`${this.$route.meta.resource}/restore/${technicianId}`)
-            .then(this.refreshTable)
-            .catch(this.showError);
-        });
+      this.error = null;
+      this.isLoading = true;
+
+      try {
+        await this.$http.put(`${this.$route.meta.resource}/restore/${id}`);
+        this.refreshTable();
+      } catch (error) {
+        this.error = error;
+      } finally {
+        this.isLoading = false;
+      }
     },
 
     refreshTable() {
@@ -104,6 +124,10 @@ export default {
       this.error = null;
       this.isLoading = true;
       this.$refs.DataTable.refresh();
+    },
+
+    clearFilters() {
+      this.periodFilter = null;
     },
 
     showTrashed() {
@@ -115,5 +139,89 @@ export default {
       this.isLoading = false;
       this.error = error;
     },
+  },
+  watch: {
+    periodFilter() {
+      this.refreshTable();
+    },
+  },
+  render() {
+    const {
+      $t: __,
+      help,
+      error,
+      isLoading,
+      columns,
+      options,
+      handleRestore,
+      handleRemove,
+      periodFilter,
+      clearFilters,
+      isTrashDisplayed,
+      showTrashed,
+    } = this;
+
+    const headerActions = [
+      <router-link to="/technicians/new" class="button success">
+        <i class="fas fa-user-plus" /> {__('page-technicians.action-add')}
+      </router-link>,
+    ];
+
+    return (
+      <Page
+        name="technicians"
+        title={__('page-technicians.title')}
+        help={__(help)}
+        error={error}
+        isLoading={isLoading}
+        actions={headerActions}
+      >
+        <div class="Technicians__filters">
+          <Datepicker
+            v-model={this.periodFilter}
+            isRange
+            placeholder={__('page-technicians.period-of-availability')}
+          />
+          {periodFilter && (
+            <button
+              class="Technicians__filters__clear-button warning"
+              v-tooltip={__('clear-filters')}
+              onClick={clearFilters}
+            >
+              <i class="fas fa-backspace" />
+            </button>
+          )}
+        </div>
+        <v-server-table
+          ref="DataTable"
+          name="techniciansTable"
+          columns={columns}
+          options={options}
+          scopedSlots={{
+            email: ({ row }) => <a href={`mailto:${row.email}`}>{row.email}</a>,
+            address: ({ row }) => (
+              <div>
+                {row.street}<br />
+                {row.postal_code} {row.locality}
+              </div>
+            ),
+            actions: ({ row }) => (
+              <ItemActions
+                isTrashMode={isTrashDisplayed}
+                id={row.id}
+                onRemove={handleRemove}
+                onRestore={handleRestore}
+              />
+            ),
+          }}
+        />
+        <div class="content__footer">
+          <button class={isTrashDisplayed ? 'info' : 'warning'} onClick={showTrashed}>
+            <i class={['fas', { 'fa-trash': !isTrashDisplayed, 'fa-eye"': isTrashDisplayed }]} />{' '}
+            {isTrashDisplayed ? __('display-not-deleted-items') : __('open-trash-bin')}
+          </button>
+        </div>
+      </Page>
+    );
   },
 };
