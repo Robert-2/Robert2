@@ -9,6 +9,7 @@
             {{ include('blocks/company-address.twig', {
                 company: company,
                 withLegalNumbers: true,
+                withLogo: true,
             }) }}
         </td>
         <td class="half">
@@ -185,16 +186,11 @@
     <table class="layout-table">
         <tr>
             <td class="half">
-                <h2>
-                    {{ company['name'] }}<br>
-                    {{ company['street'] }}<br>
-                    {{ company['zipCode'] }} {{ company['locality'] }}<br>
-                    {{ company['country'] }}
-                </h2>
-                <p>
-                    {{ translate('phone', [company['phone']]) }}<br>
-                    {{ translate('email', [company['email']]) }}
-                </p>
+                {{ include('blocks/company-address.twig', {
+                    company: company,
+                    withLegalNumbers: false,
+                    withLogo: true,
+                }) }}
             </td>
             <td class="half">
                 <h2 class="box center">{{ translate('estimateDetailsTitle') }}</h2>

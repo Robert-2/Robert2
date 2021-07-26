@@ -15,7 +15,11 @@
 <table class="layout-table">
     <tr>
         <td class="third">
-            {{ include('blocks/company-address.twig', { company: company }) }}
+            {{ include('blocks/company-address.twig', {
+                company: company,
+                withLegalNumbers: false,
+                withLogo: false,
+            }) }}
         </td>
         <td class="two-third">
             <h1 class="box center">{{ translate('materials-list') }}</h1>
