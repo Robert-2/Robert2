@@ -2525,8 +2525,11 @@ return [
     "estimateTitle"
     => "Estimate in %s",
 
-    "onDate"
+    "on-date"
     => "On %s",
+
+    "printed-on-date"
+    => "Printed on %s",
 
     "as-of-date"
     => "As of %s",

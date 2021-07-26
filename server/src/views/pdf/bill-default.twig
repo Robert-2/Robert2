@@ -16,7 +16,7 @@
             <h2 class="box center">{{ translate('billTitle', [currencyName, number]) }}</h2>
             <table class="layout-table">
                 <tr>
-                    <td class="size12">{{ translate('onDate', date|format_date('short', locale=locale)) }}</td>
+                    <td class="size12">{{ translate('on-date', date|format_date('short', locale=locale)) }}</td>
                     <td class="size12 right">{{ translate('page', 1) }}</td>
                 </tr>
             </table>
@@ -34,7 +34,7 @@
     <p>{{ translate('event', [event['title']]) }}</p>
     <p class="strong">
         {% if event['start_date'] == event['end_date'] %}
-        {{ translate('onDate', [event['start_date']|format_date('full', locale=locale)]) }},
+        {{ translate('on-date', [event['start_date']|format_date('full', locale=locale)]) }},
         {% else %}
         {{ translate('fromToDates', [event['start_date']|format_date('full', locale=locale), event['end_date']|format_date('full', locale=locale)]) }},
         {% endif %}
@@ -189,7 +189,7 @@
                 <h2 class="box center">{{ translate('billDetailsTitle', [number]) }}</h2>
                 <table class="layout-table">
                     <tr>
-                        <td class="size12">{{ translate('onDate', date|format_date('short', locale=locale)) }}</td>
+                        <td class="size12">{{ translate('on-date', date|format_date('short', locale=locale)) }}</td>
                         <td class="size12 right">{{ translate('page', 2) }}</td>
                     </tr>
                 </table>

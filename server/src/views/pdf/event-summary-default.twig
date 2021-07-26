@@ -3,22 +3,20 @@
 {% block title %}{{ translate("releaseSheet") }}{% endblock %}
 
 {% block content %}
-<h1 class="center vspace5">
-    {{ translate('releaseSheet') }}
-</h1>
 <table class="layout-table">
     <tr>
-        <td class="third">
-            <div class="spaceBottom5">
-                {{ include('blocks/company-address.twig', {
-                    company: company,
-                    withLegalNumbers: false,
-                    withLogo: true,
-                }) }}
-            </div>
+        <td class="half">
+            {{ include('blocks/company-address.twig', {
+                company: company,
+                withLegalNumbers: false,
+                withLogo: true,
+            }) }}
         </td>
-        <td>
-            <h2 class="spaceBottom5">
+        <td class="half">
+            <h1 class="box center spaceBottom5">
+                {{ translate('releaseSheet') }}
+            </h1>
+            <h2 class="">
                 {{ translate('event', [event['title']]) }}
             </h2>
             <h3>
@@ -29,57 +27,73 @@
                 ) }}
             </h3>
 
-            {% if event['is_confirmed'] %}
-            <p>{{ translate('thisEventIsConfirmed') }}</p>
-            {% endif %}
-        </td>
-        <td class="third indent5">
-            {% if event['location'] %}
-            <h2 class="spaceBottom5">{{ translate('location', [event['location']]) }}</h2>
-            {% endif %}
-
-            <h3>{{ translate('beneficiary') }}</h3>
-            <p class="size12 spaceBottom5">
-                {{ include('blocks/beneficiary-address.twig', { person: event['beneficiaries'][0] }) }}
-            </p>
+            <table class="layout-table">
+                <tr>
+                    <td class="third">
+                        <h3>{{ translate('beneficiary') }}</h3>
+                    </td>
+                    <td>
+                        <p class="size12 spaceBottom5">
+                            {{ include('blocks/beneficiary-address.twig', {
+                                person: event['beneficiaries'][0]
+                            }) }}
+                        </p>
+                    </td>
+                </tr>
+            </table>
         </td>
     </tr>
 </table>
 
 <table class="layout-table">
     <tr>
-        <td class="{{ event['beneficiaries'][1] is defined ? 'third' : 'two-third' }} size11">
+        <td class="{{ event['beneficiaries'][1] is defined ? 'third' : 'half' }} size11">
+            {% if event['location'] %}
+            <h3>{{ translate('location', [event['location']]) }}</h3>
+            {% endif %}
+            {% if event['is_confirmed'] %}
+            <p class="lighter">
+                {{ translate('thisEventIsConfirmed') }}
+            </p>
+            {% endif %}
             {% if replacementAmount %}
-            <p>
+            <p class="lighter">
                 {{ translate('eventTotalReplacementAmount', [
                     replacementAmount|format_currency(currency, formatCurrencyOptions, locale)
                 ]) }}
             </p>
             {% endif %}
-            <p>
-                {{ translate('onDate', [date|format_date('long', locale=locale)]) }}
+            <p class="lighter">
+                {{ translate('printed-on-date', [date|format_date('long', locale=locale)]) }}
             </p>
         </td>
-        <td>
-            {% if event['technicians'] %}
+        <td class="{{ event['beneficiaries'][1] is defined ? 'third' : 'half' }}">
+            {% if technicians is not empty %}
             <h3>{{ translate('technicians') }}</h3>
             <ul class="spaceBottom5">
-                {% for technician in event['technicians'] %}
+                {% for technician in technicians %}
                 <li class="spaceBottom2">
-                    {{ technician['technician']['full_name'] }}
-                    {% if technician['position'] is not empty %}
-                    <span class="lighter">- {{ technician['position'] }}</span>
+                    {{ technician['name'] }}
+                    {% if technician['phone'] is not empty %}
+                    <span class="lighter">- {{ technician['phone'] }}</span>
                     {% endif %}
-                    {% if technician['technician']['phone'] is not empty %}
-                    <br />{{ technician['technician']['phone'] }}
+                    {% for period in technician['periods'] %}
+                    <br />
+                    <span class="lighter size8">
+                        {{ period['from']|format_datetime(pattern='dd MMM HH:mm', locale=locale) }} >
+                        {{ period['to']|format_datetime(pattern='dd MMM HH:mm', locale=locale) }}
+                    </span>
+                    {% if period['position'] is not empty %}
+                    <span class="lighter">- {{ period['position'] }}</span>
                     {% endif %}
+                    {% endfor %}
                 </li>
                 {% endfor %}
             </ul>
             {% endif %}
         </td>
         {% if event['beneficiaries'][1] is defined %}
-        <td class="third indent5">
+        <td class="third">
             <h3>{{ translate('otherBeneficiaries') }}</h3>
             <ul class="spaceBottom5">
                 {% for otherBeneficiary in event['beneficiaries'] %}

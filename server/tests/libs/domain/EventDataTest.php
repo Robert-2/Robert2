@@ -33,6 +33,7 @@ final class EventDataTest extends ModelTestCase
             $this->_date = new \DateTime();
 
             $event = (new Event())
+                ->with('Technicians')
                 ->with('Beneficiaries')
                 ->with('Materials')
                 ->find(1);
@@ -657,6 +658,38 @@ final class EventDataTest extends ModelTestCase
             'locale' => Config::getSettings('defaultLang'),
             'currency' => Config::getSettings('currency')['iso'],
             'currencyName' => Config::getSettings('currency')['name'],
+        ];
+        $this->assertEquals($expected, $result);
+    }
+
+    public function testGetTechnicians()
+    {
+        $result = $this->EventData->getTechnicians();
+        $expected = [
+            [
+                'id' => 1,
+                'name' => 'Jean Fountain',
+                'phone' => null,
+                'periods' => [
+                    [
+                        'from' => '2018-12-17 09:00:00',
+                        'to' => '2018-12-18 22:00:00',
+                        'position' => 'Régisseur',
+                    ]
+                ],
+            ],
+            [
+                'id' => 2,
+                'name' => 'Roger Rabbit',
+                'phone' => null,
+                'periods' => [
+                    [
+                        'from' => '2018-12-18 14:00:00',
+                        'to' => '2018-12-18 18:00:00',
+                        'position' => 'Technicien plateau',
+                    ]
+                ],
+            ],
         ];
         $this->assertEquals($expected, $result);
     }
