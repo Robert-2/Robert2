@@ -3,7 +3,8 @@ import moment from 'moment';
 import { DATE_DB_FORMAT } from '@/config/constants';
 import FormField from '@/components/FormField';
 import LocationText from '@/components/LocationText/LocationText.vue';
-import PersonsList from '@/components/PersonsList/PersonsList.vue';
+import EventBeneficiaries from '@/components/EventBeneficiaries';
+import EventTechnicians from '@/components/EventTechnicians';
 import getEventMaterialItemsCount from '@/utils/getEventMaterialItemsCount';
 
 export default {
@@ -132,17 +133,11 @@ export default {
               {duration ? __('duration-days', { duration }, duration) : `${__('duration')} ?`}
             </div>
             {location && <LocationText location={location} />}
-            <PersonsList
-              type="beneficiaries"
-              persons={beneficiaries.map(({ id, full_name: name }) => ({ id, name }))}
+            <EventBeneficiaries
+              beneficiaries={beneficiaries}
               warningEmptyText={__('page-events.warning-no-beneficiary')}
             />
-            <PersonsList
-              type="technicians"
-              persons={technicians.map(({ technician }) => (
-                { id: technician.id, name: technician.full_name }
-              ))}
-            />
+            <EventTechnicians eventTechnicians={technicians} />
             <div class="DuplicateEvent__main__infos__items-count">
               <i class="fas fa-box" />{' '}
               {__('items-count', { count: itemsCount }, itemsCount)}

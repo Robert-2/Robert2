@@ -1,0 +1,14 @@
+@import '../../../themes/default/';
+
+.EventBeneficiaryItem {
+  display: inline-block;
+  margin-left: .5rem;
+
+  & + & {
+    &::before {
+      content: '|';
+      margin-right: .3rem;
+      color: $text-base-color;
+    }
+  }
+}

@@ -18,15 +18,11 @@
             <Help :message="{ type: 'success', text: successMessage }" :error="error" />
             <div class="EventDetails__base-infos">
               <LocationText v-if="event.location" :location="event.location" />
-              <PersonsList
-                type="beneficiaries"
-                :persons="beneficiaries"
+              <EventBeneficiaries
+                :beneficiaries="event.beneficiaries"
                 :warningEmptyText="$t('page-events.warning-no-beneficiary')"
               />
-              <PersonsList
-                type="technicians"
-                :persons="technicians"
-              />
+              <EventTechnicians :eventTechnicians="event.technicians" />
             </div>
             <p v-if="event.description" class="EventDetails__description">
               <i class="fas fa-clipboard" />

@@ -11,6 +11,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Ajoute un filtre dans la liste des techniciens permettant de n'afficher que ceux qui sont disponibles dans une période donnée (#189).
 - Ajoute la possibilité d'afficher un logo sur les PDF (en ajoutant une clé `company.logo` dans les `settings.json` et un fichier dans `public/img/`).
 - Affiche le détail des horaires des techniciens dans les fiches de sortie (#190).
+- Adapte l'affichage de la liste des techniciens dans la fenêtre d'événement et à l'étape 5 de l'édition d'événement (#191).
 
 ## 0.14.3 (2021-07-12)
 
