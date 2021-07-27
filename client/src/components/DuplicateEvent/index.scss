@@ -51,7 +51,9 @@
       }
 
       &__duration,
-      &__items-count {
+      &__items-count,
+      .EventBeneficiaries,
+      .EventTechnicians {
         margin-top: $content-padding-small-vertical;
 
         .fas {

@@ -2,6 +2,7 @@ import moment from 'moment';
 import { Tabs, Tab } from 'vue-slim-tabs';
 import Config from '@/config/globalConfig';
 import getDiscountRateFromLast from '@/utils/getDiscountRateFromLast';
+import formatEventTechnicians from '@/utils/formatEventTechnicians';
 import Alert from '@/components/Alert';
 import Help from '@/components/Help/Help.vue';
 import EventMaterials from '@/components/EventMaterials';
@@ -45,6 +46,10 @@ export default {
 
     endDate() {
       return moment(this.event.end_date);
+    },
+
+    technicians() {
+      return formatEventTechnicians(this.event.technicians);
     },
 
     hasMaterials() {
