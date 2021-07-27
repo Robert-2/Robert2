@@ -13,6 +13,7 @@ const QuantityInput = {
       }
       return this.limit?.min ?? 0;
     },
+
     max() {
       if (typeof this.limit !== 'object') {
         return this.limit;
@@ -38,6 +39,7 @@ const QuantityInput = {
 
       this.$emit('quantityChange', value);
     },
+
     handleDecrement() {
       const value = this.quantity - 1;
       if (value < this.min) {
@@ -45,6 +47,7 @@ const QuantityInput = {
       }
       this.$emit('quantityChange', value);
     },
+
     handleIncrement() {
       const value = this.quantity + 1;
       if (this.max != null && value > this.max) {

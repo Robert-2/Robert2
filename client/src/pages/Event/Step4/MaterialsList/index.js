@@ -3,7 +3,7 @@ import SwitchToggle from '@/components/SwitchToggle';
 import Config from '@/config/globalConfig';
 import formatAmount from '@/utils/formatAmount';
 import MaterialsStore from './MaterialsStore';
-import Quantity from './Quantity/Quantity.vue';
+import Quantity from './Quantity';
 import { normalizeFilters } from './_utils';
 
 const noPaginationLimit = 100000;
@@ -201,10 +201,6 @@ export default {
     },
 
     handleChanges() {
-      // - This hack is necessary because Vue-table-2 does not re-render the cells
-      // - when quantities are changing.
-      this.renderId += 1;
-
       const materialIds = Object.keys(MaterialsStore.state.materials);
 
       this.hasMaterial = materialIds.length > 0;
