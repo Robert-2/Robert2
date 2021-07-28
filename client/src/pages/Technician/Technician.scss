@@ -1,7 +1,6 @@
 .Technician {
   display: flex;
-  flex-wrap: wrap;
-  padding-bottom: 3rem;
+  flex-flow: column-reverse wrap;
 
   .PersonForm {
     flex: 2;
@@ -9,7 +8,15 @@
 
   .Help {
     flex: 1;
-    margin-top: 3.8rem;
+    margin: 0 0 $content-padding-large-vertical;
     min-width: 150px;
+  }
+
+  @media screen and (min-width: $screen-tablet) {
+    flex-direction: row;
+
+    .Help {
+      margin: 30px 0 0;
+    }
   }
 }

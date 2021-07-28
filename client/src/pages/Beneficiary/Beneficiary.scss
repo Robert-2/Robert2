@@ -1,27 +1,22 @@
 .Beneficiary {
-  &__main {
-    display: flex;
-    flex-wrap: wrap;
-    padding-bottom: 3rem;
-  }
+  display: flex;
+  flex-flow: column-reverse wrap;
 
   .PersonForm {
     flex: 2;
-    min-width: $form-min-width;
-    max-width: $form-max-width;
-    margin-right: 1rem;
   }
 
   .Help {
-    display: none;
     flex: 1;
-    margin-top: 3.8rem;
+    margin: 0 0 $content-padding-large-vertical;
     min-width: 150px;
   }
 
-  @media screen and (min-width: $screen-mobile) {
+  @media screen and (min-width: $screen-tablet) {
+    flex-direction: row;
+
     .Help {
-      display: block;
+      margin: 30px 0 0;
     }
   }
 }

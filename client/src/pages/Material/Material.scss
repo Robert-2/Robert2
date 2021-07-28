@@ -1,18 +1,22 @@
 .Material {
   display: flex;
   flex-wrap: wrap;
-  padding-bottom: 6rem;
 
   &__form {
     flex: 2;
     min-width: $form-min-width;
     max-width: $form-max-width;
     margin-right: $content-padding-large-vertical;
+
+    &.Form {
+      margin-bottom: 0;
+    }
   }
 
   &__side {
     flex: 1;
     min-width: 250px;
+    margin-bottom: $form-fixed-actions-margin-bottom;
 
     .Progressbar {
       max-width: 350px;
@@ -50,8 +54,12 @@
   }
 
   @media screen and (min-width: $screen-mobile) {
+    .Form {
+      margin-bottom: $form-fixed-actions-margin-bottom;
+    }
+
     &__side {
-      margin-top: 3.4rem;
+      margin-top: 30px;
     }
 
     .Help {

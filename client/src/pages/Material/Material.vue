@@ -165,7 +165,12 @@
               class="Form__actions__save success"
               type="submit"
             >
+              <i class="fas fa-save" />
               {{ $t('save') }}
+            </button>
+            <button type="button" @click="handleCancel">
+              <i class="fas fa-ban" />
+              {{ $t('cancel') }}
             </button>
           </section>
         </form>

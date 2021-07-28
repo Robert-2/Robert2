@@ -1,5 +1,10 @@
 <template>
-  <form class="Form PersonForm" method="POST" @submit="doSubmit" @change="handleChange">
+  <form
+    class="Form Form--fixed-actions PersonForm"
+    method="POST"
+    @submit="doSubmit"
+    @change="handleChange"
+  >
     <section class="Form__fieldset">
       <h4 class="Form__fieldset__title">
         {{ $t('personnal-infos') }}

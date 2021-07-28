@@ -32,6 +32,8 @@
   }
 
   &--fixed-actions {
+    margin-bottom: $form-fixed-actions-margin-bottom;
+
     .Form__actions {
       position: fixed;
       bottom: 0;
