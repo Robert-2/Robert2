@@ -1,13 +1,12 @@
 .User {
   display: flex;
-  flex-wrap: wrap;
-  padding-bottom: 3rem;
+  flex-flow: column-reverse wrap;
 
   .Form {
     flex: 2;
     min-width: $form-min-width;
     max-width: $form-max-width;
-    margin-right: 1rem;
+    margin-right: $content-padding-large-horizontal;
   }
 
   &__postal-code .FormField__input {
@@ -16,7 +15,15 @@
 
   .Help {
     flex: 1;
-    margin-top: 3.8rem;
-    min-width: $form-min-width;
+    margin: 0 0 $content-padding-large-vertical;
+    min-width: 150px;
+  }
+
+  @media screen and (min-width: $screen-tablet) {
+    flex-direction: row;
+
+    .Help {
+      margin: 30px 0 0;
+    }
   }
 }

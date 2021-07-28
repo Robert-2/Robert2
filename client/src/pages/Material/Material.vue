@@ -6,6 +6,7 @@
           class="Form Form--fixed-actions Material__form"
           method="POST"
           @submit="saveMaterial"
+          @change="handleFormChange"
           :key="entitiesState"
         >
           <section class="Form__fieldset">
@@ -175,7 +176,12 @@
               class="Form__actions__save success"
               type="submit"
             >
+              <i class="fas fa-save" />
               {{ $t('save') }}
+            </button>
+            <button type="button" @click="handleCancel">
+              <i class="fas fa-ban" />
+              {{ $t('cancel') }}
             </button>
           </section>
         </form>

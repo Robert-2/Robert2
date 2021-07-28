@@ -2,6 +2,8 @@ import Config from '@/config/globalConfig';
 import Help from '@/components/Help/Help.vue';
 import PersonForm from '@/components/PersonForm/PersonForm.vue';
 
+const storageKeyWIP = 'WIP-newBeneficiary';
+
 export default {
   name: 'Beneficiary',
   components: { Help, PersonForm },
@@ -38,19 +40,27 @@ export default {
       },
     };
   },
+  computed: {
+    isNew() {
+      const { id } = this.person;
+      return !id || id === 'new';
+    },
+  },
   mounted() {
     this.getBeneficiaryData();
   },
   methods: {
     getBeneficiaryData() {
-      const { id } = this.person;
-      if (!id || id === 'new') {
+      if (this.isNew) {
+        this.initWithStash();
         return;
       }
 
       this.resetHelpLoading();
 
+      const { id } = this.person;
       const { resource } = this.$route.meta;
+
       this.$http.get(`${resource}/${id}`)
         .then(({ data }) => {
           this.setPerson(data);
@@ -83,6 +93,7 @@ export default {
           this.isLoading = false;
           this.help = { type: 'success', text: 'page-beneficiaries.saved' };
           this.setPerson(data);
+          this.flushStashedData();
 
           setTimeout(() => {
             this.$router.push('/beneficiaries');
@@ -112,6 +123,32 @@ export default {
       this.person = data;
       const fullName = data.full_name || `${data.first_name} ${data.last_name}`;
       this.$store.commit('setPageSubTitle', fullName);
+    },
+
+    handleFormChange() {
+      if (!this.isNew) {
+        return;
+      }
+
+      const stashedData = JSON.stringify(this.person);
+      localStorage.setItem(storageKeyWIP, stashedData);
+    },
+
+    initWithStash() {
+      if (!this.isNew) {
+        return;
+      }
+
+      const stashedData = localStorage.getItem(storageKeyWIP);
+      if (!stashedData) {
+        return;
+      }
+
+      this.person = JSON.parse(stashedData);
+    },
+
+    flushStashedData() {
+      localStorage.removeItem(storageKeyWIP);
     },
   },
 };

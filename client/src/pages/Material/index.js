@@ -5,6 +5,8 @@ import FormField from '@/components/FormField';
 import ImageWithUpload from '@/components/ImageWithUpload/ImageWithUpload.vue';
 import Progressbar from '@/components/Progressbar/Progressbar.vue';
 
+const storageKeyWIP = 'WIP-newMaterial';
+
 export default {
   name: 'Material',
   components: {
@@ -62,6 +64,11 @@ export default {
     };
   },
   computed: {
+    isNew() {
+      const { id } = this.material;
+      return !id || id === 'new';
+    },
+
     entitiesState() {
       const { parks, categories } = this.$store.state;
       return (parks.isFetched && categories.isFetched) ? 'ready' : 'fetching';
@@ -103,15 +110,16 @@ export default {
   },
   methods: {
     fetchMaterial() {
-      const { id } = this.material;
-      if (!id || id === 'new') {
-        this.fetchAttributes();
+      if (this.isNew) {
+        this.initWithStash();
         return;
       }
 
       this.resetHelpLoading();
 
+      const { id } = this.material;
       const { resource } = this.$route.meta;
+
       this.$http.get(`${resource}/${id}`)
         .then(({ data }) => {
           this.setMaterialData(data);
@@ -287,6 +295,7 @@ export default {
       this.$store.commit('setPageSubTitle', this.material.name);
       this.updateSubCategories();
       this.setMaterialAttributes();
+      this.flushStashedData();
     },
 
     updateRentalPrice() {
@@ -338,6 +347,47 @@ export default {
       setTimeout(() => {
         this.material.sub_category_id = subCategoryId;
       }, 0);
+    },
+
+    handleFormChange() {
+      if (!this.isNew) {
+        return;
+      }
+
+      const attributes = Object.keys(this.materialAttributes).map((key) => (
+        { id: key, value: this.materialAttributes[key] }
+      ));
+      const stashedMaterial = { ...this.material, attributes };
+      const stashedData = JSON.stringify(stashedMaterial);
+
+      localStorage.setItem(storageKeyWIP, stashedData);
+    },
+
+    handleCancel() {
+      this.flushStashedData();
+      this.$router.back();
+    },
+
+    initWithStash() {
+      if (!this.isNew) {
+        this.fetchAttributes();
+        return;
+      }
+
+      const stashedData = localStorage.getItem(storageKeyWIP);
+      if (!stashedData) {
+        this.fetchAttributes();
+        return;
+      }
+
+      this.material = JSON.parse(stashedData);
+      this.fetchAttributes();
+      this.updateSubCategories();
+      this.setMaterialAttributes();
+    },
+
+    flushStashedData() {
+      localStorage.removeItem(storageKeyWIP);
     },
   },
 };

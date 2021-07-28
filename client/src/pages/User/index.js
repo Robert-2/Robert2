@@ -2,6 +2,8 @@ import Help from '@/components/Help/Help.vue';
 import FormField from '@/components/FormField';
 import ParkChooser from './ParkChooser/ParkChooser.vue';
 
+const storageKeyWIP = 'WIP-newUser';
+
 export default {
   name: 'User',
   components: { Help, FormField, ParkChooser },
@@ -51,9 +53,15 @@ export default {
     };
   },
   computed: {
+    isNew() {
+      const { id } = this.user;
+      return !id || id === 'new';
+    },
+
     isAdmin() {
       return this.user.group_id === 'admin';
     },
+
     hasMultipleParks() {
       return this.$store.state.parks.list.length > 1;
     },
@@ -64,14 +72,16 @@ export default {
   },
   methods: {
     getUserData() {
-      const { id } = this.user;
-      if (!id || id === 'new') {
+      if (this.isNew) {
+        this.initWithStash();
         return;
       }
 
       this.resetHelpLoading();
 
+      const { id } = this.user;
       const { resource } = this.$route.meta;
+
       this.$http.get(`${resource}/${id}`)
         .then(({ data }) => {
           this.setUserData(data);
@@ -105,6 +115,7 @@ export default {
           this.isLoading = false;
           this.help = { type: 'success', text: 'page-users.saved' };
           this.setUserData(data);
+          this.flushStashedData();
 
           setTimeout(() => {
             this.$router.push('/users');
@@ -155,6 +166,37 @@ export default {
         };
       }
       this.$store.commit('setPageSubTitle', this.user.pseudo);
+    },
+
+    handleFormChange() {
+      if (!this.isNew) {
+        return;
+      }
+
+      const stashedData = JSON.stringify(this.user);
+      localStorage.setItem(storageKeyWIP, stashedData);
+    },
+
+    handleCancel() {
+      this.flushStashedData();
+      this.$router.back();
+    },
+
+    initWithStash() {
+      if (!this.isNew) {
+        return;
+      }
+
+      const stashedData = localStorage.getItem(storageKeyWIP);
+      if (!stashedData) {
+        return;
+      }
+
+      this.user = JSON.parse(stashedData);
+    },
+
+    flushStashedData() {
+      localStorage.removeItem(storageKeyWIP);
     },
   },
 };

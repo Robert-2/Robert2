@@ -2,7 +2,12 @@
   <div class="content">
     <div class="content__main-view">
       <div class="Park">
-        <form class="Form" method="POST" @submit="savePark">
+        <form
+          class="Form Form--fixed-actions"
+          method="POST"
+          @submit="savePark"
+          @change="handleFormChange"
+        >
           <section class="Form__fieldset">
             <h4 class="Form__fieldset__title">
               {{ $t('minimal-infos') }}
@@ -71,7 +76,12 @@
               class="Form__actions__save success"
               type="submit"
             >
+              <i class="fas fa-save" />
               {{ $t('save') }}
+            </button>
+            <button type="button" @click="handleCancel">
+              <i class="fas fa-ban" />
+              {{ $t('cancel') }}
             </button>
           </section>
         </form>
@@ -81,7 +91,7 @@
             :error="error"
             :isLoading="isLoading"
           />
-          <div class="Park__totals">
+          <div v-if="!isNew" class="Park__totals">
             <h3>{{ $t('page-parks.total-items') }}</h3>
             <div v-if="park.total_items > 0" class="Park__totals__items">
               <strong>
