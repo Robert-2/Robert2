@@ -6,6 +6,7 @@
           class="Form Form--fixed-actions Material__form"
           method="POST"
           @submit="saveMaterial"
+          @change="handleFormChange"
           :key="entitiesState"
         >
           <section class="Form__fieldset">

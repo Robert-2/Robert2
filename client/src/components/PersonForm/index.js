@@ -27,7 +27,12 @@ export default {
       this.$emit('submit', e);
     },
 
+    handleChange(e) {
+      this.$emit('change', e);
+    },
+
     goBack() {
+      this.$emit('cancel');
       this.$router.back();
     },
   },

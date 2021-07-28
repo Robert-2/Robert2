@@ -6,6 +6,8 @@
           :person="person"
           :errors="errors"
           @submit="saveBeneficiary"
+          @change="handleFormChange"
+          @cancel="flushStashedData"
           withCompany
           withReference
         />

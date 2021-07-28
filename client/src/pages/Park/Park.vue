@@ -2,7 +2,7 @@
   <div class="content">
     <div class="content__main-view">
       <div class="Park">
-        <form class="Form" method="POST" @submit="savePark">
+        <form class="Form" method="POST" @submit="savePark" @change="handleFormChange">
           <section class="Form__fieldset">
             <h4 class="Form__fieldset__title">
               {{ $t('minimal-infos') }}
@@ -72,6 +72,10 @@
               type="submit"
             >
               {{ $t('save') }}
+            </button>
+            <button type="button" @click="handleCancel">
+              <i class="fas fa-ban" />
+              {{ $t('cancel') }}
             </button>
           </section>
         </form>

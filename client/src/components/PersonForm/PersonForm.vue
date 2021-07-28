@@ -1,5 +1,5 @@
 <template>
-  <form class="Form PersonForm" method="POST" @submit="doSubmit">
+  <form class="Form PersonForm" method="POST" @submit="doSubmit" @change="handleChange">
     <section class="Form__fieldset">
       <h4 class="Form__fieldset__title">
         {{ $t('personnal-infos') }}

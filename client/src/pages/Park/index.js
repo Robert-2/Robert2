@@ -2,6 +2,8 @@ import Help from '@/components/Help/Help.vue';
 import FormField from '@/components/FormField';
 import ParkTotalAmount from '../Parks/TotalAmount';
 
+const storageKeyWIP = 'WIP-newPark';
+
 export default {
   name: 'Material',
   components: { Help, FormField, ParkTotalAmount },
@@ -30,6 +32,11 @@ export default {
     };
   },
   computed: {
+    isNew() {
+      const { id } = this.park;
+      return !id || id === 'new';
+    },
+
     countriesOptions() {
       return this.$store.getters['countries/options'];
     },
@@ -40,14 +47,16 @@ export default {
   },
   methods: {
     getParkData() {
-      const { id } = this.park;
-      if (!id || id === 'new') {
+      if (this.isNew) {
+        this.initWithStash();
         return;
       }
 
       this.resetHelpLoading();
 
+      const { id } = this.park;
       const { resource } = this.$route.meta;
+
       this.$http.get(`${resource}/${id}`)
         .then(({ data }) => {
           this.setParkData(data);
@@ -75,6 +84,7 @@ export default {
           this.isLoading = false;
           this.help = { type: 'success', text: 'page-parks.saved' };
           this.setParkData(data);
+          this.flushStashedData();
           this.$store.dispatch('parks/refresh');
 
           setTimeout(() => {
@@ -104,6 +114,37 @@ export default {
     setParkData(data) {
       this.park = data;
       this.$store.commit('setPageSubTitle', this.park.name);
+    },
+
+    handleFormChange() {
+      if (!this.isNew) {
+        return;
+      }
+
+      const stashedData = JSON.stringify(this.park);
+      localStorage.setItem(storageKeyWIP, stashedData);
+    },
+
+    handleCancel() {
+      this.flushStashedData();
+      this.$router.back();
+    },
+
+    initWithStash() {
+      if (!this.isNew) {
+        return;
+      }
+
+      const stashedData = localStorage.getItem(storageKeyWIP);
+      if (!stashedData) {
+        return;
+      }
+
+      this.park = JSON.parse(stashedData);
+    },
+
+    flushStashedData() {
+      localStorage.removeItem(storageKeyWIP);
     },
   },
 };

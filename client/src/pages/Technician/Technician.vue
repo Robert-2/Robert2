@@ -6,6 +6,8 @@
           :person="person"
           :errors="errors"
           @submit="saveTechnician"
+          @change="handleFormChange"
+          @cancel="flushStashedData"
         />
         <Help
           :message="help"

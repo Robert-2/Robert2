@@ -2,7 +2,7 @@
   <div class="content">
     <div class="content__main-view">
       <div class="User">
-        <form class="Form" method="POST" @submit="saveUser">
+        <form class="Form" method="POST" @submit="saveUser" @change="handleFormChange">
           <section class="Form__fieldset">
             <h4 class="Form__fieldset__title">
               {{ $t('connexion-infos') }}
@@ -96,6 +96,10 @@
               type="submit"
             >
               {{ $t('save') }}
+            </button>
+            <button type="button" @click="handleCancel">
+              <i class="fas fa-ban" />
+              {{ $t('cancel') }}
             </button>
           </section>
         </form>

@@ -15,6 +15,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Corrige le comportement des champs de quantité à l'étape 4 de l'édition d'événement (#213).
 - Corrige le comportement du bouton "Afficher les quantités à date..." de la page de listing du matériel.
 - Sécurise le fichier `progress.json` de l'assistant d'installation si on saute l'étape de création des catégories (#169).
+- Conserve en mémoire les données des formulaires en cours de remplissage pour les nouveaux bénéficiaires, techniciens, matériel, parcs et utilisateurs (#173).
 
 ## 0.14.3 (2021-07-12)
 
