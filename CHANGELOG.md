@@ -14,6 +14,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Adapte l'affichage de la liste des techniciens dans la fenêtre d'événement et à l'étape 5 de l'édition d'événement (#191).
 - Corrige le comportement des champs de quantité à l'étape 4 de l'édition d'événement (#213).
 - Corrige le comportement du bouton "Afficher les quantités à date..." de la page de listing du matériel.
+- Sécurise le fichier `progress.json` de l'assistant d'installation si on saute l'étape de création des catégories (#169).
 
 ## 0.14.3 (2021-07-12)
 
