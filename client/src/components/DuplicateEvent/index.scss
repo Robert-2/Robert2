@@ -44,13 +44,16 @@
       margin-top: $content-padding-small-vertical;
 
       .LocationText,
-      .PersonsList {
+      .EventBeneficiaries,
+      .EventTechnicians {
         font-size: 1rem;
         margin-top: $content-padding-small-vertical;
       }
 
       &__duration,
-      &__items-count {
+      &__items-count,
+      .EventBeneficiaries,
+      .EventTechnicians {
         margin-top: $content-padding-small-vertical;
 
         .fas {

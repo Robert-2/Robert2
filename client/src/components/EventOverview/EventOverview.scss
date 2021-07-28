@@ -39,6 +39,17 @@
     }
   }
 
+  &__technician-periods {
+    padding: 0;
+    margin-bottom: $content-padding-small-vertical;
+
+    &__item {
+      list-style: none;
+      padding-left: 20px;
+      color: $text-nav-color;
+    }
+  }
+
   &__header,
   &__main {
     display: flex;

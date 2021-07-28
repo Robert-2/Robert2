@@ -63,21 +63,31 @@
           <dd class="EventOverview__info__value">
             <ul class="EventOverview__info__list">
               <li
-                v-for="technician in event.technicians"
-                :key="technician.technician_id"
+                v-for="technician in technicians"
+                :key="technician.id"
                 class="EventOverview__info__list-item"
               >
                 <router-link
-                  :key="technician.technician_id"
-                  :to="`/technicians/${technician.technician_id}`"
+                  :key="technician.id"
+                  :to="`/technicians/${technician.id}/view#infos`"
                   class="EventOverview__info__link"
                   :title="$t('action-edit')"
                 >
-                  {{ technician.technician.full_name }}
+                  {{ technician.name }}
                 </router-link>
-                <span v-if="technician.position">
-                  − {{ technician.position }}
-                </span>
+                <span v-if="technician.phone">− {{ technician.phone }}</span>
+                <br />
+                <ul class="EventOverview__technician-periods">
+                  <li
+                    v-for="period in technician.periods"
+                    :key="period.id"
+                    class="EventOverview__technician-periods__item"
+                  >
+                    {{ period.from.format('DD MMM LT') }} ⇒
+                    {{ period.to.format('DD MMM LT') }} :
+                    {{ period.position }}
+                  </li>
+                </ul>
               </li>
             </ul>
           </dd>

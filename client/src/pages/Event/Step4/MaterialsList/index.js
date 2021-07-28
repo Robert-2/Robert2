@@ -4,7 +4,7 @@ import Config from '@/config/globalConfig';
 import formatAmount from '@/utils/formatAmount';
 import observeBarcodeScan from '@/utils/observeBarcodeScan';
 import MaterialsStore from './MaterialsStore';
-import Quantity from './Quantity/Quantity.vue';
+import Quantity from './Quantity';
 import Units from './Units/Units.vue';
 import { normalizeFilters } from './_utils';
 
@@ -173,7 +173,7 @@ export default {
         return;
       }
 
-      // - On affiche uniquement les items selectionnés.
+      // - On affiche uniquement les items sélectionnés.
       this.setSelectedOnly(true);
 
       // - On reset les filtres (au cas ou l'item scanné n'est pas dedans).
@@ -288,10 +288,6 @@ export default {
     },
 
     handleChanges() {
-      // - This hack is necessary because Vue-table-2 does not re-render the cells
-      // - when quantities are changing.
-      this.renderId += 1;
-
       const materialIds = Object.keys(MaterialsStore.state.materials);
 
       this.hasMaterial = materialIds.length > 0;

@@ -125,8 +125,12 @@ class App
         // -- Routes: "statics"
         //
 
+        // - Install
         $this->app->map(['GET', 'POST'], '/install', $getActionFqdn('SetupController:index'))
             ->setName('install');
+        $this->app->get('/install/end', $getActionFqdn('SetupController:endInstall'))
+            ->setName('installEnd');
+
 
         // - Download files
         $this->app->get('/bills/{id:[0-9]+}/pdf[/]', $getActionFqdn('BillController:getOnePdf'))

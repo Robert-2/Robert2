@@ -60,6 +60,11 @@ class SetupController extends BaseController
                 $installData['currency'] = $allCurrencies[$installData['currency']];
             }
 
+            $stepSkipped = array_key_exists('skipped', $installData) && $installData['skipped'] === 'yes';
+            if ($stepSkipped) {
+                $installData['skipped'] = true;
+            }
+
             try {
                 $installProgress = Install::setInstallProgress($currentStep, $installData);
 
@@ -80,9 +85,7 @@ class SetupController extends BaseController
 
                 if ($currentStep === 'adminUser') {
                     $user = new User();
-                    if (array_key_exists('skipUserCreation', $installData)
-                        && $installData['skipUserCreation'] === 'yes'
-                    ) {
+                    if ($stepSkipped) {
                         $existingAdmins = $user->getAll()->where('group_id', 'admin')->get()->toArray();
                         if (empty($existingAdmins)) {
                             throw new \InvalidArgumentException(
@@ -154,6 +157,21 @@ class SetupController extends BaseController
             'stepData' => $stepData,
             'config' => $this->settings,
         ]);
+    }
+
+    public function endInstall(Request $request, Response $response)
+    {
+        $steps = Install::INSTALL_STEPS;
+
+        $endStep = end($steps);
+        $prevStep = prev($steps);
+
+        Install::setInstallProgress($prevStep, ['skipped' => true]);
+        Install::setInstallProgress($endStep, []);
+
+        return $response
+            ->withHeader('Location', '/login')
+            ->withStatus(302);
     }
 
     // ------------------------------------------------------

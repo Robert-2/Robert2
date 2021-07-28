@@ -46,7 +46,8 @@
     flex-wrap: wrap;
 
     .LocationText,
-    .PersonsList {
+    .EventBeneficiaries,
+    .EventTechnicians {
       flex: 1 0 auto;
       max-width: 100%;
       margin-right: $content-padding-small-horizontal;

@@ -5,8 +5,9 @@ import getDiscountRateFromLast from '@/utils/getDiscountRateFromLast';
 import Alert from '@/components/Alert';
 import Help from '@/components/Help/Help.vue';
 import LocationText from '@/components/LocationText/LocationText.vue';
-import PersonsList from '@/components/PersonsList/PersonsList.vue';
 import EventMaterials from '@/components/EventMaterials';
+import EventBeneficiaries from '@/components/EventBeneficiaries';
+import EventTechnicians from '@/components/EventTechnicians';
 import EventMissingMaterials from '@/components/EventMissingMaterials/EventMissingMaterials.vue';
 import ReturnInventorySummary from '@/components/ReturnInventorySummary';
 import EventEstimates from '@/components/EventEstimates/EventEstimates.vue';
@@ -23,8 +24,9 @@ export default {
     Tab,
     Help,
     LocationText,
-    PersonsList,
     EventMaterials,
+    EventBeneficiaries,
+    EventTechnicians,
     EventMissingMaterials,
     ReturnInventorySummary,
     EventEstimates,
@@ -37,9 +39,7 @@ export default {
   data() {
     return {
       event: null,
-      beneficiaries: [],
       discountRate: 0,
-      technicians: [],
       showBilling: Config.billingMode !== 'none',
       lastBill: null,
       lastEstimate: null,
@@ -221,23 +221,6 @@ export default {
         ...formatTimelineEvent(data),
         ...data,
       };
-
-      if (data.beneficiaries) {
-        this.beneficiaries = data.beneficiaries.map(
-          (beneficiary) => ({
-            id: beneficiary.id,
-            name: beneficiary.full_name,
-            company_id: beneficiary.company_id ? beneficiary.company_id : null,
-            company: beneficiary.company ? beneficiary.company.legal_name : null,
-          }),
-        );
-      }
-
-      if (data.technicians) {
-        this.technicians = data.technicians.map(
-          ({ technician }) => ({ id: technician.id, name: technician.full_name }),
-        );
-      }
 
       const [lastBill] = data.bills;
       const [lastEstimate] = data.estimates;
