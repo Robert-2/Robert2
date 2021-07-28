@@ -40,15 +40,12 @@ export default {
       columns = columns.filter((column) => column !== 'rental_price');
     }
 
-    const quantityColumnIndex = columns.findIndex((column) => column === 'stock_quantity');
-
     return {
       help: 'page-materials.help',
       error: null,
       isLoading: false,
       isDisplayTrashed: false,
       isTrashDisplayed: false,
-      quantityColumnIndex,
       dateForQuantities: null,
       columns,
       options: {
@@ -81,7 +78,6 @@ export default {
           rental_price: this.$t('rent-price'),
           replacement_price: this.$t('repl-price'),
           stock_quantity: this.$t('quantity'),
-          remaining_quantity: this.$t('remaining-quantity'),
           out_of_order_quantity: this.$t('quantity-out-of-order'),
           tags: this.$t('tags'),
           actions: '',
@@ -95,8 +91,7 @@ export default {
           rental_price: 'Materials__rental-price',
           replacement_price: 'Materials__replacement-price',
           stock_quantity: 'Materials__quantity',
-          remaining_quantity: 'Materials__remaining-quantity',
-          out_of_order_quantity: 'Materials__quantity-out',
+          out_of_order_quantity: 'Materials__quantity-broken',
           tags: 'Materials__tags',
         },
         requestFunction: (pagination) => {
@@ -239,6 +234,16 @@ export default {
       this.error = null;
       this.isLoading = true;
       this.$refs.DataTable.getData();
+
+      const { headings, columnsClasses } = this.$refs.DataTable.options;
+
+      if (this.dateForQuantities === null) {
+        headings.stock_quantity = this.$t('quantity');
+        columnsClasses.stock_quantity = 'Materials__quantity';
+      } else {
+        headings.stock_quantity = this.$t('remaining-quantity');
+        columnsClasses.stock_quantity = 'Materials__quantity Materials__quantity--remaining';
+      }
     },
 
     refreshTableAndPagination() {
@@ -261,8 +266,11 @@ export default {
       return value !== null ? formatAmount(value) : '';
     },
 
-    getStockQuantity(material) {
-      return material.stock_quantity;
+    getQuantity(material) {
+      if (this.dateForQuantities === null) {
+        return material.stock_quantity;
+      }
+      return material.remaining_quantity;
     },
 
     async showQuantityAtDateModal() {
@@ -289,7 +297,6 @@ export default {
             if (params) {
               this.dateForQuantities = moment(params.date);
               this.refreshTable();
-              this.columns.splice(this.quantityColumnIndex, 1, 'remaining_quantity');
             }
           },
         },
@@ -298,7 +305,6 @@ export default {
 
     removeDateForQuantities() {
       this.dateForQuantities = null;
-      this.columns.splice(this.quantityColumnIndex, 1, 'stock_quantity');
       this.refreshTable();
     },
   },

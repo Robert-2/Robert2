@@ -48,7 +48,7 @@
   &__description,
   &__rental-price,
   &__replacement-price,
-  &__quantity-out,
+  &__quantity-broken,
   &__tags {
     display: none;
   }
@@ -63,13 +63,19 @@
   }
 
   &__quantity,
-  &__remaining-quantity,
-  &__quantity-out {
+  &__quantity-broken {
     text-align: center !important;
   }
 
-  &__remaining-quantity {
-    color: $text-warning-color !important;
+  &__quantity {
+    &--remaining {
+      color: $text-warning-color !important;
+      font-weight: 800;
+    }
+  }
+
+  &__quantity-broken:not(th) {
+    color: $text-danger-color !important;
     font-weight: 800;
   }
 
@@ -106,7 +112,7 @@
   }
 
   @media(min-width: $screen-desktop) {
-    &__quantity-out,
+    &__quantity-broken,
     &__tags {
       display: table-cell;
     }

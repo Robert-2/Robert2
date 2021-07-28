@@ -13,6 +13,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Affiche le détail des horaires des techniciens dans les fiches de sortie (#190).
 - Adapte l'affichage de la liste des techniciens dans la fenêtre d'événement et à l'étape 5 de l'édition d'événement (#191).
 - Corrige le comportement des champs de quantité à l'étape 4 de l'édition d'événement (#213).
+- Corrige le comportement du bouton "Afficher les quantités à date..." de la page de listing du matériel.
 
 ## 0.14.3 (2021-07-12)
 

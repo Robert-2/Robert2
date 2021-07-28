@@ -85,7 +85,7 @@
           {{ formatAmount(material.row.replacement_price) }}
         </div>
         <template #stock_quantity="{ row: material }">
-          {{ getStockQuantity(material) }}
+          {{ getQuantity(material) }}
         </template>
         <div slot="out_of_order_quantity" slot-scope="material">
           {{ material.row.out_of_order_quantity || '' }}
