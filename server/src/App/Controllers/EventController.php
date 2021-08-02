@@ -196,6 +196,24 @@ class EventController extends BaseController
         return $response->withJson(['success' => true], SUCCESS_OK);
     }
 
+    public function updateTechnician(Request $request, Response $response): Response
+    {
+        $id = (int)$request->getAttribute('id');
+        if (!Event::staticExists($id)) {
+            throw new HttpNotFoundException($request);
+        }
+
+        $eventTechnicianId = (int)$request->getAttribute('eventTechnicianId');
+        $postData = (array)$request->getParsedBody();
+
+        $eventTechnician = EventTechnician::findOrFail($eventTechnicianId);
+        $eventTechnician->start_time = $postData['start_time'];
+        $eventTechnician->end_time = $postData['end_time'];
+        $eventTechnician->validate()->save();
+
+        return $response->withJson(['success' => true], SUCCESS_OK);
+    }
+
     public function removeTechnician(Request $request, Response $response): Response
     {
         $id = (int)$request->getAttribute('id');

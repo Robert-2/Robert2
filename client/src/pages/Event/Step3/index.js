@@ -196,6 +196,25 @@ const EventStep3 = {
       this.$emit('gotoStep', 4);
     },
 
+    async handleItemMoved(item, callback) {
+      const data = {
+        start_time: moment(item.start).format(),
+        end_time: moment(item.end).format(),
+      };
+
+      try {
+        this.hasCriticalError = false;
+        this.isLoading = true;
+        await this.$http.put(`events/${this.event.id}/event-technician/${item.id}`, data);
+        this.handleItemUpdated();
+        callback(item);
+      } catch {
+        callback(null);
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
     async handleItemRemove(item, callback) {
       const { value: isConfirmed } = await Alert.ConfirmDelete(this.$t, 'events.technician-item', false);
       if (!isConfirmed) {
@@ -208,13 +227,13 @@ const EventStep3 = {
         await this.$http.delete(`events/${this.event.id}/event-technician/${item.id}`);
         callback(item);
       } catch {
-        this.hasCriticalError = true;
+        callback(null);
       } finally {
         this.isLoading = false;
       }
     },
 
-    handleItemRemoved() {
+    handleItemUpdated() {
       this.isLoading = false;
       this.hasCriticalError = false;
       this.updateEvent();
@@ -276,8 +295,9 @@ const EventStep3 = {
       handleNextClick,
       handleDoubleClick,
       handleBackToCalendarClick,
+      handleItemMoved,
       handleItemRemove,
-      handleItemRemoved,
+      handleItemUpdated,
     } = this;
 
     const renderContent = () => {
@@ -305,10 +325,9 @@ const EventStep3 = {
           groups={groups}
           options={timelineOptions}
           onDoubleClick={handleDoubleClick}
+          onItemMoved={handleItemMoved}
           onItemRemove={handleItemRemove}
-          onItemRemoved={handleItemRemoved}
-          // TODO: Prendre en charge le resizing
-          // TODO: Prendre en charge le déplacement
+          onItemRemoved={handleItemUpdated}
           // TODO: Afficher la tooltip avec les données du slot (utile pour les petits slots).
         />
       );

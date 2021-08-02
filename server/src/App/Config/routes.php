@@ -82,6 +82,7 @@ return [
         '/events/restore/{id:[0-9]+}[/]' => 'EventController:restore',
         '/events/{id:[0-9]+}/return[/]' => 'EventController:updateMaterialReturn',
         '/events/{id:[0-9]+}/terminate[/]' => 'EventController:updateMaterialTerminate',
+        '/events/{id:[0-9]+}/event-technician/{eventTechnicianId:[0-9]+}[/]' => 'EventController:updateTechnician',
         '/settings[/]' => 'SettingController:update',
     ],
     'delete' => [
