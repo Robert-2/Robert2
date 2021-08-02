@@ -37,7 +37,7 @@
         "delfimov/translate": "2.6.0",
         "dompdf/dompdf": "1.0.2",
         "firebase/php-jwt": "5.4.0",
-        "illuminate/database": "8.51.0",
+        "illuminate/database": "8.52.0",
         "illuminate/pagination": "8.51.0",
         "monolog/monolog": "2.3.2",
         "php-di/php-di": "6.3.4",
