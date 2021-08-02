@@ -1,6 +1,7 @@
 import './index.scss';
 import moment from 'moment';
 import { TECHNICIAN_EVENT_STEP, TECHNICIAN_EVENT_MIN_DURATION } from '@/config/constants';
+import Alert from '@/components/Alert';
 import CriticalError from '@/components/CriticalError';
 import Loading from '@/components/Loading';
 import Timeline from '@/components/Timeline';
@@ -195,6 +196,30 @@ const EventStep3 = {
       this.$emit('gotoStep', 4);
     },
 
+    async handleItemRemove(item, callback) {
+      const { value: isConfirmed } = await Alert.ConfirmDelete(this.$t, 'events.technician-item', false);
+      if (!isConfirmed) {
+        callback(null);
+        return;
+      }
+
+      try {
+        this.isLoading = true;
+        await this.$http.delete(`events/${this.event.id}/event-technician/${item.id}`);
+        callback(item);
+      } catch {
+        this.hasCriticalError = true;
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    handleItemRemoved() {
+      this.isLoading = false;
+      this.hasCriticalError = false;
+      this.updateEvent();
+    },
+
     // ------------------------------------------------------
     // -
     // -    Methods
@@ -251,6 +276,8 @@ const EventStep3 = {
       handleNextClick,
       handleDoubleClick,
       handleBackToCalendarClick,
+      handleItemRemove,
+      handleItemRemoved,
     } = this;
 
     const renderContent = () => {
@@ -278,10 +305,11 @@ const EventStep3 = {
           groups={groups}
           options={timelineOptions}
           onDoubleClick={handleDoubleClick}
-          // TODO: Prendre charge la suppression des slots technicien pour l'événement en cours.
-          // TODO: Afficher la tooltip avec les données du slot (utile pour les petits slots).
+          onItemRemove={handleItemRemove}
+          onItemRemoved={handleItemRemoved}
           // TODO: Prendre en charge le resizing
           // TODO: Prendre en charge le déplacement
+          // TODO: Afficher la tooltip avec les données du slot (utile pour les petits slots).
         />
       );
     };

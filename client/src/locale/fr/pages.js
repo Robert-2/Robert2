@@ -109,6 +109,9 @@ export default {
       Vous pouvez passer cette étape.`
     ),
     'assign-technician': "Assigner {name} en tant que technicien(ne)",
+    'technician-item': {
+      'confirm-permanently-delete': "Voulez-vous vraiment supprimer l'assignation de ce technicien ?",
+    },
     'assign-this-technician': "Assigner ce technicien",
     'period-assigned': "Période assignée",
     'start-end-dates-and-time': "Dates et heures de début et fin",

@@ -110,6 +110,9 @@ export default {
     ),
     'assign-technician': "Assign {name} as a technician",
     'assign-this-technician': "Assign this technician",
+    'technician-item': {
+      'confirm-permanently-delete': "Do you really want to remove this technician assignation?",
+    },
     'period-assigned': "Assigned period",
     'start-end-dates-and-time': "Start and End dates and times",
     'saved': "Event saved.",

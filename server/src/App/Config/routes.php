@@ -95,6 +95,7 @@ return [
         '/materials/{id:[0-9]+}[/]' => 'MaterialController:delete',
         '/attributes/{id:[0-9]+}[/]' => 'AttributeController:delete',
         '/events/{id:[0-9]+}[/]' => 'EventController:delete',
+        '/events/{id:[0-9]+}/event-technician/{eventTechnicianId:[0-9]+}[/]' => 'EventController:removeTechnician',
         '/bills/{id:[0-9]+}[/]' => 'BillController:delete',
         '/documents/{id:[0-9]+}[/]' => 'DocumentController:delete',
         '/estimates/{id:[0-9]+}[/]' => 'EstimateController:delete',

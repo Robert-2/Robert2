@@ -196,6 +196,19 @@ class EventController extends BaseController
         return $response->withJson(['success' => true], SUCCESS_OK);
     }
 
+    public function removeTechnician(Request $request, Response $response): Response
+    {
+        $id = (int)$request->getAttribute('id');
+        if (!Event::staticExists($id)) {
+            throw new HttpNotFoundException($request);
+        }
+
+        $eventTechnicianId = (int)$request->getAttribute('eventTechnicianId');
+        EventTechnician::destroy($eventTechnicianId);
+
+        return $response->withJson(['success' => true], SUCCESS_OK);
+    }
+
     // ——————————————————————————————————————————————————————
     // —
     // —    Internal Methods
