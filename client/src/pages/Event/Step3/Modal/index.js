@@ -41,6 +41,7 @@ const EventStep3Modal = {
 
     const baseData = {
       position: '',
+      isLoading: false,
       isSaving: false,
       error: null,
       isNew: false,
@@ -105,8 +106,30 @@ const EventStep3Modal = {
     // -
     // ------------------------------------------------------
 
-    fetchTechnicianEvent() {
-      // TODO: fetch du TechnicianEvent
+    async fetchTechnicianEvent() {
+      if (typeof this.$props.data !== 'number') {
+        return;
+      }
+
+      this.error = null;
+      this.isLoading = true;
+
+      try {
+        const { data: eventTechnicianId } = this.$props;
+        const { data } = await this.$http.get(`event-technicians/${eventTechnicianId}`);
+
+        const startDate = moment(data.start_time).toDate();
+        const endDate = moment(data.start_time).add(TECHNICIAN_EVENT_MIN_DURATION).toDate();
+
+        this.eventId = data.event_id;
+        this.position = data.position;
+        this.technician = data.technician;
+        this.dates = [startDate, endDate];
+      } catch (error) {
+        this.error = error;
+      } finally {
+        this.isLoading = false;
+      }
     },
 
     async save() {
@@ -114,6 +137,7 @@ const EventStep3Modal = {
         return;
       }
 
+      this.error = null;
       this.isSaving = true;
 
       const { position, dates, eventId, technician } = this;
@@ -123,8 +147,16 @@ const EventStep3Modal = {
         position,
       };
 
+      let url = `events/${eventId}/technician/${technician.id}`;
+      if (typeof this.$props.data === 'number') {
+        const { data: eventTechnicianId } = this.$props;
+        url = `event-technicians/${eventTechnicianId}`;
+      }
+
+      const request = this.isNew ? this.$http.post : this.$http.put;
+
       try {
-        await this.$http.post(`events/${eventId}/technician/${technician.id}`, postData);
+        await request(url, postData);
         this.$emit('close');
       } catch (error) {
         this.error = error;

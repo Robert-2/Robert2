@@ -170,14 +170,23 @@ class EventController extends BaseController
         return $response->withJson($this->_getFormattedEvent($id), SUCCESS_OK);
     }
 
+
+    public function getOneEventTechnician(Request $request, Response $response): Response
+    {
+        $id = $request->getAttribute('id');
+        $eventTechnician = EventTechnician::findOrFail($id);
+
+        return $response->withJson($eventTechnician->toArray(), SUCCESS_OK);
+    }
+
     public function assignTechnician(Request $request, Response $response): Response
     {
-        $id = (int)$request->getAttribute('id');
+        $id = $request->getAttribute('id');
         if (!Event::staticExists($id)) {
             throw new HttpNotFoundException($request);
         }
 
-        $technicianId = (int)$request->getAttribute('technicianId');
+        $technicianId = $request->getAttribute('technicianId');
         if (!Person::staticExists($technicianId)) {
             throw new HttpNotFoundException($request);
         }
@@ -188,7 +197,7 @@ class EventController extends BaseController
             'technician_id' => $technicianId,
             'start_time' => $postData['start'],
             'end_time' => $postData['end'],
-            'position' => $postData['position'],
+            'position' => $postData['position'] ?? null,
         ]);
 
         $eventTechnician->validate()->save();
@@ -198,17 +207,13 @@ class EventController extends BaseController
 
     public function updateTechnician(Request $request, Response $response): Response
     {
-        $id = (int)$request->getAttribute('id');
-        if (!Event::staticExists($id)) {
-            throw new HttpNotFoundException($request);
-        }
-
-        $eventTechnicianId = (int)$request->getAttribute('eventTechnicianId');
+        $eventTechnicianId = $request->getAttribute('id');
         $postData = (array)$request->getParsedBody();
 
         $eventTechnician = EventTechnician::findOrFail($eventTechnicianId);
-        $eventTechnician->start_time = $postData['start_time'];
-        $eventTechnician->end_time = $postData['end_time'];
+        $eventTechnician->start_time = $postData['start'];
+        $eventTechnician->end_time = $postData['end'];
+        $eventTechnician->position = $postData['position'] ?? null;
         $eventTechnician->validate()->save();
 
         return $response->withJson(['success' => true], SUCCESS_OK);
@@ -216,12 +221,12 @@ class EventController extends BaseController
 
     public function removeTechnician(Request $request, Response $response): Response
     {
-        $id = (int)$request->getAttribute('id');
+        $id = $request->getAttribute('id');
         if (!Event::staticExists($id)) {
             throw new HttpNotFoundException($request);
         }
 
-        $eventTechnicianId = (int)$request->getAttribute('eventTechnicianId');
+        $eventTechnicianId = $request->getAttribute('eventTechnicianId');
         EventTechnician::destroy($eventTechnicianId);
 
         return $response->withJson(['success' => true], SUCCESS_OK);

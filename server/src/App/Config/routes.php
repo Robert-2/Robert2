@@ -36,6 +36,7 @@ return [
         '/events[/]' => 'EventController:getAll',
         '/events/{id:[0-9]+}[/]' => 'EventController:getOne',
         '/events/{id:[0-9]+}/missing-materials[/]' => 'EventController:getMissingMaterials',
+        '/event-technicians/{id:[0-9]+}[/]' => 'EventController:getOneEventTechnician',
         '/bills/{id:[0-9]+}[/]' => 'BillController:getOne',
         '/estimates/{id:[0-9]+}[/]' => 'EstimateController:getOne',
         '/settings[/]' => 'SettingController:getAll',
@@ -82,7 +83,7 @@ return [
         '/events/restore/{id:[0-9]+}[/]' => 'EventController:restore',
         '/events/{id:[0-9]+}/return[/]' => 'EventController:updateMaterialReturn',
         '/events/{id:[0-9]+}/terminate[/]' => 'EventController:updateMaterialTerminate',
-        '/events/{id:[0-9]+}/event-technician/{eventTechnicianId:[0-9]+}[/]' => 'EventController:updateTechnician',
+        '/event-technicians/{id:[0-9]+}[/]' => 'EventController:updateTechnician',
         '/settings[/]' => 'SettingController:update',
     ],
     'delete' => [

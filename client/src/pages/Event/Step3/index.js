@@ -203,14 +203,14 @@ const EventStep3 = {
 
     async handleItemMoved(item, callback) {
       const data = {
-        start_time: moment(item.start).format(),
-        end_time: moment(item.end).format(),
+        start: moment(item.start).format(),
+        end: moment(item.end).format(),
       };
 
       try {
         this.hasCriticalError = false;
         this.isLoading = true;
-        await this.$http.put(`events/${this.event.id}/event-technician/${item.id}`, data);
+        await this.$http.put(`event-technicians/${item.id}`, data);
         this.handleItemUpdated();
         callback(item);
       } catch {
