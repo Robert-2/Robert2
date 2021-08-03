@@ -106,7 +106,7 @@ const EventStep3Modal = {
     // ------------------------------------------------------
 
     fetchTechnicianEvent() {
-      console.log('fetch du TechnicianEvent');
+      // TODO: fetch du TechnicianEvent
     },
 
     async save() {

@@ -52,21 +52,24 @@ const EventStep3 = {
         return null;
       }
 
-      const eventSlots = (this.event?.technicians ?? []).map(
+      const { event } = this;
+
+      const eventSlots = (event?.technicians ?? []).map(
         (eventTechnician) => {
           const { technician_id: technicianId } = eventTechnician;
-          const { id, start, end, title: content } = formatEventTechnician(
-            { ...eventTechnician, event: this.event },
+          const { id, start, end, title } = formatEventTechnician(
+            { ...eventTechnician, event },
           );
 
           return {
             id,
             start,
             end,
-            content,
+            content: title,
             group: technicianId,
             editable: true,
             type: 'range',
+            title,
           };
         },
       );
@@ -83,6 +86,7 @@ const EventStep3 = {
             group: technician.id,
             editable: false,
             type: 'background',
+            // - Pas de `title`, car la tooltip fonctionne pas pour le type 'background'...
           };
         })
       ));
@@ -329,7 +333,6 @@ const EventStep3 = {
           onItemMoved={handleItemMoved}
           onItemRemove={handleItemRemove}
           onItemRemoved={handleItemUpdated}
-          // TODO: Afficher la tooltip avec les données du slot (utile pour les petits slots).
         />
       );
     };

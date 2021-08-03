@@ -26,5 +26,10 @@ $timeline-group-border-color: #636363 !default;
       box-sizing: content-box;
       border-bottom: 1px solid $timeline-group-border-color;
     }
+
+    .vis-item.vis-range {
+      max-height: 65px;
+      overflow: hidden;
+    }
   }
 }
