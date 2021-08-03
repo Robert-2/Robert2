@@ -1,6 +1,6 @@
 import './index.scss';
 import moment from 'moment';
-import { TECHNICIAN_EVENT_STEP, TECHNICIAN_EVENT_MIN_DURATION } from '@/config/constants';
+import { TECHNICIAN_EVENT_STEP, TECHNICIAN_EVENT_MIN_DURATION, DATE_DB_FORMAT } from '@/config/constants';
 import Alert from '@/components/Alert';
 import CriticalError from '@/components/CriticalError';
 import Help from '@/components/Help/Help.vue';
@@ -203,8 +203,8 @@ const EventStep3 = {
 
     async handleItemMoved(item, callback) {
       const data = {
-        start_time: moment(item.start).format(),
-        end_time: moment(item.end).format(),
+        start_time: moment(item.start).format(DATE_DB_FORMAT),
+        end_time: moment(item.end).format(DATE_DB_FORMAT),
       };
 
       try {

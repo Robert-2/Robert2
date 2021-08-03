@@ -47,6 +47,17 @@ class EventTechnician extends BaseModel
             return 'technician-assignation-after-event';
         }
 
+        $technicianHasOtherEvents = static::where('id', '!=', $this->id)
+            ->where('technician_id', $this->technician_id)
+            ->where([
+                ['end_time', '>=', $this->start_time],
+                ['start_time', '<=', $this->end_time],
+            ])
+            ->exists();
+        if ($technicianHasOtherEvents) {
+            return 'technician-already-busy-for-this-period';
+        }
+
         return true;
     }
 

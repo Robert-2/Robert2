@@ -44,6 +44,11 @@ const EventStep3Modal = {
       isLoading: false,
       isSaving: false,
       error: null,
+      validationErrors: {
+        start_time: null,
+        end_time: null,
+        position: null,
+      },
       isNew: false,
       eventId: null,
       technician: null,
@@ -161,14 +166,27 @@ const EventStep3Modal = {
         await request(url, postData);
         this.$emit('close');
       } catch (error) {
-        this.error = error;
+        const { code, details } = error.response?.data?.error || { code: 0, details: {} };
+        console.log(code, details);
+        if (code === 400) {
+          this.validationErrors = { ...details };
+        }
       } finally {
         this.isSaving = false;
       }
     },
   },
   render() {
-    const { $t: __, name, isSaving, error, datePickerOptions, handleSubmit, handleClose } = this;
+    const {
+      $t: __,
+      name,
+      isSaving,
+      error,
+      validationErrors,
+      datePickerOptions,
+      handleSubmit,
+      handleClose,
+    } = this;
 
     return (
       <div class="EventStep3Modal">
@@ -189,11 +207,13 @@ const EventStep3Modal = {
               label={__('page-events.period-assigned')}
               placeholder={__('page-events.start-end-dates-and-time')}
               datepickerOptions={datePickerOptions}
+              errors={validationErrors.start_time || validationErrors.end_time}
             />
             <FormField
               v-model={this.position}
               name="position"
               label={`${__('position-held')} (${__('optional')})`}
+              errors={validationErrors.position}
             />
             {error && <ErrorMessage error={error} />}
             <div class="EventStep3Modal__form__actions">
