@@ -3,6 +3,7 @@ import moment from 'moment';
 import { TECHNICIAN_EVENT_STEP, TECHNICIAN_EVENT_MIN_DURATION } from '@/config/constants';
 import Alert from '@/components/Alert';
 import CriticalError from '@/components/CriticalError';
+import Help from '@/components/Help/Help.vue';
 import Loading from '@/components/Loading';
 import Timeline from '@/components/Timeline';
 import getPersonItemLabel from '@/utils/getPersonItemLabel';
@@ -338,6 +339,9 @@ const EventStep3 = {
         <header class="EventStep3__header">
           <h1 class="EventStep3__title">{__('page-events.event-technicians')}</h1>
           {isLoading && <Loading horizontal />}
+          {(!isLoading && techniciansCount > 0) && (
+            <Help message={__('page-events.technicians-help')} />
+          )}
         </header>
         <div class="EventStep3__content">
           {renderContent()}

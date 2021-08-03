@@ -127,6 +127,7 @@ export default {
     'warning-no-material': "Attention, cet événement est vide, il ne contient aucun matériel pour le moment\u00a0!",
     'warning-no-beneficiary': "Attention, cet événement n'a aucun bénéficiaire\u00a0!",
     'beneficiary-billing-help': "Seul le premier bénéficiaire de la liste apparaîtra sur la facture.",
+    'technicians-help': "Double-cliquez sur la ligne d'un technicien à la date/heure de début voulue pour l'assigner à l'événement.",
     'missing-material-count': "Besoin de {quantity}, il en manque\u00a0{missing}\u00a0!",
     'problems-on-returned-materials': "Problèmes sur le matériel retourné",
     'return-inventory-not-done-yet': "L'inventaire du retour de matériel n'a pas été fait, ou n'est pas encore terminé.",

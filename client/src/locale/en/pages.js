@@ -127,6 +127,7 @@ export default {
     'warning-no-material': "Warning: this event is empty, there is no material at the moment!",
     'warning-no-beneficiary': "Warning: this event has no beneficiaries!",
     'beneficiary-billing-help': "Only the first beneficiary in the list will be displayed on the bill.",
+    'technicians-help': "Double-click on a technician's line to assign her/him to the event at the needed start date/time.",
     'missing-material-count': "Need {quantity}, missing\u00a0{missing}!",
     'problems-on-returned-materials': "Problems on returned materials",
     'return-inventory-not-done-yet': "Materials return inventory hasn't been done yet, or is not finished.",
