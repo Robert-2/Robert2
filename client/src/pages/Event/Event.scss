@@ -1,7 +1,7 @@
 .Event {
+  height: 100%;
   display: flex;
   flex-wrap: wrap;
-  padding-bottom: 3rem;
 
   &__panel {
     position: fixed;
@@ -44,10 +44,7 @@
     margin-left: 180px;
   }
 
-  .EventStep3 {
-    max-width: 700px;
-  }
-
+  .EventStep3,
   .EventStep4 {
     max-width: none;
   }

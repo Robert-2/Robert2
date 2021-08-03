@@ -1,4 +1,6 @@
 .MultipleItem {
+  $block: &;
+
   &__item-pivot-field  {
     width: 150px;
     margin-left: .6rem;
@@ -37,6 +39,16 @@
 
     button {
       padding: 5px 10px;
+    }
+  }
+
+  //
+  // - Empty state
+  //
+
+  &--empty {
+    #{$block}__actions {
+      margin-left: 0;
     }
   }
 }

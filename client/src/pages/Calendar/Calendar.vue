@@ -17,13 +17,13 @@
         class="Calendar__timeline"
         :items="events"
         :options="timelineOptions"
-        @item-over="onItemOver"
-        @item-out="onItemOut"
-        @item-moved="onItemMoved"
-        @item-remove="onItemRemove"
-        @item-removed="onItemRemoved"
-        @double-click="onDoubleClick"
-        @range-changed="onRangeChanged"
+        @itemOver="onItemOver"
+        @itemOut="onItemOut"
+        @itemMoved="onItemMoved"
+        @itemRemove="onItemRemove"
+        @itemRemoved="onItemRemoved"
+        @doubleClick="onDoubleClick"
+        @rangeChanged="onRangeChanged"
       />
       <div class="Calendar__footer">
         <Help :message="help" :error="error" />

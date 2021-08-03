@@ -47,6 +47,7 @@ export default {
   'item-not-found': "{item} not found. Element may have been deleted.",
   'locked': "locked",
   'clear-filters': "Clear filters",
+  'optional': "Optional",
 
   'save': "Save",
   'save-draft': "Save draft",

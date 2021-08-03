@@ -30,7 +30,7 @@
       class="MaterialViewAvailabilities__timeline"
       :items="materialEventsTimeline"
       :options="timelineOptions"
-      @double-click="handleDoubleClickTimeline"
+      @doubleClick="handleDoubleClickTimeline"
       @click="handleClickTimeline"
     />
   </div>

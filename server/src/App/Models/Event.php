@@ -236,8 +236,8 @@ class Event extends BaseModel
         $conditions = function (Builder $query) use ($start, $end) {
             $query
                 ->where([
-                    ['end_date', '>', $start],
-                    ['start_date', '<', $end],
+                    ['end_date', '>=', $start],
+                    ['start_date', '<=', $end],
                 ]);
         };
 
@@ -257,8 +257,8 @@ class Event extends BaseModel
 
         return static::orderBy('start_date', 'asc')
             ->where([
-                ['end_date', '>', $now],
-                ['start_date', '<', $now],
+                ['end_date', '>=', $now],
+                ['start_date', '<=', $now],
             ]);
     }
 
@@ -525,14 +525,14 @@ class Event extends BaseModel
         $technicians = [];
         foreach ($techniciansData as $technicianData) {
             try {
-                $technician = new EventTechnician([
+                $eventTechnician = new EventTechnician([
                     'event_id' => $this->id,
                     'technician_id' => $technicianData['id'],
                     'start_time' => $technicianData['start_time'],
                     'end_time' => $technicianData['end_time'],
                     'position' => $technicianData['position'],
                 ]);
-                $technicians[] = $technician->validate();
+                $technicians[] = $eventTechnician->withoutAlreadyBusyChecks()->validate();
             } catch (ValidationException $e) {
                 $errors[$technicianData['id']] = $e->getValidationErrors();
             }

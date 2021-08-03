@@ -1,6 +1,5 @@
 import moment from 'moment';
 import Config from '@/config/globalConfig';
-import ModalConfig from '@/config/modalConfig';
 import Alert from '@/components/Alert';
 import Help from '@/components/Help/Help.vue';
 import Dropdown, { getItemClassnames } from '@/components/Dropdown';
@@ -206,22 +205,10 @@ export default {
         return;
       }
 
-      const modalConfig = {
-        ...ModalConfig,
-        width: 600,
-        draggable: true,
-        clickToClose: false,
-      };
-
       this.$modal.show(
         AssignTags,
-        {
-          entity: 'materials',
-          id,
-          name,
-          initialTags: tags,
-        },
-        modalConfig,
+        { id, name, entity: 'materials', initialTags: tags },
+        { width: 600, draggable: true, clickToClose: false },
         {
           'before-close': () => {
             this.refreshTable();
@@ -291,20 +278,13 @@ export default {
         return;
       }
 
-      const modalConfig = {
-        ...ModalConfig,
-        width: 600,
-        draggable: true,
-        clickToClose: false,
-      };
-
       this.$modal.show(
         PromptDate,
         {
           title: this.$t('page-materials.display-quantities-at-date'),
           defaultDate: new Date(),
         },
-        modalConfig,
+        { width: 600, draggable: true, clickToClose: false },
         {
           'before-close': ({ params }) => {
             if (params) {

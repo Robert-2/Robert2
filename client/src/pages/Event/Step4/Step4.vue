@@ -4,11 +4,11 @@
       <MaterialsList :event="event" @change="handleChange" />
     </section>
     <section class="Form__actions">
-      <button class="EventStep4__save-btn info" type="submit">
+      <button class="info" type="submit">
         <i class="fas fa-arrow-left" />
         {{ $t('page-events.save-and-back-to-calendar') }}
       </button>
-      <button class="EventStep4__save-btn success" @click="saveAndNext">
+      <button class="success" @click="saveAndNext">
         {{ $t('page-events.save-and-continue') }}
         <i class="fas fa-arrow-right" />
       </button>

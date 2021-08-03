@@ -97,6 +97,7 @@ export default {
     'edit-event': "Modifier l'événement",
     'save-and-back-to-calendar': "Sauvegarder et retour au calendrier",
     'save-and-continue': "Sauvegarder et continuer",
+    'continue': "Continuer",
     'step': "Étape",
     'event-informations': "Informations",
     'event-beneficiaries': "Bénéficiaires",
@@ -104,6 +105,17 @@ export default {
     'event-materials': "Matériel",
     'event-summary': "Récapitulatif",
     'event-confirmation': "Confirmation",
+    'no-technician-pass-this-step': (
+      `Il n'y a aucun technicien disponible pour cette période.
+      Vous pouvez passer cette étape.`
+    ),
+    'assign-technician': "Assigner {name} en tant que technicien(ne)",
+    'technician-item': {
+      'confirm-permanently-delete': "Voulez-vous vraiment supprimer l'assignation de ce technicien ?",
+    },
+    'assign-this-technician': "Assigner ce technicien",
+    'period-assigned': "Période assignée",
+    'start-end-dates-and-time': "Dates et heures de début et fin",
     'saved': "Événement sauvegardé.",
     'not-saved': "L'événement comporte des modifications non sauvegardées",
     'display-only-selected-materials': "Afficher uniquement le matériel de l'événement\u00a0?",
@@ -116,6 +128,7 @@ export default {
     'warning-no-material': "Attention, cet événement est vide, il ne contient aucun matériel pour le moment\u00a0!",
     'warning-no-beneficiary': "Attention, cet événement n'a aucun bénéficiaire\u00a0!",
     'beneficiary-billing-help': "Seul le premier bénéficiaire de la liste apparaîtra sur la facture.",
+    'technicians-help': "Double-cliquez sur la ligne d'un technicien à la date/heure de début voulue pour l'assigner à l'événement.",
     'missing-material-count': "Besoin de {quantity}, il en manque\u00a0{missing}\u00a0!",
     'no-units-available': "Aucune unité disponible pendant cet événement pour ce matériel.",
     'problems-on-returned-materials': "Problèmes sur le matériel retourné",

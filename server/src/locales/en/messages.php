@@ -2472,6 +2472,9 @@ return [
     "technician-assignation-after-event"
     => "Assignment of this technician ends after the event.",
 
+    "technician-already-busy-for-this-period"
+    => "This technician is already busy for this period.",
+
     //
     // - Install messages
     //

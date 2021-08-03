@@ -2474,6 +2474,9 @@ return [
     "technician-assignation-after-event"
     => "L'assignation de ce technicien se termine après l'événement.",
 
+    "technician-already-busy-for-this-period"
+    => "Ce technicien est déjà occupé pour cette période.",
+
     //
     // - Install messages
     //

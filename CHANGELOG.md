@@ -6,6 +6,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 
 ## 0.15.0-premium (UNRELEASED)
 
+- Change l'étape 3 de création / modification d'événement : ajoute une frise temporelle permettant de visualiser les assignations de tous les techniciens pour la période de l'événement, et d'assigner les techniciens à des horaires précis (#193).
 - Ajoute une page qui affiche les informations d'un technicien (#188).
 - Ajoute un onglet "Agenda" dans la page des techniciens qui montre un calendrier avec toutes les assignations du technicien (#188).
 - Ajoute un filtre dans la liste des techniciens permettant de n'afficher que ceux qui sont disponibles dans une période donnée (#189).

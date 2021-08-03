@@ -1,7 +1,7 @@
 import './index.scss';
 import MonthCalendar from '@/components/MonthCalendar';
 import Loading from '@/components/Loading';
-import formatTechnicianEvent from './utils';
+import { formatTechnicianEvent } from './utils';
 
 const TechnicianViewSchedule = {
   name: 'TechnicianViewSchedule',

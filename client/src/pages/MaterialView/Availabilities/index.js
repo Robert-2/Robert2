@@ -1,5 +1,4 @@
 import moment from 'moment';
-import ModalConfig from '@/config/modalConfig';
 import formatTimelineEvent from '@/utils/timeline-event/format';
 import Help from '@/components/Help/Help.vue';
 import Timeline from '@/components/Timeline';
@@ -82,7 +81,7 @@ export default {
       this.$modal.show(
         EventDetails,
         { eventId },
-        ModalConfig,
+        undefined,
         {
           'before-close': () => {
             this.getMaterialEventsData();
