@@ -96,6 +96,7 @@ export default {
     'edit-event': "Modify event",
     'save-and-back-to-calendar': "Save and back to calendar",
     'save-and-continue': "Save and continue",
+    'continue': "Continue",
     'step': "Step",
     'event-informations': "Informations",
     'event-beneficiaries': "Beneficiaries",
@@ -103,6 +104,17 @@ export default {
     'event-materials': "Materials",
     'event-summary': "Summary",
     'event-confirmation': "Confirmation",
+    'no-technician-pass-this-step': (
+      `There is no technician available for this period.
+      You can skip this step.`
+    ),
+    'assign-technician': "Assign {name} as a technician",
+    'assign-this-technician': "Assign this technician",
+    'technician-item': {
+      'confirm-permanently-delete': "Do you really want to remove this technician assignation?",
+    },
+    'period-assigned': "Assigned period",
+    'start-end-dates-and-time': "Start and End dates and times",
     'saved': "Event saved.",
     'not-saved': "Event has not saved modifications",
     'display-only-selected-materials': "Display event's selected materials only?",
@@ -115,6 +127,7 @@ export default {
     'warning-no-material': "Warning: this event is empty, there is no material at the moment!",
     'warning-no-beneficiary': "Warning: this event has no beneficiaries!",
     'beneficiary-billing-help': "Only the first beneficiary in the list will be displayed on the bill.",
+    'technicians-help': "Double-click on a technician's line to assign her/him to the event at the needed start date/time.",
     'missing-material-count': "Need {quantity}, missing\u00a0{missing}!",
     'problems-on-returned-materials': "Problems on returned materials",
     'return-inventory-not-done-yet': "Materials return inventory hasn't been done yet, or is not finished.",

@@ -1,6 +1,5 @@
 import './index.scss';
 import Config from '@/config/globalConfig';
-import ModalConfig from '@/config/modalConfig';
 import Alert from '@/components/Alert';
 import Dropdown, { getItemClassnames } from '@/components/Dropdown';
 import DuplicateEvent from '@/components/DuplicateEvent';
@@ -130,15 +129,11 @@ export default {
     askDuplicate() {
       const { event } = this;
 
-      const modalConfig = {
-        ...ModalConfig,
-        name: 'duplicateEventStartDateModal',
+      this.$modal.show(DuplicateEvent, { event }, {
         width: 600,
         draggable: true,
         clickToClose: false,
-      };
-
-      this.$modal.show(DuplicateEvent, { event }, modalConfig);
+      });
     },
   },
   render() {

@@ -6,6 +6,10 @@ export default [
     start_time: '2021-07-26 08:00:00',
     end_time: '2021-07-26 19:30:00',
     position: 'Testeur',
+    event: {
+      title: 'Test event',
+      location: 'Testville',
+    },
     technician: {
       id: 1,
       full_name: 'Jean Testing',
@@ -19,6 +23,10 @@ export default [
     start_time: '2021-07-27 15:00:00',
     end_time: '2021-07-27 21:00:00',
     position: 'Testeur',
+    event: {
+      title: 'Test event',
+      location: 'Testville',
+    },
     technician: {
       id: 1,
       full_name: 'Jean Testing',
@@ -32,6 +40,10 @@ export default [
     start_time: '2021-07-26 19:00:00',
     end_time: '2021-07-27 15:30:00',
     position: 'Gardien de nuit',
+    event: {
+      title: 'Test event',
+      location: 'Testville',
+    },
     technician: {
       id: 2,
       full_name: 'Louis Testing',

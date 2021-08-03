@@ -40,7 +40,7 @@ export default {
   },
   watch: {
     $route() {
-      Vue.prototype.$modal.hide('defaultModal');
+      Vue.prototype.$modal.hideAll();
     },
   },
   computed: {

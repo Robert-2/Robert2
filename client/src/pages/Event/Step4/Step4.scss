@@ -1,23 +1,29 @@
 .EventStep4 {
+  padding-bottom: 3rem;
+
   .Form__actions {
     position: fixed;
     bottom: 0;
-    left: 315px;
+    left: 193px;
     right: 15px;
     margin: 0;
-    padding: 1rem 0 .5rem;
+    padding: 1rem 0 1.5rem;
     background: $bg-color-body;
   }
+}
 
-  &__save-btn {
-    margin-bottom: 1rem;
+@media (min-width: $screen-mobile) {
+  .EventStep4 {
+    .Form__actions {
+      left: 256px;
+    }
   }
 }
 
 @media(min-width: $screen-desktop) {
   .EventStep4 {
     .Form__actions {
-      left: 360px;
+      left: 376px;
     }
   }
 }

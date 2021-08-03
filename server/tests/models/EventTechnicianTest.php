@@ -104,6 +104,96 @@ final class EventTechnicianTest extends ModelTestCase
         $this->assertEquals($expectedErrors, $errors);
     }
 
+    public function testValidationDatesAlreadyAssigned()
+    {
+        // - Dates qui chevauchent la fin d'une assignation existante
+        try {
+            $errors = null;
+            $data = [
+                'technician_id' => 1,
+                'event_id' => 1,
+                'start_time' => '2018-12-18 20:00:00',
+                'end_time' => '2018-12-18 22:00:00',
+            ];
+            $this->model->fill($data)->validate();
+        } catch (ValidationException $e) {
+            $errors = $e->getValidationErrors();
+        }
+        $this->assertEquals([
+            'start_time' => ['This technician is already busy for this period.'],
+            'end_time' => ['This technician is already busy for this period.'],
+        ], $errors);
+
+        // - Dates qui chevauchent le début d'une assignation existante
+        try {
+            $errors = null;
+            $data = [
+                'technician_id' => 1,
+                'event_id' => 1,
+                'start_time' => '2018-12-17 07:00:00',
+                'end_time' => '2018-12-17 09:30:00',
+            ];
+            $this->model->fill($data)->validate();
+        } catch (ValidationException $e) {
+            $errors = $e->getValidationErrors();
+        }
+        $this->assertEquals([
+            'start_time' => ['This technician is already busy for this period.'],
+            'end_time' => ['This technician is already busy for this period.'],
+        ], $errors);
+
+        // - Dates qui sont comprises dans une assignation existante
+        try {
+            $errors = null;
+            $data = [
+                'technician_id' => 1,
+                'event_id' => 1,
+                'start_time' => '2018-12-17 10:00:00',
+                'end_time' => '2018-12-18 20:00:00',
+            ];
+            $this->model->fill($data)->validate();
+        } catch (ValidationException $e) {
+            $errors = $e->getValidationErrors();
+        }
+        $this->assertEquals([
+            'start_time' => ['This technician is already busy for this period.'],
+            'end_time' => ['This technician is already busy for this period.'],
+        ], $errors);
+    }
+
+    public function testValidationDatesOk()
+    {
+        // - Nouvelle assignation après une existante
+        $errors = null;
+        try {
+            $data = [
+                'technician_id' => 1,
+                'event_id' => 1,
+                'start_time' => '2018-12-18 22:15:00',
+                'end_time' => '2018-12-18 23:30:00',
+            ];
+            $this->model->fill($data)->validate();
+        } catch (ValidationException $e) {
+            $errors = $e->getValidationErrors();
+        }
+        $this->assertNull($errors);
+
+        // - Modification d'une assignation existante
+        try {
+            $eventTechnician = $this->model->find(1);
+            $data = [
+                'technician_id' => 1,
+                'event_id' => 1,
+                'start_time' => '2018-12-17 10:45:00',
+                'end_time' => '2018-12-18 23:45:00',
+            ];
+            $eventTechnician->fill($data)->validate();
+        } catch (ValidationException $e) {
+            $errors = $e->getValidationErrors();
+        }
+        $this->assertNull($errors);
+    }
+
     public function testGetForNewDates()
     {
         $event = Event::findOrFail(1);

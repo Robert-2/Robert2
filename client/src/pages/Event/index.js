@@ -4,7 +4,7 @@ import Breadcrumb from './Breadcrumb/Breadcrumb.vue';
 import MiniSummary from './MiniSummary/MiniSummary.vue';
 import EventStep1 from './Step1/Step1.vue';
 import EventStep2 from './Step2/Step2.vue';
-import EventStep3 from './Step3/Step3.vue';
+import EventStep3 from './Step3';
 import EventStep4 from './Step4/Step4.vue';
 import EventStep5 from './Step5';
 
@@ -71,19 +71,27 @@ export default {
       },
     };
   },
+  computed: {
+    isNew() {
+      const { id } = this.event;
+      return !id || id === 'new';
+    },
+  },
   mounted() {
     this.getEventData();
     EventStore.commit('reset');
   },
   methods: {
     getEventData() {
-      const { id } = this.event;
-      if (!id || id === 'new') {
+      if (this.isNew) {
         return;
       }
 
       this.startLoading();
+
+      const { id } = this.event;
       const { resource } = this.$route.meta;
+
       this.$http.get(`${resource}/${id}`)
         .then(({ data }) => {
           this.setEventData(data, { from: 'get' });

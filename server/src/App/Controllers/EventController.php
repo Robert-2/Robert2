@@ -3,13 +3,13 @@ declare(strict_types=1);
 
 namespace Robert2\API\Controllers;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Robert2\API\Controllers\Traits\WithCrud;
 use Robert2\API\Controllers\Traits\WithPdf;
+use Robert2\API\Errors\ValidationException;
 use Robert2\API\Models\Event;
 use Robert2\API\Models\Material;
 use Robert2\API\Models\Park;
-use Robert2\API\Errors\ValidationException;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
 use Slim\Http\ServerRequest as Request;

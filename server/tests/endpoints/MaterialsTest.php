@@ -754,7 +754,7 @@ final class MaterialsTest extends ApiTestCase
         $response = $this->_getResponseAsArray();
         $this->assertCount(7, $response['data']);
 
-        foreach ([0, 32, 3, 30, 1, 1, 0] as $index => $expected) {
+        foreach ([0, 32, 0, 30, 0, 1, 0] as $index => $expected) {
             $this->assertEquals($expected, $response['data'][$index]['remaining_quantity']);
         }
     }

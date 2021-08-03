@@ -1,4 +1,4 @@
-import formatTechnicianEvent from '@/pages/TechnicianView/Schedule/utils';
+import { formatTechnicianEvent } from '@/pages/TechnicianView/Schedule/utils';
 
 describe('TechnicianView/Schedule/utils.formatTechnicianEvent', () => {
   test('returns data of event formatted for calendar usage with title and classes', () => {
@@ -29,7 +29,7 @@ describe('TechnicianView/Schedule/utils.formatTechnicianEvent', () => {
     expect(result.id).toBe(1);
     expect(result.startDate).toEqual('2019-10-01 08:00:00');
     expect(result.endDate).toEqual('2019-10-02 23:00:00');
-    expect(result.title).toEqual('Test event (Régisseur)\n10/1/2019 8:00 AM - 10/2/2019 11:00 PM');
+    expect(result.title).toEqual('Test event (Testville)\n<strong>Régisseur</strong> : 01 October, 8:00 AM ⇒ 02 October, 11:00 PM');
     expect(result.classes).toEqual(['cv-item--past', 'cv-item--not-confirmed']);
   });
 });

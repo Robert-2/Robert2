@@ -9,6 +9,8 @@ class EventTechnician extends BaseModel
 {
     public $timestamps = false;
 
+    protected $withoutAlreadyBusyChecks = false;
+
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
@@ -45,6 +47,21 @@ class EventTechnician extends BaseModel
         }
         if ($start > $eventEnd || $end > $eventEnd) {
             return 'technician-assignation-after-event';
+        }
+
+        if ($this->withoutAlreadyBusyChecks) {
+            return true;
+        }
+
+        $technicianHasOtherEvents = static::where('id', '!=', $this->id)
+            ->where('technician_id', $this->technician_id)
+            ->where([
+                ['end_time', '>=', $this->start_time],
+                ['start_time', '<=', $this->end_time],
+            ])
+            ->exists();
+        if ($technicianHasOtherEvents) {
+            return 'technician-already-busy-for-this-period';
         }
 
         return true;
@@ -160,5 +177,16 @@ class EventTechnician extends BaseModel
     public static function flushForEvent(int $eventId)
     {
         static::where('event_id', $eventId)->delete();
+    }
+
+    /**
+     * Permet d'ignorer la validation qui vérifie le chevauchement avec les dates des autres assignations.
+     * Utile quand on est certain que les autres assignations vont être supprimées avant le save
+     * (voir static::flushForEvent). À chaîner avec un ->validate().
+     */
+    public function withoutAlreadyBusyChecks(): self
+    {
+        $this->withoutAlreadyBusyChecks = true;
+        return $this;
     }
 }

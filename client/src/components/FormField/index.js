@@ -158,6 +158,7 @@ export default {
             displayFormat={datepickerOptions?.format}
             disabledDates={datepickerOptions?.disabled}
             isRange={datepickerOptions?.isRange}
+            withTime={datepickerOptions?.withTime}
             placeholder={__(placeholder)}
             class="FormField__datepicker"
             onInput={handleDatepickerChange}

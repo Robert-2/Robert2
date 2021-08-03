@@ -1,6 +1,11 @@
 .EventStep2 {
+  &__title {
+    font-size: 1.5rem;
+    font-weight: 200;
+  }
+
   &__help {
-    margin-left: $form-label-width;
+    margin-top: 0;
 
     .fas {
       font-size: 1.2rem;
@@ -8,7 +13,7 @@
     }
   }
 
-  &__save-btn {
-    margin-bottom: 1rem;
+  &__footer {
+    padding: 1rem 0 .5rem;
   }
 }

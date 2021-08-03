@@ -42,6 +42,9 @@ export default {
         (option) => !this.itemsIds.includes(option.value),
       );
     },
+    hasItems() {
+      return this.itemsIds.length > 0 || this.askNewItem;
+    },
   },
   methods: {
     handleSearch(searchTerm, loading) {

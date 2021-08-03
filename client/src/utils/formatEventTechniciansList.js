@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-const formatEventTechnicians = (eventTechnicians) => {
+const formatEventTechniciansList = (eventTechnicians) => {
   if (!Array.isArray(eventTechnicians) || eventTechnicians.length === 0) {
     return [];
   }
@@ -24,4 +24,4 @@ const formatEventTechnicians = (eventTechnicians) => {
   return Array.from(technicians.values());
 };
 
-export default formatEventTechnicians;
+export default formatEventTechniciansList;

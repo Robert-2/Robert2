@@ -1,5 +1,4 @@
 import './index.scss';
-import ModalConfig from '@/config/modalConfig';
 import Details from './Details/ErrorDetails.vue';
 
 const ErrorMessage = {
@@ -64,7 +63,7 @@ const ErrorMessage = {
       this.$modal.show(
         Details,
         { code, message, details },
-        ModalConfig,
+        undefined,
         {
           'before-close': () => {
             this.isDetailsModalOpened = false;

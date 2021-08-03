@@ -1,0 +1,45 @@
+@import '../../../../themes/default/index';
+
+.EventStep3Modal {
+  &__header {
+    display: flex;
+    align-items: center;
+    padding: .7rem 1rem;
+    background-color: $bg-color-main-header;
+
+    &__title {
+      flex: 1;
+      margin: 0 0 .4rem;
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: $text-base-color;
+    }
+
+    .close {
+      flex: 0 0 auto;
+      background: none;
+      border: none;
+    }
+  }
+
+  &__form {
+    max-width: 320px;
+    margin: 0 auto;
+    padding: $content-padding-large-vertical 0;
+
+    .FormField {
+      flex-direction: column;
+      margin-bottom: $content-padding-large-vertical;
+      align-items: flex-start;
+
+      &__label {
+        flex: 0 0 auto;
+        padding: 0 3px $content-padding-small-horizontal;
+      }
+
+      &__error__text {
+        padding: 0;
+      }
+    }
+  }
+}

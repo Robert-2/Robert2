@@ -1,0 +1,57 @@
+@import '../../../themes/default/';
+
+.EventStep3 {
+  display: flex;
+  flex-direction: column;
+
+  &__header {
+    flex: 0;
+    display: flex;
+    align-items: center;
+
+    .Loading {
+      flex: 1;
+    }
+
+    .Help {
+      flex: 0 0 auto;
+    }
+  }
+
+  &__title {
+    flex: 1;
+    font-size: 1.5rem;
+    font-weight: 200;
+  }
+
+  &__content {
+    flex: 1;
+
+    .Loading {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  &__no-technician {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+
+    &__message {
+      font-size: 1.2rem;
+      margin-bottom: $content-padding-large-vertical;
+      white-space: pre-line;
+      text-align: center;
+      line-height: 1.5;
+    }
+  }
+
+  &__footer {
+    flex: 0;
+    padding: $content-padding-large-vertical 0;
+  }
+}
