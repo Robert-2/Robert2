@@ -119,7 +119,7 @@ const EventStep3Modal = {
         const { data } = await this.$http.get(`event-technicians/${eventTechnicianId}`);
 
         const startDate = moment(data.start_time).toDate();
-        const endDate = moment(data.start_time).add(TECHNICIAN_EVENT_MIN_DURATION).toDate();
+        const endDate = moment(data.end_time).toDate();
 
         this.eventId = data.event_id;
         this.position = data.position;
@@ -142,12 +142,14 @@ const EventStep3Modal = {
 
       const { position, dates, eventId, technician } = this;
       const postData = {
-        start: moment(dates[0]).format(),
-        end: moment(dates[1]).format(),
+        event_id: eventId,
+        technician_id: technician.id,
+        start_time: moment(dates[0]).format(),
+        end_time: moment(dates[1]).format(),
         position,
       };
 
-      let url = `events/${eventId}/technician/${technician.id}`;
+      let url = 'event-technicians';
       if (typeof this.$props.data === 'number') {
         const { data: eventTechnicianId } = this.$props;
         url = `event-technicians/${eventTechnicianId}`;

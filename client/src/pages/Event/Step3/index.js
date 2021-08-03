@@ -203,8 +203,8 @@ const EventStep3 = {
 
     async handleItemMoved(item, callback) {
       const data = {
-        start: moment(item.start).format(),
-        end: moment(item.end).format(),
+        start_time: moment(item.start).format(),
+        end_time: moment(item.end).format(),
       };
 
       try {
@@ -229,7 +229,7 @@ const EventStep3 = {
 
       try {
         this.isLoading = true;
-        await this.$http.delete(`events/${this.event.id}/event-technician/${item.id}`);
+        await this.$http.delete(`event-technicians/${item.id}`);
         callback(item);
       } catch {
         callback(null);

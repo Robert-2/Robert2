@@ -1,6 +1,7 @@
 @import '../../themes/default/index';
 
 $timeline-group-border-color: #636363 !default;
+$group-item-max-height: 65px !default;
 
 .Timeline {
   &--grouped {
@@ -27,9 +28,16 @@ $timeline-group-border-color: #636363 !default;
       border-bottom: 1px solid $timeline-group-border-color;
     }
 
-    .vis-item.vis-range {
-      max-height: 65px;
-      overflow: hidden;
+    .vis-item {
+      &.vis-range {
+        max-height: $group-item-max-height;
+      }
+
+      .vis-item-overflow {
+        height: calc(#{$group-item-max-height} - 1.2rem - 1.2rem);
+        overflow: hidden;
+        align-items: flex-start;
+      }
     }
   }
 }
