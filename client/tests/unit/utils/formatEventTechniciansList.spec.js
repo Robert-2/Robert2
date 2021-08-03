@@ -1,17 +1,17 @@
 import moment from 'moment';
-import formatEventTechnicians from '@/utils/formatEventTechnicians';
+import formatEventTechniciansList from '@/utils/formatEventTechniciansList';
 import eventTechniciansData from './data/event-technicians';
 
-describe('formatEventTechnicians', () => {
+describe('formatEventTechniciansList', () => {
   it('returns an empty array when nothing passed', () => {
     [null, undefined, []].forEach((emptyValue) => {
-      const result = formatEventTechnicians(emptyValue);
+      const result = formatEventTechniciansList(emptyValue);
       expect(result).toEqual([]);
     });
   });
 
   it('returns an array of all technicians with their assigned periods', () => {
-    const result = formatEventTechnicians(eventTechniciansData);
+    const result = formatEventTechniciansList(eventTechniciansData);
     expect(result.length).toBe(2);
 
     // - First technician with 2 assigned periods

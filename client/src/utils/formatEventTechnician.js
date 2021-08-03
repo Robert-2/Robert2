@@ -1,6 +1,10 @@
 import moment from 'moment';
 
 const formatEventTechnician = (eventTechnician) => {
+  if (!eventTechnician) {
+    return null;
+  }
+
   const { id, start_time: start, end_time: end, position, event } = eventTechnician;
   const { title: eventTitle, location } = event;
 
@@ -24,7 +28,7 @@ const formatEventTechnician = (eventTechnician) => {
     title = `${title}\n${datesString}`;
   }
 
-  return { id, start, end, datesString, title };
+  return { id, start, end, title };
 };
 
 export default formatEventTechnician;
