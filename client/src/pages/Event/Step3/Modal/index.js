@@ -167,7 +167,6 @@ const EventStep3Modal = {
         this.$emit('close');
       } catch (error) {
         const { code, details } = error.response?.data?.error || { code: 0, details: {} };
-        console.log(code, details);
         if (code === 400) {
           this.validationErrors = { ...details };
         }

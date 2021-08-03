@@ -475,14 +475,14 @@ class Event extends BaseModel
         $technicians = [];
         foreach ($techniciansData as $technicianData) {
             try {
-                $technician = new EventTechnician([
+                $eventTechnician = new EventTechnician([
                     'event_id' => $this->id,
                     'technician_id' => $technicianData['id'],
                     'start_time' => $technicianData['start_time'],
                     'end_time' => $technicianData['end_time'],
                     'position' => $technicianData['position'],
                 ]);
-                $technicians[] = $technician->validate();
+                $technicians[] = $eventTechnician->withoutAlreadyBusyChecks()->validate();
             } catch (ValidationException $e) {
                 $errors[$technicianData['id']] = $e->getValidationErrors();
             }
