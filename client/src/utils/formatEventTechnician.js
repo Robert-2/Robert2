@@ -22,13 +22,10 @@ const formatEventTechnician = (eventTechnician) => {
   }
 
   const datesString = `${_start.format(dateFormat)} ⇒ ${_end.format(dateFormat)}`;
-  if (position) {
-    title = `${title}\n<strong>${position}</strong> : ${datesString}`;
-  } else {
-    title = `${title}\n${datesString}`;
-  }
+  const content = position ? `<strong>${position}</strong> : ${datesString}` : datesString;
+  title = `${title}\n${content}`;
 
-  return { id, start, end, title };
+  return { id, start, end, content, title };
 };
 
 export default formatEventTechnician;
