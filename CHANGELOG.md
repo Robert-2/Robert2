@@ -19,6 +19,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Sécurise le fichier `progress.json` de l'assistant d'installation si on saute l'étape de création des catégories (#169).
 - Conserve en mémoire les données des formulaires en cours de remplissage pour les nouveaux bénéficiaires, techniciens, matériel, parcs et utilisateurs (#173).
 - Uniformise l'affichage des principaux formulaires.
+- Ferme la fenêtre automatiquement et centre la frise temporelle sur le nouvel événement qui vient d'être créé après une duplication.
 
 ## 0.14.3 (2021-07-12)
 

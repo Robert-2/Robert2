@@ -51,7 +51,7 @@ export default {
           onSaved={(data) => { this.$emit('saved', data); }}
           onDeleted={(id) => { this.$emit('deleted', id); }}
           onError={(error) => { this.$emit('error', error); }}
-          onDuplicated={() => { this.$emit('duplicated'); }}
+          onDuplicated={(newEvent) => { this.$emit('duplicated', newEvent); }}
         />
         <button class="close" onClick={() => { this.$emit('close'); }}>
           <i class="fas fa-times" />

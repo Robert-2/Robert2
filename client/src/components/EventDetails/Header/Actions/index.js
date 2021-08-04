@@ -126,8 +126,8 @@ export default {
       }
     },
 
-    handleDuplicated() {
-      this.$emit('duplicated');
+    handleDuplicated(newEvent) {
+      this.$emit('duplicated', newEvent);
     },
 
     askDuplicate() {

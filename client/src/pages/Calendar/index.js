@@ -228,12 +228,17 @@ export default {
       this.events = events;
     },
 
+    handleDuplicateEvent(newEvent) {
+      const { start_date: startDate } = newEvent;
+      this.setCenterDate(moment(startDate).toDate());
+    },
+
     openEventModal(eventId) {
-      const { handleUpdateEvent } = this;
+      const { handleUpdateEvent, handleDuplicateEvent } = this;
 
       this.$modal.show(
         EventDetails,
-        { eventId, onUpdateEvent: handleUpdateEvent },
+        { eventId, onUpdateEvent: handleUpdateEvent, onDuplicateEvent: handleDuplicateEvent },
         undefined,
         {
           'before-close': () => {

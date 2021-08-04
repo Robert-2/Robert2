@@ -18,6 +18,7 @@ export default {
   props: {
     eventId: { type: Number, required: true },
     onUpdateEvent: Function,
+    onDuplicateEvent: Function,
   },
   data() {
     return {
@@ -85,6 +86,14 @@ export default {
       if (onUpdateEvent) {
         onUpdateEvent(newData);
       }
+    },
+
+    handleDuplicateEvent(newEvent) {
+      const { onDuplicateEvent } = this.$props;
+      if (onDuplicateEvent) {
+        onDuplicateEvent(newEvent);
+      }
+      this.handleClose();
     },
 
     handleClose() {
@@ -156,6 +165,7 @@ export default {
       handleEstimateDeleted,
       handleBillCreated,
       handleUpdateEvent,
+      handleDuplicateEvent,
     } = this;
 
     return (
@@ -169,7 +179,7 @@ export default {
               onSaved={handleUpdateEvent}
               onDeleted={handleClose}
               onError={(_error) => { this.error = _error; }}
-              onDuplicated={handleClose}
+              onDuplicated={handleDuplicateEvent}
             />
             <div class="EventDetails__content__body">
               <Tabs>
