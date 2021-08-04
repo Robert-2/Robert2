@@ -2,7 +2,7 @@ import moment from 'moment';
 import { DATE_DB_FORMAT, DATE_QUERY_FORMAT } from '@/config/constants';
 import Alert from '@/components/Alert';
 import Help from '@/components/Help/Help.vue';
-import EventDetails from '@/components/EventDetails/EventDetails.vue';
+import EventDetails from '@/components/EventDetails';
 import Timeline from '@/components/Timeline';
 import CalendarHeader from './Header/Header.vue';
 import CalendarCaption from './Caption';
@@ -15,7 +15,6 @@ export default {
   components: {
     CalendarHeader,
     Timeline,
-    EventDetails,
     Help,
     CalendarCaption,
   },

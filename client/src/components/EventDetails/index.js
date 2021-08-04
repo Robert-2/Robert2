@@ -1,38 +1,19 @@
+import './index.scss';
 import moment from 'moment';
 import { Tabs, Tab } from 'vue-slim-tabs';
 import Config from '@/config/globalConfig';
-import getDiscountRateFromLast from '@/utils/getDiscountRateFromLast';
-import Alert from '@/components/Alert';
-import Help from '@/components/Help/Help.vue';
-import LocationText from '@/components/LocationText/LocationText.vue';
-import EventMaterials from '@/components/EventMaterials';
-import EventBeneficiaries from '@/components/EventBeneficiaries';
-import EventTechnicians from '@/components/EventTechnicians';
-import EventMissingMaterials from '@/components/EventMissingMaterials/EventMissingMaterials.vue';
-import ReturnInventorySummary from '@/components/ReturnInventorySummary';
-import EventEstimates from '@/components/EventEstimates/EventEstimates.vue';
-import EventBilling from '@/components/EventBilling/EventBilling.vue';
-import EventTotals from '@/components/EventTotals';
+import ErrorMessage from '@/components/ErrorMessage';
+import Loading from '@/components/Loading';
 import formatTimelineEvent from '@/utils/timeline-event/format';
+import getDiscountRateFromLast from '@/utils/getDiscountRateFromLast';
 import Header from './Header';
+import Infos from './Infos';
+import Materials from './Materials';
+import Estimates from './Estimates';
+import Billing from './Billing';
 
 export default {
   name: 'EventDetails',
-  components: {
-    Header,
-    Tabs,
-    Tab,
-    Help,
-    LocationText,
-    EventMaterials,
-    EventBeneficiaries,
-    EventTechnicians,
-    EventMissingMaterials,
-    ReturnInventorySummary,
-    EventEstimates,
-    EventBilling,
-    EventTotals,
-  },
   props: {
     eventId: { type: Number, required: true },
   },
@@ -43,14 +24,11 @@ export default {
       showBilling: Config.billingMode !== 'none',
       lastBill: null,
       lastEstimate: null,
-      successMessage: null,
-      error: null,
       isLoading: false,
-      isCreating: false,
-      deletingId: null,
+      error: null,
     };
   },
-  created() {
+  mounted() {
     this.getEvent();
   },
   computed: {
@@ -64,159 +42,30 @@ export default {
         || this.event?.hasNotReturnedMaterials
       );
     },
-
-    userCanEditBill() {
-      return this.$store.getters['auth/is'](['admin', 'member']);
-    },
   },
   methods: {
     async getEvent() {
       try {
         this.error = null;
-        this.successMessage = null;
         this.isLoading = true;
 
         const { eventId } = this.$props;
         const url = `events/${eventId}`;
 
         const { data } = await this.$http.get(url);
-        this.setData(data);
+        this.setEventData(data);
       } catch (error) {
-        this.handleError(error);
+        this.error = error;
       } finally {
         this.isLoading = false;
       }
     },
 
-    handleChangeTab() {
-      this.error = null;
-      this.successMessage = null;
+    updateDiscountRate() {
+      this.discountRate = getDiscountRateFromLast(this.lastBill, this.lastEstimate);
     },
 
-    async handleCreateEstimate(discountRate) {
-      if (this.isCreating || this.deletingId) {
-        return;
-      }
-
-      try {
-        this.error = null;
-        this.successMessage = null;
-        this.isCreating = true;
-
-        const { id } = this.event;
-        const { data } = await this.$http.post(`events/${id}/estimate`, { discountRate });
-
-        this.event.estimates.unshift(data);
-        this.lastEstimate = { ...data, date: moment(data.date) };
-        this.updateDiscountRate();
-
-        this.successMessage = this.$t('estimate-created');
-      } catch (error) {
-        this.handleError(error);
-      } finally {
-        this.isCreating = false;
-      }
-    },
-
-    async handleDeleteEstimate(id) {
-      if (this.deletingId || this.isCreating) {
-        return;
-      }
-
-      const { value } = await Alert.ConfirmDelete(this.$t, 'estimate');
-      if (!value) {
-        return;
-      }
-
-      try {
-        this.error = null;
-        this.successMessage = null;
-        this.deletingId = id;
-
-        const { data } = await this.$http.delete(`estimates/${id}`);
-
-        const { estimates } = this.event;
-        const newEstimatesList = estimates.filter((estimate) => (estimate.id !== data.id));
-        this.event.estimates = newEstimatesList;
-
-        const [lastOne] = newEstimatesList;
-        this.lastEstimate = lastOne ? { ...lastOne, date: moment(lastOne.date) } : null;
-        this.updateDiscountRate();
-
-        this.successMessage = this.$t('estimate-deleted');
-      } catch (error) {
-        this.handleError(error);
-      } finally {
-        this.deletingId = null;
-      }
-    },
-
-    async handleCreateBill(discountRate) {
-      if (this.deletingId || this.isCreating) {
-        return;
-      }
-
-      try {
-        this.error = null;
-        this.successMessage = null;
-        this.isCreating = true;
-        const { eventId } = this.$props;
-        const url = `events/${eventId}/bill`;
-
-        const { data } = await this.$http.post(url, { discountRate });
-
-        this.event.bills.unshift(data);
-        this.lastBill = { ...data, date: moment(data.date) };
-        this.updateDiscountRate();
-
-        this.successMessage = this.$t('bill-created');
-      } catch (error) {
-        this.handleError(error);
-      } finally {
-        this.isCreating = false;
-      }
-    },
-
-    async setEventIsBillable() {
-      if (this.isLoading || this.deletingId || this.isCreating) {
-        return;
-      }
-
-      try {
-        this.error = null;
-        this.successMessage = null;
-        this.isLoading = true;
-        const { eventId } = this.$props;
-        const putData = { is_billable: true };
-
-        const { data } = await this.$http.put(`events/${eventId}`, putData);
-        this.setData(data);
-        this.successMessage = this.$t('event-is-now-billable');
-      } catch (error) {
-        this.handleError(error);
-      } finally {
-        this.isLoading = false;
-      }
-    },
-
-    handleSavedFromHeader(newData) {
-      this.error = null;
-      this.setData(newData);
-      // Ne fonctionne pas comme espéré, pffff
-      this.$emit('event-updated', newData);
-    },
-
-    handleDeletedFromHeader() {
-      this.error = null;
-      this.$emit('close');
-    },
-
-    handleError(error) {
-      this.error = error;
-      this.isLoading = false;
-    },
-
-    setData(data) {
+    setEventData(data) {
       this.event = {
         ...formatTimelineEvent(data),
         ...data,
@@ -236,8 +85,135 @@ export default {
       this.updateDiscountRate();
     },
 
-    updateDiscountRate() {
-      this.discountRate = getDiscountRateFromLast(this.lastBill, this.lastEstimate);
+    handleEstimateCreated(newEstimate) {
+      this.event.estimates.unshift(newEstimate);
+      this.lastEstimate = { ...newEstimate, date: moment(newEstimate.date) };
+      this.updateDiscountRate();
     },
+
+    handleEstimateDeleted(estimateId) {
+      const newEstimatesList = this.event.estimates.filter(
+        (estimate) => (estimate.id !== estimateId),
+      );
+      this.event.estimates = newEstimatesList;
+      const [lastOne] = newEstimatesList;
+      this.lastEstimate = lastOne ? { ...lastOne, date: moment(lastOne.date) } : null;
+      this.updateDiscountRate();
+    },
+
+    handleBillCreated(newBill) {
+      this.event.bills.unshift(newBill);
+      this.lastBill = { ...newBill, date: moment(newBill.date) };
+      this.updateDiscountRate();
+    },
+
+    handleUpdateEvent(newData) {
+      this.setEventData(newData);
+      // - TODO: Remplacer ceci par une prop function pour déclencher un refresh de la timeline
+      this.$emit('event-updated', newData);
+    },
+
+    handleClose() {
+      this.$emit('close');
+    },
+  },
+  render() {
+    const {
+      $t: __,
+      event,
+      discountRate,
+      showBilling,
+      lastBill,
+      lastEstimate,
+      isLoading,
+      hasMaterials,
+      hasMaterialsProblems,
+      handleClose,
+      error,
+      handleEstimateCreated,
+      handleEstimateDeleted,
+      handleBillCreated,
+      handleUpdateEvent,
+    } = this;
+
+    return (
+      <div class="EventDetails">
+        {isLoading && <Loading />}
+        {error && <ErrorMessage error={error} />}
+        {(!isLoading && event) && (
+          <section class="EventDetails__content">
+            <Header
+              event={event}
+              onClose={handleClose}
+              onSaved={handleUpdateEvent}
+              onDeleted={handleClose}
+              onError={(_error) => { this.error = _error; }}
+            />
+            <div class="EventDetails__content__body">
+              <Tabs>
+                <Tab title={(
+                  <span>
+                    <i class="fas fa-info-circle" /> {__('informations')}
+                  </span>
+                )}>
+                  <Infos event={event} discountRate={discountRate} />
+                </Tab>
+                <Tab disabled={!hasMaterials} title={(
+                  <span>
+                    <i class="fas fa-box" /> {__('material')}
+                    {hasMaterialsProblems && <i class="fas fa-exclamation-triangle"/>}
+                  </span>
+                )}>
+                  <Materials event={event} discountRate={discountRate} />
+                </Tab>
+                {showBilling && (
+                  <Tab disabled={!hasMaterials} title={(
+                    <span>
+                      <i class="fas fa-file-signature" /> {__('estimates')}
+                    </span>
+                  )}>
+                    <Estimates
+                      event={event}
+                      lastBill={lastBill}
+                      onCreateEstimate={handleEstimateCreated}
+                      onDeleteEstimate={handleEstimateDeleted}
+                      onUpdateEvent={handleUpdateEvent}
+                    />
+                  </Tab>
+                )}
+                {showBilling && (
+                  <Tab disabled={!hasMaterials} title={(
+                    <span>
+                      <i class="fas fa-file-invoice-dollar" /> {__('bill')}
+                    </span>
+                  )}>
+                    <Billing
+                      event={event}
+                      lastBill={lastBill}
+                      lastEstimate={lastEstimate}
+                      onCreateBill={handleBillCreated}
+                      onUpdateEvent={handleUpdateEvent}
+                    />
+                  </Tab>
+                )}
+              </Tabs>
+              {!hasMaterials && (
+                <div class="EventDetails__materials-empty">
+                  <p>
+                    <i class="fas fa-exclamation-triangle"></i>
+                    {__('page-events.warning-no-material')}
+                  </p>
+                  {!event.isPast && (
+                    <router-link to={`/events/${event.id}`} class="button info">
+                      <i class="fas fa-edit" /> {__('page-events.edit-event')}
+                    </router-link>
+                  )}
+                </div>
+              )}
+            </div>
+          </section>
+        )}
+      </div>
+    );
   },
 };

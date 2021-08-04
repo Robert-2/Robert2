@@ -1,0 +1,11 @@
+@import '../../../themes/default/';
+
+.EventDetailsEstimates {
+  display: flex;
+  flex-direction: column;
+
+  &__not-billable {
+    font-size: 1.2rem;
+    color: $text-warning-color;
+  }
+}

@@ -8,6 +8,10 @@
     margin-bottom: 1.5rem;
   }
 
+  &__toggle .fas {
+    margin-right: .3rem;
+  }
+
   &__category {
     padding: 0 .5rem;
     border-left: 3px solid $list-left-border-color;
