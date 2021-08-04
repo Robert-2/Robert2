@@ -127,7 +127,7 @@ export default {
             )}
             {discountRate > 0 && (
               <div class="EventTotals__discount">
-                {__('discount')} {{ discountRate }} %
+                {__('discount')} {discountRate} %
                 <i class="fas fa-arrow-right" /> - {formatAmount(discountAmount)}
               </div>
             )}

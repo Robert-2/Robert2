@@ -2,7 +2,7 @@ import moment from 'moment';
 import { DATE_DB_FORMAT, DATE_QUERY_FORMAT } from '@/config/constants';
 import Alert from '@/components/Alert';
 import Help from '@/components/Help/Help.vue';
-import EventDetails from '@/components/EventDetails/EventDetails.vue';
+import EventDetails from '@/components/EventDetails';
 import Timeline from '@/components/Timeline';
 import CalendarHeader from './Header/Header.vue';
 import CalendarCaption from './Caption';
@@ -15,7 +15,6 @@ export default {
   components: {
     CalendarHeader,
     Timeline,
-    EventDetails,
     Help,
     CalendarCaption,
   },
@@ -218,10 +217,28 @@ export default {
       }
     },
 
+    handleUpdateEvent(newEventData) {
+      const events = [...this.events];
+      const toUpdateIndex = events.findIndex((event) => event.id === newEventData.id);
+      if (toUpdateIndex < 0) {
+        return;
+      }
+
+      events[toUpdateIndex] = formatEvent(newEventData, this.$t);
+      this.events = events;
+    },
+
+    handleDuplicateEvent(newEvent) {
+      const { start_date: startDate } = newEvent;
+      this.setCenterDate(moment(startDate).toDate());
+    },
+
     openEventModal(eventId) {
+      const { handleUpdateEvent, handleDuplicateEvent } = this;
+
       this.$modal.show(
         EventDetails,
-        { eventId },
+        { eventId, onUpdateEvent: handleUpdateEvent, onDuplicateEvent: handleDuplicateEvent },
         undefined,
         {
           'before-close': () => {

@@ -34,7 +34,7 @@ $group-item-max-height: 65px !default;
       }
 
       .vis-item-overflow {
-        height: calc(#{$group-item-max-height} - 1.2rem - 1.2rem);
+        max-height: calc(#{$group-item-max-height} - 1.2rem - 1.2rem);
         overflow: hidden;
         align-items: flex-start;
       }

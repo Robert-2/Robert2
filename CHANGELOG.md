@@ -13,11 +13,13 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Ajoute la possibilité d'afficher un logo sur les PDF (en ajoutant une clé `company.logo` dans les `settings.json` et un fichier dans `public/img/`).
 - Affiche le détail des horaires des techniciens dans les fiches de sortie (#190).
 - Adapte l'affichage de la liste des techniciens dans la fenêtre d'événement et à l'étape 5 de l'édition d'événement (#191).
+- Ajoute un onglet "Techniciens" dans la fenêtre d'événement qui affiche une frise temporelle des assignations (#192).
 - Corrige le comportement des champs de quantité à l'étape 4 de l'édition d'événement (#213).
 - Corrige le comportement du bouton "Afficher les quantités à date..." de la page de listing du matériel.
 - Sécurise le fichier `progress.json` de l'assistant d'installation si on saute l'étape de création des catégories (#169).
 - Conserve en mémoire les données des formulaires en cours de remplissage pour les nouveaux bénéficiaires, techniciens, matériel, parcs et utilisateurs (#173).
 - Uniformise l'affichage des principaux formulaires.
+- Ferme la fenêtre automatiquement et centre la frise temporelle sur le nouvel événement qui vient d'être créé après une duplication.
 
 ## 0.14.2-premium (2021-07-09)
 

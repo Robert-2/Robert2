@@ -264,6 +264,7 @@ export default {
   'event': "Event",
   'user': "User",
   'beneficiary': "Beneficiary",
+  'technicians': "Technicians",
   'material': "Material",
   'category': "Category",
   'sub-category': "Sub-category",

@@ -1,4 +1,3 @@
-// import moment from 'moment';
 import formatEventTechnician from '@/utils/formatEventTechnician';
 import eventTechniciansData from './data/event-technicians';
 
@@ -16,6 +15,7 @@ describe('formatEventTechnician', () => {
       id: 1,
       start: '2021-07-26 08:00:00',
       end: '2021-07-26 19:30:00',
+      content: '<strong>Testeur</strong> : 8:00 AM ⇒ 7:30 PM',
       title: 'Test event (Testville)\n<strong>Testeur</strong> : 8:00 AM ⇒ 7:30 PM',
     });
   });

@@ -126,10 +126,14 @@ export default {
       }
     },
 
-    askDuplicate() {
-      const { event } = this;
+    handleDuplicated(newEvent) {
+      this.$emit('duplicated', newEvent);
+    },
 
-      this.$modal.show(DuplicateEvent, { event }, {
+    askDuplicate() {
+      const { event, handleDuplicated } = this;
+
+      this.$modal.show(DuplicateEvent, { event, onDuplicated: handleDuplicated }, {
         width: 600,
         draggable: true,
         clickToClose: false,

@@ -11,6 +11,7 @@ export default {
   name: 'DuplicateEvent',
   props: {
     event: Object,
+    onDuplicated: Function,
   },
   data() {
     return {
@@ -65,7 +66,12 @@ export default {
 
       try {
         const url = `events/${this.event.id}/duplicate`;
-        await this.$http.post(url, newEventData);
+        const { data } = await this.$http.post(url, newEventData);
+
+        const { onDuplicated } = this.$props;
+        if (onDuplicated) {
+          onDuplicated(data);
+        }
 
         this.$emit('close');
       } catch (error) {

@@ -2,7 +2,7 @@ import moment from 'moment';
 import formatTimelineEvent from '@/utils/timeline-event/format';
 import Help from '@/components/Help/Help.vue';
 import Timeline from '@/components/Timeline';
-import EventDetails from '@/components/EventDetails/EventDetails.vue';
+import EventDetails from '@/components/EventDetails';
 import MaterialAvailabilitiesItem from './Item/Item.vue';
 import formatEvent from './utils';
 
