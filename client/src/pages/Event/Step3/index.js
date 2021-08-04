@@ -57,7 +57,7 @@ const EventStep3 = {
       const eventSlots = (event?.technicians ?? []).map(
         (eventTechnician) => {
           const { technician_id: technicianId } = eventTechnician;
-          const { id, start, end, title } = formatEventTechnician(
+          const { id, start, end, content, title } = formatEventTechnician(
             { ...eventTechnician, event },
           );
 
@@ -65,7 +65,7 @@ const EventStep3 = {
             id,
             start,
             end,
-            content: title,
+            content,
             group: technicianId,
             editable: true,
             type: 'range',
@@ -76,13 +76,13 @@ const EventStep3 = {
 
       const otherSlots = this.technicians.map((technician) => (
         (technician?.events ?? []).map((eventTechnician) => {
-          const { id, start, end, title: content } = formatEventTechnician(eventTechnician);
+          const { id, start, end, title } = formatEventTechnician(eventTechnician);
 
           return {
             id,
             start,
             end,
-            content,
+            content: title,
             group: technician.id,
             editable: false,
             type: 'background',
@@ -105,7 +105,7 @@ const EventStep3 = {
         type: 'background',
         zoomMin: 1000 * 3600, // 1h
         selectable: true,
-        orientation: this.techniciansCount >= 15 ? 'both' : 'top',
+        orientation: this.groups?.length >= 15 ? 'both' : 'top',
       };
     },
   },

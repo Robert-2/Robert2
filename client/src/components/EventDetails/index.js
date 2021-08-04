@@ -8,6 +8,7 @@ import formatTimelineEvent from '@/utils/timeline-event/format';
 import getDiscountRateFromLast from '@/utils/getDiscountRateFromLast';
 import Header from './Header';
 import Infos from './Infos';
+import Technicians from './Technicians';
 import Materials from './Materials';
 import Estimates from './Estimates';
 import Billing from './Billing';
@@ -32,6 +33,10 @@ export default {
     this.getEvent();
   },
   computed: {
+    hasEventTechnicians() {
+      return this.event?.technicians?.length > 0;
+    },
+
     hasMaterials() {
       return this.event?.materials?.length > 0;
     },
@@ -126,6 +131,7 @@ export default {
       lastBill,
       lastEstimate,
       isLoading,
+      hasEventTechnicians,
       hasMaterials,
       hasMaterialsProblems,
       handleClose,
@@ -157,6 +163,13 @@ export default {
                   </span>
                 )}>
                   <Infos event={event} discountRate={discountRate} />
+                </Tab>
+                <Tab disabled={!hasEventTechnicians} title={(
+                  <span>
+                    <i class="fas fa-people-carry" /> {__('technicians')}
+                  </span>
+                )}>
+                  <Technicians event={event} />
                 </Tab>
                 <Tab disabled={!hasMaterials} title={(
                   <span>

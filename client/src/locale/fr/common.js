@@ -262,6 +262,7 @@ export default {
   'event': "Événement",
   'user': "Utilisateur",
   'beneficiary': "Bénéficiaire",
+  'technicians': "Techniciens",
   'material': "Matériel",
   'category': "Catégorie",
   'sub-category': "Sous-catégorie",

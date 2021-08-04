@@ -29,6 +29,8 @@
 
     &__body {
       flex: 1;
+      display: flex;
+      flex-direction: column;
       padding: 1.5rem;
       background-color: $bg-color-body;
 
@@ -36,10 +38,20 @@
         margin-bottom: $content-padding-small-vertical;
       }
 
-      .vue-tablist {
-        .fa-exclamation-triangle {
+      .vue-tabs {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+
+        .vue-tablist .fa-exclamation-triangle {
           color: $text-danger-color;
           margin-left: .5rem;
+        }
+
+        .vue-tabpanel {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
         }
       }
     }
@@ -47,8 +59,9 @@
 
   &__materials-empty {
     font-size: 1.2rem;
-    margin-bottom: $content-padding-large-vertical;
+    margin-bottom: $content-padding-small-vertical;
     color: $text-danger-color;
+    text-align: center;
 
     .fas {
       width: 1.5rem;
