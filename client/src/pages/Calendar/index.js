@@ -217,10 +217,23 @@ export default {
       }
     },
 
+    handleUpdateEvent(newEventData) {
+      const events = [...this.events];
+      const toUpdateIndex = events.findIndex((event) => event.id === newEventData.id);
+      if (toUpdateIndex < 0) {
+        return;
+      }
+
+      events[toUpdateIndex] = formatEvent(newEventData, this.$t);
+      this.events = events;
+    },
+
     openEventModal(eventId) {
+      const { handleUpdateEvent } = this;
+
       this.$modal.show(
         EventDetails,
-        { eventId },
+        { eventId, onUpdateEvent: handleUpdateEvent },
         undefined,
         {
           'before-close': () => {

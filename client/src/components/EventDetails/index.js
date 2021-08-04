@@ -17,6 +17,7 @@ export default {
   name: 'EventDetails',
   props: {
     eventId: { type: Number, required: true },
+    onUpdateEvent: Function,
   },
   data() {
     return {
@@ -49,6 +50,53 @@ export default {
     },
   },
   methods: {
+    // ------------------------------------------------------
+    // -
+    // -    Handlers
+    // -
+    // ------------------------------------------------------
+
+    handleEstimateCreated(newEstimate) {
+      this.event.estimates.unshift(newEstimate);
+      this.lastEstimate = { ...newEstimate, date: moment(newEstimate.date) };
+      this.updateDiscountRate();
+    },
+
+    handleEstimateDeleted(estimateId) {
+      const newEstimatesList = this.event.estimates.filter(
+        (estimate) => (estimate.id !== estimateId),
+      );
+      this.event.estimates = newEstimatesList;
+      const [lastOne] = newEstimatesList;
+      this.lastEstimate = lastOne ? { ...lastOne, date: moment(lastOne.date) } : null;
+      this.updateDiscountRate();
+    },
+
+    handleBillCreated(newBill) {
+      this.event.bills.unshift(newBill);
+      this.lastBill = { ...newBill, date: moment(newBill.date) };
+      this.updateDiscountRate();
+    },
+
+    handleUpdateEvent(newData) {
+      this.setEventData(newData);
+
+      const { onUpdateEvent } = this.$props;
+      if (onUpdateEvent) {
+        onUpdateEvent(newData);
+      }
+    },
+
+    handleClose() {
+      this.$emit('close');
+    },
+
+    // ------------------------------------------------------
+    // -
+    // -    Internal methods
+    // -
+    // ------------------------------------------------------
+
     async getEvent() {
       try {
         this.error = null;
@@ -89,38 +137,6 @@ export default {
 
       this.updateDiscountRate();
     },
-
-    handleEstimateCreated(newEstimate) {
-      this.event.estimates.unshift(newEstimate);
-      this.lastEstimate = { ...newEstimate, date: moment(newEstimate.date) };
-      this.updateDiscountRate();
-    },
-
-    handleEstimateDeleted(estimateId) {
-      const newEstimatesList = this.event.estimates.filter(
-        (estimate) => (estimate.id !== estimateId),
-      );
-      this.event.estimates = newEstimatesList;
-      const [lastOne] = newEstimatesList;
-      this.lastEstimate = lastOne ? { ...lastOne, date: moment(lastOne.date) } : null;
-      this.updateDiscountRate();
-    },
-
-    handleBillCreated(newBill) {
-      this.event.bills.unshift(newBill);
-      this.lastBill = { ...newBill, date: moment(newBill.date) };
-      this.updateDiscountRate();
-    },
-
-    handleUpdateEvent(newData) {
-      this.setEventData(newData);
-      // - TODO: Remplacer ceci par une prop function pour déclencher un refresh de la timeline
-      this.$emit('event-updated', newData);
-    },
-
-    handleClose() {
-      this.$emit('close');
-    },
   },
   render() {
     const {
@@ -130,11 +146,11 @@ export default {
       showBilling,
       lastBill,
       lastEstimate,
-      isLoading,
       hasEventTechnicians,
       hasMaterials,
       hasMaterialsProblems,
       handleClose,
+      isLoading,
       error,
       handleEstimateCreated,
       handleEstimateDeleted,
@@ -145,7 +161,6 @@ export default {
     return (
       <div class="EventDetails">
         {isLoading && <Loading />}
-        {error && <ErrorMessage error={error} />}
         {(!isLoading && event) && (
           <section class="EventDetails__content">
             <Header
@@ -154,6 +169,7 @@ export default {
               onSaved={handleUpdateEvent}
               onDeleted={handleClose}
               onError={(_error) => { this.error = _error; }}
+              onDuplicated={handleClose}
             />
             <div class="EventDetails__content__body">
               <Tabs>
@@ -190,7 +206,7 @@ export default {
                       lastBill={lastBill}
                       onCreateEstimate={handleEstimateCreated}
                       onDeleteEstimate={handleEstimateDeleted}
-                      onUpdateEvent={handleUpdateEvent}
+                      onBillingEnabled={handleUpdateEvent}
                     />
                   </Tab>
                 )}
@@ -205,7 +221,7 @@ export default {
                       lastBill={lastBill}
                       lastEstimate={lastEstimate}
                       onCreateBill={handleBillCreated}
-                      onUpdateEvent={handleUpdateEvent}
+                      onBillingEnabled={handleUpdateEvent}
                     />
                   </Tab>
                 )}
@@ -226,6 +242,7 @@ export default {
             </div>
           </section>
         )}
+        {error && <ErrorMessage error={error} />}
       </div>
     );
   },

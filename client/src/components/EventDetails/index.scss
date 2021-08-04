@@ -57,6 +57,12 @@
     }
   }
 
+  &__content + .ErrorMessage {
+    min-height: auto;
+    background: none;
+    margin-bottom: $content-padding-large-vertical;
+  }
+
   &__materials-empty {
     font-size: 1.2rem;
     margin-bottom: $content-padding-small-vertical;

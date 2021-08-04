@@ -1,6 +1,6 @@
-import './index.scss';
 import Help from '@/components/Help/Help.vue';
 import EventBilling from '@/components/EventBilling/EventBilling.vue';
+import EventNotBillable from '@/components/EventNotBillable';
 
 export default {
   name: 'EventDetailsBilling',
@@ -20,10 +20,6 @@ export default {
   computed: {
     hasMaterials() {
       return this.event?.materials?.length > 0;
-    },
-
-    userCanEditBill() {
-      return this.$store.getters['auth/is'](['admin', 'member']);
     },
   },
   methods: {
@@ -48,33 +44,9 @@ export default {
         this.isCreating = false;
       }
     },
-
-    async setEventIsBillable() {
-      if (this.isLoading || this.isCreating) {
-        return;
-      }
-
-      try {
-        this.error = null;
-        this.successMessage = null;
-        this.isLoading = true;
-
-        const { id } = this.event;
-        const putData = { is_billable: true };
-        const { data } = await this.$http.put(`events/${id}`, putData);
-
-        this.$emit('updateEvent', data);
-        this.successMessage = this.$t('event-is-now-billable');
-      } catch (error) {
-        this.error = error;
-      } finally {
-        this.isLoading = false;
-      }
-    },
   },
   render() {
     const {
-      $t: __,
       event,
       successMessage,
       error,
@@ -83,8 +55,6 @@ export default {
       isCreating,
       lastEstimate,
       handleCreateBill,
-      userCanEditBill,
-      setEventIsBillable,
     } = this;
 
     return (
@@ -104,18 +74,11 @@ export default {
           />
         )}
         {!event.is_billable && (
-          <div class="EventDetailsBilling__not-billable">
-            <p>
-              <i class="fas fa-ban" /> {__('event-not-billable')}
-            </p>
-            {!event.is_confirmed && userCanEditBill && (
-              <p>
-                <button onClick={setEventIsBillable} class="success">
-                  {__('enable-billable-event')}
-                </button>
-              </p>
-            )}
-          </div>
+          <EventNotBillable
+            eventId={event.id}
+            isEventConfirmed={event.is_confirmed}
+            onBillingEnabled={(data) => { this.$emit('billingEnabled', data); }}
+          />
         )}
       </div>
     );

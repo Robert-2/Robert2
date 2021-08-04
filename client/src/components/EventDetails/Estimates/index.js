@@ -1,7 +1,7 @@
-import './index.scss';
 import Alert from '@/components/Alert';
 import Help from '@/components/Help/Help.vue';
 import EventEstimates from '@/components/EventEstimates/EventEstimates.vue';
+import EventNotBillable from '@/components/EventNotBillable';
 
 export default {
   name: 'EventDetailsEstimates',
@@ -75,33 +75,9 @@ export default {
         this.deletingId = null;
       }
     },
-
-    async setEventIsBillable() {
-      if (this.isLoading || this.deletingId || this.isCreating) {
-        return;
-      }
-
-      try {
-        this.error = null;
-        this.successMessage = null;
-        this.isLoading = true;
-
-        const { id } = this.event;
-        const putData = { is_billable: true };
-        const { data } = await this.$http.put(`events/${id}`, putData);
-
-        this.$emit('updateEvent', data);
-        this.successMessage = this.$t('event-is-now-billable');
-      } catch (error) {
-        this.error = error;
-      } finally {
-        this.isLoading = false;
-      }
-    },
   },
   render() {
     const {
-      $t: __,
       event,
       successMessage,
       error,
@@ -111,8 +87,6 @@ export default {
       deletingId,
       handleCreateEstimate,
       handleDeleteEstimate,
-      userCanEditEstimate,
-      setEventIsBillable,
     } = this;
 
     return (
@@ -133,18 +107,11 @@ export default {
           />
         )}
         {!event.is_billable && (
-          <div class="EventDetails__not-billable">
-            <p>
-              <i class="fas fa-ban" /> {__('event-not-billable')}
-            </p>
-            {!event.is_confirmed && userCanEditEstimate && (
-              <p>
-                <button onClick={setEventIsBillable} class="success">
-                  {__('enable-billable-event')}
-                </button>
-              </p>
-            )}
-          </div>
+          <EventNotBillable
+            eventId={event.id}
+            isEventConfirmed={event.is_confirmed}
+            onBillingEnabled={(data) => { this.$emit('billingEnabled', data); }}
+          />
         )}
       </div>
     );
