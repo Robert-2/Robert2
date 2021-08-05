@@ -1,5 +1,14 @@
 @import '../../themes/default/index';
 
+.Page--technicians {
+  display: flex;
+  flex-direction: column;
+
+  .VueTables {
+    flex: 1;
+  }
+}
+
 .Technicians {
   &__filters {
     position: absolute;
