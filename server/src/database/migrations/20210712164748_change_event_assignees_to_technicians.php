@@ -8,6 +8,7 @@ class ChangeEventAssigneesToTechnicians extends AbstractMigration
     public function up()
     {
         $table = $this->table('event_assignees');
+        $table->removeIndex('person_id')->dropForeignKey('person_id')->save();
         $table
             ->renameColumn('person_id', 'technician_id')
             ->addColumn('start_time', 'datetime', [
@@ -17,6 +18,12 @@ class ChangeEventAssigneesToTechnicians extends AbstractMigration
             ->addColumn('end_time', 'datetime', [
                 'null' => true,
                 'after' => 'start_time',
+            ])
+            ->addIndex(['technician_id'])
+            ->addForeignKey('technician_id', 'persons', 'id', [
+                'delete' => 'CASCADE',
+                'update' => 'NO_ACTION',
+                'constraint' => 'fk_event_technicians_technician'
             ])
             ->save();
 

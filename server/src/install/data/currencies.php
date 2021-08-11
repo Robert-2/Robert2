@@ -9,6 +9,12 @@
 // ------------------------------------------------------
 
 return [
+    // ------------------------------------------------------
+    // -
+    // -    Francophones
+    // -
+    // ------------------------------------------------------
+
     'EUR' => [
         'symbol'         => '€',
         'name'           => 'Euro',
@@ -33,6 +39,109 @@ return [
         'decimal_digits' => 2,
         'rounding'       => 0,
     ],
+    'BIF' => [
+        'symbol'         => 'FBu',
+        'name'           => 'Franc Burundien',
+        'iso'            => 'BIF',
+        'symbol_intl'    => 'FBu',
+        'decimal_digits' => 0,
+        'rounding'       => 0,
+    ],
+    'CDF' => [
+        'symbol'         => 'FrCD',
+        'name'           => 'Franc Congolais',
+        'iso'            => 'CDF',
+        'symbol_intl'    => 'CDF',
+        'decimal_digits' => 2,
+        'rounding'       => 0,
+    ],
+    'DJF' => [
+        'symbol'         => 'Fdj',
+        'name'           => 'Franc Djiboutien',
+        'iso'            => 'DJF',
+        'symbol_intl'    => 'Fdj',
+        'decimal_digits' => 0,
+        'rounding'       => 0,
+    ],
+    'DZD' => [
+        'symbol'         => 'د.ج.‏',
+        'name'           => 'Dinar Algérien',
+        'iso'            => 'DZD',
+        'symbol_intl'    => 'DA',
+        'decimal_digits' => 2,
+        'rounding'       => 0,
+    ],
+    'GNF' => [
+        'symbol'         => 'FG',
+        'name'           => 'Franc Guinéen',
+        'iso'            => 'GNF',
+        'symbol_intl'    => 'FG',
+        'decimal_digits' => 0,
+        'rounding'       => 0,
+    ],
+    'KMF' => [
+        'symbol'         => 'FC',
+        'name'           => 'Franc Comorien',
+        'iso'            => 'KMF',
+        'symbol_intl'    => 'CF',
+        'decimal_digits' => 0,
+        'rounding'       => 0,
+    ],
+    'MAD' => [
+        'symbol'         => 'د.م.‏',
+        'name'           => 'Dirham Marocain',
+        'iso'            => 'MAD',
+        'symbol_intl'    => 'MAD',
+        'decimal_digits' => 2,
+        'rounding'       => 0,
+    ],
+    'RWF' => [
+        'symbol'         => 'FR',
+        'name'           => 'Franc Rwandais',
+        'iso'            => 'RWF',
+        'symbol_intl'    => 'RWF',
+        'decimal_digits' => 0,
+        'rounding'       => 0,
+    ],
+    'TND' => [
+        'symbol'         => 'د.ت.‏',
+        'name'           => 'Dinar Tunisien',
+        'iso'            => 'TND',
+        'symbol_intl'    => 'DT',
+        'decimal_digits' => 3,
+        'rounding'       => 0,
+    ],
+    'XAF' => [
+        'symbol'         => 'FCFA',
+        'name'           => 'Franc CFA (BEAC)',
+        'iso'            => 'XAF',
+        'symbol_intl'    => 'FCFA',
+        'decimal_digits' => 0,
+        'rounding'       => 0,
+    ],
+    'XOF' => [
+        'symbol'         => 'FCFA',
+        'name'           => 'Franc CFA (BCEAO)',
+        'iso'            => 'XOF',
+        'symbol_intl'    => 'CFA',
+        'decimal_digits' => 0,
+        'rounding'       => 0,
+    ],
+    'XPF' => [
+        'symbol'         => 'CFP',
+        'name'           => 'Franc Pacifique',
+        'iso'            => 'XPF',
+        'symbol_intl'    => 'CFP',
+        'decimal_digits' => 0,
+        'rounding'       => 0,
+    ],
+
+    // ------------------------------------------------------
+    // -
+    // -    Non francophones
+    // -
+    // ------------------------------------------------------
+
     'USD' => [
         'symbol'         => '$',
         'name'           => 'US Dollar',
@@ -129,14 +238,6 @@ return [
         'decimal_digits' => 3,
         'rounding'       => 0,
     ],
-    'BIF' => [
-        'symbol'         => 'FBu',
-        'name'           => 'Burundian Franc',
-        'iso'            => 'BIF',
-        'symbol_intl'    => 'FBu',
-        'decimal_digits' => 0,
-        'rounding'       => 0,
-    ],
     'BND' => [
         'symbol'         => '$',
         'name'           => 'Brunei Dollar',
@@ -182,14 +283,6 @@ return [
         'name'           => 'Belize Dollar',
         'iso'            => 'BZD',
         'symbol_intl'    => 'BZ$',
-        'decimal_digits' => 2,
-        'rounding'       => 0,
-    ],
-    'CDF' => [
-        'symbol'         => 'FrCD',
-        'name'           => 'Congolese Franc',
-        'iso'            => 'CDF',
-        'symbol_intl'    => 'CDF',
         'decimal_digits' => 2,
         'rounding'       => 0,
     ],
@@ -241,14 +334,6 @@ return [
         'decimal_digits' => 2,
         'rounding'       => 0,
     ],
-    'DJF' => [
-        'symbol'         => 'Fdj',
-        'name'           => 'Djiboutian Franc',
-        'iso'            => 'DJF',
-        'symbol_intl'    => 'Fdj',
-        'decimal_digits' => 0,
-        'rounding'       => 0,
-    ],
     'DKK' => [
         'symbol'         => 'kr',
         'name'           => 'Danish Krone',
@@ -262,14 +347,6 @@ return [
         'name'           => 'Dominican Peso',
         'iso'            => 'DOP',
         'symbol_intl'    => 'RD$',
-        'decimal_digits' => 2,
-        'rounding'       => 0,
-    ],
-    'DZD' => [
-        'symbol'         => 'د.ج.‏',
-        'name'           => 'Algerian Dinar',
-        'iso'            => 'DZD',
-        'symbol_intl'    => 'DA',
         'decimal_digits' => 2,
         'rounding'       => 0,
     ],
@@ -327,14 +404,6 @@ return [
         'iso'            => 'GHS',
         'symbol_intl'    => 'GH₵',
         'decimal_digits' => 2,
-        'rounding'       => 0,
-    ],
-    'GNF' => [
-        'symbol'         => 'FG',
-        'name'           => 'Guinean Franc',
-        'iso'            => 'GNF',
-        'symbol_intl'    => 'FG',
-        'decimal_digits' => 0,
         'rounding'       => 0,
     ],
     'GTQ' => [
@@ -465,14 +534,6 @@ return [
         'decimal_digits' => 2,
         'rounding'       => 0,
     ],
-    'KMF' => [
-        'symbol'         => 'FC',
-        'name'           => 'Comorian Franc',
-        'iso'            => 'KMF',
-        'symbol_intl'    => 'CF',
-        'decimal_digits' => 0,
-        'rounding'       => 0,
-    ],
     'KRW' => [
         'symbol'         => '₩',
         'name'           => 'South Korean Won',
@@ -535,14 +596,6 @@ return [
         'iso'            => 'LYD',
         'symbol_intl'    => 'LD',
         'decimal_digits' => 3,
-        'rounding'       => 0,
-    ],
-    'MAD' => [
-        'symbol'         => 'د.م.‏',
-        'name'           => 'Moroccan Dirham',
-        'iso'            => 'MAD',
-        'symbol_intl'    => 'MAD',
-        'decimal_digits' => 2,
         'rounding'       => 0,
     ],
     'MDL' => [
@@ -753,14 +806,6 @@ return [
         'decimal_digits' => 2,
         'rounding'       => 0,
     ],
-    'RWF' => [
-        'symbol'         => 'FR',
-        'name'           => 'Rwandan Franc',
-        'iso'            => 'RWF',
-        'symbol_intl'    => 'RWF',
-        'decimal_digits' => 0,
-        'rounding'       => 0,
-    ],
     'SAR' => [
         'symbol'         => 'ر.س.‏',
         'name'           => 'Saudi Riyal',
@@ -815,14 +860,6 @@ return [
         'iso'            => 'THB',
         'symbol_intl'    => '฿',
         'decimal_digits' => 2,
-        'rounding'       => 0,
-    ],
-    'TND' => [
-        'symbol'         => 'د.ت.‏',
-        'name'           => 'Tunisian Dinar',
-        'iso'            => 'TND',
-        'symbol_intl'    => 'DT',
-        'decimal_digits' => 3,
         'rounding'       => 0,
     ],
     'TOP' => [
@@ -910,22 +947,6 @@ return [
         'name'           => 'Vietnamese Dong',
         'iso'            => 'VND',
         'symbol_intl'    => '₫',
-        'decimal_digits' => 0,
-        'rounding'       => 0,
-    ],
-    'XAF' => [
-        'symbol'         => 'FCFA',
-        'name'           => 'CFA Franc BEAC',
-        'iso'            => 'XAF',
-        'symbol_intl'    => 'FCFA',
-        'decimal_digits' => 0,
-        'rounding'       => 0,
-    ],
-    'XOF' => [
-        'symbol'         => 'CFA',
-        'name'           => 'CFA Franc BCEAO',
-        'iso'            => 'XOF',
-        'symbol_intl'    => 'CFA',
         'decimal_digits' => 0,
         'rounding'       => 0,
     ],
