@@ -27,12 +27,12 @@ export default {
         const { material, quantity, setQuantity } = this;
 
         return (
-      <QuantityInput
-        material={material}
-        quantity={quantity}
-        onQuantityChange={setQuantity}
-        allowOverflow
-      />
+            <QuantityInput
+                material={material}
+                quantity={quantity}
+                onQuantityChange={setQuantity}
+                allowOverflow
+            />
         );
     },
 };

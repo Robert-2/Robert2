@@ -4,7 +4,7 @@ import isValidInteger from '@/utils/isValidInteger';
 
 export const normalizeFilters = (rawFilters, extended = true) => {
     const filters = extended
-    // eslint-disable-next-line object-curly-newline
+        // eslint-disable-next-line object-curly-newline
         ? { park: null, category: null, subCategory: null, tags: [] }
         : {};
 

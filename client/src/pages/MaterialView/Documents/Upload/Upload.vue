@@ -9,10 +9,7 @@
         <h2 class="MaterialViewDocumentsUpload__title">
             {{ $t('page-materials-view.documents.drag-and-drop-files-here') }}
         </h2>
-        <button
-            class="MaterialViewDocumentsUpload__choose-files info"
-            @click="openFilesBrowser"
-        >
+        <button class="MaterialViewDocumentsUpload__choose-files info" @click="openFilesBrowser">
             {{ $t('page-materials-view.documents.choose-files') }}
         </button>
         <ul class="MaterialViewDocumentsUpload__send-list">
@@ -50,19 +47,15 @@
                 ref="chooseFilesButton"
                 class="MaterialViewDocumentsUpload__actions__file-input"
             />
-            <Help
-                message=""
-                :error="error"
-                :isLoading="isLoading"
-            />
+            <Help message="" :error="error" :isLoading="isLoading" />
         </div>
         <Progressbar v-if="uploadProgress > 0" :percent="uploadProgress" />
     </section>
 </template>
 
 <style lang="scss">
-  @import '../../../../themes/default/index';
-  @import './Upload';
+    @import '../../../../themes/default/index';
+    @import './Upload';
 </style>
 
 <script src="./index.js"></script>

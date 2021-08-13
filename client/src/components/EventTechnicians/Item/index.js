@@ -9,14 +9,14 @@ export default {
         const { $t: __, technician } = this;
 
         return (
-      <div class="EventTechnicianItem">
-        <router-link
-          to={`/technicians/${technician.id}/view#info`}
-          title={__('action-view')}
-        >
-          {technician.full_name}
-        </router-link>
-      </div>
+            <div class="EventTechnicianItem">
+                <router-link
+                    to={`/technicians/${technician.id}/view#info`}
+                    title={__('action-view')}
+                >
+                    {technician.full_name}
+                </router-link>
+            </div>
         );
     },
 };

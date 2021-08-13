@@ -65,7 +65,7 @@ const TechnicianViewPage = {
             pageTitle = __('page-technician-view.title', { name: technician.full_name });
         }
 
-        const getContent = () => {
+        const render = () => {
             if (error) {
                 return <CriticalError message={error.message} />;
             }
@@ -75,20 +75,18 @@ const TechnicianViewPage = {
             }
 
             return (
-        <Tabs defaultIndex={selectedTabIndex} class="TechnicianView">
-          <Tab title={<span><i class="fas fa-info-circle" /> {__('informations')}</span>}>
-            <TechnicianInfos technician={technician} />
-          </Tab>
-          <Tab title={<span><i class="fas fa-calendar-alt" /> {__('schedule')}</span>}>
-            <TechnicianSchedule technician={technician} />
-          </Tab>
-        </Tabs>
+                <Tabs defaultIndex={selectedTabIndex} class="TechnicianView">
+                    <Tab title={<span><i class="fas fa-info-circle" /> {__('informations')}</span>}>
+                        <TechnicianInfos technician={technician} />
+                    </Tab>
+                    <Tab title={<span><i class="fas fa-calendar-alt" /> {__('schedule')}</span>}>
+                        <TechnicianSchedule technician={technician} />
+                    </Tab>
+                </Tabs>
             );
         };
 
-        return (
-      <Page name="technician-view" title={pageTitle} render={getContent} />
-        );
+        return <Page name="technician-view" title={pageTitle} render={render} />;
     },
 };
 

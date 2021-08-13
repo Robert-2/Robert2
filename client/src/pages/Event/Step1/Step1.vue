@@ -87,8 +87,8 @@
 </template>
 
 <style lang="scss">
-  @import '../../../themes/default/index';
-  @import './Step1';
+    @import '../../../themes/default/index';
+    @import './Step1';
 </style>
 
 <script src="./index.js"></script>

@@ -1,42 +1,42 @@
 .Users {
-  &__pseudo {
-    .fas {
-      padding-right: .5rem;
+    &__pseudo {
+        .fas {
+            padding-right: 0.5rem;
+        }
     }
-  }
 
-  &__no-profile {
-    color: $text-muted-color;
-    font-style: italic;
-  }
-
-  &__group,
-  &__email,
-  &__phone,
-  &__address {
-    display: none;
-  }
-
-  &__actions {
-    width: 7.5rem;
-    min-width: 7.5rem;
-
-    .info {
-      font-size: .9rem;
+    &__no-profile {
+        color: $text-muted-color;
+        font-style: italic;
     }
-  }
 
-  @media(min-width: $screen-tablet) {
     &__group,
-    &__email {
-      display: table-cell;
-    }
-  }
-
-  @media(min-width: $screen-desktop) {
+    &__email,
     &__phone,
     &__address {
-      display: table-cell;
+        display: none;
     }
-  }
+
+    &__actions {
+        width: 7.5rem;
+        min-width: 7.5rem;
+
+        .info {
+            font-size: 0.9rem;
+        }
+    }
+
+    @media (min-width: $screen-tablet) {
+        &__group,
+        &__email {
+            display: table-cell;
+        }
+    }
+
+    @media (min-width: $screen-desktop) {
+        &__phone,
+        &__address {
+            display: table-cell;
+        }
+    }
 }

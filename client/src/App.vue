@@ -11,8 +11,8 @@
 </template>
 
 <style lang="scss">
-  @import './themes/default/index';
-  @import './App';
+    @import './themes/default/index';
+    @import './App';
 </style>
 
 <script>

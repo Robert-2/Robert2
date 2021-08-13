@@ -1,79 +1,79 @@
 .Material {
-  display: flex;
-  flex-wrap: wrap;
+    display: flex;
+    flex-wrap: wrap;
 
-  &__form {
-    flex: 2;
-    min-width: $form-min-width;
-    max-width: $form-max-width;
-    margin-right: $content-padding-large-vertical;
+    &__form {
+        flex: 2;
+        min-width: $form-min-width;
+        max-width: $form-max-width;
+        margin-right: $content-padding-large-vertical;
 
-    &.Form {
-      margin-bottom: 0;
-    }
-  }
-
-  &__side {
-    flex: 1;
-    min-width: 250px;
-    margin-bottom: $form-fixed-actions-margin-bottom;
-
-    .Progressbar {
-      max-width: 350px;
-      margin-top: $content-padding-large-horizontal;
-    }
-  }
-
-  &__no-attribute-help {
-    margin: 0 0 1rem;
-    color: $text-muted-color;
-    font-style: italic;
-  }
-
-  &__attributes {
-    margin-bottom: 1.5rem;
-  }
-
-  &__modify-attribute-link {
-    margin-bottom: 2rem;
-  }
-
-  &__ref .FormField__input {
-    max-width: 180px;
-  }
-
-  &__quantity,
-  &__price {
-    .FormField__input {
-      max-width: 80px;
-    }
-  }
-
-  .Help {
-    display: none;
-  }
-
-  @media screen and (min-width: $screen-mobile) {
-    .Form {
-      margin-bottom: $form-fixed-actions-margin-bottom;
+        &.Form {
+            margin-bottom: 0;
+        }
     }
 
     &__side {
-      margin-top: 30px;
-    }
+        flex: 1;
+        min-width: 250px;
+        margin-bottom: $form-fixed-actions-margin-bottom;
 
-    .Help {
-      display: block;
-    }
-  }
-
-  @media screen and (min-width: $screen-tablet) {
-    &__modify-attribute-link {
-      margin-left: $form-label-width;
+        .Progressbar {
+            max-width: 350px;
+            margin-top: $content-padding-large-horizontal;
+        }
     }
 
     &__no-attribute-help {
-      margin-left: $form-label-width;
+        margin: 0 0 1rem;
+        color: $text-muted-color;
+        font-style: italic;
     }
-  }
+
+    &__attributes {
+        margin-bottom: 1.5rem;
+    }
+
+    &__modify-attribute-link {
+        margin-bottom: 2rem;
+    }
+
+    &__ref .FormField__input {
+        max-width: 180px;
+    }
+
+    &__quantity,
+    &__price {
+        .FormField__input {
+            max-width: 80px;
+        }
+    }
+
+    .Help {
+        display: none;
+    }
+
+    @media screen and (min-width: $screen-mobile) {
+        .Form {
+            margin-bottom: $form-fixed-actions-margin-bottom;
+        }
+
+        &__side {
+            margin-top: 30px;
+        }
+
+        .Help {
+            display: block;
+        }
+    }
+
+    @media screen and (min-width: $screen-tablet) {
+        &__modify-attribute-link {
+            margin-left: $form-label-width;
+        }
+
+        &__no-attribute-help {
+            margin-left: $form-label-width;
+        }
+    }
 }

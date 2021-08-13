@@ -27,57 +27,47 @@ const ReturnInventorySummary = {
         },
     },
     render() {
-        const {
-            $t: __,
-            eventId,
-            isDone,
-            isVisitor,
-            materialsWithProblem,
-        } = this;
-
+        const { $t: __, eventId, isDone, isVisitor, materialsWithProblem } = this;
         const hasProblems = materialsWithProblem.length > 0;
 
         return (
-      <div class="ReturnInventorySummary">
-        {hasProblems && (
-          <div class="ReturnInventorySummary__title">
-            {__('page-events.problems-on-returned-materials')}
-          </div>
-        )}
-        {!isDone && (
-          <div class="ReturnInventorySummary__not-done">
-            <p>
-              {__('page-events.return-inventory-not-done-yet')}
-            </p>
-            {!isVisitor && (
-              <router-link to={`/event-return/${eventId}`} class="ReturnInventorySummary__link">
-                <i class="fas fa-tasks" />{' '}
-                {__('page-events.do-or-terminate-return-inventory')}
-              </router-link>
-            )}
-          </div>
-        )}
-        {isDone && (
-          <div class="ReturnInventorySummary__done">
-            {!hasProblems && (
-              <div class="ReturnInventorySummary__all-ok">
-                {__('page-event-return.all-material-returned')}
-              </div>
-            )}
-            {hasProblems && (
-              <ul class="ReturnInventorySummary__list">
-                {materialsWithProblem.map((itemData) => (
-                  <ReturnInventoryItem key={itemData.id} data={itemData} />
-                ))}
-              </ul>
-            )}
-            <router-link to={`/event-return/${eventId}`} class="ReturnInventorySummary__link">
-              <i class="fas fa-tasks" />{' '}
-              {__('page-events.view-return-inventory')}
-            </router-link>
-          </div>
-        )}
-      </div>
+            <div class="ReturnInventorySummary">
+                {hasProblems && (
+                    <div class="ReturnInventorySummary__title">
+                        {__('page-events.problems-on-returned-materials')}
+                    </div>
+                )}
+                {!isDone && (
+                    <div class="ReturnInventorySummary__not-done">
+                        <p>{__('page-events.return-inventory-not-done-yet')}</p>
+                        {!isVisitor && (
+                            <router-link to={`/event-return/${eventId}`} class="ReturnInventorySummary__link">
+                                <i class="fas fa-tasks" />{' '}
+                                {__('page-events.do-or-terminate-return-inventory')}
+                            </router-link>
+                        )}
+                    </div>
+                )}
+                {isDone && (
+                    <div class="ReturnInventorySummary__done">
+                        {!hasProblems && (
+                            <div class="ReturnInventorySummary__all-ok">
+                                {__('page-event-return.all-material-returned')}
+                            </div>
+                        )}
+                        {hasProblems && (
+                            <ul class="ReturnInventorySummary__list">
+                                {materialsWithProblem.map((itemData) => (
+                                    <ReturnInventoryItem key={itemData.id} data={itemData} />
+                                ))}
+                            </ul>
+                        )}
+                        <router-link to={`/event-return/${eventId}`} class="ReturnInventorySummary__link">
+                            <i class="fas fa-tasks" /> {__('page-events.view-return-inventory')}
+                        </router-link>
+                    </div>
+                )}
+            </div>
         );
     },
 };

@@ -60,32 +60,27 @@ const ErrorMessage = {
             this.isDetailsModalOpened = true;
             const { code, message, details } = this;
 
-            this.$modal.show(
-                Details,
-                { code, message, details },
-                undefined,
-                {
-                    'before-close': () => {
-                        this.isDetailsModalOpened = false;
-                    },
+            this.$modal.show(Details, { code, message, details }, undefined, {
+                'before-close': () => {
+                    this.isDetailsModalOpened = false;
                 },
-            );
+            });
         },
     },
     render() {
         const { $t: __, code, message, handleShowDetails } = this;
 
         return (
-      <p class="ErrorMessage">
-        <span class="ErrorMessage__message">
-          <i class="fas fa-exclamation-triangle" />&nbsp;{message}
-        </span>
-        {code === 500 && (
-          <a class="ErrorMessage__show-details" onClick={handleShowDetails}>
-            <i class="fas fa-external-link-alt" />&nbsp;{__('errors.show-details')}
-          </a>
-        )}
-      </p>
+            <p class="ErrorMessage">
+                <span class="ErrorMessage__message">
+                    <i class="fas fa-exclamation-triangle" />&nbsp;{message}
+                </span>
+                {code === 500 && (
+                    <a class="ErrorMessage__show-details" onClick={handleShowDetails}>
+                        <i class="fas fa-external-link-alt" />&nbsp;{__('errors.show-details')}
+                    </a>
+                )}
+            </p>
         );
     },
 };

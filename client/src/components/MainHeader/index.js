@@ -29,18 +29,16 @@ export default {
         const { pageTitle, toggleMenu } = this;
 
         return (
-      <div class="MainHeader">
-        <div class="MainHeader__logo">
-          <Logo minimalist />
-        </div>
-        <div class="MainHeader__menu-toggle" onClick={toggleMenu}>
-          <i class="fas fa-bars fa-2x" />
-        </div>
-        <div class="MainHeader__title">
-          {pageTitle}
-        </div>
-        <TopMenu class="MainHeader__menu" />
-      </div>
+            <div class="MainHeader">
+                <div class="MainHeader__logo">
+                    <Logo minimalist />
+                </div>
+                <div class="MainHeader__menu-toggle" onClick={toggleMenu}>
+                    <i class="fas fa-bars fa-2x" />
+                </div>
+                <div class="MainHeader__title">{pageTitle}</div>
+                <TopMenu class="MainHeader__menu" />
+            </div>
         );
     },
 };

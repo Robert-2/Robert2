@@ -48,7 +48,7 @@ export default {
                 }
 
                 const { status, data } = error.response;
-                const code = (status === 404 && !data.error) ? 0 : 404;
+                const code = status === 404 && !data.error ? 0 : 404;
                 const message = data.error ? data.error.message : 'network error';
                 this.errorMessage({ code, message });
             }

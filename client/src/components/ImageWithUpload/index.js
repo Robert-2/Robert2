@@ -51,7 +51,9 @@ export default {
             }
 
             if (size > MAX_FILE_SIZE) {
-                this.fileError = this.$t('errors.file-size-exceeded', { max: formatBytes(MAX_FILE_SIZE) });
+                this.fileError = this.$t('errors.file-size-exceeded', {
+                    max: formatBytes(MAX_FILE_SIZE),
+                });
                 return;
             }
 

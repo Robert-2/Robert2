@@ -100,86 +100,86 @@ export default {
         }];
 
         return (
-      <div class={classNames}>
-        {label && (
-          <label class="FormField__label">
-            {__(label)} {required && <span class="FormField__label__required">*</span>}
-          </label>
-        )}
-        {['text', 'email', 'tel', 'password', 'number'].includes(type) && (
-          <div class="FormField__input-wrapper">
-            <input
-              type={type}
-              step={type === 'number' ? (step || 0.01) : null}
-              min={type === 'number' ? (min || null) : null}
-              max={type === 'number' ? (max || null) : null}
-              name={name}
-              autocomplete={type === 'password' ? 'new-password' : 'off'}
-              disabled={disabled}
-              placeholder={__(placeholder)}
-              class="FormField__input"
-              value={value}
-              onInput={handleInput}
-              onChange={handleChange}
-            />
-            {addon && <div class="FormField__addon">{addon}</div>}
-          </div>
-        )}
-        {type === 'select' && (
-          <select
-            key={renderKey}
-            name={name}
-            class="FormField__select"
-            value={value}
-            disabled={disabled}
-            onInput={handleInput}
-            onChange={handleChange}
-          >
-            {options.map((option) => (
-              <option key={option.value} value={option.value}>
-                {__(option.label)}
-              </option>
-            ))}
-          </select>
-        )}
-        {type === 'textarea' && (
-          <textarea
-            name={name}
-            value={value}
-            disabled={disabled}
-            placeholder={__(placeholder)}
-            class="FormField__textarea"
-            onInput={handleInput}
-          />
-        )}
-        {type === 'date' && (
-          <Datepicker
-            value={typeof value === 'string' ? moment(value).toDate() : value}
-            displayFormat={datepickerOptions?.format}
-            disabledDates={datepickerOptions?.disabled}
-            isRange={datepickerOptions?.isRange}
-            withTime={datepickerOptions?.withTime}
-            placeholder={__(placeholder)}
-            class="FormField__datepicker"
-            onInput={handleDatepickerChange}
-          />
-        )}
-        {type === 'switch' && (
-          <div class="FormField__switch">
-            <SwitchToggle
-              value={value ?? false}
-              locked={disabled}
-              lockedReason={disabledReason}
-              onInput={handleSwitchChange}
-            />
-          </div>
-        )}
-        {errors && (
-          <div class="FormField__error">
-            <span class="FormField__error__text">{errors[0]}</span>
-          </div>
-        )}
-      </div>
+            <div class={classNames}>
+                {label && (
+                    <label class="FormField__label">
+                        {__(label)} {required && <span class="FormField__label__required">*</span>}
+                    </label>
+                )}
+                {['text', 'email', 'tel', 'password', 'number'].includes(type) && (
+                    <div class="FormField__input-wrapper">
+                        <input
+                            type={type}
+                            step={type === 'number' ? (step || 0.01) : null}
+                            min={type === 'number' ? (min || null) : null}
+                            max={type === 'number' ? (max || null) : null}
+                            name={name}
+                            autocomplete={type === 'password' ? 'new-password' : 'off'}
+                            disabled={disabled}
+                            placeholder={__(placeholder)}
+                            class="FormField__input"
+                            value={value}
+                            onInput={handleInput}
+                            onChange={handleChange}
+                        />
+                        {addon && <div class="FormField__addon">{addon}</div>}
+                    </div>
+                )}
+                {type === 'select' && (
+                    <select
+                        key={renderKey}
+                        name={name}
+                        class="FormField__select"
+                        value={value}
+                        disabled={disabled}
+                        onInput={handleInput}
+                        onChange={handleChange}
+                    >
+                        {options.map((option) => (
+                            <option key={option.value} value={option.value}>
+                                {__(option.label)}
+                            </option>
+                        ))}
+                    </select>
+                )}
+                {type === 'textarea' && (
+                    <textarea
+                        name={name}
+                        value={value}
+                        disabled={disabled}
+                        placeholder={__(placeholder)}
+                        class="FormField__textarea"
+                        onInput={handleInput}
+                    />
+                )}
+                {type === 'date' && (
+                    <Datepicker
+                        value={typeof value === 'string' ? moment(value).toDate() : value}
+                        displayFormat={datepickerOptions?.format}
+                        disabledDates={datepickerOptions?.disabled}
+                        isRange={datepickerOptions?.isRange}
+                        withTime={datepickerOptions?.withTime}
+                        placeholder={__(placeholder)}
+                        class="FormField__datepicker"
+                        onInput={handleDatepickerChange}
+                    />
+                )}
+                {type === 'switch' && (
+                    <div class="FormField__switch">
+                        <SwitchToggle
+                            value={value ?? false}
+                            locked={disabled}
+                            lockedReason={disabledReason}
+                            onInput={handleSwitchChange}
+                        />
+                    </div>
+                )}
+                {errors && (
+                    <div class="FormField__error">
+                        <span class="FormField__error__text">{errors[0]}</span>
+                    </div>
+                )}
+            </div>
         );
     },
 };

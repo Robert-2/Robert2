@@ -89,33 +89,31 @@ export default {
 
         deleteBeneficiary(beneficiaryId) {
             const isSoft = !this.isTrashDisplayed;
-            Alert.ConfirmDelete(this.$t, 'beneficiaries', isSoft)
-                .then((result) => {
-                    if (!result.value) {
-                        return;
-                    }
+            Alert.ConfirmDelete(this.$t, 'beneficiaries', isSoft).then((result) => {
+                if (!result.value) {
+                    return;
+                }
 
-                    this.error = null;
-                    this.isLoading = true;
-                    this.$http.delete(`${this.$route.meta.resource}/${beneficiaryId}`)
-                        .then(this.refreshTable)
-                        .catch(this.showError);
-                });
+                this.error = null;
+                this.isLoading = true;
+                this.$http.delete(`${this.$route.meta.resource}/${beneficiaryId}`)
+                    .then(this.refreshTable)
+                    .catch(this.showError);
+            });
         },
 
         restoreBeneficiary(beneficiaryId) {
-            Alert.ConfirmRestore(this.$t, 'beneficiaries')
-                .then((result) => {
-                    if (!result.value) {
-                        return;
-                    }
+            Alert.ConfirmRestore(this.$t, 'beneficiaries').then((result) => {
+                if (!result.value) {
+                    return;
+                }
 
-                    this.error = null;
-                    this.isLoading = true;
-                    this.$http.put(`${this.$route.meta.resource}/restore/${beneficiaryId}`)
-                        .then(this.refreshTable)
-                        .catch(this.showError);
-                });
+                this.error = null;
+                this.isLoading = true;
+                this.$http.put(`${this.$route.meta.resource}/restore/${beneficiaryId}`)
+                    .then(this.refreshTable)
+                    .catch(this.showError);
+            });
         },
 
         refreshTable() {

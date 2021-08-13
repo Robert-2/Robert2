@@ -42,9 +42,9 @@ export default {
         isFilterEmpty() {
             return (
                 this.filters.park === ''
-        && this.filters.category === ''
-        && this.filters.subCategory === ''
-        && this.filters.tags.length === 0
+                && this.filters.category === ''
+                && this.filters.subCategory === ''
+                && this.filters.tags.length === 0
             );
         },
     },
@@ -81,12 +81,7 @@ export default {
         },
 
         setQueryFilters() {
-            const {
-                park,
-                category,
-                subCategory,
-                tags,
-            } = this.filters;
+            const { park, category, subCategory, tags } = this.filters;
 
             const filters = {
                 park: park || null,

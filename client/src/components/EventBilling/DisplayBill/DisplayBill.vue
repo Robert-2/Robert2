@@ -8,12 +8,8 @@
                 {{ $t('bill-number-generated-at', { number: data.number, date: billDate.format('L') }) }}
                 <br />
                 {{ $t('with-amount-of', { amount: formatAmount(data.due_amount) }) }}
-                <span v-if="data.discount_rate === 0">
-                    ({{ $t('without-discount') }}).
-                </span>
-                <span v-else>
-                    ({{ $t('discount-rate', { rate: data.discount_rate }) }}).
-                </span>
+                <span v-if="data.discount_rate === 0"> ({{ $t('without-discount') }}).</span>
+                <span v-else> ({{ $t('discount-rate', { rate: data.discount_rate }) }}).</span>
             </div>
         </div>
         <div class="DisplayBill__actions">
@@ -26,8 +22,8 @@
 </template>
 
 <style lang="scss">
-  @import '../../../themes/default/index';
-  @import './DisplayBill';
+    @import '../../../themes/default/index';
+    @import './DisplayBill';
 </style>
 
 <script>

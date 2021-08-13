@@ -52,42 +52,41 @@ export default {
         } = this;
 
         return (
-      <form class="EventSummarySettingsForm" onSubmit={handleSubmit}>
-        <section class="EventSummarySettingsForm__section">
-          <h3>{__('page-settings.event-summary.material-list')}</h3>
-          <FormField
-            type="select"
-            label="page-settings.event-summary.display-mode"
-            name="event_summary_material_display_mode"
-            options={listModeOptions}
-            value={settings?.event_summary_material_display_mode || defaultListMode}
-            errors={errors?.event_summary_material_display_mode}
-          />
-        </section>
-        <section class="EventSummarySettingsForm__section">
-          <h3>{__('page-settings.event-summary.custom-text')}</h3>
-          <FormField
-            type="text"
-            label="page-settings.event-summary.custom-text-title"
-            name="event_summary_custom_text_title"
-            value={settings?.event_summary_custom_text_title || ''}
-            errors={errors?.event_summary_custom_text_title}
-          />
-          <FormField
-            type="textarea"
-            label="page-settings.event-summary.custom-text-content"
-            name="event_summary_custom_text"
-            value={settings?.event_summary_custom_text || ''}
-            errors={errors?.event_summary_custom_text}
-          />
-        </section>
-        <section class="EventSummarySettingsForm__actions">
-          <button type="submit" class="success" disabled={isSaving}>
-            <i class="fas fa-save" />{' '}
-            {isSaving ? __('saving') : __('save')}
-          </button>
-        </section>
-      </form>
+            <form class="EventSummarySettingsForm" onSubmit={handleSubmit}>
+                <section class="EventSummarySettingsForm__section">
+                    <h3>{__('page-settings.event-summary.material-list')}</h3>
+                    <FormField
+                        type="select"
+                        label="page-settings.event-summary.display-mode"
+                        name="event_summary_material_display_mode"
+                        options={listModeOptions}
+                        value={settings?.event_summary_material_display_mode || defaultListMode}
+                        errors={errors?.event_summary_material_display_mode}
+                    />
+                </section>
+                <section class="EventSummarySettingsForm__section">
+                    <h3>{__('page-settings.event-summary.custom-text')}</h3>
+                    <FormField
+                        type="text"
+                        label="page-settings.event-summary.custom-text-title"
+                        name="event_summary_custom_text_title"
+                        value={settings?.event_summary_custom_text_title || ''}
+                        errors={errors?.event_summary_custom_text_title}
+                    />
+                    <FormField
+                        type="textarea"
+                        label="page-settings.event-summary.custom-text-content"
+                        name="event_summary_custom_text"
+                        value={settings?.event_summary_custom_text || ''}
+                        errors={errors?.event_summary_custom_text}
+                    />
+                </section>
+                <section class="EventSummarySettingsForm__actions">
+                    <button type="submit" class="success" disabled={isSaving}>
+                        <i class="fas fa-save" /> {isSaving ? __('saving') : __('save')}
+                    </button>
+                </section>
+            </form>
         );
     },
 };

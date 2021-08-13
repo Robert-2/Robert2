@@ -64,7 +64,7 @@ export default {
 
         discountTarget: {
             get() {
-                return decimalRound((this.grandTotal - this.discountAmount));
+                return decimalRound(this.grandTotal - this.discountAmount);
             },
             set(value) {
                 const diff = this.grandTotal - value;

@@ -7,7 +7,8 @@
             <a
                 v-if="file.id"
                 :href="fileUrl"
-                target="_blank" class="MaterialViewDocumentsItem__link"
+                target="_blank"
+                class="MaterialViewDocumentsItem__link"
                 :title="$t('page-materials-view.documents.click-to-open')"
             >
                 <i class="fas" :class="iconName" />
@@ -20,7 +21,8 @@
             <a
                 v-if="file.id"
                 :href="fileUrl"
-                target="_blank" class="MaterialViewDocumentsItem__link"
+                target="_blank"
+                class="MaterialViewDocumentsItem__link"
                 :title="$t('page-materials-view.documents.click-to-open')"
             >
                 {{ file.name }}
@@ -39,8 +41,8 @@
 </template>
 
 <style lang="scss">
-  @import '../../../../themes/default/index';
-  @import './Item';
+    @import '../../../../themes/default/index';
+    @import './Item';
 </style>
 
 <script src="./index.js"></script>

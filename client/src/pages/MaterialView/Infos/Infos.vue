@@ -9,10 +9,7 @@
                     {{ categoryName }}
                 </router-link>
                 <span v-if="subCategoryName">/</span>
-                <router-link
-                    :to="`/materials?${queryStringSubCategory}`"
-                    v-if="subCategoryName"
-                >
+                <router-link :to="`/materials?${queryStringSubCategory}`" v-if="subCategoryName">
                     {{ subCategoryName }}
                 </router-link>
                 /
@@ -49,10 +46,7 @@
                     {{ $t('material-is-discountable') }}
                 </p>
             </div>
-            <Attributes
-                v-if="material.attributes.length > 0"
-                :attributes="material.attributes"
-            />
+            <Attributes v-if="material.attributes.length > 0" :attributes="material.attributes" />
             <div class="MaterialViewInfos__notes" v-if="material.note">
                 <h3>{{ $t('notes') }}</h3>
                 <p class="MaterialViewInfos__notes">{{ material.note }}</p>
@@ -101,8 +95,8 @@
 </template>
 
 <style lang="scss">
-  @import '../../../themes/default/index';
-  @import './Infos';
+    @import '../../../themes/default/index';
+    @import './Infos';
 </style>
 
 <script src="./index.js"></script>

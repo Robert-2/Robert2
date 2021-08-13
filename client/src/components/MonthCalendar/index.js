@@ -47,33 +47,31 @@ export default {
         } = this;
 
         return (
-      <div class="MonthCalendar">
-        <header class="MonthCalendar__header">
-          <button class="info" v-tooltip={__('previous-month')} onClick={handlePrevMonthClick}>
-            <i class="fas fa-arrow-left" />
-          </button>
-          <span class="MonthCalendar__header__current-month">
-            {currentMonth}
-          </span>
-          <button class="info" v-tooltip={__('next-month')} onClick={handleNextMonthClick}>
-            <i class="fas fa-arrow-right" />
-          </button>
-          {withTotal && (
-            <h4 class="MonthCalendar__header__total">
-              {__('events-count-total', { count: events.length }, events.length)}
-            </h4>
-          )}
-        </header>
-        <CalendarView
-          class="MonthCalendar__body"
-          showDate={currentDate}
-          startingDayOfWeek={1}
-          items={events}
-          itemContentHeight="40px"
-          itemBorderHeight="0px"
-          vOn:click-item={handleClickItem}
-        />
-      </div>
+            <div class="MonthCalendar">
+                <header class="MonthCalendar__header">
+                    <button class="info" v-tooltip={__('previous-month')} onClick={handlePrevMonthClick}>
+                        <i class="fas fa-arrow-left" />
+                    </button>
+                    <span class="MonthCalendar__header__current-month">{currentMonth}</span>
+                    <button class="info" v-tooltip={__('next-month')} onClick={handleNextMonthClick}>
+                        <i class="fas fa-arrow-right" />
+                    </button>
+                    {withTotal && (
+                        <h4 class="MonthCalendar__header__total">
+                            {__('events-count-total', { count: events.length }, events.length)}
+                        </h4>
+                    )}
+                </header>
+                <CalendarView
+                    class="MonthCalendar__body"
+                    showDate={currentDate}
+                    startingDayOfWeek={1}
+                    items={events}
+                    itemContentHeight="40px"
+                    itemBorderHeight="0px"
+                    vOn:click-item={handleClickItem}
+                />
+            </div>
         );
     },
 };

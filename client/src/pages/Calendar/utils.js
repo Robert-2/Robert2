@@ -61,9 +61,9 @@ const formatEvent = (dataEvent, translate) => {
         );
     }
 
-    const statusesText = getTimelineEventI18nStatuses(formattedEvent).map(
-        ({ icon, i18nKey }) => withIcon(icon, translate(`page-calendar.${i18nKey}`)),
-    ).join('\n');
+    const statusesText = getTimelineEventI18nStatuses(formattedEvent)
+        .map(({ icon, i18nKey }) => withIcon(icon, translate(`page-calendar.${i18nKey}`)))
+        .join('\n');
 
     return {
         ...formattedEvent,

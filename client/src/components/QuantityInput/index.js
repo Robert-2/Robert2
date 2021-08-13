@@ -67,39 +67,41 @@ const QuantityInput = {
         } = this;
 
         return (
-      <div class="QuantityInput">
-        <button
-          type="button"
-          role="button"
-          class="QuantityInput__button"
-          disabled={quantity <= min}
-          onClick={handleDecrement}
-        >
-          <i class="fas fa-minus" />
-        </button>
-        <input
-          type="number"
-          class="QuantityInput__input"
-          step={1}
-          min={min}
-          max={max}
-          value={quantity}
-          onInput={handleInputChange}
-          onFocus={(event) => { event.target.select(); }}
-        />
-        <button
-          type="button"
-          role="button"
-          class={{
-              QuantityInput__button: true,
-              info: max == null || quantity < max,
-          }}
-          disabled={max != null && quantity >= max}
-          onClick={handleIncrement}
-        >
-          <i class="fas fa-plus" />
-        </button>
-      </div>
+            <div class="QuantityInput">
+                <button
+                    type="button"
+                    role="button"
+                    class="QuantityInput__button"
+                    disabled={quantity <= min}
+                    onClick={handleDecrement}
+                >
+                    <i class="fas fa-minus" />
+                </button>
+                <input
+                    type="number"
+                    class="QuantityInput__input"
+                    step={1}
+                    min={min}
+                    max={max}
+                    value={quantity}
+                    onInput={handleInputChange}
+                    onFocus={(event) => {
+                        event.target.select();
+                    }}
+                />
+                <button
+                    type="button"
+                    role="button"
+                    class={{
+                        QuantityInput__button: true,
+                        info: max == null || quantity < max,
+                    }}
+                    disabled={max != null && quantity >= max}
+                    onClick={handleIncrement}
+                >
+                    <i class="fas fa-plus" />
+                </button>
+            </div>
         );
     },
 };

@@ -33,9 +33,7 @@ const defaultConfig = {
     billingMode: 'partial',
 
     // - Cette fonction doit retourner un nombre.
-    degressiveRate: (daysCount) => (
-        ((daysCount - 1) * 0.75) + 1
-    ),
+    degressiveRate: (daysCount) => (daysCount - 1) * 0.75 + 1,
 };
 
 const globalConfig = window.__SERVER_CONFIG__ || defaultConfig;

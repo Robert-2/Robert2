@@ -57,7 +57,7 @@ export default {
 
         discountTarget: {
             get() {
-                return decimalRound((this.grandTotal - this.discountAmount));
+                return decimalRound(this.grandTotal - this.discountAmount);
             },
             set(value) {
                 const diff = this.grandTotal - value;
@@ -97,56 +97,56 @@ export default {
         } = this;
 
         return (
-      <section class="EventTotals">
-        {withRentalPrices && (
-          <div class="EventTotals__rental-prices">
-            <div class="EventTotals__base">
-              {__('total')}{' '}
-              <span class="EventTotals__items-count">
-                {__('items-count', { count: itemsCount }, itemsCount)}
-              </span>
-              <span class="EventTotals__daily-total">
-                <i class="fas fa-arrow-right" /> {formatAmount(total)}
-              </span>
-              <span class="EventTotals__duration">
-                <i class="fas fa-times" /> {__('days-count', { duration }, duration)}
-              </span>
-              <span class="EventTotals__ratio">
-                <i class="fas fa-arrow-right" /> {__('ratio')}&nbsp;{ratio}
-              </span>
-            </div>
-            <div class="EventTotals__grand">
-              {__('total-amount')}:&nbsp;{formatAmount(grandTotal)}
-            </div>
-            {(discountRate > 0 && totalDiscountable !== total) && (
-              <div class="EventTotals__discountable">
-                {__('total-discountable')}:
-                {formatAmount(totalDiscountable)}&nbsp;/&nbsp;{__('day')}
-                <i class="fas fa-arrow-right" /> {formatAmount(grandTotalDiscountable)}
-              </div>
-            )}
-            {discountRate > 0 && (
-              <div class="EventTotals__discount">
-                {__('discount')} {discountRate} %
-                <i class="fas fa-arrow-right" /> - {formatAmount(discountAmount)}
-              </div>
-            )}
-            {discountRate > 0 && (
-              <div class="EventTotals__grand-discount">
-                {__('total-amount-with-discount')}: {formatAmount(grandTotalWithDiscount)}
-              </div>
-            )}
-            {duration > 1 && (
-              <div class="EventTotals__daily">
-                ({formatAmount(grandTotalWithDiscount / duration)}&nbsp;/&nbsp;{__('day')})
-              </div>
-            )}
-          </div>
-        )}
-        <div class="EventTotals__replacement">
-          {__('replacement-total')}: {formatAmount(replacementTotal)}
-        </div>
-      </section>
+            <section class="EventTotals">
+                {withRentalPrices && (
+                    <div class="EventTotals__rental-prices">
+                        <div class="EventTotals__base">
+                            {__('total')}{' '}
+                            <span class="EventTotals__items-count">
+                                {__('items-count', { count: itemsCount }, itemsCount)}
+                            </span>
+                            <span class="EventTotals__daily-total">
+                                <i class="fas fa-arrow-right" /> {formatAmount(total)}
+                            </span>
+                            <span class="EventTotals__duration">
+                                <i class="fas fa-times" /> {__('days-count', { duration }, duration)}
+                            </span>
+                            <span class="EventTotals__ratio">
+                                <i class="fas fa-arrow-right" /> {__('ratio')}&nbsp;{ratio}
+                            </span>
+                        </div>
+                        <div class="EventTotals__grand">
+                            {__('total-amount')}:&nbsp;{formatAmount(grandTotal)}
+                        </div>
+                        {discountRate > 0 && totalDiscountable !== total && (
+                            <div class="EventTotals__discountable">
+                                {__('total-discountable')}:
+                                {formatAmount(totalDiscountable)}&nbsp;/&nbsp;{__('day')}
+                                <i class="fas fa-arrow-right" /> {formatAmount(grandTotalDiscountable)}
+                            </div>
+                        )}
+                        {discountRate > 0 && (
+                            <div class="EventTotals__discount">
+                                {__('discount')} {discountRate} %
+                                <i class="fas fa-arrow-right" /> - {formatAmount(discountAmount)}
+                            </div>
+                        )}
+                        {discountRate > 0 && (
+                            <div class="EventTotals__grand-discount">
+                                {__('total-amount-with-discount')}: {formatAmount(grandTotalWithDiscount)}
+                            </div>
+                        )}
+                        {duration > 1 && (
+                            <div class="EventTotals__daily">
+                                ({formatAmount(grandTotalWithDiscount / duration)}&nbsp;/&nbsp;{__('day')})
+                            </div>
+                        )}
+                    </div>
+                )}
+                <div class="EventTotals__replacement">
+                    {__('replacement-total')}: {formatAmount(replacementTotal)}
+                </div>
+            </section>
         );
     },
 };

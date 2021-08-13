@@ -8,8 +8,8 @@
 </template>
 
 <style lang="scss">
-  @import '../../themes/default/index';
-  @import './Progressbar';
+    @import '../../themes/default/index';
+    @import './Progressbar';
 </style>
 
 <script>

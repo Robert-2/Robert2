@@ -100,8 +100,8 @@
 </template>
 
 <style lang="scss">
-  @import '../../../../themes/default/index';
-  @import './MaterialsList';
+    @import '../../../../themes/default/index';
+    @import './MaterialsList';
 </style>
 
 <script src="./index.js"></script>

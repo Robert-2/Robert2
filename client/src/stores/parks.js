@@ -16,9 +16,7 @@ export default {
         },
 
         parkName: (state) => (parkId) => {
-            const park = state.list.find(
-                (_park) => _park.id === parkId,
-            );
+            const park = state.list.find((_park) => _park.id === parkId);
             return park ? park.name : null;
         },
 

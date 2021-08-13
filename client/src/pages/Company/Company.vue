@@ -2,17 +2,9 @@
     <div class="content">
         <div class="content__main-view Company">
             <div class="Company__main">
-                <CompanyForm
-                    :company="company"
-                    :errors="errors"
-                    @submit="saveCompany"
-                />
+                <CompanyForm :company="company" :errors="errors" @submit="saveCompany" />
                 <div class="Company__extras">
-                    <Help
-                        :message="help"
-                        :error="error"
-                        :isLoading="isLoading"
-                    />
+                    <Help :message="help" :error="error" :isLoading="isLoading" />
                     <div v-if="persons.length > 0" class="Company__persons">
                         <h4 class="Company__persons__title">
                             {{ $t('page-companies.attached-persons') }}
@@ -37,8 +29,8 @@
 </template>
 
 <style lang="scss">
-  @import '../../themes/default/index';
-  @import './Company';
+    @import '../../themes/default/index';
+    @import './Company';
 </style>
 
 <script src="./index.js"></script>

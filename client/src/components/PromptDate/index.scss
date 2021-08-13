@@ -1,38 +1,38 @@
 @import '../../themes/default/index';
 
 .PromptDate {
-  &__header {
-    display: flex;
-    align-items: center;
-    padding: $content-padding-small-horizontal $content-padding-large-vertical;
-    background-color: $bg-color-main-header;
+    &__header {
+        display: flex;
+        align-items: center;
+        padding: $content-padding-small-horizontal $content-padding-large-vertical;
+        background-color: $bg-color-main-header;
 
-    &__title {
-      flex: 1;
-      font-size: 1.4rem;
+        &__title {
+            flex: 1;
+            font-size: 1.4rem;
+        }
+
+        &__btn-close {
+            flex: 0 0 auto;
+            background: none;
+            border: none;
+        }
     }
 
-    &__btn-close {
-      flex: 0 0 auto;
-      background: none;
-      border: none;
+    &__main {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: $content-padding-large-vertical $content-padding-small-vertical;
     }
-  }
 
-  &__main {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: $content-padding-large-vertical $content-padding-small-vertical;
-  }
+    &__separator {
+        opacity: 0.15;
+        margin: 0;
+    }
 
-  &__separator {
-    opacity: .15;
-    margin: 0;
-  }
-
-  &__footer {
-    padding: $content-padding-large-vertical;
-    text-align: center;
-  }
+    &__footer {
+        padding: $content-padding-large-vertical;
+        text-align: center;
+    }
 }

@@ -1,28 +1,28 @@
 @import '../../../themes/default/index';
 
 .EventReturnMaterialsList {
-  &__missing,
-  &__all-returned,
-  &__has-broken {
-    text-align: center;
-    font-size: 1.2rem;
-    margin-bottom: $content-padding-large-horizontal;
-  }
+    &__missing,
+    &__all-returned,
+    &__has-broken {
+        text-align: center;
+        font-size: 1.2rem;
+        margin-bottom: $content-padding-large-horizontal;
+    }
 
-  &__all-returned,
-  &__has-broken {
-    margin-top: $content-padding-large-vertical;
-  }
+    &__all-returned,
+    &__has-broken {
+        margin-top: $content-padding-large-vertical;
+    }
 
-  &__all-returned {
-    color: $text-success-color;
-  }
+    &__all-returned {
+        color: $text-success-color;
+    }
 
-  &__missing {
-    color: $text-danger-color;
-  }
+    &__missing {
+        color: $text-danger-color;
+    }
 
-  &__has-broken {
-    color: $text-warning-color;
-  }
+    &__has-broken {
+        color: $text-warning-color;
+    }
 }

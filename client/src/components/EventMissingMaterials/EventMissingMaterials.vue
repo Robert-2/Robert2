@@ -28,8 +28,8 @@
 </template>
 
 <style lang="scss">
-  @import '../../themes/default/index';
-  @import './EventMissingMaterials';
+    @import '../../themes/default/index';
+    @import './EventMissingMaterials';
 </style>
 
 <script src="./index.js"></script>

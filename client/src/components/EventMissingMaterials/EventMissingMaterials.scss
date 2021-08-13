@@ -1,45 +1,45 @@
 .EventMissingMaterials {
-  color: $text-base-color;
+    color: $text-base-color;
 
-  &__title {
-    font-size: 1.2rem;
-    margin-bottom: 1rem;
+    &__title {
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
 
-    .fas {
-      width: 1.5rem;
-      margin-right: .5rem;
-      text-align: center;
-    }
-  }
-
-  &__help {
-    color: $text-nav-color;
-  }
-
-  &__error {
-    color: $text-danger-color;
-    margin: 0 0 1.5rem;
-  }
-
-  &__list {
-    margin: 0 0 1.5rem;
-    padding: 0;
-  }
-
-  &__item {
-    list-style: none;
-    display: flex;
-    margin-bottom: .5rem;
-    border-bottom: 1px dashed $list-left-border-color;
-    color: $text-danger-color;
-
-    &__name {
-      flex: 1;
+        .fas {
+            width: 1.5rem;
+            margin-right: 0.5rem;
+            text-align: center;
+        }
     }
 
-    &__quantity {
-      flex: 0 0 14.5rem;
-      margin: 0 .8rem;
+    &__help {
+        color: $text-nav-color;
     }
-  }
+
+    &__error {
+        color: $text-danger-color;
+        margin: 0 0 1.5rem;
+    }
+
+    &__list {
+        margin: 0 0 1.5rem;
+        padding: 0;
+    }
+
+    &__item {
+        list-style: none;
+        display: flex;
+        margin-bottom: 0.5rem;
+        border-bottom: 1px dashed $list-left-border-color;
+        color: $text-danger-color;
+
+        &__name {
+            flex: 1;
+        }
+
+        &__quantity {
+            flex: 0 0 14.5rem;
+            margin: 0 0.8rem;
+        }
+    }
 }

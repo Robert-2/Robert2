@@ -17,11 +17,11 @@ export default {
         },
     },
     methods: {
-    // ------------------------------------------------------
-    // -
-    // -    Handlers
-    // -
-    // ------------------------------------------------------
+        // ------------------------------------------------------
+        // -
+        // -    Handlers
+        // -
+        // ------------------------------------------------------
 
         handleConfirm() {
             this.setEventConfirmation(true);
@@ -65,61 +65,68 @@ export default {
         const { is_confirmed: isConfirmed, materials, beneficiaries } = event;
 
         return (
-      <div class="EventStep5">
-        <EventOverview event={event} />
-        {materials.length > 0 && (
-          <section class="EventStep5__confirmation">
-            <h3 class="EventStep5__confirmation__title">
-              {__('page-events.event-confirmation')}
-            </h3>
-            <div class={['EventStep5__confirmation__help', {
-                'EventStep5__confirmation__help--confirmed': isConfirmed,
-            }]}>
-              {!isConfirming && (
-                <i class={['fas', 'EventStep5__confirmation__icon', {
-                    'fa-check': isConfirmed,
-                    'fa-hourglass-half': !isConfirmed,
-                }]} />
-              )}
-              {isConfirmed
-                  ? __('page-events.event-confirmed-help')
-                  : __('page-events.event-not-confirmed-help')}
+            <div class="EventStep5">
+                <EventOverview event={event} />
+                {materials.length > 0 && (
+                    <section class="EventStep5__confirmation">
+                        <h3 class="EventStep5__confirmation__title">
+                            {__('page-events.event-confirmation')}
+                        </h3>
+                        <div
+                            class={[
+                                'EventStep5__confirmation__help',
+                                { 'EventStep5__confirmation__help--confirmed': isConfirmed },
+                            ]}
+                        >
+                            {!isConfirming && (
+                                <i
+                                    class={['fas', 'EventStep5__confirmation__icon', {
+                                        'fa-check': isConfirmed,
+                                        'fa-hourglass-half': !isConfirmed,
+                                    }]}
+                                />
+                            )}
+                            {isConfirmed
+                                ? __('page-events.event-confirmed-help')
+                                : __('page-events.event-not-confirmed-help')}
+                        </div>
+                        <div class="EventStep5__confirmation__actions">
+                            {!isConfirmed && (
+                                <button class="success" onClick={handleConfirm}>
+                                    <i
+                                        class={['fas', {
+                                            'fa-circle-notch fa-spin': isConfirming,
+                                            'fa-check': !isConfirming,
+                                        }]}
+                                    />{' '}
+                                    {__('confirm-event')}
+                                </button>
+                            )}
+                            {isConfirmed && (
+                                <button class="warning" onClick={handleUnconfirm}>
+                                    <i
+                                        class={['fas', {
+                                            'fa-circle-notch fa-spin': isConfirming,
+                                            'fa-hourglass-half': !isConfirming,
+                                        }]}
+                                    />{' '}
+                                    {__('unconfirm-event')}
+                                </button>
+                            )}
+                        </div>
+                    </section>
+                )}
+                <section>
+                    <router-link to="/" exact class="button info EventStep5__back-btn">
+                        <i class="fas fa-arrow-left" /> {__('page-events.back-to-calendar')}
+                    </router-link>
+                    {materials.length > 0 && beneficiaries.length > 0 && (
+                        <a href={eventSummaryPdfUrl} target="_blank" class="button outline">
+                            <i class="fas fa-print" /> {__('print-summary')}
+                        </a>
+                    )}
+                </section>
             </div>
-            <div class="EventStep5__confirmation__actions">
-              {!isConfirmed && (
-                <button class="success" onClick={handleConfirm}>
-                  <i class={['fas', {
-                      'fa-circle-notch fa-spin': isConfirming,
-                      'fa-check': !isConfirming,
-                  }]} /> {__('confirm-event')}
-                </button>
-              )}
-              {isConfirmed && (
-                <button class="warning" onClick={handleUnconfirm}>
-                  <i class={['fas', {
-                      'fa-circle-notch fa-spin': isConfirming,
-                      'fa-hourglass-half': !isConfirming,
-                  }]} /> {__('unconfirm-event')}
-                </button>
-              )}
-            </div>
-          </section>
-        )}
-        <section>
-          <router-link to="/" exact class="button info EventStep5__back-btn">
-            <i class="fas fa-arrow-left" /> {__('page-events.back-to-calendar')}
-          </router-link>
-          {materials.length > 0 && beneficiaries.length > 0 && (
-            <a
-              href={eventSummaryPdfUrl}
-              target="_blank"
-              class="button outline"
-            >
-              <i class="fas fa-print" /> {__('print-summary')}
-            </a>
-          )}
-        </section>
-      </div>
         );
     },
 };

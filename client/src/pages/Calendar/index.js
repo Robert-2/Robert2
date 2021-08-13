@@ -65,9 +65,7 @@ export default {
             }
 
             if (this.hasMissingMaterialFilter) {
-                events = events.filter(
-                    ({ hasMissingMaterials }) => !!hasMissingMaterials,
-                );
+                events = events.filter(({ hasMissingMaterials }) => !!hasMissingMaterials);
             }
 
             this.events = events;
@@ -84,9 +82,7 @@ export default {
             };
             this.$http.get(this.$route.meta.resource, { params })
                 .then(({ data }) => {
-                    this.events = data.data.map(
-                        (event) => formatEvent(event, this.$t),
-                    );
+                    this.events = data.data.map((event) => formatEvent(event, this.$t));
 
                     this.allEvents = [...this.events];
                     this.filterEvents();
@@ -147,18 +143,19 @@ export default {
                 return;
             }
 
-            Alert.ConfirmDelete(this.$t, 'calendar')
-                .then((result) => {
-                    if (!result.value) {
-                        callback(null); // - Needed to cancel the deletion in timeline
-                        return;
-                    }
+            Alert.ConfirmDelete(this.$t, 'calendar').then((result) => {
+                if (!result.value) {
+                    callback(null); // - Needed to cancel the deletion in timeline
+                    return;
+                }
 
-                    this.error = null;
-                    this.isLoading = true;
-                    const url = `${this.$route.meta.resource}/${item.id}`;
-                    this.$http.delete(url).then(() => { callback(item); });
+                this.error = null;
+                this.isLoading = true;
+                const url = `${this.$route.meta.resource}/${item.id}`;
+                this.$http.delete(url).then(() => {
+                    callback(item);
                 });
+            });
         },
 
         onItemRemoved() {
@@ -238,7 +235,11 @@ export default {
 
             this.$modal.show(
                 EventDetails,
-                { eventId, onUpdateEvent: handleUpdateEvent, onDuplicateEvent: handleDuplicateEvent },
+                {
+                    eventId,
+                    onUpdateEvent: handleUpdateEvent,
+                    onDuplicateEvent: handleDuplicateEvent,
+                },
                 undefined,
                 {
                     'before-close': () => {

@@ -1,38 +1,38 @@
 @import '../../themes/default/index';
 
 .EventTotals {
-  flex: 0 0 auto;
-  padding: 0 .5rem;
-  text-align: right;
-  font-size: 1.1rem;
+    flex: 0 0 auto;
+    padding: 0 0.5rem;
+    text-align: right;
+    font-size: 1.1rem;
 
-  .fas {
-    margin: 0 .3rem;
-    font-size: .95rem;
-    color: $text-light-color;
-  }
+    .fas {
+        margin: 0 0.3rem;
+        font-size: 0.95rem;
+        color: $text-light-color;
+    }
 
-  &__base {
-    margin-bottom: 1rem;
-  }
+    &__base {
+        margin-bottom: 1rem;
+    }
 
-  &__grand,
-  &__grand-discount {
-    font-size: 1.7rem;
-    margin-bottom: .5rem;
-  }
+    &__grand,
+    &__grand-discount {
+        font-size: 1.7rem;
+        margin-bottom: 0.5rem;
+    }
 
-  &__discountable,
-  &__discount {
-    margin-top: 1rem;
-    margin-bottom: .5rem;
-  }
+    &__discountable,
+    &__discount {
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
+    }
 
-  &__daily {
-    color: $text-light-color;
-  }
+    &__daily {
+        color: $text-light-color;
+    }
 
-  &__replacement {
-    margin-top: 1.5rem;
-  }
+    &__replacement {
+        margin-top: 1.5rem;
+    }
 }

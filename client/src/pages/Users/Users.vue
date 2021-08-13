@@ -2,15 +2,11 @@
     <div class="content Users">
         <div class="content__header header-page">
             <div class="header-page__help">
-                <Help
-                    :message="help"
-                    :error="error"
-                    :isLoading="isLoading"
-                />
+                <Help :message="help" :error="error" :isLoading="isLoading" />
             </div>
             <div class="header-page__actions">
                 <router-link :to="`/users/new`" v-slot="{ navigate }" custom>
-                    <button @click="navigate" class="Users__create success" >
+                    <button @click="navigate" class="Users__create success">
                         <i class="fas fa-user-plus" />
                         {{ $t('page-users.action-add') }}
                     </button>
@@ -19,12 +15,7 @@
         </div>
 
         <div class="content__main-view">
-            <v-server-table
-                ref="DataTable"
-                name="UsersTable"
-                :columns="columns"
-                :options="options"
-            >
+            <v-server-table ref="DataTable" name="UsersTable" :columns="columns" :options="options">
                 <div slot="pseudo" slot-scope="user">
                     <i class="fas" :class="user.row.id === currentUserId ? 'fa-user-circle' : 'fa-user'" />
                     {{ user.row.pseudo }}
@@ -34,7 +25,7 @@
                         {{ user.row.person.first_name }} {{ user.row.person.last_name }}
                     </span>
                     <span v-else class="Users__no-profile">
-                        {{$t('page-users.profile-missing-or-deleted')}}
+                        {{ $t('page-users.profile-missing-or-deleted') }}
                     </span>
                 </div>
                 <div slot="group_id" slot-scope="user">
@@ -52,19 +43,15 @@
                     </span>
                 </div>
                 <div slot="address" slot-scope="user">
-                    {{ user.row.person.street }}<br>
+                    {{ user.row.person.street }}<br />
                     {{ user.row.person.postal_code }} {{ user.row.person.locality }}
                 </div>
                 <div slot="actions" slot-scope="user" class="Users__actions">
                     <div v-if="user.row.id === currentUserId">
-                        <router-link
-                            to="/profile"
-                            v-slot="{ navigate }"
-                            custom
-                        >
+                        <router-link to="/profile" v-slot="{ navigate }" custom>
                             <button @click="navigate" class="info">
                                 <i class="fas fa-edit" />
-                                {{$t('your-profile')}}
+                                {{ $t('your-profile') }}
                             </button>
                         </router-link>
                     </div>
@@ -128,8 +115,8 @@
 </template>
 
 <style lang="scss">
-  @import '../../themes/default/index';
-  @import './Users';
+    @import '../../themes/default/index';
+    @import './Users';
 </style>
 
 <script src="./index.js"></script>

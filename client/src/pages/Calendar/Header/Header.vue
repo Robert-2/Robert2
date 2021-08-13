@@ -43,11 +43,7 @@
                     <option value="">
                         {{ $t('page-calendar.display-all-parks') }}
                     </option>
-                    <option
-                        v-for="park in parks"
-                        :key="park.id"
-                        :value="park.id"
-                    >
+                    <option v-for="park in parks" :key="park.id" :value="park.id">
                         {{ park.name }}
                     </option>
                 </select>
@@ -72,12 +68,7 @@
             </div>
         </div>
         <div class="CalendarHeader__actions">
-            <router-link
-                v-show="!isVisitor"
-                :to="`/events/new`"
-                v-slot="{ navigate }"
-                custom
-            >
+            <router-link v-show="!isVisitor" :to="`/events/new`" v-slot="{ navigate }" custom>
                 <button @click="navigate" class="success">
                     <i class="fas fa-plus" /> {{ $t('page-calendar.add-event') }}
                 </button>
@@ -87,8 +78,8 @@
 </template>
 
 <style lang="scss">
-  @import '../../../themes/default/index';
-  @import './Header';
+    @import '../../../themes/default/index';
+    @import './Header';
 </style>
 
 <script src="./index.js"></script>

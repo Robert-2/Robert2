@@ -1,8 +1,5 @@
 <template>
-    <form
-        class="Form BillEstimateCreationForm"
-        @submit="handleSubmit"
-    >
+    <form class="Form BillEstimateCreationForm" @submit="handleSubmit">
         <div class="Form__fieldset">
             <h4 class="Form__fieldset__title">{{ $t('discount') }}</h4>
             <FormField
@@ -51,7 +48,12 @@
                 <i v-else class="fas fa-plus" />
                 {{ saveLabel }}
             </button>
-            <button v-if="isRegeneration" @click="$emit('cancel')" type="button" :disabled="loading">
+            <button
+                v-if="isRegeneration"
+                @click="$emit('cancel')"
+                type="button"
+                :disabled="loading"
+            >
                 {{ $t('cancel') }}
             </button>
         </div>
@@ -59,8 +61,8 @@
 </template>
 
 <style lang="scss">
-  @import '../../themes/default/index';
-  @import './BillEstimateCreationForm';
+    @import '../../themes/default/index';
+    @import './BillEstimateCreationForm';
 </style>
 
 <script src="./index.js"></script>

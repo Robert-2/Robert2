@@ -2,15 +2,11 @@
     <div class="content Parks">
         <div class="content__header header-page">
             <div class="header-page__help">
-                <Help
-                    :message="help"
-                    :error="error"
-                    :isLoading="isLoading"
-                />
+                <Help :message="help" :error="error" :isLoading="isLoading" />
             </div>
             <div class="header-page__actions">
                 <router-link :to="`/parks/new`" v-slot="{ navigate }" custom>
-                    <button @click="navigate" class="success" >
+                    <button @click="navigate" class="success">
                         <i class="fas fa-user-plus" />
                         {{ $t('page-parks.action-add') }}
                     </button>
@@ -19,17 +15,12 @@
         </div>
 
         <div class="content__main-view">
-            <v-server-table
-                ref="DataTable"
-                name="ParksTable"
-                :columns="columns"
-                :options="options"
-            >
+            <v-server-table ref="DataTable" name="ParksTable" :columns="columns" :options="options">
                 <div slot="name" slot-scope="park">
                     {{ park.row.name }}
                 </div>
                 <div slot="address" slot-scope="park">
-                    {{ park.row.street }}<br>
+                    {{ park.row.street }}<br />
                     {{ park.row.postal_code }} {{ park.row.locality }}
                 </div>
                 <div slot="totalItems" slot-scope="park">
@@ -130,8 +121,8 @@
 </template>
 
 <style lang="scss">
-  @import '../../themes/default/index';
-  @import './Parks';
+    @import '../../themes/default/index';
+    @import './Parks';
 </style>
 
 <script src="./index.js"></script>

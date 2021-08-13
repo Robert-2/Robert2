@@ -54,7 +54,7 @@ const EventReturnMaterialItem = {
         } = this;
 
         const itemClasses = {
-            EventReturnMaterialItem: true,
+            'EventReturnMaterialItem': true,
             'EventReturnMaterialItem--locked': isLocked,
             'EventReturnMaterialItem--complete': isComplete,
             'EventReturnMaterialItem--warning': hasBroken,
@@ -62,51 +62,45 @@ const EventReturnMaterialItem = {
         };
 
         return (
-      <li class={itemClasses}>
-        <div class="EventReturnMaterialItem__reference">
-          {reference}
-        </div>
-        <div class="EventReturnMaterialItem__name">
-          {name}
-        </div>
-        <div class="EventReturnMaterialItem__error">
-          {error?.message}
-        </div>
-        <div class="EventReturnMaterialItem__quantity-out">
-          {__('out', {}, quantities.out)}{' '}
-          <strong class="EventReturnMaterialItem__quantity-out__count">
-            {quantities.out}
-          </strong>
-        </div>
-        <div
-          class="EventReturnMaterialItem__quantity-returned"
-          title={__('quantity-returned')}
-        >
-          {isLocked ? quantities.returned : (
-            <QuantityInput
-              limit={quantities.out}
-              allowOverflow={false}
-              material={{ id }}
-              quantity={quantities.returned}
-              onQuantityChange={setQuantityReturned}
-            />
-          )}
-        </div>
-        <div
-          class="EventReturnMaterialItem__quantity-broken"
-          title={__('quantity-out-of-order')}
-        >
-          {isLocked ? quantities.broken : (
-            <QuantityInput
-              limit={quantities.out}
-              allowOverflow={false}
-              material={{ id }}
-              quantity={quantities.broken}
-              onQuantityChange={setQuantityBroken}
-            />
-          )}
-        </div>
-      </li>
+            <li class={itemClasses}>
+                <div class="EventReturnMaterialItem__reference">{reference}</div>
+                <div class="EventReturnMaterialItem__name">{name}</div>
+                <div class="EventReturnMaterialItem__error">{error?.message}</div>
+                <div class="EventReturnMaterialItem__quantity-out">
+                    {__('out', {}, quantities.out)}{' '}
+                    <strong class="EventReturnMaterialItem__quantity-out__count">
+                        {quantities.out}
+                    </strong>
+                </div>
+                <div
+                    class="EventReturnMaterialItem__quantity-returned"
+                    title={__('quantity-returned')}
+                >
+                    {isLocked ? quantities.returned : (
+                        <QuantityInput
+                            limit={quantities.out}
+                            allowOverflow={false}
+                            material={{ id }}
+                            quantity={quantities.returned}
+                            onQuantityChange={setQuantityReturned}
+                        />
+                    )}
+                </div>
+                <div
+                    class="EventReturnMaterialItem__quantity-broken"
+                    title={__('quantity-out-of-order')}
+                >
+                    {isLocked ? quantities.broken : (
+                        <QuantityInput
+                            limit={quantities.out}
+                            allowOverflow={false}
+                            material={{ id }}
+                            quantity={quantities.broken}
+                            onQuantityChange={setQuantityBroken}
+                        />
+                    )}
+                </div>
+            </li>
         );
     },
 };

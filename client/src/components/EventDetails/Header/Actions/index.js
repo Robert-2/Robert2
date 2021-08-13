@@ -20,9 +20,9 @@ export default {
         isPrintable() {
             return (
                 this.event.materials
-        && this.event.materials.length > 0
-        && this.event.beneficiaries
-        && this.event.beneficiaries.length > 0
+                && this.event.materials.length > 0
+                && this.event.beneficiaries
+                && this.event.beneficiaries.length > 0
             );
         },
 
@@ -161,9 +161,9 @@ export default {
 
         if (isVisitor) {
             return isPrintable ? (
-        <a href={eventSummaryPdfUrl} class="button outline" target="_blank">
-          <i class="fas fa-print" /> {__('print')}
-        </a>
+                <a href={eventSummaryPdfUrl} class="button outline" target="_blank">
+                    <i class="fas fa-print" /> {__('print')}
+                </a>
             ) : null;
         }
 
@@ -176,73 +176,77 @@ export default {
         } = this.event;
 
         return (
-      <div class="EventDetailsHeaderActions">
-        {isPrintable && (
-          <a href={eventSummaryPdfUrl} class="button outline" target="_blank">
-            <i class="fas fa-print" /> {__('print')}
-          </a>
-        )}
-        {isEditable && (
-          <router-link to={`/events/${id}`} custom>
-            {({ navigate }) => (
-              <button class="info" onClick={navigate}>
-                <i class="fas fa-edit" /> {__('action-edit')}
-              </button>
-            )}
-          </router-link>
-        )}
-        {(isPast || isEndToday) && !isArchived && (
-          <router-link to={`/event-return/${id}`} custom>
-            {({ navigate }) => (
-              <button class="info" onClick={navigate}>
-                <i class="fas fa-tasks" /> {__('return-inventory')}
-              </button>
-            )}
-          </router-link>
-        )}
-        <Dropdown variant="actions">
-          <template slot="items">
-            {!isPast && (
-              <button
-                class={{ ...getItemClassnames(), info: isConfirmed, success: !isConfirmed }}
-                disabled={isConfirmable}
-                onClick={toggleConfirmed}
-              >
-                {!isConfirming && !isConfirmed && <i class="fas fa-check" />}
-                {!isConfirming && isConfirmed && <i class="fas fa-hourglass-half" />}
-                {isConfirming && <i class="fas fa-circle-notch fa-spin" />}
-                {' '}{isConfirmed ? __('unconfirm-event') : __('confirm-event')}
-              </button>
-            )}
-            {isPast && isInventoryDone && (
-              <button
-                class={{ ...getItemClassnames(), info: !isArchived }}
-                onClick={toggleArchived}
-              >
-                {!isArchiving && <i class="fas fa-archive" />}
-                {isArchiving && <i class="fas fa-circle-notch fa-spin" />}
-                {' '}{isArchived ? __('unarchive-event') : __('archive-event')}
-              </button>
-            )}
-            <button
-              class={{ ...getItemClassnames(), warning: true }}
-              onClick={askDuplicate}
-            >
-              <i class="fas fa-copy" /> {__('duplicate-event')}
-            </button>
-            {isRemovable && (
-              <button
-                class={{ ...getItemClassnames(), danger: true }}
-                onClick={handleDelete}
-              >
-                {!isDeleting && <i class="fas fa-trash" />}
-                {isDeleting && <i class="fas fa-circle-notch fa-spin" />}
-                {' '}{__('delete-event')}
-              </button>
-            )}
-          </template>
-        </Dropdown>
-      </div>
+            <div class="EventDetailsHeaderActions">
+                {isPrintable && (
+                    <a href={eventSummaryPdfUrl} class="button outline" target="_blank">
+                        <i class="fas fa-print" /> {__('print')}
+                    </a>
+                )}
+                {isEditable && (
+                    <router-link to={`/events/${id}`} custom>
+                        {({ navigate }) => (
+                            <button class="info" onClick={navigate}>
+                                <i class="fas fa-edit" /> {__('action-edit')}
+                            </button>
+                        )}
+                    </router-link>
+                )}
+                {(isPast || isEndToday) && !isArchived && (
+                    <router-link to={`/event-return/${id}`} custom>
+                        {({ navigate }) => (
+                            <button class="info" onClick={navigate}>
+                                <i class="fas fa-tasks" /> {__('return-inventory')}
+                            </button>
+                        )}
+                    </router-link>
+                )}
+                <Dropdown variant="actions">
+                    <template slot="items">
+                        {!isPast && (
+                            <button
+                                class={{
+                                    ...getItemClassnames(),
+                                    info: isConfirmed,
+                                    success: !isConfirmed,
+                                }}
+                                disabled={isConfirmable}
+                                onClick={toggleConfirmed}
+                            >
+                                {!isConfirming && !isConfirmed && <i class="fas fa-check" />}
+                                {!isConfirming && isConfirmed && <i class="fas fa-hourglass-half" />}
+                                {isConfirming && <i class="fas fa-circle-notch fa-spin" />}
+                                {' '}{isConfirmed ? __('unconfirm-event') : __('confirm-event')}
+                            </button>
+                        )}
+                        {isPast && isInventoryDone && (
+                            <button
+                                class={{ ...getItemClassnames(), info: !isArchived }}
+                                onClick={toggleArchived}
+                            >
+                                {!isArchiving && <i class="fas fa-archive" />}
+                                {isArchiving && <i class="fas fa-circle-notch fa-spin" />}
+                                {' '}{isArchived ? __('unarchive-event') : __('archive-event')}
+                            </button>
+                        )}
+                        <button
+                            class={{ ...getItemClassnames(), warning: true }}
+                            onClick={askDuplicate}
+                        >
+                            <i class="fas fa-copy" /> {__('duplicate-event')}
+                        </button>
+                        {isRemovable && (
+                            <button
+                                class={{ ...getItemClassnames(), danger: true }}
+                                onClick={handleDelete}
+                            >
+                                {!isDeleting && <i class="fas fa-trash" />}
+                                {isDeleting && <i class="fas fa-circle-notch fa-spin" />}
+                                {' '}{__('delete-event')}
+                            </button>
+                        )}
+                    </template>
+                </Dropdown>
+            </div>
         );
     },
 };

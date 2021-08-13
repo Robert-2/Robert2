@@ -1,19 +1,19 @@
 <template id="SideNav-template">
-    <div class="SideNav" :class="{'SideNav--opened': isOpen}">
+    <div class="SideNav" :class="{ 'SideNav--opened': isOpen }">
         <div class="SideNav__logo">
             <Logo minimalist />
         </div>
         <SideMenu class="SideNav__menu" />
         <div class="SideNav__footer">
-            © 2017-{{ year }}<br>
+            © 2017-{{ year }}<br />
             v. {{ apiVersion }}
         </div>
     </div>
 </template>
 
 <style lang="scss">
-  @import '../../themes/default/index';
-  @import './SideNav';
+    @import '../../themes/default/index';
+    @import './SideNav';
 </style>
 
 <script>

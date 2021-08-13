@@ -14,22 +14,22 @@ const MultiSwitch = {
         }
 
         return (
-      <div class="MultiSwitch">
-        {options.map(({ value: optionValue, label, isDisplayed = true }) => (
-            isDisplayed && (
-            <button
-              key={label}
-              onClick={() => { this.$emit('change', optionValue); }}
-              class={{
-                  MultiSwitch__option: true,
-                  'MultiSwitch__option--active': value === optionValue,
-              }}
-            >
-              {label}
-            </button>
-            )
-        ))}
-      </div>
+            <div class="MultiSwitch">
+                {options.map(({ value: optionValue, label, isDisplayed = true }) => (
+                    isDisplayed && (
+                        <button
+                            key={label}
+                            onClick={() => { this.$emit('change', optionValue); }}
+                            class={{
+                                'MultiSwitch__option': true,
+                                'MultiSwitch__option--active': value === optionValue,
+                            }}
+                        >
+                            {label}
+                        </button>
+                    )
+                ))}
+            </div>
         );
     },
 };

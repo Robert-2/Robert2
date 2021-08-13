@@ -1,78 +1,78 @@
 @import '../../themes/default/';
 
 .EventDetails {
-  display: flex;
-  flex-direction: column;
-
-  .Loading,
-  .ErrorMessage {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 250px;
-    background: $bg-color-side-nav;
-    margin: 0;
-
-    .fas {
-      margin-right: .3rem;
-    }
-  }
-
-  &__content {
-    flex: 1;
     display: flex;
     flex-direction: column;
-    min-height: 520px;
-    max-height: 100vh;
-    overflow-y: auto;
 
-    &__body {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      padding: 1.5rem;
-      background-color: $bg-color-body;
+    .Loading,
+    .ErrorMessage {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 250px;
+        background: $bg-color-side-nav;
+        margin: 0;
 
-      .Help {
-        margin-bottom: $content-padding-small-vertical;
-      }
+        .fas {
+            margin-right: 0.3rem;
+        }
+    }
 
-      .vue-tabs {
+    &__content {
         flex: 1;
         display: flex;
         flex-direction: column;
+        min-height: 520px;
+        max-height: 100vh;
+        overflow-y: auto;
 
-        .vue-tablist .fa-exclamation-triangle {
-          color: $text-danger-color;
-          margin-left: .5rem;
+        &__body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+            background-color: $bg-color-body;
+
+            .Help {
+                margin-bottom: $content-padding-small-vertical;
+            }
+
+            .vue-tabs {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+
+                .vue-tablist .fa-exclamation-triangle {
+                    color: $text-danger-color;
+                    margin-left: 0.5rem;
+                }
+
+                .vue-tabpanel {
+                    flex: 1;
+                    display: flex;
+                    flex-direction: column;
+                }
+            }
         }
+    }
 
-        .vue-tabpanel {
-          flex: 1;
-          display: flex;
-          flex-direction: column;
+    &__content + .ErrorMessage {
+        min-height: auto;
+        background: none;
+        margin-bottom: $content-padding-large-vertical;
+    }
+
+    &__materials-empty {
+        font-size: 1.2rem;
+        margin-bottom: $content-padding-small-vertical;
+        color: $text-danger-color;
+        text-align: center;
+
+        .fas {
+            width: 1.5rem;
+            margin-right: 0.3rem;
+            text-align: center;
         }
-      }
     }
-  }
-
-  &__content + .ErrorMessage {
-    min-height: auto;
-    background: none;
-    margin-bottom: $content-padding-large-vertical;
-  }
-
-  &__materials-empty {
-    font-size: 1.2rem;
-    margin-bottom: $content-padding-small-vertical;
-    color: $text-danger-color;
-    text-align: center;
-
-    .fas {
-      width: 1.5rem;
-      margin-right: .3rem;
-      text-align: center;
-    }
-  }
 }

@@ -1,13 +1,6 @@
 <template>
-    <div
-        class="ImageWithUpload"
-        :class="{ 'ImageWithUpload--empty': !url }"
-    >
-        <img
-            :src="imageSrc"
-            :alt="name || 'No image'"
-            class="ImageWithUpload__img"
-        />
+    <div class="ImageWithUpload" :class="{ 'ImageWithUpload--empty': !url }">
+        <img :src="imageSrc" :alt="name || 'No image'" class="ImageWithUpload__img" />
         <div v-show="!isLoading" class="ImageWithUpload__actions">
             <input
                 type="file"
@@ -43,17 +36,13 @@
             <i class="fas fa-exclamation-triangle" />
             {{ fileError }}
         </div>
-        <Help
-            message=""
-            :error="error"
-            :isLoading="isLoading"
-        />
+        <Help message="" :error="error" :isLoading="isLoading" />
     </div>
 </template>
 
 <style lang="scss">
-  @import '../../themes/default/index';
-  @import './ImageWithUpload';
+    @import '../../themes/default/index';
+    @import './ImageWithUpload';
 </style>
 
 <script src="./index.js"></script>

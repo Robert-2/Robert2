@@ -5,16 +5,11 @@
             :key="itemData.id || `unknown-${index}`"
             class="MultipleItem__item FormField"
         >
-            <label class="FormField__label">
-                {{ $t(label) }} {{ index + 1 }}
-            </label>
+            <label class="FormField__label"> {{ $t(label) }} {{ index + 1 }} </label>
             <div class="MultipleItem__value-field">
-                <span
-                    v-if="!itemData"
-                    class="MultipleItem__value-field--error"
-                >
+                <span v-if="!itemData" class="MultipleItem__value-field--error">
                     <i class="fas fa-exclamation-triangle" />
-                    {{$t('item-not-found', { item: $t(label) })}}
+                    {{ $t('item-not-found', { item: $t(label) }) }}
                 </span>
                 <span v-else>{{ getItemLabel(itemData) || 'N/A' }}</span>
             </div>
@@ -34,13 +29,8 @@
                 <i class="fas fa-trash-alt" />
             </button>
         </div>
-        <div
-            v-if="askNewItem"
-            class="MultipleItem__item FormField"
-        >
-            <label class="FormField__label">
-                {{ $t(label) }} {{ itemsIds.length + 1 }}
-            </label>
+        <div v-if="askNewItem" class="MultipleItem__item FormField">
+            <label class="FormField__label">{{ $t(label) }} {{ itemsIds.length + 1 }}</label>
             <VueSelect
                 v-model="newItem"
                 :filterable="false"
@@ -53,11 +43,13 @@
                         {{ $t('start-typing-to-search') }}
                     </span>
                     <span v-if="search.length > 0 && search.length < minSearchCharacters">
-                        {{ $t(
-                            'type-at-least-count-chars-to-search',
-                            { count: minSearchCharacters - search.length },
-                            minSearchCharacters - search.length,
-                        ) }}
+                        {{
+                            $t(
+                                'type-at-least-count-chars-to-search',
+                                { count: minSearchCharacters - search.length },
+                                minSearchCharacters - search.length,
+                            )
+                        }}
                     </span>
                     <div v-if="search.length >= minSearchCharacters">
                         <p>{{ $t('no-result-found-try-another-search') }}</p>
@@ -78,11 +70,7 @@
             </button>
         </div>
         <div class="MultipleItem__actions">
-            <button
-                v-if="!askNewItem"
-                class="success"
-                @click="startAddItem"
-            >
+            <button v-if="!askNewItem" class="success" @click="startAddItem">
                 <i class="fas fa-plus" />
                 {{ $t('add-item', { item: $t(label) }) }}
             </button>
@@ -91,8 +79,8 @@
 </template>
 
 <style lang="scss">
-  @import '../../themes/default/index';
-  @import './MultipleItem';
+    @import '../../themes/default/index';
+    @import './MultipleItem';
 </style>
 
 <script src="./index.js"></script>

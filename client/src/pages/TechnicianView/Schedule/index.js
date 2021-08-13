@@ -54,11 +54,7 @@ const TechnicianViewSchedule = {
             return <MonthCalendar events={events} withTotal />;
         };
 
-        return (
-      <div class="TechnicianViewSchedule">
-        {render()}
-      </div>
-        );
+        return <div class="TechnicianViewSchedule">{render()}</div>;
     },
 };
 

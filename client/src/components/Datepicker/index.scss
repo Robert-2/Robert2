@@ -19,48 +19,48 @@ $time-hover-background-color: $calendar-time-cursor-color;
 @import '~vue2-datepicker/scss/index';
 
 .#{$namespace} {
-  &-calendar {
-    min-width: 310px;
-  }
-
-  &-range-wrapper &-calendar {
-    min-width: 250px;
-  }
-
-  &-input {
-    height: auto;
-    padding: $input-padding-vertical $input-padding-horizontal;
-    background-color: $bg-color-input-normal;
-    font-size: $input-font-size;
-    line-height: 1.2;
-    box-shadow: none;
-
-    &:focus {
-      border-color: $input-focus-border-color;
-    }
-  }
-
-  &-icon-calendar,
-  &-icon-clear {
-    color: $text-nav-color;
-  }
-
-  &-datepicker-main {
-    background-color: $bg-color-input-normal;
-  }
-
-  &-time {
-    background-color: $bg-color-input-normal;
-  }
-
-  &-table-date {
-    .cell.not-current-month {
-      color: $text-nav-color;
+    &-calendar {
+        min-width: 310px;
     }
 
-    .cell.disabled {
-      color: $text-muted-color;
-      background-color: $bg-color-input-normal;
+    &-range-wrapper &-calendar {
+        min-width: 250px;
     }
-  }
+
+    &-input {
+        height: auto;
+        padding: $input-padding-vertical $input-padding-horizontal;
+        background-color: $bg-color-input-normal;
+        font-size: $input-font-size;
+        line-height: 1.2;
+        box-shadow: none;
+
+        &:focus {
+            border-color: $input-focus-border-color;
+        }
+    }
+
+    &-icon-calendar,
+    &-icon-clear {
+        color: $text-nav-color;
+    }
+
+    &-datepicker-main {
+        background-color: $bg-color-input-normal;
+    }
+
+    &-time {
+        background-color: $bg-color-input-normal;
+    }
+
+    &-table-date {
+        .cell.not-current-month {
+            color: $text-nav-color;
+        }
+
+        .cell.disabled {
+            color: $text-muted-color;
+            background-color: $bg-color-input-normal;
+        }
+    }
 }

@@ -1,40 +1,40 @@
 .EventMiniSummary {
-  position: relative;
-  padding: 1rem .8rem;
-  border: 1px solid $text-muted-color;
-  border-radius: 8px;
-  text-align: center;
-  color: $text-nav-color;
+    position: relative;
+    padding: 1rem 0.8rem;
+    border: 1px solid $text-muted-color;
+    border-radius: 8px;
+    text-align: center;
+    color: $text-nav-color;
 
-  &__not-saved {
-    position: absolute;
-    color: $text-warning-color;
-  }
-
-  &__title {
-    font-size: 1.1rem;
-    font-weight: 800;
-  }
-
-  &__detail,
-  &__total {
-    margin-top: .8rem;
-    line-height: 1.4rem;
-    text-transform: capitalize;
-  }
-
-  &__total {
-    font-size: 1.4rem;
-    color: $text-base-color;
-  }
-
-  &--not-saved {
-    border-color: $text-warning-color;
-  }
-
-  &--confirmed {
-    .fa-check {
-      color: $text-success-color;
+    &__not-saved {
+        position: absolute;
+        color: $text-warning-color;
     }
-  }
+
+    &__title {
+        font-size: 1.1rem;
+        font-weight: 800;
+    }
+
+    &__detail,
+    &__total {
+        margin-top: 0.8rem;
+        line-height: 1.4rem;
+        text-transform: capitalize;
+    }
+
+    &__total {
+        font-size: 1.4rem;
+        color: $text-base-color;
+    }
+
+    &--not-saved {
+        border-color: $text-warning-color;
+    }
+
+    &--confirmed {
+        .fa-check {
+            color: $text-success-color;
+        }
+    }
 }

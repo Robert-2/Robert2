@@ -32,8 +32,8 @@
 </template>
 
 <style lang="scss">
-  @import '../../../themes/default/index';
-  @import './Step2';
+    @import '../../../themes/default/index';
+    @import './Step2';
 </style>
 
 <script src="./index.js"></script>

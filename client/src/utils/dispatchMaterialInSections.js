@@ -48,7 +48,7 @@ const dispatchMaterialInSections = (
         const quantity = getMaterialQuantity(material);
 
         section.materials.push(material);
-        section.subTotal += (quantity * material.rental_price);
+        section.subTotal += quantity * material.rental_price;
     });
 
     const result = Array.from(sections.values());
@@ -73,7 +73,7 @@ const dispatchMaterialInSections = (
                 return 0;
             }
 
-            return (_a < _b) ? -1 : 1;
+            return _a < _b ? -1 : 1;
         });
     });
 

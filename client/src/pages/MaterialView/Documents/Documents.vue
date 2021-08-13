@@ -12,19 +12,15 @@
                     @remove="removeDocument"
                 />
             </ul>
-            <Help
-                :message="help"
-                :error="error"
-                :isLoading="isLoading"
-            />
+            <Help :message="help" :error="error" :isLoading="isLoading" />
         </section>
         <DocumentUpload :materialId="materialId" @uploadSuccess="handleUploadSuccess" />
     </div>
 </template>
 
 <style lang="scss">
-  @import '../../../themes/default/index';
-  @import './Documents';
+    @import '../../../themes/default/index';
+    @import './Documents';
 </style>
 
 <script src="./index.js"></script>

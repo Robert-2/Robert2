@@ -102,8 +102,8 @@
 </template>
 
 <style lang="scss">
-  @import '../../themes/default/index';
-  @import './EventEstimates';
+    @import '../../themes/default/index';
+    @import './EventEstimates';
 </style>
 
 <script src="./index.js"></script>

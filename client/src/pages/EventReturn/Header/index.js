@@ -41,9 +41,9 @@ const EventReturnHeader = {
 
         if (isLoading || !eventData.id) {
             return (
-        <div class="EventReturnHeader">
-          <Help message="" error={error} isLoading={isLoading} />
-        </div>
+                <div class="EventReturnHeader">
+                    <Help message="" error={error} isLoading={isLoading} />
+                </div>
             );
         }
 
@@ -57,50 +57,45 @@ const EventReturnHeader = {
         } = this;
 
         return (
-      <div class="EventReturnHeader">
-        <div class="EventReturnHeader__infos">
-          <div class="EventReturnHeader__info">
-            {__('return-scheduled-on')}
-            <br />
-            <strong class="EventReturnHeader__info__important">
-              {endDate ? endDate.format('LL') : ''}
-            </strong>
-          </div>
-          <div class="EventReturnHeader__info">
-            {__('beneficiary')}
-            <br />
-            <strong class="EventReturnHeader__info__important">
-              {eventData.beneficiaries[0] ? eventData.beneficiaries[0].full_name : ''}
-            </strong>
-          </div>
-          {eventData.location && (
-            <div class="EventReturnHeader__info">
-              {__('location')}
-              <br />
-              <strong class="EventReturnHeader__info__important">
-                {eventData.location}
-              </strong>
+            <div class="EventReturnHeader">
+                <div class="EventReturnHeader__infos">
+                    <div class="EventReturnHeader__info">
+                        {__('return-scheduled-on')}<br />
+                        <strong class="EventReturnHeader__info__important">
+                            {endDate ? endDate.format('LL') : ''}
+                        </strong>
+                    </div>
+                    <div class="EventReturnHeader__info">
+                        {__('beneficiary')}<br />
+                        <strong class="EventReturnHeader__info__important">
+                            {eventData.beneficiaries[0] ? eventData.beneficiaries[0].full_name : ''}
+                        </strong>
+                    </div>
+                    {eventData.location && (
+                        <div class="EventReturnHeader__info">
+                            {__('location')}<br />
+                            <strong class="EventReturnHeader__info__important">
+                                {eventData.location}
+                            </strong>
+                        </div>
+                    )}
+                </div>
+                <Help message={help} error={error} />
+                <div class="EventReturnHeader__actions">
+                    <div class="EventReturnHeader__group-by">
+                        <span class="EventReturnHeader__group-by__label">{__('grouped-by')}</span>
+                        <MultiSwitch
+                            options={[
+                                { value: 'categories', label: __('categories') },
+                                { value: 'parks', label: __('parks'), isDisplayed: hasMultipleParks },
+                                { value: null, label: __('not-grouped') },
+                            ]}
+                            value={displayGroup}
+                            onChange={setDisplayGroup}
+                        />
+                    </div>
+                </div>
             </div>
-          )}
-        </div>
-        <Help message={help} error={error} />
-        <div class="EventReturnHeader__actions">
-          <div class="EventReturnHeader__group-by">
-            <span class="EventReturnHeader__group-by__label">
-              {__('grouped-by')}
-            </span>
-            <MultiSwitch
-              options={[
-                  { value: 'categories', label: __('categories') },
-                  { value: 'parks', label: __('parks'), isDisplayed: hasMultipleParks },
-                  { value: null, label: __('not-grouped') },
-              ]}
-              value={displayGroup}
-              onChange={setDisplayGroup}
-            />
-          </div>
-        </div>
-      </div>
         );
     },
 };

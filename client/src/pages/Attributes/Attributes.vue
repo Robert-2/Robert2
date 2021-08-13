@@ -5,11 +5,7 @@
                 <i class="fas fa-arrow-left" />
                 {{ $t('page-attributes.go-back-to-material') }}
             </button>
-            <Help
-                :message="help"
-                :error="error"
-                :isLoading="isLoading"
-            />
+            <Help :message="help" :error="error" :isLoading="isLoading" />
         </div>
         <div class="content__main-view">
             <div class="Attributes__content">
@@ -122,10 +118,7 @@
                         <button v-if="isAddingMode" class="success" @click="saveAttribute">
                             {{ $t('save') }}
                         </button>
-                        <button
-                            @click="toggleAddingMode"
-                            :class="{ success: !isAddingMode }"
-                        >
+                        <button @click="toggleAddingMode" :class="{ success: !isAddingMode }">
                             <span v-if="!isAddingMode">
                                 <i class="fas fa-plus" />
                                 {{ $t('page-attributes.add-btn') }}
@@ -142,8 +135,8 @@
 </template>
 
 <style lang="scss">
-  @import '../../themes/default/index';
-  @import './Attributes';
+    @import '../../themes/default/index';
+    @import './Attributes';
 </style>
 
 <script src="./index.js"></script>

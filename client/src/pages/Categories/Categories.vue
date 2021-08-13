@@ -2,20 +2,13 @@
     <div class="content Categories">
         <div class="content__header header-page">
             <div class="header-page__help">
-                <Help
-                    :message="help"
-                    :error="error"
-                    :isLoading="isLoading"
-                />
+                <Help :message="help" :error="error" :isLoading="isLoading" />
                 <div v-if="validationError" class="header-page__error">
                     {{ validationError }}
                 </div>
             </div>
             <div class="header-page__actions">
-                <button
-                    class="Categories__create success"
-                    @click="addCategory()"
-                >
+                <button class="Categories__create success" @click="addCategory()">
                     <i class="fas fa-plus" />
                     {{ $t('page-categories.action-add') }}
                 </button>
@@ -23,11 +16,7 @@
         </div>
 
         <div class="content__main-view Categories__items">
-            <div
-                v-for="category in categories"
-                :key="category.id"
-                class="Categories__category"
-            >
+            <div v-for="category in categories" :key="category.id" class="Categories__category">
                 <div class="Categories__category__name">
                     <i class="fas fa-folder-open" />
                     {{ category.name }}
@@ -103,8 +92,8 @@
 </template>
 
 <style lang="scss">
-  @import '../../themes/default/index';
-  @import './Categories';
+    @import '../../themes/default/index';
+    @import './Categories';
 </style>
 
 <script src="./index.js"></script>

@@ -40,16 +40,16 @@ export default {
         const { $t: __, isSaving, error, userCanEdit, handleClickEnableBilling } = this;
 
         return (
-      <div class="EventNotBillable">
-        <p><i class="fas fa-ban" /> {__('event-not-billable')}</p>
-        {!isEventConfirmed && userCanEdit && (
-          <button onClick={handleClickEnableBilling} class="success" disabled={isSaving}>
-            {isSaving && (<span><i class="fas fa-circle-notch fa-spin" /> {__('saving')}</span>)}
-            {!isSaving && __('enable-billable-event')}
-          </button>
-        )}
-        {error && <ErrorMessage error={error} />}
-      </div>
+            <div class="EventNotBillable">
+                <p><i class="fas fa-ban" /> {__('event-not-billable')}</p>
+                {!isEventConfirmed && userCanEdit && (
+                    <button onClick={handleClickEnableBilling} class="success" disabled={isSaving}>
+                        {isSaving && <span><i class="fas fa-circle-notch fa-spin" /> {__('saving')}</span>}
+                        {!isSaving && __('enable-billable-event')}
+                    </button>
+                )}
+                {error && <ErrorMessage error={error} />}
+            </div>
         );
     },
 };

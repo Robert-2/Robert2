@@ -5,9 +5,7 @@
             <section class="EventOverview__section">
                 <h2 class="EventOverview__dates-location">
                     <i class="fas fa-map-marker-alt" />
-                    <span v-if="event.location">
-                        {{ $t('in') }} {{ event.location }},
-                    </span>
+                    <span v-if="event.location"> {{ $t('in') }} {{ event.location }}, </span>
                     {{ $t('from-date-to-date', fromToDates) }}
                 </h2>
             </section>
@@ -177,8 +175,8 @@
 </template>
 
 <style lang="scss">
-  @import '../../themes/default/index';
-  @import './EventOverview';
+    @import '../../themes/default/index';
+    @import './EventOverview';
 </style>
 
 <script src="./index.js"></script>

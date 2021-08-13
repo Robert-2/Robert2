@@ -127,10 +127,7 @@
             />
         </section>
         <section class="Form__actions">
-            <button
-                class="Form__actions__save success"
-                type="submit"
-            >
+            <button class="Form__actions__save success" type="submit">
                 <i class="fas fa-save" />
                 {{ $t('save') }}
             </button>
@@ -143,8 +140,8 @@
 </template>
 
 <style lang="scss">
-  @import '../../themes/default/index';
-  @import './PersonForm';
+    @import '../../themes/default/index';
+    @import './PersonForm';
 </style>
 
 <script src="./index.js"></script>

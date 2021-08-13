@@ -9,19 +9,15 @@
                     @change="handleFormChange"
                     @cancel="flushStashedData"
                 />
-                <Help
-                    :message="help"
-                    :error="error"
-                    :isLoading="isLoading"
-                />
+                <Help :message="help" :error="error" :isLoading="isLoading" />
             </div>
         </div>
     </div>
 </template>
 
 <style lang="scss">
-  @import '../../themes/default/index';
-  @import './Technician';
+    @import '../../themes/default/index';
+    @import './Technician';
 </style>
 
 <script src="./index.js"></script>

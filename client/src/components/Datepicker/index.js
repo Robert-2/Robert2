@@ -62,22 +62,22 @@ export default {
         const { value, withTime, isRange, isClearable, displayFormat, placeholder } = $props;
 
         return (
-      <Datepicker
-        value={value}
-        type={withTime ? 'datetime' : 'date'}
-        range={isRange}
-        lang={lang}
-        onInput={handleInput}
-        minuteStep={15}
-        showSecond={false}
-        showTimeHeader={withTime}
-        clearable={isClearable}
-        placeholder={placeholder}
-        formatter={formatter}
-        format={withTime ? `${displayFormat} HH:mm` : displayFormat}
-        disabledDate={getDisabledDates}
-        rangeSeparator=" ⇒ "
-      />
+            <Datepicker
+                value={value}
+                type={withTime ? 'datetime' : 'date'}
+                range={isRange}
+                lang={lang}
+                onInput={handleInput}
+                minuteStep={15}
+                showSecond={false}
+                showTimeHeader={withTime}
+                clearable={isClearable}
+                placeholder={placeholder}
+                formatter={formatter}
+                format={withTime ? `${displayFormat} HH:mm` : displayFormat}
+                disabledDate={getDisabledDates}
+                rangeSeparator=" ⇒ "
+            />
         );
     },
 };

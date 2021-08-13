@@ -52,29 +52,18 @@ export default {
         },
     },
     render() {
-        const {
-            help,
-            isLoading,
-            error,
-            settings,
-            handleSave,
-            errors,
-        } = this;
+        const { help, isLoading, error, settings, handleSave, errors } = this;
 
         return (
-      <div class="EventSummarySettings">
-        <Help
-          message={help}
-          error={error}
-          isLoading={isLoading}
-        />
-        <EventSummarySettingsForm
-          settings={settings}
-          onSave={handleSave}
-          isSaving={isLoading}
-          errors={errors}
-        />
-      </div>
+            <div class="EventSummarySettings">
+                <Help message={help} error={error} isLoading={isLoading} />
+                <EventSummarySettingsForm
+                    settings={settings}
+                    onSave={handleSave}
+                    isSaving={isLoading}
+                    errors={errors}
+                />
+            </div>
         );
     },
 };

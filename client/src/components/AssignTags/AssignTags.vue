@@ -20,11 +20,8 @@
             </div>
         </div>
         <div class="AssignTags__actions">
-            <p v-if="error" class="AssignTags__error">{{error}}</p>
-            <button
-                class="success"
-                @click="save"
-            >
+            <p v-if="error" class="AssignTags__error">{{ error }}</p>
+            <button class="success" @click="save">
                 <i v-if="isLoading" class="fas fa-circle-notch fa-spin" />
                 <span v-if="isLoading">{{ $t('saving') }}</span>
                 <span v-else>{{ $t('save') }}</span>
@@ -37,8 +34,8 @@
 </template>
 
 <style lang="scss">
-  @import '../../themes/default/index';
-  @import './AssignTags';
+    @import '../../themes/default/index';
+    @import './AssignTags';
 </style>
 
 <script src="./index.js"></script>

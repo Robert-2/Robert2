@@ -1,32 +1,32 @@
 .MaterialViewDocuments {
-  height: calc(100% - 10px);
-  display: flex;
-  flex-wrap: wrap;
+    height: calc(100% - 10px);
+    display: flex;
+    flex-wrap: wrap;
 
-  &__main {
-    flex: 1;
-    min-width: 300px;
+    &__main {
+        flex: 1;
+        min-width: 300px;
 
-    .Help {
-      margin-top: $content-padding-large-vertical;
-      text-align: center;
+        .Help {
+            margin-top: $content-padding-large-vertical;
+            text-align: center;
+        }
     }
-  }
 
-  &__no-document {
-    margin: 30px 0 0;
-    text-align: center;
-    font-size: 1.2rem;
-    color: $text-light-color;
-    font-style: italic;
-  }
+    &__no-document {
+        margin: 30px 0 0;
+        text-align: center;
+        font-size: 1.2rem;
+        color: $text-light-color;
+        font-style: italic;
+    }
 
-  &__list {
-    margin: 0;
-    padding: 0 $content-padding-small-vertical 0 0;
-  }
+    &__list {
+        margin: 0;
+        padding: 0 $content-padding-small-vertical 0 0;
+    }
 
-  .MaterialViewDocumentsUpload {
-    flex: 1;
-  }
+    .MaterialViewDocumentsUpload {
+        flex: 1;
+    }
 }

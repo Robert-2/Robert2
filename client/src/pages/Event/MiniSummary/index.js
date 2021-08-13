@@ -29,7 +29,7 @@ export default {
 
         duration() {
             const { start, end } = this.dates;
-            return (start && end) ? moment(end).diff(start, 'days') + 1 : 0;
+            return start && end ? moment(end).diff(start, 'days') + 1 : 0;
         },
 
         ratio() {

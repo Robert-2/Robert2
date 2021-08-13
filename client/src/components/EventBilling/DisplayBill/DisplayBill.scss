@@ -1,40 +1,40 @@
 .DisplayBill {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  list-style: none;
-  margin-bottom: $content-padding-large-horizontal;
-
-  &__main {
-    flex: 1;
     display: flex;
+    flex-direction: column;
     align-items: center;
-  }
+    width: 100%;
+    list-style: none;
+    margin-bottom: $content-padding-large-horizontal;
 
-  &__icon {
-    flex: 0 0 auto;
-    font-size: 1.8rem;
-    margin-right: $content-padding-large-horizontal;
-  }
+    &__main {
+        flex: 1;
+        display: flex;
+        align-items: center;
+    }
 
-  &__text {
-    flex: 1;
-    line-height: 1.3;
-    font-size: 1.2rem;
-  }
+    &__icon {
+        flex: 0 0 auto;
+        font-size: 1.8rem;
+        margin-right: $content-padding-large-horizontal;
+    }
 
-  &__actions {
-    flex: 0 0 auto;
-    margin-top:  $content-padding-small-vertical;
-  }
+    &__text {
+        flex: 1;
+        line-height: 1.3;
+        font-size: 1.2rem;
+    }
 
-  &__download {
-    display: inline-block;
-    padding: 6px 9px;
-    border: 1px solid;
-    border-radius: $input-border-radius;
-    font-size: 1.1rem;
-    cursor: pointer;
-  }
+    &__actions {
+        flex: 0 0 auto;
+        margin-top: $content-padding-small-vertical;
+    }
+
+    &__download {
+        display: inline-block;
+        padding: 6px 9px;
+        border: 1px solid;
+        border-radius: $input-border-radius;
+        font-size: 1.1rem;
+        cursor: pointer;
+    }
 }

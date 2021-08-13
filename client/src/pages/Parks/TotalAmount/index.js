@@ -31,25 +31,23 @@ export default {
         const { $t: __, handleCalculate, loading, error, amount } = this;
 
         return (
-      <div class="ParkTotalAmount">
-        {amount === null && (
-          <button
-            class="ParkTotalAmount__calc-button"
-            onClick={handleCalculate}
-            disabled={loading}
-          >
-            {loading ? <i class="fas fa-spin fa-circle-notch" /> : __('calculate')}
-          </button>
-        )}
-        {error && (
-          <ErrorMessage error={error} />
-        )}
-        {amount !== null && (
-          <div class="ParkTotalAmount__amount">
-            {formatAmount(amount)}
-          </div>
-        )}
-      </div>
+            <div class="ParkTotalAmount">
+                {amount === null && (
+                    <button
+                        class="ParkTotalAmount__calc-button"
+                        onClick={handleCalculate}
+                        disabled={loading}
+                    >
+                        {loading ? <i class="fas fa-spin fa-circle-notch" /> : __('calculate')}
+                    </button>
+                )}
+                {error && <ErrorMessage error={error} />}
+                {amount !== null && (
+                    <div class="ParkTotalAmount__amount">
+                        {formatAmount(amount)}
+                    </div>
+                )}
+            </div>
         );
     },
 };

@@ -1,54 +1,54 @@
 .MultipleItem {
-  $block: &;
+    $block: &;
 
-  &__item-pivot-field  {
-    width: 150px;
-    margin-left: .6rem;
-  }
-
-  &__item-action-btn  {
-    height: 35px;
-    margin-left: .6rem;
-  }
-
-  &__value-field {
-    flex: 1;
-    padding: $input-padding-vertical $input-padding-horizontal;
-    min-height: 2.7rem;
-    color: $color-input;
-    border: $input-border-size solid $bg-color-input-normal;
-    border-radius: $input-border-radius;
-
-    &--loading {
-      color: $text-light-color;
+    &__item-pivot-field {
+        width: 150px;
+        margin-left: 0.6rem;
     }
 
-    &--error {
-      font-style: italic;
-      color: $text-danger-color;
+    &__item-action-btn {
+        height: 35px;
+        margin-left: 0.6rem;
     }
-  }
 
-  .v-select {
-    flex: 1;
-  }
+    &__value-field {
+        flex: 1;
+        padding: $input-padding-vertical $input-padding-horizontal;
+        min-height: 2.7rem;
+        color: $color-input;
+        border: $input-border-size solid $bg-color-input-normal;
+        border-radius: $input-border-radius;
 
-  &__actions {
-    margin-left: $form-label-width;
-    padding: 1rem 0;
+        &--loading {
+            color: $text-light-color;
+        }
 
-    button {
-      padding: 5px 10px;
+        &--error {
+            font-style: italic;
+            color: $text-danger-color;
+        }
     }
-  }
 
-  //
-  // - Empty state
-  //
-
-  &--empty {
-    #{$block}__actions {
-      margin-left: 0;
+    .v-select {
+        flex: 1;
     }
-  }
+
+    &__actions {
+        margin-left: $form-label-width;
+        padding: 1rem 0;
+
+        button {
+            padding: 5px 10px;
+        }
+    }
+
+    //
+    // - Empty state
+    //
+
+    &--empty {
+        #{$block}__actions {
+            margin-left: 0;
+        }
+    }
 }

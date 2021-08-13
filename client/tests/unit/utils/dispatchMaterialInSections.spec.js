@@ -39,8 +39,8 @@ describe('dispatchMaterialInSections', () => {
     });
 
     /**
-   * Materials
-   */
+     * Materials
+     */
 
     test('dispatch a list of materials by parks, sorted by name', () => {
         const result = dispatchMaterialInSections(materials, 'park_id', sectionParkGetter);
@@ -170,8 +170,8 @@ describe('dispatchMaterialInSections', () => {
     });
 
     /**
-   * Event's materials
-   */
+     * Event's materials
+     */
 
     test('dispatch a list of event materials by parks, sorted by name', () => {
         const result = dispatchMaterialInSections(eventMaterials, 'park_id', sectionParkGetter);
@@ -314,8 +314,8 @@ describe('dispatchMaterialInSections', () => {
     });
 
     /**
-   * Event return's materials
-   */
+     * Event return's materials
+     */
 
     test('dispatch a list of event return materials by parks, sorted by name', () => {
         const result = dispatchMaterialInSections(eventReturnMaterials, 'park_id', sectionParkGetter);

@@ -46,16 +46,16 @@ export default {
         hasMaterialsProblems() {
             return (
                 (this.event?.hasMissingMaterials && !this.event?.is_return_inventory_done)
-        || this.event?.hasNotReturnedMaterials
+                || this.event?.hasNotReturnedMaterials
             );
         },
     },
     methods: {
-    // ------------------------------------------------------
-    // -
-    // -    Handlers
-    // -
-    // ------------------------------------------------------
+        // ------------------------------------------------------
+        // -
+        // -    Handlers
+        // -
+        // ------------------------------------------------------
 
         handleEstimateCreated(newEstimate) {
             this.event.estimates.unshift(newEstimate);
@@ -65,7 +65,7 @@ export default {
 
         handleEstimateDeleted(estimateId) {
             const newEstimatesList = this.event.estimates.filter(
-                (estimate) => (estimate.id !== estimateId),
+                (estimate) => estimate.id !== estimateId,
             );
             this.event.estimates = newEstimatesList;
             const [lastOne] = newEstimatesList;
@@ -169,91 +169,91 @@ export default {
         } = this;
 
         return (
-      <div class="EventDetails">
-        {isLoading && <Loading />}
-        {(!isLoading && event) && (
-          <section class="EventDetails__content">
-            <Header
-              event={event}
-              onClose={handleClose}
-              onSaved={handleUpdateEvent}
-              onDeleted={handleClose}
-              onError={(_error) => { this.error = _error; }}
-              onDuplicated={handleDuplicateEvent}
-            />
-            <div class="EventDetails__content__body">
-              <Tabs>
-                <Tab title={(
-                  <span>
-                    <i class="fas fa-info-circle" /> {__('informations')}
-                  </span>
-                )}>
-                  <Infos event={event} discountRate={discountRate} />
-                </Tab>
-                <Tab disabled={!hasEventTechnicians} title={(
-                  <span>
-                    <i class="fas fa-people-carry" /> {__('technicians')}
-                  </span>
-                )}>
-                  <Technicians event={event} />
-                </Tab>
-                <Tab disabled={!hasMaterials} title={(
-                  <span>
-                    <i class="fas fa-box" /> {__('material')}
-                    {hasMaterialsProblems && <i class="fas fa-exclamation-triangle"/>}
-                  </span>
-                )}>
-                  <Materials event={event} discountRate={discountRate} />
-                </Tab>
-                {showBilling && (
-                  <Tab disabled={!hasMaterials} title={(
-                    <span>
-                      <i class="fas fa-file-signature" /> {__('estimates')}
-                    </span>
-                  )}>
-                    <Estimates
-                      event={event}
-                      lastBill={lastBill}
-                      onCreateEstimate={handleEstimateCreated}
-                      onDeleteEstimate={handleEstimateDeleted}
-                      onBillingEnabled={handleUpdateEvent}
-                    />
-                  </Tab>
+            <div class="EventDetails">
+                {isLoading && <Loading />}
+                {!isLoading && event && (
+                    <section class="EventDetails__content">
+                        <Header
+                            event={event}
+                            onClose={handleClose}
+                            onSaved={handleUpdateEvent}
+                            onDeleted={handleClose}
+                            onError={(_error) => {
+                                this.error = _error;
+                            }}
+                            onDuplicated={handleDuplicateEvent}
+                        />
+                        <div class="EventDetails__content__body">
+                            <Tabs>
+                                <Tab title={<span><i class="fas fa-info-circle" /> {__('informations')}</span>}>
+                                    <Infos event={event} discountRate={discountRate} />
+                                </Tab>
+                                <Tab
+                                    disabled={!hasEventTechnicians}
+                                    title={<span><i class="fas fa-people-carry" /> {__('technicians')}</span>}
+                                >
+                                    <Technicians event={event} />
+                                </Tab>
+                                <Tab
+                                    disabled={!hasMaterials}
+                                    title={
+                                        <span>
+                                            <i class="fas fa-box" /> {__('material')}
+                                            {hasMaterialsProblems && (
+                                                <i class="fas fa-exclamation-triangle" />
+                                            )}
+                                        </span>
+                                    }
+                                >
+                                    <Materials event={event} discountRate={discountRate} />
+                                </Tab>
+                                {showBilling && (
+                                    <Tab
+                                        disabled={!hasMaterials}
+                                        title={<span><i class="fas fa-file-signature" /> {__('estimates')}</span>}
+                                    >
+                                        <Estimates
+                                            event={event}
+                                            lastBill={lastBill}
+                                            onCreateEstimate={handleEstimateCreated}
+                                            onDeleteEstimate={handleEstimateDeleted}
+                                            onBillingEnabled={handleUpdateEvent}
+                                        />
+                                    </Tab>
+                                )}
+                                {showBilling && (
+                                    <Tab
+                                        disabled={!hasMaterials}
+                                        title={<span><i class="fas fa-file-invoice-dollar" /> {__('bill')}</span>}
+                                    >
+                                        <Billing
+                                            event={event}
+                                            lastBill={lastBill}
+                                            lastEstimate={lastEstimate}
+                                            onCreateBill={handleBillCreated}
+                                            onBillingEnabled={handleUpdateEvent}
+                                        />
+                                    </Tab>
+                                )}
+                            </Tabs>
+                            {!hasMaterials && (
+                                <div class="EventDetails__materials-empty">
+                                    <p>
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        {__('page-events.warning-no-material')}
+                                    </p>
+                                    {!event.isPast && (
+                                        <router-link to={`/events/${event.id}`} class="button info">
+                                            <i class="fas fa-edit" /> {__('page-events.edit-event')}
+                                        </router-link>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    </section>
                 )}
-                {showBilling && (
-                  <Tab disabled={!hasMaterials} title={(
-                    <span>
-                      <i class="fas fa-file-invoice-dollar" /> {__('bill')}
-                    </span>
-                  )}>
-                    <Billing
-                      event={event}
-                      lastBill={lastBill}
-                      lastEstimate={lastEstimate}
-                      onCreateBill={handleBillCreated}
-                      onBillingEnabled={handleUpdateEvent}
-                    />
-                  </Tab>
-                )}
-              </Tabs>
-              {!hasMaterials && (
-                <div class="EventDetails__materials-empty">
-                  <p>
-                    <i class="fas fa-exclamation-triangle"></i>
-                    {__('page-events.warning-no-material')}
-                  </p>
-                  {!event.isPast && (
-                    <router-link to={`/events/${event.id}`} class="button info">
-                      <i class="fas fa-edit" /> {__('page-events.edit-event')}
-                    </router-link>
-                  )}
-                </div>
-              )}
+                {error && <ErrorMessage error={error} />}
             </div>
-          </section>
-        )}
-        {error && <ErrorMessage error={error} />}
-      </div>
         );
     },
 };

@@ -67,49 +67,48 @@ export default {
                     this.help = { type: 'success', text: 'page-tags.saved' };
                     this.isLoading = false;
                     this.$store.dispatch('tags/refresh');
-                }).catch(this.displayError);
+                })
+                .catch(this.displayError);
         },
 
         remove(id) {
             const isSoft = !this.isTrashDisplayed;
-            Alert.ConfirmDelete(this.$t, 'tags', isSoft)
-                .then((result) => {
-                    if (!result.value) {
-                        return;
-                    }
+            Alert.ConfirmDelete(this.$t, 'tags', isSoft).then((result) => {
+                if (!result.value) {
+                    return;
+                }
 
-                    this.resetHelpLoading();
+                this.resetHelpLoading();
 
-                    this.$http.delete(`tags/${id}`)
-                        .then(() => {
-                            this.help = { type: 'success', text: 'page-tags.deleted' };
-                            this.isLoading = false;
-                            if (this.isTrashDisplayed) {
-                                this.fetchDeleted();
-                            } else {
-                                this.$store.dispatch('tags/refresh');
-                            }
-                        })
-                        .catch(this.displayError);
-                });
+                this.$http.delete(`tags/${id}`)
+                    .then(() => {
+                        this.help = { type: 'success', text: 'page-tags.deleted' };
+                        this.isLoading = false;
+                        if (this.isTrashDisplayed) {
+                            this.fetchDeleted();
+                        } else {
+                            this.$store.dispatch('tags/refresh');
+                        }
+                    })
+                    .catch(this.displayError);
+            });
         },
 
         restore(id) {
-            Alert.ConfirmRestore(this.$t, 'tags')
-                .then((result) => {
-                    if (!result.value) {
-                        return;
-                    }
+            Alert.ConfirmRestore(this.$t, 'tags').then((result) => {
+                if (!result.value) {
+                    return;
+                }
 
-                    this.resetHelpLoading();
+                this.resetHelpLoading();
 
-                    this.$http.put(`${this.$route.meta.resource}/restore/${id}`)
-                        .then(() => {
-                            this.fetchDeleted();
-                            this.$store.dispatch('tags/refresh');
-                        })
-                        .catch(this.showError);
-                });
+                this.$http.put(`${this.$route.meta.resource}/restore/${id}`)
+                    .then(() => {
+                        this.fetchDeleted();
+                        this.$store.dispatch('tags/refresh');
+                    })
+                    .catch(this.showError);
+            });
         },
 
         showTrashed() {

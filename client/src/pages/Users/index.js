@@ -73,33 +73,31 @@ export default {
     methods: {
         deleteUser(userId) {
             const isSoft = !this.isTrashDisplayed;
-            Alert.ConfirmDelete(this.$t, 'users', isSoft)
-                .then((result) => {
-                    if (!result.value) {
-                        return;
-                    }
+            Alert.ConfirmDelete(this.$t, 'users', isSoft).then((result) => {
+                if (!result.value) {
+                    return;
+                }
 
-                    this.error = null;
-                    this.isLoading = true;
-                    this.$http.delete(`${this.$route.meta.resource}/${userId}`)
-                        .then(this.refreshTable)
-                        .catch(this.showError);
-                });
+                this.error = null;
+                this.isLoading = true;
+                this.$http.delete(`${this.$route.meta.resource}/${userId}`)
+                    .then(this.refreshTable)
+                    .catch(this.showError);
+            });
         },
 
         restoreUser(userId) {
-            Alert.ConfirmRestore(this.$t, 'users')
-                .then((result) => {
-                    if (!result.value) {
-                        return;
-                    }
+            Alert.ConfirmRestore(this.$t, 'users').then((result) => {
+                if (!result.value) {
+                    return;
+                }
 
-                    this.error = null;
-                    this.isLoading = true;
-                    this.$http.put(`${this.$route.meta.resource}/restore/${userId}`)
-                        .then(this.refreshTable)
-                        .catch(this.showError);
-                });
+                this.error = null;
+                this.isLoading = true;
+                this.$http.put(`${this.$route.meta.resource}/restore/${userId}`)
+                    .then(this.refreshTable)
+                    .catch(this.showError);
+            });
         },
 
         refreshTable() {

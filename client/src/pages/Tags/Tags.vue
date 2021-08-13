@@ -2,30 +2,20 @@
     <div class="content Tags">
         <div class="content__header header-page">
             <div class="header-page__help">
-                <Help
-                    :message="help"
-                    :error="error"
-                    :isLoading="isLoading"
-                />
+                <Help :message="help" :error="error" :isLoading="isLoading" />
                 <div v-if="validationError" class="header-page__error">
                     {{ validationError }}
                 </div>
             </div>
             <div class="header-page__actions">
-                <button
-                    class="Tags__create success"
-                    @click="addTag()"
-                >
+                <button class="Tags__create success" @click="addTag()">
                     <i class="fas fa-plus" />
                     {{ $t('page-tags.action-add') }}
                 </button>
             </div>
         </div>
 
-        <div
-            v-if="!isTrashDisplayed"
-            class="content__main-view Tags__items"
-        >
+        <div v-if="!isTrashDisplayed" class="content__main-view Tags__items">
             <h3 v-if="tags.length === 0" class="Tags__empty">
                 {{ $t('page-tags.no-item') }}
             </h3>
@@ -50,10 +40,7 @@
                 </button>
             </div>
         </div>
-        <div
-            v-if="isTrashDisplayed"
-            class="content__main-view Tags__items"
-        >
+        <div v-if="isTrashDisplayed" class="content__main-view Tags__items">
             <h3 v-if="deletedTags.length === 0" class="Tags__empty">
                 {{ $t('page-tags.no-item-in-trash') }}
             </h3>
@@ -102,8 +89,8 @@
 </template>
 
 <style lang="scss">
-  @import '../../themes/default/index';
-  @import './Tags';
+    @import '../../themes/default/index';
+    @import './Tags';
 </style>
 
 <script src="./index.js"></script>

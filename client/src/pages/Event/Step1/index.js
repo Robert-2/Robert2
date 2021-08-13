@@ -50,10 +50,7 @@ export default {
                 return;
             }
 
-            this.dates = [
-                moment(startDate).toDate(),
-                moment(endDate).toDate(),
-            ];
+            this.dates = [moment(startDate).toDate(), moment(endDate).toDate()];
         },
 
         setEventDates() {

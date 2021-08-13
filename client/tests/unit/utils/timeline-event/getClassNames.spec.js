@@ -12,10 +12,7 @@ describe('getTimelineEventClassNames', () => {
             hasNotReturnedMaterials: false,
         };
         const result = getTimelineEventClassNames(formattedEvent);
-        expect(result).toEqual([
-            'timeline-event',
-            'timeline-event--not-confirmed',
-        ]);
+        expect(result).toEqual(['timeline-event', 'timeline-event--not-confirmed']);
     });
 
     test('When event is current, and not confirmed', () => {
@@ -65,9 +62,7 @@ describe('getTimelineEventClassNames', () => {
             hasNotReturnedMaterials: false,
         };
         const result = getTimelineEventClassNames(formattedEvent);
-        expect(result).toEqual([
-            'timeline-event',
-        ]);
+        expect(result).toEqual(['timeline-event']);
     });
 
     test('When event is current, and confirmed', () => {
@@ -81,10 +76,7 @@ describe('getTimelineEventClassNames', () => {
             hasNotReturnedMaterials: false,
         };
         const result = getTimelineEventClassNames(formattedEvent);
-        expect(result).toEqual([
-            'timeline-event',
-            'timeline-event--current',
-        ]);
+        expect(result).toEqual(['timeline-event', 'timeline-event--current']);
     });
 
     test('When event is past and confirmed, but not archived', () => {
@@ -206,10 +198,7 @@ describe('getTimelineEventClassNames', () => {
             hasNotReturnedMaterials: false,
         };
         const result = getTimelineEventClassNames(formattedEvent);
-        expect(result).toEqual([
-            'timeline-event',
-            'timeline-event--with-warning',
-        ]);
+        expect(result).toEqual(['timeline-event', 'timeline-event--with-warning']);
     });
 
     test('When event is current, confirmed, and has missing materials', () => {

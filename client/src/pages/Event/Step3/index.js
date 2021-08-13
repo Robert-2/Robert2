@@ -1,6 +1,5 @@
 import './index.scss';
 import moment from 'moment';
-import { TECHNICIAN_EVENT_STEP, TECHNICIAN_EVENT_MIN_DURATION, DATE_DB_FORMAT } from '@/config/constants';
 import Alert from '@/components/Alert';
 import CriticalError from '@/components/CriticalError';
 import Help from '@/components/Help/Help.vue';
@@ -10,10 +9,15 @@ import getPersonItemLabel from '@/utils/getPersonItemLabel';
 import formatEventTechnician from '@/utils/formatEventTechnician';
 import EventStore from '../EventStore';
 import Modal from './Modal';
+import {
+    TECHNICIAN_EVENT_STEP,
+    TECHNICIAN_EVENT_MIN_DURATION,
+    DATE_DB_FORMAT,
+} from '@/config/constants';
 
 const getClosestStepTime = (requestedTime, roundMethod = 'floor') => {
     const time = moment(requestedTime).startOf('minute');
-    return moment(Math[roundMethod]((+time) / (+TECHNICIAN_EVENT_STEP)) * (+TECHNICIAN_EVENT_STEP));
+    return moment(Math[roundMethod](+time / +TECHNICIAN_EVENT_STEP) * +TECHNICIAN_EVENT_STEP);
 };
 
 const EventStep3 = {
@@ -39,12 +43,10 @@ const EventStep3 = {
                 return null;
             }
 
-            return this.technicians.map(
-                (technician) => ({
-                    id: technician.id,
-                    content: getPersonItemLabel(technician),
-                }),
-            );
+            return this.technicians.map((technician) => ({
+                id: technician.id,
+                content: getPersonItemLabel(technician),
+            }));
         },
 
         events() {
@@ -54,25 +56,24 @@ const EventStep3 = {
 
             const { event } = this;
 
-            const eventSlots = (event?.technicians ?? []).map(
-                (eventTechnician) => {
-                    const { technician_id: technicianId } = eventTechnician;
-                    const { id, start, end, content, title } = formatEventTechnician(
-                        { ...eventTechnician, event },
-                    );
+            const eventSlots = (event?.technicians ?? []).map((eventTechnician) => {
+                const { technician_id: technicianId } = eventTechnician;
+                const { id, start, end, content, title } = formatEventTechnician({
+                    ...eventTechnician,
+                    event,
+                });
 
-                    return {
-                        id,
-                        start,
-                        end,
-                        content,
-                        group: technicianId,
-                        editable: true,
-                        type: 'range',
-                        title,
-                    };
-                },
-            );
+                return {
+                    id,
+                    start,
+                    end,
+                    content,
+                    group: technicianId,
+                    editable: true,
+                    type: 'range',
+                    title,
+                };
+            });
 
             const otherSlots = this.technicians.map((technician) => (
                 (technician?.events ?? []).map((eventTechnician) => {
@@ -115,11 +116,11 @@ const EventStep3 = {
         this.fetchAllTechnicians();
     },
     methods: {
-    // ------------------------------------------------------
-    // -
-    // -    Handlers
-    // -
-    // ------------------------------------------------------
+        // ------------------------------------------------------
+        // -
+        // -    Handlers
+        // -
+        // ------------------------------------------------------
 
         handleDoubleClick(e) {
             // - On évite le double-call à cause d'un bug qui trigger l'event en double.
@@ -312,56 +313,56 @@ const EventStep3 = {
 
             if (techniciansCount === 0 && !isLoading) {
                 return (
-          <div class="EventStep3__no-technician">
-            <p class="EventStep3__no-technician__message">
-              {__('page-events.no-technician-pass-this-step')}
-            </p>
-            <button type="button" class="success" onClick={handleNextClick}>
-              {__('page-events.continue')} <i class="fas fa-arrow-right" />
-            </button>
-          </div>
+                    <div class="EventStep3__no-technician">
+                        <p class="EventStep3__no-technician__message">
+                            {__('page-events.no-technician-pass-this-step')}
+                        </p>
+                        <button type="button" class="success" onClick={handleNextClick}>
+                            {__('page-events.continue')} <i class="fas fa-arrow-right" />
+                        </button>
+                    </div>
                 );
             }
 
             return (
-        <Timeline
-          class="EventStep3__timeline"
-          items={events}
-          groups={groups}
-          options={timelineOptions}
-          onDoubleClick={handleDoubleClick}
-          onItemMoved={handleItemMoved}
-          onItemRemove={handleItemRemove}
-          onItemRemoved={handleItemUpdated}
-        />
+                <Timeline
+                    class="EventStep3__timeline"
+                    items={events}
+                    groups={groups}
+                    options={timelineOptions}
+                    onDoubleClick={handleDoubleClick}
+                    onItemMoved={handleItemMoved}
+                    onItemRemove={handleItemRemove}
+                    onItemRemoved={handleItemUpdated}
+                />
             );
         };
 
         return (
-      <div class="EventStep3">
-        <header class="EventStep3__header">
-          <h1 class="EventStep3__title">{__('page-events.event-technicians')}</h1>
-          {isLoading && <Loading horizontal />}
-          {(!isLoading && techniciansCount > 0) && (
-            <Help message={__('page-events.technicians-help')} />
-          )}
-        </header>
-        <div class="EventStep3__content">
-          {renderContent()}
-        </div>
-        <section class="EventStep3__footer">
-          <button type="button" class="info" onClick={handleBackToCalendarClick}>
-            <i class="fas fa-arrow-left" />{' '}
-            {__('page-events.save-and-back-to-calendar')}
-          </button>
-          {!isLoading && techniciansCount > 0 && (
-            <button type="button" class="success" onClick={handleNextClick}>
-              {__('page-events.save-and-continue')}{' '}
-              <i class="fas fa-arrow-right" />
-            </button>
-          )}
-        </section>
-      </div>
+            <div class="EventStep3">
+                <header class="EventStep3__header">
+                    <h1 class="EventStep3__title">{__('page-events.event-technicians')}</h1>
+                    {isLoading && <Loading horizontal />}
+                    {!isLoading && techniciansCount > 0 && (
+                        <Help message={__('page-events.technicians-help')} />
+                    )}
+                </header>
+                <div class="EventStep3__content">
+                    {renderContent()}
+                </div>
+                <section class="EventStep3__footer">
+                    <button type="button" class="info" onClick={handleBackToCalendarClick}>
+                        <i class="fas fa-arrow-left" />{' '}
+                        {__('page-events.save-and-back-to-calendar')}
+                    </button>
+                    {!isLoading && techniciansCount > 0 && (
+                        <button type="button" class="success" onClick={handleNextClick}>
+                            {__('page-events.save-and-continue')}{' '}
+                            <i class="fas fa-arrow-right" />
+                        </button>
+                    )}
+                </section>
+            </div>
         );
     },
 };

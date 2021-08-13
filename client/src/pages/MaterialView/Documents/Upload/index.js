@@ -48,14 +48,14 @@ export default {
             if (size > MAX_FILE_SIZE) {
                 this.fileErrors.push({
                     fileName: name,
-                    message: this.$t('errors.file-size-exceeded', { max: formatBytes(MAX_FILE_SIZE) }),
+                    message: this.$t('errors.file-size-exceeded', {
+                        max: formatBytes(MAX_FILE_SIZE),
+                    }),
                 });
                 return false;
             }
 
-            const fileExists = this.files.some(
-                ({ name: existingName }) => existingName === name,
-            );
+            const fileExists = this.files.some(({ name: existingName }) => existingName === name);
             if (fileExists) {
                 this.fileErrors.push({
                     fileName: name,

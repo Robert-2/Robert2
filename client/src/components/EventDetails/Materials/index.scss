@@ -1,15 +1,15 @@
 @import '../../../themes/default/';
 
 .EventDetailsMaterials {
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
 
-  .EventMissingMaterials__title {
-    margin-top: 0;
-  }
+    .EventMissingMaterials__title {
+        margin-top: 0;
+    }
 
-  .EventTotals {
-    padding: 0;
-    text-align: left;
-  }
+    .EventTotals {
+        padding: 0;
+        text-align: left;
+    }
 }

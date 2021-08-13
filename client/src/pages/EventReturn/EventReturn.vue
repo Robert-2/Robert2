@@ -8,16 +8,13 @@
             @displayGroupChange="setDisplayGroup"
         />
         <div class="EventReturn__list">
-            <div
-                v-if="!isLoading && !isPast"
-                class="EventReturn__error"
-            >
+            <div v-if="!isLoading && !isPast" class="EventReturn__error">
                 <p v-if="!error">
                     <i class="fas fa-exclamation-triangle" />
                     {{ $t('page-event-return.this-event-is-not-past') }}
                 </p>
                 <router-link to="/" v-slot="{ navigate }" custom>
-                    <button type="button" @click="navigate" class="info" >
+                    <button type="button" @click="navigate" class="info">
                         <i class="fas fa-arrow-left" />
                         {{ $t('back-to-calendar') }}
                     </button>
@@ -50,9 +47,7 @@
                             <span v-if="isSaving">
                                 <i class="fas fa-circle-notch fa-spin" /> {{ $t('saving') }}
                             </span>
-                            <span v-else>
-                                <i class="fas fa-save" /> {{ $t('save-draft') }}
-                            </span>
+                            <span v-else> <i class="fas fa-save" /> {{ $t('save-draft') }}</span>
                         </button>
                         <button
                             type="button"

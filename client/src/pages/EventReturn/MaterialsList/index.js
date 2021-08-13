@@ -18,7 +18,8 @@ export default {
     computed: {
         awaitedMaterials() {
             return this.materials.map(({ pivot, ...material }) => ({
-                ...material, awaited_quantity: pivot.quantity,
+                ...material,
+                awaited_quantity: pivot.quantity,
             }));
         },
 
@@ -54,33 +55,33 @@ export default {
         } = this;
 
         return (
-      <div class="EventReturnMaterialsList">
-        {isLocked && !isAllReturned && (
-          <div class="EventReturnMaterialsList__missing">
-            {__('page-event-return.some-material-is-missing')}
-          </div>
-        )}
-        <Inventory
-          quantities={quantities}
-          materials={awaitedMaterials}
-          displayGroup={displayGroup}
-          errors={this.errors}
-          onChange={handleChange}
-          locked={isLocked}
-          strict
-        />
-        {isAllReturned && (
-          <div class="EventReturnMaterialsList__all-returned">
-            {__('page-event-return.all-material-returned')}
-          </div>
-        )}
-        {hasBroken && (
-          <div class="EventReturnMaterialsList__has-broken">
-            <i class="fas fa-exclamation-triangle" />{' '}
-            {__('page-event-return.some-material-came-back-broken')}
-          </div>
-        )}
-      </div>
+            <div class="EventReturnMaterialsList">
+                {isLocked && !isAllReturned && (
+                    <div class="EventReturnMaterialsList__missing">
+                        {__('page-event-return.some-material-is-missing')}
+                    </div>
+                )}
+                <Inventory
+                    quantities={quantities}
+                    materials={awaitedMaterials}
+                    displayGroup={displayGroup}
+                    errors={this.errors}
+                    onChange={handleChange}
+                    locked={isLocked}
+                    strict
+                />
+                {isAllReturned && (
+                    <div class="EventReturnMaterialsList__all-returned">
+                        {__('page-event-return.all-material-returned')}
+                    </div>
+                )}
+                {hasBroken && (
+                    <div class="EventReturnMaterialsList__has-broken">
+                        <i class="fas fa-exclamation-triangle" />{' '}
+                        {__('page-event-return.some-material-came-back-broken')}
+                    </div>
+                )}
+            </div>
         );
     },
 };

@@ -1,16 +1,16 @@
 a {
-  text-decoration: none;
+    text-decoration: none;
 }
 
 a:not(.button):not(.Dropdown__item) {
-  &,
-  &:visited,
-  &:active {
-    color: $link-base-color;
-    cursor: pointer;
-  }
+    &,
+    &:visited,
+    &:active {
+        color: $link-base-color;
+        cursor: pointer;
+    }
 
-  &:hover {
-    color: $link-hover-color;
-  }
+    &:hover {
+        color: $link-hover-color;
+    }
 }

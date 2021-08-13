@@ -2,22 +2,11 @@
     <div class="content Beneficiaries">
         <div class="content__header header-page">
             <div class="header-page__help">
-                <Help
-                    :message="help"
-                    :error="error"
-                    :isLoading="isLoading"
-                />
+                <Help :message="help" :error="error" :isLoading="isLoading" />
             </div>
             <div class="header-page__actions">
-                <router-link
-                    :to="`/beneficiaries/new`"
-                    v-slot="{ navigate }"
-                    custom
-                >
-                    <button
-                        class="Beneficiaries__create success"
-                        @click="navigate"
-                    >
+                <router-link :to="`/beneficiaries/new`" v-slot="{ navigate }" custom>
+                    <button class="Beneficiaries__create success" @click="navigate">
                         <i class="fas fa-user-plus" />
                         {{ $t('page-beneficiaries.action-add') }}
                     </button>
@@ -119,8 +108,8 @@
 </template>
 
 <style lang="scss">
-  @import '../../themes/default/index';
-  @import './Beneficiaries';
+    @import '../../themes/default/index';
+    @import './Beneficiaries';
 </style>
 
 <script src="./index.js"></script>

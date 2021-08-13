@@ -1,115 +1,114 @@
 @import 'vue-select/src/scss/vue-select';
 
 .v-select {
-  padding: 0 $input-padding-horizontal;
-  background-color: $bg-color-input-normal;
-  border: $input-border-size solid $bg-color-input-normal;
-  border-radius: $input-border-radius;
-  font-size: $input-font-size;
+    padding: 0 $input-padding-horizontal;
+    background-color: $bg-color-input-normal;
+    border: $input-border-size solid $bg-color-input-normal;
+    border-radius: $input-border-radius;
+    font-size: $input-font-size;
 }
 
 .vs {
-  &__dropdown-toggle {
-    border  : none;
-    padding : 0;
-  }
-
-  &__dropdown-menu {
-    width: calc(100% + 2px);
-    left: -1px;
-    background: $bg-color-input-normal;
-    border: $input-border-size solid $bg-color-button-info;
-    border-top: none;
-    border-radius: 0 0 4px 4px;
-  }
-
-  &__dropdown-option {
-    padding: .4rem .9rem;
-    color: $color-input;
-
-    &--highlight {
-      background: $bg-color-button-info;
-      color: $color-input;
-    }
-  }
-
-  &__selected-options {
-    padding: 0 2px;
-
-    .vs__selected {
-      padding: .3rem .7rem;
-      margin: .4rem 0;
-      background-color: $bg-color-tooltip;
+    &__dropdown-toggle {
+        border: none;
+        padding: 0;
     }
 
-    .vs__deselect {
-      padding: .3rem .4rem;
-
-      svg {
-        fill: $text-light-color;
-      }
-
+    &__dropdown-menu {
+        width: calc(100% + 2px);
+        left: -1px;
+        background: $bg-color-input-normal;
+        border: $input-border-size solid $bg-color-button-info;
+        border-top: none;
+        border-radius: 0 0 4px 4px;
     }
 
-    .vs__deselect:hover {
-      background-color: $bg-color-emphasis;
+    &__dropdown-option {
+        padding: 0.4rem 0.9rem;
+        color: $color-input;
 
-      svg {
-        fill: $text-nav-color;
-      }
+        &--highlight {
+            background: $bg-color-button-info;
+            color: $color-input;
+        }
     }
-  }
 
-  &__selected {
-    margin: 0 1rem 0 0;
-    padding: 0;
-    border: none;
-    line-height: normal;
-    color: $color-input;
-  }
+    &__selected-options {
+        padding: 0 2px;
 
-  &__search,
-  &__search:focus {
-    margin: 0;
-    padding: $input-padding-vertical 0;
-    border: none;
-    line-height: normal;
-    font-size: $input-font-size;
+        .vs__selected {
+            padding: 0.3rem 0.7rem;
+            margin: 0.4rem 0;
+            background-color: $bg-color-tooltip;
+        }
 
-    &::placeholder {
-      color: $text-light-color;
+        .vs__deselect {
+            padding: 0.3rem 0.4rem;
+
+            svg {
+                fill: $text-light-color;
+            }
+        }
+
+        .vs__deselect:hover {
+            background-color: $bg-color-emphasis;
+
+            svg {
+                fill: $text-nav-color;
+            }
+        }
     }
-  }
 
-  &__actions {
-    padding: 0;
-  }
-
-  &__clear {
-    margin: 0 .6rem 0 0;
-    padding: .6rem;
-    fill: $bg-color-button-danger;
-    cursor: pointer;
-
-    &:focus,
-    &:hover {
-      background: none;
-      fill: lighten($bg-color-button-danger, 10%);
+    &__selected {
+        margin: 0 1rem 0 0;
+        padding: 0;
+        border: none;
+        line-height: normal;
+        color: $color-input;
     }
-  }
 
-  &__open-indicator {
-    fill: $text-muted-color;
-    cursor: default;
-  }
+    &__search,
+    &__search:focus {
+        margin: 0;
+        padding: $input-padding-vertical 0;
+        border: none;
+        line-height: normal;
+        font-size: $input-font-size;
 
-  &--open {
-    border-color: $bg-color-button-info;
-  }
+        &::placeholder {
+            color: $text-light-color;
+        }
+    }
+
+    &__actions {
+        padding: 0;
+    }
+
+    &__clear {
+        margin: 0 0.6rem 0 0;
+        padding: 0.6rem;
+        fill: $bg-color-button-danger;
+        cursor: pointer;
+
+        &:focus,
+        &:hover {
+            background: none;
+            fill: lighten($bg-color-button-danger, 10%);
+        }
+    }
+
+    &__open-indicator {
+        fill: $text-muted-color;
+        cursor: default;
+    }
+
+    &--open {
+        border-color: $bg-color-button-info;
+    }
 }
 
 .vs--single.vs--open {
-  .vs__selected {
-    position: relative;
-  }
+    .vs__selected {
+        position: relative;
+    }
 }

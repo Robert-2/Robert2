@@ -156,15 +156,16 @@
                                 @change="handleAttributeChange"
                             />
                         </div>
-                        <router-link v-if="isAdmin" to="/attributes" class="Material__modify-attribute-link">
+                        <router-link
+                            v-if="isAdmin"
+                            to="/attributes"
+                            class="Material__modify-attribute-link"
+                        >
                             <i class="fas fa-plus" /> {{ $t('page-attributes.add-attributes') }}
                         </router-link>
                     </section>
                     <section class="Form__actions">
-                        <button
-                            class="Form__actions__save success"
-                            type="submit"
-                        >
+                        <button class="Form__actions__save success" type="submit">
                             <i class="fas fa-save" />
                             {{ $t('save') }}
                         </button>
@@ -175,11 +176,7 @@
                     </section>
                 </form>
                 <section class="Material__side">
-                    <Help
-                        :message="help"
-                        :error="error"
-                        :isLoading="isLoading"
-                    />
+                    <Help :message="help" :error="error" :isLoading="isLoading" />
                     <ImageWithUpload
                         :url="pictureUrl"
                         :name="material.picture"
@@ -188,10 +185,7 @@
                         :isLoading="isUploading"
                         :error="uploadError"
                     />
-                    <Progressbar
-                        v-if="isUploading"
-                        :percent="uploadProgress"
-                    />
+                    <Progressbar v-if="isUploading" :percent="uploadProgress" />
                 </section>
             </div>
         </div>
@@ -199,8 +193,8 @@
 </template>
 
 <style lang="scss">
-  @import '../../themes/default/index';
-  @import './Material';
+    @import '../../themes/default/index';
+    @import './Material';
 </style>
 
 <script src="./index.js"></script>

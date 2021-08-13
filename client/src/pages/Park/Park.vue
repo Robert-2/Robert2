@@ -72,10 +72,7 @@
                         />
                     </section>
                     <section class="Form__actions">
-                        <button
-                            class="Form__actions__save success"
-                            type="submit"
-                        >
+                        <button class="Form__actions__save success" type="submit">
                             <i class="fas fa-save" />
                             {{ $t('save') }}
                         </button>
@@ -86,11 +83,7 @@
                     </section>
                 </form>
                 <div class="Park__sidebar">
-                    <Help
-                        :message="help"
-                        :error="error"
-                        :isLoading="isLoading"
-                    />
+                    <Help :message="help" :error="error" :isLoading="isLoading" />
                     <div v-if="!isNew" class="Park__totals">
                         <h3>{{ $t('page-parks.total-items') }}</h3>
                         <div v-if="park.total_items > 0" class="Park__totals__items">
@@ -119,8 +112,8 @@
 </template>
 
 <style lang="scss">
-  @import '../../themes/default/index';
-  @import './Park';
+    @import '../../themes/default/index';
+    @import './Park';
 </style>
 
 <script src="./index.js"></script>

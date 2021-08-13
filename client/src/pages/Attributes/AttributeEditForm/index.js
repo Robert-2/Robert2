@@ -39,12 +39,7 @@ export default {
         },
 
         getValues() {
-            const {
-                InputName,
-                InputType,
-                InputUnit,
-                InputMaxLength,
-            } = this.$refs;
+            const { InputName, InputType, InputUnit, InputMaxLength } = this.$refs;
 
             const name = InputName.value;
             const type = InputType.value;

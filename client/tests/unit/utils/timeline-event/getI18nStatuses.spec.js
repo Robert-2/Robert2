@@ -12,9 +12,7 @@ describe('getTimelineEventI18nStatuses', () => {
             hasNotReturnedMaterials: false,
         };
         const result = getTimelineEventI18nStatuses(formattedEvent);
-        expect(result).toEqual([
-            { icon: 'question', i18nKey: 'this-event-is-not-confirmed' },
-        ]);
+        expect(result).toEqual([{ icon: 'question', i18nKey: 'this-event-is-not-confirmed' }]);
     });
 
     test('When event is current, and not confirmed', () => {
@@ -62,9 +60,7 @@ describe('getTimelineEventI18nStatuses', () => {
             hasNotReturnedMaterials: false,
         };
         const result = getTimelineEventI18nStatuses(formattedEvent);
-        expect(result).toEqual([
-            { icon: 'check', i18nKey: 'this-event-is-confirmed' },
-        ]);
+        expect(result).toEqual([{ icon: 'check', i18nKey: 'this-event-is-confirmed' }]);
     });
 
     test('When event is current, and confirmed', () => {
@@ -111,9 +107,7 @@ describe('getTimelineEventI18nStatuses', () => {
             hasMissingMaterials: false,
         };
         const result = getTimelineEventI18nStatuses(formattedEvent);
-        expect(result).toEqual([
-            { icon: 'archive', i18nKey: 'this-event-is-archived' },
-        ]);
+        expect(result).toEqual([{ icon: 'archive', i18nKey: 'this-event-is-archived' }]);
     });
 
     test('When event is future, not confirmed and has missing materials', () => {
@@ -231,9 +225,7 @@ describe('getTimelineEventI18nStatuses', () => {
             hasNotReturnedMaterials: false,
         };
         const result = getTimelineEventI18nStatuses(formattedEvent);
-        expect(result).toEqual([
-            { icon: 'lock', i18nKey: 'this-event-is-locked' },
-        ]);
+        expect(result).toEqual([{ icon: 'lock', i18nKey: 'this-event-is-locked' }]);
     });
 
     test('When event is past, confirmed, inventory done, has materials not returned and not archived', () => {

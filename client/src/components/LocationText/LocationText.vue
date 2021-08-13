@@ -14,8 +14,8 @@
 </template>
 
 <style lang="scss">
-  @import '../../themes/default/index';
-  @import './LocationText';
+    @import '../../themes/default/index';
+    @import './LocationText';
 </style>
 
 <script>

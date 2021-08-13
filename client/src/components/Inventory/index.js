@@ -29,9 +29,7 @@ const Inventory = {
                 case 'parks':
                     return dispatchMaterialInSections(this.materials, 'park_id', parkNameGetter);
                 default:
-                    return [
-                        { id: 'flat', name: null, materials: this.materials },
-                    ];
+                    return [{ id: 'flat', name: null, materials: this.materials }];
             }
         },
     },
@@ -75,37 +73,37 @@ const Inventory = {
         } = this;
 
         return (
-      <div class="Inventory">
-        {list.map(({ id: sectionId, name: sectionName, materials }) => (
-          <div key={sectionId} class="Inventory__section">
-            <div class="Inventory__section__header">
-              <h3 class="Inventory__section__title">
-                {sectionId !== 'flat' ? sectionName : ''}
-              </h3>
-              <h3 class="Inventory__section__quantity-title">
-                {__('actual-quantity')}
-              </h3>
-              <h3 class="Inventory__section__quantity-title">
-                {__('quantity-out-of-order')}
-              </h3>
+            <div class="Inventory">
+                {list.map(({ id: sectionId, name: sectionName, materials }) => (
+                    <div key={sectionId} class="Inventory__section">
+                        <div class="Inventory__section__header">
+                            <h3 class="Inventory__section__title">
+                                {sectionId !== 'flat' ? sectionName : ''}
+                            </h3>
+                            <h3 class="Inventory__section__quantity-title">
+                                {__('actual-quantity')}
+                            </h3>
+                            <h3 class="Inventory__section__quantity-title">
+                                {__('quantity-out-of-order')}
+                            </h3>
+                        </div>
+                        <div class="Inventory__list">
+                            {materials.map((material) => (
+                                <Item
+                                    ref={`items[${material.id}]`}
+                                    key={material.id}
+                                    material={material}
+                                    quantities={getMaterialQuantities(material.id)}
+                                    error={getError(material.id)}
+                                    locked={locked}
+                                    strict={strict}
+                                    onChange={handleChange}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                ))}
             </div>
-            <div class="Inventory__list">
-              {materials.map((material) => (
-                <Item
-                  ref={`items[${material.id}]`}
-                  key={material.id}
-                  material={material}
-                  quantities={getMaterialQuantities(material.id)}
-                  error={getError(material.id)}
-                  locked={locked}
-                  strict={strict}
-                  onChange={handleChange}
-                />
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
         );
     },
 };

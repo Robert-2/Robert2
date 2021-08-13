@@ -112,20 +112,13 @@
                         />
                     </section>
                     <section class="Form__actions">
-                        <button
-                            class="Form__actions__save success"
-                            type="submit"
-                        >
+                        <button class="Form__actions__save success" type="submit">
                             {{ $t('save') }}
                         </button>
                     </section>
                 </form>
                 <div class="UserProfile__extras">
-                    <Help
-                        :message="help"
-                        :error="error"
-                        :isLoading="isLoading"
-                    />
+                    <Help :message="help" :error="error" :isLoading="isLoading" />
                     <div class="UserProfile__extras__buttons">
                         <router-link to="/user-settings" v-slot="{ navigate }" custom>
                             <button @click="navigate" class="info">
@@ -141,8 +134,8 @@
 </template>
 
 <style lang="scss">
-  @import '../../themes/default/index';
-  @import './UserProfile';
+    @import '../../themes/default/index';
+    @import './UserProfile';
 </style>
 
 <script src="./index.js"></script>

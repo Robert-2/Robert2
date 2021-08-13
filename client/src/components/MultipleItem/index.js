@@ -38,9 +38,7 @@ export default {
     },
     computed: {
         selectableOptions() {
-            return this.fieldOptions.filter(
-                (option) => !this.itemsIds.includes(option.value),
-            );
+            return this.fieldOptions.filter((option) => !this.itemsIds.includes(option.value));
         },
         hasItems() {
             return this.itemsIds.length > 0 || this.askNewItem;
@@ -101,18 +99,14 @@ export default {
         },
 
         removeItem(id, index) {
-            this.itemsIds = this.itemsIds.filter(
-                (_id) => _id !== id,
-            );
+            this.itemsIds = this.itemsIds.filter((_id) => _id !== id);
             this.notSavedSelectedItems = this.notSavedSelectedItems.filter(
                 (item) => item.id !== id,
             );
             this.$emit('itemsUpdated', this.itemsIds);
 
             if (this.pivotField && this.itemsPivots.length > 0) {
-                this.itemsPivots = this.itemsPivots.filter(
-                    (_value, _index) => _index !== index,
-                );
+                this.itemsPivots = this.itemsPivots.filter((_value, _index) => _index !== index);
                 this.$emit('pivotsUpdated', this.itemsPivots);
             }
         },

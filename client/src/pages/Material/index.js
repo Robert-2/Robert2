@@ -70,7 +70,7 @@ export default {
 
         entitiesState() {
             const { parks, categories } = this.$store.state;
-            return (parks.isFetched && categories.isFetched) ? 'ready' : 'fetching';
+            return parks.isFetched && categories.isFetched ? 'ready' : 'fetching';
         },
 
         parksOptions() {

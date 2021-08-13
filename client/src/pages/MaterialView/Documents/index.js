@@ -45,22 +45,24 @@ export default {
             this.help = '';
             this.error = null;
 
-            Alert.ConfirmDelete(this.$t, 'materials-view.documents', false)
-                .then(({ value }) => {
-                    if (!value) {
-                        return;
-                    }
+            Alert.ConfirmDelete(this.$t, 'materials-view.documents', false).then(({ value }) => {
+                if (!value) {
+                    return;
+                }
 
-                    this.isLoading = true;
+                this.isLoading = true;
 
-                    this.$http.delete(`documents/${file.id}`)
-                        .then(() => {
-                            this.isLoading = false;
-                            this.help = { type: 'success', text: 'page-materials-view.documents.deleted' };
-                            this.fetchDocuments();
-                        })
-                        .catch(this.displayError);
-                });
+                this.$http.delete(`documents/${file.id}`)
+                    .then(() => {
+                        this.isLoading = false;
+                        this.help = {
+                            type: 'success',
+                            text: 'page-materials-view.documents.deleted',
+                        };
+                        this.fetchDocuments();
+                    })
+                    .catch(this.displayError);
+            });
         },
 
         displayError(error) {

@@ -65,7 +65,7 @@ export default {
 
         duration() {
             const { start_date: start, end_date: end } = this.event;
-            return (start && end) ? moment(end).diff(start, 'days') + 1 : 0;
+            return start && end ? moment(end).diff(start, 'days') + 1 : 0;
         },
     },
     methods: {
@@ -121,7 +121,7 @@ export default {
                 const { data } = await this.$http.delete(`estimates/${id}`);
 
                 const { estimates } = this.event;
-                const newEstimatesList = estimates.filter((estimate) => (estimate.id !== data.id));
+                const newEstimatesList = estimates.filter((estimate) => estimate.id !== data.id);
                 this.event.estimates = newEstimatesList;
 
                 const [lastOne] = newEstimatesList;

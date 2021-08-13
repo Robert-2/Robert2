@@ -8,7 +8,11 @@
                     class="AttributeEditForm__input"
                     :placeholder="$t('page-attributes.name')"
                 />
-                <div v-if="errors.name" class="AttributeEditForm__error" style="word-break: break-all;">
+                <div
+                    v-if="errors.name"
+                    class="AttributeEditForm__error"
+                    style="word-break: break-all"
+                >
                     {{ errors.name[0] }}
                 </div>
             </td>
@@ -72,8 +76,8 @@
 </template>
 
 <style lang="scss">
-  @import '../../../themes/default/index';
-  @import './AttributeEditForm';
+    @import '../../../themes/default/index';
+    @import './AttributeEditForm';
 </style>
 
 <script src="./index.js"></script>

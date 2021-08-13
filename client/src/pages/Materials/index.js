@@ -171,33 +171,31 @@ export default {
 
         deleteMaterial(materialId) {
             const isSoft = !this.isTrashDisplayed;
-            Alert.ConfirmDelete(this.$t, 'materials', isSoft)
-                .then((result) => {
-                    if (!result.value) {
-                        return;
-                    }
+            Alert.ConfirmDelete(this.$t, 'materials', isSoft).then((result) => {
+                if (!result.value) {
+                    return;
+                }
 
-                    this.error = null;
-                    this.isLoading = true;
-                    this.$http.delete(`materials/${materialId}`)
-                        .then(this.refreshTable)
-                        .catch(this.showError);
-                });
+                this.error = null;
+                this.isLoading = true;
+                this.$http.delete(`materials/${materialId}`)
+                    .then(this.refreshTable)
+                    .catch(this.showError);
+            });
         },
 
         restoreMaterial(materialId) {
-            Alert.ConfirmRestore(this.$t, 'materials')
-                .then((result) => {
-                    if (!result.value) {
-                        return;
-                    }
+            Alert.ConfirmRestore(this.$t, 'materials').then((result) => {
+                if (!result.value) {
+                    return;
+                }
 
-                    this.error = null;
-                    this.isLoading = true;
-                    this.$http.put(`materials/restore/${materialId}`)
-                        .then(this.refreshTable)
-                        .catch(this.showError);
-                });
+                this.error = null;
+                this.isLoading = true;
+                this.$http.put(`materials/restore/${materialId}`)
+                    .then(this.refreshTable)
+                    .catch(this.showError);
+            });
         },
 
         setTags({ id, name, tags }) {

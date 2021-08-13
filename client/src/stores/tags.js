@@ -28,9 +28,7 @@ export default {
         ),
 
         tagName: (state) => (tagId) => {
-            const tag = state.list.find(
-                (_tag) => _tag.id === tagId,
-            );
+            const tag = state.list.find((_tag) => _tag.id === tagId);
             return tag ? tag.name : null;
         },
     },

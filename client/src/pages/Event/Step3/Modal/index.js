@@ -29,8 +29,8 @@ const EventStep3Modal = {
                 return !Object.entries(dataRequirements).some(
                     ([field, { type, required = false }]) => (
                         !(field in value)
-            || (required && value[field] === undefined)
-            || (value[field] !== undefined && value[field].constructor !== type)
+                        || (required && value[field] === undefined)
+                        || (value[field] !== undefined && value[field].constructor !== type)
                     ),
                 );
             },
@@ -90,11 +90,11 @@ const EventStep3Modal = {
         }
     },
     methods: {
-    // ------------------------------------------------------
-    // -
-    // -    Handlers
-    // -
-    // ------------------------------------------------------
+        // ------------------------------------------------------
+        // -
+        // -    Handlers
+        // -
+        // ------------------------------------------------------
 
         handleSubmit(e) {
             e.preventDefault();
@@ -188,45 +188,45 @@ const EventStep3Modal = {
         } = this;
 
         return (
-      <div class="EventStep3Modal">
-        <header class="EventStep3Modal__header">
-          <h1 class="EventStep3Modal__header__title">
-            {__('page-events.assign-technician', { name })}
-          </h1>
-          <button class="close" onClick={handleClose}>
-            <i class="fas fa-times" />
-          </button>
-        </header>
-        <div class="EventStep3Modal__body">
-          <form class="EventStep3Modal__form" onSubmit={handleSubmit}>
-            <FormField
-              type="date"
-              v-model={this.dates}
-              name="dates"
-              label={__('page-events.period-assigned')}
-              placeholder={__('page-events.start-end-dates-and-time')}
-              datepickerOptions={datePickerOptions}
-              errors={validationErrors.start_time || validationErrors.end_time}
-            />
-            <FormField
-              v-model={this.position}
-              name="position"
-              label={`${__('position-held')} (${__('optional')})`}
-              errors={validationErrors.position}
-            />
-            {error && <ErrorMessage error={error} />}
-            <div class="EventStep3Modal__form__actions">
-              <button type="submit" class="success" disabled={isSaving}>
-                {isSaving ? <i class="fas fa-circle-notch fa-spin" /> : <i class="fas fa-check" />}{' '}
-                {isSaving ? __('saving') : __('page-events.assign-this-technician')}
-              </button>
-              <button type="button" onClick={handleClose}>
-                <i class="fas fa-ban" /> {__('cancel')}
-              </button>
+            <div class="EventStep3Modal">
+                <header class="EventStep3Modal__header">
+                    <h1 class="EventStep3Modal__header__title">
+                        {__('page-events.assign-technician', { name })}
+                    </h1>
+                    <button class="close" onClick={handleClose}>
+                        <i class="fas fa-times" />
+                    </button>
+                </header>
+                <div class="EventStep3Modal__body">
+                    <form class="EventStep3Modal__form" onSubmit={handleSubmit}>
+                        <FormField
+                            type="date"
+                            v-model={this.dates}
+                            name="dates"
+                            label={__('page-events.period-assigned')}
+                            placeholder={__('page-events.start-end-dates-and-time')}
+                            datepickerOptions={datePickerOptions}
+                            errors={validationErrors.start_time || validationErrors.end_time}
+                        />
+                        <FormField
+                            v-model={this.position}
+                            name="position"
+                            label={`${__('position-held')} (${__('optional')})`}
+                            errors={validationErrors.position}
+                        />
+                        {error && <ErrorMessage error={error} />}
+                        <div class="EventStep3Modal__form__actions">
+                            <button type="submit" class="success" disabled={isSaving}>
+                                {isSaving ? <i class="fas fa-circle-notch fa-spin" /> : <i class="fas fa-check" />}{' '}
+                                {isSaving ? __('saving') : __('page-events.assign-this-technician')}
+                            </button>
+                            <button type="button" onClick={handleClose}>
+                                <i class="fas fa-ban" /> {__('cancel')}
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
-          </form>
-        </div>
-      </div>
         );
     },
 };

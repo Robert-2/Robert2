@@ -1,54 +1,54 @@
 .header-page {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: flex-start;
-  padding: $content-padding-small-horizontal $content-padding-small-vertical;
-
-  &__help {
-    display: none;
-    flex: 1;
-    color: $help-text-color;
-
-    .ErrorMessage {
-      text-align: left;
-    }
-  }
-
-  &__error {
-    margin-top: .5rem;
-    color: $text-danger-color;
-    font-weight: 600;
-  }
-
-  &__actions {
-    flex: 0 1 auto;
     display: flex;
-    min-width: $form-min-width;
-    padding: .55rem 0;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+    padding: $content-padding-small-horizontal $content-padding-small-vertical;
 
-    button + .Dropdown,
-    .Dropdown + button,
-    button + button {
-      margin: 0 0 0 $content-padding-small-vertical;
-    }
-  }
-
-  @media(min-width: $screen-mobile) {
-    padding: $content-padding-large-horizontal $content-padding-large-vertical;
-  }
-
-  @media(min-width: $screen-tablet) {
     &__help {
-      display: block;
-      min-height: 25px;
-      margin-right: .78rem;
+        display: none;
+        flex: 1;
+        color: $help-text-color;
+
+        .ErrorMessage {
+            text-align: left;
+        }
+    }
+
+    &__error {
+        margin-top: 0.5rem;
+        color: $text-danger-color;
+        font-weight: 600;
     }
 
     &__actions {
-      flex-direction: row;
-      align-items: flex-start;
-      min-width: auto;
+        flex: 0 1 auto;
+        display: flex;
+        min-width: $form-min-width;
+        padding: 0.55rem 0;
+
+        button + .Dropdown,
+        .Dropdown + button,
+        button + button {
+            margin: 0 0 0 $content-padding-small-vertical;
+        }
     }
-  }
+
+    @media (min-width: $screen-mobile) {
+        padding: $content-padding-large-horizontal $content-padding-large-vertical;
+    }
+
+    @media (min-width: $screen-tablet) {
+        &__help {
+            display: block;
+            min-height: 25px;
+            margin-right: 0.78rem;
+        }
+
+        &__actions {
+            flex-direction: row;
+            align-items: flex-start;
+            min-width: auto;
+        }
+    }
 }

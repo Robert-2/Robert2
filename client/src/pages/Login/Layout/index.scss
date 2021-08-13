@@ -1,61 +1,61 @@
 @import '../../../themes/default';
 
 .LoginLayout {
-  position: relative;
-  flex: 1;
-  display: flex;
-  flex-flow: column nowrap;
-  justify-content: flex-start;
-  padding-bottom: calc(60px + .1vh);
-
-  &__logo {
     position: relative;
-    flex: 0 0 auto;
-    padding: 30px 20px;
-    text-align: center;
-
-    .Logo {
-      max-height: 80px;
-      max-width: 100%;
-    }
-  }
-
-  &__body {
-    flex: 0 0 auto;
-  }
-
-  &__footer {
-    display: none;
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    padding: 10px 15px;
-    background-color: $bg-color-emphasis;
-    color: $text-muted-color;
-    font-size: 0.8rem;
-    line-height: 1.52rem;
-    text-align: center;
-  }
-
-  @media(min-width: $screen-mobile) {
-    &__logo {
-      .Logo {
-        max-height: 120px;
-      }
-    }
-  }
-
-  @media(min-width: $screen-tablet) {
-    justify-content: center;
+    flex: 1;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: flex-start;
+    padding-bottom: calc(60px + 0.1vh);
 
     &__logo {
-      .Logo {
-        max-height: 200px;
-      }
+        position: relative;
+        flex: 0 0 auto;
+        padding: 30px 20px;
+        text-align: center;
+
+        .Logo {
+            max-height: 80px;
+            max-width: 100%;
+        }
+    }
+
+    &__body {
+        flex: 0 0 auto;
     }
 
     &__footer {
-      display: block;
+        display: none;
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        padding: 10px 15px;
+        background-color: $bg-color-emphasis;
+        color: $text-muted-color;
+        font-size: 0.8rem;
+        line-height: 1.52rem;
+        text-align: center;
     }
-  }
+
+    @media (min-width: $screen-mobile) {
+        &__logo {
+            .Logo {
+                max-height: 120px;
+            }
+        }
+    }
+
+    @media (min-width: $screen-tablet) {
+        justify-content: center;
+
+        &__logo {
+            .Logo {
+                max-height: 200px;
+            }
+        }
+
+        &__footer {
+            display: block;
+        }
+    }
 }

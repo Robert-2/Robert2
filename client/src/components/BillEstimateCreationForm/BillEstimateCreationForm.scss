@@ -1,47 +1,47 @@
 .BillEstimateCreationForm {
-  &__discount-input .FormField__input {
-    max-width: 90px;
-  }
-
-  &__discount-target-input .FormField__input {
-    max-width: 110px;
-  }
-
-  &__beneficiary {
-    display: flex;
-    flex-direction: column;
-    margin-top: $content-padding-small-vertical;
-
-    &__label {
-      display: block;
-      padding: 5px 0;
+    &__discount-input .FormField__input {
+        max-width: 90px;
     }
-  }
 
-  &__save {
-    margin-top: $content-padding-large-vertical;
-  }
+    &__discount-target-input .FormField__input {
+        max-width: 110px;
+    }
 
-  @media(min-width: $screen-tablet) {
     &__beneficiary {
-      flex-direction: row;
-      align-items: center;
-      height: 2.5rem;
+        display: flex;
+        flex-direction: column;
+        margin-top: $content-padding-small-vertical;
 
-      &__label {
-        flex: 0 0 $form-label-width;
-        padding: 0 $input-padding-horizontal;
-        text-align: right;
-      }
-
-      &__name {
-        flex: 1;
-      }
+        &__label {
+            display: block;
+            padding: 5px 0;
+        }
     }
 
     &__save {
-      margin-top: $content-padding-small-vertical;
-      padding-left: $form-label-width;
+        margin-top: $content-padding-large-vertical;
     }
-  }
+
+    @media (min-width: $screen-tablet) {
+        &__beneficiary {
+            flex-direction: row;
+            align-items: center;
+            height: 2.5rem;
+
+            &__label {
+                flex: 0 0 $form-label-width;
+                padding: 0 $input-padding-horizontal;
+                text-align: right;
+            }
+
+            &__name {
+                flex: 1;
+            }
+        }
+
+        &__save {
+            margin-top: $content-padding-small-vertical;
+            padding-left: $form-label-width;
+        }
+    }
 }

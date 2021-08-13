@@ -25,27 +25,17 @@
             <hr />
             <div class="ErrorDetails__content" ref="errorContent">
                 <div v-if="requested">
-                    <h3 class="ErrorDetails__subtitle">
-                        #### {{ $t('errors.details-request') }}
-                    </h3>
-                    <p class="ErrorDetails__request">
-                        `{{ requested }}`
-                    </p>
+                    <h3 class="ErrorDetails__subtitle">#### {{ $t('errors.details-request') }}</h3>
+                    <p class="ErrorDetails__request">`{{ requested }}`</p>
                 </div>
                 <h3 class="ErrorDetails__subtitle">
                     #### {{ $t('errors.details-message') }}
                     (<span class="ErrorDetails__code">{{ code }}</span>) :
                 </h3>
-                <p class="ErrorDetails__message">
-                    `{{ message }}`
-                </p>
+                <p class="ErrorDetails__message">`{{ message }}`</p>
                 <div v-if="file.length > 0">
-                    <h3 class="ErrorDetails__subtitle">
-                        #### {{ $t('errors.details-file') }}
-                    </h3>
-                    <p class="ErrorDetails__file">
-                        `{{ file }}`
-                    </p>
+                    <h3 class="ErrorDetails__subtitle">#### {{ $t('errors.details-file') }}</h3>
+                    <p class="ErrorDetails__file">`{{ file }}`</p>
                 </div>
                 <div v-if="trace.length > 0">
                     <h3 class="ErrorDetails__subtitle">
@@ -88,8 +78,8 @@
 </template>
 
 <style lang="scss">
-  @import '../../../themes/default/index';
-  @import './ErrorDetails';
+    @import '../../../themes/default/index';
+    @import './ErrorDetails';
 </style>
 
 <script>

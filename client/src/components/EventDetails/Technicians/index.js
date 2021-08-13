@@ -20,25 +20,23 @@ export default {
         events() {
             const { event } = this;
 
-            return (event.technicians ?? []).map(
-                (eventTechnician) => {
-                    const { id, start, end, content, title } = formatEventTechnician(
-                        { ...eventTechnician, event },
-                        { withEventTitle: false },
-                    );
+            return (event.technicians ?? []).map((eventTechnician) => {
+                const { id, start, end, content, title } = formatEventTechnician(
+                    { ...eventTechnician, event },
+                    { withEventTitle: false },
+                );
 
-                    return {
-                        id,
-                        start,
-                        end,
-                        content,
-                        group: eventTechnician.technician_id,
-                        editable: false,
-                        type: 'range',
-                        title,
-                    };
-                },
-            );
+                return {
+                    id,
+                    start,
+                    end,
+                    content,
+                    group: eventTechnician.technician_id,
+                    editable: false,
+                    type: 'range',
+                    title,
+                };
+            });
         },
 
         timelineOptions() {
@@ -60,17 +58,17 @@ export default {
         const { events, groups, timelineOptions } = this;
 
         return (
-      <div class="EventDetailsTechnicians">
-        <div class="EventDetailsTechnicians__loading">
-          <i class="fas fa-circle-notch fa-3x fa-spin" />
-        </div>
-        <Timeline
-          class="EventDetailsTechnicians__timeline"
-          items={events}
-          groups={groups}
-          options={timelineOptions}
-        />
-      </div>
+            <div class="EventDetailsTechnicians">
+                <div class="EventDetailsTechnicians__loading">
+                    <i class="fas fa-circle-notch fa-3x fa-spin" />
+                </div>
+                <Timeline
+                    class="EventDetailsTechnicians__timeline"
+                    items={events}
+                    groups={groups}
+                    options={timelineOptions}
+                />
+            </div>
         );
     },
 };

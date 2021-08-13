@@ -1,94 +1,94 @@
 @import '../../themes/default/index';
 
 .DuplicateEvent {
-  &__header {
-    display: flex;
-    align-items: center;
-    padding: $content-padding-small-horizontal $content-padding-large-vertical;
-    background-color: $bg-color-main-header;
+    &__header {
+        display: flex;
+        align-items: center;
+        padding: $content-padding-small-horizontal $content-padding-large-vertical;
+        background-color: $bg-color-main-header;
 
-    &__title {
-      flex: 1;
-      font-size: 1.4rem;
+        &__title {
+            flex: 1;
+            font-size: 1.4rem;
+        }
+
+        &__btn-close {
+            flex: 0 0 auto;
+            background: none;
+            border: none;
+        }
     }
 
-    &__btn-close {
-      flex: 0 0 auto;
-      background: none;
-      border: none;
-    }
-  }
-
-  &__main {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: $content-padding-large-vertical $content-padding-small-vertical;
-
-    &__dates {
-      .FormField {
+    &__main {
+        display: flex;
         flex-direction: column;
+        align-items: center;
+        padding: $content-padding-large-vertical $content-padding-small-vertical;
+
+        &__dates {
+            .FormField {
+                flex-direction: column;
+
+                &__error {
+                    flex: 0 0 auto;
+
+                    &__text {
+                        padding: 0;
+                    }
+                }
+            }
+        }
+
+        &__infos {
+            min-width: 300px;
+            margin-top: $content-padding-small-vertical;
+
+            .LocationText,
+            .EventBeneficiaries,
+            .EventTechnicians {
+                font-size: 1rem;
+                margin-top: $content-padding-small-vertical;
+            }
+
+            &__duration,
+            &__items-count,
+            .EventBeneficiaries,
+            .EventTechnicians {
+                margin-top: $content-padding-small-vertical;
+
+                .fas {
+                    width: 1.5rem;
+                    margin-right: 0.5rem;
+                    text-align: center;
+                }
+            }
+        }
 
         &__error {
-          flex: 0 0 auto;
-
-          &__text {
-            padding: 0;
-          }
+            margin: $content-padding-large-vertical 0 0;
+            color: $text-danger-color;
         }
-      }
     }
 
-    &__infos {
-      min-width: 300px;
-      margin-top: $content-padding-small-vertical;
+    &__datepicker {
+        display: flex;
+        align-items: center;
+        justify-content: center;
 
-      .LocationText,
-      .EventBeneficiaries,
-      .EventTechnicians {
-        font-size: 1rem;
-        margin-top: $content-padding-small-vertical;
-      }
-
-      &__duration,
-      &__items-count,
-      .EventBeneficiaries,
-      .EventTechnicians {
-        margin-top: $content-padding-small-vertical;
-
-        .fas {
-          width: 1.5rem;
-          margin-right: 0.5rem;
-          text-align: center;
+        &__input {
+            width: 100%;
+            max-width: 300px;
+            font-size: 1.1rem;
         }
-      }
     }
 
-    &__error {
-      margin: $content-padding-large-vertical 0 0;
-      color: $text-danger-color;
+    &__separator {
+        opacity: 0.15;
+        margin: 0;
     }
-  }
 
-  &__datepicker {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    &__input {
-      width: 100%;
-      max-width: 300px;
-      font-size: 1.1rem;
+    &__footer {
+        padding: $content-padding-large-vertical;
+        text-align: center;
     }
-  }
-
-  &__separator {
-    opacity: .15;
-    margin: 0;
-  }
-
-  &__footer {
-    padding: $content-padding-large-vertical;
-    text-align: center;
-  }
 }

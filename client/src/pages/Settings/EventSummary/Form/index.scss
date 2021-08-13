@@ -1,22 +1,22 @@
 @import '../../../../themes/default';
 
 .EventSummarySettingsForm {
-  max-width: $form-max-width;
+    max-width: $form-max-width;
 
-  &__section {
-    margin-top: $content-padding-large-vertical;
-  }
-
-  &__actions {
-    margin-top: $content-padding-large-vertical;
-    text-align: right;
-  }
-
-  .FormField {
-    margin-bottom: $content-padding-small-vertical;
-
-    &__textarea {
-      min-height: 200px;
+    &__section {
+        margin-top: $content-padding-large-vertical;
     }
-  }
+
+    &__actions {
+        margin-top: $content-padding-large-vertical;
+        text-align: right;
+    }
+
+    .FormField {
+        margin-bottom: $content-padding-small-vertical;
+
+        &__textarea {
+            min-height: 200px;
+        }
+    }
 }

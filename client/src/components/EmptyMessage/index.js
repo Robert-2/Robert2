@@ -17,22 +17,22 @@ const EmptyMessage = {
 
             const LinkComponent = action.url ? 'router-link' : 'a';
             return (
-        <LinkComponent
-          class="EmptyMessage__action button success"
-          onClick={action.onClick}
-          to={action.url}
-        >
-          {action.label}
-        </LinkComponent>
+                <LinkComponent
+                    class="EmptyMessage__action button success"
+                    onClick={action.onClick}
+                    to={action.url}
+                >
+                    {action.label}
+                </LinkComponent>
             );
         };
 
         return (
-      <div class="EmptyMessage">
-        <Illustration class="EmptyMessage__illustration" />
-        <p class="EmptyMessage__message">{message ?? __('empty-state')}</p>
-        {renderAction()}
-      </div>
+            <div class="EmptyMessage">
+                <Illustration class="EmptyMessage__illustration" />
+                <p class="EmptyMessage__message">{message ?? __('empty-state')}</p>
+                {renderAction()}
+            </div>
         );
     },
 };

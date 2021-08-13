@@ -1,107 +1,114 @@
 button,
 .button {
-  flex: 0 0 auto;
-  display: inline-block;
-  padding: .55rem .78rem;
-  border: none;
-  border-radius: 2px;
-  cursor: pointer;
-  background-color: $bg-color-button-default;
-  color: $color-base-button;
-  line-height: 1.25;
-  font-size: 1rem;
-  transition: all 300ms;
-  text-decoration: none;
-
-  & + & {
-    margin-left: 5px;
-  }
-
-  &:hover, &:focus {
-    background-color: lighten($bg-color-button-default, 8%);
-    color: $color-hover-button;
-    outline: 0;
-  }
-
-  &:active {
-    background-color: darken($bg-color-button-default, 8%);
-    color: $color-active-button;
-  }
-
-  &.info {
-    background-color: $bg-color-button-info;
-
-    &:hover, &:focus {
-      background-color: lighten($bg-color-button-info, 8%);
-    }
-
-    &:active {
-      background-color: darken($bg-color-button-info, 8%);
-      color: $color-active-button;
-    }
-  }
-
-  &.success {
-    background-color: $bg-color-button-success;
-
-    &:hover, &:focus {
-      background-color: lighten($bg-color-button-success, 5%);
-    }
-
-    &:active {
-      background-color: darken($bg-color-button-success, 5%);
-      color: $color-active-button;
-    }
-  }
-
-  &.warning {
-    background-color: $bg-color-button-warning;
-
-    &:hover, &:focus {
-      background-color: lighten($bg-color-button-warning, 8%);
-    }
-
-    &:active {
-      background-color: darken($bg-color-button-warning, 8%);
-      color: $color-active-button;
-    }
-  }
-
-  &.danger {
-    background-color: $bg-color-button-danger;
-
-    &:hover, &:focus {
-      background-color: lighten($bg-color-button-danger, 8%);
-    }
-
-    &:active {
-      background-color: darken($bg-color-button-danger, 8%);
-      color: $color-active-button;
-    }
-  }
-
-  &.outline {
+    flex: 0 0 auto;
     display: inline-block;
-    padding: calc(.55rem - 1px) calc(.78rem - 1px);
-    background-color: transparent;
-    border: 1px solid $link-base-color;
-    color: $link-base-color;
+    padding: 0.55rem 0.78rem;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    background-color: $bg-color-button-default;
+    color: $color-base-button;
+    line-height: 1.25;
+    font-size: 1rem;
+    transition: all 300ms;
     text-decoration: none;
 
-    &:hover, &:focus, &:visited {
-      background-color: darken($bg-color-button-default, 15%);
-      color: $link-hover-color !important;
-      outline: 0;
+    & + & {
+        margin-left: 5px;
+    }
+
+    &:hover,
+    &:focus {
+        background-color: lighten($bg-color-button-default, 8%);
+        color: $color-hover-button;
+        outline: 0;
     }
 
     &:active {
-      background-color: darken($bg-color-button-default, 15%);
-      color: $link-base-color;
+        background-color: darken($bg-color-button-default, 8%);
+        color: $color-active-button;
     }
-  }
 
-  &[disabled] {
-    cursor: not-allowed;
-    opacity: .6;
-  }
+    &.info {
+        background-color: $bg-color-button-info;
+
+        &:hover,
+        &:focus {
+            background-color: lighten($bg-color-button-info, 8%);
+        }
+
+        &:active {
+            background-color: darken($bg-color-button-info, 8%);
+            color: $color-active-button;
+        }
+    }
+
+    &.success {
+        background-color: $bg-color-button-success;
+
+        &:hover,
+        &:focus {
+            background-color: lighten($bg-color-button-success, 5%);
+        }
+
+        &:active {
+            background-color: darken($bg-color-button-success, 5%);
+            color: $color-active-button;
+        }
+    }
+
+    &.warning {
+        background-color: $bg-color-button-warning;
+
+        &:hover,
+        &:focus {
+            background-color: lighten($bg-color-button-warning, 8%);
+        }
+
+        &:active {
+            background-color: darken($bg-color-button-warning, 8%);
+            color: $color-active-button;
+        }
+    }
+
+    &.danger {
+        background-color: $bg-color-button-danger;
+
+        &:hover,
+        &:focus {
+            background-color: lighten($bg-color-button-danger, 8%);
+        }
+
+        &:active {
+            background-color: darken($bg-color-button-danger, 8%);
+            color: $color-active-button;
+        }
+    }
+
+    &.outline {
+        display: inline-block;
+        padding: calc(0.55rem - 1px) calc(0.78rem - 1px);
+        background-color: transparent;
+        border: 1px solid $link-base-color;
+        color: $link-base-color;
+        text-decoration: none;
+
+        &:hover,
+        &:focus,
+        &:visited {
+            background-color: darken($bg-color-button-default, 15%);
+            color: $link-hover-color !important;
+            outline: 0;
+        }
+
+        &:active {
+            background-color: darken($bg-color-button-default, 15%);
+            color: $link-base-color;
+        }
+    }
+
+    &[disabled] {
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
 }

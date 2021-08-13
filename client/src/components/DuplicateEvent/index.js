@@ -102,69 +102,62 @@ export default {
             handleClose,
         } = this;
 
-        const {
-            title,
-            location,
-            beneficiaries,
-            technicians,
-        } = this.event;
+        const { title, location, beneficiaries, technicians } = this.event;
 
         return (
-      <div class="DuplicateEvent">
-        <div class="DuplicateEvent__header">
-          <h2 class="DuplicateEvent__header__title">
-            {__('duplicate-the-event', { title })}
-          </h2>
-          <button class="DuplicateEvent__header__btn-close" onClick={handleClose}>
-            <i class="fas fa-times" />
-          </button>
-        </div>
-        <div class="DuplicateEvent__main">
-          <h4 class="DuplicateEvent__main__help">
-            {__('dates-of-duplicated-event')}
-          </h4>
-          <div class="DuplicateEvent__main__dates">
-            <FormField
-              v-model={this.dates}
-              type="date"
-              required
-              errors={validationErrors?.start_date || validationErrors?.end_date}
-              datepickerOptions={datepickerOptions}
-              placeholder="start-end-dates"
-            />
-          </div>
-          <div class="DuplicateEvent__main__infos">
-            <div class="DuplicateEvent__main__infos__duration">
-              <i class="fas fa-clock" />{' '}
-              {duration ? __('duration-days', { duration }, duration) : `${__('duration')} ?`}
+            <div class="DuplicateEvent">
+                <div class="DuplicateEvent__header">
+                    <h2 class="DuplicateEvent__header__title">
+                        {__('duplicate-the-event', { title })}
+                    </h2>
+                    <button class="DuplicateEvent__header__btn-close" onClick={handleClose}>
+                        <i class="fas fa-times" />
+                    </button>
+                </div>
+                <div class="DuplicateEvent__main">
+                    <h4 class="DuplicateEvent__main__help">{__('dates-of-duplicated-event')}</h4>
+                    <div class="DuplicateEvent__main__dates">
+                        <FormField
+                            v-model={this.dates}
+                            type="date"
+                            required
+                            errors={validationErrors?.start_date || validationErrors?.end_date}
+                            datepickerOptions={datepickerOptions}
+                            placeholder="start-end-dates"
+                        />
+                    </div>
+                    <div class="DuplicateEvent__main__infos">
+                        <div class="DuplicateEvent__main__infos__duration">
+                            <i class="fas fa-clock" />{' '}
+                            {duration ? __('duration-days', { duration }, duration) : `${__('duration')} ?`}
+                        </div>
+                        {location && <LocationText location={location} />}
+                        <EventBeneficiaries
+                            beneficiaries={beneficiaries}
+                            warningEmptyText={__('page-events.warning-no-beneficiary')}
+                        />
+                        <EventTechnicians eventTechnicians={technicians} />
+                        <div class="DuplicateEvent__main__infos__items-count">
+                            <i class="fas fa-box" />{' '}
+                            {__('items-count', { count: itemsCount }, itemsCount)}
+                        </div>
+                    </div>
+                    {error && (
+                        <p class="DuplicateEvent__main__error">
+                            <i class="fas fa-exclamation-triangle" /> {error.message}
+                        </p>
+                    )}
+                </div>
+                <hr class="DuplicateEvent__separator" />
+                <div class="DuplicateEvent__footer">
+                    <button onClick={handleSubmit} class="success">
+                        <i class="fas fa-check" /> {__('duplicate-event')}
+                    </button>
+                    <button onClick={handleClose}>
+                        <i class="fas fa-times" /> {__('close')}
+                    </button>
+                </div>
             </div>
-            {location && <LocationText location={location} />}
-            <EventBeneficiaries
-              beneficiaries={beneficiaries}
-              warningEmptyText={__('page-events.warning-no-beneficiary')}
-            />
-            <EventTechnicians eventTechnicians={technicians} />
-            <div class="DuplicateEvent__main__infos__items-count">
-              <i class="fas fa-box" />{' '}
-              {__('items-count', { count: itemsCount }, itemsCount)}
-            </div>
-          </div>
-          {error && (
-            <p class="DuplicateEvent__main__error">
-              <i class="fas fa-exclamation-triangle" /> {error.message}
-            </p>
-          )}
-        </div>
-        <hr class="DuplicateEvent__separator" />
-        <div class="DuplicateEvent__footer">
-          <button onClick={handleSubmit} class="success">
-            <i class="fas fa-check" /> {__('duplicate-event')}
-          </button>
-          <button onClick={handleClose}>
-            <i class="fas fa-times" /> {__('close')}
-          </button>
-        </div>
-      </div>
         );
     },
 };

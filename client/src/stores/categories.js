@@ -16,9 +16,7 @@ export default {
         },
 
         categoryName: (state) => (categoryId) => {
-            const category = state.list.find(
-                (_category) => _category.id === categoryId,
-            );
+            const category = state.list.find((_category) => _category.id === categoryId);
             return category ? category.name : null;
         },
 

@@ -22,8 +22,8 @@
 </template>
 
 <style lang="scss">
-  @import '../../../themes/default/index';
-  @import './Breadcrumb';
+    @import '../../../themes/default/index';
+    @import './Breadcrumb';
 </style>
 
 <script>
@@ -51,8 +51,8 @@ export default {
             const previousStep = this.steps[stepIndex - 1] || null;
             return (
                 this.isCurrent(step)
-        || this.isValidated(step)
-        || (previousStep && this.isValidated(previousStep))
+                || this.isValidated(step)
+                || (previousStep && this.isValidated(previousStep))
             );
         },
 

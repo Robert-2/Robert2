@@ -161,7 +161,7 @@ const InventoryItemMaterial = {
         const { reference, name } = material;
 
         const itemClasses = {
-            InventoryItemMaterial: true,
+            'InventoryItemMaterial': true,
             'InventoryItemMaterial--read-only': isReadOnly,
             'InventoryItemMaterial--complete': isComplete && actualQuantity > 0,
             'InventoryItemMaterial--warning': hasBroken,
@@ -169,53 +169,44 @@ const InventoryItemMaterial = {
         };
 
         return (
-      <div class={itemClasses}>
-        <div class="InventoryItemMaterial__reference">
-          {reference}
-        </div>
-        <div class="InventoryItemMaterial__name">
-          {name}
-        </div>
-        <div class="InventoryItemMaterial__error">
-          {error?.message}
-        </div>
-        <div class="InventoryItemMaterial__awaited-quantity">
-          {__('awaited-quantity')}
-          <strong class="InventoryItemMaterial__awaited-quantity__count">
-            {awaitedQuantity}
-          </strong>
-        </div>
-        <div
-          class="InventoryItemMaterial__actual-quantity"
-          title={__('actual-quantity')}
-        >
-          {isReadOnly ? actualQuantity : (
-            <QuantityInput
-              quantity={actualQuantity}
-              onQuantityChange={handleActualQuantityChange}
-              limit={!strict ? undefined : {
-                  min: 0,
-                  max: currentlyAwaitedActualQuantity,
-              }}
-            />
-          )}
-        </div>
-        <div
-          class="InventoryItemMaterial__quantity-broken"
-          title={__('quantity-out-of-order')}
-        >
-          {isReadOnly ? brokenQuantity : (
-            <QuantityInput
-              quantity={brokenQuantity}
-              onQuantityChange={handleBrokenQuantityChange}
-              limit={!strict ? undefined : {
-                  min: 0,
-                  max: currentlyAwaitedBrokenQuantity,
-              }}
-            />
-          )}
-        </div>
-      </div>
+            <div class={itemClasses}>
+                <div class="InventoryItemMaterial__reference">{reference}</div>
+                <div class="InventoryItemMaterial__name">{name}</div>
+                <div class="InventoryItemMaterial__error">{error?.message}</div>
+                <div class="InventoryItemMaterial__awaited-quantity">
+                    {__('awaited-quantity')}
+                    <strong class="InventoryItemMaterial__awaited-quantity__count">
+                        {awaitedQuantity}
+                    </strong>
+                </div>
+                <div class="InventoryItemMaterial__actual-quantity" title={__('actual-quantity')}>
+                    {isReadOnly ? actualQuantity : (
+                        <QuantityInput
+                            quantity={actualQuantity}
+                            onQuantityChange={handleActualQuantityChange}
+                            limit={!strict ? undefined : {
+                                min: 0,
+                                max: currentlyAwaitedActualQuantity,
+                            }}
+                        />
+                    )}
+                </div>
+                <div
+                    class="InventoryItemMaterial__quantity-broken"
+                    title={__('quantity-out-of-order')}
+                >
+                    {isReadOnly ? brokenQuantity : (
+                        <QuantityInput
+                            quantity={brokenQuantity}
+                            onQuantityChange={handleBrokenQuantityChange}
+                            limit={!strict ? undefined : {
+                                min: 0,
+                                max: currentlyAwaitedBrokenQuantity,
+                            }}
+                        />
+                    )}
+                </div>
+            </div>
         );
     },
 };

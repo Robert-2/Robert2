@@ -14,6 +14,6 @@ export default {
     render() {
         const { src } = this;
 
-        return <img class="Logo" src={src} alt='Robert²' />;
+        return <img class="Logo" src={src} alt="Robert²" />;
     },
 };

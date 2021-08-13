@@ -20,23 +20,23 @@ export default {
         const { $t: __, uniqueTechnicians, warningEmptyText } = this;
 
         return (
-      <div class="EventTechnicians">
-        {uniqueTechnicians.length === 0 && warningEmptyText && (
-          <div class="EventTechnicians__nobody">
-            <i class="fas fa-exclamation-circle" /> {warningEmptyText}
-          </div>
-        )}
-        {uniqueTechnicians.length > 0 && (
-          <div class="EventTechnicians__list">
-            <span>
-              <i class="fas fa-people-carry EventTechnicians__icon" /> {__('with')}
-            </span>
-            {uniqueTechnicians.map(({ id, technician }) => (
-              <EventTechnicianItem key={id} technician={technician} />
-            ))}
-          </div>
-        )}
-      </div>
+            <div class="EventTechnicians">
+                {uniqueTechnicians.length === 0 && warningEmptyText && (
+                    <div class="EventTechnicians__nobody">
+                        <i class="fas fa-exclamation-circle" /> {warningEmptyText}
+                    </div>
+                )}
+                {uniqueTechnicians.length > 0 && (
+                    <div class="EventTechnicians__list">
+                        <span>
+                            <i class="fas fa-people-carry EventTechnicians__icon" /> {__('with')}
+                        </span>
+                        {uniqueTechnicians.map(({ id, technician }) => (
+                            <EventTechnicianItem key={id} technician={technician} />
+                        ))}
+                    </div>
+                )}
+            </div>
         );
     },
 };

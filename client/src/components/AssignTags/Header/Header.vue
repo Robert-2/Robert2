@@ -11,8 +11,8 @@
 </template>
 
 <style lang="scss">
-  @import '../../../themes/default/index';
-  @import './Header';
+    @import '../../../themes/default/index';
+    @import './Header';
 </style>
 
 <script>

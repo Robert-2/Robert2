@@ -2,11 +2,7 @@
     <div class="content Materials">
         <div class="content__header header-page">
             <div class="header-page__help">
-                <Help
-                    :message="help"
-                    :error="error"
-                    :isLoading="isLoading"
-                />
+                <Help :message="help" :error="error" :isLoading="isLoading" />
             </div>
             <div class="header-page__actions">
                 <router-link to="/materials/new" v-slot="{ navigate }" custom>
@@ -34,10 +30,7 @@
 
         <div class="content__main-view Materials__main-view">
             <div class="Materials__filters">
-                <MaterialsFilters
-                    baseRoute="/materials"
-                    @change="refreshTableAndPagination"
-                />
+                <MaterialsFilters baseRoute="/materials" @change="refreshTableAndPagination" />
                 <div class="Materials__quantities-date">
                     <button
                         v-if="dateForQuantities === null"
@@ -48,9 +41,11 @@
                     </button>
                     <div v-else class="Materials__quantities-date__displayed">
                         <p class="Materials__quantities-date__label">
-                            {{ $t('page-materials.remaining-quantities-on-date', {
-                                date: dateForQuantities.format('LL')
-                            }) }}
+                            {{
+                                $t('page-materials.remaining-quantities-on-date', {
+                                    date: dateForQuantities.format('LL'),
+                                })
+                            }}
                         </p>
                         <button
                             class="Materials__quantities-date__button warning"
@@ -97,9 +92,7 @@
                     role="button"
                     @click="setTags(material.row)"
                 >
-                    <MaterialTags
-                        :tags="material.row.tags"
-                    />
+                    <MaterialTags :tags="material.row.tags" />
                     <span
                         v-if="material.row.tags.length === 0 && !isTrashDisplayed"
                         class="Materials__add-tags"
@@ -176,8 +169,8 @@
 </template>
 
 <style lang="scss">
-  @import '../../themes/default/index';
-  @import './Materials';
+    @import '../../themes/default/index';
+    @import './Materials';
 </style>
 
 <script src="./index.js"></script>

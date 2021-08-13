@@ -162,66 +162,68 @@ export default {
         } = this;
 
         const headerActions = [
-      <router-link to="/technicians/new" class="button success">
-        <i class="fas fa-user-plus" /> {__('page-technicians.action-add')}
-      </router-link>,
+            <router-link to="/technicians/new" class="button success">
+                <i class="fas fa-user-plus" /> {__('page-technicians.action-add')}
+            </router-link>,
         ];
 
         return (
-      <Page
-        name="technicians"
-        title={__('page-technicians.title')}
-        help={__(help)}
-        error={error}
-        isLoading={isLoading}
-        actions={headerActions}
-      >
-        <div class="Technicians__filters">
-          <Datepicker
-            v-model={this.periodFilter}
-            isRange
-            placeholder={__('page-technicians.period-of-availability')}
-          />
-          {periodFilter && (
-            <button
-              class="Technicians__filters__clear-button warning"
-              v-tooltip={__('clear-filters')}
-              onClick={clearFilters}
+            <Page
+                name="technicians"
+                title={__('page-technicians.title')}
+                help={__(help)}
+                error={error}
+                isLoading={isLoading}
+                actions={headerActions}
             >
-              <i class="fas fa-backspace" />
-            </button>
-          )}
-        </div>
-        <v-server-table
-          ref="DataTable"
-          name="techniciansTable"
-          columns={columns}
-          options={options}
-          scopedSlots={{
-              email: ({ row }) => <a href={`mailto:${row.email}`}>{row.email}</a>,
-              address: ({ row }) => (
-              <div>
-                {row.street}<br />
-                {row.postal_code} {row.locality}
-              </div>
-              ),
-              actions: ({ row }) => (
-              <ItemActions
-                isTrashMode={isTrashDisplayed}
-                id={row.id}
-                onRemove={handleRemove}
-                onRestore={handleRestore}
-              />
-              ),
-          }}
-        />
-        <div class="content__footer">
-          <button class={isTrashDisplayed ? 'info' : 'warning'} onClick={showTrashed}>
-            <i class={['fas', { 'fa-trash': !isTrashDisplayed, 'fa-eye"': isTrashDisplayed }]} />{' '}
-            {isTrashDisplayed ? __('display-not-deleted-items') : __('open-trash-bin')}
-          </button>
-        </div>
-      </Page>
+                <div class="Technicians__filters">
+                    <Datepicker
+                        v-model={this.periodFilter}
+                        isRange
+                        placeholder={__('page-technicians.period-of-availability')}
+                    />
+                    {periodFilter && (
+                        <button
+                            class="Technicians__filters__clear-button warning"
+                            v-tooltip={__('clear-filters')}
+                            onClick={clearFilters}
+                        >
+                            <i class="fas fa-backspace" />
+                        </button>
+                    )}
+                </div>
+                <v-server-table
+                    ref="DataTable"
+                    name="techniciansTable"
+                    columns={columns}
+                    options={options}
+                    scopedSlots={{
+                        email: ({ row }) => (
+                            <a href={`mailto:${row.email}`}>{row.email}</a>
+                        ),
+                        address: ({ row }) => (
+                            <div>
+                                {row.street}<br />
+                                {row.postal_code} {row.locality}
+                            </div>
+                        ),
+                        actions: ({ row }) => (
+                            <ItemActions
+                                isTrashMode={isTrashDisplayed}
+                                id={row.id}
+                                onRemove={handleRemove}
+                                onRestore={handleRestore}
+                            />
+                        ),
+                    }}
+                />
+                <div class="content__footer">
+                    <button class={isTrashDisplayed ? 'info' : 'warning'} onClick={showTrashed}>
+                        <i class={['fas', { 'fa-trash': !isTrashDisplayed, 'fa-eye"': isTrashDisplayed }]} />{' '}
+                        {isTrashDisplayed ? __('display-not-deleted-items') : __('open-trash-bin')}
+                    </button>
+                </div>
+            </Page>
         );
     },
 };

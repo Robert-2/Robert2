@@ -60,8 +60,8 @@ export default {
                         ...pagination,
                         deleted: this.isDisplayTrashed ? '1' : '0',
                     };
-                    return this.$http
-                        .get(this.$route.meta.resource, { params })
+
+                    return this.$http.get(this.$route.meta.resource, { params })
                         .catch(this.showError)
                         .finally(() => {
                             this.isTrashDisplayed = this.isDisplayTrashed;
@@ -87,31 +87,29 @@ export default {
 
         deletePark(parkId) {
             const isSoft = !this.isTrashDisplayed;
-            Alert.ConfirmDelete(this.$t, 'parks', isSoft)
-                .then((result) => {
-                    if (!result.value) {
-                        return;
-                    }
+            Alert.ConfirmDelete(this.$t, 'parks', isSoft).then((result) => {
+                if (!result.value) {
+                    return;
+                }
 
-                    this.$http.delete(`${this.$route.meta.resource}/${parkId}`)
-                        .then(this.refreshTable)
-                        .catch(this.showError);
-                });
+                this.$http.delete(`${this.$route.meta.resource}/${parkId}`)
+                    .then(this.refreshTable)
+                    .catch(this.showError);
+            });
         },
 
         restorePark(parkId) {
-            Alert.ConfirmRestore(this.$t, 'parks')
-                .then((result) => {
-                    if (!result.value) {
-                        return;
-                    }
+            Alert.ConfirmRestore(this.$t, 'parks').then((result) => {
+                if (!result.value) {
+                    return;
+                }
 
-                    this.error = null;
-                    this.isLoading = true;
-                    this.$http.put(`${this.$route.meta.resource}/restore/${parkId}`)
-                        .then(this.refreshTable)
-                        .catch(this.showError);
-                });
+                this.error = null;
+                this.isLoading = true;
+                this.$http.put(`${this.$route.meta.resource}/restore/${parkId}`)
+                    .then(this.refreshTable)
+                    .catch(this.showError);
+            });
         },
 
         refreshTable() {

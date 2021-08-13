@@ -17,8 +17,8 @@
 </template>
 
 <style lang="scss">
-  @import '../../../themes/default/index';
-  @import './Step4';
+    @import '../../../themes/default/index';
+    @import './Step4';
 </style>
 
 <script src="./index.js"></script>

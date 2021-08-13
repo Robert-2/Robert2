@@ -11,19 +11,15 @@
                     withCompany
                     withReference
                 />
-                <Help
-                    :message="help"
-                    :error="error"
-                    :isLoading="isLoading"
-                />
+                <Help :message="help" :error="error" :isLoading="isLoading" />
             </div>
         </div>
     </div>
 </template>
 
 <style lang="scss">
-  @import '../../themes/default/index';
-  @import './Beneficiary';
+    @import '../../themes/default/index';
+    @import './Beneficiary';
 </style>
 
 <script src="./index.js"></script>

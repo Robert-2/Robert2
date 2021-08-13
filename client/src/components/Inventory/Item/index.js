@@ -37,16 +37,16 @@ const InventoryItem = {
         } = this;
 
         return (
-      <div class="InventoryItem" ref="container">
-        <Material
-          material={material}
-          quantities={quantities}
-          error={error}
-          strict={strict}
-          locked={locked === true}
-          onChange={handleChange}
-        />
-      </div>
+            <div class="InventoryItem" ref="container">
+                <Material
+                    material={material}
+                    quantities={quantities}
+                    error={error}
+                    strict={strict}
+                    locked={locked === true}
+                    onChange={handleChange}
+                />
+            </div>
         );
     },
 };

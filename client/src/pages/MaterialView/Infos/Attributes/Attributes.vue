@@ -1,10 +1,7 @@
 <template>
     <div class="MaterialViewInfosAttributes">
         <h3>{{ $t('special-attributes') }}</h3>
-        <ul
-            class="MaterialViewInfosAttributes__list"
-            v-if="attributes.length > 0"
-        >
+        <ul class="MaterialViewInfosAttributes__list" v-if="attributes.length > 0">
             <li
                 class="MaterialViewInfosAttributes__list__item"
                 v-for="attribute in attributes"
@@ -36,8 +33,8 @@
 </template>
 
 <style lang="scss">
-  @import '../../../../themes/default/index';
-  @import './Attributes';
+    @import '../../../../themes/default/index';
+    @import './Attributes';
 </style>
 
 <script>

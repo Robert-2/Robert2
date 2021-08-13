@@ -19,7 +19,7 @@ const Timeline = {
         groupData: null,
     }),
     created() {
-    // @see https://github.com/almende/vis/issues/2524
+        // @see https://github.com/almende/vis/issues/2524
         this.timeline = null;
     },
     mounted() {

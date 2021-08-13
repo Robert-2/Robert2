@@ -36,25 +36,25 @@ const Page = {
         const content = render ? render() : this.$slots.default;
 
         return (
-      <div class="content">
-        <div class="content__header header-page">
-          <div class="header-page__help">
-            {isLoading && <Loading horizontal />}
-            {!isLoading && error && <ErrorMessage error={error} />}
-            {!isLoading && !error && help}
-          </div>
-          {actions && actions.length > 0 && (
-            <nav class="header-page__actions">
-              {actions}
-            </nav>
-          )}
-        </div>
-        <div class="content__main-view">
-          <div class={['Page', `Page--${this.name}`]}>
-            {content}
-          </div>
-        </div>
-      </div>
+            <div class="content">
+                <div class="content__header header-page">
+                    <div class="header-page__help">
+                        {isLoading && <Loading horizontal />}
+                        {!isLoading && error && <ErrorMessage error={error} />}
+                        {!isLoading && !error && help}
+                    </div>
+                    {actions && actions.length > 0 && (
+                        <nav class="header-page__actions">
+                            {actions}
+                        </nav>
+                    )}
+                </div>
+                <div class="content__main-view">
+                    <div class={['Page', `Page--${this.name}`]}>
+                        {content}
+                    </div>
+                </div>
+            </div>
         );
     },
 };

@@ -58,29 +58,31 @@ export default {
         } = this;
 
         return (
-      <div class="EventDetailsBilling">
-        <Help message={{ type: 'success', text: successMessage }} error={error} />
-        {hasMaterials && event.is_billable && (
-          <EventBilling
-            beneficiaries={event.beneficiaries}
-            lastBill={lastBill}
-            lastEstimate={lastEstimate}
-            allBills={event.bills}
-            materials={event.materials}
-            start={event.startDate}
-            end={event.endDate}
-            loading={isCreating}
-            onCreateBill={handleCreateBill}
-          />
-        )}
-        {!event.is_billable && (
-          <EventNotBillable
-            eventId={event.id}
-            isEventConfirmed={event.is_confirmed}
-            onBillingEnabled={(data) => { this.$emit('billingEnabled', data); }}
-          />
-        )}
-      </div>
+            <div class="EventDetailsBilling">
+                <Help message={{ type: 'success', text: successMessage }} error={error} />
+                {hasMaterials && event.is_billable && (
+                    <EventBilling
+                        beneficiaries={event.beneficiaries}
+                        lastBill={lastBill}
+                        lastEstimate={lastEstimate}
+                        allBills={event.bills}
+                        materials={event.materials}
+                        start={event.startDate}
+                        end={event.endDate}
+                        loading={isCreating}
+                        onCreateBill={handleCreateBill}
+                    />
+                )}
+                {!event.is_billable && (
+                    <EventNotBillable
+                        eventId={event.id}
+                        isEventConfirmed={event.is_confirmed}
+                        onBillingEnabled={(data) => {
+                            this.$emit('billingEnabled', data);
+                        }}
+                    />
+                )}
+            </div>
         );
     },
 };

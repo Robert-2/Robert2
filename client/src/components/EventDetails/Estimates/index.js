@@ -90,30 +90,32 @@ export default {
         } = this;
 
         return (
-      <div class="EventDetailsEstimates">
-        <Help message={{ type: 'success', text: successMessage }} error={error} />
-        {hasMaterials && event.is_billable && (
-          <EventEstimates
-            beneficiaries={event.beneficiaries}
-            materials={event.materials}
-            estimates={event.estimates}
-            lastBill={lastBill}
-            start={event.startDate}
-            end={event.endDate}
-            loading={isCreating}
-            deletingId={deletingId}
-            onCreateEstimate={handleCreateEstimate}
-            onDeleteEstimate={handleDeleteEstimate}
-          />
-        )}
-        {!event.is_billable && (
-          <EventNotBillable
-            eventId={event.id}
-            isEventConfirmed={event.is_confirmed}
-            onBillingEnabled={(data) => { this.$emit('billingEnabled', data); }}
-          />
-        )}
-      </div>
+            <div class="EventDetailsEstimates">
+                <Help message={{ type: 'success', text: successMessage }} error={error} />
+                {hasMaterials && event.is_billable && (
+                    <EventEstimates
+                        beneficiaries={event.beneficiaries}
+                        materials={event.materials}
+                        estimates={event.estimates}
+                        lastBill={lastBill}
+                        start={event.startDate}
+                        end={event.endDate}
+                        loading={isCreating}
+                        deletingId={deletingId}
+                        onCreateEstimate={handleCreateEstimate}
+                        onDeleteEstimate={handleDeleteEstimate}
+                    />
+                )}
+                {!event.is_billable && (
+                    <EventNotBillable
+                        eventId={event.id}
+                        isEventConfirmed={event.is_confirmed}
+                        onBillingEnabled={(data) => {
+                            this.$emit('billingEnabled', data);
+                        }}
+                    />
+                )}
+            </div>
         );
     },
 };

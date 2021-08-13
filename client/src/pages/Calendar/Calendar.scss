@@ -1,36 +1,40 @@
 .Calendar {
-  position: relative;
+    position: relative;
 
-  &__loading {
-    position: absolute;
-    top: 50px;
-    left: 50%;
-  }
-
-  &__timeline {
-    flex: 1;
-  }
-
-  &__footer {
-    flex: 0 0 50px;
-    display: flex;
-    flex-wrap: wrap;
-
-    .Help {
-      flex: 1;
-      min-width: 300px;
-      padding: $content-padding-small-vertical $content-padding-small-horizontal;
+    &__loading {
+        position: absolute;
+        top: 50px;
+        left: 50%;
     }
 
-    .CalendarCaption {
-      flex: 0 0 auto;
-      max-width: 100%;
-      padding: $content-padding-small-vertical 0;
+    &__timeline {
+        flex: 1;
     }
-  }
+
+    &__footer {
+        flex: 0 0 50px;
+        display: flex;
+        flex-wrap: wrap;
+
+        .Help {
+            flex: 1;
+            min-width: 300px;
+            padding: $content-padding-small-vertical $content-padding-small-horizontal;
+        }
+
+        .CalendarCaption {
+            flex: 0 0 auto;
+            max-width: 100%;
+            padding: $content-padding-small-vertical 0;
+        }
+    }
 }
 
 @keyframes animBackground {
-  from { background-position: 0 0; }
-	to { background-position: 40px 0; }
+    from {
+        background-position: 0 0;
+    }
+    to {
+        background-position: 40px 0;
+    }
 }

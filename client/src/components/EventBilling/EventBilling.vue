@@ -1,9 +1,6 @@
 <template>
     <section class="EventBilling">
-        <DisplayBill
-            v-if="lastBill && !displayCreateBill && !loading"
-            :data="lastBill"
-        />
+        <DisplayBill v-if="lastBill && !displayCreateBill && !loading" :data="lastBill" />
         <div v-if="lastBill && userCanEdit" class="EventBilling__regenerate">
             <p class="EventBilling__regenerate__text">
                 {{ $t('regenerate-bill-help') }}
@@ -67,8 +64,8 @@
 </template>
 
 <style lang="scss">
-  @import '../../themes/default/index';
-  @import './EventBilling';
+    @import '../../themes/default/index';
+    @import './EventBilling';
 </style>
 
 <script src="./index.js"></script>

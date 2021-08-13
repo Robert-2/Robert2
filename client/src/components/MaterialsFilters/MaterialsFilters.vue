@@ -10,11 +10,7 @@
             <option value="">
                 {{ $t('all-parks') }}
             </option>
-            <option
-                v-for="park in parks"
-                :key="park.id"
-                :value="park.id"
-            >
+            <option v-for="park in parks" :key="park.id" :value="park.id">
                 {{ park.name }}
             </option>
         </select>
@@ -27,11 +23,7 @@
             <option value="">
                 {{ $t('all-categories') }}
             </option>
-            <option
-                v-for="category in categories"
-                :key="category.id"
-                :value="category.id"
-            >
+            <option v-for="category in categories" :key="category.id" :value="category.id">
                 {{ category.name }}
             </option>
         </select>
@@ -74,8 +66,8 @@
 </template>
 
 <style lang="scss">
-  @import '../../themes/default/index';
-  @import './MaterialsFilters';
+    @import '../../themes/default/index';
+    @import './MaterialsFilters';
 </style>
 
 <script src="./index.js"></script>

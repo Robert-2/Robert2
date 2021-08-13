@@ -40,12 +40,7 @@ export default {
             this.error = null;
             loading(true);
 
-            const {
-                fetchParams = {},
-                $http,
-                fetchEntity,
-                formatOptions,
-            } = this;
+            const { fetchParams = {}, $http, fetchEntity, formatOptions } = this;
 
             try {
                 const params = { ...fetchParams, search, limit: 10 };
@@ -65,38 +60,23 @@ export default {
         },
     },
     render() {
-        const {
-            $t: __,
-            label,
-            options,
-            handleSearch,
-            handleChange,
-            error,
-        } = this;
+        const { $t: __, label, options, handleSearch, handleChange, error } = this;
 
         return (
-      <div class="SelectSearch">
-        {label && (
-          <label class="SelectSearch__label">
-            {__(label)}
-          </label>
-        )}
-        <VueSelect
-          v-model={this.currentValue}
-          filterable={false}
-          options={options}
-          onSearch={handleSearch}
-          placeholder={__('start-typing-to-search')}
-          onInput={handleChange}
-        >
-          <p slot="no-options">
-            {__('no-result-found-try-another-search')}
-          </p>
-        </VueSelect>
-        {error && (
-          <div class="SelectSearch__error">{error}</div>
-        )}
-      </div>
+            <div class="SelectSearch">
+                {label && <label class="SelectSearch__label">{__(label)}</label>}
+                <VueSelect
+                    v-model={this.currentValue}
+                    filterable={false}
+                    options={options}
+                    onSearch={handleSearch}
+                    placeholder={__('start-typing-to-search')}
+                    onInput={handleChange}
+                >
+                    <p slot="no-options">{__('no-result-found-try-another-search')}</p>
+                </VueSelect>
+                {error && <div class="SelectSearch__error">{error}</div>}
+            </div>
         );
     },
 };

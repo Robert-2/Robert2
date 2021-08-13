@@ -1,11 +1,5 @@
 const getMainIcon = (statuses) => {
-    const {
-        isConfirmed,
-        isArchived,
-        isPast,
-        isInventoryDone,
-        hasNotReturnedMaterials,
-    } = statuses;
+    const { isConfirmed, isArchived, isPast, isInventoryDone, hasNotReturnedMaterials } = statuses;
 
     if (isArchived) {
         return 'archive';

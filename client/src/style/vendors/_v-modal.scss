@@ -1,12 +1,12 @@
 .vm--overlay {
-  padding: 1.5rem;
-  background: rgba(0, 0, 0, .5) !important;
-  overflow: auto;
+    padding: 1.5rem;
+    background: rgba(0, 0, 0, 0.5) !important;
+    overflow: auto;
 }
 
 .vm--modal {
-  background: $bg-color-body !important;
-  box-shadow: 3px 8px 20px 0px #151515 !important;
-  color: $text-base-color !important;
-  overflow: visible !important;
+    background: $bg-color-body !important;
+    box-shadow: 3px 8px 20px 0px #151515 !important;
+    color: $text-base-color !important;
+    overflow: visible !important;
 }

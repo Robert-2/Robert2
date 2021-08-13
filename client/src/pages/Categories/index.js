@@ -112,21 +112,20 @@ export default {
                 saveMessage = 'page-subcategories.deleted';
             }
 
-            Alert.ConfirmDelete(this.$t, entity)
-                .then((result) => {
-                    if (!result.value) {
-                        return;
-                    }
-                    this.resetHelpLoading();
+            Alert.ConfirmDelete(this.$t, entity).then((result) => {
+                if (!result.value) {
+                    return;
+                }
+                this.resetHelpLoading();
 
-                    this.isLoading = false;
-                    this.$http.delete(`${entity}/${id}`)
-                        .then(() => {
-                            this.help = { type: 'success', text: saveMessage };
-                            this.$store.dispatch('categories/refresh');
-                        })
-                        .catch(this.displayError);
-                });
+                this.isLoading = false;
+                this.$http.delete(`${entity}/${id}`)
+                    .then(() => {
+                        this.help = { type: 'success', text: saveMessage };
+                        this.$store.dispatch('categories/refresh');
+                    })
+                    .catch(this.displayError);
+            });
         },
 
         resetHelpLoading() {

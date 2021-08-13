@@ -34,8 +34,8 @@
 </template>
 
 <style lang="scss">
-  @import '../../themes/default/index';
-  @import './Calendar';
+    @import '../../themes/default/index';
+    @import './Calendar';
 </style>
 
 <script src="./index.js"></script>

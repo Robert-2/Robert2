@@ -1,115 +1,120 @@
 @import 'sweetalert2/src/sweetalert2.scss';
 
 .swal2-container {
-  font-family: $text-base-font-family;
+    font-family: $text-base-font-family;
 }
 
 .swal2-popup {
-  background: $bg-color-side-nav;
-  box-shadow: 1px 1px 20px hsla(0, 0%, 0%, 0.5);
+    background: $bg-color-side-nav;
+    box-shadow: 1px 1px 20px hsla(0, 0%, 0%, 0.5);
 }
 
 .swal2-title {
-  color: $text-base-color;
-  font-size: 1.5rem;
+    color: $text-base-color;
+    font-size: 1.5rem;
 }
 
 .swal2-html-container,
 .swal2-content {
-  color: $text-base-color;
-  white-space: pre-line;
+    color: $text-base-color;
+    white-space: pre-line;
 }
 
 .swal2-file,
 .swal2-input,
 .swal2-textarea {
-  padding: $input-padding-vertical $input-padding-horizontal;
-  background-color: $bg-color-input-normal;
-  color: $color-input;
-  border: $input-border-size solid $bg-color-input-normal;
-  border-radius: $input-border-radius;
-  font-family: $text-base-font-family;
-  font-size: $input-font-size;
-  outline: 0;
+    padding: $input-padding-vertical $input-padding-horizontal;
+    background-color: $bg-color-input-normal;
+    color: $color-input;
+    border: $input-border-size solid $bg-color-input-normal;
+    border-radius: $input-border-radius;
+    font-family: $text-base-font-family;
+    font-size: $input-font-size;
+    outline: 0;
 
-  &:focus {
-    border-color: $bg-color-button-info;
-    box-shadow: none;
-  }
+    &:focus {
+        border-color: $bg-color-button-info;
+        box-shadow: none;
+    }
 }
 
 .swal2-styled:focus {
-  box-shadow: none;
+    box-shadow: none;
 }
 
 .swal2-icon.swal2-warning {
-  border-color: $bg-color-button-warning;
-  color: lighten($bg-color-button-warning, 8%);
+    border-color: $bg-color-button-warning;
+    color: lighten($bg-color-button-warning, 8%);
 }
 
 .swal2-confirm {
-  background-color: $bg-color-button-info !important;
+    background-color: $bg-color-button-info !important;
 
-  &:hover, &:focus {
-    background-color: lighten($bg-color-button-info, 8%) !important;
-    box-shadow: none !important;
-  }
-
-  &:active {
-    background-color: darken($bg-color-button-info, 8%) !important;
-    color: $color-active-button;
-  }
-
-  &--trash {
-    background-color: $bg-color-button-warning !important;
-
-    &:hover, &:focus {
-      background-color: lighten($bg-color-button-warning, 8%) !important;
+    &:hover,
+    &:focus {
+        background-color: lighten($bg-color-button-info, 8%) !important;
+        box-shadow: none !important;
     }
 
     &:active {
-      background-color: darken($bg-color-button-warning, 8%) !important;
-      color: $color-active-button;
-    }
-  }
-
-  &--delete {
-    background-color: $bg-color-button-danger !important;
-
-    &:hover, &:focus {
-      background-color: lighten($bg-color-button-danger, 8%) !important;
+        background-color: darken($bg-color-button-info, 8%) !important;
+        color: $color-active-button;
     }
 
-    &:active {
-      background-color: darken($bg-color-button-danger, 8%) !important;
-      color: $color-active-button;
-    }
-  }
+    &--trash {
+        background-color: $bg-color-button-warning !important;
 
-  &--success {
-    background-color: $bg-color-button-success !important;
+        &:hover,
+        &:focus {
+            background-color: lighten($bg-color-button-warning, 8%) !important;
+        }
 
-    &:hover, &:focus {
-      background-color: lighten($bg-color-button-success, 8%) !important;
+        &:active {
+            background-color: darken($bg-color-button-warning, 8%) !important;
+            color: $color-active-button;
+        }
     }
 
-    &:active {
-      background-color: darken($bg-color-button-success, 8%) !important;
-      color: $color-active-button;
+    &--delete {
+        background-color: $bg-color-button-danger !important;
+
+        &:hover,
+        &:focus {
+            background-color: lighten($bg-color-button-danger, 8%) !important;
+        }
+
+        &:active {
+            background-color: darken($bg-color-button-danger, 8%) !important;
+            color: $color-active-button;
+        }
     }
-  }
+
+    &--success {
+        background-color: $bg-color-button-success !important;
+
+        &:hover,
+        &:focus {
+            background-color: lighten($bg-color-button-success, 8%) !important;
+        }
+
+        &:active {
+            background-color: darken($bg-color-button-success, 8%) !important;
+            color: $color-active-button;
+        }
+    }
 }
 
 .swal2-cancel {
-  background-color: $bg-color-button-default !important;
+    background-color: $bg-color-button-default !important;
 
-  &:hover, &:focus {
-    background-color: lighten($bg-color-button-default, 8%) !important;
-    box-shadow: none !important;
-  }
+    &:hover,
+    &:focus {
+        background-color: lighten($bg-color-button-default, 8%) !important;
+        box-shadow: none !important;
+    }
 
-  &:active {
-    background-color: darken($bg-color-button-default, 8%) !important;
-    color: $color-active-button;
-  }
+    &:active {
+        background-color: darken($bg-color-button-default, 8%) !important;
+        color: $color-active-button;
+    }
 }
