@@ -2,23 +2,23 @@ import './index.scss';
 import Dropdown, { getItemClassnames } from '@/components/Dropdown';
 
 export default {
-  name: 'TopMenu',
-  computed: {
-    pseudo() {
-      return this.$store.state.auth.user.pseudo;
+    name: 'TopMenu',
+    computed: {
+        pseudo() {
+            return this.$store.state.auth.user.pseudo;
+        },
     },
-  },
-  methods: {
-    logout() {
-      this.$store.dispatch('auth/logout').then(() => {
-        this.$router.replace({ path: '/login', hash: 'bye' });
-      });
+    methods: {
+        logout() {
+            this.$store.dispatch('auth/logout').then(() => {
+                this.$router.replace({ path: '/login', hash: 'bye' });
+            });
+        },
     },
-  },
-  render() {
-    const { $t: __, pseudo, logout } = this;
+    render() {
+        const { $t: __, pseudo, logout } = this;
 
-    return (
+        return (
       <div class="TopMenu">
         <Dropdown>
           <template slot="buttonText">{__('hello-pseudo', { pseudo })}</template>
@@ -46,6 +46,6 @@ export default {
           </template>
         </Dropdown>
       </div>
-    );
-  },
+        );
+    },
 };

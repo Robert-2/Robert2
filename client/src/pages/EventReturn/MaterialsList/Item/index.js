@@ -2,66 +2,66 @@ import './index.scss';
 import QuantityInput from '@/components/QuantityInput';
 
 const EventReturnMaterialItem = {
-  name: 'EventReturnMaterialItem',
-  components: { QuantityInput },
-  props: {
-    id: Number,
-    reference: String,
-    name: String,
-    quantities: Object,
-    error: Object,
-    isLocked: Boolean,
-  },
-  computed: {
-    isComplete() {
-      return this.quantities.out === this.quantities.returned;
+    name: 'EventReturnMaterialItem',
+    components: { QuantityInput },
+    props: {
+        id: Number,
+        reference: String,
+        name: String,
+        quantities: Object,
+        error: Object,
+        isLocked: Boolean,
     },
+    computed: {
+        isComplete() {
+            return this.quantities.out === this.quantities.returned;
+        },
 
-    hasBroken() {
-      return this.quantities.broken > 0;
+        hasBroken() {
+            return this.quantities.broken > 0;
+        },
     },
-  },
-  methods: {
-    setQuantityReturned({ id }, quantity) {
-      this.$emit('updateQuantityReturned', { id, quantity });
+    methods: {
+        setQuantityReturned({ id }, quantity) {
+            this.$emit('updateQuantityReturned', { id, quantity });
 
-      if (this.quantities.broken > quantity) {
-        this.$emit('updateQuantityBroken', { id, quantity });
-      }
+            if (this.quantities.broken > quantity) {
+                this.$emit('updateQuantityBroken', { id, quantity });
+            }
+        },
+
+        setQuantityBroken({ id }, quantity) {
+            this.$emit('updateQuantityBroken', { id, quantity });
+
+            if (this.quantities.returned < quantity) {
+                this.$emit('updateQuantityReturned', { id, quantity });
+            }
+        },
     },
+    render() {
+        const {
+            $t: __,
+            id,
+            reference,
+            name,
+            quantities,
+            error,
+            isLocked,
+            isComplete,
+            hasBroken,
+            setQuantityReturned,
+            setQuantityBroken,
+        } = this;
 
-    setQuantityBroken({ id }, quantity) {
-      this.$emit('updateQuantityBroken', { id, quantity });
+        const itemClasses = {
+            EventReturnMaterialItem: true,
+            'EventReturnMaterialItem--locked': isLocked,
+            'EventReturnMaterialItem--complete': isComplete,
+            'EventReturnMaterialItem--warning': hasBroken,
+            'EventReturnMaterialItem--error': !!error || (isLocked && !isComplete),
+        };
 
-      if (this.quantities.returned < quantity) {
-        this.$emit('updateQuantityReturned', { id, quantity });
-      }
-    },
-  },
-  render() {
-    const {
-      $t: __,
-      id,
-      reference,
-      name,
-      quantities,
-      error,
-      isLocked,
-      isComplete,
-      hasBroken,
-      setQuantityReturned,
-      setQuantityBroken,
-    } = this;
-
-    const itemClasses = {
-      EventReturnMaterialItem: true,
-      'EventReturnMaterialItem--locked': isLocked,
-      'EventReturnMaterialItem--complete': isComplete,
-      'EventReturnMaterialItem--warning': hasBroken,
-      'EventReturnMaterialItem--error': !!error || (isLocked && !isComplete),
-    };
-
-    return (
+        return (
       <li class={itemClasses}>
         <div class="EventReturnMaterialItem__reference">
           {reference}
@@ -107,8 +107,8 @@ const EventReturnMaterialItem = {
           )}
         </div>
       </li>
-    );
-  },
+        );
+    },
 };
 
 export default EventReturnMaterialItem;

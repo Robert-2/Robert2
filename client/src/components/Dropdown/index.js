@@ -2,51 +2,51 @@ import './index.scss';
 import ClickOutside from 'vue-click-outside';
 
 export const getItemClassnames = (isActive = false) => ({
-  Dropdown__item: true,
-  'Dropdown__item--active': isActive,
+    Dropdown__item: true,
+    'Dropdown__item--active': isActive,
 });
 
 export default {
-  name: 'Dropdown',
-  directives: { ClickOutside },
-  props: {
-    variant: { type: String, default: 'default' },
-  },
-  data() {
-    return {
-      isOpen: false,
-    };
-  },
-  watch: {
-    $route() {
-      this.closeDropdown();
+    name: 'Dropdown',
+    directives: { ClickOutside },
+    props: {
+        variant: { type: String, default: 'default' },
     },
-  },
-  methods: {
-    toggleDropdown() {
-      this.isOpen = !this.isOpen;
+    data() {
+        return {
+            isOpen: false,
+        };
     },
-
-    closeDropdown() {
-      this.isOpen = false;
+    watch: {
+        $route() {
+            this.closeDropdown();
+        },
     },
-  },
-  render() {
-    const {
-      isOpen,
-      toggleDropdown,
-      closeDropdown,
-      variant,
-    } = this;
+    methods: {
+        toggleDropdown() {
+            this.isOpen = !this.isOpen;
+        },
 
-    const { buttonText, title, items } = this.$slots;
+        closeDropdown() {
+            this.isOpen = false;
+        },
+    },
+    render() {
+        const {
+            isOpen,
+            toggleDropdown,
+            closeDropdown,
+            variant,
+        } = this;
 
-    const classNames = ['Dropdown', {
-      'Dropdown--open': isOpen,
-      'Dropdown--actions': variant === 'actions',
-    }];
+        const { buttonText, title, items } = this.$slots;
 
-    return (
+        const classNames = ['Dropdown', {
+            'Dropdown--open': isOpen,
+            'Dropdown--actions': variant === 'actions',
+        }];
+
+        return (
       <div class={classNames} vClickOutside={closeDropdown}>
         <div class="Dropdown__button" onClick={toggleDropdown}>
           <span class="Dropdown__button__text">
@@ -63,6 +63,6 @@ export default {
           </ul>
         </div>
       </div>
-    );
-  },
+        );
+    },
 };

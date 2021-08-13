@@ -9,94 +9,94 @@ import getEventReplacementTotal from '@/utils/getEventReplacementTotal';
 import decimalRound from '@/utils/decimalRound';
 
 export default {
-  name: 'EventTotals',
-  props: {
-    materials: Array,
-    withRentalPrices: Boolean,
-    discountRate: Number,
-    start: Object,
-    end: Object,
-  },
-  data() {
-    return {
-      duration: this.end ? this.end.diff(this.start, 'days') + 1 : 1,
-      currency: Config.currency.symbol,
-    };
-  },
-  created() {
-    this.$store.dispatch('categories/fetch');
-  },
-  computed: {
-    ratio() {
-      return Config.degressiveRate(this.duration);
+    name: 'EventTotals',
+    props: {
+        materials: Array,
+        withRentalPrices: Boolean,
+        discountRate: Number,
+        start: Object,
+        end: Object,
     },
+    data() {
+        return {
+            duration: this.end ? this.end.diff(this.start, 'days') + 1 : 1,
+            currency: Config.currency.symbol,
+        };
+    },
+    created() {
+        this.$store.dispatch('categories/fetch');
+    },
+    computed: {
+        ratio() {
+            return Config.degressiveRate(this.duration);
+        },
 
-    itemsCount() {
-      return getEventMaterialItemsCount(this.materials);
-    },
+        itemsCount() {
+            return getEventMaterialItemsCount(this.materials);
+        },
 
-    total() {
-      return getEventOneDayTotal(this.materials);
-    },
+        total() {
+            return getEventOneDayTotal(this.materials);
+        },
 
-    grandTotal() {
-      return getEventGrandTotal(this.total, this.duration);
-    },
+        grandTotal() {
+            return getEventGrandTotal(this.total, this.duration);
+        },
 
-    totalDiscountable() {
-      return getEventOneDayTotalDiscountable(this.materials);
-    },
+        totalDiscountable() {
+            return getEventOneDayTotalDiscountable(this.materials);
+        },
 
-    grandTotalDiscountable() {
-      return getEventGrandTotal(this.totalDiscountable, this.duration);
-    },
+        grandTotalDiscountable() {
+            return getEventGrandTotal(this.totalDiscountable, this.duration);
+        },
 
-    discountAmount() {
-      return this.grandTotalDiscountable * (this.discountRate / 100);
-    },
+        discountAmount() {
+            return this.grandTotalDiscountable * (this.discountRate / 100);
+        },
 
-    discountTarget: {
-      get() {
-        return decimalRound((this.grandTotal - this.discountAmount));
-      },
-      set(value) {
-        const diff = this.grandTotal - value;
-        const rate = 100 * (diff / this.grandTotalDiscountable);
-        this.discountRate = decimalRound(rate, 4);
-      },
-    },
+        discountTarget: {
+            get() {
+                return decimalRound((this.grandTotal - this.discountAmount));
+            },
+            set(value) {
+                const diff = this.grandTotal - value;
+                const rate = 100 * (diff / this.grandTotalDiscountable);
+                this.discountRate = decimalRound(rate, 4);
+            },
+        },
 
-    grandTotalWithDiscount() {
-      return this.grandTotal - this.discountAmount;
-    },
+        grandTotalWithDiscount() {
+            return this.grandTotal - this.discountAmount;
+        },
 
-    replacementTotal() {
-      return getEventReplacementTotal(this.materials);
+        replacementTotal() {
+            return getEventReplacementTotal(this.materials);
+        },
     },
-  },
-  methods: {
-    recalcDiscountRate(newVal) {
-      this.discountTarget = parseFloat(newVal);
+    methods: {
+        recalcDiscountRate(newVal) {
+            this.discountTarget = parseFloat(newVal);
+        },
     },
-  },
-  render() {
-    const {
-      $t: __,
-      withRentalPrices,
-      itemsCount,
-      total,
-      duration,
-      ratio,
-      grandTotal,
-      discountRate,
-      totalDiscountable,
-      grandTotalDiscountable,
-      discountAmount,
-      grandTotalWithDiscount,
-      replacementTotal,
-    } = this;
+    render() {
+        const {
+            $t: __,
+            withRentalPrices,
+            itemsCount,
+            total,
+            duration,
+            ratio,
+            grandTotal,
+            discountRate,
+            totalDiscountable,
+            grandTotalDiscountable,
+            discountAmount,
+            grandTotalWithDiscount,
+            replacementTotal,
+        } = this;
 
-    return (
+        return (
       <section class="EventTotals">
         {withRentalPrices && (
           <div class="EventTotals__rental-prices">
@@ -147,6 +147,6 @@ export default {
           {__('replacement-total')}: {formatAmount(replacementTotal)}
         </div>
       </section>
-    );
-  },
+        );
+    },
 };

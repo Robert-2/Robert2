@@ -3,16 +3,16 @@ import Config from '@/config/globalConfig';
 import Logo from '@/components/Logo';
 
 export default {
-  name: 'LoginLayout',
-  data() {
-    return {
-      apiVersion: Config.api.version,
-    };
-  },
-  render() {
-    const { $t: __, apiVersion } = this;
+    name: 'LoginLayout',
+    data() {
+        return {
+            apiVersion: Config.api.version,
+        };
+    },
+    render() {
+        const { $t: __, apiVersion } = this;
 
-    return (
+        return (
       <div class="LoginLayout">
         <div class="LoginLayout__logo">
           <Logo />
@@ -28,6 +28,6 @@ export default {
           v{apiVersion}
         </div>
       </div>
-    );
-  },
+        );
+    },
 };

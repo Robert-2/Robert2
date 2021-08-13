@@ -7,167 +7,167 @@ import Datepicker from '@/components/Datepicker';
 import ItemActions from './Actions';
 
 export default {
-  name: 'Technicians',
-  components: { Help },
-  data() {
-    return {
-      help: 'page-technicians.help',
-      error: null,
-      isLoading: false,
-      isDisplayTrashed: false,
-      isTrashDisplayed: false,
-      periodFilter: null,
-      columns: [
-        'last_name',
-        'first_name',
-        'nickname',
-        'email',
-        'phone',
-        'address',
-        'note',
-        'actions',
-      ],
-      options: {
-        columnsDropdown: true,
-        preserveState: true,
-        orderBy: { column: 'last_name', ascending: true },
-        initialPage: this.$route.query.page || 1,
-        sortable: ['last_name', 'first_name', 'nickname', 'email'],
-        columnsDisplay: {
-          // - This is a hack: init the table with hidden columns by default
-          note: 'mobile',
+    name: 'Technicians',
+    components: { Help },
+    data() {
+        return {
+            help: 'page-technicians.help',
+            error: null,
+            isLoading: false,
+            isDisplayTrashed: false,
+            isTrashDisplayed: false,
+            periodFilter: null,
+            columns: [
+                'last_name',
+                'first_name',
+                'nickname',
+                'email',
+                'phone',
+                'address',
+                'note',
+                'actions',
+            ],
+            options: {
+                columnsDropdown: true,
+                preserveState: true,
+                orderBy: { column: 'last_name', ascending: true },
+                initialPage: this.$route.query.page || 1,
+                sortable: ['last_name', 'first_name', 'nickname', 'email'],
+                columnsDisplay: {
+                    // - This is a hack: init the table with hidden columns by default
+                    note: 'mobile',
+                },
+                headings: {
+                    last_name: this.$t('last-name'),
+                    first_name: this.$t('first-name'),
+                    nickname: this.$t('nickname'),
+                    email: this.$t('email'),
+                    phone: this.$t('phone'),
+                    address: this.$t('address'),
+                    note: this.$t('notes'),
+                    actions: '',
+                },
+                columnsClasses: {
+                    nickname: 'Technicians__nickname',
+                    email: 'Technicians__email',
+                    address: 'Technicians__address',
+                    note: 'Technicians__note',
+                    actions: 'Technicians__actions',
+                },
+                requestFunction: (pagination) => {
+                    this.error = null;
+                    this.isLoading = true;
+
+                    const params = {
+                        ...pagination,
+                        deleted: this.isDisplayTrashed ? '1' : '0',
+                    };
+                    if (this.periodFilter) {
+                        const [start, end] = this.periodFilter;
+                        params.startDate = moment(start).format();
+                        params.endDate = moment(end).endOf('day').format();
+                    }
+
+                    return this.$http
+                        .get('technicians', { params })
+                        .catch(this.showError)
+                        .finally(() => {
+                            this.isTrashDisplayed = this.isDisplayTrashed;
+                            this.isLoading = false;
+                        });
+                },
+            },
+        };
+    },
+    methods: {
+        async handleRemove(id) {
+            const isSoft = !this.isTrashDisplayed;
+            const { value: isConfirmed } = await Alert.ConfirmDelete(this.$t, 'technicians', isSoft);
+            if (!isConfirmed) {
+                return;
+            }
+
+            this.error = null;
+            this.isLoading = true;
+
+            try {
+                await this.$http.delete(`${this.$route.meta.resource}/${id}`);
+                this.refreshTable();
+            } catch (error) {
+                this.error = error;
+            } finally {
+                this.isLoading = false;
+            }
         },
-        headings: {
-          last_name: this.$t('last-name'),
-          first_name: this.$t('first-name'),
-          nickname: this.$t('nickname'),
-          email: this.$t('email'),
-          phone: this.$t('phone'),
-          address: this.$t('address'),
-          note: this.$t('notes'),
-          actions: '',
+
+        async handleRestore(id) {
+            const { value: isConfirmed } = await Alert.ConfirmRestore(this.$t, 'technicians');
+            if (!isConfirmed) {
+                return;
+            }
+
+            this.error = null;
+            this.isLoading = true;
+
+            try {
+                await this.$http.put(`${this.$route.meta.resource}/restore/${id}`);
+                this.refreshTable();
+            } catch (error) {
+                this.error = error;
+            } finally {
+                this.isLoading = false;
+            }
         },
-        columnsClasses: {
-          nickname: 'Technicians__nickname',
-          email: 'Technicians__email',
-          address: 'Technicians__address',
-          note: 'Technicians__note',
-          actions: 'Technicians__actions',
+
+        refreshTable() {
+            this.help = 'page-technicians.help';
+            this.error = null;
+            this.isLoading = true;
+            this.$refs.DataTable.refresh();
         },
-        requestFunction: (pagination) => {
-          this.error = null;
-          this.isLoading = true;
 
-          const params = {
-            ...pagination,
-            deleted: this.isDisplayTrashed ? '1' : '0',
-          };
-          if (this.periodFilter) {
-            const [start, end] = this.periodFilter;
-            params.startDate = moment(start).format();
-            params.endDate = moment(end).endOf('day').format();
-          }
-
-          return this.$http
-            .get('technicians', { params })
-            .catch(this.showError)
-            .finally(() => {
-              this.isTrashDisplayed = this.isDisplayTrashed;
-              this.isLoading = false;
-            });
+        clearFilters() {
+            this.periodFilter = null;
         },
-      },
-    };
-  },
-  methods: {
-    async handleRemove(id) {
-      const isSoft = !this.isTrashDisplayed;
-      const { value: isConfirmed } = await Alert.ConfirmDelete(this.$t, 'technicians', isSoft);
-      if (!isConfirmed) {
-        return;
-      }
 
-      this.error = null;
-      this.isLoading = true;
+        showTrashed() {
+            this.isDisplayTrashed = !this.isDisplayTrashed;
+            this.refreshTable();
+        },
 
-      try {
-        await this.$http.delete(`${this.$route.meta.resource}/${id}`);
-        this.refreshTable();
-      } catch (error) {
-        this.error = error;
-      } finally {
-        this.isLoading = false;
-      }
+        showError(error) {
+            this.isLoading = false;
+            this.error = error;
+        },
     },
-
-    async handleRestore(id) {
-      const { value: isConfirmed } = await Alert.ConfirmRestore(this.$t, 'technicians');
-      if (!isConfirmed) {
-        return;
-      }
-
-      this.error = null;
-      this.isLoading = true;
-
-      try {
-        await this.$http.put(`${this.$route.meta.resource}/restore/${id}`);
-        this.refreshTable();
-      } catch (error) {
-        this.error = error;
-      } finally {
-        this.isLoading = false;
-      }
+    watch: {
+        periodFilter() {
+            this.refreshTable();
+        },
     },
+    render() {
+        const {
+            $t: __,
+            help,
+            error,
+            isLoading,
+            columns,
+            options,
+            handleRestore,
+            handleRemove,
+            periodFilter,
+            clearFilters,
+            isTrashDisplayed,
+            showTrashed,
+        } = this;
 
-    refreshTable() {
-      this.help = 'page-technicians.help';
-      this.error = null;
-      this.isLoading = true;
-      this.$refs.DataTable.refresh();
-    },
-
-    clearFilters() {
-      this.periodFilter = null;
-    },
-
-    showTrashed() {
-      this.isDisplayTrashed = !this.isDisplayTrashed;
-      this.refreshTable();
-    },
-
-    showError(error) {
-      this.isLoading = false;
-      this.error = error;
-    },
-  },
-  watch: {
-    periodFilter() {
-      this.refreshTable();
-    },
-  },
-  render() {
-    const {
-      $t: __,
-      help,
-      error,
-      isLoading,
-      columns,
-      options,
-      handleRestore,
-      handleRemove,
-      periodFilter,
-      clearFilters,
-      isTrashDisplayed,
-      showTrashed,
-    } = this;
-
-    const headerActions = [
+        const headerActions = [
       <router-link to="/technicians/new" class="button success">
         <i class="fas fa-user-plus" /> {__('page-technicians.action-add')}
       </router-link>,
-    ];
+        ];
 
-    return (
+        return (
       <Page
         name="technicians"
         title={__('page-technicians.title')}
@@ -198,21 +198,21 @@ export default {
           columns={columns}
           options={options}
           scopedSlots={{
-            email: ({ row }) => <a href={`mailto:${row.email}`}>{row.email}</a>,
-            address: ({ row }) => (
+              email: ({ row }) => <a href={`mailto:${row.email}`}>{row.email}</a>,
+              address: ({ row }) => (
               <div>
                 {row.street}<br />
                 {row.postal_code} {row.locality}
               </div>
-            ),
-            actions: ({ row }) => (
+              ),
+              actions: ({ row }) => (
               <ItemActions
                 isTrashMode={isTrashDisplayed}
                 id={row.id}
                 onRemove={handleRemove}
                 onRestore={handleRestore}
               />
-            ),
+              ),
           }}
         />
         <div class="content__footer">
@@ -222,6 +222,6 @@ export default {
           </button>
         </div>
       </Page>
-    );
-  },
+        );
+    },
 };

@@ -3,32 +3,32 @@ import Logo from '@/components/Logo';
 import TopMenu from './TopMenu';
 
 export default {
-  name: 'MainHeader',
-  computed: {
-    pageTitle() {
-      const { pageTitle, pageSubTitle = '', pageRawTitle } = this.$store.state;
+    name: 'MainHeader',
+    computed: {
+        pageTitle() {
+            const { pageTitle, pageSubTitle = '', pageRawTitle } = this.$store.state;
 
-      if (pageRawTitle !== null) {
-        return pageRawTitle;
-      }
+            if (pageRawTitle !== null) {
+                return pageRawTitle;
+            }
 
-      return this.$t(pageTitle, { pageSubTitle });
+            return this.$t(pageTitle, { pageSubTitle });
+        },
     },
-  },
-  watch: {
-    pageTitle() {
-      this.$emit('toggleMenu', false);
+    watch: {
+        pageTitle() {
+            this.$emit('toggleMenu', false);
+        },
     },
-  },
-  methods: {
-    toggleMenu() {
-      this.$emit('toggleMenu', 'toggle');
+    methods: {
+        toggleMenu() {
+            this.$emit('toggleMenu', 'toggle');
+        },
     },
-  },
-  render() {
-    const { pageTitle, toggleMenu } = this;
+    render() {
+        const { pageTitle, toggleMenu } = this;
 
-    return (
+        return (
       <div class="MainHeader">
         <div class="MainHeader__logo">
           <Logo minimalist />
@@ -41,6 +41,6 @@ export default {
         </div>
         <TopMenu class="MainHeader__menu" />
       </div>
-    );
-  },
+        );
+    },
 };

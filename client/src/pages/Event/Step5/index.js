@@ -3,68 +3,68 @@ import Config from '@/config/globalConfig';
 import EventOverview from '@/components/EventOverview/EventOverview.vue';
 
 export default {
-  name: 'EventStep5',
-  components: { EventOverview },
-  props: { event: Object },
-  data() {
-    return { isConfirming: false };
-  },
-  computed: {
-    eventSummaryPdfUrl() {
-      const { baseUrl } = Config;
-      const { id } = this.event || { id: null };
-      return `${baseUrl}/events/${id}/pdf`;
+    name: 'EventStep5',
+    components: { EventOverview },
+    props: { event: Object },
+    data() {
+        return { isConfirming: false };
     },
-  },
-  methods: {
+    computed: {
+        eventSummaryPdfUrl() {
+            const { baseUrl } = Config;
+            const { id } = this.event || { id: null };
+            return `${baseUrl}/events/${id}/pdf`;
+        },
+    },
+    methods: {
     // ------------------------------------------------------
     // -
     // -    Handlers
     // -
     // ------------------------------------------------------
 
-    handleConfirm() {
-      this.setEventConfirmation(true);
+        handleConfirm() {
+            this.setEventConfirmation(true);
+        },
+
+        handleUnconfirm() {
+            this.setEventConfirmation(false);
+        },
+
+        // ------------------------------------------------------
+        // -
+        // -    Internal
+        // -
+        // ------------------------------------------------------
+
+        async setEventConfirmation(confirmed) {
+            const { id } = this.$props.event;
+            const url = `${this.$route.meta.resource}/${id}`;
+            this.isConfirming = true;
+
+            try {
+                const { data } = await this.$http.put(url, { id, is_confirmed: confirmed });
+                this.$emit('updateEvent', data);
+            } catch (error) {
+                this.$emit('error', error);
+            } finally {
+                this.isConfirming = false;
+            }
+        },
     },
+    render() {
+        const {
+            $t: __,
+            event,
+            handleConfirm,
+            handleUnconfirm,
+            isConfirming,
+            eventSummaryPdfUrl,
+        } = this;
 
-    handleUnconfirm() {
-      this.setEventConfirmation(false);
-    },
+        const { is_confirmed: isConfirmed, materials, beneficiaries } = event;
 
-    // ------------------------------------------------------
-    // -
-    // -    Internal
-    // -
-    // ------------------------------------------------------
-
-    async setEventConfirmation(confirmed) {
-      const { id } = this.$props.event;
-      const url = `${this.$route.meta.resource}/${id}`;
-      this.isConfirming = true;
-
-      try {
-        const { data } = await this.$http.put(url, { id, is_confirmed: confirmed });
-        this.$emit('updateEvent', data);
-      } catch (error) {
-        this.$emit('error', error);
-      } finally {
-        this.isConfirming = false;
-      }
-    },
-  },
-  render() {
-    const {
-      $t: __,
-      event,
-      handleConfirm,
-      handleUnconfirm,
-      isConfirming,
-      eventSummaryPdfUrl,
-    } = this;
-
-    const { is_confirmed: isConfirmed, materials, beneficiaries } = event;
-
-    return (
+        return (
       <div class="EventStep5">
         <EventOverview event={event} />
         {materials.length > 0 && (
@@ -73,32 +73,32 @@ export default {
               {__('page-events.event-confirmation')}
             </h3>
             <div class={['EventStep5__confirmation__help', {
-              'EventStep5__confirmation__help--confirmed': isConfirmed,
+                'EventStep5__confirmation__help--confirmed': isConfirmed,
             }]}>
               {!isConfirming && (
                 <i class={['fas', 'EventStep5__confirmation__icon', {
-                  'fa-check': isConfirmed,
-                  'fa-hourglass-half': !isConfirmed,
+                    'fa-check': isConfirmed,
+                    'fa-hourglass-half': !isConfirmed,
                 }]} />
               )}
               {isConfirmed
-                ? __('page-events.event-confirmed-help')
-                : __('page-events.event-not-confirmed-help')}
+                  ? __('page-events.event-confirmed-help')
+                  : __('page-events.event-not-confirmed-help')}
             </div>
             <div class="EventStep5__confirmation__actions">
               {!isConfirmed && (
                 <button class="success" onClick={handleConfirm}>
                   <i class={['fas', {
-                    'fa-circle-notch fa-spin': isConfirming,
-                    'fa-check': !isConfirming,
+                      'fa-circle-notch fa-spin': isConfirming,
+                      'fa-check': !isConfirming,
                   }]} /> {__('confirm-event')}
                 </button>
               )}
               {isConfirmed && (
                 <button class="warning" onClick={handleUnconfirm}>
                   <i class={['fas', {
-                    'fa-circle-notch fa-spin': isConfirming,
-                    'fa-hourglass-half': !isConfirming,
+                      'fa-circle-notch fa-spin': isConfirming,
+                      'fa-hourglass-half': !isConfirming,
                   }]} /> {__('unconfirm-event')}
                 </button>
               )}
@@ -120,6 +120,6 @@ export default {
           )}
         </section>
       </div>
-    );
-  },
+        );
+    },
 };

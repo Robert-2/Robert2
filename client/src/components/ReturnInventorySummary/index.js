@@ -2,42 +2,42 @@ import './index.scss';
 import ReturnInventoryItem from './Item';
 
 const ReturnInventorySummary = {
-  name: 'ReturnInventorySummary',
-  components: { ReturnInventoryItem },
-  props: {
-    eventId: Number,
-    isDone: Boolean,
-    materials: Array,
-  },
-  computed: {
-    materialsWithProblem() {
-      return this.materials
-        .map((material) => ({
-          ...material,
-          out: material.pivot.quantity,
-          returned: material.pivot.quantity_returned,
-          missing: material.pivot.quantity - material.pivot.quantity_returned,
-          broken: material.pivot.quantity_broken,
-        }))
-        .filter(({ missing, broken }) => missing > 0 || broken > 0);
+    name: 'ReturnInventorySummary',
+    components: { ReturnInventoryItem },
+    props: {
+        eventId: Number,
+        isDone: Boolean,
+        materials: Array,
     },
+    computed: {
+        materialsWithProblem() {
+            return this.materials
+                .map((material) => ({
+                    ...material,
+                    out: material.pivot.quantity,
+                    returned: material.pivot.quantity_returned,
+                    missing: material.pivot.quantity - material.pivot.quantity_returned,
+                    broken: material.pivot.quantity_broken,
+                }))
+                .filter(({ missing, broken }) => missing > 0 || broken > 0);
+        },
 
-    isVisitor() {
-      return this.$store.getters['auth/is']('visitor');
+        isVisitor() {
+            return this.$store.getters['auth/is']('visitor');
+        },
     },
-  },
-  render() {
-    const {
-      $t: __,
-      eventId,
-      isDone,
-      isVisitor,
-      materialsWithProblem,
-    } = this;
+    render() {
+        const {
+            $t: __,
+            eventId,
+            isDone,
+            isVisitor,
+            materialsWithProblem,
+        } = this;
 
-    const hasProblems = materialsWithProblem.length > 0;
+        const hasProblems = materialsWithProblem.length > 0;
 
-    return (
+        return (
       <div class="ReturnInventorySummary">
         {hasProblems && (
           <div class="ReturnInventorySummary__title">
@@ -78,8 +78,8 @@ const ReturnInventorySummary = {
           </div>
         )}
       </div>
-    );
-  },
+        );
+    },
 };
 
 export default ReturnInventorySummary;

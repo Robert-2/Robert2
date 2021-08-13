@@ -4,102 +4,102 @@ import Datepicker from '@/components/Datepicker';
 import SwitchToggle from '@/components/SwitchToggle';
 
 const ALLOWED_TYPES = [
-  'text',
-  'email',
-  'password',
-  'number',
-  'tel',
-  'select',
-  'textarea',
-  'date',
-  'switch',
+    'text',
+    'email',
+    'password',
+    'number',
+    'tel',
+    'select',
+    'textarea',
+    'date',
+    'switch',
 ];
 
 export default {
-  name: 'FormField',
-  props: {
-    label: String,
-    name: String,
-    type: {
-      validator: (value) => ALLOWED_TYPES.includes(value),
-      default: 'text',
+    name: 'FormField',
+    props: {
+        label: String,
+        name: String,
+        type: {
+            validator: (value) => ALLOWED_TYPES.includes(value),
+            default: 'text',
+        },
+        required: Boolean,
+        disabled: Boolean,
+        disabledReason: String,
+        placeholder: String,
+        value: [String, Number, Date, Array, Boolean],
+        step: Number,
+        min: Number,
+        max: Number,
+        addon: String,
+        options: Array,
+        errors: Array,
+        datepickerOptions: Object,
     },
-    required: Boolean,
-    disabled: Boolean,
-    disabledReason: String,
-    placeholder: String,
-    value: [String, Number, Date, Array, Boolean],
-    step: Number,
-    min: Number,
-    max: Number,
-    addon: String,
-    options: Array,
-    errors: Array,
-    datepickerOptions: Object,
-  },
-  data() {
-    return {
-      renderKey: 1,
-    };
-  },
-  watch: {
-    options() {
-      this.renderKey += 1;
+    data() {
+        return {
+            renderKey: 1,
+        };
     },
-  },
-  methods: {
-    handleInput(e) {
-      const { value } = e.target;
-      this.$emit('input', value);
+    watch: {
+        options() {
+            this.renderKey += 1;
+        },
     },
+    methods: {
+        handleInput(e) {
+            const { value } = e.target;
+            this.$emit('input', value);
+        },
 
-    handleChange(e) {
-      const { value } = e.target;
-      this.$emit('change', value);
+        handleChange(e) {
+            const { value } = e.target;
+            this.$emit('change', value);
+        },
+
+        handleDatepickerChange(newDate) {
+            this.$emit('input', newDate);
+            const newValue = moment(newDate).format('YYYY-MM-DD');
+            this.$emit('change', { field: this.name, newValue, newDate });
+        },
+
+        handleSwitchChange(newValue) {
+            this.$emit('input', newValue);
+            this.$emit('change', { field: this.name, newValue });
+        },
     },
+    render() {
+        const {
+            $t: __,
+            type,
+            label,
+            name,
+            value,
+            addon,
+            placeholder,
+            required,
+            disabled,
+            disabledReason,
+            options,
+            step,
+            min,
+            max,
+            datepickerOptions,
+            handleInput,
+            handleChange,
+            handleDatepickerChange,
+            handleSwitchChange,
+            errors,
+            renderKey,
+        } = this;
 
-    handleDatepickerChange(newDate) {
-      this.$emit('input', newDate);
-      const newValue = moment(newDate).format('YYYY-MM-DD');
-      this.$emit('change', { field: this.name, newValue, newDate });
-    },
+        const classNames = ['FormField', {
+            'FormField--with-addon': !!addon,
+            'FormField--with-error': errors && errors.length > 0,
+        }];
 
-    handleSwitchChange(newValue) {
-      this.$emit('input', newValue);
-      this.$emit('change', { field: this.name, newValue });
-    },
-  },
-  render() {
-    const {
-      $t: __,
-      type,
-      label,
-      name,
-      value,
-      addon,
-      placeholder,
-      required,
-      disabled,
-      disabledReason,
-      options,
-      step,
-      min,
-      max,
-      datepickerOptions,
-      handleInput,
-      handleChange,
-      handleDatepickerChange,
-      handleSwitchChange,
-      errors,
-      renderKey,
-    } = this;
-
-    const classNames = ['FormField', {
-      'FormField--with-addon': !!addon,
-      'FormField--with-error': errors && errors.length > 0,
-    }];
-
-    return (
+        return (
       <div class={classNames}>
         {label && (
           <label class="FormField__label">
@@ -180,6 +180,6 @@ export default {
           </div>
         )}
       </div>
-    );
-  },
+        );
+    },
 };

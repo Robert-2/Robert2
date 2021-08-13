@@ -4,59 +4,59 @@ import Help from '@/components/Help/Help.vue';
 import MultiSwitch from '@/components/MultiSwitch';
 
 const EventReturnHeader = {
-  name: 'EventReturnHeader',
-  components: { Help, MultiSwitch },
-  props: {
-    isLoading: Boolean,
-    error: Error,
-    help: String,
-    eventData: Object,
-  },
-  data() {
-    return {
-      displayGroup: 'categories',
-    };
-  },
-  computed: {
-    hasMultipleParks() {
-      return this.$store.state.parks.list.length > 1;
+    name: 'EventReturnHeader',
+    components: { Help, MultiSwitch },
+    props: {
+        isLoading: Boolean,
+        error: Error,
+        help: String,
+        eventData: Object,
     },
+    data() {
+        return {
+            displayGroup: 'categories',
+        };
+    },
+    computed: {
+        hasMultipleParks() {
+            return this.$store.state.parks.list.length > 1;
+        },
 
-    endDate() {
-      return this.eventData.id ? moment(this.eventData.end_date) : null;
+        endDate() {
+            return this.eventData.id ? moment(this.eventData.end_date) : null;
+        },
     },
-  },
-  created() {
-    this.$store.dispatch('categories/fetch');
-    this.$store.dispatch('parks/fetch');
-  },
-  methods: {
-    setDisplayGroup(group) {
-      this.displayGroup = group;
-      this.$emit('displayGroupChange', group);
+    created() {
+        this.$store.dispatch('categories/fetch');
+        this.$store.dispatch('parks/fetch');
     },
-  },
-  render() {
-    const { isLoading, eventData, error } = this;
+    methods: {
+        setDisplayGroup(group) {
+            this.displayGroup = group;
+            this.$emit('displayGroupChange', group);
+        },
+    },
+    render() {
+        const { isLoading, eventData, error } = this;
 
-    if (isLoading || !eventData.id) {
-      return (
+        if (isLoading || !eventData.id) {
+            return (
         <div class="EventReturnHeader">
           <Help message="" error={error} isLoading={isLoading} />
         </div>
-      );
-    }
+            );
+        }
 
-    const {
-      $t: __,
-      help,
-      endDate,
-      displayGroup,
-      setDisplayGroup,
-      hasMultipleParks,
-    } = this;
+        const {
+            $t: __,
+            help,
+            endDate,
+            displayGroup,
+            setDisplayGroup,
+            hasMultipleParks,
+        } = this;
 
-    return (
+        return (
       <div class="EventReturnHeader">
         <div class="EventReturnHeader__infos">
           <div class="EventReturnHeader__info">
@@ -91,9 +91,9 @@ const EventReturnHeader = {
             </span>
             <MultiSwitch
               options={[
-                { value: 'categories', label: __('categories') },
-                { value: 'parks', label: __('parks'), isDisplayed: hasMultipleParks },
-                { value: null, label: __('not-grouped') },
+                  { value: 'categories', label: __('categories') },
+                  { value: 'parks', label: __('parks'), isDisplayed: hasMultipleParks },
+                  { value: null, label: __('not-grouped') },
               ]}
               value={displayGroup}
               onChange={setDisplayGroup}
@@ -101,8 +101,8 @@ const EventReturnHeader = {
           </div>
         </div>
       </div>
-    );
-  },
+        );
+    },
 };
 
 export default EventReturnHeader;

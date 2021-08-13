@@ -3,50 +3,50 @@ import moment from 'moment';
 import { CalendarView } from 'vue-simple-calendar';
 
 export default {
-  name: 'MonthCalendar',
-  props: {
-    showDate: { type: Date },
-    events: { type: Array },
-    withTotal: { type: Boolean },
-  },
-  data() {
-    return {
-      currentDate: this.showDate || new Date(),
-    };
-  },
-  computed: {
-    currentMonth() {
-      return moment(this.currentDate).format('MMMM YYYY');
+    name: 'MonthCalendar',
+    props: {
+        showDate: { type: Date },
+        events: { type: Array },
+        withTotal: { type: Boolean },
     },
-  },
-  methods: {
-    handlePrevMonthClick() {
-      const newDate = moment(this.currentDate).subtract(1, 'month');
-      this.currentDate = newDate.toDate();
+    data() {
+        return {
+            currentDate: this.showDate || new Date(),
+        };
     },
+    computed: {
+        currentMonth() {
+            return moment(this.currentDate).format('MMMM YYYY');
+        },
+    },
+    methods: {
+        handlePrevMonthClick() {
+            const newDate = moment(this.currentDate).subtract(1, 'month');
+            this.currentDate = newDate.toDate();
+        },
 
-    handleNextMonthClick() {
-      const newDate = moment(this.currentDate).add(1, 'month');
-      this.currentDate = newDate.toDate();
-    },
+        handleNextMonthClick() {
+            const newDate = moment(this.currentDate).add(1, 'month');
+            this.currentDate = newDate.toDate();
+        },
 
-    handleClickItem(item) {
-      this.$emit('clickItem', item.originalItem);
+        handleClickItem(item) {
+            this.$emit('clickItem', item.originalItem);
+        },
     },
-  },
-  render() {
-    const {
-      $t: __,
-      events,
-      currentDate,
-      currentMonth,
-      handlePrevMonthClick,
-      handleNextMonthClick,
-      handleClickItem,
-      withTotal,
-    } = this;
+    render() {
+        const {
+            $t: __,
+            events,
+            currentDate,
+            currentMonth,
+            handlePrevMonthClick,
+            handleNextMonthClick,
+            handleClickItem,
+            withTotal,
+        } = this;
 
-    return (
+        return (
       <div class="MonthCalendar">
         <header class="MonthCalendar__header">
           <button class="info" v-tooltip={__('previous-month')} onClick={handlePrevMonthClick}>
@@ -74,6 +74,6 @@ export default {
           vOn:click-item={handleClickItem}
         />
       </div>
-    );
-  },
+        );
+    },
 };

@@ -2,31 +2,31 @@ import './index.scss';
 import Datepicker from '@/components/Datepicker';
 
 export default {
-  name: 'PromptDate',
-  props: {
-    title: String,
-    defaultDate: [String, Date],
-    placeholder: String,
-  },
-  data() {
-    return {
-      currentDate: this.defaultDate,
-    };
-  },
-  methods: {
-    handleSubmit() {
-      this.$emit('close', { date: this.currentDate });
+    name: 'PromptDate',
+    props: {
+        title: String,
+        defaultDate: [String, Date],
+        placeholder: String,
     },
-
-    handleClose() {
-      this.$emit('close');
+    data() {
+        return {
+            currentDate: this.defaultDate,
+        };
     },
-  },
-  render() {
-    const { $props, $t: __, handleSubmit, handleClose } = this;
-    const { title, placeholder } = $props;
+    methods: {
+        handleSubmit() {
+            this.$emit('close', { date: this.currentDate });
+        },
 
-    return (
+        handleClose() {
+            this.$emit('close');
+        },
+    },
+    render() {
+        const { $props, $t: __, handleSubmit, handleClose } = this;
+        const { title, placeholder } = $props;
+
+        return (
       <div class="PromptDate">
         <div class="PromptDate__header">
           <h2 class="PromptDate__header__title">
@@ -53,6 +53,6 @@ export default {
           </button>
         </div>
       </div>
-    );
-  },
+        );
+    },
 };

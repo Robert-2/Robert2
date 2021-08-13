@@ -8,108 +8,108 @@ import EventTechnicians from '@/components/EventTechnicians';
 import getEventMaterialItemsCount from '@/utils/getEventMaterialItemsCount';
 
 export default {
-  name: 'DuplicateEvent',
-  props: {
-    event: Object,
-    onDuplicated: Function,
-  },
-  data() {
-    return {
-      dates: [null, null],
-      datepickerOptions: {
-        disabled: { from: null, to: new Date() },
-        isRange: true,
-      },
-      error: null,
-      validationErrors: null,
-      isSaving: false,
-    };
-  },
-  computed: {
-    duration() {
-      const [startDate, endDate] = this.dates;
-      if (!startDate || !endDate) {
-        return null;
-      }
-      return moment(endDate).diff(startDate, 'days') + 1;
+    name: 'DuplicateEvent',
+    props: {
+        event: Object,
+        onDuplicated: Function,
     },
-
-    itemsCount() {
-      return getEventMaterialItemsCount(this.event.materials);
-    },
-  },
-  methods: {
-    async handleSubmit() {
-      if (this.isSaving) {
-        return;
-      }
-
-      const [startDate, endDate] = this.dates;
-      if (!startDate || !endDate) {
-        this.validationErrors = {
-          start_date: [this.$t('please-choose-dates')],
+    data() {
+        return {
+            dates: [null, null],
+            datepickerOptions: {
+                disabled: { from: null, to: new Date() },
+                isRange: true,
+            },
+            error: null,
+            validationErrors: null,
+            isSaving: false,
         };
-        return;
-      }
-
-      this.isSaving = true;
-      this.error = false;
-      this.validationErrors = false;
-
-      const { id: userId } = this.$store.state.auth.user;
-
-      const newEventData = {
-        user_id: userId,
-        start_date: moment(startDate).startOf('day').format(DATE_DB_FORMAT),
-        end_date: moment(endDate).endOf('day').format(DATE_DB_FORMAT),
-      };
-
-      try {
-        const url = `events/${this.event.id}/duplicate`;
-        const { data } = await this.$http.post(url, newEventData);
-
-        const { onDuplicated } = this.$props;
-        if (onDuplicated) {
-          onDuplicated(data);
-        }
-
-        this.$emit('close');
-      } catch (error) {
-        this.error = error;
-
-        const { code, details } = error.response?.data?.error || { code: 0, details: {} };
-        if (code === 400) {
-          this.validationErrors = { ...details };
-        }
-      } finally {
-        this.isSaving = false;
-      }
     },
+    computed: {
+        duration() {
+            const [startDate, endDate] = this.dates;
+            if (!startDate || !endDate) {
+                return null;
+            }
+            return moment(endDate).diff(startDate, 'days') + 1;
+        },
 
-    handleClose() {
-      this.$emit('close');
+        itemsCount() {
+            return getEventMaterialItemsCount(this.event.materials);
+        },
     },
-  },
-  render() {
-    const {
-      $t: __,
-      duration,
-      itemsCount,
-      error,
-      validationErrors,
-      datepickerOptions,
-      handleSubmit,
-      handleClose,
-    } = this;
+    methods: {
+        async handleSubmit() {
+            if (this.isSaving) {
+                return;
+            }
 
-    const {
-      title,
-      location,
-      beneficiaries,
-      technicians,
-    } = this.event;
+            const [startDate, endDate] = this.dates;
+            if (!startDate || !endDate) {
+                this.validationErrors = {
+                    start_date: [this.$t('please-choose-dates')],
+                };
+                return;
+            }
 
-    return (
+            this.isSaving = true;
+            this.error = false;
+            this.validationErrors = false;
+
+            const { id: userId } = this.$store.state.auth.user;
+
+            const newEventData = {
+                user_id: userId,
+                start_date: moment(startDate).startOf('day').format(DATE_DB_FORMAT),
+                end_date: moment(endDate).endOf('day').format(DATE_DB_FORMAT),
+            };
+
+            try {
+                const url = `events/${this.event.id}/duplicate`;
+                const { data } = await this.$http.post(url, newEventData);
+
+                const { onDuplicated } = this.$props;
+                if (onDuplicated) {
+                    onDuplicated(data);
+                }
+
+                this.$emit('close');
+            } catch (error) {
+                this.error = error;
+
+                const { code, details } = error.response?.data?.error || { code: 0, details: {} };
+                if (code === 400) {
+                    this.validationErrors = { ...details };
+                }
+            } finally {
+                this.isSaving = false;
+            }
+        },
+
+        handleClose() {
+            this.$emit('close');
+        },
+    },
+    render() {
+        const {
+            $t: __,
+            duration,
+            itemsCount,
+            error,
+            validationErrors,
+            datepickerOptions,
+            handleSubmit,
+            handleClose,
+        } = this;
+
+        const {
+            title,
+            location,
+            beneficiaries,
+            technicians,
+        } = this.event;
+
+        return (
       <div class="DuplicateEvent">
         <div class="DuplicateEvent__header">
           <h2 class="DuplicateEvent__header__title">
@@ -165,6 +165,6 @@ export default {
           </button>
         </div>
       </div>
-    );
-  },
+        );
+    },
 };

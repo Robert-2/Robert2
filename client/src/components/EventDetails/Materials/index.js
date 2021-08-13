@@ -8,26 +8,26 @@ import EventTotals from '@/components/EventTotals';
 import ReturnInventorySummary from '@/components/ReturnInventorySummary';
 
 export default {
-  name: 'EventDetailsMaterials',
-  props: {
-    event: { type: Object, required: true },
-    discountRate: Number,
-  },
-  data() {
-    return {
-      showBilling: Config.billingMode !== 'none',
-    };
-  },
-  computed: {
-    hasMaterials() {
-      return this.event?.materials?.length > 0;
+    name: 'EventDetailsMaterials',
+    props: {
+        event: { type: Object, required: true },
+        discountRate: Number,
     },
-  },
-  render() {
-    const { event, discountRate } = this.$props;
-    const { successMessage, error, hasMaterials, showBilling } = this;
+    data() {
+        return {
+            showBilling: Config.billingMode !== 'none',
+        };
+    },
+    computed: {
+        hasMaterials() {
+            return this.event?.materials?.length > 0;
+        },
+    },
+    render() {
+        const { event, discountRate } = this.$props;
+        const { successMessage, error, hasMaterials, showBilling } = this;
 
-    return (
+        return (
       <div class="EventDetailsMaterials">
         {(error || successMessage) && (
           <Help message={{ type: 'success', text: successMessage }} error={error} />
@@ -61,6 +61,6 @@ export default {
           </Fragment>
         )}
       </div>
-    );
-  },
+        );
+    },
 };

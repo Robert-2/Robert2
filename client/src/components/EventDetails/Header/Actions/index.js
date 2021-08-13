@@ -5,177 +5,177 @@ import Dropdown, { getItemClassnames } from '@/components/Dropdown';
 import DuplicateEvent from '@/components/DuplicateEvent';
 
 export default {
-  name: 'CalendarEventDetailsHeaderActions',
-  props: {
-    event: { type: Object, required: true },
-  },
-  data() {
-    return {
-      isConfirming: false,
-      isArchiving: false,
-      isDeleting: false,
-    };
-  },
-  computed: {
-    isPrintable() {
-      return (
-        this.event.materials
+    name: 'CalendarEventDetailsHeaderActions',
+    props: {
+        event: { type: Object, required: true },
+    },
+    data() {
+        return {
+            isConfirming: false,
+            isArchiving: false,
+            isDeleting: false,
+        };
+    },
+    computed: {
+        isPrintable() {
+            return (
+                this.event.materials
         && this.event.materials.length > 0
         && this.event.beneficiaries
         && this.event.beneficiaries.length > 0
-      );
+            );
+        },
+
+        isVisitor() {
+            return this.$store.getters['auth/is']('visitor');
+        },
+
+        isEditable() {
+            const { isPast, isConfirmed, isInventoryDone } = this.event;
+            return !isPast || !(isInventoryDone || isConfirmed);
+        },
+
+        isRemovable() {
+            const { isConfirmed, isInventoryDone } = this.event;
+            return !(isConfirmed || isInventoryDone);
+        },
+
+        isConfirmable() {
+            return this.event.materials?.length === 0;
+        },
+
+        isEndToday() {
+            return this.event.endDate.isSame(new Date(), 'day');
+        },
+
+        eventSummaryPdfUrl() {
+            const { baseUrl } = Config;
+            const { id } = this.event || { id: null };
+            return `${baseUrl}/events/${id}/pdf`;
+        },
     },
+    methods: {
+        toggleConfirmed() {
+            this.setEventConfirmation(!this.event.isConfirmed);
+        },
 
-    isVisitor() {
-      return this.$store.getters['auth/is']('visitor');
+        async setEventConfirmation(isConfirmed) {
+            if (this.isConfirming) {
+                return;
+            }
+            this.isConfirming = true;
+
+            const { id } = this.event;
+
+            try {
+                const url = `events/${id}`;
+                const { data } = await this.$http.put(url, { id, is_confirmed: isConfirmed });
+                this.$emit('saved', data);
+            } catch (error) {
+                this.$emit('error', error);
+            } finally {
+                this.isConfirming = false;
+            }
+        },
+
+        toggleArchived() {
+            this.setEventArchived(!this.event.isArchived);
+        },
+
+        async setEventArchived(isArchived) {
+            if (this.isArchiving) {
+                return;
+            }
+            this.isArchiving = true;
+
+            const { id } = this.event;
+
+            try {
+                const url = `events/${id}`;
+                const { data } = await this.$http.put(url, { id, is_archived: isArchived });
+                this.$emit('saved', data);
+            } catch (error) {
+                this.$emit('error', error);
+            } finally {
+                this.isArchiving = false;
+            }
+        },
+
+        async handleDelete() {
+            const { isVisitor, isRemovable, isDeleting } = this;
+            if (isVisitor || !isRemovable || isDeleting) {
+                return;
+            }
+
+            const result = await Alert.ConfirmDelete(this.$t, 'calendar');
+            if (!result.value) {
+                return;
+            }
+            this.isDeleting = true;
+
+            const { id } = this.event;
+
+            try {
+                const url = `events/${id}`;
+                await this.$http.delete(url);
+                this.$emit('deleted', id);
+            } catch (error) {
+                this.$emit('error', error);
+            } finally {
+                this.isDeleting = false;
+            }
+        },
+
+        handleDuplicated(newEvent) {
+            this.$emit('duplicated', newEvent);
+        },
+
+        askDuplicate() {
+            const { event, handleDuplicated } = this;
+
+            this.$modal.show(DuplicateEvent, { event, onDuplicated: handleDuplicated }, {
+                width: 600,
+                draggable: true,
+                clickToClose: false,
+            });
+        },
     },
+    render() {
+        const {
+            $t: __,
+            isVisitor,
+            isEditable,
+            isConfirmable,
+            isPrintable,
+            isRemovable,
+            isEndToday,
+            eventSummaryPdfUrl,
+            isArchiving,
+            isConfirming,
+            isDeleting,
+            toggleConfirmed,
+            toggleArchived,
+            handleDelete,
+            askDuplicate,
+        } = this;
 
-    isEditable() {
-      const { isPast, isConfirmed, isInventoryDone } = this.event;
-      return !isPast || !(isInventoryDone || isConfirmed);
-    },
-
-    isRemovable() {
-      const { isConfirmed, isInventoryDone } = this.event;
-      return !(isConfirmed || isInventoryDone);
-    },
-
-    isConfirmable() {
-      return this.event.materials?.length === 0;
-    },
-
-    isEndToday() {
-      return this.event.endDate.isSame(new Date(), 'day');
-    },
-
-    eventSummaryPdfUrl() {
-      const { baseUrl } = Config;
-      const { id } = this.event || { id: null };
-      return `${baseUrl}/events/${id}/pdf`;
-    },
-  },
-  methods: {
-    toggleConfirmed() {
-      this.setEventConfirmation(!this.event.isConfirmed);
-    },
-
-    async setEventConfirmation(isConfirmed) {
-      if (this.isConfirming) {
-        return;
-      }
-      this.isConfirming = true;
-
-      const { id } = this.event;
-
-      try {
-        const url = `events/${id}`;
-        const { data } = await this.$http.put(url, { id, is_confirmed: isConfirmed });
-        this.$emit('saved', data);
-      } catch (error) {
-        this.$emit('error', error);
-      } finally {
-        this.isConfirming = false;
-      }
-    },
-
-    toggleArchived() {
-      this.setEventArchived(!this.event.isArchived);
-    },
-
-    async setEventArchived(isArchived) {
-      if (this.isArchiving) {
-        return;
-      }
-      this.isArchiving = true;
-
-      const { id } = this.event;
-
-      try {
-        const url = `events/${id}`;
-        const { data } = await this.$http.put(url, { id, is_archived: isArchived });
-        this.$emit('saved', data);
-      } catch (error) {
-        this.$emit('error', error);
-      } finally {
-        this.isArchiving = false;
-      }
-    },
-
-    async handleDelete() {
-      const { isVisitor, isRemovable, isDeleting } = this;
-      if (isVisitor || !isRemovable || isDeleting) {
-        return;
-      }
-
-      const result = await Alert.ConfirmDelete(this.$t, 'calendar');
-      if (!result.value) {
-        return;
-      }
-      this.isDeleting = true;
-
-      const { id } = this.event;
-
-      try {
-        const url = `events/${id}`;
-        await this.$http.delete(url);
-        this.$emit('deleted', id);
-      } catch (error) {
-        this.$emit('error', error);
-      } finally {
-        this.isDeleting = false;
-      }
-    },
-
-    handleDuplicated(newEvent) {
-      this.$emit('duplicated', newEvent);
-    },
-
-    askDuplicate() {
-      const { event, handleDuplicated } = this;
-
-      this.$modal.show(DuplicateEvent, { event, onDuplicated: handleDuplicated }, {
-        width: 600,
-        draggable: true,
-        clickToClose: false,
-      });
-    },
-  },
-  render() {
-    const {
-      $t: __,
-      isVisitor,
-      isEditable,
-      isConfirmable,
-      isPrintable,
-      isRemovable,
-      isEndToday,
-      eventSummaryPdfUrl,
-      isArchiving,
-      isConfirming,
-      isDeleting,
-      toggleConfirmed,
-      toggleArchived,
-      handleDelete,
-      askDuplicate,
-    } = this;
-
-    if (isVisitor) {
-      return isPrintable ? (
+        if (isVisitor) {
+            return isPrintable ? (
         <a href={eventSummaryPdfUrl} class="button outline" target="_blank">
           <i class="fas fa-print" /> {__('print')}
         </a>
-      ) : null;
-    }
+            ) : null;
+        }
 
-    const {
-      id,
-      isPast,
-      isConfirmed,
-      isInventoryDone,
-      isArchived,
-    } = this.event;
+        const {
+            id,
+            isPast,
+            isConfirmed,
+            isInventoryDone,
+            isArchived,
+        } = this.event;
 
-    return (
+        return (
       <div class="EventDetailsHeaderActions">
         {isPrintable && (
           <a href={eventSummaryPdfUrl} class="button outline" target="_blank">
@@ -243,6 +243,6 @@ export default {
           </template>
         </Dropdown>
       </div>
-    );
-  },
+        );
+    },
 };

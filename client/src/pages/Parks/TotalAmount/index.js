@@ -3,34 +3,34 @@ import ErrorMessage from '@/components/ErrorMessage/index';
 import formatAmount from '@/utils/formatAmount';
 
 export default {
-  name: 'ParkTotalAmount',
-  props: {
-    parkId: Number,
-  },
-  data() {
-    return {
-      amount: null,
-      loading: false,
-      error: null,
-    };
-  },
-  methods: {
-    async handleCalculate() {
-      this.loading = true;
-      try {
-        const { data } = await this.$http.get(`parks/${this.parkId}/total-amount`);
-        this.amount = data.totalAmount;
-      } catch (error) {
-        this.error = error;
-      } finally {
-        this.loading = false;
-      }
+    name: 'ParkTotalAmount',
+    props: {
+        parkId: Number,
     },
-  },
-  render() {
-    const { $t: __, handleCalculate, loading, error, amount } = this;
+    data() {
+        return {
+            amount: null,
+            loading: false,
+            error: null,
+        };
+    },
+    methods: {
+        async handleCalculate() {
+            this.loading = true;
+            try {
+                const { data } = await this.$http.get(`parks/${this.parkId}/total-amount`);
+                this.amount = data.totalAmount;
+            } catch (error) {
+                this.error = error;
+            } finally {
+                this.loading = false;
+            }
+        },
+    },
+    render() {
+        const { $t: __, handleCalculate, loading, error, amount } = this;
 
-    return (
+        return (
       <div class="ParkTotalAmount">
         {amount === null && (
           <button
@@ -50,6 +50,6 @@ export default {
           </div>
         )}
       </div>
-    );
-  },
+        );
+    },
 };

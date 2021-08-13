@@ -4,54 +4,54 @@ import FormField from '@/components/FormField';
 const LIST_MODES = ['categories', 'sub-categories', 'parks', 'flat'];
 
 export default {
-  name: 'EventSummarySettingsForm',
-  props: {
-    settings: Object,
-    isSaving: Boolean,
-    errors: Object,
-  },
-  data() {
-    const initialListModeOptions = LIST_MODES.map((mode) => (
-      { value: mode, label: `page-settings.event-summary.list-display-mode-${mode}` }
-    ));
-
-    return {
-      initialListModeOptions,
-      defaultListMode: 'sub-categories',
-    };
-  },
-  computed: {
-    listModeOptions() {
-      const parks = this.$store.state.parks.list;
-
-      return this.initialListModeOptions.filter((mode) => (
-        mode.value !== 'parks' || parks.length > 1
-      ));
+    name: 'EventSummarySettingsForm',
+    props: {
+        settings: Object,
+        isSaving: Boolean,
+        errors: Object,
     },
-  },
-  mounted() {
-    this.$store.dispatch('parks/fetch');
-  },
-  methods: {
-    handleSubmit(e) {
-      e.preventDefault();
-      const formData = new FormData(e.currentTarget);
-      const data = Object.fromEntries(formData);
-      this.$emit('save', data);
-    },
-  },
-  render() {
-    const {
-      $t: __,
-      settings,
-      listModeOptions,
-      defaultListMode,
-      handleSubmit,
-      isSaving,
-      errors,
-    } = this;
+    data() {
+        const initialListModeOptions = LIST_MODES.map((mode) => (
+            { value: mode, label: `page-settings.event-summary.list-display-mode-${mode}` }
+        ));
 
-    return (
+        return {
+            initialListModeOptions,
+            defaultListMode: 'sub-categories',
+        };
+    },
+    computed: {
+        listModeOptions() {
+            const parks = this.$store.state.parks.list;
+
+            return this.initialListModeOptions.filter((mode) => (
+                mode.value !== 'parks' || parks.length > 1
+            ));
+        },
+    },
+    mounted() {
+        this.$store.dispatch('parks/fetch');
+    },
+    methods: {
+        handleSubmit(e) {
+            e.preventDefault();
+            const formData = new FormData(e.currentTarget);
+            const data = Object.fromEntries(formData);
+            this.$emit('save', data);
+        },
+    },
+    render() {
+        const {
+            $t: __,
+            settings,
+            listModeOptions,
+            defaultListMode,
+            handleSubmit,
+            isSaving,
+            errors,
+        } = this;
+
+        return (
       <form class="EventSummarySettingsForm" onSubmit={handleSubmit}>
         <section class="EventSummarySettingsForm__section">
           <h3>{__('page-settings.event-summary.material-list')}</h3>
@@ -88,6 +88,6 @@ export default {
           </button>
         </section>
       </form>
-    );
-  },
+        );
+    },
 };

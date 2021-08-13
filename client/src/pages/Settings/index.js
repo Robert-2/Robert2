@@ -2,11 +2,11 @@ import { Tabs, Tab } from 'vue-slim-tabs';
 import EventSummarySettings from './EventSummary';
 
 export default {
-  name: 'Settings',
-  render() {
-    const { $t: __ } = this;
+    name: 'Settings',
+    render() {
+        const { $t: __ } = this;
 
-    return (
+        return (
       <div class="content">
         <div class="content__main-view">
           <div class="Settings">
@@ -21,6 +21,6 @@ export default {
           </div>
         </div>
       </div>
-    );
-  },
+        );
+    },
 };

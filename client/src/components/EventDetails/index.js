@@ -14,161 +14,161 @@ import Estimates from './Estimates';
 import Billing from './Billing';
 
 export default {
-  name: 'EventDetails',
-  props: {
-    eventId: { type: Number, required: true },
-    onUpdateEvent: Function,
-    onDuplicateEvent: Function,
-  },
-  data() {
-    return {
-      event: null,
-      discountRate: 0,
-      showBilling: Config.billingMode !== 'none',
-      lastBill: null,
-      lastEstimate: null,
-      isLoading: false,
-      error: null,
-    };
-  },
-  mounted() {
-    this.getEvent();
-  },
-  computed: {
-    hasEventTechnicians() {
-      return this.event?.technicians?.length > 0;
+    name: 'EventDetails',
+    props: {
+        eventId: { type: Number, required: true },
+        onUpdateEvent: Function,
+        onDuplicateEvent: Function,
     },
-
-    hasMaterials() {
-      return this.event?.materials?.length > 0;
+    data() {
+        return {
+            event: null,
+            discountRate: 0,
+            showBilling: Config.billingMode !== 'none',
+            lastBill: null,
+            lastEstimate: null,
+            isLoading: false,
+            error: null,
+        };
     },
+    mounted() {
+        this.getEvent();
+    },
+    computed: {
+        hasEventTechnicians() {
+            return this.event?.technicians?.length > 0;
+        },
 
-    hasMaterialsProblems() {
-      return (
-        (this.event?.hasMissingMaterials && !this.event?.is_return_inventory_done)
+        hasMaterials() {
+            return this.event?.materials?.length > 0;
+        },
+
+        hasMaterialsProblems() {
+            return (
+                (this.event?.hasMissingMaterials && !this.event?.is_return_inventory_done)
         || this.event?.hasNotReturnedMaterials
-      );
+            );
+        },
     },
-  },
-  methods: {
+    methods: {
     // ------------------------------------------------------
     // -
     // -    Handlers
     // -
     // ------------------------------------------------------
 
-    handleEstimateCreated(newEstimate) {
-      this.event.estimates.unshift(newEstimate);
-      this.lastEstimate = { ...newEstimate, date: moment(newEstimate.date) };
-      this.updateDiscountRate();
+        handleEstimateCreated(newEstimate) {
+            this.event.estimates.unshift(newEstimate);
+            this.lastEstimate = { ...newEstimate, date: moment(newEstimate.date) };
+            this.updateDiscountRate();
+        },
+
+        handleEstimateDeleted(estimateId) {
+            const newEstimatesList = this.event.estimates.filter(
+                (estimate) => (estimate.id !== estimateId),
+            );
+            this.event.estimates = newEstimatesList;
+            const [lastOne] = newEstimatesList;
+            this.lastEstimate = lastOne ? { ...lastOne, date: moment(lastOne.date) } : null;
+            this.updateDiscountRate();
+        },
+
+        handleBillCreated(newBill) {
+            this.event.bills.unshift(newBill);
+            this.lastBill = { ...newBill, date: moment(newBill.date) };
+            this.updateDiscountRate();
+        },
+
+        handleUpdateEvent(newData) {
+            this.setEventData(newData);
+
+            const { onUpdateEvent } = this.$props;
+            if (onUpdateEvent) {
+                onUpdateEvent(newData);
+            }
+        },
+
+        handleDuplicateEvent(newEvent) {
+            const { onDuplicateEvent } = this.$props;
+            if (onDuplicateEvent) {
+                onDuplicateEvent(newEvent);
+            }
+            this.handleClose();
+        },
+
+        handleClose() {
+            this.$emit('close');
+        },
+
+        // ------------------------------------------------------
+        // -
+        // -    Internal methods
+        // -
+        // ------------------------------------------------------
+
+        async getEvent() {
+            try {
+                this.error = null;
+                this.isLoading = true;
+
+                const { eventId } = this.$props;
+                const url = `events/${eventId}`;
+
+                const { data } = await this.$http.get(url);
+                this.setEventData(data);
+            } catch (error) {
+                this.error = error;
+            } finally {
+                this.isLoading = false;
+            }
+        },
+
+        updateDiscountRate() {
+            this.discountRate = getDiscountRateFromLast(this.lastBill, this.lastEstimate);
+        },
+
+        setEventData(data) {
+            this.event = {
+                ...formatTimelineEvent(data),
+                ...data,
+            };
+
+            const [lastBill] = data.bills;
+            const [lastEstimate] = data.estimates;
+
+            if (lastBill) {
+                this.lastBill = { ...lastBill, date: moment(lastBill.date) };
+            }
+
+            if (lastEstimate) {
+                this.lastEstimate = { ...lastEstimate, date: moment(lastEstimate.date) };
+            }
+
+            this.updateDiscountRate();
+        },
     },
+    render() {
+        const {
+            $t: __,
+            event,
+            discountRate,
+            showBilling,
+            lastBill,
+            lastEstimate,
+            hasEventTechnicians,
+            hasMaterials,
+            hasMaterialsProblems,
+            handleClose,
+            isLoading,
+            error,
+            handleEstimateCreated,
+            handleEstimateDeleted,
+            handleBillCreated,
+            handleUpdateEvent,
+            handleDuplicateEvent,
+        } = this;
 
-    handleEstimateDeleted(estimateId) {
-      const newEstimatesList = this.event.estimates.filter(
-        (estimate) => (estimate.id !== estimateId),
-      );
-      this.event.estimates = newEstimatesList;
-      const [lastOne] = newEstimatesList;
-      this.lastEstimate = lastOne ? { ...lastOne, date: moment(lastOne.date) } : null;
-      this.updateDiscountRate();
-    },
-
-    handleBillCreated(newBill) {
-      this.event.bills.unshift(newBill);
-      this.lastBill = { ...newBill, date: moment(newBill.date) };
-      this.updateDiscountRate();
-    },
-
-    handleUpdateEvent(newData) {
-      this.setEventData(newData);
-
-      const { onUpdateEvent } = this.$props;
-      if (onUpdateEvent) {
-        onUpdateEvent(newData);
-      }
-    },
-
-    handleDuplicateEvent(newEvent) {
-      const { onDuplicateEvent } = this.$props;
-      if (onDuplicateEvent) {
-        onDuplicateEvent(newEvent);
-      }
-      this.handleClose();
-    },
-
-    handleClose() {
-      this.$emit('close');
-    },
-
-    // ------------------------------------------------------
-    // -
-    // -    Internal methods
-    // -
-    // ------------------------------------------------------
-
-    async getEvent() {
-      try {
-        this.error = null;
-        this.isLoading = true;
-
-        const { eventId } = this.$props;
-        const url = `events/${eventId}`;
-
-        const { data } = await this.$http.get(url);
-        this.setEventData(data);
-      } catch (error) {
-        this.error = error;
-      } finally {
-        this.isLoading = false;
-      }
-    },
-
-    updateDiscountRate() {
-      this.discountRate = getDiscountRateFromLast(this.lastBill, this.lastEstimate);
-    },
-
-    setEventData(data) {
-      this.event = {
-        ...formatTimelineEvent(data),
-        ...data,
-      };
-
-      const [lastBill] = data.bills;
-      const [lastEstimate] = data.estimates;
-
-      if (lastBill) {
-        this.lastBill = { ...lastBill, date: moment(lastBill.date) };
-      }
-
-      if (lastEstimate) {
-        this.lastEstimate = { ...lastEstimate, date: moment(lastEstimate.date) };
-      }
-
-      this.updateDiscountRate();
-    },
-  },
-  render() {
-    const {
-      $t: __,
-      event,
-      discountRate,
-      showBilling,
-      lastBill,
-      lastEstimate,
-      hasEventTechnicians,
-      hasMaterials,
-      hasMaterialsProblems,
-      handleClose,
-      isLoading,
-      error,
-      handleEstimateCreated,
-      handleEstimateDeleted,
-      handleBillCreated,
-      handleUpdateEvent,
-      handleDuplicateEvent,
-    } = this;
-
-    return (
+        return (
       <div class="EventDetails">
         {isLoading && <Loading />}
         {(!isLoading && event) && (
@@ -254,6 +254,6 @@ export default {
         )}
         {error && <ErrorMessage error={error} />}
       </div>
-    );
-  },
+        );
+    },
 };

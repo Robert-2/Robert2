@@ -1,14 +1,14 @@
 import './index.scss';
 
 export default {
-  name: 'EventBeneficiaryItem',
-  props: {
-    beneficiary: Object,
-  },
-  render() {
-    const { $t: __, beneficiary } = this;
+    name: 'EventBeneficiaryItem',
+    props: {
+        beneficiary: Object,
+    },
+    render() {
+        const { $t: __, beneficiary } = this;
 
-    return (
+        return (
       <div class="EventBeneficiaryItem">
         <router-link
           to={`/beneficiaries/${beneficiary.id}`}
@@ -25,6 +25,6 @@ export default {
           </router-link>
         )}
       </div>
-    );
-  },
+        );
+    },
 };

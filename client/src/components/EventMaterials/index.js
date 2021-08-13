@@ -3,46 +3,46 @@ import formatAmount from '@/utils/formatAmount';
 import dispatchMaterialInSections from '@/utils/dispatchMaterialInSections';
 
 export default {
-  name: 'EventMaterials',
-  props: {
-    materials: Array,
-    start: Object,
-    end: Object,
-    withRentalPrices: { type: Boolean, default: true },
-    hideDetails: { type: Boolean, default: false },
-  },
-  data() {
-    return { showMaterialsList: !this.hideDetails };
-  },
-  computed: {
-    categories() {
-      const categoryNameGetter = this.$store.getters['categories/categoryName'];
-      return dispatchMaterialInSections(
-        this.materials,
-        'category_id',
-        categoryNameGetter,
-        'price',
-      );
+    name: 'EventMaterials',
+    props: {
+        materials: Array,
+        start: Object,
+        end: Object,
+        withRentalPrices: { type: Boolean, default: true },
+        hideDetails: { type: Boolean, default: false },
     },
-  },
-  created() {
-    this.$store.dispatch('categories/fetch');
-  },
-  methods: {
-    formatAmount(amount) {
-      return formatAmount(amount);
+    data() {
+        return { showMaterialsList: !this.hideDetails };
     },
-  },
-  render() {
-    const {
-      $t: __,
-      materials,
-      categories,
-      showMaterialsList,
-      withRentalPrices,
-    } = this;
+    computed: {
+        categories() {
+            const categoryNameGetter = this.$store.getters['categories/categoryName'];
+            return dispatchMaterialInSections(
+                this.materials,
+                'category_id',
+                categoryNameGetter,
+                'price',
+            );
+        },
+    },
+    created() {
+        this.$store.dispatch('categories/fetch');
+    },
+    methods: {
+        formatAmount(amount) {
+            return formatAmount(amount);
+        },
+    },
+    render() {
+        const {
+            $t: __,
+            materials,
+            categories,
+            showMaterialsList,
+            withRentalPrices,
+        } = this;
 
-    return (
+        return (
       <div class="EventMaterials">
         {(!showMaterialsList || materials.length > 30) && (
           <div class="EventMaterials__toggle">
@@ -51,9 +51,9 @@ export default {
               class={{ info: !showMaterialsList }}
             >
               <i class={{
-                fas: true,
-                'fa-eye': !showMaterialsList,
-                'fa-eye-slash': showMaterialsList,
+                  fas: true,
+                  'fa-eye': !showMaterialsList,
+                  'fa-eye-slash': showMaterialsList,
               }} />
               {__(showMaterialsList ? 'hide-materials-details' : 'show-materials-details')}
             </button>
@@ -111,6 +111,6 @@ export default {
           </div>
         )}
       </div>
-    );
-  },
+        );
+    },
 };

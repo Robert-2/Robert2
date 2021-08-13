@@ -3,32 +3,32 @@ import getMainIcon from '@/utils/timeline-event/getMainIcon';
 import Actions from './Actions';
 
 export default {
-  name: 'CalendarEventDetailsHeader',
-  props: {
-    event: { type: Object, required: true },
-  },
-  computed: {
-    mainIcon() {
-      const withProblem = this.event.hasMissingMaterials || this.event.hasNotReturnedMaterials;
-      return withProblem ? 'exclamation-triangle' : getMainIcon(this.event);
+    name: 'CalendarEventDetailsHeader',
+    props: {
+        event: { type: Object, required: true },
     },
+    computed: {
+        mainIcon() {
+            const withProblem = this.event.hasMissingMaterials || this.event.hasNotReturnedMaterials;
+            return withProblem ? 'exclamation-triangle' : getMainIcon(this.event);
+        },
 
-    fromToDates() {
-      return {
-        from: this.event?.startDate.format('L') || '?',
-        to: this.event?.endDate.format('L') || '?',
-      };
+        fromToDates() {
+            return {
+                from: this.event?.startDate.format('L') || '?',
+                to: this.event?.endDate.format('L') || '?',
+            };
+        },
     },
-  },
-  render() {
-    const {
-      $t: __,
-      event,
-      mainIcon,
-      fromToDates,
-    } = this;
+    render() {
+        const {
+            $t: __,
+            event,
+            mainIcon,
+            fromToDates,
+        } = this;
 
-    return (
+        return (
       <header class="EventDetailsHeader">
         <div class="EventDetailsHeader__status">
           <i class={`fas fa-${mainIcon}`} />
@@ -57,6 +57,6 @@ export default {
           <i class="fas fa-times" />
         </button>
       </header>
-    );
-  },
+        );
+    },
 };

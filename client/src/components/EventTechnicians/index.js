@@ -2,24 +2,24 @@ import './index.scss';
 import EventTechnicianItem from './Item';
 
 export default {
-  name: 'EventTechnicians',
-  props: {
-    eventTechnicians: Array,
-    warningEmptyText: String,
-  },
-  computed: {
-    uniqueTechnicians() {
-      return this.eventTechnicians.filter((eventTechnician, index, self) => (
-        self.findIndex(
-          ({ technician }) => (technician.id === eventTechnician.technician.id),
-        ) === index
-      ));
+    name: 'EventTechnicians',
+    props: {
+        eventTechnicians: Array,
+        warningEmptyText: String,
     },
-  },
-  render() {
-    const { $t: __, uniqueTechnicians, warningEmptyText } = this;
+    computed: {
+        uniqueTechnicians() {
+            return this.eventTechnicians.filter((eventTechnician, index, self) => (
+                self.findIndex(
+                    ({ technician }) => (technician.id === eventTechnician.technician.id),
+                ) === index
+            ));
+        },
+    },
+    render() {
+        const { $t: __, uniqueTechnicians, warningEmptyText } = this;
 
-    return (
+        return (
       <div class="EventTechnicians">
         {uniqueTechnicians.length === 0 && warningEmptyText && (
           <div class="EventTechnicians__nobody">
@@ -37,6 +37,6 @@ export default {
           </div>
         )}
       </div>
-    );
-  },
+        );
+    },
 };

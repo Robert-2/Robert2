@@ -1,11 +1,11 @@
 import './index.scss';
 
 export default {
-  name: 'CalendarCaption',
-  render() {
-    const { $t: __ } = this;
+    name: 'CalendarCaption',
+    render() {
+        const { $t: __ } = this;
 
-    return (
+        return (
       <div class="CalendarCaption">
         <div class="CalendarCaption__group">
           <h4 class="CalendarCaption__title">
@@ -57,6 +57,6 @@ export default {
           </div>
         </div>
       </div>
-    );
-  },
+        );
+    },
 };

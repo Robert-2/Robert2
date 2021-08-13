@@ -6,26 +6,26 @@ import EventTotals from '@/components/EventTotals';
 import LocationText from '@/components/LocationText/LocationText.vue';
 
 export default {
-  name: 'EventDetailsInfos',
-  props: {
-    event: { type: Object, required: true },
-    discountRate: Number,
-  },
-  data() {
-    return {
-      showBilling: Config.billingMode !== 'none',
-    };
-  },
-  computed: {
-    hasMaterials() {
-      return this.event?.materials?.length > 0;
+    name: 'EventDetailsInfos',
+    props: {
+        event: { type: Object, required: true },
+        discountRate: Number,
     },
-  },
-  render() {
-    const { event, discountRate } = this.$props;
-    const { $t: __, hasMaterials, showBilling } = this;
+    data() {
+        return {
+            showBilling: Config.billingMode !== 'none',
+        };
+    },
+    computed: {
+        hasMaterials() {
+            return this.event?.materials?.length > 0;
+        },
+    },
+    render() {
+        const { event, discountRate } = this.$props;
+        const { $t: __, hasMaterials, showBilling } = this;
 
-    return (
+        return (
       <div class="EventDetailsInfos">
         <div class="EventDetailsInfos__base-infos">
           {event.location && <LocationText location={event.location} />}
@@ -43,8 +43,8 @@ export default {
         )}
         {hasMaterials && !event.isPast && (
           <div class={[
-            'EventDetailsInfos__confirmation',
-            { 'EventDetailsInfos__confirmation--confirmed': event.is_confirmed },
+              'EventDetailsInfos__confirmation',
+              { 'EventDetailsInfos__confirmation--confirmed': event.is_confirmed },
           ]}>
             {!event.is_confirmed && (
               <div>
@@ -70,6 +70,6 @@ export default {
           />
         )}
       </div>
-    );
-  },
+        );
+    },
 };

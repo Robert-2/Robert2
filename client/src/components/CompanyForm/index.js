@@ -2,40 +2,40 @@ import './index.scss';
 import FormField from '@/components/FormField';
 
 export default {
-  name: 'CompanyForm',
-  props: {
-    company: Object,
-    errors: Object,
-  },
-  computed: {
-    countriesOptions() {
-      return this.$store.getters['countries/options'];
+    name: 'CompanyForm',
+    props: {
+        company: Object,
+        errors: Object,
     },
-  },
-  mounted() {
-    this.$store.dispatch('countries/fetch');
-  },
-  methods: {
-    doSubmit(e) {
-      e.preventDefault();
-      this.$emit('submit', e);
+    computed: {
+        countriesOptions() {
+            return this.$store.getters['countries/options'];
+        },
     },
+    mounted() {
+        this.$store.dispatch('countries/fetch');
+    },
+    methods: {
+        doSubmit(e) {
+            e.preventDefault();
+            this.$emit('submit', e);
+        },
 
-    goBack() {
-      this.$router.back();
+        goBack() {
+            this.$router.back();
+        },
     },
-  },
-  render() {
-    const {
-      $t: __,
-      company,
-      errors,
-      countriesOptions,
-      doSubmit,
-      goBack,
-    } = this;
+    render() {
+        const {
+            $t: __,
+            company,
+            errors,
+            countriesOptions,
+            doSubmit,
+            goBack,
+        } = this;
 
-    return (
+        return (
       <form class="Form CompanyForm" onSubmit={doSubmit}>
         <section class="Form__fieldset">
           <h4 class="Form__fieldset__title">
@@ -111,6 +111,6 @@ export default {
           </button>
         </section>
       </form>
-    );
-  },
+        );
+    },
 };

@@ -2,28 +2,28 @@ import './index.scss';
 import { Fragment } from 'vue-fragment';
 
 const TechnicianViewInfos = {
-  name: 'TechnicianViewInfos',
-  props: {
-    technician: { type: Object, required: true },
-  },
-  render() {
-    const { $t: __ } = this;
-    const {
-      id,
-      user_id: userId,
-      full_name: fullName,
-      nickname,
-      reference,
-      email,
-      phone,
-      street,
-      postalCode,
-      locality,
-      country,
-      note,
-    } = this.technician;
+    name: 'TechnicianViewInfos',
+    props: {
+        technician: { type: Object, required: true },
+    },
+    render() {
+        const { $t: __ } = this;
+        const {
+            id,
+            user_id: userId,
+            full_name: fullName,
+            nickname,
+            reference,
+            email,
+            phone,
+            street,
+            postalCode,
+            locality,
+            country,
+            note,
+        } = this.technician;
 
-    return (
+        return (
       <div class="TechnicianViewInfos">
         <div class="TechnicianViewInfos__main">
           <h3 class="TechnicianViewInfos__name">
@@ -97,8 +97,8 @@ const TechnicianViewInfos = {
           </router-link>
         </div>
       </div>
-    );
-  },
+        );
+    },
 };
 
 export default TechnicianViewInfos;

@@ -1,15 +1,15 @@
 export default {
-  name: 'TechniciansItemActions',
-  props: {
-    id: { type: Number, required: true },
-    isTrashMode: Boolean,
-  },
-  render() {
-    const { $t: __, $props } = this;
-    const { isTrashMode, id } = $props;
+    name: 'TechniciansItemActions',
+    props: {
+        id: { type: Number, required: true },
+        isTrashMode: Boolean,
+    },
+    render() {
+        const { $t: __, $props } = this;
+        const { isTrashMode, id } = $props;
 
-    if (isTrashMode) {
-      return (
+        if (isTrashMode) {
+            return (
         <div>
           <button
             v-tooltip={__('action-restore')}
@@ -26,10 +26,10 @@ export default {
             <i class="fas fa-trash-alt" />
           </button>
         </div>
-      );
-    }
+            );
+        }
 
-    return (
+        return (
       <div>
         <router-link
           v-tooltip={__('action-view')}
@@ -53,6 +53,6 @@ export default {
           <i class="fas fa-trash" />
         </button>
       </div>
-    );
-  },
+        );
+    },
 };

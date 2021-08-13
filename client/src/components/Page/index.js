@@ -4,38 +4,38 @@ import Loading from '@/components/Loading';
 import ErrorMessage from '@/components/ErrorMessage';
 
 const Page = {
-  name: 'Page',
-  props: {
-    name: { type: String, required: true },
-    title: String,
-    help: String,
-    error: String,
-    isLoading: Boolean,
-    actions: Array,
-    render: Function,
-  },
-  watch: {
-    title(newTitle) {
-      this.updateTitle(newTitle);
+    name: 'Page',
+    props: {
+        name: { type: String, required: true },
+        title: String,
+        help: String,
+        error: String,
+        isLoading: Boolean,
+        actions: Array,
+        render: Function,
     },
-  },
-  mounted() {
-    this.updateTitle(this.title);
-  },
-  beforeDestroy() {
-    this.$store.commit('setPageRawTitle', null);
-  },
-  methods: {
-    updateTitle(newTitle) {
-      this.$store.commit('setPageRawTitle', newTitle ?? null);
-      document.title = [newTitle, APP_NAME].filter(Boolean).join(' - ');
+    watch: {
+        title(newTitle) {
+            this.updateTitle(newTitle);
+        },
     },
-  },
-  render() {
-    const { help, actions, error, isLoading, render } = this.$props;
-    const content = render ? render() : this.$slots.default;
+    mounted() {
+        this.updateTitle(this.title);
+    },
+    beforeDestroy() {
+        this.$store.commit('setPageRawTitle', null);
+    },
+    methods: {
+        updateTitle(newTitle) {
+            this.$store.commit('setPageRawTitle', newTitle ?? null);
+            document.title = [newTitle, APP_NAME].filter(Boolean).join(' - ');
+        },
+    },
+    render() {
+        const { help, actions, error, isLoading, render } = this.$props;
+        const content = render ? render() : this.$slots.default;
 
-    return (
+        return (
       <div class="content">
         <div class="content__header header-page">
           <div class="header-page__help">
@@ -55,8 +55,8 @@ const Page = {
           </div>
         </div>
       </div>
-    );
-  },
+        );
+    },
 };
 
 export default Page;

@@ -2,15 +2,15 @@ import './index.scss';
 import EventBeneficiaryItem from './Item';
 
 export default {
-  name: 'EventBeneficiaries',
-  props: {
-    beneficiaries: Array,
-    warningEmptyText: String,
-  },
-  render() {
-    const { $t: __, beneficiaries, warningEmptyText } = this;
+    name: 'EventBeneficiaries',
+    props: {
+        beneficiaries: Array,
+        warningEmptyText: String,
+    },
+    render() {
+        const { $t: __, beneficiaries, warningEmptyText } = this;
 
-    return (
+        return (
       <div class="EventBeneficiaries">
         {beneficiaries.length === 0 && warningEmptyText && (
           <div class="EventBeneficiaries__nobody">
@@ -28,6 +28,6 @@ export default {
           </div>
         )}
       </div>
-    );
-  },
+        );
+    },
 };

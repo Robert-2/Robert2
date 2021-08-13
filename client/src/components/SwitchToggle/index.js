@@ -1,38 +1,38 @@
 import './index.scss';
 
 const SwitchToggle = {
-  name: 'SwitchToggle',
-  props: {
-    value: { type: Boolean, required: true },
-    locked: { type: Boolean, default: false },
-    hideLabel: { type: Boolean, default: false },
-    lockedReason: String,
-  },
-  methods: {
-    handleSwitch() {
-      if (this.locked) {
-        return;
-      }
-
-      this.$emit('input', !this.value);
+    name: 'SwitchToggle',
+    props: {
+        value: { type: Boolean, required: true },
+        locked: { type: Boolean, default: false },
+        hideLabel: { type: Boolean, default: false },
+        lockedReason: String,
     },
-  },
-  render() {
-    const {
-      $t: __,
-      value,
-      locked,
-      lockedReason,
-      handleSwitch,
-      hideLabel,
-    } = this;
+    methods: {
+        handleSwitch() {
+            if (this.locked) {
+                return;
+            }
 
-    const classNames = ['SwitchToggle', {
-      'SwitchToggle--enabled': value,
-      'SwitchToggle--locked': locked,
-    }];
+            this.$emit('input', !this.value);
+        },
+    },
+    render() {
+        const {
+            $t: __,
+            value,
+            locked,
+            lockedReason,
+            handleSwitch,
+            hideLabel,
+        } = this;
 
-    return (
+        const classNames = ['SwitchToggle', {
+            'SwitchToggle--enabled': value,
+            'SwitchToggle--locked': locked,
+        }];
+
+        return (
       <div class={classNames} onClick={handleSwitch}>
         <div class="SwitchToggle__slide">
           <div class="SwitchToggle__button" />
@@ -49,8 +49,8 @@ const SwitchToggle = {
           </div>
         )}
       </div>
-    );
-  },
+        );
+    },
 };
 
 export default SwitchToggle;

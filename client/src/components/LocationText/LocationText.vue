@@ -1,16 +1,16 @@
 <template>
-  <div class="LocationText">
-    <i class="fas fa-map-marker-alt" />
-    {{ $t('in') }}
-    <strong>{{ location }}</strong>
-    <a
-      :href="`https://www.openstreetmap.org/search?query=${location}`"
-      target="_blank"
-      :title="$t('open-in-openstreetmap')"
-    >
-      &nbsp; <i class="fas fa-external-link-alt" />
-    </a>
-  </div>
+    <div class="LocationText">
+        <i class="fas fa-map-marker-alt" />
+        {{ $t('in') }}
+        <strong>{{ location }}</strong>
+        <a
+            :href="`https://www.openstreetmap.org/search?query=${location}`"
+            target="_blank"
+            :title="$t('open-in-openstreetmap')"
+        >
+            &nbsp; <i class="fas fa-external-link-alt" />
+        </a>
+    </div>
 </template>
 
 <style lang="scss">
@@ -20,9 +20,9 @@
 
 <script>
 export default {
-  name: 'LocationText',
-  props: {
-    location: String,
-  },
+    name: 'LocationText',
+    props: {
+        location: String,
+    },
 };
 </script>
