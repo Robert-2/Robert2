@@ -3,6 +3,7 @@ const DEV_CLIENT_URL = new URL('http://0.0.0.0:8081');
 const config = {
     publicPath: '/webclient/',
     runtimeCompiler: true,
+    lintOnSave: false,
     productionSourceMap: false,
     filenameHashing: false,
     chainWebpack: (webpackConfig) => {

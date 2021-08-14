@@ -1,5 +1,5 @@
-/* eslint-disable quotes */
-/* eslint-disable quote-props */
+/* eslint-disable babel/quotes */
+
 export default {
     errors: {
         'generic': "Erreur\u00a0: {message}",
@@ -29,5 +29,3 @@ export default {
         'file-already-exists': "Ce fichier est déjà présent dans la liste.",
     },
 };
-/* eslint-enable quotes */
-/* eslint-enable quote-props */

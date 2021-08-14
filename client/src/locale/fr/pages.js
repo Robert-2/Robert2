@@ -1,5 +1,5 @@
-/* eslint-disable quotes */
-/* eslint-disable quote-props */
+/* eslint-disable babel/quotes */
+
 export default {
     'page-login': {
         'title': "Connexion",
@@ -394,5 +394,3 @@ export default {
         'confirm-delete': "Voulez-vous vraiment supprimer ce devis\u00a0?",
     },
 };
-/* eslint-enable quotes */
-/* eslint-enable quote-props */

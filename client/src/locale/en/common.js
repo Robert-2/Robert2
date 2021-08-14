@@ -1,5 +1,5 @@
-/* eslint-disable quotes */
-/* eslint-disable quote-props */
+/* eslint-disable babel/quotes */
+
 export default {
     'hello-pseudo': "Hello {pseudo}!",
     'your-profile': "Your profile",
@@ -277,5 +277,3 @@ export default {
     'french': "Français",
     'english': "English",
 };
-/* eslint-enable quotes */
-/* eslint-enable quote-props */

@@ -5,8 +5,8 @@ on:
     pull_request:
         types: [opened, synchronize, reopened]
 jobs:
-    client-linting:
-        name     : "Client: Linting"
+    client-linting-js:
+        name     : "Client: Linting (Js)"
         runs-on  : ubuntu-latest
         defaults : { run: { working-directory: ./client }}
         steps    :

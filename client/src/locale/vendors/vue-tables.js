@@ -1,5 +1,5 @@
-/* eslint-disable quotes */
-/* eslint-disable quote-props */
+/* eslint-disable babel/quotes */
+
 const fr = {
     'count': "Enregistrements {from} à {to} sur {count}|{count} enregistrements|Un enregistrement",
     'first': "Première",
@@ -29,7 +29,5 @@ const en = {
     'defaultOption': "Select {column}",
     'columns': "Col.",
 };
-/* eslint-enable quotes */
-/* eslint-enable quote-props */
 
 export default { fr, en };
