@@ -19,10 +19,10 @@ export default {
     computed: {
         isPrintable() {
             return (
-                this.event.materials
-                && this.event.materials.length > 0
-                && this.event.beneficiaries
-                && this.event.beneficiaries.length > 0
+                this.event.materials &&
+                this.event.materials.length > 0 &&
+                this.event.beneficiaries &&
+                this.event.beneficiaries.length > 0
             );
         },
 

@@ -46,7 +46,7 @@ const Inventory = {
         },
         getMaterialQuantities(materialId) {
             const material = this.materials.find((_material) => _material.id === materialId);
-            invariant(material, "Le matériel demandé ne fait pas partie du matériel de l'inventaire.");
+            invariant(material, 'Le matériel demandé ne fait pas partie du matériel de l\'inventaire.');
 
             const quantities = this.quantities.find(({ id }) => id === materialId);
             return {

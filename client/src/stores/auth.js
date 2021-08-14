@@ -73,6 +73,7 @@ export default {
                 if (error.httpCode === 401 /* Unauthorized */) {
                     dispatch('logout');
                 } else {
+                    // eslint-disable-next-line no-console
                     console.error('Error:', error.message || error.code);
                 }
             }

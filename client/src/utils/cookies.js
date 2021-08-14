@@ -9,7 +9,7 @@ const Cookies = CookiesBase.withConverter({
                 // Revert the characters that are unnecessarly encoded but are
                 // allowed in a cookie value, except for the plus sign (%2B)
                 .replace(
-                    /%(23|24|26|3A|3C|3E|3D|2F|3F|40|5B|5D|5E|60|7B|7D|7C)/g,
+                    /%(?:23|24|26|3A|3C|3E|3D|2F|3F|40|5B|5D|5E|60|7B|7D|7C)/g,
                     decodeURIComponent,
                 )
         );
@@ -20,7 +20,7 @@ const Cookies = CookiesBase.withConverter({
                 // Decode the plus sign to spaces first, otherwise "legit"
                 // encoded pluses will be replaced incorrectly
                 .replace(/\+/g, ' ')
-                .replace(/(%[0-9A-Z]{2})+/g, decodeURIComponent)
+                .replace(/(?:%[0-9A-Z]{2})+/g, decodeURIComponent)
         );
     },
 });

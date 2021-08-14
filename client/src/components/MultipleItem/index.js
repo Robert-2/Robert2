@@ -61,6 +61,7 @@ export default {
                 .then(({ data }) => {
                     this.fieldOptions = this.formatOptions(data.data);
                 })
+                // eslint-disable-next-line no-console
                 .catch(console.error)
                 .finally(() => {
                     loading(false);

@@ -37,18 +37,18 @@ describe('Calendar/utils.formatEvent', () => {
         expect(result).toBeDefined();
 
         expect(result.title).toEqual(
-            '<strong>Test event</strong>'
-            + '\n\n<i class="fas fa-map-marker-alt"></i> Testville'
-            + '\n<i class="fas fa-clock"></i> from-date-to-date'
-            + '\n<i class="fas fa-address-book"></i> for Jean Benef'
-            + '\n<i class="fas fa-people-carry"></i> with Marc Tekos'
-            + '\n\n<i class="fas fa-exclamation-triangle"></i> page-calendar.this-event-has-not-returned-materials'
-            + '\n<i class="fas fa-history"></i> page-calendar.this-event-is-past'
-            + '\n<i class="fas fa-exclamation-triangle"></i> page-calendar.this-event-needs-its-return-inventory',
+            '<strong>Test event</strong>' +
+            '\n\n<i class="fas fa-map-marker-alt"></i> Testville' +
+            '\n<i class="fas fa-clock"></i> from-date-to-date' +
+            '\n<i class="fas fa-address-book"></i> for Jean Benef' +
+            '\n<i class="fas fa-people-carry"></i> with Marc Tekos' +
+            '\n\n<i class="fas fa-exclamation-triangle"></i> page-calendar.this-event-has-not-returned-materials' +
+            '\n<i class="fas fa-history"></i> page-calendar.this-event-is-past' +
+            '\n<i class="fas fa-exclamation-triangle"></i> page-calendar.this-event-needs-its-return-inventory',
         );
         expect(result.content).toEqual(
-            '<i class="fas fa-question"></i> <i class="fas fa-exclamation-triangle"></i> Test event − '
-            + '<i class="fas fa-map-marker-alt"></i> Testville',
+            '<i class="fas fa-question"></i> <i class="fas fa-exclamation-triangle"></i> Test event − ' +
+            '<i class="fas fa-map-marker-alt"></i> Testville',
         );
         expect(result.className).toEqual(
             'timeline-event timeline-event--past timeline-event--not-confirmed timeline-event--with-warning',

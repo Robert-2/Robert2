@@ -41,10 +41,10 @@ export default {
 
         isFilterEmpty() {
             return (
-                this.filters.park === ''
-                && this.filters.category === ''
-                && this.filters.subCategory === ''
-                && this.filters.tags.length === 0
+                this.filters.park === '' &&
+                this.filters.category === '' &&
+                this.filters.subCategory === '' &&
+                this.filters.tags.length === 0
             );
         },
     },

@@ -45,8 +45,8 @@ export default {
 
         hasMaterialsProblems() {
             return (
-                (this.event?.hasMissingMaterials && !this.event?.is_return_inventory_done)
-                || this.event?.hasNotReturnedMaterials
+                (this.event?.hasMissingMaterials && !this.event?.is_return_inventory_done) ||
+                this.event?.hasNotReturnedMaterials
             );
         },
     },

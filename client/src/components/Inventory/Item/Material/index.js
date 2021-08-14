@@ -137,6 +137,7 @@ const InventoryItemMaterial = {
         },
 
         quantityWarning(message) {
+            // eslint-disable-next-line no-console
             console.warn(`Quantités inventaire invalides pour le matériel ${this.id} : ${message}`);
         },
     },

@@ -28,9 +28,9 @@ const EventStep3Modal = {
                 };
                 return !Object.entries(dataRequirements).some(
                     ([field, { type, required = false }]) => (
-                        !(field in value)
-                        || (required && value[field] === undefined)
-                        || (value[field] !== undefined && value[field].constructor !== type)
+                        !(field in value) ||
+                        (required && value[field] === undefined) ||
+                        (value[field] !== undefined && value[field].constructor !== type)
                     ),
                 );
             },
