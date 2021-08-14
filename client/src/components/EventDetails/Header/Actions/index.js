@@ -4,6 +4,7 @@ import Alert from '@/components/Alert';
 import Dropdown, { getItemClassnames } from '@/components/Dropdown';
 import DuplicateEvent from '@/components/DuplicateEvent';
 
+// @vue/component
 export default {
     name: 'CalendarEventDetailsHeaderActions',
     props: {
@@ -161,6 +162,7 @@ export default {
 
         if (isVisitor) {
             return isPrintable ? (
+                // eslint-disable-next-line react/jsx-no-target-blank
                 <a href={eventSummaryPdfUrl} class="button outline" target="_blank">
                     <i class="fas fa-print" /> {__('print')}
                 </a>
@@ -178,6 +180,7 @@ export default {
         return (
             <div class="EventDetailsHeaderActions">
                 {isPrintable && (
+                    // eslint-disable-next-line react/jsx-no-target-blank
                     <a href={eventSummaryPdfUrl} class="button outline" target="_blank">
                         <i class="fas fa-print" /> {__('print')}
                     </a>
@@ -185,7 +188,7 @@ export default {
                 {isEditable && (
                     <router-link to={`/events/${id}`} custom>
                         {({ navigate }) => (
-                            <button class="info" onClick={navigate}>
+                            <button type="button" class="info" onClick={navigate}>
                                 <i class="fas fa-edit" /> {__('action-edit')}
                             </button>
                         )}
@@ -194,7 +197,7 @@ export default {
                 {(isPast || isEndToday) && !isArchived && (
                     <router-link to={`/event-return/${id}`} custom>
                         {({ navigate }) => (
-                            <button class="info" onClick={navigate}>
+                            <button type="button" class="info" onClick={navigate}>
                                 <i class="fas fa-tasks" /> {__('return-inventory')}
                             </button>
                         )}
@@ -204,6 +207,7 @@ export default {
                     <template slot="items">
                         {!isPast && (
                             <button
+                                type="button"
                                 class={{
                                     ...getItemClassnames(),
                                     info: isConfirmed,
@@ -220,6 +224,7 @@ export default {
                         )}
                         {isPast && isInventoryDone && (
                             <button
+                                type="button"
                                 class={{ ...getItemClassnames(), info: !isArchived }}
                                 onClick={toggleArchived}
                             >
@@ -229,6 +234,7 @@ export default {
                             </button>
                         )}
                         <button
+                            type="button"
                             class={{ ...getItemClassnames(), warning: true }}
                             onClick={askDuplicate}
                         >
@@ -236,6 +242,7 @@ export default {
                         </button>
                         {isRemovable && (
                             <button
+                                type="button"
                                 class={{ ...getItemClassnames(), danger: true }}
                                 onClick={handleDelete}
                             >

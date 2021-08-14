@@ -4,6 +4,7 @@ import { TECHNICIAN_EVENT_MIN_DURATION } from '@/config/constants';
 import FormField from '@/components/FormField';
 import ErrorMessage from '@/components/ErrorMessage';
 
+// @vue/component
 const EventStep3Modal = {
     name: 'EventStep3Modal',
     props: {
@@ -193,7 +194,7 @@ const EventStep3Modal = {
                     <h1 class="EventStep3Modal__header__title">
                         {__('page-events.assign-technician', { name })}
                     </h1>
-                    <button class="close" onClick={handleClose}>
+                    <button type="button" class="close" onClick={handleClose}>
                         <i class="fas fa-times" />
                     </button>
                 </header>

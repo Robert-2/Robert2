@@ -1,5 +1,6 @@
 import './index.scss';
 
+// @vue/component
 const SwitchToggle = {
     name: 'SwitchToggle',
     props: {

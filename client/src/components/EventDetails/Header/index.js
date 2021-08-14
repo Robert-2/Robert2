@@ -2,6 +2,7 @@ import './index.scss';
 import getMainIcon from '@/utils/timeline-event/getMainIcon';
 import Actions from './Actions';
 
+// @vue/component
 export default {
     name: 'CalendarEventDetailsHeader',
     props: {
@@ -47,6 +48,7 @@ export default {
                     onDuplicated={(newEvent) => { this.$emit('duplicated', newEvent); }}
                 />
                 <button
+                    type="button"
                     class="close"
                     onClick={() => { this.$emit('close'); }}
                 >

@@ -2,6 +2,7 @@ import './index.scss';
 import moment from 'moment';
 import { CalendarView } from 'vue-simple-calendar';
 
+// @vue/component
 export default {
     name: 'MonthCalendar',
     props: {
@@ -49,11 +50,21 @@ export default {
         return (
             <div class="MonthCalendar">
                 <header class="MonthCalendar__header">
-                    <button class="info" v-tooltip={__('previous-month')} onClick={handlePrevMonthClick}>
+                    <button
+                        type="button"
+                        class="info"
+                        v-tooltip={__('previous-month')}
+                        onClick={handlePrevMonthClick}
+                    >
                         <i class="fas fa-arrow-left" />
                     </button>
                     <span class="MonthCalendar__header__current-month">{currentMonth}</span>
-                    <button class="info" v-tooltip={__('next-month')} onClick={handleNextMonthClick}>
+                    <button
+                        type="button"
+                        class="info"
+                        v-tooltip={__('next-month')}
+                        onClick={handleNextMonthClick}
+                    >
                         <i class="fas fa-arrow-right" />
                     </button>
                     {withTotal && (

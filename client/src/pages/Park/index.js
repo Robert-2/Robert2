@@ -4,6 +4,7 @@ import ParkTotalAmount from '../Parks/TotalAmount';
 
 const storageKeyWIP = 'WIP-newPark';
 
+// @vue/component
 export default {
     name: 'Material',
     components: { Help, FormField, ParkTotalAmount },

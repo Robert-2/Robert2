@@ -1,6 +1,7 @@
 import './index.scss';
 import Dropdown, { getItemClassnames } from '@/components/Dropdown';
 
+// @vue/component
 export default {
     name: 'TopMenu',
     computed: {

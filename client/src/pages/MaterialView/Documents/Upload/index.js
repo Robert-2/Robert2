@@ -4,6 +4,7 @@ import Help from '@/components/Help/Help.vue';
 import Progressbar from '@/components/Progressbar/Progressbar.vue';
 import DocumentItem from '../Item/Item.vue';
 
+// @vue/component
 export default {
     name: 'MaterialViewDocumentsUpload',
     components: { Help, DocumentItem, Progressbar },

@@ -2,6 +2,7 @@ import Config from '@/config/globalConfig';
 import Help from '@/components/Help/Help.vue';
 import CompanyForm from '@/components/CompanyForm';
 
+// @vue/component
 export default {
     name: 'Company',
     components: { Help, CompanyForm },

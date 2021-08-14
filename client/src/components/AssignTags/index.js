@@ -1,17 +1,21 @@
 import VueSelect from 'vue-select';
 import Header from './Header/Header.vue';
 
+// @vue/component
 export default {
     name: 'AssignTags',
     components: { Header, VueSelect },
-    props: ['entity', 'id', 'name', 'initialTags'],
+    props: {
+        'entity': { type: String, required: true },
+        'id': { type: [String, Number], required: true },
+        'name': { type: String, required: true },
+        'initialTags': { type: Array, default: () => [] },
+    },
     data() {
         return {
             isLoading: false,
             title: this.$t('entity-name-tags', { entityName: this.name || '' }),
-            tags: this.initialTags
-                ? this.initialTags.map(({ id, name }) => ({ label: name, value: id }))
-                : [],
+            tags: this.initialTags.map(({ id, name }) => ({ label: name, value: id })),
             error: null,
         };
     },

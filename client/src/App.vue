@@ -26,6 +26,16 @@ export default {
     data() {
         return { isOpenedSideNav: false };
     },
+    computed: {
+        isLogged() {
+            return this.$store.getters['auth/isLogged'];
+        },
+    },
+    watch: {
+        $route() {
+            Vue.prototype.$modal.hideAll();
+        },
+    },
     created() {
         this.$http.interceptors.response.use((response) => response, (error) => {
             const { status } = error.response || { status: 0 };
@@ -37,16 +47,6 @@ export default {
             }
             return Promise.reject(error);
         });
-    },
-    watch: {
-        $route() {
-            Vue.prototype.$modal.hideAll();
-        },
-    },
-    computed: {
-        isLogged() {
-            return this.$store.getters['auth/isLogged'];
-        },
     },
     methods: {
         toggleSideNav(isOpen) {

@@ -2,6 +2,7 @@ import './index.scss';
 import Logo from '@/components/Logo';
 import TopMenu from './TopMenu';
 
+// @vue/component
 export default {
     name: 'MainHeader',
     computed: {

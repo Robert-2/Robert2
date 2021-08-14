@@ -3,6 +3,7 @@ import moment from 'moment';
 import Datepicker from 'vue2-datepicker';
 import * as langs from './locale';
 
+// @vue/component
 export default {
     name: 'Datepicker',
     props: {

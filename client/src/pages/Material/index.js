@@ -7,6 +7,7 @@ import Progressbar from '@/components/Progressbar/Progressbar.vue';
 
 const storageKeyWIP = 'WIP-newMaterial';
 
+// @vue/component
 export default {
     name: 'Material',
     components: {
@@ -95,17 +96,17 @@ export default {
             return picture ? `${baseUrl}/materials/${id}/picture` : null;
         },
     },
+    watch: {
+        firstPark() {
+            this.setDefaultPark();
+        },
+    },
     mounted() {
         this.$store.dispatch('parks/fetch');
         this.$store.dispatch('categories/fetch');
 
         this.fetchMaterial();
         this.setDefaultPark();
-    },
-    watch: {
-        firstPark() {
-            this.setDefaultPark();
-        },
     },
     methods: {
         fetchMaterial() {

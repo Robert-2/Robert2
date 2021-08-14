@@ -29,7 +29,11 @@
 <script>
 export default {
     name: 'Breadcrumb',
-    props: ['event', 'steps', 'currentStep'],
+    props: {
+        event: { type: Object, required: true },
+        steps: { type: Array, required: true },
+        currentStep: { type: Number, required: true },
+    },
     methods: {
         openStep(step) {
             if (!this.isActive(step)) {
@@ -50,9 +54,9 @@ export default {
 
             const previousStep = this.steps[stepIndex - 1] || null;
             return (
-                this.isCurrent(step)
-                || this.isValidated(step)
-                || (previousStep && this.isValidated(previousStep))
+                this.isCurrent(step) ||
+                this.isValidated(step) ||
+                (previousStep && this.isValidated(previousStep))
             );
         },
 

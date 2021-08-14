@@ -1,6 +1,7 @@
 import './index.scss';
 import Illustration from './assets/illustration.svg?inline';
 
+// @vue/component
 const CriticalError = {
     name: 'CriticalError',
     props: {

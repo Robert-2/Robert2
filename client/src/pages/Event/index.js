@@ -8,6 +8,7 @@ import EventStep3 from './Step3';
 import EventStep4 from './Step4/Step4.vue';
 import EventStep5 from './Step5';
 
+// @vue/component
 export default {
     name: 'Event',
     components: {

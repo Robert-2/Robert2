@@ -1,6 +1,7 @@
 import Help from '@/components/Help/Help.vue';
 import EventSummarySettingsForm from './Form';
 
+// @vue/component
 export default {
     name: 'EventSummarySettings',
     data() {

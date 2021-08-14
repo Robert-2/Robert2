@@ -4,6 +4,7 @@ import moment from 'moment';
 import { Timeline as TimelineCore, DataSet, DataView } from '@robert2/vis-timeline';
 import { mountVisData } from './_utils';
 
+// @vue/component
 const Timeline = {
     name: 'Timeline',
     props: {
@@ -18,45 +19,6 @@ const Timeline = {
         data: null,
         groupData: null,
     }),
-    created() {
-        // @see https://github.com/almende/vis/issues/2524
-        this.timeline = null;
-    },
-    mounted() {
-        this.data = mountVisData(this, 'items', 'data');
-        this.groupData = mountVisData(this, 'groups', 'groupData');
-
-        this.timeline = new TimelineCore(
-            this.$refs.visualization,
-            this.data,
-            this.groupData,
-            this.fullOptions,
-        );
-
-        // - Binding des événements globaux.
-        const globalsEvents = {
-            itemover: 'itemOver',
-            itemout: 'itemOut',
-            rangechanged: 'rangeChanged',
-            doubleClick: 'doubleClick',
-            click: 'click',
-        };
-        Object.entries(globalsEvents).forEach(([originalName, name]) => {
-            this.timeline.on(originalName, (props) => { this.$emit(name, props); });
-        });
-
-        // - Binding des événements liés aux données.
-        const dataEvents = {
-            add: 'itemAdded',
-            update: 'itemUpdated',
-            remove: 'itemRemoved',
-        };
-        Object.entries(dataEvents).forEach(([originalName, name]) => {
-            this.data.on(originalName, (event, properties, senderId) => {
-                this.$emit(name, { event, properties, senderId });
-            });
-        });
-    },
     computed: {
         fullOptions() {
             return {
@@ -104,6 +66,45 @@ const Timeline = {
                 this.timeline.setOptions(this.fullOptions);
             },
         },
+    },
+    created() {
+        // @see https://github.com/almende/vis/issues/2524
+        this.timeline = null;
+    },
+    mounted() {
+        this.data = mountVisData(this, 'items', 'data');
+        this.groupData = mountVisData(this, 'groups', 'groupData');
+
+        this.timeline = new TimelineCore(
+            this.$refs.visualization,
+            this.data,
+            this.groupData,
+            this.fullOptions,
+        );
+
+        // - Binding des événements globaux.
+        const globalsEvents = {
+            itemover: 'itemOver',
+            itemout: 'itemOut',
+            rangechanged: 'rangeChanged',
+            doubleClick: 'doubleClick',
+            click: 'click',
+        };
+        Object.entries(globalsEvents).forEach(([originalName, name]) => {
+            this.timeline.on(originalName, (props) => { this.$emit(name, props); });
+        });
+
+        // - Binding des événements liés aux données.
+        const dataEvents = {
+            add: 'itemAdded',
+            update: 'itemUpdated',
+            remove: 'itemRemoved',
+        };
+        Object.entries(dataEvents).forEach(([originalName, name]) => {
+            this.data.on(originalName, (event, properties, senderId) => {
+                this.$emit(name, { event, properties, senderId });
+            });
+        });
     },
     beforeDestroy() {
         this.timeline.destroy();

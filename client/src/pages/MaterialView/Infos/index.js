@@ -4,6 +4,7 @@ import formatAmount from '@/utils/formatAmount';
 import MaterialTags from '@/components/MaterialTags/MaterialTags.vue';
 import Attributes from './Attributes/Attributes.vue';
 
+// @vue/component
 export default {
     name: 'MaterialViewInfos',
     components: {

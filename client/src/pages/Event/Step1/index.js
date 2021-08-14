@@ -5,11 +5,12 @@ import { DATE_DB_FORMAT } from '@/config/constants';
 import FormField from '@/components/FormField';
 import EventStore from '../EventStore';
 
+// @vue/component
 export default {
     name: 'EventStep1',
     components: { FormField },
     props: {
-        event: Object,
+        event: { type: Object, required: true },
     },
     data() {
         return {

@@ -4,6 +4,7 @@ import PersonForm from '@/components/PersonForm/PersonForm.vue';
 
 const storageKeyWIP = 'WIP-newTechnician';
 
+// @vue/component
 export default {
     name: 'Technician',
     components: { Help, PersonForm },

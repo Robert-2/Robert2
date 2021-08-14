@@ -5,6 +5,7 @@ import getEventOneDayTotal from '@/utils/getEventOneDayTotal';
 import getEventGrandTotal from '@/utils/getEventGrandTotal';
 import EventStore from '../EventStore';
 
+// @vue/component
 export default {
     name: 'EventMiniSummary',
     computed: {

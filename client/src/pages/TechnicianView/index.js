@@ -6,6 +6,7 @@ import Page from '@/components/Page';
 import TechnicianInfos from './Infos';
 import TechnicianSchedule from './Schedule';
 
+// @vue/component
 const TechnicianViewPage = {
     name: 'TechnicianViewPage',
     data() {

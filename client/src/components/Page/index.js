@@ -3,6 +3,7 @@ import { APP_NAME } from '@/config/constants';
 import Loading from '@/components/Loading';
 import ErrorMessage from '@/components/ErrorMessage';
 
+// @vue/component
 const Page = {
     name: 'Page',
     props: {

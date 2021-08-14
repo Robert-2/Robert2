@@ -76,11 +76,11 @@
                 @click="showTrashed()"
             >
                 <span v-if="!isTrashDisplayed">
-                    <i class="fas fa-trash"></i>
+                    <i class="fas fa-trash" />
                     {{ $t('open-trash-bin') }}
                 </span>
                 <span v-if="isTrashDisplayed">
-                    <i class="fas fa-eye"></i>
+                    <i class="fas fa-eye" />
                     {{ $t('display-not-deleted-items') }}
                 </span>
             </button>

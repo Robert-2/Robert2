@@ -1,6 +1,7 @@
 import './index.scss';
 import Details from './Details/ErrorDetails.vue';
 
+// @vue/component
 const ErrorMessage = {
     name: 'ErrorMessage',
     props: {

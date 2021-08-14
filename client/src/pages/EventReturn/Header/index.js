@@ -3,6 +3,7 @@ import moment from 'moment';
 import Help from '@/components/Help/Help.vue';
 import MultiSwitch from '@/components/MultiSwitch';
 
+// @vue/component
 const EventReturnHeader = {
     name: 'EventReturnHeader',
     components: { Help, MultiSwitch },

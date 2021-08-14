@@ -22,7 +22,7 @@
 export default {
     name: 'LocationText',
     props: {
-        location: String,
+        location: { type: String, required: true },
     },
 };
 </script>

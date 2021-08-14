@@ -18,6 +18,8 @@
 <script>
 export default {
     name: 'AssignTagsHeader',
-    props: ['title'],
+    props: {
+        'title': { type: String, required: true },
+    },
 };
 </script>

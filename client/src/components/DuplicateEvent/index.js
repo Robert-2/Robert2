@@ -7,6 +7,7 @@ import EventBeneficiaries from '@/components/EventBeneficiaries';
 import EventTechnicians from '@/components/EventTechnicians';
 import getEventMaterialItemsCount from '@/utils/getEventMaterialItemsCount';
 
+// @vue/component
 export default {
     name: 'DuplicateEvent',
     props: {
@@ -110,7 +111,7 @@ export default {
                     <h2 class="DuplicateEvent__header__title">
                         {__('duplicate-the-event', { title })}
                     </h2>
-                    <button class="DuplicateEvent__header__btn-close" onClick={handleClose}>
+                    <button type="button" class="DuplicateEvent__header__btn-close" onClick={handleClose}>
                         <i class="fas fa-times" />
                     </button>
                 </div>
@@ -150,10 +151,10 @@ export default {
                 </div>
                 <hr class="DuplicateEvent__separator" />
                 <div class="DuplicateEvent__footer">
-                    <button onClick={handleSubmit} class="success">
+                    <button type="button" onClick={handleSubmit} class="success">
                         <i class="fas fa-check" /> {__('duplicate-event')}
                     </button>
-                    <button onClick={handleClose}>
+                    <button type="button" onClick={handleClose}>
                         <i class="fas fa-times" /> {__('close')}
                     </button>
                 </div>

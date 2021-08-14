@@ -1,5 +1,6 @@
 import './index.scss';
 
+// @vue/component
 export default {
     name: 'EventTechnicianItem',
     props: {

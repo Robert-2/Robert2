@@ -3,6 +3,7 @@ import FormField from '@/components/FormField';
 import SwitchToggle from '@/components/SwitchToggle';
 import Help from '@/components/Help/Help.vue';
 
+// @vue/component
 export default {
     name: 'CalendarHeader',
     components: { Help, FormField, SwitchToggle },

@@ -16,7 +16,7 @@
 export default {
     name: 'MaterialTags',
     props: {
-        tags: Array,
+        tags: { type: Array, required: true },
     },
 };
 </script>

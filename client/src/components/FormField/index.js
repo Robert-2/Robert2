@@ -15,6 +15,7 @@ const ALLOWED_TYPES = [
     'switch',
 ];
 
+// @vue/component
 export default {
     name: 'FormField',
     props: {

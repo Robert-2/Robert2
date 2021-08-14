@@ -4,11 +4,12 @@ import MaterialsList from './MaterialsList/MaterialsList.vue';
 import EventStore from '../EventStore';
 import { getMaterialsQuantities, materialsHasChanged } from './_utils';
 
+// @vue/component
 export default {
     name: 'EventStep4',
     components: { MaterialsList },
     props: {
-        event: Object,
+        event: { type: Object, required: true },
     },
     data() {
         return {

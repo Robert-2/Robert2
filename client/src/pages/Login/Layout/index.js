@@ -2,6 +2,7 @@ import './index.scss';
 import Config from '@/config/globalConfig';
 import Logo from '@/components/Logo';
 
+// @vue/component
 export default {
     name: 'LoginLayout',
     data() {
@@ -22,9 +23,9 @@ export default {
                 </div>
                 <div class="LoginLayout__footer">
                     {__('page-login.footer')}<br />
-                    | <a href="http://robertmanager.org" target="_blank">{__('page-login.official-website')}</a>{' '}
-                    | <a href="http://forum.robertmanager.org" target="_blank">{__('page-login.community-forum')}</a>{' '}
-                    | <a href="https://github.com/robert-2/Robert2" target="_blank">Github project</a>{' '}
+                    | <a href="http://robertmanager.org" target="_blank" rel="noreferrer">{__('page-login.official-website')}</a>{' '}
+                    | <a href="http://forum.robertmanager.org" target="_blank" rel="noreferrer">{__('page-login.community-forum')}</a>{' '}
+                    | <a href="https://github.com/robert-2/Robert2" target="_blank" rel="noreferrer">Github project</a>{' '}
                     | v{apiVersion}
                 </div>
             </div>

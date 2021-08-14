@@ -34,7 +34,7 @@ import formatAmount from '@/utils/formatAmount';
 export default {
     name: 'DisplayBill',
     props: {
-        data: Object,
+        data: { type: Object, required: true },
     },
     computed: {
         pdfUrl() {

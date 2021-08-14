@@ -3,6 +3,7 @@ import VueSelect from 'vue-select';
 import { debounce } from 'debounce';
 import { DEBOUNCE_WAIT } from '@/config/constants';
 
+// @vue/component
 export default {
     name: 'SelectSearch',
     props: {

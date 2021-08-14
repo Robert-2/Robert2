@@ -7,6 +7,7 @@ import EventMissingMaterials from '@/components/EventMissingMaterials/EventMissi
 import EventTotals from '@/components/EventTotals';
 import ReturnInventorySummary from '@/components/ReturnInventorySummary';
 
+// @vue/component
 export default {
     name: 'EventDetailsMaterials',
     props: {

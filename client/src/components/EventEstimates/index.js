@@ -8,6 +8,7 @@ import getDiscountRateFromLast from '@/utils/getDiscountRateFromLast';
 import getEventOneDayTotalDiscountable from '@/utils/getEventOneDayTotalDiscountable';
 import BillEstimateCreationForm from '@/components/BillEstimateCreationForm/BillEstimateCreationForm.vue';
 
+// @vue/component
 export default {
     name: 'EventEstimates',
     components: { BillEstimateCreationForm },
@@ -32,11 +33,6 @@ export default {
             isBillable: this.beneficiaries.length > 0,
             displayCreateEstimate: false,
         };
-    },
-    watch: {
-        discountRate(newRate) {
-            this.$emit('discountRateChange', Number.parseFloat(newRate));
-        },
     },
     computed: {
         userCanEdit() {
@@ -72,6 +68,11 @@ export default {
                 const rate = 100 * (diff / this.grandTotalDiscountable);
                 this.discountRate = decimalRound(rate, 4);
             },
+        },
+    },
+    watch: {
+        discountRate(newRate) {
+            this.$emit('discountRateChange', Number.parseFloat(newRate));
         },
     },
     methods: {

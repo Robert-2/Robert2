@@ -1,8 +1,10 @@
 import './index.scss';
 import MonthCalendar from '@/components/MonthCalendar';
+import ErrorMessage from '@/components/ErrorMessage';
 import Loading from '@/components/Loading';
 import { formatTechnicianEvent } from './utils';
 
+// @vue/component
 const TechnicianViewSchedule = {
     name: 'TechnicianViewSchedule',
     props: {

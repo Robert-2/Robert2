@@ -21,7 +21,7 @@
                         type="date"
                         required
                         :errors="errors.start_date || errors.end_date"
-                        :datepicker-options="datepickerOptions"
+                        :datepickerOptions="datepickerOptions"
                         @change="setEventDates"
                     />
                 </div>

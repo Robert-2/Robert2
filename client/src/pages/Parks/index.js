@@ -3,6 +3,7 @@ import Alert from '@/components/Alert';
 import Help from '@/components/Help/Help.vue';
 import ParkTotalAmount from './TotalAmount';
 
+// @vue/component
 export default {
     name: 'Parks',
     components: { Help, ParkTotalAmount },

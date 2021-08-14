@@ -7,7 +7,7 @@
                 <VueSelect
                     v-model="tags"
                     :options="$store.getters['tags/options']"
-                    :close-on-select="false"
+                    :closeOnSelect="false"
                     multiple
                 />
                 <button

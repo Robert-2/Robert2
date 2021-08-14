@@ -3,6 +3,7 @@ import Help from '@/components/Help/Help.vue';
 import Infos from './Infos/Infos.vue';
 import Documents from './Documents/Documents.vue';
 
+// @vue/component
 export default {
     name: 'MaterialView',
     components: {

@@ -1,6 +1,7 @@
 import './index.scss';
 import EventTechnicianItem from './Item';
 
+// @vue/component
 export default {
     name: 'EventTechnicians',
     props: {

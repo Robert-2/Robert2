@@ -6,6 +6,7 @@ import Page from '@/components/Page';
 import Datepicker from '@/components/Datepicker';
 import ItemActions from './Actions';
 
+// @vue/component
 export default {
     name: 'Technicians',
     components: { Help },
@@ -79,6 +80,11 @@ export default {
             },
         };
     },
+    watch: {
+        periodFilter() {
+            this.refreshTable();
+        },
+    },
     methods: {
         async handleRemove(id) {
             const isSoft = !this.isTrashDisplayed;
@@ -140,11 +146,6 @@ export default {
             this.error = error;
         },
     },
-    watch: {
-        periodFilter() {
-            this.refreshTable();
-        },
-    },
     render() {
         const {
             $t: __,
@@ -184,6 +185,7 @@ export default {
                     />
                     {periodFilter && (
                         <button
+                            type="button"
                             class="Technicians__filters__clear-button warning"
                             v-tooltip={__('clear-filters')}
                             onClick={clearFilters}
@@ -218,7 +220,11 @@ export default {
                     }}
                 />
                 <div class="content__footer">
-                    <button class={isTrashDisplayed ? 'info' : 'warning'} onClick={showTrashed}>
+                    <button
+                        type="button"
+                        class={isTrashDisplayed ? 'info' : 'warning'}
+                        onClick={showTrashed}
+                    >
                         <i class={['fas', { 'fa-trash': !isTrashDisplayed, 'fa-eye"': isTrashDisplayed }]} />{' '}
                         {isTrashDisplayed ? __('display-not-deleted-items') : __('open-trash-bin')}
                     </button>

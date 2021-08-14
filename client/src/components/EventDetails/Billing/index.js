@@ -2,6 +2,7 @@ import Help from '@/components/Help/Help.vue';
 import EventBilling from '@/components/EventBilling/EventBilling.vue';
 import EventNotBillable from '@/components/EventNotBillable';
 
+// @vue/component
 export default {
     name: 'EventDetailsBilling',
     props: {

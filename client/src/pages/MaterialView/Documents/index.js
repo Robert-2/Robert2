@@ -3,6 +3,7 @@ import Help from '@/components/Help/Help.vue';
 import DocumentItem from './Item/Item.vue';
 import DocumentUpload from './Upload/Upload.vue';
 
+// @vue/component
 export default {
     name: 'MaterialViewDocuments',
     components: { Help, DocumentItem, DocumentUpload },

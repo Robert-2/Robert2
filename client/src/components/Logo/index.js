@@ -1,6 +1,7 @@
 import minimalistLogoSrc from './assets/logo-R.svg';
 import logoSrc from './assets/logo.svg';
 
+// @vue/component
 export default {
     name: 'Logo',
     props: {

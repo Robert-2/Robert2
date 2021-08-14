@@ -1,5 +1,6 @@
 import VueSelect from 'vue-select';
 
+// @vue/component
 export default {
     name: 'MaterialsFilters',
     components: { VueSelect },

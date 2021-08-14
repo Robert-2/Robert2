@@ -3,6 +3,7 @@ import Alert from '@/components/Alert';
 import Help from '@/components/Help/Help.vue';
 import AttributeEditForm from './AttributeEditForm/AttributeEditForm.vue';
 
+// @vue/component
 export default {
     name: 'Attributes',
     components: { Help, AttributeEditForm },

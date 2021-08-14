@@ -5,6 +5,7 @@ import EventTechnicians from '@/components/EventTechnicians';
 import EventTotals from '@/components/EventTotals';
 import LocationText from '@/components/LocationText/LocationText.vue';
 
+// @vue/component
 export default {
     name: 'EventDetailsInfos',
     props: {

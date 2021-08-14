@@ -10,6 +10,7 @@ import MaterialsFilters from '@/components/MaterialsFilters/MaterialsFilters.vue
 import MaterialTags from '@/components/MaterialTags/MaterialTags.vue';
 import formatAmount from '@/utils/formatAmount';
 
+// @vue/component
 export default {
     name: 'Materials',
     components: {

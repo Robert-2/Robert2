@@ -5,6 +5,7 @@ import formatAmount from '@/utils/formatAmount';
 import EventReturnHeader from './Header';
 import MaterialsList from './MaterialsList';
 
+// @vue/component
 const EventReturnPage = {
     name: 'EventReturn',
     components: { EventReturnHeader, MaterialsList },

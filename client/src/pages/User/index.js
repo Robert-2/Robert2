@@ -3,6 +3,7 @@ import FormField from '@/components/FormField';
 
 const storageKeyWIP = 'WIP-newUser';
 
+// @vue/component
 export default {
     name: 'User',
     components: { Help, FormField },

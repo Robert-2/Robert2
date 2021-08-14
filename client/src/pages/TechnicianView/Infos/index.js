@@ -1,6 +1,7 @@
 import './index.scss';
 import { Fragment } from 'vue-fragment';
 
+// @vue/component
 const TechnicianViewInfos = {
     name: 'TechnicianViewInfos',
     props: {
@@ -86,7 +87,7 @@ const TechnicianViewInfos = {
                 <div class="TechnicianViewInfos__actions">
                     <router-link v-tooltip={__('action-edit')} to={`/technicians/${id}`} custom>
                         {({ navigate }) => (
-                            <button onClick={navigate} class="info">
+                            <button type="button" onClick={navigate} class="info">
                                 <i class="fas fa-edit" /> {__('action-edit')}
                             </button>
                         )}

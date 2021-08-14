@@ -1,3 +1,4 @@
+// @vue/component
 export default {
     name: 'TechniciansItemActions',
     props: {
@@ -12,6 +13,7 @@ export default {
             return (
                 <div>
                     <button
+                        type="button"
                         v-tooltip={__('action-restore')}
                         class="item-actions__button info"
                         onClick={() => { this.$emit('restore', id); }}
@@ -19,6 +21,7 @@ export default {
                         <i class="fas fa-trash-restore" />
                     </button>
                     <button
+                        type="button"
                         v-tooltip={__('action-delete')}
                         class="item-actions__button danger"
                         onClick={() => { this.$emit('remove', id); }}
@@ -46,6 +49,7 @@ export default {
                     <i class="fas fa-edit" />
                 </router-link>
                 <button
+                    type="button"
                     v-tooltip={__('action-trash')}
                     class="item-actions__button warning"
                     onClick={() => { this.$emit('remove', id); }}

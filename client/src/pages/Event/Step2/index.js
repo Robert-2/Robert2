@@ -4,10 +4,13 @@ import getPersonItemLabel from '@/utils/getPersonItemLabel';
 import formatOptions from '@/utils/formatOptions';
 import EventStore from '../EventStore';
 
+// @vue/component
 export default {
     name: 'EventStep2',
     components: { MultipleItem },
-    props: ['event'],
+    props: {
+        event: { type: Object, required: true },
+    },
     data() {
         return {
             beneficiariesIds: this.event.beneficiaries.map((benef) => benef.id),

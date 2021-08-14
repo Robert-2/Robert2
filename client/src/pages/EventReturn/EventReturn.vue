@@ -22,8 +22,8 @@
             </div>
             <template v-if="!isLoading && isPast">
                 <MaterialsList
-                    :materials="this.event.materials"
-                    :displayGroup="this.displayGroup"
+                    :materials="event.materials"
+                    :displayGroup="displayGroup"
                     :quantities="quantities"
                     :errors="validationErrors"
                     :isLocked="isDone"

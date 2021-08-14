@@ -125,7 +125,7 @@
                 :onSelect="handleChangeBillingTab"
                 class="EventOverview__billing__tabs"
             >
-                <tab title-slot="estimates">
+                <tab titleSlot="estimates">
                     <EventEstimates
                         :beneficiaries="event.beneficiaries"
                         :materials="event.materials"
@@ -141,7 +141,7 @@
                     />
                     <Help :message="{ type: 'success', text: successMessage }" :error="error" />
                 </tab>
-                <tab title-slot="bill">
+                <tab titleSlot="bill">
                     <Help :message="{ type: 'success', text: successMessage }" :error="error" />
                     <EventBilling
                         :beneficiaries="event.beneficiaries"
@@ -164,7 +164,7 @@
                 </template>
             </tabs>
             <p v-if="!hasMaterials" class="EventOverview__materials__empty">
-                <i class="fas fa-exclamation-triangle"></i>
+                <i class="fas fa-exclamation-triangle" />
                 {{ $t('page-events.warning-no-material') }}
             </p>
         </div>

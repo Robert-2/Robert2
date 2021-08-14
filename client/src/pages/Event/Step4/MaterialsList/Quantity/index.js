@@ -1,6 +1,7 @@
 import debounce from 'debounce';
 import QuantityInput from '@/components/QuantityInput';
 
+// @vue/component
 export default {
     name: 'MaterialsListQuantity',
     props: {

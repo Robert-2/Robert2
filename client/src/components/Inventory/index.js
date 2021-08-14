@@ -3,6 +3,7 @@ import dispatchMaterialInSections from '@/utils/dispatchMaterialInSections';
 import invariant from 'invariant';
 import Item from './Item';
 
+// @vue/component
 const Inventory = {
     name: 'Inventory',
     props: {

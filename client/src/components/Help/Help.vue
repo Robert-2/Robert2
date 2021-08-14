@@ -23,7 +23,7 @@ export default {
     name: 'Help',
     components: { ErrorMessage },
     props: {
-        message: { required: true, default: '' },
+        message: { type: [String, Object], required: true },
         error: { type: Error, default: null },
         isLoading: { type: Boolean, default: false },
     },

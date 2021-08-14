@@ -13,6 +13,7 @@ import Materials from './Materials';
 import Estimates from './Estimates';
 import Billing from './Billing';
 
+// @vue/component
 export default {
     name: 'EventDetails',
     props: {
@@ -31,9 +32,6 @@ export default {
             error: null,
         };
     },
-    mounted() {
-        this.getEvent();
-    },
     computed: {
         hasEventTechnicians() {
             return this.event?.technicians?.length > 0;
@@ -49,6 +47,9 @@ export default {
                 this.event?.hasNotReturnedMaterials
             );
         },
+    },
+    mounted() {
+        this.getEvent();
     },
     methods: {
         // ------------------------------------------------------
@@ -196,14 +197,14 @@ export default {
                                 </Tab>
                                 <Tab
                                     disabled={!hasMaterials}
-                                    title={
+                                    title={(
                                         <span>
                                             <i class="fas fa-box" /> {__('material')}
                                             {hasMaterialsProblems && (
                                                 <i class="fas fa-exclamation-triangle" />
                                             )}
                                         </span>
-                                    }
+                                    )}
                                 >
                                     <Materials event={event} discountRate={discountRate} />
                                 </Tab>
@@ -239,7 +240,7 @@ export default {
                             {!hasMaterials && (
                                 <div class="EventDetails__materials-empty">
                                     <p>
-                                        <i class="fas fa-exclamation-triangle"></i>
+                                        <i class="fas fa-exclamation-triangle" />
                                         {__('page-events.warning-no-material')}
                                     </p>
                                     {!event.isPast && (

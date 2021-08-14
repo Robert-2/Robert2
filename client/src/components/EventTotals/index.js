@@ -8,6 +8,7 @@ import getEventGrandTotal from '@/utils/getEventGrandTotal';
 import getEventReplacementTotal from '@/utils/getEventReplacementTotal';
 import decimalRound from '@/utils/decimalRound';
 
+// @vue/component
 export default {
     name: 'EventTotals',
     props: {
@@ -22,9 +23,6 @@ export default {
             duration: this.end ? this.end.diff(this.start, 'days') + 1 : 1,
             currency: Config.currency.symbol,
         };
-    },
-    created() {
-        this.$store.dispatch('categories/fetch');
     },
     computed: {
         ratio() {
@@ -73,6 +71,9 @@ export default {
         replacementTotal() {
             return getEventReplacementTotal(this.materials);
         },
+    },
+    created() {
+        this.$store.dispatch('categories/fetch');
     },
     methods: {
         recalcDiscountRate(newVal) {

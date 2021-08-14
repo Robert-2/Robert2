@@ -1,5 +1,7 @@
 import './index.scss';
+import ErrorMessage from '@/components/ErrorMessage';
 
+// @vue/component
 export default {
     name: 'EventNotBillable',
     props: {
@@ -43,7 +45,12 @@ export default {
             <div class="EventNotBillable">
                 <p><i class="fas fa-ban" /> {__('event-not-billable')}</p>
                 {!isEventConfirmed && userCanEdit && (
-                    <button onClick={handleClickEnableBilling} class="success" disabled={isSaving}>
+                    <button
+                        type="button"
+                        onClick={handleClickEnableBilling}
+                        class="success"
+                        disabled={isSaving}
+                    >
                         {isSaving && <span><i class="fas fa-circle-notch fa-spin" /> {__('saving')}</span>}
                         {!isSaving && __('enable-billable-event')}
                     </button>

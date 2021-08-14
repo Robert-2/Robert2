@@ -6,6 +6,7 @@ export const getItemClassnames = (isActive = false) => ({
     'Dropdown__item--active': isActive,
 });
 
+// @vue/component
 export default {
     name: 'Dropdown',
     directives: { ClickOutside },

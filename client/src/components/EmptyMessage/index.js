@@ -1,6 +1,7 @@
 import './index.scss';
 import Illustration from './assets/illustration.svg?inline';
 
+// @vue/component
 const EmptyMessage = {
     name: 'EmptyMessage',
     props: {
@@ -19,6 +20,7 @@ const EmptyMessage = {
             return (
                 <LinkComponent
                     class="EmptyMessage__action button success"
+                    // eslint-disable-next-line react/jsx-handler-names
                     onClick={action.onClick}
                     to={action.url}
                 >

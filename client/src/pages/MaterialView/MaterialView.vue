@@ -15,10 +15,10 @@
                     <template slot="documents">
                         <i class="fas fa-file-pdf" /> {{ $t('documents') }}
                     </template>
-                    <tab title-slot="infos">
+                    <tab titleSlot="infos">
                         <Infos :material="material" />
                     </tab>
-                    <tab title-slot="documents">
+                    <tab titleSlot="documents">
                         <Documents :material="material" />
                     </tab>
                 </tabs>

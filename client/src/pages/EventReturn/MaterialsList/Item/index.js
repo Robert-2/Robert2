@@ -1,6 +1,7 @@
 import './index.scss';
 import QuantityInput from '@/components/QuantityInput';
 
+// @vue/component
 const EventReturnMaterialItem = {
     name: 'EventReturnMaterialItem',
     components: { QuantityInput },

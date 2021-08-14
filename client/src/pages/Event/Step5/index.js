@@ -2,10 +2,13 @@ import './index.scss';
 import Config from '@/config/globalConfig';
 import EventOverview from '@/components/EventOverview/EventOverview.vue';
 
+// @vue/component
 export default {
     name: 'EventStep5',
     components: { EventOverview },
-    props: { event: Object },
+    props: {
+        event: { type: Object, required: true },
+    },
     data() {
         return { isConfirming: false };
     },
@@ -92,7 +95,7 @@ export default {
                         </div>
                         <div class="EventStep5__confirmation__actions">
                             {!isConfirmed && (
-                                <button class="success" onClick={handleConfirm}>
+                                <button type="button" class="success" onClick={handleConfirm}>
                                     <i
                                         class={['fas', {
                                             'fa-circle-notch fa-spin': isConfirming,
@@ -103,7 +106,7 @@ export default {
                                 </button>
                             )}
                             {isConfirmed && (
-                                <button class="warning" onClick={handleUnconfirm}>
+                                <button type="button" class="warning" onClick={handleUnconfirm}>
                                     <i
                                         class={['fas', {
                                             'fa-circle-notch fa-spin': isConfirming,
@@ -121,6 +124,7 @@ export default {
                         <i class="fas fa-arrow-left" /> {__('page-events.back-to-calendar')}
                     </router-link>
                     {materials.length > 0 && beneficiaries.length > 0 && (
+                        // eslint-disable-next-line react/jsx-no-target-blank
                         <a href={eventSummaryPdfUrl} target="_blank" class="button outline">
                             <i class="fas fa-print" /> {__('print-summary')}
                         </a>

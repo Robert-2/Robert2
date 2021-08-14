@@ -6,7 +6,7 @@
                     <Breadcrumb
                         :event="event"
                         :steps="steps"
-                        :current-step="currentStep"
+                        :currentStep="currentStep"
                         @openStep="openStep"
                     />
                     <MiniSummary />

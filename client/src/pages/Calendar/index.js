@@ -10,6 +10,7 @@ import formatEvent from './utils';
 
 const ONE_DAY = 1000 * 3600 * 24;
 
+// @vue/component
 export default {
     name: 'Calendar',
     components: {

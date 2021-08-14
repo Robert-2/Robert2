@@ -3,6 +3,7 @@ import FormField from '@/components/FormField';
 
 const LIST_MODES = ['categories', 'sub-categories', 'parks', 'flat'];
 
+// @vue/component
 export default {
     name: 'EventSummarySettingsForm',
     props: {

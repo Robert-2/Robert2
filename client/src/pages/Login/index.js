@@ -1,5 +1,6 @@
 import Layout from './Layout';
 
+// @vue/component
 export default {
     name: 'Login',
     components: { Layout },

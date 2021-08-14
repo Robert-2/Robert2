@@ -2,6 +2,7 @@ import Config from '@/config/globalConfig';
 import Alert from '@/components/Alert';
 import Help from '@/components/Help/Help.vue';
 
+// @vue/component
 export default {
     name: 'Beneficiaries',
     components: { Help },

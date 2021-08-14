@@ -20,10 +20,11 @@ const getClosestStepTime = (requestedTime, roundMethod = 'floor') => {
     return moment(Math[roundMethod](+time / +TECHNICIAN_EVENT_STEP) * +TECHNICIAN_EVENT_STEP);
 };
 
+// @vue/component
 const EventStep3 = {
     name: 'EventStep3',
     props: {
-        event: Object,
+        event: { type: Object, required: true },
     },
     data() {
         return {

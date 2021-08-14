@@ -2,6 +2,7 @@ import './index.scss';
 import formatAmount from '@/utils/formatAmount';
 import dispatchMaterialInSections from '@/utils/dispatchMaterialInSections';
 
+// @vue/component
 export default {
     name: 'EventMaterials',
     props: {
@@ -47,6 +48,7 @@ export default {
                 {(!showMaterialsList || materials.length > 30) && (
                     <div class="EventMaterials__toggle">
                         <button
+                            type="button"
                             onClick={() => { this.showMaterialsList = !showMaterialsList; }}
                             class={{ info: !showMaterialsList }}
                         >
@@ -94,7 +96,7 @@ export default {
                                 {withRentalPrices && (
                                     <div class="EventMaterials__subtotal">
                                         {categoryIndex === categories.length - 1 && (
-                                            <button onClick={() => { this.showMaterialsList = false; }}>
+                                            <button type="button" onClick={() => { this.showMaterialsList = false; }}>
                                                 <i class="fas fa-eye-slash" /> {__('hide-materials-details')}
                                             </button>
                                         )}

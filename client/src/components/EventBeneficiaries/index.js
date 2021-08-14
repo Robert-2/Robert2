@@ -1,6 +1,7 @@
 import './index.scss';
 import EventBeneficiaryItem from './Item';
 
+// @vue/component
 export default {
     name: 'EventBeneficiaries',
     props: {

@@ -2,6 +2,7 @@ import './index.scss';
 import ErrorMessage from '@/components/ErrorMessage/index';
 import formatAmount from '@/utils/formatAmount';
 
+// @vue/component
 export default {
     name: 'ParkTotalAmount',
     props: {
@@ -34,6 +35,7 @@ export default {
             <div class="ParkTotalAmount">
                 {amount === null && (
                     <button
+                        type="button"
                         class="ParkTotalAmount__calc-button"
                         onClick={handleCalculate}
                         disabled={loading}

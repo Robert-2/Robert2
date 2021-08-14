@@ -1,5 +1,6 @@
 import Material from './Material';
 
+// @vue/component
 const InventoryItem = {
     name: 'InventoryItem',
     props: {

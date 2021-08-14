@@ -1,6 +1,7 @@
 import './index.scss';
 import ReturnInventoryItem from './Item';
 
+// @vue/component
 const ReturnInventorySummary = {
     name: 'ReturnInventorySummary',
     components: { ReturnInventoryItem },

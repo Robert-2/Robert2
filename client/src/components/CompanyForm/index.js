@@ -1,6 +1,7 @@
 import './index.scss';
 import FormField from '@/components/FormField';
 
+// @vue/component
 export default {
     name: 'CompanyForm',
     props: {

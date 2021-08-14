@@ -1,6 +1,7 @@
 import Help from '@/components/Help/Help.vue';
 import FormField from '@/components/FormField';
 
+// @vue/component
 export default {
     name: 'UserProfile',
     components: { Help, FormField },

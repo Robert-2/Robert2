@@ -3,6 +3,7 @@ import Timeline from '@/components/Timeline';
 import formatEventTechnician from '@/utils/formatEventTechnician';
 import formatEventTechniciansList from '@/utils/formatEventTechniciansList';
 
+// @vue/component
 export default {
     name: 'EventDetailsTechnicians',
     props: {

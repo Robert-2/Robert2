@@ -1,6 +1,7 @@
 import './index.scss';
 import Inventory from '@/components/Inventory';
 
+// @vue/component
 export default {
     name: 'EventReturnMaterialsList',
     props: {

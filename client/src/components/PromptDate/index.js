@@ -1,6 +1,7 @@
 import './index.scss';
 import Datepicker from '@/components/Datepicker';
 
+// @vue/component
 export default {
     name: 'PromptDate',
     props: {
@@ -30,7 +31,7 @@ export default {
             <div class="PromptDate">
                 <div class="PromptDate__header">
                     <h2 class="PromptDate__header__title">{title}</h2>
-                    <button class="PromptDate__header__btn-close" onClick={handleClose}>
+                    <button type="button" class="PromptDate__header__btn-close" onClick={handleClose}>
                         <i class="fas fa-times" />
                     </button>
                 </div>
@@ -43,10 +44,10 @@ export default {
                 </div>
                 <hr class="PromptDate__separator" />
                 <div class="PromptDate__footer">
-                    <button onClick={handleSubmit} class="success">
+                    <button type="button" onClick={handleSubmit} class="success">
                         <i class="fas fa-check" /> {__('choose-date')}
                     </button>
-                    <button onClick={handleClose}>
+                    <button type="button" onClick={handleClose}>
                         <i class="fas fa-times" /> {__('close')}
                     </button>
                 </div>

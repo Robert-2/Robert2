@@ -1,6 +1,7 @@
 import Config from '@/config/globalConfig';
 import FormField from '@/components/FormField';
 
+// @vue/component
 export default {
     name: 'BillEstimateCreationForm',
     components: { FormField },

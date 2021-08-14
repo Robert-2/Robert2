@@ -8,6 +8,7 @@ import { normalizeFilters } from './_utils';
 
 const noPaginationLimit = 100000;
 
+// @vue/component
 export default {
     name: 'MaterialsList',
     components: {
@@ -114,16 +115,16 @@ export default {
             },
         };
     },
+    computed: {
+        isFiltered() {
+            return Object.keys(this.getFilters(false)).length !== 0;
+        },
+    },
     created() {
         MaterialsStore.commit('init', this.event.materials);
     },
     mounted() {
         this.fetchMaterials();
-    },
-    computed: {
-        isFiltered() {
-            return Object.keys(this.getFilters(false)).length !== 0;
-        },
     },
     methods: {
         async fetchMaterials() {

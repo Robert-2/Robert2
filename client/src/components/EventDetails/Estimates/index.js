@@ -3,6 +3,7 @@ import Help from '@/components/Help/Help.vue';
 import EventEstimates from '@/components/EventEstimates/EventEstimates.vue';
 import EventNotBillable from '@/components/EventNotBillable';
 
+// @vue/component
 export default {
     name: 'EventDetailsEstimates',
     props: {

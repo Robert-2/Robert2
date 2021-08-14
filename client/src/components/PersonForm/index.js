@@ -1,5 +1,6 @@
 import FormField from '@/components/FormField';
 
+// @vue/component
 export default {
     name: 'PersonForm',
     components: { FormField },

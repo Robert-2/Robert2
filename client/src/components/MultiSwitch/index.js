@@ -1,5 +1,6 @@
 import './index.scss';
 
+// @vue/component
 const MultiSwitch = {
     name: 'MultiSwitch',
     props: {
@@ -19,6 +20,7 @@ const MultiSwitch = {
                     isDisplayed && (
                         <button
                             key={label}
+                            type="button"
                             onClick={() => { this.$emit('change', optionValue); }}
                             class={{
                                 'MultiSwitch__option': true,

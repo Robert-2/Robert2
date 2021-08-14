@@ -1,6 +1,7 @@
 import { Tabs, Tab } from 'vue-slim-tabs';
 import EventSummarySettings from './EventSummary';
 
+// @vue/component
 export default {
     name: 'Settings',
     render() {

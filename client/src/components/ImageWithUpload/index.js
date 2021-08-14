@@ -3,6 +3,7 @@ import formatBytes from '@/utils/formatBytes';
 import Help from '@/components/Help/Help.vue';
 import emptyImageSrc from './assets/empty-image.png';
 
+// @vue/component
 export default {
     name: 'ImageWithUpload',
     components: { Help },

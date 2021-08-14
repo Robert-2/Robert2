@@ -1,5 +1,6 @@
 import './index.scss';
 
+// @vue/component
 const ReturnInventoryItem = {
     name: 'ReturnInventoryItem',
     props: {

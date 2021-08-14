@@ -11,6 +11,7 @@ import EventBilling from '@/components/EventBilling/EventBilling.vue';
 import EventEstimates from '@/components/EventEstimates/EventEstimates.vue';
 import EventTotals from '@/components/EventTotals';
 
+// @vue/component
 export default {
     name: 'EventOverview',
     components: {

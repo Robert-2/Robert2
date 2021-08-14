@@ -23,8 +23,8 @@ import SideMenu from './SideMenu/SideMenu.vue';
 
 export default {
     name: 'SideNav',
-    props: { isOpen: Boolean },
     components: { SideMenu, Logo },
+    props: { isOpen: Boolean },
     data() {
         const year = (new Date()).getFullYear();
         const apiVersion = Config.api.version;
