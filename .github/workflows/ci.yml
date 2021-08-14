@@ -15,6 +15,16 @@ jobs:
             - run: yarn install --non-interactive --pure-lockfile
             - run: yarn lint --max-warnings 0 --color
 
+    client-linting-scss:
+        name     : "Client: Linting (SCSS)"
+        runs-on  : ubuntu-latest
+        defaults : { run: { working-directory: ./client }}
+        steps    :
+            - uses: actions/checkout@v2
+            - uses: actions/setup-node@v1
+            - run: yarn install --non-interactive --pure-lockfile
+            - run: yarn lint:scss --max-warnings 0 --color
+
     client-unit-tests:
         name     : "Client: Tests unitaires"
         runs-on  : ubuntu-latest
