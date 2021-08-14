@@ -7,14 +7,14 @@
     &__title {
         flex: 1;
         margin: 0 0 0.4rem;
+        color: $text-base-color;
         font-size: 1.1rem;
         font-weight: 800;
-        color: $text-base-color;
     }
 
     .close {
         flex: 0 0 auto;
-        background: none;
         border: none;
+        background: none;
     }
 }

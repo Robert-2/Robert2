@@ -1,7 +1,6 @@
 .MaterialViewInfos {
     display: flex;
-    flex-wrap: wrap;
-    flex-direction: row-reverse;
+    flex-flow: row-reverse wrap;
     justify-content: flex-end;
     padding-bottom: 6rem;
 
@@ -30,8 +29,8 @@
 
     &__rental-price,
     &__stock-quantity {
-        font-weight: 700;
         margin-bottom: 0.3rem;
+        font-weight: 700;
     }
 
     &__out-of-order {
@@ -43,8 +42,8 @@
     }
 
     &__dates {
-        color: $text-light-color;
         margin-top: 1.5rem;
+        color: $text-light-color;
     }
 
     &__notes {

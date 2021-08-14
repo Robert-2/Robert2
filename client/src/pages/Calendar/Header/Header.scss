@@ -14,8 +14,8 @@
     &__filters {
         flex: 1 1 auto;
         display: flex;
-        align-items: center;
         flex-wrap: wrap;
+        align-items: center;
         margin-bottom: $content-padding-large-horizontal;
     }
 
@@ -41,8 +41,8 @@
         font-weight: 600;
 
         .fa-spin {
-            margin-bottom: 0.1rem;
             margin-right: $content-padding-small-horizontal;
+            margin-bottom: 0.1rem;
             font-size: 1.8rem;
         }
     }
@@ -52,8 +52,8 @@
         margin-right: 0.5rem;
 
         .FormField__label {
-            display: none;
             flex: 0 0 auto;
+            display: none;
             padding-left: 0;
         }
 
@@ -78,9 +78,9 @@
 
     &__filter {
         flex: 0 0 auto;
-        margin-right: 1rem;
         display: flex;
         align-items: center;
+        margin-right: 1rem;
 
         &__label {
             max-width: 170px;

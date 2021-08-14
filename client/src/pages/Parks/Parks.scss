@@ -16,6 +16,7 @@
 
     &__total-amount {
         width: 105px;
+        // stylelint-disable-next-line declaration-no-important
         text-align: center !important;
     }
 
@@ -30,8 +31,8 @@
 
     &__actions {
         width: 1%;
-        white-space: nowrap;
         text-align: right;
+        white-space: nowrap;
     }
 
     @media (min-width: $screen-mobile) {

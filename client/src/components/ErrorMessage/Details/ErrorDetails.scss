@@ -11,14 +11,14 @@
 
     &__title {
         flex: 1;
-        font-size: 1.5rem;
         color: $text-danger-color;
+        font-size: 1.5rem;
     }
 
     &__btn-close {
         flex: 0 0 auto;
-        background: none;
         border: none;
+        background: none;
     }
 
     &__main {
@@ -26,11 +26,11 @@
     }
 
     &__no-details-info {
-        font-weight: 600;
         color: $text-warning-color;
+        font-weight: 600;
     }
 
-    hr {
+    &__separator {
         opacity: 0.15;
     }
 
@@ -49,12 +49,12 @@
     }
 
     &__trace {
-        max-height: 150px;
         overflow-y: auto;
+        max-height: 150px;
         color: $bg-color-body;
     }
 
-    &__traceItem {
+    &__trace-item {
         margin-bottom: 0.5rem;
         color: $text-nav-color;
 
@@ -65,8 +65,8 @@
         }
 
         &__info {
-            font-family: monospace;
             color: $text-nav-color;
+            font-family: monospace;
         }
 
         &__info:not(:nth-child(2)) {

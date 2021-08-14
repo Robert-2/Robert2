@@ -20,8 +20,8 @@
 
     &__description,
     &__confirmation {
-        font-size: 1.2rem;
         margin-bottom: $content-padding-large-vertical;
+        font-size: 1.2rem;
 
         .fas {
             width: 1.5rem;
@@ -33,8 +33,8 @@
     &__description {
         margin-top: 0;
         color: $text-nav-color;
-        white-space: pre-wrap;
         line-height: 1.5;
+        white-space: pre-wrap;
     }
 
     &__confirmation {

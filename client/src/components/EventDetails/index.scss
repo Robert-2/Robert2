@@ -11,8 +11,8 @@
         align-items: center;
         justify-content: center;
         min-height: 250px;
-        background: $bg-color-side-nav;
         margin: 0;
+        background: $bg-color-side-nav;
 
         .fas {
             margin-right: 0.3rem;
@@ -23,9 +23,9 @@
         flex: 1;
         display: flex;
         flex-direction: column;
-        min-height: 520px;
-        max-height: 100vh;
         overflow-y: auto;
+        max-height: 100vh;
+        min-height: 520px;
 
         &__body {
             flex: 1;
@@ -43,9 +43,10 @@
                 display: flex;
                 flex-direction: column;
 
+                // stylelint-disable-next-line selector-max-compound-selectors
                 .vue-tablist .fa-exclamation-triangle {
-                    color: $text-danger-color;
                     margin-left: 0.5rem;
+                    color: $text-danger-color;
                 }
 
                 .vue-tabpanel {
@@ -59,14 +60,14 @@
 
     &__content + .ErrorMessage {
         min-height: auto;
-        background: none;
         margin-bottom: $content-padding-large-vertical;
+        background: none;
     }
 
     &__materials-empty {
-        font-size: 1.2rem;
         margin-bottom: $content-padding-small-vertical;
         color: $text-danger-color;
+        font-size: 1.2rem;
         text-align: center;
 
         .fas {

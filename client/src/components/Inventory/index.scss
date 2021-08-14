@@ -13,9 +13,9 @@
 
         &__quantity-title {
             flex: 0 0 95px;
-            text-align: center;
-            font-size: 1rem;
             margin-left: $content-padding-large-vertical;
+            font-size: 1rem;
+            text-align: center;
         }
 
         & + & {

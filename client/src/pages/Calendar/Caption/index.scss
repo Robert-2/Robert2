@@ -8,9 +8,9 @@
     opacity: 0.8;
 
     &__title {
-        font-weight: 400;
-        color: $text-light-color;
         margin: 10px 0;
+        color: $text-light-color;
+        font-weight: 400;
         text-align: center;
     }
 
@@ -20,7 +20,7 @@
         border-radius: 5px;
         background-color: $calendar-event-normal-color;
         color: $calendar-event-text-color;
-        box-shadow: 1px 2px 3px rgba(#000, 0.5);
         font-size: 0.9rem;
+        box-shadow: 1px 2px 3px rgba(#000, 0.5);
     }
 }

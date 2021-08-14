@@ -10,15 +10,15 @@
         &__title {
             flex: 1;
             margin: 0 0 0.4rem;
+            color: $text-base-color;
             font-size: 1.4rem;
             font-weight: 800;
-            color: $text-base-color;
         }
 
         .close {
             flex: 0 0 auto;
-            background: none;
             border: none;
+            background: none;
         }
     }
 
@@ -29,8 +29,8 @@
 
         .FormField {
             flex-direction: column;
-            margin-bottom: $content-padding-large-vertical;
             align-items: flex-start;
+            margin-bottom: $content-padding-large-vertical;
 
             &__label {
                 flex: 0 0 auto;

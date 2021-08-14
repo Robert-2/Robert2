@@ -4,10 +4,10 @@
     text-align: center;
 
     &__calc-button {
-        background: none;
-        border: none;
-        color: $text-light-color;
         width: 100%;
+        border: none;
+        background: none;
+        color: $text-light-color;
     }
 
     &__amount {

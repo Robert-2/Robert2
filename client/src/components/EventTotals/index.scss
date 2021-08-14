@@ -3,13 +3,13 @@
 .EventTotals {
     flex: 0 0 auto;
     padding: 0 0.5rem;
-    text-align: right;
     font-size: 1.1rem;
+    text-align: right;
 
     .fas {
         margin: 0 0.3rem;
-        font-size: 0.95rem;
         color: $text-light-color;
+        font-size: 0.95rem;
     }
 
     &__base {
@@ -18,8 +18,8 @@
 
     &__grand,
     &__grand-discount {
-        font-size: 1.7rem;
         margin-bottom: 0.5rem;
+        font-size: 1.7rem;
     }
 
     &__discountable,

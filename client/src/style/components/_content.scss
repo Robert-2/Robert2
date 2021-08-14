@@ -1,12 +1,12 @@
 .content {
-    flex: 1;
     position: relative;
+    flex: 1;
     display: flex;
     flex-flow: column nowrap;
     align-items: stretch;
     justify-content: flex-start;
-    height: 100%;
     overflow: auto;
+    height: 100%;
 
     &__header {
         flex: 0 0 auto;

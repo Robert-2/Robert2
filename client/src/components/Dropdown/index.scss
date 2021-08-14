@@ -8,10 +8,10 @@
     &__item {
         display: flex;
         align-items: center;
-        cursor: pointer;
-        user-select: none;
         padding: 0 $content-padding-small-vertical;
         border-radius: 2px;
+        cursor: pointer;
+        user-select: none;
         transition: all 300ms;
     }
 
@@ -40,10 +40,10 @@
 
     &__menu {
         position: absolute;
+        z-index: 2;
         top: 100%;
         right: 0;
         min-width: $dropdown-min-width;
-        z-index: 2;
         background: $bg-color-dropdown-menu;
         box-shadow: -2px 6px 6px rgba(0, 0, 0, 0.25);
         transform-origin: 50% 0%;
@@ -53,8 +53,8 @@
         &__title {
             margin: 0;
             padding: $content-padding-small-vertical $content-padding-small-horizontal;
-            text-align: center;
             font-size: 1.2rem;
+            text-align: center;
             text-transform: capitalize;
         }
 
@@ -65,8 +65,8 @@
             padding: 0;
 
             .fas {
-                font-size: $side-nav-icon-size;
                 margin-right: $content-padding-small-vertical;
+                font-size: $side-nav-icon-size;
             }
         }
     }
@@ -75,12 +75,14 @@
         flex: 0 0 auto;
         display: flex;
         align-items: center;
-        list-style: none;
         padding: $content-padding-large-horizontal $content-padding-small-vertical;
+        list-style: none;
 
+        // stylelint-disable-next-line selector-max-type
         &:not(button) {
             color: $text-base-color;
 
+            // stylelint-disable-next-line selector-max-type
             &:hover {
                 background-color: $bg-color-dropdown-menu-item-hover;
                 color: $link-hover-color;

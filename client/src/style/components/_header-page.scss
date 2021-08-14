@@ -6,8 +6,8 @@
     padding: $content-padding-small-horizontal $content-padding-small-vertical;
 
     &__help {
-        display: none;
         flex: 1;
+        display: none;
         color: $help-text-color;
 
         .ErrorMessage {
@@ -27,6 +27,7 @@
         min-width: $form-min-width;
         padding: 0.55rem 0;
 
+        // stylelint-disable-next-line selector-max-type
         button + .Dropdown,
         .Dropdown + button,
         button + button {

@@ -2,14 +2,14 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    padding: 0;
     margin: 0;
+    padding: 0;
 
     &__item {
-        list-style: none;
-        padding: 0.3rem 0.5rem;
         margin: 0 0.35rem 0.35rem 0;
-        background: $bg-color-emphasis;
+        padding: 0.3rem 0.5rem;
         border-radius: 10px;
+        background: $bg-color-emphasis;
+        list-style: none;
     }
 }

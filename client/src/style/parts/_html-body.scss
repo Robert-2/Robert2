@@ -1,16 +1,18 @@
+/* stylelint-disable selector-max-type, selector-max-universal */
+
 * {
     box-sizing: border-box;
 }
 
 html,
 body {
-    height: 100%;
     display: flex;
     flex-flow: column nowrap;
+    height: 100%;
     margin: 0;
     padding: 0;
-    font-size: $base-font-size;
     font-family: $text-base-font-family;
+    font-size: $base-font-size;
 }
 
 body {

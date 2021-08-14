@@ -7,11 +7,11 @@
     &__category {
         flex: 1 0 220px;
         max-width: 500px;
+        margin-right: 1rem;
         margin-bottom: 2rem;
         padding: 0.6rem 1rem;
-        background: $bg-color-emphasis;
         border-radius: 10px;
-        margin-right: 1rem;
+        background: $bg-color-emphasis;
     }
 
     &__sub-categories {
@@ -28,8 +28,8 @@
             display: flex;
             align-items: center;
             min-height: 2.2rem;
-            font-size: 1.2rem;
             color: $text-base-color;
+            font-size: 1.2rem;
 
             .fas {
                 margin-right: 0.6rem;
@@ -47,9 +47,9 @@
     }
 
     &__edit-button {
-        padding: 4px 8px;
         margin-left: 0.5rem;
-        transition: visibility 10ms;
+        padding: 4px 8px;
+        transition: visibility 100ms;
 
         .fas {
             margin: 0;

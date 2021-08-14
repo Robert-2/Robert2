@@ -28,8 +28,8 @@
 
     &__item,
     &__subtotal {
-        list-style: none;
         display: flex;
+        list-style: none;
 
         &__name {
             flex: 1;
@@ -49,14 +49,14 @@
 
         &__quantity-first {
             flex: 0 0 35px;
-            color: $text-light-color;
             padding-right: $content-padding-large-horizontal;
+            color: $text-light-color;
             text-align: right;
         }
 
         &__quantity {
             flex: 0 0 3rem;
-            margin: 0 0.8rem 0 0.8rem;
+            margin: 0 0.8rem;
 
             .fa-times {
                 margin-right: 0.2rem;
@@ -77,8 +77,8 @@
         font-size: 1.1rem;
 
         &__name {
-            text-align: right;
             color: $text-light-color;
+            text-align: right;
         }
 
         &__price {

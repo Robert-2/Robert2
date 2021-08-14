@@ -27,11 +27,12 @@
         }
     }
 
+    /* stylelint-disable selector-class-pattern */
     &__body {
         &.cv-wrapper {
             flex: 1;
-            min-height: 0;
             height: auto;
+            min-height: 0;
         }
 
         .cv-day,
@@ -60,25 +61,26 @@
         }
 
         .cv-item {
-            border: none;
-            padding: 10px 6px;
             margin-top: 5px;
-            background-color: $calendar-event-normal-color;
+            padding: 10px 6px;
+            border: none;
             border-radius: 4px;
+            background-color: $calendar-event-normal-color;
             color: $text-base-color;
-            white-space: pre-wrap;
             line-height: 1.3;
+            white-space: pre-wrap;
 
             &--not-confirmed {
-                background-color: rgba(
-                    $calendar-event-normal-color,
-                    $calendar-event-not-confirmed-opacity
-                );
+                background-color:
+                    rgba(
+                        $calendar-event-normal-color,
+                        $calendar-event-not-confirmed-opacity
+                    );
             }
 
             &--past {
-                background-color: $calendar-event-past-color;
                 border-radius: 5px;
+                background-color: $calendar-event-past-color;
             }
 
             &.continued {
@@ -92,4 +94,5 @@
             }
         }
     }
+    /* stylelint-enable selector-class-pattern */
 }

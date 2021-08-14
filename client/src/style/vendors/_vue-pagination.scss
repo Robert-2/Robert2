@@ -27,8 +27,8 @@
             }
 
             &.active {
-                color: $text-nav-color;
                 background: $bg-color-input-normal;
+                color: $text-nav-color;
 
                 &:hover {
                     background: $bg-color-side-menu-item-hover;

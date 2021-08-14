@@ -1,15 +1,16 @@
 @import '../../../themes/default';
 
 .ReturnInventoryItem {
-    list-style: none;
     display: flex;
     margin-bottom: $content-padding-small-vertical;
     padding-bottom: 2px;
     border-bottom: 1px dashed $list-left-border-color;
+    list-style: none;
 
     &__name {
         flex: 1;
 
+        /* stylelint-disable selector-max-type */
         a:not(button),
         a:not(button):visited,
         a:not(button):active {
@@ -19,6 +20,7 @@
         a:not(button):hover {
             color: $link-hover-color;
         }
+        /* stylelint-enable selector-max-type */
     }
 
     &__missing {

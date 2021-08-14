@@ -2,8 +2,8 @@
     color: $text-base-color;
 
     &__title {
-        font-size: 1.2rem;
         margin-bottom: 1rem;
+        font-size: 1.2rem;
 
         .fas {
             width: 1.5rem;
@@ -17,8 +17,8 @@
     }
 
     &__error {
-        color: $text-danger-color;
         margin: 0 0 1.5rem;
+        color: $text-danger-color;
     }
 
     &__list {
@@ -27,11 +27,11 @@
     }
 
     &__item {
-        list-style: none;
         display: flex;
         margin-bottom: 0.5rem;
         border-bottom: 1px dashed $list-left-border-color;
         color: $text-danger-color;
+        list-style: none;
 
         &__name {
             flex: 1;

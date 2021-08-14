@@ -44,8 +44,8 @@
             &--selected,
             &--selected:hover,
             &--selected:focus {
-                opacity: 1;
                 background-color: $bg-color-button-info;
+                opacity: 1;
             }
         }
     }
@@ -56,9 +56,10 @@
     }
 
     &__error {
-        color: $text-danger-color;
         padding: 0;
+        color: $text-danger-color;
 
+        // stylelint-disable-next-line selector-max-type
         li {
             list-style: inside;
         }

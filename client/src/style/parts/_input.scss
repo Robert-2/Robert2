@@ -1,22 +1,24 @@
+/* stylelint-disable selector-max-type */
+
 input,
 textarea {
     flex: 0 0 auto;
     padding: $input-padding-vertical $input-padding-horizontal;
-    background-color: $bg-color-input-normal;
-    color: $color-input;
+    outline: 0;
     border: $input-border-size solid $bg-color-input-normal;
     border-radius: $input-border-radius;
+    background-color: $bg-color-input-normal;
+    color: $color-input;
     font-family: $text-base-font-family;
     font-size: $input-font-size;
-    outline: 0;
 
     &:focus {
         border-color: $input-focus-border-color;
     }
 
     &:disabled {
+        border-color: $bg-color-input-normal;
         background-color: $bg-color-input-disabled;
         color: $color-input-disabled;
-        border-color: $bg-color-input-normal;
     }
 }

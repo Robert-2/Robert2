@@ -1,7 +1,9 @@
+/* stylelint-disable declaration-no-important, selector-max-type */
+
 .vdp-datepicker {
     &__calendar {
-        background-color: $bg-color-input-normal !important;
         border-color: #5c5c5c !important;
+        background-color: $bg-color-input-normal !important;
         color: $link-active-color !important;
 
         header {

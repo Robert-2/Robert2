@@ -13,22 +13,23 @@
 
     &__value-field {
         flex: 1;
-        padding: $input-padding-vertical $input-padding-horizontal;
         min-height: 2.7rem;
-        color: $color-input;
+        padding: $input-padding-vertical $input-padding-horizontal;
         border: $input-border-size solid $bg-color-input-normal;
         border-radius: $input-border-radius;
+        color: $color-input;
 
         &--loading {
             color: $text-light-color;
         }
 
         &--error {
-            font-style: italic;
             color: $text-danger-color;
+            font-style: italic;
         }
     }
 
+    // stylelint-disable-next-line selector-class-pattern
     .v-select {
         flex: 1;
     }
@@ -37,6 +38,7 @@
         margin-left: $form-label-width;
         padding: 1rem 0;
 
+        // stylelint-disable-next-line selector-max-type
         button {
             padding: 5px 10px;
         }

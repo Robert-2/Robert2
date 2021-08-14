@@ -22,7 +22,7 @@
                 <i class="fas fa-info-circle" />
                 {{ $t('errors.details-intro-not-detailed') }}
             </p>
-            <hr />
+            <hr class="ErrorDetails__separator" />
             <div class="ErrorDetails__content" ref="errorContent">
                 <div v-if="requested">
                     <h3 class="ErrorDetails__subtitle">#### {{ $t('errors.details-request') }}</h3>
@@ -44,13 +44,13 @@
                     <div class="ErrorDetails__trace">
                         >! Details<br />
                         ```log<br />
-                        <div v-for="(traceItem, index) in trace" :key="index" class="ErrorDetails__traceItem">
-                            <span class="ErrorDetails__traceItem__index">- {{ index }}:&nbsp;</span>
-                            <span class="ErrorDetails__traceItem__info">
+                        <div v-for="(traceItem, index) in trace" :key="index" class="ErrorDetails__trace-item">
+                            <span class="ErrorDetails__trace-item__index">- {{ index }}:&nbsp;</span>
+                            <span class="ErrorDetails__trace-item__info">
                                 <span v-if="traceItem.class">{{ traceItem.class }}::</span>{{ traceItem.function }}
                                 <br />
                             </span>
-                            <span v-if="traceItem.file" class="ErrorDetails__traceItem__info">
+                            <span v-if="traceItem.file" class="ErrorDetails__trace-item__info">
                                 File: {{ traceItem.file }}, line {{ traceItem.line }}
                             </span>
                         </div>
@@ -58,7 +58,7 @@
                     </div>
                 </div>
             </div>
-            <hr />
+            <hr class="ErrorDetails__separator" />
             <div class="ErrorDetails__footer">
                 <p v-if="isCopied" class="ErrorDetails__is-copied">
                     <i class="fas fa-check" />

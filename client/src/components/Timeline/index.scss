@@ -14,8 +14,8 @@ $group-item-max-height: 65px !default;
         }
 
         .vis-labelset {
-            min-width: 180px;
             max-width: 280px;
+            min-width: 180px;
 
             .vis-label {
                 box-sizing: content-box;
@@ -34,9 +34,9 @@ $group-item-max-height: 65px !default;
             }
 
             .vis-item-overflow {
-                max-height: calc(#{$group-item-max-height} - 1.2rem - 1.2rem);
-                overflow: hidden;
                 align-items: flex-start;
+                overflow: hidden;
+                max-height: calc(#{$group-item-max-height} - 1.2rem - 1.2rem);
             }
         }
     }

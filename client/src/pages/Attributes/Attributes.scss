@@ -11,11 +11,11 @@
     }
 
     &__no-data {
-        background-color: $bg-color-table-td;
         margin: 0;
         padding: 1.5rem 0.5rem;
-        text-align: center;
+        background-color: $bg-color-table-td;
         font-style: italic;
+        text-align: center;
     }
 
     &__items {
@@ -27,9 +27,9 @@
         border-collapse: collapse;
 
         &__header {
-            font-weight: 600;
             background-color: $bg-color-table-th;
             color: $text-nav-color;
+            font-weight: 600;
             text-align: left;
         }
 
@@ -46,7 +46,7 @@
 
         &__name {
             width: 305px;
-            font-weight: bold;
+            font-weight: 700;
 
             &__content {
                 display: flex;
@@ -71,10 +71,10 @@
             }
 
             &__edit-button {
-                visibility: hidden;
-                transition: none;
                 padding: 5px 8px;
                 font-size: 0.9rem;
+                visibility: hidden;
+                transition: none;
             }
         }
 
@@ -82,10 +82,10 @@
             width: 30px;
 
             &__button {
-                visibility: hidden;
-                transition: none;
                 padding: 5px 8px;
                 font-size: 0.9rem;
+                visibility: hidden;
+                transition: none;
 
                 &--show {
                     visibility: visible;

@@ -9,6 +9,7 @@
         padding: math.div($input-padding-vertical, 1.8) 0;
     }
 
+    // stylelint-disable-next-line selector-class-pattern
     .v-select {
         flex: 1;
         margin-right: 10%;
@@ -29,26 +30,28 @@
     }
 
     .vs__selected-options .vs__selected {
-        background: none;
         padding: 0;
+        background: none;
     }
 
     @media screen and (min-width: $screen-tablet) {
         display: flex;
-        flex-direction: column;
         flex-flow: row wrap;
+        flex-direction: column;
         align-items: center;
 
         &__label {
             flex: 0 0 $form-label-width;
-            text-align: right;
             padding: 0 $input-padding-horizontal;
+            text-align: right;
         }
 
+        // stylelint-disable-next-line selector-class-pattern
         &__label + .v-select + &__error {
             margin-left: $form-label-width;
         }
 
+        // stylelint-disable-next-line selector-class-pattern
         .v-select {
             margin-right: 0;
         }

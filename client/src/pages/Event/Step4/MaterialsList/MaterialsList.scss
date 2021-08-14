@@ -31,19 +31,19 @@
     }
 
     &__error {
-        color: $text-danger-color;
         margin: $content-padding-small-vertical 0;
+        color: $text-danger-color;
     }
 
     &__main {
-        flex: 1;
         position: relative;
+        flex: 1;
     }
 
     &__loading {
         position: absolute;
-        right: 0;
         top: 0.5rem;
+        right: 0;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -53,6 +53,7 @@
         }
     }
 
+    /* stylelint-disable selector-max-type, selector-max-compound-selectors */
     .VueTables__table {
         > thead {
             display: none;
@@ -60,8 +61,8 @@
 
         .VueTables__row {
             > td {
-                background: none;
                 border-bottom-color: $list-left-border-color;
+                background: none;
             }
 
             &:first-child > td {
@@ -73,8 +74,10 @@
             }
         }
     }
+    /* stylelint-enable selector-max-type, selector-max-compound-selectors */
 
     &__qty {
+        // stylelint-disable-next-line declaration-no-important
         color: $text-light-color !important;
         font-weight: 600;
     }
@@ -84,6 +87,7 @@
     }
 
     &__name {
+        // stylelint-disable-next-line declaration-no-important
         color: $text-light-color !important;
     }
 
@@ -112,6 +116,7 @@
         width: 9rem;
         min-width: 9rem;
 
+        // stylelint-disable-next-line selector-max-type
         button {
             padding: 6px 8px;
         }
@@ -133,13 +138,14 @@
         width: 45px;
         min-width: 45px;
 
+        // stylelint-disable-next-line selector-max-type
         button {
             padding: 6px 8px;
         }
     }
 
     &__add-more {
-        text-align: center;
         margin: $content-padding-small-vertical 0 50px;
+        text-align: center;
     }
 }

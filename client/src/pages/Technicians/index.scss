@@ -12,12 +12,12 @@
 .Technicians {
     &__filters {
         position: absolute;
+        z-index: 1;
+        left: 240px;
+        right: calc(#{$content-padding-large-vertical} + 45px + #{$content-padding-small-vertical});
         display: flex;
         flex-wrap: nowrap;
         align-items: center;
-        left: 240px;
-        right: calc(#{$content-padding-large-vertical} + 45px + #{$content-padding-small-vertical});
-        z-index: 1;
 
         &__clear-button {
             margin-left: $content-padding-small-horizontal;

@@ -4,8 +4,8 @@
 
     &__form {
         flex: 2;
-        min-width: $form-min-width;
         max-width: $form-max-width;
+        min-width: $form-min-width;
         margin-right: $content-padding-large-vertical;
 
         &.Form {

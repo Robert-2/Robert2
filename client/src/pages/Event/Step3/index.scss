@@ -42,11 +42,11 @@
         height: 100%;
 
         &__message {
-            font-size: 1.2rem;
             margin-bottom: $content-padding-large-vertical;
-            white-space: pre-line;
-            text-align: center;
+            font-size: 1.2rem;
             line-height: 1.5;
+            text-align: center;
+            white-space: pre-line;
         }
     }
 

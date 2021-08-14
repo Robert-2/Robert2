@@ -22,8 +22,8 @@
         }
 
         &__button {
-            background: none;
             border: none;
+            background: none;
             color: $link-base-color;
 
             &:hover {
@@ -45,8 +45,8 @@
         font-size: 1.1rem;
 
         &__item {
-            list-style: none;
             width: 100%;
+            list-style: none;
 
             .DisplayBill {
                 flex-direction: row;
@@ -54,13 +54,13 @@
                 opacity: 0.66;
 
                 &__text {
-                    font-size: 0.98rem;
                     margin-right: $content-padding-large-horizontal;
+                    font-size: 0.98rem;
                 }
 
                 &__actions {
-                    margin: 0;
                     max-width: 140px;
+                    margin: 0;
                     text-align: center;
                 }
 

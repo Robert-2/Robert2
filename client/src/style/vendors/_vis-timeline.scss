@@ -1,3 +1,5 @@
+/* stylelint-disable declaration-no-important, selector-no-qualifying-type */
+
 $items-border-radius: 10px;
 
 // - L'obligation d'utiliser des !important est due au fait que lors du build,
@@ -37,13 +39,13 @@ $items-border-radius: 10px;
     }
 
     .vis-time-axis .vis-text {
-        text-align: center;
         color: $text-nav-color;
+        text-align: center;
 
         &.vis-major {
             margin-left: 0.5rem;
-            text-transform: capitalize;
             font-weight: 800;
+            text-transform: capitalize;
         }
     }
 
@@ -60,10 +62,9 @@ $items-border-radius: 10px;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            min-height: 100%;
             min-height: max(100%, 55px);
-            word-break: break-all;
             padding: 10px;
+            word-break: break-all;
         }
     }
 }
@@ -75,10 +76,10 @@ $items-border-radius: 10px;
     font-size: 1rem;
 
     &.vis-range {
-        box-shadow: 1px 2px 3px rgba(#000, 0.5);
         border-radius: $items-border-radius !important;
         background-color: $calendar-event-normal-color;
         color: $calendar-event-text-color;
+        box-shadow: 1px 2px 3px rgba(#000, 0.5);
 
         &.vis-selected {
             background-color: lighten($calendar-event-normal-color, 10%);
@@ -87,8 +88,8 @@ $items-border-radius: 10px;
 
     &.vis-background {
         padding: 0.5rem 0.8rem;
-        color: rgba(255, 255, 255, 0.5);
         background-color: rgba(31, 31, 31, 0.6);
+        color: rgba(255, 255, 255, 0.5);
     }
 
     .vis-item-overflow {
@@ -97,8 +98,8 @@ $items-border-radius: 10px;
     }
 
     .vis-item-content {
-        white-space: pre-line;
         padding: 0 !important;
+        white-space: pre-line;
     }
 
     &:not(.vis-readonly):not(.vis-background) {
@@ -111,13 +112,13 @@ $items-border-radius: 10px;
         }
 
         .vis-drag-left {
-            border-radius: $items-border-radius 0 0 $items-border-radius;
             left: 0 !important;
+            border-radius: $items-border-radius 0 0 $items-border-radius;
         }
 
         .vis-drag-right {
-            border-radius: 0 $items-border-radius $items-border-radius 0;
             right: 0 !important;
+            border-radius: 0 $items-border-radius $items-border-radius 0;
         }
     }
 
@@ -128,20 +129,21 @@ $items-border-radius: 10px;
     }
 
     .vis-delete {
+        right: -32px !important;
         display: flex;
         align-items: center;
         justify-content: center;
         width: 32px !important;
         height: 100% !important;
-        right: -32px !important;
         border-radius: 3px;
 
         &::after {
-            color: $text-danger-color;
             content: '\f1f8' !important;
+            color: $text-danger-color;
+            // stylelint-disable-next-line font-family-no-missing-generic-family-keyword
             font-family: 'Font Awesome 5 Free' !important;
-            font-weight: 900 !important;
             font-size: 1.7rem !important;
+            font-weight: 900 !important;
         }
     }
 }
@@ -154,14 +156,14 @@ div.vis-tooltip {
     border-radius: 3px;
     background-color: $bg-color-tooltip !important;
     color: $text-base-color !important;
-    white-space: pre-wrap !important;
     font-family: $text-base-font-family !important;
+    white-space: pre-wrap !important;
 
     .fas,
     .far {
         width: 1.5rem;
-        text-align: center;
         margin-bottom: 3px;
+        text-align: center;
     }
 
     .fa-exclamation-triangle {

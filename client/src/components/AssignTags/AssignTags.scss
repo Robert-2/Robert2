@@ -10,7 +10,7 @@
     &__content {
         flex: 1;
         min-height: 150px;
-        padding: .7rem 1rem 0;
+        padding: 0.7rem 1rem 0;
 
         .vs__dropdown-menu {
             max-height: 150px;
@@ -25,6 +25,7 @@
         display: flex;
         align-items: center;
 
+        // stylelint-disable-next-line selector-class-pattern
         .v-select {
             flex: 1;
             margin-right: 1rem;
@@ -41,13 +42,14 @@
         justify-content: flex-end;
         padding: 1.5rem 1rem;
 
+        // stylelint-disable-next-line selector-max-type
         .fas + span {
-            margin-left: .35rem;
+            margin-left: 0.35rem;
         }
     }
 
     &__error {
-        margin-right: .7rem;
+        margin-right: 0.7rem;
         color: $text-danger-color;
         font-weight: 800;
     }

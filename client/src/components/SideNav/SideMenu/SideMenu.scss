@@ -2,10 +2,10 @@
     &__item {
         flex: 0 0 auto;
         width: 100%;
-        text-align: center;
         padding: $content-padding-small-vertical 0;
-        list-style: none;
         font-size: $side-nav-font-size;
+        text-align: center;
+        list-style: none;
         cursor: pointer;
         transition: all 300ms;
 
@@ -14,8 +14,8 @@
         }
 
         .fas {
-            font-size: $side-nav-icon-size;
             margin-bottom: 0.5rem;
+            font-size: $side-nav-icon-size;
         }
 
         &:hover {

@@ -1,12 +1,12 @@
 .MaterialViewDocumentsItem {
     display: flex;
     align-items: center;
-    list-style: none;
     margin: 0 0 10px;
     padding: 0;
+    border-radius: $input-border-radius;
     background: $bg-color-emphasis;
     color: $text-base-color;
-    border-radius: $input-border-radius;
+    list-style: none;
 
     &__link,
     &__no-link {
@@ -30,8 +30,8 @@
 
     &__size {
         flex: 0 0 auto;
-        color: $text-light-color;
         margin-right: $content-padding-small-vertical;
+        color: $text-light-color;
     }
 
     &__actions {

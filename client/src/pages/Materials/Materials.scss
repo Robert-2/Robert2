@@ -32,9 +32,9 @@
         &__label {
             max-width: 140px;
             margin: 0 $content-padding-small-vertical 0 0;
-            white-space: pre-line;
-            text-align: center;
             color: $text-warning-color;
+            text-align: center;
+            white-space: pre-line;
         }
 
         &__button {
@@ -59,22 +59,27 @@
 
     &__rental-price,
     &__replacement-price {
+        // stylelint-disable-next-line declaration-no-important
         text-align: right !important;
     }
 
     &__quantity,
     &__quantity-broken {
+        // stylelint-disable-next-line declaration-no-important
         text-align: center !important;
     }
 
     &__quantity {
         &--remaining {
+            // stylelint-disable-next-line declaration-no-important
             color: $text-warning-color !important;
             font-weight: 800;
         }
     }
 
+    // stylelint-disable-next-line selector-max-type
     &__quantity-broken:not(th) {
+        // stylelint-disable-next-line declaration-no-important
         color: $text-danger-color !important;
         font-weight: 800;
     }
@@ -126,13 +131,11 @@
 
         &__filters {
             position: absolute;
+            z-index: 1;
+            left: 240px;
+            right: calc(#{$content-padding-large-vertical} + 45px + #{$content-padding-small-vertical});
             flex-wrap: nowrap;
             align-items: center;
-            left: 240px;
-            right: calc(
-                #{$content-padding-large-vertical} + 45px + #{$content-padding-small-vertical}
-            );
-            z-index: 1;
 
             .MaterialsFilters {
                 flex-wrap: nowrap;

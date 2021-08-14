@@ -1,26 +1,28 @@
+/* stylelint-disable selector-class-pattern, selector-max-type */
+
 @import 'vue-select/src/scss/vue-select';
 
 .v-select {
     padding: 0 $input-padding-horizontal;
-    background-color: $bg-color-input-normal;
     border: $input-border-size solid $bg-color-input-normal;
     border-radius: $input-border-radius;
+    background-color: $bg-color-input-normal;
     font-size: $input-font-size;
 }
 
 .vs {
     &__dropdown-toggle {
-        border: none;
         padding: 0;
+        border: none;
     }
 
     &__dropdown-menu {
-        width: calc(100% + 2px);
         left: -1px;
-        background: $bg-color-input-normal;
+        width: calc(100% + 2px);
         border: $input-border-size solid $bg-color-button-info;
         border-top: none;
         border-radius: 0 0 4px 4px;
+        background: $bg-color-input-normal;
     }
 
     &__dropdown-option {
@@ -37,8 +39,8 @@
         padding: 0 2px;
 
         .vs__selected {
-            padding: 0.3rem 0.7rem;
             margin: 0.4rem 0;
+            padding: 0.3rem 0.7rem;
             background-color: $bg-color-tooltip;
         }
 
@@ -63,8 +65,8 @@
         margin: 0 1rem 0 0;
         padding: 0;
         border: none;
-        line-height: normal;
         color: $color-input;
+        line-height: normal;
     }
 
     &__search,
@@ -72,8 +74,8 @@
         margin: 0;
         padding: $input-padding-vertical 0;
         border: none;
-        line-height: normal;
         font-size: $input-font-size;
+        line-height: normal;
 
         &::placeholder {
             color: $text-light-color;

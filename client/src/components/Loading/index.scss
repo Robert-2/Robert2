@@ -3,27 +3,27 @@
 .Loading {
     display: inline-flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
     font-size: 1.2rem;
 
     &__spinner {
         width: 2.5em;
         height: 2.5em;
-        animation: Loading--rotate 2s linear infinite;
+        animation: Loading--rotate 2000ms linear infinite;
 
         &__path {
             stroke: currentColor;
             stroke-linecap: round;
             stroke-width: 4;
-            animation: Loading--dash 1.5s ease-in-out infinite;
+            animation: Loading--dash 1500ms ease-in-out infinite;
         }
     }
 
     &__text {
         margin-top: 10px;
-        font-style: italic;
         font-weight: 300;
+        font-style: italic;
     }
 
     &--horizontal {
@@ -53,10 +53,12 @@
         stroke-dasharray: 1, 150;
         stroke-dashoffset: 0;
     }
+
     50% {
         stroke-dasharray: 90, 150;
         stroke-dashoffset: -35;
     }
+
     100% {
         stroke-dasharray: 90, 150;
         stroke-dashoffset: -124;

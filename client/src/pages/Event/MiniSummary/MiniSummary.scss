@@ -3,8 +3,8 @@
     padding: 1rem 0.8rem;
     border: 1px solid $text-muted-color;
     border-radius: 8px;
-    text-align: center;
     color: $text-nav-color;
+    text-align: center;
 
     &__not-saved {
         position: absolute;
@@ -24,8 +24,8 @@
     }
 
     &__total {
-        font-size: 1.4rem;
         color: $text-base-color;
+        font-size: 1.4rem;
     }
 
     &--not-saved {

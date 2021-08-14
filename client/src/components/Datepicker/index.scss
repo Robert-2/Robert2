@@ -59,8 +59,8 @@ $time-hover-background-color: $calendar-time-cursor-color;
         }
 
         .cell.disabled {
-            color: $text-muted-color;
             background-color: $bg-color-input-normal;
+            color: $text-muted-color;
         }
     }
 }

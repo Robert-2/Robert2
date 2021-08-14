@@ -5,8 +5,8 @@
 // -----------------------------------------
 
 $bg-color-body: #242424;
-$bg-color-main-header: #333333;
-$bg-color-side-nav: #333333;
+$bg-color-main-header: #333;
+$bg-color-side-nav: #333;
 $bg-color-emphasis: #1f1f1f;
 
 $bg-color-table-th: #2e2e2e;
@@ -15,7 +15,7 @@ $bg-color-table-td: #363636;
 $bg-color-side-menu-item-hover: #262626;
 $bg-color-side-menu-item-active: #242424;
 
-$bg-color-tooltip: rgba(3, 3, 3, .75);
+$bg-color-tooltip: rgba(3, 3, 3, 0.75);
 
 $bg-color-input-normal: #454545;
 $bg-color-input-disabled: $bg-color-body;
@@ -27,8 +27,8 @@ $bg-color-button-warning: #b4320e;
 $bg-color-button-danger: #ad0101;
 
 $bg-color-dropdown-menu: #262626;
-$bg-color-dropdown-menu-item-hover: #333333;
-$bg-color-dropdown-menu-item-active: #333333;
+$bg-color-dropdown-menu-item-hover: #333;
+$bg-color-dropdown-menu-item-active: #333;
 
 // -----------------------------------------
 // -
@@ -49,13 +49,13 @@ $help-text-color: #757575;
 
 $link-base-color: #fb6418;
 $link-hover-color: #fc864a;
-$link-active-color: #ffffff;
+$link-active-color: #fff;
 
 $color-input: #ededed;
-$color-input-disabled: #999999;
+$color-input-disabled: #999;
 
 $color-base-button: #e0e0e0;
-$color-hover-button: #ffffff;
+$color-hover-button: #fff;
 $color-active-button: #e04406;
 
 $color-tab-active: $text-base-color;
@@ -84,7 +84,7 @@ $calendar-current-date-background-color: #5b382a;
 $calendar-cells-border-color: #545454;
 $calendar-time-cursor-color: #bb481b;
 
-$calendar-event-text-color: #ffffff;
+$calendar-event-text-color: #fff;
 $calendar-event-archived-text-color: #a3a3a3;
 
 $calendar-event-normal-color: #b13f13;
@@ -92,4 +92,4 @@ $calendar-event-past-color: #565656;
 $calendar-event-no-return-inventory-color: #65260e;
 $calendar-event-archived-color: #2b2b2b;
 
-$calendar-event-not-confirmed-opacity: .58;
+$calendar-event-not-confirmed-opacity: 0.58;

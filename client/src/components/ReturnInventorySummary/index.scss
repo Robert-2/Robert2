@@ -7,8 +7,8 @@
     text-align: center;
 
     &__title {
-        font-size: 1.3rem;
         color: $text-danger-color;
+        font-size: 1.3rem;
     }
 
     &__link {
@@ -16,17 +16,18 @@
         padding: 0.55rem 0.78rem;
         border: none;
         border-radius: 2px;
-        cursor: pointer;
-        color: $color-base-button !important;
-        line-height: 1.25;
-        font-size: 1rem;
         background-color: $bg-color-button-info;
+        // stylelint-disable-next-line declaration-no-important
+        color: $color-base-button !important;
+        font-size: 1rem;
+        line-height: 1.25;
+        cursor: pointer;
 
         &:hover,
         &:focus {
+            outline: 0;
             background-color: lighten($bg-color-button-info, 8%);
             color: $color-hover-button;
-            outline: 0;
         }
     }
 

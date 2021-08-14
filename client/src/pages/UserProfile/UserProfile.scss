@@ -11,8 +11,8 @@
 
     .Form {
         flex: 2;
-        min-width: $form-min-width;
         max-width: $form-max-width;
+        min-width: $form-min-width;
         margin-right: 1rem;
     }
 
@@ -26,6 +26,7 @@
     }
 
     &__section-password {
+        // stylelint-disable-next-line declaration-no-important
         display: none !important;
     }
 
@@ -35,8 +36,8 @@
 
     &__extras {
         flex: 1;
-        margin-top: 2.8rem;
         min-width: $form-min-width;
+        margin-top: 2.8rem;
 
         &__buttons {
             margin-top: 2rem;
@@ -46,11 +47,13 @@
 
     &--password-edit {
         .UserProfile__section-password {
+            // stylelint-disable-next-line declaration-no-important
             display: flex !important;
         }
 
         .UserProfile__password-edit-toggle,
         .UserProfile__section-infos {
+            // stylelint-disable-next-line declaration-no-important
             display: none !important;
         }
     }

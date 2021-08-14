@@ -2,8 +2,7 @@
 
 .TechnicianViewInfos {
     display: flex;
-    flex-wrap: wrap;
-    flex-direction: row-reverse;
+    flex-flow: row-reverse wrap;
     justify-content: flex-end;
     padding-bottom: 6rem;
 
@@ -21,8 +20,8 @@
 
     &__name,
     &__reference {
-        color: $text-base-color;
         margin-bottom: $content-padding-large-vertical;
+        color: $text-base-color;
     }
 
     &__section-title {

@@ -1,18 +1,18 @@
 .Progressbar {
     position: relative;
-    height: 20px;
     width: 100%;
-    background: $bg-color-tooltip;
+    height: 20px;
     border-radius: $input-border-radius;
+    background: $bg-color-tooltip;
 
     &__progress {
         position: absolute;
-        left: 0;
         top: 0;
+        left: 0;
         bottom: 0;
-        background: $bg-color-button-info;
-        border-radius: $input-border-radius;
-        text-align: center;
         overflow: hidden;
+        border-radius: $input-border-radius;
+        background: $bg-color-button-info;
+        text-align: center;
     }
 }

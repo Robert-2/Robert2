@@ -12,8 +12,8 @@
     }
 
     &__confirmation {
-        padding-bottom: $info-spacing;
         margin-bottom: $info-spacing;
+        padding-bottom: $info-spacing;
         border-bottom: 1px solid $list-left-border-color;
 
         &__icon {
@@ -21,10 +21,10 @@
         }
 
         &__title {
-            font-size: 1.2rem;
-            font-weight: 600;
             margin: 0 0 $info-spacing;
             color: $text-base-color;
+            font-size: 1.2rem;
+            font-weight: 600;
         }
 
         &__help {

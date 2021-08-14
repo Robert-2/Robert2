@@ -1,8 +1,8 @@
 .MaterialViewDocumentsUpload {
-    min-width: 300px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    min-width: 300px;
     border-left: 1px solid $tabs-bottom-border-color;
     background-color: transparent;
     transition: background-color 300ms ease-out;
@@ -30,9 +30,9 @@
         padding: 0 $content-padding-small-vertical;
 
         &__item {
-            list-style: none;
-            color: $text-danger-color;
             padding: $content-padding-small-horizontal 0;
+            color: $text-danger-color;
+            list-style: none;
         }
     }
 

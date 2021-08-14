@@ -4,8 +4,8 @@
 
     .Form {
         flex: 2;
-        min-width: $form-min-width;
         max-width: $form-max-width;
+        min-width: $form-min-width;
         margin-right: $content-padding-large-horizontal;
     }
 
@@ -15,8 +15,8 @@
 
     .Help {
         flex: 1;
-        margin: 0 0 $content-padding-large-vertical;
         min-width: 150px;
+        margin: 0 0 $content-padding-large-vertical;
     }
 
     @media screen and (min-width: $screen-tablet) {

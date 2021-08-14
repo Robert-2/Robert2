@@ -3,9 +3,9 @@
         padding: 1rem 0.8rem;
         border: 1px solid $text-muted-color;
         border-radius: 1.5rem;
-        text-align: left;
-        font-size: 1.1rem;
         color: $text-muted-color;
+        font-size: 1.1rem;
+        text-align: left;
         cursor: default;
 
         &__name {
@@ -13,19 +13,19 @@
         }
 
         &--active {
-            color: $text-nav-color;
             border-color: $text-nav-color;
+            color: $text-nav-color;
             cursor: pointer;
         }
 
         &--current {
-            color: $text-base-color;
             border-color: $text-base-color;
+            color: $text-base-color;
         }
 
         &--validated {
-            color: $text-success-color;
             border-color: $text-success-color;
+            color: $text-success-color;
             cursor: pointer;
         }
     }

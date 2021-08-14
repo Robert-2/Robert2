@@ -2,22 +2,23 @@
 
 .MaterialsFilters {
     display: flex;
-    align-items: center;
     flex-wrap: wrap;
+    align-items: center;
 
     &__item,
     &__reset {
-        margin-left: 0;
-        margin-bottom: $content-padding-large-horizontal;
         margin-right: math.div($content-padding-small-vertical, 2);
+        margin-bottom: $content-padding-large-horizontal;
+        margin-left: 0;
         padding: 8px 10px;
     }
 
+    /* stylelint-disable selector-class-pattern, selector-max-compound-selectors */
     .v-select {
         flex: 0 0 auto;
         min-width: 150px;
-        margin-bottom: $content-padding-large-horizontal;
         margin-right: math.div($content-padding-small-vertical, 2);
+        margin-bottom: $content-padding-large-horizontal;
         padding: 5.5px 10px;
 
         .vs__selected-options {
@@ -25,12 +26,12 @@
             font-size: 0.9rem;
 
             .vs__selected {
-                padding: 0.1rem 0.5rem;
                 margin: 0 0.2rem 0.2rem 0;
+                padding: 0.1rem 0.5rem;
 
                 .vs__deselect {
-                    padding: 0.3rem 0.4rem;
                     margin: 0 0.2rem;
+                    padding: 0.3rem 0.4rem;
                 }
             }
         }
@@ -39,8 +40,10 @@
             padding: 0.3rem 0;
         }
     }
+    /* stylelint-enable selector-class-pattern, selector-max-compound-selectors */
 
     &__item--is-active {
+        // stylelint-disable-next-line declaration-no-important
         background-color: darken($bg-color-button-warning, 5%) !important;
     }
 }

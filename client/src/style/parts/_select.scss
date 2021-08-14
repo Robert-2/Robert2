@@ -1,20 +1,22 @@
+/* stylelint-disable selector-max-type */
+
 select {
     flex: 0 0 auto;
     padding: calc(#{$input-padding-vertical} - 1px) $input-padding-horizontal;
-    background-color: $bg-color-input-normal;
-    color: $color-input;
+    outline: 0;
     border: $input-border-size solid $bg-color-input-normal;
     border-radius: $input-border-radius;
+    background-color: $bg-color-input-normal;
+    color: $color-input;
     font-size: $input-font-size;
-    outline: 0;
 
     &:focus {
         border-color: $bg-color-button-info;
     }
 
     &:disabled {
+        border-color: $bg-color-input-normal;
         background-color: $bg-color-input-disabled;
         color: $color-input-disabled;
-        border-color: $bg-color-input-normal;
     }
 }

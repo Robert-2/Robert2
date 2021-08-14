@@ -2,24 +2,23 @@
     &__empty {
         width: 100%;
         margin-top: 2rem;
-        text-align: center;
         color: $text-muted-color;
         font-size: 1.2rem;
-        font-style: italic;
         font-weight: 400;
+        font-style: italic;
+        text-align: center;
     }
 
     &__items {
         display: flex;
-        flex-direction: column;
-        flex-wrap: wrap;
+        flex-flow: column wrap;
         align-items: flex-start;
         align-content: flex-start;
     }
 
     &__edit-button {
-        padding: 0.33rem 0.6rem;
         margin-left: 0.5rem;
+        padding: 0.33rem 0.6rem;
         transition: 10ms visibility;
     }
 
@@ -27,12 +26,12 @@
         flex: 0 0 auto;
         display: flex;
         align-items: center;
-        min-height: 2rem;
         min-width: 18rem;
+        min-height: 2rem;
         margin: 0.5rem 2rem 0.5rem 0;
         padding: 0.6rem 1rem;
-        background: $bg-color-emphasis;
         border-radius: 10px;
+        background: $bg-color-emphasis;
         font-size: 1.2rem;
 
         &__name {

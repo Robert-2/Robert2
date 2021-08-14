@@ -1,6 +1,6 @@
 .PersonForm {
-    min-width: $form-min-width;
     max-width: $form-max-width;
+    min-width: $form-min-width;
     margin-right: 1rem;
 
     &__company {
@@ -30,8 +30,8 @@
 
     &__notes {
         .FormField__label {
-            align-self: flex-start;
             padding-top: 0.6rem;
+            align-self: flex-start;
         }
 
         .FormField__textarea {

@@ -7,15 +7,15 @@
 
     .CompanyForm {
         flex: 2;
-        min-width: $form-min-width;
         max-width: $form-max-width;
+        min-width: $form-min-width;
         margin-right: 0;
     }
 
     &__extras {
         flex: 1;
-        margin-top: 2.8rem;
         min-width: 180px;
+        margin-top: 2.8rem;
     }
 
     .Help {
@@ -24,8 +24,8 @@
     }
 
     &__persons {
-        padding: 0.5rem 1rem;
         max-width: 350px;
+        padding: 0.5rem 1rem;
         background-color: $bg-color-side-nav;
         color: $text-base-color;
 
@@ -40,8 +40,8 @@
         }
 
         &__item {
-            list-style: none;
             margin-bottom: 0.5rem;
+            list-style: none;
 
             .fas {
                 margin-right: 0.2rem;

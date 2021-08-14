@@ -6,9 +6,9 @@
     }
 
     &__body {
-        height: 100%;
         display: flex;
         flex-direction: column;
+        height: 100%;
         color: $text-base-color;
 
         .vue-tablist {

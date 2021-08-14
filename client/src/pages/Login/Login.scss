@@ -1,7 +1,7 @@
 .Login {
     &__message {
-        background-color: $bg-color-emphasis;
         padding: 20px;
+        background-color: $bg-color-emphasis;
         font-size: 1.2rem;
         text-align: center;
 
@@ -25,8 +25,8 @@
     &__form {
         display: flex;
         flex-flow: column nowrap;
-        justify-content: space-around;
         align-items: center;
+        justify-content: space-around;
 
         &__input {
             width: 200px;

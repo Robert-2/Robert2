@@ -3,12 +3,12 @@
 .EventReturnMaterialItem {
     display: flex;
     align-items: center;
-    list-style: none;
     width: 100%;
     padding: 0;
     border-radius: $input-border-radius;
-    color: $text-base-color;
     background: rgba(#fff, 0.05);
+    color: $text-base-color;
+    list-style: none;
 
     &__reference,
     &__name,
@@ -32,8 +32,8 @@
 
     &__quantity-out {
         flex: 0 0 auto;
-        text-align: right;
         color: $text-nav-color;
+        text-align: right;
 
         &__count {
             color: $text-base-color;
@@ -55,9 +55,9 @@
         .EventReturnMaterialItem__quantity-returned,
         .EventReturnMaterialItem__quantity-broken {
             flex: 0 0 95px;
-            font-size: 1.1rem;
-            color: $text-light-color;
             padding: $content-padding-small-horizontal 0;
+            color: $text-light-color;
+            font-size: 1.1rem;
         }
     }
 
@@ -65,8 +65,8 @@
         background: rgba($text-success-color, 0.25);
 
         .EventReturnMaterialItem__quantity-returned {
-            font-weight: 600;
             color: $text-base-color;
+            font-weight: 600;
         }
     }
 
@@ -74,13 +74,13 @@
         background: rgba($text-warning-color, 0.25);
 
         .EventReturnMaterialItem__quantity-returned {
-            font-weight: 600;
             color: $text-warning-color;
+            font-weight: 600;
         }
 
         .EventReturnMaterialItem__quantity-broken {
-            font-weight: 600;
             color: $text-danger-color;
+            font-weight: 600;
         }
     }
 
@@ -88,8 +88,8 @@
         background: rgba($text-danger-color, 0.25);
 
         .EventReturnMaterialItem__quantity-returned {
-            font-weight: 600;
             color: $text-danger-color;
+            font-weight: 600;
         }
     }
 }

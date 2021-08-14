@@ -1,3 +1,5 @@
+/* stylelint-disable selector-max-type */
+
 .Form {
     &__fieldset {
         flex: 1;
@@ -5,8 +7,8 @@
         flex-direction: column;
 
         &__title {
-            font-size: 1.1rem;
             margin: 0 0 15px;
+            font-size: 1.1rem;
         }
     }
 
@@ -16,8 +18,8 @@
 
     &__actions {
         margin-top: 40px;
-        text-align: left;
         padding-bottom: 40px;
+        text-align: left;
     }
 
     .FormField + .FormField,
@@ -36,15 +38,15 @@
 
         .Form__actions {
             position: fixed;
-            bottom: 0;
+            z-index: 2;
             left: 0;
+            bottom: 0;
             right: 0;
             margin: 0;
-            z-index: 2;
             padding: 20px 0;
-            text-align: center;
             background: $bg-color-body;
-            box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
         }
     }
 

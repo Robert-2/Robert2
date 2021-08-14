@@ -1,3 +1,5 @@
+/* stylelint-disable selector-max-type, selector-no-qualifying-type */
+
 button,
 .button {
     flex: 0 0 auto;
@@ -5,13 +7,13 @@ button,
     padding: 0.55rem 0.78rem;
     border: none;
     border-radius: 2px;
-    cursor: pointer;
     background-color: $bg-color-button-default;
     color: $color-base-button;
-    line-height: 1.25;
     font-size: 1rem;
-    transition: all 300ms;
+    line-height: 1.25;
     text-decoration: none;
+    cursor: pointer;
+    transition: all 300ms;
 
     & + & {
         margin-left: 5px;
@@ -19,9 +21,9 @@ button,
 
     &:hover,
     &:focus {
+        outline: 0;
         background-color: lighten($bg-color-button-default, 8%);
         color: $color-hover-button;
-        outline: 0;
     }
 
     &:active {
@@ -88,17 +90,18 @@ button,
     &.outline {
         display: inline-block;
         padding: calc(0.55rem - 1px) calc(0.78rem - 1px);
-        background-color: transparent;
         border: 1px solid $link-base-color;
+        background-color: transparent;
         color: $link-base-color;
         text-decoration: none;
 
         &:hover,
         &:focus,
         &:visited {
-            background-color: darken($bg-color-button-default, 15%);
-            color: $link-hover-color !important;
             outline: 0;
+            background-color: darken($bg-color-button-default, 15%);
+            // stylelint-disable-next-line declaration-no-important
+            color: $link-hover-color !important;
         }
 
         &:active {

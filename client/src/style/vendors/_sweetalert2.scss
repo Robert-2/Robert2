@@ -1,4 +1,6 @@
-@import 'sweetalert2/src/sweetalert2.scss';
+/* stylelint-disable declaration-no-important */
+
+@import 'sweetalert2/src/sweetalert2';
 
 .swal2-container {
     font-family: $text-base-font-family;
@@ -6,7 +8,7 @@
 
 .swal2-popup {
     background: $bg-color-side-nav;
-    box-shadow: 1px 1px 20px hsla(0, 0%, 0%, 0.5);
+    box-shadow: 1px 1px 20px hsla(0deg, 0%, 0%, 0.5);
 }
 
 .swal2-title {
@@ -24,13 +26,13 @@
 .swal2-input,
 .swal2-textarea {
     padding: $input-padding-vertical $input-padding-horizontal;
-    background-color: $bg-color-input-normal;
-    color: $color-input;
+    outline: 0;
     border: $input-border-size solid $bg-color-input-normal;
     border-radius: $input-border-radius;
+    background-color: $bg-color-input-normal;
+    color: $color-input;
     font-family: $text-base-font-family;
     font-size: $input-font-size;
-    outline: 0;
 
     &:focus {
         border-color: $bg-color-button-info;

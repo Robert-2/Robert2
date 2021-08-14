@@ -13,8 +13,8 @@
         align-items: center;
         width: $switch-base-size * 2.2;
         height: $switch-base-size;
-        background: $bg-color-side-nav;
         border-radius: $switch-base-size;
+        background: $bg-color-side-nav;
         cursor: pointer;
     }
 
@@ -42,8 +42,8 @@
         margin-left: 0.5rem;
 
         &__locked {
-            font-style: italic;
             margin-left: $content-padding-small-horizontal;
+            font-style: italic;
         }
     }
 

@@ -1,8 +1,8 @@
 @import '../../themes/default/index';
 
 .EventReturn {
-    width: 100%;
     overflow: auto;
+    width: 100%;
     margin-bottom: 55px;
     padding: 0 $content-padding-small-vertical $content-padding-large-horizontal;
 
@@ -18,16 +18,16 @@
 
     &__error {
         margin: $content-padding-large-vertical 0;
-        text-align: center;
         color: $text-danger-color;
         font-size: 1.2rem;
+        text-align: center;
     }
 
     &__footer {
         position: fixed;
-        right: 0;
-        bottom: 0;
         left: 0;
+        bottom: 0;
+        right: 0;
         padding: $content-padding-large-horizontal 0;
         background-color: $bg-color-body;
         text-align: center;
@@ -35,8 +35,8 @@
 
     &__done {
         display: inline-block;
-        color: $text-success-color;
         padding: $content-padding-large-horizontal $content-padding-large-vertical;
+        color: $text-success-color;
     }
 
     &__action {

@@ -14,7 +14,9 @@
     }
 
     &__refresh {
-        font-size: 1.2rem !important;
+        /* stylelint-disable declaration-no-important */
         padding: 0.75rem 1.5rem !important;
+        font-size: 1.2rem !important;
+        /* stylelint-enable declaration-no-important */
     }
 }

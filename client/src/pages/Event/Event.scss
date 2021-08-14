@@ -1,13 +1,13 @@
 .Event {
-    height: 100%;
     display: flex;
     flex-wrap: wrap;
+    height: 100%;
 
     &__panel {
         position: fixed;
+        width: 160px;
         padding: 7px 0;
         text-align: right;
-        width: 160px;
 
         &__help {
             display: flex;
@@ -39,8 +39,8 @@
     .EventStep4,
     .EventStep5 {
         width: 100%;
-        min-width: 250px;
         max-width: 600px;
+        min-width: 250px;
         margin-left: 180px;
     }
 
