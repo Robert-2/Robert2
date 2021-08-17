@@ -45,7 +45,7 @@ const TechnicianViewInfos = {
                     {phone && (
                         <p>
                             <i class="fas fa-phone-alt TechnicianViewInfos__icon" />
-                            <a href={`phone:${phone}`}>{phone}</a>
+                            <a href={`tel:${phone}`}>{phone}</a>
                         </p>
                     )}
                     {(street || postalCode || locality) && (
