@@ -13,10 +13,11 @@ describe('formatEventTechnician', () => {
         const result = formatEventTechnician(eventTechniciansData[0]);
         expect(result).toEqual({
             id: 1,
+            eventId: 10,
             start: '2021-07-26 08:00:00',
             end: '2021-07-26 19:30:00',
-            content: '<strong>Testeur</strong> : 8:00 AM ⇒ 7:30 PM',
-            title: 'Test event (Testville)\n<strong>Testeur</strong> : 8:00 AM ⇒ 7:30 PM',
+            content: 'Testeur : 8:00 AM ⇒ 7:30 PM',
+            title: 'Test event (Testville)\nTesteur : 8:00 AM ⇒ 7:30 PM',
         });
     });
 });

@@ -2,6 +2,7 @@ import './index.scss';
 import MonthCalendar from '@/components/MonthCalendar';
 import ErrorMessage from '@/components/ErrorMessage';
 import Loading from '@/components/Loading';
+import EventDetails from '@/components/EventDetails';
 import { formatTechnicianEvent } from './utils';
 
 // @vue/component
@@ -15,6 +16,8 @@ const TechnicianViewSchedule = {
             isLoading: false,
             error: null,
             technicianEvents: [],
+            hasClickedItemId: null,
+            doubleClickTimeoutId: null,
         };
     },
     computed: {
@@ -24,6 +27,11 @@ const TechnicianViewSchedule = {
     },
     mounted() {
         this.fetchEvents();
+    },
+    beforeDestroy() {
+        if (this.doubleClickTimeoutId) {
+            clearTimeout(this.doubleClickTimeoutId);
+        }
     },
     methods: {
         async fetchEvents() {
@@ -40,9 +48,36 @@ const TechnicianViewSchedule = {
                 this.isLoading = false;
             }
         },
+
+        handleClickItem(item) {
+            const { eventId } = item;
+            if (this.hasClickedItemId === eventId) {
+                this.openEventModal(eventId);
+                this.hasClickedItemId = null;
+                return;
+            }
+
+            this.hasClickedItemId = eventId;
+            this.doubleClickTimeoutId = setTimeout(() => {
+                this.hasClickedItemId = null;
+            }, 300);
+        },
+
+        openEventModal(eventId) {
+            this.$modal.show(
+                EventDetails,
+                { eventId, openedTab: 'technicians' },
+                undefined,
+                {
+                    'before-close': () => {
+                        this.fetchEvents();
+                    },
+                },
+            );
+        },
     },
     render() {
-        const { isLoading, error, events } = this;
+        const { isLoading, error, events, handleClickItem } = this;
 
         const render = () => {
             if (isLoading) {
@@ -53,7 +88,7 @@ const TechnicianViewSchedule = {
                 return <ErrorMessage error={error} />;
             }
 
-            return <MonthCalendar events={events} withTotal />;
+            return <MonthCalendar events={events} withTotal vOn:clickItem={handleClickItem} />;
         };
 
         return <div class="TechnicianViewSchedule">{render()}</div>;
