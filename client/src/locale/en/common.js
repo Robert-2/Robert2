@@ -9,6 +9,7 @@ export default {
     'action-add': "Add",
     'action-edit': "Edit",
     'action-view': "Display details",
+    'action-view-schedule': "Display schedule",
     'action-trash': "Trash bin",
     'action-restore': "Restore",
     'action-delete': "Delete",

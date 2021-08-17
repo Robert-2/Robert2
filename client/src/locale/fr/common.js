@@ -9,6 +9,7 @@ export default {
     'action-add': "Ajouter",
     'action-edit': "Modifier",
     'action-view': "Afficher en détail",
+    'action-view-schedule': "Afficher le calendrier",
     'action-trash': "Corbeille",
     'action-restore': "Restaurer",
     'action-delete': "Supprimer",
