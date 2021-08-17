@@ -35,6 +35,14 @@
             min-height: 0;
         }
 
+        .cv-header-day:last-of-type {
+            margin-right: 15px;
+        }
+
+        .cv-weekdays {
+            overflow-y: scroll;
+        }
+
         .cv-day,
         .cv-header-day,
         .cv-header-days,
@@ -61,13 +69,15 @@
         }
 
         .cv-item {
+            height: 48px;
             margin-top: 5px;
-            padding: 10px 6px;
+            margin-left: 5px;
+            padding: 7px 10px;
             border: none;
             border-radius: 4px;
             background-color: $calendar-event-normal-color;
             color: $text-base-color;
-            line-height: 1.3;
+            line-height: 1.5;
             white-space: pre-wrap;
 
             &--not-confirmed {
@@ -81,6 +91,34 @@
             &--past {
                 border-radius: 5px;
                 background-color: $calendar-event-past-color;
+            }
+
+            &.span1 {
+                width: calc((100% / 7) - 11px);
+            }
+
+            &.span2 {
+                width: calc(((100% / 7) * 2) - 11px);
+            }
+
+            &.span3 {
+                width: calc(((100% / 7) * 3) - 11px);
+            }
+
+            &.span4 {
+                width: calc(((100% / 7) * 4) - 11px);
+            }
+
+            &.span5 {
+                width: calc(((100% / 7) * 5) - 11px);
+            }
+
+            &.span6 {
+                width: calc(((100% / 7) * 6) - 11px);
+            }
+
+            &.span7 {
+                width: calc(100% - 11px);
             }
 
             &.continued {

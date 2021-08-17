@@ -6,13 +6,13 @@ import { CalendarView } from 'vue-simple-calendar';
 export default {
     name: 'MonthCalendar',
     props: {
-        showDate: { type: Date },
-        events: { type: Array },
+        events: { type: Array, required: true },
+        showDate: { type: Date, default: () => new Date() },
         withTotal: { type: Boolean },
     },
     data() {
         return {
-            currentDate: this.showDate || new Date(),
+            currentDate: this.showDate,
         };
     },
     computed: {
@@ -78,7 +78,7 @@ export default {
                     showDate={currentDate}
                     startingDayOfWeek={1}
                     items={events}
-                    itemContentHeight="40px"
+                    itemContentHeight="53px"
                     itemBorderHeight="0px"
                     vOn:click-item={handleClickItem}
                 />
