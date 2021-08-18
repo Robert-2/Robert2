@@ -16,8 +16,8 @@ describe('formatEventTechnician', () => {
             eventId: 10,
             start: '2021-07-26 08:00:00',
             end: '2021-07-26 19:30:00',
-            content: 'Testeur : 8:00 AM ⇒ 7:30 PM',
-            title: 'Test event (Testville)\nTesteur : 8:00 AM ⇒ 7:30 PM',
+            content: '8:00 AM ⇒ 7:30 PM : Testeur',
+            title: 'Test event (Testville)\n8:00 AM ⇒ 7:30 PM : Testeur',
         });
     });
 });

@@ -30,7 +30,7 @@ describe('TechnicianView/Schedule/utils.formatTechnicianEvent', () => {
         expect(result.eventId).toBe(2);
         expect(result.startDate).toEqual('2019-10-01 08:00:00');
         expect(result.endDate).toEqual('2019-10-02 23:00:00');
-        expect(result.title).toEqual('Test event (Testville)\nRégisseur : 01 October, 8:00 AM ⇒ 02 October, 11:00 PM');
+        expect(result.title).toEqual('Test event (Testville)\n01 October, 8:00 AM ⇒ 02 October, 11:00 PM : Régisseur');
         expect(result.classes).toEqual(['cv-item--past', 'cv-item--not-confirmed']);
     });
 });

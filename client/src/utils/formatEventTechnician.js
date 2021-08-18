@@ -22,7 +22,7 @@ const formatEventTechnician = (eventTechnician) => {
     }
 
     const datesString = `${_start.format(dateFormat)} ⇒ ${_end.format(dateFormat)}`;
-    const content = position ? `${position} : ${datesString}` : datesString;
+    const content = position ? `${datesString} : ${position}` : datesString;
     title = `${title}\n${content}`;
 
     return { id, eventId, start, end, content, title };
