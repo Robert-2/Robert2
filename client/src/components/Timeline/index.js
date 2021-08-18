@@ -12,8 +12,14 @@ const Timeline = {
             type: [Array, DataSet, DataView],
             default: () => [],
         },
-        groups: [Array, DataSet, DataView],
-        options: Object,
+        groups: {
+            type: [Array, DataSet, DataView],
+            default: undefined,
+        },
+        options: {
+            type: Object,
+            default: undefined,
+        },
     },
     data: () => ({
         data: null,
@@ -22,8 +28,8 @@ const Timeline = {
     computed: {
         fullOptions() {
             return {
-                start: this.options.min,
-                end: this.options.max,
+                start: this.options?.min,
+                end: this.options?.max,
                 xss: {
                     filterOptions: {
                         whiteList: {
@@ -115,7 +121,10 @@ const Timeline = {
         },
     },
     render() {
-        const _className = ['Timeline', { 'Timeline--grouped': !!this.groups }];
+        const _className = [
+            'Timeline',
+            { 'Timeline--grouped': !!this.groups, 'Timeline--limited': !!this.options?.max },
+        ];
         return <div class={_className} ref="visualization" />;
     },
 };
