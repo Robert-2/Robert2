@@ -1,5 +1,6 @@
 import './index.scss';
 import moment from 'moment';
+import dateRound from '@/utils/dateRound';
 import Alert from '@/components/Alert';
 import CriticalError from '@/components/CriticalError';
 import Help from '@/components/Help/Help.vue';
@@ -108,6 +109,7 @@ const EventStep3 = {
                 zoomMin: 1000 * 3600, // 1h
                 selectable: true,
                 orientation: this.groups?.length >= 15 ? 'both' : 'top',
+                minutesGrid: 15,
             };
         },
     },
@@ -205,8 +207,8 @@ const EventStep3 = {
 
         async handleItemMoved(item, callback) {
             const data = {
-                start_time: moment(item.start).format(DATE_DB_FORMAT),
-                end_time: moment(item.end).format(DATE_DB_FORMAT),
+                start_time: moment(dateRound(item.start)).format(DATE_DB_FORMAT),
+                end_time: moment(dateRound(item.end)).format(DATE_DB_FORMAT),
             };
 
             try {

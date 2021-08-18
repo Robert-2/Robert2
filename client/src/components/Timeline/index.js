@@ -3,6 +3,7 @@ import './index.scss';
 import moment from 'moment';
 import { Timeline as TimelineCore, DataSet, DataView } from '@robert2/vis-timeline';
 import { mountVisData } from './_utils';
+import dateRound from '@/utils/dateRound';
 
 // @vue/component
 const Timeline = {
@@ -65,6 +66,16 @@ const Timeline = {
                 },
                 moment: (date) => moment(date),
                 ...(this.options || {}),
+                onMoving: (item, callback) => {
+                    if (!this.options?.minutesGrid) {
+                        callback(item);
+                    }
+                    const { start: freeStart, end: freeEnd } = item;
+                    const { minutesGrid } = this.options;
+                    const start = dateRound(freeStart, minutesGrid);
+                    const end = dateRound(freeEnd, minutesGrid);
+                    callback({ ...item, start, end });
+                },
                 onMove: (item, callback) => {
                     this.$emit('itemMoved', item, callback);
                 },
