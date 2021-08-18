@@ -52,6 +52,13 @@ export default {
             return replacementPrice ? formatAmount(replacementPrice) : null;
         },
 
+        hasPricingData() {
+            return (
+                this.rentalPrice !== null ||
+                this.replacementPrice !== null
+            );
+        },
+
         queryStringCategory() {
             return `category=${this.material.category_id}`;
         },

@@ -1,9 +1,7 @@
 <template>
     <div class="MaterialViewInfos">
         <section class="MaterialViewInfos__main">
-            <h2>
-                {{ material.reference }}
-            </h2>
+            <h2>{{ material.reference }}</h2>
             <h3>
                 <router-link :to="`/materials?${queryStringCategory}`">
                     {{ categoryName }}
@@ -28,13 +26,13 @@
                     {{ $t('out-of-order-items-count', { count: material.out_of_order_quantity || 0 }) }}
                 </li>
             </ul>
-            <div class="MaterialViewInfos__billing" v-if="showBilling">
+            <div class="MaterialViewInfos__billing" v-if="showBilling && hasPricingData">
                 <h3>{{ $t('prices') }}</h3>
                 <ul>
-                    <li class="MaterialViewInfos__rental-price">
+                    <li v-if="rentalPrice != null" class="MaterialViewInfos__rental-price">
                         {{ $t('value-per-day', { value: rentalPrice }) }}
                     </li>
-                    <li v-if="replacementPrice">
+                    <li v-if="replacementPrice != null">
                         {{ $t('replacement-price') }} {{ replacementPrice }}
                     </li>
                 </ul>
@@ -85,10 +83,10 @@
                     {{ $t('sub-category') }}: <strong>{{ subCategoryName }}</strong>
                 </p>
             </div>
-            <MaterialTags :tags="material.tags" />
+            <MaterialTags v-if="material.tags && material.tags.length > 0" :tags="material.tags" />
             <div class="MaterialViewInfos__dates">
-                <p>{{ $t('created-at') }} {{ createDate }}</p>
-                <p>{{ $t('updated-at') }} {{ updateDate }}</p>
+                <p v-if="createDate">{{ $t('created-at') }} {{ createDate }}</p>
+                <p v-if="updateDate">{{ $t('updated-at') }} {{ updateDate }}</p>
             </div>
         </section>
     </div>
