@@ -6,9 +6,7 @@ import dispatchMaterialInSections from '@/utils/dispatchMaterialInSections';
 export default {
     name: 'EventMaterials',
     props: {
-        materials: Array,
-        start: Object,
-        end: Object,
+        event: { type: Object, required: true },
         withRentalPrices: { type: Boolean, default: true },
         hideDetails: { type: Boolean, default: false },
     },
@@ -16,6 +14,10 @@ export default {
         return { showMaterialsList: !this.hideDetails };
     },
     computed: {
+        materials() {
+            return this.event.materials;
+        },
+
         categories() {
             const categoryNameGetter = this.$store.getters['categories/categoryName'];
             return dispatchMaterialInSections(

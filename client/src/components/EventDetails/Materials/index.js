@@ -12,20 +12,17 @@ export default {
     name: 'EventDetailsMaterials',
     props: {
         event: { type: Object, required: true },
-        discountRate: Number,
     },
-    data() {
-        return {
-            showBilling: Config.billingMode !== 'none',
-        };
-    },
+    data: () => ({
+        showBilling: Config.billingMode !== 'none',
+    }),
     computed: {
         hasMaterials() {
             return this.event?.materials?.length > 0;
         },
     },
     render() {
-        const { event, discountRate } = this.$props;
+        const { event } = this.$props;
         const { successMessage, error, hasMaterials, showBilling } = this;
 
         return (
@@ -44,18 +41,13 @@ export default {
                 {hasMaterials && (
                     <Fragment>
                         <EventMaterials
-                            materials={event.materials}
-                            start={event.startDate}
-                            end={event.endDate}
+                            event={event}
                             withRentalPrices={showBilling && event.is_billable}
                             hideDetails={event.materials.length > 16}
                         />
                         <EventTotals
-                            materials={event.materials}
+                            event={event}
                             withRentalPrices={showBilling && event.is_billable}
-                            discountRate={discountRate || 0}
-                            start={event.startDate}
-                            end={event.endDate}
                         />
                     </Fragment>
                 )}

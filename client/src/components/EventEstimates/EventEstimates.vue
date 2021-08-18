@@ -1,11 +1,11 @@
 <template>
     <section class="EventEstimates">
         <ul
-            v-if="estimates.length > 0 && !displayCreateEstimate && !loading"
+            v-if="hasEstimate && !displayCreateEstimate && !loading"
             class="EventEstimates__list"
         >
             <li
-                v-for="(estimate, index) in estimates"
+                v-for="(estimate, index) in event.estimates"
                 :key="estimate.id"
                 class="EventEstimates__list__item"
                 :class="{ 'EventEstimates__list__item--old': index > 0 }"
@@ -47,11 +47,11 @@
             <i class="fas fa-circle-notch fa-spin" />
             {{ $t('loading') }}
         </div>
-        <div v-if="userCanEdit && lastBill" class="EventEstimates__warning-has-bill">
+        <div v-if="userCanEdit && hasBill" class="EventEstimates__warning-has-bill">
             {{ $t('warning-event-has-bill') }}
         </div>
         <div
-            v-if="estimates.length > 0 && userCanEdit && !loading && !deletingId"
+            v-if="hasEstimate && userCanEdit && !loading && !deletingId"
             class="EventEstimates__create-new"
         >
             <p class="EventEstimates__create-new__text">
@@ -76,7 +76,7 @@
                 {{ $t('click-edit-to-create-one') }}
             </p>
         </div>
-        <div v-if="estimates.length === 0 && isBillable">
+        <div v-if="!hasEstimate && isBillable">
             <p class="EventEstimates__no-estimate">
                 {{ $t('no-estimate-help') }}<br />
                 <span v-if="userCanEdit">{{ $t('create-estimate-help') }}</span>
@@ -84,17 +84,15 @@
             </p>
         </div>
         <BillEstimateCreationForm
-            v-if="displayCreateEstimate || loading || (
-                estimates.length === 0 && isBillable && userCanEdit && !deletingId
-            )"
+            v-if="userCanCreateEstimate"
             :discountRate="discountRate"
             :discountTarget="discountTarget"
             :maxAmount="grandTotal"
-            :beneficiary="beneficiaries[0]"
+            :beneficiary="event.beneficiaries[0]"
             :saveLabel="$t('create-estimate')"
-            :isRegeneration="estimates.length > 0"
+            :isRegeneration="hasEstimate"
             @change="handleChangeDiscount"
-            @submit="createEstimate"
+            @submit="handleCreateEstimate"
             @cancel="closeCreateEstimate"
             :loading="loading"
         />

@@ -34,6 +34,10 @@ export default {
             this.setEventConfirmation(false);
         },
 
+        handleUpdateEvent(newEvent) {
+            this.$emit('updateEvent', newEvent);
+        },
+
         // ------------------------------------------------------
         // -
         // -    Internal
@@ -59,17 +63,18 @@ export default {
         const {
             $t: __,
             event,
-            handleConfirm,
-            handleUnconfirm,
             isConfirming,
             eventSummaryPdfUrl,
+            handleConfirm,
+            handleUnconfirm,
+            handleUpdateEvent,
         } = this;
 
         const { is_confirmed: isConfirmed, materials, beneficiaries } = event;
 
         return (
             <div class="EventStep5">
-                <EventOverview event={event} />
+                <EventOverview event={event} onUpdateEvent={handleUpdateEvent} />
                 {materials.length > 0 && (
                     <section class="EventStep5__confirmation">
                         <h3 class="EventStep5__confirmation__title">

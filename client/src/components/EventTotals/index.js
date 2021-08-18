@@ -1,10 +1,12 @@
 import './index.scss';
+import moment from 'moment';
 import Config from '@/config/globalConfig';
 import formatAmount from '@/utils/formatAmount';
 import getEventMaterialItemsCount from '@/utils/getEventMaterialItemsCount';
 import getEventOneDayTotal from '@/utils/getEventOneDayTotal';
 import getEventOneDayTotalDiscountable from '@/utils/getEventOneDayTotalDiscountable';
 import getEventGrandTotal from '@/utils/getEventGrandTotal';
+import getEventDiscountRate from '@/utils/getEventDiscountRate';
 import getEventReplacementTotal from '@/utils/getEventReplacementTotal';
 import decimalRound from '@/utils/decimalRound';
 
@@ -12,29 +14,27 @@ import decimalRound from '@/utils/decimalRound';
 export default {
     name: 'EventTotals',
     props: {
-        materials: Array,
+        event: { type: Object, required: true },
+        forcedDiscountRate: { type: Number, default: undefined },
         withRentalPrices: Boolean,
-        discountRate: Number,
-        start: Object,
-        end: Object,
-    },
-    data() {
-        return {
-            duration: this.end ? this.end.diff(this.start, 'days') + 1 : 1,
-            currency: Config.currency.symbol,
-        };
     },
     computed: {
+        duration() {
+            const start = moment(this.event.start_date);
+            const end = moment(this.event.end_date);
+            return start && end ? end.diff(start, 'days') + 1 : 1;
+        },
+
         ratio() {
             return Config.degressiveRate(this.duration);
         },
 
         itemsCount() {
-            return getEventMaterialItemsCount(this.materials);
+            return getEventMaterialItemsCount(this.event.materials);
         },
 
         total() {
-            return getEventOneDayTotal(this.materials);
+            return getEventOneDayTotal(this.event.materials);
         },
 
         grandTotal() {
@@ -42,26 +42,26 @@ export default {
         },
 
         totalDiscountable() {
-            return getEventOneDayTotalDiscountable(this.materials);
+            return getEventOneDayTotalDiscountable(this.event.materials);
         },
 
         grandTotalDiscountable() {
             return getEventGrandTotal(this.totalDiscountable, this.duration);
         },
 
+        discountRate() {
+            if (this.forcedDiscountRate != null) {
+                return this.forcedDiscountRate;
+            }
+            return getEventDiscountRate(this.event);
+        },
+
         discountAmount() {
             return this.grandTotalDiscountable * (this.discountRate / 100);
         },
 
-        discountTarget: {
-            get() {
-                return decimalRound(this.grandTotal - this.discountAmount);
-            },
-            set(value) {
-                const diff = this.grandTotal - value;
-                const rate = 100 * (diff / this.grandTotalDiscountable);
-                this.discountRate = decimalRound(rate, 4);
-            },
+        discountTarget() {
+            return decimalRound(this.grandTotal - this.discountAmount);
         },
 
         grandTotalWithDiscount() {
@@ -69,16 +69,11 @@ export default {
         },
 
         replacementTotal() {
-            return getEventReplacementTotal(this.materials);
+            return getEventReplacementTotal(this.event.materials);
         },
     },
     created() {
         this.$store.dispatch('categories/fetch');
-    },
-    methods: {
-        recalcDiscountRate(newVal) {
-            this.discountTarget = parseFloat(newVal);
-        },
     },
     render() {
         const {

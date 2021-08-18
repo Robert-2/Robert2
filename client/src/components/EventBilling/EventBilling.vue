@@ -1,7 +1,7 @@
 <template>
     <section class="EventBilling">
-        <DisplayBill v-if="lastBill && !displayCreateBill && !loading" :data="lastBill" />
-        <div v-if="lastBill && userCanEdit" class="EventBilling__regenerate">
+        <DisplayBill v-if="hasBill && !displayCreateBill && !loading" :data="lastBill" />
+        <div v-if="hasBill && userCanEdit" class="EventBilling__regenerate">
             <p class="EventBilling__regenerate__text">
                 {{ $t('regenerate-bill-help') }}
             </p>
@@ -24,8 +24,8 @@
                 {{ $t('click-edit-to-create-one') }}
             </p>
         </div>
-        <div v-if="!lastBill && isBillable">
-            <div v-if="userCanEdit && !lastEstimate" class="EventBilling__warning-no-estimate">
+        <div v-if="!hasBill && isBillable">
+            <div v-if="userCanEdit && !hasEstimate" class="EventBilling__warning-no-estimate">
                 {{ $t('warning-no-estimate-before-billing') }}
             </div>
             <p class="EventBilling__no-bill">
@@ -35,23 +35,23 @@
             </p>
         </div>
         <BillEstimateCreationForm
-            v-if="displayCreateBill || loading || (!lastBill && isBillable && userCanEdit)"
+            v-if="userCanCreateBill"
             :discountRate="discountRate"
             :discountTarget="discountTarget"
             :maxAmount="grandTotal"
-            :beneficiary="beneficiaries[0]"
+            :beneficiary="event.beneficiaries[0]"
             :saveLabel="$t('create-bill')"
-            :isRegeneration="!!lastBill"
+            :isRegeneration="hasBill"
             @change="handleChangeDiscount"
-            @submit="createBill"
+            @submit="handleCreateBill"
             @cancel="closeBillRegeneration"
             :loading="loading"
         />
-        <div v-if="allBills.length > 1 && !displayCreateBill && !loading">
+        <div v-if="event.bills && event.bills.length > 1 && !displayCreateBill && !loading">
             <h3 class="EventBilling__list-title">{{ $t('previous-bills') }}</h3>
             <ul class="EventBilling__list">
                 <li
-                    v-for="(bill, index) in allBills"
+                    v-for="(bill, index) in event.bills"
                     :key="bill.id"
                     class="EventBilling__list__item"
                     :class="{ 'EventBilling__list__item--current': index === 0 }"

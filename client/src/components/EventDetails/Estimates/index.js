@@ -8,17 +8,14 @@ export default {
     name: 'EventDetailsEstimates',
     props: {
         event: { type: Object, required: true },
-        lastBill: Object,
     },
-    data() {
-        return {
-            isCreating: false,
-            deletingId: null,
-            isLoading: false,
-            successMessage: null,
-            error: null,
-        };
-    },
+    data: () => ({
+        isCreating: false,
+        deletingId: null,
+        isLoading: false,
+        successMessage: null,
+        error: null,
+    }),
     computed: {
         hasMaterials() {
             return this.event?.materials?.length > 0;
@@ -83,7 +80,6 @@ export default {
             successMessage,
             error,
             hasMaterials,
-            lastBill,
             isCreating,
             deletingId,
             handleCreateEstimate,
@@ -95,12 +91,7 @@ export default {
                 <Help message={{ type: 'success', text: successMessage }} error={error} />
                 {hasMaterials && event.is_billable && (
                     <EventEstimates
-                        beneficiaries={event.beneficiaries}
-                        materials={event.materials}
-                        estimates={event.estimates}
-                        lastBill={lastBill}
-                        start={event.startDate}
-                        end={event.endDate}
+                        event={event}
                         loading={isCreating}
                         deletingId={deletingId}
                         onCreateEstimate={handleCreateEstimate}

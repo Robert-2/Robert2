@@ -1,11 +1,9 @@
 import './index.scss';
-import moment from 'moment';
 import { Tabs, Tab } from 'vue-slim-tabs';
 import Config from '@/config/globalConfig';
 import ErrorMessage from '@/components/ErrorMessage';
 import Loading from '@/components/Loading';
 import formatTimelineEvent from '@/utils/timeline-event/format';
-import getDiscountRateFromLast from '@/utils/getDiscountRateFromLast';
 import Header from './Header';
 import Infos from './Infos';
 import Technicians from './Technicians';
@@ -21,17 +19,12 @@ export default {
         onUpdateEvent: Function,
         onDuplicateEvent: Function,
     },
-    data() {
-        return {
-            event: null,
-            discountRate: 0,
-            showBilling: Config.billingMode !== 'none',
-            lastBill: null,
-            lastEstimate: null,
-            isLoading: false,
-            error: null,
-        };
-    },
+    data: () => ({
+        event: null,
+        showBilling: Config.billingMode !== 'none',
+        isLoading: false,
+        error: null,
+    }),
     computed: {
         hasEventTechnicians() {
             return this.event?.technicians?.length > 0;
@@ -60,8 +53,6 @@ export default {
 
         handleEstimateCreated(newEstimate) {
             this.event.estimates.unshift(newEstimate);
-            this.lastEstimate = { ...newEstimate, date: moment(newEstimate.date) };
-            this.updateDiscountRate();
         },
 
         handleEstimateDeleted(estimateId) {
@@ -69,15 +60,10 @@ export default {
                 (estimate) => estimate.id !== estimateId,
             );
             this.event.estimates = newEstimatesList;
-            const [lastOne] = newEstimatesList;
-            this.lastEstimate = lastOne ? { ...lastOne, date: moment(lastOne.date) } : null;
-            this.updateDiscountRate();
         },
 
         handleBillCreated(newBill) {
             this.event.bills.unshift(newBill);
-            this.lastBill = { ...newBill, date: moment(newBill.date) };
-            this.updateDiscountRate();
         },
 
         handleUpdateEvent(newData) {
@@ -124,38 +110,18 @@ export default {
             }
         },
 
-        updateDiscountRate() {
-            this.discountRate = getDiscountRateFromLast(this.lastBill, this.lastEstimate);
-        },
-
         setEventData(data) {
             this.event = {
                 ...formatTimelineEvent(data),
                 ...data,
             };
-
-            const [lastBill] = data.bills;
-            const [lastEstimate] = data.estimates;
-
-            if (lastBill) {
-                this.lastBill = { ...lastBill, date: moment(lastBill.date) };
-            }
-
-            if (lastEstimate) {
-                this.lastEstimate = { ...lastEstimate, date: moment(lastEstimate.date) };
-            }
-
-            this.updateDiscountRate();
         },
     },
     render() {
         const {
             $t: __,
             event,
-            discountRate,
             showBilling,
-            lastBill,
-            lastEstimate,
             hasEventTechnicians,
             hasMaterials,
             hasMaterialsProblems,
@@ -172,7 +138,7 @@ export default {
         return (
             <div class="EventDetails">
                 {isLoading && <Loading />}
-                {!isLoading && event && (
+                {!!(!isLoading && event) && (
                     <section class="EventDetails__content">
                         <Header
                             event={event}
@@ -187,7 +153,7 @@ export default {
                         <div class="EventDetails__content__body">
                             <Tabs>
                                 <Tab title={<span><i class="fas fa-info-circle" /> {__('informations')}</span>}>
-                                    <Infos event={event} discountRate={discountRate} />
+                                    <Infos event={event} />
                                 </Tab>
                                 <Tab
                                     disabled={!hasEventTechnicians}
@@ -206,7 +172,7 @@ export default {
                                         </span>
                                     )}
                                 >
-                                    <Materials event={event} discountRate={discountRate} />
+                                    <Materials event={event} />
                                 </Tab>
                                 {showBilling && (
                                     <Tab
@@ -215,7 +181,6 @@ export default {
                                     >
                                         <Estimates
                                             event={event}
-                                            lastBill={lastBill}
                                             onCreateEstimate={handleEstimateCreated}
                                             onDeleteEstimate={handleEstimateDeleted}
                                             onBillingEnabled={handleUpdateEvent}
@@ -229,8 +194,6 @@ export default {
                                     >
                                         <Billing
                                             event={event}
-                                            lastBill={lastBill}
-                                            lastEstimate={lastEstimate}
                                             onCreateBill={handleBillCreated}
                                             onBillingEnabled={handleUpdateEvent}
                                         />

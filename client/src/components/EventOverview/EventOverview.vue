@@ -99,9 +99,7 @@
             </h3>
             <EventMaterials
                 v-if="hasMaterials"
-                :materials="event.materials"
-                :start="startDate"
-                :end="endDate"
+                :event="event"
                 :withRentalPrices="showBilling && event.is_billable"
                 :hideDetails="showBilling && event.is_billable"
             />
@@ -113,26 +111,19 @@
         <div class="EventOverview__billing">
             <EventTotals
                 v-if="hasMaterials"
-                :materials="event.materials"
+                :event="event"
                 :withRentalPrices="showBilling && event.is_billable"
-                :discountRate="discountRate"
-                :start="startDate"
-                :end="endDate"
+                :forcedDiscountRate="discountRate"
             />
             <tabs
                 v-if="showBilling && hasMaterials && event.is_billable"
-                :defaultIndex="lastBill ? 1 : 0"
+                :defaultIndex="hasBill ? 1 : 0"
                 :onSelect="handleChangeBillingTab"
                 class="EventOverview__billing__tabs"
             >
                 <tab titleSlot="estimates">
                     <EventEstimates
-                        :beneficiaries="event.beneficiaries"
-                        :materials="event.materials"
-                        :estimates="event.estimates"
-                        :lastBill="lastBill"
-                        :start="startDate"
-                        :end="endDate"
+                        :event="event"
                         :loading="isCreating"
                         :deletingId="deletingId"
                         @discountRateChange="handleChangeDiscountRate"
@@ -144,13 +135,7 @@
                 <tab titleSlot="bill">
                     <Help :message="{ type: 'success', text: successMessage }" :error="error" />
                     <EventBilling
-                        :beneficiaries="event.beneficiaries"
-                        :lastBill="lastBill"
-                        :lastEstimate="lastEstimate"
-                        :allBills="event.bills"
-                        :materials="event.materials"
-                        :start="startDate"
-                        :end="endDate"
+                        :event="event"
                         :loading="isCreating"
                         @discountRateChange="handleChangeDiscountRate"
                         @createBill="handleCreateBill"

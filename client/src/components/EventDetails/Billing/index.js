@@ -7,17 +7,13 @@ export default {
     name: 'EventDetailsBilling',
     props: {
         event: { type: Object, required: true },
-        lastBill: Object,
-        lastEstimate: Object,
     },
-    data() {
-        return {
-            isCreating: false,
-            isLoading: false,
-            successMessage: null,
-            error: null,
-        };
-    },
+    data: () => ({
+        isCreating: false,
+        isLoading: false,
+        successMessage: null,
+        error: null,
+    }),
     computed: {
         hasMaterials() {
             return this.event?.materials?.length > 0;
@@ -52,9 +48,7 @@ export default {
             successMessage,
             error,
             hasMaterials,
-            lastBill,
             isCreating,
-            lastEstimate,
             handleCreateBill,
         } = this;
 
@@ -63,13 +57,7 @@ export default {
                 <Help message={{ type: 'success', text: successMessage }} error={error} />
                 {hasMaterials && event.is_billable && (
                     <EventBilling
-                        beneficiaries={event.beneficiaries}
-                        lastBill={lastBill}
-                        lastEstimate={lastEstimate}
-                        allBills={event.bills}
-                        materials={event.materials}
-                        start={event.startDate}
-                        end={event.endDate}
+                        event={event}
                         loading={isCreating}
                         onCreateBill={handleCreateBill}
                     />
