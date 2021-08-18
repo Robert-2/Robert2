@@ -61,7 +61,14 @@ export default {
 
         handleDatepickerChange(newDate) {
             this.$emit('input', newDate);
-            const newValue = moment(newDate).format('YYYY-MM-DD');
+
+            let newValue;
+            if (Array.isArray(newDate)) {
+                newValue = newDate.map((date) => moment(date).format('YYYY-MM-DD'));
+            } else {
+                newValue = moment(newDate).format('YYYY-MM-DD');
+            }
+
             this.$emit('change', { field: this.name, newValue, newDate });
         },
 
