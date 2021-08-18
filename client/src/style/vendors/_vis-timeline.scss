@@ -102,6 +102,14 @@ $items-border-radius: 10px;
         white-space: pre-line;
     }
 
+    /* stylelint-disable-next-line selector-class-pattern */
+    .vis-onUpdateTime-tooltip {
+        border-radius: 3px;
+        background-color: $bg-color-tooltip;
+        line-height: 1.5;
+        white-space: pre-wrap;
+    }
+
     &:not(.vis-readonly):not(.vis-background) {
         cursor: pointer;
 

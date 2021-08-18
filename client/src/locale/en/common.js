@@ -32,6 +32,7 @@ export default {
     'almost-done': "Almost done...",
     'refresh-page': "Refresh the page",
     'take-control': "Take control",
+    'update-in-progress': "Update in progress",
 
     'please-choose': "Please choose...",
     'start-typing-to-search': "Start typing to search...",
