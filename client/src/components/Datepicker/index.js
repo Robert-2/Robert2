@@ -59,7 +59,7 @@ export default {
         },
     },
     render() {
-        const { $props, lang, formatter, handleInput, getDisabledDates } = this;
+        const { $t: __, $props, lang, formatter, handleInput, getDisabledDates } = this;
         const { value, withTime, isRange, isClearable, displayFormat, placeholder } = $props;
 
         return (
@@ -78,6 +78,8 @@ export default {
                 format={withTime ? `${displayFormat} HH:mm` : displayFormat}
                 disabledDate={getDisabledDates}
                 rangeSeparator=" ⇒ "
+                confirm
+                confirmText={__('done')}
             />
         );
     },

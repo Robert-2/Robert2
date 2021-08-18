@@ -30,6 +30,7 @@ export default {
     'copy-to-clipboard': "Copier dans le presse-papier",
     'copied-in-clipboard': "Copié dans le presse-papier\u00a0!",
     'almost-done': "Presque terminé...",
+    'done': "Terminé",
     'refresh-page': "Actualiser la page",
     'take-control': "Prendre la main",
     'update-in-progress': "Modification en cours",

@@ -30,6 +30,7 @@ export default {
     'copy-to-clipboard': "Copy to clipboard",
     'copied-in-clipboard': "Copied in clipboard!",
     'almost-done': "Almost done...",
+    'done': "Done",
     'refresh-page': "Refresh the page",
     'take-control': "Take control",
     'update-in-progress': "Update in progress",
