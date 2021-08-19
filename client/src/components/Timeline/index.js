@@ -21,6 +21,10 @@ const Timeline = {
             type: Object,
             default: undefined,
         },
+        minutesGrid: {
+            type: Number,
+            default: undefined,
+        },
     },
     data: () => ({
         data: null,
@@ -67,11 +71,11 @@ const Timeline = {
                 moment: (date) => moment(date),
                 ...(this.options || {}),
                 onMoving: (item, callback) => {
-                    if (!this.options?.minutesGrid) {
+                    if (!this.$props.minutesGrid) {
                         callback(item);
                     }
                     const { start: freeStart, end: freeEnd } = item;
-                    const { minutesGrid } = this.options;
+                    const { minutesGrid } = this.$props;
                     const start = dateRound(freeStart, minutesGrid);
                     const end = dateRound(freeEnd, minutesGrid);
                     callback({ ...item, start, end });

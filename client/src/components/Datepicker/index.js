@@ -7,13 +7,13 @@ import * as langs from './locale';
 export default {
     name: 'Datepicker',
     props: {
-        value: [Date, Array],
+        value: { type: [Date, Array], default: undefined },
         withTime: { type: Boolean, default: false },
         isRange: { type: Boolean, default: false },
         isClearable: { type: Boolean, default: false },
         displayFormat: { type: String, default: 'LL' },
-        placeholder: String,
-        disabledDates: Object,
+        placeholder: { type: String, default: undefined },
+        disabledDates: { type: Object, default: undefined },
     },
     data() {
         const { locale } = this.$store.state.i18n;
