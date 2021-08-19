@@ -109,7 +109,6 @@ const EventStep3 = {
                 zoomMin: 1000 * 3600, // 1h
                 selectable: true,
                 orientation: this.groups?.length >= 15 ? 'both' : 'top',
-                minutesGrid: 15,
             };
         },
     },
@@ -217,8 +216,12 @@ const EventStep3 = {
                 await this.$http.put(`event-technicians/${item.id}`, data);
                 this.handleItemUpdated();
                 callback(item);
-            } catch {
+            } catch (error) {
                 callback(null);
+                const { code, details } = error.response?.data?.error || { code: 0, details: null };
+                if (code === 400 && details.start_time && details.start_time.length > 0) {
+                    this.$toasted.error(details.start_time[0]);
+                }
             } finally {
                 this.isLoading = false;
             }
@@ -337,6 +340,7 @@ const EventStep3 = {
                     onItemMoved={handleItemMoved}
                     onItemRemove={handleItemRemove}
                     onItemRemoved={handleItemUpdated}
+                    minutesGrid={15}
                 />
             );
         };
