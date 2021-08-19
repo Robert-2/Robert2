@@ -2,8 +2,8 @@ import '@robert2/vis-timeline/index.scss';
 import './index.scss';
 import moment from 'moment';
 import { Timeline as TimelineCore, DataSet, DataView } from '@robert2/vis-timeline';
+import dateRoundMinutes from '@/utils/dateRoundMinutes';
 import { mountVisData } from './_utils';
-import dateRound from '@/utils/dateRound';
 
 // @vue/component
 const Timeline = {
@@ -76,8 +76,8 @@ const Timeline = {
                         callback(item);
                     }
                     const { start: freeStart, end: freeEnd } = item;
-                    const start = dateRound(freeStart, minutesGrid);
-                    const end = dateRound(freeEnd, minutesGrid);
+                    const start = dateRoundMinutes(freeStart, minutesGrid);
+                    const end = dateRoundMinutes(freeEnd, minutesGrid);
                     callback({ ...item, start, end });
                 },
                 onMove: (item, callback) => {

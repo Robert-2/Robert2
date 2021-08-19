@@ -1,6 +1,6 @@
 import './index.scss';
 import moment from 'moment';
-import dateRound from '@/utils/dateRound';
+import dateRoundMinutes from '@/utils/dateRoundMinutes';
 import Alert from '@/components/Alert';
 import CriticalError from '@/components/CriticalError';
 import Help from '@/components/Help/Help.vue';
@@ -205,8 +205,8 @@ const EventStep3 = {
 
         async handleItemMoved(item, callback) {
             const data = {
-                start_time: moment(dateRound(item.start)).format(DATE_DB_FORMAT),
-                end_time: moment(dateRound(item.end)).format(DATE_DB_FORMAT),
+                start_time: moment(dateRoundMinutes(item.start)).format(DATE_DB_FORMAT),
+                end_time: moment(dateRoundMinutes(item.end)).format(DATE_DB_FORMAT),
             };
 
             try {

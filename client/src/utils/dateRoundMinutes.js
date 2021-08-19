@@ -1,10 +1,16 @@
 import moment from 'moment';
 
-const dateRound = (date, minutesStep = 15) => {
+const dateRoundMinutes = (date, minutesStep = 15) => {
     const result = new Date(date);
-    const minutes = date.getMinutes();
+    if (minutesStep > 60) {
+        return result;
+    }
 
-    if ([0, 15, 30, 45].includes(minutes)) {
+    const stepsCount = Math.round(60 / minutesStep);
+    const steps = Array.from({ length: stepsCount }, (v, index) => index * minutesStep);
+
+    const minutes = date.getMinutes();
+    if (steps.includes(minutes)) {
         return result;
     }
 
@@ -25,4 +31,4 @@ const dateRound = (date, minutesStep = 15) => {
     return result;
 };
 
-export default dateRound;
+export default dateRoundMinutes;
