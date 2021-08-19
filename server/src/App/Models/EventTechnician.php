@@ -49,6 +49,13 @@ class EventTechnician extends BaseModel
             return 'technician-assignation-after-event';
         }
 
+        $precision = [0, 15, 30, 45];
+        $startMinutes = (int)$start->format('i');
+        $endMinutes = (int)$end->format('i');
+        if (!in_array($startMinutes, $precision) || !in_array($endMinutes, $precision)) {
+            return 'date-precision-must-be-quarter';
+        }
+
         if ($this->withoutAlreadyBusyChecks) {
             return true;
         }
@@ -139,7 +146,7 @@ class EventTechnician extends BaseModel
                 $technicianStartTime = $newStartDate;
             }
             if ($technicianEndTime > $newEndDate) {
-                $technicianEndTime = $newEndDate;
+                $technicianEndTime = clone($newEndDate)->setTime(23, 45, 0);
             }
 
             $technicians[] = [

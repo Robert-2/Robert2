@@ -2474,6 +2474,9 @@ return [
     "technician-assignation-after-event"
     => "L'assignation de ce technicien se termine après l'événement.",
 
+    "date-precision-must-be-quarter"
+    => "La date doit respecter une précision d'un quart d'heure (:00, :15, :30 ou :45).",
+
     "technician-already-busy-for-this-period"
     => "Ce technicien est déjà occupé pour cette période.",
 
