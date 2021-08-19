@@ -40,14 +40,4 @@ $group-item-max-height: 65px !default;
             }
         }
     }
-
-    &--limited {
-        .vis-item .vis-delete {
-            top: auto;
-            bottom: -35px;
-            right: calc(50% - 16px);
-            width: 32px;
-            height: 32px;
-        }
-    }
 }

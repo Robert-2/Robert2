@@ -71,11 +71,11 @@ const Timeline = {
                 moment: (date) => moment(date),
                 ...(this.options || {}),
                 onMoving: (item, callback) => {
-                    if (!this.$props.minutesGrid) {
+                    const { minutesGrid } = this.$props;
+                    if (!minutesGrid) {
                         callback(item);
                     }
                     const { start: freeStart, end: freeEnd } = item;
-                    const { minutesGrid } = this.$props;
                     const start = dateRound(freeStart, minutesGrid);
                     const end = dateRound(freeEnd, minutesGrid);
                     callback({ ...item, start, end });
@@ -145,10 +145,7 @@ const Timeline = {
         },
     },
     render() {
-        const _className = [
-            'Timeline',
-            { 'Timeline--grouped': !!this.groups, 'Timeline--limited': !!this.options?.max },
-        ];
+        const _className = ['Timeline', { 'Timeline--grouped': !!this.groups }];
         return <div class={_className} ref="visualization" />;
     },
 };

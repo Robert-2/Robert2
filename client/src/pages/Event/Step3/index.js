@@ -108,7 +108,6 @@ const EventStep3 = {
                 type: 'background',
                 zoomMin: 1000 * 3600, // 1h
                 selectable: true,
-                orientation: this.groups?.length >= 15 ? 'both' : 'top',
             };
         },
     },
