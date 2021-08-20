@@ -1,56 +1,56 @@
 .Park {
-  display: flex;
-  flex-flow: column-reverse wrap;
+    display: flex;
+    flex-flow: column-reverse wrap;
 
-  .Form {
-    flex: 2;
-    min-width: $form-min-width;
-    max-width: $form-max-width;
-    margin-right: $content-padding-large-horizontal;
-  }
-
-  &__postal-code .FormField__input {
-    max-width: 70px;
-  }
-
-  &__sidebar {
-    flex: 1;
-
-    .Help {
-      margin: 0 0 $content-padding-large-vertical;
-      min-width: 150px;
-    }
-  }
-
-  &__totals {
-    margin: $content-padding-small-vertical $content-padding-large-horizontal;
-
-    &__stock {
-      color: $text-light-color;
+    .Form {
+        flex: 2;
+        max-width: $form-max-width;
+        min-width: $form-min-width;
+        margin-right: $content-padding-large-horizontal;
     }
 
-    &__amount {
-      margin-top: $content-padding-small-horizontal;
+    &__postal-code .FormField__input {
+        max-width: 70px;
+    }
 
-      &__title {
-        padding: 7px 0;
-      }
+    &__sidebar {
+        flex: 1;
 
-      .ParkTotalAmount {
-        display: inline-block;
+        .Help {
+            min-width: 150px;
+            margin: 0 0 $content-padding-large-vertical;
+        }
+    }
+
+    &__totals {
+        margin: $content-padding-small-vertical $content-padding-large-horizontal;
+
+        &__stock {
+            color: $text-light-color;
+        }
 
         &__amount {
-          font-weight: 600;
+            margin-top: $content-padding-small-horizontal;
+
+            &__title {
+                padding: 7px 0;
+            }
+
+            .ParkTotalAmount {
+                display: inline-block;
+
+                &__amount {
+                    font-weight: 600;
+                }
+            }
         }
-      }
     }
-  }
 
-  @media screen and (min-width: $screen-tablet) {
-    flex-direction: row;
+    @media screen and (min-width: $screen-tablet) {
+        flex-direction: row;
 
-    .Help {
-      margin: 30px 0 0;
+        .Help {
+            margin: 30px 0 0;
+        }
     }
-  }
 }

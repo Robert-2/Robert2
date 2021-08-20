@@ -1,52 +1,52 @@
 @import '../../../themes/default/';
 
 .EventDetailsInfos {
-  display: flex;
-  flex-direction: column;
-
-  &__base-infos {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
 
-    .LocationText,
-    .EventBeneficiaries,
-    .EventTechnicians {
-      flex: 1 0 auto;
-      max-width: 100%;
-      margin-right: $content-padding-small-horizontal;
-      margin-bottom: $content-padding-large-vertical;
+    &__base-infos {
+        display: flex;
+        flex-wrap: wrap;
+
+        .LocationText,
+        .EventBeneficiaries,
+        .EventTechnicians {
+            flex: 1 0 auto;
+            max-width: 100%;
+            margin-right: $content-padding-small-horizontal;
+            margin-bottom: $content-padding-large-vertical;
+        }
     }
-  }
 
-  &__description,
-  &__confirmation {
-    font-size: 1.2rem;
-    margin-bottom: $content-padding-large-vertical;
+    &__description,
+    &__confirmation {
+        margin-bottom: $content-padding-large-vertical;
+        font-size: 1.2rem;
 
-    .fas {
-      width: 1.5rem;
-      margin-right: .5rem;
-      text-align: center;
+        .fas {
+            width: 1.5rem;
+            margin-right: 0.5rem;
+            text-align: center;
+        }
     }
-  }
 
-  &__description {
-    margin-top: 0;
-    color: $text-nav-color;
-    white-space: pre-wrap;
-    line-height: 1.5;
-  }
-
-  &__confirmation {
-    color: $text-warning-color;
-
-    &--confirmed {
-      color: $text-success-color;
+    &__description {
+        margin-top: 0;
+        color: $text-nav-color;
+        line-height: 1.5;
+        white-space: pre-wrap;
     }
-  }
 
-  .EventTotals {
-    padding: 0;
-    text-align: left;
-  }
+    &__confirmation {
+        color: $text-warning-color;
+
+        &--confirmed {
+            color: $text-success-color;
+        }
+    }
+
+    .EventTotals {
+        padding: 0;
+        text-align: left;
+    }
 }

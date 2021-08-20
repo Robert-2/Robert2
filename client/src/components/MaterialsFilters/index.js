@@ -1,116 +1,112 @@
 import VueSelect from 'vue-select';
 
+// @vue/component
 export default {
-  name: 'MaterialsFilters',
-  components: { VueSelect },
-  props: {
-    baseRoute: String,
-  },
-  data() {
-    return {
-      filters: {
-        park: this.$route.query.park || '',
-        category: this.$route.query.category || '',
-        subCategory: this.$route.query.subCategory || '',
-        tags: [],
-      },
-    };
-  },
-  computed: {
-    parks() {
-      return this.$store.state.parks.list;
+    name: 'MaterialsFilters',
+    components: { VueSelect },
+    props: {
+        baseRoute: String,
     },
-
-    categories() {
-      return this.$store.state.categories.list;
+    data() {
+        return {
+            filters: {
+                park: this.$route.query.park || '',
+                category: this.$route.query.category || '',
+                subCategory: this.$route.query.subCategory || '',
+                tags: [],
+            },
+        };
     },
+    computed: {
+        parks() {
+            return this.$store.state.parks.list;
+        },
 
-    subCategories() {
-      const selectedCategoryIdRaw = this.filters.category;
-      if (selectedCategoryIdRaw === '') {
-        return [];
-      }
+        categories() {
+            return this.$store.state.categories.list;
+        },
 
-      const selectedCategoryId = parseInt(selectedCategoryIdRaw, 10);
-      const selectedCategory = this.categories.find(
-        (category) => category.id === selectedCategoryId,
-      );
+        subCategories() {
+            const selectedCategoryIdRaw = this.filters.category;
+            if (selectedCategoryIdRaw === '') {
+                return [];
+            }
 
-      return selectedCategory?.sub_categories || [];
+            const selectedCategoryId = parseInt(selectedCategoryIdRaw, 10);
+            const selectedCategory = this.categories.find(
+                (category) => category.id === selectedCategoryId,
+            );
+
+            return selectedCategory?.sub_categories || [];
+        },
+
+        isFilterEmpty() {
+            return (
+                this.filters.park === '' &&
+                this.filters.category === '' &&
+                this.filters.subCategory === '' &&
+                this.filters.tags.length === 0
+            );
+        },
     },
-
-    isFilterEmpty() {
-      return (
-        this.filters.park === ''
-        && this.filters.category === ''
-        && this.filters.subCategory === ''
-        && this.filters.tags.length === 0
-      );
+    mounted() {
+        this.$store.dispatch('parks/fetch');
+        this.$store.dispatch('categories/fetch');
+        this.$store.dispatch('tags/fetch');
     },
-  },
-  mounted() {
-    this.$store.dispatch('parks/fetch');
-    this.$store.dispatch('categories/fetch');
-    this.$store.dispatch('tags/fetch');
-  },
-  methods: {
-    changePark(e) {
-      this.filters.park = parseInt(e.currentTarget.value, 10) || '';
-      this.setQueryFilters();
+    methods: {
+        changePark(e) {
+            this.filters.park = parseInt(e.currentTarget.value, 10) || '';
+            this.setQueryFilters();
+        },
+
+        changeCategory(e) {
+            this.filters.category = parseInt(e.currentTarget.value, 10) || '';
+            this.filters.subCategory = '';
+            this.setQueryFilters();
+        },
+
+        changeSubCategory(e) {
+            this.filters.subCategory = parseInt(e.currentTarget.value, 10) || '';
+            this.setQueryFilters();
+        },
+
+        clearFilters() {
+            this.filters = {
+                park: '',
+                category: '',
+                subCategory: '',
+                tags: [],
+            };
+            this.setQueryFilters();
+        },
+
+        setQueryFilters() {
+            const { park, category, subCategory, tags } = this.filters;
+
+            const filters = {
+                park: park || null,
+                category: category || null,
+                subCategory: subCategory || null,
+                tags: tags.map((tag) => tag.label),
+            };
+
+            const query = {};
+            if (park) {
+                query.park = park;
+            }
+            if (category) {
+                query.category = category;
+            }
+            if (subCategory) {
+                query.subCategory = subCategory;
+            }
+            if (tags.length > 0) {
+                query.tags = JSON.stringify(tags.map((tag) => tag.label));
+            }
+
+            this.$router.push({ path: this.baseRoute, query });
+            this.$emit('change', filters);
+        },
     },
-
-    changeCategory(e) {
-      this.filters.category = parseInt(e.currentTarget.value, 10) || '';
-      this.filters.subCategory = '';
-      this.setQueryFilters();
-    },
-
-    changeSubCategory(e) {
-      this.filters.subCategory = parseInt(e.currentTarget.value, 10) || '';
-      this.setQueryFilters();
-    },
-
-    clearFilters() {
-      this.filters = {
-        park: '',
-        category: '',
-        subCategory: '',
-        tags: [],
-      };
-      this.setQueryFilters();
-    },
-
-    setQueryFilters() {
-      const {
-        park,
-        category,
-        subCategory,
-        tags,
-      } = this.filters;
-
-      const filters = {
-        park: park || null,
-        category: category || null,
-        subCategory: subCategory || null,
-        tags: tags.map((tag) => tag.label),
-      };
-
-      const query = {};
-      if (park) {
-        query.park = park;
-      }
-      if (category) {
-        query.category = category;
-      }
-      if (subCategory) {
-        query.subCategory = subCategory;
-      }
-      if (tags.length > 0) {
-        query.tags = JSON.stringify(tags.map((tag) => tag.label));
-      }
-
-      this.$router.push({ path: this.baseRoute, query });
-      this.$emit('change', filters);
-    },
-  },
 };

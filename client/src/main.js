@@ -25,15 +25,15 @@ Vue.prototype.$http = axios;
 
 // Modal
 Vue.use(VueJsModal, {
-  dialog: true,
-  dynamic: true,
-  dynamicDefaults: {
-    width: 900,
-    height: 'auto',
-    adaptive: true,
-    minHeight: 300,
-    draggable: false,
-  },
+    dialog: true,
+    dynamic: true,
+    dynamicDefaults: {
+        width: 900,
+        height: 'auto',
+        adaptive: true,
+        minHeight: 300,
+        draggable: false,
+    },
 });
 
 // Tooltips
@@ -46,7 +46,7 @@ Vue.directive('tooltip', VTooltip);
 Vue.use(vuexI18n.plugin, store);
 
 Object.keys(translations).forEach((lang) => {
-  Vue.i18n.add(lang, translations[lang]);
+    Vue.i18n.add(lang, translations[lang]);
 });
 
 let currentLocale = Config.defaultLang;
@@ -55,8 +55,8 @@ Vue.i18n.set(currentLocale);
 
 const savedLocale = localStorage.getItem('userLocale');
 if (savedLocale && Vue.i18n.localeExists(savedLocale)) {
-  Vue.i18n.set(savedLocale);
-  currentLocale = savedLocale;
+    Vue.i18n.set(savedLocale);
+    currentLocale = savedLocale;
 }
 Vue.i18n.fallback(currentLocale);
 
@@ -64,35 +64,35 @@ moment.locale(currentLocale);
 
 // Magic tables (order, pagination)
 const tablesConfig = {
-  columnsClasses: { actions: 'VueTables__actions' },
-  sortIcon: {
-    base: 'fas',
-    up: 'fa-sort-up',
-    down: 'fa-sort-down',
-    is: 'fa-sort',
-  },
-  texts: vueTableTranslations[currentLocale],
-  requestKeys: { query: 'search' },
-  perPage: Config.defaultPaginationLimit,
-  perPageValues: [Config.defaultPaginationLimit],
-  responseAdapter: (response) => {
-    if (!response) {
-      return { data: [], count: 0 };
-    }
-    const { data, pagination } = response.data;
-    return { data, count: pagination ? pagination.total : 0 };
-  },
+    columnsClasses: { actions: 'VueTables__actions' },
+    sortIcon: {
+        base: 'fas',
+        up: 'fa-sort-up',
+        down: 'fa-sort-down',
+        is: 'fa-sort',
+    },
+    texts: vueTableTranslations[currentLocale],
+    requestKeys: { query: 'search' },
+    perPage: Config.defaultPaginationLimit,
+    perPageValues: [Config.defaultPaginationLimit],
+    responseAdapter: (response) => {
+        if (!response) {
+            return { data: [], count: 0 };
+        }
+        const { data, pagination } = response.data;
+        return { data, count: pagination ? pagination.total : 0 };
+    },
 };
 Vue.use(ClientTable, tablesConfig);
 Vue.use(ServerTable, tablesConfig, true);
 
 store.dispatch('auth/fetch').then(() => {
-  /* eslint-disable no-new */
-  new Vue({
-    el: '#app',
-    store,
-    router,
-    components: { App },
-    template: '<App/>',
-  });
+    /* eslint-disable no-new */
+    new Vue({
+        el: '#app',
+        store,
+        router,
+        components: { App },
+        template: '<App/>',
+    });
 });

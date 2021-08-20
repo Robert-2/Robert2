@@ -1,90 +1,90 @@
 @import '../../themes/default/index';
 
 .EventMaterials {
-  &__toggle,
-  &__categories,
-  &__footer {
-    flex: 0 0 auto;
-    margin-bottom: 1.5rem;
-  }
-
-  &__toggle .fas {
-    margin-right: .3rem;
-  }
-
-  &__category {
-    padding: 0 .5rem;
-    border-left: 3px solid $list-left-border-color;
-  }
-
-  &__title {
-    margin: 0 0 .5rem;
-  }
-
-  &__list {
-    margin: 0 0 .5rem;
-    padding: 0;
-  }
-
-  &__item,
-  &__subtotal {
-    list-style: none;
-    display: flex;
-
-    &__name {
-      flex: 1;
+    &__toggle,
+    &__categories,
+    &__footer {
+        flex: 0 0 auto;
+        margin-bottom: 1.5rem;
     }
 
-    &__price {
-      flex: 0 0 auto;
-      margin-left: .8rem;
-      color: $text-light-color;
-      text-align: right;
-    }
-  }
-
-  &__item {
-    margin-bottom: .35rem;
-    border-bottom: 1px dashed $list-left-border-color;
-
-    &__quantity-first {
-      flex: 0 0 35px;
-      color: $text-light-color;
-      padding-right: $content-padding-large-horizontal;
-      text-align: right;
+    &__toggle .fas {
+        margin-right: 0.3rem;
     }
 
-    &__quantity {
-      flex: 0 0 3rem;
-      margin: 0 .8rem 0 .8rem;
-
-      .fa-times {
-        margin-right: .2rem;
-        color: $text-light-color;
-        font-size: .8rem;
-      }
+    &__category {
+        padding: 0 0.5rem;
+        border-left: 3px solid $list-left-border-color;
     }
 
-    &__total {
-      flex: 0 0 5rem;
-      margin-left: .8rem;
-      text-align: right;
-    }
-  }
-
-  &__subtotal {
-    padding: .5rem 0 0;
-    font-size: 1.1rem;
-
-    &__name {
-      text-align: right;
-      color: $text-light-color;
+    &__title {
+        margin: 0 0 0.5rem;
     }
 
-    &__price {
-      flex: 0 0 auto;
-      color: $text-base-color;
-      font-weight: 600;
+    &__list {
+        margin: 0 0 0.5rem;
+        padding: 0;
     }
-  }
+
+    &__item,
+    &__subtotal {
+        display: flex;
+        list-style: none;
+
+        &__name {
+            flex: 1;
+        }
+
+        &__price {
+            flex: 0 0 auto;
+            margin-left: 0.8rem;
+            color: $text-light-color;
+            text-align: right;
+        }
+    }
+
+    &__item {
+        margin-bottom: 0.35rem;
+        border-bottom: 1px dashed $list-left-border-color;
+
+        &__quantity-first {
+            flex: 0 0 35px;
+            padding-right: $content-padding-large-horizontal;
+            color: $text-light-color;
+            text-align: right;
+        }
+
+        &__quantity {
+            flex: 0 0 3rem;
+            margin: 0 0.8rem;
+
+            .fa-times {
+                margin-right: 0.2rem;
+                color: $text-light-color;
+                font-size: 0.8rem;
+            }
+        }
+
+        &__total {
+            flex: 0 0 5rem;
+            margin-left: 0.8rem;
+            text-align: right;
+        }
+    }
+
+    &__subtotal {
+        padding: 0.5rem 0 0;
+        font-size: 1.1rem;
+
+        &__name {
+            color: $text-light-color;
+            text-align: right;
+        }
+
+        &__price {
+            flex: 0 0 auto;
+            color: $text-base-color;
+            font-weight: 600;
+        }
+    }
 }

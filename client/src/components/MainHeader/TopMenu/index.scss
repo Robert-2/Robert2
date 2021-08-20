@@ -1,12 +1,12 @@
 @import '../../../themes/default/index';
 
 .TopMenu {
-  .Dropdown__button {
-    background-color: $bg-color-main-header;
-    text-transform: capitalize;
+    .Dropdown__button {
+        background-color: $bg-color-main-header;
+        text-transform: capitalize;
 
-    &:hover {
-      background-color: lighten($bg-color-main-header, 8%);
+        &:hover {
+            background-color: lighten($bg-color-main-header, 8%);
+        }
     }
-  }
 }

@@ -7,30 +7,30 @@ import { DataSet, DataView } from '@robert2/vis-timeline';
 const arrayDiff = (arr1, arr2) => arr1.filter((x) => arr2.indexOf(x) === -1);
 
 export const mountVisData = (vm, prop, stateProp) => {
-  if (vm[prop] instanceof DataSet || vm[prop] instanceof DataView) {
-    return vm[prop];
-  }
-
-  // We attach deep watcher on the prop to propagate changes in the DataSet
-  const callback = (value) => {
-    if (!Array.isArray(value)) {
-      return;
+    if (vm[prop] instanceof DataSet || vm[prop] instanceof DataView) {
+        return vm[prop];
     }
 
-    if (!(vm[stateProp] instanceof DataSet)) {
-      vm[stateProp] = new DataSet([]);
-      vm.timeline.setGroups(vm[stateProp]);
-    }
+    // We attach deep watcher on the prop to propagate changes in the DataSet
+    const callback = (value) => {
+        if (!Array.isArray(value)) {
+            return;
+        }
 
-    const newIds = new DataSet(value).getIds();
-    const removed = arrayDiff(vm[stateProp].getIds(), newIds);
+        if (!(vm[stateProp] instanceof DataSet)) {
+            vm[stateProp] = new DataSet([]);
+            vm.timeline.setGroups(vm[stateProp]);
+        }
 
-    vm[stateProp].update(value);
-    vm[stateProp].remove(removed);
-  };
-  vm.$watch(prop, callback, { deep: true });
+        const newIds = new DataSet(value).getIds();
+        const removed = arrayDiff(vm[stateProp].getIds(), newIds);
 
-  return vm[prop] !== undefined
-    ? new DataSet(vm[prop] ?? [])
-    : undefined;
+        vm[stateProp].update(value);
+        vm[stateProp].remove(removed);
+    };
+    vm.$watch(prop, callback, { deep: true });
+
+    return vm[prop] !== undefined
+        ? new DataSet(vm[prop] ?? [])
+        : undefined;
 };

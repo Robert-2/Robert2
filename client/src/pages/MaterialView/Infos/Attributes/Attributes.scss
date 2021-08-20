@@ -1,11 +1,11 @@
 .MaterialViewInfosAttributes {
-  &__list {
-    &__item {
-      margin-bottom: .3rem;
+    &__list {
+        &__item {
+            margin-bottom: 0.3rem;
 
-      &__value {
-        font-weight: 700;
-      }
+            &__value {
+                font-weight: 700;
+            }
+        }
     }
-  }
 }

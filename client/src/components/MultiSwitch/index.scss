@@ -1,31 +1,31 @@
 @import '../../themes/default/index';
 
 .MultiSwitch {
-  display: inline-flex;
-  align-items: center;
+    display: inline-flex;
+    align-items: center;
 
-  &__option {
-    flex: 0 0 auto;
-    margin: 0;
-    background-color: rgba($bg-color-button-default, 1);
-    color: $text-base-color;
-    border-radius: 0;
+    &__option {
+        flex: 0 0 auto;
+        margin: 0;
+        border-radius: 0;
+        background-color: rgba($bg-color-button-default, 1);
+        color: $text-base-color;
 
-    &:first-child {
-      border-radius: $input-border-radius 0 0 $input-border-radius;
+        &:first-child {
+            border-radius: $input-border-radius 0 0 $input-border-radius;
+        }
+
+        &:last-child {
+            border-radius: 0 $input-border-radius $input-border-radius 0;
+        }
+
+        &--active,
+        &--active:hover,
+        &--active:focus,
+        &--active:active {
+            background-color: rgba($bg-color-button-default, 0.6);
+            color: lighten($color-active-button, 20%);
+            cursor: auto;
+        }
     }
-
-    &:last-child {
-      border-radius: 0 $input-border-radius $input-border-radius 0;
-    }
-
-    &--active,
-    &--active:hover,
-    &--active:focus,
-    &--active:active {
-      background-color: rgba($bg-color-button-default, .6);
-      color: lighten($color-active-button, 20%);
-      cursor: auto;
-    }
-  }
 }

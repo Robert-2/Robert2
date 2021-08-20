@@ -1,31 +1,33 @@
+/* stylelint-disable declaration-no-important, selector-max-type */
+
 .vdp-datepicker {
-  &__calendar {
-    background-color: $bg-color-input-normal !important;
-    border-color: #5c5c5c !important;
-    color: $link-active-color !important;
+    &__calendar {
+        border-color: #5c5c5c !important;
+        background-color: $bg-color-input-normal !important;
+        color: $link-active-color !important;
 
-    header {
-      .next:not(.disabled):hover,
-      .prev:not(.disabled):hover,
-      .up:not(.disabled):hover {
-        background-color: $bg-color-button-info !important;
-      }
-    }
+        header {
+            .next:not(.disabled):hover,
+            .prev:not(.disabled):hover,
+            .up:not(.disabled):hover {
+                background-color: $bg-color-button-info !important;
+            }
+        }
 
-    .cell:not(.blank):not(.disabled).day:hover,
-    .cell:not(.blank):not(.disabled).month:hover,
-    .cell:not(.blank):not(.disabled).year:hover {
-      border-color: #5c5c5c !important;
-    }
+        .cell:not(.blank):not(.disabled).day:hover,
+        .cell:not(.blank):not(.disabled).month:hover,
+        .cell:not(.blank):not(.disabled).year:hover {
+            border-color: #5c5c5c !important;
+        }
 
-    .cell.disabled {
-      color: $text-muted-color !important;
-    }
+        .cell.disabled {
+            color: $text-muted-color !important;
+        }
 
-    .cell.selected,
-    .cell.selected.highlighted,
-    .cell.selected:hover {
-      background-color: $bg-color-button-info !important;
+        .cell.selected,
+        .cell.selected.highlighted,
+        .cell.selected:hover {
+            background-color: $bg-color-button-info !important;
+        }
     }
-  }
 }

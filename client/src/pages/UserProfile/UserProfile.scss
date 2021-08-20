@@ -1,67 +1,70 @@
 .UserProfile {
-  &__title {
-    margin-bottom: 2rem;
-  }
-
-  &__content {
-    display: flex;
-    flex-wrap: wrap;
-    padding-bottom: 3rem;
-  }
-
-  .Form {
-    flex: 2;
-    min-width: $form-min-width;
-    max-width: $form-max-width;
-    margin-right: 1rem;
-  }
-
-  &__postal-code .FormField__input {
-    max-width: 70px;
-  }
-
-  &__password-edit-toggle {
-    display: block;
-    margin-top: 1rem;
-  }
-
-  &__section-password {
-    display: none !important;
-  }
-
-  &__password-edit-cancel {
-    float: right;
-  }
-
-  &__extras {
-    flex: 1;
-    margin-top: 2.8rem;
-    min-width: $form-min-width;
-
-    &__buttons {
-      margin-top: 2rem;
-      text-align: center;
-    }
-  }
-
-  &--password-edit {
-    .UserProfile__section-password {
-      display: flex !important;
-    }
-
-    .UserProfile__password-edit-toggle,
-    .UserProfile__section-infos {
-      display: none !important;
-    }
-  }
-
-  @media screen and (min-width: $screen-tablet) {
     &__title {
-      margin-left: $form-label-width;
+        margin-bottom: 2rem;
+    }
+
+    &__content {
+        display: flex;
+        flex-wrap: wrap;
+        padding-bottom: 3rem;
+    }
+
+    .Form {
+        flex: 2;
+        max-width: $form-max-width;
+        min-width: $form-min-width;
+        margin-right: 1rem;
+    }
+
+    &__postal-code .FormField__input {
+        max-width: 70px;
     }
 
     &__password-edit-toggle {
-      margin-left: $form-label-width;
+        display: block;
+        margin-top: 1rem;
     }
-  }
+
+    &__section-password {
+        // stylelint-disable-next-line declaration-no-important
+        display: none !important;
+    }
+
+    &__password-edit-cancel {
+        float: right;
+    }
+
+    &__extras {
+        flex: 1;
+        min-width: $form-min-width;
+        margin-top: 2.8rem;
+
+        &__buttons {
+            margin-top: 2rem;
+            text-align: center;
+        }
+    }
+
+    &--password-edit {
+        .UserProfile__section-password {
+            // stylelint-disable-next-line declaration-no-important
+            display: flex !important;
+        }
+
+        .UserProfile__password-edit-toggle,
+        .UserProfile__section-infos {
+            // stylelint-disable-next-line declaration-no-important
+            display: none !important;
+        }
+    }
+
+    @media screen and (min-width: $screen-tablet) {
+        &__title {
+            margin-left: $form-label-width;
+        }
+
+        &__password-edit-toggle {
+            margin-left: $form-label-width;
+        }
+    }
 }

@@ -1,180 +1,183 @@
 .EventOverview {
-  $info-spacing: 1.5rem;
-  color: $text-base-color;
+    $info-spacing: 1.5rem;
+    color: $text-base-color;
 
-  &__title {
-    font-size: 1.5rem;
-    margin: $content-padding-small-vertical 0 $info-spacing;
-  }
-
-  &__dates-location,
-  &__duration {
-    margin: 0;
-    font-size: 1.2rem;
-  }
-
-  &__description {
-    margin: 0 0 $info-spacing 22px;
-    padding-left: 5px;
-    white-space: pre-wrap;
-    line-height: 1.5;
-    border-left: 3px solid $tabs-bottom-border-color;
-    font-size: 1.1rem;
-
-    .fas {
-      margin-left: -30px;
-    }
-  }
-
-  &__dates-location,
-  &__duration,
-  &__description {
-    .fas,
-    .far {
-      width: 1.5rem;
-      margin-right: .5rem;
-      margin-bottom: .5rem;
-      font-size: 1.2rem;
-      text-align: center;
-    }
-  }
-
-  &__technician-periods {
-    padding: 0;
-    margin-bottom: $content-padding-small-vertical;
-
-    &__item {
-      list-style: none;
-      padding-left: 20px;
-      color: $text-nav-color;
-    }
-  }
-
-  &__header,
-  &__main {
-    display: flex;
-    flex-wrap: wrap;
-  }
-
-  &__main,
-  &__materials,
-  &__billing {
-    margin-bottom: $info-spacing;
-    border-bottom: 1px solid $list-left-border-color;
-  }
-
-  &__missing-materials {
-    margin-bottom: $info-spacing;
-  }
-
-  &__section {
-    flex: 1;
-    min-width: 200px;
-    margin-bottom: $info-spacing;
-    margin-right: $info-spacing;
-  }
-
-  &__info__term,
-  &__materials__title,
-  &__billing-title {
-    margin: 0 0 $info-spacing;
-    font-size: 1.2rem;
-    font-weight: 600;
-
-    .fas,
-    .far {
-      width: 1.5rem;
-      margin-right: .5rem;
-      margin-bottom: .5rem;
-      text-align: center;
-    }
-  }
-
-  &__info {
-    margin: 0;
-
-    & + & {
-      margin-top: $info-spacing;
+    &__title {
+        margin: $content-padding-small-vertical 0 $info-spacing;
+        font-size: 1.5rem;
     }
 
-    &__term {
-      margin-bottom: .5rem;
-
-      &::after {
-        content: ':';
-      }
+    &__dates-location,
+    &__duration {
+        margin: 0;
+        font-size: 1.2rem;
     }
 
-    &__value {
-      display: block;
-      margin: 0;
-      font-size: 1.1rem;
+    &__description {
+        margin: 0 0 $info-spacing 22px;
+        padding-left: 5px;
+        border-left: 3px solid $tabs-bottom-border-color;
+        font-size: 1.1rem;
+        line-height: 1.5;
+        white-space: pre-wrap;
+
+        .fas {
+            margin-left: -30px;
+        }
     }
 
-    &__list {
-      margin: 0;
-      padding: 0;
+    &__dates-location,
+    &__duration,
+    &__description {
+        .fas,
+        .far {
+            width: 1.5rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+            text-align: center;
+        }
     }
 
-    &__list-item {
-      list-style: inside;
-      margin-left: .2rem;
-      line-height: 1.4;
+    &__technician-periods {
+        margin-bottom: $content-padding-small-vertical;
+        padding: 0;
+
+        &__item {
+            padding-left: 20px;
+            color: $text-nav-color;
+            list-style: none;
+        }
     }
 
-    &--vertical {
-      flex-direction: column;
-      align-items: flex-start;
-
-      .EventOverview__info__value {
-        margin-top: .5rem;
-        margin-left: 0;
-      }
-    }
-  }
-
-  &__materials {
-    &__empty {
-      color: $text-danger-color;
-
-      .fas {
-        margin-right: .3rem;
-      }
-    }
-  }
-
-  &__billing {
-    display: flex;
-    flex-direction: column;
-    padding-bottom: $info-spacing;
-
-    .EventTotals {
-      flex: 0 0 auto;
-      text-align: left;
-      padding: $content-padding-small-vertical $content-padding-large-horizontal $content-padding-large-vertical;
-      border-left: 3px solid #383838;
+    &__header,
+    &__main {
+        display: flex;
+        flex-wrap: wrap;
     }
 
-    &__tabs {
-      flex: 1;
-      min-width: 350px;
-      padding: 0 $content-padding-large-horizontal;
-      border-left: 3px solid #383838;
-
-      .DisplayBill__actions {
-        max-width: 140px;
-        text-align: center;
-      }
-    }
-
-    .Help {
-      margin-bottom: $content-padding-small-vertical;
-    }
-  }
-
-  @media(min-width: $screen-desktop) {
+    &__main,
+    &__materials,
     &__billing {
-      flex-direction: row;
+        margin-bottom: $info-spacing;
+        border-bottom: 1px solid $list-left-border-color;
     }
-  }
+
+    &__missing-materials {
+        margin-bottom: $info-spacing;
+    }
+
+    &__section {
+        flex: 1;
+        min-width: 200px;
+        margin-right: $info-spacing;
+        margin-bottom: $info-spacing;
+    }
+
+    &__info__term,
+    &__materials__title,
+    &__billing-title {
+        margin: 0 0 $info-spacing;
+        font-size: 1.2rem;
+        font-weight: 600;
+
+        .fas,
+        .far {
+            width: 1.5rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+    }
+
+    &__info {
+        margin: 0;
+
+        & + & {
+            margin-top: $info-spacing;
+        }
+
+        &__term {
+            margin-bottom: 0.5rem;
+
+            &::after {
+                content: ':';
+            }
+        }
+
+        &__value {
+            display: block;
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        &__list {
+            margin: 0;
+            padding: 0;
+        }
+
+        &__list-item {
+            margin-left: 0.2rem;
+            line-height: 1.4;
+            list-style: inside;
+        }
+
+        &--vertical {
+            flex-direction: column;
+            align-items: flex-start;
+
+            .EventOverview__info__value {
+                margin-top: 0.5rem;
+                margin-left: 0;
+            }
+        }
+    }
+
+    &__materials {
+        &__empty {
+            color: $text-danger-color;
+
+            .fas {
+                margin-right: 0.3rem;
+            }
+        }
+    }
+
+    &__billing {
+        display: flex;
+        flex-direction: column;
+        padding-bottom: $info-spacing;
+
+        .EventTotals {
+            flex: 0 0 auto;
+            padding:
+                $content-padding-small-vertical
+                $content-padding-large-horizontal
+                $content-padding-large-vertical;
+            border-left: 3px solid #383838;
+            text-align: left;
+        }
+
+        &__tabs {
+            flex: 1;
+            min-width: 350px;
+            padding: 0 $content-padding-large-horizontal;
+            border-left: 3px solid #383838;
+
+            .DisplayBill__actions {
+                max-width: 140px;
+                text-align: center;
+            }
+        }
+
+        .Help {
+            margin-bottom: $content-padding-small-vertical;
+        }
+    }
+
+    @media (min-width: $screen-desktop) {
+        &__billing {
+            flex-direction: row;
+        }
+    }
 }

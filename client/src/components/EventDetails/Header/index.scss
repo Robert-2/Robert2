@@ -1,53 +1,53 @@
 @import '../../../themes/default/index';
 
 .EventDetailsHeader {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  padding: .7rem 1rem;
-  background-color: $bg-color-main-header;
-
-  &__status {
     flex: 0 0 auto;
-    padding: 0 1rem 0 0;
-    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    padding: 0.7rem 1rem;
+    background-color: $bg-color-main-header;
 
-    .fa-exclamation-triangle {
-      color: $text-danger-color;
-    }
-  }
+    &__status {
+        flex: 0 0 auto;
+        padding: 0 1rem 0 0;
+        font-size: 2rem;
 
-  &__details {
-    flex: 1;
-    color: $text-nav-color;
-
-    &__title {
-      margin: 0 0 .4rem;
-      font-size: 1.4rem;
-      font-weight: 800;
-      color: $text-base-color;
+        .fa-exclamation-triangle {
+            color: $text-danger-color;
+        }
     }
 
-    &__location-dates {
-      margin-bottom: .2rem;
-      font-size: 1.2rem;
+    &__details {
+        flex: 1;
+        color: $text-nav-color;
+
+        &__title {
+            margin: 0 0 0.4rem;
+            color: $text-base-color;
+            font-size: 1.4rem;
+            font-weight: 800;
+        }
+
+        &__location-dates {
+            margin-bottom: 0.2rem;
+            font-size: 1.2rem;
+        }
+
+        &__in-progress {
+            margin-left: $content-padding-small-horizontal;
+            color: $text-success-color;
+            font-size: 1.1rem;
+        }
     }
 
-    &__in-progress {
-      margin-left: $content-padding-small-horizontal;
-      color: $text-success-color;
-      font-size: 1.1rem;
+    .EventDetailsHeaderActions {
+        flex: 0 0 auto;
+        margin: 0 1rem;
     }
-  }
 
-  .EventDetailsHeaderActions {
-    flex: 0 0 auto;
-    margin: 0 1rem;
-  }
-
-  .close {
-    flex: 0 0 auto;
-    background: none;
-    border: none;
-  }
+    .close {
+        flex: 0 0 auto;
+        border: none;
+        background: none;
+    }
 }

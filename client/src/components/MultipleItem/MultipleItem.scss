@@ -1,54 +1,56 @@
 .MultipleItem {
-  $block: &;
+    $block: &;
 
-  &__item-pivot-field  {
-    width: 150px;
-    margin-left: .6rem;
-  }
-
-  &__item-action-btn  {
-    height: 35px;
-    margin-left: .6rem;
-  }
-
-  &__value-field {
-    flex: 1;
-    padding: $input-padding-vertical $input-padding-horizontal;
-    min-height: 2.7rem;
-    color: $color-input;
-    border: $input-border-size solid $bg-color-input-normal;
-    border-radius: $input-border-radius;
-
-    &--loading {
-      color: $text-light-color;
+    &__item-pivot-field {
+        width: 150px;
+        margin-left: 0.6rem;
     }
 
-    &--error {
-      font-style: italic;
-      color: $text-danger-color;
+    &__item-action-btn {
+        height: 35px;
+        margin-left: 0.6rem;
     }
-  }
 
-  .v-select {
-    flex: 1;
-  }
+    &__value-field {
+        flex: 1;
+        min-height: 2.7rem;
+        padding: $input-padding-vertical $input-padding-horizontal;
+        border: $input-border-size solid $bg-color-input-normal;
+        border-radius: $input-border-radius;
+        color: $color-input;
 
-  &__actions {
-    margin-left: $form-label-width;
-    padding: 1rem 0;
+        &--loading {
+            color: $text-light-color;
+        }
 
-    button {
-      padding: 5px 10px;
+        &--error {
+            color: $text-danger-color;
+            font-style: italic;
+        }
     }
-  }
 
-  //
-  // - Empty state
-  //
-
-  &--empty {
-    #{$block}__actions {
-      margin-left: 0;
+    // stylelint-disable-next-line selector-class-pattern
+    .v-select {
+        flex: 1;
     }
-  }
+
+    &__actions {
+        margin-left: $form-label-width;
+        padding: 1rem 0;
+
+        // stylelint-disable-next-line selector-max-type
+        button {
+            padding: 5px 10px;
+        }
+    }
+
+    //
+    // - Empty state
+    //
+
+    &--empty {
+        #{$block}__actions {
+            margin-left: 0;
+        }
+    }
 }

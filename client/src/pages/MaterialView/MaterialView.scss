@@ -1,22 +1,22 @@
 .MaterialView {
-  height: 100%;
-
-  > .Help {
-    margin-bottom: 1rem;
-  }
-
-  &__body {
     height: 100%;
-    display: flex;
-    flex-direction: column;
-    color: $text-base-color;
 
-    .vue-tablist {
-      margin-bottom: 1rem;
+    > .Help {
+        margin-bottom: 1rem;
     }
 
-    .vue-tabpanel {
-      flex: 1;
+    &__body {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        color: $text-base-color;
+
+        .vue-tablist {
+            margin-bottom: 1rem;
+        }
+
+        .vue-tabpanel {
+            flex: 1;
+        }
     }
-  }
 }

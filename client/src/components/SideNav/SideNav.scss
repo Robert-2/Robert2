@@ -1,65 +1,66 @@
 .SideNav {
-  position: absolute;
-  width: $side-nav-full-width;
-  left: -$side-nav-full-width;
-  height: calc(100% - #{$main-header-height});
-  z-index: 100;
-  display: flex;
-  flex-flow: column nowrap;
-  background-color: $bg-color-side-nav;
-  transition: left 300ms cubic-bezier(0, .72, .43, 1);
-
-  &__logo {
-    text-align: center;
-    padding: $content-padding-small-horizontal 0;
-
-    img {
-      height: 3rem;
-    }
-  }
-
-  &__menu {
-    flex: 1;
+    position: absolute;
+    z-index: 100;
+    left: -$side-nav-full-width;
     display: flex;
     flex-flow: column nowrap;
-    align-items: flex-start;
-    justify-content: flex-start;
-    overflow: auto;
-    user-select: none;
-  }
-
-  &__footer {
-    flex: 0 0 auto;
-    font-size: 0.7rem;
-    text-align: center;
-    padding: 10px 5px;
-  }
-
-  &--opened {
-    left: 0;
-  }
-
-  @media(min-width: $screen-mobile) {
-    position: initial;
-    flex: 0 0 $side-nav-width;
-    left: 0;
-    height: auto;
-    display: flex;
+    width: $side-nav-full-width;
+    height: calc(100% - #{$main-header-height});
+    background-color: $bg-color-side-nav;
+    transition: left 300ms cubic-bezier(0, 0.72, 0.43, 1);
 
     &__logo {
-      display: none;
+        padding: $content-padding-small-horizontal 0;
+        text-align: center;
+
+        // stylelint-disable-next-line selector-max-type
+        img {
+            height: 3rem;
+        }
+    }
+
+    &__menu {
+        flex: 1;
+        display: flex;
+        flex-flow: column nowrap;
+        align-items: flex-start;
+        justify-content: flex-start;
+        overflow: auto;
+        user-select: none;
     }
 
     &__footer {
-      display: none;
+        flex: 0 0 auto;
+        padding: 10px 5px;
+        font-size: 0.7rem;
+        text-align: center;
     }
-  }
 
-  @media(min-width: $screen-desktop) {
-    flex: 0 0 $side-nav-full-width;
-
-    &__footer {
-      display: block;
+    &--opened {
+        left: 0;
     }
-  }
+
+    @media (min-width: $screen-mobile) {
+        position: initial;
+        left: 0;
+        flex: 0 0 $side-nav-width;
+        display: flex;
+        height: auto;
+
+        &__logo {
+            display: none;
+        }
+
+        &__footer {
+            display: none;
+        }
+    }
+
+    @media (min-width: $screen-desktop) {
+        flex: 0 0 $side-nav-full-width;
+
+        &__footer {
+            display: block;
+        }
+    }
 }

@@ -1,107 +1,167 @@
-import decimalRound from '@/utils/decimalRound';
+import moment from 'moment';
 import getEventGrandTotal from '@/utils/getEventGrandTotal';
 import getEventOneDayTotal from '@/utils/getEventOneDayTotal';
-import getDiscountRateFromLast from '@/utils/getDiscountRateFromLast';
 import getEventOneDayTotalDiscountable from '@/utils/getEventOneDayTotalDiscountable';
-import BillEstimateCreationForm from '@/components/BillEstimateCreationForm/BillEstimateCreationForm.vue';
+import getEventDiscountRate from '@/utils/getEventDiscountRate';
+import BillingForm from '@/components/BillingForm';
 import DisplayBill from './DisplayBill/DisplayBill.vue';
+import { round, floor } from '@/utils/decimalRound';
 
+// @vue/component
 export default {
-  name: 'EventBilling',
-  components: {
-    DisplayBill,
-    BillEstimateCreationForm,
-  },
-  props: {
-    lastBill: Object,
-    lastEstimate: Object,
-    allBills: Array,
-    beneficiaries: Array,
-    materials: Array,
-    loading: Boolean,
-    start: Object,
-    end: Object,
-  },
-  data() {
-    const discountRate = getDiscountRateFromLast(this.lastBill, this.lastEstimate);
+    name: 'EventBilling',
+    components: {
+        DisplayBill,
+        BillingForm,
+    },
+    props: {
+        event: { type: Object, required: true },
+        loading: { type: Boolean, default: false },
+    },
+    data: () => ({
+        unsavedDiscountRate: null,
+        displayCreateBill: false,
+    }),
+    computed: {
+        isBillable() {
+            if (!this.event.beneficiaries) {
+                return false;
+            }
+            return this.event.beneficiaries.length > 0;
+        },
 
-    return {
-      discountRate,
-      duration: this.end ? this.end.diff(this.start, 'days') + 1 : 1,
-      isBillable: this.beneficiaries.length > 0,
-      displayCreateBill: false,
-    };
-  },
-  watch: {
-    discountRate(newRate) {
-      this.$emit('discountRateChange', Number.parseFloat(newRate));
-    },
-  },
-  computed: {
-    userCanEdit() {
-      return this.$store.getters['auth/is'](['admin', 'member']);
-    },
+        hasBill() {
+            if (!this.event.bills) {
+                return false;
+            }
+            return this.event.bills.length > 0;
+        },
 
-    total() {
-      return getEventOneDayTotal(this.materials);
-    },
+        hasEstimate() {
+            if (!this.event.estimates) {
+                return false;
+            }
+            return this.event.estimates.length > 0;
+        },
 
-    grandTotal() {
-      return getEventGrandTotal(this.total, this.duration);
-    },
+        lastBill() {
+            const [lastBill] = this.event.bills ?? [];
+            return { ...lastBill, date: moment(lastBill.date) };
+        },
 
-    totalDiscountable() {
-      return getEventOneDayTotalDiscountable(this.materials);
-    },
+        userCanEdit() {
+            return this.$store.getters['auth/is'](['admin', 'member']);
+        },
 
-    grandTotalDiscountable() {
-      return getEventGrandTotal(this.totalDiscountable, this.duration);
-    },
+        userCanCreateBill() {
+            // TODO: Pourquoi le `this.loading` est pertinent pour savoir si l'utilisateur peut créer une facture ?
+            if (this.displayCreateBill || this.loading) {
+                return true;
+            }
+            return !this.hasBill && this.isBillable && this.userCanEdit;
+        },
 
-    discountAmount() {
-      return this.grandTotalDiscountable * (this.discountRate / 100);
-    },
+        duration() {
+            const start = moment(this.event.start_date);
+            const end = moment(this.event.end_date);
+            return start && end ? end.diff(start, 'days') + 1 : 1;
+        },
 
-    discountTarget: {
-      get() {
-        return decimalRound((this.grandTotal - this.discountAmount));
-      },
-      set(value) {
-        const diff = this.grandTotal - value;
-        const rate = 100 * (diff / this.grandTotalDiscountable);
-        this.discountRate = decimalRound(rate, 4);
-      },
-    },
-  },
-  methods: {
-    handleChangeDiscount({ field, value }) {
-      if (field === 'amount') {
-        this.discountTarget = value;
-      } else if (field === 'rate') {
-        this.discountRate = value;
-      }
-    },
+        grandTotal() {
+            const total = getEventOneDayTotal(this.event.materials);
+            return getEventGrandTotal(total, this.duration);
+        },
 
-    createBill() {
-      this.displayCreateBill = false;
-      if (this.loading) {
-        return;
-      }
+        grandTotalDiscountable() {
+            const totalDiscountable = getEventOneDayTotalDiscountable(this.event.materials);
+            return getEventGrandTotal(totalDiscountable, this.duration);
+        },
 
-      this.$emit('createBill', this.discountRate);
-    },
+        maxDiscountRate() {
+            if (this.grandTotal <= 0) {
+                return 0;
+            }
 
-    openBillRegeneration() {
-      this.displayCreateBill = true;
-    },
+            const rate = (this.grandTotalDiscountable * 100) / this.grandTotal;
+            return floor(rate, 4);
+        },
 
-    closeBillRegeneration() {
-      this.displayCreateBill = false;
-      this.discountRate = getDiscountRateFromLast(
-        this.lastBill,
-        this.lastEstimate,
-        this.discountRate,
-      );
+        discountRate: {
+            get() {
+                if (this.unsavedDiscountRate !== null) {
+                    return this.unsavedDiscountRate;
+                }
+                return Math.min(getEventDiscountRate(this.event), this.maxDiscountRate);
+            },
+            set(value) {
+                this.unsavedDiscountRate = Math.min(value, this.maxDiscountRate);
+            },
+        },
+
+        discountTarget: {
+            get() {
+                const discountAmount = this.grandTotalDiscountable * (this.discountRate / 100);
+                return round(this.grandTotal - discountAmount);
+            },
+            set(value) {
+                if (this.grandTotal <= 0 || this.grandTotalDiscountable === 0) {
+                    this.unsavedDiscountRate = 0;
+                    return;
+                }
+
+                let discountAmount = this.grandTotal - value;
+                if (discountAmount > this.grandTotalDiscountable) {
+                    discountAmount = this.grandTotalDiscountable;
+                }
+
+                const rate = 100 * (discountAmount / this.grandTotalDiscountable);
+                this.unsavedDiscountRate = Math.min(round(rate, 4), this.maxDiscountRate);
+            },
+        },
     },
-  },
+    watch: {
+        unsavedDiscountRate(newRate) {
+            this.$emit('discountRateChange', Number.parseFloat(newRate));
+        },
+    },
+    methods: {
+        // ------------------------------------------------------
+        // -
+        // -    Handlers
+        // -
+        // ------------------------------------------------------
+
+        handleChangeDiscount({ field, value }) {
+            if (field === 'amount') {
+                this.discountTarget = value;
+            } else if (field === 'rate') {
+                this.discountRate = value;
+            }
+        },
+
+        handleCreateBill() {
+            this.displayCreateBill = false;
+            if (this.loading) {
+                return;
+            }
+
+            this.$emit('createBill', this.discountRate);
+            this.unsavedDiscountRate = null;
+        },
+
+        // ------------------------------------------------------
+        // -
+        // -    Internal methods
+        // -
+        // ------------------------------------------------------
+
+        openBillRegeneration() {
+            this.displayCreateBill = true;
+        },
+
+        closeBillRegeneration() {
+            this.displayCreateBill = false;
+            this.unsavedDiscountRate = null;
+        },
+    },
 };

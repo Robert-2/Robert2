@@ -1,42 +1,42 @@
 @import '../../../themes/default/index';
 
 .EventReturnHeader {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  padding: $content-padding-large-horizontal 0;
-
-  .Help {
-    flex: 1;
-    padding: 0 $content-padding-small-vertical;
-  }
-
-  &__infos {
-    flex: 0 0 auto;
     display: flex;
-    justify-content: flex-start;
-  }
+    flex-wrap: wrap;
+    align-items: center;
+    padding: $content-padding-large-horizontal 0;
 
-  &__actions {
-    flex: 0 0 auto;
-  }
-
-  &__info {
-    text-align: center;
-    line-height: 1.3;
-
-    &__important {
-      color: $text-base-color;
+    .Help {
+        flex: 1;
+        padding: 0 $content-padding-small-vertical;
     }
-  }
 
-  &__info + &__info {
-    margin-left: $content-padding-large-vertical;
-  }
-
-  &__group-by {
-    &__label {
-      padding: 0 $content-padding-small-horizontal;
+    &__infos {
+        flex: 0 0 auto;
+        display: flex;
+        justify-content: flex-start;
     }
-  }
+
+    &__actions {
+        flex: 0 0 auto;
+    }
+
+    &__info {
+        text-align: center;
+        line-height: 1.3;
+
+        &__important {
+            color: $text-base-color;
+        }
+    }
+
+    &__info + &__info {
+        margin-left: $content-padding-large-vertical;
+    }
+
+    &__group-by {
+        &__label {
+            padding: 0 $content-padding-small-horizontal;
+        }
+    }
 }

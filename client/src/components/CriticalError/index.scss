@@ -1,20 +1,22 @@
 .CriticalError {
-  font-size: 1.5rem;
-  text-align: center;
+    font-size: 1.5rem;
+    text-align: center;
 
-  &__illustration {
-    width: 25em;
-    fill: currentColor;
-    opacity: .2;
-  }
+    &__illustration {
+        width: 25em;
+        fill: currentColor;
+        opacity: 0.2;
+    }
 
-  &__message {
-    margin: 30px 0 20px;
-    white-space: pre-line;
-  }
+    &__message {
+        margin: 30px 0 20px;
+        white-space: pre-line;
+    }
 
-  &__refresh {
-    font-size: 1.2rem !important;
-    padding: .75rem 1.5rem !important;
-  }
+    &__refresh {
+        /* stylelint-disable declaration-no-important */
+        padding: 0.75rem 1.5rem !important;
+        font-size: 1.2rem !important;
+        /* stylelint-enable declaration-no-important */
+    }
 }

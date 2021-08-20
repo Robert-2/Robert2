@@ -4,40 +4,40 @@ $timeline-group-border-color: #636363 !default;
 $group-item-max-height: 65px !default;
 
 .Timeline {
-  &--grouped {
-    .vis-timeline {
-      background-color: scale-color($calendar-main-background-color, $alpha: -30%);
+    &--grouped {
+        .vis-timeline {
+            background-color: scale-color($calendar-main-background-color, $alpha: -30%);
+        }
+
+        .vis-vertical {
+            background-color: $calendar-main-background-color;
+        }
+
+        .vis-labelset {
+            max-width: 280px;
+            min-width: 180px;
+
+            .vis-label {
+                box-sizing: content-box;
+                border-bottom: 1px solid $timeline-group-border-color;
+            }
+        }
+
+        .vis-foreground .vis-group {
+            box-sizing: content-box;
+            border-bottom: 1px solid $timeline-group-border-color;
+        }
+
+        .vis-item {
+            &.vis-range {
+                max-height: $group-item-max-height;
+            }
+
+            .vis-item-overflow {
+                align-items: flex-start;
+                overflow: hidden;
+                max-height: calc(#{$group-item-max-height} - 1.2rem - 1.2rem);
+            }
+        }
     }
-
-    .vis-vertical {
-      background-color: $calendar-main-background-color;
-    }
-
-    .vis-labelset {
-      min-width: 180px;
-      max-width: 280px;
-
-      .vis-label {
-        box-sizing: content-box;
-        border-bottom: 1px solid $timeline-group-border-color;
-      }
-    }
-
-    .vis-foreground .vis-group {
-      box-sizing: content-box;
-      border-bottom: 1px solid $timeline-group-border-color;
-    }
-
-    .vis-item {
-      &.vis-range {
-        max-height: $group-item-max-height;
-      }
-
-      .vis-item-overflow {
-        max-height: calc(#{$group-item-max-height} - 1.2rem - 1.2rem);
-        overflow: hidden;
-        align-items: flex-start;
-      }
-    }
-  }
 }

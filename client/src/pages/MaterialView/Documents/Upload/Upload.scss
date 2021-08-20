@@ -1,60 +1,60 @@
 .MaterialViewDocumentsUpload {
-  min-width: 300px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  border-left: 1px solid $tabs-bottom-border-color;
-  background-color: transparent;
-  transition: background-color 300ms ease-out;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 300px;
+    border-left: 1px solid $tabs-bottom-border-color;
+    background-color: transparent;
+    transition: background-color 300ms ease-out;
 
-  &__title {
-    flex: 0 0 auto;
-    margin: 30px 0 15px;
-    font-size: 1.2rem;
-  }
-
-  &__choose-files {
-    margin: 15px 0;
-  }
-
-  &__send-list {
-    flex: 1;
-    width: 100%;
-    margin: 0;
-    padding: $content-padding-small-horizontal $content-padding-small-vertical;
-  }
-
-  &__file-errors {
-    flex: 1;
-    margin: $content-padding-large-horizontal 0;
-    padding: 0 $content-padding-small-vertical;
-
-    &__item {
-      list-style: none;
-      color: $text-danger-color;
-      padding: $content-padding-small-horizontal 0;
-    }
-  }
-
-  &__actions {
-    flex: 1;
-    margin: 20px 0;
-    text-align: center;
-
-    &__file-input {
-      display: none;
+    &__title {
+        flex: 0 0 auto;
+        margin: 30px 0 15px;
+        font-size: 1.2rem;
     }
 
-    .Help {
-      margin: $content-padding-large-horizontal 0;
+    &__choose-files {
+        margin: 15px 0;
     }
-  }
 
-  .Progressbar {
-    margin-left: $content-padding-large-vertical;
-  }
+    &__send-list {
+        flex: 1;
+        width: 100%;
+        margin: 0;
+        padding: $content-padding-small-horizontal $content-padding-small-vertical;
+    }
 
-  &--drag-over {
-    background-color: rgba($color-active-button, .15);
-  }
+    &__file-errors {
+        flex: 1;
+        margin: $content-padding-large-horizontal 0;
+        padding: 0 $content-padding-small-vertical;
+
+        &__item {
+            padding: $content-padding-small-horizontal 0;
+            color: $text-danger-color;
+            list-style: none;
+        }
+    }
+
+    &__actions {
+        flex: 1;
+        margin: 20px 0;
+        text-align: center;
+
+        &__file-input {
+            display: none;
+        }
+
+        .Help {
+            margin: $content-padding-large-horizontal 0;
+        }
+    }
+
+    .Progressbar {
+        margin-left: $content-padding-large-vertical;
+    }
+
+    &--drag-over {
+        background-color: rgba($color-active-button, 0.15);
+    }
 }
