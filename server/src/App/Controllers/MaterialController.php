@@ -82,8 +82,7 @@ class MaterialController extends BaseController
             $model->with('Events', function ($query) {
                 $query->where('Events.end_date', '>=', Carbon::now());
             })
-                ->with('Events')
-                ->get();
+            ->get();
         }
 
         $results = $this->paginate($request, $model);

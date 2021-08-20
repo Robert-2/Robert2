@@ -1071,4 +1071,305 @@ final class MaterialsTest extends ApiTestCase
         $this->assertStatusCode(200);
         $this->assertTrue($responseStream->isReadable());
     }
+
+    public function testGetMaterialsWithEvents()
+    {
+        $this->client->get('/api/materials?events=true');
+        $this->assertStatusCode(SUCCESS_OK);
+        $this->assertResponseData([
+            "pagination" => [
+                "current_page" => 1,
+                "first_page_url" => "/api/materials?events=true&page=1",
+                "from" => 1,
+                "last_page" => 1,
+                "last_page_url" => "/api/materials?events=true&page=1",
+                "next_page_url" => null,
+                "path" => "/api/materials",
+                "per_page" => 100,
+                "prev_page_url" => null,
+                "to" => 7,
+                "total" => 7
+            ],
+            "data" => [
+                [
+                    "id" => 6,
+                    "name" => "Behringer X Air XR18",
+                    "description" => "Mélangeur numérique 18 canaux",
+                    "reference" => "XR18",
+                    "is_unitary" => false,
+                    "park_id" => 1,
+                    "category_id" => 1,
+                    "sub_category_id" => 1,
+                    "rental_price" => 49.99,
+                    "stock_quantity" => 0,
+                    "out_of_order_quantity" => 0,
+                    "replacement_price" => 419,
+                    "is_hidden_on_bill" => false,
+                    "is_discountable" => false,
+                    "picture" => null,
+                    "note" => null,
+                    "created_at" => null,
+                    "updated_at" => null,
+                    "deleted_at" => null,
+                    "tags" => [
+                    ],
+                    "attributes" => [
+                        [
+                            "id" => 5,
+                            "name" => "Date d'achat",
+                            "type" => "date",
+                            "unit" => null,
+                            "value" => "2021-01-28"
+                        ]
+                    ],
+                    "events" => [
+                    ]
+                ],
+                [
+                    "id" => 5,
+                    "name" => "Câble XLR 10m",
+                    "description" => "Câble audio XLR 10 mètres, mâle-femelle",
+                    "reference" => "XLR10",
+                    "is_unitary" => false,
+                    "park_id" => 1,
+                    "category_id" => 1,
+                    "sub_category_id" => null,
+                    "rental_price" => 0.5,
+                    "stock_quantity" => 40,
+                    "out_of_order_quantity" => 8,
+                    "replacement_price" => 9.5,
+                    "is_hidden_on_bill" => true,
+                    "is_discountable" => true,
+                    "picture" => null,
+                    "note" => null,
+                    "created_at" => null,
+                    "updated_at" => null,
+                    "deleted_at" => null,
+                    "tags" => [
+                    ],
+                    "attributes" => [
+                    ],
+                    "events" => [
+                    ]
+                ],
+                [
+                    "id" => 1,
+                    "name" => "Console Yamaha CL3",
+                    "description" => "Console numérique 64 entrées / 8 sorties + Master + Sub",
+                    "reference" => "CL3",
+                    "is_unitary" => false,
+                    "park_id" => 1,
+                    "category_id" => 1,
+                    "sub_category_id" => 1,
+                    "rental_price" => 300,
+                    "stock_quantity" => 5,
+                    "out_of_order_quantity" => 1,
+                    "replacement_price" => 19400,
+                    "is_hidden_on_bill" => false,
+                    "is_discountable" => false,
+                    "picture" => "IMG-20210511-0001.jpg",
+                    "note" => null,
+                    "created_at" => null,
+                    "updated_at" => null,
+                    "deleted_at" => null,
+                    "tags" => [
+                        [
+                            "id" => 3,
+                            "name" => "pro"
+                        ]
+                    ],
+                    "attributes" => [
+                        [
+                            "id" => 3,
+                            "name" => "Puissance",
+                            "type" => "integer",
+                            "unit" => "W",
+                            "value" => 850
+                        ],
+                        [
+                            "id" => 2,
+                            "name" => "Couleur",
+                            "type" => "string",
+                            "unit" => null,
+                            "value" => "Grise"
+                        ],
+                        [
+                            "id" => 1,
+                            "name" => "Poids",
+                            "type" => "float",
+                            "unit" => "kg",
+                            "value" => 36.5
+                        ]
+                    ],
+                    "events" => [
+                    ]
+                ],
+                [
+                    "id" => 3,
+                    "name" => "PAR64 LED",
+                    "description" => "Projecteur PAR64 à LED, avec son set de gélatines",
+                    "reference" => "PAR64LED",
+                    "is_unitary" => false,
+                    "park_id" => 1,
+                    "category_id" => 2,
+                    "sub_category_id" => 3,
+                    "rental_price" => 3.5,
+                    "stock_quantity" => 34,
+                    "out_of_order_quantity" => 4,
+                    "replacement_price" => 89,
+                    "is_hidden_on_bill" => false,
+                    "is_discountable" => true,
+                    "picture" => null,
+                    "note" => "Soyez délicats avec ces projos !",
+                    "created_at" => null,
+                    "updated_at" => null,
+                    "deleted_at" => null,
+                    "tags" => [
+                        [
+                            "id" => 3,
+                            "name" => "pro"
+                        ]
+                    ],
+                    "attributes" => [
+                        [
+                            "id" => 3,
+                            "name" => "Puissance",
+                            "type" => "integer",
+                            "unit" => "W",
+                            "value" => 150
+                        ],
+                        [
+                            "id" => 1,
+                            "name" => "Poids",
+                            "type" => "float",
+                            "unit" => "kg",
+                            "value" => 0.85
+                        ]
+                    ],
+                    "events" => [
+                    ]
+                ],
+                [
+                    "id" => 2,
+                    "name" => "Processeur DBX PA2",
+                    "description" => "Système de diffusion numérique",
+                    "reference" => "DBXPA2",
+                    "is_unitary" => false,
+                    "park_id" => 1,
+                    "category_id" => 1,
+                    "sub_category_id" => 2,
+                    "rental_price" => 25.5,
+                    "stock_quantity" => 2,
+                    "out_of_order_quantity" => null,
+                    "replacement_price" => 349.9,
+                    "is_hidden_on_bill" => false,
+                    "is_discountable" => true,
+                    "picture" => null,
+                    "note" => null,
+                    "created_at" => null,
+                    "updated_at" => null,
+                    "deleted_at" => null,
+                    "tags" => [
+                        [
+                            "id" => 3,
+                            "name" => "pro"
+                        ]
+                    ],
+                    "attributes" => [
+                        [
+                            "id" => 3,
+                            "name" => "Puissance",
+                            "type" => "integer",
+                            "unit" => "W",
+                            "value" => 35
+                        ],
+                        [
+                            "id" => 1,
+                            "name" => "Poids",
+                            "type" => "float",
+                            "unit" => "kg",
+                            "value" => 2.2
+                        ]
+                    ],
+                    "events" => [
+                    ]
+                ],
+                [
+                    "id" => 4,
+                    "name" => "Showtec SDS-6",
+                    "description" => "Console DMX (jeu d'orgue) Showtec 6 canaux",
+                    "reference" => "SDS-6-01",
+                    "is_unitary" => false,
+                    "park_id" => 1,
+                    "category_id" => 2,
+                    "sub_category_id" => 4,
+                    "rental_price" => 15.95,
+                    "stock_quantity" => 2,
+                    "out_of_order_quantity" => null,
+                    "replacement_price" => 59,
+                    "is_hidden_on_bill" => false,
+                    "is_discountable" => true,
+                    "picture" => null,
+                    "note" => null,
+                    "created_at" => null,
+                    "updated_at" => null,
+                    "deleted_at" => null,
+                    "tags" => [
+                    ],
+                    "attributes" => [
+                        [
+                            "id" => 4,
+                            "name" => "Conforme",
+                            "type" => "boolean",
+                            "unit" => null,
+                            "value" => true
+                        ],
+                        [
+                            "id" => 3,
+                            "name" => "Puissance",
+                            "type" => "integer",
+                            "unit" => "W",
+                            "value" => 60
+                        ],
+                        [
+                            "id" => 1,
+                            "name" => "Poids",
+                            "type" => "float",
+                            "unit" => "kg",
+                            "value" => 3.15
+                        ]
+                    ],
+                    "events" => [
+                    ]
+                ],
+                [
+                    "id" => 7,
+                    "name" => "Volkswagen Transporter",
+                    "description" => "Volume utile : 9.3 m3",
+                    "reference" => "Transporter",
+                    "is_unitary" => false,
+                    "park_id" => 1,
+                    "category_id" => 3,
+                    "sub_category_id" => null,
+                    "rental_price" => 300,
+                    "stock_quantity" => 0,
+                    "out_of_order_quantity" => 0,
+                    "replacement_price" => 32000,
+                    "is_hidden_on_bill" => false,
+                    "is_discountable" => false,
+                    "picture" => null,
+                    "note" => null,
+                    "created_at" => null,
+                    "updated_at" => null,
+                    "deleted_at" => null,
+                    "tags" => [
+                    ],
+                    "attributes" => [
+                    ],
+                    "events" => [
+                    ]
+                ]
+            ]
+        ]);
+    }
 }

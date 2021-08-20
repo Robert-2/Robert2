@@ -30,7 +30,7 @@ class EventController extends BaseController
         $startDate = $request->getQueryParam('start', null);
         $endDate = $request->getQueryParam('end', null);
         $deleted = (bool)$request->getQueryParam('deleted', false);
-        $withMaterials = (bool)$request->getQueryParam('materials', false);
+        $with_materials = (bool)$request->getQueryParam('materials', false);
 
         $results = (new Event)
             ->setSearchPeriod($startDate, $endDate)
@@ -38,7 +38,9 @@ class EventController extends BaseController
             ->with('Beneficiaries:persons.id,first_name,last_name')
             ->with('Technicians');
 
-        if($withMaterials == true) $results->with('Materials');
+        if ($with_materials == true) {
+            $results->with('Materials');
+        }
 
         $data = $results->get()->toArray();
         $useMultipleParks = Park::count() > 1;
