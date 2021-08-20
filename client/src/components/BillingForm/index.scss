@@ -1,4 +1,6 @@
-.BillEstimateCreationForm {
+@import '../../themes/default/index';
+
+.BillingForm {
     &__discount-input .FormField__input {
         max-width: 90px;
     }

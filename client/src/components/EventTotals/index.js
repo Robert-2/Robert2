@@ -8,7 +8,7 @@ import getEventOneDayTotalDiscountable from '@/utils/getEventOneDayTotalDiscount
 import getEventGrandTotal from '@/utils/getEventGrandTotal';
 import getEventDiscountRate from '@/utils/getEventDiscountRate';
 import getEventReplacementTotal from '@/utils/getEventReplacementTotal';
-import decimalRound from '@/utils/decimalRound';
+import { round } from '@/utils/decimalRound';
 
 // @vue/component
 export default {
@@ -61,7 +61,7 @@ export default {
         },
 
         discountTarget() {
-            return decimalRound(this.grandTotal - this.discountAmount);
+            return round(this.grandTotal - this.discountAmount);
         },
 
         grandTotalWithDiscount() {

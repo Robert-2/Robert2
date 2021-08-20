@@ -1,18 +1,18 @@
 import moment from 'moment';
-import decimalRound from '@/utils/decimalRound';
 import getEventGrandTotal from '@/utils/getEventGrandTotal';
 import getEventOneDayTotal from '@/utils/getEventOneDayTotal';
 import getEventOneDayTotalDiscountable from '@/utils/getEventOneDayTotalDiscountable';
 import getEventDiscountRate from '@/utils/getEventDiscountRate';
-import BillEstimateCreationForm from '@/components/BillEstimateCreationForm/BillEstimateCreationForm.vue';
+import BillingForm from '@/components/BillingForm';
 import DisplayBill from './DisplayBill/DisplayBill.vue';
+import { round, floor } from '@/utils/decimalRound';
 
 // @vue/component
 export default {
     name: 'EventBilling',
     components: {
         DisplayBill,
-        BillEstimateCreationForm,
+        BillingForm,
     },
     props: {
         event: { type: Object, required: true },
@@ -67,38 +67,55 @@ export default {
             return start && end ? end.diff(start, 'days') + 1 : 1;
         },
 
-        total() {
-            return getEventOneDayTotal(this.event.materials);
-        },
-
         grandTotal() {
-            return getEventGrandTotal(this.total, this.duration);
-        },
-
-        totalDiscountable() {
-            return getEventOneDayTotalDiscountable(this.event.materials);
+            const total = getEventOneDayTotal(this.event.materials);
+            return getEventGrandTotal(total, this.duration);
         },
 
         grandTotalDiscountable() {
-            return getEventGrandTotal(this.totalDiscountable, this.duration);
+            const totalDiscountable = getEventOneDayTotalDiscountable(this.event.materials);
+            return getEventGrandTotal(totalDiscountable, this.duration);
         },
 
-        discountRate() {
-            if (this.unsavedDiscountRate !== null) {
-                return this.unsavedDiscountRate;
+        maxDiscountRate() {
+            if (this.grandTotal <= 0) {
+                return 0;
             }
-            return getEventDiscountRate(this.event);
+
+            const rate = (this.grandTotalDiscountable * 100) / this.grandTotal;
+            return floor(rate, 4);
+        },
+
+        discountRate: {
+            get() {
+                if (this.unsavedDiscountRate !== null) {
+                    return this.unsavedDiscountRate;
+                }
+                return Math.min(getEventDiscountRate(this.event), this.maxDiscountRate);
+            },
+            set(value) {
+                this.unsavedDiscountRate = Math.min(value, this.maxDiscountRate);
+            },
         },
 
         discountTarget: {
             get() {
                 const discountAmount = this.grandTotalDiscountable * (this.discountRate / 100);
-                return decimalRound(this.grandTotal - discountAmount);
+                return round(this.grandTotal - discountAmount);
             },
             set(value) {
-                const diff = this.grandTotal - value;
-                const rate = 100 * (diff / this.grandTotalDiscountable);
-                this.unsavedDiscountRate = decimalRound(rate, 4);
+                if (this.grandTotal <= 0 || this.grandTotalDiscountable === 0) {
+                    this.unsavedDiscountRate = 0;
+                    return;
+                }
+
+                let discountAmount = this.grandTotal - value;
+                if (discountAmount > this.grandTotalDiscountable) {
+                    discountAmount = this.grandTotalDiscountable;
+                }
+
+                const rate = 100 * (discountAmount / this.grandTotalDiscountable);
+                this.unsavedDiscountRate = Math.min(round(rate, 4), this.maxDiscountRate);
             },
         },
     },
@@ -118,7 +135,7 @@ export default {
             if (field === 'amount') {
                 this.discountTarget = value;
             } else if (field === 'rate') {
-                this.unsavedDiscountRate = value;
+                this.discountRate = value;
             }
         },
 

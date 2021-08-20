@@ -34,11 +34,12 @@
                 <span v-else>{{ $t('contact-someone-to-create-bill') }}</span>
             </p>
         </div>
-        <BillEstimateCreationForm
+        <BillingForm
             v-if="userCanCreateBill"
             :discountRate="discountRate"
             :discountTarget="discountTarget"
             :maxAmount="grandTotal"
+            :maxRate="maxDiscountRate"
             :beneficiary="event.beneficiaries[0]"
             :saveLabel="$t('create-bill')"
             :isRegeneration="hasBill"

@@ -49,14 +49,14 @@ export default {
         },
     },
     methods: {
-        handleInput(e) {
-            const { value } = e.target;
-            this.$emit('input', value);
+        handleInput(event) {
+            const { value } = event.target;
+            this.$emit('input', value, event);
         },
 
-        handleChange(e) {
-            const { value } = e.target;
-            this.$emit('change', value);
+        handleChange(event) {
+            const { value } = event.target;
+            this.$emit('change', value, event);
         },
 
         handleDatepickerChange(newDate) {
@@ -119,8 +119,8 @@ export default {
                         <input
                             type={type}
                             step={type === 'number' ? (step || 0.01) : null}
-                            min={type === 'number' ? (min || null) : null}
-                            max={type === 'number' ? (max || null) : null}
+                            min={type === 'number' && (min || min === 0) ? min : null}
+                            max={type === 'number' && (max || max === 0) ? max : null}
                             name={name}
                             autocomplete={type === 'password' ? 'new-password' : 'off'}
                             disabled={disabled}
