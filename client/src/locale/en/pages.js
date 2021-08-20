@@ -106,13 +106,15 @@ export default {
         'event-confirmation': "Confirmation",
         'no-technician-pass-this-step': (
             `There is no technician available for this period.
-      You can skip this step.`
+            You can skip this step.`
         ),
-        'assign-technician': "Assign {name} as a technician",
-        'assign-this-technician': "Assign this technician",
         'technician-item': {
-            'confirm-permanently-delete': "Do you really want to remove this technician assignation?",
+            'confirm-permanently-delete': "Do you really want to remove this technician assignment?",
         },
+        'assign-technician': "Assign {name} as a technician",
+        'assign-name': "Assign {name}",
+        'modify-assignment': "Modify assignment",
+        'remove-assignment': "Remove assignment",
         'period-assigned': "Assigned period",
         'start-end-dates-and-time': "Start and End dates and times",
         'saved': "Event saved.",

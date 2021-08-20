@@ -57,6 +57,7 @@ export default {
     'add': "Ajouter",
     'saving': "Sauvegarde...",
     'saved': "{entity} sauvegardé.",
+    'deleting': "Suppression...",
     'choose-date': "Choisir cette date",
     'reset-date': "Réinitialiser la date",
     'actions': "Actions",

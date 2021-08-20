@@ -106,13 +106,15 @@ export default {
         'event-confirmation': "Confirmation",
         'no-technician-pass-this-step': (
             `Il n'y a aucun technicien disponible pour cette période.
-      Vous pouvez passer cette étape.`
+            Vous pouvez passer cette étape.`
         ),
-        'assign-technician': "Assigner {name} en tant que technicien(ne)",
         'technician-item': {
             'confirm-permanently-delete': "Voulez-vous vraiment supprimer l'assignation de ce technicien ?",
         },
-        'assign-this-technician': "Assigner ce technicien",
+        'assign-technician': "Assigner {name} en tant que technicien(ne)",
+        'assign-name': "Assigner {name}",
+        'modify-assignment': "Modifier l'assignation",
+        'remove-assignment': "Supprimer l'assignation",
         'period-assigned': "Période assignée",
         'start-end-dates-and-time': "Dates et heures de début et fin",
         'saved': "Événement sauvegardé.",
