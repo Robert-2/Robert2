@@ -43,9 +43,9 @@ export default {
         'title': "Calendrier",
         'help': (
             `Cliquez-glissez pour déplacer la frise temporelle.
-      Utilisez la molette pour zoomer / dézoomer.
-      Survolez un événement avec la souris pour en voir les détails.
-      Double-cliquez sur une colonne vide pour créer un événement avec la date de départ pré-remplie.`
+            Utilisez la molette pour zoomer / dézoomer.
+            Survolez un événement avec la souris pour en voir les détails.
+            Double-cliquez sur une colonne vide pour créer un événement avec la date de départ pré-remplie.`
         ),
         'help-center-view-on-today': "Centrer le calendrier sur aujourd'hui",
         'help-add-event': "Créer un nouvel événement",
@@ -58,7 +58,7 @@ export default {
         'loading-event': "Chargement de l'événement...",
         'help-timeline-event-operations': (
             `Cliquez une fois pour sélectionner l'événement, afin de le déplacer, le redimensionner ou le supprimer.
-      Double-cliquez sur l'événement pour en ouvrir l'aperçu, et en modifier les détails.`
+            Double-cliquez sur l'événement pour en ouvrir l'aperçu, et en modifier les détails.`
         ),
         'center-on-today': "Centrer sur aujourd'hui",
         'center-on': "Centrer sur le",
@@ -163,8 +163,8 @@ export default {
         'help': "Vous pouvez envoyer un email à un utilisateur en cliquant sur son adresse.",
         'help-edit': (
             `- Le groupe «\u00a0Administrateur\u00a0» donne tous les droits à l'utilisateur.
-      - Le groupe «\u00a0Membre\u00a0» permet à l'utilisateur d'utiliser la plupart des fonctions de Robert.
-      - Le groupe «\u00a0Visiteur\u00a0» donne un accès limité à certaines données.`
+            - Le groupe «\u00a0Membre\u00a0» permet à l'utilisateur d'utiliser la plupart des fonctions de Robert.
+            - Le groupe «\u00a0Visiteur\u00a0» donne un accès limité à certaines données.`
         ),
         'action-add': "Nouvel utilisateur",
         'add': "Nouvel utilisateur",
@@ -189,7 +189,7 @@ export default {
         'company': "Personne morale (entreprise)",
         'help-edit': (
             `Seuls le nom et le prénom de la personne sont obligatoires.
-      La «\u00a0référence\u00a0» est un numéro client ou adhérent pour votre gestion interne, qui apparaîtra sur les fiches de sorties, les devis et les factures. Il doit être unique.`
+            La «\u00a0référence\u00a0» est un numéro client ou adhérent pour votre gestion interne, qui apparaîtra sur les fiches de sorties, les devis et les factures. Il doit être unique.`
         ),
         'confirm-delete': "Mettre ce bénéficiaire à la corbeille\u00a0?",
         'confirm-permanently-delete': "Voulez-vous vraiment supprimer définitivement ce bénéficiaire\u00a0?",
@@ -217,14 +217,14 @@ export default {
         'display-quantities-at-date': "Afficher les quantités à date...",
         'remaining-quantities-on-date': (
             `Quantités restantes
-      le {date}`
+            le {date}`
         ),
         'add': "Nouveau matériel",
         'edit': "Modifier le matériel «\u00a0{pageSubTitle}\u00a0»",
         'help-edit': (
             `Trouvez un nom assez court, et utilisez plutôt la description pour détailler le matériel si besoin.
 
-      La photo du matériel doit être au format JPG, PNG ou WEBP, et ne doit pas dépasser 10\u00a0Mo.`
+            La photo du matériel doit être au format JPG, PNG ou WEBP, et ne doit pas dépasser 10\u00a0Mo.`
         ),
         'confirm-delete': "Mettre ce matériel à la corbeille\u00a0?",
         'confirm-permanently-delete': "Voulez-vous vraiment supprimer définitivement ce matériel\u00a0?",
@@ -257,7 +257,7 @@ export default {
         'title': "Caractéristiques spéciales du matériel",
         'help': (
             `Ici vous pouvez ajouter les champs qui permettent de décrire votre matériel selon vos propres critères.
-      Une fois créée, une caractéristique spéciale ne pourra plus être modifiée (sauf son nom).`
+            Une fois créée, une caractéristique spéciale ne pourra plus être modifiée (sauf son nom).`
         ),
         'go-back-to-material': "Retourner au matériel",
         'name': "Nom de la caractéristique",
@@ -277,7 +277,7 @@ export default {
         'confirm-permanently-delete': (
             `Voulez-vous vraiment supprimer définitivement cette caractéristique spéciale\u00a0?
 
-      ATTENTION\u00a0: Toutes les données relative à cette caractéristique spéciale seront supprimées DÉFINITIVEMENT\u00a0!!`
+            ATTENTION\u00a0: Toutes les données relative à cette caractéristique spéciale seront supprimées DÉFINITIVEMENT\u00a0!!`
         ),
         'second-confirm': {
             'confirm-permanently-delete': (
