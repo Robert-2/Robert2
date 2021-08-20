@@ -35,6 +35,11 @@ export default {
         error: null,
     }),
     computed: {
+        openedTabIndex() {
+            const index = EventDetailsTabs.findIndex((tabName) => tabName === this.openedTab);
+            return index < 0 ? 0 : index;
+        },
+
         hasEventTechnicians() {
             return this.event?.technicians?.length > 0;
         },
@@ -130,7 +135,7 @@ export default {
         const {
             $t: __,
             event,
-            openedTab,
+            openedTabIndex,
             showBilling,
             hasEventTechnicians,
             hasMaterials,
@@ -161,7 +166,7 @@ export default {
                             onDuplicated={handleDuplicateEvent}
                         />
                         <div class="EventDetails__content__body">
-                            <Tabs defaultIndex={EventDetailsTabs.findIndex((tabName) => tabName === openedTab)}>
+                            <Tabs defaultIndex={openedTabIndex}>
                                 <Tab title={<span><i class="fas fa-info-circle" /> {__('informations')}</span>}>
                                     <Infos event={event} />
                                 </Tab>
