@@ -93,32 +93,10 @@
                 background-color: $calendar-event-past-color;
             }
 
-            &.span1 {
-                width: calc((100% / 7) - 11px);
-            }
-
-            &.span2 {
-                width: calc(((100% / 7) * 2) - 11px);
-            }
-
-            &.span3 {
-                width: calc(((100% / 7) * 3) - 11px);
-            }
-
-            &.span4 {
-                width: calc(((100% / 7) * 4) - 11px);
-            }
-
-            &.span5 {
-                width: calc(((100% / 7) * 5) - 11px);
-            }
-
-            &.span6 {
-                width: calc(((100% / 7) * 6) - 11px);
-            }
-
-            &.span7 {
-                width: calc(100% - 11px);
+            @for $i from 1 through 7 {
+                &.span#{$i} {
+                    width: calc(((100% / 7) * #{$i}) - 11px);
+                }
             }
 
             &.continued {

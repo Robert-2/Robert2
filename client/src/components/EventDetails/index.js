@@ -11,7 +11,7 @@ import Materials from './Materials';
 import Estimates from './Estimates';
 import Billing from './Billing';
 
-const EventDetailsTabs = [
+const TABS = [
     'infos',
     'technicians',
     'materials',
@@ -36,7 +36,7 @@ export default {
     }),
     computed: {
         openedTabIndex() {
-            const index = EventDetailsTabs.findIndex((tabName) => tabName === this.openedTab);
+            const index = TABS.findIndex((tabName) => tabName === this.openedTab);
             return index < 0 ? 0 : index;
         },
 

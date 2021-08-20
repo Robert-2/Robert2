@@ -1,7 +1,7 @@
 import './index.scss';
 import moment from 'moment';
 import dateRoundMinutes from '@/utils/dateRoundMinutes';
-import Alert from '@/components/Alert';
+import { confirm } from '@/utils/alert';
 import CriticalError from '@/components/CriticalError';
 import Help from '@/components/Help/Help.vue';
 import Loading from '@/components/Loading';
@@ -227,7 +227,11 @@ const EventStep3 = {
         },
 
         async handleItemRemove(item, callback) {
-            const { value: isConfirmed } = await Alert.ConfirmDelete(this.$t, 'events.technician-item', false);
+            const { value: isConfirmed } = await confirm({
+                text: this.$t('page-events.technician-item.confirm-permanently-delete'),
+                confirmButtonText: this.$t('yes-permanently-delete'),
+                type: 'delete',
+            });
             if (!isConfirmed) {
                 callback(null);
                 return;

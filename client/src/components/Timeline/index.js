@@ -54,12 +54,13 @@ const Timeline = {
                     delay: 300,
                 },
                 tooltipOnItemUpdateTime: {
-                    template: ({ start, end }) => (
-                        `${this.$t('update-in-progress')}\n${this.$t('from-date-to-date', {
+                    template: ({ start, end }) => [
+                        this.$t('update-in-progress'),
+                        this.$t('from-date-to-date', {
                             from: moment(start).format('L HH:mm'),
                             to: moment(end).format('L HH:mm'),
-                        })}`
-                    ),
+                        }),
+                    ].join('\n'),
                 },
                 editable: {
                     add: false,

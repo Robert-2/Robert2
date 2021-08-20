@@ -1,7 +1,7 @@
 import './index.scss';
 import moment from 'moment';
 import { TECHNICIAN_EVENT_MIN_DURATION } from '@/config/constants';
-import Alert from '@/components/Alert';
+import { confirm } from '@/utils/alert';
 import FormField from '@/components/FormField';
 import ErrorMessage from '@/components/ErrorMessage';
 
@@ -150,7 +150,7 @@ const EventStep3Modal = {
         },
 
         async save() {
-            if (this.isSaving || this.isDeleting || this.isNew) {
+            if (this.isSaving || this.isDeleting) {
                 return;
             }
 
@@ -188,11 +188,15 @@ const EventStep3Modal = {
         },
 
         async remove() {
-            if (this.isDeleting || this.isSaving) {
+            if (this.isDeleting || this.isSaving || this.isNew) {
                 return;
             }
 
-            const { value: isConfirmed } = await Alert.ConfirmDelete(this.$t, 'events.technician-item', false);
+            const { value: isConfirmed } = await confirm({
+                text: this.$t('page-events.technician-item.confirm-permanently-delete'),
+                confirmButtonText: this.$t('yes-permanently-delete'),
+                type: 'delete',
+            });
             if (!isConfirmed) {
                 return;
             }

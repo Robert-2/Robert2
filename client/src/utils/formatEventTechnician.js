@@ -5,7 +5,15 @@ const formatEventTechnician = (eventTechnician) => {
         return null;
     }
 
-    const { id, event_id: eventId, start_time: start, end_time: end, position, event } = eventTechnician;
+    const {
+        id,
+        event,
+        position,
+        event_id: eventId,
+        start_time: start,
+        end_time: end,
+    } = eventTechnician;
+
     const { title: eventTitle, location } = event;
 
     let title = eventTitle;

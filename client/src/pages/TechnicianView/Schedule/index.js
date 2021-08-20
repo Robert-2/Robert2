@@ -88,7 +88,7 @@ const TechnicianViewSchedule = {
                 return <ErrorMessage error={error} />;
             }
 
-            return <MonthCalendar events={events} withTotal vOn:clickItem={handleClickItem} />;
+            return <MonthCalendar events={events} withTotal onClickItem={handleClickItem} />;
         };
 
         return <div class="TechnicianViewSchedule">{render()}</div>;
