@@ -56,8 +56,13 @@ export default {
 
         setEventDates() {
             const [startDate, endDate] = this.dates;
+
+            /* eslint-disable vue/no-mutating-props */
+            // TODO: Enlever ces mutations de props (!!) et faire de même pour les mutations de prop dans template vue lié.
+            //       @see https://github.com/Robert-2/Robert2/issues/257
             this.event.start_date = moment(startDate).format();
             this.event.end_date = moment(endDate).format();
+            /* eslint-enable vue/no-mutating-props */
         },
 
         calcDuration() {
