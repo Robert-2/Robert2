@@ -4,6 +4,7 @@ import vuexI18n from 'vuex-i18n';
 import VueJsModal from 'vue-js-modal/dist/index.nocss';
 import { VTooltip } from 'v-tooltip';
 import { ClientTable, ServerTable } from 'vue-tables-2';
+import Toasted from 'vue-toasted';
 
 import Config from '@/config/globalConfig';
 import axios from '@/axios';
@@ -85,6 +86,19 @@ const tablesConfig = {
 };
 Vue.use(ClientTable, tablesConfig);
 Vue.use(ServerTable, tablesConfig, true);
+
+// Toast notifications
+Vue.use(Toasted, {
+    duration: 5000,
+    position: 'bottom-right',
+    className: 'Notification',
+    action: {
+        text: Vue.i18n.translate('close'),
+        onClick: (e, toastObject) => {
+            toastObject.goAway(0);
+        },
+    },
+});
 
 store.dispatch('auth/fetch').then(() => {
     /* eslint-disable no-new */

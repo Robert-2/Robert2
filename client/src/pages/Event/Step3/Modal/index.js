@@ -1,6 +1,7 @@
 import './index.scss';
 import moment from 'moment';
 import { TECHNICIAN_EVENT_MIN_DURATION } from '@/config/constants';
+import { confirm } from '@/utils/alert';
 import FormField from '@/components/FormField';
 import ErrorMessage from '@/components/ErrorMessage';
 
@@ -44,6 +45,7 @@ const EventStep3Modal = {
             position: '',
             isLoading: false,
             isSaving: false,
+            isDeleting: false,
             error: null,
             validationErrors: {
                 start_time: null,
@@ -84,6 +86,11 @@ const EventStep3Modal = {
                 disabled: { notBetween: [start, end] },
             };
         },
+
+        saveButtonText() {
+            const { $t: __, isNew, name } = this;
+            return isNew ? __('page-events.assign-name', { name }) : __('page-events.modify-assignment');
+        },
     },
     mounted() {
         if (typeof this.$props.data === 'number') {
@@ -104,6 +111,10 @@ const EventStep3Modal = {
 
         handleClose() {
             this.$emit('close');
+        },
+
+        handleDelete() {
+            this.remove();
         },
 
         // ------------------------------------------------------
@@ -139,7 +150,7 @@ const EventStep3Modal = {
         },
 
         async save() {
-            if (this.isSaving) {
+            if (this.isSaving || this.isDeleting) {
                 return;
             }
 
@@ -175,17 +186,50 @@ const EventStep3Modal = {
                 this.isSaving = false;
             }
         },
+
+        async remove() {
+            if (this.isDeleting || this.isSaving || this.isNew) {
+                return;
+            }
+
+            const { value: isConfirmed } = await confirm({
+                text: this.$t('page-events.technician-item.confirm-permanently-delete'),
+                confirmButtonText: this.$t('yes-permanently-delete'),
+                type: 'delete',
+            });
+            if (!isConfirmed) {
+                return;
+            }
+
+            this.error = null;
+            this.isDeleting = true;
+
+            const { data: eventTechnicianId } = this.$props;
+
+            try {
+                await this.$http.delete(`event-technicians/${eventTechnicianId}`);
+                this.$emit('close');
+            } catch (error) {
+                this.error = error;
+            } finally {
+                this.isDeleting = false;
+            }
+        },
     },
     render() {
         const {
             $t: __,
             name,
+            isNew,
+            saveButtonText,
             isSaving,
+            isDeleting,
             error,
             validationErrors,
             datePickerOptions,
             handleSubmit,
             handleClose,
+            handleDelete,
         } = this;
 
         return (
@@ -216,14 +260,17 @@ const EventStep3Modal = {
                             errors={validationErrors.position}
                         />
                         {error && <ErrorMessage error={error} />}
-                        <div class="EventStep3Modal__form__actions">
+                        <div class="EventStep3Modal__actions">
                             <button type="submit" class="success" disabled={isSaving}>
                                 {isSaving ? <i class="fas fa-circle-notch fa-spin" /> : <i class="fas fa-check" />}{' '}
-                                {isSaving ? __('saving') : __('page-events.assign-this-technician')}
+                                {isSaving ? __('saving') : saveButtonText}
                             </button>
-                            <button type="button" onClick={handleClose}>
-                                <i class="fas fa-ban" /> {__('cancel')}
-                            </button>
+                            {!isNew && (
+                                <button type="button" class="danger EventStep3Modal__delete" onClick={handleDelete}>
+                                    {isDeleting ? <i class="fas fa-circle-notch fa-spin" /> : <i class="fas fa-trash" />}{' '}
+                                    {isDeleting ? __('deleting') : __('page-events.remove-assignment')}
+                                </button>
+                            )}
                         </div>
                     </form>
                 </div>

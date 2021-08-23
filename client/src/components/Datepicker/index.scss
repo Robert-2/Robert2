@@ -63,4 +63,35 @@ $time-hover-background-color: $calendar-time-cursor-color;
             color: $text-muted-color;
         }
     }
+
+    &-datepicker-footer {
+        display: flex;
+        justify-content: center;
+    }
+
+    &-btn {
+        padding: 9px 10px;
+        border: none;
+        border-radius: 2px;
+        color: $color-base-button;
+        font-size: 1rem;
+        line-height: 1.25;
+
+        &:hover,
+        &:focus {
+            outline: 0;
+            background-color: lighten($bg-color-button-default, 8%);
+            color: $color-hover-button;
+        }
+    }
+
+    &-datepicker-btn-confirm {
+        padding: 9px 15px;
+        background-color: $bg-color-button-info;
+
+        &:hover,
+        &:focus {
+            background-color: lighten($bg-color-button-info, 8%);
+        }
+    }
 }

@@ -102,6 +102,14 @@ $items-border-radius: 10px;
         white-space: pre-line;
     }
 
+    // stylelint-disable-next-line selector-class-pattern
+    .vis-onUpdateTime-tooltip {
+        border-radius: 3px;
+        background-color: $bg-color-tooltip;
+        line-height: 1.5;
+        white-space: pre-wrap;
+    }
+
     &:not(.vis-readonly):not(.vis-background) {
         cursor: pointer;
 
@@ -129,21 +137,21 @@ $items-border-radius: 10px;
     }
 
     .vis-delete {
-        right: -32px !important;
+        right: -32px;
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 32px !important;
-        height: 100% !important;
+        width: 32px;
+        height: 100%;
         border-radius: 3px;
 
         &::after {
-            content: '\f1f8' !important;
+            content: '\f1f8';
             color: $text-danger-color;
             // stylelint-disable-next-line font-family-no-missing-generic-family-keyword
-            font-family: 'Font Awesome 5 Free' !important;
-            font-size: 1.7rem !important;
-            font-weight: 900 !important;
+            font-family: 'Font Awesome 5 Free';
+            font-size: 1.7rem;
+            font-weight: 900;
         }
     }
 }

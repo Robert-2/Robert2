@@ -2,6 +2,7 @@ import '@robert2/vis-timeline/index.scss';
 import './index.scss';
 import moment from 'moment';
 import { Timeline as TimelineCore, DataSet, DataView } from '@robert2/vis-timeline';
+import dateRoundMinutes from '@/utils/dateRoundMinutes';
 import { mountVisData } from './_utils';
 
 // @vue/component
@@ -12,8 +13,18 @@ const Timeline = {
             type: [Array, DataSet, DataView],
             default: () => [],
         },
-        groups: [Array, DataSet, DataView],
-        options: Object,
+        groups: {
+            type: [Array, DataSet, DataView],
+            default: undefined,
+        },
+        options: {
+            type: Object,
+            default: undefined,
+        },
+        minutesGrid: {
+            type: Number,
+            default: undefined,
+        },
     },
     data: () => ({
         data: null,
@@ -22,8 +33,8 @@ const Timeline = {
     computed: {
         fullOptions() {
             return {
-                start: this.options.min,
-                end: this.options.max,
+                start: this.options?.min,
+                end: this.options?.max,
                 xss: {
                     filterOptions: {
                         whiteList: {
@@ -40,6 +51,16 @@ const Timeline = {
                 tooltip: {
                     followMouse: true,
                     overflowMethod: 'flip',
+                    delay: 300,
+                },
+                tooltipOnItemUpdateTime: {
+                    template: ({ start, end }) => [
+                        this.$t('update-in-progress'),
+                        this.$t('from-date-to-date', {
+                            from: moment(start).format('L HH:mm'),
+                            to: moment(end).format('L HH:mm'),
+                        }),
+                    ].join('\n'),
                 },
                 editable: {
                     add: false,
@@ -50,6 +71,16 @@ const Timeline = {
                 },
                 moment: (date) => moment(date),
                 ...(this.options || {}),
+                onMoving: (item, callback) => {
+                    const { minutesGrid } = this.$props;
+                    if (!minutesGrid) {
+                        callback(item);
+                    }
+                    const { start: freeStart, end: freeEnd } = item;
+                    const start = dateRoundMinutes(freeStart, minutesGrid);
+                    const end = dateRoundMinutes(freeEnd, minutesGrid);
+                    callback({ ...item, start, end });
+                },
                 onMove: (item, callback) => {
                     this.$emit('itemMoved', item, callback);
                 },

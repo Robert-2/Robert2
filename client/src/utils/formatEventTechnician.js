@@ -5,7 +5,15 @@ const formatEventTechnician = (eventTechnician) => {
         return null;
     }
 
-    const { id, start_time: start, end_time: end, position, event } = eventTechnician;
+    const {
+        id,
+        event,
+        position,
+        event_id: eventId,
+        start_time: start,
+        end_time: end,
+    } = eventTechnician;
+
     const { title: eventTitle, location } = event;
 
     let title = eventTitle;
@@ -22,10 +30,10 @@ const formatEventTechnician = (eventTechnician) => {
     }
 
     const datesString = `${_start.format(dateFormat)} ⇒ ${_end.format(dateFormat)}`;
-    const content = position ? `<strong>${position}</strong> : ${datesString}` : datesString;
+    const content = position ? `${datesString} : ${position}` : datesString;
     title = `${title}\n${content}`;
 
-    return { id, start, end, content, title };
+    return { id, eventId, start, end, content, title };
 };
 
 export default formatEventTechnician;

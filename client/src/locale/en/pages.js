@@ -43,9 +43,9 @@ export default {
         'title': "Calendar",
         'help': (
             `Click and drag to move timeline.
-      Use mouse wheel to zoom in / out.
-      Hover an event with your mouse to display details about it.
-      Double-click on an empty column to create an event with start date pre-filled.`
+            Use mouse wheel to zoom in / out.
+            Hover an event with your mouse to display details about it.
+            Double-click on an empty column to create an event with start date pre-filled.`
         ),
         'help-center-view-on-today': "Center calendar on today",
         'help-add-event': "Create a new event",
@@ -58,7 +58,7 @@ export default {
         'loading-event': "Loading event...",
         'help-timeline-event-operations': (
             `Click once to select the event, in order to move, resize or delete it.
-      Double-click on an event to open its preview, and modify its details.`
+            Double-click on an event to open its preview, and modify its details.`
         ),
         'center-on-today': "Center on today",
         'center-on': "Center on",
@@ -106,13 +106,15 @@ export default {
         'event-confirmation': "Confirmation",
         'no-technician-pass-this-step': (
             `There is no technician available for this period.
-      You can skip this step.`
+            You can skip this step.`
         ),
-        'assign-technician': "Assign {name} as a technician",
-        'assign-this-technician': "Assign this technician",
         'technician-item': {
-            'confirm-permanently-delete': "Do you really want to remove this technician assignation?",
+            'confirm-permanently-delete': "Do you really want to remove this technician assignment?",
         },
+        'assign-technician': "Assign {name} as a technician",
+        'assign-name': "Assign {name}",
+        'modify-assignment': "Modify assignment",
+        'remove-assignment': "Remove assignment",
         'period-assigned': "Assigned period",
         'start-end-dates-and-time': "Start and End dates and times",
         'saved': "Event saved.",
@@ -161,8 +163,8 @@ export default {
         'help': "You can send an email to an user by clicking on his/her address.",
         'help-edit': (
             `- Group "Administrator" group gives all access rights to user.
-      - Group "Member" allow user to use most parts of Robert application.
-      - Group "Visitor" group gives a limited access to some data.`
+            - Group "Member" allow user to use most parts of Robert application.
+            - Group "Visitor" group gives a limited access to some data.`
         ),
         'action-add': "New user",
         'add': "New user",
@@ -187,7 +189,7 @@ export default {
         'company': "Legal entity (company)",
         'help-edit': (
             `Only first name and last name are mandatory.
-      The "reference" is a customer or member number for your internal management, which will appear on the output sheets, estimates and bills. It must be unique.`
+            The "reference" is a customer or member number for your internal management, which will appear on the output sheets, estimates and bills. It must be unique.`
         ),
         'confirm-delete': "Move this beneficiary in trash bin?",
         'confirm-permanently-delete': "Do you really want to permanently delete this beneficiary?",
@@ -215,14 +217,14 @@ export default {
         'display-quantities-at-date': "Display quantities at date...",
         'remaining-quantities-on-date': (
             `Remaining quantities
-      on {date}`
+            on {date}`
         ),
         'add': "New material",
         'edit': "Modify material \"{pageSubTitle}\"",
         'help-edit': (
             `Give a short name, and use the description field to detail the material if needed.
 
-      The material picture must be of type JPG, PNG or WEBP, and cannot exceed 10\u00a0MB.`
+            The material picture must be of type JPG, PNG or WEBP, and cannot exceed 10\u00a0MB.`
         ),
         'confirm-delete': "Move this material in trash bin?",
         'confirm-permanently-delete': "Do you really want to permanently delete this material?",
@@ -255,7 +257,7 @@ export default {
         'title': "Material special attributes",
         'help': (
             `Here you can add fields that allows you to describe your material according to your own criteria.
-      Once created, a special attribute cannot be modified (except for its name).`
+            Once created, a special attribute cannot be modified (except for its name).`
         ),
         'go-back-to-material': "Back to material",
         'name': "Name of the attribute",
@@ -275,7 +277,7 @@ export default {
         'confirm-permanently-delete': (
             `Do you really want to permanently delete this special attribute?
 
-      WARNING: All data related to this special attribute will be deleted DEFINITIVELY!!`
+            WARNING: All data related to this special attribute will be deleted DEFINITIVELY!!`
         ),
         'second-confirm': {
             'confirm-permanently-delete': (

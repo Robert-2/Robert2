@@ -11,13 +11,22 @@ import Materials from './Materials';
 import Estimates from './Estimates';
 import Billing from './Billing';
 
+const TABS = [
+    'infos',
+    'technicians',
+    'materials',
+    'estimates',
+    'bills',
+];
+
 // @vue/component
 export default {
     name: 'EventDetails',
     props: {
         eventId: { type: Number, required: true },
-        onUpdateEvent: Function,
-        onDuplicateEvent: Function,
+        openedTab: { type: String, default: 'infos' },
+        onUpdateEvent: { type: Function, default: undefined },
+        onDuplicateEvent: { type: Function, default: undefined },
     },
     data: () => ({
         event: null,
@@ -26,6 +35,11 @@ export default {
         error: null,
     }),
     computed: {
+        openedTabIndex() {
+            const index = TABS.findIndex((tabName) => tabName === this.openedTab);
+            return index < 0 ? 0 : index;
+        },
+
         hasEventTechnicians() {
             return this.event?.technicians?.length > 0;
         },
@@ -121,6 +135,7 @@ export default {
         const {
             $t: __,
             event,
+            openedTabIndex,
             showBilling,
             hasEventTechnicians,
             hasMaterials,
@@ -151,7 +166,7 @@ export default {
                             onDuplicated={handleDuplicateEvent}
                         />
                         <div class="EventDetails__content__body">
-                            <Tabs>
+                            <Tabs defaultIndex={openedTabIndex}>
                                 <Tab title={<span><i class="fas fa-info-circle" /> {__('informations')}</span>}>
                                     <Infos event={event} />
                                 </Tab>

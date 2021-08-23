@@ -1,6 +1,7 @@
 import './index.scss';
 import moment from 'moment';
-import Alert from '@/components/Alert';
+import dateRoundMinutes from '@/utils/dateRoundMinutes';
+import { confirm } from '@/utils/alert';
 import CriticalError from '@/components/CriticalError';
 import Help from '@/components/Help/Help.vue';
 import Loading from '@/components/Loading';
@@ -107,7 +108,6 @@ const EventStep3 = {
                 type: 'background',
                 zoomMin: 1000 * 3600, // 1h
                 selectable: true,
-                orientation: this.groups?.length >= 15 ? 'both' : 'top',
             };
         },
     },
@@ -205,8 +205,8 @@ const EventStep3 = {
 
         async handleItemMoved(item, callback) {
             const data = {
-                start_time: moment(item.start).format(DATE_DB_FORMAT),
-                end_time: moment(item.end).format(DATE_DB_FORMAT),
+                start_time: moment(dateRoundMinutes(item.start)).format(DATE_DB_FORMAT),
+                end_time: moment(dateRoundMinutes(item.end)).format(DATE_DB_FORMAT),
             };
 
             try {
@@ -215,15 +215,23 @@ const EventStep3 = {
                 await this.$http.put(`event-technicians/${item.id}`, data);
                 this.handleItemUpdated();
                 callback(item);
-            } catch {
+            } catch (error) {
                 callback(null);
+                const { code, details } = error.response?.data?.error || { code: 0, details: null };
+                if (code === 400 && details.start_time && details.start_time.length > 0) {
+                    this.$toasted.error(details.start_time[0]);
+                }
             } finally {
                 this.isLoading = false;
             }
         },
 
         async handleItemRemove(item, callback) {
-            const { value: isConfirmed } = await Alert.ConfirmDelete(this.$t, 'events.technician-item', false);
+            const { value: isConfirmed } = await confirm({
+                text: this.$t('page-events.technician-item.confirm-permanently-delete'),
+                confirmButtonText: this.$t('yes-permanently-delete'),
+                type: 'delete',
+            });
             if (!isConfirmed) {
                 callback(null);
                 return;
@@ -335,6 +343,7 @@ const EventStep3 = {
                     onItemMoved={handleItemMoved}
                     onItemRemove={handleItemRemove}
                     onItemRemoved={handleItemUpdated}
+                    minutesGrid={15}
                 />
             );
         };

@@ -726,7 +726,7 @@ final class EventTest extends ModelTestCase
         $this->assertCount(1, $newEvent->technicians);
         $this->assertEquals('Jean Fountain', $newEvent->technicians[0]['technician']['full_name']);
         $this->assertEquals('2021-08-01 09:00:00', $newEvent->technicians[0]['start_time']);
-        $this->assertEquals('2021-08-01 23:59:59', $newEvent->technicians[0]['end_time']);
+        $this->assertEquals('2021-08-01 23:45:00', $newEvent->technicians[0]['end_time']);
     }
 
     public function testChangeDatesLonger()
@@ -751,6 +751,6 @@ final class EventTest extends ModelTestCase
         $this->assertCount(1, $event->technicians);
         $this->assertEquals('Jean Fountain', $event->technicians[0]['technician']['full_name']);
         $this->assertEquals('2018-12-17 09:00:00', $event->technicians[0]['start_time']);
-        $this->assertEquals('2018-12-17 23:59:59', $event->technicians[0]['end_time']);
+        $this->assertEquals('2018-12-17 23:45:00', $event->technicians[0]['end_time']);
     }
 }

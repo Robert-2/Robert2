@@ -4,7 +4,7 @@ import moment from 'moment';
 import formatEventTechnician from '@/utils/formatEventTechnician';
 
 export const formatTechnicianEvent = (technicianEvent) => {
-    const { id, title, start: startDate, end: endDate } = formatEventTechnician(technicianEvent);
+    const { id, eventId, title, start: startDate, end: endDate } = formatEventTechnician(technicianEvent);
     const { is_confirmed: isConfirmed } = technicianEvent.event;
 
     const classes = [];
@@ -15,5 +15,5 @@ export const formatTechnicianEvent = (technicianEvent) => {
         classes.push('cv-item--not-confirmed');
     }
 
-    return { id, startDate, endDate, title, classes };
+    return { id, eventId, startDate, endDate, title, classes };
 };

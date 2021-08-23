@@ -42,6 +42,13 @@ export default {
                     <i class="fas fa-eye" />
                 </router-link>
                 <router-link
+                    v-tooltip={__('action-view-schedule')}
+                    to={`/technicians/${id}/view#schedule`}
+                    class="button success item-actions__button"
+                >
+                    <i class="far fa-calendar-alt" />
+                </router-link>
+                <router-link
                     v-tooltip={__('action-edit')}
                     to={`/technicians/${id}`}
                     class="button info item-actions__button"
