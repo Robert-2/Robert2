@@ -45,7 +45,7 @@
         "babel-core": "7.0.0-bridge.0",
         "babel-jest": "27.0.6",
         "eslint": "7.32.0",
-        "sass": "1.36.0",
+        "sass": "1.38.0",
         "sass-loader": "10.2.0",
         "stylelint": "13.13.1",
         "vue-cli-plugin-svg": "0.1.3",
