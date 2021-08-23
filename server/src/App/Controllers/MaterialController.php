@@ -53,7 +53,7 @@ class MaterialController extends BaseController
         $dateForQuantities = $request->getQueryParam('dateForQuantities', null);
         $withDeleted = (bool)$request->getQueryParam('deleted', false);
         $tags = $request->getQueryParam('tags', []);
-        $withEvents = (bool)$request->getQueryParam('events', false);
+        $withEvents = (bool)$request->getQueryParam('with-events', false);
 
         $options = [];
         if ($parkId) {
@@ -78,11 +78,12 @@ class MaterialController extends BaseController
         } else {
             $model = $model->getAllFilteredOrTagged($options, $tags, $withDeleted);
         }
-        if ($withEvents == true) {
-            $model->with('Events', function ($query) {
-                $query->where('Events.end_date', '>=', Carbon::now());
-            })
-            ->get();
+        if ($withEvents) {
+            $model
+                ->with('Events', function ($query) {
+                    $query->where('end_date', '>=', Carbon::now());
+                })
+                ->get();
         }
 
         $results = $this->paginate($request, $model);
