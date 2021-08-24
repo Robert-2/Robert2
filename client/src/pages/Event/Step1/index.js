@@ -21,6 +21,15 @@ export default {
             dates: null,
             duration: 0,
             showIsBillable: Config.billingMode === 'partial',
+            eventData: {
+                title: '',
+                start_date: '',
+                end_date: '',
+                location: '',
+                description: '',
+                is_billable: Config.billingMode !== 'none',
+                is_confirmed: false,
+            },
             errors: {
                 title: null,
                 start_date: null,
@@ -32,15 +41,34 @@ export default {
     },
     watch: {
         event() {
+            this.initValuesFromEvent();
             this.initDatesFromEvent();
             this.calcDuration();
             this.checkIsSavedEvent();
         },
     },
     mounted() {
+        this.initValuesFromEvent();
         this.initDatesFromEvent();
+        this.calcDuration();
     },
     methods: {
+        initValuesFromEvent() {
+            if (!this.event) {
+                return;
+            }
+
+            this.eventData = {
+                title: this.event.title || '',
+                start_date: this.event.start_date || '',
+                end_date: this.event.end_date || '',
+                location: this.event.location || '',
+                description: this.event.description || '',
+                is_billable: this.event.is_billable || Config.billingMode !== 'none',
+                is_confirmed: this.event.is_confirmed || false,
+            };
+        },
+
         initDatesFromEvent() {
             if (this.dates) {
                 return;
@@ -57,15 +85,18 @@ export default {
         setEventDates() {
             const [startDate, endDate] = this.dates;
 
-            /* eslint-disable vue/no-mutating-props */
-            // TODO: Enlever ces mutations de props (!!) et faire de même pour les mutations de prop dans template vue lié.
-            //       @see https://github.com/Robert-2/Robert2/issues/257
-            this.event.start_date = moment(startDate).format();
-            this.event.end_date = moment(endDate).format();
-            /* eslint-enable vue/no-mutating-props */
+            this.eventData.start_date = moment(startDate).format();
+            this.eventData.end_date = moment(endDate).format();
+
+            this.checkIsSavedEvent();
+            this.calcDuration();
         },
 
         calcDuration() {
+            if (!this.dates) {
+                return;
+            }
+
             const [startDate, endDate] = this.dates;
             if (startDate && endDate) {
                 this.duration = moment(endDate).diff(startDate, 'days') + 1;
@@ -73,7 +104,7 @@ export default {
         },
 
         checkIsSavedEvent() {
-            EventStore.dispatch('checkIsSaved', this.event);
+            EventStore.dispatch('checkIsSaved', { ...this.event || {}, ...this.eventData });
         },
 
         saveAndBack(e) {
@@ -107,7 +138,7 @@ export default {
                 route = `${resource}/${id}`;
             }
 
-            const saveData = pick(this.event, [
+            const saveData = pick(this.eventData, [
                 'title',
                 'start_date',
                 'end_date',
@@ -119,9 +150,10 @@ export default {
 
             const postData = {
                 ...saveData,
-                start_date: moment(this.event.start_date).startOf('day').format(DATE_DB_FORMAT),
-                end_date: moment(this.event.end_date).endOf('day').format(DATE_DB_FORMAT),
+                start_date: moment(this.eventData.start_date).startOf('day').format(DATE_DB_FORMAT),
+                end_date: moment(this.eventData.end_date).endOf('day').format(DATE_DB_FORMAT),
             };
+
             request(route, postData)
                 .then(({ data }) => {
                     const { gotoStep } = options;

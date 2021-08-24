@@ -41,11 +41,11 @@ export default new Vuex.Store({
     actions: {
         checkIsSaved({ commit, state }, event) {
             const isIdentical = (
-                event.title === state.title &&
+                event.title === (state.title || '') &&
                 isSameDate(event.start_date, state.dates.start) &&
                 isSameDate(event.end_date, state.dates.end) &&
-                event.location === state.location &&
-                event.description === state.description &&
+                event.location === (state.location || '') &&
+                event.description === (state.description || '') &&
                 event.is_confirmed === state.isConfirmed &&
                 event.is_billable === state.isBillable
             );

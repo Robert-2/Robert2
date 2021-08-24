@@ -6,7 +6,7 @@
                 <span class="FormField__label__required">*</span>
             </h4>
             <FormField
-                v-model="event.title"
+                v-model="eventData.title"
                 name="title"
                 label="title"
                 required
@@ -37,7 +37,7 @@
                 {{ $t('event-details') }}
             </h4>
             <FormField
-                v-model="event.location"
+                v-model="eventData.location"
                 name="location"
                 label="location"
                 class="EventStep1__location"
@@ -45,7 +45,7 @@
                 @input="checkIsSavedEvent"
             />
             <FormField
-                v-model="event.description"
+                v-model="eventData.description"
                 name="description"
                 label="description"
                 type="textarea"
@@ -55,7 +55,7 @@
             />
             <div v-if="showIsBillable" class="EventStep1__is-billable">
                 <FormField
-                    v-model="event.is_billable"
+                    v-model="eventData.is_billable"
                     name="is_billable"
                     label="is-billable"
                     type="switch"
@@ -64,10 +64,10 @@
                 />
                 <div class="EventStep1__is-billable__help">
                     <i class="fas fa-arrow-right" />
-                    <span v-if="!event.is_billable">
+                    <span v-if="!eventData.is_billable">
                         {{ $t(`is-not-billable-help`) }}
                     </span>
-                    <span v-if="event.is_billable">
+                    <span v-if="eventData.is_billable">
                         {{ $t(`is-billable-help`) }}
                     </span>
                 </div>
