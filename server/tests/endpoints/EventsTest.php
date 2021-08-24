@@ -1157,6 +1157,34 @@ final class EventsTest extends ApiTestCase
                     'technicians' => [],
                     'materials' => [
                         [
+                            'id' => 5,
+                            'name' => 'Câble XLR 10m',
+                            'description' => 'Câble audio XLR 10 mètres, mâle-femelle',
+                            'reference' => 'XLR10',
+                            'is_unitary' => false,
+                            'park_id' => 1,
+                            'category_id' => 1,
+                            'sub_category_id' => null,
+                            'rental_price' => 0.5,
+                            'stock_quantity' => 40,
+                            'out_of_order_quantity' => 8,
+                            'replacement_price' => 9.5,
+                            'is_hidden_on_bill' => true,
+                            'is_discountable' => true,
+                            'tags' => [
+                            ],
+                            'attributes' => [
+                            ],
+                            'pivot' => [
+                                'event_id' => 3,
+                                'material_id' => 5,
+                                'id' => 8,
+                                'quantity' => 12,
+                                'quantity_returned' => 0,
+                                'quantity_broken' => 0
+                            ]
+                        ],
+                        [
                             'id' => 3,
                             'name' => 'PAR64 LED',
                             'description' => 'Projecteur PAR64 à LED, avec son set de gélatines',
@@ -1248,40 +1276,10 @@ final class EventsTest extends ApiTestCase
                                 'quantity_broken' => 0
                             ]
                         ],
-                        [
-                            'id' => 5,
-                            'name' => 'Câble XLR 10m',
-                            'description' => 'Câble audio XLR 10 mètres, mâle-femelle',
-                            'reference' => 'XLR10',
-                            'is_unitary' => false,
-                            'park_id' => 1,
-                            'category_id' => 1,
-                            'sub_category_id' => null,
-                            'rental_price' => 0.5,
-                            'stock_quantity' => 40,
-                            'out_of_order_quantity' => 8,
-                            'replacement_price' => 9.5,
-                            'is_hidden_on_bill' => true,
-                            'is_discountable' => true,
-                            'tags' => [
-                            ],
-                            'attributes' => [
-                            ],
-                            'pivot' => [
-                                'event_id' => 3,
-                                'material_id' => 5,
-                                'id' => 8,
-                                'quantity' => 12,
-                                'quantity_returned' => 0,
-                                'quantity_broken' => 0
-                            ]
-                        ]
                     ],
                     'has_missing_materials' => null,
                     'has_not_returned_materials' => null,
-                    'parks' => [
-                        1
-                    ]
+                    'parks' => [1],
                 ],
                 [
                     'id' => 1,
@@ -1503,9 +1501,7 @@ final class EventsTest extends ApiTestCase
                     ],
                     'has_missing_materials' => null,
                     'has_not_returned_materials' => false,
-                    'parks' => [
-                        1
-                    ]
+                    'parks' => [1],
                 ],
                 [
                     'id' => 2,
@@ -1537,8 +1533,7 @@ final class EventsTest extends ApiTestCase
                             ]
                         ]
                     ],
-                    'technicians' => [
-                    ],
+                    'technicians' => [],
                     'materials' => [
                         [
                             'id' => 1,
@@ -1642,11 +1637,9 @@ final class EventsTest extends ApiTestCase
                     ],
                     'has_missing_materials' => null,
                     'has_not_returned_materials' => true,
-                    'parks' => [
-                        1
-                    ]
-                ]
-            ]
+                    'parks' => [1],
+                ],
+            ],
         ]);
     }
 }

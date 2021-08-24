@@ -39,7 +39,9 @@ class EventController extends BaseController
             ->with('Technicians');
 
         if ($withMaterials) {
-            $results->with('Materials');
+            $results->with(['Materials' => function ($q) {
+                $q->orderBy('name', 'asc');
+            }]);
         }
 
         $data = $results->get()->toArray();
