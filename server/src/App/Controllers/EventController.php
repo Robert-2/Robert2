@@ -30,12 +30,19 @@ class EventController extends BaseController
         $startDate = $request->getQueryParam('start', null);
         $endDate = $request->getQueryParam('end', null);
         $deleted = (bool)$request->getQueryParam('deleted', false);
+        $withMaterials = (bool)$request->getQueryParam('with-materials', false);
 
         $results = (new Event)
             ->setSearchPeriod($startDate, $endDate)
             ->getAll($deleted)
             ->with('Beneficiaries:persons.id,first_name,last_name')
             ->with('Technicians');
+
+        if ($withMaterials) {
+            $results->with(['Materials' => function ($q) {
+                $q->orderBy('name', 'asc');
+            }]);
+        }
 
         $data = $results->get()->toArray();
         $useMultipleParks = Park::count() > 1;

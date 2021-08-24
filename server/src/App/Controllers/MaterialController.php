@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Robert2\API\Controllers;
 
 use DI\Container;
+use Illuminate\Support\Carbon;
 use Robert2\API\Config\Config;
 use Robert2\API\Controllers\Traits\Taggable;
 use Robert2\API\Controllers\Traits\WithCrud;
@@ -52,6 +53,7 @@ class MaterialController extends BaseController
         $dateForQuantities = $request->getQueryParam('dateForQuantities', null);
         $withDeleted = (bool)$request->getQueryParam('deleted', false);
         $tags = $request->getQueryParam('tags', []);
+        $withEvents = (bool)$request->getQueryParam('with-events', false);
 
         $options = [];
         if ($parkId) {
@@ -75,6 +77,13 @@ class MaterialController extends BaseController
             $model = $model->getAll($withDeleted);
         } else {
             $model = $model->getAllFilteredOrTagged($options, $tags, $withDeleted);
+        }
+        if ($withEvents) {
+            $model
+                ->with('Events', function ($query) {
+                    $query->where('end_date', '>=', Carbon::now());
+                })
+                ->get();
         }
 
         $results = $this->paginate($request, $model);
