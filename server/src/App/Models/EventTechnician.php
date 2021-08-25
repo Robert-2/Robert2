@@ -145,7 +145,7 @@ class EventTechnician extends BaseModel
             if ($technicianStartTime < $newStartDate) {
                 $technicianStartTime = $newStartDate;
             }
-            if ($technicianEndTime > $newEndDate) {
+            if ($technicianEndTime >= $newEndDate) {
                 $technicianEndTime = clone($newEndDate)->setTime(23, 45, 0);
             }
 
