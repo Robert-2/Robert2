@@ -5,6 +5,7 @@
 @import './parts/form';
 @import './parts/input';
 @import './parts/select';
+@import './parts/text';
 
 // - Components
 @import './components/content';
@@ -23,6 +24,3 @@
 @import './vendors/v-modal';
 @import './vendors/vue-slim-tabs';
 @import './vendors/v-select';
-
-// - Global classes (must be avoided)
-@import './globals';
