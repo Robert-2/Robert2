@@ -1,4 +1,4 @@
-@import '../../../themes/default/';
+@use '~@/style/globals';
 
 .EventDetailsInfos {
     display: flex;
@@ -13,14 +13,14 @@
         .EventTechnicians {
             flex: 1 0 auto;
             max-width: 100%;
-            margin-right: $content-padding-small-horizontal;
-            margin-bottom: $content-padding-large-vertical;
+            margin-right: globals.$content-padding-small-horizontal;
+            margin-bottom: globals.$content-padding-large-vertical;
         }
     }
 
     &__description,
     &__confirmation {
-        margin-bottom: $content-padding-large-vertical;
+        margin-bottom: globals.$content-padding-large-vertical;
         font-size: 1.2rem;
 
         .fas {
@@ -32,16 +32,16 @@
 
     &__description {
         margin-top: 0;
-        color: $text-nav-color;
+        color: globals.$text-nav-color;
         line-height: 1.5;
         white-space: pre-wrap;
     }
 
     &__confirmation {
-        color: $text-warning-color;
+        color: globals.$text-warning-color;
 
         &--confirmed {
-            color: $text-success-color;
+            color: globals.$text-success-color;
         }
     }
 

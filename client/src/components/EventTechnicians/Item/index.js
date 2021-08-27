@@ -4,7 +4,7 @@ import './index.scss';
 export default {
     name: 'EventTechnicianItem',
     props: {
-        technician: Object,
+        technician: { type: Object, required: true },
     },
     render() {
         const { $t: __, technician } = this;

@@ -1,4 +1,4 @@
-import MaterialsFilter from '@/components/MaterialsFilters/MaterialsFilters.vue';
+import MaterialsFilters from '@/components/MaterialsFilters';
 import SwitchToggle from '@/components/SwitchToggle';
 import Config from '@/config/globalConfig';
 import formatAmount from '@/utils/formatAmount';
@@ -12,7 +12,7 @@ const noPaginationLimit = 100000;
 export default {
     name: 'MaterialsList',
     components: {
-        MaterialsFilter,
+        MaterialsFilters,
         SwitchToggle,
         Quantity,
     },
@@ -182,16 +182,6 @@ export default {
         setQuantity(material, value) {
             const quantity = parseInt(value, 10) || 0;
             MaterialsStore.commit('setQuantity', { material, quantity });
-            this.handleChanges();
-        },
-
-        decrement(material) {
-            MaterialsStore.commit('decrement', material);
-            this.handleChanges();
-        },
-
-        increment(material) {
-            MaterialsStore.commit('increment', material);
             this.handleChanges();
         },
 

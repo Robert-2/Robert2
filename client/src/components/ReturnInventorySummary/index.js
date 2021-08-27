@@ -2,7 +2,7 @@ import './index.scss';
 import ReturnInventoryItem from './Item';
 
 // @vue/component
-const ReturnInventorySummary = {
+export default {
     name: 'ReturnInventorySummary',
     components: { ReturnInventoryItem },
     props: {
@@ -72,5 +72,3 @@ const ReturnInventorySummary = {
         );
     },
 };
-
-export default ReturnInventorySummary;

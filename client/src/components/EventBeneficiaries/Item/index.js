@@ -4,7 +4,7 @@ import './index.scss';
 export default {
     name: 'EventBeneficiaryItem',
     props: {
-        beneficiary: Object,
+        beneficiary: { type: Object, required: true },
     },
     render() {
         const { $t: __, beneficiary } = this;

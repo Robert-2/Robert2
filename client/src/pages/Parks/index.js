@@ -1,6 +1,6 @@
 import Config from '@/config/globalConfig';
 import Alert from '@/components/Alert';
-import Help from '@/components/Help/Help.vue';
+import Help from '@/components/Help';
 import ParkTotalAmount from './TotalAmount';
 
 // @vue/component

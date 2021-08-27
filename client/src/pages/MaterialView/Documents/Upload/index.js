@@ -1,7 +1,7 @@
 import { AUTHORIZED_FILE_TYPES, MAX_FILE_SIZE } from '@/config/constants';
 import formatBytes from '@/utils/formatBytes';
-import Help from '@/components/Help/Help.vue';
-import Progressbar from '@/components/Progressbar/Progressbar.vue';
+import Help from '@/components/Help';
+import Progressbar from '@/components/Progressbar';
 import DocumentItem from '../Item/Item.vue';
 
 // @vue/component

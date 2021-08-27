@@ -1,4 +1,5 @@
-@import '../../themes/default/index';
+@use '~@/style/globals';
+@use 'sass:color';
 
 .MultiSwitch {
     display: inline-flex;
@@ -8,23 +9,23 @@
         flex: 0 0 auto;
         margin: 0;
         border-radius: 0;
-        background-color: rgba($bg-color-button-default, 1);
-        color: $text-base-color;
+        background-color: rgba(globals.$bg-color-button-default, 1);
+        color: globals.$text-base-color;
 
         &:first-child {
-            border-radius: $input-border-radius 0 0 $input-border-radius;
+            border-radius: globals.$input-border-radius 0 0 globals.$input-border-radius;
         }
 
         &:last-child {
-            border-radius: 0 $input-border-radius $input-border-radius 0;
+            border-radius: 0 globals.$input-border-radius globals.$input-border-radius 0;
         }
 
         &--active,
         &--active:hover,
         &--active:focus,
         &--active:active {
-            background-color: rgba($bg-color-button-default, 0.6);
-            color: lighten($color-active-button, 20%);
+            background-color: rgba(globals.$bg-color-button-default, 0.6);
+            color: color.adjust(globals.$color-active-button, $lightness: 20%);
             cursor: auto;
         }
     }

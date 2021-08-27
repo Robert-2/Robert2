@@ -1,4 +1,4 @@
-@import '../../themes/default/index';
+@use '~@/style/globals';
 
 .QuantityInput {
     display: inline-flex;
@@ -11,8 +11,8 @@
         border-radius: 0;
 
         &:disabled {
-            background-color: $bg-color-input-normal;
-            color: $text-light-color;
+            background-color: globals.$bg-color-input-normal;
+            color: globals.$text-light-color;
             opacity: 1;
         }
 

@@ -1,5 +1,5 @@
 import Alert from '@/components/Alert';
-import Help from '@/components/Help/Help.vue';
+import Help from '@/components/Help';
 import DocumentItem from './Item/Item.vue';
 import DocumentUpload from './Upload/Upload.vue';
 

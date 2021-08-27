@@ -26,33 +26,6 @@ export default new Vuex.Store({
 
             state.materials[id].quantity = quantity;
         },
-
-        increment(state, material) {
-            const { id } = material;
-
-            if (!state.materials[id]) {
-                state.materials = {
-                    ...state.materials,
-                    [id]: { quantity: 0 },
-                };
-            }
-
-            state.materials[id].quantity += 1;
-        },
-
-        decrement(state, material) {
-            const { id } = material;
-
-            if (!state.materials[id]) {
-                return;
-            }
-
-            if (state.materials[id].quantity === 0) {
-                return;
-            }
-
-            state.materials[id].quantity -= 1;
-        },
     },
     getters: {
         getQuantity: (state) => (id) => (state.materials[id]?.quantity || 0),

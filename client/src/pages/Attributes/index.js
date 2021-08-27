@@ -1,6 +1,6 @@
 import router from '@/router';
 import Alert from '@/components/Alert';
-import Help from '@/components/Help/Help.vue';
+import Help from '@/components/Help';
 import AttributeEditForm from './AttributeEditForm/AttributeEditForm.vue';
 
 // @vue/component

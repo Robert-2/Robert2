@@ -1,4 +1,4 @@
-@import '../../themes/default/index';
+@use '~@/style/globals';
 
 .MonthCalendar {
     position: relative;
@@ -11,12 +11,12 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-bottom: $content-padding-small-vertical;
+        margin-bottom: globals.$content-padding-small-vertical;
 
         &__current-month {
             min-width: 110px;
-            margin: 0 $content-padding-large-horizontal;
-            color: $text-base-color;
+            margin: 0 globals.$content-padding-large-horizontal;
+            color: globals.$text-base-color;
             text-align: center;
             text-transform: capitalize;
         }
@@ -49,21 +49,21 @@
         .cv-item,
         .cv-week,
         .cv-weeks {
-            border-color: $text-muted-color;
+            border-color: globals.$text-muted-color;
         }
 
         .cv-day:not(.outsideOfMonth) {
-            background-color: $calendar-main-background-color;
+            background-color: globals.$calendar-main-background-color;
 
             .cv-day-number {
-                color: $text-base-color;
+                color: globals.$text-base-color;
             }
 
             &.today {
-                background-color: $calendar-current-date-background-color;
+                background-color: globals.$calendar-current-date-background-color;
 
                 .cv-day-number {
-                    color: $text-warning-color;
+                    color: globals.$text-warning-color;
                 }
             }
         }
@@ -75,22 +75,22 @@
             padding: 7px 10px;
             border: none;
             border-radius: 4px;
-            background-color: $calendar-event-normal-color;
-            color: $text-base-color;
+            background-color: globals.$calendar-event-normal-color;
+            color: globals.$text-base-color;
             line-height: 1.5;
             white-space: pre-wrap;
 
             &--not-confirmed {
                 background-color:
                     rgba(
-                        $calendar-event-normal-color,
-                        $calendar-event-not-confirmed-opacity
+                        globals.$calendar-event-normal-color,
+                        globals.$calendar-event-not-confirmed-opacity
                     );
             }
 
             &--past {
                 border-radius: 5px;
-                background-color: $calendar-event-past-color;
+                background-color: globals.$calendar-event-past-color;
             }
 
             @for $i from 1 through 7 {

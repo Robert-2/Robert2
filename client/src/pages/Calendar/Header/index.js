@@ -1,7 +1,7 @@
 import moment from 'moment';
 import FormField from '@/components/FormField';
 import SwitchToggle from '@/components/SwitchToggle';
-import Help from '@/components/Help/Help.vue';
+import Help from '@/components/Help';
 
 // @vue/component
 export default {

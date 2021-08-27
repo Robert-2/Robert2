@@ -1,10 +1,10 @@
-@import '../../themes/default/';
+@use '~@/style/globals';
 
 .EventBeneficiaries {
     font-size: 1.2rem;
 
     &__nobody {
-        color: $text-danger-color;
+        color: globals.$text-danger-color;
     }
 
     &__icon {

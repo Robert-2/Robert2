@@ -1,6 +1,6 @@
 import './index.scss';
 import moment from 'moment';
-import Help from '@/components/Help/Help.vue';
+import Help from '@/components/Help';
 import MultiSwitch from '@/components/MultiSwitch';
 
 // @vue/component

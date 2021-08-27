@@ -1,9 +1,9 @@
 import Config from '@/config/globalConfig';
 import formatOptions from '@/utils/formatOptions';
-import Help from '@/components/Help/Help.vue';
+import Help from '@/components/Help';
 import FormField from '@/components/FormField';
-import ImageWithUpload from '@/components/ImageWithUpload/ImageWithUpload.vue';
-import Progressbar from '@/components/Progressbar/Progressbar.vue';
+import ImageWithUpload from '@/components/ImageWithUpload';
+import Progressbar from '@/components/Progressbar';
 
 const storageKeyWIP = 'WIP-newMaterial';
 

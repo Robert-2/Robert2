@@ -1,7 +1,7 @@
 <template>
     <div class="MaterialsList">
         <header class="MaterialsList__header">
-            <MaterialsFilter
+            <MaterialsFilters
                 ref="filters"
                 :baseRoute="`/events/${event.id}`"
                 @change="handleFiltersChanges"
@@ -53,9 +53,7 @@
                     :key="`quantities-${material.row.id}-${renderId}`"
                     :material="material.row"
                     :initialQuantity="getQuantity(material.row)"
-                    @decrement="decrement(material.row)"
-                    @setQuantity="setQuantity"
-                    @increment="increment(material.row)"
+                    @change="setQuantity"
                 />
                 <div slot="amount" slot-scope="material">
                     <span :key="`amount-${material.row.id}-${renderId}`">

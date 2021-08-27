@@ -1,3 +1,4 @@
+import './index.scss';
 import moment from 'moment';
 import Config from '@/config/globalConfig';
 import formatAmount from '@/utils/formatAmount';

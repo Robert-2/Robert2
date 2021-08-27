@@ -1,8 +1,8 @@
-@import '../../themes/default/index';
+@use '~@/style/globals';
 
 .CompanyForm {
-    max-width: $form-max-width;
-    min-width: $form-min-width;
+    max-width: globals.$form-max-width;
+    min-width: globals.$form-min-width;
     margin-right: 1rem;
 
     &__phone .FormField__input {

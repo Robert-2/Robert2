@@ -1,4 +1,4 @@
-@use '~@/themes/default' as theme;
+@use '~@/style/globals';
 @use 'sass:math';
 
 .SelectSearch {
@@ -6,7 +6,7 @@
 
     &__label {
         display: block;
-        padding: math.div(theme.$input-padding-vertical, 1.8) 0;
+        padding: math.div(globals.$input-padding-vertical, 1.8) 0;
     }
 
     // stylelint-disable-next-line selector-class-pattern
@@ -22,10 +22,10 @@
     &__error {
         flex: 0 0 100%;
         margin-top: 4px;
-        color: theme.$text-danger-color;
+        color: globals.$text-danger-color;
 
         &__text {
-            padding-left: theme.$form-label-width;
+            padding-left: globals.$form-label-width;
         }
     }
 
@@ -34,20 +34,20 @@
         background: none;
     }
 
-    @media screen and (min-width: theme.$screen-tablet) {
+    @media screen and (min-width: globals.$screen-tablet) {
         display: flex;
         flex-flow: row wrap;
         align-items: center;
 
         &__label {
-            flex: 0 0 theme.$form-label-width;
-            padding: 0 theme.$input-padding-horizontal;
+            flex: 0 0 globals.$form-label-width;
+            padding: 0 globals.$input-padding-horizontal;
             text-align: right;
         }
 
         // stylelint-disable-next-line selector-class-pattern
         &__label + .v-select + &__error {
-            margin-left: theme.$form-label-width;
+            margin-left: globals.$form-label-width;
         }
 
         // stylelint-disable-next-line selector-class-pattern

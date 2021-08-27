@@ -2,7 +2,7 @@ import './index.scss';
 import moment from 'moment';
 import { DATE_DB_FORMAT } from '@/config/constants';
 import FormField from '@/components/FormField';
-import LocationText from '@/components/LocationText/LocationText.vue';
+import LocationText from '@/components/LocationText';
 import EventBeneficiaries from '@/components/EventBeneficiaries';
 import EventTechnicians from '@/components/EventTechnicians';
 import getEventMaterialItemsCount from '@/utils/getEventMaterialItemsCount';

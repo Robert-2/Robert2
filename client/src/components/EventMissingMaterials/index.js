@@ -1,7 +1,11 @@
+import './index.scss';
+
 // @vue/component
 export default {
     name: 'EventMissingMaterials',
-    props: { eventId: Number },
+    props: {
+        eventId: { type: Number, required: true },
+    },
     data() {
         return {
             hasMissingMaterials: false,
@@ -10,25 +14,23 @@ export default {
         };
     },
     mounted() {
-        this.fetchMissingMaterials();
+        this.fetchData();
     },
     methods: {
-        fetchMissingMaterials() {
-            this.$http.get(`events/${this.eventId}/missing-materials`)
-                .then(({ data }) => {
-                    this.missingMaterials = data;
-                    this.hasMissingMaterials = data.length > 0;
-                })
-                .catch(this.displayError);
+        async fetchData() {
+            try {
+                const { data } = await this.$http.get(`events/${this.eventId}/missing-materials`);
+
+                this.missingMaterials = data;
+                this.hasMissingMaterials = data.length > 0;
+            } catch (error) {
+                this.error = error;
+            }
         },
 
         getMissingCount(missingMaterial) {
             const { quantity } = missingMaterial.pivot;
             return { quantity, missing: missingMaterial.missing_quantity };
-        },
-
-        displayError(error) {
-            this.error = error;
         },
     },
 };

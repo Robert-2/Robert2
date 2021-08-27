@@ -20,21 +20,20 @@ export default {
     },
     watch: {
         $route() {
-            this.closeDropdown();
+            this.isOpen = false;
         },
     },
     methods: {
-        toggleDropdown() {
+        handleToggle() {
             this.isOpen = !this.isOpen;
         },
 
-        closeDropdown() {
+        handleClose() {
             this.isOpen = false;
         },
     },
     render() {
-        const { isOpen, toggleDropdown, closeDropdown, variant } = this;
-
+        const { variant, isOpen, handleToggle, handleClose } = this;
         const { buttonText, title, items } = this.$slots;
 
         const classNames = ['Dropdown', {
@@ -43,8 +42,8 @@ export default {
         }];
 
         return (
-            <div class={classNames} vClickOutside={closeDropdown}>
-                <div class="Dropdown__button" onClick={toggleDropdown}>
+            <div class={classNames} vClickOutside={handleClose}>
+                <div class="Dropdown__button" onClick={handleToggle}>
                     <span class="Dropdown__button__text">
                         {buttonText || <i class="Dropdown__button__icon fas fa-ellipsis-h" />}
                     </span>

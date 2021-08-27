@@ -1,4 +1,4 @@
-@import '../../themes/default/index';
+@use '~@/style/globals';
 
 .EventMaterials {
     &__toggle,
@@ -14,7 +14,7 @@
 
     &__category {
         padding: 0 0.5rem;
-        border-left: 3px solid $list-left-border-color;
+        border-left: 3px solid globals.$list-left-border-color;
     }
 
     &__title {
@@ -38,19 +38,19 @@
         &__price {
             flex: 0 0 auto;
             margin-left: 0.8rem;
-            color: $text-light-color;
+            color: globals.$text-light-color;
             text-align: right;
         }
     }
 
     &__item {
         margin-bottom: 0.35rem;
-        border-bottom: 1px dashed $list-left-border-color;
+        border-bottom: 1px dashed globals.$list-left-border-color;
 
         &__quantity-first {
             flex: 0 0 35px;
-            padding-right: $content-padding-large-horizontal;
-            color: $text-light-color;
+            padding-right: globals.$content-padding-large-horizontal;
+            color: globals.$text-light-color;
             text-align: right;
         }
 
@@ -60,7 +60,7 @@
 
             .fa-times {
                 margin-right: 0.2rem;
-                color: $text-light-color;
+                color: globals.$text-light-color;
                 font-size: 0.8rem;
             }
         }
@@ -77,13 +77,13 @@
         font-size: 1.1rem;
 
         &__name {
-            color: $text-light-color;
+            color: globals.$text-light-color;
             text-align: right;
         }
 
         &__price {
             flex: 0 0 auto;
-            color: $text-base-color;
+            color: globals.$text-base-color;
             font-weight: 600;
         }
     }

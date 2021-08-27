@@ -1,7 +1,7 @@
 import './index.scss';
 import moment from 'moment';
 import Alert from '@/components/Alert';
-import Help from '@/components/Help/Help.vue';
+import Help from '@/components/Help';
 import Page from '@/components/Page';
 import Datepicker from '@/components/Datepicker';
 import ItemActions from './Actions';

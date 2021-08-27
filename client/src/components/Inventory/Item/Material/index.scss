@@ -1,18 +1,18 @@
-@import '../../../../themes/default/index';
+@use '~@/style/globals';
 
 .InventoryItemMaterial {
     display: flex;
     align-items: center;
     width: 100%;
     padding: 0;
-    border-radius: $input-border-radius;
+    border-radius: globals.$input-border-radius;
     background: rgba(#fff, 0.05);
-    color: $text-base-color;
+    color: globals.$text-base-color;
 
     &__reference,
     &__name,
     &__awaited-quantity {
-        padding: 0 $content-padding-large-horizontal;
+        padding: 0 globals.$content-padding-large-horizontal;
     }
 
     &__reference {
@@ -21,24 +21,24 @@
 
     &__name {
         flex: 1;
-        color: $text-nav-color;
+        color: globals.$text-nav-color;
     }
 
     &__error {
         flex: 1;
-        color: $text-danger-color;
+        color: globals.$text-danger-color;
     }
 
     &__awaited-quantity {
         flex: 0 0 auto;
         display: inline-flex;
         justify-content: center;
-        color: $text-nav-color;
+        color: globals.$text-nav-color;
         text-align: right;
 
         &__count {
             margin-left: 0.3rem;
-            color: $text-base-color;
+            color: globals.$text-base-color;
             font-size: 1.1rem;
         }
     }
@@ -50,47 +50,47 @@
     }
 
     &__quantity-broken {
-        margin-left: $content-padding-large-vertical;
+        margin-left: globals.$content-padding-large-vertical;
     }
 
     &--read-only {
         .InventoryItemMaterial__actual-quantity,
         .InventoryItemMaterial__quantity-broken {
             flex: 0 0 95px;
-            padding: $content-padding-small-horizontal 0;
-            color: $text-light-color;
+            padding: globals.$content-padding-small-horizontal 0;
+            color: globals.$text-light-color;
             font-size: 1.1rem;
         }
     }
 
     &--complete {
-        background: rgba($text-success-color, 0.25);
+        background: rgba(globals.$text-success-color, 0.25);
 
         .InventoryItemMaterial__actual-quantity {
-            color: $text-base-color;
+            color: globals.$text-base-color;
             font-weight: 600;
         }
     }
 
     &--warning {
-        background: rgba($text-warning-color, 0.25);
+        background: rgba(globals.$text-warning-color, 0.25);
 
         .InventoryItemMaterial__actual-quantity {
-            color: $text-warning-color;
+            color: globals.$text-warning-color;
             font-weight: 600;
         }
 
         .InventoryItemMaterial__quantity-broken {
-            color: $text-danger-color;
+            color: globals.$text-danger-color;
             font-weight: 600;
         }
     }
 
     &--error {
-        background: rgba($text-danger-color, 0.25);
+        background: rgba(globals.$text-danger-color, 0.25);
 
         .InventoryItemMaterial__actual-quantity {
-            color: $text-danger-color;
+            color: globals.$text-danger-color;
             font-weight: 600;
         }
     }

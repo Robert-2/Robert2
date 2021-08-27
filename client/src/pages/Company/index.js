@@ -1,5 +1,5 @@
 import Config from '@/config/globalConfig';
-import Help from '@/components/Help/Help.vue';
+import Help from '@/components/Help';
 import CompanyForm from '@/components/CompanyForm';
 
 // @vue/component

@@ -1,7 +1,7 @@
 import moment from 'moment';
 import Config from '@/config/globalConfig';
 import formatAmount from '@/utils/formatAmount';
-import MaterialTags from '@/components/MaterialTags/MaterialTags.vue';
+import MaterialTags from '@/components/MaterialTags';
 import Attributes from './Attributes/Attributes.vue';
 
 // @vue/component

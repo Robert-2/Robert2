@@ -1,4 +1,4 @@
-import Help from '@/components/Help/Help.vue';
+import Help from '@/components/Help';
 import EventStore from './EventStore';
 import Breadcrumb from './Breadcrumb/Breadcrumb.vue';
 import MiniSummary from './MiniSummary/MiniSummary.vue';

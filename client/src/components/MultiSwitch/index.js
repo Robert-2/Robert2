@@ -1,16 +1,22 @@
 import './index.scss';
 
 // @vue/component
-const MultiSwitch = {
+export default {
     name: 'MultiSwitch',
     props: {
-        options: Array,
-        value: String,
+        options: { type: Array, required: true },
+        value: {
+            required: true,
+            validator: (value) => (
+                ['string', 'number'].includes(typeof value) ||
+                value === null
+            ),
+        },
     },
     render() {
         const { options, value } = this;
 
-        if (!options || options.length === 0) {
+        if (options.length === 0) {
             return null;
         }
 
@@ -35,5 +41,3 @@ const MultiSwitch = {
         );
     },
 };
-
-export default MultiSwitch;

@@ -3,7 +3,7 @@ import moment from 'moment';
 import dateRoundMinutes from '@/utils/dateRoundMinutes';
 import { confirm } from '@/utils/alert';
 import CriticalError from '@/components/CriticalError';
-import Help from '@/components/Help/Help.vue';
+import Help from '@/components/Help';
 import Loading from '@/components/Loading';
 import Timeline from '@/components/Timeline';
 import getPersonItemLabel from '@/utils/getPersonItemLabel';

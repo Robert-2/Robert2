@@ -4,16 +4,16 @@ import Loading from '@/components/Loading';
 import ErrorMessage from '@/components/ErrorMessage';
 
 // @vue/component
-const Page = {
+export default {
     name: 'Page',
     props: {
         name: { type: String, required: true },
-        title: String,
+        title: { type: String, default: null },
         help: String,
         error: String,
         isLoading: Boolean,
         actions: Array,
-        render: Function,
+        render: { type: Function, default: undefined },
     },
     watch: {
         title(newTitle) {
@@ -59,5 +59,3 @@ const Page = {
         );
     },
 };
-
-export default Page;

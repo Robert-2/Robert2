@@ -1,10 +1,10 @@
 import './index.scss';
 
 // @vue/component
-const ReturnInventoryItem = {
+export default {
     name: 'ReturnInventoryItem',
     props: {
-        data: Object,
+        data: { type: Object, required: true },
     },
     render() {
         const { $t: __, data } = this;
@@ -33,5 +33,3 @@ const ReturnInventoryItem = {
         );
     },
 };
-
-export default ReturnInventoryItem;
