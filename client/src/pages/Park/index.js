@@ -1,3 +1,4 @@
+import './index.scss';
 import Help from '@/components/Help';
 import FormField from '@/components/FormField';
 import ParkTotalAmount from '../Parks/TotalAmount';

@@ -1,4 +1,4 @@
-@import '../../../themes/default';
+@use '~@/style/globals';
 
 .TechnicianViewInfos {
     display: flex;
@@ -20,31 +20,31 @@
 
     &__name,
     &__reference {
-        margin-bottom: $content-padding-large-vertical;
-        color: $text-base-color;
+        margin-bottom: globals.$content-padding-large-vertical;
+        color: globals.$text-base-color;
     }
 
     &__section-title {
-        margin: $content-padding-large-vertical 0 $content-padding-small-horizontal;
+        margin: globals.$content-padding-large-vertical 0 globals.$content-padding-small-horizontal;
     }
 
     &__icon {
-        margin-right: $content-padding-large-horizontal;
+        margin-right: globals.$content-padding-large-horizontal;
     }
 
     &__address,
     &__note,
     &__user {
         margin-top: 0;
-        padding-left: $content-padding-large-vertical;
-        color: $text-base-color;
+        padding-left: globals.$content-padding-large-vertical;
+        color: globals.$text-base-color;
     }
 
     &__note {
         white-space: pre-wrap;
     }
 
-    @media screen and (min-width: $screen-tablet) {
+    @media screen and (min-width: globals.$screen-tablet) {
         flex-direction: row;
         justify-content: flex-start;
     }

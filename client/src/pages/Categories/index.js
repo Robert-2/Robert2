@@ -1,3 +1,4 @@
+import './index.scss';
 import Alert from '@/components/Alert';
 import Help from '@/components/Help';
 

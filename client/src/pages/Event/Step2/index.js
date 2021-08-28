@@ -1,3 +1,4 @@
+import './index.scss';
 import Config from '@/globals/config';
 import MultipleItem from '@/components/MultipleItem';
 import getPersonItemLabel from '@/utils/getPersonItemLabel';

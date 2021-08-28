@@ -1,7 +1,8 @@
+import './index.scss';
 import router from '@/globals/router';
 import Alert from '@/components/Alert';
 import Help from '@/components/Help';
-import AttributeEditForm from './AttributeEditForm/AttributeEditForm.vue';
+import AttributeEditForm from './AttributeEditForm';
 
 // @vue/component
 export default {

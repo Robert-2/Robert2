@@ -1,4 +1,4 @@
-@import '../../../themes/default/index';
+@use '~@/style/globals';
 
 .CalendarCaption {
     display: flex;
@@ -9,7 +9,7 @@
 
     &__title {
         margin: 10px 0;
-        color: $text-light-color;
+        color: globals.$text-light-color;
         font-weight: 400;
         text-align: center;
     }
@@ -18,8 +18,8 @@
         margin: 3px;
         padding: 7px 10px;
         border-radius: 5px;
-        background-color: $calendar-event-normal-color;
-        color: $calendar-event-text-color;
+        background-color: globals.$calendar-event-normal-color;
+        color: globals.$calendar-event-text-color;
         font-size: 0.9rem;
         box-shadow: 1px 2px 3px rgba(#000, 0.5);
     }

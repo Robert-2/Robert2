@@ -2,7 +2,7 @@ import './index.scss';
 import { Fragment } from 'vue-fragment';
 
 // @vue/component
-const TechnicianViewInfos = {
+export default {
     name: 'TechnicianViewInfos',
     props: {
         technician: { type: Object, required: true },
@@ -97,5 +97,3 @@ const TechnicianViewInfos = {
         );
     },
 };
-
-export default TechnicianViewInfos;

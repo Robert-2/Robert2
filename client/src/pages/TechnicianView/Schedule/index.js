@@ -3,10 +3,10 @@ import MonthCalendar from '@/components/MonthCalendar';
 import ErrorMessage from '@/components/ErrorMessage';
 import Loading from '@/components/Loading';
 import EventDetails from '@/components/EventDetails';
-import { formatTechnicianEvent } from './utils';
+import { formatTechnicianEvent } from './_utils';
 
 // @vue/component
-const TechnicianViewSchedule = {
+export default {
     name: 'TechnicianViewSchedule',
     props: {
         technician: { type: Object, required: true },
@@ -94,5 +94,3 @@ const TechnicianViewSchedule = {
         return <div class="TechnicianViewSchedule">{render()}</div>;
     },
 };
-
-export default TechnicianViewSchedule;

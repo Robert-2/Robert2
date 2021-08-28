@@ -1,3 +1,4 @@
+import './index.scss';
 import Config from '@/globals/config';
 import Help from '@/components/Help';
 import CompanyForm from '@/components/CompanyForm';

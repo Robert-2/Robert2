@@ -1,3 +1,4 @@
+import './index.scss';
 import Config from '@/globals/config';
 import formatBytes from '@/utils/formatBytes';
 import hasIncludes from '@/utils/hasIncludes';

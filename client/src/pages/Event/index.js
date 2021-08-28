@@ -1,11 +1,12 @@
+import './index.scss';
 import Help from '@/components/Help';
 import EventStore from './EventStore';
-import Breadcrumb from './Breadcrumb/Breadcrumb.vue';
-import MiniSummary from './MiniSummary/MiniSummary.vue';
-import EventStep1 from './Step1/Step1.vue';
-import EventStep2 from './Step2/Step2.vue';
+import Breadcrumb from './Breadcrumb';
+import MiniSummary from './MiniSummary';
+import EventStep1 from './Step1';
+import EventStep2 from './Step2';
 import EventStep3 from './Step3';
-import EventStep4 from './Step4/Step4.vue';
+import EventStep4 from './Step4';
 import EventStep5 from './Step5';
 
 // @vue/component

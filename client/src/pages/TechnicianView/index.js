@@ -7,7 +7,7 @@ import TechnicianInfos from './Infos';
 import TechnicianSchedule from './Schedule';
 
 // @vue/component
-const TechnicianViewPage = {
+export default {
     name: 'TechnicianViewPage',
     data() {
         return {
@@ -90,5 +90,3 @@ const TechnicianViewPage = {
         return <Page name="technician-view" title={pageTitle} render={render} />;
     },
 };
-
-export default TechnicianViewPage;

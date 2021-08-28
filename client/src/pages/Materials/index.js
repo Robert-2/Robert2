@@ -1,3 +1,4 @@
+import './index.scss';
 import moment from 'moment';
 import Config from '@/globals/config';
 import Alert from '@/components/Alert';

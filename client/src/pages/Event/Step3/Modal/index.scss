@@ -1,16 +1,16 @@
-@import '../../../../themes/default/index';
+@use '~@/style/globals';
 
 .EventStep3Modal {
     &__header {
         display: flex;
         align-items: center;
         padding: 0.7rem 1rem;
-        background-color: $bg-color-main-header;
+        background-color: globals.$bg-color-main-header;
 
         &__title {
             flex: 1;
             margin: 0 0 0.4rem;
-            color: $text-base-color;
+            color: globals.$text-base-color;
             font-size: 1.4rem;
             font-weight: 800;
         }
@@ -25,12 +25,12 @@
     &__form {
         max-width: 360px;
         margin: 0 auto;
-        padding: $content-padding-large-vertical 0;
+        padding: globals.$content-padding-large-vertical 0;
 
         .FormField {
             flex-direction: column;
             align-items: flex-start;
-            margin-bottom: $content-padding-large-vertical;
+            margin-bottom: globals.$content-padding-large-vertical;
 
             &__datepicker {
                 width: 100%;
@@ -38,7 +38,7 @@
 
             &__label {
                 flex: 0 0 auto;
-                padding: 0 3px $content-padding-small-horizontal;
+                padding: 0 3px globals.$content-padding-small-horizontal;
             }
 
             &__error__text {

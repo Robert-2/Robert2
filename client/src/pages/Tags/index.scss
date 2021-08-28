@@ -1,0 +1,64 @@
+@use '~@/style/globals';
+
+.Tags {
+    &__empty {
+        width: 100%;
+        margin-top: 2rem;
+        color: globals.$text-muted-color;
+        font-size: 1.2rem;
+        font-weight: 400;
+        font-style: italic;
+        text-align: center;
+    }
+
+    &__items {
+        display: flex;
+        flex-flow: column wrap;
+        align-items: flex-start;
+        align-content: flex-start;
+    }
+
+    &__edit-button {
+        margin-left: 0.5rem;
+        padding: 0.33rem 0.6rem;
+    }
+
+    &__item {
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        min-width: 18rem;
+        min-height: 2rem;
+        margin: 0.5rem 2rem 0.5rem 0;
+        padding: 0.6rem 1rem;
+        border-radius: 10px;
+        background: globals.$bg-color-emphasis;
+        font-size: 1.2rem;
+
+        &__name {
+            flex: 1;
+            color: globals.$text-base-color;
+
+            .fas {
+                margin-right: 0.4rem;
+                color: globals.$text-light-color;
+            }
+        }
+    }
+}
+
+@media (min-width: globals.$screen-desktop) {
+    .Tags {
+        &__edit-button {
+            visibility: hidden;
+        }
+
+        &__item {
+            &:hover {
+                .Tags__edit-button {
+                    visibility: visible;
+                }
+            }
+        }
+    }
+}

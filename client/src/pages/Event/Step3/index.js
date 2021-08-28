@@ -22,7 +22,7 @@ const getClosestStepTime = (requestedTime, roundMethod = 'floor') => {
 };
 
 // @vue/component
-const EventStep3 = {
+export default {
     name: 'EventStep3',
     props: {
         event: { type: Object, required: true },
@@ -376,5 +376,3 @@ const EventStep3 = {
         );
     },
 };
-
-export default EventStep3;

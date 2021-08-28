@@ -1,8 +1,9 @@
+import './index.scss';
 import moment from 'moment';
 import Config from '@/globals/config';
 import formatAmount from '@/utils/formatAmount';
 import MaterialTags from '@/components/MaterialTags';
-import Attributes from './Attributes/Attributes.vue';
+import Attributes from './Attributes';
 
 // @vue/component
 export default {

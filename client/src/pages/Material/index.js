@@ -1,3 +1,4 @@
+import './index.scss';
 import Config from '@/globals/config';
 import formatOptions from '@/utils/formatOptions';
 import Help from '@/components/Help';

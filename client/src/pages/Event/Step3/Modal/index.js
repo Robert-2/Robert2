@@ -6,7 +6,7 @@ import FormField from '@/components/FormField';
 import ErrorMessage from '@/components/ErrorMessage';
 
 // @vue/component
-const EventStep3Modal = {
+export default {
     name: 'EventStep3Modal',
     props: {
         eventDates: { type: Object, required: true },
@@ -278,5 +278,3 @@ const EventStep3Modal = {
         );
     },
 };
-
-export default EventStep3Modal;

@@ -1,4 +1,4 @@
-@import '../../../themes/default';
+@use '~@/style/globals';
 
 .LoginLayout {
     position: relative;
@@ -30,14 +30,14 @@
         display: none;
         width: 100%;
         padding: 10px 15px;
-        background-color: $bg-color-emphasis;
-        color: $text-muted-color;
+        background-color: globals.$bg-color-emphasis;
+        color: globals.$text-muted-color;
         font-size: 0.8rem;
         line-height: 1.52rem;
         text-align: center;
     }
 
-    @media (min-width: $screen-mobile) {
+    @media (min-width: globals.$screen-mobile) {
         &__logo {
             .Logo {
                 max-height: 120px;
@@ -45,7 +45,7 @@
         }
     }
 
-    @media (min-width: $screen-tablet) {
+    @media (min-width: globals.$screen-tablet) {
         justify-content: center;
 
         &__logo {

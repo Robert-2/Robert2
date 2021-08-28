@@ -1,0 +1,75 @@
+@use '~@/style/globals';
+
+.AttributeEditForm {
+    width: 100%;
+    min-width: 800px;
+    margin: 0;
+    background-color: globals.$bg-color-table-td;
+    color: globals.$text-base-color;
+    border-collapse: collapse;
+
+    &__name,
+    &__type,
+    &__unit,
+    &__max-length,
+    &__categories {
+        padding: 0.8rem 0.5rem;
+        vertical-align: top;
+    }
+
+    &__name {
+        width: 305px;
+    }
+
+    &__type {
+        width: 170px;
+    }
+
+    &__unit {
+        width: 100px;
+        text-align: center;
+    }
+
+    &__max-length {
+        display: none;
+        width: 100px;
+        text-align: center;
+    }
+
+    &__categories {
+        width: auto;
+
+        &__item {
+            margin-top: 4px;
+            opacity: 0.6;
+
+            &--selected,
+            &--selected:hover,
+            &--selected:focus {
+                background-color: globals.$bg-color-button-info;
+                opacity: 1;
+            }
+        }
+    }
+
+    &__input,
+    &__select {
+        width: 100%;
+    }
+
+    &__error {
+        padding: 0;
+        color: globals.$text-danger-color;
+
+        // stylelint-disable-next-line selector-max-type
+        li {
+            list-style: inside;
+        }
+    }
+
+    @media (min-width: globals.$screen-big-desktop) {
+        &__max-length {
+            display: table-cell;
+        }
+    }
+}

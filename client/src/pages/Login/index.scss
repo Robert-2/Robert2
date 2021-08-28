@@ -1,0 +1,52 @@
+@use '~@/style/globals';
+
+.Login {
+    &__message {
+        padding: 20px;
+        background-color: globals.$bg-color-emphasis;
+        font-size: 1.2rem;
+        text-align: center;
+
+        &--default {
+            color: globals.$text-light-color;
+        }
+
+        &--error {
+            color: globals.$text-danger-color;
+        }
+
+        &--success {
+            color: globals.$text-success-color;
+        }
+    }
+
+    &__body {
+        padding: 30px 20px;
+    }
+
+    &__form {
+        display: flex;
+        flex-flow: column nowrap;
+        align-items: center;
+        justify-content: space-around;
+
+        &__input {
+            width: 200px;
+            margin-right: 10px;
+            margin-bottom: 1rem;
+        }
+
+        &__submit {
+            padding: globals.$input-padding-vertical globals.$input-padding-horizontal;
+        }
+
+        @media (min-width: 600px) {
+            flex-flow: row nowrap;
+            justify-content: center;
+
+            &__input {
+                margin-bottom: 0;
+            }
+        }
+    }
+}

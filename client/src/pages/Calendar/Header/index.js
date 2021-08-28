@@ -1,3 +1,4 @@
+import './index.scss';
 import moment from 'moment';
 import FormField from '@/components/FormField';
 import SwitchToggle from '@/components/SwitchToggle';

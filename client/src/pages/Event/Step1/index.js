@@ -1,3 +1,4 @@
+import './index.scss';
 import moment from 'moment';
 import pick from 'lodash.pick';
 import Config from '@/globals/config';

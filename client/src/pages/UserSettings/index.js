@@ -1,3 +1,4 @@
+import './index.scss';
 import Vue from 'vue';
 import Help from '@/components/Help';
 import FormField from '@/components/FormField';

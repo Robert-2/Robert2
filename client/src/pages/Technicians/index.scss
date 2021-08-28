@@ -1,4 +1,4 @@
-@import '../../themes/default/index';
+@use '~@/style/globals';
 
 .Page--technicians {
     display: flex;
@@ -14,13 +14,13 @@
         position: absolute;
         z-index: 1;
         left: 240px;
-        right: calc(#{$content-padding-large-vertical} + 45px + #{$content-padding-small-vertical});
+        right: calc(#{globals.$content-padding-large-vertical} + 45px + #{globals.$content-padding-small-vertical});
         display: flex;
         flex-wrap: nowrap;
         align-items: center;
 
         &__clear-button {
-            margin-left: $content-padding-small-horizontal;
+            margin-left: globals.$content-padding-small-horizontal;
         }
     }
 
@@ -40,19 +40,19 @@
         text-align: right;
     }
 
-    @media (min-width: $screen-mobile) {
+    @media (min-width: globals.$screen-mobile) {
         &__email {
             display: table-cell;
         }
     }
 
-    @media (min-width: $screen-tablet) {
+    @media (min-width: globals.$screen-tablet) {
         &__nickname {
             display: table-cell;
         }
     }
 
-    @media (min-width: $screen-desktop) {
+    @media (min-width: globals.$screen-desktop) {
         &__address,
         &__note {
             display: table-cell;
