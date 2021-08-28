@@ -1,6 +1,7 @@
 node_modules/
 
-test/unit/coverage
+/dist/
+/test/unit/coverage
 
 # - Logs
 npm-debug.log*
