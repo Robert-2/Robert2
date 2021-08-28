@@ -1,7 +1,5 @@
 /* stylelint-disable declaration-no-important, selector-no-qualifying-type */
 
-$items-border-radius: 10px;
-
 // - L'obligation d'utiliser des !important est due au fait que lors du build,
 //   l'ordre final du CSS semble être inversé : le CSS de vis-timeline se
 //   retrouve après celui-ci.
@@ -70,19 +68,21 @@ $items-border-radius: 10px;
 }
 
 .vis-item {
+    $border-radius: 10px;
+
     margin: 0;
     padding: 1.2rem 1.1rem;
     border: none !important;
     font-size: 1rem;
 
     &.vis-range {
-        border-radius: $items-border-radius !important;
+        border-radius: $border-radius !important;
         background-color: $calendar-event-normal-color;
         color: $calendar-event-text-color;
         box-shadow: 1px 2px 3px rgba(#000, 0.5);
 
         &.vis-selected {
-            background-color: lighten($calendar-event-normal-color, 10%);
+            background-color: adjust-color($calendar-event-normal-color, $lightness: 10%);
         }
     }
 
@@ -121,12 +121,12 @@ $items-border-radius: 10px;
 
         .vis-drag-left {
             left: 0 !important;
-            border-radius: $items-border-radius 0 0 $items-border-radius;
+            border-radius: $border-radius 0 0 $border-radius;
         }
 
         .vis-drag-right {
             right: 0 !important;
-            border-radius: 0 $items-border-radius $items-border-radius 0;
+            border-radius: 0 $border-radius $border-radius 0;
         }
     }
 

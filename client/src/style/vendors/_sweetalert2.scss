@@ -46,7 +46,7 @@
 
 .swal2-icon.swal2-warning {
     border-color: $bg-color-button-warning;
-    color: lighten($bg-color-button-warning, 8%);
+    color: adjust-color($bg-color-button-warning, $lightness: 8%);
 }
 
 .swal2-confirm {
@@ -54,12 +54,12 @@
 
     &:hover,
     &:focus {
-        background-color: lighten($bg-color-button-info, 8%) !important;
+        background-color: adjust-color($bg-color-button-info, $lightness: 8%) !important;
         box-shadow: none !important;
     }
 
     &:active {
-        background-color: darken($bg-color-button-info, 8%) !important;
+        background-color: adjust-color($bg-color-button-info, $lightness: -8%) !important;
         color: $color-active-button;
     }
 
@@ -68,11 +68,11 @@
 
         &:hover,
         &:focus {
-            background-color: lighten($bg-color-button-warning, 8%) !important;
+            background-color: adjust-color($bg-color-button-warning, $lightness: 8%) !important;
         }
 
         &:active {
-            background-color: darken($bg-color-button-warning, 8%) !important;
+            background-color: adjust-color($bg-color-button-warning, $lightness: -8%) !important;
             color: $color-active-button;
         }
     }
@@ -82,11 +82,11 @@
 
         &:hover,
         &:focus {
-            background-color: lighten($bg-color-button-danger, 8%) !important;
+            background-color: adjust-color($bg-color-button-danger, $lightness: 8%) !important;
         }
 
         &:active {
-            background-color: darken($bg-color-button-danger, 8%) !important;
+            background-color: adjust-color($bg-color-button-danger, $lightness: -8%) !important;
             color: $color-active-button;
         }
     }
@@ -96,11 +96,11 @@
 
         &:hover,
         &:focus {
-            background-color: lighten($bg-color-button-success, 8%) !important;
+            background-color: adjust-color($bg-color-button-success, $lightness: 8%) !important;
         }
 
         &:active {
-            background-color: darken($bg-color-button-success, 8%) !important;
+            background-color: adjust-color($bg-color-button-success, $lightness: -8%) !important;
             color: $color-active-button;
         }
     }
@@ -111,12 +111,12 @@
 
     &:hover,
     &:focus {
-        background-color: lighten($bg-color-button-default, 8%) !important;
+        background-color: adjust-color($bg-color-button-default, $lightness: 8%) !important;
         box-shadow: none !important;
     }
 
     &:active {
-        background-color: darken($bg-color-button-default, 8%) !important;
+        background-color: adjust-color($bg-color-button-default, $lightness: -8%) !important;
         color: $color-active-button;
     }
 }

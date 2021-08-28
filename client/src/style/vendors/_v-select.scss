@@ -95,7 +95,7 @@
         &:focus,
         &:hover {
             background: none;
-            fill: lighten($bg-color-button-danger, 10%);
+            fill: adjust-color($bg-color-button-danger, $lightness: 10%);
         }
     }
 
