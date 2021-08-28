@@ -53,7 +53,7 @@
     @media screen and (min-width: $screen-mobile) {
         &--fixed-actions {
             .Form__actions {
-                left: $side-nav-width;
+                left: $sidebar-width;
             }
         }
     }
@@ -73,7 +73,7 @@
     @media screen and (min-width: $screen-desktop) {
         &--fixed-actions {
             .Form__actions {
-                left: $side-nav-full-width;
+                left: $sidebar-full-width;
             }
         }
     }

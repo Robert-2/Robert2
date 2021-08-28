@@ -9,7 +9,7 @@
     background-color: globals.$bg-color-main-header;
 
     &__logo {
-        flex: 0 0 globals.$side-nav-width;
+        flex: 0 0 globals.$sidebar-width;
         display: none;
         padding: 0.2rem 0.2rem 0;
         text-align: center;
@@ -59,7 +59,7 @@
 
     @media (min-width: globals.$screen-desktop) {
         &__logo {
-            flex: 0 0 globals.$side-nav-full-width;
+            flex: 0 0 globals.$sidebar-full-width;
         }
     }
 }

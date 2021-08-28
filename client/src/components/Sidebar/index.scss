@@ -1,16 +1,18 @@
-.SideNav {
+@use '~@/style/globals';
+
+.Sidebar {
     position: absolute;
     z-index: 100;
-    left: -$side-nav-full-width;
+    left: -(globals.$sidebar-full-width);
     display: flex;
     flex-flow: column nowrap;
-    width: $side-nav-full-width;
-    height: calc(100% - #{$main-header-height});
-    background-color: $bg-color-side-nav;
+    width: globals.$sidebar-full-width;
+    height: calc(100% - #{globals.$main-header-height});
+    background-color: globals.$bg-color-side-nav;
     transition: left 300ms cubic-bezier(0, 0.72, 0.43, 1);
 
     &__logo {
-        padding: $content-padding-small-horizontal 0;
+        padding: globals.$content-padding-small-horizontal 0;
         text-align: center;
 
         // stylelint-disable-next-line selector-max-type
@@ -40,10 +42,10 @@
         left: 0;
     }
 
-    @media (min-width: $screen-mobile) {
+    @media (min-width: globals.$screen-mobile) {
         position: initial;
         left: 0;
-        flex: 0 0 $side-nav-width;
+        flex: 0 0 globals.$sidebar-width;
         display: flex;
         height: auto;
 
@@ -56,8 +58,8 @@
         }
     }
 
-    @media (min-width: $screen-desktop) {
-        flex: 0 0 $side-nav-full-width;
+    @media (min-width: globals.$screen-desktop) {
+        flex: 0 0 globals.$sidebar-full-width;
 
         &__footer {
             display: block;
