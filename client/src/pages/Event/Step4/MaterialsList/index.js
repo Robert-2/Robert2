@@ -1,6 +1,6 @@
 import MaterialsFilters from '@/components/MaterialsFilters';
 import SwitchToggle from '@/components/SwitchToggle';
-import Config from '@/config/globalConfig';
+import Config from '@/globals/config';
 import formatAmount from '@/utils/formatAmount';
 import MaterialsStore from './MaterialsStore';
 import Quantity from './Quantity';

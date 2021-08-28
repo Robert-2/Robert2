@@ -1,4 +1,4 @@
-import Config from '@/config/globalConfig';
+import Config from '@/globals/config';
 import formatBytes from '@/utils/formatBytes';
 import hasIncludes from '@/utils/hasIncludes';
 

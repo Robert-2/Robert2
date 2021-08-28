@@ -1,5 +1,5 @@
 import './index.scss';
-import Config from '@/config/globalConfig';
+import Config from '@/globals/config';
 import EventOverview from '@/components/EventOverview';
 
 // @vue/component

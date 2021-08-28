@@ -1,5 +1,5 @@
 import moment from 'moment';
-import Config from '@/config/globalConfig';
+import Config from '@/globals/config';
 import formatAmount from '@/utils/formatAmount';
 import MaterialTags from '@/components/MaterialTags';
 import Attributes from './Attributes/Attributes.vue';

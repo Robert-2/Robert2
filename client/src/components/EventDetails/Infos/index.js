@@ -1,5 +1,5 @@
 import './index.scss';
-import Config from '@/config/globalConfig';
+import Config from '@/globals/config';
 import EventBeneficiaries from '@/components/EventBeneficiaries';
 import EventTechnicians from '@/components/EventTechnicians';
 import EventTotals from '@/components/EventTotals';

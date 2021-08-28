@@ -1,6 +1,6 @@
 import './index.scss';
 import moment from 'moment';
-import Config from '@/config/globalConfig';
+import Config from '@/globals/config';
 import formatAmount from '@/utils/formatAmount';
 
 // @vue/component

@@ -1,6 +1,6 @@
 import './index.scss';
 import moment from 'moment';
-import { DATE_DB_FORMAT } from '@/config/constants';
+import { DATE_DB_FORMAT } from '@/globals/constants';
 import FormField from '@/components/FormField';
 import LocationText from '@/components/LocationText';
 import EventBeneficiaries from '@/components/EventBeneficiaries';

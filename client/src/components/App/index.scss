@@ -1,5 +1,4 @@
-// - Core definitions
-@import './style/index';
+@use '~@/style/globals';
 
 // stylelint-disable-next-line selector-max-id
 #app {
@@ -9,7 +8,7 @@
     flex-direction: column;
     overflow: auto;
     height: 100%;
-    color: $text-base-color;
+    color: globals.$text-base-color;
 }
 
 .main {
@@ -18,7 +17,7 @@
     flex-direction: column;
     overflow: auto;
     height: 100%;
-    color: $text-nav-color;
+    color: globals.$text-nav-color;
 
     &__body {
         flex: 1;

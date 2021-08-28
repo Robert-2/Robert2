@@ -1,6 +1,6 @@
 /* eslint-disable import/no-cycle */
 
-import axios from '@/axios';
+import requester from '@/globals/requester';
 import formatOptions from '@/utils/formatOptions';
 
 export default {
@@ -33,7 +33,7 @@ export default {
                 return;
             }
 
-            axios.get('countries')
+            requester.get('countries')
                 .then(({ data }) => {
                     commit('init', data.data);
                 })

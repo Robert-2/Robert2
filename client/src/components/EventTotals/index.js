@@ -1,6 +1,6 @@
 import './index.scss';
 import moment from 'moment';
-import Config from '@/config/globalConfig';
+import Config from '@/globals/config';
 import formatAmount from '@/utils/formatAmount';
 import getEventMaterialItemsCount from '@/utils/getEventMaterialItemsCount';
 import getEventOneDayTotal from '@/utils/getEventOneDayTotal';

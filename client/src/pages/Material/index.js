@@ -1,4 +1,4 @@
-import Config from '@/config/globalConfig';
+import Config from '@/globals/config';
 import formatOptions from '@/utils/formatOptions';
 import Help from '@/components/Help';
 import FormField from '@/components/FormField';

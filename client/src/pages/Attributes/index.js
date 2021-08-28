@@ -1,4 +1,4 @@
-import router from '@/router';
+import router from '@/globals/router';
 import Alert from '@/components/Alert';
 import Help from '@/components/Help';
 import AttributeEditForm from './AttributeEditForm/AttributeEditForm.vue';

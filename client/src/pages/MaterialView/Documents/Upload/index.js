@@ -1,4 +1,4 @@
-import { AUTHORIZED_FILE_TYPES, MAX_FILE_SIZE } from '@/config/constants';
+import { AUTHORIZED_FILE_TYPES, MAX_FILE_SIZE } from '@/globals/constants';
 import formatBytes from '@/utils/formatBytes';
 import Help from '@/components/Help';
 import Progressbar from '@/components/Progressbar';

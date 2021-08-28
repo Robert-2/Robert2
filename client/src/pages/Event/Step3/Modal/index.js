@@ -1,6 +1,6 @@
 import './index.scss';
 import moment from 'moment';
-import { TECHNICIAN_EVENT_MIN_DURATION } from '@/config/constants';
+import { TECHNICIAN_EVENT_MIN_DURATION } from '@/globals/constants';
 import { confirm } from '@/utils/alert';
 import FormField from '@/components/FormField';
 import ErrorMessage from '@/components/ErrorMessage';

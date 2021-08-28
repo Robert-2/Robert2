@@ -1,6 +1,6 @@
 /* eslint-disable import/no-cycle */
 
-import axios from '@/axios';
+import requester from '@/globals/requester';
 import formatOptions from '@/utils/formatOptions';
 
 export default {
@@ -37,7 +37,7 @@ export default {
                 return;
             }
 
-            axios.get('companies')
+            requester.get('companies')
                 .then(({ data }) => {
                     commit('init', data.data);
                 })
@@ -49,7 +49,7 @@ export default {
         refresh({ state, commit }) {
             state.isFetched = false;
 
-            axios.get('companies')
+            requester.get('companies')
                 .then(({ data }) => {
                     commit('init', data.data);
                 })

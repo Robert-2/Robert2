@@ -1,5 +1,5 @@
 import './index.scss';
-import Config from '@/config/globalConfig';
+import Config from '@/globals/config';
 import FormField from '@/components/FormField';
 
 // @vue/component

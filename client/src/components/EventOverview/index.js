@@ -1,7 +1,7 @@
 import './index.scss';
 import moment from 'moment';
 import { Tabs, Tab } from 'vue-slim-tabs';
-import Config from '@/config/globalConfig';
+import Config from '@/globals/config';
 import getEventDiscountRate from '@/utils/getEventDiscountRate';
 import formatEventTechniciansList from '@/utils/formatEventTechniciansList';
 import Alert from '@/components/Alert';

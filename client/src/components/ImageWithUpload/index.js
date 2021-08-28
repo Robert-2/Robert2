@@ -1,5 +1,5 @@
 import './index.scss';
-import { ALLOWED_IMAGE_TYPES, MAX_FILE_SIZE } from '@/config/constants';
+import { ALLOWED_IMAGE_TYPES, MAX_FILE_SIZE } from '@/globals/constants';
 import formatBytes from '@/utils/formatBytes';
 import Help from '@/components/Help';
 import emptyImageSrc from './assets/empty-image.png';

@@ -1,7 +1,7 @@
 import moment from 'moment';
 import pick from 'lodash.pick';
-import Config from '@/config/globalConfig';
-import { DATE_DB_FORMAT } from '@/config/constants';
+import Config from '@/globals/config';
+import { DATE_DB_FORMAT } from '@/globals/constants';
 import FormField from '@/components/FormField';
 import EventStore from '../EventStore';
 

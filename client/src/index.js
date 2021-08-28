@@ -1,3 +1,4 @@
+import './index.scss';
 import Vue from 'vue';
 import moment from 'moment';
 import vuexI18n from 'vuex-i18n';
@@ -6,23 +7,18 @@ import { VTooltip } from 'v-tooltip';
 import { ClientTable, ServerTable } from 'vue-tables-2';
 import Toasted from 'vue-toasted';
 
-import Config from '@/config/globalConfig';
-import axios from '@/axios';
-import store from '@/store';
+import config from '@/globals/config';
+import requester from '@/globals/requester';
+import store from '@/globals/store';
+import router from '@/globals/router';
 import translations from '@/locale';
 import vueTableTranslations from '@/locale/vendors/vue-tables';
-import router from '@/router';
-import App from '@/App.vue';
-
-// CSS vendors libraries
-import 'vue-js-modal/dist/styles.css';
-
-require('@fortawesome/fontawesome-free/css/all.css');
+import App from '@/components/App';
 
 Vue.config.productionTip = false;
 
 // HTTP (ajax) lib
-Vue.prototype.$http = axios;
+Vue.prototype.$http = requester;
 
 // Modal
 Vue.use(VueJsModal, {
@@ -50,7 +46,7 @@ Object.keys(translations).forEach((lang) => {
     Vue.i18n.add(lang, translations[lang]);
 });
 
-let currentLocale = Config.defaultLang;
+let currentLocale = config.defaultLang;
 
 Vue.i18n.set(currentLocale);
 
@@ -74,8 +70,8 @@ const tablesConfig = {
     },
     texts: vueTableTranslations[currentLocale],
     requestKeys: { query: 'search' },
-    perPage: Config.defaultPaginationLimit,
-    perPageValues: [Config.defaultPaginationLimit],
+    perPage: config.defaultPaginationLimit,
+    perPageValues: [config.defaultPaginationLimit],
     responseAdapter: (response) => {
         if (!response) {
             return { data: [], count: 0 };

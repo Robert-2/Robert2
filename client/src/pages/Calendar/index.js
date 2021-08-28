@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { DATE_DB_FORMAT, DATE_QUERY_FORMAT } from '@/config/constants';
+import { DATE_DB_FORMAT, DATE_QUERY_FORMAT } from '@/globals/constants';
 import Alert from '@/components/Alert';
 import Help from '@/components/Help';
 import EventDetails from '@/components/EventDetails';

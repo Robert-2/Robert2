@@ -1,8 +1,8 @@
 {
     "private": true,
     "scripts": {
-        "start": "vue-cli-service serve",
-        "build": "vue-cli-service build",
+        "start": "vue-cli-service serve ./src/index.js",
+        "build": "vue-cli-service build ./src/index.js",
         "lint:js": "eslint './**/*.{js,vue}'",
         "lint:scss": "stylelint 'src/**/*.scss'",
         "test": "vue-cli-service test:unit"

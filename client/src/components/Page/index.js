@@ -1,5 +1,5 @@
 import './index.scss';
-import { APP_NAME } from '@/config/constants';
+import { APP_NAME } from '@/globals/constants';
 import Loading from '@/components/Loading';
 import ErrorMessage from '@/components/ErrorMessage';
 

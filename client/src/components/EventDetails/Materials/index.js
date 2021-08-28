@@ -1,6 +1,6 @@
 import './index.scss';
 import { Fragment } from 'vue-fragment';
-import Config from '@/config/globalConfig';
+import Config from '@/globals/config';
 import Help from '@/components/Help';
 import EventMaterials from '@/components/EventMaterials';
 import EventMissingMaterials from '@/components/EventMissingMaterials';

@@ -1,13 +1,13 @@
-import Axios from 'axios';
-import Config from '@/config/globalConfig';
+import axios from 'axios';
+import Config from '@/globals/config';
 import Cookies from '@/utils/cookies';
 
-const axios = Axios.create({
+const requester = axios.create({
     baseURL: Config.api.url,
     headers: Config.api.headers,
 });
 
-axios.interceptors.request.use(
+requester.interceptors.request.use(
     (_request) => {
         const request = { ..._request };
         const token = Cookies.get(Config.auth.cookie);
@@ -19,4 +19,4 @@ axios.interceptors.request.use(
     (error) => Promise.reject(error),
 );
 
-export default axios;
+export default requester;

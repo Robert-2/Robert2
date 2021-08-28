@@ -2,8 +2,8 @@
 
 import Vue from 'vue';
 import Router from 'vue-router';
-import store from '@/store';
-import { APP_NAME } from '@/config/constants';
+import store from '@/globals/store';
+import { APP_NAME } from '@/globals/constants';
 import Login from '@/pages/Login/Login.vue';
 import UserProfile from '@/pages/UserProfile/UserProfile.vue';
 import UserSettings from '@/pages/UserSettings/UserSettings.vue';

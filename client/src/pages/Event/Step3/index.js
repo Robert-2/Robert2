@@ -14,7 +14,7 @@ import {
     TECHNICIAN_EVENT_STEP,
     TECHNICIAN_EVENT_MIN_DURATION,
     DATE_DB_FORMAT,
-} from '@/config/constants';
+} from '@/globals/constants';
 
 const getClosestStepTime = (requestedTime, roundMethod = 'floor') => {
     const time = moment(requestedTime).startOf('minute');
