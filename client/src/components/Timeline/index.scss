@@ -1,16 +1,17 @@
-@import '../../themes/default/index';
+@use '~@/style/globals';
+@use 'sass:color';
 
-$timeline-group-border-color: #636363 !default;
+$group-border-color: #636363 !default;
 $group-item-max-height: 65px !default;
 
 .Timeline {
     &--grouped {
         .vis-timeline {
-            background-color: scale-color($calendar-main-background-color, $alpha: -30%);
+            background-color: color.scale(globals.$calendar-main-background-color, $alpha: -30%);
         }
 
         .vis-vertical {
-            background-color: $calendar-main-background-color;
+            background-color: globals.$calendar-main-background-color;
         }
 
         .vis-labelset {
@@ -19,13 +20,13 @@ $group-item-max-height: 65px !default;
 
             .vis-label {
                 box-sizing: content-box;
-                border-bottom: 1px solid $timeline-group-border-color;
+                border-bottom: 1px solid $group-border-color;
             }
         }
 
         .vis-foreground .vis-group {
             box-sizing: content-box;
-            border-bottom: 1px solid $timeline-group-border-color;
+            border-bottom: 1px solid $group-border-color;
         }
 
         .vis-item {

@@ -6,7 +6,7 @@ import dateRoundMinutes from '@/utils/dateRoundMinutes';
 import { mountVisData } from './_utils';
 
 // @vue/component
-const Timeline = {
+export default {
     name: 'Timeline',
     props: {
         items: {
@@ -150,5 +150,3 @@ const Timeline = {
         return <div class={_className} ref="visualization" />;
     },
 };
-
-export default Timeline;
