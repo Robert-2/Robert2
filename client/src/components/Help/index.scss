@@ -1,5 +1,4 @@
 @use '~@/style/globals';
-@use '~@fortawesome/fontawesome-free/scss/variables' as fa-vars;
 @use '~@fortawesome/fontawesome-free/scss/mixins' as fa-mixins;
 
 .Help {
@@ -39,13 +38,17 @@
         color: globals.$text-success-color;
 
         .Help__message::before {
-            content: fa-vars.fa-content(fa-vars.$fa-var-check);
+            // TODO: Ré-introduire la variable font-awesome (ou refactoring) lorsque le ticket suivant aura été traité.
+            // @see https://github.com/FortAwesome/Font-Awesome/pull/17940
+            content: '\f00c'; // fa-content($fa-var-check);
         }
     }
 
     &--info {
         .Help__message::before {
-            content: fa-vars.fa-content(fa-vars.$fa-var-info-circle);
+            // TODO: Ré-introduire la variable font-awesome (ou refactoring) lorsque le ticket suivant aura été traité.
+            // @see https://github.com/FortAwesome/Font-Awesome/pull/17940
+            content: '\f05a'; // fa-content($fa-var-info-circle);
         }
     }
 
