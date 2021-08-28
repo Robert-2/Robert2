@@ -1,5 +1,4 @@
 import './index.scss';
-import router from '@/globals/router';
 import Alert from '@/components/Alert';
 import Help from '@/components/Help';
 import AttributeEditForm from './AttributeEditForm';
@@ -139,7 +138,7 @@ export default {
         },
 
         goBack() {
-            router.back();
+            this.$router.back();
         },
     },
 };

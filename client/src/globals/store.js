@@ -2,12 +2,7 @@
 
 import Vue from 'vue';
 import Vuex from 'vuex';
-import countriesStore from '@/stores/countries';
-import parksStore from '@/stores/parks';
-import categoriesStore from '@/stores/categories';
-import companiesStore from '@/stores/companies';
-import tagsStore from '@/stores/tags';
-import authStore from '@/stores/auth';
+import stores from '@/stores';
 
 Vue.use(Vuex);
 
@@ -29,12 +24,5 @@ export default new Vuex.Store({
             state.pageSubTitle = pageSubTitle;
         },
     },
-    modules: {
-        countries: countriesStore,
-        parks: parksStore,
-        categories: categoriesStore,
-        companies: companiesStore,
-        tags: tagsStore,
-        auth: authStore,
-    },
+    modules: stores,
 });
