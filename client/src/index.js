@@ -102,7 +102,12 @@ store.dispatch('auth/fetch').then(() => {
         el: '#app',
         store,
         router,
-        components: { App },
-        template: '<App/>',
+        render() {
+            return (
+                <div id="app">
+                    <App />
+                </div>
+            );
+        },
     });
 });

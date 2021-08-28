@@ -49,13 +49,11 @@ export default {
         } = this;
 
         return (
-            <div id="app">
-                <div class="main">
-                    {isLogged && <Header onToggleMenu={handleToggleSidebar} />}
-                    <div class="main__body">
-                        {isLogged && <Sidebar isOpen={isOpenedSidebar} />}
-                        <router-view key={$route.path} />
-                    </div>
+            <div class="App">
+                {isLogged && <Header onToggleMenu={handleToggleSidebar} />}
+                <div class="App__body">
+                    {isLogged && <Sidebar isOpen={isOpenedSidebar} />}
+                    <router-view key={$route.path} />
                 </div>
             </div>
         );

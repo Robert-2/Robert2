@@ -1,22 +1,10 @@
 @use '~@/style/globals';
 
-// stylelint-disable-next-line selector-max-id
-#app {
-    position: relative;
-    flex: 1 1 auto;
+.App {
     display: flex;
     flex-direction: column;
     overflow: auto;
-    height: 100%;
-    color: globals.$text-base-color;
-}
-
-.main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: auto;
-    height: 100%;
+    height: 100vh;
     color: globals.$text-nav-color;
 
     &__body {

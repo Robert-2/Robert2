@@ -1,4 +1,4 @@
-/* stylelint-disable selector-max-type, selector-max-universal */
+/* stylelint-disable selector-max-type, selector-max-id, selector-max-universal */
 
 * {
     box-sizing: border-box;
@@ -6,8 +6,6 @@
 
 html,
 body {
-    display: flex;
-    flex-flow: column nowrap;
     height: 100%;
     margin: 0;
     padding: 0;
@@ -16,6 +14,12 @@ body {
 }
 
 body {
-    flex: 1 1 auto;
     background-color: $bg-color-body;
+    color: $text-base-color;
+}
+
+#app {
+    position: relative;
+    overflow: auto;
+    height: 100%;
 }
