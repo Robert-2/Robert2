@@ -7,7 +7,7 @@ import EventDetails from '@/components/EventDetails';
 import Timeline from '@/components/Timeline';
 import CalendarHeader from './Header';
 import CalendarCaption from './Caption';
-import formatEvent from './utils';
+import formatEvent from './_utils';
 
 const ONE_DAY = 1000 * 3600 * 24;
 
