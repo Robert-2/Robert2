@@ -135,25 +135,6 @@
             cursor: no-drop !important;
         }
     }
-
-    .vis-delete {
-        right: -32px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 32px;
-        height: 100%;
-        border-radius: 3px;
-
-        &::after {
-            content: '\f1f8';
-            color: $text-danger-color;
-            // stylelint-disable-next-line font-family-no-missing-generic-family-keyword
-            font-family: 'Font Awesome 5 Free';
-            font-size: 1.7rem;
-            font-weight: 900;
-        }
-    }
 }
 
 div.vis-tooltip {

@@ -1,5 +1,3 @@
-/* eslint-disable no-underscore-dangle */
-
 import deepFreeze from 'deep-freeze-strict';
 
 let baseUrl = process.env.VUE_APP_API_URL ?? '';

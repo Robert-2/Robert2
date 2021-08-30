@@ -18,7 +18,7 @@ export default {
         Quantity,
     },
     props: {
-        event: Object,
+        event: { type: Object, required: true },
     },
     data() {
         const columns = [

@@ -2,7 +2,7 @@
 
 .Breadcrumb {
     &__step {
-        padding: 1rem 0.8rem;
+        padding: globals.$content-padding-small-vertical globals.$content-padding-large-horizontal;
         border: 1px solid globals.$text-muted-color;
         border-radius: 1.5rem;
         color: globals.$text-muted-color;
@@ -10,7 +10,12 @@
         text-align: left;
         cursor: default;
 
+        &__id {
+            margin-left: globals.$content-padding-small-horizontal;
+        }
+
         &__name {
+            margin-left: 0.3rem;
             font-weight: 800;
         }
 
@@ -33,6 +38,6 @@
     }
 
     &__step + &__step {
-        margin-top: 1rem;
+        margin-top: globals.$content-padding-small-vertical;
     }
 }

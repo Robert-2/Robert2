@@ -19,6 +19,7 @@ export default {
             this.updateQuantityDebounced();
         },
 
+        // - On a besoin du 'this', donc obligé d'utiliser une fonction non fléchée
         // eslint-disable-next-line func-names
         updateQuantityDebounced: debounce(function () {
             this.$emit('change', this.material, this.quantity);

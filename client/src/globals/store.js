@@ -1,5 +1,3 @@
-/* eslint-disable import/no-cycle */
-
 import Vue from 'vue';
 import Vuex from 'vuex';
 import stores from '@/stores';

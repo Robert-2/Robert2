@@ -1,5 +1,3 @@
-/* eslint-disable import/no-cycle */
-
 import Login from './Login';
 import UserProfile from './UserProfile';
 import UserSettings from './UserSettings';

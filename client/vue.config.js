@@ -15,7 +15,7 @@ const config = {
             webpackConfig.plugins.delete('friendly-errors');
         }
 
-        // - Si un `index.vue` existedans un dossier, il doit être chargé en priorité.
+        // - Si un `index.vue` existe dans un dossier, il doit être chargé en priorité.
         webpackConfig.resolve.extensions.prepend('.vue');
     },
     devServer: {

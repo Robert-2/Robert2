@@ -1,5 +1,3 @@
-/* eslint-disable import/no-cycle */
-
 import requester from '@/globals/requester';
 import Config from '@/globals/config';
 import Cookies from '@/utils/cookies';

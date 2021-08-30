@@ -43,5 +43,33 @@ export default {
             });
             return isValidated;
         },
+
+        getStepClassNames(step) {
+            return {
+                'Breadcrumb__step--current': this.isCurrent(step),
+                'Breadcrumb__step--active': this.isActive(step),
+                'Breadcrumb__step--validated': !this.isCurrent(step) && this.isValidated(step),
+            };
+        },
+    },
+    render() {
+        const { steps, openStep, isCurrent, isValidated, getStepClassNames } = this;
+
+        return (
+            <div class="Breadcrumb">
+                {steps.map((step) => (
+                    <div
+                        class={['Breadcrumb__step', getStepClassNames(step)]}
+                        key={step.id}
+                        onClick={() => { openStep(step); }}
+                    >
+                        {isCurrent(step) && <i class="fas fa-arrow-right" />}
+                        {!isCurrent(step) && isValidated(step) && <i class="fas fa-check" />}
+                        <span class="Breadcrumb__step__id">{step.id} -</span>
+                        <span class="Breadcrumb__step__name">{step.name}</span>
+                    </div>
+                ))}
+            </div>
+        );
     },
 };

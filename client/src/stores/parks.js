@@ -1,5 +1,3 @@
-/* eslint-disable import/no-cycle */
-
 import requester from '@/globals/requester';
 import formatOptions from '@/utils/formatOptions';
 
