@@ -4,7 +4,7 @@ import invariant from 'invariant';
 import Item from './Item';
 
 // @vue/component
-const Inventory = {
+export default {
     name: 'Inventory',
     props: {
         materials: { type: Array, required: true },
@@ -108,5 +108,3 @@ const Inventory = {
         );
     },
 };
-
-export default Inventory;

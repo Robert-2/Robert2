@@ -2,14 +2,14 @@ import './index.scss';
 import QuantityInput from '@/components/QuantityInput';
 
 // @vue/component
-const InventoryItemMaterial = {
+export default {
     name: 'InventoryItemMaterial',
     props: {
         material: { type: Object, required: true },
         quantities: { type: Object, required: true },
         locked: { type: Boolean, default: false },
         strict: { type: Boolean, default: false },
-        error: Object,
+        error: { type: Object, default: undefined },
     },
     computed: {
         id() {
@@ -184,8 +184,8 @@ const InventoryItemMaterial = {
                 <div class="InventoryItemMaterial__actual-quantity" title={__('actual-quantity')}>
                     {isReadOnly ? actualQuantity : (
                         <QuantityInput
-                            quantity={actualQuantity}
-                            onQuantityChange={handleActualQuantityChange}
+                            value={actualQuantity}
+                            onChange={handleActualQuantityChange}
                             limit={!strict ? undefined : {
                                 min: 0,
                                 max: currentlyAwaitedActualQuantity,
@@ -199,8 +199,8 @@ const InventoryItemMaterial = {
                 >
                     {isReadOnly ? brokenQuantity : (
                         <QuantityInput
-                            quantity={brokenQuantity}
-                            onQuantityChange={handleBrokenQuantityChange}
+                            value={brokenQuantity}
+                            onChange={handleBrokenQuantityChange}
                             limit={!strict ? undefined : {
                                 min: 0,
                                 max: currentlyAwaitedBrokenQuantity,
@@ -212,5 +212,3 @@ const InventoryItemMaterial = {
         );
     },
 };
-
-export default InventoryItemMaterial;

@@ -1,6 +1,7 @@
-import Config from '@/config/globalConfig';
+import './index.scss';
+import Config from '@/globals/config';
 import Alert from '@/components/Alert';
-import Help from '@/components/Help/Help.vue';
+import Help from '@/components/Help';
 import ParkTotalAmount from './TotalAmount';
 
 // @vue/component

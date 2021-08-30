@@ -1,8 +1,8 @@
 import './index.scss';
-import Details from './Details/ErrorDetails.vue';
+import Details from './Details';
 
 // @vue/component
-const ErrorMessage = {
+export default {
     name: 'ErrorMessage',
     props: {
         error: { type: Error, required: true },
@@ -85,5 +85,3 @@ const ErrorMessage = {
         );
     },
 };
-
-export default ErrorMessage;

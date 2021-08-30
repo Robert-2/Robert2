@@ -1,4 +1,5 @@
-import Help from '@/components/Help/Help.vue';
+import './index.scss';
+import Help from '@/components/Help';
 import FormField from '@/components/FormField';
 
 const storageKeyWIP = 'WIP-newUser';

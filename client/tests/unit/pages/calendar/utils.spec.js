@@ -1,5 +1,5 @@
 import moment from 'moment';
-import formatEvent from '@/pages/Calendar/utils';
+import formatEvent from '@/pages/Calendar/_utils';
 
 describe('Calendar/utils.formatEvent', () => {
     test('returns data of event formatted for timeline usage with classes and popups texts', () => {

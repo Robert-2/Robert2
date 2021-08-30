@@ -1,8 +1,9 @@
-@import '../../themes/default/index';
+@use '~@/style/globals';
+@use 'sass:color';
+
+$size: 1.7rem;
 
 .SwitchToggle {
-    $switch-base-size: 1.7rem;
-
     display: inline-flex;
     align-items: center;
 
@@ -11,29 +12,29 @@
         display: flex;
         flex-direction: row;
         align-items: center;
-        width: $switch-base-size * 2.2;
-        height: $switch-base-size;
-        border-radius: $switch-base-size;
-        background: $bg-color-side-nav;
+        width: $size * 2.2;
+        height: $size;
+        border-radius: $size;
+        background: globals.$bg-color-side-nav;
         cursor: pointer;
     }
 
     &__button {
         flex: 0 0 auto;
-        width: $switch-base-size;
-        height: $switch-base-size;
+        width: $size;
+        height: $size;
         border-radius: 50%;
-        background: $bg-color-button-default;
+        background: globals.$bg-color-button-default;
         box-shadow: 1px 2px 4px 0 rgba(0, 0, 0, 0.5);
     }
 
     &:hover {
         .SwitchToggle__slide {
-            background-color: lighten($bg-color-side-nav, 5%);
+            background-color: color.adjust(globals.$bg-color-side-nav, $lightness: 5%);
         }
 
         .SwitchToggle__button {
-            background-color: lighten($bg-color-button-default, 8%);
+            background-color: color.adjust(globals.$bg-color-button-default, $lightness: 8%);
         }
     }
 
@@ -42,7 +43,7 @@
         margin-left: 0.5rem;
 
         &__locked {
-            margin-left: $content-padding-small-horizontal;
+            margin-left: globals.$content-padding-small-horizontal;
             font-style: italic;
         }
     }
@@ -53,12 +54,12 @@
         }
 
         .SwitchToggle__button {
-            background-color: $bg-color-button-success;
+            background-color: globals.$bg-color-button-success;
         }
 
         &:hover {
             .SwitchToggle__button {
-                background-color: lighten($bg-color-button-success, 5%);
+                background-color: color.adjust(globals.$bg-color-button-success, $lightness: 5%);
             }
         }
     }
@@ -72,11 +73,11 @@
 
         &:hover {
             .SwitchToggle__slide {
-                background: $bg-color-side-nav;
+                background: globals.$bg-color-side-nav;
             }
 
             .SwitchToggle__button {
-                background: $bg-color-button-default;
+                background: globals.$bg-color-button-default;
             }
         }
     }

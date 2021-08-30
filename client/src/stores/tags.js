@@ -1,7 +1,5 @@
-/* eslint-disable import/no-cycle */
-
-import axios from '@/axios';
-import Config from '@/config/globalConfig';
+import requester from '@/globals/requester';
+import Config from '@/globals/config';
 import formatOptions from '@/utils/formatOptions';
 
 export default {
@@ -50,7 +48,7 @@ export default {
                 return;
             }
 
-            axios.get('tags')
+            requester.get('tags')
                 .then(({ data }) => {
                     commit('init', data.data);
                 })
@@ -62,7 +60,7 @@ export default {
         refresh({ state, commit }) {
             state.isFetched = false;
 
-            axios.get('tags')
+            requester.get('tags')
                 .then(({ data }) => {
                     commit('init', data.data);
                 })

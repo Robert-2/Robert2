@@ -1,7 +1,7 @@
 import './index.scss';
 
 // @vue/component
-const Loading = {
+export default {
     name: 'Loading',
     props: {
         horizontal: Boolean,
@@ -19,5 +19,3 @@ const Loading = {
         );
     },
 };
-
-export default Loading;

@@ -1,10 +1,10 @@
 import './index.scss';
 import moment from 'moment';
-import Help from '@/components/Help/Help.vue';
+import Help from '@/components/Help';
 import MultiSwitch from '@/components/MultiSwitch';
 
 // @vue/component
-const EventReturnHeader = {
+export default {
     name: 'EventReturnHeader',
     components: { Help, MultiSwitch },
     props: {
@@ -100,5 +100,3 @@ const EventReturnHeader = {
         );
     },
 };
-
-export default EventReturnHeader;

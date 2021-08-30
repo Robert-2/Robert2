@@ -2,11 +2,11 @@ import './index.scss';
 import Illustration from './assets/illustration.svg?inline';
 
 // @vue/component
-const EmptyMessage = {
+export default {
     name: 'EmptyMessage',
     props: {
-        message: String,
-        action: Object,
+        message: { type: String, default: undefined },
+        action: { type: Object, default: undefined },
     },
     render() {
         const { $t: __, message, action } = this;
@@ -38,5 +38,3 @@ const EmptyMessage = {
         );
     },
 };
-
-export default EmptyMessage;

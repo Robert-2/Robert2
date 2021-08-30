@@ -1,14 +1,15 @@
+import './index.scss';
 import moment from 'moment';
 import { Tabs, Tab } from 'vue-slim-tabs';
-import Config from '@/config/globalConfig';
+import Config from '@/globals/config';
 import getEventDiscountRate from '@/utils/getEventDiscountRate';
 import formatEventTechniciansList from '@/utils/formatEventTechniciansList';
 import Alert from '@/components/Alert';
-import Help from '@/components/Help/Help.vue';
+import Help from '@/components/Help';
 import EventMaterials from '@/components/EventMaterials';
-import EventMissingMaterials from '@/components/EventMissingMaterials/EventMissingMaterials.vue';
-import EventBilling from '@/components/EventBilling/EventBilling.vue';
-import EventEstimates from '@/components/EventEstimates/EventEstimates.vue';
+import EventMissingMaterials from '@/components/EventMissingMaterials';
+import EventBilling from '@/components/EventBilling';
+import EventEstimates from '@/components/EventEstimates';
 import EventTotals from '@/components/EventTotals';
 
 // @vue/component

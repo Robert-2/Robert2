@@ -1,7 +1,8 @@
+import './index.scss';
 import Alert from '@/components/Alert';
-import Help from '@/components/Help/Help.vue';
-import DocumentItem from './Item/Item.vue';
-import DocumentUpload from './Upload/Upload.vue';
+import Help from '@/components/Help';
+import DocumentItem from './Item';
+import DocumentUpload from './Upload';
 
 // @vue/component
 export default {

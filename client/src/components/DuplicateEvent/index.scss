@@ -1,11 +1,11 @@
-@import '../../themes/default/index';
+@use '~@/style/globals';
 
 .DuplicateEvent {
     &__header {
         display: flex;
         align-items: center;
-        padding: $content-padding-small-horizontal $content-padding-large-vertical;
-        background-color: $bg-color-main-header;
+        padding: globals.$content-padding-small-horizontal globals.$content-padding-large-vertical;
+        background-color: globals.$bg-color-main-header;
 
         &__title {
             flex: 1;
@@ -23,7 +23,7 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        padding: $content-padding-large-vertical $content-padding-small-vertical;
+        padding: globals.$content-padding-large-vertical globals.$content-padding-small-vertical;
 
         &__dates {
             .FormField {
@@ -41,12 +41,12 @@
 
         &__infos {
             min-width: 300px;
-            margin-top: $content-padding-small-vertical;
+            margin-top: globals.$content-padding-small-vertical;
 
             .LocationText,
             .EventBeneficiaries,
             .EventTechnicians {
-                margin-top: $content-padding-small-vertical;
+                margin-top: globals.$content-padding-small-vertical;
                 font-size: 1rem;
             }
 
@@ -54,7 +54,7 @@
             &__items-count,
             .EventBeneficiaries,
             .EventTechnicians {
-                margin-top: $content-padding-small-vertical;
+                margin-top: globals.$content-padding-small-vertical;
 
                 .fas {
                     width: 1.5rem;
@@ -65,8 +65,8 @@
         }
 
         &__error {
-            margin: $content-padding-large-vertical 0 0;
-            color: $text-danger-color;
+            margin: globals.$content-padding-large-vertical 0 0;
+            color: globals.$text-danger-color;
         }
     }
 
@@ -88,7 +88,7 @@
     }
 
     &__footer {
-        padding: $content-padding-large-vertical;
+        padding: globals.$content-padding-large-vertical;
         text-align: center;
     }
 }

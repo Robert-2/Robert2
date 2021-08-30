@@ -5,8 +5,8 @@ import FormField from '@/components/FormField';
 export default {
     name: 'CompanyForm',
     props: {
-        company: Object,
-        errors: Object,
+        company: { type: Object, required: true },
+        errors: { type: Object, default: undefined },
     },
     computed: {
         countriesOptions() {
@@ -17,20 +17,27 @@ export default {
         this.$store.dispatch('countries/fetch');
     },
     methods: {
-        doSubmit(e) {
+        handleSubmit(e) {
             e.preventDefault();
             this.$emit('submit', e);
         },
 
-        goBack() {
+        handleCancel() {
             this.$router.back();
         },
     },
     render() {
-        const { $t: __, company, errors, countriesOptions, doSubmit, goBack } = this;
+        const {
+            $t: __,
+            company,
+            errors,
+            countriesOptions,
+            handleSubmit,
+            handleCancel,
+        } = this;
 
         return (
-            <form class="Form CompanyForm" onSubmit={doSubmit}>
+            <form class="Form CompanyForm" onSubmit={handleSubmit}>
                 <section class="Form__fieldset">
                     <h4 class="Form__fieldset__title">{__('informations')}</h4>
                     <FormField
@@ -94,7 +101,7 @@ export default {
                     <button class="Form__actions__save success" type="submit">
                         <i class="fas fa-save" /> {__('save')}
                     </button>
-                    <button type="button" onClick={goBack}>
+                    <button type="button" onClick={handleCancel}>
                         <i class="fas fa-ban" /> {__('cancel')}
                     </button>
                 </section>

@@ -1,4 +1,5 @@
-@import '../../themes/default/index';
+@use '~@/style/globals';
+@use 'sass:color';
 
 .Dropdown {
     position: relative;
@@ -8,7 +9,7 @@
     &__item {
         display: flex;
         align-items: center;
-        padding: 0 $content-padding-small-vertical;
+        padding: 0 globals.$content-padding-small-vertical;
         border-radius: 2px;
         cursor: pointer;
         user-select: none;
@@ -17,8 +18,8 @@
 
     &__button {
         height: 100%;
-        background-color: $bg-color-button-default;
-        color: $color-base-button;
+        background-color: globals.$bg-color-button-default;
+        color: globals.$color-base-button;
 
         &__icon {
             font-size: 1.2rem;
@@ -33,8 +34,8 @@
         }
 
         &:hover {
-            background-color: lighten($bg-color-button-default, 8%);
-            color: $color-hover-button;
+            background-color: color.adjust(globals.$bg-color-button-default, $lightness: 8%);
+            color: globals.$color-hover-button;
         }
     }
 
@@ -43,8 +44,8 @@
         z-index: 2;
         top: 100%;
         right: 0;
-        min-width: $dropdown-min-width;
-        background: $bg-color-dropdown-menu;
+        min-width: globals.$dropdown-min-width;
+        background: globals.$bg-color-dropdown-menu;
         box-shadow: -2px 6px 6px rgba(0, 0, 0, 0.25);
         transform-origin: 50% 0%;
         transform: scaleY(0);
@@ -52,7 +53,7 @@
 
         &__title {
             margin: 0;
-            padding: $content-padding-small-vertical $content-padding-small-horizontal;
+            padding: globals.$content-padding-small-vertical globals.$content-padding-small-horizontal;
             font-size: 1.2rem;
             text-align: center;
             text-transform: capitalize;
@@ -65,8 +66,8 @@
             padding: 0;
 
             .fas {
-                margin-right: $content-padding-small-vertical;
-                font-size: $side-nav-icon-size;
+                margin-right: globals.$content-padding-small-vertical;
+                font-size: globals.$sidebar-icon-size;
             }
         }
     }
@@ -75,36 +76,36 @@
         flex: 0 0 auto;
         display: flex;
         align-items: center;
-        padding: $content-padding-large-horizontal $content-padding-small-vertical;
+        padding: globals.$content-padding-large-horizontal globals.$content-padding-small-vertical;
         list-style: none;
 
         // stylelint-disable-next-line selector-max-type
         &:not(button) {
-            color: $text-base-color;
+            color: globals.$text-base-color;
 
             // stylelint-disable-next-line selector-max-type
             &:hover {
-                background-color: $bg-color-dropdown-menu-item-hover;
-                color: $link-hover-color;
+                background-color: globals.$bg-color-dropdown-menu-item-hover;
+                color: globals.$link-hover-color;
             }
         }
 
         &--active,
         &--active:hover {
-            background-color: $bg-color-dropdown-menu-item-active;
-            color: $link-active-color;
+            background-color: globals.$bg-color-dropdown-menu-item-active;
+            color: globals.$link-active-color;
         }
     }
 
     &--actions {
-        margin-left: $content-padding-small-horizontal;
+        margin-left: globals.$content-padding-small-horizontal;
 
         .Dropdown__menu {
-            margin-top: $content-padding-small-horizontal;
+            margin-top: globals.$content-padding-small-horizontal;
         }
 
         .Dropdown__item + .Dropdown__item {
-            margin: $content-padding-small-horizontal 0 0;
+            margin: globals.$content-padding-small-horizontal 0 0;
         }
     }
 
@@ -115,12 +116,12 @@
             }
 
             &__button {
-                background-color: lighten($bg-color-button-default, 15%);
+                background-color: color.adjust(globals.$bg-color-button-default, $lightness: 15%);
             }
         }
     }
 
-    @media (min-width: $screen-mobile) {
+    @media (min-width: globals.$screen-mobile) {
         &__menu__title {
             display: none;
         }

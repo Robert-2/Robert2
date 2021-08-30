@@ -5,8 +5,8 @@ import QuantityInput from '@/components/QuantityInput';
 export default {
     name: 'MaterialsListQuantity',
     props: {
-        material: Object,
-        initialQuantity: Number,
+        material: { type: Object, required: true },
+        initialQuantity: { type: Number, default: 0 },
     },
     data() {
         return {
@@ -14,26 +14,19 @@ export default {
         };
     },
     methods: {
-        setQuantity(newValue) {
-            this.quantity = newValue;
+        handleChange(newQuantity) {
+            this.quantity = newQuantity;
             this.updateQuantityDebounced();
         },
 
+        // - On a besoin du 'this', donc obligé d'utiliser une fonction non fléchée
         // eslint-disable-next-line func-names
         updateQuantityDebounced: debounce(function () {
-            this.$emit('setQuantity', this.material, this.quantity);
+            this.$emit('change', this.material, this.quantity);
         }, 400),
     },
     render() {
-        const { material, quantity, setQuantity } = this;
-
-        return (
-            <QuantityInput
-                material={material}
-                quantity={quantity}
-                onQuantityChange={setQuantity}
-                allowOverflow
-            />
-        );
+        const { quantity, handleChange } = this;
+        return <QuantityInput value={quantity} onChange={handleChange} />;
     },
 };

@@ -1,3 +1,4 @@
+import './index.scss';
 import VueSelect from 'vue-select';
 
 // @vue/component
@@ -5,7 +6,7 @@ export default {
     name: 'MaterialsFilters',
     components: { VueSelect },
     props: {
-        baseRoute: String,
+        baseRoute: { type: String, required: true },
     },
     data() {
         return {

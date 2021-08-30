@@ -1,3 +1,4 @@
+import './index.scss';
 import Layout from './Layout';
 
 // @vue/component

@@ -1,5 +1,6 @@
-import Config from '@/config/globalConfig';
-import MultipleItem from '@/components/MultipleItem/MultipleItem.vue';
+import './index.scss';
+import Config from '@/globals/config';
+import MultipleItem from '@/components/MultipleItem';
 import getPersonItemLabel from '@/utils/getPersonItemLabel';
 import formatOptions from '@/utils/formatOptions';
 import EventStore from '../EventStore';

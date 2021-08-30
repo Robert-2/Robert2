@@ -1,12 +1,13 @@
+import './index.scss';
 import moment from 'moment';
-import { DATE_DB_FORMAT, DATE_QUERY_FORMAT } from '@/config/constants';
+import { DATE_DB_FORMAT, DATE_QUERY_FORMAT } from '@/globals/constants';
 import Alert from '@/components/Alert';
-import Help from '@/components/Help/Help.vue';
+import Help from '@/components/Help';
 import EventDetails from '@/components/EventDetails';
 import Timeline from '@/components/Timeline';
-import CalendarHeader from './Header/Header.vue';
+import CalendarHeader from './Header';
 import CalendarCaption from './Caption';
-import formatEvent from './utils';
+import formatEvent from './_utils';
 
 const ONE_DAY = 1000 * 3600 * 24;
 

@@ -1,9 +1,10 @@
-import MaterialsFilter from '@/components/MaterialsFilters/MaterialsFilters.vue';
+import './index.scss';
+import MaterialsFilters from '@/components/MaterialsFilters';
 import SwitchToggle from '@/components/SwitchToggle';
-import Config from '@/config/globalConfig';
-import formatAmount from '@/utils/formatAmount';
-import MaterialsStore from './MaterialsStore';
 import Quantity from './Quantity';
+import config from '@/globals/config';
+import formatAmount from '@/utils/formatAmount';
+import MaterialsStore from './_store';
 import { normalizeFilters } from './_utils';
 
 const noPaginationLimit = 100000;
@@ -12,12 +13,12 @@ const noPaginationLimit = 100000;
 export default {
     name: 'MaterialsList',
     components: {
-        MaterialsFilter,
+        MaterialsFilters,
         SwitchToggle,
         Quantity,
     },
     props: {
-        event: Object,
+        event: { type: Object, required: true },
     },
     data() {
         const columns = [
@@ -30,7 +31,7 @@ export default {
             'amount',
             'actions',
         ].filter((column) => {
-            if (Config.billingMode === 'none' || !this.event.is_billable) {
+            if (config.billingMode === 'none' || !this.event.is_billable) {
                 return !['price', 'amount'].includes(column);
             }
             return true;
@@ -52,7 +53,7 @@ export default {
                 preserveState: false,
                 orderBy: { column: 'custom', ascending: true },
                 initialPage: 1,
-                perPage: hasMaterial ? noPaginationLimit : Config.defaultPaginationLimit,
+                perPage: hasMaterial ? noPaginationLimit : config.defaultPaginationLimit,
                 columnsClasses: {
                     qty: 'MaterialsList__qty',
                     reference: 'MaterialsList__ref',
@@ -166,7 +167,7 @@ export default {
         setSelectedOnly(onlySelected) {
             this.$refs.DataTable.setCustomFilters({ ...this.getFilters(), onlySelected });
             this.$refs.DataTable.setLimit(
-                onlySelected ? noPaginationLimit : Config.defaultPaginationLimit,
+                onlySelected ? noPaginationLimit : config.defaultPaginationLimit,
             );
             this.showSelectedOnly = onlySelected;
         },
@@ -182,16 +183,6 @@ export default {
         setQuantity(material, value) {
             const quantity = parseInt(value, 10) || 0;
             MaterialsStore.commit('setQuantity', { material, quantity });
-            this.handleChanges();
-        },
-
-        decrement(material) {
-            MaterialsStore.commit('decrement', material);
-            this.handleChanges();
-        },
-
-        increment(material) {
-            MaterialsStore.commit('increment', material);
             this.handleChanges();
         },
 

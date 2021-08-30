@@ -1,5 +1,6 @@
+import './index.scss';
 import Alert from '@/components/Alert';
-import Help from '@/components/Help/Help.vue';
+import Help from '@/components/Help';
 
 // @vue/component
 export default {

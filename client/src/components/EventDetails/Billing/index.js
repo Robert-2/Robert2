@@ -1,5 +1,5 @@
-import Help from '@/components/Help/Help.vue';
-import EventBilling from '@/components/EventBilling/EventBilling.vue';
+import Help from '@/components/Help';
+import EventBilling from '@/components/EventBilling';
 import EventNotBillable from '@/components/EventNotBillable';
 
 // @vue/component

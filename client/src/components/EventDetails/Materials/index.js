@@ -1,9 +1,9 @@
 import './index.scss';
 import { Fragment } from 'vue-fragment';
-import Config from '@/config/globalConfig';
-import Help from '@/components/Help/Help.vue';
+import Config from '@/globals/config';
+import Help from '@/components/Help';
 import EventMaterials from '@/components/EventMaterials';
-import EventMissingMaterials from '@/components/EventMissingMaterials/EventMissingMaterials.vue';
+import EventMissingMaterials from '@/components/EventMissingMaterials';
 import EventTotals from '@/components/EventTotals';
 import ReturnInventorySummary from '@/components/ReturnInventorySummary';
 

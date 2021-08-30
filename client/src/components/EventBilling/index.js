@@ -1,10 +1,11 @@
+import './index.scss';
 import moment from 'moment';
 import getEventGrandTotal from '@/utils/getEventGrandTotal';
 import getEventOneDayTotal from '@/utils/getEventOneDayTotal';
 import getEventOneDayTotalDiscountable from '@/utils/getEventOneDayTotalDiscountable';
 import getEventDiscountRate from '@/utils/getEventDiscountRate';
 import BillingForm from '@/components/BillingForm';
-import DisplayBill from './DisplayBill/DisplayBill.vue';
+import DisplayBill from './DisplayBill';
 import { round, floor } from '@/utils/decimalRound';
 
 // @vue/component

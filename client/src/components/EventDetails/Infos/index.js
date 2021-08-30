@@ -1,9 +1,9 @@
 import './index.scss';
-import Config from '@/config/globalConfig';
+import Config from '@/globals/config';
 import EventBeneficiaries from '@/components/EventBeneficiaries';
 import EventTechnicians from '@/components/EventTechnicians';
 import EventTotals from '@/components/EventTotals';
-import LocationText from '@/components/LocationText/LocationText.vue';
+import LocationText from '@/components/LocationText';
 
 // @vue/component
 export default {

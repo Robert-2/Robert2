@@ -1,13 +1,14 @@
-@import '../../themes/default';
+@use '~@/style/globals';
+@use 'sass:color';
 
 .ReturnInventorySummary {
-    margin-bottom: $content-padding-large-horizontal;
-    padding-bottom: $content-padding-large-vertical;
-    border-bottom: 1px solid $tabs-bottom-border-color;
+    margin-bottom: globals.$content-padding-large-horizontal;
+    padding-bottom: globals.$content-padding-large-vertical;
+    border-bottom: 1px solid globals.$tabs-bottom-border-color;
     text-align: center;
 
     &__title {
-        color: $text-danger-color;
+        color: globals.$text-danger-color;
         font-size: 1.3rem;
     }
 
@@ -16,9 +17,9 @@
         padding: 0.55rem 0.78rem;
         border: none;
         border-radius: 2px;
-        background-color: $bg-color-button-info;
+        background-color: globals.$bg-color-button-info;
         // stylelint-disable-next-line declaration-no-important
-        color: $color-base-button !important;
+        color: globals.$color-base-button !important;
         font-size: 1rem;
         line-height: 1.25;
         cursor: pointer;
@@ -26,14 +27,14 @@
         &:hover,
         &:focus {
             outline: 0;
-            background-color: lighten($bg-color-button-info, 8%);
-            color: $color-hover-button;
+            background-color: color.adjust(globals.$bg-color-button-info, $lightness: 8%);
+            color: globals.$color-hover-button;
         }
     }
 
     &__all-ok {
-        margin-bottom: $content-padding-large-horizontal;
-        color: $text-success-color;
+        margin-bottom: globals.$content-padding-large-horizontal;
+        color: globals.$text-success-color;
         font-size: 1.1rem;
     }
 

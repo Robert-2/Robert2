@@ -1,6 +1,7 @@
+import './index.scss';
 import { debounce } from 'debounce';
-import { DEBOUNCE_WAIT } from '@/config/constants';
-import MaterialsList from './MaterialsList/MaterialsList.vue';
+import { DEBOUNCE_WAIT } from '@/globals/constants';
+import MaterialsList from './MaterialsList';
 import EventStore from '../EventStore';
 import { getMaterialsQuantities, materialsHasChanged } from './_utils';
 

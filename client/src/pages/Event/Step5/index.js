@@ -1,6 +1,6 @@
 import './index.scss';
-import Config from '@/config/globalConfig';
-import EventOverview from '@/components/EventOverview/EventOverview.vue';
+import Config from '@/globals/config';
+import EventOverview from '@/components/EventOverview';
 
 // @vue/component
 export default {

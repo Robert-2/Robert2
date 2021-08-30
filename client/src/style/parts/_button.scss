@@ -22,12 +22,12 @@ button,
     &:hover,
     &:focus {
         outline: 0;
-        background-color: lighten($bg-color-button-default, 8%);
+        background-color: adjust-color($bg-color-button-default, $lightness: 8%);
         color: $color-hover-button;
     }
 
     &:active {
-        background-color: darken($bg-color-button-default, 8%);
+        background-color: adjust-color($bg-color-button-default, $lightness: -8%);
         color: $color-active-button;
     }
 
@@ -36,11 +36,11 @@ button,
 
         &:hover,
         &:focus {
-            background-color: lighten($bg-color-button-info, 8%);
+            background-color: adjust-color($bg-color-button-info, $lightness: 8%);
         }
 
         &:active {
-            background-color: darken($bg-color-button-info, 8%);
+            background-color: adjust-color($bg-color-button-info, $lightness: -8%);
             color: $color-active-button;
         }
     }
@@ -50,11 +50,11 @@ button,
 
         &:hover,
         &:focus {
-            background-color: lighten($bg-color-button-success, 5%);
+            background-color: adjust-color($bg-color-button-success, $lightness: 5%);
         }
 
         &:active {
-            background-color: darken($bg-color-button-success, 5%);
+            background-color: adjust-color($bg-color-button-success, $lightness: -5%);
             color: $color-active-button;
         }
     }
@@ -64,11 +64,11 @@ button,
 
         &:hover,
         &:focus {
-            background-color: lighten($bg-color-button-warning, 8%);
+            background-color: adjust-color($bg-color-button-warning, $lightness: 8%);
         }
 
         &:active {
-            background-color: darken($bg-color-button-warning, 8%);
+            background-color: adjust-color($bg-color-button-warning, $lightness: -8%);
             color: $color-active-button;
         }
     }
@@ -78,11 +78,11 @@ button,
 
         &:hover,
         &:focus {
-            background-color: lighten($bg-color-button-danger, 8%);
+            background-color: adjust-color($bg-color-button-danger, $lightness: 8%);
         }
 
         &:active {
-            background-color: darken($bg-color-button-danger, 8%);
+            background-color: adjust-color($bg-color-button-danger, $lightness: -8%);
             color: $color-active-button;
         }
     }
@@ -99,13 +99,13 @@ button,
         &:focus,
         &:visited {
             outline: 0;
-            background-color: darken($bg-color-button-default, 15%);
+            background-color: adjust-color($bg-color-button-default, $lightness: -15%);
             // stylelint-disable-next-line declaration-no-important
             color: $link-hover-color !important;
         }
 
         &:active {
-            background-color: darken($bg-color-button-default, 15%);
+            background-color: adjust-color($bg-color-button-default, $lightness: -15%);
             color: $link-base-color;
         }
     }

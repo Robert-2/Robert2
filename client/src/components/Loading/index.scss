@@ -1,6 +1,8 @@
-@import '../../themes/default/index';
+@use '~@/style/globals';
 
 .Loading {
+    $block: &;
+
     display: inline-flex;
     flex-direction: column;
     align-items: center;
@@ -28,10 +30,10 @@
 
     &--horizontal {
         flex-direction: row;
-        color: $text-nav-color;
+        color: globals.$text-nav-color;
         font-size: 1.1rem;
 
-        .Loading__text {
+        #{$block}__text {
             margin-top: 0;
             margin-left: 10px;
         }

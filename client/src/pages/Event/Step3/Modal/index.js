@@ -1,12 +1,12 @@
 import './index.scss';
 import moment from 'moment';
-import { TECHNICIAN_EVENT_MIN_DURATION } from '@/config/constants';
+import { TECHNICIAN_EVENT_MIN_DURATION } from '@/globals/constants';
 import { confirm } from '@/utils/alert';
 import FormField from '@/components/FormField';
 import ErrorMessage from '@/components/ErrorMessage';
 
 // @vue/component
-const EventStep3Modal = {
+export default {
     name: 'EventStep3Modal',
     props: {
         eventDates: { type: Object, required: true },
@@ -278,5 +278,3 @@ const EventStep3Modal = {
         );
     },
 };
-
-export default EventStep3Modal;

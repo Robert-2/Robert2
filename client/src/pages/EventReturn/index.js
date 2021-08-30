@@ -1,4 +1,4 @@
-import './EventReturn.scss';
+import './index.scss';
 import moment from 'moment';
 import { confirm } from '@/utils/alert';
 import formatAmount from '@/utils/formatAmount';
@@ -6,7 +6,7 @@ import EventReturnHeader from './Header';
 import MaterialsList from './MaterialsList';
 
 // @vue/component
-const EventReturnPage = {
+export default {
     name: 'EventReturn',
     components: { EventReturnHeader, MaterialsList },
     data() {
@@ -165,5 +165,3 @@ const EventReturnPage = {
         },
     },
 };
-
-export default EventReturnPage;

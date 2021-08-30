@@ -1,6 +1,6 @@
 import './index.scss';
 import { Tabs, Tab } from 'vue-slim-tabs';
-import Config from '@/config/globalConfig';
+import Config from '@/globals/config';
 import ErrorMessage from '@/components/ErrorMessage';
 import Loading from '@/components/Loading';
 import formatTimelineEvent from '@/utils/timeline-event/format';

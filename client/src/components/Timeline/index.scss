@@ -1,16 +1,44 @@
-@import '../../themes/default/index';
+@use '~@/style/globals';
+@use 'sass:color';
 
-$timeline-group-border-color: #636363 !default;
+$group-border-color: #636363 !default;
 $group-item-max-height: 65px !default;
 
 .Timeline {
+    .vis-item {
+        .vis-delete {
+            right: -32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 100%;
+            border-radius: 3px;
+
+            &::after {
+                content: '\f1f8';
+                color: globals.$text-danger-color;
+                // stylelint-disable-next-line font-family-no-missing-generic-family-keyword
+                font-family: 'Font Awesome 5 Free';
+                font-size: 1.7rem;
+                font-weight: 900;
+            }
+
+            &:hover {
+                &::after {
+                    color: #fff;
+                }
+            }
+        }
+    }
+
     &--grouped {
         .vis-timeline {
-            background-color: scale-color($calendar-main-background-color, $alpha: -30%);
+            background-color: color.scale(globals.$calendar-main-background-color, $alpha: -30%);
         }
 
         .vis-vertical {
-            background-color: $calendar-main-background-color;
+            background-color: globals.$calendar-main-background-color;
         }
 
         .vis-labelset {
@@ -19,13 +47,19 @@ $group-item-max-height: 65px !default;
 
             .vis-label {
                 box-sizing: content-box;
-                border-bottom: 1px solid $timeline-group-border-color;
+                border-bottom: 1px solid $group-border-color;
+                color: globals.$text-base-color;
+            }
+
+            .vis-inner {
+                display: flex;
+                justify-content: center;
             }
         }
 
         .vis-foreground .vis-group {
             box-sizing: content-box;
-            border-bottom: 1px solid $timeline-group-border-color;
+            border-bottom: 1px solid $group-border-color;
         }
 
         .vis-item {

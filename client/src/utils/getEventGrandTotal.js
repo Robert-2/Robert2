@@ -1,4 +1,4 @@
-import Config from '@/config/globalConfig';
+import Config from '@/globals/config';
 
 const getEventGrandTotal = (total, daysCount) => {
     if (typeof total !== 'number' || Number.isNaN(total)) {

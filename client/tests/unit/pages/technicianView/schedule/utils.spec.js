@@ -1,4 +1,4 @@
-import { formatTechnicianEvent } from '@/pages/TechnicianView/Schedule/utils';
+import { formatTechnicianEvent } from '@/pages/TechnicianView/Schedule/_utils';
 
 describe('TechnicianView/Schedule/utils.formatTechnicianEvent', () => {
     test('returns data of event formatted for calendar usage with title and classes', () => {

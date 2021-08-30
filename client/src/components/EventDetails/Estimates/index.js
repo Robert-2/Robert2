@@ -1,6 +1,6 @@
 import Alert from '@/components/Alert';
-import Help from '@/components/Help/Help.vue';
-import EventEstimates from '@/components/EventEstimates/EventEstimates.vue';
+import Help from '@/components/Help';
+import EventEstimates from '@/components/EventEstimates';
 import EventNotBillable from '@/components/EventNotBillable';
 
 // @vue/component

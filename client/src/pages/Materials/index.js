@@ -1,13 +1,14 @@
+import './index.scss';
 import moment from 'moment';
-import Config from '@/config/globalConfig';
+import Config from '@/globals/config';
 import Alert from '@/components/Alert';
-import Help from '@/components/Help/Help.vue';
+import Help from '@/components/Help';
 import Dropdown, { getItemClassnames } from '@/components/Dropdown';
 import isValidInteger from '@/utils/isValidInteger';
 import PromptDate from '@/components/PromptDate';
-import AssignTags from '@/components/AssignTags/AssignTags.vue';
-import MaterialsFilters from '@/components/MaterialsFilters/MaterialsFilters.vue';
-import MaterialTags from '@/components/MaterialTags/MaterialTags.vue';
+import AssignTags from '@/components/AssignTags';
+import MaterialsFilters from '@/components/MaterialsFilters';
+import MaterialTags from '@/components/MaterialTags';
 import formatAmount from '@/utils/formatAmount';
 
 // @vue/component

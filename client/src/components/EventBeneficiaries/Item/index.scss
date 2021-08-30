@@ -1,4 +1,4 @@
-@import '../../../themes/default/';
+@use '~@/style/globals';
 
 .EventBeneficiaryItem {
     display: inline-block;
@@ -8,7 +8,7 @@
         &::before {
             content: '|';
             margin-right: 0.3rem;
-            color: $text-base-color;
+            color: globals.$text-base-color;
         }
     }
 }

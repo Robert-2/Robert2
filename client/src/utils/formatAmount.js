@@ -1,4 +1,4 @@
-import Config from '@/config/globalConfig';
+import Config from '@/globals/config';
 
 const formatAmount = (amount = 0) => {
     const { iso } = Config.currency;

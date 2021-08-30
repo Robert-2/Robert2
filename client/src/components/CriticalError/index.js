@@ -2,10 +2,10 @@ import './index.scss';
 import Illustration from './assets/illustration.svg?inline';
 
 // @vue/component
-const CriticalError = {
+export default {
     name: 'CriticalError',
     props: {
-        message: String,
+        message: { type: String, default: undefined },
     },
     render() {
         const { $t: __, message } = this;
@@ -19,5 +19,3 @@ const CriticalError = {
         );
     },
 };
-
-export default CriticalError;

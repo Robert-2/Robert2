@@ -1,0 +1,31 @@
+@use '~@/style/globals';
+
+.EventStep4 {
+    padding-bottom: 3rem;
+
+    .Form__actions {
+        position: fixed;
+        left: 193px;
+        bottom: 0;
+        right: 15px;
+        margin: 0;
+        padding: 1rem 0 1.5rem;
+        background: globals.$bg-color-body;
+    }
+}
+
+@media (min-width: globals.$screen-mobile) {
+    .EventStep4 {
+        .Form__actions {
+            left: 256px;
+        }
+    }
+}
+
+@media (min-width: globals.$screen-desktop) {
+    .EventStep4 {
+        .Form__actions {
+            left: 376px;
+        }
+    }
+}

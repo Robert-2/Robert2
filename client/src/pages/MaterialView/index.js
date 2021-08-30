@@ -1,7 +1,8 @@
+import './index.scss';
 import { Tabs, Tab } from 'vue-slim-tabs';
-import Help from '@/components/Help/Help.vue';
-import Infos from './Infos/Infos.vue';
-import Documents from './Documents/Documents.vue';
+import Help from '@/components/Help';
+import Infos from './Infos';
+import Documents from './Documents';
 
 // @vue/component
 export default {

@@ -1,19 +1,19 @@
-@import '../../../../themes/default';
+@use '~@/style/globals';
 
 .EventSummarySettingsForm {
-    max-width: $form-max-width;
+    max-width: globals.$form-max-width;
 
     &__section {
-        margin-top: $content-padding-large-vertical;
+        margin-top: globals.$content-padding-large-vertical;
     }
 
     &__actions {
-        margin-top: $content-padding-large-vertical;
+        margin-top: globals.$content-padding-large-vertical;
         text-align: right;
     }
 
     .FormField {
-        margin-bottom: $content-padding-small-vertical;
+        margin-bottom: globals.$content-padding-small-vertical;
 
         &__textarea {
             min-height: 200px;

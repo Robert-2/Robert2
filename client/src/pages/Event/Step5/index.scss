@@ -1,38 +1,38 @@
-@import '../../../themes/default';
+@use '~@/style/globals';
+
+$info-spacing: 1.5rem;
 
 .EventStep5 {
-    $info-spacing: 1.5rem;
-
     .EventOverview {
         margin-bottom: $info-spacing;
     }
 
     .EventMissingMaterials {
-        border-bottom: 1px solid $list-left-border-color;
+        border-bottom: 1px solid globals.$list-left-border-color;
     }
 
     &__confirmation {
         margin-bottom: $info-spacing;
         padding-bottom: $info-spacing;
-        border-bottom: 1px solid $list-left-border-color;
+        border-bottom: 1px solid globals.$list-left-border-color;
 
         &__icon {
-            margin-right: $content-padding-small-horizontal;
+            margin-right: globals.$content-padding-small-horizontal;
         }
 
         &__title {
             margin: 0 0 $info-spacing;
-            color: $text-base-color;
+            color: globals.$text-base-color;
             font-size: 1.2rem;
             font-weight: 600;
         }
 
         &__help {
             margin-bottom: $info-spacing;
-            color: $text-warning-color;
+            color: globals.$text-warning-color;
 
             &--confirmed {
-                color: $text-success-color;
+                color: globals.$text-success-color;
             }
         }
     }

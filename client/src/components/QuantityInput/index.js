@@ -1,11 +1,11 @@
 import './index.scss';
 
 // @vue/component
-const QuantityInput = {
+export default {
     name: 'QuantityInput',
     props: {
-        quantity: Number,
-        limit: [Number, Object],
+        value: { type: Number, required: true },
+        limit: { type: [Number, Object], default: null },
     },
     computed: {
         min() {
@@ -16,7 +16,7 @@ const QuantityInput = {
         },
 
         max() {
-            if (typeof this.limit !== 'object') {
+            if (typeof this.limit !== 'object' || this.limit === null) {
                 return this.limit;
             }
             return this.limit?.max;
@@ -38,30 +38,30 @@ const QuantityInput = {
                 value = this.max;
             }
 
-            this.$emit('quantityChange', value);
+            this.$emit('change', value);
         },
 
         handleDecrement() {
-            const value = this.quantity - 1;
+            const value = this.value - 1;
             if (value < this.min) {
                 return;
             }
-            this.$emit('quantityChange', value);
+            this.$emit('change', value);
         },
 
         handleIncrement() {
-            const value = this.quantity + 1;
+            const value = this.value + 1;
             if (this.max != null && value > this.max) {
                 return;
             }
-            this.$emit('quantityChange', value);
+            this.$emit('change', value);
         },
     },
     render() {
         const {
             min,
             max,
-            quantity,
+            value,
             handleDecrement,
             handleIncrement,
             handleInputChange,
@@ -73,7 +73,7 @@ const QuantityInput = {
                     type="button"
                     role="button"
                     class="QuantityInput__button"
-                    disabled={quantity <= min}
+                    disabled={value <= min}
                     onClick={handleDecrement}
                 >
                     <i class="fas fa-minus" />
@@ -84,7 +84,7 @@ const QuantityInput = {
                     step={1}
                     min={min}
                     max={max}
-                    value={quantity}
+                    value={value}
                     onInput={handleInputChange}
                     onFocus={(event) => {
                         event.target.select();
@@ -95,9 +95,9 @@ const QuantityInput = {
                     role="button"
                     class={{
                         QuantityInput__button: true,
-                        info: max == null || quantity < max,
+                        info: max == null || value < max,
                     }}
-                    disabled={max != null && quantity >= max}
+                    disabled={max != null && value >= max}
                     onClick={handleIncrement}
                 >
                     <i class="fas fa-plus" />
@@ -106,5 +106,3 @@ const QuantityInput = {
         );
     },
 };
-
-export default QuantityInput;

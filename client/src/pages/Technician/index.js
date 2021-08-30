@@ -1,6 +1,7 @@
-import Config from '@/config/globalConfig';
-import Help from '@/components/Help/Help.vue';
-import PersonForm from '@/components/PersonForm/PersonForm.vue';
+import './index.scss';
+import Config from '@/globals/config';
+import Help from '@/components/Help';
+import PersonForm from '@/components/PersonForm';
 
 const storageKeyWIP = 'WIP-newTechnician';
 

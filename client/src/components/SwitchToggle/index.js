@@ -1,7 +1,7 @@
 import './index.scss';
 
 // @vue/component
-const SwitchToggle = {
+export default {
     name: 'SwitchToggle',
     props: {
         value: { type: Boolean, required: true },
@@ -46,5 +46,3 @@ const SwitchToggle = {
         );
     },
 };
-
-export default SwitchToggle;

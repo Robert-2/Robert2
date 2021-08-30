@@ -1,4 +1,4 @@
-@import '../../../themes/default';
+@use '~@/style/globals';
 
 .ParkTotalAmount {
     text-align: center;
@@ -7,7 +7,7 @@
         width: 100%;
         border: none;
         background: none;
-        color: $text-light-color;
+        color: globals.$text-light-color;
     }
 
     &__amount {

@@ -1,4 +1,4 @@
-import Help from '@/components/Help/Help.vue';
+import Help from '@/components/Help';
 import EventSummarySettingsForm from './Form';
 
 // @vue/component

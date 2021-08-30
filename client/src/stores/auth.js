@@ -1,7 +1,5 @@
-/* eslint-disable import/no-cycle */
-
-import axios from '@/axios';
-import Config from '@/config/globalConfig';
+import requester from '@/globals/requester';
+import Config from '@/globals/config';
 import Cookies from '@/utils/cookies';
 
 const normalizeUser = (rawData) => ({
@@ -66,7 +64,7 @@ export default {
             }
 
             try {
-                const { data } = await axios.get('/session');
+                const { data } = await requester.get('/session');
                 commit('setUser', normalizeUser(data));
             } catch (error) {
                 // - Non connecté.
@@ -79,7 +77,7 @@ export default {
             }
         },
         async login({ dispatch, commit }, credentials) {
-            const { data } = await axios.post('session', credentials);
+            const { data } = await requester.post('session', credentials);
             commit('setUser', normalizeUser(data.user));
             setSessionCookie(data.token);
 

@@ -1,4 +1,4 @@
-@import '../../themes/default/index';
+@use '~@/style/globals';
 
 .BillingForm {
     &__discount-input .FormField__input {
@@ -12,7 +12,7 @@
     &__beneficiary {
         display: flex;
         flex-direction: column;
-        margin-top: $content-padding-small-vertical;
+        margin-top: globals.$content-padding-small-vertical;
 
         &__label {
             display: block;
@@ -21,18 +21,18 @@
     }
 
     &__save {
-        margin-top: $content-padding-large-vertical;
+        margin-top: globals.$content-padding-large-vertical;
     }
 
-    @media (min-width: $screen-tablet) {
+    @media (min-width: globals.$screen-tablet) {
         &__beneficiary {
             flex-direction: row;
             align-items: center;
             height: 2.5rem;
 
             &__label {
-                flex: 0 0 $form-label-width;
-                padding: 0 $input-padding-horizontal;
+                flex: 0 0 globals.$form-label-width;
+                padding: 0 globals.$input-padding-horizontal;
                 text-align: right;
             }
 
@@ -42,8 +42,8 @@
         }
 
         &__save {
-            margin-top: $content-padding-small-vertical;
-            padding-left: $form-label-width;
+            margin-top: globals.$content-padding-small-vertical;
+            padding-left: globals.$form-label-width;
         }
     }
 }

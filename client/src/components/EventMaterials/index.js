@@ -31,11 +31,6 @@ export default {
     created() {
         this.$store.dispatch('categories/fetch');
     },
-    methods: {
-        formatAmount(amount) {
-            return formatAmount(amount);
-        },
-    },
     render() {
         const {
             $t: __,
@@ -81,7 +76,7 @@ export default {
                                             </div>
                                             {withRentalPrices && (
                                                 <div class="EventMaterials__item__price">
-                                                    {this.formatAmount(material.rental_price)}
+                                                    {formatAmount(material.rental_price)}
                                                 </div>
                                             )}
                                             <div class="EventMaterials__item__quantity">
@@ -89,7 +84,7 @@ export default {
                                             </div>
                                             {withRentalPrices && (
                                                 <div class="EventMaterials__item__total">
-                                                    {this.formatAmount(material.pivot.quantity * material.rental_price)}
+                                                    {formatAmount(material.pivot.quantity * material.rental_price)}
                                                 </div>
                                             )}
                                         </li>
@@ -106,7 +101,7 @@ export default {
                                             {__('sub-total')}
                                         </div>
                                         <div class="EventMaterials__subtotal__price">
-                                            {this.formatAmount(category.subTotal)}
+                                            {formatAmount(category.subTotal)}
                                         </div>
                                     </div>
                                 )}

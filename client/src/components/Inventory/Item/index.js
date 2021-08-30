@@ -1,12 +1,12 @@
 import Material from './Material';
 
 // @vue/component
-const InventoryItem = {
+export default {
     name: 'InventoryItem',
     props: {
         material: { type: Object, required: true },
         quantities: { type: Object, required: true },
-        error: Object,
+        error: { type: Object, default: undefined },
         locked: { type: [Boolean, Array], default: false },
         strict: { type: Boolean, default: false },
     },
@@ -51,5 +51,3 @@ const InventoryItem = {
         );
     },
 };
-
-export default InventoryItem;

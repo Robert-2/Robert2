@@ -1,4 +1,4 @@
-@import '../../themes/default/index';
+@use '~@/style/globals';
 
 .Page--technician-view {
     display: flex;
@@ -13,7 +13,7 @@
         justify-content: center;
 
         .vue-tablist {
-            margin-bottom: $content-padding-small-vertical;
+            margin-bottom: globals.$content-padding-small-vertical;
         }
 
         .vue-tabpanel {

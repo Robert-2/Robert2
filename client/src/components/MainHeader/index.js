@@ -1,6 +1,6 @@
 import './index.scss';
 import Logo from '@/components/Logo';
-import TopMenu from './TopMenu';
+import Menu from './Menu';
 
 // @vue/component
 export default {
@@ -38,7 +38,7 @@ export default {
                     <i class="fas fa-bars fa-2x" />
                 </div>
                 <div class="MainHeader__title">{pageTitle}</div>
-                <TopMenu class="MainHeader__menu" />
+                <Menu class="MainHeader__menu" />
             </div>
         );
     },

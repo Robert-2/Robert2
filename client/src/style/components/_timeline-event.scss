@@ -23,7 +23,7 @@
 
         &.vis-selected {
             // stylelint-disable-next-line declaration-no-important
-            background-color: lighten($calendar-event-past-color, 10%) !important;
+            background-color: adjust-color($calendar-event-past-color, $lightness: 10%) !important;
         }
     }
 
@@ -33,7 +33,7 @@
 
         &.vis-selected {
             // stylelint-disable-next-line declaration-no-important
-            background-color: lighten($calendar-event-no-return-inventory-color, 10%) !important;
+            background-color: adjust-color($calendar-event-no-return-inventory-color, $lightness: 10%) !important;
         }
     }
 
@@ -45,7 +45,7 @@
 
         &.vis-selected {
             // stylelint-disable-next-line declaration-no-important
-            background-color: lighten($calendar-event-archived-color, 5%) !important;
+            background-color: adjust-color($calendar-event-archived-color, $lightness: 5%) !important;
         }
     }
 

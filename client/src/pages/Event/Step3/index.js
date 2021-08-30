@@ -3,7 +3,7 @@ import moment from 'moment';
 import dateRoundMinutes from '@/utils/dateRoundMinutes';
 import { confirm } from '@/utils/alert';
 import CriticalError from '@/components/CriticalError';
-import Help from '@/components/Help/Help.vue';
+import Help from '@/components/Help';
 import Loading from '@/components/Loading';
 import Timeline from '@/components/Timeline';
 import getPersonItemLabel from '@/utils/getPersonItemLabel';
@@ -14,7 +14,7 @@ import {
     TECHNICIAN_EVENT_STEP,
     TECHNICIAN_EVENT_MIN_DURATION,
     DATE_DB_FORMAT,
-} from '@/config/constants';
+} from '@/globals/constants';
 
 const getClosestStepTime = (requestedTime, roundMethod = 'floor') => {
     const time = moment(requestedTime).startOf('minute');
@@ -22,7 +22,7 @@ const getClosestStepTime = (requestedTime, roundMethod = 'floor') => {
 };
 
 // @vue/component
-const EventStep3 = {
+export default {
     name: 'EventStep3',
     props: {
         event: { type: Object, required: true },
@@ -376,5 +376,3 @@ const EventStep3 = {
         );
     },
 };
-
-export default EventStep3;
