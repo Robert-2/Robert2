@@ -1,126 +1,129 @@
-@import '../../themes/default/index';
+@use '~@/style/globals';
+@use 'sass:color';
 
 .Dropdown {
-  position: relative;
-  align-self: stretch;
+    position: relative;
+    align-self: stretch;
 
-  &__button,
-  &__item  {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    user-select: none;
-    padding: 0 $content-padding-small-vertical;
-    border-radius: 2px;
-    transition: all 300ms;
-  }
-
-  &__button {
-    height: 100%;
-    background-color: $bg-color-button-default;
-    color: $color-base-button;
-
-    &__icon {
-      font-size: 1.2rem;
+    &__button,
+    &__item {
+        display: flex;
+        align-items: center;
+        padding: 0 globals.$content-padding-small-vertical;
+        border-radius: 2px;
+        cursor: pointer;
+        user-select: none;
+        transition: all 300ms;
     }
 
-    &__text {
-      display: inline-block;
+    &__button {
+        height: 100%;
+        background-color: globals.$bg-color-button-default;
+        color: globals.$color-base-button;
+
+        &__icon {
+            font-size: 1.2rem;
+        }
+
+        &__text {
+            display: inline-block;
+        }
+
+        &__chevron {
+            margin-left: 5px;
+        }
+
+        &:hover {
+            background-color: color.adjust(globals.$bg-color-button-default, $lightness: 8%);
+            color: globals.$color-hover-button;
+        }
     }
 
-    &__chevron {
-      margin-left: 5px;
+    &__menu {
+        position: absolute;
+        z-index: 2;
+        top: 100%;
+        right: 0;
+        min-width: globals.$dropdown-min-width;
+        background: globals.$bg-color-dropdown-menu;
+        box-shadow: -2px 6px 6px rgba(0, 0, 0, 0.25);
+        transform-origin: 50% 0%;
+        transform: scaleY(0);
+        transition: transform 150ms ease-in-out;
+
+        &__title {
+            margin: 0;
+            padding: globals.$content-padding-small-vertical globals.$content-padding-small-horizontal;
+            font-size: 1.2rem;
+            text-align: center;
+            text-transform: capitalize;
+        }
+
+        &__items {
+            display: flex;
+            flex-direction: column;
+            margin: 0;
+            padding: 0;
+
+            .fas {
+                margin-right: globals.$content-padding-small-vertical;
+                font-size: globals.$sidebar-icon-size;
+            }
+        }
     }
 
-    &:hover {
-      background-color: lighten($bg-color-button-default, 8%);
-      color: $color-hover-button;
-    }
-  }
+    &__item {
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        padding: globals.$content-padding-large-horizontal globals.$content-padding-small-vertical;
+        list-style: none;
 
-  &__menu {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    min-width: $dropdown-min-width;
-    z-index: 2;
-    background: $bg-color-dropdown-menu;
-    box-shadow: -2px 6px 6px rgba(0, 0, 0, 0.25);
-    transform-origin: 50% 0%;
-    transform: scaleY(0);
-    transition: transform 150ms ease-in-out;
+        // stylelint-disable-next-line selector-max-type
+        &:not(button) {
+            color: globals.$text-base-color;
 
-    &__title {
-      margin: 0;
-      padding: $content-padding-small-vertical $content-padding-small-horizontal;
-      text-align: center;
-      font-size: 1.2rem;
-      text-transform: capitalize;
-    }
+            // stylelint-disable-next-line selector-max-type
+            &:hover {
+                background-color: globals.$bg-color-dropdown-menu-item-hover;
+                color: globals.$link-hover-color;
+            }
+        }
 
-    &__items {
-      display: flex;
-      flex-direction: column;
-      margin: 0;
-      padding: 0;
-
-      .fas {
-        font-size: $side-nav-icon-size;
-        margin-right: $content-padding-small-vertical;
-      }
-    }
-  }
-
-  &__item {
-    flex: 0 0 auto;
-    display: flex;
-    align-items: center;
-    list-style: none;
-    padding: $content-padding-large-horizontal $content-padding-small-vertical;
-
-    &:not(button) {
-      color: $text-base-color;
-
-      &:hover {
-        background-color: $bg-color-dropdown-menu-item-hover;
-        color: $link-hover-color;
-      }
+        &--active,
+        &--active:hover {
+            background-color: globals.$bg-color-dropdown-menu-item-active;
+            color: globals.$link-active-color;
+        }
     }
 
-    &--active,
-    &--active:hover {
-      background-color: $bg-color-dropdown-menu-item-active;
-      color: $link-active-color;
-    }
-  }
+    &--actions {
+        margin-left: globals.$content-padding-small-horizontal;
 
-  &--actions {
-    margin-left: $content-padding-small-horizontal;
+        .Dropdown__menu {
+            margin-top: globals.$content-padding-small-horizontal;
+        }
 
-    .Dropdown__menu {
-      margin-top: $content-padding-small-horizontal;
+        .Dropdown__item + .Dropdown__item {
+            margin: globals.$content-padding-small-horizontal 0 0;
+        }
     }
 
-    .Dropdown__item + .Dropdown__item {
-      margin: $content-padding-small-horizontal 0 0;
-    }
-  }
+    &--open {
+        .Dropdown {
+            &__menu {
+                transform: none;
+            }
 
-  &--open {
-    .Dropdown{
-      &__menu {
-        transform: none;
-      }
-
-      &__button {
-        background-color: lighten($bg-color-button-default, 15%);
-      }
+            &__button {
+                background-color: color.adjust(globals.$bg-color-button-default, $lightness: 15%);
+            }
+        }
     }
-  }
 
-  @media(min-width: $screen-mobile) {
-    &__menu__title {
-      display: none;
+    @media (min-width: globals.$screen-mobile) {
+        &__menu__title {
+            display: none;
+        }
     }
-  }
 }

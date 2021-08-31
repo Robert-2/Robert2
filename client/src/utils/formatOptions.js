@@ -1,19 +1,19 @@
 const formatOptions = (data, getLabel = null, emptyLabel = null) => {
-  if (!data || data.length === 0) {
-    return [];
-  }
+    if (!data || data.length === 0) {
+        return [];
+    }
 
-  const options = data.map((item) => {
-    const value = item.id;
-    const label = getLabel ? getLabel(item) : (item.name || 'N/A');
-    return { value, label };
-  });
+    const options = data.map((item) => {
+        const value = item.id;
+        const label = getLabel ? getLabel(item) : (item.name || 'N/A');
+        return { value, label };
+    });
 
-  if (emptyLabel) {
-    options.unshift({ value: '', label: emptyLabel });
-  }
+    if (emptyLabel) {
+        options.unshift({ value: '', label: emptyLabel });
+    }
 
-  return options;
+    return options;
 };
 
 export default formatOptions;

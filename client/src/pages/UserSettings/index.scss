@@ -1,0 +1,40 @@
+@use '~@/style/globals';
+
+.UserSettings {
+    &__title {
+        margin-bottom: 2rem;
+    }
+
+    &__content {
+        display: flex;
+        flex-wrap: wrap;
+        padding-bottom: 3rem;
+    }
+
+    .Form {
+        flex: 2;
+        max-width: globals.$form-max-width;
+        min-width: globals.$form-min-width;
+        margin-right: 1rem;
+    }
+
+    &__hours .FormField__input {
+        max-width: 70px;
+    }
+
+    &__extras {
+        flex: 1;
+        min-width: globals.$form-min-width;
+
+        &__buttons {
+            margin-top: 2rem;
+            text-align: center;
+        }
+    }
+
+    @media screen and (min-width: globals.$screen-tablet) {
+        &__title {
+            margin-left: globals.$form-label-width;
+        }
+    }
+}

@@ -1,78 +1,79 @@
-@import '../../themes/default/';
+@use '~@/style/globals';
 
 .EventDetails {
-  display: flex;
-  flex-direction: column;
-
-  .Loading,
-  .ErrorMessage {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 250px;
-    background: $bg-color-side-nav;
-    margin: 0;
-
-    .fas {
-      margin-right: .3rem;
-    }
-  }
-
-  &__content {
-    flex: 1;
     display: flex;
     flex-direction: column;
-    min-height: 520px;
-    max-height: 100vh;
-    overflow-y: auto;
 
-    &__body {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      padding: 1.5rem;
-      background-color: $bg-color-body;
+    .Loading,
+    .ErrorMessage {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 250px;
+        margin: 0;
+        background: globals.$bg-color-side-nav;
 
-      .Help {
-        margin-bottom: $content-padding-small-vertical;
-      }
+        .fas {
+            margin-right: 0.3rem;
+        }
+    }
 
-      .vue-tabs {
+    &__content {
         flex: 1;
         display: flex;
         flex-direction: column;
+        overflow-y: auto;
+        max-height: 100vh;
+        min-height: 520px;
 
-        .vue-tablist .fa-exclamation-triangle {
-          color: $text-danger-color;
-          margin-left: .5rem;
+        &__body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+            background-color: globals.$bg-color-body;
+
+            .Help {
+                margin-bottom: globals.$content-padding-small-vertical;
+            }
+
+            .vue-tabs {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+
+                // stylelint-disable-next-line selector-max-compound-selectors
+                .vue-tablist .fa-exclamation-triangle {
+                    margin-left: 0.5rem;
+                    color: globals.$text-danger-color;
+                }
+
+                .vue-tabpanel {
+                    flex: 1;
+                    display: flex;
+                    flex-direction: column;
+                }
+            }
         }
+    }
 
-        .vue-tabpanel {
-          flex: 1;
-          display: flex;
-          flex-direction: column;
+    &__content + .ErrorMessage {
+        min-height: auto;
+        margin-bottom: globals.$content-padding-large-vertical;
+        background: none;
+    }
+
+    &__materials-empty {
+        margin-bottom: globals.$content-padding-small-vertical;
+        color: globals.$text-danger-color;
+        font-size: 1.2rem;
+        text-align: center;
+
+        .fas {
+            width: 1.5rem;
+            margin-right: 0.3rem;
+            text-align: center;
         }
-      }
     }
-  }
-
-  &__content + .ErrorMessage {
-    min-height: auto;
-    background: none;
-    margin-bottom: $content-padding-large-vertical;
-  }
-
-  &__materials-empty {
-    font-size: 1.2rem;
-    margin-bottom: $content-padding-small-vertical;
-    color: $text-danger-color;
-    text-align: center;
-
-    .fas {
-      width: 1.5rem;
-      margin-right: .3rem;
-      text-align: center;
-    }
-  }
 }

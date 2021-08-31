@@ -1,15 +1,15 @@
-@import '../../themes/default/index';
+@use '~@/style/globals';
 
 .ErrorMessage {
-  text-align: center;
-  color: $text-danger-color;
-  font-weight: 600;
+    color: globals.$text-danger-color;
+    font-weight: 600;
+    text-align: center;
 
-  &__show-details {
-    display: block;
-    padding: 0 20px;
-    font-size: .9rem;
-    font-style: italic;
-    font-weight: 400;
-  }
+    &__show-details {
+        display: block;
+        padding: 0 20px;
+        font-size: 0.9rem;
+        font-weight: 400;
+        font-style: italic;
+    }
 }

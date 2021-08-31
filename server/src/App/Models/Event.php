@@ -40,7 +40,6 @@ class Event extends BaseModel
         $this->validation = [
             'user_id' => V::optional(V::numeric()),
             'title' => V::notEmpty()->length(2, 191),
-            'description' => V::optional(V::length(null, 255)),
             'reference' => V::oneOf(V::nullType(), V::alnum('.,-/_ ')->length(1, 64)),
             'start_date' => V::notEmpty()->date(),
             'end_date' => V::callback([$this, 'checkEndDate']),

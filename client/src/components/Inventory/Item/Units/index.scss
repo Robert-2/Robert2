@@ -1,25 +1,25 @@
 .InventoryItemUnits {
-  margin: 5px 0 0 40px;
+    margin: 5px 0 0 40px;
 
-  &__table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0 1px;
+    &__table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 1px;
 
-    .InventoryItemUnitsItem:last-child {
-      .InventoryItemUnitsItem__col {
-        &:first-child {
-          border-bottom-left-radius: 4px;
+        .InventoryItemUnitsItem:last-child {
+            .InventoryItemUnitsItem__col {
+                &:first-child {
+                    border-bottom-left-radius: 4px;
+                }
+
+                &:last-child {
+                    border-bottom-right-radius: 4px;
+                }
+            }
         }
-
-        &:last-child {
-          border-bottom-right-radius: 4px;
-        }
-      }
     }
-  }
 
-  &__add {
-    margin: 5px 0;
-  }
+    &__add {
+        margin: 5px 0;
+    }
 }

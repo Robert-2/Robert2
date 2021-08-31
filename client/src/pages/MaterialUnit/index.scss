@@ -1,0 +1,20 @@
+@use '~@/style/globals';
+
+.MaterialUnit {
+    display: flex;
+    flex-wrap: wrap;
+    padding-bottom: 3rem;
+
+    .Form {
+        flex: 2;
+        max-width: globals.$form-max-width;
+        min-width: globals.$form-min-width;
+        margin-right: 1rem;
+    }
+
+    .Help {
+        flex: 1;
+        min-width: 150px;
+        margin-top: 3.8rem;
+    }
+}

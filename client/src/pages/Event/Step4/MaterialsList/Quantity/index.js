@@ -1,43 +1,37 @@
 import debounce from 'debounce';
 import QuantityInput from '@/components/QuantityInput';
 
+// @vue/component
 export default {
-  name: 'MaterialsListQuantity',
-  props: {
-    material: Object,
-    initialQuantity: Number,
-  },
-  data() {
-    return {
-      quantity: this.initialQuantity,
-    };
-  },
-  watch: {
-    initialQuantity(newValue) {
-      this.quantity = newValue;
+    name: 'MaterialsListQuantity',
+    props: {
+        material: { type: Object, required: true },
+        initialQuantity: { type: Number, default: 0 },
     },
-  },
-  methods: {
-    setQuantity(newValue) {
-      this.quantity = newValue;
-      this.updateQuantityDebounced();
+    data() {
+        return {
+            quantity: this.initialQuantity,
+        };
     },
+    watch: {
+        initialQuantity(newValue) {
+            this.quantity = newValue;
+        },
+    },
+    methods: {
+        handleChange(newQuantity) {
+            this.quantity = newQuantity;
+            this.updateQuantityDebounced();
+        },
 
-    // eslint-disable-next-line func-names
-    updateQuantityDebounced: debounce(function () {
-      this.$emit('setQuantity', this.material, this.quantity);
-    }, 400),
-  },
-  render() {
-    const { material, quantity, setQuantity } = this;
-
-    return (
-      <QuantityInput
-        material={material}
-        quantity={quantity}
-        onQuantityChange={setQuantity}
-        allowOverflow
-      />
-    );
-  },
+        // - On a besoin du 'this', donc obligé d'utiliser une fonction non fléchée
+        // eslint-disable-next-line func-names
+        updateQuantityDebounced: debounce(function () {
+            this.$emit('change', this.material, this.quantity);
+        }, 400),
+    },
+    render() {
+        const { quantity, handleChange } = this;
+        return <QuantityInput value={quantity} onChange={handleChange} />;
+    },
 };

@@ -1,7 +1,7 @@
-@import '../../themes/default/';
+@use '~@/style/globals';
 
 .EventNotBillable {
-  font-size: 1.2rem;
-  color: $text-warning-color;
-  text-align: center;
+    color: globals.$text-warning-color;
+    font-size: 1.2rem;
+    text-align: center;
 }

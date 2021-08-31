@@ -1,0 +1,48 @@
+<template>
+    <Layout>
+        <div class="Login">
+            <div class="Login__message" :class="`Login__message--${message.type}`">
+                <i v-if="message.isLoading" class="fa fa-circle-o-notch fa-spin" />
+                {{ message.text }}
+            </div>
+            <div class="Login__body">
+                <form class="Login__form" @submit.prevent="login">
+                    <input
+                        v-model="credentials.identifier"
+                        type="text"
+                        autocomplete="username"
+                        class="Login__form__input"
+                        :placeholder="$t('email-address-or-pseudo')"
+                    />
+                    <input
+                        v-model="credentials.password"
+                        type="password"
+                        autocomplete="current-password"
+                        class="Login__form__input"
+                        :placeholder="$t('password')"
+                    />
+                    <button type="submit" class="Login__form__submit info">
+                        <i class="fa fa-user-alt" />
+                        {{ $t('page-login.connexion') }}
+                    </button>
+                </form>
+                <div class="Login__alternatives" v-if="showAlternativesLogin">
+                    <div class="Login__divider">
+                        <strong class="Login__divider__label">{{ $t('or') }}</strong>
+                    </div>
+                    <div class="Login__buttons">
+                        <a
+                            class="Login__button Login__button--cas"
+                            :href="casLoginUrl"
+                            v-if="showCASLogin"
+                        >
+                            {{ $t('page-login.login-with-cas') }}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </Layout>
+</template>
+
+<script src="./index.js"></script>

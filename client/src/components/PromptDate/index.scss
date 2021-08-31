@@ -1,38 +1,38 @@
-@import '../../themes/default/index';
+@use '~@/style/globals';
 
 .PromptDate {
-  &__header {
-    display: flex;
-    align-items: center;
-    padding: $content-padding-small-horizontal $content-padding-large-vertical;
-    background-color: $bg-color-main-header;
+    &__header {
+        display: flex;
+        align-items: center;
+        padding: globals.$content-padding-small-horizontal globals.$content-padding-large-vertical;
+        background-color: globals.$bg-color-main-header;
 
-    &__title {
-      flex: 1;
-      font-size: 1.4rem;
+        &__title {
+            flex: 1;
+            font-size: 1.4rem;
+        }
+
+        &__btn-close {
+            flex: 0 0 auto;
+            border: none;
+            background: none;
+        }
     }
 
-    &__btn-close {
-      flex: 0 0 auto;
-      background: none;
-      border: none;
+    &__main {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: globals.$content-padding-large-vertical globals.$content-padding-small-vertical;
     }
-  }
 
-  &__main {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: $content-padding-large-vertical $content-padding-small-vertical;
-  }
+    &__separator {
+        margin: 0;
+        opacity: 0.15;
+    }
 
-  &__separator {
-    opacity: .15;
-    margin: 0;
-  }
-
-  &__footer {
-    padding: $content-padding-large-vertical;
-    text-align: center;
-  }
+    &__footer {
+        padding: globals.$content-padding-large-vertical;
+        text-align: center;
+    }
 }

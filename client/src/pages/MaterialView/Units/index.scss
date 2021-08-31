@@ -1,0 +1,24 @@
+@use '~@/style/globals';
+
+.MaterialViewUnits {
+    display: flex;
+    flex-wrap: wrap;
+
+    .VueTables__actions {
+        width: 8.7rem;
+    }
+
+    &__yes-warning {
+        color: globals.$text-warning-color;
+        font-weight: 600;
+    }
+
+    &__yes-danger {
+        color: globals.$text-danger-color;
+        font-weight: 600;
+    }
+
+    &__no-ok {
+        color: globals.$text-light-color;
+    }
+}

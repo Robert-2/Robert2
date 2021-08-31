@@ -1,0 +1,73 @@
+@use '~@/style/globals';
+
+.Event {
+    display: flex;
+    flex-wrap: wrap;
+    height: 100%;
+
+    &__panel {
+        position: fixed;
+        width: 160px;
+        padding: 7px 0;
+        text-align: right;
+
+        &__help {
+            display: flex;
+            justify-content: center;
+
+            .Help {
+                margin: 1rem 0.5rem;
+                line-height: 1.5;
+
+                &__error {
+                    text-align: center;
+                }
+
+                &__loading {
+                    justify-content: center;
+                }
+            }
+        }
+    }
+
+    .EventMiniSummary {
+        width: 100%;
+        margin-top: 1rem;
+    }
+
+    .EventStep1,
+    .EventStep2,
+    .EventStep3,
+    .EventStep4,
+    .EventStep5 {
+        width: 100%;
+        max-width: 600px;
+        min-width: 250px;
+        margin-left: 180px;
+    }
+
+    .EventStep3,
+    .EventStep4 {
+        max-width: none;
+    }
+
+    .EventStep5 {
+        max-width: 900px;
+    }
+}
+
+@media (min-width: globals.$screen-desktop) {
+    .Event {
+        &__panel {
+            width: 200px;
+        }
+
+        .EventStep1,
+        .EventStep2,
+        .EventStep3,
+        .EventStep4,
+        .EventStep5 {
+            margin-left: 220px;
+        }
+    }
+}

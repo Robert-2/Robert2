@@ -1,31 +1,39 @@
 import moment from 'moment';
 
 const formatEventTechnician = (eventTechnician) => {
-  if (!eventTechnician) {
-    return null;
-  }
+    if (!eventTechnician) {
+        return null;
+    }
 
-  const { id, start_time: start, end_time: end, position, event } = eventTechnician;
-  const { title: eventTitle, location } = event;
+    const {
+        id,
+        event,
+        position,
+        event_id: eventId,
+        start_time: start,
+        end_time: end,
+    } = eventTechnician;
 
-  let title = eventTitle;
-  if (location) {
-    title = `${title} (${location})`;
-  }
+    const { title: eventTitle, location } = event;
 
-  const _start = moment(start);
-  const _end = moment(end);
-  const duration = _end.diff(_start, 'days') + 1;
-  let dateFormat = 'LT';
-  if (duration > 1) {
-    dateFormat = 'DD MMMM, LT';
-  }
+    let title = eventTitle;
+    if (location) {
+        title = `${title} (${location})`;
+    }
 
-  const datesString = `${_start.format(dateFormat)} ⇒ ${_end.format(dateFormat)}`;
-  const content = position ? `<strong>${position}</strong> : ${datesString}` : datesString;
-  title = `${title}\n${content}`;
+    const _start = moment(start);
+    const _end = moment(end);
+    const duration = _end.diff(_start, 'days') + 1;
+    let dateFormat = 'LT';
+    if (duration > 1) {
+        dateFormat = 'DD MMMM, LT';
+    }
 
-  return { id, start, end, content, title };
+    const datesString = `${_start.format(dateFormat)} ⇒ ${_end.format(dateFormat)}`;
+    const content = position ? `${datesString} : ${position}` : datesString;
+    title = `${title}\n${content}`;
+
+    return { id, eventId, start, end, content, title };
 };
 
 export default formatEventTechnician;

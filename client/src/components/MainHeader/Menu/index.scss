@@ -1,0 +1,13 @@
+@use '~@/style/globals';
+@use 'sass:color';
+
+.MainHeaderMenu {
+    .Dropdown__button {
+        background-color: globals.$bg-color-main-header;
+        text-transform: capitalize;
+
+        &:hover {
+            background-color: color.adjust(globals.$bg-color-main-header, $lightness: 8%);
+        }
+    }
+}
