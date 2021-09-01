@@ -304,6 +304,7 @@ export default {
         'display-materials': "See the material of this category",
         'no-category': "No category.",
         'create-a-category': "Create a category",
+        'cannot-delete-not-empty': "Impossible to delete this category, because it's not empty!",
     },
 
     'page-subcategories': {

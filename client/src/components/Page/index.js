@@ -9,10 +9,10 @@ export default {
     props: {
         name: { type: String, required: true },
         title: { type: String, default: null },
-        help: String,
-        error: String,
+        help: { type: String, default: undefined },
+        error: { type: [String, Error], default: null },
         isLoading: Boolean,
-        actions: Array,
+        actions: { type: Array, default: undefined },
         render: { type: Function, default: undefined },
     },
     watch: {

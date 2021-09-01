@@ -5,7 +5,7 @@ import Details from './Details';
 export default {
     name: 'ErrorMessage',
     props: {
-        error: { type: Error, required: true },
+        error: { type: [String, Error], required: true },
     },
     data() {
         return {
@@ -14,7 +14,7 @@ export default {
     },
     computed: {
         code() {
-            const { error } = this;
+            const { error } = this.$props;
             if (!error.response) {
                 return -1;
             }
@@ -22,7 +22,11 @@ export default {
         },
 
         message() {
-            const { error } = this;
+            const { error } = this.$props;
+
+            if (typeof error === 'string') {
+                return error;
+            }
 
             if (!error.response) {
                 return this.$t('errors.generic', { message: error.message || 'unknown' });
