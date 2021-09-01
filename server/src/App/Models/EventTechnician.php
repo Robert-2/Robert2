@@ -133,8 +133,12 @@ class EventTechnician extends BaseModel
 
         $technicians = [];
         foreach ($eventTechnicians as $technician) {
-            $technicianStartTime = (new \DateTime($technician['start_time']))->add($offsetInterval);
-            $technicianEndTime = (new \DateTime($technician['end_time']))->add($offsetInterval);
+            $technicianStartTime = roundDate(
+                (new \DateTime($technician['start_time']))->add($offsetInterval)
+            );
+            $technicianEndTime = roundDate(
+                (new \DateTime($technician['end_time']))->add($offsetInterval)
+            );
 
             if ($technicianStartTime > $newEndDate) {
                 continue;
