@@ -14,9 +14,14 @@
                 </button>
             </div>
         </div>
-
         <div class="content__main-view Categories__items">
-            <div v-for="category in categories" :key="category.id" class="Categories__category">
+            <EmptyMessage
+                v-if="isFetched && categories.length === 0"
+                :message="$t('page-categories.no-category')"
+                :action="{ label: $t('page-categories.create-a-category'), onClick: addCategory }"
+            />
+            <Loading v-if="!isFetched" />
+            <div v-else v-for="category in categories" :key="category.id" class="Categories__category">
                 <div class="Categories__category__name">
                     <i class="fas fa-folder-open" />
                     {{ category.name }}
