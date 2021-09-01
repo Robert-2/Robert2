@@ -1,6 +1,11 @@
 @use '~@/style/globals';
 
 .Categories {
+    .EmptyMessage,
+    .Loading {
+        width: 100%;
+    }
+
     .content__main-view {
         flex-flow: row wrap;
         padding-right: 0;

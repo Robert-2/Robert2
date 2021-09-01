@@ -302,6 +302,8 @@ export default {
         'saved': "Catégorie sauvegardée.",
         'deleted': "Catégorie supprimée.",
         'display-materials': "Voir le matériel de la catégorie",
+        'no-category': "Aucune catégorie.",
+        'create-a-category': "Créer une catégorie",
     },
 
     'page-subcategories': {

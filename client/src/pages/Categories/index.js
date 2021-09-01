@@ -1,11 +1,13 @@
 import './index.scss';
 import Alert from '@/components/Alert';
 import Help from '@/components/Help';
+import Loading from '@/components/Loading';
+import EmptyMessage from '@/components/EmptyMessage';
 
 // @vue/component
 export default {
     name: 'Categories',
-    components: { Help },
+    components: { Help, Loading, EmptyMessage },
     data() {
         return {
             help: 'page-categories.help',

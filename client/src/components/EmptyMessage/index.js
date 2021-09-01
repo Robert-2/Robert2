@@ -16,17 +16,12 @@ export default {
                 return null;
             }
 
-            const LinkComponent = action.url ? 'router-link' : 'a';
-            return (
-                <LinkComponent
-                    class="EmptyMessage__action button success"
-                    // eslint-disable-next-line react/jsx-handler-names
-                    onClick={action.onClick}
-                    to={action.url}
-                >
-                    {action.label}
-                </LinkComponent>
-            );
+            const { label, url, onClick } = action;
+            const classNames = 'EmptyMessage__action button success';
+
+            return url
+                ? <router-link to={url} class={classNames}>{label}</router-link>
+                : <a class={classNames} onClick={onClick}>{label}</a>;
         };
 
         return (
