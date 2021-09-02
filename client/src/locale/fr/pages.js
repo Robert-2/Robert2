@@ -304,6 +304,7 @@ export default {
         'display-materials': "Voir le matériel de la catégorie",
         'no-category': "Aucune catégorie.",
         'create-a-category': "Créer une catégorie",
+        'cannot-delete-not-empty': "Impossible de supprimer cette catégorie, car elle n'est pas vide\u00a0!",
     },
 
     'page-subcategories': {

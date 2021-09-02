@@ -24,12 +24,11 @@ final class SubCategoriesTest extends ApiTestCase
         ]);
         $this->assertStatusCode(SUCCESS_CREATED);
         $this->assertResponseData([
-            'id'          => 5,
-            'name'        => 'New SubCategory',
+            'id' => 5,
+            'name' => 'New SubCategory',
             'category_id' => 1,
-            'created_at'  => 'fakedTestContent',
-            'updated_at'  => 'fakedTestContent',
-            'deleted_at'  => null,
+            'created_at' => 'fakedTestContent',
+            'updated_at' => 'fakedTestContent',
         ], ['created_at', 'updated_at']);
     }
 
@@ -51,45 +50,21 @@ final class SubCategoriesTest extends ApiTestCase
         $this->client->put('/api/subcategories/1', ['name' => 'Mixers edited']);
         $this->assertStatusCode(SUCCESS_OK);
         $this->assertResponseData([
-            'id'          => 1,
-            'name'        => 'Mixers edited',
+            'id' => 1,
+            'name' => 'Mixers edited',
             'category_id' => 1,
-            'created_at'  => null,
-            'updated_at'  => 'fakedTestContent',
-            'deleted_at'  => null
+            'created_at' => null,
+            'updated_at' => 'fakedTestContent',
         ], ['updated_at']);
     }
 
-    public function testDeleteAndDestroySubCategory()
+    public function testDeleteSubCategory()
     {
-        // - First call : sets `deleted_at` not null
-        $this->client->delete('/api/subcategories/3');
-        $this->assertStatusCode(SUCCESS_OK);
-        $response = $this->_getResponseAsArray();
-        $this->assertNotEmpty($response['deleted_at']);
-
-        // - Second call : actually DESTROY record from DB
         $this->client->delete('/api/subcategories/3');
         $this->assertStatusCode(SUCCESS_OK);
         $this->assertResponseData(['destroyed' => true]);
-    }
 
-    public function testRestoreSubCategoryNotFound()
-    {
-        $this->client->put('/api/subcategories/restore/999');
+        $this->client->get('/api/subcategories/3');
         $this->assertNotFound();
-    }
-
-    public function testRestoreSubCategory()
-    {
-        // - First, delete category #3
-        $this->client->delete('/api/subcategories/3');
-        $this->assertStatusCode(SUCCESS_OK);
-
-        // - Then, restore category #3
-        $this->client->put('/api/subcategories/restore/3');
-        $this->assertStatusCode(SUCCESS_OK);
-        $response = $this->_getResponseAsArray();
-        $this->assertEmpty($response['deleted_at']);
     }
 }

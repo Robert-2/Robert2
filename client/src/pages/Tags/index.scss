@@ -21,16 +21,16 @@
     &__edit-button {
         margin-left: 0.5rem;
         padding: 0.33rem 0.6rem;
+        transition: none;
     }
 
     &__item {
         flex: 0 0 auto;
         display: flex;
         align-items: center;
-        min-width: 18rem;
-        min-height: 2rem;
-        margin: 0.5rem 2rem 0.5rem 0;
-        padding: 0.6rem 1rem;
+        min-width: 300px;
+        margin: globals.$content-padding-small-horizontal 0;
+        padding: 10px 15px;
         border-radius: 10px;
         background: globals.$bg-color-emphasis;
         font-size: 1.2rem;
