@@ -9,79 +9,71 @@ final class CategoriesTest extends ApiTestCase
         $this->assertStatusCode(SUCCESS_OK);
         $this->assertResponseData([
             'pagination' => [
-                'current_page'   => 1,
-                'from'           => 1,
-                'last_page'      => 1,
-                'path'           => '/api/categories',
+                'current_page' => 1,
+                'from' => 1,
+                'last_page' => 1,
+                'path' => '/api/categories',
                 'first_page_url' => '/api/categories?page=1',
-                'next_page_url'  => null,
-                'prev_page_url'  => null,
-                'last_page_url'  => '/api/categories?page=1',
-                'per_page'       => $this->settings['maxItemsPerPage'],
-                'to'             => 4,
-                'total'          => 4,
+                'next_page_url' => null,
+                'prev_page_url' => null,
+                'last_page_url' => '/api/categories?page=1',
+                'per_page' => $this->settings['maxItemsPerPage'],
+                'to' => 4,
+                'total' => 4,
             ],
             'data' => [
                 [
-                    'id'             => 4,
-                    'name'           => 'Décors',
-                    'created_at'     => null,
-                    'updated_at'     => null,
-                    'deleted_at'     => null,
+                    'id' => 4,
+                    'name' => 'Décors',
+                    'created_at' => null,
+                    'updated_at' => null,
                     'sub_categories' => [],
                 ],
                 [
-                    'id'             => 2,
-                    'name'           => 'light',
-                    'created_at'     => null,
-                    'updated_at'     => null,
-                    'deleted_at'     => null,
+                    'id' => 2,
+                    'name' => 'light',
+                    'created_at' => null,
+                    'updated_at' => null,
                     'sub_categories' => [
                         [
-                            'id'          => 4,
-                            'name'        => 'dimmers',
+                            'id' => 4,
+                            'name' => 'dimmers',
                             'category_id' => 2,
                         ],
                         [
-                            'id'          => 3,
-                            'name'        => 'projectors',
+                            'id' => 3,
+                            'name' => 'projectors',
                             'category_id' => 2,
                         ],
                     ],
                 ],
                 [
-                    'id'             => 1,
-                    'name'           => 'sound',
-                    'created_at'     => null,
-                    'updated_at'     => null,
-                    'deleted_at'     => null,
+                    'id' => 1,
+                    'name' => 'sound',
+                    'created_at' => null,
+                    'updated_at' => null,
                     'sub_categories' => [
                         [
-                            'id'          => 1,
-                            'name'        => 'mixers',
+                            'id' => 1,
+                            'name' => 'mixers',
                             'category_id' => 1,
                         ],
                         [
-                            'id'          => 2,
-                            'name'        => 'processors',
+                            'id' => 2,
+                            'name' => 'processors',
                             'category_id' => 1,
                         ],
                     ],
                 ],
                 [
-                    'id'             => 3,
-                    'name'           => 'transport',
-                    'created_at'     => null,
-                    'updated_at'     => null,
-                    'deleted_at'     => null,
+                    'id' => 3,
+                    'name' => 'transport',
+                    'created_at' => null,
+                    'updated_at' => null,
                     'sub_categories' => [],
                 ],
             ],
         ]);
-
-        $this->client->get('/api/categories?deleted=1');
-        $this->assertStatusCode(SUCCESS_OK);
-        $this->assertResponsePaginatedData(0, '/api/categories', 'deleted=1');
     }
 
     public function testGetCategorieNotFound()
@@ -95,20 +87,19 @@ final class CategoriesTest extends ApiTestCase
         $this->client->get('/api/categories/1');
         $this->assertStatusCode(SUCCESS_OK);
         $this->assertResponseData([
-            'id'             => 1,
-            'name'           => 'sound',
-            'created_at'     => null,
-            'updated_at'     => null,
-            'deleted_at'     => null,
+            'id' => 1,
+            'name' => 'sound',
+            'created_at' => null,
+            'updated_at' => null,
             'sub_categories' => [
                 [
-                    'id'          => 1,
-                    'name'        => 'mixers',
+                    'id' => 1,
+                    'name' => 'mixers',
                     'category_id' => 1,
                 ],
                 [
-                    'id'          => 2,
-                    'name'        => 'processors',
+                    'id' => 2,
+                    'name' => 'processors',
                     'category_id' => 1,
                 ],
             ],
@@ -120,12 +111,11 @@ final class CategoriesTest extends ApiTestCase
         $this->client->post('/api/categories', ['name' => 'New Category']);
         $this->assertStatusCode(SUCCESS_CREATED);
         $this->assertResponseData([
-            'id'             => 5,
-            'name'           => 'New Category',
+            'id' => 5,
+            'name' => 'New Category',
             'sub_categories' => [],
-            'created_at'     => 'fakedTestContent',
-            'updated_at'     => 'fakedTestContent',
-            'deleted_at'     => null,
+            'created_at' => 'fakedTestContent',
+            'updated_at' => 'fakedTestContent',
         ], ['created_at', 'updated_at']);
     }
 
@@ -147,56 +137,32 @@ final class CategoriesTest extends ApiTestCase
         $this->client->put('/api/categories/1', ['name' => 'Sound edited']);
         $this->assertStatusCode(SUCCESS_OK);
         $this->assertResponseData([
-            'id'             => 1,
-            'name'           => 'Sound edited',
-            'created_at'     => null,
-            'updated_at'     => 'fakedTestContent',
-            'deleted_at'     => null,
+            'id' => 1,
+            'name' => 'Sound edited',
+            'created_at' => null,
+            'updated_at' => 'fakedTestContent',
             'sub_categories' => [
                 [
-                    'id'          => 1,
-                    'name'        => 'mixers',
+                    'id' => 1,
+                    'name' => 'mixers',
                     'category_id' => 1,
                 ],
                 [
-                    'id'          => 2,
-                    'name'        => 'processors',
+                    'id' => 2,
+                    'name' => 'processors',
                     'category_id' => 1,
                 ],
             ],
         ], ['updated_at']);
     }
 
-    public function testDeleteAndDestroyCategory()
+    public function testDeleteCategory()
     {
-        // - First call : sets `deleted_at` not null
-        $this->client->delete('/api/categories/3');
-        $this->assertStatusCode(SUCCESS_OK);
-        $response = $this->_getResponseAsArray();
-        $this->assertNotEmpty($response['deleted_at']);
-
-        // - Second call : actually DESTROY record from DB
         $this->client->delete('/api/categories/3');
         $this->assertStatusCode(SUCCESS_OK);
         $this->assertResponseData(['destroyed' => true]);
-    }
 
-    public function testRestoreCategoryNotFound()
-    {
-        $this->client->put('/api/categories/restore/999');
+        $this->client->get('/api/categories/3');
         $this->assertNotFound();
-    }
-
-    public function testRestoreCategory()
-    {
-        // - First, delete category #3
-        $this->client->delete('/api/categories/3');
-        $this->assertStatusCode(SUCCESS_OK);
-
-        // - Then, restore category #3
-        $this->client->put('/api/categories/restore/3');
-        $this->assertStatusCode(SUCCESS_OK);
-        $response = $this->_getResponseAsArray();
-        $this->assertEmpty($response['deleted_at']);
     }
 }

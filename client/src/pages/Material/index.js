@@ -107,49 +107,54 @@ export default {
         this.$store.dispatch('parks/fetch');
         this.$store.dispatch('categories/fetch');
 
-        this.fetchMaterial();
+        if (this.isNew) {
+            this.initWithStash();
+        }
+
+        this.fetchData();
         this.setDefaultPark();
     },
     methods: {
-        fetchMaterial() {
-            if (this.isNew) {
-                this.initWithStash();
-                return;
-            }
-
+        async fetchData() {
             this.resetHelpLoading();
 
             const { id } = this.material;
             const { resource } = this.$route.meta;
 
-            this.$http.get(`${resource}/${id}`)
-                .then(({ data }) => {
+            try {
+                if (!this.isNew) {
+                    const { data } = await this.$http.get(`${resource}/${id}`);
                     this.setMaterialData(data);
-                    this.fetchAttributes();
-                    this.isLoading = false;
-                })
-                .catch(this.displayError);
+                }
+
+                await this.fetchAttributes();
+            } catch (error) {
+                this.displayError(error);
+            } finally {
+                this.isLoading = false;
+            }
+        },
+
+        async fetchAttributes() {
+            this.extraAttributes = [];
+
+            let { category_id: categoryId } = this.material;
+            if (!categoryId) {
+                categoryId = null;
+            }
+
+            try {
+                const { data } = await this.$http.get(`attributes?category=${categoryId}`);
+                this.extraAttributes = data;
+            } catch (error) {
+                this.displayError(error);
+            }
         },
 
         setDefaultPark() {
             if (this.material.id === null && this.parksOptions.length === 1) {
                 this.material.park_id = this.firstPark?.id || '';
             }
-        },
-
-        fetchAttributes() {
-            this.extraAttributes = [];
-
-            const { category_id: categoryId } = this.material;
-            if (!categoryId) {
-                return;
-            }
-
-            this.$http.get(`attributes?category=${categoryId}`)
-                .then(({ data }) => {
-                    this.extraAttributes = data;
-                })
-                .catch(this.displayError);
         },
 
         getAttributeType(attributeType) {
@@ -218,7 +223,6 @@ export default {
 
                 await this.uploadNewPicture();
 
-                this.isLoading = false;
                 this.help = { type: 'success', text: 'page-materials.saved' };
 
                 setTimeout(() => {
@@ -226,6 +230,8 @@ export default {
                 }, 300);
             } catch (error) {
                 this.displayError(error);
+            } finally {
+                this.isLoading = false;
             }
         },
 
@@ -283,7 +289,6 @@ export default {
         displayError(error) {
             this.help = 'page-materials.help-edit';
             this.error = error;
-            this.isLoading = false;
 
             const { code, details } = error.response?.data?.error || { code: 0, details: {} };
             if (code === 400) {
@@ -371,19 +376,12 @@ export default {
         },
 
         initWithStash() {
-            if (!this.isNew) {
-                this.fetchAttributes();
-                return;
-            }
-
             const stashedData = localStorage.getItem(storageKeyWIP);
             if (!stashedData) {
-                this.fetchAttributes();
                 return;
             }
 
             this.material = JSON.parse(stashedData);
-            this.fetchAttributes();
             this.updateSubCategories();
             this.setMaterialAttributes();
         },

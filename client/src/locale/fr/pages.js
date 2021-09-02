@@ -235,6 +235,7 @@ export default {
         'confirm-restore': "Voulez-vous vraiment restaurer ce matériel\u00a0?",
         'saved': "Matériel sauvegardé.",
         'print-complete-list': "Imprimer la liste complète du matériel",
+        'more-attribute-when-category-selected': "Après avoir sélectionné une catégorie, d'autres caractéristiques spéciales peuvent apparaître.",
     },
 
     'page-materials-view': {
@@ -328,6 +329,7 @@ export default {
         'display-materials': "Voir le matériel de la catégorie",
         'no-category': "Aucune catégorie.",
         'create-a-category': "Créer une catégorie",
+        'cannot-delete-not-empty': "Impossible de supprimer cette catégorie, car elle n'est pas vide\u00a0!",
     },
 
     'page-subcategories': {

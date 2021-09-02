@@ -1,0 +1,100 @@
+@use '~@/style/globals';
+
+.CategoriesItem {
+    max-width: 500px;
+    margin: 0;
+    padding: 0;
+    border-radius: 10px;
+    background: globals.$bg-color-emphasis;
+    list-style: none;
+
+    &--category {
+        margin: 0 0 15px;
+        padding: globals.$content-padding-large-horizontal globals.$content-padding-large-vertical;
+    }
+
+    &--sub-category {
+        margin-top: 10px;
+    }
+
+    &__name {
+        display: flex;
+        align-items: center;
+        min-height: 2.2rem;
+        color: globals.$text-base-color;
+        font-size: 1.2rem;
+
+        .fas {
+            margin-right: 0.6rem;
+            font-size: 1.3rem;
+        }
+    }
+
+    &__actions {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        min-width: 110px;
+    }
+
+    &__edit-button,
+    &__delete-button {
+        margin-left: globals.$content-padding-small-horizontal;
+        padding: 4px 8px;
+        transition: none;
+
+        .fas {
+            margin: 0;
+            font-size: 1rem;
+        }
+    }
+
+    &__add-sub-category-btn {
+        display: block;
+        margin-top: 5px;
+        padding-left: 0;
+        background: none;
+        color: globals.$link-base-color;
+
+        &:hover,
+        &:active,
+        &:focus {
+            background: none;
+            color: globals.$link-hover-color;
+        }
+    }
+
+    &__sub-categories {
+        margin: 0 0 0 30px;
+        padding: 0;
+    }
+
+    @media (min-width: globals.$screen-mobile) {
+        &--category {
+            margin-right: 25px;
+            margin-bottom: 25px;
+        }
+    }
+
+    @media (min-width: globals.$screen-desktop) {
+        &--category {
+            margin-right: 35px;
+            margin-bottom: 35px;
+        }
+
+        &__edit-button,
+        &__delete-button,
+        &__view-materials-button {
+            visibility: hidden;
+        }
+
+        &__name:hover {
+            .CategoriesItem__edit-button,
+            .CategoriesItem__delete-button,
+            .CategoriesItem__view-materials-button {
+                visibility: visible;
+            }
+        }
+    }
+}

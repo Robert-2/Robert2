@@ -1,10 +1,20 @@
 import formatOptions from '@/utils/formatOptions';
 
 describe('formatOptions', () => {
-    it('returns an array with only one empty option', () => {
+    it('returns an empty array when there is no data and/or no placeholder', () => {
         expect(formatOptions()).toEqual([]);
-        expect(formatOptions(null)).toEqual([]);
         expect(formatOptions([])).toEqual([]);
+        expect(formatOptions(null)).toEqual([]);
+    });
+
+    it('returns an array with the placeholder only if the list is explicitely empty', () => {
+        expect(formatOptions([], null, 'Choose...')).toEqual([
+            { value: '', label: 'Choose...' },
+        ]);
+
+        // -> Cas où les données passées ne sont pas explicitement vides (= tableau vide) => Pas de placeholder.
+        expect(formatOptions(undefined, null, 'Choose...')).toEqual([]);
+        expect(formatOptions(null, null, 'Choose...')).toEqual([]);
     });
 
     it('returns a set of options with given list of entities', () => {

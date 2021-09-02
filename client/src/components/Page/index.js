@@ -9,10 +9,10 @@ export default {
     props: {
         name: { type: String, required: true },
         title: { type: String, default: null },
-        help: String,
-        error: String,
+        help: { type: String, default: undefined },
+        error: { type: [String, Error], default: null },
         isLoading: Boolean,
-        actions: Array,
+        actions: { type: Array, default: undefined },
         render: { type: Function, default: undefined },
     },
     watch: {
@@ -36,14 +36,24 @@ export default {
         const { help, actions, error, isLoading, render } = this.$props;
         const content = render ? render() : this.$slots.default;
 
+        const renderHelp = () => {
+            if (!isLoading && !error && !help) {
+                return null;
+            }
+
+            return (
+                <div class="header-page__help">
+                    {isLoading && <Loading horizontal />}
+                    {!isLoading && error && <ErrorMessage error={error} />}
+                    {!isLoading && !error && help}
+                </div>
+            );
+        };
+
         return (
             <div class="content">
                 <div class="content__header header-page">
-                    <div class="header-page__help">
-                        {isLoading && <Loading horizontal />}
-                        {!isLoading && error && <ErrorMessage error={error} />}
-                        {!isLoading && !error && help}
-                    </div>
+                    {renderHelp()}
                     {actions && actions.length > 0 && (
                         <nav class="header-page__actions">
                             {actions}

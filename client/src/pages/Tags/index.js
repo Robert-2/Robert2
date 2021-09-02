@@ -1,4 +1,5 @@
 import './index.scss';
+import { prompt } from '@/utils/alert';
 import Alert from '@/components/Alert';
 import Help from '@/components/Help';
 
@@ -30,27 +31,38 @@ export default {
         this.$store.dispatch('tags/fetch');
     },
     methods: {
-        addTag() {
-            Alert.Prompt(this.$t, 'page-tags.prompt-add', {
-                placeholder: 'page-tags.tag-name',
-                confirmText: 'page-tags.create',
-            }).then(({ value: name }) => {
-                if (name) {
-                    this.save(null, name);
-                }
-            });
+        async add() {
+            const { value: name } = await prompt(
+                this.$t('page-tags.prompt-add'),
+                {
+                    placeholder: this.$t('page-tags.tag-name'),
+                    confirmButtonText: this.$t('page-tags.create'),
+                },
+            );
+
+            if (!name) {
+                return;
+            }
+
+            this.save(null, name);
         },
 
-        edit(tagId, oldName) {
-            Alert.Prompt(this.$t, 'page-tags.prompt-modify', {
-                placeholder: oldName,
-                confirmText: 'save',
-                inputValue: oldName,
-            }).then(({ value: newName }) => {
-                if (newName) {
-                    this.save(tagId, newName);
-                }
-            });
+        async edit(id) {
+            const tag = this.tags.find((_tag) => _tag.id === id);
+            if (tag === undefined) {
+                return;
+            }
+
+            const { value: newName } = await prompt(
+                this.$t('page-tags.prompt-modify'),
+                { placeholder: tag.name, inputValue: tag.name },
+            );
+
+            if (!newName) {
+                return;
+            }
+
+            this.save(id, newName);
         },
 
         save(id, name) {

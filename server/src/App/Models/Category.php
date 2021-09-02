@@ -10,8 +10,6 @@ use Robert2\API\Errors\ValidationException;
 
 class Category extends BaseModel
 {
-    use SoftDeletes;
-
     protected $searchField = 'name';
 
     public function __construct(array $attributes = [])
@@ -136,5 +134,12 @@ class Category extends BaseModel
         });
 
         return $categories;
+    }
+
+    public function remove($id, array $options = []): ?BaseModel
+    {
+        $category = static::findOrFail($id);
+        $category->delete();
+        return null;
     }
 }

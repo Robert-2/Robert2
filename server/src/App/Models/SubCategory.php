@@ -8,8 +8,6 @@ use Robert2\API\Validation\Validator as V;
 
 class SubCategory extends BaseModel
 {
-    use SoftDeletes;
-
     protected $searchField = 'name';
 
     public function __construct(array $attributes = [])
@@ -83,4 +81,11 @@ class SubCategory extends BaseModel
         'name',
         'category_id'
     ];
+
+    public function remove($id, array $options = []): ?BaseModel
+    {
+        $subCategory = static::findOrFail($id);
+        $subCategory->delete();
+        return null;
+    }
 }
