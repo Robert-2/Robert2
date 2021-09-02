@@ -525,6 +525,7 @@ class Inventory extends BaseModel
             'difference' => 0,
             'current' => 0,
             'broken' => 0,
+            'replacementValue' => 0,
         ];
 
         $inventoryMaterials = $inventory->materials->toArray();
@@ -547,7 +548,7 @@ class Inventory extends BaseModel
                 foreach ($material['units'] as &$unit) {
                     $unitExtraInfos = MaterialUnit::find($unit['material_unit_id']);
                     $unit = array_merge($unit, [
-                        'owner' => $unitExtraInfos->owner['full_name'],
+                        'owner' => !empty($unitExtraInfos->owner) ? $unitExtraInfos->owner['full_name'] : null,
                         'purchaseDate' => $unitExtraInfos->purchase_date,
                     ]);
                 }
@@ -556,7 +557,7 @@ class Inventory extends BaseModel
             $countDifference = $material['stock_quantity_current'] - $material['stock_quantity_previous'];
 
             $materialExtraInfos = Material::find($material['material_id']);
-            $replacementValue = $materialExtraInfos->replacement_price * $material['stock_quantity_current'];
+            $replacementValue = ($materialExtraInfos->replacement_price ?? 0) * $material['stock_quantity_current'];
 
             $totals['previous'] += $material['stock_quantity_previous'];
             $totals['difference'] += $countDifference;
@@ -565,7 +566,7 @@ class Inventory extends BaseModel
             $totals['replacementValue'] += $replacementValue;
 
             $material = array_merge($material, [
-                'replacementPrice' => $materialExtraInfos->replacement_price,
+                'replacementPrice' => $materialExtraInfos->replacement_price ?? 0,
                 'totalReplacementPrice' => $replacementValue,
                 'hasMissing' => (
                     $material['stock_quantity_current'] < $material['stock_quantity_previous'] ||

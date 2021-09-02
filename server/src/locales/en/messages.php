@@ -2472,6 +2472,9 @@ return [
     "technician-assignation-after-event"
     => "Assignment of this technician ends after the event.",
 
+    "date-precision-must-be-quarter"
+    => "Date must respect precision of a quarter (:00, :15, :30 or :45).",
+
     "technician-already-busy-for-this-period"
     => "This technician is already busy for this period.",
 

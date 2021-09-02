@@ -1,0 +1,106 @@
+@use '~@/style/globals';
+
+.Categories {
+    .EmptyMessage,
+    .Loading {
+        width: 100%;
+    }
+
+    .content__main-view {
+        flex-flow: row wrap;
+        padding-right: 0;
+    }
+
+    &__category {
+        flex: 1 0 220px;
+        max-width: 500px;
+        margin-right: 1rem;
+        margin-bottom: 2rem;
+        padding: 0.6rem 1rem;
+        border-radius: 10px;
+        background: globals.$bg-color-emphasis;
+    }
+
+    &__sub-categories {
+        margin-left: 2.3rem;
+    }
+
+    &__sub-category {
+        margin-top: 0.5rem;
+    }
+
+    &__category,
+    &__sub-category {
+        &__name {
+            display: flex;
+            align-items: center;
+            min-height: 2.2rem;
+            color: globals.$text-base-color;
+            font-size: 1.2rem;
+
+            .fas {
+                margin-right: 0.6rem;
+                font-size: 1.3rem;
+            }
+        }
+
+        &__actions {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            min-width: 110px;
+        }
+    }
+
+    &__edit-button {
+        margin-left: 0.5rem;
+        padding: 4px 8px;
+        transition: visibility 100ms;
+
+        .fas {
+            margin: 0;
+            font-size: 1rem;
+        }
+    }
+
+    &__add-link {
+        display: block;
+        margin-top: 0.5rem;
+
+        &:hover {
+            color: globals.$link-hover-color;
+        }
+    }
+}
+
+@media (min-width: globals.$screen-mobile) {
+    .Categories {
+        &__category {
+            margin-right: 2rem;
+        }
+    }
+}
+
+@media (min-width: globals.$screen-desktop) {
+    .Categories {
+        &__edit-button,
+        &__link-button {
+            visibility: hidden;
+        }
+
+        &__category {
+            margin-right: 2.5rem;
+        }
+
+        &__category,
+        &__sub-category {
+            &__name:hover {
+                .Categories__edit-button,
+                .Categories__link-button {
+                    visibility: visible;
+                }
+            }
+        }
+    }
+}

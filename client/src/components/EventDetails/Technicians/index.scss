@@ -1,18 +1,16 @@
-@import '../../../themes/default/';
-
 .EventDetailsTechnicians {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-
-  &__loading {
-    position: absolute;
-    top: 10px;
-    left: 50%;
-  }
-
-  &__timeline {
+    position: relative;
     flex: 1;
-  }
+    display: flex;
+    flex-direction: column;
+
+    &__loading {
+        position: absolute;
+        top: 10px;
+        left: 50%;
+    }
+
+    &__timeline {
+        flex: 1;
+    }
 }

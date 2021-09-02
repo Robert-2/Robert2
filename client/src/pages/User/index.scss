@@ -1,0 +1,31 @@
+@use '~@/style/globals';
+
+.User {
+    display: flex;
+    flex-flow: column-reverse wrap;
+
+    .Form {
+        flex: 2;
+        max-width: globals.$form-max-width;
+        min-width: globals.$form-min-width;
+        margin-right: globals.$content-padding-large-horizontal;
+    }
+
+    &__postal-code .FormField__input {
+        max-width: 70px;
+    }
+
+    .Help {
+        flex: 1;
+        min-width: 150px;
+        margin: 0 0 globals.$content-padding-large-vertical;
+    }
+
+    @media screen and (min-width: globals.$screen-tablet) {
+        flex-direction: row;
+
+        .Help {
+            margin: 30px 0 0;
+        }
+    }
+}

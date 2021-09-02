@@ -104,6 +104,27 @@ final class EventTechnicianTest extends ModelTestCase
         $this->assertEquals($expectedErrors, $errors);
     }
 
+    public function testValidationDatesNotQuarter()
+    {
+        // - Dates qui ne sont pas placées au quart d'heure près
+        try {
+            $errors = null;
+            $data = [
+                'technician_id' => 1,
+                'event_id' => 1,
+                'start_time' => '2018-12-18 22:12:00',
+                'end_time' => '2018-12-18 23:35:00',
+            ];
+            $this->model->fill($data)->validate();
+        } catch (ValidationException $e) {
+            $errors = $e->getValidationErrors();
+        }
+        $this->assertEquals([
+            'start_time' => ['Date must respect precision of a quarter (:00, :15, :30 or :45).'],
+            'end_time' => ['Date must respect precision of a quarter (:00, :15, :30 or :45).'],
+        ], $errors);
+    }
+
     public function testValidationDatesAlreadyAssigned()
     {
         // - Dates qui chevauchent la fin d'une assignation existante
@@ -250,7 +271,7 @@ final class EventTechnicianTest extends ModelTestCase
             [
                 'id' => 1,
                 'start_time' => '2019-01-17 09:00:00',
-                'end_time' => '2019-01-17 23:59:59',
+                'end_time' => '2019-01-17 23:45:00',
                 'position' => 'Régisseur',
             ],
         ];

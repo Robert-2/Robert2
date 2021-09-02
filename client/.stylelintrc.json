@@ -1,0 +1,3 @@
+{
+    "extends": "@pulsanova/stylelint-config-scss"
+}

@@ -1,37 +1,38 @@
-@import '../../../themes/default/index';
+@use '~@/style/globals';
 
 .InventoryPageInventory {
-  $footer-height: 55px;
+    $footer-height: 55px;
 
-  margin-bottom: $footer-height !important;
+    // stylelint-disable-next-line declaration-no-important
+    margin-bottom: $footer-height !important;
 
-  > .Inventory {
-    margin-bottom: $content-padding-large-horizontal;
-  }
-
-  &__footer {
-    position: fixed;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    height: $footer-height;
-    padding: $content-padding-large-horizontal 0;
-    background-color: $bg-color-body;
-    text-align: center;
-
-    &__action + &__action {
-      margin-left: $content-padding-small-vertical;
+    > .Inventory {
+        margin-bottom: globals.$content-padding-large-horizontal;
     }
-  }
 
-  //
-  // - Empty (pas de matériel)
-  //
+    &__footer {
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        height: $footer-height;
+        padding: globals.$content-padding-large-horizontal 0;
+        background-color: globals.$bg-color-body;
+        text-align: center;
 
-  &--empty {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-  }
+        &__action + &__action {
+            margin-left: globals.$content-padding-small-vertical;
+        }
+    }
+
+    //
+    // - Empty (pas de matériel)
+    //
+
+    &--empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
 }

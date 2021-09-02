@@ -1,0 +1,13 @@
+@use '~@/style/globals';
+
+.MaterialViewInfosAttributes {
+    &__list {
+        &__item {
+            margin-bottom: 0.3rem;
+
+            &__value {
+                font-weight: 700;
+            }
+        }
+    }
+}

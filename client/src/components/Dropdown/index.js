@@ -2,67 +2,60 @@ import './index.scss';
 import ClickOutside from 'vue-click-outside';
 
 export const getItemClassnames = (isActive = false) => ({
-  Dropdown__item: true,
-  'Dropdown__item--active': isActive,
+    'Dropdown__item': true,
+    'Dropdown__item--active': isActive,
 });
 
+// @vue/component
 export default {
-  name: 'Dropdown',
-  directives: { ClickOutside },
-  props: {
-    variant: { type: String, default: 'default' },
-  },
-  data() {
-    return {
-      isOpen: false,
-    };
-  },
-  watch: {
-    $route() {
-      this.closeDropdown();
+    name: 'Dropdown',
+    directives: { ClickOutside },
+    props: {
+        variant: { type: String, default: 'default' },
     },
-  },
-  methods: {
-    toggleDropdown() {
-      this.isOpen = !this.isOpen;
+    data() {
+        return {
+            isOpen: false,
+        };
     },
-
-    closeDropdown() {
-      this.isOpen = false;
+    watch: {
+        $route() {
+            this.isOpen = false;
+        },
     },
-  },
-  render() {
-    const {
-      isOpen,
-      toggleDropdown,
-      closeDropdown,
-      variant,
-    } = this;
+    methods: {
+        handleToggle() {
+            this.isOpen = !this.isOpen;
+        },
 
-    const { buttonText, title, items } = this.$slots;
+        handleClose() {
+            this.isOpen = false;
+        },
+    },
+    render() {
+        const { variant, isOpen, handleToggle, handleClose } = this;
+        const { buttonText, title, items } = this.$slots;
 
-    const classNames = ['Dropdown', {
-      'Dropdown--open': isOpen,
-      'Dropdown--actions': variant === 'actions',
-    }];
+        const classNames = ['Dropdown', {
+            'Dropdown--open': isOpen,
+            'Dropdown--actions': variant === 'actions',
+        }];
 
-    return (
-      <div class={classNames} vClickOutside={closeDropdown}>
-        <div class="Dropdown__button" onClick={toggleDropdown}>
-          <span class="Dropdown__button__text">
-            {buttonText || <i class="Dropdown__button__icon fas fa-ellipsis-h" />}
-          </span>
-          {buttonText && (
-            <i class={`Dropdown__button__chevron fas fa-chevron-${isOpen ? 'up' : 'down'}`} />
-          )}
-        </div>
-        <div class="Dropdown__menu">
-          {title && <h3 class="Dropdown__menu__title">{title}</h3>}
-          <ul class="Dropdown__menu__items">
-            {items}
-          </ul>
-        </div>
-      </div>
-    );
-  },
+        return (
+            <div class={classNames} vClickOutside={handleClose}>
+                <div class="Dropdown__button" onClick={handleToggle}>
+                    <span class="Dropdown__button__text">
+                        {buttonText || <i class="Dropdown__button__icon fas fa-ellipsis-h" />}
+                    </span>
+                    {buttonText && (
+                        <i class={`Dropdown__button__chevron fas fa-chevron-${isOpen ? 'up' : 'down'}`} />
+                    )}
+                </div>
+                <div class="Dropdown__menu">
+                    {title && <h3 class="Dropdown__menu__title">{title}</h3>}
+                    <ul class="Dropdown__menu__items">{items}</ul>
+                </div>
+            </div>
+        );
+    },
 };

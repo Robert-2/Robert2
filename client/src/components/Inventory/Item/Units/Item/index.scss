@@ -1,62 +1,62 @@
-@import '../../../../../themes/default/index';
+@use '~@/style/globals';
 
 .InventoryItemUnitsItem {
-  &__col {
-    padding: 5px 8px;
-    height: 30px;
-    background: rgba(#fff, .05);
-    vertical-align: middle;
+    &__col {
+        height: 30px;
+        padding: 5px 8px;
+        background: rgba(#fff, 0.05);
+        vertical-align: middle;
 
-    &--checkbox {
-      width: 30px;
-      padding-left: 15px;
-      padding-right: 15px;
+        &--checkbox {
+            width: 30px;
+            padding-right: 15px;
+            padding-left: 15px;
+        }
+
+        &--owner {
+            width: 250px;
+        }
+
+        &--state {
+            width: 200px;
+            text-align: right;
+        }
+
+        &--actions {
+            width: 55px;
+            text-align: right;
+        }
+
+        &--switch {
+            box-sizing: content-box;
+            width: 95px;
+            padding-right: 0;
+            padding-left: 0;
+            text-align: center;
+        }
+
+        &--broken {
+            padding-left: 2rem;
+        }
     }
 
-    &--owner {
-      width: 250px;
+    &__checkbox {
+        margin: 0;
+        vertical-align: -2px;
     }
 
-    &--state {
-      width: 200px;
-      text-align: right;
+    &__state {
+        &__label {
+            margin-right: 5px;
+        }
+
+        &__select {
+            width: 130px;
+            padding: 5px 10px;
+        }
     }
 
-    &--actions {
-      width: 55px;
-      text-align: right;
+    &__state--error {
+        color: globals.$text-danger-color;
     }
-
-    &--switch {
-      width: 95px;
-      box-sizing: content-box;
-      text-align: center;
-      padding-right: 0;
-      padding-left: 0;
-
-      &--broken {
-        padding-left: 2rem;
-      }
-    }
-  }
-
-  &__checkbox {
-    margin: 0;
-    vertical-align: -2px;
-  }
-
-  &__state {
-    &__label {
-      margin-right: 5px;
-    }
-
-    &__select {
-      width: 130px;
-      padding: 5px 10px;
-    }
-  }
-
-  &__state--error {
-      color: $text-danger-color;
-  }
 }

@@ -1,81 +1,81 @@
-@import '../../../themes/default';
+@use '~@/style/globals';
 
 .LoginLayout {
-  position: relative;
-  flex: 1;
-  display: flex;
-  flex-flow: column nowrap;
-  justify-content: flex-start;
-  padding-bottom: calc(60px + .1vh);
-
-  &__logo {
     position: relative;
-    flex: 0 0 auto;
-    padding: 30px 20px;
-    text-align: center;
-
-    .Logo {
-      max-height: 80px;
-      max-width: 100%;
-    }
-
-    &__premium {
-      position: absolute;
-      bottom: 30px;
-      right: calc(50% - 75px);
-      font-size: 1.1rem;
-      color: $text-base-color;
-    }
-  }
-
-  &__body {
-    flex: 0 0 auto;
-  }
-
-  &__footer {
-    display: none;
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    padding: 10px 15px;
-    background-color: $bg-color-emphasis;
-    color: $text-muted-color;
-    font-size: 0.8rem;
-    line-height: 1.52rem;
-    text-align: center;
-  }
-
-  @media(min-width: $screen-mobile) {
-    &__logo {
-      .Logo {
-        max-height: 120px;
-      }
-
-      &__premium {
-        bottom: 28px;
-        right: calc(50% - 115px);
-        font-size: 1.4rem;
-      }
-    }
-  }
-
-  @media(min-width: $screen-tablet) {
-    justify-content: center;
+    flex: 1;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: flex-start;
+    padding-bottom: calc(60px + 0.1vh);
 
     &__logo {
-      .Logo {
-        max-height: 200px;
-      }
+        position: relative;
+        flex: 0 0 auto;
+        padding: 30px 20px;
+        text-align: center;
 
-      &__premium {
-        bottom: 35px;
-        right: calc(50% - 185px);
-        font-size: 1.8rem;
-      }
+        .Logo {
+            max-width: 100%;
+            max-height: 80px;
+        }
+
+        &__premium {
+            position: absolute;
+            bottom: 30px;
+            right: calc(50% - 75px);
+            color: globals.$text-base-color;
+            font-size: 1.1rem;
+        }
+    }
+
+    &__body {
+        flex: 0 0 auto;
     }
 
     &__footer {
-      display: block;
+        position: absolute;
+        bottom: 0;
+        display: none;
+        width: 100%;
+        padding: 10px 15px;
+        background-color: globals.$bg-color-emphasis;
+        color: globals.$text-muted-color;
+        font-size: 0.8rem;
+        line-height: 1.52rem;
+        text-align: center;
     }
-  }
+
+    @media (min-width: globals.$screen-mobile) {
+        &__logo {
+            .Logo {
+                max-height: 120px;
+            }
+
+            &__premium {
+                bottom: 28px;
+                right: calc(50% - 115px);
+                font-size: 1.4rem;
+            }
+        }
+    }
+
+    @media (min-width: globals.$screen-tablet) {
+        justify-content: center;
+
+        &__logo {
+            .Logo {
+                max-height: 200px;
+            }
+
+            &__premium {
+                bottom: 35px;
+                right: calc(50% - 185px);
+                font-size: 1.8rem;
+            }
+        }
+
+        &__footer {
+            display: block;
+        }
+    }
 }

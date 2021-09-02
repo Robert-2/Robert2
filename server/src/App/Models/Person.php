@@ -91,6 +91,7 @@ class Person extends BaseModel
     {
         return $this->hasMany(EventTechnician::class, 'technician_id')
             ->with('Event')
+            ->has('Event')
             ->orderBy('start_time');
     }
 

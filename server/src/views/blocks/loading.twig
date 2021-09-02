@@ -1,14 +1,15 @@
 <style>
+    {% if env is same as('development') -%}
     html {
         padding: 0;
     }
     body {
-        background-color: #242424;
         margin: 0;
-    }
-    .app {
+        background-color: #242424;
         color: #e3e3e3;
     }
+    {% endif %}
+
     .app-loading {
         display: flex;
         flex-direction: column;
@@ -27,17 +28,17 @@
         background-color: #1f1f1f;
     }
     .app-loading__details__spinner {
-        -webkit-animation: spin 2s linear infinite;
-        -moz-animation: spin 2s linear infinite;
-        animation: spin 2s linear infinite;
+        -webkit-animation: app-loading--spin 2s linear infinite;
+        -moz-animation: app-loading--spin 2s linear infinite;
+        animation: app-loading--spin 2s linear infinite;
     }
-    @-moz-keyframes spin {
+    @-moz-keyframes app-loading--spin {
         100% { -moz-transform: rotate(360deg); }
     }
-    @-webkit-keyframes spin {
+    @-webkit-keyframes app-loading--spin {
         100% { -webkit-transform: rotate(360deg); }
     }
-    @keyframes spin {
+    @keyframes app-loading--spin {
         100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); }
     }
 </style>

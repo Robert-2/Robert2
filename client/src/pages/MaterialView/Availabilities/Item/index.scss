@@ -1,0 +1,99 @@
+@use '~@/style/globals';
+@use 'sass:color';
+
+.MaterialAvailabilitiesItem {
+    display: flex;
+    align-items: center;
+    margin-bottom: globals.$content-padding-small-horizontal;
+    padding: globals.$content-padding-small-horizontal 0;
+    border-radius: globals.$input-border-radius;
+    background-color: globals.$bg-color-table-th;
+    color: globals.$text-nav-color;
+    list-style: square;
+    opacity: 0.7;
+    cursor: pointer;
+
+    &:hover {
+        background-color: globals.$bg-color-table-td;
+    }
+
+    &__quantity {
+        flex: 0 0 45px;
+        margin: 0 globals.$content-padding-large-horizontal 0 0;
+        padding-left: globals.$content-padding-small-horizontal;
+        color: globals.$text-base-color;
+        font-size: 2rem;
+        text-align: right;
+    }
+
+    &__quantity-text {
+        flex: 0 0 auto;
+    }
+
+    &__icon {
+        flex: 0 0 auto;
+        margin: 0 globals.$content-padding-large-horizontal 0 globals.$content-padding-large-horizontal;
+
+        .fa-exclamation-triangle {
+            color: globals.$text-danger-color;
+        }
+
+        .fas + .fas {
+            margin-left: globals.$content-padding-small-horizontal;
+        }
+    }
+
+    &__main {
+        flex: 1;
+        margin: 0 globals.$content-padding-large-vertical 0 0;
+
+        &__title {
+            margin: 0 0 globals.$content-padding-small-horizontal;
+            color: globals.$text-base-color;
+        }
+    }
+
+    &__units {
+        flex: 1;
+
+        &__title {
+            color: globals.$text-nav-color;
+        }
+    }
+
+    &__readable-state {
+        flex: 0 0 200px;
+        padding: 0 globals.$content-padding-large-horizontal;
+        text-align: left;
+
+        .fas {
+            margin-right: 5px;
+        }
+    }
+
+    &__actions {
+        padding: 0 globals.$content-padding-large-horizontal;
+    }
+
+    &--future {
+        color: globals.$text-base-color;
+        opacity: 1;
+
+        .MaterialAvailabilitiesItem__quantity,
+        .MaterialAvailabilitiesItem__main__title {
+            color: globals.$link-base-color;
+        }
+    }
+
+    &--future + &:not(.MaterialAvailabilitiesItem--future) {
+        margin-top: globals.$content-padding-large-vertical;
+    }
+
+    &--current {
+        background-color: color.adjust(globals.$calendar-event-normal-color, $lightness: -12%);
+
+        &:hover {
+            background-color: color.adjust(globals.$calendar-event-normal-color, $lightness: -7%);
+        }
+    }
+}
