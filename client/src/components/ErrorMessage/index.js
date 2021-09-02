@@ -14,7 +14,7 @@ export default {
     },
     computed: {
         code() {
-            const { error } = this.$props;
+            const { error } = this;
             if (!error.response) {
                 return -1;
             }
@@ -22,7 +22,7 @@ export default {
         },
 
         message() {
-            const { error } = this.$props;
+            const { error } = this;
 
             if (typeof error === 'string') {
                 return error;

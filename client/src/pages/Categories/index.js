@@ -1,4 +1,5 @@
 import './index.scss';
+import { ERROR_CODES } from '@/globals/constants';
 import { confirm, prompt } from '@/utils/alert';
 import Page from '@/components/Page';
 import Help from '@/components/Help';
@@ -56,11 +57,12 @@ export default {
 
             try {
                 await this.$http.post('subcategories', { name, category_id: categoryId });
-                this.isSaving = false;
                 this.help = 'page-subcategories.saved';
                 this.$store.dispatch('categories/refresh');
             } catch (error) {
                 this.displayError(error);
+            } finally {
+                this.isSaving = false;
             }
         },
 
@@ -80,11 +82,12 @@ export default {
 
             try {
                 await request(route, { name });
-                this.isSaving = false;
                 this.help = `page-${entity}.saved`;
                 this.$store.dispatch('categories/refresh');
             } catch (error) {
                 this.displayError(error);
+            } finally {
+                this.isSaving = false;
             }
         },
 
@@ -104,11 +107,12 @@ export default {
 
             try {
                 await this.$http.delete(`${entity}/${id}`);
-                this.isSaving = false;
                 this.help = `page-${entity}.deleted`;
                 this.$store.dispatch('categories/refresh');
             } catch (error) {
                 this.displayError(error);
+            } finally {
+                this.isSaving = false;
             }
         },
 
@@ -122,14 +126,13 @@ export default {
         displayError(error) {
             this.help = 'page-categories.help';
             this.error = error;
-            this.isSaving = false;
             this.validationError = null;
 
             const { code, details } = error.response?.data?.error || { code: 0, details: {} };
             if (code === 400 && details.name) {
                 [this.validationError] = details.name;
             }
-            if (code === '23000') {
+            if (code === ERROR_CODES.SQL_RELATION_NOT_EMPTY) {
                 this.validationError = this.$t('page-categories.cannot-delete-not-empty');
             }
         },
