@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Robert2\API\Validation\Validator as V;
 
 class EventTechnician extends BaseModel
@@ -66,6 +67,9 @@ class EventTechnician extends BaseModel
                 ['end_time', '>=', $this->start_time],
                 ['start_time', '<=', $this->end_time],
             ])
+            ->whereHas('event', function (Builder $query) {
+                $query->where('deleted_at', null);
+            })
             ->exists();
         if ($technicianHasOtherEvents) {
             return 'technician-already-busy-for-this-period';
