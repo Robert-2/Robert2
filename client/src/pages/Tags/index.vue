@@ -8,7 +8,7 @@
                 </div>
             </div>
             <div class="header-page__actions">
-                <button class="Tags__create success" @click="addTag()">
+                <button class="Tags__create success" @click="add()">
                     <i class="fas fa-plus" />
                     {{ $t('page-tags.action-add') }}
                 </button>
@@ -27,7 +27,7 @@
                 <button
                     v-tooltip="$t('action-edit')"
                     class="Tags__edit-button info"
-                    @click="edit(tag.id, tag.name)"
+                    @click="edit(tag.id)"
                 >
                     <i class="fas fa-edit" />
                 </button>
