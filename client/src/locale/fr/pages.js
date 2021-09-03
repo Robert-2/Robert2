@@ -231,6 +231,7 @@ export default {
         'confirm-restore': "Voulez-vous vraiment restaurer ce matériel\u00a0?",
         'saved': "Matériel sauvegardé.",
         'print-complete-list': "Imprimer la liste complète du matériel",
+        'more-attribute-when-category-selected': "Après avoir sélectionné une catégorie, d'autres caractéristiques spéciales peuvent apparaître.",
     },
 
     'page-materials-view': {

@@ -156,6 +156,10 @@
                                 @change="handleAttributeChange"
                             />
                         </div>
+                        <p v-if="!material.category_id" class="Material__attributes-help">
+                            <i class="fas fa-info-circle Material__attributes-help__icon" />
+                            {{ $t('page-materials.more-attribute-when-category-selected') }}
+                        </p>
                         <router-link
                             v-if="isAdmin"
                             to="/attributes"
