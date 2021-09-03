@@ -21,6 +21,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Uniformise l'affichage des principaux formulaires.
 - Ferme la fenêtre automatiquement et centre la frise temporelle sur le nouvel événement qui vient d'être créé après une duplication.
 - Ajoute une infobulle au dessus des événements lors de leur déplacement dans les frises temporelles pour mieux visualiser les nouvelles dates avant de valider le déplacement (#247).
+- Améliore l'utilisation des caractéristiques spéciales dans la page d'ajout / modification du matériel.
 - Rend les catégories non-supprimables quand du matériel leur est assigné.
 - Affiche systématiquement l'option par défaut dans les listes de sélection, même vides, plutôt qu'aucune option.
 

@@ -305,6 +305,7 @@ export default {
         'no-category': "No category.",
         'create-a-category': "Create a category",
         'cannot-delete-not-empty': "Impossible to delete this category, because it's not empty!",
+        'more-attribute-when-category-selected': "When a category is selected, some other special attributes may appear.",
     },
 
     'page-subcategories': {
