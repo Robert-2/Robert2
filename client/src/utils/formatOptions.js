@@ -1,5 +1,5 @@
 const formatOptions = (data, getLabel = null, emptyLabel = null) => {
-    if (!data || data.length === 0) {
+    if (data == null) {
         return [];
     }
 

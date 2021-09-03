@@ -22,6 +22,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Ferme la fenêtre automatiquement et centre la frise temporelle sur le nouvel événement qui vient d'être créé après une duplication.
 - Ajoute une infobulle au dessus des événements lors de leur déplacement dans les frises temporelles pour mieux visualiser les nouvelles dates avant de valider le déplacement (#247).
 - Rend les catégories non-supprimables quand du matériel leur est assigné.
+- Affiche systématiquement l'option par défaut dans les listes de sélection, même vides, plutôt qu'aucune option.
 
 ## 0.14.3 (2021-07-12)
 
