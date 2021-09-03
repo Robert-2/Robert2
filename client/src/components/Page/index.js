@@ -36,14 +36,24 @@ export default {
         const { help, actions, error, isLoading, render } = this.$props;
         const content = render ? render() : this.$slots.default;
 
+        const renderHelp = () => {
+            if (!isLoading && !error && !help) {
+                return null;
+            }
+
+            return (
+                <div class="header-page__help">
+                    {isLoading && <Loading horizontal />}
+                    {!isLoading && error && <ErrorMessage error={error} />}
+                    {!isLoading && !error && help}
+                </div>
+            );
+        };
+
         return (
             <div class="content">
                 <div class="content__header header-page">
-                    <div class="header-page__help">
-                        {isLoading && <Loading horizontal />}
-                        {!isLoading && error && <ErrorMessage error={error} />}
-                        {!isLoading && !error && help}
-                    </div>
+                    {renderHelp()}
                     {actions && actions.length > 0 && (
                         <nav class="header-page__actions">
                             {actions}
