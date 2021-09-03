@@ -24,6 +24,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Améliore l'utilisation des caractéristiques spéciales dans la page d'ajout / modification du matériel.
 - Rend les catégories non-supprimables quand du matériel leur est assigné.
 - Affiche systématiquement l'option par défaut dans les listes de sélection, même vides, plutôt qu'aucune option.
+- Ajoute des messages d'aide dans l'encart de création de devis et factures, concernant les remises quand du matériel non-remisable est présent dans l'événement (#253).
 
 ## 0.14.3 (2021-07-12)
 
