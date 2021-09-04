@@ -1,61 +1,47 @@
 import './index.scss';
-import Vue from 'vue';
+import { ref, computed, watch } from '@vue/composition-api';
+import useRouter from '@/hooks/useRouter';
 import Header from '@/components/MainHeader';
 import Sidebar from '@/components/Sidebar';
 
 // @vue/component
-export default {
-    name: 'App',
-    data() {
-        return { isOpenedSidebar: false };
-    },
-    computed: {
-        isLogged() {
-            return this.$store.getters['auth/isLogged'];
-        },
-    },
-    watch: {
-        $route() {
-            Vue.prototype.$modal.hideAll();
-        },
-    },
-    created() {
-        this.$http.interceptors.response.use((response) => response, (error) => {
-            const { status } = error.response || { status: 0 };
-            if (status === 401) {
-                this.$store.dispatch('auth/logout').then(() => {
-                    this.$router.replace({ path: '/login', hash: 'expired' })
-                        .catch(() => {});
-                });
-            }
-            return Promise.reject(error);
-        });
-    },
-    methods: {
-        handleToggleSidebar(isOpen) {
-            if (isOpen === 'toggle') {
-                this.isOpenedSidebar = !this.isOpenedSidebar;
-                return;
-            }
-            this.isOpenedSidebar = isOpen;
-        },
-    },
-    render() {
-        const {
-            $route,
-            isLogged,
-            isOpenedSidebar,
-            handleToggleSidebar,
-        } = this;
+const App = (props, { root }) => {
+    const isOpenedSidebar = ref(false);
+    const isLogged = computed(() => root.$store.getters['auth/isLogged']);
+    const { route } = useRouter();
 
-        return (
-            <div class="App">
-                {isLogged && <Header onToggleMenu={handleToggleSidebar} />}
-                <div class="App__body">
-                    {isLogged && <Sidebar isOpen={isOpenedSidebar} />}
-                    <router-view key={$route.path} />
-                </div>
+    // - Configure Axios pour qu'il redirige en cas de soucis de connexion lors des requêtes API.
+    root.$http.interceptors.response.use((response) => response, (error) => {
+        const { status } = error.response || { status: 0 };
+        if (status === 401) {
+            root.$store.dispatch('auth/logout').then(() => {
+                root.$router.replace({ path: '/login', hash: 'expired' })
+                    .catch(() => {});
+            });
+        }
+        return Promise.reject(error);
+    });
+
+    // - "Cache" les modales ouvertes entre deux changements de page.
+    watch(route, () => { root.$modal.hideAll(); });
+
+    const handleToggleSidebar = (isOpen) => {
+        if (isOpen === 'toggle') {
+            isOpenedSidebar.value = !isOpenedSidebar.value;
+            return;
+        }
+        isOpenedSidebar.value = isOpen;
+    };
+
+    return () => (
+        <div class="App">
+            {isLogged.value && <Header onToggleMenu={handleToggleSidebar} />}
+            <div class="App__body">
+                {isLogged.value && <Sidebar isOpen={isOpenedSidebar.value} />}
+                <router-view key={route.value.path} />
             </div>
-        );
-    },
+        </div>
+    );
 };
+
+export default App;
