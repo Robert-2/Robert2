@@ -237,7 +237,7 @@ export default [
         name: 'addMaterialUnit',
         component: MaterialUnit,
         meta: {
-            title: 'page-materials-units.add',
+            title: 'page-material-units.add',
             requiresAuth: true,
             requiresGroups: ['admin', 'member'],
         },
@@ -247,7 +247,7 @@ export default [
         name: 'editMaterialUnit',
         component: MaterialUnit,
         meta: {
-            title: 'page-materials-units.edit',
+            title: 'page-material-units.edit',
             requiresAuth: true,
             requiresGroups: ['admin', 'member'],
         },
