@@ -1,6 +1,6 @@
 import './index.scss';
 import { ref, toRefs } from '@vue/composition-api';
-import useI18n from '@/composition/useI18n';
+import useI18n from '@/hooks/useI18n';
 import Datepicker from '@/components/Datepicker';
 
 // @vue/component
