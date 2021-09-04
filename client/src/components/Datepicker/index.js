@@ -78,7 +78,7 @@ export default {
                 format={withTime ? `${displayFormat} HH:mm` : displayFormat}
                 disabledDate={getDisabledDates}
                 rangeSeparator=" ⇒ "
-                confirm
+                confirm={withTime}
                 confirmText={__('done')}
             />
         );
