@@ -1,7 +1,10 @@
 import './index.scss';
 import { computed, toRefs, onMounted } from '@vue/composition-api';
+import { useQuery } from 'vue-query';
 import useI18n from '@/hooks/useI18n';
 import useRouter from '@/hooks/useRouter';
+import formatOptions from '@/utils/formatOptions';
+import apiCountries from '@/stores/api/countries';
 import FormField from '@/components/FormField';
 
 import type { Render, SetupContext } from '@vue/composition-api';
@@ -17,13 +20,13 @@ type Props = {
 const PersonForm = (props: Props, { root, emit }: SetupContext): Render => {
     // FIXME: La prop. `person` ne devrait âtre mutée dans ce component...
     const { person, errors, withReference, withCompany } = toRefs(props);
-    const countriesOptions = computed(() => root.$store.getters['countries/options']);
+    const { data: countries } = useQuery('countries', apiCountries.all);
+    const countriesOptions = computed(() => formatOptions(countries.value ?? []));
     const companiesOptions = computed(() => root.$store.getters['companies/options']);
     const { router } = useRouter();
     const __ = useI18n();
 
     onMounted(() => {
-        root.$store.dispatch('countries/fetch');
         root.$store.dispatch('companies/fetch');
     });
 
@@ -149,6 +152,7 @@ const PersonForm = (props: Props, { root, emit }: SetupContext): Render => {
                     options={countriesOptions.value}
                     vModel={person.value.country_id}
                     errors={errors.value.country_id}
+                    placeholder
                 />
             </section>
             <section class="Form__fieldset">
