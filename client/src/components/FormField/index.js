@@ -2,6 +2,7 @@ import './index.scss';
 import moment from 'moment';
 import Datepicker from '@/components/Datepicker';
 import SwitchToggle from '@/components/SwitchToggle';
+import { defineComponent } from '@vue/composition-api';
 
 const ALLOWED_TYPES = [
     'text',
@@ -16,7 +17,7 @@ const ALLOWED_TYPES = [
 ];
 
 // @vue/component
-export default {
+export default defineComponent({
     name: 'FormField',
     props: {
         label: String,
@@ -25,8 +26,8 @@ export default {
             validator: (value) => ALLOWED_TYPES.includes(value),
             default: 'text',
         },
-        required: Boolean,
-        disabled: Boolean,
+        required: { type: Boolean, default: false },
+        disabled: { type: Boolean, default: false },
         disabledReason: String,
         placeholder: String,
         value: [String, Number, Date, Array, Boolean],
@@ -190,4 +191,4 @@ export default {
             </div>
         );
     },
-};
+});

@@ -4,8 +4,15 @@ import useI18n from '@/hooks/useI18n';
 import useRouter from '@/hooks/useRouter';
 import FormField from '@/components/FormField';
 
+type Props = {
+    person: Record<string, any>,
+    errors: Record<string, any>,
+    withCompany: boolean,
+    withReference: boolean,
+};
+
 // @vue/component
-const PersonForm = (props, { root, emit }) => {
+const PersonForm: FC<Props> = (props, { root, emit }) => {
     // FIXME: La prop `person` ne devraot âtre mutée dans ce component...
     const { person, errors, withReference, withCompany } = toRefs(props);
     const countriesOptions = computed(() => root.$store.getters['countries/options']);
@@ -18,11 +25,11 @@ const PersonForm = (props, { root, emit }) => {
         root.$store.dispatch('companies/fetch');
     });
 
-    const handleSubmit = (e) => {
+    const handleSubmit = (e: SubmitEvent) => {
         emit('submit', e);
     };
 
-    const handleChange = (e) => {
+    const handleChange = (e: Event) => {
         emit('change', e);
     };
 
