@@ -1,6 +1,8 @@
 import './index.scss';
 import { ref, computed, watch } from '@vue/composition-api';
+import queryClient from '@/globals/queryClient';
 import useRouter from '@/hooks/useRouter';
+import { useQueryProvider } from 'vue-query';
 import Header from '@/components/MainHeader';
 import Sidebar from '@/components/Sidebar';
 
@@ -9,6 +11,7 @@ const App = (props, { root }) => {
     const isOpenedSidebar = ref(false);
     const isLogged = computed(() => root.$store.getters['auth/isLogged']);
     const { route } = useRouter();
+    useQueryProvider(queryClient);
 
     // - Configure Axios pour qu'il redirige en cas de soucis de connexion lors des requêtes API.
     root.$http.interceptors.response.use((response) => response, (error) => {
