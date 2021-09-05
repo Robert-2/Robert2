@@ -9,28 +9,19 @@ final class CountriesTest extends ApiTestCase
         $this->assertStatusCode(SUCCESS_OK);
         $this->assertResponseData([
             [
-                'id'         => 1,
-                'name'       => 'France',
-                'code'       => 'FR',
-                'created_at' => null,
-                'updated_at' => null,
-                'deleted_at' => null,
+                'id' => 1,
+                'name' => 'France',
+                'code' => 'FR',
             ],
             [
-                'id'         => 2,
-                'name'       => 'Suisse',
-                'code'       => 'CH',
-                'created_at' => null,
-                'updated_at' => null,
-                'deleted_at' => null,
+                'id' => 2,
+                'name' => 'Suisse',
+                'code' => 'CH',
             ],
             [
-                'id'         => 3,
-                'name'       => 'Belgique',
-                'code'       => 'BE',
-                'created_at' => null,
-                'updated_at' => null,
-                'deleted_at' => null,
+                'id' => 3,
+                'name' => 'Belgique',
+                'code' => 'BE',
             ],
         ]);
     }

@@ -4,6 +4,8 @@ import useI18n from '@/hooks/useI18n';
 import useRouter from '@/hooks/useRouter';
 import FormField from '@/components/FormField';
 
+import type { Render, SetupContext } from '@vue/composition-api';
+
 type Props = {
     person: Record<string, any>,
     errors: Record<string, any>,
@@ -12,8 +14,8 @@ type Props = {
 };
 
 // @vue/component
-const PersonForm: FC<Props> = (props, { root, emit }) => {
-    // FIXME: La prop `person` ne devraot âtre mutée dans ce component...
+const PersonForm = (props: Props, { root, emit }: SetupContext): Render => {
+    // FIXME: La prop. `person` ne devrait âtre mutée dans ce component...
     const { person, errors, withReference, withCompany } = toRefs(props);
     const countriesOptions = computed(() => root.$store.getters['countries/options']);
     const companiesOptions = computed(() => root.$store.getters['companies/options']);
@@ -25,15 +27,15 @@ const PersonForm: FC<Props> = (props, { root, emit }) => {
         root.$store.dispatch('companies/fetch');
     });
 
-    const handleSubmit = (e: SubmitEvent) => {
+    const handleSubmit = (e: SubmitEvent): void => {
         emit('submit', e);
     };
 
-    const handleChange = (e: Event) => {
+    const handleChange = (e: Event): void => {
         emit('change', e);
     };
 
-    const handleBack = () => {
+    const handleBack = (): void => {
         emit('cancel');
         router.back();
     };
