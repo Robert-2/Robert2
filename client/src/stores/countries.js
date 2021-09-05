@@ -1,4 +1,4 @@
-import requester from '@/globals/requester';
+import apiCountries from './api/countries';
 import formatOptions from '@/utils/formatOptions';
 
 export default {
@@ -26,18 +26,17 @@ export default {
         },
     },
     actions: {
-        fetch({ state, commit }) {
+        async fetch({ state, commit }) {
             if (state.isFetched) {
                 return;
             }
 
-            requester.get('countries')
-                .then(({ data }) => {
-                    commit('init', data.data);
-                })
-                .catch((error) => {
-                    commit('setError', error);
-                });
+            try {
+                const countries = await apiCountries.all();
+                commit('init', countries);
+            } catch (error) {
+                commit('setError', error);
+            }
         },
     },
 };
