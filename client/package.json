@@ -10,7 +10,7 @@
     "dependencies": {
         "@fortawesome/fontawesome-free": "5.15.3",
         "@robert2/vis-timeline": "file:./vendors/vis-timeline",
-        "axios": "0.21.1",
+        "axios": "0.21.3",
         "debounce": "1.2.1",
         "deep-freeze-strict": "1.1.1",
         "invariant": "2.2.4",
