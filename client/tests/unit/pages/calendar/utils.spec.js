@@ -21,6 +21,18 @@ describe('Calendar/utils.formatEvent', () => {
                 {
                     id: 1,
                     start_time: '2019-10-01 08:00:00',
+                    end_time: '2019-10-01 12:00:00',
+                    position: 'Régisseur',
+                    technician: {
+                        id: 1,
+                        first_name: 'Marc',
+                        last_name: 'Tekos',
+                        full_name: 'Marc Tekos',
+                    },
+                },
+                {
+                    id: 2,
+                    start_time: '2019-10-02 14:00:00',
                     end_time: '2019-10-02 23:00:00',
                     position: 'Régisseur',
                     technician: {
