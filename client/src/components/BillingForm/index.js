@@ -26,6 +26,11 @@ export default {
             currency: Config.currency.symbol,
         };
     },
+    computed: {
+        isDiscountable() {
+            return this.maxRate > 0;
+        },
+    },
     methods: {
         handleChangeRate(value, event) {
             // - Controlled input...
@@ -87,6 +92,7 @@ export default {
             beneficiary,
             maxRate,
             maxAmount,
+            isDiscountable,
             discountRate,
             discountTarget,
             isRegeneration,
@@ -96,49 +102,65 @@ export default {
             handleChangeAmount,
         } = this;
 
+        const classNames = [
+            'Form',
+            'BillingForm',
+            { 'BillingForm--not-discountable': !isDiscountable },
+        ];
+
         return (
-            <form class="Form BillingForm" onSubmit={handleSubmit}>
-                <div class="Form__fieldset">
-                    <h4 class="Form__fieldset__title">{__('discount')}</h4>
-                    <FormField
-                        type="number"
-                        label="wanted-rate"
-                        class="BillingForm__discount-input"
-                        name="discountRate"
-                        disabled={loading}
-                        value={discountRate}
-                        step={0.0001}
-                        min={0.0}
-                        max={maxRate}
-                        addon="%"
-                        onInput={handleChangeRate}
-                    />
-                    <FormField
-                        type="number"
-                        label="wanted-amount"
-                        class="BillingForm__discount-target-input"
-                        name="discountTarget"
-                        disabled={loading}
-                        value={discountTarget}
-                        step={0.01}
-                        min={0}
-                        max={maxAmount}
-                        addon={currency}
-                        onInput={handleChangeAmount}
-                    />
-                    {!!beneficiary && (
-                        <div class="BillingForm__beneficiary">
-                            <div class="BillingForm__beneficiary__label">
-                                {__('beneficiary')}
-                            </div>
-                            <div class="BillingForm__beneficiary__name">
-                                <router-link to={`/beneficiaries/${beneficiary.id}`} title={__('action-edit')}>
-                                    {beneficiary.full_name}
-                                </router-link>
-                            </div>
+            <form class={classNames} onSubmit={handleSubmit}>
+                {!isDiscountable && (
+                    <p class="BillingForm__no-discount">{__('no-discount-applicable')}</p>
+                )}
+                {isDiscountable && (
+                    <div class="Form__fieldset">
+                        <h4 class="Form__fieldset__title">{__('discount')}</h4>
+                        <FormField
+                            type="number"
+                            label="wanted-rate"
+                            class="BillingForm__discount-input"
+                            name="discountRate"
+                            disabled={loading}
+                            value={discountRate}
+                            step={0.0001}
+                            min={0.0}
+                            max={maxRate}
+                            addon="%"
+                            onInput={handleChangeRate}
+                        />
+                        {maxRate < 100 && (
+                            <p class="BillingForm__discount-max-help">
+                                {__('max-discount-rate-help', { rate: maxRate })}
+                            </p>
+                        )}
+                        <FormField
+                            type="number"
+                            label="wanted-amount"
+                            class="BillingForm__discount-target-input"
+                            name="discountTarget"
+                            disabled={loading}
+                            value={discountTarget}
+                            step={0.01}
+                            min={0}
+                            max={maxAmount}
+                            addon={currency}
+                            onInput={handleChangeAmount}
+                        />
+                    </div>
+                )}
+                {!!beneficiary && (
+                    <div class="BillingForm__beneficiary">
+                        <div class="BillingForm__beneficiary__label">
+                            {__('beneficiary')}
                         </div>
-                    )}
-                </div>
+                        <div class="BillingForm__beneficiary__name">
+                            <router-link to={`/beneficiaries/${beneficiary.id}`} title={__('action-edit')}>
+                                {beneficiary.full_name}
+                            </router-link>
+                        </div>
+                    </div>
+                )}
                 <div class="BillingForm__save">
                     <button class="success" type="submit" disabled={loading}>
                         <i class={['fas', loading ? 'fa-circle-notch fa-spin' : 'fa-plus']} />{' '}
