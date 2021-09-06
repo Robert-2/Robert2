@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f5b8ff8e24a999f90b7bfd11a3bb4210",
+    "content-hash": "48eda7c80a5653a8c0c06c96b7c747a1",
     "packages": [
         {
             "name": "adbario/php-dot-notation",
@@ -5672,16 +5672,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "9.5.7",
+            "version": "9.5.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "d0dc8b6999c937616df4fb046792004b33fd31c5"
+                "reference": "ea8c2dfb1065eb35a79b3681eee6e6fb0a6f273b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/d0dc8b6999c937616df4fb046792004b33fd31c5",
-                "reference": "d0dc8b6999c937616df4fb046792004b33fd31c5",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/ea8c2dfb1065eb35a79b3681eee6e6fb0a6f273b",
+                "reference": "ea8c2dfb1065eb35a79b3681eee6e6fb0a6f273b",
                 "shasum": ""
             },
             "require": {
@@ -5693,7 +5693,7 @@
                 "ext-xml": "*",
                 "ext-xmlwriter": "*",
                 "myclabs/deep-copy": "^1.10.1",
-                "phar-io/manifest": "^2.0.1",
+                "phar-io/manifest": "^2.0.3",
                 "phar-io/version": "^3.0.2",
                 "php": ">=7.3",
                 "phpspec/prophecy": "^1.12.1",
@@ -5759,7 +5759,7 @@
             ],
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/9.5.7"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/9.5.9"
             },
             "funding": [
                 {
@@ -5771,7 +5771,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2021-07-19T06:14:47+00:00"
+            "time": "2021-08-31T06:47:40+00:00"
         },
         {
             "name": "sebastian/cli-parser",
@@ -6796,16 +6796,16 @@
         },
         {
             "name": "theseer/tokenizer",
-            "version": "1.2.0",
+            "version": "1.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/theseer/tokenizer.git",
-                "reference": "75a63c33a8577608444246075ea0af0d052e452a"
+                "reference": "34a41e998c2183e22995f158c581e7b5e755ab9e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/theseer/tokenizer/zipball/75a63c33a8577608444246075ea0af0d052e452a",
-                "reference": "75a63c33a8577608444246075ea0af0d052e452a",
+                "url": "https://api.github.com/repos/theseer/tokenizer/zipball/34a41e998c2183e22995f158c581e7b5e755ab9e",
+                "reference": "34a41e998c2183e22995f158c581e7b5e755ab9e",
                 "shasum": ""
             },
             "require": {
@@ -6834,7 +6834,7 @@
             "description": "A small library for converting tokenized PHP source code into XML and potentially other formats",
             "support": {
                 "issues": "https://github.com/theseer/tokenizer/issues",
-                "source": "https://github.com/theseer/tokenizer/tree/master"
+                "source": "https://github.com/theseer/tokenizer/tree/1.2.1"
             },
             "funding": [
                 {
@@ -6842,7 +6842,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2020-07-12T23:59:07+00:00"
+            "time": "2021-07-28T10:34:58+00:00"
         },
         {
             "name": "webmozart/assert",
