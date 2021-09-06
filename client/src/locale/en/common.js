@@ -202,6 +202,8 @@ export default {
     'discount': "Discount",
     'without-discount': "Without discount",
     'discount-rate': "{rate}\u00a0% off",
+    'no-discount-applicable': "No discount can be set to this event (no discountable materials).",
+    'max-discount-rate-help': "The maximum discount rate is {rate}\u00a0% because of some not-discountable material presence.",
     'wanted-rate': "Rate in %",
     'wanted-amount': "Wanted amount",
     'create-bill': "Create bill",

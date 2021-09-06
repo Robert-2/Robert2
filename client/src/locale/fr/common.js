@@ -202,6 +202,8 @@ export default {
     'discount': "Remise",
     'without-discount': "sans remise",
     'discount-rate': "remise {rate}\u00a0%",
+    'no-discount-applicable': "Aucune remise n'est applicable pour cet événement (pas de matériel remisable).",
+    'max-discount-rate-help': "Le taux de remise maximum est de {rate}\u00a0% car il y a du matériel non-remisable.",
     'wanted-rate': "Taux en %",
     'wanted-amount': "Montant souhaité",
     'create-bill': "Créer la facture",
