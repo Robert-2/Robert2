@@ -81,6 +81,7 @@ class Config
         ],
         'companyData' => [
             'name' => '',
+            'logo' => null,
             'street' => '',
             'zipCode' => '',
             'locality' => '',
