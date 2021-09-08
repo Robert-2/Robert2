@@ -1,0 +1,44 @@
+@use '~@/style/globals';
+
+.Users {
+    &__pseudo {
+        .fas {
+            padding-right: 0.5rem;
+        }
+    }
+
+    &__no-profile {
+        color: globals.$text-muted-color;
+        font-style: italic;
+    }
+
+    &__group,
+    &__email,
+    &__phone,
+    &__address {
+        display: none;
+    }
+
+    &__actions {
+        width: 7.5rem;
+        min-width: 7.5rem;
+
+        .info {
+            font-size: 0.9rem;
+        }
+    }
+
+    @media (min-width: globals.$screen-tablet) {
+        &__group,
+        &__email {
+            display: table-cell;
+        }
+    }
+
+    @media (min-width: globals.$screen-desktop) {
+        &__phone,
+        &__address {
+            display: table-cell;
+        }
+    }
+}

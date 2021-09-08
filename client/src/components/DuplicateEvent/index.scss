@@ -1,112 +1,94 @@
-@import '../../themes/default/index';
+@use '~@/style/globals';
 
 .DuplicateEvent {
-  &__header {
-    display: flex;
-    align-items: center;
-    padding: $content-padding-small-horizontal $content-padding-large-vertical;
-    background-color: $bg-color-main-header;
+    &__header {
+        display: flex;
+        align-items: center;
+        padding: globals.$content-padding-small-horizontal globals.$content-padding-large-vertical;
+        background-color: globals.$bg-color-main-header;
 
-    &__title {
-      flex: 1;
-      font-size: 1.4rem;
-    }
-
-    &__btn-close {
-      flex: 0 0 auto;
-      background: none;
-      border: none;
-    }
-  }
-
-  &__main {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: $content-padding-large-vertical $content-padding-small-vertical;
-
-    &__dates {
-      &__fields {
-        flex: 0 0 280px;
-
-        .FormField__datepicker {
-          width: 100%;
+        &__title {
+            flex: 1;
+            font-size: 1.4rem;
         }
 
-        .FormField + .FormField {
-          margin-top: $content-padding-small-vertical;
+        &__btn-close {
+            flex: 0 0 auto;
+            border: none;
+            background: none;
         }
-      }
+    }
 
-      &__duration {
-        margin-top: $content-padding-small-vertical;
+    &__main {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: globals.$content-padding-large-vertical globals.$content-padding-small-vertical;
+
+        &__dates {
+            .FormField {
+                flex-direction: column;
+
+                &__error {
+                    flex: 0 0 auto;
+
+                    &__text {
+                        padding: 0;
+                    }
+                }
+            }
+        }
+
+        &__infos {
+            min-width: 300px;
+            margin-top: globals.$content-padding-small-vertical;
+
+            .LocationText,
+            .EventBeneficiaries,
+            .EventTechnicians {
+                margin-top: globals.$content-padding-small-vertical;
+                font-size: 1rem;
+            }
+
+            &__duration,
+            &__items-count,
+            .EventBeneficiaries,
+            .EventTechnicians {
+                margin-top: globals.$content-padding-small-vertical;
+
+                .fas {
+                    width: 1.5rem;
+                    margin-right: 0.5rem;
+                    text-align: center;
+                }
+            }
+        }
+
+        &__error {
+            margin: globals.$content-padding-large-vertical 0 0;
+            color: globals.$text-danger-color;
+        }
+    }
+
+    &__datepicker {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &__input {
+            width: 100%;
+            max-width: 300px;
+            font-size: 1.1rem;
+        }
+    }
+
+    &__separator {
+        margin: 0;
+        opacity: 0.15;
+    }
+
+    &__footer {
+        padding: globals.$content-padding-large-vertical;
         text-align: center;
-
-        .fas {
-          width: 1.5rem;
-          margin-right: 0.5rem;
-          text-align: center;
-        }
-      }
     }
-
-    &__infos {
-      margin-top: $content-padding-small-vertical;
-
-      .LocationText,
-      .PersonsList {
-        font-size: 1rem;
-        margin-top: $content-padding-small-vertical;
-      }
-
-      &__items-count {
-        margin-top: $content-padding-small-vertical;
-
-        .fas {
-          width: 1.5rem;
-          margin-right: 0.5rem;
-          text-align: center;
-        }
-      }
-    }
-
-    &__error {
-      margin: $content-padding-large-vertical 0 0;
-      color: $text-danger-color;
-    }
-  }
-
-  &__datepicker {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    &__input {
-      width: 100%;
-      max-width: 300px;
-      font-size: 1.1rem;
-    }
-  }
-
-  &__separator {
-    opacity: .15;
-    margin: 0;
-  }
-
-  &__footer {
-    padding: $content-padding-large-vertical;
-    text-align: center;
-  }
-
-  @media screen and (min-width: $screen-tablet) {
-    &__main__dates {
-      display: flex;
-      align-items: center;
-
-      &__duration {
-        width: 140px;
-        margin-top: 0;
-      }
-    }
-  }
 }

@@ -1,34 +1,34 @@
-@import '../../themes/default/index';
+@use '~@/style/globals';
 
 .Inventory {
-  &__section {
-    &__header {
-      display: flex;
-      align-items: flex-end;
+    &__section {
+        &__header {
+            display: flex;
+            align-items: flex-end;
+        }
+
+        &__title {
+            flex: 1;
+        }
+
+        &__quantity-title {
+            flex: 0 0 95px;
+            margin-left: globals.$content-padding-large-vertical;
+            font-size: 1rem;
+            text-align: center;
+        }
+
+        & + & {
+            margin-top: globals.$content-padding-large-vertical;
+        }
     }
 
-    &__title {
-      flex: 1;
+    &__list {
+        padding: 0 0 0 globals.$content-padding-small-horizontal;
+        border-left: 3px solid globals.$list-left-border-color;
     }
 
-    &__quantity-title {
-      flex: 0 0 95px;
-      text-align: center;
-      font-size: 1rem;
-      margin-left: $content-padding-large-vertical;
+    .InventoryItem {
+        margin-bottom: globals.$content-padding-small-horizontal;
     }
-
-    & + & {
-      margin-top: $content-padding-large-vertical;
-    }
-  }
-
-  &__list {
-    padding: 0 0 0 $content-padding-small-horizontal;
-    border-left: 3px solid $list-left-border-color;
-  }
-
-  .InventoryItem {
-    margin-bottom: $content-padding-small-horizontal;
-  }
 }

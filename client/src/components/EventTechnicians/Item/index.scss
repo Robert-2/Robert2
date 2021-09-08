@@ -1,0 +1,14 @@
+@use '~@/style/globals';
+
+.EventTechnicianItem {
+    display: inline-block;
+    margin-left: 0.5rem;
+
+    & + & {
+        &::before {
+            content: '|';
+            margin-right: 0.3rem;
+            color: globals.$text-base-color;
+        }
+    }
+}

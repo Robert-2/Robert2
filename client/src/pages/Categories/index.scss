@@ -1,0 +1,25 @@
+@use '~@/style/globals';
+
+.Categories {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+
+    .EmptyMessage,
+    .Loading {
+        width: 100%;
+    }
+
+    .CategoriesItem {
+        flex: 0 0 auto;
+    }
+
+    @media (min-width: globals.$screen-mobile) {
+        flex-flow: row wrap;
+
+        .CategoriesItem {
+            flex: 1 0 300px;
+        }
+    }
+}

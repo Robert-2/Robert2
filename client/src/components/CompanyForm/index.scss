@@ -1,26 +1,26 @@
-@import '../../themes/default/index';
+@use '~@/style/globals';
 
 .CompanyForm {
-  min-width: $form-min-width;
-  max-width: $form-max-width;
-  margin-right: 1rem;
+    max-width: globals.$form-max-width;
+    min-width: globals.$form-min-width;
+    margin-right: 1rem;
 
-  &__phone .FormField__input {
-    max-width: 120px;
-  }
-
-  &__postal-code .FormField__input {
-    max-width: 70px;
-  }
-
-  &__notes {
-    .FormField__label {
-      align-self: flex-start;
-      padding-top: .6rem;
+    &__phone .FormField__input {
+        max-width: 120px;
     }
 
-    .FormField__textarea {
-      min-height: 120px;
+    &__postal-code .FormField__input {
+        max-width: 70px;
     }
-  }
+
+    &__notes {
+        .FormField__label {
+            padding-top: 0.6rem;
+            align-self: flex-start;
+        }
+
+        .FormField__textarea {
+            min-height: 120px;
+        }
+    }
 }

@@ -1,0 +1,15 @@
+@use '~@/style/globals';
+
+.EventBeneficiaries {
+    font-size: 1.2rem;
+
+    &__nobody {
+        color: globals.$text-danger-color;
+    }
+
+    &__icon {
+        width: 1.5rem;
+        margin-right: 0.5rem;
+        text-align: center;
+    }
+}

@@ -1,42 +1,45 @@
-@import '../../themes/default';
+@use '~@/style/globals';
+@use 'sass:color';
 
 .ReturnInventorySummary {
-  margin-bottom: $content-padding-large-horizontal;
-  padding-bottom: $content-padding-large-vertical;
-  border-bottom: 1px solid $tabs-bottom-border-color;
-  text-align: center;
+    margin-bottom: globals.$content-padding-large-horizontal;
+    padding-bottom: globals.$content-padding-large-vertical;
+    border-bottom: 1px solid globals.$tabs-bottom-border-color;
+    text-align: center;
 
-  &__title {
-    font-size: 1.3rem;
-    color: $text-danger-color;
-  }
-
-  &__link {
-    display: inline-block;
-    padding: .55rem .78rem;
-    border: none;
-    border-radius: 2px;
-    cursor: pointer;
-    color: $color-base-button !important;
-    line-height: 1.25;
-    font-size: 1rem;
-    background-color: $bg-color-button-info;
-
-    &:hover, &:focus {
-      background-color: lighten($bg-color-button-info, 8%);
-      color: $color-hover-button;
-      outline: 0;
+    &__title {
+        color: globals.$text-danger-color;
+        font-size: 1.3rem;
     }
-  }
 
-  &__all-ok {
-    margin-bottom: $content-padding-large-horizontal;
-    color: $text-success-color;
-    font-size: 1.1rem;
-  }
+    &__link {
+        display: inline-block;
+        padding: 0.55rem 0.78rem;
+        border: none;
+        border-radius: 2px;
+        background-color: globals.$bg-color-button-info;
+        // stylelint-disable-next-line declaration-no-important
+        color: globals.$color-base-button !important;
+        font-size: 1rem;
+        line-height: 1.25;
+        cursor: pointer;
 
-  &__list {
-    padding: 0;
-    text-align: left;
-  }
+        &:hover,
+        &:focus {
+            outline: 0;
+            background-color: color.adjust(globals.$bg-color-button-info, $lightness: 8%);
+            color: globals.$color-hover-button;
+        }
+    }
+
+    &__all-ok {
+        margin-bottom: globals.$content-padding-large-horizontal;
+        color: globals.$text-success-color;
+        font-size: 1.1rem;
+    }
+
+    &__list {
+        padding: 0;
+        text-align: left;
+    }
 }

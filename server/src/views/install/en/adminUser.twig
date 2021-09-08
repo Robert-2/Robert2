@@ -3,7 +3,7 @@
     <p>
         That's great, the structure of Robert's database is now complete.
     </p>
-    {% if stepData['existingAdmins'] %}
+    {% if stepData['existingAdmins'] is not empty %}
     <p>
         There is already <strong>{{ stepData['existingAdmins']|length }} admin users</strong>
         in your database:
@@ -24,7 +24,7 @@
             Or do you prefer to continue with existing admin users, and go to next step directly?
         </p>
         <div class="form__submit">
-            <input type="hidden" name="skipUserCreation" value="yes" />
+            <input type="hidden" name="skipped" value="yes" />
             <button role="submit">Étape suivante</button>
         </div>
     </form>

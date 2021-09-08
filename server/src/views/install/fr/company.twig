@@ -14,7 +14,7 @@
                 type="text"
                 name="name"
                 style="width: 410px;"
-                value="{{stepData['company']['name']}}"
+                value="{{stepData['name']}}"
             />
             {% if validationErrors['name'] %}
             <div class="form__field-error">{{ translate(validationErrors['name']) }}</div>
@@ -30,7 +30,7 @@
                 type="text"
                 name="street"
                 style="width: 410px;"
-                value="{{stepData['company']['street']}}"
+                value="{{stepData['street']}}"
             />
             {% if validationErrors['street'] %}
             <div class="form__field-error">{{ translate(validationErrors['street']) }}</div>
@@ -42,7 +42,7 @@
                         type="text"
                         name="zipCode"
                         style="width: 100px;"
-                        value="{{stepData['company']['zipCode']}}"
+                        value="{{stepData['zipCode']}}"
                     />
                     {% if validationErrors['zipCode'] %}
                     <div class="form__field-error">{{ translate(validationErrors['zipCode']) }}</div>
@@ -54,7 +54,7 @@
                         type="text"
                         name="locality"
                         style="width: 300px;"
-                        value="{{stepData['company']['locality']}}"
+                        value="{{stepData['locality']}}"
                     />
                     {% if validationErrors['locality'] %}
                     <div class="form__field-error">{{ translate(validationErrors['locality']) }}</div>
@@ -66,7 +66,7 @@
                 type="text"
                 name="country"
                 style="width: 250px;"
-                value="{{stepData['company']['country']}}"
+                value="{{stepData['country']}}"
             />
         </section>
         <section class="form__field">
@@ -78,7 +78,7 @@
                 type="text"
                 name="phone"
                 style="width: 410px;"
-                value="{{stepData['company']['phone']}}"
+                value="{{stepData['phone']}}"
             />
         </section>
         <section class="form__field">
@@ -90,7 +90,7 @@
                 type="text"
                 name="email"
                 style="width: 410px;"
-                value="{{stepData['company']['email']}}"
+                value="{{stepData['email']}}"
             />
         </section>
         <section class="form__field">
@@ -106,7 +106,7 @@
                         type="text"
                         name="vatNumber"
                         style="width: 250px;"
-                        value="{{stepData['company']['vatNumber']}}"
+                        value="{{stepData['vatNumber']}}"
                     />
                 </div>
                 <div class="form__sub-fields__item">
@@ -116,7 +116,7 @@
                         step="0.1"
                         name="vatRate"
                         style="width: 100px;"
-                        value="{{stepData['company']['vatRate']}}"
+                        value="{{stepData['vatRate']}}"
                     />
                 </div>
             </div>

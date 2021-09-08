@@ -20,9 +20,9 @@ class Install
         'end',
     ];
 
-    const INSTALL_FILE     = __DIR__ . '/progress.json';
+    const INSTALL_FILE = __DIR__ . '/progress.json';
     const DB_INIT_DATA_DIR = __DIR__ . '/data';
-    const PHINX_COMMAND    = 'src/vendor/bin/phinx --configuration=src/database/phinx.php';
+    const PHINX_COMMAND = 'src/vendor/bin/phinx --configuration=src/database/phinx.php';
 
     const REQUIRED_EXTENSIONS = [
         'pcre',
@@ -55,7 +55,7 @@ class Install
         $installProgress = self::getInstallProgress();
 
         if ($data === null) {
-            $installProgress['step']         = $step;
+            $installProgress['step'] = $step;
             $installProgress["config_$step"] = [];
 
             return self::_saveInstallProcess($installProgress);

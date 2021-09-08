@@ -5,15 +5,25 @@ on:
     pull_request:
         types: [opened, synchronize, reopened]
 jobs:
-    client-linting:
-        name     : "Client: Linting"
+    client-linting-js:
+        name     : "Client: Linting (Js)"
         runs-on  : ubuntu-latest
         defaults : { run: { working-directory: ./client }}
         steps    :
             - uses: actions/checkout@v2
             - uses: actions/setup-node@v1
             - run: yarn install --non-interactive --pure-lockfile
-            - run: yarn lint --max-warnings 0 --color
+            - run: yarn lint:js --max-warnings 52 --color
+
+    client-linting-scss:
+        name     : "Client: Linting (SCSS)"
+        runs-on  : ubuntu-latest
+        defaults : { run: { working-directory: ./client }}
+        steps    :
+            - uses: actions/checkout@v2
+            - uses: actions/setup-node@v1
+            - run: yarn install --non-interactive --pure-lockfile
+            - run: yarn lint:scss --max-warnings 0 --color
 
     client-unit-tests:
         name     : "Client: Tests unitaires"

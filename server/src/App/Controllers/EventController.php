@@ -3,15 +3,15 @@ declare(strict_types=1);
 
 namespace Robert2\API\Controllers;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Robert2\API\Controllers\Traits\WithCrud;
 use Robert2\API\Controllers\Traits\WithPdf;
+use Robert2\API\Errors\ValidationException;
 use Robert2\API\Models\Event;
 use Robert2\API\Models\Material;
 use Robert2\API\Models\MaterialUnit;
 use Robert2\API\Models\Park;
 use Robert2\API\Services\Auth;
-use Robert2\API\Errors\ValidationException;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
 use Slim\Http\ServerRequest as Request;
@@ -34,10 +34,10 @@ class EventController extends BaseController
         $deleted = (bool)$request->getQueryParam('deleted', false);
 
         $results = (new Event)
-            ->setPeriod($startDate, $endDate)
+            ->setSearchPeriod($startDate, $endDate)
             ->getAll($deleted)
             ->with('Beneficiaries:persons.id,first_name,last_name')
-            ->with('Assignees:persons.id,first_name,last_name');
+            ->with('Technicians');
 
         $restrictedParks = Auth::user()->restricted_parks;
         $useMultipleParks = Park::count() > 1;
@@ -141,50 +141,16 @@ class EventController extends BaseController
 
     public function duplicate(Request $request, Response $response): Response
     {
-        $id = (int)$request->getAttribute('id');
+        $originalId = (int)$request->getAttribute('id');
+        $postData = (array)$request->getParsedBody();
+
         try {
-            $originalEventData = Event::findOrFail($id);
+            $newEvent = Event::duplicate($originalId, $postData);
         } catch (ModelNotFoundException $e) {
             throw new HttpNotFoundException($request);
         }
 
-        $originalBeneficiaries = array_column($originalEventData['beneficiaries'], 'id');
-
-        $originalAssignees = [];
-        foreach ($originalEventData['assignees'] as $assignee) {
-            $originalAssignees[$assignee['id']] = [
-                'position' => $assignee['pivot']['position'],
-            ];
-        }
-
-        $originalMaterials = array_map(function ($material) {
-            return [
-                'id' => $material['id'],
-                'quantity' => $material['pivot']['quantity'],
-                'units' => $material['pivot']['units'],
-            ];
-        }, $originalEventData['materials']);
-
-        $postData = (array)$request->getParsedBody();
-        $newEventData = array_merge($postData, [
-            'user_id' => $postData['user_id'] ?? null,
-            'title' => $originalEventData['title'],
-            'description' => $originalEventData['description'],
-            'start_date' => $postData['start_date'] ?? null,
-            'end_date' => $postData['end_date'] ?? null,
-            'is_confirmed' => false,
-            'is_archived' => false,
-            'location' => $originalEventData['location'],
-            'is_billable' => $originalEventData['is_billable'],
-            'is_return_inventory_done' => false,
-            'beneficiaries' => $originalBeneficiaries,
-            'assignees' => $originalAssignees,
-            'materials' => $originalMaterials,
-        ]);
-
-        $newId = $this->_saveEvent(null, $newEventData);
-
-        return $response->withJson($this->_getFormattedEvent($newId), SUCCESS_CREATED);
+        return $response->withJson($this->_getFormattedEvent($newEvent->id), SUCCESS_CREATED);
     }
 
     public function updateMaterialReturn(Request $request, Response $response): Response
@@ -236,102 +202,6 @@ class EventController extends BaseController
         }
 
         $event = Event::staticEdit($id, $postData);
-
-        if (isset($postData['beneficiaries'])) {
-            $event->Beneficiaries()->sync($postData['beneficiaries']);
-        }
-
-        if (isset($postData['assignees'])) {
-            $event->Assignees()->sync($postData['assignees']);
-        }
-
-        // - Unités déjà utilisées auparavant dans l'événement.
-        $existingUnits = [];
-        foreach ($event->Materials()->get() as $material) {
-            $existingUnits = array_merge($existingUnits, $material->pivot->units);
-        }
-
-        // - Unités utilisées au moment de l'événement (dans les autres événements).
-        $concurrentlyUsedUnits = $event->getConcurrentlyUsedUnits();
-
-        if (isset($postData['materials'])) {
-            $materials = [];
-            $materialsUnits = [];
-            foreach ($postData['materials'] as $materialData) {
-                if ((int)$materialData['quantity'] <= 0) {
-                    continue;
-                }
-
-                try {
-                    $material = Material::findOrFail($materialData['id']);
-
-                    $unitIds = [];
-                    if ($material->is_unitary && !empty($materialData['units'])) {
-                        $unitIds = $materialData['units'];
-                        if (!is_array($unitIds)) {
-                            throw new \InvalidArgumentException(
-                                sprintf(
-                                    "Le format des unités sélectionnées pour le matériel ref. \"%s\" est invalide.",
-                                    $material->reference
-                                ),
-                                ERROR_VALIDATION
-                            );
-                        }
-
-                        foreach ($unitIds as $unitId) {
-                            $unit = MaterialUnit::findOrFail($unitId);
-                            if ($unit->material_id !== $material->id) {
-                                throw new \InvalidArgumentException(
-                                    vsprintf(
-                                        "L'unité ref. \"%s\", sélectionnée pour le matériel " .
-                                        "ref. \"%s\" n'appartient pas à celui-ci.",
-                                        [$unit->reference, $material->reference]
-                                    ),
-                                    ERROR_VALIDATION
-                                );
-                            }
-
-                            // - Si l'unité était déjà sauvée pour l'événement, on bypass les autres vérifs.
-                            if (in_array($unit->id, $existingUnits, true)) {
-                                continue;
-                            }
-
-                            // NOTE: On n'empêche pas le save des unités `is_broken` car si l'utilisateur final
-                            // souhaite quand même les placer dans un événement, libre à lui.
-                            if (in_array($unit->id, $concurrentlyUsedUnits, true)) {
-                                throw new \InvalidArgumentException(
-                                    vsprintf(
-                                        "L'unité ref. \"%s\", sélectionnée pour le matériel " .
-                                        "ref. \"%s\" n'est pas disponible à cette période.",
-                                        [$unit->reference, $material->reference]
-                                    ),
-                                    ERROR_VALIDATION
-                                );
-                            }
-                        }
-                    }
-
-                    $materialsUnits[$materialData['id']] = $unitIds;
-                    $materials[$materialData['id']] = [
-                        'quantity' => $materialData['quantity']
-                    ];
-                } catch (ModelNotFoundException $e) {
-                    throw new \InvalidArgumentException(
-                        "Un ou plusieurs matériels (ou des unités de ceux-ci) ajoutés à l'événement n'existent pas.",
-                        ERROR_VALIDATION
-                    );
-                }
-            }
-
-            $event->Materials()->sync($materials);
-
-            // - Synchronisation des unités.
-            $materials = $event->Materials()->get();
-            foreach ($materials as $material) {
-                $units = $materialsUnits[$material->id] ?? [];
-                $material->pivot->Units()->sync($units);
-            }
-        }
 
         return $event->id;
     }
@@ -461,7 +331,7 @@ class EventController extends BaseController
     {
         $model = (new Event)
             ->with('User')
-            ->with('Assignees')
+            ->with('Technicians')
             ->with('Beneficiaries')
             ->with('Materials')
             ->with('Bills')

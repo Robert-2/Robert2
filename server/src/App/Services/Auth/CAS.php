@@ -3,15 +3,15 @@ declare(strict_types=1);
 
 namespace Robert2\API\Services\Auth;
 
+use \phpCAS;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Logger;
 use Ramsey\Uuid\Uuid;
 use Robert2\API\Config\Config;
-use Robert2\API\I18n\I18n;
-use Robert2\API\Services\Auth;
 use Robert2\API\Models\User;
+use Robert2\API\Services\Auth;
+use Robert2\API\Services\I18n;
 use Slim\Http\ServerRequest as Request;
-use \phpCAS;
 
 final class CAS implements AuthenticatorInterface
 {

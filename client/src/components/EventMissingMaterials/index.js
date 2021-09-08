@@ -1,33 +1,36 @@
+import './index.scss';
+
+// @vue/component
 export default {
-  name: 'EventMissingMaterials',
-  props: { eventId: Number },
-  data() {
-    return {
-      hasMissingMaterials: false,
-      missingMaterials: [],
-      error: null,
-    };
-  },
-  mounted() {
-    this.fetchMissingMaterials();
-  },
-  methods: {
-    fetchMissingMaterials() {
-      this.$http.get(`events/${this.eventId}/missing-materials`)
-        .then(({ data }) => {
-          this.missingMaterials = data;
-          this.hasMissingMaterials = data.length > 0;
-        })
-        .catch(this.displayError);
+    name: 'EventMissingMaterials',
+    props: {
+        eventId: { type: Number, required: true },
     },
+    data() {
+        return {
+            hasMissingMaterials: false,
+            missingMaterials: [],
+            error: null,
+        };
+    },
+    mounted() {
+        this.fetchData();
+    },
+    methods: {
+        async fetchData() {
+            try {
+                const { data } = await this.$http.get(`events/${this.eventId}/missing-materials`);
 
-    getMissingCount(missingMaterial) {
-      const { quantity } = missingMaterial.pivot;
-      return { quantity, missing: missingMaterial.missing_quantity };
-    },
+                this.missingMaterials = data;
+                this.hasMissingMaterials = data.length > 0;
+            } catch (error) {
+                this.error = error;
+            }
+        },
 
-    displayError(error) {
-      this.error = error;
+        getMissingCount(missingMaterial) {
+            const { quantity } = missingMaterial.pivot;
+            return { quantity, missing: missingMaterial.missing_quantity };
+        },
     },
-  },
 };

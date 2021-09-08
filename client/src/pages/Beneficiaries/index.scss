@@ -1,0 +1,33 @@
+@use '~@/style/globals';
+
+.Beneficiaries {
+    &__nickname,
+    &__email,
+    &__address,
+    &__note {
+        display: none;
+    }
+
+    &__address {
+        white-space: pre-line;
+    }
+
+    @media (min-width: globals.$screen-mobile) {
+        &__email {
+            display: table-cell;
+        }
+    }
+
+    @media (min-width: globals.$screen-tablet) {
+        &__nickname {
+            display: table-cell;
+        }
+    }
+
+    @media (min-width: globals.$screen-desktop) {
+        &__address,
+        &__note {
+            display: table-cell;
+        }
+    }
+}

@@ -87,6 +87,14 @@ class Person extends BaseModel
         return $this->hasMany('Robert2\API\Models\MaterialUnit');
     }
 
+    public function Events()
+    {
+        return $this->hasMany(EventTechnician::class, 'technician_id')
+            ->with('Event')
+            ->has('Event')
+            ->orderBy('start_time');
+    }
+
     // ——————————————————————————————————————————————————————
     // —
     // —    Mutators
@@ -136,6 +144,11 @@ class Person extends BaseModel
     {
         $tags = $this->Tags()->get();
         return Tag::format($tags);
+    }
+
+    public function getEventsAttribute()
+    {
+        return $this->Events()->get()->each->setAppends(['event']);
     }
 
     // ——————————————————————————————————————————————————————

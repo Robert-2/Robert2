@@ -1,0 +1,21 @@
+.Notification {
+    &.toasted-primary {
+        border-radius: 3px;
+        font-size: 1rem;
+
+        &.error {
+            background-color: rgba($bg-color-button-danger, 0.7);
+        }
+
+        .action {
+            color: $text-base-color;
+            opacity: 0.7;
+
+            &:hover {
+                color: $text-base-color;
+                text-decoration: none;
+                opacity: 1;
+            }
+        }
+    }
+}

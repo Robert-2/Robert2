@@ -1,0 +1,52 @@
+@use '~@/style/globals';
+
+.EventDetailsInfos {
+    display: flex;
+    flex-direction: column;
+
+    &__base-infos {
+        display: flex;
+        flex-wrap: wrap;
+
+        .LocationText,
+        .EventBeneficiaries,
+        .EventTechnicians {
+            flex: 1 0 auto;
+            max-width: 100%;
+            margin-right: globals.$content-padding-small-horizontal;
+            margin-bottom: globals.$content-padding-large-vertical;
+        }
+    }
+
+    &__description,
+    &__confirmation {
+        margin-bottom: globals.$content-padding-large-vertical;
+        font-size: 1.2rem;
+
+        .fas {
+            width: 1.5rem;
+            margin-right: 0.5rem;
+            text-align: center;
+        }
+    }
+
+    &__description {
+        margin-top: 0;
+        color: globals.$text-nav-color;
+        line-height: 1.5;
+        white-space: pre-wrap;
+    }
+
+    &__confirmation {
+        color: globals.$text-warning-color;
+
+        &--confirmed {
+            color: globals.$text-success-color;
+        }
+    }
+
+    .EventTotals {
+        padding: 0;
+        text-align: left;
+    }
+}

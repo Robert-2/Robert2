@@ -1,0 +1,34 @@
+@use '~@/style/globals';
+
+.ParkChooser {
+    display: flex;
+    flex-wrap: wrap;
+    margin: globals.$content-padding-small-horizontal 0;
+    padding: 0;
+
+    &__park {
+        margin-right: 5px;
+        margin-bottom: 5px;
+        padding: 0.55rem 0.78rem;
+        border-radius: 2px;
+        background-color: globals.$bg-color-button-info;
+        color: globals.$color-base-button;
+        font-size: 1rem;
+        line-height: 1.25;
+        cursor: pointer;
+        list-style: none;
+        transition: all 300ms;
+
+        &__icon {
+            margin-right: 0.3rem;
+        }
+
+        &--selected {
+            background-color: globals.$bg-color-button-danger;
+        }
+    }
+
+    @media screen and (min-width: globals.$screen-tablet) {
+        margin-left: globals.$form-label-width;
+    }
+}

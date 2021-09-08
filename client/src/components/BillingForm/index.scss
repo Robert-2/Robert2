@@ -1,0 +1,80 @@
+@use '~@/style/globals';
+
+.BillingForm {
+    &__no-discount {
+        margin: 0;
+        text-align: center;
+    }
+
+    &__discount-max-help {
+        color: globals.$text-light-color;
+    }
+
+    &__discount-input .FormField__input {
+        max-width: 90px;
+    }
+
+    &__discount-target-input .FormField__input {
+        max-width: 110px;
+    }
+
+    &__beneficiary {
+        display: flex;
+        flex-direction: column;
+        margin-top: globals.$content-padding-small-vertical;
+
+        &__label {
+            display: block;
+            padding: 5px 0;
+        }
+    }
+
+    &__save {
+        margin-top: globals.$content-padding-large-vertical;
+    }
+
+    &--not-discountable {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        .BillingForm__beneficiary {
+            text-align: center;
+
+            &__label {
+                flex: 0 0 auto;
+            }
+        }
+
+        .BillingForm__save {
+            padding: 0;
+        }
+    }
+
+    @media (min-width: globals.$screen-tablet) {
+        &__discount-max-help {
+            padding-left: globals.$form-label-width;
+        }
+
+        &__beneficiary {
+            flex-direction: row;
+            align-items: center;
+            height: 2.5rem;
+
+            &__label {
+                flex: 0 0 globals.$form-label-width;
+                padding: 0 globals.$input-padding-horizontal;
+                text-align: right;
+            }
+
+            &__name {
+                flex: 1;
+            }
+        }
+
+        &__save {
+            margin-top: globals.$content-padding-small-vertical;
+            padding-left: globals.$form-label-width;
+        }
+    }
+}

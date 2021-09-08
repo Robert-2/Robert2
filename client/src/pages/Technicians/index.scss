@@ -1,0 +1,61 @@
+@use '~@/style/globals';
+
+.Page--technicians {
+    display: flex;
+    flex-direction: column;
+
+    .VueTables {
+        flex: 1;
+    }
+}
+
+.Technicians {
+    &__filters {
+        position: absolute;
+        z-index: 1;
+        left: 240px;
+        right: calc(#{globals.$content-padding-large-vertical} + 45px + #{globals.$content-padding-small-vertical});
+        display: flex;
+        flex-wrap: nowrap;
+        align-items: center;
+
+        &__clear-button {
+            margin-left: globals.$content-padding-small-horizontal;
+        }
+    }
+
+    &__nickname,
+    &__email,
+    &__address,
+    &__note {
+        display: none;
+    }
+
+    &__note {
+        white-space: pre-wrap;
+    }
+
+    &__actions {
+        min-width: 115px;
+        text-align: right;
+    }
+
+    @media (min-width: globals.$screen-mobile) {
+        &__email {
+            display: table-cell;
+        }
+    }
+
+    @media (min-width: globals.$screen-tablet) {
+        &__nickname {
+            display: table-cell;
+        }
+    }
+
+    @media (min-width: globals.$screen-desktop) {
+        &__address,
+        &__note {
+            display: table-cell;
+        }
+    }
+}
