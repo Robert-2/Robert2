@@ -1,0 +1,52 @@
+@use '~@/style/globals';
+
+.Parks {
+    &__print-button {
+        text-decoration: none;
+    }
+
+    &__address,
+    &__opening-hours,
+    &__note {
+        display: none;
+    }
+
+    &__total-stock {
+        display: block;
+        color: globals.$text-light-color;
+    }
+
+    &__total-amount {
+        width: 105px;
+        // stylelint-disable-next-line declaration-no-important
+        text-align: center !important;
+    }
+
+    &__events {
+        text-align: center;
+    }
+
+    &__no-items {
+        color: globals.$text-light-color;
+        font-style: italic;
+    }
+
+    &__actions {
+        width: 1%;
+        text-align: right;
+        white-space: nowrap;
+    }
+
+    @media (min-width: globals.$screen-mobile) {
+        &__address {
+            display: table-cell;
+        }
+    }
+
+    @media (min-width: globals.$screen-tablet) {
+        &__opening-hours,
+        &__note {
+            display: table-cell;
+        }
+    }
+}

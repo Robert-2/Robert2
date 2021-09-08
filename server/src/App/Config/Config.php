@@ -34,18 +34,18 @@ class Config
             'beneficiary' => 'Bénéficiaire',
             'technician' => 'Technicien',
         ],
-        'billingMode' => 'partial',
+        'billingMode' => 'partial', // - Valeurs possibles : 'none', 'partial', 'all'.
         'degressiveRateFunction' => '((daysCount - 1) * 0.75) + 1',
         'auth' => [
             'cookie' => 'auth',
         ],
         'currency' => [
-          'symbol' => '€',
-          'name' => 'Euro',
-          'iso' => 'EUR',
-          'symbol_intl' => '€',
-          'decimal_digits' => 2,
-          'rounding' => 0,
+            'symbol' => '€',
+            'name' => 'Euro',
+            'iso' => 'EUR',
+            'symbol_intl' => '€',
+            'decimal_digits' => 2,
+            'rounding' => 0,
         ],
         'db' => [
             'driver' => 'mysql',
@@ -69,6 +69,7 @@ class Config
         ],
         'companyData' => [
             'name' => '',
+            'logo' => null,
             'street' => '',
             'zipCode' => '',
             'locality' => '',

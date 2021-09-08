@@ -3,7 +3,7 @@ import pages from './pages';
 import errors from './errors';
 
 export default {
-  ...common,
-  ...pages,
-  ...errors,
+    ...common,
+    ...pages,
+    ...errors,
 };

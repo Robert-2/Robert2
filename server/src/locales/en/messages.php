@@ -2454,10 +2454,10 @@ return [
     "Missing value"
     => "Missing value",
 
-    "endDateMustBeLater"
+    "end-date-must-be-later"
     => "End date must be later than start date",
 
-    "eventCannotBeArchived"
+    "event-cannot-be-archived"
     => "An event cannot be archived if its return inventory is not done!",
 
     "referenceAlreadyInUse"
@@ -2465,6 +2465,18 @@ return [
 
     "invalid-value"
     => "Invalid value.",
+
+    "technician-assignation-before-event"
+    => "Assignment of this technician begins before the event.",
+
+    "technician-assignation-after-event"
+    => "Assignment of this technician ends after the event.",
+
+    "date-precision-must-be-quarter"
+    => "Date must respect precision of a quarter (:00, :15, :30 or :45).",
+
+    "technician-already-busy-for-this-period"
+    => "This technician is already busy for this period.",
 
     //
     // - Install messages
@@ -2519,8 +2531,11 @@ return [
     "estimateTitle"
     => "Estimate in %s",
 
-    "onDate"
+    "on-date"
     => "On %s",
+
+    "printed-on-date"
+    => "Printed on %s",
 
     "as-of-date"
     => "As of %s",
@@ -2546,7 +2561,7 @@ return [
     "vatNumber"
     => "VAT number: %s",
 
-    "assignees"
+    "technicians"
     => "Technicians",
 
     "beneficiary"

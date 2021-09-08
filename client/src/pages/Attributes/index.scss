@@ -1,0 +1,142 @@
+@use '~@/style/globals';
+
+.Attributes {
+    &__header {
+        .Help {
+            margin-top: globals.$content-padding-small-horizontal;
+        }
+    }
+
+    &__back-button {
+        margin-top: globals.$content-padding-small-horizontal;
+        margin-right: globals.$content-padding-small-vertical;
+    }
+
+    &__no-data {
+        margin: 0;
+        padding: 1.5rem 0.5rem;
+        background-color: globals.$bg-color-table-td;
+        font-style: italic;
+        text-align: center;
+    }
+
+    &__items {
+        width: 100%;
+        min-width: 800px;
+        margin: 0;
+        background-color: globals.$bg-color-table-td;
+        color: globals.$text-base-color;
+        border-collapse: collapse;
+
+        &__header {
+            background-color: globals.$bg-color-table-th;
+            color: globals.$text-nav-color;
+            font-weight: 600;
+            text-align: left;
+        }
+
+        &__name,
+        &__type,
+        &__unit,
+        &__max-length,
+        &__categories,
+        &__delete {
+            height: 45px;
+            padding: 0.8rem 0.5rem;
+            border-bottom: 1px solid globals.$bg-color-body;
+        }
+
+        &__name {
+            width: 305px;
+            font-weight: 700;
+
+            &__content {
+                display: flex;
+                align-items: center;
+            }
+
+            &__text {
+                flex: 1;
+            }
+
+            &__actions {
+                margin-left: 10px;
+            }
+
+            &__input {
+                width: 100%;
+            }
+
+            &__error {
+                color: globals.$text-danger-color;
+                font-weight: 400;
+            }
+
+            &__edit-button {
+                padding: 5px 8px;
+                font-size: 0.9rem;
+                visibility: hidden;
+                transition: none;
+            }
+        }
+
+        &__delete {
+            width: 30px;
+
+            &__button {
+                padding: 5px 8px;
+                font-size: 0.9rem;
+                visibility: hidden;
+                transition: none;
+
+                &--show {
+                    visibility: visible;
+                }
+            }
+        }
+
+        &__line:hover {
+            .Attributes__items__name__edit-button,
+            .Attributes__items__delete__button {
+                visibility: visible;
+            }
+        }
+
+        &__type {
+            width: 170px;
+        }
+
+        &__unit {
+            width: 100px;
+            text-align: center;
+        }
+
+        &__max-length {
+            display: none;
+            width: 100px;
+            text-align: center;
+        }
+
+        &__categories {
+            &__empty {
+                color: globals.$text-light-color;
+                font-style: italic;
+            }
+        }
+    }
+
+    &__actions {
+        display: flex;
+        margin-top: 1rem;
+
+        &--add {
+            justify-content: flex-end;
+        }
+    }
+
+    @media (min-width: globals.$screen-big-desktop) {
+        &__items__max-length {
+            display: table-cell;
+        }
+    }
+}

@@ -1,13 +1,13 @@
 .item-actions {
-  text-align: right;
+    text-align: right;
 
-  &__button {
-    min-width: 27px;
-    min-height: 24px;
-    padding: .35rem .6rem;
-  }
+    &__button {
+        min-width: 27px;
+        min-height: 24px;
+        padding: 0.35rem 0.6rem;
+    }
 
-  &__button + &__button {
-    margin-left: .5rem;
-  }
+    &__button + &__button {
+        margin-left: 0.5rem;
+    }
 }

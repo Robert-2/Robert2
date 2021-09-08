@@ -15,14 +15,15 @@ class Pdf
     public function __construct(string $html)
     {
         $this->DomPdf = new Dompdf([
-            'tempDir'                 => VAR_FOLDER . DS . 'tmp',
-            'fontCache'               => VAR_FOLDER . DS . 'cache',
-            'logOutputFile'           => VAR_FOLDER . DS . 'logs' . DS . 'pdf.html',
-            'defaultMediaType'        => 'print',
-            'defaultPaperSize'        => 'a4',
+            'tempDir' => VAR_FOLDER . DS . 'tmp',
+            'fontCache' => VAR_FOLDER . DS . 'cache',
+            'logOutputFile' => VAR_FOLDER . DS . 'logs' . DS . 'pdf.html',
+            'defaultMediaType' => 'print',
+            'defaultPaperSize' => 'a4',
             'defaultPaperOrientation' => 'portrait',
-            'defaultFont'             => 'DejaVu Sans',
-            'isHtml5ParserEnabled'    => true,
+            'defaultFont' => 'DejaVu Sans',
+            'isHtml5ParserEnabled' => true,
+            'isRemoteEnabled' => true,
         ]);
 
         $this->DomPdf->loadHtml($html);
@@ -48,6 +49,7 @@ class Pdf
             //   (i.e. the `?` character appear for thousand separator, when FR)
             'grouping_used' => false
         ];
+        $data['baseUrl'] = trim(Config::getSettings('apiUrl'), '/');
 
         $i18n = new I18n(Config::getSettings('defaultLang'));
         $template = sprintf('pdf/%s.twig', $templateName);

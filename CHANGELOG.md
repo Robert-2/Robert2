@@ -4,6 +4,29 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.15.0 (2021-09-08)
+
+- Change l'étape 3 de création / modification d'événement : ajoute une frise temporelle permettant de visualiser les assignations de tous les techniciens pour la période de l'événement, et d'assigner les techniciens à des horaires précis (#193).
+- Ajoute une page qui affiche les informations d'un technicien (#188).
+- Ajoute un onglet "Agenda" dans la page des techniciens qui montre un calendrier avec toutes les assignations du technicien (#188).
+- Ajoute un filtre dans la liste des techniciens permettant de n'afficher que ceux qui sont disponibles dans une période donnée (#189).
+- Ajoute la possibilité d'afficher un logo sur les PDF (en ajoutant une clé `company.logo` dans les `settings.json` et un fichier dans `public/img/`).
+- Affiche le détail des horaires des techniciens dans les fiches de sortie (#190).
+- Adapte l'affichage de la liste des techniciens dans la fenêtre d'événement et à l'étape 5 de l'édition d'événement (#191).
+- Ajoute un onglet "Techniciens" dans la fenêtre d'événement qui affiche une frise temporelle des assignations (#192).
+- Corrige le comportement des champs de quantité à l'étape 4 de l'édition d'événement (#213).
+- Corrige le comportement du bouton "Afficher les quantités à date..." de la page de listing du matériel.
+- Sécurise le fichier `progress.json` de l'assistant d'installation si on saute l'étape de création des catégories (#169).
+- Conserve en mémoire les données des formulaires en cours de remplissage pour les nouveaux bénéficiaires, techniciens, matériel, parcs et utilisateurs (#173).
+- Uniformise l'affichage des principaux formulaires.
+- Ferme la fenêtre automatiquement et centre la frise temporelle sur le nouvel événement qui vient d'être créé après une duplication.
+- Ajoute une infobulle au dessus des événements lors de leur déplacement dans les frises temporelles pour mieux visualiser les nouvelles dates avant de valider le déplacement (#247).
+- Améliore l'utilisation des caractéristiques spéciales dans la page d'ajout / modification du matériel.
+- Rend les catégories non-supprimables quand du matériel leur est assigné.
+- Affiche systématiquement l'option par défaut dans les listes de sélection, même vides, plutôt qu'aucune option.
+- Ajoute des messages d'aide dans l'encart de création de devis et factures, concernant les remises quand du matériel non-remisable est présent dans l'événement (#253).
+- Corrige l'étape "3 - société" de l'assistant d'installation.
+
 ## 0.14.3 (2021-07-12)
 
 - Corrige la migration qui posait problème avec les préfixes de table (#198).

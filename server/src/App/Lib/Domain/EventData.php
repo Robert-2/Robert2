@@ -201,6 +201,36 @@ class EventData
         return $materials;
     }
 
+    public function getTechnicians()
+    {
+        if (empty($this->_eventData['technicians'])) {
+            return [];
+        }
+
+        $technicians = [];
+        foreach ($this->_eventData['technicians'] as $eventTechnician) {
+            $technician = $eventTechnician['technician'];
+            $technicianId = $technician['id'];
+
+            if (!array_key_exists($technicianId, $technicians)) {
+                $technicians[$technicianId] = [
+                    'id' => $technicianId,
+                    'name' => $technician['full_name'],
+                    'phone' => $technician['phone'],
+                    'periods' => [],
+                ];
+            }
+
+            $technicians[$technicianId]['periods'][] = [
+                'from' => $eventTechnician['start_time'],
+                'to' => $eventTechnician['end_time'],
+                'position' => $eventTechnician['position'],
+            ];
+        }
+
+        return array_values($technicians);
+    }
+
     public function toModelArray(): array
     {
         $totals = $this->_calcTotals();

@@ -288,9 +288,9 @@ final class MaterialTest extends ModelTestCase
         $this->assertEquals($expected, $result);
 
         // - Set tags : one existing, and two new tags
-        $result = $this->model->setTags(1, ['tag 01', 'yipee', 'new tag']);
+        $result = $this->model->setTags(1, ['Technician', 'yipee', 'new tag']);
         $expected = [
-            ['id' => 1, 'name' => 'tag 01'],
+            ['id' => 1, 'name' => 'Technician'],
             ['id' => 4, 'name' => 'yipee'],
             ['id' => 5, 'name' => 'new tag'],
         ];

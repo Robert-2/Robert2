@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\QueryException;
+use phpDocumentor\Reflection\Types\Integer;
 use Psr\Http\Message\UploadedFileInterface;
 
 /**
@@ -267,4 +268,45 @@ function moveUploadedFile($directory, UploadedFileInterface $uploadedFile)
     $uploadedFile->moveTo($directory . DS . $nameSecure);
 
     return $nameSecure;
+}
+
+/**
+ * Arrondi un horaire (datetime) selon une précision en minutes donnée.
+ *
+ * @param DateTime  $originalDate   La date à arrondir
+ * @param int       $precision      La précision à utiliser. Par défaut 15 minutes. Max 60 minutes.
+ *
+ * @return DateTime Un clone de la date originale arrondie.
+ */
+function roundDate(\DateTime $originalDate, int $precision = 15): DateTime
+{
+    $date = clone($originalDate);
+    if ($precision > 60) {
+        return $date;
+    }
+
+    $steps = range(0, 60, $precision);
+
+    $minutes = (int)$originalDate->format('i');
+    if (in_array($minutes, $steps)) {
+        return $date;
+    }
+
+    $hours = (int)$originalDate->format('H');
+    $roundedMinutes = ((round($minutes / $precision)) * $precision) % 60;
+    $date->setTime($hours, $roundedMinutes);
+
+    $nextHourThreshold = 60 - ($precision / 2);
+    if ($minutes < $nextHourThreshold) {
+        return $date;
+    }
+
+    if ($hours === 23) {
+        $date->setTime(0, 0);
+        $date->add(new \DateInterval('P1D'));
+        return $date;
+    }
+
+    $date->setTime($hours + 1, 0);
+    return $date;
 }

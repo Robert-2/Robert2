@@ -1,56 +1,58 @@
+@use '~@/style/globals';
 @use 'sass:math';
-@import '../../themes/default/';
 
 .SelectSearch {
-  flex: 1;
-
-  &__label {
-    display: block;
-    padding: math.div($input-padding-vertical, 1.8) 0;
-  }
-
-  .v-select {
     flex: 1;
-    margin-right: 10%;
-  }
-
-  &__hidden-field {
-    display: none;
-  }
-
-  &__error {
-    flex: 0 0 100%;
-    margin-top: 4px;
-    color: $text-danger-color;
-
-    &__text {
-      padding-left: $form-label-width;
-    }
-  }
-
-  .vs__selected-options .vs__selected {
-    background: none;
-    padding: 0;
-  }
-
-  @media screen and (min-width: $screen-tablet) {
-    display: flex;
-    flex-direction: column;
-    flex-flow: row wrap;
-    align-items: center;
 
     &__label {
-      flex: 0 0 $form-label-width;
-      text-align: right;
-      padding: 0 $input-padding-horizontal;
+        display: block;
+        padding: math.div(globals.$input-padding-vertical, 1.8) 0;
     }
 
-    &__label + .v-select + &__error {
-      margin-left: $form-label-width;
-    }
-
+    // stylelint-disable-next-line selector-class-pattern
     .v-select {
-      margin-right: 0;
+        flex: 1;
+        margin-right: 10%;
     }
-  }
+
+    &__hidden-field {
+        display: none;
+    }
+
+    &__error {
+        flex: 0 0 100%;
+        margin-top: 4px;
+        color: globals.$text-danger-color;
+
+        &__text {
+            padding-left: globals.$form-label-width;
+        }
+    }
+
+    .vs__selected-options .vs__selected {
+        padding: 0;
+        background: none;
+    }
+
+    @media screen and (min-width: globals.$screen-tablet) {
+        display: flex;
+        flex-flow: row wrap;
+        align-items: center;
+
+        &__label {
+            flex: 0 0 globals.$form-label-width;
+            padding: 0 globals.$input-padding-horizontal;
+            text-align: right;
+        }
+
+        // stylelint-disable-next-line selector-class-pattern
+        &__label + .v-select + &__error {
+            margin-left: globals.$form-label-width;
+        }
+
+        // stylelint-disable-next-line selector-class-pattern
+        .v-select {
+            margin-right: 0;
+        }
+    }
 }

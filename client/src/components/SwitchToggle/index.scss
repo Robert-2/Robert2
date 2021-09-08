@@ -1,83 +1,84 @@
-@import '../../themes/default/index';
+@use '~@/style/globals';
+@use 'sass:color';
+
+$size: 1.7rem;
 
 .SwitchToggle {
-  $switch-base-size: 1.7rem;
-
-  display: inline-flex;
-  align-items: center;
-
-  &__slide {
-    flex: 0 0 auto;
-    display: flex;
-    flex-direction: row;
+    display: inline-flex;
     align-items: center;
-    width: $switch-base-size * 2.2;
-    height: $switch-base-size;
-    background: $bg-color-side-nav;
-    border-radius: $switch-base-size;
-    cursor: pointer;
-  }
 
-  &__button {
-    flex: 0 0 auto;
-    width: $switch-base-size;
-    height: $switch-base-size;
-    border-radius: 50%;
-    background: $bg-color-button-default;
-    box-shadow: 1px 2px 4px 0 rgba(0, 0, 0, .5);
-  }
-
-  &:hover {
-    .SwitchToggle__slide {
-      background-color: lighten($bg-color-side-nav, 5%);
+    &__slide {
+        flex: 0 0 auto;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        width: $size * 2.2;
+        height: $size;
+        border-radius: $size;
+        background: globals.$bg-color-side-nav;
+        cursor: pointer;
     }
 
-    .SwitchToggle__button {
-      background-color: lighten($bg-color-button-default, 8%);
-    }
-  }
-
-  &__label {
-    flex: 1;
-    margin-left: .5rem;
-
-    &__locked {
-      font-style: italic;
-      margin-left: $content-padding-small-horizontal;
-    }
-  }
-
-  &--enabled {
-    .SwitchToggle__slide {
-      flex-direction: row-reverse;
-    }
-
-    .SwitchToggle__button {
-      background-color: $bg-color-button-success;
+    &__button {
+        flex: 0 0 auto;
+        width: $size;
+        height: $size;
+        border-radius: 50%;
+        background: globals.$bg-color-button-default;
+        box-shadow: 1px 2px 4px 0 rgba(0, 0, 0, 0.5);
     }
 
     &:hover {
-      .SwitchToggle__button {
-        background-color: lighten($bg-color-button-success, 5%);
-      }
-    }
-  }
+        .SwitchToggle__slide {
+            background-color: color.adjust(globals.$bg-color-side-nav, $lightness: 5%);
+        }
 
-  &--locked {
-    .SwitchToggle__slide,
-    .SwitchToggle__button {
-      opacity: .5;
-      cursor: not-allowed;
+        .SwitchToggle__button {
+            background-color: color.adjust(globals.$bg-color-button-default, $lightness: 8%);
+        }
     }
 
-    &:hover {
-      .SwitchToggle__slide {
-        background: $bg-color-side-nav;
-      }
+    &__label {
+        flex: 1;
+        margin-left: 0.5rem;
 
-      .SwitchToggle__button {
-        background: $bg-color-button-default;
-      }
+        &__locked {
+            margin-left: globals.$content-padding-small-horizontal;
+            font-style: italic;
+        }
     }
-  }
+
+    &--enabled {
+        .SwitchToggle__slide {
+            flex-direction: row-reverse;
+        }
+
+        .SwitchToggle__button {
+            background-color: globals.$bg-color-button-success;
+        }
+
+        &:hover {
+            .SwitchToggle__button {
+                background-color: color.adjust(globals.$bg-color-button-success, $lightness: 5%);
+            }
+        }
+    }
+
+    &--locked {
+        .SwitchToggle__slide,
+        .SwitchToggle__button {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        &:hover {
+            .SwitchToggle__slide {
+                background: globals.$bg-color-side-nav;
+            }
+
+            .SwitchToggle__button {
+                background: globals.$bg-color-button-default;
+            }
+        }
+    }
 }

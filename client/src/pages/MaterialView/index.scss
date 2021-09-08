@@ -1,0 +1,24 @@
+@use '~@/style/globals';
+
+.MaterialView {
+    height: 100%;
+
+    > .Help {
+        margin-bottom: 1rem;
+    }
+
+    &__body {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        color: globals.$text-base-color;
+
+        .vue-tablist {
+            margin-bottom: 1rem;
+        }
+
+        .vue-tabpanel {
+            flex: 1;
+        }
+    }
+}

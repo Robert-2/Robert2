@@ -26,7 +26,7 @@ final class TagTest extends ModelTestCase
         $this->assertEquals([
             [
                 'id' => 2,
-                'name' => 'customers',
+                'name' => 'Beneficiary',
                 'created_at' => null,
                 'updated_at' => null,
                 'deleted_at' => null,
@@ -40,7 +40,7 @@ final class TagTest extends ModelTestCase
             ],
             [
                 'id' => 1,
-                'name' => 'tag 01',
+                'name' => 'Technician',
                 'created_at' => null,
                 'updated_at' => null,
                 'deleted_at' => null,
@@ -85,14 +85,14 @@ final class TagTest extends ModelTestCase
 
     public function testGetMaterials(): void
     {
-        $Tag     = $this->model::find(3);
+        $Tag = $this->model::find(3);
         $results = $Tag->materials;
         $this->assertCount(3, $results);
     }
 
     public function testGetIdsByNames(): void
     {
-        $result = $this->model->getIdsByNames(['tag 01']);
+        $result = $this->model->getIdsByNames(['Technician']);
         $this->assertEquals([1], $result);
     }
 
@@ -106,19 +106,19 @@ final class TagTest extends ModelTestCase
         $this->assertEquals('nextNewone', @$result[1]['name']);
 
         // - Ajout de tags avec un qui existait déjà (ne l'ajoute pas deux fois)
-        $result = $this->model->bulkAdd(['super tag', 'tag 01']);
+        $result = $this->model->bulkAdd(['super tag', 'Technician']);
         $this->assertEquals('super tag', @$result[0]['name']);
-        $this->assertEquals('tag 01', @$result[1]['name']);
+        $this->assertEquals('Technician', @$result[1]['name']);
         $this->assertEquals(1, @$result[1]['id']);
     }
 
     public function testFormat(): void
     {
-        $Tags   = Models\Tag::where('name', 'like', '%t%')->get();
+        $Tags   = Models\Tag::where('name', 'like', '%ci%')->get();
         $result = Models\Tag::format($Tags);
         $this->assertEquals([
-            ['id' => 1, 'name' => 'tag 01'],
-            ['id' => 2, 'name' => 'customers'],
+            ['id' => 1, 'name' => 'Technician'],
+            ['id' => 2, 'name' => 'Beneficiary'],
         ], $result);
     }
 }
