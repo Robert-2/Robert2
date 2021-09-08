@@ -17,7 +17,6 @@ export default {
             material: null,
             ongoingPersist: null,
             datepickerOptions: {
-                format: 'd MMMM yyyy',
                 disabled: {
                     from: new Date(),
                 },
