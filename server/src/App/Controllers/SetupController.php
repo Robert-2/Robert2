@@ -60,6 +60,11 @@ class SetupController extends BaseController
                 $installData['currency'] = $allCurrencies[$installData['currency']];
             }
 
+            if ($currentStep === 'company') {
+                $installData['logo'] = null;
+                ksort($installData);
+            }
+
             $stepSkipped = array_key_exists('skipped', $installData) && $installData['skipped'] === 'yes';
             if ($stepSkipped) {
                 $installData['skipped'] = true;
@@ -84,16 +89,15 @@ class SetupController extends BaseController
                 }
 
                 if ($currentStep === 'adminUser') {
-                    $user = new User();
-                    if ($stepSkipped) {
-                        $existingAdmins = $user->getAll()->where('group_id', 'admin')->get()->toArray();
-                        if (empty($existingAdmins)) {
-                            throw new \InvalidArgumentException(
-                                "At least one user must exists. Please create an admin user."
-                            );
-                        }
-                    } else {
+                    if ($stepSkipped && !User::where('group_id', 'admin')->exists()) {
+                        throw new \InvalidArgumentException(
+                            "At least one user must exists. Please create an admin user."
+                        );
+                    }
+
+                    if (!$stepSkipped) {
                         $installData['user']['group_id'] = 'admin';
+                        $user = new User();
                         $user->edit(null, $installData['user']);
                     }
                 }
@@ -144,8 +148,7 @@ class SetupController extends BaseController
         }
 
         if ($installProgress['step'] === 'adminUser') {
-            $user = new User();
-            $stepData['existingAdmins'] = $user->getAll()->where('group_id', 'admin')->get()->toArray();
+            $stepData['existingAdmins'] = User::where('group_id', 'admin')->get()->toArray();
         }
 
         return $this->view->render($response, 'install.twig', [

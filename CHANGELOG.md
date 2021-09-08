@@ -26,6 +26,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Affiche systématiquement l'option par défaut dans les listes de sélection, même vides, plutôt qu'aucune option.
 - Corrige le titre des pages d'édition des unités.
 - Ajoute des messages d'aide dans l'encart de création de devis et factures, concernant les remises quand du matériel non-remisable est présent dans l'événement (#253).
+- Corrige l'étape "3 - société" de l'assistant d'installation.
 
 ## 0.14.2-premium (2021-07-09)
 
