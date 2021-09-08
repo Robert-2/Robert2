@@ -43,7 +43,7 @@ export default {
 
         unitState() {
             const { state } = this.data;
-            return state ? state.name : null;
+            return this.$store.getters['unitStates/unitStateName'](state) || null;
         },
     },
     methods: {
