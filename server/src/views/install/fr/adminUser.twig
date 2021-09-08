@@ -3,7 +3,7 @@
     <p>
         Génial, la structure des données de Robert2 est maintenant complète !
     </p>
-    {% if stepData['existingAdmins'] %}
+    {% if stepData['existingAdmins'] is not empty %}
     <p>
         Il existe déjà <strong>{{ stepData['existingAdmins']|length }} utilisateurs admin</strong>
         dans votre base de données&nbsp;:
