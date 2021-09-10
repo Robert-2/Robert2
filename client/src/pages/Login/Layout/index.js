@@ -17,6 +17,7 @@ export default {
             <div class="LoginLayout">
                 <div class="LoginLayout__logo">
                     <Logo />
+                    <div class="LoginLayout__logo__premium">Premium</div>
                 </div>
                 <div class="LoginLayout__body">
                     {this.$slots.default}
