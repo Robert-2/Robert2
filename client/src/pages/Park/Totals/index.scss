@@ -1,0 +1,21 @@
+@use '~@/style/globals';
+
+.ParkTotals {
+    margin: globals.$content-padding-small-vertical globals.$content-padding-large-horizontal;
+
+    &__stock {
+        color: globals.$text-light-color;
+    }
+
+    &__amount {
+        margin-top: globals.$content-padding-small-horizontal;
+
+        &__title {
+            padding: 7px 0;
+        }
+
+        .ParkTotalAmount {
+            display: inline-block;
+        }
+    }
+}

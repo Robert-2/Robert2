@@ -267,10 +267,7 @@ export default {
 
             this.$modal.show(
                 PromptDate,
-                {
-                    title: this.$t('page-materials.display-quantities-at-date'),
-                    defaultDate: new Date(),
-                },
+                { title: this.$t('page-materials.display-quantities-at-date') },
                 { width: 600, draggable: true, clickToClose: false },
                 {
                     'before-close': ({ params }) => {

@@ -2,6 +2,7 @@ import './index.scss';
 import moment from 'moment';
 import Datepicker from '@/components/Datepicker';
 import SwitchToggle from '@/components/SwitchToggle';
+import { defineComponent } from '@vue/composition-api';
 
 const ALLOWED_TYPES = [
     'text',
@@ -16,7 +17,7 @@ const ALLOWED_TYPES = [
 ];
 
 // @vue/component
-export default {
+export default defineComponent({
     name: 'FormField',
     props: {
         label: String,
@@ -25,10 +26,10 @@ export default {
             validator: (value) => ALLOWED_TYPES.includes(value),
             default: 'text',
         },
-        required: Boolean,
-        disabled: Boolean,
+        required: { type: Boolean, default: false },
+        disabled: { type: Boolean, default: false },
         disabledReason: String,
-        placeholder: String,
+        placeholder: { type: [String, Boolean], default: false },
         value: [String, Number, Date, Array, Boolean],
         step: Number,
         min: Number,
@@ -102,6 +103,15 @@ export default {
             renderKey,
         } = this;
 
+        // - Placeholder.
+        let _placeholder;
+        if (placeholder) {
+            // eslint-disable-next-line no-nested-ternary
+            _placeholder = placeholder === true
+                ? (type === 'select' ? __('please-choose') : label)
+                : __(placeholder);
+        }
+
         const classNames = ['FormField', {
             'FormField--with-addon': !!addon,
             'FormField--with-error': errors && errors.length > 0,
@@ -124,7 +134,7 @@ export default {
                             name={name}
                             autocomplete={type === 'password' ? 'new-password' : 'off'}
                             disabled={disabled}
-                            placeholder={__(placeholder)}
+                            placeholder={_placeholder}
                             class="FormField__input"
                             value={value}
                             onInput={handleInput}
@@ -143,6 +153,7 @@ export default {
                         onInput={handleInput}
                         onChange={handleChange}
                     >
+                        {_placeholder !== undefined && <option value="">{_placeholder}</option>}
                         {options.map((option) => (
                             <option key={option.value} value={option.value}>
                                 {__(option.label)}
@@ -155,7 +166,7 @@ export default {
                         name={name}
                         value={value}
                         disabled={disabled}
-                        placeholder={__(placeholder)}
+                        placeholder={_placeholder}
                         class="FormField__textarea"
                         onInput={handleInput}
                     />
@@ -167,7 +178,7 @@ export default {
                         disabledDates={datepickerOptions?.disabled}
                         isRange={datepickerOptions?.isRange}
                         withTime={datepickerOptions?.withTime}
-                        placeholder={__(placeholder)}
+                        placeholder={_placeholder}
                         class="FormField__datepicker"
                         onInput={handleDatepickerChange}
                     />
@@ -190,4 +201,4 @@ export default {
             </div>
         );
     },
-};
+});

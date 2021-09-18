@@ -1,8 +1,9 @@
 import './index.scss';
 import ErrorMessage from '@/components/ErrorMessage';
+import { defineComponent } from '@vue/composition-api';
 
 // @vue/component
-export default {
+export default defineComponent({
     name: 'Help',
     props: {
         message: { type: [String, Object], required: true },
@@ -44,4 +45,4 @@ export default {
             </div>
         );
     },
-};
+});
