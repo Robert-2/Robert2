@@ -1453,38 +1453,38 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@pulsanova/eslint-config-base@1.3.1":
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/@pulsanova/eslint-config-base/-/eslint-config-base-1.3.1.tgz#317fbdcbb8cb6e33b35e90935dbbdc145be0db2a"
-  integrity sha512-ZLxhuAtCcqPX7HQi+4FU11SJGJMPZsxb3DvXEO344OxZs6CKamWTgz8KcwQZi/Uf2zyvzODkiF+/s4BQn00XHw==
+"@pulsanova/eslint-config-base@1.3.2":
+  version "1.3.2"
+  resolved "https://registry.yarnpkg.com/@pulsanova/eslint-config-base/-/eslint-config-base-1.3.2.tgz#e06b20d6abd279c1d0b9a6d47b8103e64dcaa0d9"
+  integrity sha512-CyN4YQrNvVohELHP1008GGssvykUydGZOQzHFM65Bh5eZ+tXxXBRI7ia5F4DYiL7p+1BSjLQIfwFP9D83Nu5dw==
   dependencies:
     eslint-config-airbnb-base "~14.2.1"
     eslint-plugin-import "~2.24.0"
 
-"@pulsanova/eslint-config-browser@1.3.1":
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/@pulsanova/eslint-config-browser/-/eslint-config-browser-1.3.1.tgz#89fdd10da262b71cdab88587cb6a83c88f31df34"
-  integrity sha512-vY96EPof1dFFU6D1NG9Ga9n6T84kUP15HSiNEdjeAH8yzEYazMxPnSMW6DsjL6oLAh7cxHT5vYv/gGWFlnWyxA==
+"@pulsanova/eslint-config-browser@1.3.2":
+  version "1.3.2"
+  resolved "https://registry.yarnpkg.com/@pulsanova/eslint-config-browser/-/eslint-config-browser-1.3.2.tgz#e1162af86d717eb4294813a4a1b95e57be31e5ae"
+  integrity sha512-afZtjTrWzNOQWCyTuSYTiq+oReX6gI/zp/HrPK9VMGymtTQMXuGTr2/QyRkikmmASdpToaIRVvLUP18OL6c1Fw==
   dependencies:
-    "@pulsanova/eslint-config-esnext" "1.3.1"
+    "@pulsanova/eslint-config-esnext" "1.3.2"
 
-"@pulsanova/eslint-config-esnext@1.3.1":
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/@pulsanova/eslint-config-esnext/-/eslint-config-esnext-1.3.1.tgz#06c80167c906e7324e7c11b83dd7bb36c7e50bea"
-  integrity sha512-QXutUWIdndcxes/sQ0gSS8GynTpGgWj+nMQnmSre8LM5jVjv/u7+b9k3N5/QgjqDgW9aiqkn+XZHxEJQq9boLw==
+"@pulsanova/eslint-config-esnext@1.3.2":
+  version "1.3.2"
+  resolved "https://registry.yarnpkg.com/@pulsanova/eslint-config-esnext/-/eslint-config-esnext-1.3.2.tgz#1793a1b51b135a4cbc40f0d41760c2ecb7558319"
+  integrity sha512-B+e4e444ULQ5ueHeT6FvxiJidpSfjiEYA9T2QnHhPq/Guai4xmTnKAgUTXnUIVROdpSHzGJTmdF6rCGGsDIoQg==
   dependencies:
-    "@pulsanova/eslint-config-base" "1.3.1"
+    "@pulsanova/eslint-config-base" "1.3.2"
     "@typescript-eslint/eslint-plugin" "~4.30.0"
     "@typescript-eslint/parser" "~4.30.0"
     babel-eslint "~10.1.0"
     eslint-plugin-babel "~5.3.1"
 
-"@pulsanova/eslint-config-vue@1.3.1":
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/@pulsanova/eslint-config-vue/-/eslint-config-vue-1.3.1.tgz#896d48b2aedaa0ba09973cbbbe7fbac9d0ffe605"
-  integrity sha512-oVn9oB96a8DlnHQmrkMyt/eLDk6AxPsZ5Fz+AqeRlSQhIS9pBW5dkrQ5rSnEQboafe/v3hSepNoyub+UfbvDVg==
+"@pulsanova/eslint-config-vue@1.3.2":
+  version "1.3.2"
+  resolved "https://registry.yarnpkg.com/@pulsanova/eslint-config-vue/-/eslint-config-vue-1.3.2.tgz#f76f7ee059458de0b80f1435d84b59c8c4523a7e"
+  integrity sha512-md4GFt8o09GHA+kU5D4JaWPuEXBllednhcgImVVbx8uGCDYZ4igNlIUZ2Mj+QEWCUkz3vtkhl0zP2ZfhWWu7Jw==
   dependencies:
-    "@pulsanova/eslint-config-browser" "1.3.1"
+    "@pulsanova/eslint-config-browser" "1.3.2"
     eslint-config-airbnb "~18.2.1"
     eslint-import-resolver-webpack "~0.13.1"
     eslint-plugin-react "~7.24.0"
@@ -2207,10 +2207,10 @@
   optionalDependencies:
     prettier "^1.18.2"
 
-"@vue/composition-api@1.1.4":
-  version "1.1.4"
-  resolved "https://registry.yarnpkg.com/@vue/composition-api/-/composition-api-1.1.4.tgz#b4cd566e575350b86c22fa02632e4a356ac2e26e"
-  integrity sha512-f618a79X0VepQUoZofaAYzaherBuzfIIYah4gQPcwmXgN3oeuGdhO7DY2s3Rjcw7r9yTEh5sQIowbNWy6INGjg==
+"@vue/composition-api@1.1.5":
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/@vue/composition-api/-/composition-api-1.1.5.tgz#dec72423d2a41a49ddae87d107a6694b68003c33"
+  integrity sha512-OBi35vuM2ZJHENCbYshvikSHZ2qoIl63TBUpszZkmdlmgWLi7yi0tKmesXfP2TsSuNVaKqvxNhHQ9BsEh5IwAg==
   dependencies:
     tslib "^2.3.0"
 
@@ -9894,10 +9894,10 @@ react-is@^16.8.1, react-is@^16.8.4:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.13.1.tgz#789729a4dc36de2999dc156dd6c1d9c18cea56a4"
   integrity sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==
 
-react-query@^3.19.6:
-  version "3.21.1"
-  resolved "https://registry.yarnpkg.com/react-query/-/react-query-3.21.1.tgz#8fe4df90bf6c6a93e0552ea9baff211d1b28f6e0"
-  integrity sha512-aKFLfNJc/m21JBXJk7sR9tDUYPjotWA4EHAKvbZ++GgxaY+eI0tqBxXmGBuJo0Pisis1W4pZWlZgoRv9yE8yjA==
+react-query@^3.23.2:
+  version "3.23.2"
+  resolved "https://registry.yarnpkg.com/react-query/-/react-query-3.23.2.tgz#1f95a5af7d0797370bbeb916d54fbb516bf9f1c5"
+  integrity sha512-RFnJh1ZKj4DImWR8SijHnUunYk9WC7aoHuSqxdg7kV9IBq4IIUVbFwix5sYFk0CfUZTh2F4m2KZMlguweLzj+w==
   dependencies:
     "@babel/runtime" "^7.5.5"
     broadcast-channel "^3.4.1"
@@ -11695,10 +11695,10 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typescript@4.4.2:
-  version "4.4.2"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.4.2.tgz#6d618640d430e3569a1dfb44f7d7e600ced3ee86"
-  integrity sha512-gzP+t5W4hdy4c+68bfcv0t400HVJMMd2+H9B7gae1nQlBzCqvrXX+6GL/b3GAgyTH966pzrZ70/fRjwAtZksSQ==
+typescript@4.4.3:
+  version "4.4.3"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.4.3.tgz#bdc5407caa2b109efd4f82fe130656f977a29324"
+  integrity sha512-4xfscpisVgqqDfPaJo5vkd+Qd/ItkoagnHpufr+i2QCHBsNYp+G7UAoyFl8aPtx879u38wPV65rZ8qbGZijalA==
 
 uglify-js@3.4.x:
   version "3.4.10"
@@ -12152,13 +12152,13 @@ vue-pagination-2@^3.0:
     vue ">=2.0.0"
     vuex "^2.0.0"
 
-vue-query@1.10.1:
-  version "1.10.1"
-  resolved "https://registry.yarnpkg.com/vue-query/-/vue-query-1.10.1.tgz#ed0a124e92a772c07a27383e7ff6e2224f880013"
-  integrity sha512-zGEcI9UKVQ063CSXJ9Ke0y1QmlO7/SqCU4FqlHw4GoYSXeJtfZ8aDTn5xJHHddR12daGCCZPpmQS2kBuWVNjZg==
+vue-query@1.11.0:
+  version "1.11.0"
+  resolved "https://registry.yarnpkg.com/vue-query/-/vue-query-1.11.0.tgz#2d11146040ac64395b4a682c7781a1536aa0908a"
+  integrity sha512-/a2tnAnAWjEAnNsUDtnkklpFpD5/JqLC9EpXUJchHl6MyTfrd4q6GT8Mdn8xFqQ3KiSCTVx7slPNSDe8LL1KOw==
   dependencies:
     match-sorter "^6.3.0"
-    react-query "^3.19.6"
+    react-query "^3.23.2"
     vue-demi "^0.10.1"
 
 vue-resize@^1.0.1:
