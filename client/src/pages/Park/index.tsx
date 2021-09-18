@@ -17,31 +17,15 @@ type State = {
     error: unknown | null,
     isLoading: boolean,
     isFetched: boolean,
-    park: {
-        id: number | 'new' | null,
-        name: string,
-        street: string,
-        // eslint-disable-next-line babel/camelcase
-        postal_code: string,
-        locality: string,
-        // eslint-disable-next-line babel/camelcase
-        country_id: string,
-        // eslint-disable-next-line babel/camelcase
-        total_amount: number,
-        note: string,
-    },
-    errors: {
-        name: string | null,
-        street: string | null,
-        // eslint-disable-next-line babel/camelcase
-        postal_code: string | null,
-        locality: string | null,
-        // eslint-disable-next-line babel/camelcase
-        country_id: string | null,
-    },
+
+    // TODO: Typer ça correctement via un type Park provement de `stores/api/parks.ts`.
+    park: Record<string, any>,
+
+    // TODO: Lorsque le type Park sera dispo, on devra faire `Record<keyof Park, string | null>`.
+    errors: Record<string, string | null>,
 };
 
-const storageKeyWIP = 'WIP-newPark';
+const WIP_STORAGE_KEY = 'WIP-newPark';
 
 // @vue/component
 const ParkEditPage = (props: Props, { root }: SetupContext): Render => {
@@ -50,6 +34,7 @@ const ParkEditPage = (props: Props, { root }: SetupContext): Render => {
     const id = computed(() => route.value.params.id || null);
     const isNew = computed(() => !id.value || id.value === 'new');
 
+    // TODO: Refactoriser ça + Utiliser des ref() séparées.
     const state = ref<State>({
         help: 'page-parks.help-edit',
         error: null,
@@ -74,21 +59,8 @@ const ParkEditPage = (props: Props, { root }: SetupContext): Render => {
         },
     });
 
-    const initWithStash = (): void => {
-        if (!isNew) {
-            return;
-        }
-
-        const stashedData = localStorage.getItem(storageKeyWIP);
-        if (!stashedData) {
-            return;
-        }
-
-        state.value.park = JSON.parse(stashedData);
-    };
-
     const flushStashedData = (): void => {
-        localStorage.removeItem(storageKeyWIP);
+        localStorage.removeItem(WIP_STORAGE_KEY);
     };
 
     const resetHelpLoading = (): void => {
@@ -110,7 +82,10 @@ const ParkEditPage = (props: Props, { root }: SetupContext): Render => {
 
     const getParkData = async (): Promise<void> => {
         if (isNew.value) {
-            initWithStash();
+            const stashedData = localStorage.getItem(WIP_STORAGE_KEY);
+            if (stashedData) {
+                state.value.park = JSON.parse(stashedData);
+            }
             state.value.isFetched = true;
             return;
         }
@@ -154,7 +129,7 @@ const ParkEditPage = (props: Props, { root }: SetupContext): Render => {
         }
 
         const stashedData = JSON.stringify(newData);
-        localStorage.setItem(storageKeyWIP, stashedData);
+        localStorage.setItem(WIP_STORAGE_KEY, stashedData);
     };
 
     const handleCancel = (): void => {
@@ -166,7 +141,9 @@ const ParkEditPage = (props: Props, { root }: SetupContext): Render => {
         getParkData();
     });
 
-    const pageTitle = isNew ? __('page-parks.add') : __('page-parks.edit', { pageSubTitle: state.value.park.name });
+    const pageTitle = isNew
+        ? __('page-parks.add')
+        : __('page-parks.edit', { pageSubTitle: state.value.park.name });
 
     return () => {
         const {
@@ -179,7 +156,6 @@ const ParkEditPage = (props: Props, { root }: SetupContext): Render => {
         } = state.value;
 
         return (
-            // @ts-ignore TODO: migrer le component Page vers TS
             <Page name="park-edit" title={pageTitle}>
                 {isFetched && (
                     <ParkForm
@@ -191,12 +167,7 @@ const ParkEditPage = (props: Props, { root }: SetupContext): Render => {
                     />
                 )}
                 <div class="Park__sidebar">
-                    {/* @ts-ignore TODO: migrer le component Help vers TS */}
-                    <Help
-                        message={help}
-                        error={error}
-                        isLoading={isLoading}
-                    />
+                    <Help message={help} error={error} isLoading={isLoading} />
                     {isFetched && !isNew.value && <ParkTotals park={park} />}
                 </div>
             </Page>

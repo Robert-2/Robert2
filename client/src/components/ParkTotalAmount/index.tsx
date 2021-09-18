@@ -11,60 +11,49 @@ type Props = {
     parkId: number,
 };
 
-type State = {
-    amount: number | null,
-    loading: boolean,
-    error: unknown | null,
-};
-
 // @vue/component
 const ParkTotalAmount = (props: Props): Render => {
     const __ = useI18n();
     const { parkId } = toRefs(props);
-
-    const state = ref<State>({
-        amount: null,
-        loading: false,
-        error: null,
-    });
+    const isLoading = ref(false);
+    const amount = ref<number | null>(null);
+    const error = ref<Error | string | null>(null);
 
     const handleCalculate = async (): Promise<void> => {
-        state.value.loading = true;
+        isLoading.value = true;
         try {
             const { data } = await requester.get(`parks/${parkId.value}/total-amount`);
-            state.value.amount = data.totalAmount;
-        } catch (error) {
-            state.value.error = error;
+            amount.value = data.totalAmount;
+        } catch (_error) {
+            if (!(_error instanceof Error) || typeof _error !== 'string') {
+                return;
+            }
+            error.value = _error;
         } finally {
-            state.value.loading = false;
+            isLoading.value = false;
         }
     };
 
-    return () => {
-        const { loading, error, amount } = state.value;
-
-        return (
-            <div class="ParkTotalAmount">
-                {amount === null && (
-                    <button
-                        type="button"
-                        class="ParkTotalAmount__calc-button"
-                        onClick={handleCalculate}
-                        disabled={loading}
-                    >
-                        {loading ? <i class="fas fa-spin fa-circle-notch" /> : __('calculate')}
-                    </button>
-                )}
-                {/* @ts-ignore TODO: Migrer le component ErrorMessage avec TS */}
-                {error && <ErrorMessage error={error} />}
-                {amount !== null && (
-                    <div class="ParkTotalAmount__amount">
-                        {formatAmount(amount)}
-                    </div>
-                )}
-            </div>
-        );
-    };
+    return () => (
+        <div class="ParkTotalAmount">
+            {amount.value === null && (
+                <button
+                    type="button"
+                    class="ParkTotalAmount__calc-button"
+                    onClick={handleCalculate}
+                    disabled={isLoading.value}
+                >
+                    {isLoading.value ? <i class="fas fa-spin fa-circle-notch" /> : __('calculate')}
+                </button>
+            )}
+            {error.value && <ErrorMessage error={error.value} />}
+            {amount.value !== null && (
+                <div class="ParkTotalAmount__amount">
+                    {formatAmount(amount.value)}
+                </div>
+            )}
+        </div>
+    );
 };
 
 ParkTotalAmount.props = {

@@ -57,9 +57,7 @@ const ParkForm = (props: Props, { emit }: SetupContext): Render => {
                 />
             </section>
             <section class="Form__fieldset">
-                <h4 class="Form__fieldset__title">
-                    {__('contact-details')}
-                </h4>
+                <h4 class="Form__fieldset__title">{__('contact-details')}</h4>
                 <FormField
                     value={park.value.street}
                     name="street"
@@ -90,9 +88,7 @@ const ParkForm = (props: Props, { emit }: SetupContext): Render => {
                 />
             </section>
             <section class="Form__fieldset">
-                <h4 class="Form__fieldset__title">
-                    {__('other-infos')}
-                </h4>
+                <h4 class="Form__fieldset__title">{__('other-infos')}</h4>
                 <FormField
                     value={park.value.opening_hours}
                     name="opening_hours"

@@ -108,7 +108,7 @@ const CompanyForm = (props: Props, { emit }: SetupContext): Render => {
 
 CompanyForm.props = {
     company: { type: Object, required: true },
-    errors: { type: Object, default: undefined },
+    errors: { type: Object, default: () => ({}) },
 };
 
 export default CompanyForm;
