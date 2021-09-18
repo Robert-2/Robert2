@@ -2,11 +2,7 @@
     <div class="content">
         <div class="content__main-view">
             <div class="MaterialView">
-                <Help
-                    :message="help"
-                    :error="error"
-                    :isLoading="isLoading"
-                />
+                <Help :message="help" :error="error" :isLoading="isLoading" />
                 <tabs
                     v-if="!isLoading"
                     :onSelect="onSelectTab"

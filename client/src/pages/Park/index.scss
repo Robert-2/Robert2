@@ -1,27 +1,21 @@
 @use '~@/style/globals';
 
-.Park {
+.Page--park-edit {
     display: flex;
-    flex-flow: column-reverse wrap;
+    flex-flow: column wrap;
 
-    .Form {
+    .ParkForm {
         flex: 2;
-        max-width: globals.$form-max-width;
-        min-width: globals.$form-min-width;
-        margin-right: globals.$content-padding-large-horizontal;
     }
 
-    &__postal-code .FormField__input {
-        max-width: 70px;
+    @media screen and (min-width: globals.$screen-tablet) {
+        flex-direction: row;
     }
+}
 
+.Park {
     &__sidebar {
         flex: 1;
-
-        .Help {
-            min-width: 150px;
-            margin: 0 0 globals.$content-padding-large-vertical;
-        }
     }
 
     &__totals {
@@ -49,10 +43,8 @@
     }
 
     @media screen and (min-width: globals.$screen-tablet) {
-        flex-direction: row;
-
-        .Help {
-            margin: 30px 0 0;
+        &__sidebar {
+            margin-top: 30px;
         }
     }
 }

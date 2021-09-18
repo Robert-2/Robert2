@@ -2,6 +2,7 @@ import './index.scss';
 import Vue from 'vue';
 import moment from 'moment';
 import vuexI18n from 'vuex-i18n';
+import vueCompositionApî from '@vue/composition-api';
 import VueJsModal from 'vue-js-modal/dist/index.nocss';
 import { VTooltip } from 'v-tooltip';
 import { ClientTable, ServerTable } from 'vue-tables-2';
@@ -17,10 +18,13 @@ import App from '@/components/App';
 
 Vue.config.productionTip = false;
 
-// HTTP (ajax) lib
+// - Vue Composition API
+Vue.use(vueCompositionApî);
+
+// - HTTP (ajax) lib
 Vue.prototype.$http = requester;
 
-// Modal
+// - Modal
 Vue.use(VueJsModal, {
     dialog: true,
     dynamic: true,
@@ -33,13 +37,13 @@ Vue.use(VueJsModal, {
     },
 });
 
-// Tooltips
+// - Tooltips
 VTooltip.options.defaultContainer = '#app';
 VTooltip.options.disposeTimeout = 1000;
 VTooltip.options.defaultDelay = 100;
 Vue.directive('tooltip', VTooltip);
 
-// Internationalization
+// - Internationalization
 Vue.use(vuexI18n.plugin, store);
 
 Object.keys(translations).forEach((lang) => {
@@ -59,7 +63,7 @@ Vue.i18n.fallback(currentLocale);
 
 moment.locale(currentLocale);
 
-// Magic tables (order, pagination)
+// - Tables (order, pagination)
 const tablesConfig = {
     columnsClasses: { actions: 'VueTables__actions' },
     sortIcon: {
@@ -83,7 +87,7 @@ const tablesConfig = {
 Vue.use(ClientTable, tablesConfig);
 Vue.use(ServerTable, tablesConfig, true);
 
-// Toast notifications
+// - Toast notifications
 Vue.use(Toasted, {
     duration: 5000,
     position: 'bottom-right',

@@ -1,0 +1,11 @@
+@use '~@/style/globals';
+
+.ParkForm {
+    max-width: globals.$form-max-width;
+    min-width: globals.$form-min-width;
+    margin-right: globals.$content-padding-large-horizontal;
+
+    &__postal-code .FormField__input {
+        max-width: 70px;
+    }
+}

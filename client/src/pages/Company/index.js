@@ -12,6 +12,7 @@ export default {
             help: 'page-companies.help-edit',
             error: null,
             isLoading: false,
+            isFetched: false,
             company: {
                 id: this.$route.params.id || null,
                 legal_name: '',
@@ -34,74 +35,60 @@ export default {
         };
     },
     mounted() {
-        this.getCompanyData();
-        this.getCompanyPersons();
+        this.getData();
     },
     methods: {
-        getCompanyData() {
+        async getData() {
             const { id } = this.company;
             if (!id || id === 'new') {
+                this.isFetched = true;
                 return;
             }
 
             this.resetHelpLoading();
 
-            const { resource } = this.$route.meta;
-            this.$http.get(`${resource}/${id}`)
-                .then(({ data }) => {
-                    this.setCompany(data);
-                    this.isLoading = false;
-                })
-                .catch(this.displayError);
-        },
+            try {
+                const { data: companyData } = await this.$http.get(`companies/${id}`);
+                this.setCompany(companyData);
 
-        getCompanyPersons() {
-            const { id } = this.company;
-            if (!id || id === 'new') {
-                return;
+                const { data: personsData } = await this.$http.get(`companies/${id}/persons`);
+                this.persons = personsData.data;
+            } catch (error) {
+                this.displayError(error);
+            } finally {
+                this.isLoading = false;
+                this.isFetched = true;
             }
-
-            this.resetHelpLoading();
-
-            const { resource } = this.$route.meta;
-            this.$http.get(`${resource}/${id}/persons`)
-                .then(({ data }) => {
-                    this.persons = data.data;
-                    this.isLoading = false;
-                })
-                .catch(this.displayError);
         },
 
-        saveCompany() {
+        async save(formData) {
             this.resetHelpLoading();
 
             const { id } = this.company;
-            const { resource } = this.$route.meta;
 
-            let request = this.$http.post;
-            let route = resource;
-            if (id) {
-                request = this.$http.put;
-                route = `${resource}/${id}`;
+            const request = id ? this.$http.put : this.$http.post;
+            const route = id ? `companies/${id}` : 'companies';
+
+            try {
+                const companyData = { ...formData, country_id: parseInt(formData.country_id, 10) };
+                if (!id) {
+                    companyData.tags = [Config.beneficiaryTagName];
+                }
+
+                const { data } = await request(route, companyData);
+                this.setCompany(data);
+                this.help = { type: 'success', text: 'page-companies.saved' };
+
+                this.$store.dispatch('companies/refresh');
+
+                setTimeout(() => {
+                    this.$router.back();
+                }, 300);
+            } catch (error) {
+                this.displayError();
+            } finally {
+                this.isLoading = false;
             }
-
-            const companyData = { ...this.company };
-            if (!id) {
-                companyData.tags = [Config.beneficiaryTagName];
-            }
-
-            request(route, companyData)
-                .then(({ data }) => {
-                    this.isLoading = false;
-                    this.help = { type: 'success', text: 'page-companies.saved' };
-                    this.setCompany(data);
-                    this.$store.dispatch('companies/refresh');
-
-                    setTimeout(() => {
-                        this.$router.back();
-                    }, 300);
-                })
-                .catch(this.displayError);
         },
 
         resetHelpLoading() {
@@ -113,7 +100,6 @@ export default {
         displayError(error) {
             this.help = 'page-companies.help-edit';
             this.error = error;
-            this.isLoading = false;
 
             const { code, details } = error.response?.data?.error || { code: 0, details: {} };
             if (code === 400) {
