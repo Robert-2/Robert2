@@ -4,6 +4,10 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.15.1 (2021-09-21)
+
+- Corrige une migration avec l'utilisation de préfixe de table (#288).
+
 ## 0.15.0 (2021-09-08)
 
 - Change l'étape 3 de création / modification d'événement : ajoute une frise temporelle permettant de visualiser les assignations de tous les techniciens pour la période de l'événement, et d'assigner les techniciens à des horaires précis (#193).
