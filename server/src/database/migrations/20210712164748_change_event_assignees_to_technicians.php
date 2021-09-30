@@ -47,7 +47,7 @@ class ChangeEventAssigneesToTechnicians extends AbstractMigration
             ->changeColumn('end_time', 'datetime', ['null' => false])
             ->save();
 
-        $table->rename('event_technicians')->update();
+        $table->rename(sprintf('%sevent_technicians', $prefix))->update();
     }
 
     public function down()
