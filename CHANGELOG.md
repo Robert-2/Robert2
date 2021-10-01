@@ -4,6 +4,9 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.16.0 (UNRELEASED)
+
+
 ## 0.15.1 (2021-09-21)
 
 - Corrige une migration avec l'utilisation de préfixe de table (#288).
