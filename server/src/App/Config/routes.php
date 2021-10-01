@@ -44,6 +44,8 @@ return [
         '/bills/{id:[0-9]+}[/]' => 'BillController:getOne',
         '/estimates/{id:[0-9]+}[/]' => 'EstimateController:getOne',
         '/settings[/]' => 'SettingController:getAll',
+        '/list-templates[/]' => 'ListTemplateController:getAll',
+        '/list-templates/{id:[0-9]+}[/]' => 'ListTemplateController:getOne',
     ],
     'post' => [
         '/session[/]' => 'AuthController:loginWithForm',
@@ -66,6 +68,7 @@ return [
         '/events/{eventId:[0-9]+}/bill[/]' => 'BillController:create',
         '/events/{eventId:[0-9]+}/estimate[/]' => 'EstimateController:create',
         '/event-technicians[/]' => 'EventTechnicianController:create',
+        '/list-templates[/]' => 'ListTemplateController:create',
     ],
     'put' => [
         '/users/{id:[0-9]+}[/]' => 'UserController:update',
@@ -96,6 +99,7 @@ return [
         '/settings[/]' => 'SettingController:update',
         '/inventories/{id:[0-9]+}' => 'InventoryController:update',
         '/inventories/{id:[0-9]+}/terminate' => 'InventoryController:terminate',
+        '/list-templates/{id:[0-9]+}[/]' => 'ListTemplateController:update',
     ],
     'delete' => [
         '/users/{id:[0-9]+}[/]' => 'UserController:delete',
@@ -114,5 +118,6 @@ return [
         '/bills/{id:[0-9]+}[/]' => 'BillController:delete',
         '/documents/{id:[0-9]+}[/]' => 'DocumentController:delete',
         '/estimates/{id:[0-9]+}[/]' => 'EstimateController:delete',
+        '/list-templates/{id:[0-9]+}[/]' => 'ListTemplateController:delete',
     ],
 ];

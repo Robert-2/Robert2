@@ -1,2 +1,44 @@
 [
+    {
+        "id": 1,
+        "list_template_id": 1,
+        "material_id": 1,
+        "quantity": 1
+    },
+    {
+        "id": 2,
+        "list_template_id": 1,
+        "material_id": 2,
+        "quantity": 1
+    },
+    {
+        "id": 3,
+        "list_template_id": 1,
+        "material_id": 4,
+        "quantity": 1
+    },
+    {
+        "id": 4,
+        "list_template_id": 2,
+        "material_id": 1,
+        "quantity": 3
+    },
+    {
+        "id": 5,
+        "list_template_id": 2,
+        "material_id": 2,
+        "quantity": 2
+    },
+    {
+        "id": 6,
+        "list_template_id": 2,
+        "material_id": 6,
+        "quantity": 2
+    },
+    {
+        "id": 7,
+        "list_template_id": 2,
+        "material_id": 7,
+        "quantity": 1
+    }
 ]
