@@ -479,4 +479,13 @@ export default {
             "- The units state and their \"out of order\" status will be updated.",
         ].join('\n'),
     },
+
+    'page-list-templates': {
+        'title': "Templates of materials list",
+        'help': "Templates of materials list are useful when creating events, to quickly choose materials.",
+        'action-add': "New list template",
+        'confirm-delete': "Move this list template in trash bin?",
+        'confirm-permanently-delete': "Do you really want to permanently delete this list template?",
+        'confirm-restore': "Do you really want to restore this list template?",
+    },
 };

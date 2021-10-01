@@ -267,6 +267,9 @@ export default {
     'warning-terminate-inventory': "Beware, once this inventory terminated, it will no longer be modifiable.",
     'inventory-validation-error': "Some quantities are not valid. Please double-check the list.",
 
+    'materials-list-templates': "Materials list templates",
+    'list-templates': "List templates",
+
     'event': "Event",
     'user': "User",
     'beneficiary': "Beneficiary",

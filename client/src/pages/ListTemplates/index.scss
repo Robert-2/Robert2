@@ -1,0 +1,17 @@
+@use '~@/style/globals';
+
+.Page--list-templates {
+    display: flex;
+    flex-direction: column;
+
+    .VueTables {
+        flex: 1;
+    }
+}
+
+.ListTemplates {
+    &__actions {
+        min-width: 115px;
+        text-align: right;
+    }
+}

@@ -267,6 +267,9 @@ export default {
     'warning-terminate-inventory': "Attention, une fois cet inventaire terminé, il ne sera plus modifiable.",
     'inventory-validation-error': "Certaines quantités ne sont pas correctes. Veuillez vérifier à nouveau la liste.",
 
+    'list-templates': "Modèles de liste",
+    'materials-list-templates': "Modèles de liste de matériel",
+
     'event': "Événement",
     'user': "Utilisateur",
     'beneficiary': "Bénéficiaire",

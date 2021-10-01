@@ -479,4 +479,13 @@ export default {
             "- L'état des unités et leur statut «\u00a0en panne\u00a0», ou non, sera mis à jour.",
         ].join('\n'),
     },
+
+    'page-list-templates': {
+        'title': "Modèles de liste de matériel",
+        'help': "Les modèles de liste de matériel servent à la création des événements, lors du choix du matériel.",
+        'action-add': "Nouveau modèle de liste",
+        'confirm-delete': "Mettre ce modèle de liste à la corbeille\u00a0?",
+        'confirm-permanently-delete': "Voulez-vous vraiment supprimer définitivement ce modèle de liste\u00a0?",
+        'confirm-restore': "Voulez-vous vraiment restaurer ce modèle de liste\u00a0?",
+    },
 };

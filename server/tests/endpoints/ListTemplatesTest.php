@@ -279,4 +279,17 @@ final class ListTemplatesTest extends ApiTestCase
         $this->assertStatusCode(SUCCESS_OK);
         $this->assertResponseData(['destroyed' => true]);
     }
+
+    public function testRestoreListTemplate()
+    {
+        // - First, delete template #1
+        $this->client->delete('/api/list-templates/1');
+        $this->assertStatusCode(SUCCESS_OK);
+
+        // - Then, restore template #1
+        $this->client->put('/api/list-templates/restore/1');
+        $this->assertStatusCode(SUCCESS_OK);
+        $response = $this->_getResponseAsArray();
+        $this->assertEmpty($response['deleted_at']);
+    }
 }

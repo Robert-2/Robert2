@@ -100,6 +100,7 @@ return [
         '/inventories/{id:[0-9]+}' => 'InventoryController:update',
         '/inventories/{id:[0-9]+}/terminate' => 'InventoryController:terminate',
         '/list-templates/{id:[0-9]+}[/]' => 'ListTemplateController:update',
+        '/list-templates/restore/{id:[0-9]+}[/]' => 'ListTemplateController:restore',
     ],
     'delete' => [
         '/users/{id:[0-9]+}[/]' => 'UserController:delete',
