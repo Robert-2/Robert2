@@ -1,0 +1,7 @@
+@use '~@/style/globals';
+
+.Page--list-template-edit {
+    .Help {
+        margin-bottom: globals.$content-padding-large-vertical;
+    }
+}

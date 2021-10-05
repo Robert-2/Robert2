@@ -483,7 +483,10 @@ export default {
     'page-list-templates': {
         'title': "Modèles de liste de matériel",
         'help': "Les modèles de liste de matériel servent à la création des événements, lors du choix du matériel.",
+        'help-edit': "Seul le nom de la liste est obligatoire.",
         'action-add': "Nouveau modèle de liste",
+        'add': "Nouveau modèle de liste de matériel",
+        'edit': "Modifier le modèle de liste «\u00a0{pageSubTitle}\u00a0»",
         'confirm-delete': "Mettre ce modèle de liste à la corbeille\u00a0?",
         'confirm-permanently-delete': "Voulez-vous vraiment supprimer définitivement ce modèle de liste\u00a0?",
         'confirm-restore': "Voulez-vous vraiment restaurer ce modèle de liste\u00a0?",

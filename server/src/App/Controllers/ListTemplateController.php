@@ -5,6 +5,7 @@ namespace Robert2\API\Controllers;
 
 use Robert2\API\Controllers\Traits\WithCrud;
 use Robert2\API\Models\ListTemplate;
+use Robert2\API\Services\Auth;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
 use Slim\Http\ServerRequest as Request;
@@ -42,6 +43,8 @@ class ListTemplateController extends BaseController
                 ERROR_VALIDATION
             );
         }
+
+        $postData['user_id'] = Auth::user()->id;
 
         $result = ListTemplate::new($postData);
         $listTemplate = $result->append(['materials']);

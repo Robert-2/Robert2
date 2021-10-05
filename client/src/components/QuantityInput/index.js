@@ -1,7 +1,8 @@
 import './index.scss';
+import { defineComponent } from '@vue/composition-api';
 
 // @vue/component
-export default {
+export default defineComponent({
     name: 'QuantityInput',
     props: {
         value: { type: Number, required: true },
@@ -105,4 +106,4 @@ export default {
             </div>
         );
     },
-};
+});

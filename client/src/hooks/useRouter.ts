@@ -4,7 +4,7 @@ import getRuntimeVm from '@/utils/getRuntimeVm';
 export type RouteData = {
     name: string,
     params: Record<string, string>,
-    query: { page?: string } | undefined,
+    query: Record<string, string> | undefined,
     path: string,
     fullPath: string,
     hash: string,

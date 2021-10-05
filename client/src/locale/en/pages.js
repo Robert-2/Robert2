@@ -483,7 +483,10 @@ export default {
     'page-list-templates': {
         'title': "Templates of materials list",
         'help': "Templates of materials list are useful when creating events, to quickly choose materials.",
+        'help-edit': "Only the name of the list is mandatory.",
         'action-add': "New list template",
+        'add': "New list template",
+        'edit': "Modify list template \"{pageSubTitle}\"",
         'confirm-delete': "Move this list template in trash bin?",
         'confirm-permanently-delete': "Do you really want to permanently delete this list template?",
         'confirm-restore': "Do you really want to restore this list template?",

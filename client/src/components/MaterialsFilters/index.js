@@ -1,8 +1,9 @@
 import './index.scss';
+import { defineComponent } from '@vue/composition-api';
 import VueSelect from 'vue-select';
 
 // @vue/component
-export default {
+export default defineComponent({
     name: 'MaterialsFilters',
     components: { VueSelect },
     props: {
@@ -110,4 +111,4 @@ export default {
             this.$emit('change', filters);
         },
     },
-};
+});
