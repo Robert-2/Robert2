@@ -1,0 +1,445 @@
+import './index.scss';
+import { toRefs, ref, computed, onMounted, onBeforeUnmount, reactive, watch } from '@vue/composition-api';
+import { useQuery } from 'vue-query';
+import { Fragment } from 'vue-fragment';
+import config from '@/globals/config';
+import useI18n from '@/hooks/useI18n';
+import useRouter from '@/hooks/useRouter';
+import formatAmount from '@/utils/formatAmount';
+import observeBarcodeScan from '@/utils/observeBarcodeScan';
+import apiMaterials from '@/stores/api/materials';
+import ErrorMessage from '@/components/ErrorMessage';
+import MaterialsFilters from '@/components/MaterialsFilters';
+import SwitchToggle from '@/components/SwitchToggle';
+import MaterialsStore from './_store';
+import { normalizeFilters } from './_utils';
+import Quantity from './Quantity';
+import Units from './Units';
+
+import type { Render, SetupContext } from '@vue/composition-api';
+import type { ClientTableInstance, ClientTableOptions, TableRow } from 'vue-table-2';
+import type { Material, MaterialWhileEvent, MaterialWithPivot } from '@/stores/api/materials';
+import type { Tag } from '@/stores/api/tags';
+import type { MaterialQuantity, RawFilters, MaterialsFiltersType } from './_utils';
+
+type Props = {
+    selectedMaterials: MaterialWithPivot[],
+    eventId?: number | null,
+    onChange(newList: MaterialQuantity[]): void,
+};
+
+const noPaginationLimit = 100000;
+
+// @vue/component
+const MaterialsListEditor = (props: Props, { emit }: SetupContext): Render => {
+    const __ = useI18n();
+    const { selectedMaterials, eventId } = toRefs(props);
+
+    const { route } = useRouter();
+
+    const dataTableRef = ref<ClientTableInstance | null>(null);
+    const filtersRef = ref<typeof MaterialsFilters | null>(null);
+    const showSelectedOnly = ref<boolean>(selectedMaterials.value.length > 0);
+    const manualOrder = ref<number[]>([]);
+    const cancelScanObservation = ref<(() => void) | null>(null);
+
+    const { data: materials, isLoading, error } = useQuery<MaterialWhileEvent[]>(
+        reactive(['materials-while-event', { eventId: eventId?.value }]),
+        () => (
+            eventId?.value
+            ? apiMaterials.allWhileEvent(eventId.value)
+            : apiMaterials.allWithoutPagination()
+        ),
+    );
+
+    const hasMaterials = computed<boolean>(() => (
+        (selectedMaterials.value?.length || 0) > 0
+    ));
+
+    const columns = ref<string[]>([
+        'child-toggler',
+        'qty',
+        'reference',
+        'name',
+        'remaining_quantity',
+        'price',
+        'quantity',
+        'amount',
+        'actions',
+    ]);
+
+    const getFilters = (extended: boolean = true, isInit: boolean = false) => {
+        const filters: Record<string, number | boolean | string> = {};
+
+        if (extended) {
+            filters.onlySelected = isInit
+                ? selectedMaterials.value.length
+                : showSelectedOnly.value;
+        }
+
+        ['park', 'category', 'subCategory'].forEach((key) => {
+            if (route.value?.query && key in route.value.query) {
+                filters[key] = route.value?.query[key];
+            }
+        });
+
+        if (route.value?.query?.tags) {
+            filters.tags = JSON.parse(route.value.query.tags);
+        }
+
+        return normalizeFilters(filters, extended);
+    };
+
+    const tableOptions = ref<ClientTableOptions<Material, MaterialsFiltersType>>({
+        columnsDropdown: false,
+        preserveState: false,
+        orderBy: { column: 'reference', ascending: true },
+        initialPage: 1,
+        perPage: hasMaterials.value ? noPaginationLimit : config.defaultPaginationLimit,
+        sortable: ['reference', 'name'],
+        columnsClasses: {
+            'child-toggler': 'MaterialsListEditor__child-toggler',
+            'qty': 'MaterialsListEditor__qty',
+            'reference': 'MaterialsListEditor__ref',
+            'name': 'MaterialsListEditor__name',
+            'remaining_quantity': 'MaterialsListEditor__remaining',
+            'price': 'MaterialsListEditor__price',
+            'quantity': 'MaterialsListEditor__quantity',
+            'amount': 'MaterialsListEditor__amount',
+            'actions': 'MaterialsListEditor__actions',
+        },
+        initFilters: getFilters(true, true),
+        headings: {
+            'child-toggler': '',
+            qty: __('qty'),
+            reference: __('reference'),
+            name: __('name'),
+            stock_quantity: __('quantity'),
+            quantity: '',
+            actions: '',
+        },
+        customSorting: {
+            custom: (ascending: boolean) => (a: Material, b: Material) => {
+                let result = null;
+
+                // - Si on est en mode "sélectionnés uniquement" et qu'au moins l'un
+                //   des deux à un ordre manuellement défini, on l'utilise.
+                if (showSelectedOnly.value) {
+                    const aManualOrderIndex = manualOrder.value?.indexOf(a.id);
+                    const bManualOrderIndex = manualOrder.value?.indexOf(b.id);
+                    if (aManualOrderIndex !== -1 || bManualOrderIndex !== -1) {
+                        result = aManualOrderIndex > bManualOrderIndex ? -1 : 1;
+                    }
+                }
+
+                // - Sinon on fallback sur le tri par reference.
+                if (result === null) {
+                    result = a.reference.localeCompare(b.reference, undefined, { ignorePunctuation: true });
+                }
+
+                return ascending || result === 0 ? result : -result;
+            },
+        },
+        customFilters: [
+            {
+                name: 'park',
+                callback: (row: Material, parkId: number) => {
+                    if (!row.is_unitary) {
+                        return row.park_id === parkId;
+                    }
+                    return row.units.some((unit) => unit.park_id === parkId);
+                },
+            },
+            {
+                name: 'category',
+                callback: (row: Material, categoryId: number) => row.category_id === categoryId,
+            },
+            {
+                name: 'subCategory',
+                callback: (row: Material, subCategoryId: number) => row.sub_category_id === subCategoryId,
+            },
+            {
+                name: 'tags',
+                callback: (row: Material, tags: string[]) => (
+                    tags.length === 0 || row.tags.some((tag: Tag) => tags.includes(tag.name))
+                ),
+            },
+            {
+                name: 'onlySelected',
+                callback: (row: Material, isOnlySelected: boolean) => (
+                    !isOnlySelected || getQuantity(row) > 0
+                ),
+            },
+        ],
+    });
+
+    const isFiltered = computed(() => (
+        Object.keys(getFilters(false)).length !== 0
+    ));
+
+    const handleFiltersChanges = (filters: RawFilters) => {
+        const onlySelected = showSelectedOnly.value;
+        const newFilters = normalizeFilters({ ...filters, onlySelected });
+        dataTableRef.value?.setCustomFilters(newFilters);
+    };
+
+    const setSelectedOnly = (onlySelected: boolean) => {
+        dataTableRef.value?.setCustomFilters({ ...getFilters(), onlySelected });
+        dataTableRef.value?.setLimit(
+            onlySelected ? noPaginationLimit : config.defaultPaginationLimit,
+        );
+        showSelectedOnly.value = onlySelected;
+    };
+
+    const handleChanges = () => {
+        const materialIds = Object.keys(MaterialsStore.state.materials);
+
+        if (materialIds.length === 0) {
+            setSelectedOnly(false);
+        }
+
+        const allMaterials: MaterialQuantity[] = Object.entries(MaterialsStore.state.materials)
+            .map(([id, { quantity, units }]) => ({
+                id: parseInt(id, 10),
+                quantity,
+                units: [...units],
+            }));
+
+        emit('change', allMaterials);
+    };
+
+    const setQuantity = (material: MaterialWhileEvent, quantity: number) => {
+        MaterialsStore.commit('setQuantity', { material, quantity });
+        handleChanges();
+    };
+
+    const getQuantity = (material: Material) => (
+        MaterialsStore.getters.getQuantity(material.id)
+    );
+
+    const getRemainingQuantity = (material: MaterialWhileEvent) => {
+        if (!material.is_unitary) {
+            return material.remaining_quantity - getQuantity(material);
+        }
+
+        const filters = getFilters();
+        const selectedUnits = MaterialsStore.getters.getUnits(material.id);
+        const availableUnits = material.units.filter((unit) => {
+            if (!unit.is_available || unit.is_broken) {
+                return false;
+            }
+
+            return !(
+                filters.park &&
+                unit.park_id !== filters.park &&
+                !selectedUnits.includes(unit.id)
+            );
+        });
+
+        return availableUnits.length - selectedUnits.length;
+    };
+
+    const isChildOpen = (id: number) => {
+        const tableRef = dataTableRef.value?.$refs.table;
+        return tableRef?.openChildRows.includes(id) || false;
+    };
+
+    const toggleChild = (id: number) => {
+        dataTableRef.value?.toggleChildRow(id);
+    };
+
+    const handleScan = (id: number, unitId: number) => {
+        if (!id || !unitId) {
+            return;
+        }
+
+        const material = materials.value?.find((_material) => _material.id === id);
+        if (!material || !material.is_unitary) {
+            return;
+        }
+
+        const unit = material.units.find((_unit) => _unit.id === unitId);
+        if (!unit || !unit.is_available) {
+            return;
+        }
+
+        // - On affiche uniquement les items sélectionnés.
+        setSelectedOnly(true);
+
+        // - On reset les filtres (au cas ou l'item scanné n'est pas dedans).
+        if (isFiltered.value) {
+            filtersRef.value?.clearFilters();
+        }
+
+        // - Si elle n'est pas encore sélectionnée, on sélectionne l'unité.
+        const selectedUnits = MaterialsStore.getters.getUnits(material.id);
+        const isAlreadySelected = selectedUnits.includes(unit.id);
+        if (!isAlreadySelected) {
+            MaterialsStore.commit('selectUnit', { material, unitId: unit.id });
+            handleChanges();
+        }
+
+        // - Ajoute l'élément au tableau des ordonnés "manuellement".
+        const existingOrderIndex = manualOrder.value.indexOf(material.id);
+        if (existingOrderIndex !== -1) {
+            manualOrder.value.splice(existingOrderIndex, 1);
+        }
+        manualOrder.value.push(material.id);
+
+        // TODO: Améliorer ça, pas idéal d'avoir à référencer le `.content` ici ...
+        document.querySelector('.content')?.scrollTo(0, 0);
+    };
+
+    onMounted(() => {
+        MaterialsStore.commit('init', selectedMaterials.value);
+
+        cancelScanObservation.value = observeBarcodeScan(handleScan);
+    });
+
+    watch(selectedMaterials, (newData) => {
+        if (newData.length === 0) {
+            return;
+        }
+
+        MaterialsStore.commit('init', newData);
+        setSelectedOnly(true);
+    });
+
+    onBeforeUnmount(() => {
+        if (cancelScanObservation.value) {
+            cancelScanObservation.value();
+        }
+    });
+
+    return () => (
+        <div class="MaterialsListEditor">
+            <header class="MaterialsListEditor__header">
+                <MaterialsFilters
+                    ref={filtersRef}
+                    onChange={handleFiltersChanges}
+                />
+                <div class="MaterialsListEditor__header__extra-filters">
+                    {hasMaterials.value && (
+                        <div class="MaterialsListEditor__header__extra-filters__filter">
+                            {__('display-only-selected-materials')}
+                            <SwitchToggle value={showSelectedOnly.value} onInput={setSelectedOnly} />
+                        </div>
+                    )}
+                </div>
+            </header>
+            {error.value && <ErrorMessage error={error.value} />}
+            <div class="MaterialsListEditor__main">
+                {isLoading.value && (
+                    <div class="MaterialsListEditor__loading">
+                        <i class="fas fa-circle-notch fa-spin fa-2x" /> {__('loading')}
+                    </div>
+                )}
+                <v-client-table
+                    ref={dataTableRef}
+                    name="listTemplateMaterialsListTable"
+                    data={materials.value || []}
+                    columns={columns.value}
+                    options={tableOptions.value}
+                    scopedSlots={{
+                        'child-toggler': ({ row }: TableRow<MaterialWhileEvent>) => (
+                            row.is_unitary ? (
+                                <button
+                                    type="button"
+                                    class="MaterialsListEditor__child-toggler__button"
+                                    onClick={() => { toggleChild(row.id); }}
+                                >
+                                    <i class={{
+                                        fas: true,
+                                        'fa-caret-right': !isChildOpen(row.id),
+                                        'fa-caret-down': isChildOpen(row.id),
+                                    }} />
+                                </button>
+                            ) : null
+                        ),
+                        child_row: ({ row }: TableRow<MaterialWhileEvent>) => (
+                            <Units
+                                material={row}
+                                initialData={selectedMaterials.value}
+                                filters={getFilters()}
+                                onChange={handleChanges}
+                            />
+                        ),
+                        qty: ({ row }: TableRow<MaterialWhileEvent>) => (
+                            <span>{getQuantity(row) > 0 ? `${getQuantity(row)}\u00a0×` : ''}</span>
+                        ),
+                        remaining_quantity:({ row }: TableRow<MaterialWhileEvent>) => (
+                            <span
+                                class={{
+                                    'MaterialsList__remaining': true,
+                                    'MaterialsList__remaining--zero': getRemainingQuantity(row) === 0,
+                                    'MaterialsList__remaining--empty': getRemainingQuantity(row) < 0,
+                                }}
+                            >
+                                {__('remaining-count', { count: getRemainingQuantity(row) })}
+                            </span>
+                        ),
+                        price: ({ row }: TableRow<MaterialWhileEvent>) => (
+                            <Fragment>
+                                {formatAmount(row.rental_price)} <i class="fas fa-times" />
+                            </Fragment>
+                        ),
+                        quantity: ({ row }: TableRow<MaterialWhileEvent>) => (
+                            <Quantity
+                                material={row}
+                                initialQuantity={getQuantity(row)}
+                                onChange={setQuantity}
+                            />
+                        ),
+                        amount: ({ row }: TableRow<MaterialWhileEvent>) => (
+                            <span>
+                                {formatAmount(row.rental_price * getQuantity(row))}
+                            </span>
+                        ),
+                        actions: ({ row }: TableRow<MaterialWhileEvent>) => (
+                            getQuantity(row) > 0 ? (
+                                <button
+                                    type="button"
+                                    role="button"
+                                    class="warning"
+                                    onClick={() => { setQuantity(row, 0); }}
+                                >
+                                    <i class="fas fa-backspace" />
+                                </button>
+                            ) : null
+                        ),
+                    }}
+                />
+                {(!isLoading.value && hasMaterials.value) && (
+                    <div class="MaterialsListEditor__add-more">
+                        <button
+                            type="button"
+                            role="button"
+                            onClick={() => { setSelectedOnly(!showSelectedOnly.value); }}
+                        >
+                            {showSelectedOnly.value ? (
+                                <Fragment>
+                                    <i class="fas fa-plus" />{' '}
+                                    {__('display-all-materials-to-add-some')}
+                                </Fragment>
+                            ) : (
+                                <Fragment>
+                                    <i class="fas fa-eye" />{' '}
+                                    {__('display-only-selected-materials')}
+                                </Fragment>
+                            )}
+                        </button>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+};
+
+MaterialsListEditor.props = {
+    selectedMaterials: { type: Array, required: true },
+    eventId: { type: Number, default: null },
+};
+
+MaterialsListEditor.emits = ['change'];
+
+export default MaterialsListEditor;

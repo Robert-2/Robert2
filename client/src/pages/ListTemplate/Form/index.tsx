@@ -4,16 +4,18 @@ import getFormDataAsJson from '@/utils/getFormDataAsJson';
 import useI18n from '@/hooks/useI18n';
 import FormField from '@/components/FormField';
 import ListTemplateTotals from '@/components/ListTemplateTotals';
-import MaterialsList from '@/pages/Event/Step4/MaterialsList';
+import MaterialsListEditor from '@/components/MaterialsListEditor';
+import { getMaterialsQuantities, materialsHasChanged } from '@/components/MaterialsListEditor/_utils';
 
 import type { Render, SetupContext } from '@vue/composition-api';
 import type { ListTemplateWithMaterial } from '@/stores/api/list-templates';
+import type { MaterialQuantity } from '@/components/MaterialsListEditor/_utils';
 
 type Props = {
     listTemplate: ListTemplateWithMaterial | null | undefined,
     errors: Record<string, string | null> | undefined,
-    onSubmit(data: Record<string, string>): void,
-    onChange(data: Record<string, string>): void,
+    onSubmit(data: Record<string, string | MaterialQuantity>): void,
+    onChange?(data: Record<string, string | MaterialQuantity>): void,
     onCancel(): void,
 };
 
@@ -62,7 +64,10 @@ const ListTemplateForm = (props: Props, { emit }: SetupContext): Render => {
                 />
             </section>
             <section class="ListTemplateForm__materials">
-                <pre>{JSON.stringify(listTemplate.value?.materials || [], undefined, 2)}</pre>
+                <MaterialsListEditor
+                    initialData={listTemplate.value?.materials || []}
+                    baseRoute={`list-templates/${listTemplate.value?.id || 'new'}`}
+                />
             </section>
             <section class="Form__actions">
                 <button class="Form__actions__save success" type="submit">

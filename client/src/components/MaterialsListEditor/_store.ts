@@ -1,13 +1,36 @@
 import Vuex from 'vuex';
 import _times from 'lodash.times';
 
-export default new Vuex.Store({
+import type { MaterialUnit, MaterialWhileEvent, MaterialWithPivot } from '@/stores/api/materials';
+
+export type MaterialsStoreStateMaterial = {
+    quantity: number,
+    units: number[],
+};
+
+export type MaterialsStoreStateMaterials = Record<number, MaterialsStoreStateMaterial>;
+
+type MaterialsStoreState = {
+    materials: MaterialsStoreStateMaterials,
+}
+
+type MaterialsStoreSetQuantityPayload = {
+    material: MaterialWhileEvent,
+    quantity: number,
+}
+
+type MaterialsStoreSelectUnitPayload = {
+    material: MaterialWhileEvent,
+    unitId: number,
+}
+
+export default new Vuex.Store<MaterialsStoreState>({
     state: {
         materials: {},
     },
     mutations: {
-        init(state, materials) {
-            const reducer = (acc, material) => {
+        init(state: MaterialsStoreState, materials: MaterialWithPivot[]) {
+            const reducer = (acc: MaterialsStoreStateMaterials, material: MaterialWithPivot) => {
                 const units = [...material.pivot.units];
 
                 let { quantity } = material.pivot;
@@ -20,7 +43,8 @@ export default new Vuex.Store({
             state.materials = materials.reduce(reducer, {});
         },
 
-        setQuantity(state, { material, quantity }) {
+        setQuantity(state: MaterialsStoreState, payload: MaterialsStoreSetQuantityPayload) {
+            const { material, quantity } = payload;
             const { id } = material;
 
             if (!state.materials[id]) {
@@ -36,6 +60,7 @@ export default new Vuex.Store({
 
             if (material.is_unitary && diff !== 0) {
                 if (diff > 0) {
+                    // @ts-ignore - Le commit fonctionne parfaitement, le typage doit être mauvais.
                     _times(diff, () => { this.commit('selectNextUnit', material); });
                 } else {
                     let unitsToRemove;
@@ -44,13 +69,14 @@ export default new Vuex.Store({
                     unitsToRemove = Math.min(unitsToRemove, unitsQuantity);
 
                     if (unitsToRemove > 0) {
+                        // @ts-ignore - Le commit fonctionne parfaitement, le typage doit être mauvais.
                         _times(unitsToRemove, () => { this.commit('unselectLastUnit', material); });
                     }
                 }
             }
         },
 
-        increment(state, material) {
+        increment(state: MaterialsStoreState, material: MaterialWhileEvent) {
             const { id } = material;
 
             if (!state.materials[id]) {
@@ -63,11 +89,12 @@ export default new Vuex.Store({
             state.materials[id].quantity += 1;
 
             if (material.is_unitary) {
+                // @ts-ignore - Le commit fonctionne parfaitement, le typage doit être mauvais.
                 this.commit('selectNextUnit', material);
             }
         },
 
-        decrement(state, material) {
+        decrement(state: MaterialsStoreState, material: MaterialWhileEvent) {
             const { id } = material;
 
             if (!state.materials[id]) {
@@ -82,11 +109,12 @@ export default new Vuex.Store({
 
             const useExternalMaterial = state.materials[id].quantity >= state.materials[id].units.length;
             if (material.is_unitary && !useExternalMaterial) {
+                // @ts-ignore - Le commit fonctionne parfaitement, le typage doit être mauvais.
                 this.commit('unselectLastUnit', material);
             }
         },
 
-        selectUnit(state, payload) {
+        selectUnit(state: MaterialsStoreState, payload: MaterialsStoreSelectUnitPayload) {
             const { material, unitId } = payload;
             const { id } = material;
 
@@ -109,7 +137,7 @@ export default new Vuex.Store({
             state.materials[id].units.push(unitId);
         },
 
-        toggleUnit(state, payload) {
+        toggleUnit(state: MaterialsStoreState, payload: MaterialsStoreSelectUnitPayload) {
             const { material, unitId } = payload;
             const { id } = material;
 
@@ -134,14 +162,14 @@ export default new Vuex.Store({
             state.materials[id].units.push(unitId);
         },
 
-        selectNextUnit(state, material) {
+        selectNextUnit(state: MaterialsStoreState, material: MaterialWhileEvent) {
             const { id } = material;
 
             if (!material.is_unitary) {
                 throw new Error(`Le matériel n'est pas unitaire, impossible d'ajouter une unité.`);
             }
 
-            const nextAvailableUnit = material.units.find((unit) => {
+            const nextAvailableUnit = material.units.find((unit: MaterialUnit) => {
                 // - Si l'unité est déjà sélectionnée.
                 if (state.materials[id].units.includes(unit.id)) {
                     return false;
@@ -158,7 +186,7 @@ export default new Vuex.Store({
             }
         },
 
-        unselectLastUnit(state, material) {
+        unselectLastUnit(state: MaterialsStoreState, material: MaterialWhileEvent) {
             const { id } = material;
 
             if (!material.is_unitary) {
@@ -167,7 +195,7 @@ export default new Vuex.Store({
 
             // - Récupère la première unité sélectionnée en partant de la fin
             //   de la liste des unités du matériel.
-            const closestSelectedUnit = [...material.units].reverse().find((unit) => (
+            const closestSelectedUnit = [...material.units].reverse().find((unit: MaterialUnit) => (
                 state.materials[id].units.includes(unit.id)
             ));
             if (closestSelectedUnit) {
@@ -178,7 +206,12 @@ export default new Vuex.Store({
         },
     },
     getters: {
-        getQuantity: (state) => (id) => (state.materials[id]?.quantity || 0),
-        getUnits: (state) => (id) => (state.materials[id]?.units || []),
+        getQuantity: (state: MaterialsStoreState) => (id: number) => (
+            state.materials[id]?.quantity || 0
+        ),
+
+        getUnits: (state: MaterialsStoreState) => (id: number) => (
+            state.materials[id]?.units || []
+        ),
     },
 });

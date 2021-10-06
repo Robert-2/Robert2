@@ -16,9 +16,17 @@ export type MaterialAttribute = {
 
 export type MaterialUnit = {
     id: number,
+    material_id: number,
+    reference: string,
+    serial_number: string,
     park_id: number,
-    is_available: boolean,
+    person_id: number,
     is_broken: boolean,
+    is_lost: boolean,
+    is_available?: boolean,
+    state: string,
+    purchase_date: string,
+    notes: string,
 };
 
 export type Material = {
@@ -66,8 +74,12 @@ const allWhileEvent = async (eventId: number): Promise<MaterialWhileEvent[]> => 
     return (await requester.get(`materials/while-event/${eventId}`)).data;
 };
 
+const allWithoutPagination = async (): Promise<MaterialWhileEvent[]> => (
+    (await requester.get('materials/withoutPagination')).data
+);
+
 const all = async (): Promise<PaginatedData<Material[]>> => (
     (await requester.get('materials')).data
 );
 
-export default { all, allWhileEvent };
+export default { allWhileEvent, allWithoutPagination, all };

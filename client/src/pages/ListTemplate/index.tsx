@@ -28,7 +28,7 @@ const ListTemplateEditPage = (props: Props, { root }: SetupContext): Render => {
 
     const queryClient = useQueryClient();
 
-    const { data: listTemplate, isLoading, isFetched, error } = useQuery<ListTemplateWithMaterial | null>(
+    const { data: listTemplate, isLoading, error } = useQuery<ListTemplateWithMaterial | null>(
         reactive(['list-template', { id: id.value }]),
         () => id.value ? apiListTemplates.one(id.value) : null,
         reactive({ enabled: !isNew.value }),

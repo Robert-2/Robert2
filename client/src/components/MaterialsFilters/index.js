@@ -6,9 +6,6 @@ import VueSelect from 'vue-select';
 export default defineComponent({
     name: 'MaterialsFilters',
     components: { VueSelect },
-    props: {
-        baseRoute: { type: String, required: true },
-    },
     data() {
         return {
             filters: {
@@ -107,7 +104,7 @@ export default defineComponent({
                 query.tags = JSON.stringify(tags.map((tag) => tag.label));
             }
 
-            this.$router.push({ path: this.baseRoute, query });
+            this.$router.push({ query });
             this.$emit('change', filters);
         },
     },
