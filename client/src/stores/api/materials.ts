@@ -75,7 +75,7 @@ const allWhileEvent = async (eventId: number): Promise<MaterialWhileEvent[]> => 
 };
 
 const allWithoutPagination = async (): Promise<MaterialWhileEvent[]> => (
-    (await requester.get('materials/withoutPagination')).data
+    (await requester.get('materials/not-paginated')).data
 );
 
 const all = async (): Promise<PaginatedData<Material[]>> => (
