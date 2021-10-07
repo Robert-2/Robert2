@@ -17,8 +17,8 @@ import Quantity from './Quantity';
 import Units from './Units';
 
 import type { Render, SetupContext } from '@vue/composition-api';
-import type { ClientTableInstance, ClientTableOptions, TableRow } from 'vue-table-2';
-import type { Material, MaterialWhileEvent, MaterialWithPivot } from '@/stores/api/materials';
+import type { ClientTableInstance, ClientTableOptions, TableRow } from 'vue-tables-2';
+import type { Material, MaterialUnit, MaterialWhileEvent, MaterialWithPivot } from '@/stores/api/materials';
 import type { Tag } from '@/stores/api/tags';
 import type { MaterialQuantity, RawFilters, MaterialsFiltersType } from './_utils';
 
@@ -47,8 +47,8 @@ const MaterialsListEditor = (props: Props, { emit }: SetupContext): Render => {
         reactive(['materials-while-event', { eventId: eventId?.value }]),
         () => (
             eventId?.value
-            ? apiMaterials.allWhileEvent(eventId.value)
-            : apiMaterials.allWithoutPagination()
+                ? apiMaterials.allWhileEvent(eventId.value)
+                : apiMaterials.allWithoutPagination()
         ),
     );
 
@@ -68,7 +68,7 @@ const MaterialsListEditor = (props: Props, { emit }: SetupContext): Render => {
         'actions',
     ]);
 
-    const getFilters = (extended: boolean = true, isInit: boolean = false) => {
+    const getFilters = (extended: boolean = true, isInit: boolean = false): MaterialsFiltersType => {
         const filters: Record<string, number | boolean | string> = {};
 
         if (extended) {
@@ -77,7 +77,7 @@ const MaterialsListEditor = (props: Props, { emit }: SetupContext): Render => {
                 : showSelectedOnly.value;
         }
 
-        ['park', 'category', 'subCategory'].forEach((key) => {
+        ['park', 'category', 'subCategory'].forEach((key: string) => {
             if (route.value?.query && key in route.value.query) {
                 filters[key] = route.value?.query[key];
             }
@@ -88,6 +88,42 @@ const MaterialsListEditor = (props: Props, { emit }: SetupContext): Render => {
         }
 
         return normalizeFilters(filters, extended);
+    };
+
+    const setSelectedOnly = (onlySelected: boolean): void => {
+        dataTableRef.value?.setCustomFilters({ ...getFilters(), onlySelected });
+        dataTableRef.value?.setLimit(
+            onlySelected ? noPaginationLimit : config.defaultPaginationLimit,
+        );
+        showSelectedOnly.value = onlySelected;
+    };
+
+    const handleChanges = (): void => {
+        const materialIds = Object.keys(MaterialsStore.state.materials);
+
+        if (materialIds.length === 0) {
+            setSelectedOnly(false);
+        }
+
+        const allMaterials: MaterialQuantity[] = Object.entries(MaterialsStore.state.materials)
+            // - Laissons Typescript inférer le type de l'argumen du map ici...
+            // eslint-disable-next-line @typescript-eslint/typedef
+            .map(([id, { quantity, units }]) => ({
+                id: parseInt(id, 10),
+                quantity,
+                units: [...units],
+            }));
+
+        emit('change', allMaterials);
+    };
+
+    const getQuantity = (material: Material): number => (
+        MaterialsStore.getters.getQuantity(material.id)
+    );
+
+    const setQuantity = (material: MaterialWhileEvent, quantity: number): void => {
+        MaterialsStore.commit('setQuantity', { material, quantity });
+        handleChanges();
     };
 
     const tableOptions = ref<ClientTableOptions<Material, MaterialsFiltersType>>({
@@ -111,12 +147,12 @@ const MaterialsListEditor = (props: Props, { emit }: SetupContext): Render => {
         initFilters: getFilters(true, true),
         headings: {
             'child-toggler': '',
-            qty: __('qty'),
-            reference: __('reference'),
-            name: __('name'),
-            stock_quantity: __('quantity'),
-            quantity: '',
-            actions: '',
+            'qty': __('qty'),
+            'reference': __('reference'),
+            'name': __('name'),
+            'stock_quantity': __('quantity'),
+            'quantity': '',
+            'actions': '',
         },
         customSorting: {
             custom: (ascending: boolean) => (a: Material, b: Material) => {
@@ -147,7 +183,7 @@ const MaterialsListEditor = (props: Props, { emit }: SetupContext): Render => {
                     if (!row.is_unitary) {
                         return row.park_id === parkId;
                     }
-                    return row.units.some((unit) => unit.park_id === parkId);
+                    return row.units.some((unit: MaterialUnit) => unit.park_id === parkId);
                 },
             },
             {
@@ -177,54 +213,20 @@ const MaterialsListEditor = (props: Props, { emit }: SetupContext): Render => {
         Object.keys(getFilters(false)).length !== 0
     ));
 
-    const handleFiltersChanges = (filters: RawFilters) => {
+    const handleFiltersChanges = (filters: RawFilters): void => {
         const onlySelected = showSelectedOnly.value;
         const newFilters = normalizeFilters({ ...filters, onlySelected });
         dataTableRef.value?.setCustomFilters(newFilters);
     };
 
-    const setSelectedOnly = (onlySelected: boolean) => {
-        dataTableRef.value?.setCustomFilters({ ...getFilters(), onlySelected });
-        dataTableRef.value?.setLimit(
-            onlySelected ? noPaginationLimit : config.defaultPaginationLimit,
-        );
-        showSelectedOnly.value = onlySelected;
-    };
-
-    const handleChanges = () => {
-        const materialIds = Object.keys(MaterialsStore.state.materials);
-
-        if (materialIds.length === 0) {
-            setSelectedOnly(false);
-        }
-
-        const allMaterials: MaterialQuantity[] = Object.entries(MaterialsStore.state.materials)
-            .map(([id, { quantity, units }]) => ({
-                id: parseInt(id, 10),
-                quantity,
-                units: [...units],
-            }));
-
-        emit('change', allMaterials);
-    };
-
-    const setQuantity = (material: MaterialWhileEvent, quantity: number) => {
-        MaterialsStore.commit('setQuantity', { material, quantity });
-        handleChanges();
-    };
-
-    const getQuantity = (material: Material) => (
-        MaterialsStore.getters.getQuantity(material.id)
-    );
-
-    const getRemainingQuantity = (material: MaterialWhileEvent) => {
+    const getRemainingQuantity = (material: MaterialWhileEvent): number => {
         if (!material.is_unitary) {
             return material.remaining_quantity - getQuantity(material);
         }
 
         const filters = getFilters();
         const selectedUnits = MaterialsStore.getters.getUnits(material.id);
-        const availableUnits = material.units.filter((unit) => {
+        const availableUnits = material.units.filter((unit: MaterialUnit) => {
             if (!unit.is_available || unit.is_broken) {
                 return false;
             }
@@ -239,26 +241,26 @@ const MaterialsListEditor = (props: Props, { emit }: SetupContext): Render => {
         return availableUnits.length - selectedUnits.length;
     };
 
-    const isChildOpen = (id: number) => {
+    const isChildOpen = (id: number): boolean => {
         const tableRef = dataTableRef.value?.$refs.table;
         return tableRef?.openChildRows.includes(id) || false;
     };
 
-    const toggleChild = (id: number) => {
+    const toggleChild = (id: number): void => {
         dataTableRef.value?.toggleChildRow(id);
     };
 
-    const handleScan = (id: number, unitId: number) => {
+    const handleScan = (id: number, unitId: number): void => {
         if (!id || !unitId) {
             return;
         }
 
-        const material = materials.value?.find((_material) => _material.id === id);
+        const material = materials.value?.find((_material: MaterialWhileEvent) => _material.id === id);
         if (!material || !material.is_unitary) {
             return;
         }
 
-        const unit = material.units.find((_unit) => _unit.id === unitId);
+        const unit = material.units.find((_unit: MaterialUnit) => _unit.id === unitId);
         if (!unit || !unit.is_available) {
             return;
         }
@@ -296,7 +298,7 @@ const MaterialsListEditor = (props: Props, { emit }: SetupContext): Render => {
         cancelScanObservation.value = observeBarcodeScan(handleScan);
     });
 
-    watch(selectedMaterials, (newData) => {
+    watch(selectedMaterials, (newData: MaterialWithPivot[]) => {
         if (newData.length === 0) {
             return;
         }
@@ -348,15 +350,17 @@ const MaterialsListEditor = (props: Props, { emit }: SetupContext): Render => {
                                     class="MaterialsListEditor__child-toggler__button"
                                     onClick={() => { toggleChild(row.id); }}
                                 >
-                                    <i class={{
-                                        fas: true,
-                                        'fa-caret-right': !isChildOpen(row.id),
-                                        'fa-caret-down': isChildOpen(row.id),
-                                    }} />
+                                    <i
+                                        class={{
+                                            'fas': true,
+                                            'fa-caret-right': !isChildOpen(row.id),
+                                            'fa-caret-down': isChildOpen(row.id),
+                                        }}
+                                    />
                                 </button>
                             ) : null
                         ),
-                        child_row: ({ row }: TableRow<MaterialWhileEvent>) => (
+                        'child_row': ({ row }: TableRow<MaterialWhileEvent>) => (
                             <Units
                                 material={row}
                                 initialData={selectedMaterials.value}
@@ -364,10 +368,10 @@ const MaterialsListEditor = (props: Props, { emit }: SetupContext): Render => {
                                 onChange={handleChanges}
                             />
                         ),
-                        qty: ({ row }: TableRow<MaterialWhileEvent>) => (
+                        'qty': ({ row }: TableRow<MaterialWhileEvent>) => (
                             <span>{getQuantity(row) > 0 ? `${getQuantity(row)}\u00a0×` : ''}</span>
                         ),
-                        remaining_quantity:({ row }: TableRow<MaterialWhileEvent>) => (
+                        'remaining_quantity': ({ row }: TableRow<MaterialWhileEvent>) => (
                             <span
                                 class={{
                                     'MaterialsList__remaining': true,
@@ -378,24 +382,24 @@ const MaterialsListEditor = (props: Props, { emit }: SetupContext): Render => {
                                 {__('remaining-count', { count: getRemainingQuantity(row) })}
                             </span>
                         ),
-                        price: ({ row }: TableRow<MaterialWhileEvent>) => (
+                        'price': ({ row }: TableRow<MaterialWhileEvent>) => (
                             <Fragment>
                                 {formatAmount(row.rental_price)} <i class="fas fa-times" />
                             </Fragment>
                         ),
-                        quantity: ({ row }: TableRow<MaterialWhileEvent>) => (
+                        'quantity': ({ row }: TableRow<MaterialWhileEvent>) => (
                             <Quantity
                                 material={row}
                                 initialQuantity={getQuantity(row)}
                                 onChange={setQuantity}
                             />
                         ),
-                        amount: ({ row }: TableRow<MaterialWhileEvent>) => (
+                        'amount': ({ row }: TableRow<MaterialWhileEvent>) => (
                             <span>
                                 {formatAmount(row.rental_price * getQuantity(row))}
                             </span>
                         ),
-                        actions: ({ row }: TableRow<MaterialWhileEvent>) => (
+                        'actions': ({ row }: TableRow<MaterialWhileEvent>) => (
                             getQuantity(row) > 0 ? (
                                 <button
                                     type="button"

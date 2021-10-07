@@ -1,6 +1,8 @@
 import { ref, watch } from '@vue/composition-api';
 import getRuntimeVm from '@/utils/getRuntimeVm';
 
+import type { Ref } from '@vue/composition-api';
+
 export type RouteData = {
     name: string,
     params: Record<string, string>,
@@ -8,11 +10,16 @@ export type RouteData = {
     path: string,
     fullPath: string,
     hash: string,
-    matched: Record<string, unknown>[],
+    matched: Array<Record<string, unknown>>,
     meta: Record<string, boolean | number | string | string[]>,
 };
 
-const useRouter = () => {
+type UseRouterReturnType = {
+    route: Ref<RouteData>,
+    router: any,
+};
+
+const useRouter = (): UseRouterReturnType => {
     const vm = getRuntimeVm();
     const route = ref<RouteData>(vm.$route);
 

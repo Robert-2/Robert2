@@ -1,5 +1,5 @@
 import './index.scss';
-import { toRefs } from '@vue/composition-api';
+import { toRefs, ref } from '@vue/composition-api';
 import getFormDataAsJson from '@/utils/getFormDataAsJson';
 import useI18n from '@/hooks/useI18n';
 import FormField from '@/components/FormField';
@@ -24,14 +24,37 @@ const ListTemplateForm = (props: Props, { emit }: SetupContext): Render => {
     const { listTemplate, errors } = toRefs(props);
     const __ = useI18n();
 
-    const handleSubmit = (e: SubmitEvent): void => {
-        e.preventDefault();
-        emit('submit', getFormDataAsJson(e.target));
+    const formRef = ref<HTMLFormElement | null>(null);
+    const materialsQuantities = ref<MaterialQuantity[]>([]);
+    const hasChanged = ref<boolean>(false);
+
+    const getPostData = (): Record<string, string | MaterialQuantity> => {
+        const postData = getFormDataAsJson(formRef.value);
+        postData.materials = materialsQuantities.value;
+        return postData;
     };
 
-    const handleChange = (e: Event): void => {
-        const { form } = e.target as HTMLInputElement;
-        emit('change', getFormDataAsJson(form));
+    const handleSubmit = (e: SubmitEvent): void => {
+        e.preventDefault();
+        emit('submit', getPostData());
+    };
+
+    const handleFormChange = (): void => {
+        const formValues = getFormDataAsJson(formRef.value);
+        hasChanged.value = (
+            formValues.name !== (listTemplate.value?.name || '') ||
+            formValues.description !== (listTemplate.value?.description || '')
+        );
+        emit('change', getPostData());
+    };
+
+    const handleListChange = (newList: MaterialQuantity[]): void => {
+        materialsQuantities.value = newList;
+
+        const savedList = getMaterialsQuantities(listTemplate.value?.materials || []);
+        hasChanged.value = materialsHasChanged(savedList, newList);
+
+        emit('change', getPostData());
     };
 
     const handleCancel = (): void => {
@@ -40,9 +63,10 @@ const ListTemplateForm = (props: Props, { emit }: SetupContext): Render => {
 
     return () => (
         <form
+            ref={formRef}
             class="Form Form--fixed-actions ListTemplateForm"
             onSubmit={handleSubmit}
-            onChange={handleChange}
+            onChange={handleFormChange}
         >
             <section class="ListTemplateForm__infos">
                 <FormField
@@ -62,11 +86,16 @@ const ListTemplateForm = (props: Props, { emit }: SetupContext): Render => {
                 <ListTemplateTotals
                     materials={listTemplate.value?.materials || []}
                 />
+                {hasChanged.value && (
+                    <div class="ListTemplateForm__infos__not-saved">
+                        <i class="fas fa-exclamation-triangle" /> {__('page-list-templates.not-saved')}
+                    </div>
+                )}
             </section>
             <section class="ListTemplateForm__materials">
                 <MaterialsListEditor
-                    initialData={listTemplate.value?.materials || []}
-                    baseRoute={`list-templates/${listTemplate.value?.id || 'new'}`}
+                    selectedMaterials={listTemplate.value?.materials || []}
+                    onChange={handleListChange}
                 />
             </section>
             <section class="Form__actions">

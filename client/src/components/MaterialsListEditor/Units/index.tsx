@@ -37,25 +37,27 @@ const MaterialsListEditorUnits = (props: Props, { emit }: SetupContext): Render 
         return withUnavailable.value || (unit.is_available && !unit.is_broken);
     }));
 
-    const handleToggleUnit = (id: number) => {
+    const handleToggleUnit = (id: number): void => {
         MaterialsStore.commit('toggleUnit', { material: material.value, unitId: id });
         emit('change');
     };
 
-    const toggleWithUnavailable = (e: MouseEvent) => {
+    const toggleWithUnavailable = (e: MouseEvent): void => {
         e.preventDefault();
         e.stopPropagation();
         withUnavailable.value = !withUnavailable.value;
     };
 
     watch(initialData, (newInitialData: MaterialWithPivot[] | undefined) => {
-        const newMaterial = newInitialData?.find(({ id }) => id === material.value.id);
+        const newMaterial = newInitialData?.find(({ id }: MaterialWithPivot) => (
+            id === material.value.id
+        ));
         if (!newMaterial) {
             return;
         }
 
         const newUnits = [...newMaterial.pivot.units]
-            .filter((unitId) => !initialUnits.value.includes(unitId));
+            .filter((unitId: number) => !initialUnits.value.includes(unitId));
 
         initialUnits.value.push(...newUnits);
     });
@@ -83,13 +85,21 @@ const MaterialsListEditorUnits = (props: Props, { emit }: SetupContext): Render 
                                 </th>
                                 <th class="MaterialsListEditorUnits__heading MaterialsListEditorUnits__heading--is-broken">
                                     {__('is-broken')}
-                                    <button class="MaterialsListEditorUnits__mini-action-button" onClick={toggleWithUnavailable}>
+                                    <button
+                                        type="button"
+                                        class="MaterialsListEditorUnits__mini-action-button"
+                                        onClick={toggleWithUnavailable}
+                                    >
                                         {withUnavailable.value ? <i class="fas fa-eye-slash" /> : <i class="fas fa-eye" />}
                                     </button>
                                 </th>
                                 <th class="MaterialsListEditorUnits__heading MaterialsListEditorUnits__heading--is-lost">
                                     {__('is-lost')}
-                                    <button class="MaterialsListEditorUnits__mini-action-button" onClick={toggleWithUnavailable}>
+                                    <button
+                                        type="button"
+                                        class="MaterialsListEditorUnits__mini-action-button"
+                                        onClick={toggleWithUnavailable}
+                                    >
                                         {withUnavailable.value ? <i class="fas fa-eye-slash" /> : <i class="fas fa-eye" />}
                                     </button>
                                 </th>

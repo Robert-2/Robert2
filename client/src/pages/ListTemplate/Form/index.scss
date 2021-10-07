@@ -36,6 +36,12 @@
         .ListTemplateTotals {
             margin: globals.$content-padding-large-vertical 0;
         }
+
+        &__not-saved {
+            color: globals.$text-warning-color;
+            font-size: 1.15rem;
+            text-align: center;
+        }
     }
 
     &__materials {

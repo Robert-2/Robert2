@@ -1,6 +1,5 @@
 import debounce from 'debounce';
 import { toRefs, ref, watch } from '@vue/composition-api';
-import useI18n from '@/hooks/useI18n';
 import QuantityInput from '@/components/QuantityInput';
 
 import type { Render, SetupContext } from '@vue/composition-api';
@@ -14,7 +13,6 @@ type Props = {
 
 // @vue/component
 const MaterialsListEditorQuantity = (props: Props, { emit }: SetupContext): Render => {
-    const __ = useI18n();
     const { material, initialQuantity } = toRefs(props);
 
     const quantity = ref<number>(initialQuantity.value);
@@ -23,7 +21,7 @@ const MaterialsListEditorQuantity = (props: Props, { emit }: SetupContext): Rend
         emit('change', material.value, quantity.value);
     }, 400);
 
-    const handleChange = (value: string) => {
+    const handleChange = (value: string): void => {
         quantity.value = parseInt(value, 10) || 0;
         updateQuantityDebounced();
     };

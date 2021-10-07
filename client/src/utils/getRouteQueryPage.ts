@@ -11,4 +11,3 @@ const getRouteQueryPage = (route: Ref<RouteData>): number => {
 };
 
 export default getRouteQueryPage;
-

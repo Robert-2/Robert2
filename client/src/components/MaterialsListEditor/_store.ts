@@ -12,17 +12,17 @@ export type MaterialsStoreStateMaterials = Record<number, MaterialsStoreStateMat
 
 type MaterialsStoreState = {
     materials: MaterialsStoreStateMaterials,
-}
+};
 
 type MaterialsStoreSetQuantityPayload = {
     material: MaterialWhileEvent,
     quantity: number,
-}
+};
 
 type MaterialsStoreSelectUnitPayload = {
     material: MaterialWhileEvent,
     unitId: number,
-}
+};
 
 export default new Vuex.Store<MaterialsStoreState>({
     state: {
@@ -30,7 +30,10 @@ export default new Vuex.Store<MaterialsStoreState>({
     },
     mutations: {
         init(state: MaterialsStoreState, materials: MaterialWithPivot[]) {
-            const reducer = (acc: MaterialsStoreStateMaterials, material: MaterialWithPivot) => {
+            const reducer = (
+                acc: MaterialsStoreStateMaterials,
+                material: MaterialWithPivot,
+            ): MaterialsStoreStateMaterials => {
                 const units = [...material.pivot.units];
 
                 let { quantity } = material.pivot;
@@ -154,7 +157,9 @@ export default new Vuex.Store<MaterialsStoreState>({
 
             if (state.materials[id].units.includes(unitId)) {
                 state.materials[id].quantity -= 1;
-                state.materials[id].units = state.materials[id].units.filter((_id) => _id !== unitId);
+                state.materials[id].units = state.materials[id].units.filter(
+                    (_id: number) => _id !== unitId,
+                );
                 return;
             }
 
@@ -200,7 +205,7 @@ export default new Vuex.Store<MaterialsStoreState>({
             ));
             if (closestSelectedUnit) {
                 state.materials[id].units = state.materials[id].units.filter(
-                    (_id) => _id !== closestSelectedUnit.id,
+                    (_id: number) => _id !== closestSelectedUnit.id,
                 );
             }
         },

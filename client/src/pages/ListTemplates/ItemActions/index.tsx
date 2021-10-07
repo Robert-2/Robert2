@@ -20,7 +20,7 @@ const ListTemplatesItemActions = (props: Props, { emit }: SetupContext): Render 
 
     const isLoading = ref<boolean>(false);
 
-    const handleDelete = async () => {
+    const handleDelete = async (): Promise<void> => {
         const isSoftDelete = !isTrashMode.value;
         const { value: isConfirmed } = await confirm({
             title: __('please-confirm'),
@@ -46,7 +46,7 @@ const ListTemplatesItemActions = (props: Props, { emit }: SetupContext): Render 
         }
     };
 
-    const handleRestore = async () => {
+    const handleRestore = async (): Promise<void> => {
         const { value: isConfirmed } = await confirm({
             title: __('please-confirm'),
             text: __('page-list-templates.confirm-restore'),

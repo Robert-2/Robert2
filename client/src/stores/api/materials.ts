@@ -1,10 +1,12 @@
+/* eslint-disable babel/camelcase */
+
 import requester from '@/globals/requester';
 
 //
 // - Types
 //
 
-import type { PaginatedData } from '@/globals/types/pagination';
+import type { PaginatedData } from '@/globals/types/pagination.d';
 
 export type MaterialAttribute = {
     id: number,
@@ -69,7 +71,7 @@ export type MaterialWithPivot = Material & {
 
 const allWhileEvent = async (eventId: number): Promise<MaterialWhileEvent[]> => {
     if (!eventId) {
-        throw new Error("Missing event id to fetch concurrent material of.");
+        throw new Error(`Missing event id to fetch concurrent material of.`);
     }
     return (await requester.get(`materials/while-event/${eventId}`)).data;
 };
@@ -83,3 +85,5 @@ const all = async (): Promise<PaginatedData<Material[]>> => (
 );
 
 export default { allWhileEvent, allWithoutPagination, all };
+
+/* eslint-enable babel/camelcase */

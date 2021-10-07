@@ -4,7 +4,7 @@ import requester from '@/globals/requester';
 // - Types
 //
 
-import { PaginatedData } from '@/globals/types/pagination';
+import type { PaginatedData } from '@/globals/types/pagination.d';
 
 export type Park = {
     id: number,

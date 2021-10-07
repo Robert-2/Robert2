@@ -1,10 +1,12 @@
+/* eslint-disable babel/camelcase */
+
 import requester from '@/globals/requester';
 
 //
 // - Types
 //
 
-import type { PaginatedData, PaginationParams } from '@/globals/types/pagination';
+import type { PaginatedData, PaginationParams } from '@/globals/types/pagination.d';
 import type { MaterialWithPivot } from '@/stores/api/materials';
 
 export type GetAllParams = PaginationParams & {
@@ -38,3 +40,5 @@ const one = async (id: number | string): Promise<ListTemplateWithMaterial> => (
 );
 
 export default { all, one };
+
+/* eslint-enable babel/camelcase */

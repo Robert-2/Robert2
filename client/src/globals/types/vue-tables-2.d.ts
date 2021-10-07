@@ -1,7 +1,6 @@
-
-declare module 'vue-table-2' {
+declare module 'vue-tables-2' {
     import type { VNode } from 'vue';
-    import type { PaginationParams } from '@/globals/types/pagination';
+    import type { PaginationParams } from '@/globals/types/pagination.d';
 
     //
     // - Common types
@@ -24,7 +23,7 @@ declare module 'vue-table-2' {
     interface BaseTableInstance {
         name: string;
         columns: string[];
-        data: Record<string, unknown>[];
+        data: Array<Record<string, unknown>>;
         filtersCount: number;
         openChildRows: number[];
         selectedRows: number[] | undefined;
@@ -62,14 +61,14 @@ declare module 'vue-table-2' {
     export type CustomSortFunction<TData> = (ascending: boolean) => (a: TData, b: TData) => number;
 
     export type ClientTableOptions<TData, TFilter> = BaseTableOptions & {
-        initFilters: TFilter;
+        initFilters: TFilter,
         customSorting?: Record<string, CustomSortFunction<TData>>,
         customFilters?: ClientCustomFilter[],
     };
 
     export interface ClientTableInstance extends BaseTableInstance {
-        filteredData: Record<string, unknown>[];
-        allFilteredData: Record<string, unknown>[];
+        filteredData: Array<Record<string, unknown>>;
+        allFilteredData: Array<Record<string, unknown>>;
     }
 
     //

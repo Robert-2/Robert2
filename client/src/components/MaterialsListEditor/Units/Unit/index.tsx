@@ -6,7 +6,7 @@ import apiParks from '@/stores/api/parks';
 import apiUnitStates from '@/stores/api/unit-states';
 
 import type { Render, SetupContext } from '@vue/composition-api';
-import type { PaginatedData } from '@/globals/types/pagination';
+import type { PaginatedData } from '@/globals/types/pagination.d';
 import type { Park } from '@/stores/api/parks';
 import type { UnitState } from '@/stores/api/unit-states';
 import type { MaterialUnit } from '@/stores/api/materials';
@@ -43,35 +43,35 @@ const MaterialsListEditorUnit = (props: Props, { emit }: SetupContext): Render =
     const isAvailable = computed(() => !!data.value.is_available);
 
     const classNames = computed(() => {
-        const classNames = ['MaterialsListEditorUnit'];
+        const classesList = ['MaterialsListEditorUnit'];
 
         if (isSelected.value) {
-            classNames.push('MaterialsListEditorUnit--selected');
+            classesList.push('MaterialsListEditorUnit--selected');
         }
 
         if (!isAvailable.value) {
-            classNames.push('MaterialsListEditorUnit--unavailable');
+            classesList.push('MaterialsListEditorUnit--unavailable');
         }
 
         if (data.value.is_broken) {
-            classNames.push('MaterialsListEditorUnit--broken');
+            classesList.push('MaterialsListEditorUnit--broken');
         }
 
         if (data.value.is_lost) {
-            classNames.push('MaterialsListEditorUnit--lost');
+            classesList.push('MaterialsListEditorUnit--lost');
         }
 
-        return classNames.join(' ');
+        return classesList.join(' ');
     });
 
-    const handleToggle = () => {
+    const handleToggle = (): void => {
         if (!isAvailable.value && !isSelected.value) {
             return;
         }
         emit('toggle');
     };
 
-    const handleCheckbox = (e: Event) => {
+    const handleCheckbox = (e: Event): void => {
         e.preventDefault();
         if (!e.currentTarget) {
             return;

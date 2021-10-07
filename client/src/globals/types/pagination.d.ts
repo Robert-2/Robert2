@@ -1,3 +1,5 @@
+/* eslint-disable babel/camelcase */
+
 export type PaginatedData<T> = {
     data: T,
     pagination: {
@@ -23,3 +25,5 @@ export type PaginationParams = {
     search?: string,
     byColumn?: 0 | 1,
 };
+
+/* eslint-enable babel/camelcase */

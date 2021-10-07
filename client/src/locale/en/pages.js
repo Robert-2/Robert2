@@ -120,9 +120,6 @@ export default {
         'start-end-dates-and-time': "Start and End dates and times",
         'saved': "Event saved.",
         'not-saved': "Event has not saved modifications",
-        'display-only-selected-materials': "Display event's selected materials only?",
-        'display-all-materials-to-add-some': "Display all materials to add some",
-        'display-only-event-materials': "Display only event's materials",
         'event-not-confirmed-help': "The event is not confirmed yet. It is subject to change at any time.",
         'event-confirmed-help': "The event is confirmed: its information should no longer change.",
         'event-missing-materials': "Missing materials",
@@ -490,5 +487,6 @@ export default {
         'confirm-delete': "Move this list template in trash bin?",
         'confirm-permanently-delete': "Do you really want to permanently delete this list template?",
         'confirm-restore': "Do you really want to restore this list template?",
+        'not-saved': "List modified but not saved!",
     },
 };

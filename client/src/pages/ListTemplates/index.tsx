@@ -7,10 +7,12 @@ import Page from '@/components/Page';
 import getRouteQueryPage from '@/utils/getRouteQueryPage';
 import ItemActions from './ItemActions';
 
-import type { ServerTableInstance, ServerTableOptions, TableRow } from 'vue-table-2';
+import type { ServerTableInstance, ServerTableOptions, TableRow } from 'vue-tables-2';
 import type { Render } from '@vue/composition-api';
-import type { PaginatedData } from '@/globals/types/pagination';
+import type { PaginatedData, PaginationParams } from '@/globals/types/pagination.d';
 import type { ListTemplate } from '@/stores/api/list-templates';
+
+type RequestFunctionReturn = Promise<{ data: PaginatedData<ListTemplate[]> } | undefined>;
 
 // @vue/component
 const ListTemplatesPage = (): Render => {
@@ -37,13 +39,13 @@ const ListTemplatesPage = (): Render => {
         columnsClasses: {
             actions: 'ListTemplates__actions',
         },
-        requestFunction: async (pagination) => {
+        requestFunction: async (pagination: PaginationParams): RequestFunctionReturn => {
             try {
                 isLoading.value = true;
                 error.value = null;
 
                 const data = await apiListTemplates.all({
-                    ... pagination,
+                    ...pagination,
                     deleted: isTrashDisplayed.value ? '1' : '0',
                 });
 
@@ -53,17 +55,18 @@ const ListTemplatesPage = (): Render => {
             } finally {
                 isLoading.value = false;
             }
+            return undefined;
         },
     });
 
-    const refresh = () => {
+    const refresh = (): void => {
         dataTable.value?.refresh();
-    }
+    };
 
-    const showTrashed = () => {
+    const showTrashed = (): void => {
         isTrashDisplayed.value = !isTrashDisplayed.value;
         refresh();
-    }
+    };
 
     const headerActions = [
         <router-link to="/list-templates/new" class="button success">

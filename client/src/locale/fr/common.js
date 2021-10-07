@@ -273,6 +273,8 @@ export default {
 
     'list-templates': "Modèles de liste",
     'materials-list-templates': "Modèles de liste de matériel",
+    'display-only-selected-materials': "Afficher uniquement le matériel sélectionné",
+    'display-all-materials-to-add-some': "Afficher tout le matériel pour en ajouter",
 
     'event': "Événement",
     'user': "Utilisateur",

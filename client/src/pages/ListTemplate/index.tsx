@@ -1,6 +1,5 @@
 import './index.scss';
-import { computed, ref } from '@vue/composition-api';
-import { reactive } from 'vue-demi';
+import { computed, reactive, ref } from '@vue/composition-api';
 import { useQuery, useQueryClient } from 'vue-query';
 import requester from '@/globals/requester';
 import apiListTemplates from '@/stores/api/list-templates';
@@ -10,15 +9,11 @@ import Help from '@/components/Help';
 import Page from '@/components/Page';
 import ListTemplateForm from './Form';
 
-import type { Render, SetupContext } from '@vue/composition-api';
+import type { Render } from '@vue/composition-api';
 import type { ListTemplateWithMaterial } from '@/stores/api/list-templates';
 
-type Props = Record<string, never>;
-
-const WIP_STORAGE_KEY = 'WIP-newListTemplate';
-
 // @vue/component
-const ListTemplateEditPage = (props: Props, { root }: SetupContext): Render => {
+const ListTemplateEditPage = (): Render => {
     const __ = useI18n();
     const { route, router } = useRouter();
     const id = computed(() => route.value.params.id || null);
@@ -30,7 +25,7 @@ const ListTemplateEditPage = (props: Props, { root }: SetupContext): Render => {
 
     const { data: listTemplate, isLoading, error } = useQuery<ListTemplateWithMaterial | null>(
         reactive(['list-template', { id: id.value }]),
-        () => id.value ? apiListTemplates.one(id.value) : null,
+        () => (id.value ? apiListTemplates.one(id.value) : null),
         reactive({ enabled: !isNew.value }),
     );
 
@@ -38,35 +33,31 @@ const ListTemplateEditPage = (props: Props, { root }: SetupContext): Render => {
         queryClient.removeQueries(['list-template', { id: null }]);
     };
 
-    const save = async (parkData: Record<string, any>): Promise<void> => {
+    const save = async (templateListData: Record<string, any>): Promise<void> => {
         error.value = null;
         isLoading.value = true;
 
         const request = isNew.value ? requester.post : requester.put;
-        const endpoint = isNew.value ? 'list-templates' : `list-templates/${id.value}`;
+        const endpoint = isNew.value ? 'list-templates' : `list-templates/${id.value || ''}`;
 
         try {
-            const { data } = await request(endpoint, parkData);
-            listTemplate.value = data;
-            flushStashedData();
+            const { data } = await request(endpoint, templateListData);
+            if (isNew.value) {
+                flushStashedData();
+            } else {
+                queryClient.setQueryData(['list-template', { id: id.value }], data);
+            }
             setTimeout(() => { router.push('/list-templates'); }, 300);
         } catch (err) {
             error.value = err;
 
-            // TODO: Utiliser un typage correct pour la gestion des erreurs de validation de l'API
-            // @ts-ignore
+            // @ts-ignore // TODO: Utiliser un typage correct pour la gestion des erreurs de validation de l'API
             const { code, details } = err.response?.data?.error || { code: 0, details: {} };
             if (code === 400) {
                 errors.value = { ...details };
             }
         } finally {
             isLoading.value = false;
-        }
-    };
-
-    const handleChange = (newData: Record<string, any>): void => {
-        if (isNew.value) {
-            queryClient.setQueryData(['list-template', { id: id.value }], newData);
         }
     };
 
@@ -92,7 +83,6 @@ const ListTemplateEditPage = (props: Props, { root }: SetupContext): Render => {
                         listTemplate={listTemplate.value}
                         errors={errors.value}
                         onSubmit={save}
-                        onChange={handleChange}
                         onCancel={handleCancel}
                     />
                 </div>

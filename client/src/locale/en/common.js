@@ -273,6 +273,8 @@ export default {
 
     'materials-list-templates': "Materials list templates",
     'list-templates': "List templates",
+    'display-only-selected-materials': "Display selected materials only",
+    'display-all-materials-to-add-some': "Display all materials to add some",
 
     'event': "Event",
     'user': "User",

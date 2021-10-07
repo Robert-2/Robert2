@@ -38,12 +38,12 @@ export const normalizeFilters = (rawFilters: RawFilters, extended: boolean = tru
     }
 
     if ('tags' in rawFilters && Array.isArray(rawFilters.tags)) {
-        filters.tags = rawFilters.tags as string[];
+        filters.tags = rawFilters.tags!;
     }
 
     ['park', 'category', 'subCategory'].forEach((key: string) => {
         if (key in rawFilters && isValidInteger(rawFilters[key])) {
-            // @ts-ignore
+            // @ts-ignore - Ici, on sait que `key` est un nombre.
             filters[key] = parseInt(rawFilters[key] as string, 10);
         }
     });
@@ -56,7 +56,7 @@ export const normalizeFilters = (rawFilters: RawFilters, extended: boolean = tru
 //
 
 export const getMaterialsQuantities = (materials: MaterialWithPivot[]): MaterialQuantity[] => (
-    materials.map(({ id, is_unitary: isUnitary, pivot }) => {
+    materials.map(({ id, is_unitary: isUnitary, pivot }: MaterialWithPivot) => {
         const data = { id, quantity: pivot?.quantity || 0, units: [] };
         return !isUnitary ? data : { ...data, units: pivot?.units || [] };
     })
@@ -68,8 +68,8 @@ const materialComparatorBuilder = (a: MaterialQuantity) => (b: MaterialQuantity)
     }
 
     const unitsDiff = a.units
-        .filter((unit) => !b.units.includes(unit))
-        .concat(b.units.filter((unit) => !a.units.includes(unit)));
+        .filter((unitId: number) => !b.units.includes(unitId))
+        .concat(b.units.filter((unitId: number) => !a.units.includes(unitId)));
 
     if (unitsDiff.length > 0) {
         return false;
@@ -78,9 +78,9 @@ const materialComparatorBuilder = (a: MaterialQuantity) => (b: MaterialQuantity)
     return a.quantity === b.quantity;
 };
 
-export const materialsHasChanged = (before: MaterialQuantity[], after: MaterialQuantity[]) => {
+export const materialsHasChanged = (before: MaterialQuantity[], after: MaterialQuantity[]): boolean => {
     // - Si un nouveau matériel n'est pas identique à un matériel déjà sauvé.
-    const differencesNew = after.filter((newMaterial) => {
+    const differencesNew = after.filter((newMaterial: MaterialQuantity) => {
         if (newMaterial.quantity === 0) {
             return false;
         }
@@ -91,7 +91,7 @@ export const materialsHasChanged = (before: MaterialQuantity[], after: MaterialQ
     }
 
     // - Si un matériel sauvé n'existe plus ou a changé dans le nouveau jeu de données.
-    const differencesOld = before.filter((oldMaterial) => {
+    const differencesOld = before.filter((oldMaterial: MaterialQuantity) => {
         if (oldMaterial.quantity === 0) {
             return false;
         }
