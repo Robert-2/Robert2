@@ -80,6 +80,7 @@ const ListTemplateEditPage = (): Render => {
                 />
                 <div class="ListTemplate__content">
                     <ListTemplateForm
+                        isNew={isNew.value}
                         listTemplate={listTemplate.value}
                         errors={errors.value}
                         onSubmit={save}

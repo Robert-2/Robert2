@@ -25,6 +25,8 @@ export default {
     'yes-delete': "Yes, move in trash bin",
     'yes-permanently-delete': "Yes, permanently delete",
     'yes-restore': "Oui, restaurer",
+    'changes-exists-really-cancel': "Some changes have not been saved. Do you really want to leave this page?",
+    'yes-leave-page': "Yes, leave page",
     'cancel': "Cancel",
     'close': "Close",
     'copy-to-clipboard': "Copy to clipboard",

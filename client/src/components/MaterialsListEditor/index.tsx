@@ -1,5 +1,5 @@
 import './index.scss';
-import { toRefs, ref, computed, onMounted, onBeforeUnmount, reactive, watch } from '@vue/composition-api';
+import { toRefs, ref, computed, onMounted, onBeforeUnmount, reactive } from '@vue/composition-api';
 import { useQuery } from 'vue-query';
 import { Fragment } from 'vue-fragment';
 import config from '@/globals/config';
@@ -298,15 +298,6 @@ const MaterialsListEditor = (props: Props, { emit }: SetupContext): Render => {
         cancelScanObservation.value = observeBarcodeScan(handleScan);
     });
 
-    watch(selectedMaterials, (newData: MaterialWithPivot[]) => {
-        if (newData.length === 0) {
-            return;
-        }
-
-        MaterialsStore.commit('init', newData);
-        setSelectedOnly(true);
-    });
-
     onBeforeUnmount(() => {
         if (cancelScanObservation.value) {
             cancelScanObservation.value();
@@ -374,9 +365,9 @@ const MaterialsListEditor = (props: Props, { emit }: SetupContext): Render => {
                         'remaining_quantity': ({ row }: TableRow<MaterialWhileEvent>) => (
                             <span
                                 class={{
-                                    'MaterialsList__remaining': true,
-                                    'MaterialsList__remaining--zero': getRemainingQuantity(row) === 0,
-                                    'MaterialsList__remaining--empty': getRemainingQuantity(row) < 0,
+                                    'MaterialsListEditor__remaining': true,
+                                    'MaterialsListEditor__remaining--zero': getRemainingQuantity(row) === 0,
+                                    'MaterialsListEditor__remaining--empty': getRemainingQuantity(row) < 0,
                                 }}
                             >
                                 {__('remaining-count', { count: getRemainingQuantity(row) })}

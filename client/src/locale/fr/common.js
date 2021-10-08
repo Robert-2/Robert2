@@ -25,6 +25,8 @@ export default {
     'yes-delete': "Oui, mettre à la corbeille",
     'yes-permanently-delete': "Oui, supprimer définitivement",
     'yes-restore': "Oui, restaurer",
+    'changes-exists-really-cancel': "Des changements n'ont pas été sauvegardés. Voulez-vous vraiment quitter cette page\u00a0?",
+    'yes-leave-page': "Oui, quitter la page",
     'cancel': "Annuler",
     'close': "Fermer",
     'copy-to-clipboard': "Copier dans le presse-papier",

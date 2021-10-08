@@ -2,6 +2,7 @@ import './index.scss';
 import { toRefs, ref } from '@vue/composition-api';
 import getFormDataAsJson from '@/utils/getFormDataAsJson';
 import useI18n from '@/hooks/useI18n';
+import { confirm } from '@/utils/alert';
 import FormField from '@/components/FormField';
 import ListTemplateTotals from '@/components/ListTemplateTotals';
 import MaterialsListEditor from '@/components/MaterialsListEditor';
@@ -12,6 +13,7 @@ import type { ListTemplateWithMaterial } from '@/stores/api/list-templates';
 import type { MaterialQuantity } from '@/components/MaterialsListEditor/_utils';
 
 type Props = {
+    isNew: boolean,
     listTemplate: ListTemplateWithMaterial | null | undefined,
     errors: Record<string, string | null> | undefined,
     onSubmit(data: Record<string, string | MaterialQuantity>): void,
@@ -21,7 +23,7 @@ type Props = {
 
 // @vue/component
 const ListTemplateForm = (props: Props, { emit }: SetupContext): Render => {
-    const { listTemplate, errors } = toRefs(props);
+    const { isNew, listTemplate, errors } = toRefs(props);
     const __ = useI18n();
 
     const formRef = ref<HTMLFormElement | null>(null);
@@ -57,7 +59,19 @@ const ListTemplateForm = (props: Props, { emit }: SetupContext): Render => {
         emit('change', getPostData());
     };
 
-    const handleCancel = (): void => {
+    const handleCancel = async (): Promise<void> => {
+        if (hasChanged.value) {
+            const { isConfirmed } = await confirm({
+                title: __('please-confirm'),
+                text: __('changes-exists-really-cancel'),
+                confirmButtonText: __('yes-leave-page'),
+                type: 'trash',
+            });
+            if (!isConfirmed) {
+                return;
+            }
+        }
+
         emit('cancel');
     };
 
@@ -93,10 +107,18 @@ const ListTemplateForm = (props: Props, { emit }: SetupContext): Render => {
                 )}
             </section>
             <section class="ListTemplateForm__materials">
-                <MaterialsListEditor
-                    selectedMaterials={listTemplate.value?.materials || []}
-                    onChange={handleListChange}
-                />
+                {isNew.value && (
+                    <MaterialsListEditor
+                        selectedMaterials={[]}
+                        onChange={handleListChange}
+                    />
+                )}
+                {!isNew.value && listTemplate.value?.materials && (
+                    <MaterialsListEditor
+                        selectedMaterials={listTemplate.value.materials}
+                        onChange={handleListChange}
+                    />
+                )}
             </section>
             <section class="Form__actions">
                 <button class="Form__actions__save success" type="submit">
@@ -111,6 +133,7 @@ const ListTemplateForm = (props: Props, { emit }: SetupContext): Render => {
 };
 
 ListTemplateForm.props = {
+    isNew: { type: Boolean, required: true },
     listTemplate: { type: Object, default: () => ({}) },
     errors: { type: Object, default: () => ({}) },
 };

@@ -102,13 +102,6 @@ const ListTemplatesItemActions = (props: Props, { emit }: SetupContext): Render 
         return (
             <div>
                 <router-link
-                    v-tooltip={__('action-view')}
-                    to={`/list-templates/${id.value}/view`}
-                    class="button success item-actions__button"
-                >
-                    <i class="fas fa-eye" />
-                </router-link>
-                <router-link
                     v-tooltip={__('action-edit')}
                     to={`/list-templates/${id.value}`}
                     class="button info item-actions__button"
