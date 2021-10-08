@@ -93,7 +93,7 @@ const ParkEditPage = (props: Props, { root }: SetupContext): Render => {
         resetHelpLoading();
 
         try {
-            const { data } = await requester.get(`parks/${id.value}`);
+            const { data } = await requester.get(`parks/${id.value || ''}`);
             state.value.park = data;
             state.value.isFetched = true;
         } catch (error) {
@@ -107,7 +107,7 @@ const ParkEditPage = (props: Props, { root }: SetupContext): Render => {
         resetHelpLoading();
 
         const request = isNew.value ? requester.post : requester.put;
-        const endpoint = isNew.value ? 'parks' : `parks/${id.value}`;
+        const endpoint = isNew.value ? 'parks' : `parks/${id.value || ''}`;
 
         try {
             const { data } = await request(endpoint, parkData);

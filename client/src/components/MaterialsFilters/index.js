@@ -1,13 +1,11 @@
 import './index.scss';
+import { defineComponent } from '@vue/composition-api';
 import VueSelect from 'vue-select';
 
 // @vue/component
-export default {
+export default defineComponent({
     name: 'MaterialsFilters',
     components: { VueSelect },
-    props: {
-        baseRoute: { type: String, required: true },
-    },
     data() {
         return {
             filters: {
@@ -106,8 +104,8 @@ export default {
                 query.tags = JSON.stringify(tags.map((tag) => tag.label));
             }
 
-            this.$router.push({ path: this.baseRoute, query });
+            this.$router.push({ query });
             this.$emit('change', filters);
         },
     },
-};
+});

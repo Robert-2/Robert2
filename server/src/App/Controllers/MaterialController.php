@@ -126,6 +126,28 @@ class MaterialController extends BaseController
         return $response->withJson($results);
     }
 
+    public function getAllNotPaginated(Request $request, Response $response): Response
+    {
+        $materials = (new Material)
+            ->setOrderBy('reference', true)
+            ->getAll()
+            ->get()
+            ->toArray();
+
+        if ($materials && count($materials) > 0) {
+            foreach ($materials as &$material) {
+                $material['remaining_quantity'] = $material['stock_quantity'];
+                if ($material['is_unitary'] && array_key_exists('units', $material)) {
+                    foreach ($material['units'] as &$unit) {
+                        $unit['is_available'] = !($unit['is_broken'] === true || $unit['is_lost'] === true);
+                    }
+                }
+            }
+        }
+
+        return $response->withJson($materials);
+    }
+
     public function getParkAll(Request $request, Response $response): Response
     {
         $parkId = (int)$request->getAttribute('parkId');
