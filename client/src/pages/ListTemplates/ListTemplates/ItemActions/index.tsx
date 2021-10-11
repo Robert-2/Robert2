@@ -72,13 +72,15 @@ const ListTemplatesItemActions = (props: Props, { emit }: SetupContext): Render 
     return () => {
         if (isLoading.value) {
             return (
-                <div><i class="fas fa-spin fa-circle-notch" /></div>
+                <div class="ListTemplatesItemActions">
+                    <i class="fas fa-spin fa-circle-notch" />
+                </div>
             );
         }
 
         if (isTrashMode.value) {
             return (
-                <div>
+                <div class="ListTemplatesItemActions">
                     <button
                         type="button"
                         v-tooltip={__('action-restore')}
@@ -100,7 +102,7 @@ const ListTemplatesItemActions = (props: Props, { emit }: SetupContext): Render 
         }
 
         return (
-            <div>
+            <div class="ListTemplatesItemActions">
                 <router-link
                     v-tooltip={__('action-edit')}
                     to={`/list-templates/${id.value}`}

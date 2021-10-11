@@ -1,7 +1,7 @@
 import Vuex from 'vuex';
 import _times from 'lodash.times';
 
-import type { MaterialUnit, MaterialWhileEvent, MaterialWithPivot } from '@/stores/api/materials';
+import type { Material, MaterialUnit, MaterialWithPivot } from '@/stores/api/materials';
 
 export type MaterialsStoreStateMaterial = {
     quantity: number,
@@ -15,12 +15,12 @@ type MaterialsStoreState = {
 };
 
 type MaterialsStoreSetQuantityPayload = {
-    material: MaterialWhileEvent,
+    material: Material,
     quantity: number,
 };
 
 type MaterialsStoreSelectUnitPayload = {
-    material: MaterialWhileEvent,
+    material: Material,
     unitId: number,
 };
 
@@ -79,7 +79,7 @@ export default new Vuex.Store<MaterialsStoreState>({
             }
         },
 
-        increment(state: MaterialsStoreState, material: MaterialWhileEvent) {
+        increment(state: MaterialsStoreState, material: Material) {
             const { id } = material;
 
             if (!state.materials[id]) {
@@ -97,7 +97,7 @@ export default new Vuex.Store<MaterialsStoreState>({
             }
         },
 
-        decrement(state: MaterialsStoreState, material: MaterialWhileEvent) {
+        decrement(state: MaterialsStoreState, material: Material) {
             const { id } = material;
 
             if (!state.materials[id]) {
@@ -167,7 +167,7 @@ export default new Vuex.Store<MaterialsStoreState>({
             state.materials[id].units.push(unitId);
         },
 
-        selectNextUnit(state: MaterialsStoreState, material: MaterialWhileEvent) {
+        selectNextUnit(state: MaterialsStoreState, material: Material) {
             const { id } = material;
 
             if (!material.is_unitary) {
@@ -191,7 +191,7 @@ export default new Vuex.Store<MaterialsStoreState>({
             }
         },
 
-        unselectLastUnit(state: MaterialsStoreState, material: MaterialWhileEvent) {
+        unselectLastUnit(state: MaterialsStoreState, material: Material) {
             const { id } = material;
 
             if (!material.is_unitary) {

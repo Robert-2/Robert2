@@ -2,11 +2,11 @@
 
 import requester from '@/globals/requester';
 
+import type { PaginatedData } from '@/stores/api/@types.d';
+
 //
 // - Types
 //
-
-import type { PaginatedData } from '@/globals/types/pagination.d';
 
 export type MaterialAttribute = {
     id: number,
@@ -42,6 +42,7 @@ export type Material = {
     sub_category_id: number,
     rental_price: number,
     stock_quantity: number,
+    remaining_quantity?: number,
     out_of_order_quantity: number | null,
     replacement_price: number,
     is_hidden_on_bill: boolean,
@@ -49,10 +50,6 @@ export type Material = {
     tags: [],
     units: MaterialUnit[],
     attributes: MaterialAttribute[],
-};
-
-export type MaterialWhileEvent = Material & {
-    remaining_quantity: number,
 };
 
 export type MaterialWithPivot = Material & {
@@ -69,15 +66,15 @@ export type MaterialWithPivot = Material & {
 // - Functions
 //
 
-const allWhileEvent = async (eventId: number): Promise<MaterialWhileEvent[]> => {
+const allWhileEvent = async (eventId: number): Promise<Material[]> => {
     if (!eventId) {
         throw new Error(`Missing event id to fetch concurrent material of.`);
     }
     return (await requester.get(`materials/while-event/${eventId}`)).data;
 };
 
-const allWithoutPagination = async (): Promise<MaterialWhileEvent[]> => (
-    (await requester.get('materials/not-paginated')).data
+const allWithoutPagination = async (): Promise<Material[]> => (
+    (await requester.get('materials?pagination=none')).data
 );
 
 const all = async (): Promise<PaginatedData<Material[]>> => (

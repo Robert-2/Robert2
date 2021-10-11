@@ -1,6 +1,6 @@
-import { getMaterialsQuantities, materialsHasChanged } from '@/pages/Event/Step4/_utils';
+import { getMaterialsQuantities, materialsHasChanged } from '@/components/MaterialsListEditor/_utils';
 
-describe('Page Event / Step 4 (material)', () => {
+describe('MaterialsListEditor', () => {
     describe('Utils / getMaterialsQuantities()', () => {
         it('should return an object containing the quantities related to a material', () => {
             const materials = [

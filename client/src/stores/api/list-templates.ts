@@ -2,12 +2,12 @@
 
 import requester from '@/globals/requester';
 
+import type { PaginatedData, PaginationParams } from '@/stores/api/@types.d';
+import type { MaterialWithPivot } from '@/stores/api/materials';
+
 //
 // - Types
 //
-
-import type { PaginatedData, PaginationParams } from '@/globals/types/pagination.d';
-import type { MaterialWithPivot } from '@/stores/api/materials';
 
 export type GetAllParams = PaginationParams & {
     deleted?: '0' | '1',
@@ -17,7 +17,6 @@ export type ListTemplate = {
     id: number,
     name: string,
     description: string | null,
-    user_id: number | null,
     created_at: string | null,
     updated_at: string | null,
     deleted_at: string | null,

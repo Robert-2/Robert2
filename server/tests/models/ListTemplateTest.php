@@ -22,27 +22,19 @@ final class ListTemplateTest extends ModelTestCase
 
     public function testGetAll(): void
     {
-        $result = $this->model->getAll()->get()->toArray();
+        $result = $this->model->getAll()->forAll()->get();
         $this->assertEquals([
             [
                 'id' => 2,
                 'name' => 'Petit concert',
                 'description' => null,
-                'user_id' => 1,
-                'created_at' => '2021-10-01 11:10:00',
-                'updated_at' => '2021-10-01 11:10:00',
-                'deleted_at' => null,
             ],
             [
                 'id' => 1,
                 'name' => 'Premier modèle',
                 'description' => "Une liste de matériel bien sympa.",
-                'user_id' => 1,
-                'created_at' => '2021-10-01 11:00:00',
-                'updated_at' => '2021-10-01 11:00:00',
-                'deleted_at' => null,
             ],
-        ], $result);
+        ], $result->toArray());
     }
 
     public function testGetParks(): void
@@ -119,7 +111,6 @@ final class ListTemplateTest extends ModelTestCase
         $data = [
             'name' => 'Test update',
             'description' => '',
-            'user_id' => 1,
             'materials' => [
                 ['id' => 3, 'quantity' => 20],
                 ['id' => 2, 'quantity' => 3],
@@ -133,8 +124,6 @@ final class ListTemplateTest extends ModelTestCase
         $this->assertEquals(2, $listTemplate->id);
         $this->assertEquals('Test update', $listTemplate->name);
         $this->assertNull($listTemplate->description);
-        $this->assertEquals(1, $listTemplate->user_id);
-
         $this->assertEquals(5, count($listTemplate->materials));
         $this->assertEquals(5, $listTemplate->materials[0]['id']);
         $this->assertEquals(14, $listTemplate->materials[0]['pivot']['quantity']);

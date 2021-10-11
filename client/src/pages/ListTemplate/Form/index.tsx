@@ -14,7 +14,7 @@ import type { MaterialQuantity } from '@/components/MaterialsListEditor/_utils';
 
 type Props = {
     isNew: boolean,
-    listTemplate: ListTemplateWithMaterial | null | undefined,
+    data: ListTemplateWithMaterial | null | undefined,
     errors: Record<string, string | null> | undefined,
     onSubmit(data: Record<string, string | MaterialQuantity>): void,
     onChange?(data: Record<string, string | MaterialQuantity>): void,
@@ -23,7 +23,7 @@ type Props = {
 
 // @vue/component
 const ListTemplateForm = (props: Props, { emit }: SetupContext): Render => {
-    const { isNew, listTemplate, errors } = toRefs(props);
+    const { isNew, data, errors } = toRefs(props);
     const __ = useI18n();
 
     const formRef = ref<HTMLFormElement | null>(null);
@@ -44,8 +44,8 @@ const ListTemplateForm = (props: Props, { emit }: SetupContext): Render => {
     const handleFormChange = (): void => {
         const formValues = getFormDataAsJson(formRef.value);
         hasChanged.value = (
-            formValues.name !== (listTemplate.value?.name || '') ||
-            formValues.description !== (listTemplate.value?.description || '')
+            formValues.name !== (data.value?.name || '') ||
+            formValues.description !== (data.value?.description || '')
         );
         emit('change', getPostData());
     };
@@ -53,7 +53,7 @@ const ListTemplateForm = (props: Props, { emit }: SetupContext): Render => {
     const handleListChange = (newList: MaterialQuantity[]): void => {
         materialsQuantities.value = newList;
 
-        const savedList = getMaterialsQuantities(listTemplate.value?.materials || []);
+        const savedList = getMaterialsQuantities(data.value?.materials || []);
         hasChanged.value = materialsHasChanged(savedList, newList);
 
         emit('change', getPostData());
@@ -84,21 +84,21 @@ const ListTemplateForm = (props: Props, { emit }: SetupContext): Render => {
         >
             <section class="ListTemplateForm__infos">
                 <FormField
-                    value={listTemplate.value?.name}
+                    value={data.value?.name}
                     name="name"
                     label="name"
                     required
                     errors={errors?.value?.name}
                 />
                 <FormField
-                    value={listTemplate.value?.description}
+                    value={data.value?.description}
                     name="description"
                     label="description"
                     type="textarea"
                     errors={errors?.value?.description}
                 />
                 <ListTemplateTotals
-                    materials={listTemplate.value?.materials || []}
+                    materials={data.value?.materials || []}
                 />
                 {hasChanged.value && (
                     <div class="ListTemplateForm__infos__not-saved">
@@ -108,14 +108,11 @@ const ListTemplateForm = (props: Props, { emit }: SetupContext): Render => {
             </section>
             <section class="ListTemplateForm__materials">
                 {isNew.value && (
-                    <MaterialsListEditor
-                        selectedMaterials={[]}
-                        onChange={handleListChange}
-                    />
+                    <MaterialsListEditor onChange={handleListChange} />
                 )}
-                {!isNew.value && listTemplate.value?.materials && (
+                {!isNew.value && data.value?.materials && (
                     <MaterialsListEditor
-                        selectedMaterials={listTemplate.value.materials}
+                        selected={data.value.materials}
                         onChange={handleListChange}
                     />
                 )}
@@ -134,7 +131,7 @@ const ListTemplateForm = (props: Props, { emit }: SetupContext): Render => {
 
 ListTemplateForm.props = {
     isNew: { type: Boolean, required: true },
-    listTemplate: { type: Object, default: () => ({}) },
+    data: { type: Object, default: () => ({}) },
     errors: { type: Object, default: () => ({}) },
 };
 

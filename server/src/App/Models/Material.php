@@ -311,20 +311,24 @@ class Material extends BaseModel
 
     public static function recalcQuantitiesForPeriod(
         array $data,
-        string $start,
-        string $end,
+        ?string $start = null,
+        ?string $end = null,
         ?int $exceptEventId = null
     ): array {
         if (empty($data)) {
             return [];
         }
 
-        $events = (new Event)->setSearchPeriod($start, $end)->getAll();
-        if ($exceptEventId) {
-            $events = $events->where('id', '!=', $exceptEventId);
-        }
+        $events = [];
+        if (!empty($start) || !empty($end)) {
+            $events = (new Event)->setSearchPeriod($start, $end)->getAll();
 
-        $events = $events->with('Materials')->get()->toArray();
+            if ($exceptEventId) {
+                $events = $events->where('id', '!=', $exceptEventId);
+            }
+
+            $events = $events->with('Materials')->get()->toArray();
+        }
 
         foreach ($data as &$material) {
             if ($material['is_unitary']) {

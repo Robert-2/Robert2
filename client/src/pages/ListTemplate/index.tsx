@@ -1,6 +1,7 @@
 import './index.scss';
 import { computed, reactive, ref } from '@vue/composition-api';
 import { useQuery, useQueryClient } from 'vue-query';
+import { extractErrorDetails } from '@/utils/errors';
 import requester from '@/globals/requester';
 import apiListTemplates from '@/stores/api/list-templates';
 import useI18n from '@/hooks/useI18n';
@@ -11,6 +12,7 @@ import ListTemplateForm from './Form';
 
 import type { Render } from '@vue/composition-api';
 import type { ListTemplateWithMaterial } from '@/stores/api/list-templates';
+import type { MaterialQuantity } from '@/components/MaterialsListEditor/_utils';
 
 // @vue/component
 const ListTemplateEditPage = (): Render => {
@@ -38,7 +40,7 @@ const ListTemplateEditPage = (): Render => {
         isLoading.value = true;
 
         const request = isNew.value ? requester.post : requester.put;
-        const endpoint = isNew.value ? 'list-templates' : `list-templates/${id.value || ''}`;
+        const endpoint = isNew.value ? 'list-templates' : `list-templates/${id.value!}`;
 
         try {
             const { data } = await request(endpoint, templateListData);
@@ -49,21 +51,25 @@ const ListTemplateEditPage = (): Render => {
             }
             setTimeout(() => { router.push('/list-templates'); }, 300);
         } catch (err) {
-            error.value = err;
-
-            // @ts-ignore // TODO: Utiliser un typage correct pour la gestion des erreurs de validation de l'API
-            const { code, details } = err.response?.data?.error || { code: 0, details: {} };
-            if (code === 400) {
-                errors.value = { ...details };
-            }
+            error.value = extractErrorDetails(err);
         } finally {
             isLoading.value = false;
         }
     };
 
+    const handleChange = (newData: Record<string, string | MaterialQuantity>): void => {
+        if (isNew.value) {
+            // - Conservation des données du formulaire dans le cache
+            // TODO: Prendre en charge la liste du matériel (et pas uniquement lors de la création)
+            //       afin de mettre à jour les totaux du formulaire en temps réel.
+            const { name, description } = newData;
+            queryClient.setQueryData(['list-template', { id: null }], { name, description });
+        }
+    };
+
     const handleCancel = (): void => {
         flushStashedData();
-        router.back();
+        router.push('/list-templates');
     };
 
     return () => {
@@ -81,9 +87,10 @@ const ListTemplateEditPage = (): Render => {
                 <div class="ListTemplate__content">
                     <ListTemplateForm
                         isNew={isNew.value}
-                        listTemplate={listTemplate.value}
+                        data={listTemplate.value}
                         errors={errors.value}
                         onSubmit={save}
+                        onChange={handleChange}
                         onCancel={handleCancel}
                     />
                 </div>

@@ -4,14 +4,7 @@
     display: flex;
     flex-direction: column;
 
-    .VueTables {
+    .ListTemplates {
         flex: 1;
-    }
-}
-
-.ListTemplates {
-    &__actions {
-        min-width: 115px;
-        text-align: right;
     }
 }

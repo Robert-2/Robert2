@@ -1,6 +1,6 @@
 declare module 'vue-tables-2' {
     import type { VNode } from 'vue';
-    import type { PaginationParams } from '@/globals/types/pagination.d';
+    import type { PaginationParams } from '@/stores/api/@types.d';
 
     //
     // - Common types
@@ -75,9 +75,11 @@ declare module 'vue-tables-2' {
     // - Server component specific types
     //
 
+    export type RequestFunction<TData> = (pagination: PaginationParams) => Promise<{ data: TData } | undefined>;
+
     export type ServerTableOptions<TData> = BaseTableOptions & {
         customFilters?: string[],
-        requestFunction?(pagination: PaginationParams): Promise<{ data: TData } | undefined>,
+        requestFunction?: RequestFunction<TData>,
     };
 
     export interface ServerTableInstance extends BaseTableInstance {

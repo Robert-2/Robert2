@@ -3,12 +3,12 @@ import { toRefs, ref, watch } from '@vue/composition-api';
 import QuantityInput from '@/components/QuantityInput';
 
 import type { Render, SetupContext } from '@vue/composition-api';
-import type { MaterialWhileEvent } from '@/stores/api/materials';
+import type { Material } from '@/stores/api/materials';
 
 type Props = {
-    material: MaterialWhileEvent,
+    material: Material,
     initialQuantity: number,
-    onChange(material: MaterialWhileEvent, newQuantity: number): void,
+    onChange(material: Material, newQuantity: number): void,
 };
 
 // @vue/component

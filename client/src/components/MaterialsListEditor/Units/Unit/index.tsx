@@ -6,7 +6,7 @@ import apiParks from '@/stores/api/parks';
 import apiUnitStates from '@/stores/api/unit-states';
 
 import type { Render, SetupContext } from '@vue/composition-api';
-import type { PaginatedData } from '@/globals/types/pagination.d';
+import type { PaginatedData } from '@/stores/api/@types.d';
 import type { Park } from '@/stores/api/parks';
 import type { UnitState } from '@/stores/api/unit-states';
 import type { MaterialUnit } from '@/stores/api/materials';

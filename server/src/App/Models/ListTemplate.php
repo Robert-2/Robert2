@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
+use Eloquence\Behaviours\CamelCasing;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Robert2\API\Errors\ValidationException;
 use Robert2\API\Models\Material;
@@ -12,6 +15,7 @@ use Robert2\API\Validation\Validator as V;
 class ListTemplate extends BaseModel
 {
     use SoftDeletes;
+    use CamelCasing;
 
     protected $orderField = 'name';
 
@@ -23,8 +27,7 @@ class ListTemplate extends BaseModel
         parent::__construct($attributes);
 
         $this->validation = [
-            'name' => V::notEmpty()->length(2, 256),
-            'user_id' => V::optional(V::numeric()),
+            'name' => V::notEmpty()->length(2, 100),
         ];
     }
 
@@ -39,7 +42,6 @@ class ListTemplate extends BaseModel
         $fields = [
             'materials.id',
             'name',
-            'description',
             'reference',
             'is_unitary',
             'park_id',
@@ -68,13 +70,12 @@ class ListTemplate extends BaseModel
     protected $casts = [
         'name' => 'string',
         'description' => 'string',
-        'user_id' => 'integer',
     ];
 
     public function getMaterialsAttribute()
     {
         $materials = $this->Materials()->get();
-        return $materials ? $materials->toArray() : null;
+        return $materials ?: null;
     }
 
     // ——————————————————————————————————————————————————————
@@ -106,6 +107,22 @@ class ListTemplate extends BaseModel
 
     // ——————————————————————————————————————————————————————
     // —
+    // —    Data scopes
+    // —
+    // ——————————————————————————————————————————————————————
+
+    public function scopeForAll(Builder $query): Builder
+    {
+        return $query->select(['id', 'name', 'description']);
+    }
+
+    public function scopeForOne(Builder $query): Builder
+    {
+        return $query->select(['id', 'name', 'description']);
+    }
+
+    // ——————————————————————————————————————————————————————
+    // —
     // —    Setters
     // —
     // ——————————————————————————————————————————————————————
@@ -113,7 +130,6 @@ class ListTemplate extends BaseModel
     protected $fillable = [
         'name',
         'description',
-        'user_id',
     ];
 
     public static function staticEdit($id = null, array $data = []): BaseModel
@@ -133,7 +149,7 @@ class ListTemplate extends BaseModel
 
             if (isset($data['materials'])) {
                 if (!is_array($data['materials'])) {
-                    throw new \InvalidArgumentException("Key 'materials' must be an array.");
+                    throw new \InvalidArgumentException("La clé 'materials' doit être un tableau.");
                 }
                 $listTemplate->syncMaterials($data['materials']);
             }

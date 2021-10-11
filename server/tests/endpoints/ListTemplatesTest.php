@@ -26,19 +26,11 @@ final class ListTemplatesTest extends ApiTestCase
                     'id' => 2,
                     'name' => 'Petit concert',
                     'description' => null,
-                    'user_id' => 1,
-                    'created_at' => '2021-10-01 11:10:00',
-                    'updated_at' => '2021-10-01 11:10:00',
-                    'deleted_at' => null,
                 ],
                 [
                     'id' => 1,
                     'name' => 'Premier modèle',
                     'description' => "Une liste de matériel bien sympa.",
-                    'user_id' => 1,
-                    'created_at' => '2021-10-01 11:00:00',
-                    'updated_at' => '2021-10-01 11:00:00',
-                    'deleted_at' => null,
                 ],
             ],
         ]);
@@ -52,12 +44,10 @@ final class ListTemplatesTest extends ApiTestCase
             'id' => 1,
             'name' => 'Premier modèle',
             'description' => "Une liste de matériel bien sympa.",
-            'user_id' => 1,
             'materials' => [
                 [
                     'id' => 4,
                     'name' => 'Showtec SDS-6',
-                    'description' => "Console DMX (jeu d'orgue) Showtec 6 canaux",
                     'reference' => 'SDS-6-01',
                     'is_unitary' => false,
                     'park_id' => 1,
@@ -105,7 +95,6 @@ final class ListTemplatesTest extends ApiTestCase
                 [
                     'id' => 2,
                     'name' => 'Processeur DBX PA2',
-                    'description' => 'Système de diffusion numérique',
                     'reference' => 'DBXPA2',
                     'is_unitary' => false,
                     'park_id' => 1,
@@ -148,7 +137,6 @@ final class ListTemplatesTest extends ApiTestCase
                 [
                     'id' => 1,
                     'name' => 'Console Yamaha CL3',
-                    'description' => "Console numérique 64 entrées / 8 sorties + Master + Sub",
                     'reference' => 'CL3',
                     'is_unitary' => false,
                     'park_id' => 1,
@@ -196,9 +184,6 @@ final class ListTemplatesTest extends ApiTestCase
                     ],
                 ],
             ],
-            'created_at' => '2021-10-01 11:00:00',
-            'updated_at' => '2021-10-01 11:00:00',
-            'deleted_at' => null,
         ]);
     }
 
@@ -207,7 +192,6 @@ final class ListTemplatesTest extends ApiTestCase
         $data = [
             'name' => 'Nouvelle liste',
             'description' => 'Création de liste pour le test',
-            'user_id' => 1,
             'materials' => [
                 ['id' => 2, 'quantity' => 5],
                 ['id' => 3, 'quantity' => 2],
@@ -221,7 +205,6 @@ final class ListTemplatesTest extends ApiTestCase
         $this->assertEquals(3, $response['id']);
         $this->assertEquals('Nouvelle liste', $response['name']);
         $this->assertEquals('Création de liste pour le test', $response['description']);
-        $this->assertEquals(1, $response['user_id']);
         $this->assertCount(4, $response['materials']);
         $this->assertEquals(6, $response['materials'][0]['id']);
         $this->assertEquals(2, $response['materials'][0]['pivot']['quantity']);
@@ -238,7 +221,7 @@ final class ListTemplatesTest extends ApiTestCase
     {
         $this->client->put('/api/list-templates/1', []);
         $this->assertStatusCode(ERROR_VALIDATION);
-        $this->assertErrorMessage("Missing request data to process validation");
+        $this->assertErrorMessage("Aucune donnée à utiliser pour la modification.");
     }
 
     public function testUpdateListTemplateNotFound()
@@ -259,7 +242,6 @@ final class ListTemplatesTest extends ApiTestCase
         $this->assertEquals(1, $response['id']);
         $this->assertEquals('Liste modifiée', $response['name']);
         $this->assertEquals('Une liste de matériel bien sympa.', $response['description']);
-        $this->assertEquals(1, $response['user_id']);
         $this->assertCount(3, $response['materials']);
         $this->assertEquals(4, $response['materials'][0]['id']);
         $this->assertEquals(2, $response['materials'][1]['id']);
@@ -272,7 +254,7 @@ final class ListTemplatesTest extends ApiTestCase
         $this->client->delete('/api/list-templates/1');
         $this->assertStatusCode(SUCCESS_OK);
         $response = $this->_getResponseAsArray();
-        $this->assertNotEmpty($response['deleted_at']);
+        $this->assertNotEmpty($response['name']);
 
         // - Second call : actually DESTROY record from DB
         $this->client->delete('/api/list-templates/1');
@@ -289,7 +271,5 @@ final class ListTemplatesTest extends ApiTestCase
         // - Then, restore template #1
         $this->client->put('/api/list-templates/restore/1');
         $this->assertStatusCode(SUCCESS_OK);
-        $response = $this->_getResponseAsArray();
-        $this->assertEmpty($response['deleted_at']);
     }
 }

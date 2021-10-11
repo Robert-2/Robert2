@@ -5,8 +5,6 @@ namespace Robert2\API\Controllers;
 
 use Robert2\API\Controllers\Traits\WithCrud;
 use Robert2\API\Models\ListTemplate;
-use Robert2\API\Services\Auth;
-use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
 use Slim\Http\ServerRequest as Request;
 
@@ -20,11 +18,30 @@ class ListTemplateController extends BaseController
     // —
     // ——————————————————————————————————————————————————————
 
+    public function getAll(Request $request, Response $response): Response
+    {
+        $searchTerm = $request->getQueryParam('search', null);
+        $searchField = $request->getQueryParam('searchBy', null);
+        $orderBy = $request->getQueryParam('orderBy', null);
+        $limit = $request->getQueryParam('limit', null);
+        $ascending = (bool)$request->getQueryParam('ascending', true);
+        $withDeleted = (bool)$request->getQueryParam('deleted', false);
+
+        $query = (new ListTemplate)
+            ->setOrderBy($orderBy, $ascending)
+            ->setSearch($searchTerm, $searchField)
+            ->getAll($withDeleted)
+            ->forAll();
+
+        $paginated = $this->paginate($request, $query, $limit ? (int)$limit : null);
+        return $response->withJson($paginated);
+    }
+
     public function getOne(Request $request, Response $response): Response
     {
         $id = (int)$request->getAttribute('id');
 
-        $listTemplate = ListTemplate::findOrFail($id)->append(['materials']);
+        $listTemplate = ListTemplate::forOne()->findOrFail($id)->append(['materials']);
         return $response->withJson($listTemplate);
     }
 
@@ -39,12 +56,10 @@ class ListTemplateController extends BaseController
         $postData = (array)$request->getParsedBody();
         if (empty($postData)) {
             throw new \InvalidArgumentException(
-                "Missing request data to process validation",
+                "Aucune donnée à utiliser pour la création.",
                 ERROR_VALIDATION
             );
         }
-
-        $postData['user_id'] = Auth::user()->id;
 
         $result = ListTemplate::new($postData);
         $listTemplate = $result->append(['materials']);
@@ -57,16 +72,12 @@ class ListTemplateController extends BaseController
         $postData = (array)$request->getParsedBody();
         if (empty($postData)) {
             throw new \InvalidArgumentException(
-                "Missing request data to process validation",
+                "Aucune donnée à utiliser pour la modification.",
                 ERROR_VALIDATION
             );
         }
 
         $id = (int)$request->getAttribute('id');
-        $model = ListTemplate::find($id);
-        if (!$model) {
-            throw new HttpNotFoundException($request);
-        }
 
         $result = ListTemplate::staticEdit($id, $postData);
         $listTemplate = $result->append(['materials']);

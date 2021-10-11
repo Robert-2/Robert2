@@ -5,11 +5,11 @@ import MaterialsStore from '../_store';
 import Unit from './Unit';
 
 import type { Render, SetupContext } from '@vue/composition-api';
-import type { MaterialUnit, MaterialWhileEvent, MaterialWithPivot } from '@/stores/api/materials';
+import type { Material, MaterialUnit, MaterialWithPivot } from '@/stores/api/materials';
 import type { MaterialsFiltersType } from '../_utils';
 
 type Props = {
-    material: MaterialWhileEvent,
+    material: Material,
     initialData: MaterialWithPivot[] | undefined,
     filters: MaterialsFiltersType,
     onChange(): void,
