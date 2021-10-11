@@ -7,18 +7,11 @@ class CreateListTemplates extends AbstractMigration
     {
         $table = $this->table('list_templates');
         $table
-            ->addColumn('name', 'string', ['length' => 256])
+            ->addColumn('name', 'string', ['length' => 100])
             ->addColumn('description', 'text', ['null' => true])
-            ->addColumn('user_id', 'integer', ['null' => true])
             ->addColumn('created_at', 'datetime', ['null' => true])
             ->addColumn('updated_at', 'datetime', ['null' => true])
             ->addColumn('deleted_at', 'datetime', ['null' => true])
-            ->addIndex(['user_id'])
-            ->addForeignKey('user_id', 'users', 'id', [
-                'delete' => 'SET_NULL',
-                'update' => 'NO_ACTION',
-                'constraint' => 'fk_list_template_user'
-            ])
             ->create();
 
         $table = $this->table('list_template_materials');
