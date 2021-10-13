@@ -1,13 +1,14 @@
 import './index.scss';
+import { defineComponent } from '@vue/composition-api';
 
 // @vue/component
-export default {
+export default defineComponent({
     name: 'SwitchToggle',
     props: {
         value: { type: Boolean, required: true },
         locked: { type: Boolean, default: false },
         hideLabel: { type: Boolean, default: false },
-        lockedReason: String,
+        lockedReason: { type: String, default: '' },
     },
     methods: {
         handleSwitch() {
@@ -45,4 +46,4 @@ export default {
             </div>
         );
     },
-};
+});

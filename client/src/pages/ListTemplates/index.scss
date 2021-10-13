@@ -1,0 +1,10 @@
+@use '~@/style/globals';
+
+.Page--list-templates {
+    display: flex;
+    flex-direction: column;
+
+    .ListTemplates {
+        flex: 1;
+    }
+}

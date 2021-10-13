@@ -1,8 +1,9 @@
 import './index.scss';
+import { defineComponent } from '@vue/composition-api';
 import Illustration from './assets/illustration.svg?inline';
 
 // @vue/component
-export default {
+export default defineComponent({
     name: 'CriticalError',
     props: {
         message: { type: String, default: undefined },
@@ -18,4 +19,4 @@ export default {
             </div>
         );
     },
-};
+});

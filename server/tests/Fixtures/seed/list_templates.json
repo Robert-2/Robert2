@@ -1,0 +1,18 @@
+[
+    {
+        "id": 1,
+        "name": "Premier modèle",
+        "description": "Une liste de matériel bien sympa.",
+        "created_at": "2021-10-01 11:00:00",
+        "updated_at": "2021-10-01 11:00:00",
+        "deleted_at": null
+    },
+    {
+        "id": 2,
+        "name": "Petit concert",
+        "description": null,
+        "created_at": "2021-10-01 11:10:00",
+        "updated_at": "2021-10-01 11:10:00",
+        "deleted_at": null
+    }
+]

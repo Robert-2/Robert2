@@ -1,0 +1,175 @@
+@use '~@/style/globals';
+
+.MaterialsListEditor {
+    display: flex;
+    flex-direction: column;
+    color: globals.$text-base-color;
+
+    &__header {
+        flex: 0 0 auto;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+
+        .MaterialsFilters {
+            flex: 1;
+            margin: globals.$content-padding-small-vertical 0;
+        }
+
+        &__extra-filters {
+            flex: 0 0 auto;
+            margin: globals.$content-padding-small-vertical;
+
+            &__filter {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+
+                .SwitchToggle {
+                    margin-top: 0.3rem;
+                }
+            }
+        }
+    }
+
+    &__error {
+        margin: globals.$content-padding-small-vertical 0;
+        color: globals.$text-danger-color;
+    }
+
+    &__main {
+        position: relative;
+        flex: 1;
+    }
+
+    &__loading {
+        position: absolute;
+        top: 0.5rem;
+        right: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .fas {
+            margin-right: 0.3rem;
+        }
+    }
+
+    /* stylelint-disable selector-max-type, selector-max-compound-selectors */
+    .VueTables__table {
+        > thead {
+            display: none;
+        }
+
+        .VueTables__row {
+            > td {
+                border-bottom-color: globals.$list-left-border-color;
+                background: none;
+            }
+
+            &:first-child > td {
+                border-top: 1px solid globals.$list-left-border-color;
+            }
+
+            &:hover {
+                background: rgba(#fff, 0.05);
+            }
+        }
+    }
+    /* stylelint-enable selector-max-type, selector-max-compound-selectors */
+
+    &__child-toggler {
+        width: 85px;
+        /* stylelint-disable-next-line declaration-no-important */
+        padding: 0 0.45rem 0 0 !important;
+
+        &__button {
+            box-sizing: content-box;
+            width: 1rem;
+            padding: 2px 1rem;
+            border: 0;
+            background: rgba(255, 255, 255, 0.1);
+            color: inherit;
+            font-size: 1.5rem;
+            text-align: center;
+
+            &:focus,
+            &:hover {
+                background: rgba(255, 255, 255, 0.1);
+            }
+        }
+    }
+
+    &__qty {
+        // stylelint-disable-next-line declaration-no-important
+        color: globals.$text-light-color !important;
+        font-weight: 600;
+    }
+
+    &__ref {
+        font-weight: 600;
+    }
+
+    &__name {
+        // stylelint-disable-next-line declaration-no-important
+        color: globals.$text-light-color !important;
+    }
+
+    &__remaining {
+        min-width: 4.5rem;
+
+        &--zero {
+            color: globals.$text-warning-color;
+        }
+
+        &--empty {
+            color: globals.$text-danger-color;
+        }
+    }
+
+    &__price {
+        text-align: right;
+
+        .fas {
+            margin-left: 0.3rem;
+            color: globals.$text-light-color;
+        }
+    }
+
+    &__quantity {
+        width: 9rem;
+        min-width: 9rem;
+
+        // stylelint-disable-next-line selector-max-type
+        button {
+            padding: 6px 8px;
+        }
+
+        &__number {
+            width: 3rem;
+            margin: 0 0.3rem;
+            padding: 5px 8px 6px;
+        }
+    }
+
+    &__amount {
+        width: 5rem;
+        min-width: 5rem;
+        text-align: right;
+    }
+
+    &__actions {
+        width: 45px;
+        min-width: 45px;
+
+        // stylelint-disable-next-line selector-max-type
+        button {
+            padding: 6px 8px;
+        }
+    }
+
+    &__add-more {
+        margin: globals.$content-padding-small-vertical 0 50px;
+        text-align: center;
+    }
+}

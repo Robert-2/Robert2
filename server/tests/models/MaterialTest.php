@@ -77,6 +77,14 @@ final class MaterialTest extends ModelTestCase
             return $builder->orderBy('id', 'asc')->get()->toArray();
         };
 
+        // - Calcul des quantités restantes de chaque matériel sans spécifier de date (aucun événement)
+        $data = $getData();
+        $result = Material::recalcQuantitiesForPeriod($data);
+        $this->assertCount(8, $result);
+        foreach ([4, 2, 30, 2, 32, 2, 1, 2] as $index => $expected) {
+            $this->assertEquals($expected, $result[$index]['remaining_quantity']);
+        }
+
         // - Calcul des quantités restantes de chaque matériel pour une période sans événement
         $data = $getData();
         $result = Material::recalcQuantitiesForPeriod($data, '2018-12-01', '2018-12-02');

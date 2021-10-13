@@ -1,0 +1,17 @@
+[
+    {
+        "id": 1,
+        "list_template_material_id": 6,
+        "material_unit_id": 1
+    },
+    {
+        "id": 2,
+        "list_template_material_id": 6,
+        "material_unit_id": 2
+    },
+    {
+        "id": 3,
+        "list_template_material_id": 7,
+        "material_unit_id": 4
+    }
+]

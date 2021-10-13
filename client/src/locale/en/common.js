@@ -25,6 +25,8 @@ export default {
     'yes-delete': "Yes, move in trash bin",
     'yes-permanently-delete': "Yes, permanently delete",
     'yes-restore': "Oui, restaurer",
+    'changes-exists-really-cancel': "Some changes have not been saved. Do you really want to leave this page?",
+    'yes-leave-page': "Yes, leave page",
     'cancel': "Cancel",
     'close': "Close",
     'copy-to-clipboard': "Copy to clipboard",
@@ -111,6 +113,7 @@ export default {
     'repl-price': "Repl. price",
     'value-per-day': '{value}\u00a0/\u00a0day',
     'serial-number': "Serial n°",
+    'qty': "Qty",
     'quantity': "Stock qty",
     'quantities': "Quantities",
     'quantity-out-of-order': "Out of order qty",
@@ -238,6 +241,9 @@ export default {
     'total-amount': "Total amount",
     'total-amount-with-discount': "Total with discount",
     'replacement-total': "Total replacement price",
+    'total-quantity': "Total quantity: {total}",
+    'daily-amount': "Daily amount: {amount}",
+    'replacement-value-amount': "Remplacement value\u00a0: {amount}",
     'calculate': "Calculate",
     'day': "day",
     'days-count': [
@@ -266,6 +272,11 @@ export default {
     'terminate-inventory': "Terminate inventory",
     'warning-terminate-inventory': "Beware, once this inventory terminated, it will no longer be modifiable.",
     'inventory-validation-error': "Some quantities are not valid. Please double-check the list.",
+
+    'materials-list-templates': "Materials list templates",
+    'list-templates': "List templates",
+    'display-only-selected-materials': "Display selected materials only",
+    'display-all-materials-to-add-some': "Display all materials to add some",
 
     'event': "Event",
     'user': "User",

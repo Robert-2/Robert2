@@ -11,6 +11,12 @@
                         {{ $t('page-materials.action-add') }}
                     </button>
                 </router-link>
+                <router-link to="/list-templates" v-slot="{ navigate }" custom>
+                    <button @click="navigate" class="info">
+                        <i class="fas fa-list" />
+                        {{ $t('list-templates') }}
+                    </button>
+                </router-link>
                 <router-link to="/inventories" v-slot="{ navigate }" custom>
                     <button @click="navigate">
                         <i class="fas fa-boxes" />

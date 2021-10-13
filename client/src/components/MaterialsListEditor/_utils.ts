@@ -1,0 +1,102 @@
+/* eslint-disable import/prefer-default-export */
+
+import isValidInteger from '@/utils/isValidInteger';
+
+import type { MaterialWithPivot } from '@/stores/api/materials';
+
+//
+// - Types
+//
+
+export type MaterialQuantity = {
+    id: number,
+    quantity: number,
+    units: number[],
+};
+
+export type RawFilters = Record<string, number | string | string[] | boolean>;
+
+export type MaterialsFiltersType = {
+    onlySelected?: boolean,
+    park?: number | null,
+    category?: number | null,
+    subCategory?: number | null,
+    tags?: string[],
+};
+
+//
+// - Filters
+//
+
+export const normalizeFilters = (rawFilters: RawFilters, extended: boolean = true): MaterialsFiltersType => {
+    const filters: MaterialsFiltersType = extended
+        ? { park: null, category: null, subCategory: null, tags: [] }
+        : {};
+
+    if ('onlySelected' in rawFilters) {
+        filters.onlySelected = !!rawFilters.onlySelected;
+    }
+
+    if ('tags' in rawFilters && Array.isArray(rawFilters.tags)) {
+        filters.tags = rawFilters.tags!;
+    }
+
+    ['park', 'category', 'subCategory'].forEach((key: string) => {
+        if (key in rawFilters && isValidInteger(rawFilters[key])) {
+            // @ts-ignore - Ici, on sait que `key` est un nombre.
+            filters[key] = parseInt(rawFilters[key] as string, 10);
+        }
+    });
+
+    return filters;
+};
+
+//
+// - Quantities
+//
+
+export const getMaterialsQuantities = (materials: MaterialWithPivot[]): MaterialQuantity[] => (
+    materials.map(({ id, is_unitary: isUnitary, pivot }: MaterialWithPivot) => {
+        const data = { id, quantity: pivot?.quantity || 0, units: [] };
+        return !isUnitary ? data : { ...data, units: pivot?.units || [] };
+    })
+);
+
+const materialComparatorBuilder = (a: MaterialQuantity) => (b: MaterialQuantity) => {
+    if (a.id !== b.id) {
+        return false;
+    }
+
+    const unitsDiff = a.units
+        .filter((unitId: number) => !b.units.includes(unitId))
+        .concat(b.units.filter((unitId: number) => !a.units.includes(unitId)));
+
+    if (unitsDiff.length > 0) {
+        return false;
+    }
+
+    return a.quantity === b.quantity;
+};
+
+export const materialsHasChanged = (before: MaterialQuantity[], after: MaterialQuantity[]): boolean => {
+    // - Si un nouveau matériel n'est pas identique à un matériel déjà sauvé.
+    const differencesNew = after.filter((newMaterial: MaterialQuantity) => {
+        if (newMaterial.quantity === 0) {
+            return false;
+        }
+        return !before.some(materialComparatorBuilder(newMaterial));
+    });
+    if (differencesNew.length > 0) {
+        return true;
+    }
+
+    // - Si un matériel sauvé n'existe plus ou a changé dans le nouveau jeu de données.
+    const differencesOld = before.filter((oldMaterial: MaterialQuantity) => {
+        if (oldMaterial.quantity === 0) {
+            return false;
+        }
+        return !after.some(materialComparatorBuilder(oldMaterial));
+    });
+
+    return differencesOld.length > 0;
+};

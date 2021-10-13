@@ -45,6 +45,7 @@ class MaterialController extends BaseController
 
     public function getAll(Request $request, Response $response): Response
     {
+        $pagination = $request->getQueryParam('pagination', null);
         $searchTerm = $request->getQueryParam('search', null);
         $searchField = $request->getQueryParam('searchBy', null);
         $parkId = $request->getQueryParam('park', null);
@@ -93,7 +94,11 @@ class MaterialController extends BaseController
             });
         }
 
-        $results = $this->paginate($request, $model);
+        if ($pagination === 'none') {
+            $results = ['data' => $model->get()->toArray()];
+        } else {
+            $results = $this->paginate($request, $model);
+        }
 
         if (count($restrictedParks) > 0) {
             $results['data'] = array_map(function ($item) use ($restrictedParks) {
@@ -110,13 +115,15 @@ class MaterialController extends BaseController
             }, $results['data']);
         }
 
-        if ($dateForQuantities) {
-            $results['data'] = Material::recalcQuantitiesForPeriod(
-                $results['data'],
-                $dateForQuantities,
-                $dateForQuantities,
-                null
-            );
+        $results['data'] = Material::recalcQuantitiesForPeriod(
+            $results['data'],
+            $dateForQuantities,
+            $dateForQuantities,
+            null
+        );
+
+        if ($pagination === 'none') {
+            $results = $results['data'];
         }
 
         return $response->withJson($results);

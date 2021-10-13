@@ -120,9 +120,6 @@ export default {
         'start-end-dates-and-time': "Dates et heures de début et fin",
         'saved': "Événement sauvegardé.",
         'not-saved': "L'événement comporte des modifications non sauvegardées",
-        'display-only-selected-materials': "Afficher uniquement le matériel de l'événement\u00a0?",
-        'display-all-materials-to-add-some': "Afficher tout le matériel pour en ajouter",
-        'display-only-event-materials': "Afficher uniquement le matériel de l'événement",
         'event-not-confirmed-help': "L'événement n'est pas encore confirmé, il est susceptible de changer à tout moment.",
         'event-confirmed-help': "L'événement est confirmé\u00a0: Ses informations ne devraient plus changer.",
         'event-missing-materials': "Matériel manquant",
@@ -478,5 +475,18 @@ export default {
             "- Les unités absentes seront marquées comme «\u00a0perdues\u00a0» et ne seront donc plus utilisables dans les événements (et inversement pour les quantités «\u00a0retrouvées\u00a0»).",
             "- L'état des unités et leur statut «\u00a0en panne\u00a0», ou non, sera mis à jour.",
         ].join('\n'),
+    },
+
+    'page-list-templates': {
+        'title': "Modèles de liste de matériel",
+        'help': "Les modèles de liste de matériel servent à la création des événements, lors du choix du matériel.",
+        'help-edit': "Seul le nom de la liste est obligatoire.",
+        'action-add': "Nouveau modèle de liste",
+        'add': "Nouveau modèle de liste de matériel",
+        'edit': "Modifier le modèle de liste «\u00a0{pageSubTitle}\u00a0»",
+        'confirm-delete': "Mettre ce modèle de liste à la corbeille\u00a0?",
+        'confirm-permanently-delete': "Voulez-vous vraiment supprimer définitivement ce modèle de liste\u00a0?",
+        'confirm-restore': "Voulez-vous vraiment restaurer ce modèle de liste\u00a0?",
+        'not-saved': "Liste modifiée non sauvegardée\u00a0!",
     },
 };

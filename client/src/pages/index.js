@@ -24,6 +24,8 @@ import Park from './Park';
 import Settings from './Settings';
 import Inventories from './Inventories';
 import Inventory from './Inventory';
+import ListTemplates from './ListTemplates';
+import ListTemplate from './ListTemplate';
 
 export default [
     {
@@ -384,6 +386,33 @@ export default [
         path: '/parks/:parkId(\\d+)/inventories/new',
         name: 'park-inventories-new',
         component: Inventory,
+        meta: {
+            requiresAuth: true,
+            requiresGroups: ['admin', 'member'],
+        },
+    },
+    {
+        path: '/list-templates',
+        name: 'list-templates',
+        component: ListTemplates,
+        meta: {
+            requiresAuth: true,
+            requiresGroups: ['admin', 'member'],
+        },
+    },
+    {
+        path: '/list-templates/new',
+        name: 'new-list-template',
+        component: ListTemplate,
+        meta: {
+            requiresAuth: true,
+            requiresGroups: ['admin', 'member'],
+        },
+    },
+    {
+        path: '/list-templates/:id(\\d+)',
+        name: 'edit-list-template',
+        component: ListTemplate,
         meta: {
             requiresAuth: true,
             requiresGroups: ['admin', 'member'],

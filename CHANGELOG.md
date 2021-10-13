@@ -4,6 +4,10 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.16.0-premium (UNRELEASED)
+
+- Ajoute les modèles de liste de matériel (#136).
+
 ## 0.15.1-premium (2021-09-10)
 
 - Remet la mention "Premium" sous le logo dans la page de login (#133).
