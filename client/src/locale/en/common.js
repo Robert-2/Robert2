@@ -110,6 +110,7 @@ export default {
     'repl-price': "Repl. price",
     'value-per-day': '{value}\u00a0/\u00a0day',
     'serial-number': "Serial n°",
+    'qty': "Qty",
     'quantity': "Stock qty",
     'quantities': "Quantities",
     'quantity-out-of-order': "Out of order qty",
@@ -237,6 +238,9 @@ export default {
     'total-amount': "Total amount",
     'total-amount-with-discount': "Total with discount",
     'replacement-total': "Total replacement price",
+    'total-quantity': "Total quantity: {total}",
+    'daily-amount': "Daily amount: {amount}",
+    'replacement-value-amount': "Remplacement value\u00a0: {amount}",
     'calculate': "Calculate",
     'day': "day",
     'days-count': [
@@ -264,6 +268,9 @@ export default {
     'terminate-inventory': "Terminate inventory",
     'warning-terminate-inventory': "Beware, once this inventory terminated, it will no longer be modifiable.",
     'inventory-validation-error': "Some quantities are not valid. Please double-check the list.",
+
+    'display-only-selected-materials': "Display selected materials only",
+    'display-all-materials-to-add-some': "Display all materials to add some",
 
     'event': "Event",
     'user': "User",

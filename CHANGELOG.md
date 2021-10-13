@@ -6,6 +6,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 
 ## 0.16.0 (UNRELEASED)
 
+- Commence l'amélioration du code front-end : réécriture en TypeScript, et utilisation de la nouvelle "composition API" de Vue.js.
 
 ## 0.15.1 (2021-09-21)
 

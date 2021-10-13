@@ -1,7 +1,11 @@
 <template>
     <form class="Form EventStep4" method="POST" @submit="saveAndBack">
         <section class="Form__fieldset">
-            <MaterialsList :event="event" @change="handleChange" />
+            <MaterialsListEditor
+                :selected="event.materials"
+                :event="event"
+                @change="handleChange"
+            />
         </section>
         <section class="Form__actions">
             <button class="info" type="submit">

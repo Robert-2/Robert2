@@ -35,6 +35,7 @@ final class MaterialsTest extends ApiTestCase
                     'sub_category_id' => 1,
                     'rental_price' => 49.99,
                     'stock_quantity' => 0,
+                    'remaining_quantity' => 0,
                     'out_of_order_quantity' => 0,
                     'replacement_price' => 419,
                     'is_hidden_on_bill' => false,
@@ -66,6 +67,7 @@ final class MaterialsTest extends ApiTestCase
                     'sub_category_id' => null,
                     'rental_price' => 0.5,
                     'stock_quantity' => 40,
+                    'remaining_quantity' => 32,
                     'out_of_order_quantity' => 8,
                     'replacement_price' => 9.5,
                     'is_hidden_on_bill' => true,
@@ -89,6 +91,7 @@ final class MaterialsTest extends ApiTestCase
                     'sub_category_id' => 1,
                     'rental_price' => 300,
                     'stock_quantity' => 5,
+                    'remaining_quantity' => 4,
                     'out_of_order_quantity' => 1,
                     'replacement_price' => 19400,
                     'is_hidden_on_bill' => false,
@@ -136,6 +139,7 @@ final class MaterialsTest extends ApiTestCase
                     'sub_category_id' => 3,
                     'rental_price' => 3.5,
                     'stock_quantity' => 34,
+                    'remaining_quantity' => 30,
                     'out_of_order_quantity' => 4,
                     'replacement_price' => 89,
                     'is_hidden_on_bill' => false,
@@ -176,6 +180,7 @@ final class MaterialsTest extends ApiTestCase
                     'sub_category_id' => 2,
                     'rental_price' => 25.5,
                     'stock_quantity' => 2,
+                    'remaining_quantity' => 2,
                     'out_of_order_quantity' => null,
                     'replacement_price' => 349.9,
                     'is_hidden_on_bill' => false,
@@ -216,6 +221,7 @@ final class MaterialsTest extends ApiTestCase
                     'sub_category_id' => 4,
                     'rental_price' => 15.95,
                     'stock_quantity' => 2,
+                    'remaining_quantity' => 2,
                     'out_of_order_quantity' => null,
                     'replacement_price' => 59,
                     'is_hidden_on_bill' => false,
@@ -261,6 +267,7 @@ final class MaterialsTest extends ApiTestCase
                     'sub_category_id' => null,
                     'rental_price' => 300,
                     'stock_quantity' => 0,
+                    'remaining_quantity' => 0,
                     'out_of_order_quantity' => 0,
                     'replacement_price' => 32000,
                     'is_hidden_on_bill' => false,
@@ -293,6 +300,14 @@ final class MaterialsTest extends ApiTestCase
         foreach ($expectedResults as $index => $expected) {
             $this->assertEquals($expected, $results['data'][$index]['reference']);
         }
+
+        $this->client->get('/api/materials?pagination=none');
+        $this->assertStatusCode(SUCCESS_OK);
+        $results = $this->_getResponseAsArray();
+        $this->assertCount(8, $results);
+        $this->assertEquals('Behringer X Air XR18', $results[0]['name']);
+        $this->assertEquals(3, $results[0]['stock_quantity']);
+        $this->assertEquals(2, $results[0]['remaining_quantity']);
 
         $this->client->get('/api/materials?deleted=1');
         $this->assertStatusCode(SUCCESS_OK);

@@ -1,14 +1,14 @@
 import './index.scss';
 import { debounce } from 'debounce';
 import { DEBOUNCE_WAIT } from '@/globals/constants';
-import MaterialsList from './MaterialsList';
+import MaterialsListEditor from '@/components/MaterialsListEditor';
+import { getMaterialsQuantities, materialsHasChanged } from '@/components/MaterialsListEditor/_utils';
 import EventStore from '../EventStore';
-import { getMaterialsQuantities, materialsHasChanged } from './_utils';
 
 // @vue/component
 export default {
     name: 'EventStep4',
-    components: { MaterialsList },
+    components: { MaterialsListEditor },
     props: {
         event: { type: Object, required: true },
     },
