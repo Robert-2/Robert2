@@ -40,6 +40,7 @@
     },
     "devDependencies": {
         "@babel/core": "7.14.8",
+        "@babel/preset-typescript": "7.15.0",
         "@pulsanova/eslint-config-vue": "1.3.2",
         "@pulsanova/stylelint-config-scss": "1.2.2",
         "@types/debounce": "1.2.1",

@@ -1,6 +1,6 @@
 import Vuex from 'vuex';
 
-import type { MaterialWhileEvent, MaterialWithPivot } from '@/stores/api/materials';
+import type { Material, MaterialWithPivot } from '@/stores/api/materials';
 
 export type MaterialsStoreStateMaterial = {
     quantity: number,
@@ -13,7 +13,7 @@ type MaterialsStoreState = {
 };
 
 type MaterialsStoreSetQuantityPayload = {
-    material: MaterialWhileEvent,
+    material: Material,
     quantity: number,
 };
 

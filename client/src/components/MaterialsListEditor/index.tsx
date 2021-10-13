@@ -16,13 +16,14 @@ import Quantity from './Quantity';
 
 import type { Render, SetupContext } from '@vue/composition-api';
 import type { ClientTableInstance, ClientTableOptions, TableRow } from 'vue-tables-2';
-import type { Material, MaterialWhileEvent, MaterialWithPivot } from '@/stores/api/materials';
+import type { Material, MaterialWithPivot } from '@/stores/api/materials';
+import type { Event } from '@/stores/api/events';
 import type { Tag } from '@/stores/api/tags';
 import type { MaterialQuantity, RawFilters, MaterialsFiltersType } from './_utils';
 
 type Props = {
-    selectedMaterials: MaterialWithPivot[],
-    eventId?: number | null,
+    selected?: MaterialWithPivot[],
+    event?: Event,
     onChange(newList: MaterialQuantity[]): void,
 };
 
@@ -31,26 +32,26 @@ const noPaginationLimit = 100000;
 // @vue/component
 const MaterialsListEditor = (props: Props, { emit }: SetupContext): Render => {
     const __ = useI18n();
-    const { selectedMaterials, eventId } = toRefs(props);
+    const { selected, event } = toRefs(props);
 
     const { route } = useRouter();
 
     const dataTableRef = ref<ClientTableInstance | null>(null);
     const filtersRef = ref<typeof MaterialsFilters | null>(null);
-    const showSelectedOnly = ref<boolean>(selectedMaterials.value.length > 0);
+    const showSelectedOnly = ref<boolean>(selected!.value!.length > 0);
     const manualOrder = ref<number[]>([]);
 
-    const { data: materials, isLoading, error } = useQuery<MaterialWhileEvent[]>(
-        reactive(['materials-while-event', { eventId: eventId?.value }]),
+    const { data: materials, isLoading, error } = useQuery<Material[]>(
+        reactive(['materials-while-event', { eventId: event?.value?.id }]),
         () => (
-            eventId?.value
-                ? apiMaterials.allWhileEvent(eventId.value)
+            event?.value?.id
+                ? apiMaterials.allWhileEvent(event.value.id)
                 : apiMaterials.allWithoutPagination()
         ),
     );
 
     const hasMaterials = computed<boolean>(() => (
-        (selectedMaterials.value?.length || 0) > 0
+        (selected!.value!.length || 0) > 0
     ));
 
     const columns = ref<string[]>([
@@ -70,18 +71,18 @@ const MaterialsListEditor = (props: Props, { emit }: SetupContext): Render => {
 
         if (extended) {
             filters.onlySelected = isInit
-                ? selectedMaterials.value.length
+                ? selected!.value!.length
                 : showSelectedOnly.value;
         }
 
         ['park', 'category', 'subCategory'].forEach((key: string) => {
             if (route.value?.query && key in route.value.query) {
-                filters[key] = route.value?.query[key];
+                filters[key] = route.value?.query[key] as string;
             }
         });
 
         if (route.value?.query?.tags) {
-            filters.tags = JSON.parse(route.value.query.tags);
+            filters.tags = JSON.parse(route.value.query.tags as string);
         }
 
         return normalizeFilters(filters, extended);
@@ -117,7 +118,7 @@ const MaterialsListEditor = (props: Props, { emit }: SetupContext): Render => {
         MaterialsStore.getters.getQuantity(material.id)
     );
 
-    const setQuantity = (material: MaterialWhileEvent, quantity: number): void => {
+    const setQuantity = (material: Material, quantity: number): void => {
         MaterialsStore.commit('setQuantity', { material, quantity });
         handleChanges();
     };
@@ -204,12 +205,12 @@ const MaterialsListEditor = (props: Props, { emit }: SetupContext): Render => {
         dataTableRef.value?.setCustomFilters(newFilters);
     };
 
-    const getRemainingQuantity = (material: MaterialWhileEvent): number => (
-        material.remaining_quantity - getQuantity(material)
+    const getRemainingQuantity = (material: Material): number => (
+        (material.remaining_quantity || 0) - getQuantity(material)
     );
 
     onMounted(() => {
-        MaterialsStore.commit('init', selectedMaterials.value);
+        MaterialsStore.commit('init', selected!.value);
     });
 
     return () => (
@@ -242,10 +243,10 @@ const MaterialsListEditor = (props: Props, { emit }: SetupContext): Render => {
                     columns={columns.value}
                     options={tableOptions.value}
                     scopedSlots={{
-                        'qty': ({ row }: TableRow<MaterialWhileEvent>) => (
+                        'qty': ({ row }: TableRow<Material>) => (
                             <span>{getQuantity(row) > 0 ? `${getQuantity(row)}\u00a0×` : ''}</span>
                         ),
-                        'remaining_quantity': ({ row }: TableRow<MaterialWhileEvent>) => (
+                        'remaining_quantity': ({ row }: TableRow<Material>) => (
                             <span
                                 class={{
                                     'MaterialsListEditor__remaining': true,
@@ -256,24 +257,24 @@ const MaterialsListEditor = (props: Props, { emit }: SetupContext): Render => {
                                 {__('remaining-count', { count: getRemainingQuantity(row) })}
                             </span>
                         ),
-                        'price': ({ row }: TableRow<MaterialWhileEvent>) => (
+                        'price': ({ row }: TableRow<Material>) => (
                             <Fragment>
                                 {formatAmount(row.rental_price)} <i class="fas fa-times" />
                             </Fragment>
                         ),
-                        'quantity': ({ row }: TableRow<MaterialWhileEvent>) => (
+                        'quantity': ({ row }: TableRow<Material>) => (
                             <Quantity
                                 material={row}
                                 initialQuantity={getQuantity(row)}
                                 onChange={setQuantity}
                             />
                         ),
-                        'amount': ({ row }: TableRow<MaterialWhileEvent>) => (
+                        'amount': ({ row }: TableRow<Material>) => (
                             <span>
                                 {formatAmount(row.rental_price * getQuantity(row))}
                             </span>
                         ),
-                        'actions': ({ row }: TableRow<MaterialWhileEvent>) => (
+                        'actions': ({ row }: TableRow<Material>) => (
                             getQuantity(row) > 0 ? (
                                 <button
                                     type="button"
@@ -314,8 +315,8 @@ const MaterialsListEditor = (props: Props, { emit }: SetupContext): Render => {
 };
 
 MaterialsListEditor.props = {
-    selectedMaterials: { type: Array, required: true },
-    eventId: { type: Number, default: null },
+    selected: { type: Array, default: () => [] },
+    event: { type: Object, default: undefined },
 };
 
 MaterialsListEditor.emits = ['change'];

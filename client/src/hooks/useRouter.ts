@@ -2,28 +2,18 @@ import { ref, watch } from '@vue/composition-api';
 import getRuntimeVm from '@/utils/getRuntimeVm';
 
 import type { Ref } from '@vue/composition-api';
+import type { Route } from 'vue-router';
 
-export type RouteData = {
-    name: string,
-    params: Record<string, string>,
-    query: Record<string, string> | undefined,
-    path: string,
-    fullPath: string,
-    hash: string,
-    matched: Array<Record<string, unknown>>,
-    meta: Record<string, boolean | number | string | string[]>,
-};
-
-type UseRouterReturnType = {
-    route: Ref<RouteData>,
+type ReturnType = {
+    route: Ref<Route>,
     router: any,
 };
 
-const useRouter = (): UseRouterReturnType => {
+const useRouter = (): ReturnType => {
     const vm = getRuntimeVm();
-    const route = ref<RouteData>(vm.$route);
+    const route = ref<Route>(vm.$route);
 
-    watch(() => vm.$route, (newRoute: RouteData) => {
+    watch(() => vm.$route, (newRoute: Route) => {
         route.value = newRoute;
     });
 

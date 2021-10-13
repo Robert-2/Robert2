@@ -45,6 +45,7 @@ class MaterialController extends BaseController
 
     public function getAll(Request $request, Response $response): Response
     {
+        $pagination = $request->getQueryParam('pagination', null);
         $searchTerm = $request->getQueryParam('search', null);
         $searchField = $request->getQueryParam('searchBy', null);
         $parkId = $request->getQueryParam('park', null);
@@ -86,14 +87,21 @@ class MaterialController extends BaseController
                 ->get();
         }
 
-        $results = $this->paginate($request, $model);
-        if ($dateForQuantities) {
-            $results['data'] = Material::recalcQuantitiesForPeriod(
-                $results['data'],
-                $dateForQuantities,
-                $dateForQuantities,
-                null
-            );
+        if ($pagination === 'none') {
+            $results = ['data' => $model->get()->toArray()];
+        } else {
+            $results = $this->paginate($request, $model);
+        }
+
+        $results['data'] = Material::recalcQuantitiesForPeriod(
+            $results['data'],
+            $dateForQuantities,
+            $dateForQuantities,
+            null
+        );
+
+        if ($pagination === 'none') {
+            $results = $results['data'];
         }
 
         return $response->withJson($results);
@@ -124,28 +132,6 @@ class MaterialController extends BaseController
         }
 
         return $response->withJson($results);
-    }
-
-    public function getAllNotPaginated(Request $request, Response $response): Response
-    {
-        $materials = (new Material)
-            ->setOrderBy('reference', true)
-            ->getAll()
-            ->get()
-            ->toArray();
-
-        if ($materials && count($materials) > 0) {
-            foreach ($materials as &$material) {
-                $material['remaining_quantity'] = $material['stock_quantity'];
-                if ($material['is_unitary'] && array_key_exists('units', $material)) {
-                    foreach ($material['units'] as &$unit) {
-                        $unit['is_available'] = !($unit['is_broken'] === true || $unit['is_lost'] === true);
-                    }
-                }
-            }
-        }
-
-        return $response->withJson($materials);
     }
 
     public function getParkAll(Request $request, Response $response): Response

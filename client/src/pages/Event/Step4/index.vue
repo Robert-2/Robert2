@@ -2,8 +2,8 @@
     <form class="Form EventStep4" method="POST" @submit="saveAndBack">
         <section class="Form__fieldset">
             <MaterialsListEditor
-                :selectedMaterials="event.materials"
-                :eventId="event.id"
+                :selected="event.materials"
+                :event="event"
                 @change="handleChange"
             />
         </section>

@@ -33,7 +33,6 @@ return [
         '/materials/{id:[0-9]+}/documents[/]' => 'MaterialController:getAllDocuments',
         '/materials/{id:[0-9]+}/events[/]' => 'MaterialController:getEvents',
         '/materials/while-event/{eventId:[0-9]+}[/]' => 'MaterialController:getAllWhileEvent',
-        '/materials/not-paginated[/]' => 'MaterialController:getAllNotPaginated',
         '/events[/]' => 'EventController:getAll',
         '/events/{id:[0-9]+}[/]' => 'EventController:getOne',
         '/events/{id:[0-9]+}/missing-materials[/]' => 'EventController:getMissingMaterials',
