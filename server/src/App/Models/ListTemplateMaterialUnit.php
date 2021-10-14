@@ -9,6 +9,8 @@ class ListTemplateMaterialUnit extends Pivot
 {
     public $incrementing = true;
 
+    protected $table = 'list_template_material_units';
+
     // ——————————————————————————————————————————————————————
     // —
     // —    Mutators

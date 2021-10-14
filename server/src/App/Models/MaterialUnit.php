@@ -50,12 +50,23 @@ class MaterialUnit extends BaseModel
     public function EventMaterials()
     {
         $relation = $this->belongsToMany(
-            'Robert2\API\Models\EventMaterial',
+            EventMaterial::class,
             'event_material_units',
             'material_unit_id',
             'event_material_id'
         );
-        return $relation->using('Robert2\API\Models\EventMaterialUnit');
+        return $relation->using(EventMaterialUnit::class);
+    }
+
+    public function ListTemplateMaterials()
+    {
+        $relation = $this->belongsToMany(
+            ListTemplateMaterial::class,
+            'list_template_material_units',
+            'material_unit_id',
+            'list_template_material_id'
+        );
+        return $relation->using(ListTemplateMaterialUnit::class);
     }
 
     public function MaterialUnitState()
@@ -144,6 +155,28 @@ class MaterialUnit extends BaseModel
     {
         $owner = $this->Person()->first();
         return $owner ? $owner->toArray() : null;
+    }
+
+    public function getUsedByAttribute()
+    {
+        $eventMaterialsIds = EventMaterialUnit::where('material_unit_id', $this->id)
+            ->pluck('event_material_id');
+        $eventsIds = EventMaterial::whereIn('id', $eventMaterialsIds)
+            ->pluck('event_id');
+        $events = Event::whereIn('id', $eventsIds)
+            ->pluck('title');
+
+        $listTemplateMaterialsIds = ListTemplateMaterialUnit::where('material_unit_id', $this->id)
+            ->pluck('list_template_material_id');
+        $listTemplatesIds = ListTemplateMaterial::whereIn('id', $listTemplateMaterialsIds)
+            ->pluck('list_template_id');
+        $listTemplates = ListTemplate::whereIn('id', $listTemplatesIds)
+            ->pluck('name');
+
+        return [
+            'events' => $events->toArray(),
+            'listTemplates' => $listTemplates->toArray(),
+        ];
     }
 
     // ——————————————————————————————————————————————————————
