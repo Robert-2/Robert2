@@ -3,6 +3,7 @@
 import requester from '@/globals/requester';
 
 import type { PaginatedData } from '@/stores/api/@types.d';
+import type { Person } from '@/stores/api/persons';
 
 //
 // - Types
@@ -16,6 +17,11 @@ export type MaterialAttribute = {
     value: boolean | string | number | null,
 };
 
+export type UnitUsedBy = {
+    events: string[],
+    listTemplates: string[],
+};
+
 export type MaterialUnit = {
     id: number,
     material_id: number,
@@ -26,6 +32,8 @@ export type MaterialUnit = {
     is_broken: boolean,
     is_lost: boolean,
     is_available?: boolean,
+    owner: Person | null,
+    usedBy?: UnitUsedBy,
     state: string,
     purchase_date: string,
     notes: string,
