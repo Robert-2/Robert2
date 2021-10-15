@@ -213,6 +213,7 @@ export default {
     'create-estimate': "Create estimate",
     'download': "Download",
     'download-pdf': "Download PDF file",
+    'download-barcode': "Download barcode",
     'regenerate-bill-help': "You can regenerate the bill to change discount, or if the event has been modified.",
     'create-new-estimate-help': "You can create another estimate, if the event has changed, or if you want another discount rate.",
     'click-here-to-regenerate-bill': "Click here to regenerate the bill.",
@@ -267,6 +268,16 @@ export default {
     'back-to-calendar': "Back to calendar",
     'previous-month': "Previous month",
     'next-month': "Next month",
+
+    'used-by': "Used by",
+    'events-count': [
+        '{count} event',
+        '{count} events',
+    ],
+    'list-templates-count': [
+        '{count} list template',
+        '{count} list templates',
+    ],
 
     'inventories': "Inventories",
     'terminate-inventory': "Terminate inventory",

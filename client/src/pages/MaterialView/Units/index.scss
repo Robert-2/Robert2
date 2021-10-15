@@ -21,4 +21,14 @@
     &__no-ok {
         color: globals.$text-light-color;
     }
+
+    &__used-by {
+        margin: 0;
+        padding: 0;
+
+        &__item {
+            color: globals.$text-nav-color;
+            list-style: none;
+        }
+    }
 }

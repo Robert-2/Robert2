@@ -164,6 +164,7 @@ class MaterialUnit extends BaseModel
         $eventsIds = EventMaterial::whereIn('id', $eventMaterialsIds)
             ->pluck('event_id');
         $events = Event::whereIn('id', $eventsIds)
+            ->orderBy('start_date', 'desc')
             ->pluck('title');
 
         $listTemplateMaterialsIds = ListTemplateMaterialUnit::where('material_unit_id', $this->id)
@@ -171,6 +172,7 @@ class MaterialUnit extends BaseModel
         $listTemplatesIds = ListTemplateMaterial::whereIn('id', $listTemplateMaterialsIds)
             ->pluck('list_template_id');
         $listTemplates = ListTemplate::whereIn('id', $listTemplatesIds)
+            ->orderBy('name', 'asc')
             ->pluck('name');
 
         return [

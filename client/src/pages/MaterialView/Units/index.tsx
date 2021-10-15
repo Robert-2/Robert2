@@ -9,7 +9,7 @@ import ItemActions from './ItemActions';
 
 import type { Render, SetupContext } from '@vue/composition-api';
 import type { ServerTableOptions, TableRow } from 'vue-tables-2';
-import type { Material, MaterialUnit } from '@/stores/api/materials';
+import type { Material, MaterialUnit, UnitUsedBy } from '@/stores/api/materials';
 import type { Park } from '@/stores/api/parks';
 import type { UnitState } from '@/stores/api/unit-states';
 
@@ -23,8 +23,8 @@ type Props = {
 const MaterialViewUnits = (props: Props, { emit }: SetupContext): Render => {
     const __ = useI18n();
     const { material } = toRefs(props);
-    const { data: parks } = useQuery('parks', apiParks.list);
-    const { data: unitStates } = useQuery('unit-states', apiUnitStates.all);
+    const { data: parks } = useQuery<Park[]>('parks', apiParks.list);
+    const { data: unitStates } = useQuery<UnitState[]>('unit-states', apiUnitStates.all);
 
     const columns = ref<string[]>([
         'reference',
@@ -35,6 +35,7 @@ const MaterialViewUnits = (props: Props, { emit }: SetupContext): Render => {
         'is_lost',
         'state',
         'purchase_date',
+        'usedBy',
         'actions',
     ]);
 
@@ -42,6 +43,11 @@ const MaterialViewUnits = (props: Props, { emit }: SetupContext): Render => {
         columnsDropdown: true,
         preserveState: true,
         orderBy: { column: 'reference', ascending: true },
+        columnsDisplay: {
+            owner: 'not_tabletL',
+            purchase_date: 'not_tabletL',
+            usedBy: 'not_tabletL',
+        },
         sortable: [
             'reference',
             'serial_number',
@@ -59,6 +65,7 @@ const MaterialViewUnits = (props: Props, { emit }: SetupContext): Render => {
             is_lost: __('is-lost'),
             state: __('state'),
             purchase_date: __('purchase-date'),
+            usedBy: __('used-by'),
             actions: '',
         },
     });
@@ -69,6 +76,14 @@ const MaterialViewUnits = (props: Props, { emit }: SetupContext): Render => {
 
     const getUnitStateName = (stateId: string): string => (
         unitStates?.value?.find((state: UnitState) => state.id === stateId)?.name || ''
+    );
+
+    const getEventsCounts = (usedBy: UnitUsedBy | undefined): number => (
+        usedBy?.events?.length || 0
+    );
+
+    const getListTemplatesCounts = (usedBy: UnitUsedBy | undefined): number => (
+        usedBy?.listTemplates?.length || 0
     );
 
     return () => (
@@ -94,10 +109,27 @@ const MaterialViewUnits = (props: Props, { emit }: SetupContext): Render => {
                     purchase_date: ({ row }: TableRow<MaterialUnit>) => (
                         row.purchase_date ? moment(row.purchase_date).format('L') : null
                     ),
+                    usedBy: ({ row }: TableRow<MaterialUnit>) => {
+                        const eventsCount = getEventsCounts(row.usedBy);
+                        const listTemplatesCount = getListTemplatesCounts(row.usedBy);
+                        return (
+                            <ul class="MaterialViewUnits__used-by">
+                                {eventsCount > 0 && (
+                                    <li class="MaterialViewUnits__used-by__item">
+                                        {__('events-count', { count: eventsCount }, eventsCount)}
+                                    </li>
+                                )}
+                                {listTemplatesCount > 0 && (
+                                    <li class="MaterialViewUnits__used-by__item">
+                                        {__('list-templates-count', { count: listTemplatesCount }, listTemplatesCount)}
+                                    </li>
+                                )}
+                            </ul>
+                        );
+                    },
                     actions: ({ row }: TableRow<MaterialUnit>) => (
                         <ItemActions
-                            id={row.id}
-                            materialId={material.value.id}
+                            unit={row}
                             onChange={() => { emit('outdated'); }}
                             onError={(error: unknown) => { emit('error', error); }}
                         />

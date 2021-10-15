@@ -271,8 +271,20 @@ export default {
         'saved': "Unité sauvegardée.",
         'help-edit': (
             `La référence est l'identifiant unique de l'unité.
-        Son numéro de série est facultatif.`
+            Son numéro de série est facultatif.`
         ),
+        'caution-used': "Attention, unité utilisée\u00a0!",
+        'used-in': "Cette unité est utilisée dans\u00a0:",
+        'events-list': [
+            "- L'événement \"{items}\"",
+            "- Les événements \"{items}\"... ({count} au total)",
+        ],
+        'list-templates-list': [
+            "- Le modèle de liste \"{items}\"",
+            "- Les modèles de liste \"{items}\"... ({count} au total)",
+        ],
+        'deleting-will-set-as-external': "Supprimer cette unité aura pour conséquence de définir son utilisation comme un matériel externe.",
+        'permanently-delete-anyway': "Supprimer définitivement malgré tout",
     },
 
     'page-attributes': {

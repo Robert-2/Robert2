@@ -5,10 +5,10 @@ import useI18n from '@/hooks/useI18n';
 import { confirm } from '@/utils/alert';
 
 import type { Render, SetupContext } from '@vue/composition-api';
+import type { MaterialUnit } from '@/stores/api/materials';
 
 type Props = {
-    id: number,
-    materialId: number,
+    unit: MaterialUnit,
     onChange?(): void,
     onError?(error: unknown): void,
 };
@@ -16,29 +16,60 @@ type Props = {
 // @vue/component
 const MaterialViewUnitActions = (props: Props, { emit }: SetupContext): Render => {
     const __ = useI18n();
-    const { id, materialId } = toRefs(props);
+    const { unit } = toRefs(props);
 
     const isLoading = ref<boolean>(false);
 
     const fileUrl = computed<string>((): string => {
         const { baseUrl } = Config;
-        return `${baseUrl}/material-units/${id.value}/barcode`;
+        return `${baseUrl}/material-units/${unit.value.id}/barcode`;
     });
 
+    const used = computed<boolean>(() => (
+        (unit.value.usedBy?.events?.length || 0) > 0 ||
+        (unit.value.usedBy?.listTemplates?.length || 0) > 0
+    ));
+
     const handleDelete = async (): Promise<void> => {
-        const { value: isConfirmed } = await confirm({
+        const confirmContent = {
             title: __('please-confirm'),
             text: __('page-material-units.confirm-permanently-delete'),
             confirmButtonText: __('yes-permanently-delete'),
             type: 'delete',
-        });
+        };
+
+        if (used.value) {
+            const { events, listTemplates } = unit.value.usedBy || { events: [''], listTemplates: [''] };
+            confirmContent.title = __('page-material-units.caution-used');
+
+            confirmContent.text = __('page-material-units.used-in');
+            if (events.length > 0) {
+                confirmContent.text += `\n\n${__(
+                    'page-material-units.events-list',
+                    { items: events.slice(0, 4).join('", "'), count: events.length },
+                    events.length,
+                )}`;
+            }
+            if (listTemplates.length > 0) {
+                confirmContent.text += `\n\n${__(
+                    'page-material-units.list-templates-list',
+                    { items: listTemplates.slice(0, 4).join('", "'), count: listTemplates.length },
+                    listTemplates.length,
+                )}`;
+            }
+            confirmContent.text += `\n\n${__('page-material-units.deleting-will-set-as-external')}`;
+
+            confirmContent.confirmButtonText = __('page-material-units.permanently-delete-anyway');
+        }
+
+        const { value: isConfirmed } = await confirm(confirmContent);
         if (!isConfirmed) {
             return;
         }
 
         try {
-            await requester.delete(`material-units/${id.value}`);
-            emit('change', id.value);
+            await requester.delete(`material-units/${unit.value.id}`);
+            emit('change', unit.value.id);
         } catch (err) {
             emit('error', err);
         } finally {
@@ -57,12 +88,19 @@ const MaterialViewUnitActions = (props: Props, { emit }: SetupContext): Render =
 
         return (
             <div class="MaterialViewUnitActions">
-                <a target="_blank" rel="noreferrer" href={fileUrl.value} class="item-actions__button info">
+                <a
+                    target="_blank"
+                    rel="noreferrer"
+                    download
+                    href={fileUrl.value}
+                    vTooltip={__('download-barcode')}
+                    class="button item-actions__button info"
+                >
                     <i class="fas fa-barcode" />
                 </a>
                 <router-link
                     vTooltip={__('action-edit')}
-                    to={`/materials/${materialId?.value}/units/${id.value}`}
+                    to={`/materials/${unit.value.material_id}/units/${unit.value.id}`}
                     custom
                 >
                     {({ navigate }: { navigate(): void }) => (
@@ -72,7 +110,7 @@ const MaterialViewUnitActions = (props: Props, { emit }: SetupContext): Render =
                     )}
                 </router-link>
                 <button
-                    vTooltip={__('action-delete')}
+                    vTooltip_left={__('action-delete')}
                     type="button"
                     class="item-actions__button danger"
                     onClick={handleDelete}
@@ -85,7 +123,7 @@ const MaterialViewUnitActions = (props: Props, { emit }: SetupContext): Render =
 };
 
 MaterialViewUnitActions.props = {
-    id: { type: Number, required: true },
+    unit: { type: Object, required: true },
 };
 
 MaterialViewUnitActions.emits = ['change', 'error'];
