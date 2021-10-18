@@ -1,9 +1,11 @@
+import './index.scss';
 import { toRefs, ref, computed } from '@vue/composition-api';
 import Config from '@/globals/config';
 import requester from '@/globals/requester';
 import useI18n from '@/hooks/useI18n';
 import { confirm } from '@/utils/alert';
 
+import type { RouterLinkRenderFunctionArgs } from '@/globals/types/router-link.d';
 import type { Render, SetupContext } from '@vue/composition-api';
 import type { MaterialUnit } from '@/stores/api/materials';
 
@@ -68,6 +70,7 @@ const MaterialViewUnitActions = (props: Props, { emit }: SetupContext): Render =
         }
 
         try {
+            isLoading.value = true;
             await requester.delete(`material-units/${unit.value.id}`);
             emit('change', unit.value.id);
         } catch (err) {
@@ -81,7 +84,9 @@ const MaterialViewUnitActions = (props: Props, { emit }: SetupContext): Render =
         if (isLoading.value) {
             return (
                 <div class="MaterialViewUnitActions">
-                    <i class="fas fa-spin fa-circle-notch" />
+                    <div class="MaterialViewUnitActions__loading">
+                        <i class="fas fa-spin fa-circle-notch fa-2x" />
+                    </div>
                 </div>
             );
         }
@@ -103,7 +108,7 @@ const MaterialViewUnitActions = (props: Props, { emit }: SetupContext): Render =
                     to={`/materials/${unit.value.material_id}/units/${unit.value.id}`}
                     custom
                 >
-                    {({ navigate }: { navigate(): void }) => (
+                    {({ navigate }: RouterLinkRenderFunctionArgs) => (
                         <button type="button" class="item-actions__button info" onClick={navigate}>
                             <i class="fas fa-edit" />
                         </button>
