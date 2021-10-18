@@ -1,7 +1,13 @@
 /* eslint-disable babel/camelcase */
 
+import type { PersonWithEventPivot } from '@/stores/api/persons';
+import type { MaterialWithPivot } from '@/stores/api/materials';
+import type { Estimate } from '@/stores/api/estimates';
+import type { Bill } from '@/stores/api/bills';
+import type { User } from '@/stores/api/users';
+
 //
-// - types
+// - Types
 //
 
 export type Event = {
@@ -18,13 +24,13 @@ export type Event = {
     is_archived: boolean,
     has_missing_materials: boolean,
     has_not_returned_materials: boolean,
-    beneficiaries: Array<Record<string, unknown>>,
-    technicians: Array<Record<string, unknown>>,
-    materials: Array<Record<string, unknown>>,
-    estimates: Array<Record<string, unknown>>,
-    bills: Array<Record<string, unknown>>,
-    user_id: number,
-    user: Record<string, unknown>,
+    beneficiaries: PersonWithEventPivot[],
+    technicians: PersonWithEventPivot[],
+    materials: MaterialWithPivot[],
+    estimates: Estimate[],
+    bills: Bill[],
+    user_id: number | null,
+    user: User | null,
     created_at: string,
     deleted_at: string,
     updated_at: string,

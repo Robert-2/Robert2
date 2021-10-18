@@ -1,5 +1,5 @@
 //
-// - types
+// - Types
 //
 
 export type Tag = {

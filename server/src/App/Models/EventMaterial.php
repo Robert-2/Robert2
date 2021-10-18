@@ -9,6 +9,8 @@ class EventMaterial extends Pivot
 {
     public $incrementing = true;
 
+    protected $table = 'event_materials';
+
     // ——————————————————————————————————————————————————————
     // —
     // —    Mutators
