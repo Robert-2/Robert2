@@ -15,26 +15,29 @@ import MaterialsStore from './_store';
 import { normalizeFilters } from './_utils';
 import Quantity from './Quantity';
 import Units from './Units';
+import ListTemplateUsage from './ListTemplateUsage';
 
 import type { Render, SetupContext } from '@vue/composition-api';
 import type { ClientTableInstance, ClientTableOptions, TableRow } from 'vue-tables-2';
 import type { Material, MaterialUnit, MaterialWithPivot } from '@/stores/api/materials';
 import type { Event } from '@/stores/api/events';
 import type { Tag } from '@/stores/api/tags';
+import type { ListTemplateWithMaterial } from '@/stores/api/list-templates';
 import type { MaterialQuantity, RawFilters, MaterialsFiltersType } from './_utils';
 
 type Props = {
     selected?: MaterialWithPivot[],
     event?: Event,
+    withTemplates?: boolean,
     onChange(newList: MaterialQuantity[]): void,
 };
 
 const noPaginationLimit = 100000;
 
 // @vue/component
-const MaterialsListEditor = (props: Props, { emit }: SetupContext): Render => {
+const MaterialsListEditor = (props: Props, { root, emit }: SetupContext): Render => {
     const __ = useI18n();
-    const { selected, event } = toRefs(props);
+    const { selected, event, withTemplates } = toRefs(props);
 
     const { route } = useRouter();
 
@@ -251,6 +254,28 @@ const MaterialsListEditor = (props: Props, { emit }: SetupContext): Render => {
         dataTableRef.value?.toggleChildRow(id);
     };
 
+    const selectUnit = (material: Material, unitId: number): boolean => {
+        const selectedUnits = MaterialsStore.getters.getUnits(material.id);
+        const isAlreadySelected = selectedUnits.includes(unitId);
+        if (isAlreadySelected) {
+            return false;
+        }
+
+        const materialFromList = materials.value?.find(({ id }: Material) => id === material.id);
+        if (!materialFromList) {
+            return false;
+        }
+
+        const unit = materialFromList.units?.find(({ id }: MaterialUnit) => id === unitId);
+        if (!unit || !unit.is_available || unit.is_broken) {
+            MaterialsStore.commit('increment', materialFromList);
+            return true;
+        }
+
+        MaterialsStore.commit('selectUnit', { material: materialFromList, unitId });
+        return true;
+    };
+
     const handleScan = (id: number, unitId: number): void => {
         if (!id || !unitId) {
             return;
@@ -274,11 +299,8 @@ const MaterialsListEditor = (props: Props, { emit }: SetupContext): Render => {
             filtersRef.value?.clearFilters();
         }
 
-        // - Si elle n'est pas encore sélectionnée, on sélectionne l'unité.
-        const selectedUnits = MaterialsStore.getters.getUnits(material.id);
-        const isAlreadySelected = selectedUnits.includes(unit.id);
-        if (!isAlreadySelected) {
-            MaterialsStore.commit('selectUnit', { material, unitId: unit.id });
+        // - On sélectionne l'unité (si elle n'est pas encore sélectionnée).
+        if (selectUnit(material, unit.id)) {
             handleChanges();
         }
 
@@ -305,6 +327,36 @@ const MaterialsListEditor = (props: Props, { emit }: SetupContext): Render => {
         }
     });
 
+    const hanleSelectTemplate = ({ materials: templateMaterials }: ListTemplateWithMaterial): void => {
+        templateMaterials.forEach(({ pivot, ...material }: MaterialWithPivot) => {
+            const { quantity, units } = pivot;
+            if (material.is_unitary) {
+                units.forEach((unitId: number) => {
+                    selectUnit(material, unitId);
+                });
+            } else {
+                MaterialsStore.commit('setQuantity', { material, quantity });
+            }
+        });
+
+        handleChanges();
+    };
+
+    const showTemplateUsageModal = (): void => {
+        root.$modal.show(
+            ListTemplateUsage,
+            undefined,
+            { width: 700, draggable: true, clickToClose: true },
+            {
+                'before-close': ({ params }: { params?: { template: ListTemplateWithMaterial } }) => {
+                    if (params) {
+                        hanleSelectTemplate(params.template);
+                    }
+                },
+            },
+        );
+    };
+
     return () => (
         <div class="MaterialsListEditor">
             <header class="MaterialsListEditor__header">
@@ -318,6 +370,11 @@ const MaterialsListEditor = (props: Props, { emit }: SetupContext): Render => {
                             {__('display-only-selected-materials')}
                             <SwitchToggle value={showSelectedOnly.value} onInput={setSelectedOnly} />
                         </div>
+                    )}
+                    {withTemplates?.value && (
+                        <button type="button" class="info" onClick={showTemplateUsageModal}>
+                            {__('use-list-template')}
+                        </button>
                     )}
                 </div>
             </header>
@@ -434,6 +491,7 @@ const MaterialsListEditor = (props: Props, { emit }: SetupContext): Render => {
 MaterialsListEditor.props = {
     selected: { type: Array, default: () => [] },
     event: { type: Object, default: undefined },
+    withTemplates: { type: Boolean, default: false },
 };
 
 MaterialsListEditor.emits = ['change'];

@@ -34,10 +34,14 @@ const all = async (params: GetAllParams): Promise<PaginatedData<ListTemplate[]>>
     (await requester.get('list-templates', { params })).data
 );
 
+const allWithoutPagination = async (): Promise<ListTemplate[]> => (
+    (await requester.get('list-templates?pagination=none')).data
+);
+
 const one = async (id: number | string): Promise<ListTemplateWithMaterial> => (
     (await requester.get(`list-templates/${id}`)).data
 );
 
-export default { all, one };
+export default { all, allWithoutPagination, one };
 
 /* eslint-enable babel/camelcase */

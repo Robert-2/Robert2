@@ -1,9 +1,10 @@
 import './index.scss';
+import { defineComponent } from '@vue/composition-api';
 import formatAmount from '@/utils/formatAmount';
 import dispatchMaterialInSections from '@/utils/dispatchMaterialInSections';
 
 // @vue/component
-export default {
+export default defineComponent({
     name: 'EventMaterials',
     props: {
         event: { type: Object, required: true },
@@ -112,4 +113,4 @@ export default {
             </div>
         );
     },
-};
+});
