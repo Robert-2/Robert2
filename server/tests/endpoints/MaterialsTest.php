@@ -906,6 +906,99 @@ final class MaterialsTest extends ApiTestCase
             'updated_at' => null,
             'deleted_at' => null
         ]);
+
+        $owner = Person::find(1)->toArray();
+
+        // - Matériel avec des unités
+        $this->client->get('/api/materials/6');
+        $this->assertStatusCode(SUCCESS_OK);
+        $this->assertResponseData([
+            'id' => 6,
+            'name' => 'Behringer X Air XR18',
+            'description' => 'Mélangeur numérique 18 canaux',
+            'reference' => 'XR18',
+            'is_unitary' => true,
+            'park_id' => null,
+            'category_id' => 1,
+            'sub_category_id' => 1,
+            'rental_price' => 49.99,
+            'stock_quantity' => 3,
+            'out_of_order_quantity' => 1,
+            'replacement_price' => 419.0,
+            'is_hidden_on_bill' => false,
+            'is_discountable' => false,
+            'picture' => null,
+            'note' => null,
+            'units' => [
+                [
+                    'id' => 1,
+                    'reference' => 'XR18-1',
+                    'serial_number' => null,
+                    'park_id' => 1,
+                    'person_id' => 1,
+                    'is_broken' => false,
+                    'is_lost' => false,
+                    'state' => 'state-of-use',
+                    'purchase_date' => '2020-02-01',
+                    'notes' => 'Ce bon vieux XR-18',
+                    'owner' => $owner,
+                    'usedBy' => [
+                        'events' => ['Concert X'],
+                        'listTemplates' => ['Petit concert'],
+                    ],
+                    'created_at' => null,
+                ],
+                [
+                    'id' => 2,
+                    'reference' => 'XR18-2',
+                    'serial_number' => null,
+                    'park_id' => 1,
+                    'person_id' => null,
+                    'is_broken' => false,
+                    'is_lost' => false,
+                    'state' => 'excellent',
+                    'purchase_date' => null,
+                    'notes' => null,
+                    'owner' => null,
+                    'usedBy' => [
+                        'events' => [],
+                        'listTemplates' => ['Petit concert'],
+                    ],
+                    'created_at' => null,
+                ],
+                [
+                    'id' => 3,
+                    'reference' => 'XR18-3',
+                    'serial_number' => null,
+                    'park_id' => 2,
+                    'person_id' => null,
+                    'is_broken' => true,
+                    'is_lost' => false,
+                    'state' => 'bad',
+                    'purchase_date' => null,
+                    'notes' => null,
+                    'owner' => null,
+                    'usedBy' => [
+                        'events' => ['Concert X'],
+                        'listTemplates' => [],
+                    ],
+                    'created_at' => null,
+                ],
+            ],
+            'attributes' => [
+                [
+                    'id' => 5,
+                    'name' => 'Date d\'achat',
+                    'type' => 'date',
+                    'unit' => null,
+                    'value' => '2021-01-28',
+                ],
+            ],
+            'tags' => [],
+            'created_at' => null,
+            'updated_at' => null,
+            'deleted_at' => null
+        ]);
     }
 
     public function testGetTagsNotFound()

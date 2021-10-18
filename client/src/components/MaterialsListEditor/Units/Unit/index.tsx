@@ -6,7 +6,6 @@ import apiParks from '@/stores/api/parks';
 import apiUnitStates from '@/stores/api/unit-states';
 
 import type { Render, SetupContext } from '@vue/composition-api';
-import type { PaginatedData } from '@/stores/api/@types.d';
 import type { Park } from '@/stores/api/parks';
 import type { UnitState } from '@/stores/api/unit-states';
 import type { MaterialUnit } from '@/stores/api/materials';
@@ -23,16 +22,12 @@ const MaterialsListEditorUnit = (props: Props, { emit }: SetupContext): Render =
     const __ = useI18n();
     const { data, isSelected } = toRefs(props);
 
-    const { data: parks } = useQuery<PaginatedData<Park[]>>('parks', apiParks.all);
+    const { data: parks } = useQuery<Park[]>('parks', apiParks.list);
     const { data: unitStates } = useQuery<UnitState[]>('unit-states', apiUnitStates.all);
 
-    const parkName = computed(() => {
-        if (!parks.value) {
-            return null;
-        }
-        const park = parks.value.data.find(({ id }: Park) => id === data.value.park_id);
-        return park ? park.name : null;
-    });
+    const parkName = computed(() => (
+        parks?.value?.find((park: Park) => park.id === data.value.park_id)?.name || ''
+    ));
 
     const unitStateName = computed(() => {
         const { state } = data.value;

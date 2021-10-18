@@ -7,6 +7,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 ## 0.16.0-premium (UNRELEASED)
 
 - Ajoute les modèles de liste de matériel (#136).
+- Affiche un message quand l'utilisateur veut supprimer une unité qui est utilisée dans des modèles de liste ou événements.
 
 ## 0.15.1-premium (2021-09-10)
 

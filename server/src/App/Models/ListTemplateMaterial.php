@@ -9,6 +9,8 @@ class ListTemplateMaterial extends Pivot
 {
     public $incrementing = true;
 
+    protected $table = 'list_template_materials';
+
     // ——————————————————————————————————————————————————————
     // —
     // —    Mutators
@@ -30,13 +32,13 @@ class ListTemplateMaterial extends Pivot
     public function Units()
     {
         $relation = $this->belongsToMany(
-            'Robert2\API\Models\MaterialUnit',
+            MaterialUnit::class,
             'list_template_material_units',
             'list_template_material_id'
         );
 
         return $relation
-            ->using('Robert2\API\Models\ListTemplateMaterialUnit')
+            ->using(ListTemplateMaterialUnit::class)
             ->select(['material_units.id']);
     }
 

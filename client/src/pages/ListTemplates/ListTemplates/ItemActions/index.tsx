@@ -83,7 +83,7 @@ const ListTemplatesItemActions = (props: Props, { emit }: SetupContext): Render 
                 <div class="ListTemplatesItemActions">
                     <button
                         type="button"
-                        v-tooltip={__('action-restore')}
+                        vTooltip={__('action-restore')}
                         class="item-actions__button info"
                         onClick={handleRestore}
                     >
@@ -91,7 +91,7 @@ const ListTemplatesItemActions = (props: Props, { emit }: SetupContext): Render 
                     </button>
                     <button
                         type="button"
-                        v-tooltip={__('action-delete')}
+                        vTooltip_left={__('action-delete')}
                         class="item-actions__button danger"
                         onClick={handleDelete}
                     >
@@ -104,7 +104,7 @@ const ListTemplatesItemActions = (props: Props, { emit }: SetupContext): Render 
         return (
             <div class="ListTemplatesItemActions">
                 <router-link
-                    v-tooltip={__('action-edit')}
+                    vTooltip={__('action-edit')}
                     to={`/list-templates/${id.value}`}
                     class="button info item-actions__button"
                 >
@@ -112,7 +112,7 @@ const ListTemplatesItemActions = (props: Props, { emit }: SetupContext): Render 
                 </router-link>
                 <button
                     type="button"
-                    v-tooltip={__('action-trash')}
+                    vTooltip_left={__('action-trash')}
                     class="item-actions__button warning"
                     onClick={handleDelete}
                 >

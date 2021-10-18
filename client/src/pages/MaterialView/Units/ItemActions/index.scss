@@ -1,0 +1,8 @@
+@use '~@/style/globals';
+
+.MaterialViewUnitActions {
+    &__loading {
+        color: globals.$text-light-color;
+        text-align: center;
+    }
+}

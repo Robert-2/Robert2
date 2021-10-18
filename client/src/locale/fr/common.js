@@ -213,6 +213,7 @@ export default {
     'create-estimate': "Créer un devis",
     'download': "Télécharger",
     'download-pdf': "Télécharger au format PDF",
+    'download-barcode': "Télécharger le code-barre",
     'regenerate-bill-help': "Vous pouvez re-générer la facture pour en changer la remise, ou si l'événement a été modifié.",
     'create-new-estimate-help': "Vous pouvez créer un autre devis si l'événement a été modifié, ou si vous voulez une remise différente.",
     'click-here-to-regenerate-bill': "Cliquez ici pour refaire une facture.",
@@ -267,6 +268,16 @@ export default {
     'back-to-calendar': "Retour au calendrier",
     'previous-month': "Mois précédent",
     'next-month': "Mois suivant",
+
+    'used-by': "Utilisé dans",
+    'events-count': [
+        '{count} événement',
+        '{count} événements',
+    ],
+    'list-templates-count': [
+        '{count} modèle de liste',
+        '{count} modèles de liste',
+    ],
 
     'inventories': "Inventaires",
     'terminate-inventory': "Terminer l'inventaire",

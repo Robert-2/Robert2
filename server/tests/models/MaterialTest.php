@@ -378,6 +378,10 @@ final class MaterialTest extends ModelTestCase
                     'purchase_date' => '2020-02-01',
                     'notes' => 'Ce bon vieux XR-18',
                     'owner' => $owner,
+                    'usedBy' => [
+                        'events' => ['Concert X'],
+                        'listTemplates' => ['Petit concert'],
+                    ],
                     'created_at' => null,
                 ],
                 [
@@ -392,6 +396,10 @@ final class MaterialTest extends ModelTestCase
                     'purchase_date' => null,
                     'notes' => null,
                     'owner' => null,
+                    'usedBy' => [
+                        'events' => [],
+                        'listTemplates' => ['Petit concert'],
+                    ],
                     'created_at' => null,
                 ],
                 [
@@ -406,6 +414,10 @@ final class MaterialTest extends ModelTestCase
                     'purchase_date' => null,
                     'notes' => null,
                     'owner' => null,
+                    'usedBy' => [
+                        'events' => ['Concert X'],
+                        'listTemplates' => [],
+                    ],
                     'created_at' => null,
                 ],
             ],
@@ -450,6 +462,10 @@ final class MaterialTest extends ModelTestCase
                     'purchase_date' => '2020-02-01',
                     'notes' => 'Ce bon vieux XR-18',
                     'owner' => $owner,
+                    'usedBy' => [
+                        'events' => ['Concert X'],
+                        'listTemplates' => ['Petit concert'],
+                    ],
                     'created_at' => null,
                 ],
                 [
@@ -464,6 +480,10 @@ final class MaterialTest extends ModelTestCase
                     'purchase_date' => null,
                     'notes' => null,
                     'owner' => null,
+                    'usedBy' => [
+                        'events' => [],
+                        'listTemplates' => ['Petit concert'],
+                    ],
                     'created_at' => null,
                 ],
             ],

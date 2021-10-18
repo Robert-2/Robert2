@@ -270,8 +270,20 @@ export default {
         'saved': "Unit saved.",
         'help-edit': (
             `The reference is the unique identifier of the unit.
-        Its serial number is optional.`
+            Its serial number is optional.`
         ),
+        'caution-used': "Caution, unit used!",
+        'used-in': "This unit is used into:",
+        'events-list': [
+            "- Event \"{items}\"",
+            "- Events \"{items}\"... ({count} au total)",
+        ],
+        'list-templates-list': [
+            "- List template \"{items}\"",
+            "- List templates \"{items}\"... ({count} au total)",
+        ],
+        'deleting-will-set-as-external': "Deleting this unit will result in defining its use as an external material.",
+        'permanently-delete-anyway': "Permanently delete anyway",
     },
 
     'page-attributes': {
