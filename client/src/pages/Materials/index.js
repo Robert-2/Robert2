@@ -254,22 +254,22 @@ export default {
         },
 
         getQuantity(material) {
-            if (this.dateForQuantities === null) {
-                return material.stock_quantity;
-            }
-
-            if (!material.is_unitary) {
-                return material.stock_quantity;
-            }
-
             const filters = this.getFilters();
-            if (!filters.park) {
-                return material.units.length;
+            if (!material.is_unitary || !filters.park) {
+                if (this.dateForQuantities !== null) {
+                    return material.remaining_quantity;
+                }
+
+                return material.stock_quantity;
             }
 
-            const parkUnits = material.units.filter(
-                (unit) => unit.park_id === filters.park,
-            );
+            const parkUnits = material.units.filter((unit) => {
+                const isInPark = unit.park_id === filters.park;
+                if (this.dateForQuantities !== null) {
+                    return isInPark && unit.is_available;
+                }
+                return isInPark;
+            });
             return parkUnits.length;
         },
 
