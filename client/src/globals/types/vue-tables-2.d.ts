@@ -1,6 +1,6 @@
 declare module 'vue-tables-2' {
     import type { VNode } from 'vue';
-    import type { PaginationParams } from '@/stores/api/@types.d';
+    import type { PaginationParams } from '@/stores/api/@types';
 
     //
     // - Common types

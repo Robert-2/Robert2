@@ -6,7 +6,7 @@ import type { Render, SetupContext } from '@vue/composition-api';
 import type { ListTemplate } from '@/stores/api/list-templates';
 
 type Props = {
-    data: ListTemplate[],
+    data: ListTemplate[] | undefined,
     onSelect(id: number): void,
 };
 
@@ -16,7 +16,7 @@ const ListTemplateUsageList = (props: Props, { emit }: SetupContext): Render => 
     const { data } = toRefs(props);
 
     return () => {
-        if (data.value.length === 0) {
+        if (data.value?.length === 0) {
             return (
                 <div class="ListTemplateUsageList ListTemplateUsageList--empty">
                     <p class="ListTemplateUsageList__nothing">
@@ -39,7 +39,7 @@ const ListTemplateUsageList = (props: Props, { emit }: SetupContext): Render => 
                     </tr>
                 </thead>
                 <tbody>
-                    {data.value.map((listTemplate: ListTemplate) => (
+                    {data.value?.map((listTemplate: ListTemplate) => (
                         <tr class="ListTemplateUsageList__item" key={listTemplate.id}>
                             <td class="ListTemplateUsageList__item__cell">{listTemplate.name}</td>
                             <td class="ListTemplateUsageList__item__cell">{listTemplate.description}</td>

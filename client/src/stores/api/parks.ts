@@ -1,6 +1,6 @@
 import requester from '@/globals/requester';
 
-import type { PaginatedData } from '@/stores/api/@types.d';
+import type { PaginatedData } from '@/stores/api/@types';
 
 //
 // - Types

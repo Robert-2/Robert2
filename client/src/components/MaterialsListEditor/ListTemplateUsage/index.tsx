@@ -15,21 +15,21 @@ import type { ListTemplate, ListTemplateWithMaterial } from '@/stores/api/list-t
 // @vue/component
 const ListTemplateUsage = (props: Record<string, never>, { emit }: SetupContext): Render => {
     const __ = useI18n();
+    const selected = ref<ListTemplateWithMaterial | null>(null);
 
     // - Obligation d'utiliser ce hook car on est dans une modale
     useQueryProvider(queryClient);
 
-    const { data: listTemplates, isLoading, error } = useQuery<ListTemplate[] | null>(
+    const { data: listTemplates, isLoading, error } = useQuery<ListTemplate[]>(
         'list-templates',
-        apiListTemplates.allWithoutPagination,
+        () => apiListTemplates.all({ paginated: false }),
     );
 
-    const selected = ref<ListTemplateWithMaterial | null>(null);
-
     const handleSelectTemplate = async (id: number): Promise<void> => {
+        isLoading.value = true;
+        error.value = null;
+
         try {
-            isLoading.value = true;
-            error.value = null;
             selected.value = await apiListTemplates.one(id);
         } catch (err) {
             error.value = err;
@@ -51,27 +51,18 @@ const ListTemplateUsage = (props: Record<string, never>, { emit }: SetupContext)
         emit('close');
     };
 
-    return () => (
-        <div class="ListTemplateUsage">
-            <div class="ListTemplateUsage__header">
-                <h2 class="ListTemplateUsage__header__title">
-                    {__('choose-list-template-to-use')}
-                </h2>
-                <button type="button" class="ListTemplateUsage__header__btn-close" onClick={handleClose}>
-                    <i class="fas fa-times" />
-                </button>
-            </div>
-            <div class="ListTemplateUsage__main">
-                {(isLoading.value) && <Loading />}
-                {(!isLoading.value && listTemplates.value && !selected.value) && (
-                    <div class="ListTemplateUsage__list">
-                        <TemplatesList
-                            data={listTemplates.value}
-                            onSelect={handleSelectTemplate}
-                        />
-                    </div>
-                )}
-                {(!isLoading.value && selected.value) && (
+    return () => {
+        const renderMainContent = (): JSX.Element => {
+            if (error.value) {
+                return <ErrorMessage error={error.value} />;
+            }
+
+            if (isLoading.value) {
+                return <Loading />;
+            }
+
+            if (selected.value) {
+                return (
                     <div class="ListTemplateUsage__selected">
                         <h3>{__('list-template-details', { name: selected.value.name })}</h3>
                         <p class="ListTemplateUsage__selected__description">{selected.value.description}</p>
@@ -84,21 +75,45 @@ const ListTemplateUsage = (props: Record<string, never>, { emit }: SetupContext)
                             {__('list-template-use-warning')}
                         </p>
                     </div>
-                )}
-            </div>
-            {error.value && <ErrorMessage error={error.value} />}
-            {selected.value && (
-                <div class="ListTemplateUsage__footer">
-                    <button type="button" onClick={handleSubmit} class="success">
-                        <i class="fas fa-check" /> {__('use-this-template')}
-                    </button>
-                    <button type="button" onClick={handleClearSelection} class="warning">
-                        <i class="fas fa-random" /> {__('choose-another-one')}
+                );
+            }
+
+            return (
+                <div class="ListTemplateUsage__list">
+                    <TemplatesList
+                        data={listTemplates.value}
+                        onSelect={handleSelectTemplate}
+                    />
+                </div>
+            );
+        };
+
+        return (
+            <div class="ListTemplateUsage">
+                <div class="ListTemplateUsage__header">
+                    <h2 class="ListTemplateUsage__header__title">
+                        {__('choose-list-template-to-use')}
+                    </h2>
+                    <button type="button" class="ListTemplateUsage__header__btn-close" onClick={handleClose}>
+                        <i class="fas fa-times" />
                     </button>
                 </div>
-            )}
-        </div>
-    );
+                <div class="ListTemplateUsage__main">
+                    {renderMainContent()}
+                </div>
+                {selected.value && (
+                    <div class="ListTemplateUsage__footer">
+                        <button type="button" onClick={handleSubmit} class="success">
+                            <i class="fas fa-check" /> {__('use-this-template')}
+                        </button>
+                        <button type="button" onClick={handleClearSelection} class="warning">
+                            <i class="fas fa-random" /> {__('choose-another-one')}
+                        </button>
+                    </div>
+                )}
+            </div>
+        );
+    };
 };
 
 export default ListTemplateUsage;

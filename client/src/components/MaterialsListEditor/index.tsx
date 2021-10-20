@@ -369,7 +369,7 @@ const MaterialsListEditor = (props: Props, { root, emit }: SetupContext): Render
                             <SwitchToggle value={showSelectedOnly.value} onInput={setSelectedOnly} />
                         </div>
                     )}
-                    {withTemplates?.value && (
+                    {withTemplates!.value && (
                         <button type="button" class="info" onClick={showTemplateUsageModal}>
                             {__('use-list-template')}
                         </button>

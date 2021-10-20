@@ -36,7 +36,7 @@ final class ListTemplatesTest extends ApiTestCase
         ]);
 
         // - Test sans pagination
-        $this->client->get('/api/list-templates?pagination=none');
+        $this->client->get('/api/list-templates?paginated=0');
         $this->assertStatusCode(SUCCESS_OK);
         $this->assertResponseData([
             [
