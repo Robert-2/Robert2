@@ -97,12 +97,6 @@ const MaterialsListEditor = (props: Props, { emit }: SetupContext): Render => {
     };
 
     const handleChanges = (): void => {
-        const materialIds = Object.keys(MaterialsStore.state.materials);
-
-        if (materialIds.length === 0) {
-            setSelectedOnly(false);
-        }
-
         const allMaterials: MaterialQuantity[] = Object.entries(MaterialsStore.state.materials)
             // - Laissons Typescript inférer le type de l'argument du map ici...
             // eslint-disable-next-line @typescript-eslint/typedef
@@ -110,6 +104,10 @@ const MaterialsListEditor = (props: Props, { emit }: SetupContext): Render => {
                 id: parseInt(id, 10),
                 quantity,
             }));
+
+        if (allMaterials.every(({ quantity }: MaterialQuantity) => quantity === 0)) {
+            setSelectedOnly(false);
+        }
 
         emit('change', allMaterials);
     };
