@@ -2,6 +2,12 @@
     display: flex;
     flex-direction: column;
 
+    .MaterialsListDisplay__categories {
+        overflow-y: auto;
+        max-height: 350px;
+        padding-right: 10px;
+    }
+
     .EventMissingMaterials__title {
         margin-top: 0;
     }

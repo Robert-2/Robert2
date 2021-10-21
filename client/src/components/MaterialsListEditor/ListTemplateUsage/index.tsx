@@ -6,7 +6,7 @@ import useI18n from '@/hooks/useI18n';
 import apiListTemplates from '@/stores/api/list-templates';
 import Loading from '@/components/Loading';
 import ErrorMessage from '@/components/ErrorMessage';
-import EventMaterials from '@/components/EventMaterials';
+import MaterialsListDisplay from '@/components/MaterialsListDisplay';
 import TemplatesList from './List';
 
 import type { Render, SetupContext } from '@vue/composition-api';
@@ -66,8 +66,8 @@ const ListTemplateUsage = (props: Record<string, never>, { emit }: SetupContext)
                     <div class="ListTemplateUsage__selected">
                         <h3>{__('list-template-details', { name: selected.value.name })}</h3>
                         <p class="ListTemplateUsage__selected__description">{selected.value.description}</p>
-                        <EventMaterials
-                            event={selected.value}
+                        <MaterialsListDisplay
+                            data={selected.value.materials}
                             hideDetails={selected.value.materials.length > 10}
                         />
                         <p class="ListTemplateUsage__selected__warning">
