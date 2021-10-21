@@ -5,6 +5,7 @@ import type { MaterialWithPivot } from '@/stores/api/materials';
 import type { Estimate } from '@/stores/api/estimates';
 import type { Bill } from '@/stores/api/bills';
 import type { User } from '@/stores/api/users';
+import type { Moment } from 'moment';
 
 //
 // - Types
@@ -34,6 +35,18 @@ export type Event = {
     created_at: string,
     deleted_at: string,
     updated_at: string,
+};
+
+export type FormatedEvent = Event & {
+    startDate: Moment,
+    endDate: Moment,
+    isCurrent: boolean,
+    isPast: boolean,
+    isConfirmed: boolean,
+    isInventoryDone: boolean,
+    isArchived: boolean,
+    hasMissingMaterials: boolean,
+    hasNotReturnedMaterials: boolean,
 };
 
 /* eslint-enable babel/camelcase */

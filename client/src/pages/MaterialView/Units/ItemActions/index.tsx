@@ -5,7 +5,7 @@ import requester from '@/globals/requester';
 import useI18n from '@/hooks/useI18n';
 import { confirm } from '@/utils/alert';
 
-import type { RouterLinkRenderFunctionArgs } from '@/globals/types/router-link.d';
+import type { RouterLinkRenderFunctionArgs } from '@/globals/types/router-link';
 import type { Render, SetupContext } from '@vue/composition-api';
 import type { MaterialUnit } from '@/stores/api/materials';
 
