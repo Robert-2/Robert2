@@ -1,0 +1,73 @@
+@use '~@/style/globals';
+
+.ListTemplateFromEvent {
+    &__header {
+        display: flex;
+        align-items: center;
+        padding: globals.$content-padding-small-horizontal globals.$content-padding-large-vertical;
+        background-color: globals.$bg-color-main-header;
+
+        &__title {
+            flex: 1;
+            font-size: 1.4rem;
+        }
+
+        &__btn-close {
+            flex: 0 0 auto;
+            border: none;
+            background: none;
+        }
+    }
+
+    &__main {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: globals.$content-padding-large-vertical globals.$content-padding-small-vertical;
+
+        .FormField {
+            display: block;
+            min-width: 350px;
+
+            &__label {
+                margin-bottom: globals.$content-padding-small-horizontal;
+                padding: 0;
+                text-align: left;
+            }
+
+            &__textarea {
+                width: 100%;
+            }
+
+            &__error {
+                flex: 0 0 auto;
+
+                &__text {
+                    padding: 0;
+                }
+            }
+        }
+
+        .FormField + .FormField {
+            margin-top: globals.$content-padding-small-vertical;
+        }
+    }
+
+    &__datepicker {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &__input {
+            width: 100%;
+            max-width: 300px;
+            font-size: 1.1rem;
+        }
+    }
+
+    &__footer {
+        padding: globals.$content-padding-large-vertical;
+        border-top: 1px solid globals.$tabs-bottom-border-color;
+        text-align: center;
+    }
+}

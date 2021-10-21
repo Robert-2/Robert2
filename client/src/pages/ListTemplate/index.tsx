@@ -11,6 +11,7 @@ import Page from '@/components/Page';
 import ListTemplateForm from './Form';
 
 import type { Render } from '@vue/composition-api';
+import type { FormErrorDetail } from '@/stores/api/@types';
 import type { ListTemplateWithMaterial } from '@/stores/api/list-templates';
 import type { MaterialQuantity } from '@/components/MaterialsListEditor/_utils';
 
@@ -21,7 +22,7 @@ const ListTemplateEditPage = (): Render => {
     const id = computed(() => route.value.params.id || null);
     const isNew = computed(() => !id.value || id.value === 'new');
 
-    const errors = ref<Record<string, string>>();
+    const errors = ref<FormErrorDetail | null>(null);
 
     const queryClient = useQueryClient();
 
@@ -37,6 +38,7 @@ const ListTemplateEditPage = (): Render => {
 
     const save = async (templateListData: Record<string, any>): Promise<void> => {
         error.value = null;
+        errors.value = null;
         isLoading.value = true;
 
         const request = isNew.value ? requester.post : requester.put;
@@ -51,7 +53,8 @@ const ListTemplateEditPage = (): Render => {
             }
             setTimeout(() => { router.push('/list-templates'); }, 300);
         } catch (err) {
-            error.value = extractErrorDetails(err);
+            error.value = err;
+            errors.value = extractErrorDetails(err);
         } finally {
             isLoading.value = false;
         }

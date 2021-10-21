@@ -26,4 +26,6 @@ export type PaginationParams = {
     byColumn?: 0 | 1,
 };
 
+export type FormErrorDetail = Record<string, string[]>;
+
 /* eslint-enable babel/camelcase */

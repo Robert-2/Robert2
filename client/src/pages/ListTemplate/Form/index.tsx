@@ -9,13 +9,14 @@ import MaterialsListEditor from '@/components/MaterialsListEditor';
 import { getMaterialsQuantities, materialsHasChanged } from '@/components/MaterialsListEditor/_utils';
 
 import type { Render, SetupContext } from '@vue/composition-api';
+import type { FormErrorDetail } from '@/stores/api/@types';
 import type { ListTemplateWithMaterial } from '@/stores/api/list-templates';
 import type { MaterialQuantity } from '@/components/MaterialsListEditor/_utils';
 
 type Props = {
     isNew: boolean,
     data: ListTemplateWithMaterial | null | undefined,
-    errors: Record<string, string | null> | undefined,
+    errors: FormErrorDetail | null | undefined,
     onSubmit(data: Record<string, string | MaterialQuantity>): void,
     onChange?(data: Record<string, string | MaterialQuantity>): void,
     onCancel(): void,

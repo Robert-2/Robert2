@@ -3,6 +3,7 @@ import Config from '@/globals/config';
 import Alert from '@/components/Alert';
 import Dropdown, { getItemClassnames } from '@/components/Dropdown';
 import DuplicateEvent from '@/components/DuplicateEvent';
+import ListTemplateFromEvent from '@/components/ListTemplateFromEvent';
 
 // @vue/component
 export default {
@@ -18,10 +19,14 @@ export default {
         };
     },
     computed: {
+        hasMaterials() {
+            return this.event.materials.length > 0;
+        },
+
         isPrintable() {
             return (
                 this.event.materials &&
-                this.event.materials.length > 0 &&
+                this.hasMaterials &&
                 this.event.beneficiaries &&
                 this.event.beneficiaries.length > 0
             );
@@ -140,11 +145,22 @@ export default {
                 clickToClose: false,
             });
         },
+
+        askCreateListTemplate() {
+            const { materials } = this.event;
+
+            this.$modal.show(ListTemplateFromEvent, { materials }, {
+                width: 600,
+                draggable: true,
+                clickToClose: false,
+            });
+        },
     },
     render() {
         const {
             $t: __,
             isVisitor,
+            hasMaterials,
             isEditable,
             isConfirmable,
             isPrintable,
@@ -158,6 +174,7 @@ export default {
             toggleArchived,
             handleDelete,
             askDuplicate,
+            askCreateListTemplate,
         } = this;
 
         if (isVisitor) {
@@ -249,6 +266,15 @@ export default {
                                 {!isDeleting && <i class="fas fa-trash" />}
                                 {isDeleting && <i class="fas fa-circle-notch fa-spin" />}
                                 {' '}{__('delete-event')}
+                            </button>
+                        )}
+                        {hasMaterials && (
+                            <button
+                                type="button"
+                                class={{ ...getItemClassnames() }}
+                                onClick={askCreateListTemplate}
+                            >
+                                <i class="fas fa-list" /> {__('create-list-template-from-event')}
                             </button>
                         )}
                     </template>
