@@ -2,7 +2,7 @@
 
 import requester from '@/globals/requester';
 
-import type { PaginatedData } from '@/stores/api/@types';
+import type { PaginatedData, PaginationParams } from '@/stores/api/@types';
 
 //
 // - Types
@@ -43,9 +43,28 @@ export type MaterialWithPivot = Material & {
     },
 };
 
+type GetAllParams = {
+    deleted?: boolean,
+};
+
+type GetAllPaginated = GetAllParams & PaginationParams & { paginated?: true };
+type GetAllRaw = GetAllParams & { paginated: false };
+
 //
 // - Functions
 //
+
+async function all(params: GetAllRaw): Promise<Material[]>;
+async function all(params: GetAllPaginated): Promise<PaginatedData<Material[]>>;
+// eslint-disable-next-line func-style
+async function all(rawParams: GetAllPaginated | GetAllRaw): Promise<unknown> {
+    const params = {
+        ...rawParams,
+        paginated: rawParams.paginated === false ? '0' : '1',
+        deleted: rawParams.deleted ? '1' : '0',
+    };
+    return (await requester.get('materials', { params })).data;
+}
 
 const allWhileEvent = async (eventId: number): Promise<Material[]> => {
     if (!eventId) {
@@ -54,14 +73,6 @@ const allWhileEvent = async (eventId: number): Promise<Material[]> => {
     return (await requester.get(`materials/while-event/${eventId}`)).data;
 };
 
-const allWithoutPagination = async (): Promise<Material[]> => (
-    (await requester.get('materials?pagination=none')).data
-);
-
-const all = async (): Promise<PaginatedData<Material[]>> => (
-    (await requester.get('materials')).data
-);
-
-export default { allWhileEvent, allWithoutPagination, all };
+export default { all, allWhileEvent };
 
 /* eslint-enable babel/camelcase */

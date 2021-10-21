@@ -301,7 +301,7 @@ final class MaterialsTest extends ApiTestCase
             $this->assertEquals($expected, $results['data'][$index]['reference']);
         }
 
-        $this->client->get('/api/materials?pagination=none');
+        $this->client->get('/api/materials?paginated=0');
         $this->assertStatusCode(SUCCESS_OK);
         $results = $this->_getResponseAsArray();
         $this->assertCount(7, $results);
