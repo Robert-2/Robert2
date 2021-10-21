@@ -52,7 +52,7 @@ const MaterialsListEditor = (props: Props, { root, emit }: SetupContext): Render
         () => (
             event?.value?.id
                 ? apiMaterials.allWhileEvent(event.value.id)
-                : apiMaterials.allWithoutPagination()
+                : apiMaterials.all({ paginated: false })
         ),
     );
 

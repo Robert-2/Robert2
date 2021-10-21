@@ -45,7 +45,7 @@ class MaterialController extends BaseController
 
     public function getAll(Request $request, Response $response): Response
     {
-        $pagination = $request->getQueryParam('pagination', null);
+        $paginated = (bool)$request->getQueryParam('paginated', true);
         $searchTerm = $request->getQueryParam('search', null);
         $searchField = $request->getQueryParam('searchBy', null);
         $parkId = $request->getQueryParam('park', null);
@@ -94,10 +94,10 @@ class MaterialController extends BaseController
             });
         }
 
-        if ($pagination === 'none') {
-            $results = ['data' => $model->get()->toArray()];
-        } else {
+        if ($paginated) {
             $results = $this->paginate($request, $model);
+        } else {
+            $results = ['data' => $model->get()->toArray()];
         }
 
         if (count($restrictedParks) > 0) {
@@ -122,7 +122,7 @@ class MaterialController extends BaseController
             null
         );
 
-        if ($pagination === 'none') {
+        if (!$paginated) {
             $results = $results['data'];
         }
 
