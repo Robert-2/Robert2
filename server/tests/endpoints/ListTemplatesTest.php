@@ -34,6 +34,22 @@ final class ListTemplatesTest extends ApiTestCase
                 ],
             ],
         ]);
+
+        // - Test sans pagination
+        $this->client->get('/api/list-templates?paginated=0');
+        $this->assertStatusCode(SUCCESS_OK);
+        $this->assertResponseData([
+            [
+                'id' => 2,
+                'name' => 'Petit concert',
+                'description' => null,
+            ],
+            [
+                'id' => 1,
+                'name' => 'Premier modèle',
+                'description' => "Une liste de matériel bien sympa.",
+            ],
+        ]);
     }
 
     public function testGetOneListTemplate()

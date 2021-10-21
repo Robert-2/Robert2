@@ -5,6 +5,7 @@
                 :selected="event.materials"
                 :event="event"
                 @change="handleChange"
+                withTemplates
             />
         </section>
         <section class="Form__actions">

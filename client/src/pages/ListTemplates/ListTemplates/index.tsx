@@ -8,7 +8,7 @@ import ItemActions from './ItemActions';
 
 import type { Render, SetupContext } from '@vue/composition-api';
 import type { ServerTableInstance, ServerTableOptions, TableRow } from 'vue-tables-2';
-import type { PaginationParams, PaginatedData } from '@/stores/api/@types.d';
+import type { PaginationParams, PaginatedData } from '@/stores/api/@types';
 import type { ListTemplate } from '@/stores/api/list-templates';
 
 type Props = {
@@ -47,8 +47,9 @@ const ListTemplates = (props: Props, { emit }: SetupContext): Render => {
                 hasError.value = false;
 
                 const data = await apiListTemplates.all({
+                    paginated: true,
                     ...pagination,
-                    deleted: withTrashed.value ? '1' : '0',
+                    deleted: withTrashed.value,
                 });
 
                 return { data };

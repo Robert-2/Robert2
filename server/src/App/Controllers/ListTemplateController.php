@@ -20,6 +20,7 @@ class ListTemplateController extends BaseController
 
     public function getAll(Request $request, Response $response): Response
     {
+        $paginated = (bool)$request->getQueryParam('paginated', true);
         $searchTerm = $request->getQueryParam('search', null);
         $searchField = $request->getQueryParam('searchBy', null);
         $orderBy = $request->getQueryParam('orderBy', null);
@@ -32,6 +33,11 @@ class ListTemplateController extends BaseController
             ->setSearch($searchTerm, $searchField)
             ->getAll($withDeleted)
             ->forAll();
+
+        if (!$paginated) {
+            $results = $query->whereHas('materials')->get();
+            return $response->withJson($results);
+        }
 
         $paginated = $this->paginate($request, $query, $limit ? (int)$limit : null);
         return $response->withJson($paginated);

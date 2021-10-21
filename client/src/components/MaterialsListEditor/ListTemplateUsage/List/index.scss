@@ -1,0 +1,39 @@
+@use '~@/style/globals';
+
+.ListTemplateUsageList {
+    width: 100%;
+    border-collapse: collapse;
+
+    &__heading {
+        padding: globals.$content-padding-small-vertical globals.$content-padding-small-horizontal;
+        background-color: globals.$bg-color-table-th;
+        text-align: left;
+
+        &--actions {
+            width: 80px;
+        }
+    }
+
+    &__item {
+        background-color: globals.$bg-color-table-td;
+
+        &__cell {
+            padding: globals.$content-padding-small-horizontal;
+        }
+
+        &:hover {
+            background-color: globals.$bg-color-dropdown-menu-item-hover;
+        }
+    }
+
+    &__nothing {
+        color: globals.$text-light-color;
+        font-style: italic;
+    }
+
+    &--empty {
+        width: auto;
+        font-size: 1.15rem;
+        text-align: center;
+    }
+}

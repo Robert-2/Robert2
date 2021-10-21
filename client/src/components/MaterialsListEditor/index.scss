@@ -18,12 +18,15 @@
 
         &__extra-filters {
             flex: 0 0 auto;
+            display: flex;
+            align-items: center;
             margin: globals.$content-padding-small-vertical;
 
             &__filter {
                 display: flex;
                 flex-direction: column;
                 align-items: center;
+                margin-right: globals.$content-padding-large-horizontal;
 
                 .SwitchToggle {
                     margin-top: 0.3rem;
