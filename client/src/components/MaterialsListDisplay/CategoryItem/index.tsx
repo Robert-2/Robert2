@@ -3,7 +3,7 @@ import { toRefs } from '@vue/composition-api';
 import useI18n from '@/hooks/useI18n';
 import formatAmount from '@/utils/formatAmount';
 
-import type { Render } from '@vue/composition-api';
+import type { Component } from '@vue/composition-api';
 import type { MaterialWithPivot } from '@/stores/api/materials';
 import type { MaterialCategoryItem } from '..';
 
@@ -13,7 +13,7 @@ type Props = {
 };
 
 // @vue/component
-const MaterialsCategoryItem = (props: Props): Render => {
+const MaterialsCategoryItem: Component<Props> = (props: Props) => {
     const __ = useI18n();
     const { data, withRentalPrices } = toRefs(props);
 

@@ -1,11 +1,16 @@
-import type { SetupContext } from '@vue/composition-api';
+import type { VNode } from 'vue';
+import type { ComponentPropsOptions, SetupContext } from '@vue/composition-api';
 
 module '@vue/composition-api' {
     export type Render = () => VNode | null;
 
-    export interface Component<Props> {
-        // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
-        (props: Props, ctx: SetupContext): Record<string, unknown> | Render | void;
-        props: ComponentPropsOptions<Props>;
+    export type ImplicitProps = {
+        key?: string | number,
+    };
+
+    export interface Component<Props extends Record<string, unknown>> {
+        (props: Props & ImplicitProps, ctx: SetupContext): Render;
+        props?: ComponentPropsOptions<Props>;
+        emits?: string[];
     }
 }
