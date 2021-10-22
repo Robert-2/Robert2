@@ -6,14 +6,16 @@ import useI18n from '@/hooks/useI18n';
 import apiListTemplates from '@/stores/api/list-templates';
 import Loading from '@/components/Loading';
 import ErrorMessage from '@/components/ErrorMessage';
-import MaterialsListDisplay from '@/components/MaterialsListDisplay';
+import MaterialsSorted from '@/components/MaterialsSorted';
 import TemplatesList from './List';
 
-import type { Render, SetupContext } from '@vue/composition-api';
+import type { Component, SetupContext } from '@vue/composition-api';
 import type { ListTemplate, ListTemplateWithMaterial } from '@/stores/api/list-templates';
 
+type Props = Record<string, never>;
+
 // @vue/component
-const ListTemplateUsage = (props: Record<string, never>, { emit }: SetupContext): Render => {
+const ListTemplateUsage: Component<Props> = (props: Props, { emit }: SetupContext) => {
     const __ = useI18n();
     const selected = ref<ListTemplateWithMaterial | null>(null);
 
@@ -66,7 +68,7 @@ const ListTemplateUsage = (props: Record<string, never>, { emit }: SetupContext)
                     <div class="ListTemplateUsage__selected">
                         <h3>{__('list-template-details', { name: selected.value.name })}</h3>
                         <p class="ListTemplateUsage__selected__description">{selected.value.description}</p>
-                        <MaterialsListDisplay
+                        <MaterialsSorted
                             data={selected.value.materials}
                             hideDetails={selected.value.materials.length > 10}
                         />

@@ -8,7 +8,10 @@ import type { MaterialWithPivot } from '@/stores/api/materials';
 import type { MaterialCategoryItem } from '..';
 
 type Props = {
+    /** La catégorie avec matériel à afficher. */
     data: MaterialCategoryItem,
+
+    /** Permet d'afficher les prix de location ou non. */
     withRentalPrices?: boolean,
 };
 

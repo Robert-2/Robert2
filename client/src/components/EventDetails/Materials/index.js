@@ -2,7 +2,7 @@ import './index.scss';
 import { Fragment } from 'vue-fragment';
 import Config from '@/globals/config';
 import Help from '@/components/Help';
-import MaterialsListDisplay from '@/components/MaterialsListDisplay';
+import MaterialsSorted from '@/components/MaterialsSorted';
 import EventMissingMaterials from '@/components/EventMissingMaterials';
 import EventTotals from '@/components/EventTotals';
 import ReturnInventorySummary from '@/components/ReturnInventorySummary';
@@ -40,7 +40,7 @@ export default {
                 {!event.is_return_inventory_done && <EventMissingMaterials eventId={event.id} />}
                 {hasMaterials && (
                     <Fragment>
-                        <MaterialsListDisplay
+                        <MaterialsSorted
                             data={event.materials}
                             withRentalPrices={showBilling && event.is_billable}
                             hideDetails={event.materials.length > 16}
