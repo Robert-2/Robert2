@@ -36,12 +36,7 @@ type GetAllRaw = GetAllParams & { paginated: false };
 async function all(params: GetAllRaw): Promise<ListTemplate[]>;
 async function all(params: GetAllPaginated): Promise<PaginatedData<ListTemplate[]>>;
 // eslint-disable-next-line func-style
-async function all(rawParams: GetAllPaginated | GetAllRaw): Promise<unknown> {
-    const params = {
-        ...rawParams,
-        paginated: rawParams.paginated === false ? '0' : '1',
-        deleted: rawParams.deleted ? '1' : '0',
-    };
+async function all(params: GetAllPaginated | GetAllRaw): Promise<unknown> {
     return (await requester.get('list-templates', { params })).data;
 }
 

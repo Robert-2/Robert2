@@ -39,8 +39,8 @@ class ListTemplateController extends BaseController
             return $response->withJson($results);
         }
 
-        $paginated = $this->paginate($request, $query, $limit ? (int)$limit : null);
-        return $response->withJson($paginated);
+        $result = $this->paginate($request, $query, $limit ? (int)$limit : null);
+        return $response->withJson($result);
     }
 
     public function getOne(Request $request, Response $response): Response

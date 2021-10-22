@@ -1,21 +1,8 @@
 @use '~@/style/globals';
 
-.EventMaterials {
-    &__toggle,
-    &__categories,
-    &__footer {
-        flex: 0 0 auto;
-        margin-bottom: 1.5rem;
-    }
-
-    &__toggle .fas {
-        margin-right: 0.3rem;
-    }
-
-    &__category {
-        padding: 0 0.5rem;
-        border-left: 3px solid globals.$list-left-border-color;
-    }
+.MaterialsCategoryItem {
+    padding: 0 0.5rem;
+    border-left: 3px solid globals.$list-left-border-color;
 
     &__title {
         margin: 0 0 0.5rem;
@@ -26,7 +13,7 @@
         padding: 0;
     }
 
-    &__item,
+    &__material,
     &__subtotal {
         display: flex;
         list-style: none;
@@ -43,7 +30,7 @@
         }
     }
 
-    &__item {
+    &__material {
         margin-bottom: 0.35rem;
         border-bottom: 1px dashed globals.$list-left-border-color;
 
