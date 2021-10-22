@@ -13,6 +13,7 @@ import SwitchToggle from '@/components/SwitchToggle';
 import MaterialsStore from './_store';
 import { normalizeFilters } from './_utils';
 import Quantity from './Quantity';
+import ReuseEventMaterials from './ReuseEventMaterials';
 
 import type { Component, SetupContext } from '@vue/composition-api';
 import type { ClientTableInstance, ClientTableOptions, TableRow } from 'vue-tables-2';
@@ -35,7 +36,7 @@ type Props = {
 const noPaginationLimit = 100000;
 
 // @vue/component
-const MaterialsListEditor: Component<Props> = (props: Props, { emit }: SetupContext) => {
+const MaterialsListEditor: Component<Props> = (props: Props, { root, emit }: SetupContext) => {
     const __ = useI18n();
     const { selected, event } = toRefs(props);
 
@@ -216,6 +217,36 @@ const MaterialsListEditor: Component<Props> = (props: Props, { emit }: SetupCont
         MaterialsStore.commit('init', selected!.value);
     });
 
+    const handleSelectMany = (materialsToAdd: MaterialWithPivot[]): void => {
+        const shouldDisplayOnlySelected = !selected!.value || selected!.value.length === 0;
+
+        materialsToAdd.forEach(({ pivot, ...material }: MaterialWithPivot) => {
+            const { quantity } = pivot;
+            MaterialsStore.commit('setQuantity', { material, quantity });
+        });
+
+        handleChanges();
+
+        if (shouldDisplayOnlySelected) {
+            setSelectedOnly(true);
+        }
+    };
+
+    const handleShowReuseEventModal = (): void => {
+        root.$modal.show(
+            ReuseEventMaterials,
+            undefined,
+            { width: 700, draggable: true, clickToClose: true },
+            {
+                'before-close': ({ params }: { params?: { materials: MaterialWithPivot[] } }) => {
+                    if (params) {
+                        handleSelectMany(params.materials);
+                    }
+                },
+            },
+        );
+    };
+
     return () => (
         <div class="MaterialsListEditor">
             <header class="MaterialsListEditor__header">
@@ -230,6 +261,9 @@ const MaterialsListEditor: Component<Props> = (props: Props, { emit }: SetupCont
                             <SwitchToggle value={showSelectedOnly.value} onInput={setSelectedOnly} />
                         </div>
                     )}
+                    <button type="button" class="info" onClick={handleShowReuseEventModal}>
+                        {__('reuse-list-from-event')}
+                    </button>
                 </div>
             </header>
             {error.value && <ErrorMessage error={error.value} />}

@@ -350,6 +350,58 @@ final class EventTest extends ModelTestCase
         $this->assertEquals($expected, $results);
     }
 
+    public function testSearchByTitle()
+    {
+        $searchTerm = 'premier';
+
+        // - Retourne la liste des événement avec le terme "premier" dans le titre
+        $results = Event::searchByTitle($searchTerm);
+        $this->assertEquals([
+            [
+                'id' => 1,
+                'title' => 'Premier événement',
+                'location' => 'Gap',
+                'description' => null,
+                'start_date' => '2018-12-17 00:00:00',
+                'end_date' => '2018-12-18 23:59:59',
+            ],
+            [
+                'id' => 3,
+                'title' => 'Avant-premier événement',
+                'location' => 'Brousse',
+                'description' => null,
+                'start_date' => '2018-12-15 00:00:00',
+                'end_date' => '2018-12-16 23:59:59',
+            ],
+        ], $results->toArray());
+
+        // - Pareil, mais en excluant l'événement #3
+        $results = Event::searchByTitle($searchTerm, 3);
+        $this->assertEquals([
+            [
+                'id' => 1,
+                'title' => 'Premier événement',
+                'location' => 'Gap',
+                'description' => null,
+                'start_date' => '2018-12-17 00:00:00',
+                'end_date' => '2018-12-18 23:59:59',
+            ],
+        ], $results->toArray());
+
+        // - Encore, mais en limitant à 1 seul résultat
+        $results = Event::searchByTitle($searchTerm, null, 1);
+        $this->assertEquals([
+            [
+                'id' => 1,
+                'title' => 'Premier événement',
+                'location' => 'Gap',
+                'description' => null,
+                'start_date' => '2018-12-17 00:00:00',
+                'end_date' => '2018-12-18 23:59:59',
+            ],
+        ], $results->toArray());
+    }
+
     public function testSetPeriod()
     {
         // - Set period to current year

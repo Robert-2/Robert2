@@ -5,6 +5,7 @@ namespace Robert2\API\Models;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Robert2\API\Config\Config;
 use Robert2\API\Errors\ValidationException;
 use Robert2\API\Models\Material;
@@ -376,6 +377,22 @@ class Event extends BaseModel
         }
 
         return $eventPdf;
+    }
+
+    public static function searchByTitle(string $searchTerm, ?int $exclude = null, int $limit = 10): Collection
+    {
+        $term = sprintf('%%%s%%', addcslashes(trim($searchTerm), '%_'));
+        $select = ['id', 'title', 'start_date', 'end_date', 'location', 'description'];
+
+        $query = static::select($select)
+            ->where('title', 'LIKE', $term)
+            ->whereHas('materials');
+
+        if ($exclude) {
+            $query->where('id', '<>', $exclude);
+        }
+
+        return $query->orderBy('start_date', 'desc')->limit($limit)->get();
     }
 
     // ——————————————————————————————————————————————————————

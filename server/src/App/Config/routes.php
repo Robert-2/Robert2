@@ -34,6 +34,7 @@ return [
         '/materials/{id:[0-9]+}/events[/]' => 'MaterialController:getEvents',
         '/materials/while-event/{eventId:[0-9]+}[/]' => 'MaterialController:getAllWhileEvent',
         '/events[/]' => 'EventController:getAll',
+        '/events/search[/]' => 'EventController:search',
         '/events/{id:[0-9]+}[/]' => 'EventController:getOne',
         '/events/{id:[0-9]+}/missing-materials[/]' => 'EventController:getMissingMaterials',
         '/event-technicians/{id:[0-9]+}[/]' => 'EventTechnicianController:getOne',
