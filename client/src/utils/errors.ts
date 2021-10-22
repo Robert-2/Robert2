@@ -11,7 +11,7 @@ const isApiErrorCode = (error: unknown, code: number): boolean => {
     return (error.response?.status === code);
 };
 
-const extractErrorDetails = (error: unknown): FormErrorDetail | null => {
+const getValidationErrors = (error: unknown): FormErrorDetail | null => {
     if (!isApiErrorCode(error, 400)) {
         return null;
     }
@@ -20,4 +20,4 @@ const extractErrorDetails = (error: unknown): FormErrorDetail | null => {
     return details;
 };
 
-export { isApiErrorCode, extractErrorDetails };
+export { isApiErrorCode, getValidationErrors };

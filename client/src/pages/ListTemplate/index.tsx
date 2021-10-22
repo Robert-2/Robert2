@@ -1,7 +1,7 @@
 import './index.scss';
 import { computed, reactive, ref } from '@vue/composition-api';
 import { useQuery, useQueryClient } from 'vue-query';
-import { extractErrorDetails } from '@/utils/errors';
+import { getValidationErrors } from '@/utils/errors';
 import requester from '@/globals/requester';
 import apiListTemplates from '@/stores/api/list-templates';
 import useI18n from '@/hooks/useI18n';
@@ -54,7 +54,7 @@ const ListTemplateEditPage = (): Render => {
             setTimeout(() => { router.push('/list-templates'); }, 300);
         } catch (err) {
             error.value = err;
-            errors.value = extractErrorDetails(err);
+            errors.value = getValidationErrors(err);
         } finally {
             isLoading.value = false;
         }

@@ -2,7 +2,7 @@ import './index.scss';
 import { toRefs, ref } from '@vue/composition-api';
 import requester from '@/globals/requester';
 import useI18n from '@/hooks/useI18n';
-import { extractErrorDetails } from '@/utils/errors';
+import { getValidationErrors } from '@/utils/errors';
 import FormField from '@/components/FormField';
 import ListTemplateTotals from '@/components/ListTemplateTotals';
 import { getMaterialsQuantities } from '@/components/MaterialsListEditor/_utils';
@@ -19,7 +19,6 @@ type Props = {
 const ListTemplateFromEvent = (props: Props, { root, emit }: SetupContext): Render => {
     const __ = useI18n();
     const { materials } = toRefs(props);
-
     const name = ref<string>('');
     const description = ref<string>('');
     const isSaving = ref<boolean>(false);
@@ -40,7 +39,7 @@ const ListTemplateFromEvent = (props: Props, { root, emit }: SetupContext): Rend
             root.$toasted.success(__('list-template-created', { name: data.name }));
             emit('close');
         } catch (err) {
-            errors.value = extractErrorDetails(err);
+            errors.value = getValidationErrors(err);
         } finally {
             isSaving.value = false;
         }
