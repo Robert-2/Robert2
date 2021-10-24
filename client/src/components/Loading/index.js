@@ -1,7 +1,8 @@
 import './index.scss';
+import { defineComponent } from '@vue/composition-api';
 
 // @vue/component
-export default {
+export default defineComponent({
     name: 'Loading',
     props: {
         horizontal: Boolean,
@@ -18,4 +19,4 @@ export default {
             </div>
         );
     },
-};
+});

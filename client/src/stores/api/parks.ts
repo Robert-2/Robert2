@@ -1,6 +1,6 @@
 import requester from '@/globals/requester';
 
-import type { PaginatedData } from '@/stores/api/@types.d';
+import type { PaginatedData } from '@/stores/api/@types';
 
 //
 // - Types
@@ -20,4 +20,8 @@ const all = async (): Promise<PaginatedData<Park[]>> => (
     (await requester.get('parks')).data
 );
 
-export default { all };
+const list = async (): Promise<Park[]> => (
+    (await requester.get('parks/list')).data
+);
+
+export default { all, list };

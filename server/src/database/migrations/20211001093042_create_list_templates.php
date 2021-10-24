@@ -46,7 +46,7 @@ class CreateListTemplates extends AbstractMigration
             ])
             ->addIndex(['material_unit_id'])
             ->addForeignKey('material_unit_id', 'material_units', 'id', [
-                'delete' => 'RESTRICT',
+                'delete' => 'CASCADE',
                 'update' => 'NO_ACTION',
                 'constraint' => 'fk_list_template_material_unit_material_unit',
             ])

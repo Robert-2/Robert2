@@ -1,6 +1,6 @@
 declare module 'vue-tables-2' {
     import type { VNode } from 'vue';
-    import type { PaginationParams } from '@/stores/api/@types.d';
+    import type { PaginationParams } from '@/stores/api/@types';
 
     //
     // - Common types
@@ -16,7 +16,7 @@ declare module 'vue-tables-2' {
         filterByColumn?: boolean,
         columnsDropdown?: boolean,
         preserveState?: boolean,
-        columnsDisplay?: Record<string, 'mobile' | 'desktop'>,
+        columnsDisplay?: Record<string, string>, // - Voir https://matanya.gitbook.io/vue-tables-2/columns-visibility
         columnsClasses?: Record<string, string>,
     };
 

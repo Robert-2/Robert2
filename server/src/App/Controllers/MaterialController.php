@@ -45,7 +45,7 @@ class MaterialController extends BaseController
 
     public function getAll(Request $request, Response $response): Response
     {
-        $pagination = $request->getQueryParam('pagination', null);
+        $paginated = (bool)$request->getQueryParam('paginated', true);
         $searchTerm = $request->getQueryParam('search', null);
         $searchField = $request->getQueryParam('searchBy', null);
         $parkId = $request->getQueryParam('park', null);
@@ -87,10 +87,10 @@ class MaterialController extends BaseController
                 ->get();
         }
 
-        if ($pagination === 'none') {
-            $results = ['data' => $model->get()->toArray()];
-        } else {
+        if ($paginated) {
             $results = $this->paginate($request, $model);
+        } else {
+            $results = ['data' => $model->get()->toArray()];
         }
 
         $results['data'] = Material::recalcQuantitiesForPeriod(
@@ -100,7 +100,7 @@ class MaterialController extends BaseController
             null
         );
 
-        if ($pagination === 'none') {
+        if (!$paginated) {
             $results = $results['data'];
         }
 

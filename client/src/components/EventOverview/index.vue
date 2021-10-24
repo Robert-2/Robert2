@@ -97,9 +97,9 @@
                 <i class="fas fa-box" />
                 {{ $t('page-events.event-materials') }}
             </h3>
-            <EventMaterials
+            <MaterialsSorted
                 v-if="hasMaterials"
-                :event="event"
+                :data="event.materials"
                 :withRentalPrices="showBilling && event.is_billable"
                 :hideDetails="showBilling && event.is_billable"
             />

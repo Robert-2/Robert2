@@ -14,7 +14,7 @@ import MaterialsStore from './_store';
 import { normalizeFilters } from './_utils';
 import Quantity from './Quantity';
 
-import type { Render, SetupContext } from '@vue/composition-api';
+import type { Component, SetupContext } from '@vue/composition-api';
 import type { ClientTableInstance, ClientTableOptions, TableRow } from 'vue-tables-2';
 import type { Material, MaterialWithPivot } from '@/stores/api/materials';
 import type { Event } from '@/stores/api/events';
@@ -22,15 +22,20 @@ import type { Tag } from '@/stores/api/tags';
 import type { MaterialQuantity, RawFilters, MaterialsFiltersType } from './_utils';
 
 type Props = {
+    /** La liste du matériel sélectionné. */
     selected?: MaterialWithPivot[],
+
+    /** L'événement éventuel associé à la liste. */
     event?: Event,
+
+    /** Déclenché à chaque changement dans la liste. */
     onChange(newList: MaterialQuantity[]): void,
 };
 
 const noPaginationLimit = 100000;
 
 // @vue/component
-const MaterialsListEditor = (props: Props, { emit }: SetupContext): Render => {
+const MaterialsListEditor: Component<Props> = (props: Props, { emit }: SetupContext) => {
     const __ = useI18n();
     const { selected, event } = toRefs(props);
 
@@ -46,7 +51,7 @@ const MaterialsListEditor = (props: Props, { emit }: SetupContext): Render => {
         () => (
             event?.value?.id
                 ? apiMaterials.allWhileEvent(event.value.id)
-                : apiMaterials.allWithoutPagination()
+                : apiMaterials.all({ paginated: false })
         ),
     );
 
@@ -97,12 +102,6 @@ const MaterialsListEditor = (props: Props, { emit }: SetupContext): Render => {
     };
 
     const handleChanges = (): void => {
-        const materialIds = Object.keys(MaterialsStore.state.materials);
-
-        if (materialIds.length === 0) {
-            setSelectedOnly(false);
-        }
-
         const allMaterials: MaterialQuantity[] = Object.entries(MaterialsStore.state.materials)
             // - Laissons Typescript inférer le type de l'argument du map ici...
             // eslint-disable-next-line @typescript-eslint/typedef
@@ -110,6 +109,10 @@ const MaterialsListEditor = (props: Props, { emit }: SetupContext): Render => {
                 id: parseInt(id, 10),
                 quantity,
             }));
+
+        if (allMaterials.every(({ quantity }: MaterialQuantity) => quantity === 0)) {
+            setSelectedOnly(false);
+        }
 
         emit('change', allMaterials);
     };

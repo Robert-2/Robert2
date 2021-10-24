@@ -6,7 +6,7 @@ import getEventDiscountRate from '@/utils/getEventDiscountRate';
 import formatEventTechniciansList from '@/utils/formatEventTechniciansList';
 import Alert from '@/components/Alert';
 import Help from '@/components/Help';
-import EventMaterials from '@/components/EventMaterials';
+import MaterialsSorted from '@/components/MaterialsSorted';
 import EventMissingMaterials from '@/components/EventMissingMaterials';
 import EventBilling from '@/components/EventBilling';
 import EventEstimates from '@/components/EventEstimates';
@@ -19,7 +19,7 @@ export default {
         Tabs,
         Tab,
         Help,
-        EventMaterials,
+        MaterialsSorted,
         EventMissingMaterials,
         EventBilling,
         EventEstimates,
