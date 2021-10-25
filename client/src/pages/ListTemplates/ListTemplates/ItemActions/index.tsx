@@ -3,7 +3,7 @@ import requester from '@/globals/requester';
 import useI18n from '@/hooks/useI18n';
 import { confirm } from '@/utils/alert';
 
-import type { Render, SetupContext } from '@vue/composition-api';
+import type { Component, SetupContext } from '@vue/composition-api';
 
 type Props = {
     id: number,
@@ -13,7 +13,7 @@ type Props = {
 };
 
 // @vue/component
-const ListTemplatesItemActions = (props: Props, { emit }: SetupContext): Render => {
+const ListTemplatesItemActions: Component<Props> = (props: Props, { emit }: SetupContext) => {
     const __ = useI18n();
 
     const { id, isTrashMode } = toRefs(props);

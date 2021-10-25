@@ -4,7 +4,7 @@ import useI18n from '@/hooks/useI18n';
 import MaterialsStore from '../_store';
 import Unit from './Unit';
 
-import type { Render, SetupContext } from '@vue/composition-api';
+import type { Component, SetupContext } from '@vue/composition-api';
 import type { Material, MaterialUnit, MaterialWithPivot } from '@/stores/api/materials';
 import type { MaterialsFiltersType } from '../_utils';
 
@@ -16,7 +16,7 @@ type Props = {
 };
 
 // @vue/component
-const MaterialsListEditorUnits = (props: Props, { emit }: SetupContext): Render => {
+const MaterialsListEditorUnits: Component<Props> = (props: Props, { emit }: SetupContext) => {
     const __ = useI18n();
     const { material, initialData, filters } = toRefs(props);
 

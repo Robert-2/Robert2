@@ -7,7 +7,7 @@ import FormField from '@/components/FormField';
 import ListTemplateTotals from '@/components/ListTemplateTotals';
 import { getMaterialsQuantities } from '@/components/MaterialsListEditor/_utils';
 
-import type { Render, SetupContext } from '@vue/composition-api';
+import type { Component, SetupContext } from '@vue/composition-api';
 import type { FormErrorDetail } from '@/stores/api/@types';
 import type { MaterialWithPivot } from '@/stores/api/materials';
 
@@ -16,7 +16,7 @@ type Props = {
 };
 
 // @vue/component
-const ListTemplateFromEvent = (props: Props, { root, emit }: SetupContext): Render => {
+const ListTemplateFromEvent: Component<Props> = (props: Props, { root, emit }: SetupContext) => {
     const __ = useI18n();
     const { materials } = toRefs(props);
     const name = ref<string>('');

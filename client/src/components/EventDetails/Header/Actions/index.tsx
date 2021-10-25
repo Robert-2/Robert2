@@ -1,15 +1,14 @@
 import './index.scss';
 import { toRefs, computed, ref } from '@vue/composition-api';
 import Config from '@/globals/config';
-import requester from '@/globals/requester';
 import { confirm } from '@/utils/alert';
 import useI18n from '@/hooks/useI18n';
+import apiEvents from '@/stores/api/events';
 import Dropdown, { getItemClassnames } from '@/components/Dropdown';
 import DuplicateEvent from '@/components/DuplicateEvent';
 import ListTemplateFromEvent from '@/components/ListTemplateFromEvent';
 
-import type { Render, SetupContext } from '@vue/composition-api';
-import type { RouterLinkRenderFunctionArgs } from '@/globals/types/router-link';
+import type { Component, SetupContext } from '@vue/composition-api';
 import type { FormatedEvent } from '@/stores/api/events';
 
 type Props = {
@@ -17,17 +16,15 @@ type Props = {
 };
 
 // @vue/component
-const EventDetailsHeaderActions = (props: Props, { root, emit }: SetupContext): Render => {
+const EventDetailsHeaderActions: Component<Props> = (props: Props, { root, emit }: SetupContext) => {
     const __ = useI18n();
     const { event } = toRefs(props);
-
     const isConfirming = ref<boolean>(false);
     const isArchiving = ref<boolean>(false);
     const isDeleting = ref<boolean>(false);
-
-    const hasMaterials = computed(() => (
-        event.value.materials.length > 0
-    ));
+    const hasMaterials = computed(() => event.value.materials.length > 0);
+    const isConfirmable = computed(() => event.value.materials?.length === 0);
+    const isEndToday = computed(() => event.value.endDate.isSame(new Date(), 'day'));
 
     const isPrintable = computed(() => (
         event.value.materials &&
@@ -50,27 +47,22 @@ const EventDetailsHeaderActions = (props: Props, { root, emit }: SetupContext): 
         return !(isConfirmed || isInventoryDone);
     });
 
-    const isConfirmable = computed(() => event.value.materials?.length === 0);
-
-    const isEndToday = computed(() => event.value.endDate.isSame(new Date(), 'day'));
-
     const eventSummaryPdfUrl = computed(() => {
         const { baseUrl } = Config;
         const { id } = event.value || { id: null };
         return `${baseUrl}/events/${id}/pdf`;
     });
 
-    const setEventConfirmation = async (isConfirmed: boolean): Promise<void> => {
+    const handleToggleConfirm = async (): Promise<void> => {
         if (isConfirming.value) {
             return;
         }
         isConfirming.value = true;
 
-        const { id } = event.value;
+        const { id, isConfirmed } = event.value;
 
         try {
-            const url = `events/${id}`;
-            const { data } = await requester.put(url, { id, is_confirmed: isConfirmed });
+            const data = await apiEvents.setConfirmed(id, !isConfirmed);
             emit('saved', data);
         } catch (error) {
             emit('error', error);
@@ -80,21 +72,16 @@ const EventDetailsHeaderActions = (props: Props, { root, emit }: SetupContext): 
         }
     };
 
-    const toggleConfirmed = (): void => {
-        setEventConfirmation(!event.value.isConfirmed);
-    };
-
-    const setEventArchived = async (isArchived: boolean): Promise<void> => {
+    const handleToggleArchived = async (): Promise<void> => {
         if (isArchiving.value) {
             return;
         }
         isArchiving.value = true;
 
-        const { id } = event.value;
+        const { id, isArchived } = event.value;
 
         try {
-            const url = `events/${id}`;
-            const { data } = await requester.put(url, { id, is_archived: isArchived });
+            const data = await apiEvents.setArchived(id, !isArchived);
             emit('saved', data);
         } catch (error) {
             emit('error', error);
@@ -102,10 +89,6 @@ const EventDetailsHeaderActions = (props: Props, { root, emit }: SetupContext): 
             // eslint-disable-next-line require-atomic-updates
             isArchiving.value = false;
         }
-    };
-
-    const toggleArchived = (): void => {
-        setEventArchived(event.value.isArchived);
     };
 
     const handleDelete = async (): Promise<void> => {
@@ -128,7 +111,7 @@ const EventDetailsHeaderActions = (props: Props, { root, emit }: SetupContext): 
         const { id } = event.value;
 
         try {
-            await requester.delete(`events/${id}`);
+            await apiEvents.remove(id);
             emit('deleted', id);
         } catch (error) {
             emit('error', error);
@@ -150,7 +133,7 @@ const EventDetailsHeaderActions = (props: Props, { root, emit }: SetupContext): 
         });
     };
 
-    const askCreateListTemplate = (): void => {
+    const handleCreateListTemplate = (): void => {
         const { materials } = event.value;
 
         root.$modal.show(ListTemplateFromEvent, { materials }, {
@@ -177,21 +160,13 @@ const EventDetailsHeaderActions = (props: Props, { root, emit }: SetupContext): 
                     </a>
                 )}
                 {isEditable.value && (
-                    <router-link to={`/events/${id}`} custom>
-                        {({ navigate }: RouterLinkRenderFunctionArgs) => (
-                            <button type="button" class="info" onClick={navigate}>
-                                <i class="fas fa-edit" /> {__('action-edit')}
-                            </button>
-                        )}
+                    <router-link to={`/events/${id}`} class="button info">
+                        <i class="fas fa-edit" /> {__('action-edit')}
                     </router-link>
                 )}
                 {(isPast || isEndToday.value) && !isArchived && (
-                    <router-link to={`/event-return/${id}`} custom>
-                        {({ navigate }: RouterLinkRenderFunctionArgs) => (
-                            <button type="button" class="info" onClick={navigate}>
-                                <i class="fas fa-tasks" /> {__('return-inventory')}
-                            </button>
-                        )}
+                    <router-link to={`/event-return/${id}`} class="button info">
+                        <i class="fas fa-tasks" /> {__('return-inventory')}
                     </router-link>
                 )}
                 <Dropdown variant="actions">
@@ -205,7 +180,7 @@ const EventDetailsHeaderActions = (props: Props, { root, emit }: SetupContext): 
                                     success: !isConfirmed,
                                 }}
                                 disabled={isConfirmable.value}
-                                onClick={toggleConfirmed}
+                                onClick={handleToggleConfirm}
                             >
                                 {(!isConfirming.value && !isConfirmed) && <i class="fas fa-check" />}
                                 {(!isConfirming.value && isConfirmed) && <i class="fas fa-hourglass-half" />}
@@ -217,7 +192,7 @@ const EventDetailsHeaderActions = (props: Props, { root, emit }: SetupContext): 
                             <button
                                 type="button"
                                 class={{ ...getItemClassnames(), info: !isArchived }}
-                                onClick={toggleArchived}
+                                onClick={handleToggleArchived}
                             >
                                 {!isArchiving.value && <i class="fas fa-archive" />}
                                 {isArchiving.value && <i class="fas fa-circle-notch fa-spin" />}
@@ -246,7 +221,7 @@ const EventDetailsHeaderActions = (props: Props, { root, emit }: SetupContext): 
                             <button
                                 type="button"
                                 class={{ ...getItemClassnames() }}
-                                onClick={askCreateListTemplate}
+                                onClick={handleCreateListTemplate}
                             >
                                 <i class="fas fa-list" /> {__('create-list-template-from-event')}
                             </button>
@@ -261,6 +236,7 @@ const EventDetailsHeaderActions = (props: Props, { root, emit }: SetupContext): 
 EventDetailsHeaderActions.props = {
     event: { type: Object, required: true },
 };
+
 EventDetailsHeaderActions.emits = ['saved', 'deleted', 'duplicated', 'error'];
 
 export default EventDetailsHeaderActions;

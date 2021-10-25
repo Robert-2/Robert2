@@ -2,7 +2,7 @@ import './index.scss';
 import { toRefs } from '@vue/composition-api';
 import useI18n from '@/hooks/useI18n';
 
-import type { Render, SetupContext } from '@vue/composition-api';
+import type { Component, SetupContext } from '@vue/composition-api';
 import type { ListTemplate } from '@/stores/api/list-templates';
 
 type Props = {
@@ -11,7 +11,7 @@ type Props = {
 };
 
 // @vue/component
-const ListTemplateUsageList = (props: Props, { emit }: SetupContext): Render => {
+const ListTemplateUsageList: Component<Props> = (props: Props, { emit }: SetupContext) => {
     const __ = useI18n();
     const { data } = toRefs(props);
 

@@ -8,7 +8,7 @@ import ListTemplateTotals from '@/components/ListTemplateTotals';
 import MaterialsListEditor from '@/components/MaterialsListEditor';
 import { getMaterialsQuantities, materialsHasChanged } from '@/components/MaterialsListEditor/_utils';
 
-import type { Render, SetupContext } from '@vue/composition-api';
+import type { Component, SetupContext } from '@vue/composition-api';
 import type { FormErrorDetail } from '@/stores/api/@types';
 import type { ListTemplateWithMaterial } from '@/stores/api/list-templates';
 import type { MaterialQuantity } from '@/components/MaterialsListEditor/_utils';
@@ -23,7 +23,7 @@ type Props = {
 };
 
 // @vue/component
-const ListTemplateForm = (props: Props, { emit }: SetupContext): Render => {
+const ListTemplateForm: Component<Props> = (props: Props, { emit }: SetupContext) => {
     const { isNew, data, errors } = toRefs(props);
     const __ = useI18n();
 

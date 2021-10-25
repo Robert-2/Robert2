@@ -67,7 +67,7 @@
 
     &__footer {
         padding: globals.$content-padding-large-vertical;
-        border-top: 1px solid globals.$tabs-bottom-border-color;
+        border-top: 1px solid globals.$modal-footer-separator-color;
         text-align: center;
     }
 }

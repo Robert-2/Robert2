@@ -1,4 +1,4 @@
-/* eslint-disable babel/camelcase */
+import requester from '@/globals/requester';
 
 import type { PersonWithEventPivot } from '@/stores/api/persons';
 import type { MaterialWithPivot } from '@/stores/api/materials';
@@ -11,6 +11,7 @@ import type { Moment } from 'moment';
 // - Types
 //
 
+/* eslint-disable babel/camelcase */
 export type Event = {
     id: number,
     title: string,
@@ -36,6 +37,7 @@ export type Event = {
     deleted_at: string,
     updated_at: string,
 };
+/* eslint-enable babel/camelcase */
 
 export type FormatedEvent = Event & {
     startDate: Moment,
@@ -49,4 +51,16 @@ export type FormatedEvent = Event & {
     hasNotReturnedMaterials: boolean,
 };
 
-/* eslint-enable babel/camelcase */
+const setConfirmed = async (id: number, isConfirmed: boolean): Promise<Event> => (
+    (await requester.put(`events/${id}`, { is_confirmed: isConfirmed })).data
+);
+
+const setArchived = async (id: number, isArchived: boolean): Promise<Event> => (
+    (await requester.put(`events/${id}`, { is_archived: isArchived })).data
+);
+
+const remove = async (id: number): Promise<void> => {
+    await requester.delete(`events/${id}`);
+};
+
+export default { setConfirmed, setArchived, remove };

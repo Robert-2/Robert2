@@ -5,20 +5,19 @@ import useI18n from '@/hooks/useI18n';
 import apiParks from '@/stores/api/parks';
 import apiUnitStates from '@/stores/api/unit-states';
 
-import type { Render, SetupContext } from '@vue/composition-api';
+import type { Component, SetupContext } from '@vue/composition-api';
 import type { Park } from '@/stores/api/parks';
 import type { UnitState } from '@/stores/api/unit-states';
 import type { MaterialUnit } from '@/stores/api/materials';
 
 type Props = {
-    key: number,
     data: MaterialUnit,
     isSelected: boolean,
     onToggle(): void,
 };
 
 // @vue/component
-const MaterialsListEditorUnit = (props: Props, { emit }: SetupContext): Render => {
+const MaterialsListEditorUnit: Component<Props> = (props: Props, { emit }: SetupContext) => {
     const __ = useI18n();
     const { data, isSelected } = toRefs(props);
 

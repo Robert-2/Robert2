@@ -8,7 +8,7 @@ import formatOptions from '@/utils/formatOptions';
 import apiCountries from '@/stores/api/countries';
 import FormField from '@/components/FormField';
 
-import type { Render, SetupContext } from '@vue/composition-api';
+import type { Component, SetupContext } from '@vue/composition-api';
 
 type Props = {
     company: Record<string, any>,
@@ -16,7 +16,7 @@ type Props = {
 };
 
 // @vue/component
-const CompanyForm = (props: Props, { emit }: SetupContext): Render => {
+const CompanyForm: Component<Props> = (props: Props, { emit }: SetupContext) => {
     const { company, errors } = toRefs(props);
     const { data: countries } = useQuery('countries', apiCountries.all);
     const countriesOptions = computed(() => formatOptions(countries.value ?? []));
