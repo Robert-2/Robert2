@@ -5,14 +5,14 @@ import formatAmount from '@/utils/formatAmount';
 import useI18n from '@/hooks/useI18n';
 import ErrorMessage from '@/components/ErrorMessage/index';
 
-import type { Render } from '@vue/composition-api';
+import type { Component } from '@vue/composition-api';
 
 type Props = {
     parkId: number,
 };
 
 // @vue/component
-const ParkTotalAmount = (props: Props): Render => {
+const ParkTotalAmount: Component<Props> = (props: Props) => {
     const __ = useI18n();
     const { parkId } = toRefs(props);
     const isLoading = ref(false);

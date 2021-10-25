@@ -7,7 +7,7 @@ import formatOptions from '@/utils/formatOptions';
 import apiCountries from '@/stores/api/countries';
 import FormField from '@/components/FormField';
 
-import type { Render, SetupContext } from '@vue/composition-api';
+import type { Component, SetupContext } from '@vue/composition-api';
 
 type Props = {
     person: Record<string, any>,
@@ -17,7 +17,7 @@ type Props = {
 };
 
 // @vue/component
-const PersonForm = (props: Props, { root, emit }: SetupContext): Render => {
+const PersonForm: Component<Props> = (props: Props, { root, emit }: SetupContext) => {
     // FIXME: La prop. `person` ne devrait pas être mutée dans ce component...
     const { person, errors, withReference, withCompany } = toRefs(props);
     const { data: countries } = useQuery('countries', apiCountries.all);

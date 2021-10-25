@@ -7,7 +7,7 @@ import apiCountries from '@/stores/api/countries';
 import useI18n from '@/hooks/useI18n';
 import FormField from '@/components/FormField';
 
-import type { Render, SetupContext } from '@vue/composition-api';
+import type { Component, SetupContext } from '@vue/composition-api';
 
 type Props = {
     park: Record<string, any>,
@@ -18,7 +18,7 @@ type Props = {
 };
 
 // @vue/component
-const ParkForm = (props: Props, { emit }: SetupContext): Render => {
+const ParkForm: Component<Props> = (props: Props, { emit }: SetupContext) => {
     const { park, errors } = toRefs(props);
     const { data: countries } = useQuery('countries', apiCountries.all);
     const countriesOptions = computed(() => formatOptions(countries.value ?? []));

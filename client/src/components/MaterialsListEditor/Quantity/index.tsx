@@ -2,7 +2,7 @@ import debounce from 'debounce';
 import { toRefs, ref, watch } from '@vue/composition-api';
 import QuantityInput from '@/components/QuantityInput';
 
-import type { Render, SetupContext } from '@vue/composition-api';
+import type { Component, SetupContext } from '@vue/composition-api';
 import type { Material } from '@/stores/api/materials';
 
 type Props = {
@@ -12,7 +12,7 @@ type Props = {
 };
 
 // @vue/component
-const MaterialsListEditorQuantity = (props: Props, { emit }: SetupContext): Render => {
+const MaterialsListEditorQuantity: Component<Props> = (props: Props, { emit }: SetupContext) => {
     const { material, initialQuantity } = toRefs(props);
 
     const quantity = ref<number>(initialQuantity.value);
