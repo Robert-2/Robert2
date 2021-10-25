@@ -6,7 +6,7 @@ import apiListTemplates from '@/stores/api/list-templates';
 import CriticalError from '@/components/CriticalError';
 import ItemActions from './ItemActions';
 
-import type { Render, SetupContext } from '@vue/composition-api';
+import type { Component, SetupContext } from '@vue/composition-api';
 import type { ServerTableInstance, ServerTableOptions, TableRow } from 'vue-tables-2';
 import type { PaginationParams, PaginatedData } from '@/stores/api/@types';
 import type { ListTemplate } from '@/stores/api/list-templates';
@@ -17,7 +17,7 @@ type Props = {
 };
 
 // @vue/component
-const ListTemplates = (props: Props, { emit }: SetupContext): Render => {
+const ListTemplates: Component<Props> = (props: Props, { emit }: SetupContext) => {
     const __ = useI18n();
 
     const { withTrashed } = toRefs(props);

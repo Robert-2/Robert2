@@ -1,5 +1,5 @@
 .Notification {
-    &.toasted-primary {
+    &.toasted.toasted-primary {
         border-radius: 3px;
         font-size: 1rem;
 
@@ -7,9 +7,18 @@
             background-color: rgba($bg-color-button-danger, 0.7);
         }
 
+        &.success {
+            background-color: rgba($bg-color-button-success, 0.7);
+        }
+
         .action {
+            margin-left: $content-padding-small-vertical;
             color: $text-base-color;
+            font-size: 1rem;
+            font-weight: 400;
+            letter-spacing: normal;
             opacity: 0.7;
+            text-transform: none;
 
             &:hover {
                 color: $text-base-color;

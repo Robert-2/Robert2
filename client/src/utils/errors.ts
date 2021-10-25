@@ -1,5 +1,8 @@
 import axios from 'axios';
 
+import type { AxiosError } from 'axios';
+import type { FormErrorDetail } from '@/stores/api/@types';
+
 const isApiErrorCode = (error: unknown, code: number): boolean => {
     if (!axios.isAxiosError(error)) {
         return false;
@@ -8,17 +11,13 @@ const isApiErrorCode = (error: unknown, code: number): boolean => {
     return (error.response?.status === code);
 };
 
-const extractErrorDetails = (error: unknown): unknown => {
-    if (!axios.isAxiosError(error)) {
-        return error;
+const getValidationErrors = (error: unknown): FormErrorDetail | null => {
+    if (!isApiErrorCode(error, 400)) {
+        return null;
     }
 
-    if (isApiErrorCode(error, 400)) {
-        const { details } = error.response?.data?.error || { details: {} };
-        return details;
-    }
-
-    return error;
+    const { details } = (error as AxiosError).response?.data?.error || { details: {} };
+    return details;
 };
 
-export { isApiErrorCode, extractErrorDetails };
+export { isApiErrorCode, getValidationErrors };

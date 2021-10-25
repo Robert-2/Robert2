@@ -5,7 +5,6 @@ import requester from '@/globals/requester';
 import useI18n from '@/hooks/useI18n';
 import { confirm } from '@/utils/alert';
 
-import type { RouterLinkRenderFunctionArgs } from '@/globals/types/router-link.d';
 import type { Render, SetupContext } from '@vue/composition-api';
 import type { MaterialUnit } from '@/stores/api/materials';
 
@@ -106,13 +105,9 @@ const MaterialViewUnitActions = (props: Props, { emit }: SetupContext): Render =
                 <router-link
                     vTooltip={__('action-edit')}
                     to={`/materials/${unit.value.material_id}/units/${unit.value.id}`}
-                    custom
+                    class="button item-actions__button info"
                 >
-                    {({ navigate }: RouterLinkRenderFunctionArgs) => (
-                        <button type="button" class="item-actions__button info" onClick={navigate}>
-                            <i class="fas fa-edit" />
-                        </button>
-                    )}
+                    <i class="fas fa-edit" />
                 </router-link>
                 <button
                     vTooltip_left={__('action-delete')}

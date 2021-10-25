@@ -4,7 +4,7 @@ import { Fragment } from 'vue-fragment';
 import useI18n from '@/hooks/useI18n';
 import formatAmount from '@/utils/formatAmount';
 
-import type { Render } from '@vue/composition-api';
+import type { Component } from '@vue/composition-api';
 import type { MaterialWithPivot } from '@/stores/api/materials';
 
 type Props = {
@@ -12,7 +12,7 @@ type Props = {
 };
 
 // @vue/component
-const ListTemplateTotals = (props: Props): Render => {
+const ListTemplateTotals: Component<Props> = (props: Props) => {
     const __ = useI18n();
     const { materials } = toRefs(props);
 

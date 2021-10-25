@@ -1,6 +1,6 @@
 @use '~@/style/globals';
 
-.ListTemplateUsage {
+.ListTemplateFromEvent {
     &__header {
         display: flex;
         align-items: center;
@@ -21,38 +21,47 @@
 
     &__main {
         display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: globals.$content-padding-large-vertical globals.$content-padding-small-vertical;
+
+        .FormField {
+            display: block;
+            min-width: 350px;
+
+            &__label {
+                margin-bottom: globals.$content-padding-small-horizontal;
+                padding: 0;
+                text-align: left;
+            }
+
+            &__textarea {
+                width: 100%;
+            }
+
+            &__error {
+                flex: 0 0 auto;
+
+                &__text {
+                    padding: 0;
+                }
+            }
+        }
+
+        .FormField + .FormField {
+            margin-top: globals.$content-padding-small-vertical;
+        }
+    }
+
+    &__datepicker {
+        display: flex;
         align-items: center;
         justify-content: center;
-        padding: globals.$content-padding-large-vertical globals.$content-padding-small-vertical;
-    }
 
-    &__list {
-        overflow-y: auto;
-        width: 100%;
-        max-height: 500px;
-    }
-
-    &__selected {
-        padding: 0 globals.$content-padding-small-vertical;
-
-        &__description {
-            margin-bottom: globals.$content-padding-large-vertical;
-        }
-
-        .MaterialsSorted__categories {
-            overflow-y: auto;
-            min-width: 650px;
-            max-height: 500px;
-        }
-
-        &__warning {
-            margin-top: globals.$content-padding-large-vertical;
-            color: globals.$text-warning-color;
-            font-size: 1.2rem;
-
-            .fas {
-                margin-right: globals.$content-padding-small-horizontal;
-            }
+        &__input {
+            width: 100%;
+            max-width: 300px;
+            font-size: 1.1rem;
         }
     }
 

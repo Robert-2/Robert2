@@ -287,6 +287,8 @@ export default {
     'choose-another-one': "Choose another one",
     'no-list-template-available': "No list template available!",
     'create-list-template': "Create a material list template",
+    'create-list-template-from-event': "Create a list template with this event's materials",
+    'list-template-created': "Le modèle de liste de matériel nommé «\u00a0{name}\u00a0» a bien été créé",
 
     'inventories': "Inventories",
     'terminate-inventory': "Terminate inventory",
