@@ -1,3 +1,4 @@
+import moment from 'moment';
 import { formatTechnicianEvent } from '@/pages/TechnicianView/Schedule/_utils';
 
 describe('TechnicianView/Schedule/utils.formatTechnicianEvent', () => {
@@ -28,8 +29,10 @@ describe('TechnicianView/Schedule/utils.formatTechnicianEvent', () => {
 
         expect(result.id).toBe(1);
         expect(result.eventId).toBe(2);
-        expect(result.startDate).toEqual('2019-10-01 08:00:00');
-        expect(result.endDate).toEqual('2019-10-02 23:00:00');
+        expect(moment.isMoment(result.startDate)).toBe(true);
+        expect(result.startDate.format('DD MMM LT')).toEqual('01 Oct 8:00 AM');
+        expect(moment.isMoment(result.endDate)).toBe(true);
+        expect(result.endDate.format('DD MMM LT')).toEqual('02 Oct 11:00 PM');
         expect(result.title).toEqual('Test event (Testville)\n01 October, 8:00 AM ⇒ 02 October, 11:00 PM : Régisseur');
         expect(result.classes).toEqual(['cv-item--past', 'cv-item--not-confirmed']);
     });

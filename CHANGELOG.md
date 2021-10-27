@@ -10,6 +10,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Corrige le comportement de la modale d'assignation de technicien (étape 3 de l'édition d'événement) en cas d'erreur serveur (#294).
 - Corrige le comportement du calendrier principal quand un technicien a été supprimé (#293).
 - Permet l'affichage des techniciens mis à la corbeille (#293).
+- Corrige le problème d'assignation de technicien avec MySQL 5.7 (#294).
 
 ## 0.15.1 (2021-09-21)
 

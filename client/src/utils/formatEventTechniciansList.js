@@ -19,8 +19,8 @@ const formatEventTechniciansList = (eventTechnicians) => {
             }
 
             const currentTechnician = technicians.get(id);
-            const from = moment(startTime);
-            const to = moment(endTime);
+            const from = moment.utc(startTime).local();
+            const to = moment.utc(endTime).local();
             currentTechnician.periods.push({ id: periodId, from, to, position });
         },
     );

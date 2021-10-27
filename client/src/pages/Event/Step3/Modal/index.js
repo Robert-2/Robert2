@@ -1,6 +1,6 @@
 import './index.scss';
 import moment from 'moment';
-import { TECHNICIAN_EVENT_MIN_DURATION } from '@/globals/constants';
+import { TECHNICIAN_EVENT_MIN_DURATION, DATE_DB_FORMAT } from '@/globals/constants';
 import { confirm } from '@/utils/alert';
 import { getValidationErrors } from '@/utils/errors';
 import FormField from '@/components/FormField';
@@ -158,8 +158,8 @@ export default {
             const postData = {
                 event_id: eventId,
                 technician_id: technician.id,
-                start_time: moment(dates[0]).format(),
-                end_time: moment(dates[1]).format(),
+                start_time: moment(dates[0]).utc().format(DATE_DB_FORMAT),
+                end_time: moment(dates[1]).utc().format(DATE_DB_FORMAT),
                 position,
             };
 
