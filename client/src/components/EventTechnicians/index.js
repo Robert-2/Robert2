@@ -5,14 +5,14 @@ import EventTechnicianItem from './Item';
 export default {
     name: 'EventTechnicians',
     props: {
-        eventTechnicians: Array,
-        warningEmptyText: String,
+        eventTechnicians: { type: Array, required: true },
+        warningEmptyText: { type: String, default: null },
     },
     computed: {
         uniqueTechnicians() {
             return this.eventTechnicians.filter((eventTechnician, index, self) => (
-                self.findIndex(
-                    ({ technician }) => (technician.id === eventTechnician.technician.id),
+                eventTechnician.technician && self.findIndex(
+                    ({ technician }) => (technician && technician.id === eventTechnician.technician.id),
                 ) === index
             ));
         },

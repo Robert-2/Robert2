@@ -56,8 +56,8 @@ const formatEvent = (dataEvent, translate) => {
     if (technicians.length > 0) {
         const techniciansNames = technicians
             .filter((eventTechnician, index, self) => (
-                self.findIndex(
-                    ({ technician }) => (technician.id === eventTechnician.technician.id),
+                eventTechnician.technician && self.findIndex(
+                    ({ technician }) => (technician && technician.id === eventTechnician.technician.id),
                 ) === index
             ))
             .map(({ technician }) => technician.full_name);

@@ -8,6 +8,10 @@ const formatEventTechniciansList = (eventTechnicians) => {
     const technicians = new Map();
     eventTechnicians.forEach(
         ({ technician, id: periodId, start_time: startTime, end_time: endTime, position }) => {
+            if (!technician) {
+                return;
+            }
+
             const { id, full_name: name, phone } = technician;
 
             if (!technicians.has(id)) {
