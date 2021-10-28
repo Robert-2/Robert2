@@ -10,8 +10,8 @@ const formatEventTechnician = (eventTechnician) => {
         event,
         position,
         event_id: eventId,
-        start_time: start,
-        end_time: end,
+        start_time: startTime,
+        end_time: endTime,
     } = eventTechnician;
 
     const { title: eventTitle, location } = event;
@@ -21,15 +21,15 @@ const formatEventTechnician = (eventTechnician) => {
         title = `${title} (${location})`;
     }
 
-    const _start = moment(start);
-    const _end = moment(end);
-    const duration = _end.diff(_start, 'days') + 1;
+    const start = moment.utc(startTime).local();
+    const end = moment.utc(endTime).local();
+    const duration = end.diff(start, 'days') + 1;
     let dateFormat = 'LT';
     if (duration > 1) {
         dateFormat = 'DD MMMM, LT';
     }
 
-    const datesString = `${_start.format(dateFormat)} ⇒ ${_end.format(dateFormat)}`;
+    const datesString = `${start.format(dateFormat)} ⇒ ${end.format(dateFormat)}`;
     const content = position ? `${datesString} : ${position}` : datesString;
     title = `${title}\n${content}`;
 

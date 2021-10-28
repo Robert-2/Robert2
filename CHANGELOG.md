@@ -6,6 +6,11 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 
 ## 0.16.0-premium (UNRELEASED)
 
+- Commence l'amélioration du code front-end : réécriture en TypeScript, et utilisation de la nouvelle "composition API" de Vue.js.
+- Corrige le comportement de la modale d'assignation de technicien (étape 3 de l'édition d'événement) en cas d'erreur serveur (OSS #294).
+- Corrige le comportement du calendrier principal quand un technicien a été supprimé (OSS #293).
+- Permet l'affichage des techniciens mis à la corbeille (OSS #293).
+- Corrige le problème d'assignation de technicien avec MySQL 5.7 (OSS #294).
 - Ajoute les modèles de liste de matériel (#136).
 - Affiche un message quand l'utilisateur veut supprimer une unité qui est utilisée dans des modèles de liste ou événements.
 - Permet l'utilisation des modèles de liste de matériel pour remplir rapidement les événements (#136).

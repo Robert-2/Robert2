@@ -6,7 +6,7 @@
         "lint:js": "eslint './**/*.{js,vue,ts,tsx}'",
         "lint:scss": "stylelint 'src/**/*.scss'",
         "check-types": "tsc",
-        "test": "vue-cli-service test:unit"
+        "test": "npx cross-env TZ=UTC vue-cli-service test:unit"
     },
     "dependencies": {
         "@fortawesome/fontawesome-free": "5.15.3",
