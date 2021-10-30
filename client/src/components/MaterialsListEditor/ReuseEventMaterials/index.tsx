@@ -109,7 +109,7 @@ const ReuseEventMaterials: Component<Props> = (props: Props, { emit }: SetupCont
                         <button type="button" onClick={handleSubmit} class="success">
                             <i class="fas fa-check" /> {__('use-these-materials')}
                         </button>
-                        <button type="button" onClick={handleClearSelection} class="warning">
+                        <button type="button" onClick={handleClearSelection}>
                             <i class="fas fa-random" /> {__('choose-another-one')}
                         </button>
                     </div>

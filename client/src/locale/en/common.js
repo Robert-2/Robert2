@@ -271,7 +271,7 @@ export default {
 
     'display-only-selected-materials': "Display selected materials only",
     'display-all-materials-to-add-some': "Display all materials to add some",
-    'reuse-list-from-event': "Use list form another event...",
+    'reuse-list-from-event': "Add materials from another event...",
     'choose-event-to-reuse-materials-list': "Choose an event to reuse its materials list",
     'type-to-search-event': "Type in to search an event...",
     'reuse-list-from-event-warning': "Be careful, the materials will be added to the already selected, and the list will be saved right away!",
