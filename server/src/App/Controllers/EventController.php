@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Robert2\API\Controllers;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Robert2\API\Controllers\Traits\CamelCase;
 use Robert2\API\Controllers\Traits\WithCrud;
 use Robert2\API\Controllers\Traits\WithPdf;
 use Robert2\API\Errors\ValidationException;
@@ -17,7 +16,6 @@ use Slim\Http\ServerRequest as Request;
 
 class EventController extends BaseController
 {
-    use CamelCase;
     use WithCrud;
     use WithPdf;
 
@@ -29,6 +27,14 @@ class EventController extends BaseController
 
     public function getAll(Request $request, Response $response): Response
     {
+        $title = $request->getQueryParam('title', null);
+        $exclude = $request->getQueryParam('exclude', null);
+
+        if ($title) {
+            $results = Event::searchByTitle($title, $exclude ? (int)$exclude : null);
+            return $response->withJson($results);
+        }
+
         $startDate = $request->getQueryParam('start', null);
         $endDate = $request->getQueryParam('end', null);
         $deleted = (bool)$request->getQueryParam('deleted', false);
@@ -68,20 +74,6 @@ class EventController extends BaseController
         }
 
         return $response->withJson(compact('data'));
-    }
-
-    public function search(Request $request, Response $response): Response
-    {
-        $searchTerm = $request->getQueryParam('searchTerm', null);
-        $exclude = $request->getQueryParam('exclude', null);
-
-        if (!$searchTerm || strlen($searchTerm) < 2) {
-            return $response->withJson([]);
-        }
-
-        $results = Event::searchByTitle($searchTerm, (int)$exclude);
-
-        return $response->withJson($this->collectionToCamelCase($results));
     }
 
     public function getOne(Request $request, Response $response): Response

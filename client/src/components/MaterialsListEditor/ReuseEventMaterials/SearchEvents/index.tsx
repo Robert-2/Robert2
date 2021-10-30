@@ -37,13 +37,13 @@ const SearchEvents: Component<Props> = (props: Props, { root, emit }: SetupConte
 
         try {
             results.value = await apiEvents.search({
-                searchTerm: trimedSearchTerm,
+                title: trimedSearchTerm,
                 exclude: exclude?.value || undefined,
             });
             isFetched.value = true;
         } catch (err) {
             isFetched.value = false;
-            root.$toasted.error(getErrorMessage(err));
+            root.$toasted.error(getErrorMessage(err, __));
         } finally {
             isLoading.value = false;
         }

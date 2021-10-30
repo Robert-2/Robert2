@@ -24,7 +24,7 @@ export default defineComponent({
         },
 
         message() {
-            return getErrorMessage(this.error);
+            return getErrorMessage(this.error, this.$t);
         },
 
         details() {

@@ -10,12 +10,14 @@ use Robert2\API\Config\Config;
 use Robert2\API\Errors\ValidationException;
 use Robert2\API\Models\Material;
 use Robert2\API\Models\Park;
+use Robert2\API\Models\Traits\CamelCaseJson;
 use Robert2\API\Models\Traits\WithPdf;
 use Robert2\Lib\Domain\EventData;
 use Robert2\API\Validation\Validator as V;
 
 class Event extends BaseModel
 {
+    use CamelCaseJson;
     use SoftDeletes;
     use WithPdf;
 
@@ -379,13 +381,17 @@ class Event extends BaseModel
         return $eventPdf;
     }
 
-    public static function searchByTitle(string $searchTerm, ?int $exclude = null, int $limit = 10): Collection
+    public static function searchByTitle(string $term, ?int $exclude = null, int $limit = 10): Collection
     {
-        $term = sprintf('%%%s%%', addcslashes(trim($searchTerm), '%_'));
+        if (!$term || strlen($term) < 2) {
+            return [];
+        }
+
+        $safeTerm = sprintf('%%%s%%', addcslashes(trim($term), '%_'));
         $select = ['id', 'title', 'start_date', 'end_date', 'location', 'description'];
 
         $query = static::select($select)
-            ->where('title', 'LIKE', $term)
+            ->where('title', 'LIKE', $safeTerm)
             ->whereHas('materials');
 
         if ($exclude) {

@@ -1,4 +1,3 @@
-import Vue from 'vue';
 import axios from 'axios';
 
 import type { AxiosError } from 'axios';
@@ -21,14 +20,12 @@ const getValidationErrors = (error: unknown): FormErrorDetail | null => {
     return details;
 };
 
-const getErrorMessage = (error: unknown): string => {
+type I18nTranslate = (msg: string, vars?: Record<string, string | number>) => string;
+
+const getErrorMessage = (error: unknown, __: I18nTranslate): string => {
     if (typeof error === 'string') {
         return error;
     }
-
-    // FIXME: Trouver un moyen de typer ceci correctement ↓
-    // @ts-ignore Ici, i18n est bien défini.
-    const { translate: __ } = Vue.i18n;
 
     if (!axios.isAxiosError(error)) {
         const message = (error as Error).message || 'unknown';

@@ -61,7 +61,7 @@ export type EventSummary = {
 };
 
 type SearchParams = {
-    searchTerm: string,
+    title: string,
     exclude?: number | undefined,
 };
 
@@ -70,7 +70,7 @@ type SearchParams = {
 //
 
 const search = async (params: SearchParams): Promise<EventSummary[]> => (
-    (await requester.get(`events/search`, { params })).data
+    (await requester.get(`events`, { params })).data
 );
 
 const one = async (id: number): Promise<Event> => (

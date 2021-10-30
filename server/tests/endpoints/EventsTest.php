@@ -1053,7 +1053,7 @@ final class EventsTest extends ApiTestCase
         $this->client->put('/api/events/restore/1');
         $this->assertStatusCode(SUCCESS_OK);
         $response = $this->_getResponseAsArray();
-        $this->assertEmpty($response['deleted_at']);
+        $this->assertEmpty($response['deletedAt']);
     }
 
     public function testGetMissingMaterials()
@@ -1645,7 +1645,7 @@ final class EventsTest extends ApiTestCase
 
     public function testSearch()
     {
-        $this->client->get('/api/events/search?searchTerm=premier');
+        $this->client->get('/api/events?title=premier');
         $this->assertStatusCode(SUCCESS_OK);
         $this->assertResponseData([
             [

@@ -5,10 +5,7 @@
     align-items: center;
     padding: globals.$content-padding-small-horizontal;
 
-    &__title {
-        flex: 1;
-    }
-
+    &__title,
     &__dates {
         flex: 1;
     }
