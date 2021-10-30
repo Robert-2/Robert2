@@ -24,11 +24,11 @@ final class View
     public function __construct(I18n $i18n)
     {
         $cachePath = false;
-        if (!isTestMode() && Config::getEnv() === 'production') {
-            $cachePath = VAR_FOLDER . DS . 'cache' . DS . 'views';
+        if (Config::getEnv() === 'production') {
+            $cachePath = CACHE_FOLDER . DS . 'views';
         }
         $this->view = Twig::create(VIEWS_FOLDER, [
-            'debug' => isTestMode() || Config::getEnv() !== 'production',
+            'debug' => Config::getEnv() !== 'production',
             'cache' => $cachePath,
         ]);
 

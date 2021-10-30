@@ -1,0 +1,295 @@
+#!/usr/bin/env bash
+
+MIN_PHP_VERSION=7.3
+LICENSE_PROVIDER_URL="https://client.loxya.com/licenses"
+RELEASE_HOST='pulsanova@server-2.loxya.com'
+
+remote_exec() { ssh $RELEASE_HOST $@; }
+remote_download() { scp -q $RELEASE_HOST:$1 ${@:2}; }
+remote_upload() { scp -q $1 $RELEASE_HOST:$2 ${@:3}; }
+
+VERSION_NUMBER=${1:-$(<./VERSION)}
+
+while getopts "v:" option; do
+    case $option in
+    (v) VERSION_NUMBER=$OPTARG ;;
+    (*) printf "Option inconue : '-%s'\n" "$opt" && exit 1 ;;
+    esac
+done
+
+VERSION_NUMBER=$(echo "$VERSION_NUMBER" | sed -e "s/\-premium$//")
+VERSION="${VERSION_NUMBER}-premium"
+
+echo -e "
+    ██╗      ██████╗ ██╗  ██╗██╗   ██╗ █████╗
+    ██║     ██╔═══██╗╚██╗██╔╝╚██╗ ██╔╝██╔══██╗
+    ██║     ██║   ██║ ╚███╔╝  ╚████╔╝ ███████║
+    ██║     ██║   ██║ ██╔██╗   ╚██╔╝  ██╔══██║
+    ███████╗╚██████╔╝██╔╝ ██╗   ██║   ██║  ██║
+    ╚══════╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝
+
+\e[1m\e[34m* Script d'obfuscation de la version \e[4m$VERSION_NUMBER Premium\e[0m\e[1m\e[34m *\e[0m
+
+Commençons...\n"
+
+isTemporaryRemoteArchivePath=false
+REMOTE_RELEASE_ARCHIVE_PATH=$(remote_exec download-loxya-release $VERSION)
+if [ $? -eq 0 ]; then
+    echo -e "\e[1m\e[34m-> La version $VERSION semble avoir été relasée sur Github, cette version va être utilisée...\e[0m"
+else
+    LOCAL_RELEASE_ARCHIVE_PATH="./dist/Robert2-$VERSION.zip"
+    if [ ! -f $LOCAL_RELEASE_ARCHIVE_PATH ]; then
+        echo -e "\e[1m\e[31mERREUR: Impossible de récupérer l'archive de la version $VERSION.\e[0m"
+        echo -e "\e[1m\e[31m        (Elle ne semble ni avoir été releasée sur le Github, ni être disponible localement).\e[0m"
+        exit 1
+    fi
+    REMOTE_RELEASE_ARCHIVE_PATH=$(remote_exec mktemp --dry-run)
+    remote_upload $LOCAL_RELEASE_ARCHIVE_PATH $REMOTE_RELEASE_ARCHIVE_PATH
+    isTemporaryRemoteArchivePath=true
+fi
+
+LICENSE_RELEASES_PATH="./dist/licenses"
+mkdir -p $LICENSE_RELEASES_PATH
+
+REMOTE_OBFUSCATION_RUNTIME_PATH=$(remote_exec mktemp --directory)
+
+# - Fonction permettant le nettoyage avant la sortie du script.
+quitAlreadyRequested=false
+function cleanup() {
+    if $quitAlreadyRequested; then
+        echo -e "\n\e[1m\e[33mSortie sans attendre le nettoyage !!\e[0m"
+        exit
+    fi
+
+    quitAlreadyRequested=true
+    echo -e "\n\n\e[1m\e[34m-> Suppression du dossier temporaire avant la fin du script.\e[0m"
+    remote_exec rm -rf $REMOTE_OBFUSCATION_RUNTIME_PATH
+    if $isTemporaryRemoteArchivePath; then
+        remote_exec rm -rf $REMOTE_RELEASE_ARCHIVE_PATH
+    fi
+    exit
+}
+
+# - Intercepte les CTRL+C pour cleanup avant la sortie.
+trap cleanup INT
+remote_exec mkdir -p "$REMOTE_OBFUSCATION_RUNTIME_PATH"/{source,licenses}
+
+echo -e "\e[1m\e[34m-> Désarchivage de la release $VERSION dans un dossier temporaire...\e[0m"
+remote_exec bsdtar --extract \
+    --strip-components=1 \
+    --file "$REMOTE_RELEASE_ARCHIVE_PATH" \
+    --directory "$REMOTE_OBFUSCATION_RUNTIME_PATH/source"
+
+echo -e "\e[1m\e[34m-> Début du processus d'obfuscation...\e[0m"
+index=0
+while true; do
+    if [ $index -gt 0 ]; then
+        read -p $'\nVoulez-vous générer un distribuable pour une autre licence (y/n) ? ' answer
+        if ! [[ $answer =~ [yY] ]]; then
+            break
+        fi
+    fi
+
+    ((index=index+1))
+    echo -e "\n   \e[4mLicence $index\e[0m\n"
+
+    # - Id de la licence
+    # TODO: Cette information devrait être suffisante pour faire un CURL sur l'API de Loxya admin
+    #       et récup. les données `ProjectID` et `ProjectKey` plutôt que de les demander manuellement.
+    #       (bien-sûr, l'endpoint doit être uniquement autorisés pour Polo, Donovan et les serveurs Loxya)
+    read -p $'   Veuillez spécifier \e[4ml\'identifiant\e[0m de licence :\n   > ' licenseId
+    while [ -z "$licenseId" ]; do
+        read -p "   > " licenseId
+    done
+    echo
+
+    licenseReleaseName="Robert2-$VERSION--$licenseId"
+    licenseOutputFile="$LICENSE_RELEASES_PATH/$licenseReleaseName.zip"
+    if [ -f $licenseOutputFile ]; then
+        read -p $'   \e[1m\e[33mUn distribuable obfusqué existe déjà pour cette licence, voulez-vous vraiment l\'overwriter (y/n) ?\e[0m ' answer
+        if ! [[ $answer =~ [yY] ]]; then
+            continue
+        fi
+        rm -rf $licenseOutputFile
+        echo
+    fi
+
+    # - Project ID
+    # TODO: Temporaire, voir TODO pour l'id de la licence.
+    read -p $'   Veuillez spécifier la \e[4mpremière clé (ProjectID)\e[0m de la licence :\n   > ' licenseProjectId
+    while [ -z "$licenseProjectId" ]; do
+        read -p "   > " licenseProjectId
+    done
+    echo
+
+    # - Project key
+    # TODO: Temporaire, voir TODO pour l'id de la licence.
+    read -p $'   Veuillez spécifier la \e[4mseconde clé (ProjectKey)\e[0m de la licence :\n   > ' licenseProjectkey
+    while [ -z "$licenseProjectkey" ]; do
+        read -p "   > " licenseProjectkey
+    done
+    echo
+
+    # - Domaine autorisé
+    # TODO: Temporaire, voir TODO pour l'id de la licence.
+    read -p $'   Veuillez spécifier le \e[4mdomaine\e[0m sur lequel est autorisée la licence :\n   > ' licenseDomain
+    while [ -z "$licenseDomain" ]; do
+        read -p "   > " licenseDomain
+    done
+    echo
+
+    # - Mode de validation de la licence
+    # TODO: Cette information devrait être suffisante pour faire un CURL sur l'API de Loxya admin
+    #       et récup. les données `ProjectID` et `ProjectKey` plutôt que de les demander manuellement.
+    #       (bien-sûr, l'endpoint doit être uniquement autorisés pour Polo, Donovan et les serveurs Loxya)
+    availableModes=(live deferred offline)
+    read -p $'   Quel \e[4mmode\e[0m doit être utilisé pour la récupération de licence :\n   (live (par défaut), deferred, offline)\n   > ' licenseMode
+    while [[ ! " ${availableModes[*]} " =~ " ${licenseMode} " ]] && [ ! -z "$licenseMode" ]; do
+        read -p "   > " licenseMode
+    done
+    licenseMode=$([ -z "$licenseMode" ] && echo "live" || echo "$licenseMode")
+    echo
+
+    echo -e "   \e[1m\e[34m-> Préparation de l'obfuscation...\e[0m"
+    clientRemoteRuntimePath="$REMOTE_OBFUSCATION_RUNTIME_PATH/licenses/$licenseReleaseName"
+    remote_exec rm -rf $clientRemoteRuntimePath
+    remote_exec cp --archive "$REMOTE_OBFUSCATION_RUNTIME_PATH/source" $clientRemoteRuntimePath
+
+    # - Licence
+    licenceLocalPath=$([[ "$licenseMode" == "offline" ]] && echo "loxya.lic" || echo "src/var/cache/loxya.lic")
+    if [[ "$licenseMode" != "offline" ]]; then
+        expireDays=$([[ "$licenseMode" == "live" ]] && echo "15" || echo "90")
+
+        echo -e "   \e[1m\e[34m-> Génération d'une \e[4mlicence valable $expireDays jours\e[0m\e[1m\e[34m pour le domaine $licenseDomain...\e[0m"
+        remote_exec "
+            cd '$clientRemoteRuntimePath' && licgen \
+                --const licenseId='$licenseId' \
+                --projid '$licenseProjectId' \
+                --projkey '$licenseProjectkey' \
+                --domain '$licenseDomain' \
+                --domain-ignore-cli \
+                --ip-ignore-cli \
+                --expire ${expireDays}d \
+                "$licenceLocalPath" > /dev/null
+        "
+    else
+        echo -e "   \e[1m\e[34m-> Génération d'une \e[4mlicence SANS EXPIRATION\e[0m\e[1m\e[34m pour le domaine $licenseDomain...\e[0m"
+        remote_exec "
+            cd '$clientRemoteRuntimePath' && licgen \
+                --const licenseId='$licenseId' \
+                --projid '$licenseProjectId' \
+                --projkey '$licenseProjectkey' \
+                --domain '$licenseDomain' \
+                --domain-ignore-cli \
+                --ip-ignore-cli \
+                "$licenceLocalPath" > /dev/null
+        "
+    fi
+    if ! [ $? -eq 0 ]; then
+        echo -e "\n   \e[1m\e[31mLa génération de licence a échoué.\e[0m"
+        continue
+    fi
+
+    echo -e "   \e[1m\e[34m-> Obfuscation...\e[0m"
+
+    # - Entrypoint HTTP.
+    entrypointLicensePath="$LICENSE_PROVIDER_URL/$licenseId,$licenceLocalPath"
+    if [[ "$licenseMode" != "live" ]]; then
+        entrypointLicensePath="$licenceLocalPath"
+    fi
+    remote_exec "
+        cd $clientRemoteRuntimePath && sourceguardian 'src/public/index.php' \
+            --const licenseMode='$licenseMode' \
+            --phpversion '$MIN_PHP_VERSION+' \
+            --projid '$licenseProjectId' \
+            --projkey '$licenseProjectkey' \
+            --external '${entrypointLicensePath}' \
+            -n \
+            -b- \
+            -z9 \
+            --strict-errors \
+            --deprec-errors \
+            --keep-file-date \
+            --catch ERR_ALL=licenseErrorHandler \
+            -p \"<?php \
+set_error_handler(function (\\\$errno, \\\$errstr) { return strpos(\\\$errstr, 'sg_load()') === 0; }, E_WARNING); \
+if (!function_exists('sg_load')) { \\\$code = 0; require './error.php'; exit; } \
+function licenseErrorHandler(\\\$code, \\\$message) { require './error.php'; exit; } \
+?>\" \
+            --verbose 1
+    "
+    if ! [ $? -eq 0 ]; then
+        echo -e "\n   \e[1m\e[31mL'obfuscation a échoué.\e[0m"
+        continue
+    fi
+
+    # - Entrypoint CLI.
+    remote_exec "
+        cd $clientRemoteRuntimePath && sourceguardian 'bin/console' \
+            --const licenseMode='$licenseMode' \
+            --phpversion '$MIN_PHP_VERSION+' \
+            --ip-ignore-cli \
+            --domain-ignore-cli \
+            --projid '$licenseProjectId' \
+            --projkey '$licenseProjectkey' \
+            --external '${licenceLocalPath}' \
+            -n \
+            -b- \
+            -z9 \
+            --strict-errors \
+            --deprec-errors \
+            --keep-file-date \
+            --catch ERR_ALL=licenseErrorHandler \
+            -p \"<?php \
+set_error_handler(function (\\\$errno, \\\$errstr) { return strpos(\\\$errstr, 'sg_load()') === 0; }, E_WARNING); \
+if (!function_exists('sg_load')) { echo 'Pour pouvoir éxecuter Robert2 / Loxya, un loader est requis. Ouvrez l\\\\'application dans un navigateur pour plus de détails.' . PHP_EOL; exit(1); } \
+function licenseErrorHandler(\\\$code, \\\$message) { echo 'Une erreur est survenue avec votre licence. Ouvrez l\\\\'application dans un navigateur pour plus de détails.' . PHP_EOL; exit(1); } \
+?>\" \
+            --verbose 1
+    "
+    if ! [ $? -eq 0 ]; then
+        echo -e "\n   \e[1m\e[31mL'obfuscation a échoué.\e[0m"
+        continue
+    fi
+
+    remote_exec "
+        cd $clientRemoteRuntimePath && sourceguardian -r '*.php' \
+            --const licenseMode='$licenseMode' \
+            --phpversion '$MIN_PHP_VERSION+' \
+            --exclude 'bin' \
+            --exclude 'data' \
+            --exclude 'src/var/*' \
+            --exclude 'src/vendor/*' \
+            --exclude 'src/App/Config/constants.php' \
+            --exclude 'src/public/error.php' \
+            --exclude 'src/public/index.php' \
+            --ip-ignore-cli \
+            --domain-ignore-cli \
+            --projid '$licenseProjectId' \
+            --projkey '$licenseProjectkey' \
+            --external '${licenceLocalPath}' \
+            -n \
+            -b- \
+            -z9 \
+            --strict-errors \
+            --deprec-errors \
+            --keep-file-date \
+            --verbose 1
+    "
+    if ! [ $? -eq 0 ]; then
+        echo -e "\n   \e[1m\e[31mL'obfuscation a échoué.\e[0m"
+        continue
+    fi
+
+    echo -e "   \e[1m\e[34m-> Empaquetage de la release dans un fichier ZIP...\e[0m"
+    remote_exec "
+        cd '$REMOTE_OBFUSCATION_RUNTIME_PATH/licenses' && \
+            zip -r --quiet '$licenseReleaseName.zip' '$licenseReleaseName'
+    "
+
+    remote_download "$REMOTE_OBFUSCATION_RUNTIME_PATH/licenses/$licenseReleaseName.zip" $licenseOutputFile
+    echo -e "\n   \e[1m\e[32mTerminé pour cette licence.\e[0m"
+done
+
+# - Cleanup avant la sortie.
+cleanup

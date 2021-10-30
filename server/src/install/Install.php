@@ -4,6 +4,9 @@ declare(strict_types=1);
 namespace Robert2\Install;
 
 use Robert2\API\Config as Config;
+use Robert2\API\Console\App as CliApp;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\StreamOutput;
 
 class Install
 {
@@ -22,7 +25,6 @@ class Install
 
     const INSTALL_FILE = __DIR__ . '/progress.json';
     const DB_INIT_DATA_DIR = __DIR__ . '/data';
-    const PHINX_COMMAND = 'src/vendor/bin/phinx --configuration=src/database/phinx.php';
 
     const REQUIRED_EXTENSIONS = [
         'pcre',
@@ -213,26 +215,20 @@ class Install
 
     private static function _executePhinxCommand(string $command): array
     {
-        if (!in_array($command, ['status', 'migrate'])) {
-            throw new \InvalidArgumentException("Phinx command not permitted.", 2);
+        if (!in_array($command, ['status', 'migrate', 'rollback'], true)) {
+            throw new \InvalidArgumentException("Commande de migration inconnue.", 2);
         }
 
         // - Allow very long time execution for migrations
         set_time_limit(3600);
 
-        $phinxApp = new \Phinx\Console\PhinxApplication();
-        $phinxWrap = new \Phinx\Wrapper\TextWrapper($phinxApp, [
-            'configuration' => '../../src/database/phinx.php'
-        ]);
-
-        $routes = [
-            'status'   => 'getStatus',
-            'migrate'  => 'getMigrate',
-            'rollback' => 'getRollback',
-        ];
-
-        $output = call_user_func([$phinxWrap, $routes[$command]]);
-        $exitCode = $phinxWrap->getExitCode();
+        $stream = fopen('php://temp', 'w+');
+        $exitCode = (new CliApp)->doRun(
+            new ArrayInput([sprintf('migrations:%s', $command)]),
+            new StreamOutput($stream)
+        );
+        $output = stream_get_contents($stream, -1, 0);
+        fclose($stream);
 
         if (!in_array($exitCode, [0, 3])) {
             throw new \RuntimeException($output, $exitCode);

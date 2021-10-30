@@ -1,33 +1,37 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-VERSION=${1:-$(<./VERSION)}
+VERSION_NUMBER=${1:-$(<./VERSION)}
 isProduction=true
-isPremium=false
 
-while getopts "pv:" option
+while getopts "v:" option
 do
     case $option in
-    (v) VERSION=$OPTARG ; [ $OPTARG == 'testing' ] && isProduction=false ;;
-    (p) isPremium=true ;;
+    (v) VERSION_NUMBER=$OPTARG ; [ $OPTARG == 'testing' ] && isProduction=false ;;
     (*) printf "Option inconue : '-%s'\n" "$opt" && exit 1 ;;
     esac
 done
 
-if $isPremium; then
-    VERSION="${VERSION}-premium"
-fi
+VERSION_NUMBER=$(echo "$VERSION_NUMBER" | sed -e "s/\-premium$//")
+VERSION="${VERSION_NUMBER}-premium"
 
 releaseName="Robert2-${VERSION}"
 distFolder="./dist/${releaseName}"
 
-echo -e "
-  ____       _               _   ____
- |  _ \ ___ | |__   ___ _ __| |_|___ \\
- | |_) / _ \| '_ \ / _ \ '__| __| __) |
- |  _ < (_) | |_) |  __/ |  | |_ / __/
- |_| \_\___/|_.__/ \___|_|   \__|_____|
+# - Header message
+headerMessage="\e[1m\e[34m* Script de distribution de la version \e[4m$VERSION_NUMBER Premium\e[0m\e[1m\e[34m *"
+if ! $isProduction; then
+    headerMessage="\e[1m\e[33m* Test du script de distribution de la version \e[4mPremium\e[0m\e[1m\e[33m *"
+fi
 
- \e[1m\e[34m* RELEASE ${VERSION} DISTRIBUTION SCRIPT *\e[0m
+echo -e "
+      ██╗      ██████╗ ██╗  ██╗██╗   ██╗ █████╗
+      ██║     ██╔═══██╗╚██╗██╔╝╚██╗ ██╔╝██╔══██╗
+      ██║     ██║   ██║ ╚███╔╝  ╚████╔╝ ███████║
+      ██║     ██║   ██║ ██╔██╗   ╚██╔╝  ██╔══██║
+      ███████╗╚██████╔╝██╔╝ ██╗   ██║   ██║  ██║
+      ╚══════╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝
+
+$headerMessage\e[0m
 
 Commençons..."
 
@@ -36,38 +40,41 @@ if ! [ -x "$(command -v jq)" ]; then
     exit 1
 fi
 
+echo -ne "\e[1m\e[34m\n-> Mise à jour du CHANGELOG et du fichier de version...\e[0m"
 if $isProduction; then
-    echo -e "\e[1m\e[34m\nMet à jour le CHANGELOG et le fichier de version...\e[0m"
+    echo
     CHANGELOG_REGEX="$VERSION\s+\(UNRELEASED\)"
     grep -i -E "$CHANGELOG_REGEX" ./CHANGELOG.md > /dev/null 2>&1
     if [ $? -ne 0 ]; then
-        read -p ">> Le CHANGELOG n'a pas pu être mis à jour automatiquement, voulez-vous continuer (y/n) ? " -n 1 -r
+        read -p "   Le CHANGELOG n'a pas pu être mis à jour automatiquement, voulez-vous continuer (y/n) ? " -n 1 -r
         if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-            echo -e "\e[1m\e[33m\nReleasing annulé.\e[0m"
+            echo -e "\e[1m\e[33m\n\nReleasing annulé.\e[0m"
             exit 1
         fi
+        echo
     fi
     sed -i -E "s/$CHANGELOG_REGEX/$VERSION \($(date '+%Y-%m-%d')\)/i" ./CHANGELOG.md
     echo $VERSION > ./VERSION
 else
-    echo -e "\e[1m\e[33m\n** MODE TESTING ** → omission de la mise à jour du Changelog et du fichier de version !\e[0m"
+    echo -e "\e[1m\e[33m Omise (testing mode).\e[0m"
 fi
 
-echo -e "\e[1m\e[34m\nSuppression de l'ancien dossier \"dist\"...\e[0m"
-rm -rf ./dist
+echo -e "\e[1m\e[34m-> Suppression de l'éventuelle ancienne version distribuable pour cette version...\e[0m"
+rm -rf $distFolder ./dist/${releaseName}.zip
 
-echo -e "\e[1m\e[34mCompilation des sources du client...\e[0m"
-(cd ./client && yarn install && yarn build)
+echo -e "\e[1m\e[34m-> Compilation des sources du client...\e[0m"
+(cd ./client && yarn install --frozen-lockfile --silent)
+(cd ./client && yarn run --silent build --silent > /dev/null)
 
-echo -e "\e[1m\e[34m\nCopie des sources vers le dossier de distribution...\e[0m"
+echo -e "\e[1m\e[34m-> Copie des sources vers le dossier de distribution...\e[0m"
 mkdir -p $distFolder
 cp -r ./server/src dist
 mv ./dist/src $distFolder/src
 
+cp -R ./server/bin $distFolder/bin
 cp ./server/.htaccess $distFolder/.htaccess
 cp ./server/composer.json $distFolder/composer.json
 cp ./server/composer.lock $distFolder/composer.lock
-cp ./README.md $distFolder/README.md
 cp ./LICENCE.md $distFolder/LICENCE.md
 
 rm $distFolder/src/VERSION
@@ -76,35 +83,47 @@ cp ./VERSION $distFolder/src/VERSION
 rm $distFolder/src/public/webclient
 cp -R ./client/dist $distFolder/src/public/webclient
 
-echo -e "\e[1m\e[34mNettoyage du dossier de distribution (suppression des fichiers inutiles / privés)...\e[0m"
+echo -e "\e[1m\e[34m-> Nettoyage du dossier de distribution (suppression des fichiers inutiles / privés)...\e[0m"
 cd $distFolder
-rm -r src/vendor
-rm src/App/Config/settings.json
-rm src/install/progress.json
+rm -rf src/vendor
+rm -f src/App/Config/settings.json
+rm -f src/install/progress.json
 rm -r src/var/cache && mkdir -m 777 src/var/cache/
 rm -r src/var/logs && mkdir -m 777 src/var/logs/
 rm -r src/var/tmp && mkdir -m 777 src/var/tmp/
 
-echo -e "\e[1m\e[34mCréation du dossier des données privées...\e[0m"
+echo -e "\e[1m\e[34m-> Création du dossier des données privées...\e[0m"
 mkdir -m 777 data/
 
-echo -e "\e[1m\e[34mDéfinition des permission des dossiers...\e[0m"
+echo -e "\e[1m\e[34m-> Définition des permission des dossiers...\e[0m"
 chmod 777 src/App/Config
 chmod 777 src/install
 
-echo -e "\e[1m\e[34mInstallation des dépendances back...\e[0m"
-query='del(."require-dev")|del(.autoload."psr-4"."Robert2\\Tests\\")|del(.autoload."psr-4"."Robert2\\Fixtures\\")|del(.scripts."create-migration")|del(.scripts."lint")|del(.scripts."test")|del(.scripts."testapi")|del(.scripts."testmodels")|del(.scripts."testlibs")|del(.scripts."testother")'
+echo -e "\e[1m\e[34m-> Installation des dépendances back-end...\e[0m"
+query=(
+    'del(."require-dev")'
+    'del(.autoload."psr-4"."Robert2\\Tests\\")'
+    'del(.autoload."psr-4"."Robert2\\Fixtures\\")'
+    'del(.scripts."create-migration")'
+    'del(.scripts."lint")'
+    'del(.scripts."test")'
+    'del(.scripts."testapi")'
+    'del(.scripts."testmodels")'
+    'del(.scripts."testlibs")'
+    'del(.scripts."testother")'
+)
+query=$(IFS='|' ; echo "${query[*]}")
 jq $query composer.json > tmp.composer.json
 mv tmp.composer.json composer.json
 composer update --lock --quiet
 composer install --quiet
-echo "Done."
 
-echo -e "\e[1m\e[34mEmpaquetage de la release dans un fichier ZIP...\e[0m"
+echo -e "\e[1m\e[34m-> Empaquetage de la release dans un fichier ZIP...\e[0m"
 cd .. && zip -r --quiet "${releaseName}.zip" $releaseName
-echo "Done → Fichier dist/${releaseName}.zip"
 
-echo -e "\e[1m\e[34mSuppression du dossier temporaire...\e[0m"
+echo -e "\e[1m\e[34m-> Suppression du dossier temporaire...\e[0m"
 cd .. && rm -rf $distFolder
 
-echo -e "\e[1m\e[32mTerminé !!\e[0m"
+echo -e "\e[1m\e[32m\nTerminé !!\e[0m"
+echo -e "\n=> Vous pouvez maintenant récupérer le distribuable \`./dist/${releaseName}.zip\`."
+echo -e "   \e[1m\e[33m⚠️  Attention à bien éxecuter le script \`./bin/obfuscate\` pour les versions standalone avant la distribution.\e[0m"

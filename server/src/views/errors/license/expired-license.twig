@@ -1,0 +1,20 @@
+{% extends "errors/base.twig" %}
+
+{% block title %}La licence Robert2&nbsp;/&nbsp;Loxya a expiré{% endblock %}
+
+{% block content %}
+    <p>
+        Ceci peut se produire si <strong>Robert2&nbsp;/&nbsp;Loxya n'a pas pu renouveler la licence</strong> auprès
+        du serveur officiel <strong>dans les quinze (15) derniers jours</strong>.
+    </p>
+    <p>
+        Veuillez vérifier que l'installation de Robert2&nbsp;/&nbsp;Loxya a bien accès à internet et est
+        autorisée à effectuer des requêtes vers le domaine <code>client.loxya.com</code> sur le port <code>80</code>.
+        <br />
+        Vérifiez aussi que l'application a bien le droit d'écrire dans le dossier <code>src/var/cache</code>.
+    </p>
+    <p>
+        S'il s'avère qu'il n'y a pas de souci à ce niveau, veuillez contacter
+        directement le support Robert2&nbsp;/&nbsp;Loxya à l'adresse <a href="mailto:support@loxya.com">support@loxya.com</a>.
+    </p>
+{% endblock %}

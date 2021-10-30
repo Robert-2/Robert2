@@ -150,7 +150,7 @@ class Bill extends BaseModel
             $bill->number,
             slugify($bill->Beneficiary->full_name)
         );
-        if (isTestMode()) {
+        if (Config::getEnv() === 'test') {
             $fileName = sprintf('TEST-%s', $fileName);
         }
 

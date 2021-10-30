@@ -14,9 +14,15 @@ class Pdf
 
     public function __construct(string $html)
     {
+        // - Font cache dir
+        $cacheDir = CACHE_FOLDER . DS . 'pdf';
+        if (!is_dir($cacheDir)) {
+            @mkdir($cacheDir, 0777, true);
+        }
+
         $this->DomPdf = new Dompdf([
             'tempDir' => VAR_FOLDER . DS . 'tmp',
-            'fontCache' => VAR_FOLDER . DS . 'cache',
+            'fontCache' => $cacheDir,
             'logOutputFile' => VAR_FOLDER . DS . 'logs' . DS . 'pdf.html',
             'defaultMediaType' => 'print',
             'defaultPaperSize' => 'a4',

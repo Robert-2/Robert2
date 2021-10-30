@@ -1,0 +1,43 @@
+{% extends "errors/base.twig" %}
+
+{% block title %}Cette installation de Robert2&nbsp;/&nbsp;Loxya n'est pas autorisée{% endblock %}
+
+{% block content %}
+    <p>
+        Cette installation de Robert2&nbsp;/&nbsp;Loxya n'est pas autorisée par votre licence actuelle.
+        <br /><br />
+        Plusieurs solutions sont possibles&nbsp;:
+    </p>
+    <ul>
+        {% if code == 1 %}
+        <li>
+            Si cette installation de Robert2&nbsp;/&nbsp;Loxya a été déplacée, connectez-vous à votre espace client à l'adresse
+            <a href="https://client.loxya.com" target="_blank">https://client.loxya.com</a> et mettez à jour la licence
+            qui correspond à cette installation avec sa nouvelle IP&nbsp;: <code>{{ip}}</code>
+        </li>
+        {% elseif code == 2 %}
+        <li>
+            Si le nom de domaine de cette installation de Robert2&nbsp;/&nbsp;Loxya a changé, connectez-vous à votre
+            espace client à l'adresse <a href="https://client.loxya.com" target="_blank">https://client.loxya.com</a> et mettez
+            à jour la licence qui correspond à cette installation avec son nouveau domaine complet&nbsp;: <code>{{domain}}</code>
+        </li>
+        {% else %}
+        <li>
+            Si cette installation de Robert2&nbsp;/&nbsp;Loxya a été déplacée, connectez-vous à votre espace client à l'adresse
+            <a href="https://client.loxya.com" target="_blank">https://client.loxya.com</a> et mettez à jour la licence
+            qui correspond à cette installation.
+        </li>
+        {% endif %}
+        <li>
+            Si vous avez récupéré les fichiers d'une autre installation de Robert2&nbsp;/&nbsp;Loxya et l'avez installé ailleurs,
+            sachez que <strong>chaque installation de Robert2&nbsp;/&nbsp;Loxya doit disposer de sa propre licence</strong>.
+            <br />
+            Vous pouvez souscrire à une nouvelle licence en nous contactant directement à l'adresse
+            <a href="mailto:contact@loxya.com">contact@loxya.com</a>.
+        </li>
+    </ul>
+    <p>
+        Si aucun des cas ci-dessus ne correspond à votre situation, veuillez contacter
+        directement le support Robert2&nbsp;/&nbsp;Loxya à l'adresse <a href="mailto:support@loxya.com">support@loxya.com</a>.
+    </p>
+{% endblock %}

@@ -506,7 +506,7 @@ class Inventory extends BaseModel
             slugify($inventory->park->name),
             $date->format('Y-m-d')
         );
-        if (isTestMode()) {
+        if (Config::getEnv() === 'test') {
             $fileName = sprintf('TEST-%s', $fileName);
         }
 

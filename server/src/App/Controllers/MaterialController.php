@@ -523,7 +523,7 @@ class MaterialController extends BaseController
             slugify($parkOnlyName ?: $company['name']),
             (new \DateTime())->format('Y-m-d')
         );
-        if (isTestMode()) {
+        if (Config::getEnv() === 'test') {
             $fileName = sprintf('TEST-%s', $fileName);
         }
 

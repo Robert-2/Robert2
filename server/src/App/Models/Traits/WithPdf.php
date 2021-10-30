@@ -29,7 +29,7 @@ trait WithPdf
             slugify($company['name']),
             $model->title ?: $model->id
         );
-        if (isTestMode()) {
+        if (Config::getEnv() === 'test') {
             $fileName = sprintf('TEST-%s', $fileName);
         }
 

@@ -36,6 +36,6 @@
     -->
 
     <rule ref="PSR1.Classes.ClassDeclaration.MissingNamespace">
-        <exclude-pattern>*/database/migrations/*</exclude-pattern>
+        <exclude-pattern>*/migrations/*</exclude-pattern>
     </rule>
 </ruleset>

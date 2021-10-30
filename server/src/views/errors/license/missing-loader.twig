@@ -1,0 +1,36 @@
+{% extends "errors/base.twig" %}
+
+{% block title %}Le loader Loxya ne semble pas correctement installé.{% endblock %}
+
+{% block content %}
+    <p>
+        Pour pouvoir éxecuter Robert2 / Loxya, vous devez installer un loader spécifique à votre
+        système d'exploitation et version de PHP.
+        <br /><br />
+        Si vous ne l'avez pas encore installé, suivez les étapes suivantes&nbsp;:
+    </p>
+    <ol>
+        <li><a href="{{loader.url}}" target="_blank">Cliquez-ici</a> pour télécharger le loader spécifique à votre installation.</li>
+        {% if php.extensionDir is not empty %}
+        <li>Installez le loader dans le dossier <code>{{php.extensionDir}}</code></li>
+        {% else %}
+        <li>
+            Installez le loader avec vos autres extensions de PHP.<br />
+            <small>
+                (pour connaitre l'emplacement des extensions, recherchez "<code>extension_dir</code>"
+                dans la configuration de PHP)
+            </small>
+        </li>
+        {% endif %}
+        <li>
+            Modifiez votre fichier de configuration de PHP
+            {% if php.confPath is not empty %} (<code>{{php.confPath}}</code>){% endif %}
+            en y ajoutant la directive <code>extension={{loader.name}}</code>.
+        </li>
+        <li>Redémarrez votre serveur web (apache, nginx ou autre).</li>
+    </ol>
+    <p>
+        Si vous avez besoin d'aide pour l'installation du loader ou que cela ne fonctionne pas, veuillez contacter
+        directement le support Robert2&nbsp;/&nbsp;Loxya à l'adresse <a href="mailto:support@loxya.com">support@loxya.com</a>.
+    </p>
+{% endblock %}

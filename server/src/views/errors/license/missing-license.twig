@@ -1,0 +1,17 @@
+{% extends "errors/base.twig" %}
+
+{% block title %}Le fichier de licence est manquant{% endblock %}
+
+{% block content %}
+    <p>Il semble qu'il y ait un problème avec le fichier de licence Robert2&nbsp;/&nbsp;Loxya, celui-ci est introuvable.</p>
+    <p>
+        Veuillez vérifier que l'installation de Robert2&nbsp;/&nbsp;Loxya a bien accès à internet et est
+        autorisée à effectuer des requêtes vers le domaine <code>client.loxya.com</code> sur le port <code>80</code>.
+        <br />
+        Vérifiez aussi que l'application a bien le droit d'écrire dans le dossier <code>src/var/cache</code>.
+    </p>
+    <p>
+        S'il s'avère qu'il n'y a pas de souci à ce niveau, veuillez contacter
+        directement le support Robert2&nbsp;/&nbsp;Loxya à l'adresse <a href="mailto:support@loxya.com">support@loxya.com</a>.
+    </p>
+{% endblock %}
