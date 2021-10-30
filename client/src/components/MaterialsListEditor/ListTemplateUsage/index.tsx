@@ -108,7 +108,7 @@ const ListTemplateUsage: Component<Props> = (props: Props, { emit }: SetupContex
                         <button type="button" onClick={handleSubmit} class="success">
                             <i class="fas fa-check" /> {__('use-this-template')}
                         </button>
-                        <button type="button" onClick={handleClearSelection} class="warning">
+                        <button type="button" onClick={handleClearSelection}>
                             <i class="fas fa-random" /> {__('choose-another-one')}
                         </button>
                     </div>
