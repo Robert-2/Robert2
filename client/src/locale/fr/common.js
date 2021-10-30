@@ -271,6 +271,14 @@ export default {
 
     'display-only-selected-materials': "Afficher uniquement le matériel sélectionné",
     'display-all-materials-to-add-some': "Afficher tout le matériel pour en ajouter",
+    'reuse-list-from-event': "Utiliser la liste d'un autre événement...",
+    'choose-event-to-reuse-materials-list': "Choisir un événement pour réutiliser sa liste",
+    'type-to-search-event': "Entrez le nom d'un événement...",
+    'reuse-list-from-event-warning': "Attention, cela va ajouter le matériel à celui déjà sélectionné, et sauvegarder tout de suite après\u00a0!",
+    'choose': "Choisir",
+    'use-these-materials': "Utiliser ce matériel",
+    'choose-another-one': "En choisir un autre",
+    'event-materials': "Matériel de l'événement «\u00a0{name}\u00a0»",
 
     'event': "Événement",
     'user': "Utilisateur",

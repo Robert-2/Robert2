@@ -1053,7 +1053,7 @@ final class EventsTest extends ApiTestCase
         $this->client->put('/api/events/restore/1');
         $this->assertStatusCode(SUCCESS_OK);
         $response = $this->_getResponseAsArray();
-        $this->assertEmpty($response['deleted_at']);
+        $this->assertEmpty($response['deletedAt']);
     }
 
     public function testGetMissingMaterials()
@@ -1639,6 +1639,42 @@ final class EventsTest extends ApiTestCase
                     'has_not_returned_materials' => true,
                     'parks' => [1],
                 ],
+            ],
+        ]);
+    }
+
+    public function testSearch()
+    {
+        // - Retourne la liste des événement qui ont le terme "premier" dans le titre
+        $this->client->get('/api/events?search=premier');
+        $this->assertStatusCode(SUCCESS_OK);
+        $this->assertResponseData([
+            [
+                'id' => 1,
+                'title' => 'Premier événement',
+                'location' => 'Gap',
+                'startDate' => '2018-12-17 00:00:00',
+                'endDate' => '2018-12-18 23:59:59',
+            ],
+            [
+                'id' => 3,
+                'title' => 'Avant-premier événement',
+                'location' => 'Brousse',
+                'startDate' => '2018-12-15 00:00:00',
+                'endDate' => '2018-12-16 23:59:59',
+            ],
+        ]);
+
+        // - Pareil, mais en excluant l'événement n°3
+        $this->client->get('/api/events?search=premier&exclude=3');
+        $this->assertStatusCode(SUCCESS_OK);
+        $this->assertResponseData([
+            [
+                'id' => 1,
+                'title' => 'Premier événement',
+                'location' => 'Gap',
+                'startDate' => '2018-12-17 00:00:00',
+                'endDate' => '2018-12-18 23:59:59',
             ],
         ]);
     }
