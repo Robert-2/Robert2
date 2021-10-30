@@ -17,9 +17,9 @@ export type Event = {
     title: string,
     start_date: string,
     end_date: string,
-    location: string,
-    reference: string,
-    description: string,
+    location: string | null,
+    reference: string | null,
+    description: string | null,
     is_billable: boolean,
     is_confirmed: boolean,
     is_return_inventory_done: boolean,
@@ -51,6 +51,31 @@ export type FormatedEvent = Event & {
     hasNotReturnedMaterials: boolean,
 };
 
+export type EventSummary = {
+    id: number,
+    title: string,
+    startDate: string,
+    endDate: string,
+    location: string | null,
+};
+
+type SearchParams = {
+    search: string,
+    exclude?: number | undefined,
+};
+
+//
+// - Functions
+//
+
+const search = async (params: SearchParams): Promise<EventSummary[]> => (
+    (await requester.get(`events`, { params })).data
+);
+
+const one = async (id: number): Promise<Event> => (
+    (await requester.get(`events/${id}`)).data
+);
+
 const setConfirmed = async (id: number, isConfirmed: boolean): Promise<Event> => (
     (await requester.put(`events/${id}`, { is_confirmed: isConfirmed })).data
 );
@@ -63,4 +88,4 @@ const remove = async (id: number): Promise<void> => {
     await requester.delete(`events/${id}`);
 };
 
-export default { setConfirmed, setArchived, remove };
+export default { search, one, setConfirmed, setArchived, remove };

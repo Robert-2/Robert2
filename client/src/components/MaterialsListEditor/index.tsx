@@ -14,6 +14,7 @@ import SwitchToggle from '@/components/SwitchToggle';
 import MaterialsStore from './_store';
 import { normalizeFilters } from './_utils';
 import Quantity from './Quantity';
+import ReuseEventMaterials from './ReuseEventMaterials';
 import Units from './Units';
 import ListTemplateUsage from './ListTemplateUsage';
 
@@ -332,7 +333,44 @@ const MaterialsListEditor: Component<Props> = (props: Props, { root, emit }: Set
         }
     });
 
+    const handleSelectMany = (materialsToAdd: MaterialWithPivot[]): void => {
+        const shouldDisplayOnlySelected = !selected!.value || selected!.value.length === 0;
+
+        materialsToAdd.forEach(({ pivot, ...material }: MaterialWithPivot) => {
+            const { quantity, units } = pivot;
+            if (material.is_unitary) {
+                units.forEach((unitId: number) => {
+                    selectUnit(material, unitId);
+                });
+            } else {
+                MaterialsStore.commit('setQuantity', { material, quantity });
+            }
+        });
+
+        handleChanges();
+
+        if (shouldDisplayOnlySelected) {
+            setSelectedOnly(true);
+        }
+    };
+
+    const handleShowReuseEventModal = (): void => {
+        root.$modal.show(
+            ReuseEventMaterials,
+            undefined,
+            { width: 700, draggable: true, clickToClose: true },
+            {
+                'before-close': ({ params }: { params?: { materials: MaterialWithPivot[] } }) => {
+                    if (params) {
+                        handleSelectMany(params.materials);
+                    }
+                },
+            },
+        );
+    };
+
     const hanleSelectTemplate = ({ materials: templateMaterials }: ListTemplateWithMaterial): void => {
+        handleSelectMany(templateMaterials);
         templateMaterials.forEach(({ pivot, ...material }: MaterialWithPivot) => {
             const { quantity, units } = pivot;
             if (material.is_unitary) {
@@ -381,6 +419,9 @@ const MaterialsListEditor: Component<Props> = (props: Props, { root, emit }: Set
                             {__('use-list-template')}
                         </button>
                     )}
+                    <button type="button" class="info" onClick={handleShowReuseEventModal}>
+                        {__('reuse-list-from-event')}
+                    </button>
                 </div>
             </header>
             {error.value && <ErrorMessage error={error.value} />}

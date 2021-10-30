@@ -1,6 +1,7 @@
 import './index.scss';
 import Details from './Details';
 import { defineComponent } from '@vue/composition-api';
+import { getErrorMessage } from '@/utils/errors';
 
 // @vue/component
 export default defineComponent({
@@ -23,30 +24,7 @@ export default defineComponent({
         },
 
         message() {
-            const { error } = this;
-
-            if (typeof error === 'string') {
-                return error;
-            }
-
-            if (!error.response) {
-                return this.$t('errors.generic', { message: error.message || 'unknown' });
-            }
-            const { status, data } = error.response;
-
-            if (status === 400) {
-                return this.$t('errors.validation');
-            }
-
-            if (status === 404) {
-                return this.$t('errors.not-found');
-            }
-
-            if (status === 409) {
-                return this.$t('errors.already-exists');
-            }
-
-            return data?.error?.message ?? this.$t('errors.unknown');
+            return getErrorMessage(this.error, this.$t);
         },
 
         details() {

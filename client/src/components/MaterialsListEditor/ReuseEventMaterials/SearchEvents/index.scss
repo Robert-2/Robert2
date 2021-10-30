@@ -1,0 +1,46 @@
+@use '~@/style/globals';
+
+.SearchEvents {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    &__search {
+        display: flex;
+        justify-content: center;
+        margin-bottom: globals.$content-padding-large-vertical;
+
+        &__input {
+            width: 300px;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        &__button {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+    }
+
+    .Loading {
+        margin-bottom: globals.$content-padding-small-vertical;
+    }
+
+    &__results {
+        width: 100%;
+        padding-top: globals.$content-padding-small-vertical;
+        border-top: 1px solid globals.$modal-footer-separator-color;
+
+        &__list {
+            margin: 0;
+            padding: 0;
+        }
+    }
+
+    &__no-result {
+        color: globals.$text-light-color;
+        font-size: 1.1rem;
+        font-style: italic;
+        text-align: center;
+    }
+}

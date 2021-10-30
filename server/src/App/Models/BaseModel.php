@@ -112,6 +112,31 @@ abstract class BaseModel extends Model
         return $this;
     }
 
+    public function addSearch(string $term, ?array $fields = null): Builder
+    {
+        if (!$term) {
+            throw new \InvalidArgumentException();
+        }
+
+        $trimmedTerm = trim($term);
+        if (strlen($trimmedTerm) < 2) {
+            throw new \InvalidArgumentException();
+        }
+
+        $safeTerm = sprintf('%%%s%%', addcslashes($trimmedTerm, '%_'));
+
+        if (empty($fields)) {
+            return $this->where($this->searchField, 'LIKE', $safeTerm);
+        }
+
+        $query = $this;
+        foreach ($fields as $field) {
+            $query = $query->orWhere($field, 'LIKE', $safeTerm);
+        }
+
+        return $query;
+    }
+
     // ——————————————————————————————————————————————————————
     // —
     // —    "Repository" methods

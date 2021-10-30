@@ -1,7 +1,8 @@
 import './index.scss';
+import { defineComponent } from '@vue/composition-api';
 
 // @vue/component
-export default {
+export default defineComponent({
     name: 'LocationText',
     props: {
         location: { type: String, required: true },
@@ -26,4 +27,4 @@ export default {
             </div>
         );
     },
-};
+});

@@ -29,6 +29,27 @@ class EventController extends BaseController
 
     public function getAll(Request $request, Response $response): Response
     {
+        $search = $request->getQueryParam('search', null);
+        $exclude = $request->getQueryParam('exclude', null);
+
+        if ($search) {
+            $query = (new Event)
+                ->addSearch($search)
+                ->select(['id', 'title', 'start_date', 'end_date', 'location'])
+                ->whereHas('materials');
+
+            if ($exclude) {
+                $query->where('id', '<>', $exclude);
+            }
+
+            $results = $query
+                ->orderBy('start_date', 'desc')
+                ->limit(10)
+                ->get();
+
+            return $response->withJson($results);
+        }
+
         $startDate = $request->getQueryParam('start', null);
         $endDate = $request->getQueryParam('end', null);
         $deleted = (bool)$request->getQueryParam('deleted', false);
