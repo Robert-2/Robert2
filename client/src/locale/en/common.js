@@ -284,7 +284,6 @@ export default {
     'list-template-details': "Details of list template \"{name}\"",
     'list-template-use-warning': "Be careful, using this template will add its materials to the already selected, and will save the list right away!",
     'use-this-template': "Use this list template",
-    'choose-another-one': "Choose another one",
     'no-list-template-available': "No list template available!",
     'create-list-template': "Create a material list template",
     'create-list-template-from-event': "Create a list template with this event's materials",
@@ -295,6 +294,9 @@ export default {
     'warning-terminate-inventory': "Beware, once this inventory terminated, it will no longer be modifiable.",
     'inventory-validation-error': "Some quantities are not valid. Please double-check the list.",
 
+    'add-materials-from': "Add materials from...",
+    'another-event': "Another évent...",
+    'a-list-template': "A list template...",
     'list-templates': "List templates",
     'materials-list-templates': "Materials list templates",
     'display-only-selected-materials': "Display selected materials only",

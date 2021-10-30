@@ -11,6 +11,7 @@ import apiMaterials from '@/stores/api/materials';
 import ErrorMessage from '@/components/ErrorMessage';
 import MaterialsFilters from '@/components/MaterialsFilters';
 import SwitchToggle from '@/components/SwitchToggle';
+import Dropdown from '@/components/Dropdown';
 import MaterialsStore from './_store';
 import { normalizeFilters } from './_utils';
 import Quantity from './Quantity';
@@ -414,14 +415,21 @@ const MaterialsListEditor: Component<Props> = (props: Props, { root, emit }: Set
                             <SwitchToggle value={showSelectedOnly.value} onInput={setSelectedOnly} />
                         </div>
                     )}
-                    {withTemplates!.value && (
-                        <button type="button" class="info" onClick={showTemplateUsageModal}>
-                            {__('use-list-template')}
-                        </button>
-                    )}
-                    <button type="button" class="info" onClick={handleShowReuseEventModal}>
-                        {__('reuse-list-from-event')}
-                    </button>
+                    <Dropdown variant="actions">
+                        <template slot="buttonText">
+                            {__('add-materials-from')}
+                        </template>
+                        <template slot="items">
+                            {withTemplates!.value && (
+                                <button type="button" class="Dropdown__item info" onClick={showTemplateUsageModal}>
+                                    {__('a-list-template')}
+                                </button>
+                            )}
+                            <button type="button" class="Dropdown__item info" onClick={handleShowReuseEventModal}>
+                                {__('another-event')}
+                            </button>
+                        </template>
+                    </Dropdown>
                 </div>
             </header>
             {error.value && <ErrorMessage error={error.value} />}

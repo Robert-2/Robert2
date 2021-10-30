@@ -20,7 +20,7 @@
             flex: 0 0 auto;
             display: flex;
             align-items: center;
-            margin: globals.$content-padding-small-vertical;
+            margin: 0 globals.$content-padding-small-vertical;
 
             &__filter {
                 display: flex;
@@ -30,6 +30,13 @@
 
                 .SwitchToggle {
                     margin-top: 0.3rem;
+                }
+            }
+
+            .Dropdown {
+                &__button {
+                    padding: 8px 10px;
+                    background-color: globals.$bg-color-button-info;
                 }
             }
         }
