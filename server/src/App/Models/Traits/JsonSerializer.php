@@ -5,7 +5,7 @@ namespace Robert2\API\Models\Traits;
 
 use Illuminate\Support\Str;
 
-trait CamelCaseJson
+trait JsonSerializer
 {
     public function jsonSerialize()
     {

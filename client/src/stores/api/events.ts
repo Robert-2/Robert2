@@ -56,12 +56,11 @@ export type EventSummary = {
     title: string,
     startDate: string,
     endDate: string,
-    location: string,
-    description: string | null,
+    location: string | null,
 };
 
 type SearchParams = {
-    title: string,
+    search: string,
     exclude?: number | undefined,
 };
 

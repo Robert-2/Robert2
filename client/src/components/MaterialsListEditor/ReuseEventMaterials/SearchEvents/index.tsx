@@ -37,7 +37,7 @@ const SearchEvents: Component<Props> = (props: Props, { root, emit }: SetupConte
 
         try {
             results.value = await apiEvents.search({
-                title: trimedSearchTerm,
+                search: trimedSearchTerm,
                 exclude: exclude?.value || undefined,
             });
             isFetched.value = true;

@@ -350,54 +350,43 @@ final class EventTest extends ModelTestCase
         $this->assertEquals($expected, $results);
     }
 
-    public function testSearchByTitle()
+    public function testAddSearch()
     {
-        $searchTerm = 'premier';
+        // - Retourne les événement qui ont le terme "premier" dans le titre
+        $results = (new Event)->addSearch('premier')
+            ->select(['id', 'title'])
+            ->get();
+        $this->assertEquals([
+            ['id' => 1, 'title' => 'Premier événement'],
+            ['id' => 3, 'title' => 'Avant-premier événement'],
+        ], $results->toArray());
 
-        // - Retourne la liste des événement avec le terme "premier" dans le titre
-        $results = Event::searchByTitle($searchTerm);
+        // - Retourne les événements qui ont le terme "Lyon" dans la localisation
+        $results = (new Event)->addSearch('Lyon', ['location'])
+            ->select(['id', 'title', 'location'])
+            ->get();
         $this->assertEquals([
             [
-                'id' => 1,
-                'title' => 'Premier événement',
-                'location' => 'Gap',
-                'description' => null,
-                'start_date' => '2018-12-17 00:00:00',
-                'end_date' => '2018-12-18 23:59:59',
+                'id' => 2,
+                'title' => 'Second événement',
+                'location' => 'Lyon',
             ],
+        ], $results->toArray());
+
+        // - Retourne les événements qui ont le terme "ou" dans le titre ou la localisation
+        $results = (new Event)->addSearch('ou', ['title', 'location'])
+            ->select(['id', 'title', 'location'])
+            ->get();
+        $this->assertEquals([
             [
                 'id' => 3,
                 'title' => 'Avant-premier événement',
                 'location' => 'Brousse',
-                'description' => null,
-                'start_date' => '2018-12-15 00:00:00',
-                'end_date' => '2018-12-16 23:59:59',
             ],
-        ], $results->toArray());
-
-        // - Pareil, mais en excluant l'événement #3
-        $results = Event::searchByTitle($searchTerm, 3);
-        $this->assertEquals([
             [
-                'id' => 1,
-                'title' => 'Premier événement',
-                'location' => 'Gap',
-                'description' => null,
-                'start_date' => '2018-12-17 00:00:00',
-                'end_date' => '2018-12-18 23:59:59',
-            ],
-        ], $results->toArray());
-
-        // - Encore, mais en limitant à 1 seul résultat
-        $results = Event::searchByTitle($searchTerm, null, 1);
-        $this->assertEquals([
-            [
-                'id' => 1,
-                'title' => 'Premier événement',
-                'location' => 'Gap',
-                'description' => null,
-                'start_date' => '2018-12-17 00:00:00',
-                'end_date' => '2018-12-18 23:59:59',
+                'id' => 5,
+                'title' => "Kermesse de l'école des trois cailloux",
+                'location' => 'Saint-Jean-la-Forêt',
             ],
         ], $results->toArray());
     }

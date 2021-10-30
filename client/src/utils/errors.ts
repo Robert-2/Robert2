@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 import type { AxiosError } from 'axios';
+import type { I18nTranslate } from 'vuex-i18n';
 import type { FormErrorDetail } from '@/stores/api/@types';
 
 const isApiErrorCode = (error: unknown, code: number): boolean => {
@@ -19,8 +20,6 @@ const getValidationErrors = (error: unknown): FormErrorDetail | null => {
     const { details } = (error as AxiosError).response?.data?.error || { details: {} };
     return details;
 };
-
-type I18nTranslate = (msg: string, vars?: Record<string, string | number>) => string;
 
 const getErrorMessage = (error: unknown, __: I18nTranslate): string => {
     if (typeof error === 'string') {

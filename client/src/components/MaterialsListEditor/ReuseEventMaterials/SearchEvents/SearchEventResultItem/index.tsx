@@ -25,7 +25,9 @@ const SearchEventResultItem: Component<Props> = (props: Props, { emit }: SetupCo
 
     return () => (
         <li class="SearchEventResultItem">
-            <span class="SearchEventResultItem__title">{data.value.title}</span>
+            <span class="SearchEventResultItem__title">
+                {data.value.title} {data.value.location && <em>({data.value.location})</em>}
+            </span>
             <span class="SearchEventResultItem__dates">
                 {duration.value === 1 && __('on-date', { date: start.value.format('LL') })}
                 {duration.value > 1 && __(
