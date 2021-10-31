@@ -12,10 +12,10 @@
         }
     ],
     "scripts": {
-        "create-migration": "src/vendor/robmorgan/phinx/bin/phinx --configuration=src/database/phinx.php create $1 --template=src/database/template",
-        "migration-status": "src/vendor/robmorgan/phinx/bin/phinx --configuration=src/database/phinx.php status",
-        "migrate": "src/vendor/robmorgan/phinx/bin/phinx --configuration=src/database/phinx.php migrate",
-        "rollback": "src/vendor/robmorgan/phinx/bin/phinx --configuration=src/database/phinx.php rollback",
+        "create-migration": "bin/console migrations:create",
+        "migration-status": "bin/console migrations:status",
+        "migrate": "bin/console migrations:migrate",
+        "rollback": "bin/console migrations:rollback",
         "lint": "src/vendor/bin/phpcs -s --colors -p ./src/App/",
         "test": "src/vendor/bin/phpunit --colors=always --coverage-html tests/coverage",
         "testapi": "src/vendor/bin/phpunit --colors=always --testsuite api --filter",
@@ -49,9 +49,11 @@
         "slim/psr7": "1.4.0",
         "slim/slim": "4.8.1",
         "slim/twig-view": "3.2.0",
+        "symfony/cache": "v5.3.8",
         "twig/html-extra": "3.3.0",
         "twig/intl-extra": "3.3.0",
         "twig/string-extra": "3.3.1",
+        "twig/twig": "v3.3.3",
         "vlucas/phpdotenv": "5.3.0"
     },
     "require-dev": {

@@ -3,18 +3,7 @@ declare(strict_types=1);
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\QueryException;
-use phpDocumentor\Reflection\Types\Integer;
 use Psr\Http\Message\UploadedFileInterface;
-
-/**
- * Check wether current run is in TEST mode
- *
- * @return bool True if script is running in TEST mode.
- */
-function isTestMode(): bool
-{
-    return getenv('PHP_ROBERT2_TESTING') === 'TESTS';
-}
 
 /**
  * Print a variable, and exit current script (or not)
@@ -55,7 +44,7 @@ function debug($var = null, array $options = []): void
     }
 
     $wrap = ['<pre>', '</pre>'];
-    if (isTestMode()) {
+    if (in_array(PHP_SAPI, ['cli', 'phpdbg'], true)) {
         $wrap = ["\n\033[35m", "\033[0m\n"];
     }
 

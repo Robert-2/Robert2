@@ -1,6 +1,7 @@
+@import 'parts/root.css';
+
 @import 'layout/parts.css';
-@import 'layout/root.css';
-@import 'layout/body.css';
+@import 'layout/layout.css';
 @import 'layout/header.css';
 @import 'layout/page.css';
 @import 'layout/footer.css';

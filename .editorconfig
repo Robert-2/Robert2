@@ -14,3 +14,6 @@ trim_trailing_whitespace = false
 
 [*.{html,twig}]
 insert_final_newline = false
+
+[*.template]
+trim_trailing_whitespace = false

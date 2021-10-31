@@ -2713,10 +2713,10 @@ return [
     "designation"
     => "Désignation",
 
-    "replacementValue"
+    "replacement-value"
     => "Val. Remp.",
 
-    "totalReplacementValue"
+    "total-replacement-value"
     => "Val. Remp. Totale",
 
     "releaseSheet"

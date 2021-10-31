@@ -50,9 +50,7 @@ class RobertFixtures
         echo "Running migrations for tests...\n";
 
         $output = [];
-        $phinxPath = 'src' . DS . 'vendor' . DS . 'bin' . DS . 'phinx';
-        $configPath = 'src' . DS . 'database' . DS . 'phinx.php';
-        exec($phinxPath . ' --configuration=' . $configPath . ' --environment=test migrate', $output);
+        exec('bin' . DS . 'console --env=test migrate', $output);
 
         echo implode("\n", $output) . "\n\n";
     }
