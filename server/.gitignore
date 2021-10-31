@@ -8,6 +8,9 @@ src/install/*.json
 
 /vendors/
 
+/data/*
+!/data/.gitkeep
+
 /.phpunit*
 tests/coverage/
 tests/Fixtures/tmp/*
