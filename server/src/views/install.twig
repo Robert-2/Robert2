@@ -1,12 +1,28 @@
-{% extends "install/base.twig" %}
+{% extends "base.twig" %}
 
 {% block title %}{{ translate("Install") }} - {{ translate(step) }}{% endblock %}
 
-{% block pageTitle %}{{ translate("Installation wizard") }}{% endblock %}
+{% block head %}
+<link rel="stylesheet" type="text/css" href="css/style.css">
+{% endblock %}
 
-{% block content %}
-    {% if error %}
-    <div class="page__error">{{ translate(error) }}</div>
-    {% endif %}
-    {{ include('install/' ~ lang ~ '/' ~ step ~ '.twig') }}
+{% block body %}
+     <div class="layout">
+        <header class="layout__header header">
+            {{ include('components/logo.svg.twig', { class: 'header__logo' }) }}
+            <h3 class="header__title">{{ translate("Installation wizard") }}</h3>
+        </header>
+        <div class="layout__content page">
+            {% if error %}<div class="page__error">{{ translate(error) }}</div>{% endif %}
+            {{ include('install/' ~ lang ~ '/' ~ step ~ '.twig') }}
+        </div>
+        <footer class="layout__footer footer">
+            <div class="footer__version">
+                Robert2 API, version <strong>{{version()}}</strong>
+            </div>
+            <div class="footer__licence">
+                &copy; Pulsanova 2017-{{ 'now'|date('Y') }} - Tous droits réservés.
+            </div>
+        </footer>
+    </div>
 {% endblock %}

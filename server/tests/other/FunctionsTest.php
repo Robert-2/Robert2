@@ -8,11 +8,6 @@ use Slim\Psr7\UploadedFile;
 
 final class FunctionsTest extends TestCase
 {
-    public function testIsTestMode(): void
-    {
-        $this->assertTrue(isTestMode());
-    }
-
     public function testGetExecutionTime(): void
     {
         $this->assertNotEmpty(getExecutionTime());

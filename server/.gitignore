@@ -1,5 +1,11 @@
 .env
 
+src/App/Config/*.json
+src/App/Config/*.json.bckp
+
+src/install/*.json
+!src/install/dependencyTree.json
+
 src/vendor/
 
 /.phpunit*

@@ -3,12 +3,12 @@ declare(strict_types=1);
 
 namespace Robert2\API;
 
-use DI\ContainerBuilder;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Robert2\API\Config\Config;
 use Robert2\API\Errors\ErrorHandler;
+use Robert2\API\Kernel;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Factory\AppFactory;
 use Slim\Http\Response;
@@ -26,10 +26,11 @@ class App
     private $container;
     private $app;
 
-    public function __construct()
+    public function __construct(?Kernel $kernel = null)
     {
-        $this->container = static::createContainer();
+        $kernel = ($kernel ?? new Kernel)->boot();
 
+        $this->container = $kernel->getContainer();
         $this->app = AppFactory::create(null, $this->container);
         $this->app->addBodyParsingMiddleware();
 
@@ -53,7 +54,7 @@ class App
     protected function configureCors()
     {
         $isCORSEnabled = (bool)$this->container->get('settings')['enableCORS'];
-        if (isTestMode() || !$isCORSEnabled) {
+        if (Config::getEnv() === 'test' || !$isCORSEnabled) {
             return;
         }
 
@@ -75,17 +76,13 @@ class App
     protected function configureRouter()
     {
         $settings = $this->container->get('settings');
-        $isCORSEnabled = (bool)$settings['enableCORS'] && !isTestMode();
-        $useRouterCache = (
-            (bool)$settings['useRouterCache']
-            && !isTestMode()
-            && Config::getEnv() !== 'development'
-        );
+        $isCORSEnabled = (bool)$settings['enableCORS'] && Config::getEnv() !== 'test';
+        $useRouterCache = (bool)$settings['useRouterCache'] && Config::getEnv() === 'production';
 
         // - Route cache
         if ($useRouterCache) {
             $routeCollector = $this->app->getRouteCollector();
-            $routeCollector->setCacheFile(VAR_FOLDER . DS . 'cache' . DS . 'routes.php');
+            $routeCollector->setCacheFile(CACHE_FOLDER . DS . 'routes.php');
         }
 
         // - Middleware
@@ -162,11 +159,10 @@ class App
 
     protected function configureErrorHandlers()
     {
-        $shouldLog = !isTestMode();
+        $shouldLog = Config::getEnv() !== 'test';
         $displayErrorDetails = (
             (bool)$this->container->get('settings')['displayErrorDetails']
-            || isTestMode()
-            || Config::getEnv() === 'development'
+            || in_array(Config::getEnv(), ['production', 'test'], true)
         );
 
         $logger = $this->container->get('logger')->createLogger('error');
@@ -179,27 +175,5 @@ class App
             $logger
         );
         $errorMiddleware->setDefaultErrorHandler($defaultErrorHandler);
-    }
-
-    // ------------------------------------------------------
-    // -
-    // -    Internal static Methods
-    // -
-    // ------------------------------------------------------
-
-    protected static function createContainer()
-    {
-        $builder = new ContainerBuilder();
-        $builder->addDefinitions(CONFIG_FOLDER . DS . 'definitions.php');
-
-        $container = $builder->build();
-
-        //
-        // - Settings
-        //
-
-        $container->set('settings', Config::getSettings());
-
-        return $container;
     }
 }

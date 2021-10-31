@@ -36,6 +36,11 @@ class Config
         ],
         'billingMode' => 'partial', // - Valeurs possibles : 'none', 'partial', 'all'.
         'degressiveRateFunction' => '((daysCount - 1) * 0.75) + 1',
+        'proxy' => [
+            'enabled' => false,
+            'host' => 'proxy.robert2.local',
+            'port' => 3128,
+        ],
         'auth' => [
             'cookie' => 'auth',
         ],
@@ -162,7 +167,7 @@ class Config
 
     public static function getEnv()
     {
-        $env = $_ENV['APP_ENV'] ?? static::getSettings('env') ?? 'production';
+        $env = $_ENV['APP_ENV'] ?? $_SERVER['APP_ENV'] ?? static::getSettings('env') ?? 'production';
 
         $availableEnvs = ['development', 'production', 'test'];
         if (empty($env) || !in_array($env, $availableEnvs)) {
@@ -186,7 +191,7 @@ class Config
 
         $dbConfig = self::getSettings('db');
 
-        if (isTestMode()) {
+        if (static::getEnv() === 'test') {
             $dbConfig['database'] = $dbConfig['testDatabase'];
         }
 

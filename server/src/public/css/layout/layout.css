@@ -1,4 +1,4 @@
-.body {
+.layout {
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -7,14 +7,14 @@
     color: #333;
 }
 
-.body__header {
+.layout__header {
     flex: 0 0 auto;
 }
 
-.body__content {
+.layout__content {
     flex: 1;
 }
 
-.body__footer {
+.layout__footer {
     flex: 0 0 auto;
 }

@@ -1,5 +1,4 @@
 <?php
-
 namespace Robert2\Tests;
 
 final class EventsTest extends ApiTestCase

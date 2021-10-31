@@ -1,0 +1,142 @@
+{% extends "base.twig" %}
+
+{% block head %}
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&amp;display=swap" rel="stylesheet">
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    :root {
+        font-size: 14px;
+    }
+
+    html,
+    body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        font-family: 'Roboto', sans-serif;
+        font-weight: 300;
+    }
+
+    body {
+        background-color: #fff;
+        color: #494d54;
+    }
+
+    strong {
+        font-weight: 400;
+    }
+
+    svg {
+        max-width: 100%;
+        max-height: 100%;
+    }
+
+    a {
+        color: #5783db;
+    }
+
+    ul, ol {
+        padding-left: 20px;
+        text-align: left;
+    }
+    li + li {
+        margin-top: 8px;
+    }
+
+    .layout {
+        height: 100%;
+        display: flex;
+        min-width: 320px;
+        flex-direction: column;
+        padding: 20px 40px;
+    }
+    .layout__header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 70px;
+        margin-bottom: 20px;
+    }
+    .layout__body {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .critical-error {
+        max-width: 900px;
+        text-align: center;
+    }
+    .critical-error__illustration {
+        stroke: #dae2ef;
+        width: 5rem;
+        height: 5rem;
+        margin-bottom: 20px;
+    }
+    .critical-error__title {
+        margin: 0 0 20px;
+        font-size: 2rem;
+        line-height: 1.2;
+    }
+    .critical-error__body {
+        max-width: 800px;
+        margin: 0 auto;
+        font-size: 1.15rem;
+        line-height: 1.5;
+    }
+    .critical-error__button {
+        display: inline-block;
+        padding: .8rem 1.3rem;
+        background-color: #eaeef6; /* #5783db */
+        color: #494d54;
+        text-decoration: none;
+        border-radius: 10px;
+        transition: background-color ease 300ms;
+    }
+    .critical-error__button:hover {
+        background-color: #c9d5e8;
+        color: #494d54;
+    }
+
+    @media (min-width: 900px) {
+        :root {
+            font-size: 16px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+    <main class="layout">
+        <header class="layout__header header">
+            {{ include('components/logo.svg.twig') }}
+        </header>
+        <div class="layout__body">
+            <div class="critical-error">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="critical-error__illustration"
+                >
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M12 8v4M12 16h.01" />
+                </svg>
+                <h1 class="critical-error__title">
+                    {% block title %}{% endblock %}
+                </h1>
+                <div class="critical-error__body">
+                    {% block content %}{% endblock %}
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock %}
