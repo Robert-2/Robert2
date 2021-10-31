@@ -84,6 +84,6 @@ jobs:
                   coverage    : xdebug
             - run: composer install --no-interaction --no-progress
             - run: cp ../.github/workflows/ci_settings.json ./src/App/Config/settings.json
-            - run: ./src/vendor/bin/phpunit --coverage-text
+            - run: ./vendors/bin/phpunit --coverage-text
               env:
                   DB_PORT: ${{ job.services.mysql.ports[3306] }}

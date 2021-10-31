@@ -6,7 +6,7 @@ src/App/Config/*.json.bckp
 src/install/*.json
 !src/install/dependencyTree.json
 
-src/vendor/
+/vendors/
 
 /.phpunit*
 tests/coverage/

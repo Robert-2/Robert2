@@ -16,15 +16,15 @@
         "migration-status": "bin/console migrations:status",
         "migrate": "bin/console migrations:migrate",
         "rollback": "bin/console migrations:rollback",
-        "lint": "src/vendor/bin/phpcs -s --colors -p ./src/App/",
-        "test": "src/vendor/bin/phpunit --colors=always --coverage-html tests/coverage",
-        "testapi": "src/vendor/bin/phpunit --colors=always --testsuite api --filter",
-        "testmodels": "src/vendor/bin/phpunit --colors=always --testsuite models --filter",
-        "testlibs": "src/vendor/bin/phpunit --colors=always --testsuite libs --filter",
-        "testother": "src/vendor/bin/phpunit --colors=always --testsuite other --filter"
+        "lint": "vendors/bin/phpcs -s --colors -p ./src/App/",
+        "test": "vendors/bin/phpunit --colors=always --coverage-html tests/coverage",
+        "testapi": "vendors/bin/phpunit --colors=always --testsuite api --filter",
+        "testmodels": "vendors/bin/phpunit --colors=always --testsuite models --filter",
+        "testlibs": "vendors/bin/phpunit --colors=always --testsuite libs --filter",
+        "testother": "vendors/bin/phpunit --colors=always --testsuite other --filter"
     },
     "config": {
-        "vendor-dir": "src/vendor",
+        "vendor-dir": "vendors",
         "sort-packages": true,
         "platform": {
             "php": "7.3"

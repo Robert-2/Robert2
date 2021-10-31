@@ -84,7 +84,6 @@ cp -R ./client/dist $distFolder/src/public/webclient
 
 echo -e "\e[1m\e[34m-> Nettoyage du dossier de distribution (suppression des fichiers inutiles / privés)...\e[0m"
 cd $distFolder
-rm -rf src/vendor
 rm -f src/App/Config/settings.json
 rm -f src/install/progress.json
 rm -r src/var/cache && mkdir -m 777 src/var/cache/

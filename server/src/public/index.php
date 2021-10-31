@@ -1,9 +1,9 @@
 <?php
 use Robert2\API\App;
 
-require '../vendor/autoload.php';
-require '../App/Config/constants.php';
-require '../App/Config/functions.php';
+require __DIR__ . '/../../vendors/autoload.php';
+require __DIR__ . '/../App/Config/constants.php';
+require __DIR__ . '/../App/Config/functions.php';
 
 // - Chargement de l'environnement
 $dotenv = Dotenv\Dotenv::createImmutable(ROOT_FOLDER);
