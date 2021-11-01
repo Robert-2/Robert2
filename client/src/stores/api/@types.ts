@@ -28,4 +28,9 @@ export type PaginationParams = {
 
 export type FormErrorDetail = Record<string, string[]>;
 
+export type WithCount<T> = {
+    count: number,
+    data: T,
+};
+
 /* eslint-enable babel/camelcase */

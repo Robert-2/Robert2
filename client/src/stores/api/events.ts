@@ -1,5 +1,6 @@
 import requester from '@/globals/requester';
 
+import type { WithCount } from '@/stores/api/@types';
 import type { PersonWithEventPivot } from '@/stores/api/persons';
 import type { MaterialWithPivot } from '@/stores/api/materials';
 import type { Estimate } from '@/stores/api/estimates';
@@ -68,7 +69,7 @@ type SearchParams = {
 // - Functions
 //
 
-const search = async (params: SearchParams): Promise<EventSummary[]> => (
+const search = async (params: SearchParams): Promise<WithCount<EventSummary[]>> => (
     (await requester.get(`events`, { params })).data
 );
 

@@ -1,9 +1,9 @@
 import './index.scss';
+import debounce from 'debounce';
 import { ref, toRefs } from '@vue/composition-api';
 import { getErrorMessage } from '@/utils/errors';
 import useI18n from '@/hooks/useI18n';
 import apiEvents from '@/stores/api/events';
-import Loading from '@/components/Loading';
 import SearchEventResultItem from './SearchEventResultItem';
 
 import type { Component, SetupContext } from '@vue/composition-api';
@@ -22,6 +22,7 @@ const SearchEvents: Component<Props> = (props: Props, { root, emit }: SetupConte
     const __ = useI18n();
     const { exclude } = toRefs(props);
     const searchTerm = ref<string>('');
+    const totalCount = ref<number>(0);
     const results = ref<EventSummary[]>([]);
     const isLoading = ref<boolean>(false);
     const isFetched = ref<boolean>(false);
@@ -33,13 +34,14 @@ const SearchEvents: Component<Props> = (props: Props, { root, emit }: SetupConte
         }
 
         isLoading.value = true;
-        isFetched.value = false;
 
         try {
-            results.value = await apiEvents.search({
+            const { count, data } = await apiEvents.search({
                 search: trimedSearchTerm,
                 exclude: exclude?.value || undefined,
             });
+            totalCount.value = count;
+            results.value = data;
             isFetched.value = true;
         } catch (err) {
             isFetched.value = false;
@@ -49,55 +51,80 @@ const SearchEvents: Component<Props> = (props: Props, { root, emit }: SetupConte
         }
     };
 
+    const handleSearchDebounced = debounce(() => {
+        handleSearch();
+    }, 400);
+
+    const handleKeyUp = (e: KeyboardEvent): void => {
+        if (e.code === 'Enter' || e.code === 'NumpadEnter') {
+            handleSearch();
+            return;
+        }
+
+        handleSearchDebounced();
+    };
+
     const handleSelect = (id: number): void => {
         emit('select', id);
     };
 
-    const handleKeyUp = (e: KeyboardEvent): void => {
-        if (e.code !== 'Enter' && e.code !== 'NumpadEnter') {
-            return;
-        }
+    return () => {
+        const renderResults = (): JSX.Element => {
+            if (results.value.length === 0) {
+                return (
+                    <p class="SearchEvents__no-result">
+                        {__('no-result-found-try-another-search')}
+                    </p>
+                );
+            }
 
-        handleSearch();
-    };
+            const otherCount = totalCount.value - results.value.length;
 
-    return () => (
-        <div class="SearchEvents">
-            <div class="SearchEvents__search">
-                <input
-                    type="search"
-                    vModel={searchTerm.value}
-                    placeholder={__('type-to-search-event')}
-                    class="SearchEvents__search__input"
-                    onKeyup={handleKeyUp}
-                />
-                <button type="button" class="SearchEvents__search__button info" onClick={handleSearch}>
-                    <i class="fas fa-search" />
-                </button>
-            </div>
-            {isLoading.value && <Loading horizontal />}
-            {isFetched.value && (
+            return (
                 <div class="SearchEvents__results">
-                    {results.value.length === 0 && (
-                        <p class="SearchEvents__no-result">
-                            {__('no-result-found-try-another-search')}
+                    <ul class="SearchEvents__results__list">
+                        {results.value.map((event: EventSummary) => (
+                            <SearchEventResultItem
+                                key={event.id}
+                                data={event}
+                                onSelect={handleSelect}
+                            />
+                        ))}
+                    </ul>
+                    {otherCount > 0 && (
+                        <p class="SearchEvents__results__count">
+                            {__('and-count-more-older-events', { count: otherCount }, otherCount)}
                         </p>
                     )}
-                    {results.value.length > 0 && (
-                        <ul class="SearchEvents__results__list">
-                            {results.value.map((event: EventSummary) => (
-                                <SearchEventResultItem
-                                    key={event.id}
-                                    data={event}
-                                    onSelect={handleSelect}
-                                />
-                            ))}
-                        </ul>
-                    )}
                 </div>
-            )}
-        </div>
-    );
+            );
+        };
+
+        return (
+            <div class="SearchEvents">
+                <div class="SearchEvents__search">
+                    <input
+                        type="search"
+                        vModel={searchTerm.value}
+                        placeholder={__('type-to-search-event')}
+                        class="SearchEvents__search__input"
+                        onKeyup={handleKeyUp}
+                    />
+                    <button
+                        type="button"
+                        class="SearchEvents__search__button info"
+                        onClick={handleSearch}
+                        disabled={isLoading.value}
+                    >
+                        {isLoading.value
+                            ? (<i class="fas fa-circle-notch fa-spin" />)
+                            : (<i class="fas fa-search" />)}
+                    </button>
+                </div>
+                {isFetched.value && renderResults()}
+            </div>
+        );
+    };
 };
 
 SearchEvents.props = {

@@ -57,7 +57,7 @@ const ReuseEventMaterials: Component<Props> = (props: Props, { emit }: SetupCont
     };
 
     return () => {
-        const renderMainContent = (): JSX.Element => {
+        const renderSelection = (): JSX.Element | null => {
             if (error.value) {
                 return <ErrorMessage error={error.value} />;
             }
@@ -66,29 +66,29 @@ const ReuseEventMaterials: Component<Props> = (props: Props, { emit }: SetupCont
                 return <Loading />;
             }
 
-            if (selected.value) {
-                return (
-                    <div class="ReuseEventMaterials__selected">
-                        <h3>{__('event-materials', { name: selected.value.title })}</h3>
-                        <p class="ReuseEventMaterials__selected__description">{selected.value.description}</p>
-                        <MaterialsSorted
-                            data={selected.value.materials}
-                            hideDetails={selected.value.materials.length > 10}
-                        />
-                        <p class="ReuseEventMaterials__selected__warning">
-                            <i class="fas fa-exclamation-triangle" />
-                            {__('reuse-list-from-event-warning')}
-                        </p>
-                    </div>
-                );
+            if (selected.value === null) {
+                return null;
             }
 
             return (
-                <SearchEvents
-                    exclude={excludeEvent.value}
-                    onSelect={handleSelectEvent}
-                />
+                <div class="ReuseEventMaterials__selected">
+                    <h3>{__('event-materials', { name: selected.value.title })}</h3>
+                    <p class="ReuseEventMaterials__selected__description">{selected.value.description}</p>
+                    <MaterialsSorted
+                        data={selected.value.materials}
+                        hideDetails={selected.value.materials.length > 10}
+                    />
+                    <p class="ReuseEventMaterials__selected__warning">
+                        <i class="fas fa-exclamation-triangle" />
+                        {__('reuse-list-from-event-warning')}
+                    </p>
+                </div>
             );
+        };
+
+        const mainClassNames = {
+            'ReuseEventMaterials__main': true,
+            'ReuseEventMaterials__main--has-selected': selected.value !== null,
         };
 
         return (
@@ -101,10 +101,14 @@ const ReuseEventMaterials: Component<Props> = (props: Props, { emit }: SetupCont
                         <i class="fas fa-times" />
                     </button>
                 </div>
-                <div class="ReuseEventMaterials__main">
-                    {renderMainContent()}
+                <div class={mainClassNames}>
+                    <SearchEvents
+                        exclude={excludeEvent.value}
+                        onSelect={handleSelectEvent}
+                    />
+                    {renderSelection()}
                 </div>
-                {selected.value && (
+                {selected.value !== null && (
                     <div class="ReuseEventMaterials__footer">
                         <button type="button" onClick={handleSubmit} class="success">
                             <i class="fas fa-check" /> {__('use-these-materials')}

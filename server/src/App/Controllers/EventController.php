@@ -40,12 +40,14 @@ class EventController extends BaseController
                 $query->where('id', '<>', $exclude);
             }
 
+            $count = $query->count();
+
             $results = $query
                 ->orderBy('start_date', 'desc')
                 ->limit(10)
                 ->get();
 
-            return $response->withJson($results);
+            return $response->withJson(['count' => $count, 'data' => $results]);
         }
 
         $startDate = $request->getQueryParam('start', null);

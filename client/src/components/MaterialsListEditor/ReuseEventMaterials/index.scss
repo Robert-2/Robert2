@@ -21,9 +21,16 @@
 
     &__main {
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
         padding: globals.$content-padding-large-vertical globals.$content-padding-small-vertical;
+
+        &--has-selected {
+            .SearchEvents {
+                display: none;
+            }
+        }
     }
 
     .SearchEvents {

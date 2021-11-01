@@ -35,6 +35,12 @@
             margin: 0;
             padding: 0;
         }
+
+        &__count {
+            color: globals.$text-light-color;
+            font-style: italic;
+            text-align: center;
+        }
     }
 
     &__no-result {

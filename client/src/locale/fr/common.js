@@ -274,6 +274,10 @@ export default {
     'reuse-list-from-event': "Ajouter du matériel depuis un autre événement...",
     'choose-event-to-reuse-materials-list': "Choisir un événement pour réutiliser sa liste de matériel",
     'type-to-search-event': "Entrez le nom d'un événement...",
+    'and-count-more-older-events': [
+        "...et un autre événement plus ancien.",
+        "...et {count} autres événements plus anciens.",
+    ],
     'reuse-list-from-event-warning': "Attention, cela va ajouter le matériel à celui déjà sélectionné, et sauvegarder tout de suite après\u00a0!",
     'choose': "Choisir",
     'use-these-materials': "Utiliser ce matériel",

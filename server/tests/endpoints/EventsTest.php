@@ -1648,19 +1648,22 @@ final class EventsTest extends ApiTestCase
         $this->client->get('/api/events?search=premier');
         $this->assertStatusCode(SUCCESS_OK);
         $this->assertResponseData([
-            [
-                'id' => 1,
-                'title' => 'Premier événement',
-                'location' => 'Gap',
-                'startDate' => '2018-12-17 00:00:00',
-                'endDate' => '2018-12-18 23:59:59',
-            ],
-            [
-                'id' => 3,
-                'title' => 'Avant-premier événement',
-                'location' => 'Brousse',
-                'startDate' => '2018-12-15 00:00:00',
-                'endDate' => '2018-12-16 23:59:59',
+            'count' => 2,
+            'data' => [
+                [
+                    'id' => 1,
+                    'title' => 'Premier événement',
+                    'location' => 'Gap',
+                    'startDate' => '2018-12-17 00:00:00',
+                    'endDate' => '2018-12-18 23:59:59',
+                ],
+                [
+                    'id' => 3,
+                    'title' => 'Avant-premier événement',
+                    'location' => 'Brousse',
+                    'startDate' => '2018-12-15 00:00:00',
+                    'endDate' => '2018-12-16 23:59:59',
+                ],
             ],
         ]);
 
@@ -1668,12 +1671,15 @@ final class EventsTest extends ApiTestCase
         $this->client->get('/api/events?search=premier&exclude=3');
         $this->assertStatusCode(SUCCESS_OK);
         $this->assertResponseData([
-            [
-                'id' => 1,
-                'title' => 'Premier événement',
-                'location' => 'Gap',
-                'startDate' => '2018-12-17 00:00:00',
-                'endDate' => '2018-12-18 23:59:59',
+            'count' => 1,
+            'data' => [
+                [
+                    'id' => 1,
+                    'title' => 'Premier événement',
+                    'location' => 'Gap',
+                    'startDate' => '2018-12-17 00:00:00',
+                    'endDate' => '2018-12-18 23:59:59',
+                ],
             ],
         ]);
     }

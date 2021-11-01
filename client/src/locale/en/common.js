@@ -274,6 +274,10 @@ export default {
     'reuse-list-from-event': "Add materials from another event...",
     'choose-event-to-reuse-materials-list': "Choose an event to reuse its materials list",
     'type-to-search-event': "Type in to search an event...",
+    'and-count-more-older-events': [
+        "...and one older event.",
+        "...and {count} older events.",
+    ],
     'reuse-list-from-event-warning': "Be careful, the materials will be added to the already selected, and the list will be saved right away!",
     'choose': "Choose",
     'use-these-materials': "Use these materials",
