@@ -4,7 +4,7 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 0.16.0 (UNRELEASED)
+## 0.16.0 (2021-11-02)
 
 - Commence l'amélioration du code front-end : réécriture en TypeScript, et utilisation de la nouvelle "composition API" de Vue.js.
 - Corrige le comportement de la modale d'assignation de technicien (étape 3 de l'édition d'événement) en cas d'erreur serveur (#294).
