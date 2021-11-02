@@ -5,10 +5,10 @@ Options -Indexes
     RewriteEngine On
     RewriteBase /
 
-    ## Restrict access to `.git/`, `var/`, `vendor/` folders & `composer` files
+    ## Restrict access to `.git/`, `var/`, `vendors/` folders & `composer` files
     RewriteRule ^\.git / [F,L]
     RewriteRule ^server/src/var/(.*)?$ / [F,L]
-    RewriteRule ^server/src/vendor/(.*)?$ / [F,L]
+    RewriteRule ^server/vendors/(.*)?$ / [F,L]
     RewriteRule ^server/composer\.(lock|json)$ / [F,L]
 
     ## Redirect all requests to `src/public/` folder

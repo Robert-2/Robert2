@@ -12,19 +12,19 @@
         }
     ],
     "scripts": {
-        "create-migration": "src/vendor/robmorgan/phinx/bin/phinx --configuration=src/database/phinx.php create $1 --template=src/database/template",
-        "migration-status": "src/vendor/robmorgan/phinx/bin/phinx --configuration=src/database/phinx.php status",
-        "migrate": "src/vendor/robmorgan/phinx/bin/phinx --configuration=src/database/phinx.php migrate",
-        "rollback": "src/vendor/robmorgan/phinx/bin/phinx --configuration=src/database/phinx.php rollback",
-        "lint": "src/vendor/bin/phpcs -s --colors -p ./src/App/",
-        "test": "src/vendor/bin/phpunit --colors=always --coverage-html tests/coverage",
-        "testapi": "src/vendor/bin/phpunit --colors=always --testsuite api --filter",
-        "testmodels": "src/vendor/bin/phpunit --colors=always --testsuite models --filter",
-        "testlibs": "src/vendor/bin/phpunit --colors=always --testsuite libs --filter",
-        "testother": "src/vendor/bin/phpunit --colors=always --testsuite other --filter"
+        "create-migration": "bin/console migrations:create",
+        "migration-status": "bin/console migrations:status",
+        "migrate": "bin/console migrations:migrate",
+        "rollback": "bin/console migrations:rollback",
+        "lint": "vendors/bin/phpcs -s --colors -p ./src/App/",
+        "test": "vendors/bin/phpunit --colors=always --coverage-html tests/coverage",
+        "testapi": "vendors/bin/phpunit --colors=always --testsuite api --filter",
+        "testmodels": "vendors/bin/phpunit --colors=always --testsuite models --filter",
+        "testlibs": "vendors/bin/phpunit --colors=always --testsuite libs --filter",
+        "testother": "vendors/bin/phpunit --colors=always --testsuite other --filter"
     },
     "config": {
-        "vendor-dir": "src/vendor",
+        "vendor-dir": "vendors",
         "sort-packages": true,
         "platform": {
             "php": "7.3"
@@ -39,6 +39,7 @@
         "firebase/php-jwt": "5.4.0",
         "illuminate/database": "8.51.0",
         "illuminate/pagination": "8.51.0",
+        "kirkbushell/eloquence": "8.0.0",
         "monolog/monolog": "2.3.2",
         "php-di/php-di": "6.3.4",
         "respect/validation": "1.1.31",
@@ -48,9 +49,11 @@
         "slim/psr7": "1.4.0",
         "slim/slim": "4.8.1",
         "slim/twig-view": "3.2.0",
+        "symfony/cache": "v5.3.8",
         "twig/html-extra": "3.3.0",
         "twig/intl-extra": "3.3.0",
         "twig/string-extra": "3.3.1",
+        "twig/twig": "v3.3.3",
         "vlucas/phpdotenv": "5.3.0"
     },
     "require-dev": {

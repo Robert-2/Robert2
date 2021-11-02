@@ -96,7 +96,8 @@ class EventTechnician extends BaseModel
     public function Technician()
     {
         return $this->belongsTo(Person::class, 'technician_id')
-            ->select(['id', 'first_name', 'last_name', 'nickname', 'phone']);
+            ->select(['id', 'first_name', 'last_name', 'nickname', 'phone'])
+            ->withTrashed();
     }
 
     // ——————————————————————————————————————————————————————

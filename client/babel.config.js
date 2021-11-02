@@ -1,3 +1,7 @@
 module.exports = {
-    presets: ['@vue/cli-plugin-babel/preset'],
+    presets: [
+        'vca-jsx',
+        '@vue/cli-plugin-babel/preset',
+        '@babel/preset-typescript',
+    ],
 };

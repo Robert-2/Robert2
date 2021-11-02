@@ -45,6 +45,7 @@ class MaterialController extends BaseController
 
     public function getAll(Request $request, Response $response): Response
     {
+        $paginated = (bool)$request->getQueryParam('paginated', true);
         $searchTerm = $request->getQueryParam('search', null);
         $searchField = $request->getQueryParam('searchBy', null);
         $parkId = $request->getQueryParam('park', null);
@@ -86,14 +87,21 @@ class MaterialController extends BaseController
                 ->get();
         }
 
-        $results = $this->paginate($request, $model);
-        if ($dateForQuantities) {
-            $results['data'] = Material::recalcQuantitiesForPeriod(
-                $results['data'],
-                $dateForQuantities,
-                $dateForQuantities,
-                null
-            );
+        if ($paginated) {
+            $results = $this->paginate($request, $model);
+        } else {
+            $results = ['data' => $model->get()->toArray()];
+        }
+
+        $results['data'] = Material::recalcQuantitiesForPeriod(
+            $results['data'],
+            $dateForQuantities,
+            $dateForQuantities,
+            null
+        );
+
+        if (!$paginated) {
+            $results = $results['data'];
         }
 
         return $response->withJson($results);
@@ -449,7 +457,7 @@ class MaterialController extends BaseController
             slugify($parkOnlyName ?: $company['name']),
             (new \DateTime())->format('Y-m-d')
         );
-        if (isTestMode()) {
+        if (Config::getEnv() === 'test') {
             $fileName = sprintf('TEST-%s', $fileName);
         }
 

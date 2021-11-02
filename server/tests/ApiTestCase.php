@@ -22,7 +22,7 @@ class ApiTestCase extends TestCase
     {
         $this->baseSetUp();
 
-        $this->app = new App();
+        $this->app = new App;
         $this->client = new ApiTestClient($this->app);
 
         // - Test specific configuration

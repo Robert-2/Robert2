@@ -2,7 +2,7 @@ import './index.scss';
 import Config from '@/globals/config';
 import Alert from '@/components/Alert';
 import Help from '@/components/Help';
-import ParkTotalAmount from './TotalAmount';
+import ParkTotalAmount from '@/components/ParkTotalAmount';
 
 // @vue/component
 export default {

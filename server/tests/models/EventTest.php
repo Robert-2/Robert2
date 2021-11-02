@@ -350,6 +350,47 @@ final class EventTest extends ModelTestCase
         $this->assertEquals($expected, $results);
     }
 
+    public function testAddSearch()
+    {
+        // - Retourne les événement qui ont le terme "premier" dans le titre
+        $results = (new Event)->addSearch('premier')
+            ->select(['id', 'title'])
+            ->get();
+        $this->assertEquals([
+            ['id' => 1, 'title' => 'Premier événement'],
+            ['id' => 3, 'title' => 'Avant-premier événement'],
+        ], $results->toArray());
+
+        // - Retourne les événements qui ont le terme "Lyon" dans la localisation
+        $results = (new Event)->addSearch('Lyon', ['location'])
+            ->select(['id', 'title', 'location'])
+            ->get();
+        $this->assertEquals([
+            [
+                'id' => 2,
+                'title' => 'Second événement',
+                'location' => 'Lyon',
+            ],
+        ], $results->toArray());
+
+        // - Retourne les événements qui ont le terme "ou" dans le titre ou la localisation
+        $results = (new Event)->addSearch('ou', ['title', 'location'])
+            ->select(['id', 'title', 'location'])
+            ->get();
+        $this->assertEquals([
+            [
+                'id' => 3,
+                'title' => 'Avant-premier événement',
+                'location' => 'Brousse',
+            ],
+            [
+                'id' => 5,
+                'title' => "Kermesse de l'école des trois cailloux",
+                'location' => 'Saint-Jean-la-Forêt',
+            ],
+        ], $results->toArray());
+    }
+
     public function testSetPeriod()
     {
         // - Set period to current year

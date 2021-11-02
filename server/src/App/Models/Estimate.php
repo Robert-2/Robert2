@@ -145,7 +145,7 @@ class Estimate extends BaseModel
             $date->format('Ymd-Hi'),
             slugify($estimate->Beneficiary->full_name)
         );
-        if (isTestMode()) {
+        if (Config::getEnv() === 'test') {
             $fileName = sprintf('TEST-%s', $fileName);
         }
 

@@ -5,6 +5,7 @@ namespace Robert2\API\Services;
 
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Robert2\API\Config\Acl;
+use Robert2\API\Config\Config;
 use Robert2\API\Models\User;
 use Robert2\API\Services\Auth\AuthenticatorInterface;
 use Slim\Exception\HttpUnauthorizedException;
@@ -115,7 +116,7 @@ final class Auth
         }
 
         // - Si on est en mode "test", on "fake" identifie l'utilisateur.
-        if (isTestMode()) {
+        if (Config::getEnv() === 'test') {
             static::$user = User::find(1);
             return true;
         }

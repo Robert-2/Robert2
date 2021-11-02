@@ -5,11 +5,12 @@ import Alert from '@/components/Alert';
 import Help from '@/components/Help';
 import Dropdown, { getItemClassnames } from '@/components/Dropdown';
 import isValidInteger from '@/utils/isValidInteger';
+import formatAmount from '@/utils/formatAmount';
+import apiMaterials from '@/stores/api/materials';
 import PromptDate from '@/components/PromptDate';
 import AssignTags from '@/components/AssignTags';
 import MaterialsFilters from '@/components/MaterialsFilters';
 import MaterialTags from '@/components/MaterialTags';
-import formatAmount from '@/utils/formatAmount';
 
 // @vue/component
 export default {
@@ -95,21 +96,27 @@ export default {
                     out_of_order_quantity: 'Materials__quantity-broken',
                     tags: 'Materials__tags',
                 },
-                requestFunction: (pagination) => {
+                requestFunction: async (pagination) => {
                     this.isLoading = true;
+                    this.error = null;
+
                     const filters = this.getFilters();
-                    const params = {
-                        ...pagination,
-                        ...filters,
-                        deleted: this.isDisplayTrashed ? '1' : '0',
-                    };
-                    return this.$http
-                        .get('materials', { params })
-                        .catch(this.showError)
-                        .finally(() => {
-                            this.isTrashDisplayed = this.isDisplayTrashed;
-                            this.isLoading = false;
+
+                    try {
+                        const data = await apiMaterials.all({
+                            paginated: true,
+                            ...pagination,
+                            ...filters,
+                            deleted: this.isDisplayTrashed,
                         });
+                        return { data };
+                    } catch (err) {
+                        this.error = err;
+                    } finally {
+                        this.isLoading = false;
+                    }
+
+                    return undefined;
                 },
             },
         };
@@ -267,10 +274,7 @@ export default {
 
             this.$modal.show(
                 PromptDate,
-                {
-                    title: this.$t('page-materials.display-quantities-at-date'),
-                    defaultDate: new Date(),
-                },
+                { title: this.$t('page-materials.display-quantities-at-date') },
                 { width: 600, draggable: true, clickToClose: false },
                 {
                     'before-close': ({ params }) => {

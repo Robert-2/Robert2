@@ -17,9 +17,8 @@ class CountryController extends BaseController
         $data = (new Country())
             ->setOrderBy('id', true)
             ->getAll()
-            ->get()
-            ->toArray();
+            ->get(['id', 'name', 'code']);
 
-        return $response->withJson(compact('data'));
+        return $response->withJson($data);
     }
 }

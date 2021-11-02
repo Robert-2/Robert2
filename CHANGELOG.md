@@ -4,6 +4,15 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.16.0 (2021-11-02)
+
+- Commence l'amélioration du code front-end : réécriture en TypeScript, et utilisation de la nouvelle "composition API" de Vue.js.
+- Corrige le comportement de la modale d'assignation de technicien (étape 3 de l'édition d'événement) en cas d'erreur serveur (#294).
+- Corrige le comportement du calendrier principal quand un technicien a été supprimé (#293).
+- Permet l'affichage des techniciens mis à la corbeille (#293).
+- Corrige le problème d'assignation de technicien avec MySQL 5.7 (#294).
+- À l'étape 4 de l'édition d'événement, ajoute la possibilité de sélectionner un autre événement pour réutiliser sa liste de matériel (#291).
+
 ## 0.15.1 (2021-09-21)
 
 - Corrige une migration avec l'utilisation de préfixe de table (#288).

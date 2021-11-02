@@ -2,9 +2,10 @@ import './index.scss';
 import { APP_NAME } from '@/globals/constants';
 import Loading from '@/components/Loading';
 import ErrorMessage from '@/components/ErrorMessage';
+import { defineComponent } from '@vue/composition-api';
 
 // @vue/component
-export default {
+export default defineComponent({
     name: 'Page',
     props: {
         name: { type: String, required: true },
@@ -68,4 +69,4 @@ export default {
             </div>
         );
     },
-};
+});

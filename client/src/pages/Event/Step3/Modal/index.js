@@ -1,7 +1,8 @@
 import './index.scss';
 import moment from 'moment';
-import { TECHNICIAN_EVENT_MIN_DURATION } from '@/globals/constants';
+import { TECHNICIAN_EVENT_MIN_DURATION, DATE_DB_FORMAT } from '@/globals/constants';
 import { confirm } from '@/utils/alert';
+import { getValidationErrors } from '@/utils/errors';
 import FormField from '@/components/FormField';
 import ErrorMessage from '@/components/ErrorMessage';
 
@@ -47,11 +48,7 @@ export default {
             isSaving: false,
             isDeleting: false,
             error: null,
-            validationErrors: {
-                start_time: null,
-                end_time: null,
-                position: null,
-            },
+            validationErrors: null,
             isNew: false,
             eventId: null,
             technician: null,
@@ -161,8 +158,8 @@ export default {
             const postData = {
                 event_id: eventId,
                 technician_id: technician.id,
-                start_time: moment(dates[0]).format(),
-                end_time: moment(dates[1]).format(),
+                start_time: moment(dates[0]).utc().format(DATE_DB_FORMAT),
+                end_time: moment(dates[1]).utc().format(DATE_DB_FORMAT),
                 position,
             };
 
@@ -178,10 +175,8 @@ export default {
                 await request(url, postData);
                 this.$emit('close');
             } catch (error) {
-                const { code, details } = error.response?.data?.error || { code: 0, details: {} };
-                if (code === 400) {
-                    this.validationErrors = { ...details };
-                }
+                this.error = error;
+                this.validationErrors = getValidationErrors(error);
             } finally {
                 this.isSaving = false;
             }
@@ -251,13 +246,13 @@ export default {
                             label={__('page-events.period-assigned')}
                             placeholder={__('page-events.start-end-dates-and-time')}
                             datepickerOptions={datePickerOptions}
-                            errors={validationErrors.start_time || validationErrors.end_time}
+                            errors={validationErrors?.start_time || validationErrors?.end_time}
                         />
                         <FormField
                             v-model={this.position}
                             name="position"
                             label={`${__('position-held')} (${__('optional')})`}
-                            errors={validationErrors.position}
+                            errors={validationErrors?.position}
                         />
                         {error && <ErrorMessage error={error} />}
                         <div class="EventStep3Modal__actions">

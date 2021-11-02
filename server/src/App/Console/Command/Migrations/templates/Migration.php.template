@@ -1,0 +1,23 @@
+<?php
+declare(strict_types=1);
+$namespaceDefinition
+use $useClassName;
+
+final class $className extends $baseClassName
+{
+    public function up(): void
+    {
+        $table = $this->table('');
+        $table
+            ->addColumn('')
+            ->addColumn('created_at', 'datetime', ['null' => true])
+            ->addColumn('updated_at', 'datetime', ['null' => true])
+            ->addColumn('deleted_at', 'datetime', ['null' => true])
+            ->create();
+    }
+
+    public function down(): void
+    {
+        $this->table('')->drop()->save();
+    }
+}

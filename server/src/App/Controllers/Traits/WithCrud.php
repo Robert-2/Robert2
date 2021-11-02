@@ -20,6 +20,7 @@ trait WithCrud
 
     public function getAll(Request $request, Response $response): Response
     {
+        $paginated = (bool)$request->getQueryParam('paginated', true);
         $searchTerm = $request->getQueryParam('search', null);
         $searchField = $request->getQueryParam('searchBy', null);
         $orderBy = $request->getQueryParam('orderBy', null);
@@ -32,8 +33,13 @@ trait WithCrud
             ->setSearch($searchTerm, $searchField)
             ->getAll($withDeleted);
 
-        $paginated = $this->paginate($request, $query, $limit ? (int)$limit : null);
-        return $response->withJson($paginated);
+        if ($paginated) {
+            $results = $this->paginate($request, $query, $limit ? (int)$limit : null);
+        } else {
+            $results = $query->get();
+        }
+
+        return $response->withJson($results);
     }
 
     public function getOne(Request $request, Response $response): Response

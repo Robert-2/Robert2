@@ -1,20 +1,18 @@
 <?php
 declare(strict_types=1);
 
-// - Make errors more obvious during testing
-error_reporting(-1);
-ini_set('display_errors', '1');
-ini_set('display_startup_errors', '1');
 date_default_timezone_set('UTC');
 
-putenv('PHP_ROBERT2_TESTING=TESTS');
-
-require_once 'src/vendor/autoload.php';
-require_once 'tests/constants.php';
-require_once 'src/App/Config/constants.php';
-require_once 'src/App/Config/functions.php';
+require_once __DIR__ . '/../vendors/autoload.php';
+require_once __DIR__ . '/constants.php';
+require_once __DIR__ . '/../src/App/Config/constants.php';
+require_once __DIR__ . '/../src/App/Config/functions.php';
 
 use Robert2\Fixtures;
+
+// - Chargement de l'environnement
+$dotenv = Dotenv\Dotenv::createImmutable(ROOT_FOLDER);
+$dotenv->safeLoad();
 
 $echoError = function (string $msg) {
     echo sprintf("\n\033[1;31m%s\033[0m\n\n", $msg);

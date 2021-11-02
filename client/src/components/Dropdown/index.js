@@ -1,4 +1,5 @@
 import './index.scss';
+import { defineComponent } from '@vue/composition-api';
 import ClickOutside from 'vue-click-outside';
 
 export const getItemClassnames = (isActive = false) => ({
@@ -7,7 +8,7 @@ export const getItemClassnames = (isActive = false) => ({
 });
 
 // @vue/component
-export default {
+export default defineComponent({
     name: 'Dropdown',
     directives: { ClickOutside },
     props: {
@@ -58,4 +59,4 @@ export default {
             </div>
         );
     },
-};
+});

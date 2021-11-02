@@ -2711,10 +2711,10 @@ return [
     "designation"
     => "Designation",
 
-    "replacementValue"
+    "replacement-value"
     => "Repl. Val.",
 
-    "totalReplacementValue"
+    "total-replacement-value"
     => "Total Repl. Val.",
 
     "releaseSheet"

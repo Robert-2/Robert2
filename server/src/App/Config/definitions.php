@@ -1,9 +1,13 @@
 <?php
 declare(strict_types=1);
 
-use function DI\get;
+use Psr\Cache\CacheItemPoolInterface;
 use Psr\Container\ContainerInterface;
+use Robert2\API\Console\Command;
 use Robert2\API\Services;
+use Symfony\Component\Cache\Adapter\AbstractAdapter;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Symfony\Contracts\Cache\CacheInterface;
 
 return [
     'logger' => function (ContainerInterface $container) {
@@ -13,18 +17,31 @@ return [
 
     'auth' => function () {
         return new Services\Auth([
-            new Services\Auth\JWT
+            new Services\Auth\JWT,
         ]);
     },
+
+    'cache' => function (): AbstractAdapter {
+        return new FilesystemAdapter('core', 0, CACHE_FOLDER);
+    },
+
+    'console.commands' => DI\add([
+        DI\get(Command\Migrations\MigrateCommand::class),
+        DI\get(Command\Migrations\StatusCommand::class),
+        DI\get(Command\Migrations\RollbackCommand::class),
+        DI\get(Command\Migrations\CreateCommand::class),
+    ]),
 
     //
     // - Aliases
     //
 
-    'cache' => get(\Slim\HttpCache\CacheProvider::class),
-    'i18n' => get(Services\I18n::class),
-    'view' => get(Services\View::class),
+    'i18n' => DI\get(Services\I18n::class),
+    'view' => DI\get(Services\View::class),
+    'httpCache' => DI\get(\Slim\HttpCache\CacheProvider::class),
 
-    Services\Auth::class => get('auth'),
-    Services\Logger::class => get('logger'),
+    Services\Auth::class => DI\get('auth'),
+    Services\Logger::class => DI\get('logger'),
+    CacheInterface::class => DI\get('cache'),
+    CacheItemPoolInterface::class => DI\get('cache'),
 ];

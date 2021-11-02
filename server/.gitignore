@@ -1,6 +1,15 @@
 .env
 
-src/vendor/
+src/App/Config/*.json
+src/App/Config/*.json.bckp
+
+src/install/*.json
+!src/install/dependencyTree.json
+
+/vendors/
+
+/data/*
+!/data/.gitkeep
 
 /.phpunit*
 tests/coverage/

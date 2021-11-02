@@ -8,6 +8,10 @@ const formatEventTechniciansList = (eventTechnicians) => {
     const technicians = new Map();
     eventTechnicians.forEach(
         ({ technician, id: periodId, start_time: startTime, end_time: endTime, position }) => {
+            if (!technician) {
+                return;
+            }
+
             const { id, full_name: name, phone } = technician;
 
             if (!technicians.has(id)) {
@@ -15,8 +19,8 @@ const formatEventTechniciansList = (eventTechnicians) => {
             }
 
             const currentTechnician = technicians.get(id);
-            const from = moment(startTime);
-            const to = moment(endTime);
+            const from = moment.utc(startTime).local();
+            const to = moment.utc(endTime).local();
             currentTechnician.periods.push({ id: periodId, from, to, position });
         },
     );
