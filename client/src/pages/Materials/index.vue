@@ -102,6 +102,7 @@
                 </div>
                 <div slot="actions" slot-scope="material" class="Materials__actions">
                     <router-link
+                        v-if="!isTrashDisplayed"
                         v-tooltip="$t('action-view')"
                         :to="`/materials/${material.row.id}/view`"
                         v-slot="{ navigate }"

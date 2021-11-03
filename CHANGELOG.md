@@ -4,6 +4,10 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.16.1 (2021-11-03)
+
+- Corrige l'affichage de la corbeille dans le listing du matériel.
+
 ## 0.16.0 (2021-11-02)
 
 - Commence l'amélioration du code front-end : réécriture en TypeScript, et utilisation de la nouvelle "composition API" de Vue.js.

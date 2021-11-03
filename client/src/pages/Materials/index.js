@@ -248,6 +248,7 @@ export default {
 
         showTrashed() {
             this.isDisplayTrashed = !this.isDisplayTrashed;
+            this.isTrashDisplayed = !this.isTrashDisplayed;
             this.refreshTableAndPagination();
         },
 
