@@ -205,8 +205,8 @@ export default {
 
         async handleItemMoved(item, callback) {
             const data = {
-                start_time: moment(dateRoundMinutes(item.start)).format(DATE_DB_FORMAT),
-                end_time: moment(dateRoundMinutes(item.end)).format(DATE_DB_FORMAT),
+                start_time: moment(dateRoundMinutes(item.start)).utc().format(DATE_DB_FORMAT),
+                end_time: moment(dateRoundMinutes(item.end)).utc().format(DATE_DB_FORMAT),
             };
 
             try {

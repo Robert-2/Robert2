@@ -4,6 +4,10 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.16.2 (2021-11-04)
+
+- Corrige la normalisation des horaires d'assignation des techniciens.
+
 ## 0.16.1 (2021-11-03)
 
 - Corrige l'affichage de la corbeille dans le listing du matériel.
