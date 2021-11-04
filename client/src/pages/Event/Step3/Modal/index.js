@@ -132,8 +132,8 @@ export default {
                 const { data: eventTechnicianId } = this.$props;
                 const { data } = await this.$http.get(`event-technicians/${eventTechnicianId}`);
 
-                const startDate = moment(data.start_time).toDate();
-                const endDate = moment(data.end_time).toDate();
+                const startDate = moment.utc(data.start_time).toDate();
+                const endDate = moment.utc(data.end_time).toDate();
 
                 this.eventId = data.event_id;
                 this.position = data.position;
