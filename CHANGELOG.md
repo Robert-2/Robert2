@@ -7,6 +7,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 ## 0.16.3 (UNRELEASED)
 
 - Enlève la limite de caractères du champ "lieu" des événements (#300).
+- Google Maps est maintenant utilisé à la place de OpenStreetMap pour ouvrir les adresses (#300).
 
 ## 0.16.2 (2021-11-04)
 

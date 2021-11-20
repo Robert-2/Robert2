@@ -170,7 +170,7 @@ export default {
     'print-summary': "Imprimer ce récapitulatif",
     'open': "Ouvrir",
     'in': "À",
-    'open-in-openstreetmap': "Rechercher dans OpenStreetMap",
+    'open-in-google-maps': "Ouvrir dans Google Maps",
     'on-date': "Le {date}",
     'from-date-to-date': "du\u00a0{from} au\u00a0{to}",
     'or': "ou",
