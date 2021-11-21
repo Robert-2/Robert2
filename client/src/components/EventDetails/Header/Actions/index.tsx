@@ -66,7 +66,6 @@ const EventDetailsHeaderActions: Component<Props> = (props: Props, { root, emit 
         } catch (error) {
             emit('error', error);
         } finally {
-            // eslint-disable-next-line require-atomic-updates
             isConfirming.value = false;
         }
     };
@@ -85,7 +84,6 @@ const EventDetailsHeaderActions: Component<Props> = (props: Props, { root, emit 
         } catch (error) {
             emit('error', error);
         } finally {
-            // eslint-disable-next-line require-atomic-updates
             isArchiving.value = false;
         }
     };
@@ -104,7 +102,6 @@ const EventDetailsHeaderActions: Component<Props> = (props: Props, { root, emit 
         if (!isConfirmed) {
             return;
         }
-        // eslint-disable-next-line require-atomic-updates
         isDeleting.value = true;
 
         const { id } = event.value;
@@ -115,7 +112,6 @@ const EventDetailsHeaderActions: Component<Props> = (props: Props, { root, emit 
         } catch (error) {
             emit('error', error);
         } finally {
-            // eslint-disable-next-line require-atomic-updates
             isDeleting.value = false;
         }
     };

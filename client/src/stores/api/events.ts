@@ -12,7 +12,7 @@ import type { Moment } from 'moment';
 // - Types
 //
 
-/* eslint-disable camelcase */
+/* eslint-disable @typescript-eslint/naming-convention */
 export type Event = {
     id: number,
     title: string,
@@ -38,7 +38,7 @@ export type Event = {
     deleted_at: string,
     updated_at: string,
 };
-/* eslint-enable camelcase */
+/* eslint-enable @typescript-eslint/naming-convention */
 
 export type FormatedEvent = Event & {
     startDate: Moment,
