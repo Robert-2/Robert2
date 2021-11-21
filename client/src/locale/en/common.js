@@ -170,7 +170,7 @@ export default {
     'print-summary': "Print this summary",
     'open': "Open",
     'in': "In",
-    'open-in-openstreetmap': "Search in OpenStreetMap",
+    'open-in-google-maps': "Open in Google Maps",
     'on-date': "On {date}",
     'from-date-to-date': "from\u00a0{from} to\u00a0{to}",
     'or': "or",

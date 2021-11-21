@@ -47,7 +47,6 @@ class Event extends BaseModel
             'end_date' => V::callback([$this, 'checkEndDate']),
             'is_confirmed' => V::notOptional()->boolType(),
             'is_archived' => V::callback([$this, 'checkIsArchived']),
-            'location' => V::optional(V::length(2, 64)),
             'is_billable' => V::optional(V::boolType()),
             'is_return_inventory_done' => V::optional(V::boolType()),
         ];

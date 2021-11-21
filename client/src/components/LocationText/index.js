@@ -18,8 +18,8 @@ export default defineComponent({
                 {' '}
                 <a
                     rel="noopener noreferrer nofollow"
-                    href={`https://www.openstreetmap.org/search?query=${location}`}
-                    title={__('open-in-openstreetmap')}
+                    href={`https://maps.google.com/?q=${location}`}
+                    title={__('open-in-google-maps')}
                     target="_blank"
                 >
                     <i class="fas fa-external-link-alt" />
