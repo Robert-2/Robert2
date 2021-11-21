@@ -216,6 +216,10 @@ export default {
             `Remaining quantities
             on {date}`
         ),
+        'remaining-quantities-on-period': (
+            `Remaining quantities
+            from\u00a0{from} to\u00a0{to}`
+        ),
         'add': "New material",
         'edit': "Modify material \"{pageSubTitle}\"",
         'help-edit': (

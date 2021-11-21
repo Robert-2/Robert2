@@ -216,6 +216,10 @@ export default {
             `Quantités restantes
             le {date}`
         ),
+        'remaining-quantities-on-period': (
+            `Quantités restantes
+            du\u00a0{from} au\u00a0{to}`
+        ),
         'add': "Nouveau matériel",
         'edit': "Modifier le matériel «\u00a0{pageSubTitle}\u00a0»",
         'help-edit': (

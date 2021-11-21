@@ -1,10 +1,11 @@
 import './index.scss';
 import moment from 'moment';
+import { defineComponent } from '@vue/composition-api';
 import Datepicker from 'vue2-datepicker';
 import * as langs from './locale';
 
 // @vue/component
-export default {
+export default defineComponent({
     name: 'Datepicker',
     props: {
         value: { type: [Date, Array], default: undefined },
@@ -83,4 +84,4 @@ export default {
             />
         );
     },
-};
+});

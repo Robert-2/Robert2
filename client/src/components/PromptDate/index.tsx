@@ -3,18 +3,29 @@ import { ref, toRefs } from '@vue/composition-api';
 import useI18n from '@/hooks/useI18n';
 import Datepicker from '@/components/Datepicker';
 
+import type { Render, SetupContext } from '@vue/composition-api';
+
+type LooseDate = string | string[] | Date | Date[];
+
+type Props = {
+    title: string,
+    isRange?: boolean,
+    defaultDate?: LooseDate,
+    onClose?(params?: { dates: LooseDate }): void,
+};
+
 // @vue/component
-const PromptDate = (props, { emit }) => {
-    const { title, placeholder, defaultDate } = toRefs(props);
-    const currentDate = ref(defaultDate.value);
+const PromptDate = (props: Props, { emit }: SetupContext): Render => {
+    const { title, isRange, defaultDate } = toRefs(props);
+    const currentDate = ref(isRange?.value === true ? [defaultDate?.value, defaultDate?.value] : defaultDate?.value);
     const __ = useI18n();
 
-    const handleClose = () => {
+    const handleClose = (): void => {
         emit('close');
     };
 
-    const handleSubmit = () => {
-        emit('close', { date: currentDate.value });
+    const handleSubmit = (): void => {
+        emit('close', { dates: currentDate.value });
     };
 
     return () => (
@@ -28,14 +39,14 @@ const PromptDate = (props, { emit }) => {
             <div class="PromptDate__main">
                 <Datepicker
                     vModel={currentDate.value}
-                    placeholder={placeholder.value}
+                    isRange={isRange?.value}
                     class="PromptDate__datepicker"
                 />
             </div>
             <hr class="PromptDate__separator" />
             <div class="PromptDate__footer">
                 <button type="button" onClick={handleSubmit} class="success">
-                    <i class="fas fa-check" /> {__('choose-date')}
+                    <i class="fas fa-check" /> {isRange?.value ? __('choose-period') : __('choose-date')}
                 </button>
                 <button type="button" onClick={handleClose}>
                     <i class="fas fa-times" /> {__('close')}
@@ -47,11 +58,12 @@ const PromptDate = (props, { emit }) => {
 
 PromptDate.props = {
     title: { type: String, required: true },
-    placeholder: { type: String, default: undefined },
+    isRange: { type: Boolean, default: false },
     defaultDate: {
         type: [String, Date],
         default: () => new Date(),
     },
 };
+PromptDate.emits = ['close'];
 
 export default PromptDate;
