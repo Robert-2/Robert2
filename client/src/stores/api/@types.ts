@@ -1,4 +1,4 @@
-/* eslint-disable babel/camelcase */
+/* eslint-disable camelcase */
 
 export type PaginatedData<T> = {
     data: T,
@@ -32,5 +32,3 @@ export type WithCount<T> = {
     count: number,
     data: T,
 };
-
-/* eslint-enable babel/camelcase */

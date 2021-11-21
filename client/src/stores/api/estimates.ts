@@ -1,4 +1,4 @@
-/* eslint-disable babel/camelcase */
+/* eslint-disable camelcase */
 
 //
 // - Types
@@ -10,5 +10,3 @@ export type Estimate = {
     discount_rate: number,
     due_amount: number,
 };
-
-/* eslint-enable babel/camelcase */

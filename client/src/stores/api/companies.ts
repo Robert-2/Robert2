@@ -1,4 +1,4 @@
-/* eslint-disable babel/camelcase */
+/* eslint-disable camelcase */
 
 import type { Country } from '@/stores/api/countries';
 
@@ -20,5 +20,3 @@ export type Company = {
     updated_at: string,
     deleted_at: string | null,
 };
-
-/* eslint-enable babel/camelcase */
