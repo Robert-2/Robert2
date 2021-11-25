@@ -1,4 +1,4 @@
-/* eslint-disable babel/camelcase */
+/* eslint-disable @typescript-eslint/naming-convention */
 
 import requester from '@/globals/requester';
 
@@ -69,5 +69,3 @@ const allWhileEvent = async (eventId: number): Promise<Material[]> => {
 };
 
 export default { all, allWhileEvent };
-
-/* eslint-enable babel/camelcase */

@@ -1,3 +1,5 @@
+/* stylelint-disable scss/no-global-function-names */
+
 .timeline-event {
     .fas,
     .far {
@@ -62,6 +64,16 @@
                 transparent
             );
         background-size: 40px 40px;
-        animation: animBackground 3000ms linear infinite;
+        animation: timeline-event--background-animation 3000ms linear infinite;
+    }
+}
+
+@keyframes timeline-event--background-animation {
+    from {
+        background-position: 0 0;
+    }
+
+    to {
+        background-position: 40px 0;
     }
 }

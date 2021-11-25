@@ -1,4 +1,4 @@
-/* eslint-disable babel/quotes */
+/* eslint-disable quotes */
 
 export default {
     'hello-pseudo': "Bonjour {pseudo}\u00a0!",

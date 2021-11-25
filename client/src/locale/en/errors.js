@@ -1,4 +1,4 @@
-/* eslint-disable babel/quotes */
+/* eslint-disable quotes */
 
 export default {
     errors: {
