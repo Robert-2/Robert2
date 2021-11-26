@@ -94,20 +94,22 @@ class MaterialController extends BaseController
         }
 
         // - Filtre des quantités pour une date ou une période donnée
-        $start = null;
-        $end = null;
-        $hasDateForQuantities = is_string($dateForQuantities) || (
-            isset($dateForQuantities['start'])
-            && is_string($dateForQuantities['start'])
-            && isset($dateForQuantities['end'])
-            && is_string($dateForQuantities['end'])
-        );
-        if ($hasDateForQuantities) {
-            $start = isset($dateForQuantities['start']) ? $dateForQuantities['start'] : $dateForQuantities;
-            $end = isset($dateForQuantities['end']) ? $dateForQuantities['end'] : $dateForQuantities;
+        if (!is_array($dateForQuantities)) {
+            $dateForQuantities = array_fill_keys(['start', 'end'], $dateForQuantities);
+        }
+        if (empty($dateForQuantities['start']) ||
+            !is_string($dateForQuantities['start']) ||
+            empty($dateForQuantities['end']) ||
+            !is_string($dateForQuantities['end'])
+        ) {
+            $dateForQuantities = array_fill_keys(['start', 'end'], null);
         }
 
-        $results['data'] = Material::recalcQuantitiesForPeriod($results['data'], $start, $end, null);
+        $results['data'] = Material::recalcQuantitiesForPeriod(
+            $results['data'],
+            $dateForQuantities['start'],
+            $dateForQuantities['end']
+        );
 
         if (!$paginated) {
             $results = $results['data'];
