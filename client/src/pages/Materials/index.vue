@@ -40,18 +40,18 @@
                         {{ $t('page-materials.display-quantities-at-date') }}
                     </button>
                     <div v-else class="Materials__quantities-date__displayed">
-                        <p v-if="periodForQuantitiesOnOneDay" class="Materials__quantities-date__label">
+                        <p v-if="isSingleDayPeriodForQuantities" class="Materials__quantities-date__label">
                             {{
                                 $t('page-materials.remaining-quantities-on-date', {
-                                    date: periodForQuantities[0].format('L'),
+                                    date: periodForQuantities.start.format('L'),
                                 })
                             }}
                         </p>
                         <p v-else class="Materials__quantities-date__label">
                             {{
                                 $t('page-materials.remaining-quantities-on-period', {
-                                    from: periodForQuantities[0].format('L'),
-                                    to: periodForQuantities[1].format('L'),
+                                    from: periodForQuantities.start.format('L'),
+                                    to: periodForQuantities.end.format('L'),
                                 })
                             }}
                         </p>
@@ -59,7 +59,7 @@
                             class="Materials__quantities-date__button warning"
                             @click="removeDateForQuantities"
                         >
-                            {{ periodForQuantitiesOnOneDay ? $t('reset-date') : $t('reset-period') }}
+                            {{ isSingleDayPeriodForQuantities ? $t('reset-date') : $t('reset-period') }}
                         </button>
                     </div>
                 </div>

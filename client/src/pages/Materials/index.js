@@ -135,11 +135,11 @@ export default {
             return getItemClassnames();
         },
 
-        periodForQuantitiesOnOneDay() {
+        isSingleDayPeriodForQuantities() {
             if (!this.periodForQuantities) {
                 return false;
             }
-            return this.periodForQuantities[0].isSame(this.periodForQuantities[1], 'day');
+            return this.periodForQuantities.start.isSame(this.periodForQuantities.end, 'day');
         },
     },
     mounted() {
@@ -179,8 +179,13 @@ export default {
             }
 
             if (this.periodForQuantities) {
-                params.dateStartForQuantities = this.periodForQuantities[0].format('YYYY-MM-DD');
-                params.dateEndForQuantities = this.periodForQuantities[1].format('YYYY-MM-DD');
+                const start = this.periodForQuantities.start.format('YYYY-MM-DD');
+                if (this.isSingleDayPeriodForQuantities) {
+                    params.dateForQuantities = start;
+                } else {
+                    params['dateForQuantities[start]'] = start;
+                    params['dateForQuantities[end]'] = this.periodForQuantities.end.format('YYYY-MM-DD');
+                }
             }
 
             return params;
@@ -290,12 +295,11 @@ export default {
                         if (!params) {
                             return;
                         }
-                        const { dates } = params;
-                        if (Array.isArray(dates)) {
-                            this.periodForQuantities = [moment(dates[0]), moment(dates[1])];
-                        } else {
-                            this.periodForQuantities = [moment(dates), moment(dates)];
-                        }
+                        const dateOrPeriod = params;
+                        this.periodForQuantities = {
+                            start: moment(dateOrPeriod.start),
+                            end: moment(dateOrPeriod.end),
+                        };
                         this.refreshTable();
                     },
                 },

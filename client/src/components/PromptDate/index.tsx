@@ -5,27 +5,48 @@ import Datepicker from '@/components/Datepicker';
 
 import type { Render, SetupContext } from '@vue/composition-api';
 
-type LooseDate = string | string[] | Date | Date[];
+type LooseDate = string | Date;
+type LoosePeriod = { start: LooseDate, end: LooseDate };
 
-type Props = {
+type BaseProps = {
     title: string,
-    isRange?: boolean,
     defaultDate?: LooseDate,
-    onClose?(params?: { dates: LooseDate }): void,
 };
+
+type Props = BaseProps & (
+    | { isRange?: false, onClose?(date?: LooseDate): void }
+    | { isRange: true, onClose?(dates?: LoosePeriod): void }
+);
 
 // @vue/component
 const PromptDate = (props: Props, { emit }: SetupContext): Render => {
     const { title, isRange, defaultDate } = toRefs(props);
-    const currentDate = ref(isRange?.value === true ? [defaultDate?.value, defaultDate?.value] : defaultDate?.value);
     const __ = useI18n();
+    const currentDate = ref<LooseDate | Array<LooseDate | undefined> | undefined>(
+        isRange?.value === true ? [defaultDate?.value, defaultDate?.value] : defaultDate?.value,
+    );
 
     const handleClose = (): void => {
         emit('close');
     };
 
     const handleSubmit = (): void => {
-        emit('close', { dates: currentDate.value });
+        const { value } = currentDate;
+        if (!value) {
+            return;
+        }
+
+        if (typeof value === 'string' || value instanceof Date) {
+            emit('close', value);
+            return;
+        }
+
+        if (Array.isArray(value) && value[0] && value[1]) {
+            emit('close', {
+                start: value[0],
+                end: value[1],
+            });
+        }
     };
 
     return () => (

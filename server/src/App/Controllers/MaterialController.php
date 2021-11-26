@@ -51,8 +51,7 @@ class MaterialController extends BaseController
         $parkId = $request->getQueryParam('park', null);
         $categoryId = $request->getQueryParam('category', null);
         $subCategoryId = $request->getQueryParam('subCategory', null);
-        $dateStartForQuantities = $request->getQueryParam('dateStartForQuantities', null);
-        $dateEndForQuantities = $request->getQueryParam('dateEndForQuantities', $dateStartForQuantities);
+        $dateForQuantities = $request->getQueryParam('dateForQuantities', null);
         $withDeleted = (bool)$request->getQueryParam('deleted', false);
         $tags = $request->getQueryParam('tags', []);
         $withEvents = (bool)$request->getQueryParam('with-events', false);
@@ -94,10 +93,12 @@ class MaterialController extends BaseController
             $results = ['data' => $model->get()->toArray()];
         }
 
+        $isPeriodForQuantities = isset($dateForQuantities['start']) && isset($dateForQuantities['end']);
+
         $results['data'] = Material::recalcQuantitiesForPeriod(
             $results['data'],
-            $dateStartForQuantities,
-            $dateEndForQuantities,
+            $isPeriodForQuantities ? $dateForQuantities['start'] : $dateForQuantities,
+            $isPeriodForQuantities ? $dateForQuantities['end'] : null,
             null
         );
 
