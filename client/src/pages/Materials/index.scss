@@ -15,7 +15,6 @@
 
         .MaterialsFilters {
             flex: 0 1 auto;
-            margin-right: globals.$content-padding-small-vertical;
         }
     }
 
@@ -23,24 +22,17 @@
         flex: 1 0 auto;
         margin-bottom: globals.$content-padding-large-horizontal;
 
-        &__displayed {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            color: globals.$text-base-color;
-            font-weight: 600;
+        &__input {
+            width: 280px;
         }
 
-        &__label {
-            max-width: 180px;
-            margin: 0 globals.$content-padding-small-vertical 0 0;
-            color: globals.$text-warning-color;
-            text-align: center;
-            white-space: pre-line;
-        }
-
-        &__button {
+        &__clear-button {
+            margin-left: globals.$content-padding-small-horizontal;
             padding: 9px 10px;
+
+            &__icon {
+                margin-right: 2px;
+            }
         }
     }
 
@@ -134,7 +126,7 @@
         &__filters {
             position: absolute;
             z-index: 1;
-            left: 240px;
+            left: globals.$table-search-input;
             right: calc(#{globals.$content-padding-large-vertical} + 45px + #{globals.$content-padding-small-vertical});
             flex-wrap: nowrap;
             align-items: center;

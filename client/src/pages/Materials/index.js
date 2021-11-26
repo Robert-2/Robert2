@@ -1,16 +1,18 @@
 import './index.scss';
 import moment from 'moment';
 import Config from '@/globals/config';
+import { DATE_QUERY_FORMAT } from '@/globals/constants';
 import Alert from '@/components/Alert';
 import Help from '@/components/Help';
 import Dropdown, { getItemClassnames } from '@/components/Dropdown';
 import isValidInteger from '@/utils/isValidInteger';
 import formatAmount from '@/utils/formatAmount';
+import isSameDate from '@/utils/isSameDate';
 import apiMaterials from '@/stores/api/materials';
-import PromptDate from '@/components/PromptDate';
 import AssignTags from '@/components/AssignTags';
 import MaterialsFilters from '@/components/MaterialsFilters';
 import MaterialTags from '@/components/MaterialTags';
+import Datepicker from '@/components/Datepicker';
 
 // @vue/component
 export default {
@@ -20,6 +22,7 @@ export default {
         Dropdown,
         MaterialsFilters,
         MaterialTags,
+        Datepicker,
     },
     data() {
         let columns = [
@@ -139,7 +142,12 @@ export default {
             if (!this.periodForQuantities) {
                 return false;
             }
-            return this.periodForQuantities.start.isSame(this.periodForQuantities.end, 'day');
+            return isSameDate(this.periodForQuantities[0], this.periodForQuantities[1]);
+        },
+    },
+    watch: {
+        periodForQuantities() {
+            this.refreshTable();
         },
     },
     mounted() {
@@ -179,12 +187,14 @@ export default {
             }
 
             if (this.periodForQuantities) {
-                const start = this.periodForQuantities.start.format('YYYY-MM-DD');
+                const [start, end] = this.periodForQuantities || [null, null];
+                const startDate = start ? moment(start).format(DATE_QUERY_FORMAT) : null;
                 if (this.isSingleDayPeriodForQuantities) {
-                    params.dateForQuantities = start;
+                    params.dateForQuantities = startDate;
                 } else {
-                    params['dateForQuantities[start]'] = start;
-                    params['dateForQuantities[end]'] = this.periodForQuantities.end.format('YYYY-MM-DD');
+                    const endDate = end ? moment(end).format(DATE_QUERY_FORMAT) : null;
+                    params['dateForQuantities[start]'] = startDate;
+                    params['dateForQuantities[end]'] = endDate;
                 }
             }
 
@@ -279,31 +289,6 @@ export default {
                 return material.stock_quantity;
             }
             return material.remaining_quantity;
-        },
-
-        async showQuantityAtDateModal() {
-            if (this.periodForQuantities) {
-                return;
-            }
-
-            this.$modal.show(
-                PromptDate,
-                { title: this.$t('page-materials.display-quantities-at-date'), isRange: true },
-                { width: 600, draggable: true, clickToClose: false },
-                {
-                    'before-close': ({ params }) => {
-                        if (!params) {
-                            return;
-                        }
-                        const dateOrPeriod = params;
-                        this.periodForQuantities = {
-                            start: moment(dateOrPeriod.start),
-                            end: moment(dateOrPeriod.end),
-                        };
-                        this.refreshTable();
-                    },
-                },
-            );
         },
 
         removeDateForQuantities() {

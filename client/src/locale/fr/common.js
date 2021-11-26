@@ -58,8 +58,6 @@ export default {
     'saving': "Sauvegarde...",
     'saved': "{entity} sauvegardé.",
     'deleting': "Suppression...",
-    'choose-date': "Choisir cette date",
-    'choose-period': "Choisir cette période",
     'reset-date': "Réinitialiser la date",
     'reset-period': "Réinitialiser la période",
     'actions': "Actions",

@@ -13,7 +13,7 @@
     &__filters {
         position: absolute;
         z-index: 1;
-        left: 240px;
+        left: globals.$table-search-input;
         right: calc(#{globals.$content-padding-large-vertical} + 45px + #{globals.$content-padding-small-vertical});
         display: flex;
         flex-wrap: nowrap;

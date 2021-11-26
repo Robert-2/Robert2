@@ -212,12 +212,6 @@ export default {
         'action-add': "New material",
         'manage-attributes': "Manage special attributes",
         'display-quantities-at-date': "Display quantities at date...",
-        'remaining-quantities-on-date': (
-            `Remaining quantities\non {date}`
-        ),
-        'remaining-quantities-on-period': (
-            `Remaining quantities\nfrom\u00a0{from} to\u00a0{to}`
-        ),
         'add': "New material",
         'edit': "Modify material \"{pageSubTitle}\"",
         'help-edit': (
