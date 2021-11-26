@@ -54,12 +54,13 @@ type GetAllRaw = GetAllParams & { paginated: false };
 // - Functions
 //
 
+/* eslint-disable func-style */
 async function all(params: GetAllRaw): Promise<Material[]>;
 async function all(params: GetAllPaginated): Promise<PaginatedData<Material[]>>;
-// eslint-disable-next-line func-style
 async function all(params: GetAllPaginated | GetAllRaw): Promise<unknown> {
     return (await requester.get('materials', { params })).data;
 }
+/* eslint-enable func-style */
 
 const allWhileEvent = async (eventId: number): Promise<Material[]> => {
     if (!eventId) {
