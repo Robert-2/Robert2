@@ -33,17 +33,25 @@
                 <MaterialsFilters baseRoute="/materials" @change="refreshTableAndPagination" />
                 <div class="Materials__quantities-date">
                     <button
-                        v-if="dateForQuantities === null"
+                        v-if="periodForQuantities === null"
                         class="Materials__quantities-date__button"
                         @click="showQuantityAtDateModal"
                     >
                         {{ $t('page-materials.display-quantities-at-date') }}
                     </button>
                     <div v-else class="Materials__quantities-date__displayed">
-                        <p class="Materials__quantities-date__label">
+                        <p v-if="isSingleDayPeriodForQuantities" class="Materials__quantities-date__label">
                             {{
                                 $t('page-materials.remaining-quantities-on-date', {
-                                    date: dateForQuantities.format('LL'),
+                                    date: periodForQuantities.start.format('L'),
+                                })
+                            }}
+                        </p>
+                        <p v-else class="Materials__quantities-date__label">
+                            {{
+                                $t('page-materials.remaining-quantities-on-period', {
+                                    from: periodForQuantities.start.format('L'),
+                                    to: periodForQuantities.end.format('L'),
                                 })
                             }}
                         </p>
@@ -51,7 +59,7 @@
                             class="Materials__quantities-date__button warning"
                             @click="removeDateForQuantities"
                         >
-                            {{ $t('reset-date') }}
+                            {{ isSingleDayPeriodForQuantities ? $t('reset-date') : $t('reset-period') }}
                         </button>
                     </div>
                 </div>

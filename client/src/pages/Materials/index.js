@@ -48,7 +48,7 @@ export default {
             isLoading: false,
             isDisplayTrashed: false,
             isTrashDisplayed: false,
-            dateForQuantities: null,
+            periodForQuantities: null,
             columns,
             options: {
                 columnsDropdown: true,
@@ -134,6 +134,13 @@ export default {
         dropdownItemClass() {
             return getItemClassnames();
         },
+
+        isSingleDayPeriodForQuantities() {
+            if (!this.periodForQuantities) {
+                return false;
+            }
+            return this.periodForQuantities.start.isSame(this.periodForQuantities.end, 'day');
+        },
     },
     mounted() {
         this.$store.dispatch('categories/fetch');
@@ -171,8 +178,14 @@ export default {
                 params.tags = JSON.parse(this.$route.query.tags);
             }
 
-            if (this.dateForQuantities) {
-                params.dateForQuantities = this.dateForQuantities.format('YYYY-MM-DD');
+            if (this.periodForQuantities) {
+                const start = this.periodForQuantities.start.format('YYYY-MM-DD');
+                if (this.isSingleDayPeriodForQuantities) {
+                    params.dateForQuantities = start;
+                } else {
+                    params['dateForQuantities[start]'] = start;
+                    params['dateForQuantities[end]'] = this.periodForQuantities.end.format('YYYY-MM-DD');
+                }
             }
 
             return params;
@@ -231,7 +244,7 @@ export default {
 
             const { headings, columnsClasses } = this.$refs.DataTable.options;
 
-            if (this.dateForQuantities === null) {
+            if (this.periodForQuantities === null) {
                 headings.stock_quantity = this.$t('quantity');
                 columnsClasses.stock_quantity = 'Materials__quantity';
             } else {
@@ -262,34 +275,39 @@ export default {
         },
 
         getQuantity(material) {
-            if (this.dateForQuantities === null) {
+            if (this.periodForQuantities === null) {
                 return material.stock_quantity;
             }
             return material.remaining_quantity;
         },
 
         async showQuantityAtDateModal() {
-            if (this.dateForQuantities) {
+            if (this.periodForQuantities) {
                 return;
             }
 
             this.$modal.show(
                 PromptDate,
-                { title: this.$t('page-materials.display-quantities-at-date') },
+                { title: this.$t('page-materials.display-quantities-at-date'), isRange: true },
                 { width: 600, draggable: true, clickToClose: false },
                 {
                     'before-close': ({ params }) => {
-                        if (params) {
-                            this.dateForQuantities = moment(params.date);
-                            this.refreshTable();
+                        if (!params) {
+                            return;
                         }
+                        const dateOrPeriod = params;
+                        this.periodForQuantities = {
+                            start: moment(dateOrPeriod.start),
+                            end: moment(dateOrPeriod.end),
+                        };
+                        this.refreshTable();
                     },
                 },
             );
         },
 
         removeDateForQuantities() {
-            this.dateForQuantities = null;
+            this.periodForQuantities = null;
             this.refreshTable();
         },
     },

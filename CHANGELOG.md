@@ -8,6 +8,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 
 - Enlève la limite de caractères du champ "lieu" des événements (#300).
 - Google Maps est maintenant utilisé à la place de OpenStreetMap pour ouvrir les adresses (#300).
+- Utilise une période plutôt qu'une simple date pour le calcul des quantités disponibles du matériel (#301).
 
 ## 0.16.2 (2021-11-04)
 

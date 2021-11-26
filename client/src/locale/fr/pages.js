@@ -213,8 +213,10 @@ export default {
         'manage-attributes': "Gérer les caractéristiques spéciales",
         'display-quantities-at-date': "Afficher les quantités à date...",
         'remaining-quantities-on-date': (
-            `Quantités restantes
-            le {date}`
+            `Quantités restantes\nle {date}`
+        ),
+        'remaining-quantities-on-period': (
+            `Quantités restantes\ndu\u00a0{from} au\u00a0{to}`
         ),
         'add': "Nouveau matériel",
         'edit': "Modifier le matériel «\u00a0{pageSubTitle}\u00a0»",
