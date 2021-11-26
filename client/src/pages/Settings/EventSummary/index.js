@@ -1,8 +1,9 @@
 import Help from '@/components/Help';
 import EventSummarySettingsForm from './Form';
+import { defineComponent } from '@vue/composition-api';
 
 // @vue/component
-export default {
+export default defineComponent({
     name: 'EventSummarySettings',
     data() {
         return {
@@ -67,4 +68,4 @@ export default {
             </div>
         );
     },
-};
+});
