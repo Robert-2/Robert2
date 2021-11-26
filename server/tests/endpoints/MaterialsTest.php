@@ -783,6 +783,17 @@ final class MaterialsTest extends ApiTestCase
         foreach ([0, 20, 0, 20, 0, 1, 0] as $index => $expected) {
             $this->assertEquals($expected, $response['data'][$index]['remaining_quantity']);
         }
+
+        // - Test avec une période non valide (retourne les quantités en stock uniquement)
+        $this->client->get('/api/materials?dateForQuantities[end]=2018-12-18');
+        $this->assertStatusCode(SUCCESS_OK);
+        $response = $this->_getResponseAsArray();
+        $this->assertCount(7, $response['data']);
+
+        foreach ([0, 40, 5, 34, 2, 2, 0] as $index => $expected) {
+            $this->assertNotContains('remaining_quantity', $response['data'][$index]);
+            $this->assertEquals($expected, $response['data'][$index]['stock_quantity']);
+        }
     }
 
     public function testCreateMaterialWithoutData()
