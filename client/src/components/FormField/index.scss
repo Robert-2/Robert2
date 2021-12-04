@@ -25,6 +25,10 @@
         width: 90%;
     }
 
+    &__switch {
+        display: flex;
+    }
+
     &__addon {
         display: inline-block;
         min-width: 2.7rem;

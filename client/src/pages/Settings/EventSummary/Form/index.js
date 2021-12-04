@@ -1,5 +1,6 @@
 import './index.scss';
 import FormField from '@/components/FormField';
+import getFormDataAsJson from '@/utils/getFormDataAsJson';
 
 const LIST_MODES = ['categories', 'sub-categories', 'parks', 'flat'];
 
@@ -39,9 +40,8 @@ export default {
     methods: {
         handleSubmit(e) {
             e.preventDefault();
-            const formData = new FormData(e.currentTarget);
-            const data = Object.fromEntries(formData);
-            this.$emit('save', data);
+
+            this.$emit('save', getFormDataAsJson(e.target));
         },
     },
     render() {

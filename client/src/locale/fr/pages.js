@@ -388,6 +388,9 @@ export default {
             'custom-text-content': "Contenu du texte",
             'saved': "Les paramètres des fiches de sortie ont bien été sauvegardés.",
         },
+        'calendar': {
+            'title': "Calendrier",
+        },
     },
 
     'page-estimate': {
