@@ -83,9 +83,10 @@ export default {
 
             const userLocale = data.user.settings.language.toLowerCase();
             window.localStorage.setItem('userLocale', userLocale);
-            dispatch('i18n/setLocale', { locale: userLocale }, { root: true });
+            await dispatch('i18n/setLocale', { locale: userLocale }, { root: true });
+            await dispatch('settings/fetch', undefined, { root: true });
         },
-        async logout({ commit }) {
+        async logout({ dispatch, commit }) {
             const hasPotentiallyStatefulSession = false;
 
             if (hasPotentiallyStatefulSession) {
@@ -100,6 +101,7 @@ export default {
 
             commit('setUser', null);
             commit('parks/reset', undefined, { root: true });
+            await dispatch('settings/reset', undefined, { root: true });
 
             Cookies.remove(Config.auth.cookie);
         },

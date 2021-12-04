@@ -58,7 +58,7 @@ class EventController extends BaseController
         $results = (new Event)
             ->setSearchPeriod($startDate, $endDate)
             ->getAll($deleted)
-            ->with('Beneficiaries:persons.id,first_name,last_name')
+            ->with('Beneficiaries')
             ->with('Technicians');
 
         if ($withMaterials) {

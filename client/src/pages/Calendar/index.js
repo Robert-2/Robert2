@@ -44,7 +44,6 @@ export default {
             hasMissingMaterialFilter: false,
             parkId: parkFilter ? Number.parseInt(parkFilter, 10) : null,
             events: [],
-            allEvents: [],
             timelineOptions: {
                 start,
                 end,
@@ -54,25 +53,33 @@ export default {
             },
         };
     },
-    mounted() {
-        this.getEventsData();
-    },
-    methods: {
-        filterEvents() {
-            let events = [...this.allEvents];
+    computed: {
+        formattedEvents() {
+            const { $t: __, $store: { state: { settings } } } = this;
+            const { showLocation = true, showBorrower = false } = settings.calendar.event;
+            return this.events.map((event) => formatEvent(event, __, { showBorrower, showLocation }));
+        },
+
+        filteredEvents() {
+            let events = [...this.formattedEvents];
+
             if (this.parkId) {
-                events = events.filter(
-                    ({ parks: eventParks }) => eventParks?.includes(this.parkId),
-                );
+                events = events.filter(({ parks: eventParks }) => (
+                    eventParks?.includes(this.parkId)
+                ));
             }
 
             if (this.hasMissingMaterialFilter) {
                 events = events.filter(({ hasMissingMaterials }) => !!hasMissingMaterials);
             }
 
-            this.events = events;
+            return events;
         },
-
+    },
+    mounted() {
+        this.getEventsData();
+    },
+    methods: {
         getEventsData() {
             this.error = null;
             this.isLoading = true;
@@ -84,11 +91,7 @@ export default {
             };
             this.$http.get(this.$route.meta.resource, { params })
                 .then(({ data }) => {
-                    this.events = data.data.map((event) => formatEvent(event, this.$t));
-
-                    this.allEvents = [...this.events];
-                    this.filterEvents();
-
+                    this.events = data.data;
                     this.isLoading = false;
                 })
                 .catch((error) => {
@@ -217,14 +220,12 @@ export default {
         },
 
         handleUpdateEvent(newEventData) {
-            const events = [...this.events];
-            const toUpdateIndex = events.findIndex((event) => event.id === newEventData.id);
-            if (toUpdateIndex < 0) {
-                return;
+            const toUpdateIndex = this.events.findIndex(
+                (event) => event.id === newEventData.id,
+            );
+            if (toUpdateIndex >= 0) {
+                this.$set(this.events, toUpdateIndex, newEventData);
             }
-
-            events[toUpdateIndex] = formatEvent(newEventData, this.$t);
-            this.events = events;
         },
 
         handleDuplicateEvent(newEvent) {
@@ -258,12 +259,10 @@ export default {
 
         handleFilterMissingMaterial(hasMissingMaterialFilter) {
             this.hasMissingMaterialFilter = hasMissingMaterialFilter;
-            this.filterEvents();
         },
 
         handleFilterByPark(parkId) {
             this.parkId = parkId === '' ? null : Number.parseInt(parkId, 10);
-            this.filterEvents();
         },
     },
 };
