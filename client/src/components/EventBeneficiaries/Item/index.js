@@ -1,4 +1,5 @@
 import './index.scss';
+import { Fragment } from 'vue-fragment';
 
 // @vue/component
 export default {
@@ -15,12 +16,15 @@ export default {
                     {beneficiary.full_name}
                 </router-link>
                 {beneficiary.company && (
-                    <router-link
-                        to={`/companies/${beneficiary.company_id}`}
-                        title={__('action-edit')}
-                    >
-                        ({beneficiary.company.legal_name})
-                    </router-link>
+                    <Fragment>
+                        {' '}
+                        <router-link
+                            to={`/companies/${beneficiary.company_id}`}
+                            title={__('action-edit')}
+                        >
+                            ({beneficiary.company.legal_name})
+                        </router-link>
+                    </Fragment>
                 )}
             </div>
         );
