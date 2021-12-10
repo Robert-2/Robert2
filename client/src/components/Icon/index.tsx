@@ -20,9 +20,7 @@ export type Props = {
 const VARIANT_MAP = {
     'regular': 'far',
     'solid': 'fas',
-    'light': 'fal',
     'brands': 'fab',
-    'duotone': 'fad',
 } as const;
 
 // @vue/component
