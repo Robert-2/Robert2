@@ -51,6 +51,7 @@ export default {
     'locked': "verrouillé",
     'clear-filters': "Réinitialiser les filtres",
     'optional': "Optionnel",
+    'and-n-others': ["et {count} autre", "et {count} autres"],
 
     'save': "Sauvegarder",
     'save-draft': "Sauvegarder le brouillon",

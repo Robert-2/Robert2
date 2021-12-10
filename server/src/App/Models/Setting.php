@@ -3,22 +3,16 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
+use Adbar\Dot as DotArray;
 use Robert2\API\Validation\Validator as V;
 use Robert2\API\Errors\ValidationException;
 
 class Setting extends BaseModel
 {
-
     protected $primaryKey = 'key';
 
     public $incrementing = false;
     public $timestamps = false;
-
-    protected $availableKeys = [
-        'event_summary_material_display_mode',
-        'event_summary_custom_text_title',
-        'event_summary_custom_text',
-    ];
 
     public function __construct(array $attributes = [])
     {
@@ -27,6 +21,52 @@ class Setting extends BaseModel
         $this->validation = [
             'key' => V::callback([$this, 'checkKey']),
             'value' => V::callback([$this, 'checkValue']),
+        ];
+    }
+
+    protected static function manifest()
+    {
+        // NOTE: Penser à mettre à jour le store côté client lorsque les settings sont modifiées.
+        return [
+            //
+            // - Fiche de sortie événement
+            //
+
+            'eventSummary.materialDisplayMode' => [
+                'type' => 'string',
+                'validation' => V::notEmpty()->oneOf(
+                    V::equals('categories'),
+                    V::equals('sub-categories'),
+                    V::equals('parks'),
+                    V::equals('flat')
+                ),
+                'default' => 'sub-categories',
+            ],
+            'eventSummary.customText.title' => [
+                'type' => 'string',
+                'validation' => V::optional(V::length(null, 191)),
+                'default' => null,
+            ],
+            'eventSummary.customText.content' => [
+                'type' => 'string',
+                'validation' => null,
+                'default' => null,
+            ],
+
+            //
+            // - Calendrier
+            //
+
+            'calendar.event.showLocation' => [
+                'type' => 'boolean',
+                'validation' => V::boolType(),
+                'default' => true,
+            ],
+            'calendar.event.showBorrower' => [
+                'type' => 'boolean',
+                'validation' => V::boolType(),
+                'default' => false,
+            ],
         ];
     }
 
@@ -41,34 +81,16 @@ class Setting extends BaseModel
         if (empty($keyName)) {
             return false;
         }
-
-        return in_array($keyName, $this->availableKeys);
+        return in_array($keyName, array_keys(static::manifest()));
     }
 
     public function checkValue()
     {
-        $valuesValidation = [
-            'event_summary_material_display_mode' => V::notEmpty()->oneOf(
-                V::equals('categories'),
-                V::equals('sub-categories'),
-                V::equals('parks'),
-                V::equals('flat')
-            ),
-            'event_summary_custom_text_title' => V::optional(
-                V::length(null, 191)
-            ),
-            'event_summary_custom_text' => null,
-        ];
-
-        if (!array_key_exists($this->key, $valuesValidation)) {
+        $manifest = static::manifest();
+        if (!array_key_exists($this->key, $manifest)) {
             return false;
         }
-
-        if (!$valuesValidation[$this->key]) {
-            return true;
-        }
-
-        return $valuesValidation[$this->key];
+        return $manifest[$this->key]['validation'] ?? true;
     }
 
     // ——————————————————————————————————————————————————————
@@ -82,20 +104,38 @@ class Setting extends BaseModel
         'value' => 'string',
     ];
 
-    public static function getList(): array
+    public function getValueAttribute($value)
     {
-        $settings = static::all();
-        $settingsList = [];
-        foreach ($settings as $setting) {
-            $settingsList[$setting->key] = $setting->value;
+        $manifest = static::manifest();
+        if (!array_key_exists($this->key, $manifest)) {
+            return $value;
         }
-        return $settingsList;
+
+        if ($value === null) {
+            return $value;
+        }
+
+        $type = $manifest[$this->key]['type'] ?? 'string';
+        switch ($type) {
+            case 'boolean':
+                return in_array($value, ['1', 'true', true], true);
+
+            case 'string':
+                return $value;
+
+            default:
+                throw new \LogicException(sprintf("Type de données non pris en charge : %s", $type));
+        }
     }
 
-    public static function getWithKey(string $key): ?string
+    public static function getList(): array
     {
-        $setting = static::where('key', $key)->first();
-        return $setting ? $setting->value : null;
+        return static::allTraversable()->all();
+    }
+
+    public static function getWithKey(string $path)
+    {
+        return static::allTraversable()->get($path);
     }
 
     // ——————————————————————————————————————————————————————
@@ -120,8 +160,9 @@ class Setting extends BaseModel
                     $errors['key'] = ["This setting does not exists."];
                     continue;
                 }
-                $value = $value ? trim($value) : $value;
-                $model->value = ($value === '') ? null : $value;
+
+                $value = $value && is_string($value) ? trim($value) : $value;
+                $model->value = $value === '' ? null : $value;
                 $model->validate()->save();
             } catch (ValidationException $error) {
                 $errors[$key] = $error->getValidationErrors()['value'];
@@ -145,5 +186,28 @@ class Setting extends BaseModel
     public function unremove($id): BaseModel
     {
         throw new \InvalidArgumentException("Settings cannot be restored.");
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Internal
+    // -
+    // ------------------------------------------------------
+
+    protected static function allTraversable(): DotArray
+    {
+        $settings = new DotArray;
+
+        foreach (static::all() as $setting) {
+            $settings->set($setting->key, $setting->value);
+        }
+
+        foreach (static::manifest() as $key => $meta) {
+            if (!$settings->has($key)) {
+                $settings->set($key, $meta['default']);
+            }
+        }
+
+        return $settings;
     }
 }

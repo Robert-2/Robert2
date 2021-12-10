@@ -8,39 +8,21 @@ export default defineComponent({
     data() {
         return {
             help: 'page-settings.event-summary.help',
-            settings: null,
-            isLoading: false,
+            isSaving: false,
             error: null,
             errors: null,
         };
     },
-    mounted() {
-        this.fetchSettings();
-    },
     methods: {
-        async fetchSettings() {
-            this.isLoading = true;
-            this.error = null;
-
-            try {
-                const { data } = await this.$http.get('settings');
-                this.settings = data;
-            } catch (error) {
-                this.error = error;
-            } finally {
-                this.isLoading = false;
-            }
-        },
-
         async handleSave(newData) {
-            this.isLoading = true;
+            this.isSaving = true;
             this.error = null;
             this.errors = null;
 
             try {
-                const { data } = await this.$http.put('settings', newData);
-                this.settings = data;
+                await this.$http.put('settings', newData);
                 this.help = { type: 'success', text: 'page-settings.event-summary.saved' };
+                this.$store.dispatch('settings/fetch');
             } catch (error) {
                 this.error = error;
 
@@ -49,20 +31,19 @@ export default defineComponent({
                     this.errors = { ...details };
                 }
             } finally {
-                this.isLoading = false;
+                this.isSaving = false;
             }
         },
     },
     render() {
-        const { help, isLoading, error, settings, handleSave, errors } = this;
+        const { help, isSaving, error, handleSave, errors } = this;
 
         return (
             <div class="EventSummarySettings">
-                <Help message={help} error={error} isLoading={isLoading} />
+                <Help message={help} error={error} isLoading={isSaving} />
                 <EventSummarySettingsForm
-                    settings={settings}
                     onSave={handleSave}
-                    isSaving={isLoading}
+                    isSaving={isSaving}
                     errors={errors}
                 />
             </div>

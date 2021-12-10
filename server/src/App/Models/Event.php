@@ -3,17 +3,18 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\QueryException;
 use Robert2\API\Config\Config;
 use Robert2\API\Errors\ValidationException;
 use Robert2\API\Models\Material;
 use Robert2\API\Models\Park;
 use Robert2\API\Models\Traits\JsonSerializer;
 use Robert2\API\Models\Traits\WithPdf;
-use Robert2\Lib\Domain\EventData;
 use Robert2\API\Validation\Validator as V;
+use Robert2\Lib\Domain\EventData;
 
 class Event extends BaseModel
 {
@@ -339,7 +340,7 @@ class Event extends BaseModel
         $EventData = new EventData($date, $event, 'summary', $event['user_id']);
         $EventData->setCategories($categories)->setParks($parks);
 
-        $materialDisplayMode = Setting::getWithKey('event_summary_material_display_mode');
+        $materialDisplayMode = Setting::getWithKey('eventSummary.materialDisplayMode');
         if ($materialDisplayMode === 'categories') {
             $materialList = $EventData->getMaterialByCategories(true);
         } elseif ($materialDisplayMode === 'sub-categories') {
@@ -349,9 +350,6 @@ class Event extends BaseModel
         } else {
             $materialList = $EventData->getMaterialsFlat(true);
         }
-
-        $customTextTitle = Setting::getWithKey('event_summary_custom_text_title');
-        $customText = Setting::getWithKey('event_summary_custom_text');
 
         $data = [
             'event' => $event,
@@ -364,8 +362,7 @@ class Event extends BaseModel
             'materialDisplayMode' => $materialDisplayMode,
             'replacementAmount' => $EventData->getReplacementAmount(),
             'technicians' => $EventData->getTechnicians(),
-            'customTextTitle' => $customTextTitle,
-            'customText' => $customText,
+            'customText' => Setting::getWithKey('eventSummary.customText'),
         ];
 
         $eventPdf = $this->_getPdfAsString($data);

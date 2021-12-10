@@ -168,11 +168,11 @@
 
 
 <table class="layout-table">
-    {% if customText is not empty %}
+    {% if customText and customText['content'] is not empty %}
     <tr>
         <td style="padding: 3mm 0;" colspan="2">
-            <h2>{{ customTextTitle }}</h2>
-            <p>{{ customText|nl2br }}</p>
+            {% if customText['title'] is not empty %}<h2>{{ customText['title'] }}</h2>{% endif %}
+            <p>{{ customText['content']|nl2br }}</p>
         </td>
     </tr>
     {% endif %}

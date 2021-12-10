@@ -18,9 +18,19 @@ final class SettingTest extends ModelTestCase
     {
         $result = Setting::getList();
         $expected = [
-            'event_summary_material_display_mode' => 'sub-categories',
-            'event_summary_custom_text_title' => "Contrat",
-            'event_summary_custom_text' => "Un petit contrat de test.",
+            'eventSummary' => [
+                'customText' => [
+                    'title' => "Contrat",
+                    'content' => "Un petit contrat de test.",
+                ],
+                'materialDisplayMode' => 'sub-categories',
+            ],
+            'calendar' => [
+                'event' => [
+                    'showLocation' => true,
+                    'showBorrower' => false,
+                ],
+            ],
         ];
         $this->assertEquals($expected, $result);
     }
@@ -30,16 +40,24 @@ final class SettingTest extends ModelTestCase
         $result = Setting::get()->toArray();
         $expected = [
             [
-                'key' => 'event_summary_material_display_mode',
+                'key' => 'eventSummary.materialDisplayMode',
                 'value' => 'sub-categories',
             ],
             [
-                'key' => 'event_summary_custom_text_title',
+                'key' => 'eventSummary.customText.title',
                 'value' => "Contrat",
             ],
             [
-                'key' => 'event_summary_custom_text',
+                'key' => 'eventSummary.customText.content',
                 'value' => "Un petit contrat de test.",
+            ],
+            [
+                'key' => 'calendar.event.showLocation',
+                'value' => true,
+            ],
+            [
+                'key' => 'calendar.event.showBorrower',
+                'value' => false,
             ],
         ];
         $this->assertEquals($expected, $result);
@@ -47,14 +65,25 @@ final class SettingTest extends ModelTestCase
 
     public function testGetWithKey(): void
     {
-        $result = Setting::getWithKey('event_summary_material_display_mode');
+        $result = Setting::getWithKey('eventSummary.materialDisplayMode');
         $this->assertEquals('sub-categories', $result);
 
-        $result = Setting::getWithKey('event_summary_custom_text_title');
+        $result = Setting::getWithKey('eventSummary.customText.title');
         $this->assertEquals("Contrat", $result);
 
-        $result = Setting::getWithKey('event_summary_custom_text');
-        $this->assertEquals("Un petit contrat de test.", $result);
+        $result = Setting::getWithKey('eventSummary.customText');
+        $expected = ['title' => 'Contrat', 'content' => 'Un petit contrat de test.'];
+        $this->assertEquals($expected, $result);
+
+        $result = Setting::getWithKey('eventSummary');
+        $expected = [
+            'customText' => [
+                'title' => 'Contrat',
+                'content' => 'Un petit contrat de test.',
+            ],
+            'materialDisplayMode' => 'sub-categories'
+        ];
+        $this->assertEquals($expected, $result);
 
         $result = Setting::getWithKey('inexistant');
         $this->assertNull($result);
@@ -71,20 +100,31 @@ final class SettingTest extends ModelTestCase
     {
         $this->expectException(ValidationException::class);
         $this->expectExceptionCode(ERROR_VALIDATION);
-        Setting::staticEdit(null, ['event_summary_material_display_mode' => 'not-valid']);
+        Setting::staticEdit(null, ['eventSummary.materialDisplayMode' => 'not-valid']);
     }
 
     public function testUpdate(): void
     {
         Setting::staticEdit(null, [
-            'event_summary_material_display_mode' => 'flat',
-            'event_summary_custom_text_title' => 'test',
-            'event_summary_custom_text' => null,
+            'calendar.event.showLocation' => false,
+            'eventSummary.materialDisplayMode' => 'flat',
+            'eventSummary.customText.title' => 'test',
+            'eventSummary.customText.content' => null,
         ]);
         $expected = [
-            'event_summary_material_display_mode' => 'flat',
-            'event_summary_custom_text_title' => 'test',
-            'event_summary_custom_text' => null,
+            'eventSummary' => [
+                'customText' => [
+                    'title' => 'test',
+                    'content' => null,
+                ],
+                'materialDisplayMode' => 'flat',
+            ],
+            'calendar' => [
+                'event' => [
+                    'showBorrower' => false,
+                    'showLocation' => false,
+                ],
+            ],
         ];
         $this->assertEquals($expected, Setting::getList());
     }

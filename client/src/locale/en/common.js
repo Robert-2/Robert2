@@ -51,6 +51,7 @@ export default {
     'locked': "locked",
     'clear-filters': "Clear filters",
     'optional': "Optional",
+    'and-n-others': ["and {count} other", "and {count} others"],
 
     'save': "Save",
     'save-draft': "Save draft",

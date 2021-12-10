@@ -7,7 +7,6 @@ const LIST_MODES = ['categories', 'sub-categories', 'parks', 'flat'];
 export default {
     name: 'EventSummarySettingsForm',
     props: {
-        settings: Object,
         isSaving: Boolean,
         errors: Object,
     },
@@ -22,6 +21,10 @@ export default {
         };
     },
     computed: {
+        values() {
+            const { $store: { state: { settings } } } = this;
+            return settings.eventSummary;
+        },
         listModeOptions() {
             const parks = this.$store.state.parks.list;
 
@@ -44,7 +47,7 @@ export default {
     render() {
         const {
             $t: __,
-            settings,
+            values,
             listModeOptions,
             defaultListMode,
             handleSubmit,
@@ -59,10 +62,10 @@ export default {
                     <FormField
                         type="select"
                         label="page-settings.event-summary.display-mode"
-                        name="event_summary_material_display_mode"
+                        name="eventSummary.materialDisplayMode"
                         options={listModeOptions}
-                        value={settings?.event_summary_material_display_mode || defaultListMode}
-                        errors={errors?.event_summary_material_display_mode}
+                        value={values.materialDisplayMode || defaultListMode}
+                        errors={errors?.eventSummary.materialDisplayMode}
                     />
                 </section>
                 <section class="EventSummarySettingsForm__section">
@@ -70,16 +73,16 @@ export default {
                     <FormField
                         type="text"
                         label="page-settings.event-summary.custom-text-title"
-                        name="event_summary_custom_text_title"
-                        value={settings?.event_summary_custom_text_title || ''}
-                        errors={errors?.event_summary_custom_text_title}
+                        name="eventSummary.customText.title"
+                        value={values.customText.title || ''}
+                        errors={errors?.eventSummary.customText.title}
                     />
                     <FormField
                         type="textarea"
                         label="page-settings.event-summary.custom-text-content"
-                        name="event_summary_custom_text"
-                        value={settings?.event_summary_custom_text || ''}
-                        errors={errors?.event_summary_custom_text}
+                        name="eventSummary.customText.content"
+                        value={values.customText.content || ''}
+                        errors={errors?.eventSummary.customText.content}
                     />
                 </section>
                 <section class="EventSummarySettingsForm__actions">
