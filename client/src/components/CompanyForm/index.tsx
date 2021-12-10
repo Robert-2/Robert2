@@ -1,4 +1,4 @@
-import './index.scss';
+import './index.scss'; //-
 import { computed, toRefs } from '@vue/composition-api';
 import { useQuery } from 'vue-query';
 import getFormDataAsJson from '@/utils/getFormDataAsJson';

@@ -1,5 +1,7 @@
+import './index.scss';
 import { ref } from '@vue/composition-api';
 import useI18n from '@/hooks/useI18n';
+import getFormDataAsJson from '@/utils/getFormDataAsJson';
 import FormField from '@/components/FormField';
 import Button from '@/components/Button';
 
@@ -12,6 +14,10 @@ const CalendarSettings: Component = () => {
 
     const handleSubmit = (e: SubmitEvent): void => {
         e.preventDefault();
+
+        isSaving.value = true;
+        const data = getFormDataAsJson(e.target);
+        console.log('=> Submit', data);
     };
 
     return () => (
@@ -23,13 +29,22 @@ const CalendarSettings: Component = () => {
                         type="switch"
                         label="Afficher le lieu de l'événement ?"
                         name="calendar.event.showLocation"
+                        // value={true}
+                        // errors={errors?.eventSummary.materialDisplayMode}
                     />
                     <FormField
                         type="switch"
                         label="Afficher le bénéficiaire / emprunteur ?"
                         name="calendar.event.showBorrower"
+                        // value={true}
+                        // errors={errors?.eventSummary.materialDisplayMode}
                     />
                 </section>
+                {/*
+                <section class="CalendarSettings__section">
+                    <h3>Couleurs des événements du calendrier</h3>
+                </section>
+                */}
                 <section class="CalendarSettings__actions">
                     <Button
                         icon="save"
