@@ -34,7 +34,7 @@ export default {
                         warningEmptyText={__('page-events.warning-no-beneficiary')}
                     />
                     <EventTechnicians eventTechnicians={event.technicians} />
-                    {event.user && (
+                    {event.user?.person && (
                         <p class="EventDetailsInfos__base-infos__creator">
                             <i class="fas fa-user EventDetailsInfos__base-infos__creator__icon" />
                             {__('created-by')}
