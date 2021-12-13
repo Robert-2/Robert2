@@ -34,6 +34,18 @@ export default {
                         warningEmptyText={__('page-events.warning-no-beneficiary')}
                     />
                     <EventTechnicians eventTechnicians={event.technicians} />
+                    {event.user && (
+                        <p class="EventDetailsInfos__base-infos__creator">
+                            <i class="fas fa-user EventDetailsInfos__base-infos__creator__icon" />
+                            {__('created-by')}
+                            <router-link
+                                to={`/users/${event.user.person.id}`}
+                                class="EventDetailsInfos__base-infos__creator__link"
+                            >
+                                {event.user.person.full_name}
+                            </router-link>
+                        </p>
+                    )}
                 </div>
                 {event.description && (
                     <p class="EventDetailsInfos__description">

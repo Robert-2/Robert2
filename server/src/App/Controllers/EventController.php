@@ -10,6 +10,7 @@ use Robert2\API\Errors\ValidationException;
 use Robert2\API\Models\Event;
 use Robert2\API\Models\Material;
 use Robert2\API\Models\Park;
+use Robert2\API\Services\Auth;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
 use Slim\Http\ServerRequest as Request;
@@ -133,6 +134,9 @@ class EventController extends BaseController
     public function create(Request $request, Response $response): Response
     {
         $postData = (array)$request->getParsedBody();
+        if (!isset($postData['user_id'])) {
+            $postData['user_id'] = Auth::user()->id;
+        }
         $id = $this->_saveEvent(null, $postData);
 
         return $response->withJson($this->_getFormattedEvent($id), SUCCESS_CREATED);

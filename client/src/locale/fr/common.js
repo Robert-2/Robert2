@@ -284,6 +284,7 @@ export default {
     'use-these-materials': "Utiliser ce matériel",
     'choose-another-one': "En choisir un autre",
     'event-materials': "Matériel de l'événement «\u00a0{name}\u00a0»",
+    'created-by': "Créé par",
 
     'event': "Événement",
     'user': "Utilisateur",

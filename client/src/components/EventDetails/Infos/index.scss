@@ -10,11 +10,23 @@
 
         .LocationText,
         .EventBeneficiaries,
-        .EventTechnicians {
+        .EventTechnicians,
+        &__creator {
             flex: 1 0 auto;
             max-width: 100%;
-            margin-right: globals.$content-padding-small-horizontal;
-            margin-bottom: globals.$content-padding-large-vertical;
+            margin: 0 globals.$content-padding-small-horizontal globals.$content-padding-large-vertical 0;
+        }
+
+        &__creator {
+            font-size: 1rem;
+
+            &__icon {
+                margin-right: 0.3rem;
+            }
+
+            &__link {
+                margin-left: 0.3rem;
+            }
         }
     }
 

@@ -284,6 +284,7 @@ export default {
     'use-these-materials': "Use these materials",
     'choose-another-one': "Choose another one",
     'event-materials': "Materials of event \"{name}\"",
+    'created-by': "Created by",
 
     'event': "Event",
     'user': "User",
