@@ -298,6 +298,7 @@ export default {
 
         handleCategoryChange() {
             this.fetchAttributes();
+            this.material.sub_category_id = null;
             this.updateSubCategories();
         },
 

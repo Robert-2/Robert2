@@ -11,6 +11,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Utilise une période plutôt qu'une simple date pour le calcul des quantités disponibles du matériel (#301).
 - Il est maintenant possible de choisir ce qui est affiché ou non dans les événements sur le calendrier (#302).
 - Affiche le nom de l'utilisateur qui a créé l'événement dans la fenêtre d'événement.
+- Supprime automatiquement la sous-catégorie quand la catégorie change lors de la sauvegarde du matériel (#306).
 
 ## 0.16.2 (2021-11-04)
 
