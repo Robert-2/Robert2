@@ -363,6 +363,7 @@ class Event extends BaseModel
             'replacementAmount' => $EventData->getReplacementAmount(),
             'technicians' => $EventData->getTechnicians(),
             'customText' => Setting::getWithKey('eventSummary.customText'),
+            'withLegalNumbers' => Setting::getWithKey('eventSummary.withLegalNumbers'),
         ];
 
         $eventPdf = $this->_getPdfAsString($data);

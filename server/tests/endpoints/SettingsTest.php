@@ -14,6 +14,7 @@ final class SettingsTest extends ApiTestCase
                     'content' => "Un petit contrat de test.",
                 ],
                 'materialDisplayMode' => 'sub-categories',
+                'withLegalNumbers' => true,
             ],
             'calendar' => [
                 'event' => [
@@ -70,6 +71,7 @@ final class SettingsTest extends ApiTestCase
             'eventSummary.materialDisplayMode' => 'flat',
             'eventSummary.customText.title' => null,
             'eventSummary.customText.content' => null,
+            'eventSummary.withLegalNumbers' => false,
         ]);
         $this->assertStatusCode(SUCCESS_OK);
         $this->assertResponseData([
@@ -79,6 +81,7 @@ final class SettingsTest extends ApiTestCase
                     'content' => null,
                 ],
                 'materialDisplayMode' => 'flat',
+                'withLegalNumbers' => false,
             ],
             'calendar' => [
                 'event' => [

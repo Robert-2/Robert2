@@ -7,6 +7,7 @@ const getDefaults = () => ({
             'content': null,
         },
         'materialDisplayMode': 'sub-categories',
+        'withLegalNumbers': true,
     },
     'calendar': {
         'event': {
