@@ -2,7 +2,8 @@ import './index.scss';
 import moment from 'moment';
 import Config from '@/globals/config';
 import { DATE_QUERY_FORMAT } from '@/globals/constants';
-import Alert from '@/components/Alert';
+import queryClient from '@/globals/queryClient';
+import { confirm } from '@/utils/alert';
 import Help from '@/components/Help';
 import Dropdown, { getItemClassnames } from '@/components/Dropdown';
 import isValidInteger from '@/utils/isValidInteger';
@@ -201,33 +202,53 @@ export default {
             return params;
         },
 
-        deleteMaterial(materialId) {
+        async deleteMaterial(materialId) {
             const isSoft = !this.isTrashDisplayed;
-            Alert.ConfirmDelete(this.$t, 'materials', isSoft).then((result) => {
-                if (!result.value) {
-                    return;
-                }
+            const text = isSoft
+                ? this.$t('page-materials.confirm-delete')
+                : this.$t('page-materials.confirm-permanently-delete');
+            const confirmButtonText = isSoft
+                ? this.$t('yes-delete')
+                : this.$t('yes-permanently-delete');
+            const type = isSoft ? 'trash' : 'delete';
+            const { value: isConfirmed } = await confirm({ text, confirmButtonText, type });
+            if (!isConfirmed) {
+                return;
+            }
 
-                this.error = null;
-                this.isLoading = true;
-                this.$http.delete(`materials/${materialId}`)
-                    .then(this.refreshTable)
-                    .catch(this.showError);
-            });
+            this.error = null;
+            this.isLoading = true;
+
+            try {
+                await this.$http.delete(`materials/${materialId}`);
+                this.refreshTable();
+            } catch (error) {
+                this.error = error;
+            } finally {
+                this.isLoading = false;
+            }
         },
 
-        restoreMaterial(materialId) {
-            Alert.ConfirmRestore(this.$t, 'materials').then((result) => {
-                if (!result.value) {
-                    return;
-                }
-
-                this.error = null;
-                this.isLoading = true;
-                this.$http.put(`materials/restore/${materialId}`)
-                    .then(this.refreshTable)
-                    .catch(this.showError);
+        async restoreMaterial(materialId) {
+            const { value: isConfirmed } = await confirm({
+                text: this.$t('page-materials.confirm-restore'),
+                confirmButtonText: this.$t('yes-restore'),
             });
+            if (!isConfirmed) {
+                return;
+            }
+
+            this.error = null;
+            this.isLoading = true;
+
+            try {
+                await this.$http.put(`materials/restore/${materialId}`);
+                this.refreshTable();
+            } catch (error) {
+                this.error = error;
+            } finally {
+                this.isLoading = false;
+            }
         },
 
         setTags({ id, name, tags }) {
@@ -248,6 +269,8 @@ export default {
         },
 
         refreshTable() {
+            queryClient.invalidateQueries('materials-while-event');
+
             this.error = null;
             this.isLoading = true;
             this.$refs.DataTable.getData();

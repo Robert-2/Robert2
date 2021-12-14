@@ -1,5 +1,6 @@
 import './index.scss';
 import Config from '@/globals/config';
+import queryClient from '@/globals/queryClient';
 import formatOptions from '@/utils/formatOptions';
 import Help from '@/components/Help';
 import FormField from '@/components/FormField';
@@ -204,6 +205,8 @@ export default {
                 this.setMaterialData(data);
 
                 await this.uploadNewPicture();
+
+                queryClient.invalidateQueries('materials-while-event');
 
                 this.help = { type: 'success', text: 'page-materials.saved' };
 
