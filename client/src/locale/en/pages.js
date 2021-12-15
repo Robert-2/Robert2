@@ -145,7 +145,8 @@ export default {
     'page-event-return': {
         'title': "Return of the material of event \"{pageSubTitle}\"",
         'help': "",
-        'this-event-is-not-past': "This event is not finished, so it is not possible to check its return at the moment.",
+        'this-event-not-started-yet': "This event has not yet started, so it is not possible to check its return at the moment.",
+        'this-event-is-not-past': "This event is not yet finished, you can start its inventory, but you cannot terminate it.",
         'confirm-terminate-title': "Do you really want to terminate this return inventory?",
         'confirm-terminate-text': "Please note that it will no longer be possible to modify it.",
         'confirm-terminate-text-with-broken': "This will update all the \"out of order\" quantities for the concerned materials, and it will no longer be possible to modify this inventory.",

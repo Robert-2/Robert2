@@ -8,10 +8,10 @@
             @displayGroupChange="setDisplayGroup"
         />
         <div class="EventReturn__list">
-            <div v-if="!isLoading && !isPast" class="EventReturn__error">
+            <div v-if="!isLoading && !hasStarted" class="EventReturn__error">
                 <p v-if="!error">
                     <i class="fas fa-exclamation-triangle" />
-                    {{ $t('page-event-return.this-event-is-not-past') }}
+                    {{ $t('page-event-return.this-event-not-started-yet') }}
                 </p>
                 <router-link to="/" v-slot="{ navigate }" custom>
                     <button type="button" @click="navigate" class="info">
@@ -20,7 +20,7 @@
                     </button>
                 </router-link>
             </div>
-            <template v-if="!isLoading && isPast">
+            <template v-if="!isLoading && hasStarted">
                 <MaterialsList
                     :materials="event.materials"
                     :displayGroup="displayGroup"
@@ -50,6 +50,7 @@
                             <span v-else> <i class="fas fa-save" /> {{ $t('save-draft') }}</span>
                         </button>
                         <button
+                            v-if="hasEnded"
                             type="button"
                             class="EventReturn__action info"
                             @click="terminate"
@@ -63,6 +64,10 @@
                                 <i class="fas fa-check" /> {{ $t('terminate-inventory') }}
                             </span>
                         </button>
+                        <p v-if="!hasEnded" class="EventReturn__warning">
+                            <i class="fas fa-exclamation-triangle" />
+                            {{ $t('page-event-return.this-event-is-not-past') }}
+                        </p>
                     </template>
                 </div>
             </template>

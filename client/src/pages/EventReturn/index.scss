@@ -23,6 +23,11 @@
         text-align: center;
     }
 
+    &__warning {
+        color: globals.$text-warning-color;
+        font-size: 1.1rem;
+    }
+
     &__footer {
         position: fixed;
         left: 0;

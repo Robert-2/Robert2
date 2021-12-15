@@ -23,7 +23,7 @@ const EventDetailsHeaderActions: Component<Props> = (props: Props, { root, emit 
     const isDeleting = ref<boolean>(false);
     const hasMaterials = computed(() => event.value.materials.length > 0);
     const isConfirmable = computed(() => event.value.materials?.length === 0);
-    const isEndToday = computed(() => event.value.endDate.isSame(new Date(), 'day'));
+    const hasStarted = computed(() => event.value.startDate.isSameOrBefore(new Date(), 'day'));
 
     const isPrintable = computed(() => (
         event.value.materials &&
@@ -149,7 +149,7 @@ const EventDetailsHeaderActions: Component<Props> = (props: Props, { root, emit 
                         <i class="fas fa-edit" /> {__('action-edit')}
                     </router-link>
                 )}
-                {(isPast || isEndToday.value) && !isArchived && (
+                {(isPast || hasStarted.value) && !isArchived && (
                     <router-link to={`/event-return/${id}`} class="button info">
                         <i class="fas fa-tasks" /> {__('return-inventory')}
                     </router-link>

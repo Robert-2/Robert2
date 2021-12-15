@@ -145,7 +145,8 @@ export default {
     'page-event-return': {
         'title': "Retour du matériel de l'événement «\u00a0{pageSubTitle}\u00a0»",
         'help': "",
-        'this-event-is-not-past': "Cet événement n'est pas terminé, il n'est donc pas possible de vérifier son retour pour le moment.",
+        'this-event-not-started-yet': "Cet événement n'a pas encore commencé, il n'est donc pas possible de vérifier son retour pour le moment.",
+        'this-event-is-not-past': "Cet événement n'est pas encore terminé, vous pouvez commencer son inventaire de retour, mais pas le terminer.",
         'confirm-terminate-title': "Voulez-vous vraiment terminer cet inventaire de retour\u00a0?",
         'confirm-terminate-text': "Veuillez noter qu'il ne sera plus possible de le modifier.",
         'confirm-terminate-text-with-broken': "Ceci aura pour effet de mettre à jour toutes les quantités «\u00a0en panne\u00a0» du matériel concerné, et il ne sera plus possible de modifier cet inventaire.",
