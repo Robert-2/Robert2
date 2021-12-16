@@ -8,8 +8,8 @@
         <td class="half">
             {{ include('blocks/company-address.twig', {
                 company: company,
-                withLegalNumbers: true,
-                withLogo: true,
+                showLegalNumbers: true,
+                showLogo: true,
             }) }}
         </td>
         <td class="half">
@@ -181,8 +181,8 @@
             <td class="half">
                 {{ include('blocks/company-address.twig', {
                     company: company,
-                    withLegalNumbers: false,
-                    withLogo: true,
+                    showLegalNumbers: false,
+                    showLogo: true,
                 }) }}
             </td>
             <td class="half">

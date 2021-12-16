@@ -12,8 +12,8 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Il est maintenant possible de choisir ce qui est affiché ou non dans les événements sur le calendrier (#302).
 - Affiche le nom de l'utilisateur qui a créé l'événement dans la fenêtre d'événement.
 - Supprime automatiquement la sous-catégorie quand la catégorie change lors de la sauvegarde du matériel (#306).
-- Ajoute un paramètre permettant d'afficher ou non les numéros légaux sur les fiches de sortie (#310).
 - Permet la création des inventaires de retour dès le premier jour des événements, sans pouvoir les terminer avant leur dernier jour (#307).
+- Ajoute un paramètre permettant d'afficher ou non les numéros légaux sur les fiches de sortie (#310).
 
 ## 0.16.2 (2021-11-04)
 

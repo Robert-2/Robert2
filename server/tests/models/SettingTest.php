@@ -24,7 +24,7 @@ final class SettingTest extends ModelTestCase
                     'content' => "Un petit contrat de test.",
                 ],
                 'materialDisplayMode' => 'sub-categories',
-                'withLegalNumbers' => true,
+                'showLegalNumbers' => true,
             ],
             'calendar' => [
                 'event' => [
@@ -53,7 +53,7 @@ final class SettingTest extends ModelTestCase
                 'value' => "Un petit contrat de test.",
             ],
             [
-                'key' => 'eventSummary.withLegalNumbers',
+                'key' => 'eventSummary.showLegalNumbers',
                 'value' => true,
             ],
             [
@@ -87,7 +87,7 @@ final class SettingTest extends ModelTestCase
                 'content' => 'Un petit contrat de test.',
             ],
             'materialDisplayMode' => 'sub-categories',
-            'withLegalNumbers' => true,
+            'showLegalNumbers' => true,
         ];
         $this->assertEquals($expected, $result);
 
@@ -115,7 +115,7 @@ final class SettingTest extends ModelTestCase
             'eventSummary.materialDisplayMode' => 'flat',
             'eventSummary.customText.title' => 'test',
             'eventSummary.customText.content' => null,
-            'eventSummary.withLegalNumbers' => false,
+            'eventSummary.showLegalNumbers' => false,
             'calendar.event.showLocation' => false,
             'calendar.event.showBorrower' => true,
         ]);
@@ -126,7 +126,7 @@ final class SettingTest extends ModelTestCase
                     'content' => null,
                 ],
                 'materialDisplayMode' => 'flat',
-                'withLegalNumbers' => false,
+                'showLegalNumbers' => false,
             ],
             'calendar' => [
                 'event' => [

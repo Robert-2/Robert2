@@ -9,7 +9,7 @@ final class AddNewSetting extends AbstractMigration
     public function up(): void
     {
         $data = [
-            'key' => 'eventSummary.withLegalNumbers',
+            'key' => 'eventSummary.showLegalNumbers',
             'value' => '1',
         ];
         $this->table('settings')->insert($data)->saveData();
@@ -21,7 +21,7 @@ final class AddNewSetting extends AbstractMigration
         $builder = $this->getQueryBuilder();
         $builder
             ->delete(sprintf('%ssettings', $prefix))
-            ->where(['key' => 'eventSummary.withLegalNumbers'])
+            ->where(['key' => 'eventSummary.showLegalNumbers'])
             ->execute();
     }
 }

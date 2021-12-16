@@ -52,7 +52,7 @@ class Setting extends BaseModel
                 'validation' => null,
                 'default' => null,
             ],
-            'eventSummary.withLegalNumbers' => [
+            'eventSummary.showLegalNumbers' => [
                 'type' => 'boolean',
                 'validation' => V::boolVal(),
                 'default' => true,

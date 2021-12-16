@@ -61,14 +61,9 @@ export default {
                     <FormField
                         type="switch"
                         label="page-settings.event-summary.display-legal-numbers"
-                        v-model={values.withLegalNumbers}
-                        errors={errors && errors['eventSummary.withLegalNumbers']}
-                    />
-                    <input
-                        type="hidden"
-                        name="eventSummary.withLegalNumbers"
-                        value={values.withLegalNumbers ? '1' : '0'}
-                        readonly
+                        name="eventSummary.showLegalNumbers"
+                        v-model={values.showLegalNumbers}
+                        errors={errors && errors['eventSummary.showLegalNumbers']}
                     />
                 </section>
                 <section class="EventSummarySettingsForm__section">
