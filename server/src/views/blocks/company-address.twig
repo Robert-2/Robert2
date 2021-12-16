@@ -1,4 +1,4 @@
-{% if withLogo and company['logo'] is not empty %}
+{% if showLogo and company['logo'] is not empty %}
   <img src="{{ baseUrl }}/img/{{ company['logo'] }}" style="width: 75mm;" />
 {% endif %}
 
@@ -9,7 +9,7 @@
     {{ company['country'] }}
 </p>
 
-{% if withLegalNumbers %}
+{% if showLegalNumbers %}
 <p>
     {% for legalNumber in company['legalNumbers'] %}
         {% if legalNumber['value'] is not empty %}
@@ -28,7 +28,7 @@
     {% endif %}
 </p>
 
-{% if withLegalNumbers and company['vatNumber'] is not empty %}
+{% if showLegalNumbers and company['vatNumber'] is not empty %}
 <p>
     {{ translate('vatNumber', [company['vatNumber']]) }}
 </p>

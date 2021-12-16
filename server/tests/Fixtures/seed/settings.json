@@ -12,12 +12,14 @@
         "value": "Un petit contrat de test."
     },
     {
-
+        "key": "eventSummary.showLegalNumbers",
+        "value": "1"
+    },
+    {
         "key": "calendar.event.showLocation",
         "value": "1"
     },
     {
-
         "key": "calendar.event.showBorrower",
         "value": "0"
     }

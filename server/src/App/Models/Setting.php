@@ -52,6 +52,11 @@ class Setting extends BaseModel
                 'validation' => null,
                 'default' => null,
             ],
+            'eventSummary.showLegalNumbers' => [
+                'type' => 'boolean',
+                'validation' => V::boolVal(),
+                'default' => true,
+            ],
 
             //
             // - Calendrier

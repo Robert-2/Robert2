@@ -377,6 +377,8 @@ export default {
         'event-summary': {
             'title': "Event summaries",
             'help': "Here you can customize the PDF event summaries",
+            'header': "Top of page",
+            'display-legal-numbers': "Display legal numbers?",
             'material-list': "Materials list",
             'display-mode': "Display mode",
             'list-display-mode-categories': "Sorted by categories",

@@ -24,6 +24,7 @@ final class SettingTest extends ModelTestCase
                     'content' => "Un petit contrat de test.",
                 ],
                 'materialDisplayMode' => 'sub-categories',
+                'showLegalNumbers' => true,
             ],
             'calendar' => [
                 'event' => [
@@ -50,6 +51,10 @@ final class SettingTest extends ModelTestCase
             [
                 'key' => 'eventSummary.customText.content',
                 'value' => "Un petit contrat de test.",
+            ],
+            [
+                'key' => 'eventSummary.showLegalNumbers',
+                'value' => true,
             ],
             [
                 'key' => 'calendar.event.showLocation',
@@ -81,7 +86,8 @@ final class SettingTest extends ModelTestCase
                 'title' => 'Contrat',
                 'content' => 'Un petit contrat de test.',
             ],
-            'materialDisplayMode' => 'sub-categories'
+            'materialDisplayMode' => 'sub-categories',
+            'showLegalNumbers' => true,
         ];
         $this->assertEquals($expected, $result);
 
@@ -106,10 +112,12 @@ final class SettingTest extends ModelTestCase
     public function testUpdate(): void
     {
         Setting::staticEdit(null, [
-            'calendar.event.showLocation' => false,
             'eventSummary.materialDisplayMode' => 'flat',
             'eventSummary.customText.title' => 'test',
             'eventSummary.customText.content' => null,
+            'eventSummary.showLegalNumbers' => false,
+            'calendar.event.showLocation' => false,
+            'calendar.event.showBorrower' => true,
         ]);
         $expected = [
             'eventSummary' => [
@@ -118,11 +126,12 @@ final class SettingTest extends ModelTestCase
                     'content' => null,
                 ],
                 'materialDisplayMode' => 'flat',
+                'showLegalNumbers' => false,
             ],
             'calendar' => [
                 'event' => [
-                    'showBorrower' => false,
                     'showLocation' => false,
+                    'showBorrower' => true,
                 ],
             ],
         ];

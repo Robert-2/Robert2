@@ -377,6 +377,8 @@ export default {
         'event-summary': {
             'title': "Fiches de sortie",
             'help': "Ici, vous pouvez personnaliser les fiches de sortie des événements.",
+            'header': "Haut de page",
+            'display-legal-numbers': "Afficher les numéros légaux\u00a0?",
             'material-list': "Liste du matériel",
             'display-mode': "Mode de présentation",
             'list-display-mode-categories': "Triée par catégories",
