@@ -1,11 +1,13 @@
-<span class="lighter" style="margin-right: 2mm;">
+<span class="lighter" style="white-space: nowrap;">
     {{ attribute['name'] }} :
     {% if attribute['type'] == 'boolean' %}
-    {{ attribute['value'] == '1' ? translate("yes") : translate("no") }}
+    {{ attribute['value'] == '1' ? translate("yes") : translate("no") }}.
     {% elseif attribute['type'] == 'date' %}
-    {{ attribute['value']|format_date('short', locale=locale) }}
+    {{ attribute['value']|format_date('short', locale=locale) }}.
     {% else %}
     {{ attribute['value'] }}
     {% endif %}
-    {{ attribute['unit'] }}
+    {% if attribute['unit'] is not empty %}
+    {{ attribute['unit'] }}.
+    {% endif %}
 </span>

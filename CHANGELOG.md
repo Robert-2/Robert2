@@ -14,6 +14,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Supprime automatiquement la sous-catégorie quand la catégorie change lors de la sauvegarde du matériel (#306).
 - Permet la création des inventaires de retour dès le premier jour des événements, sans pouvoir les terminer avant leur dernier jour (#307).
 - Ajoute un paramètre permettant d'afficher ou non les numéros légaux sur les fiches de sortie (#310).
+- Ajoute une colonne vide "Qté retour" dans la liste du matériel des fiches de sortie (#313).
 
 ## 0.16.2 (2021-11-04)
 

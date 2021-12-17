@@ -2714,8 +2714,11 @@ return [
     "replacement-value"
     => "Repl. Val.",
 
-    "total-replacement-value"
+    "totalReplacementValue"
     => "Total Repl. Val.",
+
+    "qtyReturned"
+    => "Qty Return",
 
     "releaseSheet"
     => "Release sheet",

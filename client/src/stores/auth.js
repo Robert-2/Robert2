@@ -95,7 +95,7 @@ export default {
                 // - Timeout de 5 secondes avant de rejeter la promise.
                 // => L'idée étant que la redirection doit avoir lieu dans ce labs de temps.
                 // => Cela permet aussi de "bloquer" les listeners de cette méthodes pour éviter
-                //    qu'ils executent des process post-logout (redirection, vidage de store ...)
+                //    qu'ils exécutent des process post-logout (redirection, vidage de store ...)
                 await new Promise((_, reject) => { setTimeout(reject, 5000); });
             }
 

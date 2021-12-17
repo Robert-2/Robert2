@@ -124,14 +124,15 @@
             <th>{{ translate('designation') }}</th>
             <th>{{ translate('qty') }}</th>
             <th>{{ translate('replacement-value') }}</th>
-            <th>{{ translate('total-replacement-value') }}</th>
+            <th>{{ translate('totalReplacementValue') }}</th>
+            <th>{{ translate('qtyReturned') }}</th>
         </tr>
     </thead>
     <tbody>
         {% if materialDisplayMode == 'categories' or materialDisplayMode == 'sub-categories' %}
         {% for subCategory in materialList %}
             <tr>
-                <td class="section-title" colspan="5">
+                <td class="section-title" colspan="6">
                     {% if subCategory['name'] is null %}
                     {{ translate('otherMaterials') }}
                     {% else %}
@@ -146,7 +147,7 @@
         {% elseif materialDisplayMode == 'parks' %}
         {% for park in materialList %}
             <tr>
-                <td class="section-title" colspan="5">
+                <td class="section-title" colspan="6">
                     {% if park['name'] is not empty %}
                         {{ park['name'] }}
                     {% else %}
