@@ -133,10 +133,10 @@
         {% for subCategory in materialList %}
             <tr>
                 <td class="section-title" colspan="6">
-                    {% if subCategory['name'] is null %}
-                    {{ translate('otherMaterials') }}
+                    {% if subCategory['name'] is not empty %}
+                    {{ subCategory['category'] }} - {{ subCategory['name'] }}
                     {% else %}
-                    {{ subCategory['name'] }}
+                    {{ subCategory['category'] }} - {{ translate('otherMaterials') }}
                     {% endif %}
                 </td>
             </tr>

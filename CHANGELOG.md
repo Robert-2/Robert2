@@ -15,6 +15,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Permet la création des inventaires de retour dès le premier jour des événements, sans pouvoir les terminer avant leur dernier jour (#307).
 - Ajoute un paramètre permettant d'afficher ou non les numéros légaux sur les fiches de sortie (#310).
 - Ajoute une colonne vide "Qté retour" dans la liste du matériel des fiches de sortie (#313).
+- Trie les listes de matériel imprimées selon la catégorie (en affichant leur nom) en plus des sous-catégories (#315).
 
 ## 0.16.2 (2021-11-04)
 

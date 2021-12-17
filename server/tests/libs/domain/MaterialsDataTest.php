@@ -44,38 +44,9 @@ final class MaterialsDataTest extends ModelTestCase
         $result = $this->MaterialsData->getBySubCategories();
         $expected = [
             [
-                'id' => null,
-                'name' => null,
-                'materials' => [
-                    'Transporter' => [
-                        'reference' => 'Transporter',
-                        'name' => 'Volkswagen Transporter',
-                        'park' => 'default',
-                        'stockQuantity' => 0,
-                        'attributes' => [],
-                        'quantity' => 0,
-                        'rentalPrice' => 300.0,
-                        'replacementPrice' => 32000.0,
-                        'total' => 0.0,
-                        'totalReplacementPrice' => 0.0,
-                    ],
-                    'XLR10' => [
-                        'reference' => 'XLR10',
-                        'name' => 'Câble XLR 10m',
-                        'park' => 'default',
-                        'stockQuantity' => 40,
-                        'attributes' => [],
-                        'quantity' => 0,
-                        'rentalPrice' => 0.5,
-                        'replacementPrice' => 9.5,
-                        'total' => 0.0,
-                        'totalReplacementPrice' => 0.0,
-                    ],
-                ],
-            ],
-            [
                 'id' => 4,
                 'name' => 'dimmers',
+                'category' => 'light',
                 'materials' => [
                     'SDS-6-01' => [
                         'reference' => 'SDS-6-01',
@@ -116,6 +87,7 @@ final class MaterialsDataTest extends ModelTestCase
             [
                 'id' => 3,
                 'name' => 'projectors',
+                'category' => 'light',
                 'materials' => [
                     'PAR64LED' => [
                         'reference' => 'PAR64LED',
@@ -147,41 +119,9 @@ final class MaterialsDataTest extends ModelTestCase
                 ],
             ],
             [
-                'id' => 2,
-                'name' => 'processors',
-                'materials' => [
-                    'DBXPA2' => [
-                        'reference' => 'DBXPA2',
-                        'name' => 'Processeur DBX PA2',
-                        'park' => 'default',
-                        'stockQuantity' => 2,
-                        'attributes' => [
-                            [
-                                'id' => 3,
-                                'name' => 'Puissance',
-                                'type' => 'integer',
-                                'value' => 35,
-                                'unit' => 'W',
-                            ],
-                            [
-                                'id' => 1,
-                                'name' => 'Poids',
-                                'type' => 'float',
-                                'value' => 2.2,
-                                'unit' => 'kg',
-                            ],
-                        ],
-                        'quantity' => 0,
-                        'rentalPrice' => 25.5,
-                        'replacementPrice' => 349.9,
-                        'total' => 0.0,
-                        'totalReplacementPrice' => 0.0,
-                    ],
-                ],
-            ],
-            [
                 'id' => 1,
                 'name' => 'mixers',
+                'category' => 'sound',
                 'materials' => [
                     'CL3' => [
                         'reference' => 'CL3',
@@ -237,6 +177,78 @@ final class MaterialsDataTest extends ModelTestCase
                         'quantity' => 0,
                         'rentalPrice' => 49.99,
                         'replacementPrice' => 419.0,
+                        'total' => 0.0,
+                        'totalReplacementPrice' => 0.0,
+                    ],
+                ],
+            ],
+            [
+                'id' => 2,
+                'name' => 'processors',
+                'category' => 'sound',
+                'materials' => [
+                    'DBXPA2' => [
+                        'reference' => 'DBXPA2',
+                        'name' => 'Processeur DBX PA2',
+                        'park' => 'default',
+                        'stockQuantity' => 2,
+                        'attributes' => [
+                            [
+                                'id' => 3,
+                                'name' => 'Puissance',
+                                'type' => 'integer',
+                                'value' => 35,
+                                'unit' => 'W',
+                            ],
+                            [
+                                'id' => 1,
+                                'name' => 'Poids',
+                                'type' => 'float',
+                                'value' => 2.2,
+                                'unit' => 'kg',
+                            ],
+                        ],
+                        'quantity' => 0,
+                        'rentalPrice' => 25.5,
+                        'replacementPrice' => 349.9,
+                        'total' => 0.0,
+                        'totalReplacementPrice' => 0.0,
+                    ],
+                ],
+            ],
+            [
+                'id' => 'c-1',
+                'name' => null,
+                'category' => 'sound',
+                'materials' => [
+                    'XLR10' => [
+                        'reference' => 'XLR10',
+                        'name' => 'Câble XLR 10m',
+                        'park' => 'default',
+                        'stockQuantity' => 40,
+                        'attributes' => [],
+                        'quantity' => 0,
+                        'rentalPrice' => 0.5,
+                        'replacementPrice' => 9.5,
+                        'total' => 0.0,
+                        'totalReplacementPrice' => 0.0,
+                    ],
+                ],
+            ],
+            [
+                'id' => 'c-3',
+                'name' => null,
+                'category' => 'transport',
+                'materials' => [
+                    'Transporter' => [
+                        'reference' => 'Transporter',
+                        'name' => 'Volkswagen Transporter',
+                        'park' => 'default',
+                        'stockQuantity' => 0,
+                        'attributes' => [],
+                        'quantity' => 0,
+                        'rentalPrice' => 300.0,
+                        'replacementPrice' => 32000.0,
                         'total' => 0.0,
                         'totalReplacementPrice' => 0.0,
                     ],
