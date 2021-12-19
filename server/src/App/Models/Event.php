@@ -24,9 +24,6 @@ class Event extends BaseModel
 
     protected $orderField = 'start_date';
 
-    protected $_searchStartDate;
-    protected $_searchEndDate;
-
     protected $allowedSearchFields = ['title', 'start_date', 'end_date', 'location'];
     protected $searchField = 'title';
 
@@ -35,10 +32,6 @@ class Event extends BaseModel
         parent::__construct($attributes);
 
         $this->pdfTemplate = 'event-summary-default';
-
-        $thisYear = date('Y');
-        $this->_searchStartDate = new \DateTime("$thisYear-01-01");
-        $this->_searchEndDate = new \DateTime("$thisYear-12-31");
 
         $this->validation = [
             'user_id' => V::optional(V::numeric()),
@@ -223,6 +216,49 @@ class Event extends BaseModel
         return $bills ? $bills->toArray() : null;
     }
 
+    public function getHasMissingMaterialsAttribute()
+    {
+        if (!$this->exists || $this->is_archived) {
+            return null;
+        }
+
+        $today = (new \DateTime())->setTime(0, 0, 0);
+        $eventEndDate = new \DateTime($this->end_date);
+
+        if ($eventEndDate < $today) {
+            return null;
+        }
+
+        return !empty($this->missingMaterials());
+    }
+
+    public function getHasNotReturnedMaterialsAttribute()
+    {
+        if (!$this->exists || $this->is_archived) {
+            return null;
+        }
+
+        $today = (new \DateTime())->setTime(0, 0, 0);
+        $eventEndDate = new \DateTime($this->end_date);
+
+        if ($eventEndDate >= $today || !$this->is_return_inventory_done) {
+            return null;
+        }
+
+        if (empty($this->materials)) {
+            return false;
+        }
+
+        foreach ($this->materials as $material) {
+            $missing = $material['pivot']['quantity'] - $material['pivot']['quantity_returned'];
+            if ($missing > 0) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     // ——————————————————————————————————————————————————————
     // —
     // —    Getters
@@ -231,19 +267,7 @@ class Event extends BaseModel
 
     public function getAll(bool $withDeleted = false): Builder
     {
-        $start = $this->_searchStartDate->format('Y-m-d H:i:s');
-        $end = $this->_searchEndDate->format('Y-m-d H:i:s');
-
-        $conditions = function (Builder $query) use ($start, $end) {
-            $query
-                ->where([
-                    ['end_date', '>=', $start],
-                    ['start_date', '<=', $end],
-                ]);
-        };
-
-        $builder = static::orderBy('start_date', 'asc')
-            ->where($conditions);
+        $builder = static::inPeriod('first day of this year', 'last day of this year');
 
         if ($withDeleted) {
             $builder = $builder->onlyTrashed();
@@ -252,61 +276,31 @@ class Event extends BaseModel
         return $builder;
     }
 
-    public static function getOngoing(): Builder
+    public function missingMaterials(): ?array
     {
-        $now = date('Y-m-d H:i:s');
-
-        return static::orderBy('start_date', 'asc')
-            ->where([
-                ['end_date', '>=', $now],
-                ['start_date', '<=', $now],
-            ]);
-    }
-
-    public static function getMissingMaterials(int $id): ?array
-    {
-        $event = static::with('Materials')->find($id);
-        if (!$event || empty($event->materials)) {
+        if (empty($this->materials)) {
             return null;
         }
 
         $eventMaterials = Material::recalcQuantitiesForPeriod(
-            $event->materials,
-            $event->start_date,
-            $event->end_date,
-            $id
+            $this->materials,
+            $this->start_date,
+            $this->end_date,
+            $this->exists ? $this->id : null,
         );
 
         $missingMaterials = [];
         foreach ($eventMaterials as $material) {
             $material['missing_quantity'] = $material['pivot']['quantity'] - $material['remaining_quantity'];
             $material['missing_quantity'] = min($material['missing_quantity'], $material['pivot']['quantity']);
-            if ($material['missing_quantity'] <= 0) {
-                continue;
-            }
-
-            $missingMaterials[] = $material;
-        }
-
-        return empty($missingMaterials) ? null : array_values($missingMaterials);
-    }
-
-    public static function hasNotReturnedMaterials(int $id): bool
-    {
-        $event = static::with('Materials')->find($id);
-        if (!$event || empty($event->materials) || !$event->is_return_inventory_done) {
-            return false;
-        }
-
-        $hasNotReturnedMaterials = false;
-        foreach ($event->materials as $material) {
-            $missing = $material['pivot']['quantity'] - $material['pivot']['quantity_returned'];
-            if ($missing > 0) {
-                $hasNotReturnedMaterials = true;
+            if ($material['missing_quantity'] > 0) {
+                $missingMaterials[] = $material;
             }
         }
 
-        return $hasNotReturnedMaterials;
+        return !empty($missingMaterials)
+            ? array_values($missingMaterials)
+            : null;
     }
 
     public static function getParks(int $id): array
@@ -512,22 +506,6 @@ class Event extends BaseModel
         $this->Materials()->sync($materials);
     }
 
-    public function setSearchPeriod(?string $start, ?string $end): Event
-    {
-        $thisYear = date('Y');
-        if (empty($start)) {
-            $start = "$thisYear-01-01 00:00:00";
-        }
-        if (empty($end)) {
-            $end = "$thisYear-12-31 23:59:59";
-        }
-
-        $this->_searchStartDate = new \DateTime($start);
-        $this->_searchEndDate = new \DateTime($end);
-
-        return $this;
-    }
-
     public static function duplicate(int $originalId, array $newEventData): BaseModel
     {
         $originalEvent = static::findOrFail($originalId);
@@ -567,5 +545,40 @@ class Event extends BaseModel
         $newEvent->syncMaterials($materials);
 
         return $newEvent;
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Query Scopes
+    // -
+    // ------------------------------------------------------
+
+    /**
+     * @param Builder              $query
+     * @param string|DateTime      $start
+     * @param null|string|DateTime $end (optional)
+     *
+     * @return Builder
+     */
+    public function scopeInPeriod(Builder $query, $start, $end = null): Builder
+    {
+        // - Si pas de date de fin: Période d'une journée.
+        $end = $end ?? $start;
+
+        if (!$start instanceof \DateTime) {
+            $start = new \DateTime($start);
+        }
+        if (!$end instanceof \DateTime) {
+            $end = new \DateTime($end);
+        }
+
+        return $query
+            ->orderBy('start_date', 'asc')
+            ->where(function (Builder $query) use ($start, $end) {
+                $query->where([
+                    ['end_date', '>=', $start->format('Y-m-d 00:00:00')],
+                    ['start_date', '<=', $end->format('Y-m-d 23:59:59')],
+                ]);
+            });
     }
 }

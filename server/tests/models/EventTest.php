@@ -24,9 +24,64 @@ final class EventTest extends ModelTestCase
 
     public function testGetAll(): void
     {
-        $this->model->setSearchPeriod('2018-01-15', '2018-12-19');
-        $result = $this->model->getAll()->get()->toArray();
-        $this->assertEquals([
+        // Préparation:
+        // - On s'assure qu'il n'y a aucun événement dans l'année courante.
+        // - On fait en sorte que l'événement 3 se produise entre aujourd'hui et demain.
+        foreach (Event::all() as $event) {
+            $currentYear = date('Y');
+
+            $start = new \Datetime($event->start_date);
+            if ($start->format('Y') === $currentYear) {
+                $start->add(new \DateInterval('P1Y'));
+            }
+
+            $end = new \Datetime($event->end_date);
+            if ($end->format('Y') === $currentYear) {
+                $end->add(new \DateInterval('P1Y'));
+            }
+
+            $event->update([
+                'start_date' => $start->format('Y-m-d 00:00:00'),
+                'end_date' => $end->format('Y-m-d 23:59:59'),
+            ]);
+        }
+        $today = (new \Datetime)->format('Y-m-d 00:00:00');
+        $tomorrow = (new \Datetime('tomorrow'))->format('Y-m-d 23:59:59');
+        Event::where('id', 3)->update(['start_date' => $today, 'end_date' => $tomorrow]);
+
+        // - La méthod `getAll` ne doit retourner que les événements dans l'année courante.
+        $results = array_map(
+            function ($result) {
+                unset($result['created_at'], $result['updated_at']);
+                return $result;
+            },
+            $this->model->getAll()->get()->toArray(),
+        );
+        $expected = [
+            [
+                'id' => 3,
+                'user_id' => 1,
+                'title' => "Avant-premier événement",
+                'description' => null,
+                'reference' => null,
+                'start_date' => $today,
+                'end_date' => $tomorrow,
+                'is_confirmed' => false,
+                'is_archived' => true,
+                'location' => "Brousse",
+                'is_billable' => false,
+                'is_return_inventory_done' => false,
+                'deleted_at' => null,
+            ]
+        ];
+        $this->assertEquals($expected, $results);
+    }
+
+    public function testInPeriodScope(): void
+    {
+        // - Récupére les événement de 2018
+        $result = Event::inPeriod('2018-01-01', '2018-12-31')->get();
+        $expected = [
             [
                 'id' => 3,
                 'user_id' => 1,
@@ -78,39 +133,88 @@ final class EventTest extends ModelTestCase
                 'updated_at' => null,
                 'deleted_at' => null,
             ]
-        ], $result);
+        ];
+        $this->assertCount(3, $result);
+        $this->assertEquals($expected, $result->toArray());
+
+        // - Récupére les événement de la fin décembre 2018.
+        $results = Event::inPeriod('2018-12-19', '2018-12-31')->get();
+        $this->assertCount(1, $results);
+        $this->assertEquals(2, $results[0]->id);
+
+        // - Récupére les événement d'une journée si un seul argument est passé.
+        $results = Event::inPeriod('2018-12-15')->get();
+        $this->assertCount(1, $results);
+        $this->assertEquals(3, $results[0]->id);
+
+        // - Doit accepter les formats relatifs.
+        $results = Event::inPeriod('first day of December 2018', 'third sat of December 2018')->get();
+        $this->assertCount(1, $results);
+        $this->assertEquals(3, $results[0]->id);
     }
 
-    public function testGetMissingMaterials(): void
+    public function testMissingMaterials(): void
     {
         // - No missing materials for event #3
-        $result = Event::getMissingMaterials(3);
+        $result = Event::find(3)->missingMaterials();
         $this->assertNull($result);
 
         // - Get missing materials of event #1
-        $result = Event::getMissingMaterials(1);
+        $result = Event::find(1)->missingMaterials();
         $this->assertNotNull($result);
         $this->assertCount(1, $result);
         $this->assertEquals('DBXPA2', $result[0]['reference']);
         $this->assertEquals(1, $result[0]['missing_quantity']);
 
         // - Get missing materials of event #4
-        $result = Event::getMissingMaterials(4);
+        $result = Event::find(4)->missingMaterials();
         $this->assertNotNull($result);
         $this->assertCount(2, $result);
         $this->assertEquals('Transporter', $result[0]['reference']);
         $this->assertEquals(3, $result[0]['missing_quantity']);
     }
 
+    public function testHasMissingMaterials(): void
+    {
+        // - L'événement #4 contient du matériel manquant.
+        $result = Event::find(1)
+            ->fill(['end_date' => (new \Datetime('tomorrow'))->format('Y-m-d H:i:s')])
+            ->setAppends(['has_missing_materials']);
+        $this->assertSame(true, $result->hasMissingMaterials);
+
+        // - L'événement #3 est archivé, pas de calcul du matériel manquant.
+        $result = Event::find(3)
+            ->fill([
+                'start_date' => (new \Datetime)->format('Y-m-d H:i:s'),
+                'end_date' => (new \Datetime('tomorrow'))->format('Y-m-d H:i:s'),
+            ])
+            ->setAppends(['has_missing_materials']);
+        $this->assertSame(null, $result->hasMissingMaterials);
+
+        // - L'événement #3 lorsqu'il est désarchivé, ne contient pas de matériel manquant.
+        $result = Event::find(3)
+            ->fill([
+                'is_archived' => false,
+                'start_date' => (new \Datetime)->format('Y-m-d H:i:s'),
+                'end_date' => (new \Datetime('tomorrow'))->format('Y-m-d H:i:s'),
+            ])
+            ->setAppends(['has_missing_materials']);
+        $this->assertSame(false, $result->hasMissingMaterials);
+    }
+
     public function testHasNotReturnedMaterials(): void
     {
         // - Event #1 does not have material not returned
-        $result = Event::hasNotReturnedMaterials(1);
-        $this->assertFalse($result);
+        $result = Event::find(1)->setAppends(['has_not_returned_materials']);
+        $this->assertSame(false, $result->hasNotReturnedMaterials);
 
         // - Event #2 have some materials not returned
-        $result = Event::hasNotReturnedMaterials(2);
-        $this->assertTrue($result);
+        $result = Event::find(2)->setAppends(['has_not_returned_materials']);
+        $this->assertSame(true, $result->hasNotReturnedMaterials);
+
+        // - L'événement #3 est archivé, pas de calcul du matériel non retourné.
+        $result = Event::find(3)->setAppends(['has_not_returned_materials']);
+        $this->assertSame(null, $result->hasNotReturnedMaterials);
     }
 
     public function testGetParks(): void
@@ -389,26 +493,6 @@ final class EventTest extends ModelTestCase
                 'location' => 'Saint-Jean-la-Forêt',
             ],
         ], $results->toArray());
-    }
-
-    public function testSetPeriod()
-    {
-        // - Set period to current year
-        $this->model->setSearchPeriod(null, null);
-        $results = $this->model->getAll()->get()->toArray();
-        $this->assertCount(0, $results);
-
-        // - Set period to 2018
-        $this->model->setSearchPeriod('2018-01-01', '2018-12-31');
-        $results = $this->model->getAll()->get()->toArray();
-        $this->assertCount(3, $results);
-        $this->assertEquals('Avant-premier événement', $results[0]['title']);
-
-        // - Set period to last dec. 2018
-        $this->model->setSearchPeriod('2018-12-19', '2018-12-31');
-        $results = $this->model->getAll()->get()->toArray();
-        $this->assertCount(1, $results);
-        $this->assertEquals('Second événement', $results[0]['title']);
     }
 
     public function testValidateEventDates(): void

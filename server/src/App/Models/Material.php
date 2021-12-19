@@ -262,13 +262,11 @@ class Material extends BaseModel
 
         $events = [];
         if (!empty($start) || !empty($end)) {
-            $events = (new Event)->setSearchPeriod($start, $end)->getAll();
-
+            $query = Event::inPeriod($start, $end);
             if ($exceptEventId) {
-                $events = $events->where('id', '!=', $exceptEventId);
+                $query = $query->where('id', '!=', $exceptEventId);
             }
-
-            $events = $events->with('Materials')->get()->toArray();
+            $events = $query->with('Materials')->get()->toArray();
         }
 
         $periods = splitPeriods($events);

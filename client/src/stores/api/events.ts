@@ -13,7 +13,7 @@ import type { Moment } from 'moment';
 //
 
 /* eslint-disable @typescript-eslint/naming-convention */
-export type Event = {
+export type BaseEvent = {
     id: number,
     title: string,
     start_date: string,
@@ -24,9 +24,6 @@ export type Event = {
     is_billable: boolean,
     is_confirmed: boolean,
     is_return_inventory_done: boolean,
-    is_archived: boolean,
-    has_missing_materials: boolean,
-    has_not_returned_materials: boolean,
     beneficiaries: PersonWithEventPivot[],
     technicians: PersonWithEventPivot[],
     materials: MaterialWithPivot[],
@@ -38,6 +35,19 @@ export type Event = {
     deleted_at: string,
     updated_at: string,
 };
+
+export type Event = BaseEvent & (
+    | {
+        is_archived: true,
+        has_missing_materials: null,
+        has_not_returned_materials: null,
+    }
+    | {
+        is_archived: false,
+        has_missing_materials: boolean | null,
+        has_not_returned_materials: boolean | null,
+    }
+);
 /* eslint-enable @typescript-eslint/naming-convention */
 
 export type FormatedEvent = Event & {

@@ -136,7 +136,7 @@ class Park extends BaseModel
             return false;
         }
 
-        $ongoingEvents = Event::getOngoing()
+        $ongoingEvents = Event::inPeriod('today')
             ->with('Materials')
             ->get();
 
