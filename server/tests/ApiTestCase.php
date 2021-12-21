@@ -3,8 +3,9 @@ declare(strict_types=1);
 
 namespace Robert2\Tests;
 
-use Robert2\API\App;
 use PHPUnit\Framework\TestCase;
+use Robert2\API\App;
+use Robert2\API\Kernel;
 
 class ApiTestCase extends TestCase
 {
@@ -27,6 +28,13 @@ class ApiTestCase extends TestCase
 
         // - Test specific configuration
         $this->app->add(new \Slim\HttpCache\Cache('private', 0));
+    }
+
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+
+        Kernel::reset();
     }
 
     // ——————————————————————————————————————————————————————

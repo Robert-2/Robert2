@@ -3,14 +3,30 @@ declare(strict_types=1);
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\QueryException;
+use Monolog\Logger;
 use Psr\Http\Message\UploadedFileInterface;
+use Robert2\API\Kernel;
+
+/**
+ * Retourne le conteneur courant ou le service lié à l'id dans le conteneur si fourni.
+ *
+ * NOTE: À n'utiliser que dans les cas ou l'auto-wiring n'est pas disponible.
+ *
+ * @param string $id (optional) Un éventuel identifiant de service à retourner.
+ *
+ * @return mixed Le conteneur lui-même si aucun identifiant n'est passé, le service lié à l'id sinon.
+ */
+function container(?string $id)
+{
+    $container = Kernel::get()->getContainer();
+    return $id ? $container->get($id) : $container;
+}
 
 /**
  * Print a variable, and exit current script (or not)
  *
  * Options:
  * - `log` (bool): Wether to log the debug in `/var/log` instead of direct output (default `false`)
- * - `append` (bool): Wether to append to log file instead of replace (default `true`)
  *
  * @param mixed $var     Variable to monitor.
  * @param array $options See "Options" above.
@@ -21,10 +37,11 @@ use Psr\Http\Message\UploadedFileInterface;
  */
 function debug($var = null, array $options = []): void
 {
-    $options = array_merge([
-        'log' => false,
-        'append' => true,
-    ], $options);
+    $options = array_merge(['log' => false], $options);
+
+    if ($var instanceof Builder) {
+        $var = $var->toSql();
+    }
 
     if ($options['log']) {
         $backtrace = debug_backtrace();
@@ -32,14 +49,12 @@ function debug($var = null, array $options = []): void
         $displayVar = var_export($var, true);
 
         $debug = sprintf(
-            "%s [%s] line %d: %s\n",
-            date('d/m H:i'),
+            "[%s:%d] %s",
             basename($caller['file']),
             $caller['line'],
             $displayVar
         );
-        $logFile = VAR_FOLDER . DS . 'logs' . DS . 'debug.log';
-        file_put_contents($logFile, $debug, $options['append'] ? FILE_APPEND : 0);
+        container('logger')->log(Logger::DEBUG, $debug);
         return;
     }
 
@@ -55,21 +70,6 @@ function debug($var = null, array $options = []): void
         var_dump($var);
     }
     echo $wrap[1];
-}
-
-/**
- * Add a line into SQL logs file
- *
- * @param Builder $builder The Eloquent Query builder.
- *
- * @return void
- *
- * @codeCoverageIgnore
- */
-function logSql(Builder $builder): void
-{
-    $logFile = VAR_FOLDER . DS . 'logs' . DS . 'sql.log';
-    file_put_contents($logFile, $builder->toSql() . "\n", FILE_APPEND);
 }
 
 /**

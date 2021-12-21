@@ -8,25 +8,46 @@ use Illuminate\Database\Capsule\Manager as Database;
 use Illuminate\Events\Dispatcher as EventDispatcher;
 use Psr\Container\ContainerInterface;
 use Robert2\API\Config\Config;
+use Robert2\API\Models\Event;
+use Robert2\API\Observers\EventObserver;
 
-class Kernel
+final class Kernel
 {
+    private static $instance;
+
     protected $container;
 
-    protected $booted = false;
-
-    public function boot(): self
+    public static function boot()
     {
-        if ($this->booted) {
-            return $this;
+        if (!is_null(static::$instance) && Config::getEnv() !== 'test') {
+            throw new \LogicException("Le kernel a déjà été booté.");
         }
+        return static::$instance = new static;
+    }
 
+    public static function get()
+    {
+        if (is_null(static::$instance)) {
+            throw new \LogicException("Tentative de récupération du kernel avant le boot de celui-ci.");
+        }
+        return static::$instance;
+    }
+
+    public static function reset()
+    {
+        static::$instance = new static;
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Instance methods
+    // -
+    // ------------------------------------------------------
+
+    private function __construct()
+    {
         $this->initializeContainer();
         $this->initializeDatabase();
-
-        $this->booted = true;
-
-        return $this;
     }
 
     public function getContainer(): ContainerInterface
