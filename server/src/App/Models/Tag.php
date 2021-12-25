@@ -32,26 +32,17 @@ class Tag extends BaseModel
 
     public function Persons()
     {
-        return $this->morphedByMany(
-            'Robert2\API\Models\Person',
-            'taggable'
-        );
+        return $this->morphedByMany(Person::class, 'taggable');
     }
 
     public function Companies()
     {
-        return $this->morphedByMany(
-            'Robert2\API\Models\Company',
-            'taggable'
-        );
+        return $this->morphedByMany(Company::class, 'taggable');
     }
 
     public function Materials()
     {
-        return $this->morphedByMany(
-            'Robert2\API\Models\Material',
-            'taggable'
-        );
+        return $this->morphedByMany(Material::class, 'taggable');
     }
 
     // ——————————————————————————————————————————————————————

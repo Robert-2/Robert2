@@ -36,15 +36,15 @@ class Attribute extends BaseModel
 
     public function Materials()
     {
-        return $this->belongsToMany('Robert2\API\Models\Material', 'material_attributes')
-            ->using('Robert2\API\Models\MaterialAttributesPivot')
+        return $this->belongsToMany(Material::class, 'material_attributes')
+            ->using(MaterialAttributesPivot::class)
             ->withPivot('value')
             ->select(['materials.id', 'name']);
     }
 
     public function Categories()
     {
-        return $this->belongsToMany('Robert2\API\Models\Category', 'attribute_categories')
+        return $this->belongsToMany(Category::class, 'attribute_categories')
             ->orderBy('name')
             ->select(['categories.id', 'name']);
     }

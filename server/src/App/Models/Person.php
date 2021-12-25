@@ -67,19 +67,19 @@ class Person extends BaseModel
 
     public function User()
     {
-        return $this->belongsTo('Robert2\API\Models\User')
+        return $this->belongsTo(User::class)
             ->select(['id', 'pseudo', 'email', 'group_id']);
     }
 
     public function Country()
     {
-        return $this->belongsTo('Robert2\API\Models\Country')
+        return $this->belongsTo(Country::class)
             ->select(['id', 'name', 'code']);
     }
 
     public function Company()
     {
-        return $this->belongsTo('Robert2\API\Models\Company');
+        return $this->belongsTo(Company::class);
     }
 
     public function Events()

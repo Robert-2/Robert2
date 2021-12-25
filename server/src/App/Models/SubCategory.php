@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Robert2\API\Validation\Validator as V;
 
 class SubCategory extends BaseModel
@@ -28,7 +27,7 @@ class SubCategory extends BaseModel
 
     public function Category()
     {
-        return $this->belongsTo('Robert2\API\Models\Category')
+        return $this->belongsTo(Category::class)
             ->select(['id', 'name']);
     }
 
@@ -46,7 +45,7 @@ class SubCategory extends BaseModel
             'replacement_price',
         ];
 
-        return $this->hasMany('Robert2\API\Models\Material')->select($fields);
+        return $this->hasMany(Material::class)->select($fields);
     }
 
     // ——————————————————————————————————————————————————————

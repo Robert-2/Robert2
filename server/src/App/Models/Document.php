@@ -32,7 +32,7 @@ class Document extends BaseModel
 
     public function Material()
     {
-        return $this->belongsTo('Robert2\API\Models\Material')
+        return $this->belongsTo(Material::class)
             ->select(['id', 'name', 'reference']);
     }
 

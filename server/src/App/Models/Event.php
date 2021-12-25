@@ -9,8 +9,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\QueryException;
 use Robert2\API\Config\Config;
 use Robert2\API\Errors\ValidationException;
-use Robert2\API\Models\Material;
-use Robert2\API\Models\Park;
 use Robert2\API\Models\Traits\Cache;
 use Robert2\API\Models\Traits\JsonSerializer;
 use Robert2\API\Models\Traits\WithPdf;
@@ -18,6 +16,11 @@ use Robert2\API\Validation\Validator as V;
 use Robert2\Lib\Domain\EventData;
 use Symfony\Contracts\Cache\ItemInterface as CacheItemInterface;
 
+/**
+ * Modèle Event.
+ *
+ * @method static Builder inPeriod(Builder $query, string|DateTime $start, string|DateTime|null $end)
+ */
 class Event extends BaseModel
 {
     use JsonSerializer;
@@ -103,7 +106,7 @@ class Event extends BaseModel
 
     public function User()
     {
-        return $this->belongsTo('Robert2\API\Models\User')
+        return $this->belongsTo(User::class)
             ->select(['users.id', 'pseudo', 'email', 'group_id']);
     }
 
@@ -115,7 +118,7 @@ class Event extends BaseModel
 
     public function Beneficiaries()
     {
-        return $this->belongsToMany('Robert2\API\Models\Person', 'event_beneficiaries')
+        return $this->belongsToMany(Person::class, 'event_beneficiaries')
             ->select([
                 'persons.id',
                 'first_name',
@@ -149,22 +152,22 @@ class Event extends BaseModel
             'is_discountable',
         ];
 
-        return $this->belongsToMany('Robert2\API\Models\Material', 'event_materials')
-            ->using('Robert2\API\Models\EventMaterial')
+        return $this->belongsToMany(Material::class, 'event_materials')
+            ->using(EventMaterial::class)
             ->withPivot('id', 'quantity', 'quantity_returned', 'quantity_broken')
             ->select($fields);
     }
 
     public function Bills()
     {
-        return $this->hasMany('Robert2\API\Models\Bill')
+        return $this->hasMany(Bill::class)
             ->select(['bills.id', 'number', 'date', 'discount_rate', 'due_amount'])
             ->orderBy('date', 'desc');
     }
 
     public function Estimates()
     {
-        return $this->hasMany('Robert2\API\Models\Estimate')
+        return $this->hasMany(Estimate::class)
             ->select(['estimates.id', 'date', 'discount_rate', 'due_amount'])
             ->orderBy('date', 'desc');
     }
