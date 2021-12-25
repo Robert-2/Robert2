@@ -44,9 +44,10 @@ function debug($var = null, array $options = []): void
     }
 
     if ($options['log']) {
-        $backtrace = debug_backtrace();
-        $caller = array_shift($backtrace);
-        $displayVar = var_export($var, true);
+        $caller = debug_backtrace()[0];
+        $displayVar = !is_string($var)
+            ? var_export($var, true)
+            : $var;
 
         $debug = sprintf(
             "[%s:%d] %s",
@@ -58,6 +59,10 @@ function debug($var = null, array $options = []): void
         return;
     }
 
+    if ($options['log'] === 'only') {
+        return;
+    }
+
     $wrap = ['<pre>', '</pre>'];
     if (in_array(PHP_SAPI, ['cli', 'phpdbg'], true)) {
         $wrap = ["\n\033[35m", "\033[0m\n"];
@@ -66,6 +71,8 @@ function debug($var = null, array $options = []): void
     echo $wrap[0];
     if (is_array($var) || is_object($var) || is_callable($var)) {
         print_r($var);
+    } elseif (is_string($var)) {
+        echo $var;
     } else {
         var_dump($var);
     }

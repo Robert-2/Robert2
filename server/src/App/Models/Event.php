@@ -11,16 +11,19 @@ use Robert2\API\Config\Config;
 use Robert2\API\Errors\ValidationException;
 use Robert2\API\Models\Material;
 use Robert2\API\Models\Park;
+use Robert2\API\Models\Traits\Cache;
 use Robert2\API\Models\Traits\JsonSerializer;
 use Robert2\API\Models\Traits\WithPdf;
 use Robert2\API\Validation\Validator as V;
 use Robert2\Lib\Domain\EventData;
+use Symfony\Contracts\Cache\ItemInterface as CacheItemInterface;
 
 class Event extends BaseModel
 {
     use JsonSerializer;
     use SoftDeletes;
     use WithPdf;
+    use Cache;
 
     protected $orderField = 'start_date';
 
@@ -229,7 +232,15 @@ class Event extends BaseModel
             return null;
         }
 
-        return !empty($this->missingMaterials());
+        return $this->cacheGet(
+            'has_missing_materials',
+            function (?CacheItemInterface $cacheItem) {
+                if ($cacheItem) {
+                    $cacheItem->expiresAfter(new \DateInterval('P1D'));
+                }
+                return !empty($this->missingMaterials());
+            }
+        );
     }
 
     public function getHasNotReturnedMaterialsAttribute()
@@ -245,18 +256,27 @@ class Event extends BaseModel
             return null;
         }
 
-        if (empty($this->materials)) {
-            return false;
-        }
+        return $this->cacheGet(
+            'has_not_returned_materials',
+            function (?CacheItemInterface $cacheItem) {
+                if ($cacheItem) {
+                    $cacheItem->expiresAfter(new \DateInterval('P1D'));
+                }
 
-        foreach ($this->materials as $material) {
-            $missing = $material['pivot']['quantity'] - $material['pivot']['quantity_returned'];
-            if ($missing > 0) {
-                return true;
+                if (empty($this->materials)) {
+                    return false;
+                }
+
+                foreach ($this->materials as $material) {
+                    $missing = $material['pivot']['quantity'] - $material['pivot']['quantity_returned'];
+                    if ($missing > 0) {
+                        return true;
+                    }
+                }
+
+                return false;
             }
-        }
-
-        return false;
+        );
     }
 
     // ——————————————————————————————————————————————————————

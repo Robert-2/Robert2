@@ -8,8 +8,10 @@ use Illuminate\Database\Capsule\Manager as Database;
 use Illuminate\Events\Dispatcher as EventDispatcher;
 use Psr\Container\ContainerInterface;
 use Robert2\API\Config\Config;
-use Robert2\API\Models\Event;
+use Robert2\API\Models;
+use Robert2\API\Observers\EventMaterialObserver;
 use Robert2\API\Observers\EventObserver;
+use Robert2\API\Observers\MaterialObserver;
 
 final class Kernel
 {
@@ -90,5 +92,10 @@ final class Kernel
         $database->bootEloquent();
 
         $this->container->set('database', $database);
+
+        // - Observers
+        Models\Event::observe(EventObserver::class);
+        Models\Material::observe(MaterialObserver::class);
+        Models\EventMaterial::observe(EventMaterialObserver::class);
     }
 }

@@ -16,6 +16,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Ajoute un paramètre permettant d'afficher ou non les numéros légaux sur les fiches de sortie (#310).
 - Ajoute une colonne vide "Qté retour" dans la liste du matériel des fiches de sortie (#313).
 - Trie les listes de matériel imprimées selon la catégorie (en affichant leur nom) en plus des sous-catégories (#315).
+- Améliore les performances du chargement des événements du calendrier (de ~4 secondes à ~150 millisecondes sur un calendrier rempli) (#32).
 
 ## 0.16.2 (2021-11-04)
 
