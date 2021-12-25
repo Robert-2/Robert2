@@ -5,7 +5,7 @@ namespace Robert2\API\Observers;
 
 use Robert2\API\Models\Event;
 
-class EventObserver
+final class EventObserver
 {
     public function created(Event $event)
     {
@@ -87,9 +87,13 @@ class EventObserver
         }
     }
 
-    public function deleted(Event $event)
+    public function deleting(Event $event)
     {
-        debug("[Event] Événement #%s supprimé.", $event->id);
+        if ($event->isForceDeleting()) {
+            debug("[Event] Événement #%s supprimé définitivement.", $event->id);
+        } else {
+            debug("[Event] Événement #%s supprimé.", $event->id);
+        }
 
         //
         // - On invalide le cache de l'événement "soft-delete".
@@ -101,33 +105,6 @@ class EventObserver
         //
         // - On invalide le cache du matériel manquant des événéments voisins à celui-ci.
         //
-
-        /** @var Event[] */
-        $neighborEvents = Event::inPeriod($event->start_date, $event->end_date)->get();
-        foreach ($neighborEvents as $neighborEvent) {
-            // TODO: N'invalider que si pour les events avec du matériel en commun ?
-            $neighborEvent->invalidateCache('has_missing_materials');
-        }
-    }
-
-    public function forceDeleted(Event $event)
-    {
-        debug("[Event] Événement #%s supprimé définitivement.", $event->id);
-
-        //
-        // - On invalide le cache de l'événement supprimé.
-        //
-
-        $event->invalidateCache();
-
-        //
-        // - On invalide le cache du matériel manquant des événéments voisins à celui-ci.
-        //
-
-        // - Si l'événement était déjà "soft-deleté", on a déjà fait ce travail dans l'évent `deleted`.
-        if ($event->trashed()) {
-            return;
-        }
 
         /** @var Event[] */
         $neighborEvents = Event::inPeriod($event->start_date, $event->end_date)->get();

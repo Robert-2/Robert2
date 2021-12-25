@@ -24,4 +24,20 @@ class EventMaterial extends Pivot
         'quantity_returned' => 'integer',
         'quantity_broken' => 'integer',
     ];
+
+    // ——————————————————————————————————————————————————————
+    // —
+    // —    Relations
+    // —
+    // ——————————————————————————————————————————————————————
+
+    public function Event()
+    {
+        return $this->belongsTo(Event::class);
+    }
+
+    public function Material()
+    {
+        return $this->belongsTo(Material::class);
+    }
 }

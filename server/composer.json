@@ -38,7 +38,7 @@
         "dompdf/dompdf": "1.1.1",
         "firebase/php-jwt": "5.4.0",
         "illuminate/database": "8.51.0",
-        "illuminate/events": "v8.76.2",
+        "illuminate/events": "v8.77.1",
         "illuminate/pagination": "8.51.0",
         "kirkbushell/eloquence": "8.0.0",
         "monolog/monolog": "2.3.2",

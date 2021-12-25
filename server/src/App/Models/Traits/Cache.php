@@ -47,7 +47,7 @@ trait Cache
             $cacheKey,
             function (CacheItemInterface $item) use ($callback, $entityCacheKey, $cacheKey) {
                 debug('Création de l\'entrée de cache de modèle `%s`.', $cacheKey);
-                $item->tag([$this->getModelCacheKey(), $entityCacheKey]);
+                $item->tag([static::getModelCacheKey(), $entityCacheKey]);
                 return $callback($item);
             }
         );
