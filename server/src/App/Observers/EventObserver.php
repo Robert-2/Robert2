@@ -9,6 +9,8 @@ class EventObserver
 {
     public function created(Event $event)
     {
+        debug("[Event] Événement #%s ajouté.", $event->id);
+
         //
         // - Dans le doute, on supprime le cache de l'événement lors de sa création.
         //
@@ -29,6 +31,8 @@ class EventObserver
 
     public function updated(Event $event)
     {
+        debug("[Event] Événement #%s modifié.", $event->id);
+
         //
         // - On invalide le cache du présent événement.
         //
@@ -62,6 +66,8 @@ class EventObserver
 
     public function restored(Event $event)
     {
+        debug("[Event] Événement #%s restauré.", $event->id);
+
         //
         // - Dans le doute, on supprime le cache de l'événement lors de son rétablissement.
         //
@@ -83,6 +89,8 @@ class EventObserver
 
     public function deleted(Event $event)
     {
+        debug("[Event] Événement #%s supprimé.", $event->id);
+
         //
         // - On invalide le cache de l'événement "soft-delete".
         //   (pour éviter une reprise de cache malheureuse lors d'un éventuel rétablissement)
@@ -104,6 +112,8 @@ class EventObserver
 
     public function forceDeleted(Event $event)
     {
+        debug("[Event] Événement #%s supprimé définitivement.", $event->id);
+
         //
         // - On invalide le cache de l'événement supprimé.
         //

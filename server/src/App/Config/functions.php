@@ -23,60 +23,63 @@ function container(?string $id)
 }
 
 /**
- * Print a variable, and exit current script (or not)
+ * Affiche le contenu d'une variable.
  *
- * Options:
- * - `log` (bool): Wether to log the debug in `/var/log` instead of direct output (default `false`)
- *
- * @param mixed $var     Variable to monitor.
- * @param array $options See "Options" above.
- *
- * @return void
+ * @param mixed $var Le message ou la variable à afficher.
  *
  * @codeCoverageIgnore
  */
-function debug($var = null, array $options = []): void
+function dump($var): void
 {
-    $options = array_merge(['log' => false], $options);
-
-    if ($var instanceof Builder) {
-        $var = $var->toSql();
-    }
-
-    if ($options['log']) {
-        $caller = debug_backtrace()[0];
-        $displayVar = !is_string($var)
-            ? var_export($var, true)
-            : $var;
-
-        $debug = sprintf(
-            "[%s:%d] %s",
-            basename($caller['file']),
-            $caller['line'],
-            $displayVar
-        );
-        container('logger')->log(Logger::DEBUG, $debug);
-        return;
-    }
-
-    if ($options['log'] === 'only') {
-        return;
-    }
-
     $wrap = ['<pre>', '</pre>'];
     if (in_array(PHP_SAPI, ['cli', 'phpdbg'], true)) {
         $wrap = ["\n\033[35m", "\033[0m\n"];
     }
 
     echo $wrap[0];
-    if (is_array($var) || is_object($var) || is_callable($var)) {
-        print_r($var);
+    if ($var instanceof Builder) {
+        echo $var->toSql();
     } elseif (is_string($var)) {
         echo $var;
+    } elseif (is_array($var) || is_object($var) || is_callable($var)) {
+        print_r($var);
     } else {
         var_dump($var);
     }
     echo $wrap[1];
+}
+
+/**
+ * Ajoute une entrée de log de type "debug".
+ *
+ * Le fonctionnement de cette fonction est similaire à celui de la fonction `sprintf`.
+ * (Uniquement dans le cas ou `$message` est une chaîne de caractères)
+ *
+ * @param mixed $message    Le message ou la variable à logger.
+ * @param string[] ...$vars Les variables utilisées pour remplir les placeholders de `$message`.
+ *                          Voir le fonctionnement de `sprintf()`.
+ *
+ * @codeCoverageIgnore
+ */
+function debug($message, ...$vars)
+{
+    $parts = [];
+
+    if (!is_string($message)) {
+        $caller = debug_backtrace()[0];
+        $parts[] = sprintf("[%s:%d]", basename($caller['file']), $caller['line']);
+    }
+
+    if (is_string($message)) {
+        $message = !empty($vars) ? vsprintf($message, $vars) : $message;
+    } elseif ($message instanceof Builder) {
+        $message = $message->toSql();
+    } else {
+        $message = var_export($message, true);
+    }
+    $parts[] = $message;
+
+    container('logger')->log(Logger::DEBUG, implode(' ', $parts));
 }
 
 /**

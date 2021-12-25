@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Robert2\API\Config;
 
+use Monolog\Logger;
+
 define('USE_SSL', isset($_SERVER['HTTPS']) ? (bool)$_SERVER['HTTPS'] : false);
 define('HOST_NAME', isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'localhost');
 
@@ -94,7 +96,7 @@ class Config
         ],
         'logger' => [
             'timezone' => 'Europe/Paris',
-            'level' => 'debug',
+            'level' => Logger::NOTICE,
             'max_files' => 10,
         ],
         'authorizedFileTypes' => [

@@ -45,7 +45,8 @@ trait Cache
 
         return $cache->get(
             $cacheKey,
-            function (CacheItemInterface $item) use ($callback, $entityCacheKey) {
+            function (CacheItemInterface $item) use ($callback, $entityCacheKey, $cacheKey) {
+                debug('Création de l\'entrée de cache de modèle `%s`.', $cacheKey);
                 $item->tag([$this->getModelCacheKey(), $entityCacheKey]);
                 return $callback($item);
             }
@@ -66,6 +67,7 @@ trait Cache
 
         // - Si pas de scope, on invalide toutes les entrées taggées avec ce modèle en particulier.
         if (empty($scopes)) {
+            debug('Invalidation de toutes les entrées de cache du modèle #%s.', $this->id);
             return $cache->invalidateTags([$entityCacheKey]);
         }
 
@@ -75,6 +77,7 @@ trait Cache
             },
             is_array($scopes) ? $scopes : [$scopes],
         );
+        debug('Invalidation de(s) l\'entrée(s) de cache de modèle `%s`.', implode('`,`', $cacheKeys));
 
         $success = true;
         foreach ($cacheKeys as $cacheKey) {
