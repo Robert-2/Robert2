@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Robert2\Tests;
 
 use Robert2\API\Config;
-use Illuminate\Database\Capsule\Manager as Capsule;
 
 final class ConfigTest extends ModelTestCase
 {
@@ -26,11 +25,5 @@ final class ConfigTest extends ModelTestCase
     {
         $result = Config\Config::getDbConfig();
         $this->assertCount(12, $result);
-    }
-
-    public function testGetCapsule()
-    {
-        $result = Config\Config::getCapsule();
-        $this->assertInstanceOf(Capsule::class, $result);
     }
 }

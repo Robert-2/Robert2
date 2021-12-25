@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace Robert2\API\Config;
 
-use Illuminate\Database\Capsule\Manager as Capsule;
-
 define('USE_SSL', isset($_SERVER['HTTPS']) ? (bool)$_SERVER['HTTPS'] : false);
 define('HOST_NAME', isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'localhost');
 
@@ -217,15 +215,6 @@ class Config
         }
 
         return $dbConfig;
-    }
-
-    public static function getCapsule(): Capsule
-    {
-        $capsule = new Capsule();
-        $capsule->addConnection(self::getDbConfig());
-        $capsule->bootEloquent();
-
-        return $capsule;
     }
 
     public static function getPDO(): \PDO

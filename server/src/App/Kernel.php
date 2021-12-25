@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace Robert2\API;
 
 use DI\ContainerBuilder;
+use Illuminate\Database\Capsule\Manager as Database;
+use Illuminate\Events\Dispatcher as EventDispatcher;
 use Psr\Container\ContainerInterface;
 use Robert2\API\Config\Config;
 
@@ -20,6 +22,7 @@ class Kernel
         }
 
         $this->initializeContainer();
+        $this->initializeDatabase();
 
         $this->booted = true;
 
@@ -55,5 +58,16 @@ class Kernel
         $container->set('settings', Config::getSettings());
 
         return $this->container = $container;
+    }
+
+    protected function initializeDatabase()
+    {
+        $database = new Database();
+
+        $database->addConnection(Config::getDbConfig());
+        $database->setEventDispatcher(new EventDispatcher());
+        $database->bootEloquent();
+
+        $this->container->set('database', $database);
     }
 }
