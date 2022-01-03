@@ -49,13 +49,13 @@ final class EventTest extends ModelTestCase
         $tomorrow = (new \Datetime('tomorrow'))->format('Y-m-d 23:59:59');
         Event::where('id', 3)->update(['start_date' => $today, 'end_date' => $tomorrow]);
 
-        // - La méthod `getAll` ne doit retourner que les événements dans l'année courante.
+        // - La méthode `getAll` ne doit retourner que les événements dans l'année courante.
         $results = array_map(
             function ($result) {
                 unset($result['created_at'], $result['updated_at']);
                 return $result;
             },
-            $this->model->getAll()->get()->toArray(),
+            $this->model->getAll()->get()->toArray()
         );
         $expected = [
             [
@@ -72,14 +72,14 @@ final class EventTest extends ModelTestCase
                 'is_billable' => false,
                 'is_return_inventory_done' => false,
                 'deleted_at' => null,
-            ]
+            ],
         ];
         $this->assertEquals($expected, $results);
     }
 
     public function testInPeriodScope(): void
     {
-        // - Récupére les événement de 2018
+        // - Récupère les événements de 2018
         $result = Event::inPeriod('2018-01-01', '2018-12-31')->get();
         $expected = [
             [
@@ -137,12 +137,12 @@ final class EventTest extends ModelTestCase
         $this->assertCount(3, $result);
         $this->assertEquals($expected, $result->toArray());
 
-        // - Récupére les événement de la fin décembre 2018.
+        // - Récupère les événements de la fin décembre 2018.
         $results = Event::inPeriod('2018-12-19', '2018-12-31')->get();
         $this->assertCount(1, $results);
         $this->assertEquals(2, $results[0]->id);
 
-        // - Récupére les événement d'une journée si un seul argument est passé.
+        // - Récupère les événements d'une journée si un seul argument est passé.
         $results = Event::inPeriod('2018-12-15')->get();
         $this->assertCount(1, $results);
         $this->assertEquals(3, $results[0]->id);
