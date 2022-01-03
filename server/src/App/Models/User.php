@@ -46,12 +46,12 @@ class User extends BaseModel
 
     public function Person()
     {
-        return $this->hasOne('Robert2\API\Models\Person');
+        return $this->hasOne(Person::class);
     }
 
     public function Settings()
     {
-        return $this->hasOne('Robert2\API\Models\UserSetting');
+        return $this->hasOne(UserSetting::class);
     }
 
     public function Events()
@@ -64,7 +64,7 @@ class User extends BaseModel
             'is_confirmed',
             'is_archived',
         ];
-        return $this->hasMany('Robert2\API\Models\Event')
+        return $this->hasMany(Event::class)
             ->select($selectFields)
             ->orderBy('start_date');
     }

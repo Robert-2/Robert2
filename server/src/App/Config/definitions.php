@@ -5,8 +5,8 @@ use Psr\Cache\CacheItemPoolInterface;
 use Psr\Container\ContainerInterface;
 use Robert2\API\Console\Command;
 use Robert2\API\Services;
-use Symfony\Component\Cache\Adapter\AbstractAdapter;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Symfony\Component\Cache\Adapter\TagAwareAdapter;
 use Symfony\Contracts\Cache\CacheInterface;
 
 return [
@@ -21,8 +21,10 @@ return [
         ]);
     },
 
-    'cache' => function (): AbstractAdapter {
-        return new FilesystemAdapter('core', 0, CACHE_FOLDER);
+    'cache' => function (): TagAwareAdapter {
+        return new TagAwareAdapter(
+            new FilesystemAdapter('core', 0, CACHE_FOLDER)
+        );
     },
 
     'console.commands' => DI\add([

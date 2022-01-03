@@ -21,25 +21,23 @@ export default {
         CalendarCaption,
     },
     data() {
-        let start = moment().subtract(2, 'days').startOf('day');
-        let end = moment().add(5, 'days').endOf('day');
-
-        const savedStart = localStorage.getItem('calendarStart');
-        const savedEnd = localStorage.getItem('calendarEnd');
-        if (savedStart && savedEnd) {
-            start = savedStart;
-            end = savedEnd;
-        }
-
         const isVisitor = this.$store.getters['auth/is']('visitor');
         const parkFilter = this.$route.query.park;
+
+        // - Intervalle affiché dans le calendrier.
+        let start = moment(localStorage.getItem('calendarStart'), 'YYYY-MM-DD HH:mm:ss');
+        let end = moment(localStorage.getItem('calendarEnd'), 'YYYY-MM-DD HH:mm:ss');
+        if (!start.isValid() || !end.isValid()) {
+            start = moment().subtract(2, 'days').startOf('day');
+            end = moment().add(5, 'days').endOf('day');
+        }
 
         return {
             help: 'page-calendar.help',
             error: null,
             isLoading: false,
-            fetchStart: moment().subtract(8, 'days').startOf('day'),
-            fetchEnd: moment().add(1, 'months').endOf('month'),
+            fetchStart: moment(start).subtract(8, 'days').startOf('day'),
+            fetchEnd: moment(end).add(1, 'months').endOf('month'),
             isModalOpened: false,
             hasMissingMaterialFilter: false,
             parkId: parkFilter ? Number.parseInt(parkFilter, 10) : null,
@@ -117,7 +115,6 @@ export default {
                 return;
             }
 
-            const url = `${this.$route.meta.resource}/${item.id}`;
             const itemEnd = moment(item.end);
             if (itemEnd.hour() === 0) {
                 itemEnd.subtract(1, 'day').endOf('day');
@@ -129,7 +126,7 @@ export default {
 
             this.error = null;
             this.isLoading = true;
-            this.$http.put(url, data)
+            this.$http.put(`${this.$route.meta.resource}/${item.id}`, data)
                 .then(() => {
                     this.isLoading = false;
                     this.help = { type: 'success', text: 'page-calendar.event-saved' };
@@ -156,8 +153,7 @@ export default {
 
                 this.error = null;
                 this.isLoading = true;
-                const url = `${this.$route.meta.resource}/${item.id}`;
-                this.$http.delete(url).then(() => {
+                this.$http.delete(`${this.$route.meta.resource}/${item.id}`).then(() => {
                     callback(item);
                 });
             });
@@ -196,11 +192,11 @@ export default {
 
         onRangeChanged(newPeriod) {
             const dates = Object.fromEntries(['start', 'end'].map(
-                (type) => [type, newPeriod[type].getTime()],
+                (type) => [type, moment(newPeriod[type])],
             ));
 
-            localStorage.setItem('calendarStart', dates.start);
-            localStorage.setItem('calendarEnd', dates.end);
+            localStorage.setItem('calendarStart', dates.start.format('YYYY-MM-DD HH:mm:ss'));
+            localStorage.setItem('calendarEnd', dates.end.format('YYYY-MM-DD HH:mm:ss'));
             this.$refs.Header.changePeriod(dates);
 
             let needFetch = false;

@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\QueryException;
 use Robert2\API\Validation\Validator as V;
 use Robert2\API\Errors\ValidationException;
@@ -33,14 +32,14 @@ class Category extends BaseModel
 
     public function SubCategories()
     {
-        return $this->hasMany('Robert2\API\Models\SubCategory')
+        return $this->hasMany(SubCategory::class)
             ->select(['id', 'name', 'category_id'])
             ->orderBy('name');
     }
 
     public function Materials()
     {
-        return $this->hasMany('Robert2\API\Models\Material')->select([
+        return $this->hasMany(Material::class)->select([
             'id',
             'name',
             'description',
@@ -55,8 +54,8 @@ class Category extends BaseModel
 
     public function Attributes()
     {
-        return $this->belongsToMany('Robert2\API\Models\Attribute', 'attribute_categories')
-            ->using('Robert2\API\Models\AttributeCategoriesPivot')
+        return $this->belongsToMany(Attribute::class, 'attribute_categories')
+            ->using(AttributeCategoriesPivot::class)
             ->select(['attributes.id', 'attributes.name', 'attributes.type', 'attributes.unit']);
     }
 

@@ -17,7 +17,7 @@ final class Logger
     private $settings = [
         'timezone' => null,
         'max_files' => 5,
-        'level' => \Monolog\Logger::DEBUG,
+        'level' => \Monolog\Logger::NOTICE,
     ];
 
     /**
@@ -35,9 +35,11 @@ final class Logger
             }
         }
 
-        $levels = array_keys(\Monolog\Logger::getLevels());
-        if (!in_array($this->settings['level'], $levels)) {
-            $this->settings['level'] = \Monolog\Logger::DEBUG;
+        if (!is_numeric($this->settings['level'])) {
+            $levels = array_keys(\Monolog\Logger::getLevels());
+            if (!in_array(strtoupper($this->settings['level']), $levels)) {
+                $this->settings['level'] = \Monolog\Logger::NOTICE;
+            }
         }
 
         $this->globalLogger = $this->createLogger('app');

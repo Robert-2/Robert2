@@ -41,12 +41,12 @@ class Company extends BaseModel
 
     public function Persons()
     {
-        return $this->hasMany('Robert2\API\Models\Person');
+        return $this->hasMany(Person::class);
     }
 
     public function Country()
     {
-        return $this->belongsTo('Robert2\API\Models\Country');
+        return $this->belongsTo(Country::class);
     }
 
     // ——————————————————————————————————————————————————————

@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Respect\Validation\Exceptions\NestedValidationException;
-use Robert2\API\Config\Config;
 use Robert2\API\Errors\ValidationException;
 
 abstract class BaseModel extends Model
@@ -33,13 +32,6 @@ abstract class BaseModel extends Model
     public $validation;
 
     const EXTRA_CHARS = "-_.' ÇçàÀâÂäÄåÅèÈéÉêÊëËíÍìÌîÎïÏòÒóÓôÔöÖðÐõÕøØúÚùÙûÛüÜýÝÿŸŷŶøØæÆœŒñÑßÞ";
-
-    public function __construct(array $attributes = [])
-    {
-        Config::getCapsule();
-
-        parent::__construct($attributes);
-    }
 
     // ——————————————————————————————————————————————————————
     // —

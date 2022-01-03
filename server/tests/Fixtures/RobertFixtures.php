@@ -31,10 +31,10 @@ class RobertFixtures
     {
         $dbConfig = Config\Config::getDbConfig();
 
-        echo sprintf("Drop and re-create database '%s'...", $dbConfig['testDatabase']);
+        echo sprintf("Drop and re-create database `%s`...", $dbConfig['testDatabase']);
 
         $sqlRecreate = sprintf(
-            'DROP DATABASE IF EXISTS %1$s; CREATE DATABASE %1$s;',
+            'DROP DATABASE IF EXISTS `%1$s`; CREATE DATABASE `%1$s`;',
             $dbConfig['testDatabase']
         );
 
@@ -84,7 +84,7 @@ class RobertFixtures
         $dbConfig = Config\Config::getDbConfig(['noCharset' => true]);
 
         echo sprintf(
-            "Dumping test database '%s'...\n",
+            "Dumping test database `%s`...\n",
             $dbConfig['testDatabase']
         );
 
@@ -106,7 +106,7 @@ class RobertFixtures
 
         echo "Optimizing dump file (Memory engine, varchar, etc.)...\n";
 
-        $dumpContent  = sprintf("USE %s;\n", $dbConfig['testDatabase']);
+        $dumpContent  = sprintf("USE `%s`;\n", $dbConfig['testDatabase']);
         $dumpContent .= file_get_contents($dumpFile);
 
         $prefixedTable = sprintf('CREATE TABLE `%s`.', $dbConfig['testDatabase']);
