@@ -170,6 +170,13 @@ function normalizePhone(string $phone): string
     return preg_replace('/ /', '', $phone);
 }
 
+/**
+ * Permet de normaliser une chaîne en caractères alphanumériques.
+ *
+ * @param string $string La chaîne à normaliser.
+ *
+ * @return string La chaîne normalisée en caractères alphanumériques.
+ */
 function alphanumericalize(string $string): string
 {
     return (new Cocur\Slugify\Slugify())
