@@ -18,11 +18,12 @@ type GetAllRaw = { paginated: false };
 // - Functions
 //
 
+/* eslint-disable func-style */
 async function all(params: GetAllRaw): Promise<Category[]>;
 async function all(params: GetAllPaginated): Promise<PaginatedData<Category[]>>;
-// eslint-disable-next-line func-style
 async function all(params: GetAllPaginated | GetAllRaw): Promise<unknown> {
     return (await requester.get('categories', { params })).data;
 }
+/* eslint-enable func-style */
 
 export default { all };

@@ -1,4 +1,4 @@
-/* eslint-disable babel/camelcase */
+/* eslint-disable @typescript-eslint/naming-convention */
 
 import requester from '@/globals/requester';
 
@@ -54,12 +54,13 @@ type GetAllRaw = GetAllParams & { paginated: false };
 // - Functions
 //
 
+/* eslint-disable func-style */
 async function all(params: GetAllRaw): Promise<Material[]>;
 async function all(params: GetAllPaginated): Promise<PaginatedData<Material[]>>;
-// eslint-disable-next-line func-style
 async function all(params: GetAllPaginated | GetAllRaw): Promise<unknown> {
     return (await requester.get('materials', { params })).data;
 }
+/* eslint-enable func-style */
 
 const allWhileEvent = async (eventId: number): Promise<Material[]> => {
     if (!eventId) {
@@ -69,5 +70,3 @@ const allWhileEvent = async (eventId: number): Promise<Material[]> => {
 };
 
 export default { all, allWhileEvent };
-
-/* eslint-enable babel/camelcase */

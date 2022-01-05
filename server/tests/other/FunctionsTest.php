@@ -47,6 +47,15 @@ final class FunctionsTest extends TestCase
         $this->assertEquals('0123456789', $result);
     }
 
+    public function testAlphanumericalize(): void
+    {
+        $result = alphanumericalize('What a Test, dude!');
+        $this->assertEquals('what-a-test-dude', $result);
+
+        $result = alphanumericalize('MySuperClass');
+        $this->assertEquals('mysuperclass', $result);
+    }
+
     public function testSplitPeriods(): void
     {
         $exec = function ($sets) {

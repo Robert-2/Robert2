@@ -32,28 +32,21 @@
             <div class="Materials__filters">
                 <MaterialsFilters baseRoute="/materials" @change="refreshTableAndPagination" />
                 <div class="Materials__quantities-date">
+                    <Datepicker
+                        v-model="periodForQuantities"
+                        class="Materials__quantities-date__input"
+                        isRange
+                        :placeholder="$t('page-materials.display-quantities-at-date')"
+                    />
                     <button
-                        v-if="dateForQuantities === null"
-                        class="Materials__quantities-date__button"
-                        @click="showQuantityAtDateModal"
+                        v-if="periodForQuantities"
+                        type="button"
+                        class="Materials__quantities-date__clear-button warning"
+                        @click="removeDateForQuantities"
                     >
-                        {{ $t('page-materials.display-quantities-at-date') }}
+                        <i class="fas fa-backspace Materials__quantities-date__clear-button__icon" />
+                        {{ isSingleDayPeriodForQuantities ? $t('reset-date') : $t('reset-period') }}
                     </button>
-                    <div v-else class="Materials__quantities-date__displayed">
-                        <p class="Materials__quantities-date__label">
-                            {{
-                                $t('page-materials.remaining-quantities-on-date', {
-                                    date: dateForQuantities.format('LL'),
-                                })
-                            }}
-                        </p>
-                        <button
-                            class="Materials__quantities-date__button warning"
-                            @click="removeDateForQuantities"
-                        >
-                            {{ $t('reset-date') }}
-                        </button>
-                    </div>
                 </div>
             </div>
             <v-server-table

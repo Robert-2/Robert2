@@ -160,8 +160,32 @@ final class EventDataTest extends ModelTestCase
         $result = $this->EventData->getMaterialBySubCategories();
         $expected = [
             [
+                'id' => 4,
+                'name' => 'dimmers',
+                'category' => 'light',
+                'materials' => [
+                    'SDS-6-01' => [
+                        'reference' => 'SDS-6-01',
+                        'name' => 'Showtec SDS-6',
+                        'stockQuantity' => 2,
+                        'attributes' => [
+                            ['id' => 4, 'name' => 'Conforme', 'type' => 'boolean', 'value' => true, 'unit' => null],
+                            ['id' => 3, 'name' => 'Puissance', 'type' => 'integer', 'value' => 60, 'unit' => 'W'],
+                            ['id' => 1, 'name' => 'Poids', 'type' => 'float', 'value' => 3.15, 'unit' => 'kg'],
+                        ],
+                        'park' => 'default',
+                        'quantity' => 1,
+                        'rentalPrice' => 15.95,
+                        'replacementPrice' => 59.0,
+                        'total' => 15.95,
+                        'totalReplacementPrice' => 59.0,
+                    ],
+                ],
+            ],
+            [
                 'id' => 1,
                 'name' => 'mixers',
+                'category' => 'sound',
                 'materials' => [
                     'CL3' => [
                         'reference' => 'CL3',
@@ -184,6 +208,7 @@ final class EventDataTest extends ModelTestCase
             [
                 'id' => 2,
                 'name' => 'processors',
+                'category' => 'sound',
                 'materials' => [
                     'DBXPA2' => [
                         'reference' => 'DBXPA2',
@@ -199,28 +224,6 @@ final class EventDataTest extends ModelTestCase
                         'replacementPrice' => 349.9,
                         'total' => 25.5,
                         'totalReplacementPrice' => 349.9,
-                    ],
-                ],
-            ],
-            [
-                'id' => 4,
-                'name' => 'dimmers',
-                'materials' => [
-                    'SDS-6-01' => [
-                        'reference' => 'SDS-6-01',
-                        'name' => 'Showtec SDS-6',
-                        'stockQuantity' => 2,
-                        'attributes' => [
-                            ['id' => 4, 'name' => 'Conforme', 'type' => 'boolean', 'value' => true, 'unit' => null],
-                            ['id' => 3, 'name' => 'Puissance', 'type' => 'integer', 'value' => 60, 'unit' => 'W'],
-                            ['id' => 1, 'name' => 'Poids', 'type' => 'float', 'value' => 3.15, 'unit' => 'kg'],
-                        ],
-                        'park' => 'default',
-                        'quantity' => 1,
-                        'rentalPrice' => 15.95,
-                        'replacementPrice' => 59.0,
-                        'total' => 15.95,
-                        'totalReplacementPrice' => 59.0,
                     ],
                 ],
             ],
@@ -538,8 +541,50 @@ final class EventDataTest extends ModelTestCase
             ],
             'materialList' => [
                 [
+                    'id' => 4,
+                    'name' => "dimmers",
+                    'category' => 'light',
+                    'materials' => [
+                        'SDS-6-01' => [
+                            'reference' => 'SDS-6-01',
+                            'name' => 'Showtec SDS-6',
+                            'stockQuantity' => 2,
+                            'attributes' => [
+                                [
+                                    'id' => 4,
+                                    'name' => 'Conforme',
+                                    'type' => 'boolean',
+                                    'value' => true,
+                                    'unit' => null,
+                                ],
+                                [
+                                    'id' => 3,
+                                    'name' => 'Puissance',
+                                    'type' => 'integer',
+                                    'value' => 60,
+                                    'unit' => 'W',
+                                ],
+                                [
+                                    'id' => 1,
+                                    'name' => 'Poids',
+                                    'type' => 'float',
+                                    'value' => 3.15,
+                                    'unit' => 'kg',
+                                ],
+                            ],
+                            'park' => 'default',
+                            'quantity' => 1,
+                            'rentalPrice' => 15.95,
+                            'replacementPrice' => 59.0,
+                            'total' => 15.95,
+                            'totalReplacementPrice' => 59.0,
+                        ],
+                    ],
+                ],
+                [
                     'id' => 1,
                     'name' => "mixers",
+                    'category' => 'sound',
                     'materials' => [
                         'CL3' => [
                             'reference' => 'CL3',
@@ -583,6 +628,7 @@ final class EventDataTest extends ModelTestCase
                 [
                     'id' => 2,
                     'name' => "processors",
+                    'category' => 'sound',
                     'materials' => [
                         'DBXPA2' => [
                             'reference' => 'DBXPA2',
@@ -610,46 +656,6 @@ final class EventDataTest extends ModelTestCase
                             'replacementPrice' => 349.9,
                             'total' => 25.5,
                             'totalReplacementPrice' => 349.9,
-                        ],
-                    ],
-                ],
-                [
-                    'id' => 4,
-                    'name' => "dimmers",
-                    'materials' => [
-                        'SDS-6-01' => [
-                            'reference' => 'SDS-6-01',
-                            'name' => 'Showtec SDS-6',
-                            'stockQuantity' => 2,
-                            'attributes' => [
-                                [
-                                    'id' => 4,
-                                    'name' => 'Conforme',
-                                    'type' => 'boolean',
-                                    'value' => true,
-                                    'unit' => null,
-                                ],
-                                [
-                                    'id' => 3,
-                                    'name' => 'Puissance',
-                                    'type' => 'integer',
-                                    'value' => 60,
-                                    'unit' => 'W',
-                                ],
-                                [
-                                    'id' => 1,
-                                    'name' => 'Poids',
-                                    'type' => 'float',
-                                    'value' => 3.15,
-                                    'unit' => 'kg',
-                                ],
-                            ],
-                            'park' => 'default',
-                            'quantity' => 1,
-                            'rentalPrice' => 15.95,
-                            'replacementPrice' => 59.0,
-                            'total' => 15.95,
-                            'totalReplacementPrice' => 59.0,
                         ],
                     ],
                 ],

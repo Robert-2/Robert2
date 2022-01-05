@@ -1,4 +1,4 @@
-/* eslint-disable babel/quotes */
+/* eslint-disable quotes */
 
 export default {
     'hello-pseudo': "Bonjour {pseudo}\u00a0!",
@@ -51,6 +51,7 @@ export default {
     'locked': "verrouillé",
     'clear-filters': "Réinitialiser les filtres",
     'optional': "Optionnel",
+    'and-n-others': ["et {count} autre", "et {count} autres"],
 
     'save': "Sauvegarder",
     'save-draft': "Sauvegarder le brouillon",
@@ -58,8 +59,8 @@ export default {
     'saving': "Sauvegarde...",
     'saved': "{entity} sauvegardé.",
     'deleting': "Suppression...",
-    'choose-date': "Choisir cette date",
     'reset-date': "Réinitialiser la date",
+    'reset-period': "Réinitialiser la période",
     'actions': "Actions",
     'informations': "Informations",
     'connexion-infos': "Informations de connexion",
@@ -170,7 +171,7 @@ export default {
     'print-summary': "Imprimer ce récapitulatif",
     'open': "Ouvrir",
     'in': "À",
-    'open-in-openstreetmap': "Rechercher dans OpenStreetMap",
+    'open-in-google-maps': "Ouvrir dans Google Maps",
     'on-date': "Le {date}",
     'from-date-to-date': "du\u00a0{from} au\u00a0{to}",
     'or': "ou",
@@ -283,6 +284,7 @@ export default {
     'use-these-materials': "Utiliser ce matériel",
     'choose-another-one': "En choisir un autre",
     'event-materials': "Matériel de l'événement «\u00a0{name}\u00a0»",
+    'created-by': "Créé par",
 
     'event': "Événement",
     'user': "Utilisateur",

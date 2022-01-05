@@ -1,14 +1,26 @@
 [
     {
-        "key": "event_summary_material_display_mode",
+        "key": "eventSummary.materialDisplayMode",
         "value": "sub-categories"
     },
     {
-        "key": "event_summary_custom_text_title",
+        "key": "eventSummary.customText.title",
         "value": "Contrat"
     },
     {
-        "key": "event_summary_custom_text",
+        "key": "eventSummary.customText.content",
         "value": "Un petit contrat de test."
+    },
+    {
+        "key": "eventSummary.showLegalNumbers",
+        "value": "1"
+    },
+    {
+        "key": "calendar.event.showLocation",
+        "value": "1"
+    },
+    {
+        "key": "calendar.event.showBorrower",
+        "value": "0"
     }
 ]

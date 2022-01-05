@@ -55,6 +55,12 @@ final class EventsTest extends ApiTestCase
                             'full_name' => 'Client Benef',
                             'country' => null,
                             'company' => null,
+                            'reference' => null,
+                            'phone' => '+33123456789',
+                            'company_id' => null,
+                            'street' => '156 bis, avenue des tests poussés',
+                            'postal_code' => '88080',
+                            'locality' => 'Wazzaville',
                             'pivot' => [
                                 'event_id' => 1,
                                 'person_id' => 3,
@@ -127,6 +133,12 @@ final class EventsTest extends ApiTestCase
                             'full_name' => 'Client Benef',
                             'country' => null,
                             'company' => null,
+                            'reference' => null,
+                            'phone' => '+33123456789',
+                            'company_id' => null,
+                            'street' => '156 bis, avenue des tests poussés',
+                            'postal_code' => '88080',
+                            'locality' => 'Wazzaville',
                             'pivot' => [
                                 'event_id' => 2,
                                 'person_id' => 3,
@@ -445,7 +457,6 @@ final class EventsTest extends ApiTestCase
     {
         // - Test avec des données simples
         $data = [
-            'user_id' => 1,
             'title' => "Un nouvel événement",
             'description' => null,
             'start_date' => '2019-09-01 00:00:00',
@@ -458,6 +469,7 @@ final class EventsTest extends ApiTestCase
         $this->assertStatusCode(SUCCESS_CREATED);
         $response = $this->_getResponseAsArray();
         $this->assertEquals(7, $response['id']);
+        $this->assertEquals(1, $response['user_id']);
         $this->assertEquals("Un nouvel événement", $response['title']);
         $this->assertEmpty($response['beneficiaries']);
         $this->assertEmpty($response['technicians']);
@@ -466,6 +478,7 @@ final class EventsTest extends ApiTestCase
         // - Test avec des données qui contiennent les sous-entités (hasMany)
         $dataWithChildren = array_merge($data, [
             'title' => "Encore un événement",
+            'user_id' => 2,
             'beneficiaries' => [3],
             'technicians' => [
                 [
@@ -491,6 +504,7 @@ final class EventsTest extends ApiTestCase
         $this->assertStatusCode(SUCCESS_CREATED);
         $response = $this->_getResponseAsArray();
         $this->assertEquals(8, $response['id']);
+        $this->assertEquals(2, $response['user_id']);
         $this->assertEquals("Encore un événement", $response['title']);
         $this->assertCount(1, $response['beneficiaries']);
         $this->assertCount(2, $response['technicians']);
@@ -1304,6 +1318,12 @@ final class EventsTest extends ApiTestCase
                             'full_name' => 'Client Benef',
                             'country' => null,
                             'company' => null,
+                            'reference' => null,
+                            'phone' => '+33123456789',
+                            'company_id' => null,
+                            'street' => '156 bis, avenue des tests poussés',
+                            'postal_code' => '88080',
+                            'locality' => 'Wazzaville',
                             'pivot' => [
                                 'event_id' => '1',
                                 'person_id' => '3'
@@ -1526,6 +1546,12 @@ final class EventsTest extends ApiTestCase
                             'full_name' => 'Client Benef',
                             'country' => null,
                             'company' => null,
+                            'reference' => null,
+                            'phone' => '+33123456789',
+                            'company_id' => null,
+                            'street' => '156 bis, avenue des tests poussés',
+                            'postal_code' => '88080',
+                            'locality' => 'Wazzaville',
                             'pivot' => [
                                 'event_id' => '2',
                                 'person_id' => '3'

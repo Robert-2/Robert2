@@ -4,6 +4,20 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.17.0 (2022-01-05)
+
+- Enlève la limite de caractères du champ "lieu" des événements (#300).
+- Google Maps est maintenant utilisé à la place de OpenStreetMap pour ouvrir les adresses (#300).
+- Utilise une période plutôt qu'une simple date pour le calcul des quantités disponibles du matériel (#301).
+- Il est maintenant possible de choisir ce qui est affiché ou non dans les événements sur le calendrier (#302).
+- Affiche le nom de l'utilisateur qui a créé l'événement dans la fenêtre d'événement.
+- Supprime automatiquement la sous-catégorie quand la catégorie change lors de la sauvegarde du matériel (#306).
+- Permet la création des inventaires de retour dès le premier jour des événements, sans pouvoir les terminer avant leur dernier jour (#307).
+- Ajoute un paramètre permettant d'afficher ou non les numéros légaux sur les fiches de sortie (#310).
+- Ajoute une colonne vide "Qté retour" dans la liste du matériel des fiches de sortie (#313).
+- Trie les listes de matériel imprimées selon la catégorie (en affichant leur nom) en plus des sous-catégories (#315).
+- Améliore les performances du chargement des événements du calendrier (de ~4 secondes à ~150 millisecondes sur un calendrier rempli) (#32).
+
 ## 0.16.2 (2021-11-04)
 
 - Corrige la normalisation des horaires d'assignation des techniciens.

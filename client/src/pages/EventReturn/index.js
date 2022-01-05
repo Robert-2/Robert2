@@ -23,12 +23,17 @@ export default {
                 materials: [],
                 beneficiaries: [],
             },
+            startDate: null,
             endDate: null,
             quantities: [],
         };
     },
     computed: {
-        isPast() {
+        hasStarted() {
+            return this.startDate ? this.startDate.isSameOrBefore(new Date(), 'day') : false;
+        },
+
+        hasEnded() {
             return this.endDate ? this.endDate.isSameOrBefore(new Date(), 'day') : false;
         },
 
@@ -70,6 +75,7 @@ export default {
             this.isTerminating = false;
 
             this.event = data;
+            this.startDate = moment(data.start_date);
             this.endDate = moment(data.end_date);
 
             this.initQuantities();

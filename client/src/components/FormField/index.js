@@ -20,24 +20,27 @@ const ALLOWED_TYPES = [
 export default defineComponent({
     name: 'FormField',
     props: {
-        label: String,
-        name: String,
+        label: { type: String, default: null },
+        name: { type: String, default: null },
         type: {
             validator: (value) => ALLOWED_TYPES.includes(value),
             default: 'text',
         },
         required: { type: Boolean, default: false },
         disabled: { type: Boolean, default: false },
-        disabledReason: String,
+        disabledReason: { type: String, default: null },
         placeholder: { type: [String, Boolean], default: false },
-        value: [String, Number, Date, Array, Boolean],
-        step: Number,
-        min: Number,
-        max: Number,
-        addon: String,
-        options: Array,
-        errors: Array,
-        datepickerOptions: Object,
+        value: {
+            type: [String, Number, Date, Array, Boolean],
+            default: '',
+        },
+        step: { type: Number, default: 0.01 },
+        min: { type: Number, default: null },
+        max: { type: Number, default: null },
+        addon: { type: String, default: null },
+        options: { type: Array, default: () => [] },
+        errors: { type: Array, default: null },
+        datepickerOptions: { type: Object, default: null },
     },
     data() {
         return {
@@ -190,6 +193,12 @@ export default defineComponent({
                             locked={disabled}
                             lockedReason={disabledReason}
                             onInput={handleSwitchChange}
+                        />
+                        <input
+                            type="hidden"
+                            name={name}
+                            value={value ? '1' : '0'}
+                            readonly
                         />
                     </div>
                 )}

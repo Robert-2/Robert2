@@ -322,8 +322,6 @@ export default [
         name: 'addPark',
         component: Park,
         meta: {
-            resource: 'parks',
-            title: 'page-parks.add',
             requiresAuth: true,
             requiresGroups: ['admin'],
         },
@@ -333,8 +331,6 @@ export default [
         name: 'editPark',
         component: Park,
         meta: {
-            resource: 'parks',
-            title: 'page-parks.edit',
             requiresAuth: true,
             requiresGroups: ['admin'],
         },

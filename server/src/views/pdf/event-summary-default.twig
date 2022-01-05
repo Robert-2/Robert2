@@ -8,8 +8,8 @@
         <td class="half">
             {{ include('blocks/company-address.twig', {
                 company: company,
-                withLegalNumbers: false,
-                withLogo: true,
+                showLegalNumbers: showLegalNumbers,
+                showLogo: true,
             }) }}
         </td>
         <td class="half">
@@ -124,18 +124,19 @@
             <th>{{ translate('designation') }}</th>
             <th>{{ translate('qty') }}</th>
             <th>{{ translate('replacement-value') }}</th>
-            <th>{{ translate('total-replacement-value') }}</th>
+            <th>{{ translate('totalReplacementValue') }}</th>
+            <th>{{ translate('qtyReturned') }}</th>
         </tr>
     </thead>
     <tbody>
         {% if materialDisplayMode == 'categories' or materialDisplayMode == 'sub-categories' %}
         {% for subCategory in materialList %}
             <tr>
-                <td class="section-title" colspan="5">
-                    {% if subCategory['name'] is null %}
-                    {{ translate('otherMaterials') }}
+                <td class="section-title" colspan="6">
+                    {% if subCategory['name'] is not empty %}
+                    {{ subCategory['category'] }} - {{ subCategory['name'] }}
                     {% else %}
-                    {{ subCategory['name'] }}
+                    {{ subCategory['category'] }} - {{ translate('otherMaterials') }}
                     {% endif %}
                 </td>
             </tr>
@@ -146,7 +147,7 @@
         {% elseif materialDisplayMode == 'parks' %}
         {% for park in materialList %}
             <tr>
-                <td class="section-title" colspan="5">
+                <td class="section-title" colspan="6">
                     {% if park['name'] is not empty %}
                         {{ park['name'] }}
                     {% else %}
@@ -168,11 +169,11 @@
 
 
 <table class="layout-table">
-    {% if customText is not empty %}
+    {% if customText and customText['content'] is not empty %}
     <tr>
         <td style="padding: 3mm 0;" colspan="2">
-            <h2>{{ customTextTitle }}</h2>
-            <p>{{ customText|nl2br }}</p>
+            {% if customText['title'] is not empty %}<h2>{{ customText['title'] }}</h2>{% endif %}
+            <p>{{ customText['content']|nl2br }}</p>
         </td>
     </tr>
     {% endif %}

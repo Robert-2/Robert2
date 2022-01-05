@@ -1,4 +1,4 @@
-/* eslint-disable babel/camelcase */
+/* eslint-disable @typescript-eslint/naming-convention */
 
 import type { Country } from '@/stores/api/countries';
 import type { Company } from '@/stores/api/companies';
@@ -33,5 +33,3 @@ export type Person = {
 export type PersonWithEventPivot = Person & {
     pivot: { event_id: number, person_id: number },
 };
-
-/* eslint-enable babel/camelcase */

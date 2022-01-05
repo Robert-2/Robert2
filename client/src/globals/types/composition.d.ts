@@ -15,7 +15,10 @@ module '@vue/composition-api' {
     // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
     type ComponentReturnType = Record<string, unknown> | Render | void;
 
-    export interface Component<Props, ReturnType extends ComponentReturnType = Render> {
+    export interface Component<
+        Props = Record<string, never>,
+        ReturnType extends ComponentReturnType = Render,
+    > {
         (props: Props & ImplicitProps, ctx: SetupContext): ReturnType;
         props?: ComponentPropsOptions<Omit<Props, `on${string}`>>;
         emits?: EmitsOptions;

@@ -1,5 +1,3 @@
-/* eslint-disable import/prefer-default-export */
-
 import isValidInteger from '@/utils/isValidInteger';
 
 import type { MaterialWithPivot } from '@/stores/api/materials';

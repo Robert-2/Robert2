@@ -10,6 +10,7 @@ use Robert2\API\Errors\ValidationException;
 use Robert2\API\Models\Event;
 use Robert2\API\Models\Material;
 use Robert2\API\Models\Park;
+use Robert2\API\Services\Auth;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
 use Slim\Http\ServerRequest as Request;
@@ -41,12 +42,7 @@ class EventController extends BaseController
             }
 
             $count = $query->count();
-
-            $results = $query
-                ->orderBy('start_date', 'desc')
-                ->limit(10)
-                ->get();
-
+            $results = $query->orderBy('start_date', 'desc')->limit(10)->get();
             return $response->withJson(['count' => $count, 'data' => $results]);
         }
 
@@ -55,37 +51,32 @@ class EventController extends BaseController
         $deleted = (bool)$request->getQueryParam('deleted', false);
         $withMaterials = (bool)$request->getQueryParam('with-materials', false);
 
-        $results = (new Event)
-            ->setSearchPeriod($startDate, $endDate)
-            ->getAll($deleted)
-            ->with('Beneficiaries:persons.id,first_name,last_name')
+        $query = Event::inPeriod($startDate, $endDate)
+            ->with('Beneficiaries')
             ->with('Technicians');
 
+        if ($deleted) {
+            $query->onlyTrashed();
+        }
+
         if ($withMaterials) {
-            $results->with(['Materials' => function ($q) {
+            $query->with(['Materials' => function ($q) {
                 $q->orderBy('name', 'asc');
             }]);
         }
 
-        $data = $results->get()->toArray();
+        $data = $query->get()
+            ->each->setAppends([
+                'has_missing_materials',
+                'has_not_returned_materials',
+            ])
+            ->toArray();
+
         $useMultipleParks = Park::count() > 1;
-        $today = (new \DateTime())->setTime(0, 0, 0);
         foreach ($data as $index => $event) {
-            $data[$index]['has_missing_materials'] = null;
-            $data[$index]['has_not_returned_materials'] = null;
-            $data[$index]['parks'] = $useMultipleParks ? Event::getParks($event['id']) : null;
-
-            if ($event['is_archived']) {
-                continue;
-            }
-
-            $eventEndDate = new \DateTime($event['end_date']);
-            if ($eventEndDate >= $today) {
-                $eventMissingMaterials = Event::getMissingMaterials($event['id']);
-                $data[$index]['has_missing_materials'] = !empty($eventMissingMaterials);
-            } elseif ($event['is_return_inventory_done']) {
-                $data[$index]['has_not_returned_materials'] = Event::hasNotReturnedMaterials($event['id']);
-            }
+            $data[$index]['parks'] = $useMultipleParks
+                ? Event::getParks($event['id'])
+                : null;
         }
 
         return $response->withJson(compact('data'));
@@ -98,41 +89,23 @@ class EventController extends BaseController
             throw new HttpNotFoundException($request);
         }
 
-        $eventData = $this->_getFormattedEvent($id);
-
-        $eventData['has_missing_materials'] = null;
-        $eventData['has_not_returned_materials'] = null;
-
-        $today = (new \DateTime())->setTime(0, 0, 0);
-        $eventEndDate = new \DateTime($eventData['end_date']);
-        if ($eventEndDate >= $today) {
-            $eventMissingMaterials = Event::getMissingMaterials($eventData['id']);
-            $eventData['has_missing_materials'] = !empty($eventMissingMaterials);
-        } elseif ($eventData['is_return_inventory_done']) {
-            $eventData['has_not_returned_materials'] = Event::hasNotReturnedMaterials($eventData['id']);
-        }
-
+        $eventData = $this->_getFormattedEvent($id, true);
         return $response->withJson($eventData);
     }
 
     public function getMissingMaterials(Request $request, Response $response): Response
     {
         $id = (int)$request->getAttribute('id');
-        if (!Event::staticExists($id)) {
-            throw new HttpNotFoundException($request);
-        }
-
-        $eventMissingMaterials = Event::getMissingMaterials($id);
-        if (empty($eventMissingMaterials)) {
-            return $response->withJson([]);
-        }
-
-        return $response->withJson($eventMissingMaterials);
+        $result = Event::findOrFail($id)->missingMaterials();
+        return $response->withJson($result ?: []);
     }
 
     public function create(Request $request, Response $response): Response
     {
         $postData = (array)$request->getParsedBody();
+        if (!isset($postData['user_id'])) {
+            $postData['user_id'] = Auth::user()->id;
+        }
         $id = $this->_saveEvent(null, $postData);
 
         return $response->withJson($this->_getFormattedEvent($id), SUCCESS_CREATED);
@@ -305,7 +278,7 @@ class EventController extends BaseController
         }
     }
 
-    protected function _getFormattedEvent(int $id): array
+    protected function _getFormattedEvent(int $id, bool $withDetails = false): array
     {
         $model = (new Event)
             ->with('User')
@@ -315,6 +288,13 @@ class EventController extends BaseController
             ->with('Bills')
             ->with('Estimates')
             ->find($id);
+
+        if ($withDetails) {
+            $model = $model->setAppends([
+                'has_missing_materials',
+                'has_not_returned_materials',
+            ]);
+        }
 
         $result = $model->toArray();
         if ($model->bills) {

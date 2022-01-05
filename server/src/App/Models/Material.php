@@ -65,26 +65,26 @@ class Material extends BaseModel
 
     public function Park()
     {
-        return $this->belongsTo('Robert2\API\Models\Park')
+        return $this->belongsTo(Park::class)
             ->select(['id', 'name']);
     }
 
     public function Category()
     {
-        return $this->belongsTo('Robert2\API\Models\Category')
+        return $this->belongsTo(Category::class)
             ->select(['id', 'name']);
     }
 
     public function SubCategory()
     {
-        return $this->belongsTo('Robert2\API\Models\SubCategory')
+        return $this->belongsTo(SubCategory::class)
             ->select(['id', 'name', 'category_id']);
     }
 
     public function Attributes()
     {
-        return $this->belongsToMany('Robert2\API\Models\Attribute', 'material_attributes')
-            ->using('Robert2\API\Models\MaterialAttributesPivot')
+        return $this->belongsToMany(Attribute::class, 'material_attributes')
+            ->using(MaterialAttributesPivot::class)
             ->withPivot('value')
             ->select(['attributes.id', 'attributes.name', 'attributes.type', 'attributes.unit']);
     }
@@ -101,8 +101,8 @@ class Material extends BaseModel
             'is_archived',
             'is_return_inventory_done',
         ];
-        return $this->belongsToMany('Robert2\API\Models\Event', 'event_materials')
-            ->using('Robert2\API\Models\EventMaterial')
+        return $this->belongsToMany(Event::class, 'event_materials')
+            ->using(EventMaterial::class)
             ->withPivot('id', 'quantity')
             ->select($selectFields)
             ->orderBy('start_date', 'desc');
@@ -110,7 +110,7 @@ class Material extends BaseModel
 
     public function Documents()
     {
-        return $this->hasMany('Robert2\API\Models\Document')
+        return $this->hasMany(Document::class)
             ->orderBy('name', 'asc')
             ->select(['id', 'name', 'type', 'size']);
     }
@@ -262,13 +262,11 @@ class Material extends BaseModel
 
         $events = [];
         if (!empty($start) || !empty($end)) {
-            $events = (new Event)->setSearchPeriod($start, $end)->getAll();
-
+            $query = Event::inPeriod($start, $end);
             if ($exceptEventId) {
-                $events = $events->where('id', '!=', $exceptEventId);
+                $query = $query->where('id', '!=', $exceptEventId);
             }
-
-            $events = $events->with('Materials')->get()->toArray();
+            $events = $query->with('Materials')->get()->toArray();
         }
 
         $periods = splitPeriods($events);

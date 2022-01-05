@@ -42,22 +42,22 @@ class Park extends BaseModel
 
     public function Materials()
     {
-        return $this->hasMany('Robert2\API\Models\Material');
+        return $this->hasMany(Material::class);
     }
 
     public function Person()
     {
-        return $this->belongsTo('Robert2\API\Models\Person');
+        return $this->belongsTo(Person::class);
     }
 
     public function Company()
     {
-        return $this->belongsTo('Robert2\API\Models\Company');
+        return $this->belongsTo(Company::class);
     }
 
     public function Country()
     {
-        return $this->belongsTo('Robert2\API\Models\Country')
+        return $this->belongsTo(Country::class)
             ->select(['id', 'name', 'code']);
     }
 
@@ -136,7 +136,7 @@ class Park extends BaseModel
             return false;
         }
 
-        $ongoingEvents = Event::getOngoing()
+        $ongoingEvents = Event::inPeriod('today')
             ->with('Materials')
             ->get();
 

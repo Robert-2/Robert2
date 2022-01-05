@@ -100,8 +100,14 @@ Vue.use(Toasted, {
     },
 });
 
-store.dispatch('auth/fetch').then(() => {
-    /* eslint-disable no-new */
+const boot = async () => {
+    await store.dispatch('auth/fetch');
+
+    if (store.getters['auth/isLogged']) {
+        await store.dispatch('settings/fetch');
+    }
+
+    // eslint-disable-next-line no-new
     new Vue({
         el: '#app',
         store,
@@ -114,4 +120,5 @@ store.dispatch('auth/fetch').then(() => {
             );
         },
     });
-});
+};
+boot();

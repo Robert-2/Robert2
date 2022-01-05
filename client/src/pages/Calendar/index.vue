@@ -15,7 +15,7 @@
             <Timeline
                 ref="Timeline"
                 class="Calendar__timeline"
-                :items="events"
+                :items="filteredEvents"
                 :options="timelineOptions"
                 @itemOver="onItemOver"
                 @itemOut="onItemOut"

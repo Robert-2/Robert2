@@ -93,11 +93,22 @@ class MaterialController extends BaseController
             $results = ['data' => $model->get()->toArray()];
         }
 
+        // - Filtre des quantités pour une date ou une période donnée
+        if (!is_array($dateForQuantities)) {
+            $dateForQuantities = array_fill_keys(['start', 'end'], $dateForQuantities);
+        }
+        if (empty($dateForQuantities['start']) ||
+            !is_string($dateForQuantities['start']) ||
+            empty($dateForQuantities['end']) ||
+            !is_string($dateForQuantities['end'])
+        ) {
+            $dateForQuantities = array_fill_keys(['start', 'end'], null);
+        }
+
         $results['data'] = Material::recalcQuantitiesForPeriod(
             $results['data'],
-            $dateForQuantities,
-            $dateForQuantities,
-            null
+            $dateForQuantities['start'],
+            $dateForQuantities['end']
         );
 
         if (!$paginated) {
@@ -361,34 +372,22 @@ class MaterialController extends BaseController
             throw new HttpNotFoundException($request);
         }
 
+        $collection = [];
         $useMultipleParks = Park::count() > 1;
+        foreach ($material->Events()->get() as $event) {
+            $event = $event->setAppends([
+                'has_missing_materials',
+                'has_not_returned_materials',
+            ]);
 
-        $data = [];
-        $today = (new \DateTime())->setTime(0, 0, 0);
-        foreach ($material->events as $event) {
-            $event['has_missing_materials'] = null;
-            $event['has_not_returned_materials'] = null;
-            $event['parks'] = null;
-
-            if ($useMultipleParks) {
-                $event['parks'] = Event::getParks($event['id']);
-            }
-
-            if ($event['is_archived']) {
-                $data[] = $event;
-                continue;
-            }
-
-            $eventEndDate = new \DateTime($event['end_date']);
-            if ($eventEndDate < $today && $event['is_return_inventory_done']) {
-                // TODO: ne mettre ce champ à true que si c'est LE matériel actuel ($id) qui n'a pas été retourné.
-                $event['has_not_returned_materials'] = Event::hasNotReturnedMaterials($event['id']);
-            }
-
-            $data[] = $event;
+            $collection[] = array_replace($event->toArray(), [
+                'parks' => $useMultipleParks
+                    ? Event::getParks($event['id'])
+                    : null
+            ]);
         }
 
-        return $response->withJson($data, SUCCESS_OK);
+        return $response->withJson($collection, SUCCESS_OK);
     }
 
     public function getPicture(Request $request, Response $response): Response

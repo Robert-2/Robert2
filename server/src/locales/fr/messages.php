@@ -2716,8 +2716,11 @@ return [
     "replacement-value"
     => "Val. Remp.",
 
-    "total-replacement-value"
+    "totalReplacementValue"
     => "Val. Remp. Totale",
+
+    "qtyReturned"
+    => "Qté Retour",
 
     "releaseSheet"
     => "Fiche de sortie",

@@ -8,8 +8,8 @@
         <td class="half">
             {{ include('blocks/company-address.twig', {
                 company: company,
-                withLegalNumbers: true,
-                withLogo: true,
+                showLegalNumbers: true,
+                showLogo: true,
             }) }}
         </td>
         <td class="half">
@@ -181,8 +181,8 @@
             <td class="half">
                 {{ include('blocks/company-address.twig', {
                     company: company,
-                    withLegalNumbers: false,
-                    withLogo: true,
+                    showLegalNumbers: false,
+                    showLogo: true,
                 }) }}
             </td>
             <td class="half">
@@ -213,10 +213,10 @@
         {% for subCategory in materialList %}
             <tr>
                 <td class="section-title" colspan="6">
-                    {% if subCategory['name'] is null %}
-                    {{ translate('otherMaterials') }}
+                    {% if subCategory['name'] is not empty %}
+                    {{ subCategory['category'] }} - {{ subCategory['name'] }}
                     {% else %}
-                    {{ subCategory['name'] }}
+                    {{ subCategory['category'] }} - {{ translate('otherMaterials') }}
                     {% endif %}
                 </td>
             </tr>

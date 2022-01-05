@@ -1,4 +1,5 @@
 import './index.scss';
+import getFormDataAsJson from '@/utils/getFormDataAsJson';
 import FormField from '@/components/FormField';
 
 const LIST_MODES = ['categories', 'sub-categories', 'parks', 'flat'];
@@ -7,9 +8,8 @@ const LIST_MODES = ['categories', 'sub-categories', 'parks', 'flat'];
 export default {
     name: 'EventSummarySettingsForm',
     props: {
-        settings: Object,
         isSaving: Boolean,
-        errors: Object,
+        errors: { type: Object, default: null },
     },
     data() {
         const initialListModeOptions = LIST_MODES.map((mode) => (
@@ -22,6 +22,10 @@ export default {
         };
     },
     computed: {
+        values() {
+            const { $store: { state: { settings } } } = this;
+            return settings.eventSummary;
+        },
         listModeOptions() {
             const parks = this.$store.state.parks.list;
 
@@ -36,15 +40,13 @@ export default {
     methods: {
         handleSubmit(e) {
             e.preventDefault();
-            const formData = new FormData(e.currentTarget);
-            const data = Object.fromEntries(formData);
-            this.$emit('save', data);
+            this.$emit('save', getFormDataAsJson(e.target));
         },
     },
     render() {
         const {
             $t: __,
-            settings,
+            values,
             listModeOptions,
             defaultListMode,
             handleSubmit,
@@ -55,14 +57,24 @@ export default {
         return (
             <form class="EventSummarySettingsForm" onSubmit={handleSubmit}>
                 <section class="EventSummarySettingsForm__section">
+                    <h3>{__('page-settings.event-summary.header')}</h3>
+                    <FormField
+                        type="switch"
+                        label="page-settings.event-summary.display-legal-numbers"
+                        name="eventSummary.showLegalNumbers"
+                        v-model={values.showLegalNumbers}
+                        errors={errors && errors['eventSummary.showLegalNumbers']}
+                    />
+                </section>
+                <section class="EventSummarySettingsForm__section">
                     <h3>{__('page-settings.event-summary.material-list')}</h3>
                     <FormField
                         type="select"
                         label="page-settings.event-summary.display-mode"
-                        name="event_summary_material_display_mode"
+                        name="eventSummary.materialDisplayMode"
                         options={listModeOptions}
-                        value={settings?.event_summary_material_display_mode || defaultListMode}
-                        errors={errors?.event_summary_material_display_mode}
+                        value={values.materialDisplayMode || defaultListMode}
+                        errors={errors && errors['eventSummary.materialDisplayMode']}
                     />
                 </section>
                 <section class="EventSummarySettingsForm__section">
@@ -70,16 +82,16 @@ export default {
                     <FormField
                         type="text"
                         label="page-settings.event-summary.custom-text-title"
-                        name="event_summary_custom_text_title"
-                        value={settings?.event_summary_custom_text_title || ''}
-                        errors={errors?.event_summary_custom_text_title}
+                        name="eventSummary.customText.title"
+                        value={values.customText.title || ''}
+                        errors={errors && errors['eventSummary.customText.title']}
                     />
                     <FormField
                         type="textarea"
                         label="page-settings.event-summary.custom-text-content"
-                        name="event_summary_custom_text"
-                        value={settings?.event_summary_custom_text || ''}
-                        errors={errors?.event_summary_custom_text}
+                        name="eventSummary.customText.content"
+                        value={values.customText.content || ''}
+                        errors={errors && errors['eventSummary.customText.content']}
                     />
                 </section>
                 <section class="EventSummarySettingsForm__actions">

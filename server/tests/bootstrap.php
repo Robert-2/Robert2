@@ -8,6 +8,7 @@ require_once __DIR__ . '/constants.php';
 require_once __DIR__ . '/../src/App/Config/constants.php';
 require_once __DIR__ . '/../src/App/Config/functions.php';
 
+use Robert2\API\Kernel;
 use Robert2\Fixtures;
 
 // - Chargement de l'environnement
@@ -40,3 +41,5 @@ try {
 } catch (Exception $e) {
     $echoError("Oops ! Setting fixtures went wrong: " . $e->getMessage());
 }
+
+Kernel::boot();

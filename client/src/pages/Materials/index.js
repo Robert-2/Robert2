@@ -1,16 +1,19 @@
 import './index.scss';
 import moment from 'moment';
 import Config from '@/globals/config';
-import Alert from '@/components/Alert';
+import { DATE_QUERY_FORMAT } from '@/globals/constants';
+import queryClient from '@/globals/queryClient';
+import { confirm } from '@/utils/alert';
 import Help from '@/components/Help';
 import Dropdown, { getItemClassnames } from '@/components/Dropdown';
 import isValidInteger from '@/utils/isValidInteger';
 import formatAmount from '@/utils/formatAmount';
+import isSameDate from '@/utils/isSameDate';
 import apiMaterials from '@/stores/api/materials';
-import PromptDate from '@/components/PromptDate';
 import AssignTags from '@/components/AssignTags';
 import MaterialsFilters from '@/components/MaterialsFilters';
 import MaterialTags from '@/components/MaterialTags';
+import Datepicker from '@/components/Datepicker';
 
 // @vue/component
 export default {
@@ -20,6 +23,7 @@ export default {
         Dropdown,
         MaterialsFilters,
         MaterialTags,
+        Datepicker,
     },
     data() {
         let columns = [
@@ -48,7 +52,7 @@ export default {
             isLoading: false,
             isDisplayTrashed: false,
             isTrashDisplayed: false,
-            dateForQuantities: null,
+            periodForQuantities: null,
             columns,
             options: {
                 columnsDropdown: true,
@@ -134,6 +138,18 @@ export default {
         dropdownItemClass() {
             return getItemClassnames();
         },
+
+        isSingleDayPeriodForQuantities() {
+            if (!this.periodForQuantities) {
+                return false;
+            }
+            return isSameDate(this.periodForQuantities[0], this.periodForQuantities[1]);
+        },
+    },
+    watch: {
+        periodForQuantities() {
+            this.refreshTable();
+        },
     },
     mounted() {
         this.$store.dispatch('categories/fetch');
@@ -171,40 +187,68 @@ export default {
                 params.tags = JSON.parse(this.$route.query.tags);
             }
 
-            if (this.dateForQuantities) {
-                params.dateForQuantities = this.dateForQuantities.format('YYYY-MM-DD');
+            if (this.periodForQuantities) {
+                const [start, end] = this.periodForQuantities || [null, null];
+                const startDate = start ? moment(start).format(DATE_QUERY_FORMAT) : null;
+                if (this.isSingleDayPeriodForQuantities) {
+                    params.dateForQuantities = startDate;
+                } else {
+                    const endDate = end ? moment(end).format(DATE_QUERY_FORMAT) : null;
+                    params['dateForQuantities[start]'] = startDate;
+                    params['dateForQuantities[end]'] = endDate;
+                }
             }
 
             return params;
         },
 
-        deleteMaterial(materialId) {
+        async deleteMaterial(materialId) {
             const isSoft = !this.isTrashDisplayed;
-            Alert.ConfirmDelete(this.$t, 'materials', isSoft).then((result) => {
-                if (!result.value) {
-                    return;
-                }
+            const text = isSoft
+                ? this.$t('page-materials.confirm-delete')
+                : this.$t('page-materials.confirm-permanently-delete');
+            const confirmButtonText = isSoft
+                ? this.$t('yes-delete')
+                : this.$t('yes-permanently-delete');
+            const type = isSoft ? 'trash' : 'delete';
+            const { value: isConfirmed } = await confirm({ text, confirmButtonText, type });
+            if (!isConfirmed) {
+                return;
+            }
 
-                this.error = null;
-                this.isLoading = true;
-                this.$http.delete(`materials/${materialId}`)
-                    .then(this.refreshTable)
-                    .catch(this.showError);
-            });
+            this.error = null;
+            this.isLoading = true;
+
+            try {
+                await this.$http.delete(`materials/${materialId}`);
+                this.refreshTable();
+            } catch (error) {
+                this.error = error;
+            } finally {
+                this.isLoading = false;
+            }
         },
 
-        restoreMaterial(materialId) {
-            Alert.ConfirmRestore(this.$t, 'materials').then((result) => {
-                if (!result.value) {
-                    return;
-                }
-
-                this.error = null;
-                this.isLoading = true;
-                this.$http.put(`materials/restore/${materialId}`)
-                    .then(this.refreshTable)
-                    .catch(this.showError);
+        async restoreMaterial(materialId) {
+            const { value: isConfirmed } = await confirm({
+                text: this.$t('page-materials.confirm-restore'),
+                confirmButtonText: this.$t('yes-restore'),
             });
+            if (!isConfirmed) {
+                return;
+            }
+
+            this.error = null;
+            this.isLoading = true;
+
+            try {
+                await this.$http.put(`materials/restore/${materialId}`);
+                this.refreshTable();
+            } catch (error) {
+                this.error = error;
+            } finally {
+                this.isLoading = false;
+            }
         },
 
         setTags({ id, name, tags }) {
@@ -225,13 +269,15 @@ export default {
         },
 
         refreshTable() {
+            queryClient.invalidateQueries('materials-while-event');
+
             this.error = null;
             this.isLoading = true;
             this.$refs.DataTable.getData();
 
             const { headings, columnsClasses } = this.$refs.DataTable.options;
 
-            if (this.dateForQuantities === null) {
+            if (this.periodForQuantities === null) {
                 headings.stock_quantity = this.$t('quantity');
                 columnsClasses.stock_quantity = 'Materials__quantity';
             } else {
@@ -262,34 +308,14 @@ export default {
         },
 
         getQuantity(material) {
-            if (this.dateForQuantities === null) {
+            if (this.periodForQuantities === null) {
                 return material.stock_quantity;
             }
             return material.remaining_quantity;
         },
 
-        async showQuantityAtDateModal() {
-            if (this.dateForQuantities) {
-                return;
-            }
-
-            this.$modal.show(
-                PromptDate,
-                { title: this.$t('page-materials.display-quantities-at-date') },
-                { width: 600, draggable: true, clickToClose: false },
-                {
-                    'before-close': ({ params }) => {
-                        if (params) {
-                            this.dateForQuantities = moment(params.date);
-                            this.refreshTable();
-                        }
-                    },
-                },
-            );
-        },
-
         removeDateForQuantities() {
-            this.dateForQuantities = null;
+            this.periodForQuantities = null;
             this.refreshTable();
         },
     },

@@ -16,14 +16,14 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class App extends BaseApplication
 {
-    private $kernel;
+    private $container;
 
     private $commandsRegistered = false;
     private $registrationErrors = [];
 
-    public function __construct(?Kernel $kernel = null)
+    public function __construct()
     {
-        $this->kernel = $kernel ?? new Kernel;
+        $this->container = Kernel::boot()->getContainer();
 
         parent::__construct('Robert2', Config::getVersion());
 
@@ -120,12 +120,8 @@ class App extends BaseApplication
         }
         $this->commandsRegistered = true;
 
-        $this->kernel->boot();
-
-        $container = $this->kernel->getContainer();
-
-        if ($container->has('console.commands')) {
-            foreach ($container->get('console.commands') as $command) {
+        if ($this->container->has('console.commands')) {
+            foreach ($this->container->get('console.commands') as $command) {
                 try {
                     $this->add($command);
                 } catch (\Throwable $e) {

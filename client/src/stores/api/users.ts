@@ -1,4 +1,4 @@
-/* eslint-disable babel/camelcase */
+/* eslint-disable @typescript-eslint/naming-convention */
 
 import type { Person } from '@/stores/api/persons';
 
@@ -15,5 +15,3 @@ export type User = {
     group_id: UserGroupId,
     person: Person | null,
 };
-
-/* eslint-enable babel/camelcase */

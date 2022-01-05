@@ -20,9 +20,8 @@ export default {
                 )}
                 {beneficiaries.length > 0 && (
                     <div class="EventBeneficiaries__list">
-                        <span>
-                            <i class="fas fa-address-book" /> {__('for')}
-                        </span>
+                        <i class="fas fa-address-book EventBeneficiaries__icon" />
+                        {__('for')}
                         {beneficiaries.map((beneficiary) => (
                             <EventBeneficiaryItem key={beneficiary.id} beneficiary={beneficiary} />
                         ))}

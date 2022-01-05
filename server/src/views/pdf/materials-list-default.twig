@@ -17,8 +17,8 @@
         <td class="third">
             {{ include('blocks/company-address.twig', {
                 company: company,
-                withLegalNumbers: false,
-                withLogo: false,
+                showLegalNumbers: false,
+                showLogo: false,
             }) }}
         </td>
         <td class="two-third">
@@ -67,10 +67,10 @@
         {% for subCategory in park['materials'] %}
             <tr>
                 <td class="section-title" colspan="5">
-                    {% if subCategory['name'] is null %}
-                    {{ translate('otherMaterials') }}
+                    {% if subCategory['name'] is not empty %}
+                    {{ subCategory['category'] }} - {{ subCategory['name'] }}
                     {% else %}
-                    {{ subCategory['name'] }}
+                    {{ subCategory['category'] }} - {{ translate('otherMaterials') }}
                     {% endif %}
                 </td>
             </tr>

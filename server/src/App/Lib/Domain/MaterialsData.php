@@ -96,12 +96,14 @@ class MaterialsData
                 continue;
             }
 
-            $subCategoryId = $material['sub_category_id'] ?: 0;
+            $categoryId = $material['category_id'];
+            $subCategoryId = $material['sub_category_id'] ?: sprintf('c-%d', $categoryId);
 
             if (!isset($subCategoriesMaterials[$subCategoryId])) {
                 $subCategoriesMaterials[$subCategoryId] = [
-                    'id' => $subCategoryId ?: null,
-                    'name' => $this->getSubCategoryName($subCategoryId),
+                    'id' => $subCategoryId,
+                    'name' => $this->getSubCategoryName($material['sub_category_id']),
+                    'category' => $this->getCategoryName($categoryId),
                     'materials' => [],
                 ];
             }
@@ -130,7 +132,15 @@ class MaterialsData
             ksort($subCategoriesMaterials[$subCategoryId]['materials'], SORT_NATURAL | SORT_FLAG_CASE);
         }
 
-        return array_reverse(array_values($subCategoriesMaterials));
+        $results = array_values($subCategoriesMaterials);
+        usort($results, function ($a, $b) {
+            $noNameSortReplacer = 'ZZZZZZZZ';
+            $aString = sprintf('%s%s', $a['category'], $a['name'] ?: $noNameSortReplacer);
+            $bString = sprintf('%s%s', $b['category'], $b['name'] ?: $noNameSortReplacer);
+            return strcasecmp($aString, $bString);
+        });
+
+        return $results;
     }
 
     public function getByParks(bool $withHidden = false)
@@ -238,7 +248,7 @@ class MaterialsData
         return null;
     }
 
-    protected function getSubCategoryName(int $subCategoryId): ?string
+    protected function getSubCategoryName(?int $subCategoryId): ?string
     {
         if (empty($this->categories)) {
             throw new \InvalidArgumentException("Missing categories data.");

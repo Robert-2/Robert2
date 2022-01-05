@@ -79,7 +79,7 @@ $group-item-max-height: 65px !default;
             box-shadow: 1px 2px 3px rgba(#000, 0.5);
 
             &.vis-selected {
-                background-color: adjust-color(globals.$calendar-event-normal-color, $lightness: 10%);
+                background-color: color.adjust(globals.$calendar-event-normal-color, $lightness: 10%);
             }
         }
 
@@ -209,8 +209,11 @@ $group-item-max-height: 65px !default;
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
-                min-height: max(100%, 55px);
                 padding: 10px;
+
+                // Faux positif, @see https://github.com/stylelint-scss/stylelint-scss/issues/486
+                // stylelint-disable-next-line scss/no-global-function-names, order/properties-order
+                min-height: max(100%, 55px);
             }
         }
 

@@ -50,19 +50,19 @@ class Estimate extends BaseModel
 
     public function Event()
     {
-        return $this->belongsTo('Robert2\API\Models\Event')
+        return $this->belongsTo(Event::class)
             ->select(['events.id', 'title', 'location', 'start_date', 'end_date']);
     }
 
     public function Beneficiary()
     {
-        return $this->belongsTo('Robert2\API\Models\Person')
+        return $this->belongsTo(Person::class)
             ->select(['persons.id', 'first_name', 'last_name', 'street', 'postal_code', 'locality']);
     }
 
     public function User()
     {
-        return $this->belongsTo('Robert2\API\Models\User')
+        return $this->belongsTo(User::class)
             ->select(['users.id', 'pseudo', 'email', 'group_id']);
     }
 

@@ -26,11 +26,9 @@ class App
     private $container;
     private $app;
 
-    public function __construct(?Kernel $kernel = null)
+    public function __construct()
     {
-        $kernel = ($kernel ?? new Kernel)->boot();
-
-        $this->container = $kernel->getContainer();
+        $this->container = Kernel::boot()->getContainer();
         $this->app = AppFactory::create(null, $this->container);
         $this->app->addBodyParsingMiddleware();
 

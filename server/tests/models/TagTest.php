@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Robert2\Tests;
 
 use Robert2\API\Models;
-use Robert2\API\Errors;
+use Robert2\API\Models\Person;
 
 final class TagTest extends ModelTestCase
 {
@@ -77,7 +77,7 @@ final class TagTest extends ModelTestCase
                 'pivot' => [
                     'tag_id' => 2,
                     'taggable_id' => 2,
-                    'taggable_type' => 'Robert2\API\Models\Person',
+                    'taggable_type' => Person::class,
                 ],
             ],
         ], $result);

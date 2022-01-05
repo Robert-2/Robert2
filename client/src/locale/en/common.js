@@ -1,4 +1,4 @@
-/* eslint-disable babel/quotes */
+/* eslint-disable quotes */
 
 export default {
     'hello-pseudo': "Hello {pseudo}!",
@@ -51,6 +51,7 @@ export default {
     'locked': "locked",
     'clear-filters': "Clear filters",
     'optional': "Optional",
+    'and-n-others': ["and {count} other", "and {count} others"],
 
     'save': "Save",
     'save-draft': "Save draft",
@@ -58,12 +59,12 @@ export default {
     'saving': "Saving...",
     'saved': "{entity} saved.",
     'deleting': "Deleting...",
-    'choose-date': "Choose this date",
     'reset-date': "Reset date",
+    'reset-period': "Reset period",
     'actions': "Actions",
     'informations': "Informations",
     'connexion-infos': "Credentials",
-    'personnal-infos': "Personnal informations",
+    'personnal-infos': "Personal informations",
     'minimal-infos': "Minimal informations",
     'extra-infos': "Additional informations",
     'billing-infos': "Billing informations",
@@ -170,7 +171,7 @@ export default {
     'print-summary': "Print this summary",
     'open': "Open",
     'in': "In",
-    'open-in-openstreetmap': "Search in OpenStreetMap",
+    'open-in-google-maps': "Open in Google Maps",
     'on-date': "On {date}",
     'from-date-to-date': "from\u00a0{from} to\u00a0{to}",
     'or': "or",
@@ -283,6 +284,7 @@ export default {
     'use-these-materials': "Use these materials",
     'choose-another-one': "Choose another one",
     'event-materials': "Materials of event \"{name}\"",
+    'created-by': "Created by",
 
     'event': "Event",
     'user': "User",
