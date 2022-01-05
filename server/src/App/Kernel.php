@@ -22,7 +22,7 @@ final class Kernel
     public static function boot()
     {
         if (!is_null(static::$instance) && Config::getEnv() !== 'test') {
-            throw new \LogicException("Le kernel a déjà été booté.");
+            return static::$instance;
         }
         return static::$instance = new static;
     }
