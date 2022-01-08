@@ -12,14 +12,7 @@ export default {
         errors: { type: Object, default: null },
     },
     data() {
-        const initialListModeOptions = LIST_MODES.map((mode) => (
-            { value: mode, label: `page-settings.event-summary.list-display-mode-${mode}` }
-        ));
-
-        return {
-            initialListModeOptions,
-            defaultListMode: 'sub-categories',
-        };
+        return { defaultListMode: 'sub-categories' };
     },
     computed: {
         values() {
@@ -29,9 +22,12 @@ export default {
         listModeOptions() {
             const parks = this.$store.state.parks.list;
 
-            return this.initialListModeOptions.filter((mode) => (
-                mode.value !== 'parks' || parks.length > 1
-            ));
+            return LIST_MODES
+                .filter((mode) => mode !== 'parks' || parks.length > 1)
+                .map((mode) => ({
+                    value: mode,
+                    label: `page-settings.event-summary.list-display-mode-${mode}`,
+                }));
         },
     },
     mounted() {
@@ -40,6 +36,7 @@ export default {
     methods: {
         handleSubmit(e) {
             e.preventDefault();
+
             this.$emit('save', getFormDataAsJson(e.target));
         },
     },

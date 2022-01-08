@@ -390,6 +390,9 @@ export default {
             'custom-text-content': "Text content",
             'saved': "Event summaries settings were successfully saved.",
         },
+        'calendar': {
+            'title': "Calendar",
+        },
     },
 
     'page-estimate': {
