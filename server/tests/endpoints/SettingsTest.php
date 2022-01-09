@@ -49,7 +49,7 @@ final class SettingsTest extends ApiTestCase
         $this->assertValidationErrorMessage();
         $this->assertErrorDetails([
             'calendar.event.showBorrower' => [
-                'value must be a boolean',
+                'value must be a boolean value',
             ],
             'eventSummary.materialDisplayMode' => [
                 'At least one of these rules must pass for value',
@@ -66,6 +66,41 @@ final class SettingsTest extends ApiTestCase
 
     public function testUpdate(): void
     {
+        $this->client->put('/api/settings', [
+            'eventSummary' => [
+                'customText' => [
+                    'title' => 'foo',
+                    'content' => 'bar',
+                ],
+                'materialDisplayMode' => 'sub-categories',
+                'showLegalNumbers' => true,
+            ],
+            'calendar' => [
+                'event' => [
+                    'showBorrower' => false,
+                    'showLocation' => false,
+                ],
+            ],
+        ]);
+        $this->assertStatusCode(SUCCESS_OK);
+        $this->assertResponseData([
+            'eventSummary' => [
+                'customText' => [
+                    'title' => 'foo',
+                    'content' => 'bar',
+                ],
+                'materialDisplayMode' => 'sub-categories',
+                'showLegalNumbers' => true,
+            ],
+            'calendar' => [
+                'event' => [
+                    'showBorrower' => false,
+                    'showLocation' => false,
+                ],
+            ],
+        ]);
+
+        // - Syntaxe alternative
         $this->client->put('/api/settings', [
             'calendar.event.showBorrower' => true,
             'eventSummary.materialDisplayMode' => 'flat',
@@ -86,7 +121,7 @@ final class SettingsTest extends ApiTestCase
             'calendar' => [
                 'event' => [
                     'showBorrower' => true,
-                    'showLocation' => true,
+                    'showLocation' => false,
                 ],
             ],
         ]);
