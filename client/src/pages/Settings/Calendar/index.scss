@@ -13,6 +13,10 @@
                 flex-basis: 250px;
             }
 
+            &__error__text {
+                padding-left: 250px;
+            }
+
             + .FormField {
                 margin-top: globals.$content-padding-small-vertical;
             }

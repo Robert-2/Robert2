@@ -392,6 +392,11 @@ export default {
         },
         'calendar': {
             'title': "Calendrier",
+            'help': "Ici, vous pouvez personnaliser le calendrier et les événements affichés sur celui-ci.",
+            'saved': "Les paramètres du calendrier ont bien été sauvegardés.",
+            'events-display-section-title': "Données affichées dans les événements du calendrier",
+            'showLocation': "Afficher le lieu de l'événement ?",
+            'showBorrower': "Afficher le bénéficiaire / emprunteur ?",
         },
     },
 

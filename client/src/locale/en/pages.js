@@ -388,10 +388,15 @@ export default {
             'custom-text': "Custom text (bottom of page)",
             'custom-text-title': "Text title",
             'custom-text-content': "Text content",
-            'saved': "Event summaries settings were successfully saved.",
+            'saved': "Event summaries settings has been successfully saved.",
         },
         'calendar': {
             'title': "Calendar",
+            'help': "Here you can customize the calendar and the events that are displayed on it.",
+            'saved': "Calendar settings has been successfully saved.",
+            'events-display-section-title': "Data that will be displayed in the calendar events",
+            'showLocation': "Show the location of the event?",
+            'showBorrower': "Show the beneficiary / borrower?",
         },
     },
 
