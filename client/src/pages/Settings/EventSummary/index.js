@@ -1,34 +1,69 @@
+import './index.scss';
 import Help from '@/components/Help';
-import EventSummarySettingsForm from './Form';
 import { defineComponent } from '@vue/composition-api';
+import getFormDataAsJson from '@/utils/getFormDataAsJson';
+import FormField from '@/components/FormField';
+
+const LIST_MODES = ['categories', 'sub-categories', 'parks', 'flat'];
 
 // @vue/component
 export default defineComponent({
     name: 'EventSummarySettings',
     data() {
         return {
-            help: 'page-settings.event-summary.help',
             isSaving: false,
+            isSaved: false,
             error: null,
-            errors: null,
         };
     },
+    computed: {
+        help() {
+            return this.isSaved
+                ? { type: 'success', text: 'page-settings.event-summary.saved' }
+                : 'page-settings.event-summary.help';
+        },
+        values() {
+            const { $store: { state: { settings } } } = this;
+            return settings.eventSummary;
+        },
+        listModeOptions() {
+            const parks = this.$store.state.parks.list;
+
+            return LIST_MODES
+                .filter((mode) => mode !== 'parks' || parks.length > 1)
+                .map((mode) => ({
+                    value: mode,
+                    label: `page-settings.event-summary.list-display-mode-${mode}`,
+                }));
+        },
+        validationErrors() {
+            if (!this.error) {
+                return null;
+            }
+
+            const { code, details } = this.error.response?.data?.error || { code: 0, details: {} };
+            return code === 400 ? { ...details } : null;
+        },
+    },
+    mounted() {
+        this.$store.dispatch('parks/fetch');
+    },
     methods: {
-        async handleSave(newData) {
+        async handleSubmit(e) {
+            e.preventDefault();
+
             this.isSaving = true;
             this.error = null;
-            this.errors = null;
 
             try {
-                await this.$http.put('settings', newData);
-                this.help = { type: 'success', text: 'page-settings.event-summary.saved' };
+                await this.$http.put('settings', getFormDataAsJson(e.target));
                 this.$store.dispatch('settings/fetch');
-            } catch (error) {
-                this.error = error;
 
-                const { code, details } = error.response?.data?.error || { code: 0, details: {} };
-                if (code === 400) {
-                    this.errors = { ...details };
+                this.isSaved = true;
+            } catch (err) {
+                this.isSaved = false;
+                if (err instanceof Error) {
+                    this.error = err;
                 }
             } finally {
                 this.isSaving = false;
@@ -36,16 +71,65 @@ export default defineComponent({
         },
     },
     render() {
-        const { help, isSaving, error, handleSave, errors } = this;
+        const {
+            $t: __,
+            help,
+            error,
+            values,
+            isSaving,
+            handleSubmit,
+            listModeOptions,
+            validationErrors,
+        } = this;
 
         return (
             <div class="EventSummarySettings">
                 <Help message={help} error={error} isLoading={isSaving} />
-                <EventSummarySettingsForm
-                    onSave={handleSave}
-                    isSaving={isSaving}
-                    errors={errors}
-                />
+                <form class="EventSummarySettings__form" onSubmit={handleSubmit}>
+                    <section class="EventSummarySettings__section">
+                        <h3>{__('page-settings.event-summary.header')}</h3>
+                        <FormField
+                            type="switch"
+                            label="page-settings.event-summary.display-legal-numbers"
+                            name="eventSummary.showLegalNumbers"
+                            v-model={values.showLegalNumbers}
+                            errors={validationErrors?.['eventSummary.showLegalNumbers']}
+                        />
+                    </section>
+                    <section class="EventSummarySettings__section">
+                        <h3>{__('page-settings.event-summary.material-list')}</h3>
+                        <FormField
+                            type="select"
+                            label="page-settings.event-summary.display-mode"
+                            name="eventSummary.materialDisplayMode"
+                            options={listModeOptions}
+                            value={values.materialDisplayMode || 'sub-categories'}
+                            errors={validationErrors?.['eventSummary.materialDisplayMode']}
+                        />
+                    </section>
+                    <section class="EventSummarySettings__section">
+                        <h3>{__('page-settings.event-summary.custom-text')}</h3>
+                        <FormField
+                            type="text"
+                            label="page-settings.event-summary.custom-text-title"
+                            name="eventSummary.customText.title"
+                            value={values.customText.title || ''}
+                            errors={validationErrors?.['eventSummary.customText.title']}
+                        />
+                        <FormField
+                            type="textarea"
+                            label="page-settings.event-summary.custom-text-content"
+                            name="eventSummary.customText.content"
+                            value={values.customText.content || ''}
+                            errors={validationErrors?.['eventSummary.customText.content']}
+                        />
+                    </section>
+                    <section class="EventSummarySettings__actions">
+                        <button type="submit" class="success" disabled={isSaving}>
+                            <i class="fas fa-save" /> {isSaving ? __('saving') : __('save')}
+                        </button>
+                    </section>
+                </form>
             </div>
         );
     },

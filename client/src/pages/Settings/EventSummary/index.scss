@@ -1,7 +1,9 @@
 @use '~@/style/globals';
 
-.EventSummarySettingsForm {
-    max-width: globals.$form-max-width;
+.EventSummarySettings {
+    &__form {
+        max-width: globals.$form-max-width;
+    }
 
     &__section {
         margin-top: globals.$content-padding-large-vertical;
