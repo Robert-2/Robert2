@@ -4,7 +4,7 @@ import requester from '@/globals/requester';
 // - Types
 //
 
-type MaterialDisplayMode = 'categories' | 'sub-categories' | 'parks' | 'flat';
+export type MaterialDisplayMode = 'categories' | 'sub-categories' | 'parks' | 'flat';
 
 export type Settings = {
     eventSummary: {
