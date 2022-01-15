@@ -64,12 +64,12 @@ class Setting extends BaseModel
 
             'calendar.event.showLocation' => [
                 'type' => 'boolean',
-                'validation' => V::boolType(),
+                'validation' => V::boolVal(),
                 'default' => true,
             ],
             'calendar.event.showBorrower' => [
                 'type' => 'boolean',
-                'validation' => V::boolType(),
+                'validation' => V::boolVal(),
                 'default' => false,
             ],
         ];
@@ -158,7 +158,7 @@ class Setting extends BaseModel
         }
 
         $errors = [];
-        foreach ($data as $key => $value) {
+        foreach ((new DotArray($data))->flatten() as $key => $value) {
             try {
                 $model = static::find($key);
                 if (empty($model)) {
@@ -166,7 +166,7 @@ class Setting extends BaseModel
                     continue;
                 }
 
-                $value = $value && is_string($value) ? trim($value) : $value;
+                $value = is_string($value) ? trim($value) : $value;
                 $model->value = $value === '' ? null : $value;
                 $model->validate()->save();
             } catch (ValidationException $error) {

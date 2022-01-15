@@ -390,6 +390,14 @@ export default {
             'custom-text-content': "Contenu du texte",
             'saved': "Les paramètres des fiches de sortie ont bien été sauvegardés.",
         },
+        'calendar': {
+            'title': "Calendrier",
+            'help': "Ici, vous pouvez personnaliser le calendrier et les événements affichés sur celui-ci.",
+            'saved': "Les paramètres du calendrier ont bien été sauvegardés.",
+            'events-display-section-title': "Données affichées dans les événements du calendrier",
+            'showLocation': "Afficher le lieu de l'événement\u00a0?",
+            'showBorrower': "Afficher le bénéficiaire / emprunteur\u00a0?",
+        },
     },
 
     'page-estimate': {

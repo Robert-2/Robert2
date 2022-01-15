@@ -1,0 +1,29 @@
+@use '~@/style/globals';
+
+.CalendarSettings {
+    &__form {
+        max-width: globals.$form-max-width;
+    }
+
+    &__section {
+        margin-top: globals.$content-padding-large-vertical;
+
+        .FormField {
+            &__label {
+                flex-basis: 250px;
+            }
+
+            &__error__text {
+                padding-left: 250px;
+            }
+
+            + .FormField {
+                margin-top: globals.$content-padding-small-vertical;
+            }
+        }
+    }
+
+    &__actions {
+        margin-top: globals.$content-padding-large-vertical;
+    }
+}

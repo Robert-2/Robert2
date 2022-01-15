@@ -2,6 +2,8 @@
 @use 'sass:math';
 
 .FormField {
+    $block: &;
+
     flex: 1;
 
     &__label {
@@ -23,6 +25,10 @@
     &__textarea,
     &__datepicker {
         width: 90%;
+    }
+
+    &__switch {
+        display: flex;
     }
 
     &__addon {
@@ -51,7 +57,7 @@
     }
 
     &--with-addon {
-        .FormField__input {
+        #{$block}__input {
             display: inline-block;
             padding-right: 0;
             border-right: 0;
@@ -60,11 +66,11 @@
     }
 
     &--with-error {
-        .FormField__input:not(:focus),
-        .FormField__datepicker .mx-input:not(:focus),
-        .FormField__select:not(:focus),
-        .FormField__textarea:not(:focus),
-        .FormField__addon {
+        #{$block}__input:not(:focus),
+        #{$block}__datepicker .mx-input:not(:focus),
+        #{$block}__select:not(:focus),
+        #{$block}__textarea:not(:focus),
+        #{$block}__addon {
             border-color: globals.$input-error-border-color;
         }
     }
