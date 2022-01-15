@@ -4,6 +4,11 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.18.0 (UNRELEASED)
+
+- Ajoute la possibilité de configurer les données affichées dans les événements du calendrier 
+  via la page des paramètres de l'application (fin du ticket #302).
+
 ## 0.17.1 (2022-01-06)
 
 - Corrige l'erreur de l'étape 5 du wizard d'installation (double boot du kernel).
