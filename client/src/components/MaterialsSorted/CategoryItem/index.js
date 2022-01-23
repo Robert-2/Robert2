@@ -1,6 +1,6 @@
 import './index.scss';
 import { toRefs } from '@vue/composition-api';
-import useI18n from '@/hooks/useI18n';
+import useI18n from '@/hooks/vue/useI18n';
 import formatAmount from '@/utils/formatAmount';
 
 // type Props = {

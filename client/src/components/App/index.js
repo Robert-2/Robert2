@@ -1,7 +1,7 @@
 import './index.scss';
 import { ref, computed, watch } from '@vue/composition-api';
 import queryClient from '@/globals/queryClient';
-import useRouter from '@/hooks/useRouter';
+import useRouter from '@/hooks/vue/useRouter';
 import { useQueryProvider } from 'vue-query';
 import Header from '@/components/MainHeader';
 import Sidebar from '@/components/Sidebar';

@@ -3,8 +3,8 @@ import { toRefs, ref, computed, onMounted, reactive } from '@vue/composition-api
 import { useQuery } from 'vue-query';
 import { Fragment } from 'vue-fragment';
 import config from '@/globals/config';
-import useI18n from '@/hooks/useI18n';
-import useRouter from '@/hooks/useRouter';
+import useI18n from '@/hooks/vue/useI18n';
+import useRouter from '@/hooks/vue/useRouter';
 import formatAmount from '@/utils/formatAmount';
 import apiMaterials from '@/stores/api/materials';
 import ErrorMessage from '@/components/ErrorMessage';

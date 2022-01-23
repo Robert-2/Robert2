@@ -1,7 +1,7 @@
 import './index.scss';
 import { Fragment } from 'vue-fragment';
 import { toRefs } from '@vue/composition-api';
-import useI18n from '@/hooks/useI18n';
+import useI18n from '@/hooks/vue/useI18n';
 import ParkTotalAmount from '@/components/ParkTotalAmount';
 
 // @vue/component

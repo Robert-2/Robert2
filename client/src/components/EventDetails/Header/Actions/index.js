@@ -2,7 +2,7 @@ import './index.scss';
 import { toRefs, computed, ref } from '@vue/composition-api';
 import Config from '@/globals/config';
 import { confirm } from '@/utils/alert';
-import useI18n from '@/hooks/useI18n';
+import useI18n from '@/hooks/vue/useI18n';
 import apiEvents from '@/stores/api/events';
 import Dropdown, { getItemClassnames } from '@/components/Dropdown';
 import DuplicateEvent from '@/components/DuplicateEvent';

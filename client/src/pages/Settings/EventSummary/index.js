@@ -1,7 +1,7 @@
 import './index.scss';
 import { ref, computed, reactive, onMounted } from '@vue/composition-api';
 import axios from 'axios';
-import useI18n from '@/hooks/useI18n';
+import useI18n from '@/hooks/vue/useI18n';
 import cloneDeep from 'lodash.clonedeep';
 import apiSettings from '@/stores/api/settings';
 import Help from '@/components/Help';

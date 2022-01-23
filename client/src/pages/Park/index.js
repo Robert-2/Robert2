@@ -1,8 +1,8 @@
 import './index.scss';
 import { computed, ref, onMounted } from '@vue/composition-api';
 import requester from '@/globals/requester';
-import useI18n from '@/hooks/useI18n';
-import useRouter from '@/hooks/useRouter';
+import useI18n from '@/hooks/vue/useI18n';
+import useRouter from '@/hooks/vue/useRouter';
 import Help from '@/components/Help';
 import Page from '@/components/Page';
 import ParkForm from './Form';

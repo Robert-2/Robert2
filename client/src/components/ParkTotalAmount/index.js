@@ -2,7 +2,7 @@ import './index.scss';
 import { ref, toRefs } from '@vue/composition-api';
 import requester from '@/globals/requester';
 import formatAmount from '@/utils/formatAmount';
-import useI18n from '@/hooks/useI18n';
+import useI18n from '@/hooks/vue/useI18n';
 import ErrorMessage from '@/components/ErrorMessage/index';
 
 // @vue/component

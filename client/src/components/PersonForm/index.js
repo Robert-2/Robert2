@@ -1,8 +1,8 @@
 import './index.scss';
 import { computed, toRefs, onMounted } from '@vue/composition-api';
 import { useQuery } from 'vue-query';
-import useI18n from '@/hooks/useI18n';
-import useRouter from '@/hooks/useRouter';
+import useI18n from '@/hooks/vue/useI18n';
+import useRouter from '@/hooks/vue/useRouter';
 import formatOptions from '@/utils/formatOptions';
 import apiCountries from '@/stores/api/countries';
 import FormField from '@/components/FormField';

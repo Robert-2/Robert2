@@ -4,7 +4,7 @@ import { useQuery } from 'vue-query';
 import getFormDataAsJson from '@/utils/getFormDataAsJson';
 import formatOptions from '@/utils/formatOptions';
 import apiCountries from '@/stores/api/countries';
-import useI18n from '@/hooks/useI18n';
+import useI18n from '@/hooks/vue/useI18n';
 import FormField from '@/components/FormField';
 
 // @vue/component

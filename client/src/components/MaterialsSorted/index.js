@@ -3,7 +3,7 @@ import { toRefs, computed, ref } from '@vue/composition-api';
 import { useQuery, useQueryProvider } from 'vue-query';
 import dispatchMaterialInSections from '@/utils/dispatchMaterialInSections';
 import queryClient from '@/globals/queryClient';
-import useI18n from '@/hooks/useI18n';
+import useI18n from '@/hooks/vue/useI18n';
 import apiCategories from '@/stores/api/categories';
 import MaterialsCategoryItem from './CategoryItem';
 
