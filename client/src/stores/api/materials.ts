@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import requester from '@/globals/requester';
+import invariant from 'invariant';
 
 import type { PaginatedData, PaginationParams } from '@/stores/api/@types';
 
@@ -63,9 +64,7 @@ async function all(params: GetAllPaginated | GetAllRaw): Promise<unknown> {
 /* eslint-enable func-style */
 
 const allWhileEvent = async (eventId: number): Promise<Material[]> => {
-    if (!eventId) {
-        throw new Error(`Missing event id to fetch concurrent material of.`);
-    }
+    invariant(eventId, 'Missing event id to fetch concurrent material of.');
     return (await requester.get(`materials/while-event/${eventId}`)).data;
 };
 
