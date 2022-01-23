@@ -1,8 +1,8 @@
 import './index.scss';
 import moment from 'moment';
+import { defineComponent } from '@vue/composition-api';
 import Datepicker from '@/components/Datepicker';
 import SwitchToggle from '@/components/SwitchToggle';
-import { defineComponent } from '@vue/composition-api';
 
 const ALLOWED_TYPES = [
     'text',

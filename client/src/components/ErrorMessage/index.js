@@ -1,7 +1,7 @@
 import './index.scss';
-import Details from './Details';
 import { defineComponent } from '@vue/composition-api';
 import { getErrorMessage } from '@/utils/errors';
+import Details from './Details';
 
 // @vue/component
 export default defineComponent({

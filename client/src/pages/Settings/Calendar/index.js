@@ -1,9 +1,9 @@
 import './index.scss';
 import { ref, computed, reactive } from '@vue/composition-api';
 import axios from 'axios';
-import useI18n from '@/hooks/vue/useI18n';
 import cloneDeep from 'lodash.clonedeep';
 import apiSettings from '@/stores/api/settings';
+import useI18n from '@/hooks/vue/useI18n';
 import Help from '@/components/Help';
 import FormField from '@/components/FormField';
 import Button from '@/components/Button';

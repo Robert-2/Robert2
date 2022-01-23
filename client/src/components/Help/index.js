@@ -1,6 +1,6 @@
 import './index.scss';
-import ErrorMessage from '@/components/ErrorMessage';
 import { defineComponent } from '@vue/composition-api';
+import ErrorMessage from '@/components/ErrorMessage';
 
 // @vue/component
 export default defineComponent({
