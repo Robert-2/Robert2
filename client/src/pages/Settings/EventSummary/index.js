@@ -8,19 +8,15 @@ import Help from '@/components/Help';
 import FormField from '@/components/FormField';
 import Button from '@/components/Button';
 
-import type { AxiosError } from 'axios';
-import type { Settings, MaterialDisplayMode } from '@/stores/api/settings';
-import type { Component, SetupContext } from '@vue/composition-api';
-
-const LIST_MODES: readonly MaterialDisplayMode[] = ['categories', 'sub-categories', 'parks', 'flat'] as const;
+const LIST_MODES = Object.freeze(['categories', 'sub-categories', 'parks', 'flat']);
 
 // @vue/component
-const EventSummarySettings: Component = (props: Record<string, never>, { root }: SetupContext) => {
+const EventSummarySettings = (props, { root }) => {
     const __ = useI18n();
     const isSaving = ref(false);
     const isSaved = ref(false);
-    const error = ref<AxiosError | Error | null>(null);
-    const values = reactive<Settings['eventSummary']>(
+    const error = ref(null);
+    const values = reactive(
         (() => {
             const _values = cloneDeep(root.$store.state.settings.eventSummary);
             if (_values.customText?.title == null) {
@@ -43,8 +39,8 @@ const EventSummarySettings: Component = (props: Record<string, never>, { root }:
         const parks = root.$store.state.parks.list;
 
         return LIST_MODES
-            .filter((mode: MaterialDisplayMode) => mode !== 'parks' || parks.length > 1)
-            .map((mode: MaterialDisplayMode) => ({
+            .filter((mode) => mode !== 'parks' || parks.length > 1)
+            .map((mode) => ({
                 value: mode,
                 label: `page-settings.event-summary.list-display-mode-${mode}`,
             }));
@@ -63,7 +59,7 @@ const EventSummarySettings: Component = (props: Record<string, never>, { root }:
         root.$store.dispatch('parks/fetch');
     });
 
-    const handleSubmit = async (e: SubmitEvent): Promise<void> => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         isSaving.value = true;

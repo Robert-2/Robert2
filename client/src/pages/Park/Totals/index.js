@@ -4,14 +4,8 @@ import { toRefs } from '@vue/composition-api';
 import useI18n from '@/hooks/useI18n';
 import ParkTotalAmount from '@/components/ParkTotalAmount';
 
-import type { Component } from '@vue/composition-api';
-
-type Props = {
-    park: Record<string, any>,
-};
-
 // @vue/component
-const ParkTotals: Component<Props> = (props: Props) => {
+const ParkTotals = (props) => {
     const __ = useI18n();
     const { park } = toRefs(props);
 

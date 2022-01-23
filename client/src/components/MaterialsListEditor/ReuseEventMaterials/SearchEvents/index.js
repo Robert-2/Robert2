@@ -6,28 +6,25 @@ import useI18n from '@/hooks/useI18n';
 import apiEvents from '@/stores/api/events';
 import SearchEventResultItem from './SearchEventResultItem';
 
-import type { Component, SetupContext } from '@vue/composition-api';
-import type { EventSummary } from '@/stores/api/events';
+// type Props = {
+//     /** ID d'un événement à ne pas inclure dans la recherche */
+//     exclude?: number | null,
 
-type Props = {
-    /** ID d'un événement à ne pas inclure dans la recherche */
-    exclude?: number | null,
-
-    /** Déclenché quand un événement est choisi dans la liste. */
-    onSelect(id: number): void,
-};
+//     /** Déclenché quand un événement est choisi dans la liste. */
+//     onSelect(id: number): void,
+// };
 
 // @vue/component
-const SearchEvents: Component<Props> = (props: Props, { root, emit }: SetupContext) => {
+const SearchEvents = (props, { root, emit }) => {
     const __ = useI18n();
     const { exclude } = toRefs(props);
-    const searchTerm = ref<string>('');
-    const totalCount = ref<number>(0);
-    const results = ref<EventSummary[]>([]);
-    const isLoading = ref<boolean>(false);
-    const isFetched = ref<boolean>(false);
+    const searchTerm = ref('');
+    const totalCount = ref(0);
+    const results = ref([]);
+    const isLoading = ref(false);
+    const isFetched = ref(false);
 
-    const handleSearch = async (): Promise<void> => {
+    const handleSearch = async () => {
         const trimedSearchTerm = searchTerm.value.trim();
         if (trimedSearchTerm.length < 2) {
             return;
@@ -55,7 +52,7 @@ const SearchEvents: Component<Props> = (props: Props, { root, emit }: SetupConte
         handleSearch();
     }, 400);
 
-    const handleKeyUp = (e: KeyboardEvent): void => {
+    const handleKeyUp = (e) => {
         if (e.code === 'Enter' || e.code === 'NumpadEnter') {
             handleSearch();
             return;
@@ -64,12 +61,12 @@ const SearchEvents: Component<Props> = (props: Props, { root, emit }: SetupConte
         handleSearchDebounced();
     };
 
-    const handleSelect = (id: number): void => {
+    const handleSelect = (id) => {
         emit('select', id);
     };
 
     return () => {
-        const renderResults = (): JSX.Element => {
+        const renderResults = () => {
             if (results.value.length === 0) {
                 return (
                     <p class="SearchEvents__no-result">
@@ -83,7 +80,7 @@ const SearchEvents: Component<Props> = (props: Props, { root, emit }: SetupConte
             return (
                 <div class="SearchEvents__results">
                     <ul class="SearchEvents__results__list">
-                        {results.value.map((event: EventSummary) => (
+                        {results.value.map((event) => (
                             <SearchEventResultItem
                                 key={event.id}
                                 data={event}

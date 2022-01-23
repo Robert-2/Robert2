@@ -8,17 +8,13 @@ import Help from '@/components/Help';
 import FormField from '@/components/FormField';
 import Button from '@/components/Button';
 
-import type { AxiosError } from 'axios';
-import type { Settings } from '@/stores/api/settings';
-import type { Component, SetupContext } from '@vue/composition-api';
-
 // @vue/component
-const CalendarSettings: Component = (props: Record<string, never>, { root }: SetupContext) => {
+const CalendarSettings = (props, { root }) => {
     const __ = useI18n();
     const isSaving = ref(false);
     const isSaved = ref(false);
-    const error = ref<AxiosError | Error | null>(null);
-    const values = reactive<Settings['calendar']>(cloneDeep(root.$store.state.settings.calendar));
+    const error = ref(null);
+    const values = reactive(cloneDeep(root.$store.state.settings.calendar));
 
     const help = computed(() => (
         isSaved.value
@@ -35,7 +31,7 @@ const CalendarSettings: Component = (props: Record<string, never>, { root }: Set
         return code === 400 ? { ...details } : null;
     });
 
-    const handleSubmit = async (e: SubmitEvent): Promise<void> => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         isSaving.value = true;

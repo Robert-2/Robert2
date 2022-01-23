@@ -7,20 +7,13 @@ import apiEvents from '@/stores/api/events';
 import Dropdown, { getItemClassnames } from '@/components/Dropdown';
 import DuplicateEvent from '@/components/DuplicateEvent';
 
-import type { Component, SetupContext } from '@vue/composition-api';
-import type { FormatedEvent } from '@/stores/api/events';
-
-type Props = {
-    event: FormatedEvent,
-};
-
 // @vue/component
-const EventDetailsHeaderActions: Component<Props> = (props: Props, { root, emit }: SetupContext) => {
+const EventDetailsHeaderActions = (props, { root, emit }) => {
     const __ = useI18n();
     const { event } = toRefs(props);
-    const isConfirming = ref<boolean>(false);
-    const isArchiving = ref<boolean>(false);
-    const isDeleting = ref<boolean>(false);
+    const isConfirming = ref(false);
+    const isArchiving = ref(false);
+    const isDeleting = ref(false);
     const hasMaterials = computed(() => event.value.materials.length > 0);
     const isConfirmable = computed(() => event.value.materials?.length === 0);
     const hasStarted = computed(() => event.value.startDate.isSameOrBefore(new Date(), 'day'));
@@ -52,7 +45,7 @@ const EventDetailsHeaderActions: Component<Props> = (props: Props, { root, emit 
         return `${baseUrl}/events/${id}/pdf`;
     });
 
-    const handleToggleConfirm = async (): Promise<void> => {
+    const handleToggleConfirm = async () => {
         if (isConfirming.value) {
             return;
         }
@@ -70,7 +63,7 @@ const EventDetailsHeaderActions: Component<Props> = (props: Props, { root, emit 
         }
     };
 
-    const handleToggleArchived = async (): Promise<void> => {
+    const handleToggleArchived = async () => {
         if (isArchiving.value) {
             return;
         }
@@ -88,7 +81,7 @@ const EventDetailsHeaderActions: Component<Props> = (props: Props, { root, emit 
         }
     };
 
-    const handleDelete = async (): Promise<void> => {
+    const handleDelete = async () => {
         if (isVisitor.value || !isRemovable.value || isDeleting.value) {
             return;
         }
@@ -116,11 +109,11 @@ const EventDetailsHeaderActions: Component<Props> = (props: Props, { root, emit 
         }
     };
 
-    const handleDuplicated = (newEvent: Event): void => {
+    const handleDuplicated = (newEvent) => {
         emit('duplicated', newEvent);
     };
 
-    const askDuplicate = (): void => {
+    const askDuplicate = () => {
         root.$modal.show(DuplicateEvent, { event: event.value, onDuplicated: handleDuplicated }, {
             width: 600,
             draggable: true,

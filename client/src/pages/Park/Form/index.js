@@ -1,80 +1,74 @@
 import './index.scss';
-import { computed, toRefs } from '@vue/composition-api';
+import { toRefs, computed } from '@vue/composition-api';
 import { useQuery } from 'vue-query';
 import getFormDataAsJson from '@/utils/getFormDataAsJson';
-import useI18n from '@/hooks/useI18n';
-import useRouter from '@/hooks/useRouter';
 import formatOptions from '@/utils/formatOptions';
 import apiCountries from '@/stores/api/countries';
+import useI18n from '@/hooks/useI18n';
 import FormField from '@/components/FormField';
 
-import type { Component, SetupContext } from '@vue/composition-api';
-
-type Props = {
-    company: Record<string, any>,
-    errors: Record<string, any>,
-};
-
 // @vue/component
-const CompanyForm: Component<Props> = (props: Props, { emit }: SetupContext) => {
-    const { company, errors } = toRefs(props);
+const ParkForm = (props, { emit }) => {
+    const { park, errors } = toRefs(props);
     const { data: countries } = useQuery('countries', apiCountries.all);
     const countriesOptions = computed(() => formatOptions(countries.value ?? []));
-    const { router } = useRouter();
     const __ = useI18n();
 
-    const handleSubmit = (e: SubmitEvent): void => {
+    const handleSubmit = (e) => {
         e.preventDefault();
         emit('submit', getFormDataAsJson(e.target));
     };
 
-    const handleCancel = (): void => {
-        router.back();
+    const handleChange = (e) => {
+        const { form } = e.target;
+        emit('change', getFormDataAsJson(form));
+    };
+
+    const handleCancel = () => {
+        emit('cancel');
     };
 
     return () => (
-        <form class="Form Form--fixed-actions CompanyForm" onSubmit={handleSubmit}>
+        <form
+            class="Form Form--fixed-actions ParkForm"
+            onSubmit={handleSubmit}
+            onChange={handleChange}
+        >
             <section class="Form__fieldset">
-                <h4 class="Form__fieldset__title">{__('informations')}</h4>
+                <h4 class="Form__fieldset__title">
+                    {__('minimal-infos')} <span class="FormField__label__required">*</span>
+                </h4>
                 <FormField
-                    value={company.value.legal_name}
-                    name="legal_name"
-                    label="legal-name"
+                    value={park.value.name}
+                    name="name"
+                    label="name"
                     required
-                    errors={errors.value.legal_name}
-                />
-                <FormField
-                    value={company.value.phone}
-                    name="phone"
-                    label="phone"
-                    class="CompanyForm__phone"
-                    type="tel"
-                    errors={errors.value.phone}
+                    errors={errors.value.name}
                 />
             </section>
             <section class="Form__fieldset">
-                <h4 class="Form__fieldset__title">{__('address')}</h4>
+                <h4 class="Form__fieldset__title">{__('contact-details')}</h4>
                 <FormField
-                    value={company.value.street}
+                    value={park.value.street}
                     name="street"
                     label="street"
                     errors={errors.value.street}
                 />
                 <FormField
-                    value={company.value.postal_code}
+                    value={park.value.postal_code}
                     name="postal_code"
                     label="postal-code"
-                    class="CompanyForm__postal-code"
+                    class="ParkForm__postal-code"
                     errors={errors.value.postal_code}
                 />
                 <FormField
-                    value={company.value.locality}
+                    value={park.value.locality}
                     name="locality"
                     label="city"
                     errors={errors.value.locality}
                 />
                 <FormField
-                    value={company.value.country_id}
+                    value={park.value.country_id}
                     name="country_id"
                     label="country"
                     type="select"
@@ -86,11 +80,16 @@ const CompanyForm: Component<Props> = (props: Props, { emit }: SetupContext) => 
             <section class="Form__fieldset">
                 <h4 class="Form__fieldset__title">{__('other-infos')}</h4>
                 <FormField
-                    value={company.value.note}
-                    label="notes"
+                    value={park.value.opening_hours}
+                    name="opening_hours"
+                    label="opening-hours"
+                    errors={errors.value.opening_hours}
+                />
+                <FormField
+                    value={park.value.note}
                     name="note"
+                    label="notes"
                     type="textarea"
-                    class="CompanyForm__notes"
                     errors={errors.value.note}
                 />
             </section>
@@ -106,9 +105,9 @@ const CompanyForm: Component<Props> = (props: Props, { emit }: SetupContext) => 
     );
 };
 
-CompanyForm.props = {
-    company: { type: Object, required: true },
+ParkForm.props = {
+    park: { type: Object, default: () => ({}) },
     errors: { type: Object, default: () => ({}) },
 };
 
-export default CompanyForm;
+export default ParkForm;

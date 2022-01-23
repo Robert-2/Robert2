@@ -15,39 +15,21 @@ import { normalizeFilters } from './_utils';
 import Quantity from './Quantity';
 import ReuseEventMaterials from './ReuseEventMaterials';
 
-import type { Component, SetupContext } from '@vue/composition-api';
-import type { ClientTableInstance, ClientTableOptions, TableRow } from 'vue-tables-2';
-import type { Material, MaterialWithPivot } from '@/stores/api/materials';
-import type { Event } from '@/stores/api/events';
-import type { Tag } from '@/stores/api/tags';
-import type { MaterialQuantity, RawFilters, MaterialsFiltersType } from './_utils';
-
-type Props = {
-    /** La liste du matériel sélectionné. */
-    selected?: MaterialWithPivot[],
-
-    /** L'événement éventuel associé à la liste. */
-    event?: Event,
-
-    /** Déclenché à chaque changement dans la liste. */
-    onChange(newList: MaterialQuantity[]): void,
-};
-
 const noPaginationLimit = 100000;
 
 // @vue/component
-const MaterialsListEditor: Component<Props> = (props: Props, { root, emit }: SetupContext) => {
+const MaterialsListEditor = (props, { root, emit }) => {
     const __ = useI18n();
     const { selected, event } = toRefs(props);
 
     const { route } = useRouter();
 
-    const dataTableRef = ref<ClientTableInstance | null>(null);
-    const filtersRef = ref<typeof MaterialsFilters | null>(null);
-    const showSelectedOnly = ref<boolean>(selected!.value!.length > 0);
-    const manualOrder = ref<number[]>([]);
+    const dataTableRef = ref(null);
+    const filtersRef = ref(null);
+    const showSelectedOnly = ref(selected.value.length > 0);
+    const manualOrder = ref([]);
 
-    const { data: materials, isLoading, error } = useQuery<Material[]>(
+    const { data: materials, isLoading, error } = useQuery(
         reactive(['materials-while-event', { eventId: event?.value?.id }]),
         () => (
             event?.value?.id
@@ -56,11 +38,11 @@ const MaterialsListEditor: Component<Props> = (props: Props, { root, emit }: Set
         ),
     );
 
-    const hasMaterials = computed<boolean>(() => (
-        (selected!.value!.length || 0) > 0
+    const hasMaterials = computed(() => (
+        (selected.value.length || 0) > 0
     ));
 
-    const columns = ref<string[]>([
+    const columns = ref([
         'child-toggler',
         'qty',
         'reference',
@@ -72,29 +54,29 @@ const MaterialsListEditor: Component<Props> = (props: Props, { root, emit }: Set
         'actions',
     ]);
 
-    const getFilters = (extended: boolean = true, isInit: boolean = false): MaterialsFiltersType => {
-        const filters: Record<string, number | boolean | string> = {};
+    const getFilters = (extended = true, isInit = false) => {
+        const filters = {};
 
         if (extended) {
             filters.onlySelected = isInit
-                ? selected!.value!.length
+                ? selected.value.length
                 : showSelectedOnly.value;
         }
 
-        ['park', 'category', 'subCategory'].forEach((key: string) => {
+        ['park', 'category', 'subCategory'].forEach((key) => {
             if (route.value?.query && key in route.value.query) {
-                filters[key] = route.value?.query[key] as string;
+                filters[key] = route.value?.query[key];
             }
         });
 
         if (route.value?.query?.tags) {
-            filters.tags = JSON.parse(route.value.query.tags as string);
+            filters.tags = JSON.parse(route.value.query.tags);
         }
 
         return normalizeFilters(filters, extended);
     };
 
-    const setSelectedOnly = (onlySelected: boolean): void => {
+    const setSelectedOnly = (onlySelected) => {
         dataTableRef.value?.setCustomFilters({ ...getFilters(), onlySelected });
         dataTableRef.value?.setLimit(
             onlySelected ? noPaginationLimit : config.defaultPaginationLimit,
@@ -102,32 +84,27 @@ const MaterialsListEditor: Component<Props> = (props: Props, { root, emit }: Set
         showSelectedOnly.value = onlySelected;
     };
 
-    const handleChanges = (): void => {
-        const allMaterials: MaterialQuantity[] = Object.entries(MaterialsStore.state.materials)
-            // - Laissons Typescript inférer le type de l'argument du map ici...
-            // eslint-disable-next-line @typescript-eslint/typedef
-            .map(([id, { quantity }]) => ({
-                id: parseInt(id, 10),
-                quantity,
-            }));
+    const handleChanges = () => {
+        const allMaterials = Object.entries(MaterialsStore.state.materials)
+            .map(([id, { quantity }]) => ({ id: parseInt(id, 10), quantity }));
 
-        if (allMaterials.every(({ quantity }: MaterialQuantity) => quantity === 0)) {
+        if (allMaterials.every(({ quantity }) => quantity === 0)) {
             setSelectedOnly(false);
         }
 
         emit('change', allMaterials);
     };
 
-    const getQuantity = (material: Material): number => (
+    const getQuantity = (material) => (
         MaterialsStore.getters.getQuantity(material.id)
     );
 
-    const setQuantity = (material: Material, quantity: number): void => {
+    const setQuantity = (material, quantity) => {
         MaterialsStore.commit('setQuantity', { material, quantity });
         handleChanges();
     };
 
-    const tableOptions = ref<ClientTableOptions<Material, MaterialsFiltersType>>({
+    const tableOptions = ref({
         columnsDropdown: false,
         preserveState: false,
         orderBy: { column: 'reference', ascending: true },
@@ -154,7 +131,7 @@ const MaterialsListEditor: Component<Props> = (props: Props, { root, emit }: Set
             'actions': '',
         },
         customSorting: {
-            custom: (ascending: boolean) => (a: Material, b: Material) => {
+            custom: (ascending) => (a, b) => {
                 let result = null;
 
                 // - Si on est en mode "sélectionnés uniquement" et qu'au moins l'un
@@ -178,49 +155,49 @@ const MaterialsListEditor: Component<Props> = (props: Props, { root, emit }: Set
         customFilters: [
             {
                 name: 'park',
-                callback: (row: Material, parkId: number) => row.park_id === parkId,
+                callback: (row, parkId) => row.park_id === parkId,
             },
             {
                 name: 'category',
-                callback: (row: Material, categoryId: number) => row.category_id === categoryId,
+                callback: (row, categoryId) => row.category_id === categoryId,
             },
             {
                 name: 'subCategory',
-                callback: (row: Material, subCategoryId: number) => row.sub_category_id === subCategoryId,
+                callback: (row, subCategoryId) => row.sub_category_id === subCategoryId,
             },
             {
                 name: 'tags',
-                callback: (row: Material, tags: string[]) => (
-                    tags.length === 0 || row.tags.some((tag: Tag) => tags.includes(tag.name))
+                callback: (row, tags) => (
+                    tags.length === 0 || row.tags.some((tag) => tags.includes(tag.name))
                 ),
             },
             {
                 name: 'onlySelected',
-                callback: (row: Material, isOnlySelected: boolean) => (
+                callback: (row, isOnlySelected) => (
                     !isOnlySelected || getQuantity(row) > 0
                 ),
             },
         ],
     });
 
-    const handleFiltersChanges = (filters: RawFilters): void => {
+    const handleFiltersChanges = (filters) => {
         const onlySelected = showSelectedOnly.value;
         const newFilters = normalizeFilters({ ...filters, onlySelected });
         dataTableRef.value?.setCustomFilters(newFilters);
     };
 
-    const getRemainingQuantity = (material: Material): number => (
+    const getRemainingQuantity = (material) => (
         (material.remaining_quantity || 0) - getQuantity(material)
     );
 
     onMounted(() => {
-        MaterialsStore.commit('init', selected!.value);
+        MaterialsStore.commit('init', selected.value);
     });
 
-    const handleSelectMany = (materialsToAdd: MaterialWithPivot[]): void => {
-        const shouldDisplayOnlySelected = !selected!.value || selected!.value.length === 0;
+    const handleSelectMany = (materialsToAdd) => {
+        const shouldDisplayOnlySelected = !selected.value || selected.value.length === 0;
 
-        materialsToAdd.forEach(({ pivot, ...material }: MaterialWithPivot) => {
+        materialsToAdd.forEach(({ pivot, ...material }) => {
             const { quantity } = pivot;
             MaterialsStore.commit('setQuantity', { material, quantity });
         });
@@ -232,13 +209,13 @@ const MaterialsListEditor: Component<Props> = (props: Props, { root, emit }: Set
         }
     };
 
-    const handleShowReuseEventModal = (): void => {
+    const handleShowReuseEventModal = () => {
         root.$modal.show(
             ReuseEventMaterials,
             undefined,
             { width: 700, draggable: true, clickToClose: true },
             {
-                'before-close': ({ params }: { params?: { materials: MaterialWithPivot[] } }) => {
+                'before-close': ({ params }) => {
                     if (params) {
                         handleSelectMany(params.materials);
                     }
@@ -280,10 +257,10 @@ const MaterialsListEditor: Component<Props> = (props: Props, { root, emit }: Set
                     columns={columns.value}
                     options={tableOptions.value}
                     scopedSlots={{
-                        'qty': ({ row }: TableRow<Material>) => (
+                        'qty': ({ row }) => (
                             <span>{getQuantity(row) > 0 ? `${getQuantity(row)}\u00a0×` : ''}</span>
                         ),
-                        'remaining_quantity': ({ row }: TableRow<Material>) => (
+                        'remaining_quantity': ({ row }) => (
                             <span
                                 class={{
                                     'MaterialsListEditor__remaining': true,
@@ -294,24 +271,24 @@ const MaterialsListEditor: Component<Props> = (props: Props, { root, emit }: Set
                                 {__('remaining-count', { count: getRemainingQuantity(row) })}
                             </span>
                         ),
-                        'price': ({ row }: TableRow<Material>) => (
+                        'price': ({ row }) => (
                             <Fragment>
                                 {formatAmount(row.rental_price)} <i class="fas fa-times" />
                             </Fragment>
                         ),
-                        'quantity': ({ row }: TableRow<Material>) => (
+                        'quantity': ({ row }) => (
                             <Quantity
                                 material={row}
                                 initialQuantity={getQuantity(row)}
                                 onChange={setQuantity}
                             />
                         ),
-                        'amount': ({ row }: TableRow<Material>) => (
+                        'amount': ({ row }) => (
                             <span>
                                 {formatAmount(row.rental_price * getQuantity(row))}
                             </span>
                         ),
-                        'actions': ({ row }: TableRow<Material>) => (
+                        'actions': ({ row }) => (
                             getQuantity(row) > 0 ? (
                                 <button
                                     type="button"

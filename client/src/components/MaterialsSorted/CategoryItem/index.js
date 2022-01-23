@@ -3,20 +3,16 @@ import { toRefs } from '@vue/composition-api';
 import useI18n from '@/hooks/useI18n';
 import formatAmount from '@/utils/formatAmount';
 
-import type { Component } from '@vue/composition-api';
-import type { MaterialWithPivot } from '@/stores/api/materials';
-import type { MaterialCategoryItem } from '..';
+// type Props = {
+//     /** La catégorie avec matériel à afficher. */
+//     data: MaterialCategoryItem,
 
-type Props = {
-    /** La catégorie avec matériel à afficher. */
-    data: MaterialCategoryItem,
-
-    /** Permet d'afficher les prix de location ou non. */
-    withRentalPrices?: boolean,
-};
+//     /** Permet d'afficher les prix de location ou non. */
+//     withRentalPrices?: boolean,
+// };
 
 // @vue/component
-const MaterialsCategoryItem: Component<Props> = (props: Props) => {
+const MaterialsCategoryItem = (props) => {
     const __ = useI18n();
     const { data, withRentalPrices } = toRefs(props);
 
@@ -24,7 +20,7 @@ const MaterialsCategoryItem: Component<Props> = (props: Props) => {
         <div class="MaterialsCategoryItem">
             <h4 class="MaterialsCategoryItem__title">{data.value.name}</h4>
             <ul class="MaterialsCategoryItem__list">
-                {data.value.materials.map((material: MaterialWithPivot) => (
+                {data.value.materials.map((material) => (
                     <li key={material.id} class="MaterialsCategoryItem__material">
                         <div class="MaterialsCategoryItem__material__quantity-first">
                             {material.pivot.quantity}

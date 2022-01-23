@@ -5,21 +5,15 @@ import formatAmount from '@/utils/formatAmount';
 import useI18n from '@/hooks/useI18n';
 import ErrorMessage from '@/components/ErrorMessage/index';
 
-import type { Component } from '@vue/composition-api';
-
-type Props = {
-    parkId: number,
-};
-
 // @vue/component
-const ParkTotalAmount: Component<Props> = (props: Props) => {
+const ParkTotalAmount = (props) => {
     const __ = useI18n();
     const { parkId } = toRefs(props);
     const isLoading = ref(false);
-    const amount = ref<number | null>(null);
-    const error = ref<Error | string | null>(null);
+    const amount = ref(null);
+    const error = ref(null);
 
-    const handleCalculate = async (): Promise<void> => {
+    const handleCalculate = async () => {
         isLoading.value = true;
         try {
             const { data } = await requester.get(`parks/${parkId.value}/total-amount`);

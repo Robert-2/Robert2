@@ -7,56 +7,45 @@ import useI18n from '@/hooks/useI18n';
 import apiCategories from '@/stores/api/categories';
 import MaterialsCategoryItem from './CategoryItem';
 
-import type { Component } from '@vue/composition-api';
-import type { MaterialWithPivot } from '@/stores/api/materials';
-import type { Category } from '@/stores/api/categories';
+// type Props = {
+//     /** La liste du matériel. */
+//     data: MaterialWithPivot[],
 
-type Props = {
-    /** La liste du matériel. */
-    data: MaterialWithPivot[],
+//     /** Permet d'afficher les prix de location ou non. */
+//     withRentalPrices?: boolean,
 
-    /** Permet d'afficher les prix de location ou non. */
-    withRentalPrices?: boolean,
-
-    /** Pour déplier la liste à l'ouverture du component. */
-    hideDetails?: boolean,
-};
-
-export type MaterialCategoryItem = {
-    id: number,
-    name: string,
-    materials: MaterialWithPivot[],
-    subTotal: number,
-};
+//     /** Pour déplier la liste à l'ouverture du component. */
+//     hideDetails?: boolean,
+// };
 
 const MIN_COUNT_FOR_HIDE_BUTTON = 20;
 
 // @vue/component
-const MaterialsSorted: Component<Props> = (props: Props) => {
+const MaterialsSorted = (props) => {
     const __ = useI18n();
     const { data, withRentalPrices, hideDetails } = toRefs(props);
-    const showList = ref<boolean>(!hideDetails?.value);
+    const showList = ref(!hideDetails?.value);
 
     // - Obligation d'utiliser ce hook car on peut être dans une modale
     useQueryProvider(queryClient);
-    const { data: allCategories } = useQuery<Category[]>(
+    const { data: allCategories } = useQuery(
         'categories',
         () => apiCategories.all({ paginated: false }),
     );
 
-    const byCategories = computed<MaterialCategoryItem[]>(() => {
-        const categoryNameGetter = (categoryId: number): string | null => {
-            const category = allCategories.value?.find(({ id }: Category) => id === categoryId);
+    const byCategories = computed(() => {
+        const categoryNameGetter = (categoryId) => {
+            const category = allCategories.value?.find(({ id }) => id === categoryId);
             return category ? category.name : null;
         };
         return dispatchMaterialInSections(data.value, 'category_id', categoryNameGetter, 'price');
     });
 
-    const handleToggleDetails = (): void => {
+    const handleToggleDetails = () => {
         showList.value = !showList.value;
     };
 
-    const handleHideDetails = (): void => {
+    const handleHideDetails = () => {
         showList.value = false;
     };
 
@@ -74,7 +63,7 @@ const MaterialsSorted: Component<Props> = (props: Props) => {
             </button>
             {showList.value && (
                 <div class="MaterialsSorted__categories">
-                    {byCategories.value.map((category: MaterialCategoryItem) => (
+                    {byCategories.value.map((category) => (
                         <MaterialsCategoryItem
                             key={category.id}
                             data={category}
