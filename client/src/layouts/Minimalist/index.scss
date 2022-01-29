@@ -3,10 +3,31 @@
 .MinimalistLayout {
     position: relative;
     display: flex;
-    flex-flow: column nowrap;
-    justify-content: flex-start;
+    flex-direction: column;
     height: 100%;
-    padding-bottom: calc(60px + 0.1vh);
+
+    &__body {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    &__footer {
+        flex: none;
+        display: none;
+        width: 100%;
+        padding: 10px 15px;
+        background-color: globals.$bg-color-emphasis;
+        color: globals.$text-muted-color;
+        font-size: 0.8rem;
+        line-height: 1.52rem;
+        text-align: center;
+    }
+
+    //
+    // - Corps de la page
+    //
 
     &__logo {
         position: relative;
@@ -20,22 +41,13 @@
         }
     }
 
-    &__body {
+    &__content {
         flex: 0 0 auto;
     }
 
-    &__footer {
-        position: absolute;
-        bottom: 0;
-        display: none;
-        width: 100%;
-        padding: 10px 15px;
-        background-color: globals.$bg-color-emphasis;
-        color: globals.$text-muted-color;
-        font-size: 0.8rem;
-        line-height: 1.52rem;
-        text-align: center;
-    }
+    //
+    // - Reponsive
+    //
 
     @media (min-width: globals.$screen-mobile) {
         &__logo {
@@ -46,11 +58,9 @@
     }
 
     @media (min-width: globals.$screen-tablet) {
-        justify-content: center;
-
         &__logo {
             .Logo {
-                max-height: 200px;
+                max-height: 150px;
             }
         }
 

@@ -13,11 +13,13 @@ const MinimalistLayout = (_, { slots }) => {
 
         return (
             <div class="MinimalistLayout">
-                <div class="MinimalistLayout__logo">
-                    <Logo />
-                </div>
                 <div class="MinimalistLayout__body">
-                    {children}
+                    <div class="MinimalistLayout__logo">
+                        <Logo />
+                    </div>
+                    <div class="MinimalistLayout__content">
+                        {children}
+                    </div>
                 </div>
                 <div class="MinimalistLayout__footer">
                     {__('layouts.minimalist.footer-text')}<br />
