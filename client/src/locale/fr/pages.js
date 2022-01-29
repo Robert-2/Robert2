@@ -7,10 +7,6 @@ export default {
         'connexion': "Connexion",
         'please-wait': "Authentification, merci de patienter...",
         'bye': "À bientôt\u00a0!",
-        'footer': "Robert2 est un logiciel libre. Vous pouvez le copier et le redistribuer librement, sauf pour une utilisation commerciale.",
-        'official-website': "Site web officiel",
-        'community-forum': "Forum de la communauté",
-
         'error': {
             'bad-infos': "Les informations fournies sont incorrectes. Utilisez votre adresse e-mail ou votre pseudo, et votre mot de passe.",
             'expired-session': "Votre session a expiré. Merci de vous reconnecter\u00a0!",

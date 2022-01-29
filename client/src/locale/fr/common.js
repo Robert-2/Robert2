@@ -308,4 +308,10 @@ export default {
 
     'french': "Français",
     'english': "English",
+
+    'external-links': {
+        'official-website': "Site web officiel",
+        'community-forum': "Forum de la communauté",
+        'github-repository': 'Dépôt Github',
+    },
 };

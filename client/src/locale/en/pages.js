@@ -7,10 +7,6 @@ export default {
         'connexion': "Enter Robert",
         'please-wait': "Authentication, please wait...",
         'bye': "See you\u00a0!",
-        'footer': "Robert2 is a free (as in 'freedom') software. You can copy and redistribute it freely, except for commercial purpose.",
-        'official-website': "Official website",
-        'community-forum': "Community Forum",
-
         'error': {
             'bad-infos': "Given infos ar not correct. Please give your e-mail address or pseudo, and your password.",
             'expired-session': "Your session has expired. Please log back in!",
