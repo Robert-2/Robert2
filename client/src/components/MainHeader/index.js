@@ -1,5 +1,5 @@
 import './index.scss';
-import Logo from '@/components/Logo';
+import Logo from '@/components/Logo/vue';
 import Menu from './Menu';
 
 // @vue/component

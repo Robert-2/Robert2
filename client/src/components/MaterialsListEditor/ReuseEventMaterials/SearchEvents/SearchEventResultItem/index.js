@@ -1,25 +1,17 @@
 import './index.scss';
 import moment from 'moment';
 import { toRefs, computed } from '@vue/composition-api';
-import useI18n from '@/hooks/useI18n';
-
-import type { Component, SetupContext } from '@vue/composition-api';
-import type { EventSummary } from '@/stores/api/events';
-
-type Props = {
-    data: EventSummary,
-    onSelect(id: number): void,
-};
+import useI18n from '@/hooks/vue/useI18n';
 
 // @vue/component
-const SearchEventResultItem: Component<Props> = (props: Props, { emit }: SetupContext) => {
+const SearchEventResultItem = (props, { emit }) => {
     const __ = useI18n();
     const { data } = toRefs(props);
     const start = computed(() => moment(data.value.startDate));
     const end = computed(() => moment(data.value.endDate));
     const duration = computed(() => end.value.diff(start.value, 'days') + 1);
 
-    const handleSelect = (): void => {
+    const handleSelect = () => {
         emit('select', data.value.id);
     };
 

@@ -4,37 +4,27 @@ import { useQuery } from 'vue-query';
 import getFormDataAsJson from '@/utils/getFormDataAsJson';
 import formatOptions from '@/utils/formatOptions';
 import apiCountries from '@/stores/api/countries';
-import useI18n from '@/hooks/useI18n';
+import useI18n from '@/hooks/vue/useI18n';
 import FormField from '@/components/FormField';
 
-import type { Component, SetupContext } from '@vue/composition-api';
-
-type Props = {
-    park: Record<string, any>,
-    errors: Record<string, string | null>,
-    onSubmit(data: Record<string, string>): void,
-    onChange(data: Record<string, string>): void,
-    onCancel(): void,
-};
-
 // @vue/component
-const ParkForm: Component<Props> = (props: Props, { emit }: SetupContext) => {
+const ParkForm = (props, { emit }) => {
     const { park, errors } = toRefs(props);
     const { data: countries } = useQuery('countries', apiCountries.all);
     const countriesOptions = computed(() => formatOptions(countries.value ?? []));
     const __ = useI18n();
 
-    const handleSubmit = (e: SubmitEvent): void => {
+    const handleSubmit = (e) => {
         e.preventDefault();
         emit('submit', getFormDataAsJson(e.target));
     };
 
-    const handleChange = (e: Event): void => {
-        const { form } = e.target as HTMLInputElement;
+    const handleChange = (e) => {
+        const { form } = e.target;
         emit('change', getFormDataAsJson(form));
     };
 
-    const handleCancel = (): void => {
+    const handleCancel = () => {
         emit('cancel');
     };
 

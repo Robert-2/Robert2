@@ -1,32 +1,27 @@
 import './index.scss';
 import { ref, computed } from '@vue/composition-api';
-import useI18n from '@/hooks/useI18n';
-import useRouter from '@/hooks/useRouter';
+import useI18n from '@/hooks/vue/useI18n';
+import useRouter from '@/hooks/vue/useRouter';
 import Loading from '@/components/Loading';
 import ErrorMessage from '@/components/ErrorMessage/index';
 import MaterialsSorted from '@/components/MaterialsSorted';
 import apiEvents from '@/stores/api/events';
 import SearchEvents from './SearchEvents';
 
-import type { Component, SetupContext } from '@vue/composition-api';
-import type { Event } from '@/stores/api/events';
-
-type Props = Record<string, never>;
-
 // @vue/component
-const ReuseEventMaterials: Component<Props> = (props: Props, { emit }: SetupContext) => {
+const ReuseEventMaterials = (props, { emit }) => {
     const __ = useI18n();
     const { route } = useRouter();
-    const selected = ref<Event | null>(null);
-    const isLoading = ref<boolean>(false);
-    const error = ref<unknown | null>(null);
+    const selected = ref(null);
+    const isLoading = ref(false);
+    const error = ref(null);
 
-    const excludeEvent = computed<number | null>(() => {
+    const excludeEvent = computed(() => {
         const { id } = route.value.params;
         return id ? Number.parseInt(id, 10) : null;
     });
 
-    const handleSelectEvent = async (id: number): Promise<void> => {
+    const handleSelectEvent = async (id) => {
         isLoading.value = true;
         error.value = null;
 
@@ -40,11 +35,11 @@ const ReuseEventMaterials: Component<Props> = (props: Props, { emit }: SetupCont
         }
     };
 
-    const handleClearSelection = (): void => {
+    const handleClearSelection = () => {
         selected.value = null;
     };
 
-    const handleSubmit = (): void => {
+    const handleSubmit = () => {
         if (!selected.value) {
             return;
         }
@@ -52,12 +47,12 @@ const ReuseEventMaterials: Component<Props> = (props: Props, { emit }: SetupCont
         emit('close', { materials });
     };
 
-    const handleClose = (): void => {
+    const handleClose = () => {
         emit('close');
     };
 
     return () => {
-        const renderSelection = (): JSX.Element | null => {
+        const renderSelection = () => {
             if (error.value) {
                 return <ErrorMessage error={error.value} />;
             }

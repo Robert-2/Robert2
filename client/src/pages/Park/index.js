@@ -1,41 +1,24 @@
 import './index.scss';
 import { computed, ref, onMounted } from '@vue/composition-api';
 import requester from '@/globals/requester';
-import useI18n from '@/hooks/useI18n';
-import useRouter from '@/hooks/useRouter';
+import useI18n from '@/hooks/vue/useI18n';
+import useRouter from '@/hooks/vue/useRouter';
 import Help from '@/components/Help';
 import Page from '@/components/Page';
 import ParkForm from './Form';
 import ParkTotals from './Totals';
 
-import type { Render, SetupContext } from '@vue/composition-api';
-
-type Props = Record<string, never>;
-
-type State = {
-    help: string | { type: string, text: string },
-    error: unknown | null,
-    isLoading: boolean,
-    isFetched: boolean,
-
-    // TODO: Typer ça correctement via un type Park provement de `stores/api/parks.ts`.
-    park: Record<string, any>,
-
-    // TODO: Lorsque le type Park sera dispo, on devra faire `Record<keyof Park, string | null>`.
-    errors: Record<string, string | null>,
-};
-
 const WIP_STORAGE_KEY = 'WIP-newPark';
 
 // @vue/component
-const ParkEditPage = (props: Props, { root }: SetupContext): Render => {
+const ParkEditPage = (props, { root }) => {
     const __ = useI18n();
     const { route, router } = useRouter();
     const id = computed(() => route.value.params.id || null);
     const isNew = computed(() => !id.value || id.value === 'new');
 
     // TODO: Refactoriser ça + Utiliser des ref() séparées.
-    const state = ref<State>({
+    const state = ref({
         help: 'page-parks.help-edit',
         error: null,
         isLoading: false,
@@ -59,17 +42,17 @@ const ParkEditPage = (props: Props, { root }: SetupContext): Render => {
         },
     });
 
-    const flushStashedData = (): void => {
+    const flushStashedData = () => {
         localStorage.removeItem(WIP_STORAGE_KEY);
     };
 
-    const resetHelpLoading = (): void => {
+    const resetHelpLoading = () => {
         state.value.help = 'page-parks.help-edit';
         state.value.error = null;
         state.value.isLoading = true;
     };
 
-    const displayError = (error: unknown): void => {
+    const displayError = (error) => {
         state.value.help = 'page-parks.help-edit';
         state.value.error = error;
 
@@ -80,7 +63,7 @@ const ParkEditPage = (props: Props, { root }: SetupContext): Render => {
         }
     };
 
-    const getParkData = async (): Promise<void> => {
+    const getParkData = async () => {
         if (isNew.value) {
             const stashedData = localStorage.getItem(WIP_STORAGE_KEY);
             if (stashedData) {
@@ -93,7 +76,7 @@ const ParkEditPage = (props: Props, { root }: SetupContext): Render => {
         resetHelpLoading();
 
         try {
-            const { data } = await requester.get(`parks/${id.value!}`);
+            const { data } = await requester.get(`parks/${id.value}`);
             state.value.park = data;
             state.value.isFetched = true;
         } catch (error) {
@@ -103,11 +86,11 @@ const ParkEditPage = (props: Props, { root }: SetupContext): Render => {
         }
     };
 
-    const save = async (parkData: Record<string, any>): Promise<void> => {
+    const save = async (parkData) => {
         resetHelpLoading();
 
         const request = isNew.value ? requester.post : requester.put;
-        const endpoint = isNew.value ? 'parks' : `parks/${id.value!}`;
+        const endpoint = isNew.value ? 'parks' : `parks/${id.value}`;
 
         try {
             const { data } = await request(endpoint, parkData);
@@ -123,7 +106,7 @@ const ParkEditPage = (props: Props, { root }: SetupContext): Render => {
         }
     };
 
-    const handleChange = (newData: Record<string, any>): void => {
+    const handleChange = (newData) => {
         if (!isNew.value) {
             return;
         }
@@ -132,7 +115,7 @@ const ParkEditPage = (props: Props, { root }: SetupContext): Render => {
         localStorage.setItem(WIP_STORAGE_KEY, stashedData);
     };
 
-    const handleCancel = (): void => {
+    const handleCancel = () => {
         flushStashedData();
         router.back();
     };

@@ -1,23 +1,14 @@
 import './index.scss';
 import { computed, toRefs, onMounted } from '@vue/composition-api';
 import { useQuery } from 'vue-query';
-import useI18n from '@/hooks/useI18n';
-import useRouter from '@/hooks/useRouter';
+import useI18n from '@/hooks/vue/useI18n';
+import useRouter from '@/hooks/vue/useRouter';
 import formatOptions from '@/utils/formatOptions';
 import apiCountries from '@/stores/api/countries';
 import FormField from '@/components/FormField';
 
-import type { Component, SetupContext } from '@vue/composition-api';
-
-type Props = {
-    person: Record<string, any>,
-    errors: Record<string, any>,
-    withCompany: boolean,
-    withReference: boolean,
-};
-
 // @vue/component
-const PersonForm: Component<Props> = (props: Props, { root, emit }: SetupContext) => {
+const PersonForm = (props, { root, emit }) => {
     // FIXME: La prop. `person` ne devrait pas être mutée dans ce component...
     const { person, errors, withReference, withCompany } = toRefs(props);
     const { data: countries } = useQuery('countries', apiCountries.all);
@@ -30,15 +21,15 @@ const PersonForm: Component<Props> = (props: Props, { root, emit }: SetupContext
         root.$store.dispatch('companies/fetch');
     });
 
-    const handleSubmit = (e: SubmitEvent): void => {
+    const handleSubmit = (e) => {
         emit('submit', e);
     };
 
-    const handleChange = (e: Event): void => {
+    const handleChange = (e) => {
         emit('change', e);
     };
 
-    const handleBack = (): void => {
+    const handleBack = () => {
         emit('cancel');
         router.back();
     };

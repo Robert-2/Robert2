@@ -2,33 +2,26 @@ import './index.scss';
 import { computed, toRefs } from '@vue/composition-api';
 import { useQuery } from 'vue-query';
 import getFormDataAsJson from '@/utils/getFormDataAsJson';
-import useI18n from '@/hooks/useI18n';
-import useRouter from '@/hooks/useRouter';
+import useI18n from '@/hooks/vue/useI18n';
+import useRouter from '@/hooks/vue/useRouter';
 import formatOptions from '@/utils/formatOptions';
 import apiCountries from '@/stores/api/countries';
 import FormField from '@/components/FormField';
 
-import type { Component, SetupContext } from '@vue/composition-api';
-
-type Props = {
-    company: Record<string, any>,
-    errors: Record<string, any>,
-};
-
 // @vue/component
-const CompanyForm: Component<Props> = (props: Props, { emit }: SetupContext) => {
+const CompanyForm = (props, { emit }) => {
     const { company, errors } = toRefs(props);
     const { data: countries } = useQuery('countries', apiCountries.all);
     const countriesOptions = computed(() => formatOptions(countries.value ?? []));
     const { router } = useRouter();
     const __ = useI18n();
 
-    const handleSubmit = (e: SubmitEvent): void => {
+    const handleSubmit = (e) => {
         e.preventDefault();
         emit('submit', getFormDataAsJson(e.target));
     };
 
-    const handleCancel = (): void => {
+    const handleCancel = () => {
         router.back();
     };
 
