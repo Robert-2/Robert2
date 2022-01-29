@@ -1,6 +1,6 @@
 @use '~@/style/globals';
 
-.Sidebar {
+.DefaultLayoutSidebar {
     position: absolute;
     z-index: 100;
     left: -(globals.$sidebar-full-width);

@@ -28,6 +28,7 @@ export default [
         name: 'login',
         component: Login,
         meta: {
+            layout: 'minimalist',
             requiresAuth: false,
         },
     },

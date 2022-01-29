@@ -1,10 +1,8 @@
 import './index.scss';
-import Layout from './Layout';
 
 // @vue/component
 export default {
     name: 'Login',
-    components: { Layout },
     data() {
         let type = 'default';
         let text = this.$t('page-login.welcome');
@@ -61,12 +59,47 @@ export default {
             if (error.code === 404) {
                 text = this.$t('page-login.error.bad-infos');
             }
-
-            this.message = {
-                type: 'error',
-                text,
-                isLoading: false,
-            };
+            this.message = { type: 'error', text, isLoading: false };
         },
+
+        handleSubmit(e) {
+            e.preventDefault();
+
+            this.login();
+        },
+    },
+    render() {
+        const { $t: __, message, credentials, handleSubmit } = this;
+
+        return (
+            <div class="Login">
+                <div class={['Login__message', `Login__message--${message.type}`]}>
+                    {message.isLoading && <i class="fa fa-circle-o-notch fa-spin" />}
+                    {message.text}
+                </div>
+                <div class="Login__body">
+                    <form class="Login__form" onSubmit={handleSubmit}>
+                        <input
+                            type="text"
+                            vModel={credentials.identifier}
+                            autocomplete="username"
+                            class="Login__form__input"
+                            placeholder={__('email-address-or-pseudo')}
+                        />
+                        <input
+                            type="password"
+                            vModel={credentials.password}
+                            autocomplete="current-password"
+                            class="Login__form__input"
+                            placeholder={__('password')}
+                        />
+                        <button type="submit" class="Login__form__submit info">
+                            <i class="fa fa-user-alt" />
+                            {__('page-login.connexion')}
+                        </button>
+                    </form>
+                </div>
+            </div>
+        );
     },
 };

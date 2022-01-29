@@ -1,17 +1,18 @@
-import './index.scss';
+import invariant from 'invariant';
 import { useQueryProvider } from 'vue-query';
-import { ref, computed, watch } from '@vue/composition-api';
+import { computed, watch } from '@vue/composition-api';
 import queryClient from '@/globals/queryClient';
 import useRouter from '@/hooks/vue/useRouter';
-import Header from '@/components/MainHeader';
-import Sidebar from '@/components/Sidebar';
+import layouts from '@/layouts';
 
 // @vue/component
 const App = (props, { root }) => {
-    const isOpenedSidebar = ref(false);
-    const isLogged = computed(() => root.$store.getters['auth/isLogged']);
-    const { route } = useRouter();
     useQueryProvider(queryClient);
+    const { route } = useRouter();
+    const layout = computed(() => {
+        const routeMeta = route.value?.meta;
+        return routeMeta?.layout ?? 'default';
+    });
 
     // - Configure Axios pour qu'il redirige en cas de soucis de connexion lors des requêtes API.
     root.$http.interceptors.response.use((response) => response, (error) => {
@@ -28,23 +29,16 @@ const App = (props, { root }) => {
     // - "Cache" les modales ouvertes entre deux changements de page.
     watch(route, () => { root.$modal.hideAll(); });
 
-    const handleToggleSidebar = (isOpen) => {
-        if (isOpen === 'toggle') {
-            isOpenedSidebar.value = !isOpenedSidebar.value;
-            return;
-        }
-        isOpenedSidebar.value = isOpen;
-    };
+    return () => {
+        invariant(layout.value in layouts, `The "${layout}" layout doesn't exist.`);
+        const Layout = layouts[layout.value];
 
-    return () => (
-        <div class="App">
-            {isLogged.value && <Header onToggleMenu={handleToggleSidebar} />}
-            <div class="App__body">
-                {isLogged.value && <Sidebar isOpen={isOpenedSidebar.value} />}
+        return (
+            <Layout>
                 <router-view key={route.value.path} />
-            </div>
-        </div>
-    );
+            </Layout>
+        );
+    };
 };
 
 export default App;

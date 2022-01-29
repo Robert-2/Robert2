@@ -3,7 +3,7 @@ import Dropdown, { getItemClassnames } from '@/components/Dropdown';
 
 // @vue/component
 export default {
-    name: 'MainHeaderMenu',
+    name: 'DefaultLayoutHeaderMenu',
     computed: {
         pseudo() {
             return this.$store.state.auth.user.pseudo;
@@ -20,7 +20,7 @@ export default {
         const { $t: __, pseudo, logout } = this;
 
         return (
-            <nav class="MainHeaderMenu">
+            <nav class="DefaultLayoutHeaderMenu">
                 <Dropdown>
                     <template slot="buttonText">{__('hello-pseudo', { pseudo })}</template>
                     <template slot="items">

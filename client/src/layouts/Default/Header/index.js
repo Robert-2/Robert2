@@ -4,7 +4,7 @@ import Menu from './Menu';
 
 // @vue/component
 export default {
-    name: 'MainHeader',
+    name: 'DefaultLayoutHeader',
     computed: {
         pageTitle() {
             const { pageTitle, pageSubTitle = '', pageRawTitle } = this.$store.state;
@@ -30,15 +30,15 @@ export default {
         const { pageTitle, toggleMenu } = this;
 
         return (
-            <div class="MainHeader">
-                <div class="MainHeader__logo">
+            <div class="DefaultLayoutHeader">
+                <div class="DefaultLayoutHeader__logo">
                     <Logo minimalist />
                 </div>
-                <div class="MainHeader__menu-toggle" onClick={toggleMenu}>
+                <div class="DefaultLayoutHeader__menu-toggle" onClick={toggleMenu}>
                     <i class="fas fa-bars fa-2x" />
                 </div>
-                <div class="MainHeader__title">{pageTitle}</div>
-                <Menu class="MainHeader__menu" />
+                <div class="DefaultLayoutHeader__title">{pageTitle}</div>
+                <Menu class="DefaultLayoutHeader__menu" />
             </div>
         );
     },

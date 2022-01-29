@@ -1,11 +1,11 @@
 @use '~@/style/globals';
 
-.LoginLayout {
+.MinimalistLayout {
     position: relative;
-    flex: 1;
     display: flex;
     flex-flow: column nowrap;
     justify-content: flex-start;
+    height: 100%;
     padding-bottom: calc(60px + 0.1vh);
 
     &__logo {

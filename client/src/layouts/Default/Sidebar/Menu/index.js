@@ -2,7 +2,7 @@ import './index.scss';
 
 // @vue/component
 export default {
-    name: 'SidebarMenu',
+    name: 'DefaultLayoutSidebarMenu',
     computed: {
         links() {
             const isAdmin = this.$store.getters['auth/is']('admin');
@@ -37,14 +37,14 @@ export default {
         const { $t: __, links } = this;
 
         return (
-            <ul class="SidebarMenu">
+            <ul class="DefaultLayoutSidebarMenu">
                 {links.map(({ icon, label, url, exact = false }, index) => (
                     <router-link key={index} to={url} exact={exact} custom>
                         {({ href, navigate, isActive }) => (
-                            <li class={['SidebarMenu__item', { 'SidebarMenu__item--active': isActive }]}>
-                                <a href={href} onClick={navigate} class="SidebarMenu__item__link">
-                                    <i class={['SidebarMenu__item__icon', 'fas', `fa-${icon}`]} /><br />
-                                    <span class="SidebarMenu__item__title">{__(label)}</span>
+                            <li class={['DefaultLayoutSidebarMenu__item', { 'DefaultLayoutSidebarMenu__item--active': isActive }]}>
+                                <a href={href} onClick={navigate} class="DefaultLayoutSidebarMenu__item__link">
+                                    <i class={['DefaultLayoutSidebarMenu__item__icon', 'fas', `fa-${icon}`]} /><br />
+                                    <span class="DefaultLayoutSidebarMenu__item__title">{__(label)}</span>
                                 </a>
                             </li>
                         )}

@@ -1,6 +1,6 @@
 @use '~@/style/globals';
 
-.MainHeader {
+.DefaultLayoutHeader {
     flex: 0 0 globals.$main-header-height;
     display: flex;
     flex-flow: row nowrap;

@@ -5,7 +5,7 @@ import Menu from './Menu';
 
 // @vue/component
 export default {
-    name: 'Sidebar',
+    name: 'DefaultLayoutSidebar',
     props: {
         isOpen: Boolean,
     },
@@ -18,12 +18,12 @@ export default {
         const { isOpen, year, version } = this;
 
         return (
-            <div class={['Sidebar', { 'Sidebar--opened': isOpen }]}>
-                <div class="Sidebar__logo">
+            <div class={['DefaultLayoutSidebar', { 'DefaultLayoutSidebar--opened': isOpen }]}>
+                <div class="DefaultLayoutSidebar__logo">
                     <Logo minimalist />
                 </div>
-                <Menu class="Sidebar__menu" />
-                <div class="Sidebar__footer">
+                <Menu class="DefaultLayoutSidebar__menu" />
+                <div class="DefaultLayoutSidebar__footer">
                     © 2017-{year}<br />
                     v. {version}
                 </div>
