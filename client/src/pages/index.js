@@ -1,6 +1,4 @@
 import Login from './Login';
-import UserProfile from './UserProfile';
-import UserSettings from './UserSettings';
 import Calendar from './Calendar';
 import Event from './Event';
 import EventReturn from './EventReturn';
@@ -20,6 +18,7 @@ import TechnicianView from './TechnicianView';
 import Categories from './Categories';
 import Parks from './Parks';
 import Park from './Park';
+import UserSettings from './Settings/User';
 import GlobalSettings from './Settings/Global';
 
 export default [
@@ -33,23 +32,10 @@ export default [
         },
     },
     {
-        path: '/profile',
-        name: 'user-profile',
-        component: UserProfile,
-        meta: {
-            resource: 'users',
-            title: 'page-profile.title',
-            requiresAuth: true,
-            requiresGroups: ['admin', 'member', 'visitor'],
-        },
-    },
-    {
         path: '/user-settings',
         name: 'user-settings',
         component: UserSettings,
         meta: {
-            resource: 'users',
-            title: 'page-user-settings.title',
             requiresAuth: true,
             requiresGroups: ['admin', 'member', 'visitor'],
         },

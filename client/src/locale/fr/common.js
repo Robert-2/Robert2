@@ -2,7 +2,6 @@
 
 export default {
     'hello-pseudo': "Bonjour {pseudo}\u00a0!",
-    'your-profile': "Votre profil",
     'your-settings': "Vos paramètres",
     'logout-quit': "Quitter Robert",
 

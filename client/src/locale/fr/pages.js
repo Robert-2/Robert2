@@ -14,27 +14,6 @@ export default {
         },
     },
 
-    'page-profile': {
-        'title': "Votre profil",
-        'help': "Si vous modifiez votre email, votre pseudo ou votre mot de passe, ne les oubliez pas avant de vous déconnecter\u00a0!",
-        'you-are-group': "Vous êtes\u00a0: {group}.",
-        'edit-password': "Modifier votre mot de passe",
-        'password-confirmation': "Confirmation du mot passe",
-        'password-confirmation-must-match': "Le mot de passe et sa confirmation doivent être identiques.",
-        'password-modified': "Votre mot de passe a bien été modifié.",
-        'saved': "Votre profil a bien été sauvegardé.",
-    },
-
-    'page-user-settings': {
-        'title': "Vos paramètres",
-        'help': "La « durée d'une session » est le temps imparti avant votre déconnexion automatique de l'application.",
-        'auth-token-validity-duration': "Durée max. d'une session",
-        'interface': "Interface",
-        'language': "Langue",
-        'hours': "heures",
-        'saved': "Paramètres sauvegardés.",
-    },
-
     'page-calendar': {
         'title': "Calendrier",
         'help': (
@@ -408,6 +387,28 @@ export default {
             ),
             'public-calendar-url-reset-error': "Une erreur est survenue lors de la re-génération du lien du calendrier public, veuillez re-essayer.",
             'public-calendar-url-reset-success': "Le lien du calendrier public a bien été re-généré\u00a0! Le nouveau lien est disponible ci-dessus.",
+        },
+    },
+
+    'page-user-settings': {
+        'title': "Vos paramètres",
+        'profile': {
+            'title': "Profil",
+            'help': "Si vous modifiez votre email, votre pseudo ou votre mot de passe, ne les oubliez pas avant de vous déconnecter\u00a0!",
+            'new-password': "Nouveau mot de passe",
+            'new-password-help': "Ne remplissez cette partie que si vous souhaitez changer de mot de passe.",
+            'password-confirmation': "Confirmation du mot passe",
+            'password-confirmation-must-match': "Le mot de passe et sa confirmation doivent être identiques.",
+            'saved': "Vos informations ont bien été enregistrées.",
+            'saved-with-password': "Vos informations et votre nouveau mot de passe ont bien été enregistrées.",
+        },
+        'interface': {
+            'title': "Interface",
+            'help': "La « durée d'une session » est le temps imparti avant votre déconnexion automatique de l'application.",
+            'auth-token-validity-duration': "Durée max. d'une session",
+            'language': "Langue",
+            'hours': "heures",
+            'saved': "Paramètres sauvegardés.",
         },
     },
 

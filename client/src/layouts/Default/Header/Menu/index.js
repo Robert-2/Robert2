@@ -24,13 +24,6 @@ export default {
                 <Dropdown>
                     <template slot="buttonText">{__('hello-pseudo', { pseudo })}</template>
                     <template slot="items">
-                        <router-link to="/profile" custom>
-                            {({ navigate, isActive }) => (
-                                <li onClick={navigate} class={getItemClassnames(isActive)}>
-                                    <i class="fas fa-user-alt" /> {__('your-profile')}
-                                </li>
-                            )}
-                        </router-link>
                         <router-link to="/user-settings" custom>
                             {({ navigate, isActive }) => (
                                 <li onClick={navigate} class={getItemClassnames(isActive)}>

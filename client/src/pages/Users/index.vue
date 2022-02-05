@@ -48,10 +48,9 @@
                 </div>
                 <div slot="actions" slot-scope="user" class="Users__actions">
                     <div v-if="user.row.id === currentUserId">
-                        <router-link to="/profile" v-slot="{ navigate }" custom>
+                        <router-link to="/user-settings" v-slot="{ navigate }" custom>
                             <button @click="navigate" class="info">
                                 <i class="fas fa-edit" />
-                                {{ $t('your-profile') }}
                             </button>
                         </router-link>
                     </div>

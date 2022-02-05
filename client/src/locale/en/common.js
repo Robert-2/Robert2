@@ -2,7 +2,6 @@
 
 export default {
     'hello-pseudo': "Hello {pseudo}!",
-    'your-profile': "Your profile",
     'your-settings': "Your settings",
     'logout-quit': "Quit Robert",
 
