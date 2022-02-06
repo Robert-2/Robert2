@@ -1,8 +1,9 @@
 import './index.scss';
 import { Fragment } from 'vue-fragment';
 import Config from '@/globals/config';
+import Page from '@/components/Page';
 import Alert from '@/components/Alert';
-import Help from '@/components/Help';
+import Button from '@/components/Button';
 
 // @vue/component
 export default {
@@ -11,7 +12,6 @@ export default {
         const { $t: __ } = this;
 
         return {
-            help: 'page-beneficiaries.help',
             error: null,
             isLoading: false,
             isDisplayTrashed: false,
@@ -55,22 +55,7 @@ export default {
                     note: 'Beneficiaries__note',
                     actions: 'VueTables__actions Beneficiaries__actions',
                 },
-                requestFunction: (pagination) => {
-                    this.isLoading = true;
-                    this.error = null;
-                    const params = {
-                        ...pagination,
-                        tags: [Config.beneficiaryTagName],
-                        deleted: this.isDisplayTrashed ? '1' : '0',
-                    };
-                    return this.$http
-                        .get(this.$route.meta.resource, { params })
-                        .catch(this.showError)
-                        .finally(() => {
-                            this.isTrashDisplayed = this.isDisplayTrashed;
-                            this.isLoading = false;
-                        });
-                },
+                requestFunction: this.fetch.bind(this),
                 templates: {
                     company: (h, beneficiary) => {
                         if (!beneficiary.company) {
@@ -173,6 +158,26 @@ export default {
         };
     },
     methods: {
+        async fetch(pagination) {
+            this.isLoading = true;
+            this.error = null;
+
+            try {
+                const params = {
+                    ...pagination,
+                    tags: [Config.beneficiaryTagName],
+                    deleted: this.isDisplayTrashed ? '1' : '0',
+                };
+                return await this.$http.get('persons', { params });
+            } catch (error) {
+                this.showError(error);
+                return undefined;
+            } finally {
+                this.isTrashDisplayed = this.isDisplayTrashed;
+                this.isLoading = false;
+            }
+        },
+
         getBeneficiaryAddress(beneficiary) {
             const formatAddress = ({ street, postal_code: postalCode, locality }) => {
                 const localityFull = [postalCode, locality].filter(Boolean).join(' ');
@@ -199,7 +204,7 @@ export default {
 
                 this.error = null;
                 this.isLoading = true;
-                this.$http.delete(`${this.$route.meta.resource}/${beneficiaryId}`)
+                this.$http.delete(`persons/${beneficiaryId}`)
                     .then(this.refreshTable)
                     .catch(this.showError);
             });
@@ -213,7 +218,7 @@ export default {
 
                 this.error = null;
                 this.isLoading = true;
-                this.$http.put(`${this.$route.meta.resource}/restore/${beneficiaryId}`)
+                this.$http.put(`persons/restore/${beneficiaryId}`)
                     .then(this.refreshTable)
                     .catch(this.showError);
             });
@@ -238,7 +243,6 @@ export default {
     render() {
         const {
             $t: __,
-            help,
             error,
             isLoading,
             columns,
@@ -247,51 +251,44 @@ export default {
             isTrashDisplayed,
         } = this;
 
-        return (
-            <div class="content Beneficiaries">
-                <div class="content__header header-page">
-                    <div class="header-page__help">
-                        <Help message={help} error={error} isLoading={isLoading} />
-                    </div>
-                    <div class="header-page__actions">
-                        <router-link to="/beneficiaries/new" custom>
-                            {({ navigate }) => (
-                                <button
-                                    type="button"
-                                    class="Beneficiaries__create success"
-                                    onClick={navigate}
-                                >
-                                    <i class="fas fa-user-plus" />
-                                    {__('page-beneficiaries.action-add')}
-                                </button>
-                            )}
-                        </router-link>
-                    </div>
-                </div>
-                <div class="content__main-view">
-                    <v-server-table
-                        ref="DataTable"
-                        name="BeneficiariesTable"
-                        columns={columns}
-                        options={options}
-                    />
-                </div>
-                <div class="content__footer">
-                    <button
-                        type="button"
-                        onClick={showTrashed}
-                        class={[
-                            'Beneficiaries__show-trashed',
-                            isTrashDisplayed ? 'info' : 'warning',
-                        ]}
+        const headerActions = [
+            <Button
+                onClick={showTrashed}
+                icon={isTrashDisplayed ? 'eye' : 'trash'}
+                class="Beneficiaries__show-trashed"
+            >
+                {isTrashDisplayed ? __('display-not-deleted-items') : __('open-trash-bin')}
+            </Button>,
+            <router-link to="/beneficiaries/new" custom>
+                {({ navigate }) => (
+                    <Button
+                        onClick={navigate}
+                        icon="user-plus"
+                        class="Beneficiaries__create success"
                     >
-                        <span>
-                            <i class={['fas', isTrashDisplayed ? 'fa-eye' : 'fa-trash']} />
-                            {isTrashDisplayed ? __('display-not-deleted-items') : __('open-trash-bin')}
-                        </span>
-                    </button>
-                </div>
-            </div>
+                        {__('page-beneficiaries.action-add')}
+                    </Button>
+                )}
+            </router-link>,
+        ];
+
+        return (
+            <Page
+                name="beneficiaries"
+                class="Beneficiaries"
+                title={__('page-beneficiaries.title')}
+                help={__('page-beneficiaries.help')}
+                error={error}
+                isLoading={isLoading}
+                actions={headerActions}
+            >
+                <v-server-table
+                    ref="DataTable"
+                    name="BeneficiariesTable"
+                    columns={columns}
+                    options={options}
+                />
+            </Page>
         );
     },
 };

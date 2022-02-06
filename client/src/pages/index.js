@@ -122,8 +122,6 @@ export default [
         name: 'beneficiaries',
         component: Beneficiaries,
         meta: {
-            resource: 'persons',
-            title: 'page-beneficiaries.title',
             requiresAuth: true,
             requiresGroups: ['admin', 'member'],
         },
