@@ -98,7 +98,9 @@
     }
 
     &__actions {
-        min-width: 110px;
+        width: 1%;
+        text-align: right;
+        white-space: nowrap;
     }
 
     @media (min-width: globals.$screen-tablet) {

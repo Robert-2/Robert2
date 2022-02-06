@@ -1,7 +1,6 @@
 import './index.scss';
 import moment from 'moment';
 import { confirm } from '@/utils/alert';
-import Help from '@/components/Help';
 import Page from '@/components/Page';
 import Datepicker from '@/components/Datepicker';
 import ItemActions from './Actions';
@@ -9,7 +8,6 @@ import ItemActions from './Actions';
 // @vue/component
 export default {
     name: 'Technicians',
-    components: { Help },
     data() {
         return {
             help: 'page-technicians.help',

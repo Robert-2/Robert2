@@ -12,6 +12,12 @@
         white-space: pre-line;
     }
 
+    &__actions {
+        width: 1%;
+        text-align: right;
+        white-space: nowrap;
+    }
+
     @media (min-width: globals.$screen-mobile) {
         &__email {
             display: table-cell;

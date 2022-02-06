@@ -53,7 +53,7 @@ export default {
                     email: 'Beneficiaries__email',
                     address: 'Beneficiaries__address',
                     note: 'Beneficiaries__note',
-                    actions: 'VueTables__actions Beneficiaries__actions',
+                    actions: 'Beneficiaries__actions',
                 },
                 requestFunction: this.fetch.bind(this),
                 templates: {
@@ -77,14 +77,12 @@ export default {
                             {beneficiary.email}
                         </a>
                     ),
-                    phone(h, beneficiary) {
-                        return (
-                            <Fragment>
-                                {!!beneficiary.phone && <div>{beneficiary.phone}</div>}
-                                {!!beneficiary.company && <div>{beneficiary.company.phone}</div>}
-                            </Fragment>
-                        );
-                    },
+                    phone: (h, beneficiary) => (
+                        <Fragment>
+                            {!!beneficiary.phone && <div>{beneficiary.phone}</div>}
+                            {!!beneficiary.company && <div>{beneficiary.company.phone}</div>}
+                        </Fragment>
+                    ),
                     address: (h, beneficiary) => (
                         this.getBeneficiaryAddress(beneficiary)
                     ),
@@ -102,31 +100,24 @@ export default {
                             restoreBeneficiary,
                         } = this;
 
-                        if (!isTrashDisplayed) {
+                        if (isTrashDisplayed) {
                             return (
                                 <Fragment>
-                                    <router-link
-                                        vTooltip={__('action-edit')}
-                                        to={`/beneficiaries/${beneficiary.id}`}
-                                        custom
-                                    >
-                                        {({ navigate }) => (
-                                            <button
-                                                type="button"
-                                                class="item-actions__button info"
-                                                onClick={navigate}
-                                            >
-                                                <i class="fas fa-edit" />
-                                            </button>
-                                        )}
-                                    </router-link>
                                     <button
                                         type="button"
-                                        vTooltip={__('action-trash')}
-                                        class="item-actions__button warning"
+                                        vTooltip={__('action-restore')}
+                                        class="item-actions__button info"
+                                        onClick={() => { restoreBeneficiary(beneficiary.id); }}
+                                    >
+                                        <i class="fas fa-trash-restore" />
+                                    </button>
+                                    <button
+                                        type="button"
+                                        vTooltip={__('action-delete')}
+                                        class="item-actions__button danger"
                                         onClick={() => { deleteBeneficiary(beneficiary.id); }}
                                     >
-                                        <i class="fas fa-trash" />
+                                        <i class="fas fa-trash-alt" />
                                     </button>
                                 </Fragment>
                             );
@@ -134,21 +125,28 @@ export default {
 
                         return (
                             <Fragment>
-                                <button
-                                    type="button"
-                                    vTooltip={__('action-restore')}
-                                    class="item-actions__button info"
-                                    onClick={() => { restoreBeneficiary(beneficiary.id); }}
+                                <router-link
+                                    vTooltip={__('action-edit')}
+                                    to={`/beneficiaries/${beneficiary.id}`}
+                                    custom
                                 >
-                                    <i class="fas fa-trash-restore" />
-                                </button>
+                                    {({ navigate }) => (
+                                        <button
+                                            type="button"
+                                            class="item-actions__button info"
+                                            onClick={navigate}
+                                        >
+                                            <i class="fas fa-edit" />
+                                        </button>
+                                    )}
+                                </router-link>
                                 <button
                                     type="button"
-                                    vTooltip={__('action-delete')}
-                                    class="item-actions__button danger"
+                                    vTooltip={__('action-trash')}
+                                    class="item-actions__button warning"
                                     onClick={() => { deleteBeneficiary(beneficiary.id); }}
                                 >
-                                    <i class="fas fa-trash-alt" />
+                                    <i class="fas fa-trash" />
                                 </button>
                             </Fragment>
                         );
