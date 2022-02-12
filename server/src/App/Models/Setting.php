@@ -40,21 +40,25 @@ class Setting extends BaseModel
                     V::equals('parks'),
                     V::equals('flat')
                 ),
+                'sensitive' => false,
                 'default' => 'sub-categories',
             ],
             'eventSummary.customText.title' => [
                 'type' => 'string',
                 'validation' => V::optional(V::length(null, 191)),
+                'sensitive' => false,
                 'default' => null,
             ],
             'eventSummary.customText.content' => [
                 'type' => 'string',
                 'validation' => null,
+                'sensitive' => false,
                 'default' => null,
             ],
             'eventSummary.showLegalNumbers' => [
                 'type' => 'boolean',
                 'validation' => V::boolVal(),
+                'sensitive' => false,
                 'default' => true,
             ],
 
@@ -65,12 +69,26 @@ class Setting extends BaseModel
             'calendar.event.showLocation' => [
                 'type' => 'boolean',
                 'validation' => V::boolVal(),
+                'sensitive' => false,
                 'default' => true,
             ],
             'calendar.event.showBorrower' => [
                 'type' => 'boolean',
                 'validation' => V::boolVal(),
+                'sensitive' => false,
                 'default' => false,
+            ],
+            'calendar.public.enabled' => [
+                'type' => 'boolean',
+                'validation' => V::boolVal(),
+                'sensitive' => false,
+                'default' => false,
+            ],
+            'calendar.public.uuid' => [
+                'type' => 'string',
+                'validation' => V::Uuid(4),
+                'sensitive' => true,
+                'default' => null,
             ],
         ];
     }
@@ -133,9 +151,9 @@ class Setting extends BaseModel
         }
     }
 
-    public static function getList(): array
+    public static function getList($withSensitive = true): array
     {
-        return static::allTraversable()->all();
+        return static::allTraversable($withSensitive)->all();
     }
 
     public static function getWithKey(string $path)
@@ -199,7 +217,7 @@ class Setting extends BaseModel
     // -
     // ------------------------------------------------------
 
-    protected static function allTraversable(): DotArray
+    protected static function allTraversable($withSensitive = true): DotArray
     {
         $settings = new DotArray;
 
@@ -208,6 +226,11 @@ class Setting extends BaseModel
         }
 
         foreach (static::manifest() as $key => $meta) {
+            if ($meta['sensitive'] && !$withSensitive) {
+                $settings->delete($key);
+                continue;
+            }
+
             if (!$settings->has($key)) {
                 $settings->set($key, $meta['default']);
             }

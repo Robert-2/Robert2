@@ -2463,6 +2463,9 @@ return [
     "referenceAlreadyInUse"
     => "This reference is already in use.",
 
+    "invalid-uuid"
+    => "The unique identifier (UUID) is invalid.",
+
     "invalid-value"
     => "Invalid value.",
 

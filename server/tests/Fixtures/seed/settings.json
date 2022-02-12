@@ -22,5 +22,13 @@
     {
         "key": "calendar.event.showBorrower",
         "value": "0"
+    },
+    {
+        "key": "calendar.public.enabled",
+        "value": "1"
+    },
+    {
+        "key": "calendar.event.uuid",
+        "value": "dfe7cd82-52b9-4c9b-aaed-033df210f23b"
     }
 ]

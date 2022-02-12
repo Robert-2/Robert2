@@ -16,6 +16,7 @@ final class SettingTest extends ModelTestCase
 
     public function testGetList(): void
     {
+        // - Si non spécifiée (ou `withSensitive = true`), les données sensibles doivent être présentes.
         $result = Setting::getList();
         $expected = [
             'eventSummary' => [
@@ -30,6 +31,33 @@ final class SettingTest extends ModelTestCase
                 'event' => [
                     'showLocation' => true,
                     'showBorrower' => false,
+                ],
+                'public' => [
+                    'enabled' => true,
+                    'uuid' => 'dfe7cd82-52b9-4c9b-aaed-033df210f23b',
+                ],
+            ],
+        ];
+        $this->assertEquals($expected, $result);
+
+        // - Si `withSensitive = false`, les données sensibles ne sont pas retournées.
+        $result = Setting::getList(true);
+        $expected = [
+            'eventSummary' => [
+                'customText' => [
+                    'title' => "Contrat",
+                    'content' => "Un petit contrat de test.",
+                ],
+                'materialDisplayMode' => 'sub-categories',
+                'showLegalNumbers' => true,
+            ],
+            'calendar' => [
+                'event' => [
+                    'showLocation' => true,
+                    'showBorrower' => false,
+                ],
+                'public' => [
+                    'enabled' => true,
                 ],
             ],
         ];
@@ -63,6 +91,14 @@ final class SettingTest extends ModelTestCase
             [
                 'key' => 'calendar.event.showBorrower',
                 'value' => false,
+            ],
+            [
+                'key' => 'calendar.public.enabled',
+                'value' => true,
+            ],
+            [
+                'key' => 'calendar.event.uuid',
+                'value' => 'dfe7cd82-52b9-4c9b-aaed-033df210f23b',
             ],
         ];
         $this->assertEquals($expected, $result);
@@ -132,6 +168,10 @@ final class SettingTest extends ModelTestCase
                 'event' => [
                     'showLocation' => false,
                     'showBorrower' => true,
+                ],
+                'public' => [
+                    'enabled' => true,
+                    'uuid' => 'dfe7cd82-52b9-4c9b-aaed-033df210f23b',
                 ],
             ],
         ];

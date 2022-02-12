@@ -21,6 +21,10 @@ final class SettingsTest extends ApiTestCase
                     'showBorrower' => false,
                     'showLocation' => true,
                 ],
+                'public' => [
+                    'enabled' => true,
+                    'uuid' => 'dfe7cd82-52b9-4c9b-aaed-033df210f23b',
+                ],
             ],
         ]);
     }
@@ -44,6 +48,7 @@ final class SettingsTest extends ApiTestCase
             'calendar.event.showBorrower' => 'foo',
             'eventSummary.materialDisplayMode' => 'not-valid',
             'eventSummary.customText.title' => str_repeat('A', 192),
+            'event.public.uuid' => 'not-valid',
         ]);
         $this->assertStatusCode(ERROR_VALIDATION);
         $this->assertValidationErrorMessage();
@@ -60,6 +65,9 @@ final class SettingsTest extends ApiTestCase
             ],
             'eventSummary.customText.title' => [
                 'value must have a length lower than 191',
+            ],
+            'event.public.uuid' => [
+                'value must be a valid UUID',
             ],
         ]);
     }
@@ -80,6 +88,10 @@ final class SettingsTest extends ApiTestCase
                     'showBorrower' => false,
                     'showLocation' => false,
                 ],
+                'public' => [
+                    'enabled' => false,
+                    'uuid' => 'dfe7cd82-52b9-4c9b-aaed-033df210f23b',
+                ],
             ],
         ]);
         $this->assertStatusCode(SUCCESS_OK);
@@ -96,6 +108,10 @@ final class SettingsTest extends ApiTestCase
                 'event' => [
                     'showBorrower' => false,
                     'showLocation' => false,
+                ],
+                'public' => [
+                    'enabled' => false,
+                    'uuid' => 'dfe7cd82-52b9-4c9b-aaed-033df210f23b',
                 ],
             ],
         ]);
@@ -122,6 +138,10 @@ final class SettingsTest extends ApiTestCase
                 'event' => [
                     'showBorrower' => true,
                     'showLocation' => false,
+                ],
+                'public' => [
+                    'enabled' => false,
+                    'uuid' => 'dfe7cd82-52b9-4c9b-aaed-033df210f23b',
                 ],
             ],
         ]);
