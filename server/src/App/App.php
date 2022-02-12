@@ -32,8 +32,8 @@ class App
         $this->app = AppFactory::create(null, $this->container);
         $this->app->addBodyParsingMiddleware();
 
-        $this->configureRouter();
         $this->configureMiddlewares();
+        $this->configureRouter();
         $this->configureErrorHandlers();
         $this->configureCors();
     }
@@ -121,31 +121,25 @@ class App
         //
 
         // - Install
-        $this->app->map(['GET', 'POST'], '/install', $getActionFqdn('SetupController:index'))
-            ->setName('install');
-        $this->app->get('/install/end', $getActionFqdn('SetupController:endInstall'))
-            ->setName('installEnd');
+        $this->app->map(['GET', 'POST'], '/install', $getActionFqdn('SetupController:index'));
+        $this->app->get('/install/end', $getActionFqdn('SetupController:endInstall'));
 
 
-        // - Download files
-        $this->app->get('/bills/{id:[0-9]+}/pdf[/]', $getActionFqdn('BillController:getOnePdf'))
-            ->setName('getBillPdf');
-        $this->app->get('/estimates/{id:[0-9]+}/pdf[/]', $getActionFqdn('EstimateController:getOnePdf'))
-            ->setName('getEstimatePdf');
-        $this->app->get('/events/{id:[0-9]+}/pdf[/]', $getActionFqdn('EventController:getOnePdf'))
-            ->setName('getEventPdf');
-        $this->app->get('/documents/{id:[0-9]+}/download[/]', $getActionFqdn('DocumentController:getOne'))
-            ->setName('getDocumentFile');
-        $this->app->get('/materials/{id:[0-9]+}/picture[/]', $getActionFqdn('MaterialController:getPicture'))
-            ->setName('getMaterialPicture');
-        $this->app->get('/materials/pdf[/]', $getActionFqdn('MaterialController:getAllPdf'))
-            ->setName('getMaterialsListPdf');
+        // - "Raw" / Download files
+        $this->app->get('/bills/{id:[0-9]+}/pdf[/]', $getActionFqdn('BillController:getOnePdf'));
+        $this->app->get('/estimates/{id:[0-9]+}/pdf[/]', $getActionFqdn('EstimateController:getOnePdf'));
+        $this->app->get('/events/{id:[0-9]+}/pdf[/]', $getActionFqdn('EventController:getOnePdf'));
+        $this->app->get('/documents/{id:[0-9]+}/download[/]', $getActionFqdn('DocumentController:getOne'));
+        $this->app->get('/materials/{id:[0-9]+}/picture[/]', $getActionFqdn('MaterialController:getPicture'));
+        $this->app->get('/materials/pdf[/]', $getActionFqdn('MaterialController:getAllPdf'));
+        $this->app->get('/calendar/{uuid:[a-z0-9-]+}.ics', $getActionFqdn('CalendarController:public'));
 
         // - Login services
         $this->app->get('/logout', $getActionFqdn('AuthController:logout'));
 
         // - All remaining non-API routes should be handled by Front-End Router
-        $this->app->get('/[{path:.*}]', $getActionFqdn('EntryController:index'));
+        $this->app->get('/[{path:.*}]', $getActionFqdn('EntryController:index'))
+            ->setName('catch-all');
     }
 
     protected function configureMiddlewares()

@@ -118,6 +118,69 @@ class MaterialController extends BaseController
         return $response->withJson($results);
     }
 
+    public function getAllPdf(Request $request, Response $response): Response
+    {
+        $onlyParkId = $request->getQueryParam('park', null);
+
+        $categories = Category::get()->toArray();
+        $parks = Park::with('materials')->get()->each->setAppends([])->toArray();
+
+        $parksMaterials = [];
+        foreach ($parks as $park) {
+            if ($onlyParkId && (int)$onlyParkId !== $park['id']) {
+                continue;
+            }
+
+            if (empty($park['materials'])) {
+                continue;
+            }
+
+            $materialsData = new MaterialsData(array_values($park['materials']));
+            $materialsData->setParks($parks)->setCategories($categories);
+            $parksMaterials[] = [
+                'id' => $park['id'],
+                'name' => $park['name'],
+                'materials' => $materialsData->getBySubCategories(true),
+            ];
+        }
+
+        usort($parksMaterials, function ($a, $b) {
+            return strcmp($a['name'], $b['name'] ?: '');
+        });
+
+        $company = Config::getSettings('companyData');
+
+        $parkOnlyName = null;
+        if ($onlyParkId) {
+            $parkKey = array_search($onlyParkId, array_column($parks, 'id'));
+            if ($parkKey !== false) {
+                $parkOnlyName = $parks[$parkKey]['name'];
+            }
+        }
+
+        $fileName = sprintf(
+            '%s-%s-%s.pdf',
+            slugify($this->i18n->translate('materials-list')),
+            slugify($parkOnlyName ?: $company['name']),
+            (new \DateTime())->format('Y-m-d')
+        );
+        if (Config::getEnv() === 'test') {
+            $fileName = sprintf('TEST-%s', $fileName);
+        }
+
+        $data = [
+            'locale' => Config::getSettings('defaultLang'),
+            'company' => $company,
+            'parkOnlyName' => $parkOnlyName,
+            'currency' => Config::getSettings('currency')['iso'],
+            'parksMaterialsList' => $parksMaterials,
+        ];
+
+        $fileContent = Pdf::createFromTemplate('materials-list-default', $data);
+
+        return $this->_responseWithFile($response, $fileName, $fileContent);
+    }
+
     public function getAllWhileEvent(Request $request, Response $response): Response
     {
         $eventId = (int)$request->getAttribute('eventId');
@@ -145,6 +208,17 @@ class MaterialController extends BaseController
         return $response->withJson($results);
     }
 
+    public function getAllDocuments(Request $request, Response $response): Response
+    {
+        $id = (int)$request->getAttribute('id');
+        $model = Material::find($id);
+        if (!$model) {
+            throw new HttpNotFoundException($request);
+        }
+
+        return $response->withJson($model->documents, SUCCESS_OK);
+    }
+
     public function getParkAll(Request $request, Response $response): Response
     {
         $parkId = (int)$request->getAttribute('parkId');
@@ -154,6 +228,52 @@ class MaterialController extends BaseController
 
         $materials = Material::getParkAll($parkId);
         return $response->withJson($materials);
+    }
+
+    public function getEvents(Request $request, Response $response): Response
+    {
+        $id = (int)$request->getAttribute('id');
+        $material = Material::find($id);
+        if (!$material) {
+            throw new HttpNotFoundException($request);
+        }
+
+        $collection = [];
+        $useMultipleParks = Park::count() > 1;
+        foreach ($material->Events()->get() as $event) {
+            $event = $event->setAppends([
+                'has_missing_materials',
+                'has_not_returned_materials',
+            ]);
+
+            $collection[] = array_replace($event->toArray(), [
+                'parks' => $useMultipleParks
+                    ? Event::getParks($event['id'])
+                    : null
+            ]);
+        }
+
+        return $response->withJson($collection, SUCCESS_OK);
+    }
+
+    public function getPicture(Request $request, Response $response): Response
+    {
+        $id = (int)$request->getAttribute('id');
+        $model = Material::find($id);
+        if (!$model) {
+            throw new HttpNotFoundException($request);
+        }
+
+        $picturePath = Material::getPicturePath($id, $model->picture);
+
+        $pictureContent = file_get_contents($picturePath);
+        if (!$pictureContent) {
+            throw new HttpNotFoundException($request, "The picture file cannot be found.");
+        }
+
+        $response = $response->write($pictureContent);
+        $mimeType = mime_content_type($picturePath);
+        return $response->withHeader('Content-Type', $mimeType);
     }
 
     // ------------------------------------------------------
@@ -179,76 +299,6 @@ class MaterialController extends BaseController
         $postData = (array)$request->getParsedBody();
         $result = $this->_saveMaterial($id, $postData);
         return $response->withJson($result, SUCCESS_OK);
-    }
-
-    // ------------------------------------------------------
-    // —
-    // —    Internal Methods
-    // —
-    // ------------------------------------------------------
-
-    protected function _saveMaterial(?int $id, $postData): array
-    {
-        if (!is_array($postData) || empty($postData)) {
-            throw new \InvalidArgumentException(
-                "Missing request data to process validation",
-                ERROR_VALIDATION
-            );
-        }
-
-        if (array_key_exists('stock_quantity', $postData)) {
-            $stockQuantity = $postData['stock_quantity'];
-            if ($stockQuantity !== null && (int)$stockQuantity < 0) {
-                $postData['stock_quantity'] = 0;
-            }
-        }
-
-        if (array_key_exists('out_of_order_quantity', $postData)) {
-            $stockQuantity = (int)($postData['stock_quantity'] ?? 0);
-            $outOfOrderQuantity = (int)$postData['out_of_order_quantity'];
-            if ($outOfOrderQuantity > $stockQuantity) {
-                $outOfOrderQuantity = $stockQuantity;
-                $postData['out_of_order_quantity'] = $outOfOrderQuantity;
-            }
-            if ($outOfOrderQuantity <= 0) {
-                $postData['out_of_order_quantity'] = null;
-            }
-        }
-
-        // - Removing `picture` field because it must be edited
-        //   using handleUploadPicture() method (see below)
-        if (array_key_exists('picture', $postData) && !empty($postData['picture'])) {
-            unset($postData['picture']);
-        }
-
-        $result = Material::staticEdit($id, $postData);
-
-        if (isset($postData['attributes'])) {
-            $attributes = [];
-            foreach ($postData['attributes'] as $attribute) {
-                if (empty($attribute['value'])) {
-                    continue;
-                }
-
-                $attributes[$attribute['id']] = [
-                    'value' => (string)$attribute['value']
-                ];
-            }
-            $result->Attributes()->sync($attributes);
-        }
-
-        return Material::find($result->id)->toArray();
-    }
-
-    public function getAllDocuments(Request $request, Response $response): Response
-    {
-        $id = (int)$request->getAttribute('id');
-        $model = Material::find($id);
-        if (!$model) {
-            throw new HttpNotFoundException($request);
-        }
-
-        return $response->withJson($model->documents, SUCCESS_OK);
     }
 
     public function handleUploadDocuments(Request $request, Response $response): Response
@@ -364,112 +414,62 @@ class MaterialController extends BaseController
         return $response->withJson($result, SUCCESS_OK);
     }
 
-    public function getEvents(Request $request, Response $response): Response
+    // ------------------------------------------------------
+    // —
+    // —    Internal Methods
+    // —
+    // ------------------------------------------------------
+
+    protected function _saveMaterial(?int $id, $postData): array
     {
-        $id = (int)$request->getAttribute('id');
-        $material = Material::find($id);
-        if (!$material) {
-            throw new HttpNotFoundException($request);
+        if (!is_array($postData) || empty($postData)) {
+            throw new \InvalidArgumentException(
+                "Missing request data to process validation",
+                ERROR_VALIDATION
+            );
         }
 
-        $collection = [];
-        $useMultipleParks = Park::count() > 1;
-        foreach ($material->Events()->get() as $event) {
-            $event = $event->setAppends([
-                'has_missing_materials',
-                'has_not_returned_materials',
-            ]);
-
-            $collection[] = array_replace($event->toArray(), [
-                'parks' => $useMultipleParks
-                    ? Event::getParks($event['id'])
-                    : null
-            ]);
-        }
-
-        return $response->withJson($collection, SUCCESS_OK);
-    }
-
-    public function getPicture(Request $request, Response $response): Response
-    {
-        $id = (int)$request->getAttribute('id');
-        $model = Material::find($id);
-        if (!$model) {
-            throw new HttpNotFoundException($request);
-        }
-
-        $picturePath = Material::getPicturePath($id, $model->picture);
-
-        $pictureContent = file_get_contents($picturePath);
-        if (!$pictureContent) {
-            throw new HttpNotFoundException($request, "The picture file cannot be found.");
-        }
-
-        $response = $response->write($pictureContent);
-        $mimeType = mime_content_type($picturePath);
-        return $response->withHeader('Content-Type', $mimeType);
-    }
-
-    public function getAllPdf(Request $request, Response $response): Response
-    {
-        $onlyParkId = $request->getQueryParam('park', null);
-
-        $categories = Category::get()->toArray();
-        $parks = Park::with('materials')->get()->each->setAppends([])->toArray();
-
-        $parksMaterials = [];
-        foreach ($parks as $park) {
-            if ($onlyParkId && (int)$onlyParkId !== $park['id']) {
-                continue;
-            }
-
-            if (empty($park['materials'])) {
-                continue;
-            }
-
-            $materialsData = new MaterialsData(array_values($park['materials']));
-            $materialsData->setParks($parks)->setCategories($categories);
-            $parksMaterials[] = [
-                'id' => $park['id'],
-                'name' => $park['name'],
-                'materials' => $materialsData->getBySubCategories(true),
-            ];
-        }
-
-        usort($parksMaterials, function ($a, $b) {
-            return strcmp($a['name'], $b['name'] ?: '');
-        });
-
-        $company = Config::getSettings('companyData');
-
-        $parkOnlyName = null;
-        if ($onlyParkId) {
-            $parkKey = array_search($onlyParkId, array_column($parks, 'id'));
-            if ($parkKey !== false) {
-                $parkOnlyName = $parks[$parkKey]['name'];
+        if (array_key_exists('stock_quantity', $postData)) {
+            $stockQuantity = $postData['stock_quantity'];
+            if ($stockQuantity !== null && (int)$stockQuantity < 0) {
+                $postData['stock_quantity'] = 0;
             }
         }
 
-        $fileName = sprintf(
-            '%s-%s-%s.pdf',
-            slugify($this->i18n->translate('materials-list')),
-            slugify($parkOnlyName ?: $company['name']),
-            (new \DateTime())->format('Y-m-d')
-        );
-        if (Config::getEnv() === 'test') {
-            $fileName = sprintf('TEST-%s', $fileName);
+        if (array_key_exists('out_of_order_quantity', $postData)) {
+            $stockQuantity = (int)($postData['stock_quantity'] ?? 0);
+            $outOfOrderQuantity = (int)$postData['out_of_order_quantity'];
+            if ($outOfOrderQuantity > $stockQuantity) {
+                $outOfOrderQuantity = $stockQuantity;
+                $postData['out_of_order_quantity'] = $outOfOrderQuantity;
+            }
+            if ($outOfOrderQuantity <= 0) {
+                $postData['out_of_order_quantity'] = null;
+            }
         }
 
-        $data = [
-            'locale' => Config::getSettings('defaultLang'),
-            'company' => $company,
-            'parkOnlyName' => $parkOnlyName,
-            'currency' => Config::getSettings('currency')['iso'],
-            'parksMaterialsList' => $parksMaterials,
-        ];
+        // - Removing `picture` field because it must be edited
+        //   using handleUploadPicture() method (see below)
+        if (array_key_exists('picture', $postData) && !empty($postData['picture'])) {
+            unset($postData['picture']);
+        }
 
-        $fileContent = Pdf::createFromTemplate('materials-list-default', $data);
+        $result = Material::staticEdit($id, $postData);
 
-        return $this->_responseWithFile($response, $fileName, $fileContent);
+        if (isset($postData['attributes'])) {
+            $attributes = [];
+            foreach ($postData['attributes'] as $attribute) {
+                if (empty($attribute['value'])) {
+                    continue;
+                }
+
+                $attributes[$attribute['id']] = [
+                    'value' => (string)$attribute['value']
+                ];
+            }
+            $result->Attributes()->sync($attributes);
+        }
+
+        return Material::find($result->id)->toArray();
     }
 }
