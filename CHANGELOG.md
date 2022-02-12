@@ -6,6 +6,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 
 ## 0.18.0 (UNRELEASED)
 
+- __[CHANGEMENT CRITIQUE]__ Robert2 requiert maintenant au minimum PHP 7.4 pour fonctionner (#327).
 - Ajoute la possibilité de configurer les données affichées dans les événements du calendrier 
   via la page des paramètres de l'application (fin du ticket #302).
 

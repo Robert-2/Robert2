@@ -27,11 +27,11 @@
         "vendor-dir": "vendors",
         "sort-packages": true,
         "platform": {
-            "php": "7.3"
+            "php": "7.4"
         }
     },
     "require": {
-        "php": ">=7.3",
+        "php": ">=7.4",
         "adbario/php-dot-notation": "2.2.0",
         "cocur/slugify": "4.0.0",
         "delfimov/translate": "2.6.0",
