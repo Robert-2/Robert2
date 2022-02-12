@@ -32,6 +32,9 @@ class Acl
                 'delete',
                 'restore',
             ],
+            'Setting' => [
+                'update'
+            ],
         ],
         'visitor' => [
             'Category' => [
@@ -95,6 +98,9 @@ class Acl
                 'create',
                 'delete',
                 'restore',
+            ],
+            'Setting' => [
+                'update'
             ],
         ],
     ];
