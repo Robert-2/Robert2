@@ -43,7 +43,7 @@ return [
     ],
     'post' => [
         '/session[/]' => 'AuthController:loginWithForm',
-        '/users/signup[/]' => 'UserController:create',
+        '/users[/]' => 'UserController:create',
         '/categories[/]' => 'CategoryController:create',
         '/subcategories[/]' => 'SubCategoryController:create',
         '/tags[/]' => 'TagController:create',

@@ -14,7 +14,6 @@ class Acl
         //
 
         '/api/session' => ['POST'],
-        '/api/users/signup',
     ];
 
     const DENY_LIST = [
