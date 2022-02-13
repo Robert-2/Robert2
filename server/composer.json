@@ -36,6 +36,7 @@
         "cocur/slugify": "4.0.0",
         "delfimov/translate": "2.6.0",
         "dompdf/dompdf": "1.1.1",
+        "eluceo/ical": "2.4.0",
         "firebase/php-jwt": "5.4.0",
         "illuminate/database": "8.51.0",
         "illuminate/events": "v8.77.1",

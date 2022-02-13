@@ -132,7 +132,7 @@ class App
         $this->app->get('/documents/{id:[0-9]+}/download[/]', $getActionFqdn('DocumentController:getOne'));
         $this->app->get('/materials/{id:[0-9]+}/picture[/]', $getActionFqdn('MaterialController:getPicture'));
         $this->app->get('/materials/pdf[/]', $getActionFqdn('MaterialController:getAllPdf'));
-        $this->app->get('/calendar/{uuid:[a-z0-9-]+}.ics', $getActionFqdn('CalendarController:public'));
+        $this->app->get('/calendar/public/{uuid:[a-z0-9-]+}.ics', $getActionFqdn('CalendarController:public'));
 
         // - Login services
         $this->app->get('/logout', $getActionFqdn('AuthController:logout'));

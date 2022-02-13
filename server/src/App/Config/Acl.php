@@ -9,6 +9,8 @@ class Acl
         '/install',
         '/login',
 
+        '/calendar/public',
+
         //
         // - Api
         //
