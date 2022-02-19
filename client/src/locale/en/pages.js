@@ -397,6 +397,15 @@ export default {
             'events-display-section-title': "Data that will be displayed in the calendar events",
             'showLocation': "Show the location of the event?",
             'showBorrower': "Show the beneficiary / borrower?",
+            'public-calendar-section-title': "Calendar external subscription",
+            'enable-public-calendar': "Enable external calendar access?",
+            'public-calendar-url': "External calendar URL",
+            'public-calendar-help': (
+                `This configuration allows you to get a public link to your Loxya / Robert2 calendar.\n
+                This means that anyone who has access to this link can see your calendar events. Make sure you only share this link with people you trust.\n
+                Once this configuration enabled and the link obtained, all you have to do is to go to your calendar application and look for the "New Calendar Subscription" or similar feature and paste the link in.\n
+                Please note that the refresh rate of the public calendar events depends totally on the calendar applications used. So be aware that the calendar in these applications may lag behind the Loxya / Robert2 one.`
+            ),
         },
     },
 

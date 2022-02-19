@@ -71,6 +71,17 @@ const CalendarSettings = (props, { root }) => {
                         vModel={values.event.showBorrower}
                     />
                 </section>
+                <section class="CalendarSettings__section">
+                    <h3>{__('page-settings.calendar.public-calendar-section-title')}</h3>
+                    <p class="CalendarSettings__help">{__('page-settings.calendar.public-calendar-help')}</p>
+                    <FormField
+                        type="switch"
+                        label="page-settings.calendar.enable-public-calendar"
+                        name="calendar.public.enabled"
+                        errors={validationErrors.value?.['calendar.public.enabled']}
+                        vModel={values.public.enabled}
+                    />
+                </section>
                 <section class="CalendarSettings__actions">
                     <Button
                         icon="save"

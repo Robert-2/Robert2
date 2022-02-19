@@ -397,6 +397,15 @@ export default {
             'events-display-section-title': "Données affichées dans les événements du calendrier",
             'showLocation': "Afficher le lieu de l'événement\u00a0?",
             'showBorrower': "Afficher le bénéficiaire / emprunteur\u00a0?",
+            'public-calendar-section-title': "Abonnement externe au calendrier",
+            'enable-public-calendar': "Activer l'accès externe au calendrier ?",
+            'public-calendar-url': "URL du calendrier externe",
+            'public-calendar-help': (
+                `Cette configuration vous permet d'obtenir un lien public vers votre calendrier Loxya / Robert2.\n
+                Cela implique que n'importe quelle personne qui aurait accès à ce lien pourrait voir les événements de votre calendrier. Veillez à ne communiquer ce lien qu'à des personnes de confiance.\n
+                Une fois cette configuration activée et le lien récupéré, il vous suffira de vous rendre dans votre application de calendrier et de chercher la fonctionnalité "Abonnement à un calendrier" ou similaire pour y coller le lien.\n
+                Il est à noter que le taux de rafraichissement des événements du calendrier public dépend totalement des applications de calendrier utilisées. Soyez donc conscient que le calendrier dans ces applications peut avoir du retard sur celui de Loxya / Robert2.`
+            ),
         },
     },
 

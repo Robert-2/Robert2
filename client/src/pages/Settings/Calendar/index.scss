@@ -23,6 +23,10 @@
         }
     }
 
+    &__help {
+        white-space: pre-line;
+    }
+
     &__actions {
         margin-top: globals.$content-padding-large-vertical;
     }
