@@ -1,33 +1,36 @@
 @use '~@/style/globals';
 
 .CalendarSettings {
-    &__form {
-        max-width: globals.$form-max-width;
-    }
-
     &__section {
         margin-top: globals.$content-padding-large-vertical;
 
         .FormField {
-            &__label {
-                flex-basis: 250px;
-            }
-
-            &__error__text {
-                padding-left: 250px;
-            }
-
             + .FormField {
                 margin-top: globals.$content-padding-small-vertical;
+            }
+
+            @media screen and (min-width: globals.$screen-tablet) {
+                $label-width: 250px;
+
+                &__label {
+                    flex-basis: $label-width;
+                }
+
+                &__help,
+                &__error__text {
+                    padding-left: $label-width;
+                }
             }
         }
     }
 
     &__help {
+        margin-bottom: 20px;
         white-space: pre-line;
     }
 
     &__actions {
         margin-top: globals.$content-padding-large-vertical;
+        text-align: center;
     }
 }

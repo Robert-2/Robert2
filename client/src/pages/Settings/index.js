@@ -1,3 +1,4 @@
+import './index.scss';
 import { Tabs, Tab } from 'vue-slim-tabs';
 import EventSummarySettings from './EventSummary';
 import CalendarSettings from './Calendar';
@@ -11,8 +12,8 @@ export default {
         return (
             <div class="content">
                 <div class="content__main-view">
-                    <div class="Settings">
-                        <Tabs class="Settings__body">
+                    <div class="SettingsPage">
+                        <Tabs class="SettingsPage__body">
                             <template slot="event-summary">
                                 <i class="fas fa-print" /> {__('page-settings.event-summary.title')}
                             </template>

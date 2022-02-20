@@ -1,10 +1,6 @@
 @use '~@/style/globals';
 
 .EventSummarySettings {
-    &__form {
-        max-width: globals.$form-max-width;
-    }
-
     &__section {
         margin-top: globals.$content-padding-large-vertical;
 
@@ -16,11 +12,24 @@
             + .FormField {
                 margin-top: globals.$content-padding-small-vertical;
             }
+
+            @media screen and (min-width: globals.$screen-tablet) {
+                $label-width: 200px;
+
+                &__label {
+                    flex-basis: $label-width;
+                }
+
+                &__help,
+                &__error__text {
+                    padding-left: $label-width;
+                }
+            }
         }
     }
 
     &__actions {
         margin-top: globals.$content-padding-large-vertical;
-        text-align: right;
+        text-align: center;
     }
 }
