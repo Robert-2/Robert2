@@ -1,6 +1,7 @@
 import './index.scss';
 import { ref, computed, reactive } from '@vue/composition-api';
 import axios from 'axios';
+import pick from 'lodash.pick';
 import cloneDeep from 'lodash.clonedeep';
 import apiSettings from '@/stores/api/settings';
 import useI18n from '@/hooks/vue/useI18n';
@@ -14,7 +15,13 @@ const CalendarSettings = (props, { root }) => {
     const isSaving = ref(false);
     const isSaved = ref(false);
     const error = ref(null);
-    const values = reactive(cloneDeep(root.$store.state.settings.calendar));
+
+    const persistedData = computed(() => root.$store.state.settings.calendar);
+    const values = reactive(pick(cloneDeep(persistedData.value), [
+        'event.showLocation',
+        'event.showBorrower',
+        'public.enabled',
+    ]));
 
     const help = computed(() => (
         isSaved.value
@@ -50,51 +57,75 @@ const CalendarSettings = (props, { root }) => {
         }
     };
 
-    return () => (
-        <div class="CalendarSettings">
-            <Help message={help.value} error={error.value} isLoading={isSaving.value} />
-            <form class="CalendarSettings__form" onSubmit={handleSubmit}>
-                <section class="CalendarSettings__section">
-                    <h3>{__('page-settings.calendar.events-display-section-title')}</h3>
-                    <FormField
-                        type="switch"
-                        label="page-settings.calendar.showLocation"
-                        name="calendar.event.showLocation"
-                        errors={validationErrors.value?.['calendar.event.showLocation']}
-                        vModel={values.event.showLocation}
-                    />
-                    <FormField
-                        type="switch"
-                        label="page-settings.calendar.showBorrower"
-                        name="calendar.event.showBorrower"
-                        errors={validationErrors.value?.['calendar.event.showBorrower']}
-                        vModel={values.event.showBorrower}
-                    />
-                </section>
-                <section class="CalendarSettings__section">
-                    <h3>{__('page-settings.calendar.public-calendar-section-title')}</h3>
-                    <p class="CalendarSettings__help">{__('page-settings.calendar.public-calendar-help')}</p>
-                    <FormField
-                        type="switch"
-                        label="page-settings.calendar.enable-public-calendar"
-                        name="calendar.public.enabled"
-                        errors={validationErrors.value?.['calendar.public.enabled']}
-                        vModel={values.public.enabled}
-                    />
-                </section>
-                <section class="CalendarSettings__actions">
-                    <Button
-                        icon="save"
-                        htmlType="submit"
-                        class="success"
-                        disabled={isSaving.value}
-                    >
-                        {isSaving.value ? __('saving') : __('save')}
-                    </Button>
-                </section>
-            </form>
-        </div>
-    );
+    return () => {
+        const renderPublicCalendarUrl = () => {
+            const isServerSideEnabled = persistedData.value.public.enabled;
+            const isClientSideEnabled = values.public.enabled;
+
+            if (!isClientSideEnabled) {
+                return null;
+            }
+
+            return (
+                <FormField
+                    type="static"
+                    label="page-settings.calendar.public-calendar-url"
+                    value={(
+                        isServerSideEnabled
+                            ? persistedData.value.public.url
+                            : __('page-settings.calendar.save-to-get-calendar-url')
+                    )}
+                />
+            );
+        };
+
+        return (
+            <div class="CalendarSettings">
+                <Help message={help.value} error={error.value} isLoading={isSaving.value} />
+                <form class="CalendarSettings__form" onSubmit={handleSubmit}>
+                    <section class="CalendarSettings__section">
+                        <h2>{__('page-settings.calendar.events-display-section-title')}</h2>
+                        <FormField
+                            type="switch"
+                            label="page-settings.calendar.showLocation"
+                            name="calendar.event.showLocation"
+                            errors={validationErrors.value?.['calendar.event.showLocation']}
+                            vModel={values.event.showLocation}
+                        />
+                        <FormField
+                            type="switch"
+                            label="page-settings.calendar.showBorrower"
+                            name="calendar.event.showBorrower"
+                            errors={validationErrors.value?.['calendar.event.showBorrower']}
+                            vModel={values.event.showBorrower}
+                        />
+                    </section>
+                    <section class="CalendarSettings__section">
+                        <h2>{__('page-settings.calendar.public-calendar-section-title')}</h2>
+                        <p class="CalendarSettings__help">{__('page-settings.calendar.public-calendar-help')}</p>
+                        <FormField
+                            type="switch"
+                            label="page-settings.calendar.enable-public-calendar"
+                            name="calendar.public.enabled"
+                            errors={validationErrors.value?.['calendar.public.enabled']}
+                            vModel={values.public.enabled}
+                        />
+                        {renderPublicCalendarUrl()}
+                    </section>
+                    <section class="CalendarSettings__actions">
+                        <Button
+                            icon="save"
+                            htmlType="submit"
+                            class="success"
+                            disabled={isSaving.value}
+                        >
+                            {isSaving.value ? __('saving') : __('save')}
+                        </Button>
+                    </section>
+                </form>
+            </div>
+        );
+    };
 };
 
 export default CalendarSettings;

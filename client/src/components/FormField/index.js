@@ -7,6 +7,7 @@ import SwitchToggle from '@/components/SwitchToggle';
 const ALLOWED_TYPES = [
     'text',
     'email',
+    'static',
     'password',
     'number',
     'tel',
@@ -201,6 +202,9 @@ export default defineComponent({
                             readonly
                         />
                     </div>
+                )}
+                {type === 'static' && (
+                    <p class="FormField__static-value">{value}</p>
                 )}
                 {errors && (
                     <div class="FormField__error">

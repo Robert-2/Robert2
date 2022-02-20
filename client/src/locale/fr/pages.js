@@ -400,6 +400,7 @@ export default {
             'public-calendar-section-title': "Abonnement externe au calendrier",
             'enable-public-calendar': "Activer l'accès externe au calendrier ?",
             'public-calendar-url': "URL du calendrier externe",
+            'save-to-get-calendar-url': "Veuillez sauvegarder vos modifications pour obtenir l'URL.",
             'public-calendar-help': (
                 `Cette configuration vous permet d'obtenir un lien public vers votre calendrier Loxya / Robert2.\n
                 Cela implique que n'importe quelle personne qui aurait accès à ce lien pourrait voir les événements de votre calendrier. Veillez à ne communiquer ce lien qu'à des personnes de confiance.\n
