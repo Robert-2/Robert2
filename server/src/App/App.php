@@ -12,6 +12,7 @@ use Robert2\API\Kernel;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Factory\AppFactory;
 use Slim\Http\Response;
+use Slim\Interfaces\RouteParserInterface;
 use Slim\Routing\RouteCollectorProxy;
 
 /**
@@ -76,10 +77,18 @@ class App
         $settings = $this->container->get('settings');
         $isCORSEnabled = (bool)$settings['enableCORS'] && Config::getEnv() !== 'test';
         $useRouterCache = (bool)$settings['useRouterCache'] && Config::getEnv() === 'production';
+        $routeCollector = $this->app->getRouteCollector();
+
+        // - Ajoute le parseur de route au conteneur.
+        $this->container->set(RouteParserInterface::class, $routeCollector->getRouteParser());
+
+        // - Base Path
+        $baseUrlParts = parse_url(Config::getSettings('apiUrl'));
+        $basePath = rtrim($baseUrlParts['path'] ?? '', '/');
+        $routeCollector->setBasePath($basePath);
 
         // - Route cache
         if ($useRouterCache) {
-            $routeCollector = $this->app->getRouteCollector();
             $routeCollector->setCacheFile(CACHE_FOLDER . DS . 'routes.php');
         }
 
@@ -132,7 +141,9 @@ class App
         $this->app->get('/documents/{id:[0-9]+}/download[/]', $getActionFqdn('DocumentController:getOne'));
         $this->app->get('/materials/{id:[0-9]+}/picture[/]', $getActionFqdn('MaterialController:getPicture'));
         $this->app->get('/materials/pdf[/]', $getActionFqdn('MaterialController:getAllPdf'));
-        $this->app->get('/calendar/public/{uuid:[a-z0-9-]+}.ics', $getActionFqdn('CalendarController:public'));
+
+        $this->app->get('/calendar/public/{uuid:[a-z0-9-]+}.ics', $getActionFqdn('CalendarController:public'))
+            ->setName('public-calendar');
 
         // - Login services
         $this->app->get('/logout', $getActionFqdn('AuthController:logout'));
