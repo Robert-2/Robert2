@@ -1,8 +1,8 @@
 import './index.scss';
 import { ref, computed, reactive } from '@vue/composition-api';
 import axios from 'axios';
-import pick from 'lodash.pick';
-import cloneDeep from 'lodash.clonedeep';
+import pick from 'lodash/pick';
+import cloneDeep from 'lodash/cloneDeep';
 import apiSettings from '@/stores/api/settings';
 import useI18n from '@/hooks/vue/useI18n';
 import Help from '@/components/Help';
