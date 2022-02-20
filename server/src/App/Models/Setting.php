@@ -6,6 +6,7 @@ namespace Robert2\API\Models;
 use Adbar\Dot as DotArray;
 use Robert2\API\Validation\Validator as V;
 use Robert2\API\Errors\ValidationException;
+use Illuminate\Support\Str;
 
 class Setting extends BaseModel
 {
@@ -88,7 +89,7 @@ class Setting extends BaseModel
                 'type' => 'string',
                 'validation' => V::Uuid(4),
                 'sensitive' => true,
-                'default' => null,
+                'default' => (string) Str::uuid(),
             ],
         ];
     }
@@ -118,7 +119,7 @@ class Setting extends BaseModel
 
     // ——————————————————————————————————————————————————————
     // —
-    // —    Mutators
+    // —    Getters
     // —
     // ——————————————————————————————————————————————————————
 
@@ -199,6 +200,19 @@ class Setting extends BaseModel
         }
 
         return new static;
+    }
+
+    public function reset()
+    {
+        $manifest = static::manifest();
+        if (!array_key_exists($this->key, $manifest)) {
+            throw new \LogicException(
+                sprintf('La configuration de la clé `%s` est manquante dans le manifeste.', $this->key)
+            );
+        }
+
+        $this->value = $manifest[$this->key]['default'];
+        $this->validate()->save();
     }
 
     public function remove($id, array $options = []): ?BaseModel

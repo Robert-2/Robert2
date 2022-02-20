@@ -34,7 +34,8 @@ class Acl
                 'restore',
             ],
             'Setting' => [
-                'update'
+                'update',
+                'reset',
             ],
         ],
         'visitor' => [
@@ -101,7 +102,8 @@ class Acl
                 'restore',
             ],
             'Setting' => [
-                'update'
+                'update',
+                'reset',
             ],
         ],
     ];

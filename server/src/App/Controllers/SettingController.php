@@ -77,4 +77,20 @@ class SettingController extends BaseController
         $response = $response->withStatus(SUCCESS_OK);
         return $this->getAll($request, $response);
     }
+
+    public function reset(Request $request, Response $response): Response
+    {
+        $key = $request->getAttribute('key');
+
+        // - La partie client manipule l'URL formattée du calendrier public
+        //   => On permet donc le reset via cette "clé".
+        if ($key === 'calendar.public.url') {
+            $key = 'calendar.public.uuid';
+        }
+
+        Setting::findOrFail($key)->reset();
+
+        $response = $response->withStatus(SUCCESS_OK);
+        return $this->getAll($request, $response);
+    }
 }
