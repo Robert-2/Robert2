@@ -116,7 +116,7 @@ const CalendarSettings = (props, { root }) => {
                         <Button
                             icon="save"
                             htmlType="submit"
-                            class="success"
+                            type="success"
                             disabled={isSaving.value}
                         >
                             {isSaving.value ? __('saving') : __('save')}

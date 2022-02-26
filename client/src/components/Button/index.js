@@ -2,6 +2,8 @@ import './index.scss';
 import { toRefs, computed } from '@vue/composition-api';
 import Icon from '@/components/Icon';
 
+const BUTTON_TYPE = ['default', 'success', 'warning', 'danger'];
+
 // type Props = {
 //     /**
 //      * Le type de bouton pour l'attribut `type` de la balise `<button>`?
@@ -28,8 +30,8 @@ import Icon from '@/components/Icon';
 // };
 
 // @vue/component
-const Button = (props, { slots }) => {
-    const { htmlType, icon, disabled } = toRefs(props);
+const Button = (props, { slots, emit }) => {
+    const { htmlType, icon, disabled, type } = toRefs(props);
     const _icon = computed(() => {
         if (!icon.value) {
             return null;
@@ -43,7 +45,8 @@ const Button = (props, { slots }) => {
         return { name: iconType, variant };
     });
 
-    const _className = ['Button', {
+    const _className = ['Button', `Button--${type.value}`, {
+        'Button--disabled': disabled.value,
         'Button--with-icon': !!_icon,
     }];
 
@@ -51,8 +54,13 @@ const Button = (props, { slots }) => {
         const children = slots.default?.();
 
         return (
-            // eslint-disable-next-line react/button-has-type
-            <button type={htmlType.value} class={_className} disabled={disabled.value}>
+            <button
+                // eslint-disable-next-line react/button-has-type
+                type={htmlType.value}
+                class={_className}
+                disabled={disabled.value}
+                onClick={emit.bind(null, 'click')}
+            >
                 {_icon.value && <Icon {...{ props: _icon.value }} class="Button__icon" />}
                 {children && <span class="Button__content">{children}</span>}
             </button>
@@ -68,8 +76,15 @@ Button.props = {
             ['button', 'submit', 'reset'].includes(value)
         ),
     },
+    type: {
+        type: String,
+        validator: (value) => BUTTON_TYPE.includes(value),
+        default: 'default',
+    },
     icon: { type: String, default: undefined },
     disabled: { type: Boolean, default: false },
 };
+
+Button.emits = ['click'];
 
 export default Button;
