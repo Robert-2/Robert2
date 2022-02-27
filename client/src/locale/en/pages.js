@@ -407,6 +407,13 @@ export default {
                 Once this configuration enabled and the link obtained, all you have to do is to go to your calendar application and look for the "New Calendar Subscription" or similar feature and paste the link in.\n
                 Please note that the refresh rate of the public calendar events depends totally on the calendar applications used. So be aware that the calendar in these applications may lag behind the Loxya / Robert2 one.`
             ),
+            'public-calendar-url-reset-help': "If you suspect that the calendar link has been shared with unwanted third parties, you can re-generate the link by clicking here:",
+            'public-calendar-url-reset-warning': (
+                "If you regenerate the link, the previous one will be revoked and you will need to communicate this new link again to people who legitimately have access to the calendar since theirs will be revoked.\n\n" +
+                "Are you sure you want to proceed?"
+            ),
+            'public-calendar-url-reset-error': "An error occurred while regenerating the public calendar link, please try again.",
+            'public-calendar-url-reset-success': "The public calendar link has been successfully re-generated! The new one is available above.",
         },
     },
 

@@ -230,7 +230,7 @@ export default {
             const { value: isConfirmed } = await confirm({
                 text: this.$t('page-events.technician-item.confirm-permanently-delete'),
                 confirmButtonText: this.$t('yes-permanently-delete'),
-                type: 'delete',
+                type: 'danger',
             });
             if (!isConfirmed) {
                 callback(null);

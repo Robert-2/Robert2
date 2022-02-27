@@ -90,7 +90,7 @@ const EventDetailsHeaderActions = (props, { root, emit }) => {
             title: __('please-confirm'),
             text: __('page-calendar.confirm-delete'),
             confirmButtonText: __('yes-delete'),
-            type: 'warning',
+            type: 'danger',
         });
         if (!isConfirmed) {
             return;

@@ -63,7 +63,7 @@
         color: $color-active-button;
     }
 
-    &--trash {
+    &--warning {
         background-color: $bg-color-button-warning !important;
 
         &:hover,
@@ -77,7 +77,7 @@
         }
     }
 
-    &--delete {
+    &--danger {
         background-color: $bg-color-button-danger !important;
 
         &:hover,

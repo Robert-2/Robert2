@@ -407,6 +407,13 @@ export default {
                 Une fois cette configuration activée et le lien récupéré, il vous suffira de vous rendre dans votre application de calendrier et de chercher la fonctionnalité "Abonnement à un calendrier" ou similaire pour y coller le lien.\n
                 Il est à noter que le taux de rafraichissement des événements du calendrier public dépend totalement des applications de calendrier utilisées. Soyez donc conscient que le calendrier dans ces applications peut avoir du retard sur celui de Loxya / Robert2.`
             ),
+            'public-calendar-url-reset-help': "Si vous soupsonnez que le lien du calendrier a été communiqué à des tiers non désirés, vous pouvez re-générer le lien en cliquant ici\u00a0:",
+            'public-calendar-url-reset-warning': (
+                "Si vous regénérez le lien, le précédent sera révoqué et vous devrez communiquer ce nouveau lien à nouveau aux personnes qui ont légitimement accès au calendrier vu que le leur sera révoqué.\n\n" +
+                "Êtes-vous sûr de vouloir continuer\u00a0?"
+            ),
+            'public-calendar-url-reset-error': "Une erreur est survenue lors de la regénération du lien du calendrier public, veuillez re-essayer.",
+            'public-calendar-url-reset-success': "Le lien du calendrier public a bien été re-généré\u00a0! Le nouveau lien est disponible ci-dessus.",
         },
     },
 

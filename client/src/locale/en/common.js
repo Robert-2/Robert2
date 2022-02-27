@@ -20,10 +20,12 @@ export default {
     'yes': "Yes",
     'no': "No",
 
+    'warning': "Warning\u00a0!",
     'loading': "Loading...",
     'please-confirm': "Please confirm...",
     'yes-delete': "Yes, move in trash bin",
     'yes-permanently-delete': "Yes, permanently delete",
+    'yes-regenerate-link': "Yes, regenerate the link",
     'yes-restore': "Oui, restaurer",
     'cancel': "Cancel",
     'close': "Close",
@@ -34,6 +36,7 @@ export default {
     'refresh-page': "Refresh the page",
     'take-control': "Take control",
     'update-in-progress': "Update in progress",
+    'regenerate-link': "Regenerate link",
 
     'please-choose': "Please choose...",
     'start-typing-to-search': "Start typing to search...",

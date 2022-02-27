@@ -210,7 +210,7 @@ export default {
             const confirmButtonText = isSoft
                 ? this.$t('yes-delete')
                 : this.$t('yes-permanently-delete');
-            const type = isSoft ? 'trash' : 'delete';
+            const type = isSoft ? 'warning' : 'danger';
             const { value: isConfirmed } = await confirm({ text, confirmButtonText, type });
             if (!isConfirmed) {
                 return;

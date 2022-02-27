@@ -85,6 +85,7 @@ export default defineComponent({
     render() {
         const {
             $t: __,
+            $scopedSlots: slots,
             type,
             label,
             name,
@@ -211,6 +212,7 @@ export default defineComponent({
                         <span class="FormField__error__text">{errors[0]}</span>
                     </div>
                 )}
+                {(!errors && slots.help) && <div class="FormField__help">{slots.help()}</div>}
             </div>
         );
     },

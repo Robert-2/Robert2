@@ -96,7 +96,7 @@ export default {
                 title: this.$t('please-confirm'),
                 text: this.$t(`page-${entity}.confirm-permanently-delete`),
                 confirmButtonText: this.$t(`yes-permanently-delete`),
-                type: 'delete',
+                type: 'danger',
             });
 
             if (!isConfirmed) {

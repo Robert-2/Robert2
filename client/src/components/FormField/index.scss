@@ -54,9 +54,13 @@
         min-height: 50px;
     }
 
+    &__help,
     &__error {
         flex: 0 0 100%;
         margin-top: 0.3rem;
+    }
+
+    &__error {
         color: globals.$text-danger-color;
 
         &__text {

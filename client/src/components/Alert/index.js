@@ -8,7 +8,7 @@ const ConfirmDelete = ($t, entityName, isSoft = true) => Swal.fire({
     icon: 'warning',
     showCancelButton: true,
     customClass: {
-        confirmButton: isSoft ? 'swal2-confirm--trash' : 'swal2-confirm--delete',
+        confirmButton: isSoft ? 'swal2-confirm--warning' : 'swal2-confirm--danger',
     },
     confirmButtonText: isSoft ? $t('yes-delete') : $t('yes-permanently-delete'),
     cancelButtonText: $t('cancel'),

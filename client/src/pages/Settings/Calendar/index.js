@@ -3,6 +3,7 @@ import { ref, computed, reactive } from '@vue/composition-api';
 import axios from 'axios';
 import pick from 'lodash/pick';
 import cloneDeep from 'lodash/cloneDeep';
+import { confirm } from '@/utils/alert';
 import apiSettings from '@/stores/api/settings';
 import useI18n from '@/hooks/vue/useI18n';
 import Help from '@/components/Help';
@@ -15,6 +16,11 @@ const CalendarSettings = (props, { root }) => {
     const isSaving = ref(false);
     const isSaved = ref(false);
     const error = ref(null);
+
+    // - State "temporaire" juste pendant la durée de vie de ce formulaire.
+    //   (on veut que le bouton de "Régénération du lien" du calendrier public
+    //   ré-apparaisse lorsqu'on reviendra sur le formulaire)
+    const hasRegeneratedCalendarLink = ref(false);
 
     const persistedData = computed(() => root.$store.state.settings.calendar);
     const values = reactive(pick(cloneDeep(persistedData.value), [
@@ -57,24 +63,75 @@ const CalendarSettings = (props, { root }) => {
         }
     };
 
+    const handleRegenerateCalendarUrl = async () => {
+        const { value: isConfirmed } = await confirm({
+            title: __('warning'),
+            text: __('page-settings.calendar.public-calendar-url-reset-warning'),
+            confirmButtonText: __('yes-regenerate-link'),
+            type: 'warning',
+        });
+        if (!isConfirmed) {
+            return;
+        }
+
+        try {
+            await apiSettings.reset('calendar.public.url');
+            root.$store.dispatch('settings/fetch');
+            hasRegeneratedCalendarLink.value = true;
+        } catch {
+            root.$toasted.error(__('page-settings.calendar.public-calendar-url-reset-error'));
+        }
+    };
+
     return () => {
         const renderPublicCalendarUrl = () => {
-            const isServerSideEnabled = persistedData.value.public.enabled;
             const isClientSideEnabled = values.public.enabled;
-
             if (!isClientSideEnabled) {
                 return null;
+            }
+
+            const isServerSideEnabled = persistedData.value.public.enabled;
+            if (!isServerSideEnabled) {
+                return (
+                    <FormField
+                        type="static"
+                        label="page-settings.calendar.public-calendar-url"
+                        value={__('page-settings.calendar.save-to-get-calendar-url')}
+                    />
+                );
             }
 
             return (
                 <FormField
                     type="static"
                     label="page-settings.calendar.public-calendar-url"
-                    value={(
-                        isServerSideEnabled
-                            ? persistedData.value.public.url
-                            : __('page-settings.calendar.save-to-get-calendar-url')
-                    )}
+                    class="CalendarSettings__public-calendar-url"
+                    value={persistedData.value.public.url}
+                    scopedSlots={{
+                        'help': () => {
+                            if (hasRegeneratedCalendarLink.value) {
+                                return (
+                                    <span
+                                        class={[
+                                            'CalendarSettings__public-calendar-url__help',
+                                            'CalendarSettings__public-calendar-url__help--success',
+                                        ]}
+                                    >
+                                        {__('page-settings.calendar.public-calendar-url-reset-success')}
+                                    </span>
+                                );
+                            }
+
+                            return (
+                                <span class="CalendarSettings__public-calendar-url__help">
+                                    {__('page-settings.calendar.public-calendar-url-reset-help')}
+                                    <Button onClick={handleRegenerateCalendarUrl} type="warning">
+                                        {__('regenerate-link')}
+                                    </Button>
+                                </span>
+                            );
+                        },
+                    }}
                 />
             );
         };

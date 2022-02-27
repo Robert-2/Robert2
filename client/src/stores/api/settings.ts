@@ -35,4 +35,8 @@ const put = async (data: Partial<Settings>): Promise<Settings> => (
     (await requester.put('settings', data)).data
 );
 
-export default { all, put };
+const reset = async (key: string): Promise<Settings> => (
+    (await requester.delete(`/settings/${key}`)).data
+);
+
+export default { all, put, reset };
