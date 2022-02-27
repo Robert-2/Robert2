@@ -9,6 +9,8 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - __[CHANGEMENT CRITIQUE]__ Robert2 requiert maintenant au minimum PHP 7.4 pour fonctionner (#327).
 - Ajoute la possibilité de configurer les données affichées dans les événements du calendrier 
   via la page des paramètres de l'application (fin du ticket #302).
+- Il est maintenant possible de s'abonner depuis votre application de calendrier préférée (Google Agenda, Apple Calendrier, etc.) au calendrier Robert2 / Loxya. 
+  Pour plus d'informations, rendez-vous dans les paramètres de votre instance Robert2 / Loxya, onglet "Calendrier" (#326).
 
 ## 0.17.1 (2022-01-06)
 
