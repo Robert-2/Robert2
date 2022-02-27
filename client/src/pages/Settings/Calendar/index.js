@@ -103,7 +103,7 @@ const CalendarSettings = (props, { root }) => {
 
             return (
                 <FormField
-                    type="static"
+                    type="copy"
                     label="page-settings.calendar.public-calendar-url"
                     class="CalendarSettings__public-calendar-url"
                     value={persistedData.value.public.url}

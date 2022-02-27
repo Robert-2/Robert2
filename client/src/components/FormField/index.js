@@ -3,10 +3,12 @@ import moment from 'moment';
 import { defineComponent } from '@vue/composition-api';
 import Datepicker from '@/components/Datepicker';
 import SwitchToggle from '@/components/SwitchToggle';
+import InputCopy from '@/components/InputCopy';
 
 const ALLOWED_TYPES = [
     'text',
     'email',
+    'copy',
     'static',
     'password',
     'number',
@@ -203,6 +205,9 @@ export default defineComponent({
                             readonly
                         />
                     </div>
+                )}
+                {type === 'copy' && (
+                    <InputCopy class="FormField__input" value={value} />
                 )}
                 {type === 'static' && (
                     <p class="FormField__static-value">{value}</p>

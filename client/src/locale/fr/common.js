@@ -31,6 +31,8 @@ export default {
     'close': "Fermer",
     'copy-to-clipboard': "Copier dans le presse-papier",
     'copied-in-clipboard': "Copié dans le presse-papier\u00a0!",
+    'copy': "Copier",
+    'copied': "Copié\u00a0!",
     'almost-done': "Presque terminé...",
     'done': "Terminé",
     'refresh-page': "Actualiser la page",

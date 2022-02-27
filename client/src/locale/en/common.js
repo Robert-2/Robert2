@@ -31,6 +31,8 @@ export default {
     'close': "Close",
     'copy-to-clipboard': "Copy to clipboard",
     'copied-in-clipboard': "Copied in clipboard!",
+    'copy': "Copy",
+    'copied': "Copied!",
     'almost-done': "Almost done...",
     'done': "Done",
     'refresh-page': "Refresh the page",
