@@ -239,9 +239,9 @@ final class UsersTest extends ApiTestCase
         $this->assertEquals(72, $response['auth_token_validity_duration']);
     }
 
-    public function testUserSignupBadData()
+    public function testCreateUserBadData()
     {
-        $this->client->post('/api/users/signup', [
+        $this->client->post('/api/users', [
             'email' => '',
             'person' => [
                 'first_name' => '',
@@ -275,12 +275,12 @@ final class UsersTest extends ApiTestCase
         ]);
     }
 
-    public function testUserSignup()
+    public function testCreateUser()
     {
-        $this->client->post('/api/users/signup', [
+        $this->client->post('/api/users', [
             'email' => 'nobody@test.org',
-            'pseudo' => 'signupTest',
-            'password' => 'signupTest',
+            'pseudo' => 'Jeanne',
+            'password' => 'my-ultim4te-paßwor!',
             'group_id' => 'member',
             'person' => [
                 'first_name' => 'Nobody',
@@ -297,7 +297,7 @@ final class UsersTest extends ApiTestCase
         $this->assertEquals([
             'id' => 4,
             'email' => 'nobody@test.org',
-            'pseudo' => 'signupTest',
+            'pseudo' => 'Jeanne',
             'group_id' => 'member',
             'cas_identifier' => null,
             'person' => [
@@ -321,28 +321,6 @@ final class UsersTest extends ApiTestCase
                 'country' => null,
             ],
         ], $response);
-    }
-
-    public function testCreateUser()
-    {
-        $this->client->post('/api/users/signup', [
-            'pseudo' => 'New User',
-            'email' => 'test@testing.org',
-            'password' => 'test',
-            'group_id' => 'member',
-        ]);
-        $this->assertStatusCode(SUCCESS_CREATED);
-        $this->assertResponseData([
-            'id' => 4,
-            'pseudo' => 'New User',
-            'email' => 'test@testing.org',
-            'group_id' => 'member',
-            'cas_identifier' => null,
-            'created_at' => 'fakedTestContent',
-            'updated_at' => 'fakedTestContent',
-            'deleted_at' => null,
-            'person' => null,
-        ], ['created_at', 'updated_at']);
     }
 
     public function testUpdateCategoryNoData()

@@ -24,7 +24,7 @@ final class SettingTest extends ModelTestCase
                     'title' => "Contrat",
                     'content' => "Un petit contrat de test.",
                 ],
-                'materialDisplayMode' => 'sub-categories',
+                'materialDisplayMode' => 'categories',
                 'showLegalNumbers' => true,
             ],
             'calendar' => [
@@ -48,7 +48,7 @@ final class SettingTest extends ModelTestCase
                     'title' => "Contrat",
                     'content' => "Un petit contrat de test.",
                 ],
-                'materialDisplayMode' => 'sub-categories',
+                'materialDisplayMode' => 'categories',
                 'showLegalNumbers' => true,
             ],
             'calendar' => [
@@ -58,6 +58,7 @@ final class SettingTest extends ModelTestCase
                 ],
                 'public' => [
                     'enabled' => true,
+                    'uuid' => 'dfe7cd82-52b9-4c9b-aaed-033df210f23b',
                 ],
             ],
         ];
@@ -70,7 +71,7 @@ final class SettingTest extends ModelTestCase
         $expected = [
             [
                 'key' => 'eventSummary.materialDisplayMode',
-                'value' => 'sub-categories',
+                'value' => 'categories',
             ],
             [
                 'key' => 'eventSummary.customText.title',
@@ -97,7 +98,7 @@ final class SettingTest extends ModelTestCase
                 'value' => true,
             ],
             [
-                'key' => 'calendar.event.uuid',
+                'key' => 'calendar.public.uuid',
                 'value' => 'dfe7cd82-52b9-4c9b-aaed-033df210f23b',
             ],
         ];
@@ -107,7 +108,7 @@ final class SettingTest extends ModelTestCase
     public function testGetWithKey(): void
     {
         $result = Setting::getWithKey('eventSummary.materialDisplayMode');
-        $this->assertEquals('sub-categories', $result);
+        $this->assertEquals('categories', $result);
 
         $result = Setting::getWithKey('eventSummary.customText.title');
         $this->assertEquals("Contrat", $result);
@@ -122,7 +123,7 @@ final class SettingTest extends ModelTestCase
                 'title' => 'Contrat',
                 'content' => 'Un petit contrat de test.',
             ],
-            'materialDisplayMode' => 'sub-categories',
+            'materialDisplayMode' => 'categories',
             'showLegalNumbers' => true,
         ];
         $this->assertEquals($expected, $result);
@@ -176,6 +177,21 @@ final class SettingTest extends ModelTestCase
             ],
         ];
         $this->assertEquals($expected, Setting::getList());
+    }
+
+    public function testReset(): void
+    {
+        // - Par défaut, le mode d'affichage du matériel est `sub-categories`.
+        Setting::find('eventSummary.materialDisplayMode')->reset();
+        $this->assertEquals('sub-categories', Setting::getWithKey('eventSummary.materialDisplayMode'));
+
+        // - Par défaut, le calendrier public est désactivé.
+        Setting::find('calendar.public.enabled')->reset();
+        $this->assertEquals(false, Setting::getWithKey('calendar.public.enabled'));
+
+        // - Par défaut, l'UUID de calendrier est un UUID aléatoire.
+        Setting::find('calendar.public.uuid')->reset();
+        $this->assertNotEquals('dfe7cd82-52b9-4c9b-aaed-033df210f23b', Setting::getWithKey('calendar.public.uuid'));
     }
 
     public function testRemove(): void

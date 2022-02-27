@@ -181,7 +181,7 @@ class Setting extends BaseModel
             try {
                 $model = static::find($key);
                 if (empty($model)) {
-                    $errors['key'] = ["This setting does not exists."];
+                    $errors[$key] = ["This setting does not exists."];
                     continue;
                 }
 

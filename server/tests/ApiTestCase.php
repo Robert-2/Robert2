@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Robert2\Tests;
 
+use Adbar\Dot as DotArray;
 use PHPUnit\Framework\TestCase;
 use Robert2\API\App;
 use Robert2\API\Kernel;
@@ -102,6 +103,22 @@ class ApiTestCase extends TestCase
         }
 
         $this->assertEquals($expectedData, $response);
+    }
+
+    public function assertResponseHasKeyEquals(string $path, $expectedValue): void
+    {
+        $response = new DotArray($this->_getResponseAsArray());
+
+        $this->assertTrue($response->has($path), sprintf("La clé \"%s\" n'existe pas dans la réponse.", $path));
+        $this->assertEquals($expectedValue, $response->get($path));
+    }
+
+    public function assertResponseHasKeyNotEquals(string $path, $expectedValue): void
+    {
+        $response = new DotArray($this->_getResponseAsArray());
+
+        $this->assertTrue($response->has($path), sprintf("La clé \"%s\" n'existe pas dans la réponse.", $path));
+        $this->assertNotEquals($expectedValue, $response->get($path));
     }
 
     public function assertResponsePaginatedData(int $count, string $baseUrl, string $extraParams = ''): void
