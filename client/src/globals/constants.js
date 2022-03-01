@@ -28,8 +28,6 @@ const ALLOWED_IMAGE_TYPES = [
     'image/webp',
 ];
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
-
 const TECHNICIAN_EVENT_STEP = moment.duration(15, 'minutes');
 const TECHNICIAN_EVENT_MIN_DURATION = moment.duration(15, 'minutes');
 
@@ -44,7 +42,6 @@ export {
     DEBOUNCE_WAIT,
     AUTHORIZED_FILE_TYPES,
     ALLOWED_IMAGE_TYPES,
-    MAX_FILE_SIZE,
     TECHNICIAN_EVENT_STEP,
     TECHNICIAN_EVENT_MIN_DURATION,
     ERROR_CODES,

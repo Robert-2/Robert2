@@ -211,6 +211,7 @@ export default {
         'documents': {
             'no-document': "Aucun document pour le moment.",
             'drag-and-drop-files-here': "Glissez-déposez des fichiers ici ↓ pour les ajouter.",
+            'max-size': "Taille maximum {size}",
             'choose-files': "Ou cliquez ici pour choisir des fichiers à ajouter",
             'send-files': [
                 "Envoyer le fichier",

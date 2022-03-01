@@ -1,5 +1,6 @@
 import './index.scss';
-import { AUTHORIZED_FILE_TYPES, MAX_FILE_SIZE } from '@/globals/constants';
+import { AUTHORIZED_FILE_TYPES } from '@/globals/constants';
+import Config from '@/globals/config';
 import formatBytes from '@/utils/formatBytes';
 import Help from '@/components/Help';
 import Progressbar from '@/components/Progressbar';
@@ -21,6 +22,9 @@ export default {
             files: [],
             uploadProgress: 0,
         };
+    },
+    computed: {
+        maxSize: () => formatBytes(Config.maxFileUploadSize),
     },
     methods: {
         openFilesBrowser() {
@@ -47,11 +51,11 @@ export default {
                 return false;
             }
 
-            if (size > MAX_FILE_SIZE) {
+            if (size > Config.maxFileUploadSize) {
                 this.fileErrors.push({
                     fileName: name,
                     message: this.$t('errors.file-size-exceeded', {
-                        max: formatBytes(MAX_FILE_SIZE),
+                        max: formatBytes(Config.maxFileUploadSize),
                     }),
                 });
                 return false;

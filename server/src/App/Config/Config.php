@@ -99,6 +99,7 @@ class Config
             'level' => Logger::NOTICE,
             'max_files' => 10,
         ],
+        'maxFileUploadSize' => 25 * 1024 * 1024, // - En octets
         'authorizedFileTypes' => [
             'application/pdf',
             'application/zip',

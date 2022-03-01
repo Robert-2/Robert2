@@ -311,11 +311,18 @@ class MaterialController extends BaseController
         $uploadedFiles = $request->getUploadedFiles();
         $destDirectory = Document::getFilePath($id);
 
-        $errors = [];
+        $errors = count($uploadedFiles) === 0 ? ['' => 'No file to save!'] : [];
         $files = [];
         foreach ($uploadedFiles as $file) {
-            if ($file->getError() !== UPLOAD_ERR_OK) {
-                $errors[$file->getClientFilename()] = 'File upload failed.';
+            $error = $file->getError();
+            if ($error !== UPLOAD_ERR_OK) {
+                $errors[$file->getClientFilename()] = sprintf('File upload failed. Error code: %d.', $error);
+                continue;
+            }
+
+            $fileSize = $file->getSize();
+            if ($fileSize > Config::getSettings('maxFileUploadSize')) {
+                $errors[$file->getClientFilename()] = 'This file exceeds maximum size allowed.';
                 continue;
             }
 
@@ -377,6 +384,11 @@ class MaterialController extends BaseController
 
         if (empty($file) || $file->getError() !== UPLOAD_ERR_OK) {
             throw new \Exception("File upload failed.");
+        }
+
+        $fileSize = $file->getSize();
+        if ($fileSize > Config::getSettings('maxFileUploadSize')) {
+            throw new \Exception("This file exceeds maximum size allowed.");
         }
 
         $fileType = $file->getClientMediaType();
