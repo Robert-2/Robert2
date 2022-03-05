@@ -41,7 +41,7 @@ final class SettingTest extends ModelTestCase
         $this->assertEquals($expected, $result);
 
         // - Si `withSensitive = false`, les données sensibles ne sont pas retournées.
-        $result = Setting::getList(true);
+        $result = Setting::getList(false);
         $expected = [
             'eventSummary' => [
                 'customText' => [
@@ -58,7 +58,6 @@ final class SettingTest extends ModelTestCase
                 ],
                 'public' => [
                     'enabled' => true,
-                    'uuid' => 'dfe7cd82-52b9-4c9b-aaed-033df210f23b',
                 ],
             ],
         ];
