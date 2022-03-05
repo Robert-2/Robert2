@@ -397,6 +397,21 @@ export default {
             'events-display-section-title': "Data that will be displayed in the calendar events",
             'showLocation': "Show the location of the event?",
             'showBorrower': "Show the beneficiary / borrower?",
+            'public-calendar-section-title': "Calendar external subscription",
+            'enable-public-calendar': "Enable external calendar access?",
+            'public-calendar-url': "External calendar URL",
+            'save-to-get-calendar-url': "Please save your changes to get the calendar URL.",
+            'public-calendar-help': (
+                `This allows you to publish the main calendar. Any person in possession of this link will be able to consult the events of your calendar, without being connected to the application! So be sure to only share this link with people you trust.\n
+                To use this link, go to your compatible calendar application, and look for the "New Calendar Subscription" feature. Please note that the refresh rate in these applications is highly variable, so they may display event changes with a delay.`
+            ),
+            'public-calendar-url-reset-help': "If you suspect that the calendar link has been shared with unwanted third parties, you can re-generate the link by clicking here:",
+            'public-calendar-url-reset-warning': (
+                "If you regenerate the link, the previous one will be revoked and you will need to communicate this new link again to people who legitimately have access to the calendar since theirs will be revoked.\n\n" +
+                "Do you really want to proceed?"
+            ),
+            'public-calendar-url-reset-error': "An error occurred while regenerating the public calendar link, please try again.",
+            'public-calendar-url-reset-success': "The public calendar link has been successfully re-generated! The new one is available above.",
         },
     },
 

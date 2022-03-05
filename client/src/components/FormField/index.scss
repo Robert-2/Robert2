@@ -23,8 +23,16 @@
 
     &__input,
     &__textarea,
-    &__datepicker {
+    &__datepicker,
+    &__static-value {
         width: 90%;
+    }
+
+    &__static-value {
+        margin: 0;
+        padding: 10px 0;
+        font-weight: 500;
+        font-style: italic;
     }
 
     &__switch {
@@ -46,9 +54,13 @@
         min-height: 50px;
     }
 
+    &__help,
     &__error {
         flex: 0 0 100%;
         margin-top: 0.3rem;
+    }
+
+    &__error {
         color: globals.$text-danger-color;
 
         &__text {
@@ -62,6 +74,10 @@
             padding-right: 0;
             border-right: 0;
             border-radius: globals.$input-border-radius 0 0 globals.$input-border-radius;
+
+            &:focus + #{$block}__addon {
+                border-color: globals.$input-focus-border-color;
+            }
         }
     }
 
@@ -88,7 +104,8 @@
 
         &__input,
         &__textarea,
-        &__datepicker {
+        &__datepicker,
+        &__static-value {
             flex: 1;
         }
 

@@ -76,6 +76,17 @@ final class Auth
         return (bool)static::user();
     }
 
+    public static function is($groups): bool
+    {
+        $groups = (array)$groups;
+
+        if (!static::isAuthenticated()) {
+            return false;
+        }
+
+        return in_array(static::user()->group_id, (array)$groups);
+    }
+
     public static function isLoginRequest(Request $request): bool
     {
         return static::requestMatch($request, '/login');

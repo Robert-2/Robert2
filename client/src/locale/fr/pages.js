@@ -397,6 +397,21 @@ export default {
             'events-display-section-title': "Données affichées dans les événements du calendrier",
             'showLocation': "Afficher le lieu de l'événement\u00a0?",
             'showBorrower': "Afficher le bénéficiaire / emprunteur\u00a0?",
+            'public-calendar-section-title': "Abonnement externe au calendrier",
+            'enable-public-calendar': "Activer l'accès externe au calendrier\u00a0?",
+            'public-calendar-url': "URL du calendrier externe",
+            'save-to-get-calendar-url': "Veuillez sauvegarder vos modifications pour obtenir l'URL.",
+            'public-calendar-help': (
+                `Ceci vous permet de publier le calendrier principal. Toute personne en possession de ce lien pourra donc consulter les événements de votre calendrier, sans être connecté à l'application\u00a0! Veillez donc bien à ne communiquer ce lien qu'à des personnes de confiance.\n
+                Pour utiliser ce lien, rendez-vous dans votre application de calendrier compatible, et cherchez la fonctionnalité "Abonnement à un calendrier". Veuillez noter que le taux de rafraîchissement des données dans ces applications est très variable, elles peuvent donc afficher les modifications des événements avec du retard.`
+            ),
+            'public-calendar-url-reset-help': "Si vous soupçonnez que le lien du calendrier a été communiqué à des tiers non désirés, vous pouvez re-générer le lien en cliquant ici\u00a0:",
+            'public-calendar-url-reset-warning': (
+                "Si vous re-générez le lien, le précédent sera révoqué et vous devrez communiquer ce nouveau lien aux personnes qui ont légitimement accès au calendrier pour qu'elles le mette à jour.\n\n" +
+                "Voulez-vous vraiment continuer\u00a0?"
+            ),
+            'public-calendar-url-reset-error': "Une erreur est survenue lors de la re-génération du lien du calendrier public, veuillez re-essayer.",
+            'public-calendar-url-reset-success': "Le lien du calendrier public a bien été re-généré\u00a0! Le nouveau lien est disponible ci-dessus.",
         },
     },
 

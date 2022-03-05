@@ -13,13 +13,17 @@ final class SettingsTest extends ApiTestCase
                     'title' => "Contrat",
                     'content' => "Un petit contrat de test.",
                 ],
-                'materialDisplayMode' => 'sub-categories',
+                'materialDisplayMode' => 'categories',
                 'showLegalNumbers' => true,
             ],
             'calendar' => [
                 'event' => [
                     'showBorrower' => false,
                     'showLocation' => true,
+                ],
+                'public' => [
+                    'enabled' => true,
+                    'url' => '/calendar/public/dfe7cd82-52b9-4c9b-aaed-033df210f23b.ics',
                 ],
             ],
         ]);
@@ -34,7 +38,7 @@ final class SettingsTest extends ApiTestCase
         $this->assertStatusCode(ERROR_VALIDATION);
         $this->assertValidationErrorMessage();
         $this->assertErrorDetails([
-            'key' => ["This setting does not exists."],
+            'inexistant_settings' => ["This setting does not exists."],
         ]);
     }
 
@@ -44,6 +48,7 @@ final class SettingsTest extends ApiTestCase
             'calendar.event.showBorrower' => 'foo',
             'eventSummary.materialDisplayMode' => 'not-valid',
             'eventSummary.customText.title' => str_repeat('A', 192),
+            'calendar.public.uuid' => 'not-valid',
         ]);
         $this->assertStatusCode(ERROR_VALIDATION);
         $this->assertValidationErrorMessage();
@@ -61,6 +66,9 @@ final class SettingsTest extends ApiTestCase
             'eventSummary.customText.title' => [
                 'value must have a length lower than 191',
             ],
+            'calendar.public.uuid' => [
+                'The unique identifier (UUID) is invalid.',
+            ],
         ]);
     }
 
@@ -72,13 +80,16 @@ final class SettingsTest extends ApiTestCase
                     'title' => 'foo',
                     'content' => 'bar',
                 ],
-                'materialDisplayMode' => 'sub-categories',
+                'materialDisplayMode' => 'categories',
                 'showLegalNumbers' => true,
             ],
             'calendar' => [
                 'event' => [
                     'showBorrower' => false,
                     'showLocation' => false,
+                ],
+                'public' => [
+                    'enabled' => false,
                 ],
             ],
         ]);
@@ -89,13 +100,16 @@ final class SettingsTest extends ApiTestCase
                     'title' => 'foo',
                     'content' => 'bar',
                 ],
-                'materialDisplayMode' => 'sub-categories',
+                'materialDisplayMode' => 'categories',
                 'showLegalNumbers' => true,
             ],
             'calendar' => [
                 'event' => [
                     'showBorrower' => false,
                     'showLocation' => false,
+                ],
+                'public' => [
+                    'enabled' => false,
                 ],
             ],
         ]);
@@ -123,7 +137,31 @@ final class SettingsTest extends ApiTestCase
                     'showBorrower' => true,
                     'showLocation' => false,
                 ],
+                'public' => [
+                    'enabled' => false,
+                ],
             ],
         ]);
+    }
+
+    public function testReset(): void
+    {
+        // - Par défaut, le mode d'affichage du matériel est `sub-categories`.
+        $this->client->delete('/api/settings/eventSummary.materialDisplayMode');
+        $this->assertStatusCode(SUCCESS_OK);
+        $this->assertResponseHasKeyEquals('eventSummary.materialDisplayMode', 'sub-categories');
+
+        // - Par défaut, l'UUID de calendrier est un UUID aléatoire.
+        $this->client->delete('/api/settings/calendar.public.url');
+        $this->assertStatusCode(SUCCESS_OK);
+        $this->assertResponseHasKeyNotEquals(
+            'calendar.public.url',
+            '/calendar/public/dfe7cd82-52b9-4c9b-aaed-033df210f23b.ics'
+        );
+
+        // - Par défaut, le calendrier public est désactivé.
+        $this->client->delete('/api/settings/calendar.public.enabled');
+        $this->assertStatusCode(SUCCESS_OK);
+        $this->assertResponseHasKeyEquals('calendar.public.enabled', false);
     }
 }

@@ -1,6 +1,6 @@
-/* stylelint-disable selector-max-type, selector-no-qualifying-type, scss/no-global-function-names */
+/* stylelint-disable selector-no-qualifying-type, scss/no-global-function-names */
 
-button,
+button:not(.Button),
 .button {
     flex: 0 0 auto;
     display: inline-block;

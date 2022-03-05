@@ -9,12 +9,13 @@ class Acl
         '/install',
         '/login',
 
+        '/calendar/public',
+
         //
         // - Api
         //
 
         '/api/session' => ['POST'],
-        '/api/users/signup',
     ];
 
     const DENY_LIST = [
@@ -31,6 +32,10 @@ class Acl
                 'create',
                 'delete',
                 'restore',
+            ],
+            'Setting' => [
+                'update',
+                'reset',
             ],
         ],
         'visitor' => [
@@ -95,6 +100,10 @@ class Acl
                 'create',
                 'delete',
                 'restore',
+            ],
+            'Setting' => [
+                'update',
+                'reset',
             ],
         ],
     ];

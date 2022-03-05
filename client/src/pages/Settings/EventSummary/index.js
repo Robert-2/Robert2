@@ -1,7 +1,7 @@
 import './index.scss';
 import { ref, computed, reactive, onMounted } from '@vue/composition-api';
 import axios from 'axios';
-import cloneDeep from 'lodash.clonedeep';
+import cloneDeep from 'lodash/cloneDeep';
 import useI18n from '@/hooks/vue/useI18n';
 import apiSettings from '@/stores/api/settings';
 import Help from '@/components/Help';
@@ -124,7 +124,7 @@ const EventSummarySettings = (props, { root }) => {
                     <Button
                         icon="save"
                         htmlType="submit"
-                        class="success"
+                        type="success"
                         disabled={isSaving.value}
                     >
                         {isSaving.value ? __('saving') : __('save')}

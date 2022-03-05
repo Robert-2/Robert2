@@ -27,15 +27,16 @@
         "vendor-dir": "vendors",
         "sort-packages": true,
         "platform": {
-            "php": "7.3"
+            "php": "7.4"
         }
     },
     "require": {
-        "php": ">=7.3",
+        "php": ">=7.4",
         "adbario/php-dot-notation": "2.2.0",
         "cocur/slugify": "4.0.0",
         "delfimov/translate": "2.6.0",
         "dompdf/dompdf": "1.1.1",
+        "eluceo/ical": "2.4.0",
         "firebase/php-jwt": "5.4.0",
         "illuminate/database": "8.51.0",
         "illuminate/events": "v8.77.1",
@@ -43,6 +44,7 @@
         "kirkbushell/eloquence": "8.0.0",
         "monolog/monolog": "2.3.2",
         "php-di/php-di": "6.3.4",
+        "ramsey/uuid": "4.2.3",
         "respect/validation": "1.1.31",
         "robmorgan/phinx": "0.12.7",
         "slim/http": "1.2.0",
