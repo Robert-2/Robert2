@@ -74,7 +74,6 @@ class SettingController extends BaseController
 
         Setting::staticEdit(null, $postData);
 
-        $response = $response->withStatus(SUCCESS_OK);
         return $this->getAll($request, $response);
     }
 
@@ -90,7 +89,6 @@ class SettingController extends BaseController
 
         Setting::findOrFail($key)->reset();
 
-        $response = $response->withStatus(SUCCESS_OK);
         return $this->getAll($request, $response);
     }
 }
