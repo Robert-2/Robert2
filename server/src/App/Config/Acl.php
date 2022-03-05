@@ -59,9 +59,21 @@ class Acl
             ],
             'Event' => [
                 'create',
+                'duplicate',
                 'update',
                 'delete',
                 'restore',
+                'updateMaterialReturn',
+                'updateMaterialTerminate',
+            ],
+            'EventTechnician' => [
+                'create',
+                'update',
+                'delete',
+            ],
+            'Estimate' => [
+                'create',
+                'delete',
             ],
             'Bill' => [
                 'getOne',
@@ -70,12 +82,16 @@ class Acl
             ],
             'Attribute' => [
                 'create',
+                'update',
+                'delete',
             ],
             'Material' => [
                 'create',
                 'update',
                 'delete',
                 'restore',
+                'handleUploadDocuments',
+                'handleUploadPicture',
             ],
             'Park' => [
                 'create',
@@ -105,6 +121,9 @@ class Acl
                 'update',
                 'reset',
             ],
+            'Document' => [
+                'delete',
+            ]
         ],
     ];
 }
