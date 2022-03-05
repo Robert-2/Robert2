@@ -25,7 +25,7 @@ export default {
     'please-confirm': "Veuillez confirmer...",
     'yes-delete': "Oui, mettre à la corbeille",
     'yes-permanently-delete': "Oui, supprimer définitivement",
-    'yes-regenerate-link': "Oui, regénérer le lien",
+    'yes-regenerate-link': "Oui, re-générer le lien",
     'yes-restore': "Oui, restaurer",
     'cancel': "Annuler",
     'close': "Fermer",
@@ -38,7 +38,7 @@ export default {
     'refresh-page': "Actualiser la page",
     'take-control': "Prendre la main",
     'update-in-progress': "Modification en cours",
-    'regenerate-link': "Regénérer le lien",
+    'regenerate-link': "Re-générer le lien",
 
     'please-choose': "Veuillez choisir...",
     'start-typing-to-search': "Commencez à écrire pour rechercher...",

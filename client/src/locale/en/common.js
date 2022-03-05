@@ -20,7 +20,7 @@ export default {
     'yes': "Yes",
     'no': "No",
 
-    'warning': "Warning\u00a0!",
+    'warning': "Warning!",
     'loading': "Loading...",
     'please-confirm': "Please confirm...",
     'yes-delete': "Yes, move in trash bin",
