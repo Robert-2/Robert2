@@ -7,6 +7,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 ## 0.18.0 (UNRELEASED)
 
 - __[CHANGEMENT CRITIQUE]__ Robert2 requiert maintenant au minimum PHP 7.4 pour fonctionner (#327).
+- Augmente la taille du champ `degressive_rate` des tables `bills` et `estimates` pour qu'il accepte une valeur jusqu'à 9999,99 (quand un événement est très long), au lieu de juste 99,99 (#329).
 - Ajoute la possibilité de configurer les données affichées dans les événements du calendrier 
   via la page des paramètres de l'application (fin du ticket #302).
 - Il est maintenant possible de s'abonner depuis votre application de calendrier préférée (Google Agenda, Apple Calendrier, etc.) au calendrier Robert2 / Loxya. 
