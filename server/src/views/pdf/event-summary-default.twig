@@ -134,9 +134,14 @@
             <tr>
                 <td class="section-title" colspan="6">
                     {% if subCategory['name'] is not empty %}
-                    {{ subCategory['category'] }} - {{ subCategory['name'] }}
-                    {% else %}
+                        {% if subCategory['category'] is not empty %}
+                        {{ subCategory['category'] }} -
+                        {% endif %}
+                    {{ subCategory['name'] }}
+                    {% elseif subCategory['categoryHasSubcategories'] == true %}
                     {{ subCategory['category'] }} - {{ translate('otherMaterials') }}
+                    {% else %}
+                    {{ subCategory['category'] }}
                     {% endif %}
                 </td>
             </tr>

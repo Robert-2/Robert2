@@ -54,6 +54,7 @@ class MaterialsData
                 $categoriesMaterials[$categoryId] = [
                     'id' => $categoryId ?: null,
                     'name' => $this->getCategoryName($categoryId),
+                    'categoryHasSubcategories' => $this->categoryHasSubcategories($categoryId),
                     'materials' => [],
                 ];
             }
@@ -104,6 +105,7 @@ class MaterialsData
                     'id' => $subCategoryId,
                     'name' => $this->getSubCategoryName($material['sub_category_id']),
                     'category' => $this->getCategoryName($categoryId),
+                    'categoryHasSubcategories' => $this->categoryHasSubcategories($categoryId),
                     'materials' => [],
                 ];
             }
@@ -246,6 +248,21 @@ class MaterialsData
         }
 
         return null;
+    }
+
+    protected function categoryHasSubcategories(int $categoryId): bool
+    {
+        if (empty($this->categories)) {
+            throw new \InvalidArgumentException("Missing categories data.");
+        }
+
+        foreach ($this->categories as $category) {
+            if ($categoryId === $category['id']) {
+                return count($category['sub_categories']) > 0;
+            }
+        }
+
+        return false;
     }
 
     protected function getSubCategoryName(?int $subCategoryId): ?string
