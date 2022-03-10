@@ -47,6 +47,17 @@
         display: none;
     }
 
+    &__link {
+        padding: 10px 0;
+        /* stylelint-disable-next-line declaration-no-important */
+        color: globals.$text-base-color !important;
+
+        &:hover {
+            /* stylelint-disable-next-line declaration-no-important */
+            color: globals.$link-hover-color !important;
+        }
+    }
+
     &__category {
         white-space: nowrap;
     }
