@@ -10,8 +10,8 @@ export default {
     name: 'ImageWithUpload',
     components: { Help },
     props: {
-        url: { type: String, required: true },
-        name: { type: String, required: true },
+        url: { type: String, default: null },
+        name: { type: String, default: null },
         isLoading: { type: Boolean, required: true },
     },
     data() {

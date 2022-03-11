@@ -2482,6 +2482,31 @@ return [
     => "This technician is already busy for this period.",
 
     //
+    // - Upload messages
+    //
+
+    "no-uploaded-files"
+    => "No uploaded files.",
+
+    "upload-failed-error-code"
+    => "File upload failed. Error code:",
+
+    "file-exceeds-max-size"
+    => "This file exceeds maximum size allowed.",
+
+    "file-type-not-allowed"
+    => "This file type is not allowed.",
+
+    "saving-uploaded-file-failed"
+    => "Saving the uploaded file failed.",
+
+    "document-cannot-be-saved-in-db"
+    => "Document could not be saved in database. Reason:",
+
+    "material-picture-cannot-be-saved-in-db"
+    => "Material picture could not be saved in database. Reason:",
+
+    //
     // - Install messages
     //
 

@@ -246,7 +246,7 @@ export default {
             try {
                 await this.$http.post(`materials/${id}/picture`, formData, { onUploadProgress });
             } catch (error) {
-                throw new Error('Upload failed.');
+                throw new Error(error.response?.data?.error?.message || error.message);
             } finally {
                 this.isUploading = false;
             }
