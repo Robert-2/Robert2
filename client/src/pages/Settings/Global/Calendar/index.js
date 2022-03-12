@@ -11,7 +11,7 @@ import FormField from '@/components/FormField';
 import Button from '@/components/Button';
 
 // @vue/component
-const CalendarSettings = (props, { root }) => {
+const CalendarGlobalSettings = (props, { root }) => {
     const __ = useI18n();
     const isSaving = ref(false);
     const isSaved = ref(false);
@@ -105,7 +105,7 @@ const CalendarSettings = (props, { root }) => {
                 <FormField
                     type="copy"
                     label="page-settings.calendar.public-calendar-url"
-                    class="CalendarSettings__public-calendar-url"
+                    class="CalendarGlobalSettings__public-calendar-url"
                     value={persistedData.value.public.url}
                     scopedSlots={{
                         'help': () => {
@@ -113,8 +113,8 @@ const CalendarSettings = (props, { root }) => {
                                 return (
                                     <span
                                         class={[
-                                            'CalendarSettings__public-calendar-url__help',
-                                            'CalendarSettings__public-calendar-url__help--success',
+                                            'CalendarGlobalSettings__public-calendar-url__help',
+                                            'CalendarGlobalSettings__public-calendar-url__help--success',
                                         ]}
                                     >
                                         {__('page-settings.calendar.public-calendar-url-reset-success')}
@@ -123,7 +123,7 @@ const CalendarSettings = (props, { root }) => {
                             }
 
                             return (
-                                <span class="CalendarSettings__public-calendar-url__help">
+                                <span class="CalendarGlobalSettings__public-calendar-url__help">
                                     {__('page-settings.calendar.public-calendar-url-reset-help')}
                                     <Button onClick={handleRegenerateCalendarUrl} type="warning">
                                         {__('regenerate-link')}
@@ -137,10 +137,10 @@ const CalendarSettings = (props, { root }) => {
         };
 
         return (
-            <div class="CalendarSettings">
+            <div class="CalendarGlobalSettings">
                 <Help message={help.value} error={error.value} isLoading={isSaving.value} />
-                <form class="CalendarSettings__form" onSubmit={handleSubmit}>
-                    <section class="CalendarSettings__section">
+                <form class="CalendarGlobalSettings__form" onSubmit={handleSubmit}>
+                    <section class="CalendarGlobalSettings__section">
                         <h2>{__('page-settings.calendar.events-display-section-title')}</h2>
                         <FormField
                             type="switch"
@@ -157,9 +157,9 @@ const CalendarSettings = (props, { root }) => {
                             vModel={values.event.showBorrower}
                         />
                     </section>
-                    <section class="CalendarSettings__section">
+                    <section class="CalendarGlobalSettings__section">
                         <h2>{__('page-settings.calendar.public-calendar-section-title')}</h2>
-                        <p class="CalendarSettings__help">{__('page-settings.calendar.public-calendar-help')}</p>
+                        <p class="CalendarGlobalSettings__help">{__('page-settings.calendar.public-calendar-help')}</p>
                         <FormField
                             type="switch"
                             label="page-settings.calendar.enable-public-calendar"
@@ -169,7 +169,7 @@ const CalendarSettings = (props, { root }) => {
                         />
                         {renderPublicCalendarUrl()}
                     </section>
-                    <section class="CalendarSettings__actions">
+                    <section class="CalendarGlobalSettings__actions">
                         <Button
                             icon="save"
                             htmlType="submit"
@@ -185,4 +185,4 @@ const CalendarSettings = (props, { root }) => {
     };
 };
 
-export default CalendarSettings;
+export default CalendarGlobalSettings;

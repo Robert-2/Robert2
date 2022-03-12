@@ -20,7 +20,7 @@ import TechnicianView from './TechnicianView';
 import Categories from './Categories';
 import Parks from './Parks';
 import Park from './Park';
-import Settings from './Settings';
+import GlobalSettings from './Settings/Global';
 
 export default [
     {
@@ -339,7 +339,7 @@ export default [
     {
         path: '/settings',
         name: 'settings',
-        component: Settings,
+        component: GlobalSettings,
         meta: {
             resource: 'settings',
             title: 'page-settings.title',

@@ -11,7 +11,7 @@ import Button from '@/components/Button';
 const LIST_MODES = Object.freeze(['categories', 'sub-categories', 'parks', 'flat']);
 
 // @vue/component
-const EventSummarySettings = (props, { root }) => {
+const EventSummaryGlobalSettings = (props, { root }) => {
     const __ = useI18n();
     const isSaving = ref(false);
     const isSaved = ref(false);
@@ -79,10 +79,10 @@ const EventSummarySettings = (props, { root }) => {
     };
 
     return () => (
-        <div class="EventSummarySettings">
+        <div class="EventSummaryGlobalSettings">
             <Help message={help.value} error={error.value} isLoading={isSaving.value} />
-            <form class="EventSummarySettings__form" onSubmit={handleSubmit}>
-                <section class="EventSummarySettings__section">
+            <form class="EventSummaryGlobalSettings__form" onSubmit={handleSubmit}>
+                <section class="EventSummaryGlobalSettings__section">
                     <h3>{__('page-settings.event-summary.header')}</h3>
                     <FormField
                         type="switch"
@@ -92,7 +92,7 @@ const EventSummarySettings = (props, { root }) => {
                         vModel={values.showLegalNumbers}
                     />
                 </section>
-                <section class="EventSummarySettings__section">
+                <section class="EventSummaryGlobalSettings__section">
                     <h3>{__('page-settings.event-summary.material-list')}</h3>
                     <FormField
                         type="select"
@@ -103,7 +103,7 @@ const EventSummarySettings = (props, { root }) => {
                         vModel={values.materialDisplayMode}
                     />
                 </section>
-                <section class="EventSummarySettings__section">
+                <section class="EventSummaryGlobalSettings__section">
                     <h3>{__('page-settings.event-summary.custom-text')}</h3>
                     <FormField
                         type="text"
@@ -120,7 +120,7 @@ const EventSummarySettings = (props, { root }) => {
                         vModel={values.customText.content}
                     />
                 </section>
-                <section class="EventSummarySettings__actions">
+                <section class="EventSummaryGlobalSettings__actions">
                     <Button
                         icon="save"
                         htmlType="submit"
@@ -135,4 +135,4 @@ const EventSummarySettings = (props, { root }) => {
     );
 };
 
-export default EventSummarySettings;
+export default EventSummaryGlobalSettings;

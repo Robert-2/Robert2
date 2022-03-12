@@ -5,15 +5,15 @@ import CalendarSettings from './Calendar';
 
 // @vue/component
 export default {
-    name: 'Settings',
+    name: 'GlobalSettingsPage',
     render() {
         const { $t: __ } = this;
 
         return (
             <div class="content">
                 <div class="content__main-view">
-                    <div class="SettingsPage">
-                        <Tabs class="SettingsPage__body">
+                    <div class="GlobalSettingsPage">
+                        <Tabs class="GlobalSettingsPage__body">
                             <template slot="event-summary">
                                 <i class="fas fa-print" /> {__('page-settings.event-summary.title')}
                             </template>
