@@ -182,7 +182,7 @@ export default {
             const isSoft = !this.isTrashDisplayed;
 
             const { value: isConfirmed } = await confirm({
-                type: isSoft ? 'trash' : 'delete',
+                type: isSoft ? 'warning' : 'danger',
 
                 text: isSoft
                     ? __('page-beneficiaries.confirm-delete')
@@ -274,24 +274,9 @@ export default {
         } = this;
 
         const headerActions = [
-            <Button
-                onClick={showTrashed}
-                icon={isTrashDisplayed ? 'eye' : 'trash'}
-                class="Beneficiaries__show-trashed"
-            >
-                {isTrashDisplayed ? __('display-not-deleted-items') : __('open-trash-bin')}
+            <Button icon="user-plus" type="success" to="/beneficiaries/new">
+                {__('page-beneficiaries.action-add')}
             </Button>,
-            <router-link to="/beneficiaries/new" custom>
-                {({ navigate }) => (
-                    <Button
-                        onClick={navigate}
-                        icon="user-plus"
-                        class="Beneficiaries__create success"
-                    >
-                        {__('page-beneficiaries.action-add')}
-                    </Button>
-                )}
-            </router-link>,
         ];
 
         return (
@@ -310,6 +295,15 @@ export default {
                     columns={columns}
                     options={options}
                 />
+                <div class="content__footer">
+                    <Button
+                        onClick={showTrashed}
+                        icon={isTrashDisplayed ? 'eye' : 'trash'}
+                        type={isTrashDisplayed ? 'success' : 'danger'}
+                    >
+                        {isTrashDisplayed ? __('display-not-deleted-items') : __('open-trash-bin')}
+                    </Button>
+                </div>
             </Page>
         );
     },

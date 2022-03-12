@@ -19,6 +19,10 @@ button:not(.Button),
         margin-left: 5px;
     }
 
+    &:visited {
+        color: $color-base-button;
+    }
+
     &:hover,
     &:focus {
         outline: 0;

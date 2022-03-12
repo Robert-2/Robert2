@@ -1,37 +1,13 @@
 import './index.scss';
 import { toRefs, computed } from '@vue/composition-api';
+import { Fragment } from 'vue-fragment';
 import Icon from '@/components/Icon';
 
-const BUTTON_TYPE = ['default', 'success', 'warning', 'danger'];
-
-// type Props = {
-//     /**
-//      * Le type de bouton pour l'attribut `type` de la balise `<button>`?
-//      *
-//      * Options disponibles: `submit`, `button` ou `reset`.
-//      */
-//     htmlType?: 'submit' | 'button' | 'reset',
-
-//     /**
-//      * Le code de l'éventuelle icône qui sera ajoutée au bouton.
-//      *
-//      * Pour utiliser une variante de l'icône, vous pouvez suffixer le nom de l'icône avec `:[variante]`.
-//      * Par exemple: `plus:solid` ou `birthday-cake:regular`.
-//      *
-//      * Voir le component <Icon> concernant la liste des codes et les variantes possibles.
-//      */
-//     icon?: string | undefined,
-
-//     /** Le bouton est-il désactivé ? */
-//     disabled?: boolean,
-
-//     /** Des éventuelles classes supplémentaires qui seront ajoutées au component. */
-//     class?: string,
-// };
+const BUTTON_TYPE = ['default', 'success', 'warning', 'danger', 'primary'];
 
 // @vue/component
 const Button = (props, { slots, emit }) => {
-    const { htmlType, icon, disabled, type } = toRefs(props);
+    const { htmlType, icon, disabled, type, to } = toRefs(props);
     const _icon = computed(() => {
         if (!icon.value) {
             return null;
@@ -45,24 +21,45 @@ const Button = (props, { slots, emit }) => {
         return { name: iconType, variant };
     });
 
-    const _className = ['Button', `Button--${type.value}`, {
-        'Button--disabled': disabled.value,
-        'Button--with-icon': !!_icon,
-    }];
+    const _className = computed(() => [
+        'Button',
+        `Button--${type.value}`, {
+            'Button--disabled': disabled.value,
+            'Button--with-icon': !!_icon,
+        },
+    ]);
 
     return () => {
         const children = slots.default?.();
+
+        const content = (
+            <Fragment>
+                {_icon.value && <Icon {...{ props: _icon.value }} class="Button__icon" />}
+                {children && <span class="Button__content">{children}</span>}
+            </Fragment>
+        );
+
+        if (to.value && !disabled.value) {
+            return (
+                <router-link to={to.value} custom>
+                    {({ href, navigate: handleClick }) => (
+                        <a href={href} onClick={handleClick} class={_className.value}>
+                            {content}
+                        </a>
+                    )}
+                </router-link>
+            );
+        }
 
         return (
             <button
                 // eslint-disable-next-line react/button-has-type
                 type={htmlType.value}
-                class={_className}
+                class={_className.value}
                 disabled={disabled.value}
                 onClick={emit.bind(null, 'click')}
             >
-                {_icon.value && <Icon {...{ props: _icon.value }} class="Button__icon" />}
-                {children && <span class="Button__content">{children}</span>}
+                {content}
             </button>
         );
     };
@@ -80,6 +77,10 @@ Button.props = {
         type: String,
         validator: (value) => BUTTON_TYPE.includes(value),
         default: 'default',
+    },
+    to: {
+        type: [String, Object],
+        default: undefined,
     },
     icon: { type: String, default: undefined },
     disabled: { type: Boolean, default: false },

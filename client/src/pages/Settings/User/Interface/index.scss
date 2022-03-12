@@ -1,10 +1,6 @@
 @use '~@/style/globals';
 
 .InterfaceUserSettings {
-    &__form {
-        max-width: globals.$form-max-width;
-    }
-
     &__inputs {
         margin-top: globals.$content-padding-large-vertical;
 
@@ -29,5 +25,6 @@
 
     &__actions {
         margin-top: globals.$content-padding-large-vertical;
+        text-align: center;
     }
 }

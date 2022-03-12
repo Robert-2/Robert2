@@ -1,4 +1,5 @@
 import './index.scss';
+import Button from '@/components/Button';
 
 // @vue/component
 export default {
@@ -93,10 +94,13 @@ export default {
                             class="Login__form__input"
                             placeholder={__('password')}
                         />
-                        <button type="submit" class="Login__form__submit info">
-                            <i class="fa fa-user-alt" />
+                        <Button
+                            htmlType="submit"
+                            type="primary"
+                            class="Login__form__submit"
+                        >
                             {__('page-login.connexion')}
-                        </button>
+                        </Button>
                     </form>
                 </div>
             </div>

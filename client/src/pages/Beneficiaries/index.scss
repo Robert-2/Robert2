@@ -1,5 +1,14 @@
 @use '~@/style/globals';
 
+.Page--beneficiaries {
+    display: flex;
+    flex-direction: column;
+
+    .VueTables {
+        flex: 1;
+    }
+}
+
 .Beneficiaries {
     &__nickname,
     &__email,

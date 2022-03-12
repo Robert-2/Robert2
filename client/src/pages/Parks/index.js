@@ -215,7 +215,7 @@ export default {
             const isSoft = !this.isTrashDisplayed;
 
             const { value: isConfirmed } = await confirm({
-                type: isSoft ? 'trash' : 'delete',
+                type: isSoft ? 'warning' : 'danger',
 
                 text: isSoft
                     ? __('page-parks.confirm-delete')
@@ -306,7 +306,7 @@ export default {
                         <router-link to="/parks/new" custom>
                             {({ navigate }) => (
                                 <button type="button" onClick={navigate} class="success">
-                                    <i class="fas fa-plus" />
+                                    <i class="fas fa-plus" />{' '}
                                     {__('page-parks.action-add')}
                                 </button>
                             )}
@@ -330,7 +330,7 @@ export default {
                             isTrashDisplayed ? 'info' : 'warning',
                         ]}
                     >
-                        <i class={['fas', isTrashDisplayed ? 'fa-eye' : 'fa-trash']} />
+                        <i class={['fas', isTrashDisplayed ? 'fa-eye' : 'fa-trash']} />{' '}
                         {isTrashDisplayed ? __('display-not-deleted-items') : __('open-trash-bin')}
                     </button>
                 </div>

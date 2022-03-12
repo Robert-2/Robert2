@@ -25,6 +25,8 @@
     }
 
     &__form {
+        $element-vertical-padding: 10px;
+
         display: flex;
         flex-flow: column nowrap;
         align-items: center;
@@ -34,10 +36,12 @@
             width: 200px;
             margin-right: 10px;
             margin-bottom: 1rem;
+            padding: $element-vertical-padding 15px;
         }
 
         &__submit {
-            padding: globals.$input-padding-vertical globals.$input-padding-horizontal;
+            // stylelint-disable-next-line declaration-no-important -- Overwrite the .Button definition.
+            padding: $element-vertical-padding 14px !important;
         }
 
         @media (min-width: 600px) {

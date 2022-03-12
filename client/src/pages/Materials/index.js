@@ -466,7 +466,7 @@ export default {
                                     onClick={navigate}
                                     class="Materials__create success"
                                 >
-                                    <i class="fas fa-plus" />
+                                    <i class="fas fa-plus" />{' '}
                                     {__('page-materials.action-add')}
                                 </button>
                             )}
@@ -480,7 +480,7 @@ export default {
                                             <router-link to="/attributes" custom>
                                                 {({ navigate }) => (
                                                     <li class={dropdownItemClass} onClick={navigate}>
-                                                        <i class="fas fa-cog" />
+                                                        <i class="fas fa-cog" />{' '}
                                                         {__('page-materials.manage-attributes')}
                                                     </li>
                                                 )}
@@ -491,7 +491,7 @@ export default {
                                                 rel="noreferrer"
                                                 target="_blank"
                                             >
-                                                <i class="fas fa-print" />
+                                                <i class="fas fa-print" />{' '}
                                                 {__('page-materials.print-complete-list')}
                                             </a>
                                         </Fragment>
@@ -517,7 +517,7 @@ export default {
                                     class="Materials__quantities-date__clear-button warning"
                                     onClick={removeDateForQuantities}
                                 >
-                                    <i class="fas fa-backspace Materials__quantities-date__clear-button__icon" />
+                                    <i class="fas fa-backspace Materials__quantities-date__clear-button__icon" />{' '}
                                     {isSingleDayPeriodForQuantities ? __('reset-date') : __('reset-period')}
                                 </button>
                             )}
@@ -539,7 +539,7 @@ export default {
                             isTrashDisplayed ? 'info' : 'warning',
                         ]}
                     >
-                        <i class={['fas', isTrashDisplayed ? 'fa-eye' : 'fa-trash']} />
+                        <i class={['fas', isTrashDisplayed ? 'fa-eye' : 'fa-trash']} />{' '}
                         {isTrashDisplayed ? __('display-not-deleted-items') : __('open-trash-bin')}
                     </button>
                 </div>

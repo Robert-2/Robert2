@@ -1,3 +1,4 @@
+import './index.scss';
 import { Tabs, Tab } from 'vue-slim-tabs';
 import Page from '@/components/Page';
 import ProfileSettings from './Profile';
@@ -5,7 +6,7 @@ import InterfaceSettings from './Interface';
 
 // @vue/component
 export default {
-    name: 'UserSettings',
+    name: 'UserSettingsPage',
     render() {
         const { $t: __ } = this;
 

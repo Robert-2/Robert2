@@ -128,7 +128,7 @@ export default {
                         />
                     </section>
                     <section class="InterfaceUserSettings__actions">
-                        <Button icon="save" htmlType="submit" class="success">
+                        <Button icon="save" htmlType="submit" type="success">
                             {__('save')}
                         </Button>
                     </section>

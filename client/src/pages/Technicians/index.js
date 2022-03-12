@@ -93,7 +93,7 @@ export default {
             const isSoft = !this.isTrashDisplayed;
 
             const { value: isConfirmed } = await confirm({
-                type: isSoft ? 'trash' : 'delete',
+                type: isSoft ? 'warning' : 'danger',
 
                 text: isSoft
                     ? __('page-technicians.confirm-delete')

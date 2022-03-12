@@ -201,7 +201,7 @@ export default {
             const isSoft = !this.isTrashDisplayed;
 
             const { value: isConfirmed } = await confirm({
-                type: isSoft ? 'trash' : 'delete',
+                type: isSoft ? 'warning' : 'danger',
 
                 text: isSoft
                     ? __('page-users.confirm-delete')
@@ -291,7 +291,7 @@ export default {
                                     onClick={navigate}
                                     class="Users__create success"
                                 >
-                                    <i class="fas fa-user-plus" />
+                                    <i class="fas fa-user-plus" />{' '}
                                     {__('page-users.action-add')}
                                 </button>
                             )}
@@ -315,7 +315,7 @@ export default {
                             isTrashDisplayed ? 'info' : 'warning',
                         ]}
                     >
-                        <i class={['fas', isTrashDisplayed ? 'fa-eye' : 'fa-trash']} />
+                        <i class={['fas', isTrashDisplayed ? 'fa-eye' : 'fa-trash']} />{' '}
                         {isTrashDisplayed ? __('display-not-deleted-items') : __('open-trash-bin')}
                     </button>
                 </div>
