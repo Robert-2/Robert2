@@ -1,6 +1,6 @@
 import './index.scss';
+import { confirm } from '@/utils/alert';
 import Config from '@/globals/config';
-import Alert from '@/components/Alert';
 import Help from '@/components/Help';
 import ParkTotalAmount from '@/components/ParkTotalAmount';
 
@@ -55,21 +55,7 @@ export default {
                     events: 'Parks__events',
                     actions: 'Parks__actions',
                 },
-                requestFunction: (pagination) => {
-                    this.error = null;
-                    this.isLoading = true;
-                    const params = {
-                        ...pagination,
-                        deleted: this.isDisplayTrashed ? '1' : '0',
-                    };
-
-                    return this.$http.get(this.$route.meta.resource, { params })
-                        .catch(this.showError)
-                        .finally(() => {
-                            this.isTrashDisplayed = this.isDisplayTrashed;
-                            this.isLoading = false;
-                        });
-                },
+                requestFunction: this.fetch.bind(this),
             },
         };
     },
@@ -82,36 +68,86 @@ export default {
         this.$store.dispatch('parks/fetch');
     },
     methods: {
+        async fetch(pagination) {
+            this.error = null;
+            this.isLoading = true;
+
+            try {
+                const params = {
+                    ...pagination,
+                    deleted: this.isDisplayTrashed ? '1' : '0',
+                };
+                return await this.$http.get('parks', { params });
+            } catch (error) {
+                this.error = error;
+            } finally {
+                this.isTrashDisplayed = this.isDisplayTrashed;
+                this.isLoading = false;
+            }
+
+            return undefined;
+        },
+
+        async deletePark(parkId) {
+            const { $t: __ } = this;
+            const isSoft = !this.isTrashDisplayed;
+
+            const { value: isConfirmed } = await confirm({
+                type: isSoft ? 'trash' : 'delete',
+
+                text: isSoft
+                    ? __('page-parks.confirm-delete')
+                    : __('page-parks.confirm-permanently-delete'),
+
+                confirmButtonText: isSoft
+                    ? __('yes-delete')
+                    : __('yes-permanently-delete'),
+            });
+            if (!isConfirmed) {
+                return;
+            }
+
+            this.error = null;
+            this.isLoading = true;
+
+            try {
+                await this.$http.delete(`parks/${parkId}`);
+                this.refreshTable();
+            } catch (error) {
+                this.error = error;
+            } finally {
+                this.isLoading = false;
+            }
+        },
+
+        async restorePark(parkId) {
+            const { $t: __ } = this;
+
+            const { value: isConfirmed } = await confirm({
+                type: 'restore',
+                text: __('page-parks.confirm-restore'),
+                confirmButtonText: __('yes-restore'),
+            });
+            if (!isConfirmed) {
+                return;
+            }
+
+            this.error = null;
+            this.isLoading = true;
+
+            try {
+                await this.$http.put(`parks/restore/${parkId}`);
+                this.refreshTable();
+            } catch (error) {
+                this.error = error;
+            } finally {
+                this.isLoading = false;
+            }
+        },
+
         getDownloadListingUrl(parkId) {
             const { baseUrl } = Config;
             return `${baseUrl}/materials/pdf?park=${parkId}`;
-        },
-
-        deletePark(parkId) {
-            const isSoft = !this.isTrashDisplayed;
-            Alert.ConfirmDelete(this.$t, 'parks', isSoft).then((result) => {
-                if (!result.value) {
-                    return;
-                }
-
-                this.$http.delete(`${this.$route.meta.resource}/${parkId}`)
-                    .then(this.refreshTable)
-                    .catch(this.showError);
-            });
-        },
-
-        restorePark(parkId) {
-            Alert.ConfirmRestore(this.$t, 'parks').then((result) => {
-                if (!result.value) {
-                    return;
-                }
-
-                this.error = null;
-                this.isLoading = true;
-                this.$http.put(`${this.$route.meta.resource}/restore/${parkId}`)
-                    .then(this.refreshTable)
-                    .catch(this.showError);
-            });
         },
 
         refreshTable() {
@@ -124,11 +160,6 @@ export default {
         showTrashed() {
             this.isDisplayTrashed = !this.isDisplayTrashed;
             this.refreshTable();
-        },
-
-        showError(error) {
-            this.isLoading = false;
-            this.error = error;
         },
     },
 };

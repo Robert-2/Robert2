@@ -1,6 +1,6 @@
 import './index.scss';
 import moment from 'moment';
-import Alert from '@/components/Alert';
+import { confirm } from '@/utils/alert';
 import Help from '@/components/Help';
 import Page from '@/components/Page';
 import Datepicker from '@/components/Datepicker';
@@ -55,28 +55,7 @@ export default {
                     note: 'Technicians__note',
                     actions: 'Technicians__actions',
                 },
-                requestFunction: (pagination) => {
-                    this.error = null;
-                    this.isLoading = true;
-
-                    const params = {
-                        ...pagination,
-                        deleted: this.isDisplayTrashed ? '1' : '0',
-                    };
-                    if (this.periodFilter) {
-                        const [start, end] = this.periodFilter;
-                        params.startDate = moment(start).format();
-                        params.endDate = moment(end).endOf('day').format();
-                    }
-
-                    return this.$http
-                        .get('technicians', { params })
-                        .catch(this.showError)
-                        .finally(() => {
-                            this.isTrashDisplayed = this.isDisplayTrashed;
-                            this.isLoading = false;
-                        });
-                },
+                requestFunction: this.fetch.bind(this),
             },
         };
     },
@@ -86,9 +65,46 @@ export default {
         },
     },
     methods: {
-        async handleRemove(id) {
+        async fetch(pagination) {
+            this.error = null;
+            this.isLoading = true;
+
+            try {
+                const params = {
+                    ...pagination,
+                    deleted: this.isDisplayTrashed ? '1' : '0',
+                };
+                if (this.periodFilter) {
+                    const [start, end] = this.periodFilter;
+                    params.startDate = moment(start).format();
+                    params.endDate = moment(end).endOf('day').format();
+                }
+                return await this.$http.get('technicians', { params });
+            } catch (error) {
+                this.error = error;
+            } finally {
+                this.isTrashDisplayed = this.isDisplayTrashed;
+                this.isLoading = false;
+            }
+
+            return undefined;
+        },
+
+        async deleteTechnician(id) {
+            const { $t: __ } = this;
             const isSoft = !this.isTrashDisplayed;
-            const { value: isConfirmed } = await Alert.ConfirmDelete(this.$t, 'technicians', isSoft);
+
+            const { value: isConfirmed } = await confirm({
+                type: isSoft ? 'trash' : 'delete',
+
+                text: isSoft
+                    ? __('page-technicians.confirm-delete')
+                    : __('page-technicians.confirm-permanently-delete'),
+
+                confirmButtonText: isSoft
+                    ? __('yes-delete')
+                    : __('yes-permanently-delete'),
+            });
             if (!isConfirmed) {
                 return;
             }
@@ -97,7 +113,7 @@ export default {
             this.isLoading = true;
 
             try {
-                await this.$http.delete(`${this.$route.meta.resource}/${id}`);
+                await this.$http.delete(`persons/${id}`);
                 this.refreshTable();
             } catch (error) {
                 this.error = error;
@@ -106,8 +122,14 @@ export default {
             }
         },
 
-        async handleRestore(id) {
-            const { value: isConfirmed } = await Alert.ConfirmRestore(this.$t, 'technicians');
+        async restoreTechnician(id) {
+            const { $t: __ } = this;
+
+            const { value: isConfirmed } = await confirm({
+                type: 'restore',
+                text: __('page-technicians.confirm-restore'),
+                confirmButtonText: __('yes-restore'),
+            });
             if (!isConfirmed) {
                 return;
             }
@@ -116,7 +138,7 @@ export default {
             this.isLoading = true;
 
             try {
-                await this.$http.put(`${this.$route.meta.resource}/restore/${id}`);
+                await this.$http.put(`persons/restore/${id}`);
                 this.refreshTable();
             } catch (error) {
                 this.error = error;
@@ -140,11 +162,6 @@ export default {
             this.isDisplayTrashed = !this.isDisplayTrashed;
             this.refreshTable();
         },
-
-        showError(error) {
-            this.isLoading = false;
-            this.error = error;
-        },
     },
     render() {
         const {
@@ -154,8 +171,8 @@ export default {
             isLoading,
             columns,
             options,
-            handleRestore,
-            handleRemove,
+            restoreTechnician,
+            deleteTechnician,
             periodFilter,
             clearFilters,
             isTrashDisplayed,
@@ -213,8 +230,8 @@ export default {
                             <ItemActions
                                 isTrashMode={isTrashDisplayed}
                                 id={row.id}
-                                onRemove={handleRemove}
-                                onRestore={handleRestore}
+                                onRemove={deleteTechnician}
+                                onRestore={restoreTechnician}
                             />
                         ),
                     }}

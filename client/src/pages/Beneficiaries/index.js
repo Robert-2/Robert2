@@ -1,8 +1,8 @@
 import './index.scss';
 import { Fragment } from 'vue-fragment';
+import { confirm } from '@/utils/alert';
 import Config from '@/globals/config';
 import Page from '@/components/Page';
-import Alert from '@/components/Alert';
 import Button from '@/components/Button';
 
 // @vue/component
@@ -170,10 +170,68 @@ export default {
                 };
                 return await this.$http.get('persons', { params });
             } catch (error) {
-                this.showError(error);
-                return undefined;
+                this.error = error;
             } finally {
                 this.isTrashDisplayed = this.isDisplayTrashed;
+                this.isLoading = false;
+            }
+
+            return undefined;
+        },
+
+        async deleteBeneficiary(beneficiaryId) {
+            const { $t: __ } = this;
+            const isSoft = !this.isTrashDisplayed;
+
+            const { value: isConfirmed } = await confirm({
+                type: isSoft ? 'trash' : 'delete',
+
+                text: isSoft
+                    ? __('page-beneficiaries.confirm-delete')
+                    : __('page-beneficiaries.confirm-permanently-delete'),
+
+                confirmButtonText: isSoft
+                    ? __('yes-delete')
+                    : __('yes-permanently-delete'),
+            });
+            if (!isConfirmed) {
+                return;
+            }
+
+            this.error = null;
+            this.isLoading = true;
+
+            try {
+                await this.$http.delete(`persons/${beneficiaryId}`);
+                this.refreshTable();
+            } catch (error) {
+                this.error = error;
+            } finally {
+                this.isLoading = false;
+            }
+        },
+
+        async restoreBeneficiary(beneficiaryId) {
+            const { $t: __ } = this;
+
+            const { value: isConfirmed } = await confirm({
+                type: 'restore',
+                text: __('page-beneficiaries.confirm-restore'),
+                confirmButtonText: __('yes-restore'),
+            });
+            if (!isConfirmed) {
+                return;
+            }
+
+            this.error = null;
+            this.isLoading = true;
+
+            try {
+                await this.$http.put(`persons/restore/${beneficiaryId}`);
+                this.refreshTable();
+            } catch (error) {
+                this.error = error;
+            } finally {
                 this.isLoading = false;
             }
         },
@@ -195,35 +253,6 @@ export default {
             return formatAddress(beneficiary.company || {});
         },
 
-        deleteBeneficiary(beneficiaryId) {
-            const isSoft = !this.isTrashDisplayed;
-            Alert.ConfirmDelete(this.$t, 'beneficiaries', isSoft).then((result) => {
-                if (!result.value) {
-                    return;
-                }
-
-                this.error = null;
-                this.isLoading = true;
-                this.$http.delete(`persons/${beneficiaryId}`)
-                    .then(this.refreshTable)
-                    .catch(this.showError);
-            });
-        },
-
-        restoreBeneficiary(beneficiaryId) {
-            Alert.ConfirmRestore(this.$t, 'beneficiaries').then((result) => {
-                if (!result.value) {
-                    return;
-                }
-
-                this.error = null;
-                this.isLoading = true;
-                this.$http.put(`persons/restore/${beneficiaryId}`)
-                    .then(this.refreshTable)
-                    .catch(this.showError);
-            });
-        },
-
         refreshTable() {
             this.error = null;
             this.isLoading = true;
@@ -233,11 +262,6 @@ export default {
         showTrashed() {
             this.isDisplayTrashed = !this.isDisplayTrashed;
             this.refreshTable();
-        },
-
-        showError(error) {
-            this.isLoading = false;
-            this.error = error;
         },
     },
     render() {

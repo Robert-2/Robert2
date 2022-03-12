@@ -1,5 +1,5 @@
 import './index.scss';
-import Alert from '@/components/Alert';
+import { confirm } from '@/utils/alert';
 import Help from '@/components/Help';
 
 // @vue/component
@@ -49,21 +49,7 @@ export default {
                     phone: 'Users__phone',
                     address: 'Users__address',
                 },
-                requestFunction: (pagination) => {
-                    this.error = null;
-                    this.isLoading = true;
-                    const params = {
-                        ...pagination,
-                        deleted: this.isDisplayTrashed ? '1' : '0',
-                    };
-                    return this.$http
-                        .get(this.$route.meta.resource, { params })
-                        .catch(this.showError)
-                        .finally(() => {
-                            this.isTrashDisplayed = this.isDisplayTrashed;
-                            this.isLoading = false;
-                        });
-                },
+                requestFunction: this.fetch.bind(this),
             },
         };
     },
@@ -73,33 +59,81 @@ export default {
         },
     },
     methods: {
-        deleteUser(userId) {
-            const isSoft = !this.isTrashDisplayed;
-            Alert.ConfirmDelete(this.$t, 'users', isSoft).then((result) => {
-                if (!result.value) {
-                    return;
-                }
+        async fetch(pagination) {
+            this.error = null;
+            this.isLoading = true;
 
-                this.error = null;
-                this.isLoading = true;
-                this.$http.delete(`${this.$route.meta.resource}/${userId}`)
-                    .then(this.refreshTable)
-                    .catch(this.showError);
-            });
+            try {
+                const params = {
+                    ...pagination,
+                    deleted: this.isDisplayTrashed ? '1' : '0',
+                };
+                return await this.$http.get('users', { params });
+            } catch (error) {
+                this.error = error;
+            } finally {
+                this.isTrashDisplayed = this.isDisplayTrashed;
+                this.isLoading = false;
+            }
+
+            return undefined;
         },
 
-        restoreUser(userId) {
-            Alert.ConfirmRestore(this.$t, 'users').then((result) => {
-                if (!result.value) {
-                    return;
-                }
+        async deleteUser(userId) {
+            const { $t: __ } = this;
+            const isSoft = !this.isTrashDisplayed;
 
-                this.error = null;
-                this.isLoading = true;
-                this.$http.put(`${this.$route.meta.resource}/restore/${userId}`)
-                    .then(this.refreshTable)
-                    .catch(this.showError);
+            const { value: isConfirmed } = await confirm({
+                type: isSoft ? 'trash' : 'delete',
+
+                text: isSoft
+                    ? __('page-users.confirm-delete')
+                    : __('page-users.confirm-permanently-delete'),
+
+                confirmButtonText: isSoft
+                    ? __('yes-delete')
+                    : __('yes-permanently-delete'),
             });
+            if (!isConfirmed) {
+                return;
+            }
+
+            this.error = null;
+            this.isLoading = true;
+
+            try {
+                await this.$http.delete(`users/${userId}`);
+                this.refreshTable();
+            } catch (error) {
+                this.error = error;
+            } finally {
+                this.isLoading = false;
+            }
+        },
+
+        async restoreUser(userId) {
+            const { $t: __ } = this;
+
+            const { value: isConfirmed } = await confirm({
+                type: 'restore',
+                text: __('page-users.confirm-restore'),
+                confirmButtonText: __('yes-restore'),
+            });
+            if (!isConfirmed) {
+                return;
+            }
+
+            this.error = null;
+            this.isLoading = true;
+
+            try {
+                await this.$http.put(`users/restore/${userId}`);
+                this.refreshTable();
+            } catch (error) {
+                this.error = error;
+            } finally {
+                this.isLoading = false;
+            }
         },
 
         refreshTable() {
@@ -112,11 +146,6 @@ export default {
         showTrashed() {
             this.isDisplayTrashed = !this.isDisplayTrashed;
             this.refreshTable();
-        },
-
-        showError(error) {
-            this.error = error;
-            this.isLoading = false;
         },
     },
 };

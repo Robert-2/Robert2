@@ -100,28 +100,7 @@ export default {
                     out_of_order_quantity: 'Materials__quantity-broken',
                     tags: 'Materials__tags',
                 },
-                requestFunction: async (pagination) => {
-                    this.isLoading = true;
-                    this.error = null;
-
-                    const filters = this.getFilters();
-
-                    try {
-                        const data = await apiMaterials.all({
-                            paginated: true,
-                            ...pagination,
-                            ...filters,
-                            deleted: this.isDisplayTrashed,
-                        });
-                        return { data };
-                    } catch (err) {
-                        this.error = err;
-                    } finally {
-                        this.isLoading = false;
-                    }
-
-                    return undefined;
-                },
+                requestFunction: this.fetch.bind(this),
             },
         };
     },
@@ -156,6 +135,29 @@ export default {
         this.$store.dispatch('tags/fetch');
     },
     methods: {
+        async fetch(pagination) {
+            this.isLoading = true;
+            this.error = null;
+
+            const filters = this.getFilters();
+
+            try {
+                const data = await apiMaterials.all({
+                    paginated: true,
+                    ...pagination,
+                    ...filters,
+                    deleted: this.isDisplayTrashed,
+                });
+                return { data };
+            } catch (err) {
+                this.error = err;
+            } finally {
+                this.isLoading = false;
+            }
+
+            return undefined;
+        },
+
         getParkName(parkId) {
             return this.$store.getters['parks/parkName'](parkId) || '--';
         },
@@ -203,15 +205,20 @@ export default {
         },
 
         async deleteMaterial(materialId) {
+            const { $t: __ } = this;
             const isSoft = !this.isTrashDisplayed;
-            const text = isSoft
-                ? this.$t('page-materials.confirm-delete')
-                : this.$t('page-materials.confirm-permanently-delete');
-            const confirmButtonText = isSoft
-                ? this.$t('yes-delete')
-                : this.$t('yes-permanently-delete');
-            const type = isSoft ? 'warning' : 'danger';
-            const { value: isConfirmed } = await confirm({ text, confirmButtonText, type });
+
+            const { value: isConfirmed } = await confirm({
+                type: isSoft ? 'warning' : 'danger',
+
+                text: isSoft
+                    ? __('page-materials.confirm-delete')
+                    : __('page-materials.confirm-permanently-delete'),
+
+                confirmButtonText: isSoft
+                    ? __('yes-delete')
+                    : __('yes-permanently-delete'),
+            });
             if (!isConfirmed) {
                 return;
             }
@@ -230,9 +237,12 @@ export default {
         },
 
         async restoreMaterial(materialId) {
+            const { $t: __ } = this;
+
             const { value: isConfirmed } = await confirm({
-                text: this.$t('page-materials.confirm-restore'),
-                confirmButtonText: this.$t('yes-restore'),
+                type: 'restore',
+                text: __('page-materials.confirm-restore'),
+                confirmButtonText: __('yes-restore'),
             });
             if (!isConfirmed) {
                 return;
@@ -296,11 +306,6 @@ export default {
             this.isDisplayTrashed = !this.isDisplayTrashed;
             this.isTrashDisplayed = !this.isTrashDisplayed;
             this.refreshTableAndPagination();
-        },
-
-        showError(error) {
-            this.isLoading = false;
-            this.error = error;
         },
 
         formatAmount(value) {

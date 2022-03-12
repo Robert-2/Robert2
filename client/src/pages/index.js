@@ -89,7 +89,6 @@ export default [
         name: 'users',
         component: Users,
         meta: {
-            resource: 'users',
             title: 'page-users.title',
             requiresAuth: true,
             requiresGroups: ['admin'],
@@ -241,7 +240,6 @@ export default [
         name: 'technicians',
         component: Technicians,
         meta: {
-            resource: 'persons',
             title: 'page-technicians.title',
             requiresAuth: true,
             requiresGroups: ['admin', 'member'],
@@ -296,7 +294,6 @@ export default [
         name: 'parks',
         component: Parks,
         meta: {
-            resource: 'parks',
             title: 'page-parks.title',
             requiresAuth: true,
             requiresGroups: ['admin'],
