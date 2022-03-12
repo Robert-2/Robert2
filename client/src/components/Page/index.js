@@ -51,16 +51,28 @@ export default defineComponent({
             );
         };
 
-        return (
-            <div class="content">
+        const renderHeader = () => {
+            const hasActions = actions && actions.length > 0;
+            const helpElement = renderHelp();
+            if (helpElement === null && !hasActions) {
+                return null;
+            }
+
+            return (
                 <div class="content__header header-page">
-                    {renderHelp()}
-                    {actions && actions.length > 0 && (
+                    {helpElement}
+                    {hasActions && (
                         <nav class="header-page__actions">
                             {actions}
                         </nav>
                     )}
                 </div>
+            );
+        };
+
+        return (
+            <div class="content">
+                {renderHeader()}
                 <div class="content__main-view">
                     <div class={['Page', `Page--${this.name}`]}>
                         {content}

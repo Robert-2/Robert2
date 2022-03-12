@@ -341,8 +341,6 @@ export default [
         name: 'settings',
         component: GlobalSettings,
         meta: {
-            resource: 'settings',
-            title: 'page-settings.title',
             requiresAuth: true,
             requiresGroups: ['admin'],
         },
