@@ -11,6 +11,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
   via la page des paramètres de l'application (fin du ticket #302).
 - Il est maintenant possible de s'abonner depuis votre application de calendrier préférée (Google Agenda, Apple Calendrier, etc.) au calendrier Robert2 / Loxya. 
   Pour plus d'informations, rendez-vous dans les paramètres de votre instance Robert2 / Loxya, onglet "Calendrier" (#326).
+- Ajoute une limite de taille des fichiers uploadés dans la configuration générale (valeur par défaut 25 Mo) (#332).
 
 ## 0.17.1 (2022-01-06)
 

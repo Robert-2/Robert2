@@ -50,7 +50,6 @@ export default {
             newPicture: null,
             isUploading: false,
             uploadProgress: 0,
-            uploadError: null,
             errors: {
                 name: null,
                 reference: null,
@@ -231,7 +230,6 @@ export default {
             }
 
             this.isUploading = true;
-            this.uploadError = null;
 
             const formData = new FormData();
             formData.append('picture-0', this.newPicture);
@@ -248,8 +246,7 @@ export default {
             try {
                 await this.$http.post(`materials/${id}/picture`, formData, { onUploadProgress });
             } catch (error) {
-                this.uploadError = error;
-                throw new Error('Upload failed.');
+                throw new Error(error.response?.data?.error?.message || error.message);
             } finally {
                 this.isUploading = false;
             }

@@ -63,6 +63,7 @@ class EntryController extends BaseController
             'beneficiaryTagName' => $rawConfig['defaultTags']['beneficiary'],
             'technicianTagName' => $rawConfig['defaultTags']['technician'],
             'billingMode' => $rawConfig['billingMode'],
+            'maxFileUploadSize' => $rawConfig['maxFileUploadSize'],
             'degressiveRate' => sprintf(
                 'function (daysCount) { return %s; }',
                 $rawConfig['degressiveRateFunction']

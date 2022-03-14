@@ -311,23 +311,36 @@ class MaterialController extends BaseController
         $uploadedFiles = $request->getUploadedFiles();
         $destDirectory = Document::getFilePath($id);
 
-        $errors = [];
+        if (count($uploadedFiles) === 0) {
+            throw new \Exception($this->i18n->translate('no-uploaded-files'));
+        }
+
         $files = [];
         foreach ($uploadedFiles as $file) {
-            if ($file->getError() !== UPLOAD_ERR_OK) {
-                $errors[$file->getClientFilename()] = 'File upload failed.';
+            $error = $file->getError();
+            if ($error !== UPLOAD_ERR_OK) {
+                $errors[$file->getClientFilename()] = $this->i18n->translate(
+                    'upload-failed-error-code',
+                    [$error],
+                );
+                continue;
+            }
+
+            $fileSize = $file->getSize();
+            if ($fileSize > Config::getSettings('maxFileUploadSize')) {
+                $errors[$file->getClientFilename()] = $this->i18n->translate('file-exceeds-max-size');
                 continue;
             }
 
             $fileType = $file->getClientMediaType();
             if (!in_array($fileType, Config::getSettings('authorizedFileTypes'))) {
-                $errors[$file->getClientFilename()] = 'This file type is not allowed.';
+                $errors[$file->getClientFilename()] = $this->i18n->translate('file-type-not-allowed');
                 continue;
             }
 
             $filename = moveUploadedFile($destDirectory, $file);
             if (!$filename) {
-                $errors[$file->getClientFilename()] = 'Saving file failed.';
+                $errors[$file->getClientFilename()] = $this->i18n->translate('saving-uploaded-file-failed');
                 continue;
             }
 
@@ -348,9 +361,9 @@ class MaterialController extends BaseController
             } catch (\Exception $e) {
                 $filePath = Document::getFilePath($id, $document['name']);
                 unlink($filePath);
-                $errors[$document['name']] = sprintf(
-                    'Document could not be saved in database: %s',
-                    $e->getMessage()
+                $errors[$document['name']] = $this->i18n->translate(
+                    'document-cannot-be-saved-in-db',
+                    [$e->getMessage()],
                 );
             }
         }
@@ -376,18 +389,23 @@ class MaterialController extends BaseController
         $file = $request->getUploadedFiles()['picture-0'];
 
         if (empty($file) || $file->getError() !== UPLOAD_ERR_OK) {
-            throw new \Exception("File upload failed.");
+            throw new \Exception($this->i18n->translate('no-uploaded-files'));
+        }
+
+        $fileSize = $file->getSize();
+        if ($fileSize > Config::getSettings('maxFileUploadSize')) {
+            throw new \Exception($this->i18n->translate('file-exceeds-max-size'));
         }
 
         $fileType = $file->getClientMediaType();
         if (!in_array($fileType, Config::getSettings('authorizedImageTypes'))) {
-            throw new \Exception("This file type is not allowed.");
+            throw new \Exception($this->i18n->translate('file-type-not-allowed'));
         }
 
         $destDirectory = Material::getPicturePath($id);
         $filename = moveUploadedFile($destDirectory, $file);
         if (!$filename) {
-            throw new \Exception("Saving file failed.");
+            throw new \Exception($this->i18n->translate('saving-uploaded-file-failed'));
         }
 
         $materialBefore = Material::find($id)->toArray();
@@ -403,9 +421,9 @@ class MaterialController extends BaseController
         } catch (\Exception $e) {
             $filePath = Material::getPicturePath($id, $filename);
             unlink($filePath);
-            throw new \Exception(sprintf(
-                "Material picture could not be saved in database: %s",
-                $e->getMessage()
+            throw new \Exception($this->i18n->translate(
+                'material-picture-cannot-be-saved-in-db',
+                [$e->getMessage()],
             ));
         }
 

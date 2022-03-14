@@ -187,7 +187,6 @@
                         @changePicture="handleChangePicture"
                         @resetPicture="handleResetPicture"
                         :isLoading="isUploading"
-                        :error="uploadError"
                     />
                     <Progressbar v-if="isUploading" :percent="uploadProgress" />
                 </section>
