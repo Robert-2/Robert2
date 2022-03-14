@@ -28,18 +28,18 @@ class Bill extends BaseModel
         $this->pdfTemplate = 'bill-default';
 
         $this->validation = [
-            'number'             => V::notEmpty()->length(4, 20),
-            'date'               => V::notEmpty()->date(),
-            'event_id'           => V::notEmpty()->numeric(),
-            'beneficiary_id'     => V::notEmpty()->numeric(),
-            'materials'          => V::notEmpty(),
-            'degressive_rate'    => V::notEmpty()->floatVal()->between(0.0, 99.99, true),
-            'discount_rate'      => V::optional(V::floatVal()->between(0.0, 99.9999, true)),
-            'vat_rate'           => V::optional(V::floatVal()->between(0.0, 99.99, true)),
-            'due_amount'         => V::notEmpty()->floatVal()->between(0.0, 999999.99, true),
+            'number' => V::notEmpty()->length(4, 20),
+            'date' => V::notEmpty()->date(),
+            'event_id' => V::notEmpty()->numeric(),
+            'beneficiary_id' => V::notEmpty()->numeric(),
+            'materials' => V::notEmpty(),
+            'degressive_rate' => V::notEmpty()->floatVal()->between(0.0, 99999.99, true),
+            'discount_rate' => V::optional(V::floatVal()->between(0.0, 99.9999, true)),
+            'vat_rate' => V::optional(V::floatVal()->between(0.0, 99.99, true)),
+            'due_amount' => V::notEmpty()->floatVal()->between(0.0, 999999.99, true),
             'replacement_amount' => V::notEmpty()->floatVal()->between(0.0, 999999.99, true),
-            'currency'           => V::notEmpty()->length(3),
-            'user_id'            => V::optional(V::numeric()),
+            'currency' => V::notEmpty()->length(3),
+            'user_id' => V::optional(V::numeric()),
         ];
     }
 

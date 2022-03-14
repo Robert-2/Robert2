@@ -9,12 +9,12 @@ final class UpgradeDegressiveRateFields extends AbstractMigration
     {
         $bills = $this->table('bills');
         $bills
-            ->changeColumn('degressive_rate', 'decimal', ['precision' => 6, 'scale' => 2])
+            ->changeColumn('degressive_rate', 'decimal', ['precision' => 7, 'scale' => 2])
             ->save();
 
         $estimates = $this->table('estimates');
         $estimates
-            ->changeColumn('degressive_rate', 'decimal', ['precision' => 6, 'scale' => 2])
+            ->changeColumn('degressive_rate', 'decimal', ['precision' => 7, 'scale' => 2])
             ->save();
     }
 
