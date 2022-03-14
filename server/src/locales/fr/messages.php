@@ -2491,7 +2491,7 @@ return [
     => "Aucun fichier n'a été envoyé.",
 
     "upload-failed-error-code"
-    => "L'envoi du fichier a échoué. Code d'erreur :",
+    => "L'envoi du fichier a échoué. Code d'erreur : %d",
 
     "file-exceeds-max-size"
     => "Ce fichier dépasse la taille maximum autorisée.",
@@ -2503,10 +2503,10 @@ return [
     => "La sauvegarde du fichier envoyé a échoué.",
 
     "document-cannot-be-saved-in-db"
-    => "Le document n'a pas pu être sauvegardé dans la base de données. Raison :",
+    => "Le document n'a pas pu être sauvegardé dans la base de données. Raison : %s",
 
     "material-picture-cannot-be-saved-in-db"
-    => "L'image pour le matériel n'a pas pu être sauvegardé dans la base de données. Raison :",
+    => "L'image pour le matériel n'a pas pu être sauvegardé dans la base de données. Raison : %s",
 
     //
     // - Install messages

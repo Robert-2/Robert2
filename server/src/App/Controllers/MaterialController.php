@@ -319,10 +319,9 @@ class MaterialController extends BaseController
         foreach ($uploadedFiles as $file) {
             $error = $file->getError();
             if ($error !== UPLOAD_ERR_OK) {
-                $errors[$file->getClientFilename()] = sprintf(
-                    '%s %d.',
-                    $this->i18n->translate('upload-failed-error-code'),
-                    $error,
+                $errors[$file->getClientFilename()] = $this->i18n->translate(
+                    'upload-failed-error-code',
+                    [$error],
                 );
                 continue;
             }
@@ -362,10 +361,9 @@ class MaterialController extends BaseController
             } catch (\Exception $e) {
                 $filePath = Document::getFilePath($id, $document['name']);
                 unlink($filePath);
-                $errors[$document['name']] = sprintf(
-                    '%s %s',
-                    $this->i18n->translate('document-cannot-be-saved-in-db'),
-                    $e->getMessage()
+                $errors[$document['name']] = $this->i18n->translate(
+                    'document-cannot-be-saved-in-db',
+                    [$e->getMessage()],
                 );
             }
         }
@@ -423,10 +421,9 @@ class MaterialController extends BaseController
         } catch (\Exception $e) {
             $filePath = Material::getPicturePath($id, $filename);
             unlink($filePath);
-            throw new \Exception(sprintf(
-                '%s %s',
-                $this->i18n->translate('material-picture-cannot-be-saved-in-db'),
-                $e->getMessage()
+            throw new \Exception($this->i18n->translate(
+                'material-picture-cannot-be-saved-in-db',
+                [$e->getMessage()],
             ));
         }
 

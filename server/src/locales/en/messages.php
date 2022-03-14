@@ -2489,7 +2489,7 @@ return [
     => "No uploaded files.",
 
     "upload-failed-error-code"
-    => "File upload failed. Error code:",
+    => "File upload failed. Error code: %d",
 
     "file-exceeds-max-size"
     => "This file exceeds maximum size allowed.",
@@ -2501,10 +2501,10 @@ return [
     => "Saving the uploaded file failed.",
 
     "document-cannot-be-saved-in-db"
-    => "Document could not be saved in database. Reason:",
+    => "Document could not be saved in database. Reason: %s",
 
     "material-picture-cannot-be-saved-in-db"
-    => "Material picture could not be saved in database. Reason:",
+    => "Material picture could not be saved in database. Reason: %s",
 
     //
     // - Install messages
