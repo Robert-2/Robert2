@@ -162,7 +162,6 @@ final class EventDataTest extends ModelTestCase
             [
                 'id' => 1,
                 'name' => 'sound',
-                'categoryHasSubcategories' => true,
                 'materials' => [
                     'CL3' => [
                         'reference' => 'CL3',
@@ -200,7 +199,6 @@ final class EventDataTest extends ModelTestCase
             [
                 'id' => 2,
                 'name' => 'light',
-                'categoryHasSubcategories' => true,
                 'materials' => [
                     'SDS-6-01' => [
                         'reference' => 'SDS-6-01',
@@ -232,7 +230,7 @@ final class EventDataTest extends ModelTestCase
                 'id' => 4,
                 'name' => 'dimmers',
                 'category' => 'light',
-                'categoryHasSubcategories' => true,
+                'categoryHasSubCategories' => true,
                 'materials' => [
                     'SDS-6-01' => [
                         'reference' => 'SDS-6-01',
@@ -256,7 +254,7 @@ final class EventDataTest extends ModelTestCase
                 'id' => 1,
                 'name' => 'mixers',
                 'category' => 'sound',
-                'categoryHasSubcategories' => true,
+                'categoryHasSubCategories' => true,
                 'materials' => [
                     'CL3' => [
                         'reference' => 'CL3',
@@ -280,7 +278,7 @@ final class EventDataTest extends ModelTestCase
                 'id' => 2,
                 'name' => 'processors',
                 'category' => 'sound',
-                'categoryHasSubcategories' => true,
+                'categoryHasSubCategories' => true,
                 'materials' => [
                     'DBXPA2' => [
                         'reference' => 'DBXPA2',
@@ -616,7 +614,7 @@ final class EventDataTest extends ModelTestCase
                     'id' => 4,
                     'name' => "dimmers",
                     'category' => 'light',
-                    'categoryHasSubcategories' => true,
+                    'categoryHasSubCategories' => true,
                     'materials' => [
                         'SDS-6-01' => [
                             'reference' => 'SDS-6-01',
@@ -658,7 +656,7 @@ final class EventDataTest extends ModelTestCase
                     'id' => 1,
                     'name' => "mixers",
                     'category' => 'sound',
-                    'categoryHasSubcategories' => true,
+                    'categoryHasSubCategories' => true,
                     'materials' => [
                         'CL3' => [
                             'reference' => 'CL3',
@@ -703,7 +701,7 @@ final class EventDataTest extends ModelTestCase
                     'id' => 2,
                     'name' => "processors",
                     'category' => 'sound',
-                    'categoryHasSubcategories' => true,
+                    'categoryHasSubCategories' => true,
                     'materials' => [
                         'DBXPA2' => [
                             'reference' => 'DBXPA2',

@@ -68,13 +68,14 @@ class MaterialsData
             $replacementPrice = $material['replacement_price'];
 
             $withPark = count($this->parks) > 1 && !empty($material['park_id']);
+            $park = Park::find($material['park_id']);
 
             $categoriesMaterials[$categoryId]['materials'][$reference] = [
                 'reference' => $reference,
                 'name' => $material['name'],
                 'stockQuantity' => $stockQuantity,
                 'attributes' => $material['attributes'],
-                'park' => $withPark ? Park::find($material['park_id'])->name : null,
+                'park' => ($withPark && $park) ? $park->name : null,
                 'quantity' => $quantity,
                 'rentalPrice' => $price,
                 'replacementPrice' => $replacementPrice,
@@ -102,11 +103,12 @@ class MaterialsData
 
             $categoryId = $material['category_id'];
             $subCategoryId = $material['sub_category_id'] ?: sprintf('c-%d', $categoryId);
+            $subCategory = SubCategory::find($material['sub_category_id']);
 
             if (!isset($subCategoriesMaterials[$subCategoryId])) {
                 $subCategoriesMaterials[$subCategoryId] = [
                     'id' => $subCategoryId,
-                    'name' => SubCategory::find($material['sub_category_id'])->name,
+                    'name' => $subCategory ? $subCategory->name : null,
                     'category' => Category::find($categoryId)->name,
                     'categoryHasSubCategories' => Category::hasSubCategories($categoryId),
                     'materials' => [],
@@ -118,13 +120,14 @@ class MaterialsData
             $replacementPrice = $material['replacement_price'];
 
             $withPark = count($this->parks) > 1 && !empty($material['park_id']);
+            $park = Park::find($material['park_id']);
 
             $subCategoriesMaterials[$subCategoryId]['materials'][$reference] = [
                 'reference' => $reference,
                 'name' => $material['name'],
                 'stockQuantity' => $material['stock_quantity'],
                 'attributes' => $material['attributes'],
-                'park' => $withPark ? Park::find($material['park_id'])->name : null,
+                'park' => ($withPark && $park) ? $park->name : null,
                 'quantity' => $quantity,
                 'rentalPrice' => $price,
                 'replacementPrice' => $replacementPrice,
@@ -162,12 +165,13 @@ class MaterialsData
             $replacementPrice = $material['replacement_price'];
 
             $parkId = $material['park_id'];
+            $park = Park::find($parkId);
             $quantity = array_key_exists('pivot', $material) ? $material['pivot']['quantity'] : 0;
 
             if (!isset($parksMaterials[$parkId])) {
                 $parksMaterials[$parkId] = [
                     'id' => $parkId,
-                    'name' => $parkId ? Park::find($parkId)->name : null,
+                    'name' => $park ? $park->name : null,
                     'materials' => [],
                 ];
             }
@@ -208,6 +212,7 @@ class MaterialsData
             }
 
             $withPark = count($this->parks) > 1 && !empty($material['park_id']);
+            $park = Park::find($material['park_id']);
 
             $reference = $material['reference'];
             $quantity = array_key_exists('pivot', $material) ? $material['pivot']['quantity'] : 0;
@@ -218,7 +223,7 @@ class MaterialsData
                 'name' => $material['name'],
                 'stockQuantity' => $material['stock_quantity'],
                 'attributes' => $material['attributes'],
-                'park' => $withPark ? Park::find($material['park_id'])->name : null,
+                'park' => ($withPark && $park) ? $park->name : null,
                 'quantity' => $quantity,
                 'rentalPrice' => $price,
                 'replacementPrice' => $replacementPrice,

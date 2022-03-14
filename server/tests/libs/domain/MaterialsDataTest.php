@@ -46,7 +46,6 @@ final class MaterialsDataTest extends ModelTestCase
             [
                 'id' => 3,
                 'name' => 'transport',
-                'categoryHasSubcategories' => false,
                 'materials' => [
                     'Transporter' => [
                         'reference' => 'Transporter',
@@ -65,7 +64,6 @@ final class MaterialsDataTest extends ModelTestCase
             [
                 'id' => 2,
                 'name' => 'light',
-                'categoryHasSubcategories' => true,
                 'materials' => [
                     'SDS-6-01' => [
                         'reference' => 'SDS-6-01',
@@ -133,7 +131,6 @@ final class MaterialsDataTest extends ModelTestCase
             [
                 'id' => 1,
                 'name' => 'sound',
-                'categoryHasSubcategories' => true,
                 'materials' => [
                     'CL3' => [
                         'reference' => 'CL3',
@@ -245,7 +242,7 @@ final class MaterialsDataTest extends ModelTestCase
                 'id' => 4,
                 'name' => 'dimmers',
                 'category' => 'light',
-                'categoryHasSubcategories' => true,
+                'categoryHasSubCategories' => true,
                 'materials' => [
                     'SDS-6-01' => [
                         'reference' => 'SDS-6-01',
@@ -287,7 +284,7 @@ final class MaterialsDataTest extends ModelTestCase
                 'id' => 3,
                 'name' => 'projectors',
                 'category' => 'light',
-                'categoryHasSubcategories' => true,
+                'categoryHasSubCategories' => true,
                 'materials' => [
                     'PAR64LED' => [
                         'reference' => 'PAR64LED',
@@ -322,7 +319,7 @@ final class MaterialsDataTest extends ModelTestCase
                 'id' => 1,
                 'name' => 'mixers',
                 'category' => 'sound',
-                'categoryHasSubcategories' => true,
+                'categoryHasSubCategories' => true,
                 'materials' => [
                     'CL3' => [
                         'reference' => 'CL3',
@@ -387,7 +384,7 @@ final class MaterialsDataTest extends ModelTestCase
                 'id' => 2,
                 'name' => 'processors',
                 'category' => 'sound',
-                'categoryHasSubcategories' => true,
+                'categoryHasSubCategories' => true,
                 'materials' => [
                     'DBXPA2' => [
                         'reference' => 'DBXPA2',
@@ -422,7 +419,7 @@ final class MaterialsDataTest extends ModelTestCase
                 'id' => 'c-1',
                 'name' => null,
                 'category' => 'sound',
-                'categoryHasSubcategories' => true,
+                'categoryHasSubCategories' => true,
                 'materials' => [
                     'XLR10' => [
                         'reference' => 'XLR10',
@@ -442,7 +439,7 @@ final class MaterialsDataTest extends ModelTestCase
                 'id' => 'c-3',
                 'name' => null,
                 'category' => 'transport',
-                'categoryHasSubcategories' => false,
+                'categoryHasSubCategories' => false,
                 'materials' => [
                     'Transporter' => [
                         'reference' => 'Transporter',
