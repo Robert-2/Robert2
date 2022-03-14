@@ -3,6 +3,10 @@ declare(strict_types=1);
 
 namespace Robert2\Lib\Domain;
 
+use Robert2\API\Models\Category;
+use Robert2\API\Models\Park;
+use Robert2\API\Models\SubCategory;
+
 class MaterialsData
 {
     protected $materials;
@@ -53,8 +57,7 @@ class MaterialsData
             if (!isset($categoriesMaterials[$categoryId])) {
                 $categoriesMaterials[$categoryId] = [
                     'id' => $categoryId ?: null,
-                    'name' => $this->getCategoryName($categoryId),
-                    'categoryHasSubcategories' => $this->categoryHasSubcategories($categoryId),
+                    'name' => Category::find($categoryId)->name,
                     'materials' => [],
                 ];
             }
@@ -71,7 +74,7 @@ class MaterialsData
                 'name' => $material['name'],
                 'stockQuantity' => $stockQuantity,
                 'attributes' => $material['attributes'],
-                'park' => $withPark ? $this->getParkName($material['park_id']) : null,
+                'park' => $withPark ? Park::find($material['park_id'])->name : null,
                 'quantity' => $quantity,
                 'rentalPrice' => $price,
                 'replacementPrice' => $replacementPrice,
@@ -103,9 +106,9 @@ class MaterialsData
             if (!isset($subCategoriesMaterials[$subCategoryId])) {
                 $subCategoriesMaterials[$subCategoryId] = [
                     'id' => $subCategoryId,
-                    'name' => $this->getSubCategoryName($material['sub_category_id']),
-                    'category' => $this->getCategoryName($categoryId),
-                    'categoryHasSubcategories' => $this->categoryHasSubcategories($categoryId),
+                    'name' => SubCategory::find($material['sub_category_id'])->name,
+                    'category' => Category::find($categoryId)->name,
+                    'categoryHasSubCategories' => Category::hasSubCategories($categoryId),
                     'materials' => [],
                 ];
             }
@@ -121,7 +124,7 @@ class MaterialsData
                 'name' => $material['name'],
                 'stockQuantity' => $material['stock_quantity'],
                 'attributes' => $material['attributes'],
-                'park' => $withPark ? $this->getParkName($material['park_id']) : null,
+                'park' => $withPark ? Park::find($material['park_id'])->name : null,
                 'quantity' => $quantity,
                 'rentalPrice' => $price,
                 'replacementPrice' => $replacementPrice,
@@ -164,7 +167,7 @@ class MaterialsData
             if (!isset($parksMaterials[$parkId])) {
                 $parksMaterials[$parkId] = [
                     'id' => $parkId,
-                    'name' => $parkId ? $this->getParkName($parkId) : null,
+                    'name' => $parkId ? Park::find($parkId)->name : null,
                     'materials' => [],
                 ];
             }
@@ -215,7 +218,7 @@ class MaterialsData
                 'name' => $material['name'],
                 'stockQuantity' => $material['stock_quantity'],
                 'attributes' => $material['attributes'],
-                'park' => $withPark ? $this->getParkName($material['park_id']) : null,
+                'park' => $withPark ? Park::find($material['park_id'])->name : null,
                 'quantity' => $quantity,
                 'rentalPrice' => $price,
                 'replacementPrice' => $replacementPrice,
@@ -227,73 +230,5 @@ class MaterialsData
         ksort($flatMaterials, SORT_NATURAL | SORT_FLAG_CASE);
 
         return $flatMaterials;
-    }
-
-    // ------------------------------------------------------
-    // -
-    // -    Internal Methods
-    // -
-    // ------------------------------------------------------
-
-    protected function getCategoryName(int $categoryId): ?string
-    {
-        if (empty($this->categories)) {
-            throw new \InvalidArgumentException("Missing categories data.");
-        }
-
-        foreach ($this->categories as $category) {
-            if ($categoryId === $category['id']) {
-                return $category['name'];
-            }
-        }
-
-        return null;
-    }
-
-    protected function categoryHasSubcategories(int $categoryId): bool
-    {
-        if (empty($this->categories)) {
-            throw new \InvalidArgumentException("Missing categories data.");
-        }
-
-        foreach ($this->categories as $category) {
-            if ($categoryId === $category['id']) {
-                return count($category['sub_categories']) > 0;
-            }
-        }
-
-        return false;
-    }
-
-    protected function getSubCategoryName(?int $subCategoryId): ?string
-    {
-        if (empty($this->categories)) {
-            throw new \InvalidArgumentException("Missing categories data.");
-        }
-
-        foreach ($this->categories as $category) {
-            foreach ($category['sub_categories'] as $subCategory) {
-                if ($subCategoryId === $subCategory['id']) {
-                    return $subCategory['name'];
-                }
-            }
-        }
-
-        return null;
-    }
-
-    protected function getParkName(int $parkId): ?string
-    {
-        if (empty($this->parks)) {
-            throw new \InvalidArgumentException("Missing parks data.");
-        }
-
-        foreach ($this->parks as $park) {
-            if ($parkId === $park['id']) {
-                return $park['name'];
-            }
-        }
-
-        return null;
     }
 }

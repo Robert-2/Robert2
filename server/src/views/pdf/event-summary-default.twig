@@ -129,19 +129,32 @@
         </tr>
     </thead>
     <tbody>
-        {% if materialDisplayMode == 'categories' or materialDisplayMode == 'sub-categories' %}
+        {% if materialDisplayMode == 'categories' %}
+        {% for category in materialList %}
+            <tr>
+                <td class="section-title" colspan="6">
+                    {% if category['name'] is not empty %}
+                    {{ category['name'] }}
+                    {% else %}
+                    {{ translate('otherMaterials') }}
+                    {% endif %}
+                </td>
+            </tr>
+            {% for material in category['materials'] %}
+                {{ include('blocks/materials/line-summary.twig', { material: material }) }}
+            {% endfor %}
+        {% endfor %}
+        {% elseif materialDisplayMode == 'sub-categories' %}
         {% for subCategory in materialList %}
             <tr>
                 <td class="section-title" colspan="6">
+                    {% if subCategory['category'] is not empty %}{{ subCategory['category'] }}{% endif %}
                     {% if subCategory['name'] is not empty %}
-                        {% if subCategory['category'] is not empty %}
-                        {{ subCategory['category'] }} -
-                        {% endif %}
-                    {{ subCategory['name'] }}
-                    {% elseif subCategory['categoryHasSubcategories'] == true %}
-                    {{ subCategory['category'] }} - {{ translate('otherMaterials') }}
+                    - {{ subCategory['name'] }}
                     {% else %}
-                    {{ subCategory['category'] }}
+                        {% if subCategory['categoryHasSubCategories'] == true %}
+                        - {{ translate('otherMaterials') }}
+                        {% endif %}
                     {% endif %}
                 </td>
             </tr>
