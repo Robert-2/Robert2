@@ -67,7 +67,7 @@ export default {
                                 vTooltip={__('action-edit')}
                                 to={`/companies/${beneficiary.company.id}`}
                             >
-                                {beneficiary.company.legal_name}
+                                {beneficiary.company.legal_name}{' '}
                                 <i class="fas fa-edit" />
                             </router-link>
                         );

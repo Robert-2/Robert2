@@ -506,7 +506,7 @@ export default {
                         <MaterialsFilters baseRoute="/materials" onChange={refreshTableAndPagination} />
                         <div class="Materials__quantities-date">
                             <Datepicker
-                                vModel={periodForQuantities}
+                                vModel={this.periodForQuantities}
                                 class="Materials__quantities-date__input"
                                 placeholder={__('page-materials.display-quantities-at-date')}
                                 isRange
