@@ -2,7 +2,6 @@
 
 export default {
     'hello-pseudo': "Hello {pseudo}!",
-    'your-profile': "Your profile",
     'your-settings': "Your settings",
     'logout-quit': "Quit Robert",
 
@@ -308,4 +307,10 @@ export default {
 
     'french': "Français",
     'english': "English",
+
+    'external-links': {
+        'official-website': "Official website",
+        'community-forum': "Community Forum",
+        'github-repository': 'Github repository',
+    },
 };

@@ -7,36 +7,11 @@ export default {
         'connexion': "Enter Robert",
         'please-wait': "Authentication, please wait...",
         'bye': "See you\u00a0!",
-        'footer': "Robert2 is a free (as in 'freedom') software. You can copy and redistribute it freely, except for commercial purpose.",
-        'official-website': "Official website",
-        'community-forum': "Community Forum",
-
         'error': {
             'bad-infos': "Given infos ar not correct. Please give your e-mail address or pseudo, and your password.",
             'expired-session': "Your session has expired. Please log back in!",
             'not-allowed': "You tried to visit a page with restricted access. Please log in with an account who can access this page.",
         },
-    },
-
-    'page-profile': {
-        'title': "Your profile",
-        'help': "If you change your email, pseudo or password, do not forget them before logging-out!",
-        'you-are-group': "You are: {group}.",
-        'edit-password': "Change your password",
-        'password-confirmation': "Password confirmation",
-        'password-confirmation-must-match': "Password and its confirmation must be identical.",
-        'password-modified': "Your password was modified.",
-        'saved': "Your profile was saved.",
-    },
-
-    'page-user-settings': {
-        'title': "Your settings",
-        'help': "The \"duration of a session\" is the time allowed before you're automatically logged out.",
-        'auth-token-validity-duration': "Max. duration of a session",
-        'interface': "Interface",
-        'language': "Language",
-        'hours': "hours",
-        'saved': "Settings saved.",
     },
 
     'page-calendar': {
@@ -412,6 +387,29 @@ export default {
             ),
             'public-calendar-url-reset-error': "An error occurred while regenerating the public calendar link, please try again.",
             'public-calendar-url-reset-success': "The public calendar link has been successfully re-generated! The new one is available above.",
+        },
+    },
+
+    'page-user-settings': {
+        'title': "Your settings",
+        'profile': {
+            'title': "Your profile",
+            'help': "If you change your email, pseudo or password, do not forget them before logging-out!",
+            'new-password': "New password",
+            'new-password-help': "Only fill this section if you want to change your password.",
+            'password-confirmation': "Password confirmation",
+            'password-confirmation-must-match': "Password and its confirmation must be identical.",
+            'password-modified': "Your password was modified.",
+            'saved': "Your informations have been successfully saved.",
+            'saved-with-password': "Your informations and your new password have been successfully saved.",
+        },
+        'interface': {
+            'title': "Interface",
+            'help': "The \"duration of a session\" is the time allowed before you're automatically logged out.",
+            'auth-token-validity-duration': "Max. duration of a session",
+            'language': "Language",
+            'hours': "hours",
+            'saved': "Settings saved.",
         },
     },
 

@@ -1,0 +1,30 @@
+@use '~@/style/globals';
+
+.InterfaceUserSettings {
+    &__inputs {
+        margin-top: globals.$content-padding-large-vertical;
+
+        .FormField {
+            &__label {
+                flex-basis: 200px;
+            }
+
+            &__error__text {
+                padding-left: 200px;
+            }
+
+            + .FormField {
+                margin-top: globals.$content-padding-small-vertical;
+            }
+        }
+    }
+
+    &__hours .FormField__input {
+        max-width: 70px;
+    }
+
+    &__actions {
+        margin-top: globals.$content-padding-large-vertical;
+        text-align: center;
+    }
+}

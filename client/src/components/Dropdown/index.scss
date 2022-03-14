@@ -79,16 +79,21 @@
         padding: globals.$content-padding-large-horizontal globals.$content-padding-small-vertical;
         list-style: none;
 
-        // stylelint-disable-next-line selector-max-type
+        /* stylelint-disable selector-max-type */
         &:not(button) {
             color: globals.$text-base-color;
 
-            // stylelint-disable-next-line selector-max-type
             &:hover {
                 background-color: globals.$bg-color-dropdown-menu-item-hover;
                 color: globals.$link-hover-color;
             }
+
+            &:visited,
+            &:active {
+                color: globals.$text-base-color;
+            }
         }
+        /* stylelint-enable selector-max-type */
 
         &--active,
         &--active:hover {

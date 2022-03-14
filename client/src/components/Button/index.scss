@@ -19,6 +19,10 @@
         margin-left: 5px;
     }
 
+    &:visited {
+        color: $default-color;
+    }
+
     &:hover,
     &:focus {
         outline: 0;
@@ -64,6 +68,22 @@
     //
     // - Variantes
     //
+
+    &--primary {
+        background-color: $primary-variant-background;
+        color: $primary-variant-color;
+
+        &:hover,
+        &:focus {
+            background-color: $primary-variant-focused-background;
+            color: $primary-variant-focused-color;
+        }
+
+        &:active {
+            background-color: $primary-variant-active-background;
+            color: $primary-variant-active-color;
+        }
+    }
 
     &--success {
         background-color: $success-variant-background;

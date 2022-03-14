@@ -1,0 +1,68 @@
+@use '~@/style/globals';
+
+.DefaultLayoutSidebar {
+    position: absolute;
+    z-index: 100;
+    left: -(globals.$sidebar-full-width);
+    display: flex;
+    flex-flow: column nowrap;
+    width: globals.$sidebar-full-width;
+    height: calc(100% - #{globals.$main-header-height});
+    background-color: globals.$bg-color-side-nav;
+    transition: left 300ms cubic-bezier(0, 0.72, 0.43, 1);
+
+    &__logo {
+        padding: globals.$content-padding-small-horizontal 0;
+        text-align: center;
+
+        // stylelint-disable-next-line selector-max-type
+        img {
+            height: 3rem;
+        }
+    }
+
+    &__menu {
+        flex: 1;
+        display: flex;
+        flex-flow: column nowrap;
+        align-items: flex-start;
+        justify-content: flex-start;
+        overflow: auto;
+        user-select: none;
+    }
+
+    &__footer {
+        flex: 0 0 auto;
+        padding: 10px 5px;
+        font-size: 0.7rem;
+        text-align: center;
+    }
+
+    &--opened {
+        left: 0;
+    }
+
+    @media (min-width: globals.$screen-mobile) {
+        position: initial;
+        left: 0;
+        flex: 0 0 globals.$sidebar-width;
+        display: flex;
+        height: auto;
+
+        &__logo {
+            display: none;
+        }
+
+        &__footer {
+            display: none;
+        }
+    }
+
+    @media (min-width: globals.$screen-desktop) {
+        flex: 0 0 globals.$sidebar-full-width;
+
+        &__footer {
+            display: block;
+        }
+    }
+}

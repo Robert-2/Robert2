@@ -1,15 +1,17 @@
 import './index.scss';
+import { Fragment } from 'vue-fragment';
+import { confirm } from '@/utils/alert';
 import Config from '@/globals/config';
-import Alert from '@/components/Alert';
-import Help from '@/components/Help';
+import Page from '@/components/Page';
+import Button from '@/components/Button';
 
 // @vue/component
 export default {
     name: 'Beneficiaries',
-    components: { Help },
     data() {
+        const { $t: __ } = this;
+
         return {
-            help: 'page-beneficiaries.help',
             error: null,
             isLoading: false,
             isDisplayTrashed: false,
@@ -36,14 +38,14 @@ export default {
                     note: 'mobile',
                 },
                 headings: {
-                    last_name: this.$t('last-name'),
-                    first_name: this.$t('first-name'),
-                    reference: this.$t('reference'),
-                    company: this.$t('company'),
-                    email: this.$t('email'),
-                    phone: this.$t('phone'),
-                    address: this.$t('address'),
-                    note: this.$t('notes'),
+                    last_name: __('last-name'),
+                    first_name: __('first-name'),
+                    reference: __('reference'),
+                    company: __('company'),
+                    email: __('email'),
+                    phone: __('phone'),
+                    address: __('address'),
+                    note: __('notes'),
                     actions: '',
                 },
                 columnsClasses: {
@@ -51,27 +53,187 @@ export default {
                     email: 'Beneficiaries__email',
                     address: 'Beneficiaries__address',
                     note: 'Beneficiaries__note',
+                    actions: 'Beneficiaries__actions',
                 },
-                requestFunction: (pagination) => {
-                    this.isLoading = true;
-                    this.error = null;
-                    const params = {
-                        ...pagination,
-                        tags: [Config.beneficiaryTagName],
-                        deleted: this.isDisplayTrashed ? '1' : '0',
-                    };
-                    return this.$http
-                        .get(this.$route.meta.resource, { params })
-                        .catch(this.showError)
-                        .finally(() => {
-                            this.isTrashDisplayed = this.isDisplayTrashed;
-                            this.isLoading = false;
-                        });
+                requestFunction: this.fetch.bind(this),
+                templates: {
+                    company: (h, beneficiary) => {
+                        if (!beneficiary.company) {
+                            return null;
+                        }
+
+                        return (
+                            <router-link
+                                vTooltip={__('action-edit')}
+                                to={`/companies/${beneficiary.company.id}`}
+                            >
+                                {beneficiary.company.legal_name}{' '}
+                                <i class="fas fa-edit" />
+                            </router-link>
+                        );
+                    },
+                    email: (h, beneficiary) => (
+                        <a href={`mailto:${beneficiary.email}`}>
+                            {beneficiary.email}
+                        </a>
+                    ),
+                    phone: (h, beneficiary) => (
+                        <Fragment>
+                            {!!beneficiary.phone && <div>{beneficiary.phone}</div>}
+                            {!!beneficiary.company && <div>{beneficiary.company.phone}</div>}
+                        </Fragment>
+                    ),
+                    address: (h, beneficiary) => (
+                        this.getBeneficiaryAddress(beneficiary)
+                    ),
+                    note: (h, beneficiary) => {
+                        const note = beneficiary.company
+                            ? beneficiary.company.note
+                            : beneficiary.note;
+
+                        return <pre>{note}</pre>;
+                    },
+                    actions: (h, beneficiary) => {
+                        const {
+                            isTrashDisplayed,
+                            deleteBeneficiary,
+                            restoreBeneficiary,
+                        } = this;
+
+                        if (isTrashDisplayed) {
+                            return (
+                                <Fragment>
+                                    <button
+                                        type="button"
+                                        vTooltip={__('action-restore')}
+                                        class="item-actions__button info"
+                                        onClick={() => { restoreBeneficiary(beneficiary.id); }}
+                                    >
+                                        <i class="fas fa-trash-restore" />
+                                    </button>
+                                    <button
+                                        type="button"
+                                        vTooltip={__('action-delete')}
+                                        class="item-actions__button danger"
+                                        onClick={() => { deleteBeneficiary(beneficiary.id); }}
+                                    >
+                                        <i class="fas fa-trash-alt" />
+                                    </button>
+                                </Fragment>
+                            );
+                        }
+
+                        return (
+                            <Fragment>
+                                <router-link
+                                    vTooltip={__('action-edit')}
+                                    to={`/beneficiaries/${beneficiary.id}`}
+                                    custom
+                                >
+                                    {({ navigate }) => (
+                                        <button
+                                            type="button"
+                                            class="item-actions__button info"
+                                            onClick={navigate}
+                                        >
+                                            <i class="fas fa-edit" />
+                                        </button>
+                                    )}
+                                </router-link>
+                                <button
+                                    type="button"
+                                    vTooltip={__('action-trash')}
+                                    class="item-actions__button warning"
+                                    onClick={() => { deleteBeneficiary(beneficiary.id); }}
+                                >
+                                    <i class="fas fa-trash" />
+                                </button>
+                            </Fragment>
+                        );
+                    },
                 },
             },
         };
     },
     methods: {
+        async fetch(pagination) {
+            this.isLoading = true;
+            this.error = null;
+
+            try {
+                const params = {
+                    ...pagination,
+                    tags: [Config.beneficiaryTagName],
+                    deleted: this.isDisplayTrashed ? '1' : '0',
+                };
+                return await this.$http.get('persons', { params });
+            } catch (error) {
+                this.error = error;
+            } finally {
+                this.isTrashDisplayed = this.isDisplayTrashed;
+                this.isLoading = false;
+            }
+
+            return undefined;
+        },
+
+        async deleteBeneficiary(beneficiaryId) {
+            const { $t: __ } = this;
+            const isSoft = !this.isTrashDisplayed;
+
+            const { value: isConfirmed } = await confirm({
+                type: isSoft ? 'warning' : 'danger',
+
+                text: isSoft
+                    ? __('page-beneficiaries.confirm-delete')
+                    : __('page-beneficiaries.confirm-permanently-delete'),
+
+                confirmButtonText: isSoft
+                    ? __('yes-delete')
+                    : __('yes-permanently-delete'),
+            });
+            if (!isConfirmed) {
+                return;
+            }
+
+            this.error = null;
+            this.isLoading = true;
+
+            try {
+                await this.$http.delete(`persons/${beneficiaryId}`);
+                this.refreshTable();
+            } catch (error) {
+                this.error = error;
+            } finally {
+                this.isLoading = false;
+            }
+        },
+
+        async restoreBeneficiary(beneficiaryId) {
+            const { $t: __ } = this;
+
+            const { value: isConfirmed } = await confirm({
+                type: 'restore',
+                text: __('page-beneficiaries.confirm-restore'),
+                confirmButtonText: __('yes-restore'),
+            });
+            if (!isConfirmed) {
+                return;
+            }
+
+            this.error = null;
+            this.isLoading = true;
+
+            try {
+                await this.$http.put(`persons/restore/${beneficiaryId}`);
+                this.refreshTable();
+            } catch (error) {
+                this.error = error;
+            } finally {
+                this.isLoading = false;
+            }
+        },
+
         getBeneficiaryAddress(beneficiary) {
             const formatAddress = ({ street, postal_code: postalCode, locality }) => {
                 const localityFull = [postalCode, locality].filter(Boolean).join(' ');
@@ -89,35 +251,6 @@ export default {
             return formatAddress(beneficiary.company || {});
         },
 
-        deleteBeneficiary(beneficiaryId) {
-            const isSoft = !this.isTrashDisplayed;
-            Alert.ConfirmDelete(this.$t, 'beneficiaries', isSoft).then((result) => {
-                if (!result.value) {
-                    return;
-                }
-
-                this.error = null;
-                this.isLoading = true;
-                this.$http.delete(`${this.$route.meta.resource}/${beneficiaryId}`)
-                    .then(this.refreshTable)
-                    .catch(this.showError);
-            });
-        },
-
-        restoreBeneficiary(beneficiaryId) {
-            Alert.ConfirmRestore(this.$t, 'beneficiaries').then((result) => {
-                if (!result.value) {
-                    return;
-                }
-
-                this.error = null;
-                this.isLoading = true;
-                this.$http.put(`${this.$route.meta.resource}/restore/${beneficiaryId}`)
-                    .then(this.refreshTable)
-                    .catch(this.showError);
-            });
-        },
-
         refreshTable() {
             this.error = null;
             this.isLoading = true;
@@ -128,10 +261,50 @@ export default {
             this.isDisplayTrashed = !this.isDisplayTrashed;
             this.refreshTable();
         },
+    },
+    render() {
+        const {
+            $t: __,
+            error,
+            isLoading,
+            columns,
+            options,
+            showTrashed,
+            isTrashDisplayed,
+        } = this;
 
-        showError(error) {
-            this.isLoading = false;
-            this.error = error;
-        },
+        const headerActions = [
+            <Button icon="user-plus" type="success" to="/beneficiaries/new">
+                {__('page-beneficiaries.action-add')}
+            </Button>,
+        ];
+
+        return (
+            <Page
+                name="beneficiaries"
+                class="Beneficiaries"
+                title={__('page-beneficiaries.title')}
+                help={__('page-beneficiaries.help')}
+                error={error}
+                isLoading={isLoading}
+                actions={headerActions}
+            >
+                <v-server-table
+                    ref="DataTable"
+                    name="BeneficiariesTable"
+                    columns={columns}
+                    options={options}
+                />
+                <div class="content__footer">
+                    <Button
+                        onClick={showTrashed}
+                        icon={isTrashDisplayed ? 'eye' : 'trash'}
+                        type={isTrashDisplayed ? 'success' : 'danger'}
+                    >
+                        {isTrashDisplayed ? __('display-not-deleted-items') : __('open-trash-bin')}
+                    </Button>
+                </div>
+            </Page>
+        );
     },
 };
