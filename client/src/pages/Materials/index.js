@@ -16,6 +16,16 @@ import MaterialsFilters from '@/components/MaterialsFilters';
 import MaterialTags from '@/components/MaterialTags';
 import Datepicker from '@/components/Datepicker';
 
+const defaultSortableColumns = [
+    'reference',
+    'name',
+    'description',
+    'rental_price',
+    'replacement_price',
+    'stock_quantity',
+    'out_of_order_quantity',
+];
+
 // @vue/component
 export default {
     name: 'Materials',
@@ -54,15 +64,7 @@ export default {
                 preserveState: true,
                 orderBy: { column: 'name', ascending: true },
                 initialPage: this.$route.query.page || 1,
-                sortable: [
-                    'reference',
-                    'name',
-                    'description',
-                    'rental_price',
-                    'replacement_price',
-                    'stock_quantity',
-                    'out_of_order_quantity',
-                ],
+                sortable: defaultSortableColumns,
                 columnsDisplay: {
                     // - This is a hack: init the table with hidden columns by default
                     park: 'mobile',
@@ -236,6 +238,14 @@ export default {
     },
     watch: {
         periodForQuantities() {
+            if (this.periodForQuantities) {
+                this.options.sortable = defaultSortableColumns.filter(
+                    (sortColumn) => sortColumn !== 'stock_quantity',
+                );
+            } else {
+                this.options.sortable = defaultSortableColumns;
+            }
+
             this.refreshTable();
         },
     },
