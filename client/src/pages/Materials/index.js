@@ -16,16 +16,6 @@ import MaterialsFilters from '@/components/MaterialsFilters';
 import MaterialTags from '@/components/MaterialTags';
 import Datepicker from '@/components/Datepicker';
 
-const defaultSortableColumns = [
-    'reference',
-    'name',
-    'description',
-    'rental_price',
-    'replacement_price',
-    'stock_quantity',
-    'out_of_order_quantity',
-];
-
 // @vue/component
 export default {
     name: 'Materials',
@@ -64,7 +54,7 @@ export default {
                 preserveState: true,
                 orderBy: { column: 'name', ascending: true },
                 initialPage: this.$route.query.page || 1,
-                sortable: defaultSortableColumns,
+                sortable: [],
                 columnsDisplay: {
                     // - This is a hack: init the table with hidden columns by default
                     park: 'mobile',
@@ -72,32 +62,8 @@ export default {
                     replacement_price: 'mobile',
                     out_of_order_quantity: 'mobile',
                 },
-                headings: {
-                    reference: __('ref'),
-                    name: __('name'),
-                    description: __('description'),
-                    park: __('park'),
-                    category: __('category'),
-                    rental_price: __('rent-price'),
-                    replacement_price: __('repl-price'),
-                    stock_quantity: __('quantity'),
-                    out_of_order_quantity: __('quantity-out-of-order'),
-                    tags: __('tags'),
-                    actions: '',
-                },
-                columnsClasses: {
-                    reference: 'Materials__ref',
-                    name: 'Materials__name',
-                    park: 'Materials__park',
-                    category: 'Materials__category',
-                    description: 'Materials__description',
-                    rental_price: 'Materials__rental-price',
-                    replacement_price: 'Materials__replacement-price',
-                    stock_quantity: 'Materials__quantity',
-                    out_of_order_quantity: 'Materials__quantity-broken',
-                    tags: 'Materials__tags',
-                    actions: 'Materials__actions',
-                },
+                headings: {},
+                columnsClasses: {},
                 requestFunction: this.fetch.bind(this),
                 templates: {
                     park: (h, material) => this.getParkName(material.park_id),
@@ -235,17 +201,61 @@ export default {
             }
             return isSameDate(this.periodForQuantities[0], this.periodForQuantities[1]);
         },
-    },
-    watch: {
-        periodForQuantities() {
+
+        dataTableOptions() {
+            const { $t: __ } = this;
+            const headings = {
+                reference: __('ref'),
+                name: __('name'),
+                description: __('description'),
+                park: __('park'),
+                category: __('category'),
+                rental_price: __('rent-price'),
+                replacement_price: __('repl-price'),
+                stock_quantity: __('quantity'),
+                out_of_order_quantity: __('quantity-out-of-order'),
+                tags: __('tags'),
+                actions: '',
+            };
+            let sortable = [
+                'reference',
+                'name',
+                'description',
+                'rental_price',
+                'replacement_price',
+                'stock_quantity',
+                'out_of_order_quantity',
+            ];
+            const columnsClasses = {
+                reference: 'Materials__ref',
+                name: 'Materials__name',
+                park: 'Materials__park',
+                category: 'Materials__category',
+                description: 'Materials__description',
+                rental_price: 'Materials__rental-price',
+                replacement_price: 'Materials__replacement-price',
+                stock_quantity: 'Materials__quantity',
+                out_of_order_quantity: 'Materials__quantity-broken',
+                tags: 'Materials__tags',
+                actions: 'Materials__actions',
+            };
+
             if (this.periodForQuantities) {
-                this.options.sortable = defaultSortableColumns.filter(
+                headings.stock_quantity = __('remaining-quantity');
+                columnsClasses.stock_quantity = 'Materials__quantity Materials__quantity--remaining';
+                sortable = sortable.filter(
                     (sortColumn) => sortColumn !== 'stock_quantity',
                 );
             } else {
-                this.options.sortable = defaultSortableColumns;
+                headings.stock_quantity = __('quantity');
+                columnsClasses.stock_quantity = 'Materials__quantity';
             }
 
+            return { ...this.options, headings, sortable, columnsClasses };
+        },
+    },
+    watch: {
+        periodForQuantities() {
             this.refreshTable();
         },
     },
@@ -403,16 +413,6 @@ export default {
             this.error = null;
             this.isLoading = true;
             this.$refs.DataTable.getData();
-
-            const { headings, columnsClasses } = this.$refs.DataTable.options;
-
-            if (this.periodForQuantities === null) {
-                headings.stock_quantity = this.$t('quantity');
-                columnsClasses.stock_quantity = 'Materials__quantity';
-            } else {
-                headings.stock_quantity = this.$t('remaining-quantity');
-                columnsClasses.stock_quantity = 'Materials__quantity Materials__quantity--remaining';
-            }
         },
 
         refreshTableAndPagination() {
@@ -451,7 +451,7 @@ export default {
             isAdmin,
             isLoading,
             columns,
-            options,
+            dataTableOptions,
             dropdownItemClass,
             downloadListingUrl,
             showTrashed,
@@ -537,7 +537,7 @@ export default {
                         ref="DataTable"
                         name="materialsTable"
                         columns={columns}
-                        options={options}
+                        options={dataTableOptions}
                     />
                 </div>
                 <div class="content__footer">

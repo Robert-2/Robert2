@@ -14,7 +14,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
   Pour plus d'informations, rendez-vous dans les paramètres de votre instance Robert2 / Loxya, onglet "Calendrier" (#326).
 - Ajoute une limite de taille des fichiers uploadés dans la configuration générale (valeur par défaut 25 Mo) (#332).
 - Sur la fiche de sortie, supprime la mention inutile "autre matériel" de la liste du matériel triée par sous-catégories, quand la catégorie n'a aucune sous-catégorie (#319).
-- Enlève le tri sur la colonne "quantité restante" dans la liste du matériel, car impossible (#324).
+- Enlève la possibilité de trier sur la colonne "quantité restante" dans la liste du matériel (#324).
 
 ## 0.17.1 (2022-01-06)
 
