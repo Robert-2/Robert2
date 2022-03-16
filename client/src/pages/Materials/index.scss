@@ -47,6 +47,20 @@
         display: none;
     }
 
+    &__link {
+        padding: 10px 0;
+
+        // "important", pour surcharger la définition globale du <a>
+        // stylelint-disable-next-line declaration-no-important
+        color: globals.$text-base-color !important;
+
+        &:hover {
+            // "important", pour surcharger la définition globale du <a>
+            // stylelint-disable-next-line declaration-no-important
+            color: globals.$link-hover-color !important;
+        }
+    }
+
     &__category {
         white-space: nowrap;
     }

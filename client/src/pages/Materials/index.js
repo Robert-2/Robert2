@@ -98,6 +98,36 @@ export default {
                 },
                 requestFunction: this.fetch.bind(this),
                 templates: {
+                    reference: (h, material) => (
+                        <Fragment>
+                            {!this.isTrashDisplayed && (
+                                <router-link
+                                    to={`/materials/${material.id}/view`}
+                                    class="Materials__link"
+                                >
+                                    {material.reference}
+                                </router-link>
+                            )}
+                            {this.isTrashDisplayed && (
+                                <span>{material.reference}</span>
+                            )}
+                        </Fragment>
+                    ),
+                    name: (h, material) => (
+                        <Fragment>
+                            {!this.isTrashDisplayed && (
+                                <router-link
+                                    to={`/materials/${material.id}/view`}
+                                    class="Materials__link"
+                                >
+                                    {material.name}
+                                </router-link>
+                            )}
+                            {this.isTrashDisplayed && (
+                                <span>{material.name}</span>
+                            )}
+                        </Fragment>
+                    ),
                     park: (h, material) => this.getParkName(material.park_id),
                     category: (h, material) => (
                         <Fragment>
