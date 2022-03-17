@@ -1,5 +1,6 @@
 import './index.scss';
 import Config from '@/globals/config';
+import Page from '@/components/Page';
 import Help from '@/components/Help';
 import PersonForm from '@/components/PersonForm';
 
@@ -49,8 +50,12 @@ export default {
         },
         help() {
             return this.isSaved
-                ? { type: 'success', text: 'page-beneficiaries.saved' }
-                : 'page-beneficiaries.help-edit';
+                ? { type: 'success', text: 'page-beneficiary.saved' }
+                : 'page-beneficiary.help';
+        },
+        fullName() {
+            const { full_name: fullName, first_name: firstName, last_name: lastName } = this.person;
+            return fullName || `${firstName} ${lastName}`;
         },
     },
     mounted() {
@@ -106,8 +111,7 @@ export default {
 
             try {
                 const { data } = await this.$http.get(`${resource}/${id}`);
-
-                this.setPerson(data);
+                this.person = data;
             } catch (error) {
                 this.displayError(error);
             } finally {
@@ -137,9 +141,8 @@ export default {
 
             try {
                 const { data } = await request(route, personData);
-
+                this.person = data;
                 this.isSaved = true;
-                this.setPerson(data);
                 this.flushStashedData();
 
                 const redirect = () => { this.$router.push('/beneficiaries'); };
@@ -161,18 +164,15 @@ export default {
             }
         },
 
-        setPerson(data) {
-            this.person = data;
-            const fullName = data.full_name || `${data.first_name} ${data.last_name}`;
-            this.$store.commit('setPageSubTitle', fullName);
-        },
-
         flushStashedData() {
             localStorage.removeItem(WIP_STORAGE_KEY);
         },
     },
     render() {
         const {
+            $t: __,
+            isNew,
+            fullName,
             person,
             errors,
             help,
@@ -183,23 +183,23 @@ export default {
             handleCancel,
         } = this;
 
+        const title = isNew
+            ? __('page-beneficiary.title-create')
+            : __('page-beneficiary.title-edit', { name: fullName });
+
         return (
-            <div class="content">
-                <div class="content__main-view">
-                    <div class="Beneficiary">
-                        <PersonForm
-                            person={person}
-                            errors={errors}
-                            onSubmit={handleSave}
-                            onChange={handleChange}
-                            onCancel={handleCancel}
-                            withCompany
-                            withReference
-                        />
-                        <Help message={help} error={error} isLoading={isLoading} />
-                    </div>
-                </div>
-            </div>
+            <Page name="global-settings" title={title}>
+                <PersonForm
+                    person={person}
+                    errors={errors}
+                    onSubmit={handleSave}
+                    onChange={handleChange}
+                    onCancel={handleCancel}
+                    withCompany
+                    withReference
+                />
+                <Help message={help} error={error} isLoading={isLoading} />
+            </Page>
         );
     },
 };

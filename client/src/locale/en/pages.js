@@ -155,18 +155,22 @@ export default {
         'help': "You can send an email to a beneficiary by clicking on his/her address.",
         'action-add': "New beneficiary",
         'add': "New beneficiary",
-        'edit': "Modify beneficiary \"{pageSubTitle}\"",
-        'edit-title': "Modify beneficiary",
+        'edit': "Modify beneficiary",
         'beneficiary-type': "Beneficiary type",
         'person': "Natural person (individual)",
         'company': "Legal entity (company)",
-        'help-edit': (
-            `Only first name and last name are mandatory.
-            The "reference" is a customer or member number for your internal management, which will appear on the output sheets, estimates and bills. It must be unique.`
-        ),
         'confirm-delete': "Move this beneficiary in trash bin?",
         'confirm-permanently-delete': "Do you really want to permanently delete this beneficiary?",
         'confirm-restore': "Do you really want to restore this beneficiary?",
+    },
+
+    'page-beneficiary': {
+        'title-create': "New beneficiary",
+        'title-edit': "Modify beneficiary \"{name}\"",
+        'help': (
+            `Only first name and last name are mandatory.
+            The "reference" is a customer or member number for your internal management, which will appear on the output sheets, estimates and bills. It must be unique.`
+        ),
         'saved': "Beneficiary saved.",
     },
 
