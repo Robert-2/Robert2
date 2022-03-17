@@ -42,7 +42,7 @@ const PersonForm = (props, { root, emit }) => {
             onChange={handleChange}
         >
             <section class="Form__fieldset">
-                <h4 class="Form__fieldset__title">{__('personnal-infos')}</h4>
+                <h4 class="Form__fieldset__title">{__('personal-infos')}</h4>
                 <FormField
                     name="first_name"
                     label="first-name"

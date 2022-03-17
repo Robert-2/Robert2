@@ -212,7 +212,7 @@ export default {
                         </div>
                     </section>
                     <section class="ProfileUserSettings__section ProfileUserSettings__section--infos">
-                        <h3 class="ProfileUserSettings__section__title">{__('personnal-infos')}</h3>
+                        <h3 class="ProfileUserSettings__section__title">{__('personal-infos')}</h3>
                         <div class="ProfileUserSettings__section__body">
                             <FormField
                                 vModel={user.person.first_name}
