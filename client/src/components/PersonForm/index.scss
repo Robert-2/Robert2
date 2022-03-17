@@ -5,23 +5,6 @@
     min-width: globals.$form-min-width;
     margin-right: 1rem;
 
-    &__company {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: flex-start;
-        margin-bottom: globals.$content-padding-small-vertical;
-
-        .FormField {
-            flex: 1;
-        }
-
-        &__edit-btn {
-            flex: 0 0 auto;
-            margin-top: 2rem;
-        }
-    }
-
     &__phone .FormField__input {
         max-width: 120px;
     }

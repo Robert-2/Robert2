@@ -171,6 +171,7 @@ export default {
             `Only first name and last name are mandatory.
             The "reference" is a customer or member number for your internal management, which will appear on the output sheets, estimates and bills. It must be unique.`
         ),
+        'type-to-search-company': "Enter a company name...",
         'saved': "Beneficiary saved.",
     },
 

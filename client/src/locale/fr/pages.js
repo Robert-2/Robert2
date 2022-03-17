@@ -171,6 +171,7 @@ export default {
             `Seuls le nom et le prénom de la personne sont obligatoires.
             La «\u00a0référence\u00a0» est un numéro client ou adhérent pour votre gestion interne, qui apparaîtra sur les fiches de sorties, les devis et les factures. Il doit être unique.`
         ),
+        'type-to-search-company': "Entrez le nom d'une société...",
         'saved': "Bénéficiaire sauvegardé.",
     },
 
