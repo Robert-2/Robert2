@@ -1,22 +1,30 @@
 {% if person['company'] is not empty %}
-    {{ person['company']['legal_name'] }} -
+    <strong>{{ person['company']['legal_name'] }}</strong><br>
 {% endif %}
 
-{{ person['full_name'] }}<br>
-
-{% if person['street'] is not empty %}
-    {{ person['street'] }}<br>
+{% if person['full_name'] != '-- --' %}
+    {{ person['full_name'] }}<br>
 {% endif %}
 
-{% if person['postal_code'] is not empty %}
-    {{ person['postal_code'] }} {{ person['locality'] }}<br>
+{% if person['company']['street'] is not empty and person['company']['postal_code'] is not empty and person['company']['locality'] is not empty%}
+    {{ person['company']['street'] }}<br>
+    {{ person['company']['postal_code'] }} {{ person['company']['locality'] }}<br>
+{% else %}
+    {% if person['street'] is not empty %}
+        {{ person['street'] }}<br>
+    {% endif %}
+    {% if person['postal_code'] is not empty and person['locality'] is not empty %}
+        {{ person['postal_code'] }} {{ person['locality'] }}<br>
+    {% endif %}
 {% endif %}
 
 {% if person['reference'] is not empty %}
     <small>({{ translate('beneficiaryReference', [person['reference']]) }})</small><br>
 {% endif %}
 
-{% if person['phone'] is not empty %}
+{% if person['company']['phone'] is not empty %}
+    <small>{{ translate('phone', [person['company']['phone']]) }}</small><br>
+{% elseif person['phone'] is not empty %}
     <small>{{ translate('phone', [person['phone']]) }}</small><br>
 {% endif %}
 

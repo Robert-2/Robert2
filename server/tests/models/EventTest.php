@@ -356,6 +356,7 @@ final class EventTest extends ModelTestCase
                 'full_name' => 'Client Benef',
                 'reference' => null,
                 'phone' => '+33123456789',
+                'email' => 'client@beneficiaires.com',
                 'street' => '156 bis, avenue des tests poussés',
                 'postal_code' => '88080',
                 'locality' => 'Wazzaville',
