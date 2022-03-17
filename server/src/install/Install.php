@@ -36,6 +36,16 @@ class Install
         'pdo_mysql',
     ];
 
+    const VALUE_TYPES = [
+        'enableCORS' => 'boolean',
+        'displayErrorDetails' => 'boolean',
+        'useRouterCache' => 'boolean',
+        'useHTTPS' => 'boolean',
+        'sessionExpireHours' => 'int',
+        'maxItemsPerPage' => 'int',
+        'vatRate' => 'float',
+    ];
+
     public static function getInstallProgress(): array
     {
         $default = ['step' => 'welcome'];
@@ -63,12 +73,19 @@ class Install
             return self::_saveInstallProcess($installProgress);
         }
 
-        $data = array_map(function ($value) {
-            if ($value === '1' || $value === '0') {
-                return (bool)$value;
+        foreach ($data as $key => $value) {
+            $types = self::VALUE_TYPES;
+            $keyType = array_key_exists($key, $types) ? $types[$key] : null;
+            if ($keyType === 'boolean') {
+                $data[$key] = (bool)$value;
             }
-            return $value;
-        }, $data);
+            if ($keyType === 'int') {
+                $data[$key] = (int)$value;
+            }
+            if ($keyType === 'float') {
+                $data[$key] = (float)$value;
+            }
+        };
 
         $installProgress["config_$step"] = $data;
         $installProgress['step'] = self::getNextInstallStep($step);
