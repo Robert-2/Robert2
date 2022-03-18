@@ -125,7 +125,6 @@ class Config
     public const SETTINGS_FILE = __DIR__ . '/settings.json';
     public const JSON_OPTIONS = JSON_PRETTY_PRINT |
         JSON_UNESCAPED_UNICODE |
-        JSON_NUMERIC_CHECK |
         JSON_UNESCAPED_SLASHES;
 
     public const CUSTOM_SETTINGS = [
