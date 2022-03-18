@@ -41,8 +41,8 @@ class Install
         'displayErrorDetails' => 'boolean',
         'useRouterCache' => 'boolean',
         'useHTTPS' => 'boolean',
-        'sessionExpireHours' => 'int',
-        'maxItemsPerPage' => 'int',
+        'sessionExpireHours' => 'integer',
+        'maxItemsPerPage' => 'integer',
         'vatRate' => 'float',
     ];
 
@@ -74,12 +74,11 @@ class Install
         }
 
         foreach ($data as $key => $value) {
-            $types = self::VALUE_TYPES;
-            $keyType = array_key_exists($key, $types) ? $types[$key] : null;
+            $keyType = self::VALUE_TYPES[$key] ??  null;
             if ($keyType === 'boolean') {
                 $data[$key] = (bool)$value;
             }
-            if ($keyType === 'int') {
+            if ($keyType === 'integer') {
                 $data[$key] = (int)$value;
             }
             if ($keyType === 'float') {
