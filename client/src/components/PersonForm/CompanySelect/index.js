@@ -5,6 +5,7 @@ import { DEBOUNCE_WAIT } from '@/globals/constants';
 import formatOptions from '@/utils/formatOptions';
 import Button from '@/components/Button';
 import ErrorMessage from '@/components/ErrorMessage';
+import Icon from '@/components/Icon';
 
 // @vue/component
 export default {
@@ -25,10 +26,14 @@ export default {
             searchError: null,
         };
     },
+    created() {
+        this.debouncedSearch = debounce(this.search.bind(this), DEBOUNCE_WAIT);
+    },
+    beforeUnmount() {
+        this.debouncedSearch.clear();
+    },
     methods: {
-        // - Ici on n'utilise pas une fonction fléchée, afin de pouvoir accéder à 'this'
-        // eslint-disable-next-line func-names
-        search: debounce(async function (loading, search) {
+        async search(loading, search) {
             try {
                 this.searchError = null;
                 const params = { search, limit: 10 };
@@ -39,14 +44,14 @@ export default {
             } finally {
                 loading(false);
             }
-        }, DEBOUNCE_WAIT),
+        },
 
         handleSearch(searchTerm, loading) {
             if (searchTerm.length < 2) {
                 return;
             }
             loading(true);
-            this.search(loading, searchTerm);
+            this.debouncedSearch(loading, searchTerm);
         },
 
         handleChange(selection) {
@@ -81,23 +86,15 @@ export default {
                         <p>{__('no-result-found-try-another-search')}</p>
                         <p>
                             <router-link to="/companies/new">
-                                <i class="fas fa-plus" /> {__('page-companies.create-new')}
+                                <Icon name="plus" /> {__('page-companies.create-new')}
                             </router-link>
                         </p>
                     </div>
                 </VueSelect>
                 {selectedValue?.value && (
-                    <router-link
-                        to={`/companies/${selectedValue?.value}`}
-                        class="CompanySelect__edit-btn"
-                        custom
-                    >
-                        {({ navigate }) => (
-                            <Button icon="edit" type="default" onClick={navigate}>
-                                {__('action-edit')}
-                            </Button>
-                        )}
-                    </router-link>
+                    <Button icon="edit" type="default" to={`/companies/${selectedValue.value}`}>
+                        {__('action-edit')}
+                    </Button>
                 )}
                 {searchError && <ErrorMessage error={searchError} />}
             </div>

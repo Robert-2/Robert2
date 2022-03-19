@@ -7,13 +7,13 @@ const BUTTON_TYPE = ['default', 'success', 'warning', 'danger', 'primary'];
 
 // @vue/component
 const Button = (props, { slots, emit }) => {
-    const { htmlType, icon, disabled, type, to, isLoading } = toRefs(props);
+    const { htmlType, icon, disabled, type, to, loading } = toRefs(props);
     const _icon = computed(() => {
         if (!icon.value) {
             return null;
         }
 
-        if (isLoading.value) {
+        if (loading.value) {
             return { name: 'spinner', spin: true };
         }
 
@@ -28,7 +28,8 @@ const Button = (props, { slots, emit }) => {
     const _className = computed(() => [
         'Button',
         `Button--${type.value}`, {
-            'Button--disabled': disabled.value || isLoading.value,
+            'Button--disabled': disabled.value || loading.value,
+            'Button--loading': loading.value,
             'Button--with-icon': !!_icon,
         },
     ]);
@@ -60,7 +61,7 @@ const Button = (props, { slots, emit }) => {
                 // eslint-disable-next-line react/button-has-type
                 type={htmlType.value}
                 class={_className.value}
-                disabled={disabled.value || isLoading.value}
+                disabled={disabled.value || loading.value}
                 onClick={emit.bind(null, 'click')}
             >
                 {content}
@@ -87,7 +88,7 @@ Button.props = {
         default: undefined,
     },
     icon: { type: String, default: undefined },
-    isLoading: { type: Boolean, default: false },
+    loading: { type: Boolean, default: false },
     disabled: { type: Boolean, default: false },
 };
 

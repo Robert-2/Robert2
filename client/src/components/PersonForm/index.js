@@ -82,9 +82,7 @@ const PersonForm = (props, { root, emit }) => {
             </section>
             {withCompany.value && (
                 <section class="Form__fieldset">
-                    <h4 class="Form__fieldset__title">
-                        {__('company')}
-                    </h4>
+                    <h4 class="Form__fieldset__title">{__('company')}</h4>
                     <CompanySelect
                         defaultCompany={person.value.company || null}
                         onChange={handleChangeCompany}
@@ -152,7 +150,7 @@ const PersonForm = (props, { root, emit }) => {
                 />
             </section>
             <section class="Form__actions">
-                <Button htmlType="submit" type="success" icon="save" isLoading={isSaving.value}>
+                <Button htmlType="submit" type="success" icon="save" loading={isSaving.value}>
                     {isSaving.value ? __('saving') : __('save')}
                 </Button>
                 <Button icon="ban" onClick={handleCancel}>

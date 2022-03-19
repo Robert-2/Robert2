@@ -45,6 +45,15 @@
     }
 
     //
+    // - Loading
+    //
+
+    &--loading {
+        cursor: wait;
+        opacity: 0.75;
+    }
+
+    //
     // - Icône
     //
 

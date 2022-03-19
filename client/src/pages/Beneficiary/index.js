@@ -48,9 +48,15 @@ export default {
             const { id } = this.person;
             return !id || id === 'new';
         },
-        fullName() {
-            const { full_name: fullName, first_name: firstName, last_name: lastName } = this.person;
-            return fullName || `${firstName} ${lastName}`;
+        pageTitle() {
+            const { $t: __, isNew, person } = this;
+            if (isNew) {
+                return __('page-beneficiary.title-create');
+            }
+
+            const { full_name: fullName, first_name: firstName, last_name: lastName } = person;
+            const name = fullName || `${firstName} ${lastName}`;
+            return __('page-beneficiary.title-edit', { name });
         },
     },
     mounted() {
@@ -131,7 +137,7 @@ export default {
                 route = `${resource}/${id}`;
             }
 
-            const personData = (({ company, ...rest }) => rest)(this.person);
+            const { company, ...personData } = this.person;
             if (!id) {
                 personData.tags = [Config.beneficiaryTagName];
             }
@@ -166,10 +172,9 @@ export default {
     render() {
         const {
             $t: __,
-            isNew,
+            pageTitle,
             isLoading,
             isFetched,
-            fullName,
             person,
             errors,
             error,
@@ -179,14 +184,10 @@ export default {
             handleCancel,
         } = this;
 
-        const title = isNew
-            ? __('page-beneficiary.title-create')
-            : __('page-beneficiary.title-edit', { name: fullName });
-
         return (
             <Page
                 name="beneficiary-edit"
-                title={title}
+                title={pageTitle}
                 help={__('page-beneficiary.help')}
                 error={error}
                 isLoading={isLoading}
