@@ -2,20 +2,12 @@
     <strong>{{ person['company']['legal_name'] }}</strong><br>
 {% endif %}
 
-{% if person['full_name'] != '-- --' %}
-    {{ person['full_name'] }}<br>
-{% endif %}
+{{ person['full_name'] }}<br>
 
-{% if person['company']['street'] is not empty and person['company']['postal_code'] is not empty and person['company']['locality'] is not empty%}
-    {{ person['company']['street'] }}<br>
-    {{ person['company']['postal_code'] }} {{ person['company']['locality'] }}<br>
+{% if person['company']['full_address'] is not empty %}
+    {{ person['company']['full_address'] | nl2br }}<br>
 {% else %}
-    {% if person['street'] is not empty %}
-        {{ person['street'] }}<br>
-    {% endif %}
-    {% if person['postal_code'] is not empty and person['locality'] is not empty %}
-        {{ person['postal_code'] }} {{ person['locality'] }}<br>
-    {% endif %}
+    {{ person['full_address'] | nl2br }}<br>
 {% endif %}
 
 {% if person['reference'] is not empty %}

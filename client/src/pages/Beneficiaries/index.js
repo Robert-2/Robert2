@@ -84,7 +84,7 @@ export default {
                         </Fragment>
                     ),
                     address: (h, beneficiary) => (
-                        this.getBeneficiaryAddress(beneficiary)
+                        beneficiary.company?.full_address || beneficiary.full_address || ''
                     ),
                     note: (h, beneficiary) => {
                         const note = beneficiary.company
@@ -232,23 +232,6 @@ export default {
             } finally {
                 this.isLoading = false;
             }
-        },
-
-        getBeneficiaryAddress(beneficiary) {
-            const formatAddress = ({ street, postal_code: postalCode, locality }) => {
-                const localityFull = [postalCode, locality].filter(Boolean).join(' ');
-
-                return [street, localityFull]
-                    .map((value) => (value ? value.trim() : value))
-                    .filter(Boolean)
-                    .join('\n');
-            };
-
-            if (beneficiary.street || beneficiary.postal_code || beneficiary.locality) {
-                return formatAddress(beneficiary);
-            }
-
-            return formatAddress(beneficiary.company || {});
         },
 
         refreshTable() {

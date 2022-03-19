@@ -62,6 +62,7 @@ final class EventsTest extends ApiTestCase
                             'street' => '156 bis, avenue des tests poussés',
                             'postal_code' => '88080',
                             'locality' => 'Wazzaville',
+                            'full_address' => "156 bis, avenue des tests poussés\n88080 Wazzaville",
                             'pivot' => [
                                 'event_id' => 1,
                                 'person_id' => 3,
@@ -84,6 +85,7 @@ final class EventsTest extends ApiTestCase
                                 'nickname' => null,
                                 'phone' => null,
                                 'country' => null,
+                                'full_address' => null,
                                 'company' => null,
                             ],
                         ],
@@ -102,6 +104,7 @@ final class EventsTest extends ApiTestCase
                                 'nickname' => 'Riri',
                                 'phone' => null,
                                 'country' => null,
+                                'full_address' => null,
                                 'company' => null,
                             ],
                         ],
@@ -141,6 +144,7 @@ final class EventsTest extends ApiTestCase
                             'street' => '156 bis, avenue des tests poussés',
                             'postal_code' => '88080',
                             'locality' => 'Wazzaville',
+                            'full_address' => "156 bis, avenue des tests poussés\n88080 Wazzaville",
                             'pivot' => [
                                 'event_id' => 2,
                                 'person_id' => 3,
@@ -207,6 +211,7 @@ final class EventsTest extends ApiTestCase
                     'postal_code' => '1234',
                     'locality' => 'Megacity',
                     'country_id' => 1,
+                    'full_address' => "1, somewhere av.\n1234 Megacity",
                     'company_id' => 1,
                     'note' => null,
                     'created_at' => null,
@@ -219,6 +224,7 @@ final class EventsTest extends ApiTestCase
                         'postal_code' => '1234',
                         'locality' => 'Megacity',
                         'country_id' => 1,
+                        'full_address' => "1, company st.\n1234 Megacity",
                         'phone' => '+4123456789',
                         'note' => 'Just for tests',
                         'created_at' => null,
@@ -253,6 +259,7 @@ final class EventsTest extends ApiTestCase
                         'full_name' => 'Jean Fountain',
                         'phone' => null,
                         'company' => null,
+                        'full_address' => null,
                         'country' => null,
                     ],
                 ],
@@ -271,6 +278,7 @@ final class EventsTest extends ApiTestCase
                         'full_name' => 'Roger Rabbit',
                         'phone' => null,
                         'company' => null,
+                        'full_address' => null,
                         'country' => null,
                     ],
                 ],
@@ -287,6 +295,7 @@ final class EventsTest extends ApiTestCase
                     'street' => '156 bis, avenue des tests poussés',
                     'postal_code' => '88080',
                     'locality' => 'Wazzaville',
+                    'full_address' => "156 bis, avenue des tests poussés\n88080 Wazzaville",
                     'company_id' => null,
                     'company' => null,
                     'country' => null,
@@ -554,6 +563,7 @@ final class EventsTest extends ApiTestCase
                     'postal_code' => '1234',
                     'locality' => 'Megacity',
                     'country_id' => 1,
+                    'full_address' => "1, somewhere av.\n1234 Megacity",
                     'company_id' => 1,
                     'note' => null,
                     'created_at' => null,
@@ -567,6 +577,7 @@ final class EventsTest extends ApiTestCase
                         'postal_code' => '1234',
                         'locality' => 'Megacity',
                         'country_id' => 1,
+                        'full_address' => "1, company st.\n1234 Megacity",
                         'phone' => '+4123456789',
                         'note' => 'Just for tests',
                         'created_at' => null,
@@ -611,6 +622,7 @@ final class EventsTest extends ApiTestCase
                         'full_name' => 'Jean Fountain',
                         'phone' => null,
                         'company' => null,
+                        'full_address' => null,
                         'country' => null,
                     ],
                 ],
@@ -629,6 +641,7 @@ final class EventsTest extends ApiTestCase
                         'full_name' => 'Roger Rabbit',
                         'phone' => null,
                         'company' => null,
+                        'full_address' => null,
                         'country' => null,
                     ],
                 ],
@@ -645,6 +658,7 @@ final class EventsTest extends ApiTestCase
                     'street' => '156 bis, avenue des tests poussés',
                     'postal_code' => '88080',
                     'locality' => 'Wazzaville',
+                    'full_address' => "156 bis, avenue des tests poussés\n88080 Wazzaville",
                     'company_id' => null,
                     'company' => null,
                     'country' => null,
@@ -1329,6 +1343,7 @@ final class EventsTest extends ApiTestCase
                             'street' => '156 bis, avenue des tests poussés',
                             'postal_code' => '88080',
                             'locality' => 'Wazzaville',
+                            'full_address' => "156 bis, avenue des tests poussés\n88080 Wazzaville",
                             'pivot' => [
                                 'event_id' => '1',
                                 'person_id' => '3'
@@ -1351,6 +1366,7 @@ final class EventsTest extends ApiTestCase
                                 'phone' => null,
                                 'full_name' => 'Jean Fountain',
                                 'country' => null,
+                                'full_address' => null,
                                 'company' => null
                             ]
                         ],
@@ -1369,6 +1385,7 @@ final class EventsTest extends ApiTestCase
                                 'phone' => null,
                                 'full_name' => 'Roger Rabbit',
                                 'country' => null,
+                                'full_address' => null,
                                 'company' => null
                             ]
                         ]
@@ -1558,6 +1575,7 @@ final class EventsTest extends ApiTestCase
                             'street' => '156 bis, avenue des tests poussés',
                             'postal_code' => '88080',
                             'locality' => 'Wazzaville',
+                            'full_address' => "156 bis, avenue des tests poussés\n88080 Wazzaville",
                             'pivot' => [
                                 'event_id' => '2',
                                 'person_id' => '3'

@@ -61,6 +61,7 @@ class Person extends BaseModel
 
     protected $appends = [
         'full_name',
+        'full_address',
         'country',
         'company',
     ];
@@ -115,6 +116,17 @@ class Person extends BaseModel
     public function getFullNameAttribute()
     {
         return "{$this->first_name} {$this->last_name}";
+    }
+
+    public function getFullAddressAttribute()
+    {
+        if (empty($this->street) && empty($this->postal_code) && empty($this->locality)) {
+            return null;
+        }
+        if (empty($this->postal_code) && empty($this->locality)) {
+            return $this->street;
+        }
+        return "{$this->street}\n{$this->postal_code} {$this->locality}";
     }
 
     public function getUserAttribute()

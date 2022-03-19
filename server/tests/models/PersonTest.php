@@ -87,6 +87,7 @@ final class PersonTest extends ModelTestCase
                 'street' => '1, somewhere av.',
                 'postal_code' => '1234',
                 'locality' => 'Megacity',
+                'full_address' => "1, somewhere av.\n1234 Megacity",
                 'country_id' => 1,
                 'company_id' => 1,
                 'note' => null,
@@ -100,6 +101,7 @@ final class PersonTest extends ModelTestCase
                     'postal_code' => '1234',
                     'locality' => 'Megacity',
                     'country_id' => 1,
+                    'full_address' => "1, company st.\n1234 Megacity",
                     'phone' => '+4123456789',
                     'note' => 'Just for tests',
                     'created_at' => null,
@@ -124,19 +126,20 @@ final class PersonTest extends ModelTestCase
     {
         $Person = $this->model::find(1);
         $this->assertEquals([
-            'id'          => 1,
-            'legal_name'  => 'Testing, Inc',
-            'street'      => '1, company st.',
+            'id' => 1,
+            'legal_name' => 'Testing, Inc',
+            'street' => '1, company st.',
             'postal_code' => '1234',
-            'locality'    => 'Megacity',
-            'country_id'  => 1,
-            'phone'       => '+4123456789',
-            'note'        => 'Just for tests',
-            'created_at'  => null,
-            'updated_at'  => null,
-            'deleted_at'  => null,
-            'country'     => [
-                'id'   => 1,
+            'locality' => 'Megacity',
+            'country_id' => 1,
+            'full_address' => "1, company st.\n1234 Megacity",
+            'phone' => '+4123456789',
+            'note' => 'Just for tests',
+            'created_at' => null,
+            'updated_at' => null,
+            'deleted_at' => null,
+            'country' => [
+                'id' => 1,
                 'name' => 'France',
                 'code' => 'FR',
             ],
@@ -229,22 +232,23 @@ final class PersonTest extends ModelTestCase
         // - Test d'ajout de personne, avec n° de téléphone et tags
         $result = $this->model->edit(null, [
             'first_name' => 'New',
-            'last_name'  => 'Tester',
-            'nickname'   => 'Jackmayol',
-            'email'      => 'tester3@robertmanager.net',
-            'phone'      => '+331 23 45 67 89',
-            'tags'       => ['newbie', 'people'],
+            'last_name' => 'Tester',
+            'nickname' => 'Jackmayol',
+            'email' => 'tester3@robertmanager.net',
+            'phone' => '+331 23 45 67 89',
+            'tags' => ['newbie', 'people'],
         ]);
         $expected = [
-            'id'         => 4,
+            'id' => 4,
             'first_name' => 'New',
-            'last_name'  => 'Tester',
-            'full_name'  => 'New Tester',
-            'nickname'   => 'Jackmayol',
-            'email'      => 'tester3@robertmanager.net',
-            'phone'      => '+33123456789',
-            'company'    => null,
-            'country'    => null,
+            'last_name' => 'Tester',
+            'full_name' => 'New Tester',
+            'nickname' => 'Jackmayol',
+            'email' => 'tester3@robertmanager.net',
+            'phone' => '+33123456789',
+            'company' => null,
+            'country' => null,
+            'full_address' => null,
         ];
         unset($result->created_at);
         unset($result->updated_at);
@@ -260,10 +264,10 @@ final class PersonTest extends ModelTestCase
         $this->expectExceptionCode(ERROR_VALIDATION);
         $this->model->edit(null, [
             'first_name' => 'Tester',
-            'last_name'  => 'Phoner',
-            'nickname'   => 'Fonfon',
-            'email'      => 'fonfon@robertmanager.net',
-            'phone'      => 'notAphoneNumber',
+            'last_name' => 'Phoner',
+            'nickname' => 'Fonfon',
+            'email' => 'fonfon@robertmanager.net',
+            'phone' => 'notAphoneNumber',
         ]);
     }
 
@@ -288,6 +292,7 @@ final class PersonTest extends ModelTestCase
             'postal_code' => '1234',
             'locality' => 'Megacity',
             'country_id' => 1,
+            'full_address' => "1, somewhere av.\n1234 Megacity",
             'company_id' => 1,
             'note' => null,
             'company' => [
@@ -297,6 +302,7 @@ final class PersonTest extends ModelTestCase
                 'postal_code' => '1234',
                 'locality' => 'Megacity',
                 'country_id' => 1,
+                'full_address' => "1, company st.\n1234 Megacity",
                 'phone' => '+4123456789',
                 'note' => 'Just for tests',
                 'created_at' => null,

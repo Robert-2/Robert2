@@ -22,6 +22,7 @@ final class EventTechniciansTest extends ApiTestCase
                 'phone' => null,
                 'full_name' => 'Jean Fountain',
                 'country' => null,
+                'full_address' => null,
                 'company' => null,
             ],
         ]);
@@ -53,6 +54,7 @@ final class EventTechniciansTest extends ApiTestCase
                 'phone' => null,
                 'full_name' => 'Roger Rabbit',
                 'country' => null,
+                'full_address' => null,
                 'company' => null,
             ],
         ]);
@@ -89,6 +91,7 @@ final class EventTechniciansTest extends ApiTestCase
                 'phone' => null,
                 'full_name' => 'Jean Fountain',
                 'country' => null,
+                'full_address' => null,
                 'company' => null,
             ],
         ]);
