@@ -48,7 +48,7 @@
                     </section>
                     <section class="Form__fieldset">
                         <h4 class="Form__fieldset__title">
-                            {{ $t('personnal-infos') }}
+                            {{ $t('personal-infos') }}
                         </h4>
                         <FormField
                             v-model="user.person.first_name"

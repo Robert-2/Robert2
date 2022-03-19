@@ -17,6 +17,8 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Ouvre le détail du matériel au clic sur son nom ou sa référence dans la liste (#331).
 - Sur la fiche de sortie, supprime la mention inutile "autre matériel" de la liste du matériel triée par sous-catégories, quand la catégorie n'a aucune sous-catégorie (#319).
 - Enlève la possibilité de trier sur la colonne "quantité restante" dans la liste du matériel (#324).
+- Corrige le comportement du sélecteur de la société associée au bénéficiaire, dans le formulaire d'édition, pour qu'il fonctionne avec un grand nombre de sociétés existantes (#340).
+- Corrige le tri des bénéficiaires par nom de la société (#342).
 
 ## 0.17.1 (2022-01-06)
 

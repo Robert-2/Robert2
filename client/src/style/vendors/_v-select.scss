@@ -1,4 +1,4 @@
-/* stylelint-disable selector-class-pattern, selector-max-type, scss/no-global-function-names */
+/* stylelint-disable selector-class-pattern, scss/no-global-function-names */
 
 @import 'vue-select/src/scss/vue-select';
 
@@ -11,7 +11,10 @@
 }
 
 .vs {
+    $block: &;
+
     &__dropdown-toggle {
+        min-height: 35px;
         padding: 0;
         border: none;
     }
@@ -36,15 +39,17 @@
     }
 
     &__selected-options {
+        display: flex;
+        flex-wrap: nowrap;
         padding: 0 2px;
 
-        .vs__selected {
+        #{$block}__selected {
             margin: 0.4rem 0;
             padding: 0.3rem 0.7rem;
             background-color: $bg-color-tooltip;
         }
 
-        .vs__deselect {
+        #{$block}__deselect {
             padding: 0.3rem 0.4rem;
 
             svg {
@@ -52,7 +57,7 @@
             }
         }
 
-        .vs__deselect:hover {
+        #{$block}__deselect:hover {
             background-color: $bg-color-emphasis;
 
             svg {
@@ -89,6 +94,10 @@
     &__clear {
         margin: 0 0.6rem 0 0;
         padding: 0.6rem;
+
+        // - Important, pour surcharger la règle `.button:not(.Button)`
+        // stylelint-disable-next-line declaration-no-important
+        background: none !important;
         fill: $bg-color-button-danger;
         cursor: pointer;
 
@@ -107,10 +116,18 @@
     &--open {
         border-color: $bg-color-button-info;
     }
-}
 
-.vs--single.vs--open {
-    .vs__selected {
-        position: relative;
+    &--single {
+        #{$block}__selected {
+            margin: 0;
+            padding: 0;
+            background: none;
+        }
+
+        &#{$block}--open {
+            #{$block}__selected {
+                display: none;
+            }
+        }
     }
 }

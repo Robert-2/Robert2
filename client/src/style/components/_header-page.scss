@@ -9,6 +9,7 @@
         flex: 1;
         display: none;
         color: $help-text-color;
+        white-space: pre-line;
 
         .ErrorMessage {
             text-align: left;

@@ -1,19 +1,20 @@
 import './index.scss';
-import { computed, toRefs, onMounted } from '@vue/composition-api';
+import { computed, toRefs, ref, onMounted } from '@vue/composition-api';
 import { useQuery } from 'vue-query';
 import useI18n from '@/hooks/vue/useI18n';
 import useRouter from '@/hooks/vue/useRouter';
 import formatOptions from '@/utils/formatOptions';
 import apiCountries from '@/stores/api/countries';
 import FormField from '@/components/FormField';
+import Button from '@/components/Button';
+import CompanySelect from './CompanySelect';
 
 // @vue/component
 const PersonForm = (props, { root, emit }) => {
-    // FIXME: La prop. `person` ne devrait pas être mutée dans ce component...
-    const { person, errors, withReference, withCompany } = toRefs(props);
+    const { initialData, isSaving, errors, withReference, withCompany } = toRefs(props);
+    const person = ref(initialData.value);
     const { data: countries } = useQuery('countries', apiCountries.all);
     const countriesOptions = computed(() => formatOptions(countries.value ?? []));
-    const companiesOptions = computed(() => root.$store.getters['companies/options']);
     const { router } = useRouter();
     const __ = useI18n();
 
@@ -25,11 +26,16 @@ const PersonForm = (props, { root, emit }) => {
         emit('submit', e);
     };
 
-    const handleChange = (e) => {
-        emit('change', e);
+    const handleChange = () => {
+        emit('change', person.value);
     };
 
-    const handleBack = () => {
+    const handleChangeCompany = (companyId) => {
+        person.value.company_id = companyId || null;
+        emit('change', person.value);
+    };
+
+    const handleCancel = () => {
         emit('cancel');
         router.back();
     };
@@ -42,7 +48,7 @@ const PersonForm = (props, { root, emit }) => {
             onChange={handleChange}
         >
             <section class="Form__fieldset">
-                <h4 class="Form__fieldset__title">{__('personnal-infos')}</h4>
+                <h4 class="Form__fieldset__title">{__('personal-infos')}</h4>
                 <FormField
                     name="first_name"
                     label="first-name"
@@ -77,24 +83,10 @@ const PersonForm = (props, { root, emit }) => {
             {withCompany.value && (
                 <section class="Form__fieldset">
                     <h4 class="Form__fieldset__title">{__('company')}</h4>
-                    <div class="PersonForm__company">
-                        <FormField
-                            name="company_id"
-                            label="company"
-                            type="select"
-                            options={companiesOptions.value}
-                            vModel={person.value.company_id}
-                            errors={errors.value.company_id}
-                        />
-                        {!!person.value.company_id && (
-                            <router-link
-                                to={`/companies/${person.value.company_id}`}
-                                class="PersonForm__company__edit-btn button info"
-                            >
-                                <i class="fas fa-edit" /> {__('page-companies.edit-btn')}
-                            </router-link>
-                        )}
-                    </div>
+                    <CompanySelect
+                        defaultCompany={person.value.company || null}
+                        onChange={handleChangeCompany}
+                    />
                     <router-link to="/companies/new" class="PersonForm__add-company">
                         <i class="fas fa-plus" /> {__('page-companies.create-new')}
                     </router-link>
@@ -158,19 +150,20 @@ const PersonForm = (props, { root, emit }) => {
                 />
             </section>
             <section class="Form__actions">
-                <button class="Form__actions__save success" type="submit">
-                    <i class="fas fa-save" /> {__('save')}
-                </button>
-                <button type="button" onClick={handleBack}>
-                    <i class="fas fa-ban" /> {__('cancel')}
-                </button>
+                <Button htmlType="submit" type="success" icon="save" loading={isSaving.value}>
+                    {isSaving.value ? __('saving') : __('save')}
+                </Button>
+                <Button icon="ban" onClick={handleCancel}>
+                    {__('cancel')}
+                </Button>
             </section>
         </form>
     );
 };
 
 PersonForm.props = {
-    person: { type: Object, default: () => ({}) },
+    initialData: { type: Object, default: () => ({}) },
+    isSaving: { type: Boolean, default: false },
     errors: { type: Object, default: () => ({}) },
     withCompany: Boolean,
     withReference: Boolean,

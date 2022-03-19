@@ -23,9 +23,14 @@ const VARIANT_MAP = {
 
 // @vue/component
 const Icon = (props) => {
-    const { name, variant } = toRefs(props);
+    const { name, variant, spin } = toRefs(props);
     const baseClass = computed(() => VARIANT_MAP[variant.value]);
-    return () => <i class={[baseClass.value, `fa-${name.value}`]} aria-hidden="true" />;
+    return () => (
+        <i
+            class={[baseClass.value, `fa-${name.value}`, { 'fa-spin': spin.value }]}
+            aria-hidden="true"
+        />
+    );
 };
 
 Icon.props = {
@@ -37,6 +42,7 @@ Icon.props = {
             ['solid', 'regular', 'brands'].includes(value)
         ),
     },
+    spin: { type: Boolean, default: false },
 };
 
 export default Icon;

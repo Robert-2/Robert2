@@ -68,7 +68,7 @@ export default {
     'actions': "Actions",
     'informations': "Informations",
     'connexion-infos': "Informations de connexion",
-    'personnal-infos': "Informations personnelles",
+    'personal-infos': "Informations personnelles",
     'minimal-infos': "Informations minimales",
     'extra-infos': "Informations supplémentaires",
     'billing-infos': "Informations de facturation",

@@ -167,7 +167,9 @@ class Person extends BaseModel
         }
 
         if ($order === 'companies.legal_name') {
-            $builder = $builder->leftJoin('companies', 'persons.company_id', '=', 'companies.id');
+            $builder = $builder->leftJoin('companies', 'persons.company_id', '=', 'companies.id')
+                // - Hack pour éviter l'écrasement de l'ID de `Person` par celui de `Company` (voir #342)
+                ->select('companies.*', 'persons.*');
         }
 
         return $builder;
