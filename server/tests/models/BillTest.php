@@ -50,6 +50,7 @@ final class BillTest extends ModelTestCase
             'postal_code' => "88080",
             'locality' => "Wazzaville",
             'full_name' => "Client Benef",
+            'full_address' => "156 bis, avenue des tests poussés\n88080 Wazzaville",
             'company' => null,
             'country' => null,
         ];
@@ -77,6 +78,7 @@ final class BillTest extends ModelTestCase
                 'postal_code' => '1234',
                 'locality' => 'Megacity',
                 'country_id' => 1,
+                'full_address' => "1, somewhere av.\n1234 Megacity",
                 'company_id' => 1,
                 'note' => null,
                 'created_at' => null,
@@ -90,6 +92,7 @@ final class BillTest extends ModelTestCase
                     'postal_code' => '1234',
                     'locality' => 'Megacity',
                     'country_id' => 1,
+                    'full_address' => "1, company st.\n1234 Megacity",
                     'phone' => '+4123456789',
                     'note' => 'Just for tests',
                     'created_at' => null,

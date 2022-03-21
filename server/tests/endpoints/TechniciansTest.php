@@ -35,6 +35,7 @@ final class TechniciansTest extends ApiTestCase
                     'postal_code' => null,
                     'locality' => null,
                     'country_id' => null,
+                    'full_address' => null,
                     'company_id' => null,
                     'note' => null,
                     'created_at' => null,

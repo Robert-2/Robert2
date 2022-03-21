@@ -124,6 +124,7 @@ class Event extends BaseModel
                 'first_name',
                 'last_name',
                 'reference',
+                'email',
                 'phone',
                 'company_id',
                 'street',
