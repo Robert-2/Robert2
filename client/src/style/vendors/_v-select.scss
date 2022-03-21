@@ -41,37 +41,36 @@
     &__selected-options {
         display: flex;
         flex-wrap: nowrap;
+        align-items: center;
         padding: 0 2px;
 
         #{$block}__selected {
-            margin: 0.4rem 0;
+            display: inline-flex;
+            align-items: baseline;
+            margin: 0 3px 0 0;
             padding: 0.3rem 0.7rem;
+            border: none;
             background-color: $bg-color-tooltip;
+            color: $color-input;
+            line-height: normal;
         }
 
         #{$block}__deselect {
             padding: 0.3rem 0.4rem;
+            background: none;
 
             svg {
                 fill: $text-light-color;
             }
-        }
 
-        #{$block}__deselect:hover {
-            background-color: $bg-color-emphasis;
+            &:hover {
+                background-color: $bg-color-button-default;
 
-            svg {
-                fill: $text-nav-color;
+                svg {
+                    fill: $text-nav-color;
+                }
             }
         }
-    }
-
-    &__selected {
-        margin: 0 1rem 0 0;
-        padding: 0;
-        border: none;
-        color: $color-input;
-        line-height: normal;
     }
 
     &__search,
@@ -89,28 +88,28 @@
 
     &__actions {
         padding: 0;
-    }
 
-    &__clear {
-        margin: 0 0.6rem 0 0;
-        padding: 0.6rem;
+        #{$block}__clear {
+            margin: 0 0.6rem 0 0;
+            padding: 0.6rem;
 
-        // - Important, pour surcharger la règle `.button:not(.Button)`
-        // stylelint-disable-next-line declaration-no-important
-        background: none !important;
-        fill: $bg-color-button-danger;
-        cursor: pointer;
+            // - Important, pour surcharger la règle `.button:not(.Button)`
+            // stylelint-disable-next-line declaration-no-important
+            background: none !important;
+            fill: $bg-color-button-danger;
+            cursor: pointer;
 
-        &:focus,
-        &:hover {
-            background: none;
-            fill: adjust-color($bg-color-button-danger, $lightness: 10%);
+            &:focus,
+            &:hover {
+                background: none;
+                fill: adjust-color($bg-color-button-danger, $lightness: 10%);
+            }
         }
-    }
 
-    &__open-indicator {
-        fill: $text-muted-color;
-        cursor: default;
+        #{$block}__open-indicator {
+            fill: $text-nav-color;
+            cursor: pointer;
+        }
     }
 
     &--open {
