@@ -20,6 +20,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Enlève la possibilité de trier sur la colonne "quantité restante" dans la liste du matériel (#324).
 - Corrige le comportement du sélecteur de la société associée au bénéficiaire, dans le formulaire d'édition, pour qu'il fonctionne avec un grand nombre de sociétés existantes (#340).
 - Corrige le tri des bénéficiaires par nom de la société (#342).
+- Corrige le problème de rafraîchissement du calcul du matériel disponible après changement des quantités dans l'édition des événements (#348).
 
 ## 0.17.1 (2022-01-06)
 
