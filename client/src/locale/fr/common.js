@@ -291,6 +291,7 @@ export default {
     'created-by': "Créé par",
 
     'event': "Événement",
+    'events': "Événements",
     'user': "Utilisateur",
     'beneficiary': "Bénéficiaire",
     'technicians': "Techniciens",

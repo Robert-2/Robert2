@@ -7,6 +7,7 @@ import queryClient from '@/globals/queryClient';
 import { confirm } from '@/utils/alert';
 import Help from '@/components/Help';
 import Dropdown, { getItemClassnames } from '@/components/Dropdown';
+import initColumnsDisplay from '@/utils/initColumnsDisplay';
 import isValidInteger from '@/utils/isValidInteger';
 import formatAmount from '@/utils/formatAmount';
 import isSameDate from '@/utils/isSameDate';
@@ -42,7 +43,6 @@ export default {
         }
 
         return {
-            help: 'page-materials.help',
             error: null,
             isLoading: false,
             isDisplayTrashed: false,
@@ -52,16 +52,22 @@ export default {
             options: {
                 columnsDropdown: true,
                 preserveState: true,
+                saveState: true,
                 orderBy: { column: 'name', ascending: true },
                 initialPage: this.$route.query.page || 1,
                 sortable: [],
-                columnsDisplay: {
-                    // - This is a hack: init the table with hidden columns by default
-                    park: 'mobile',
-                    description: 'mobile',
-                    replacement_price: 'mobile',
-                    out_of_order_quantity: 'mobile',
-                },
+                columnsDisplay: initColumnsDisplay('materialsTable', {
+                    reference: true,
+                    name: true,
+                    description: false,
+                    park: false,
+                    category: true,
+                    rental_price: true,
+                    replacement_price: false,
+                    stock_quantity: true,
+                    out_of_order_quantity: false,
+                    tags: true,
+                }),
                 headings: {},
                 columnsClasses: {},
                 requestFunction: this.fetch.bind(this),
@@ -110,10 +116,10 @@ export default {
                         </Fragment>
                     ),
                     rental_price: (h, material) => (
-                        formatAmount(material.rental_price)
+                        formatAmount(material.rental_price || 0)
                     ),
                     replacement_price: (h, material) => (
-                        formatAmount(material.replacement_price)
+                        formatAmount(material.replacement_price || 0)
                     ),
                     stock_quantity: (h, material) => (
                         this.getQuantity(material)
@@ -476,7 +482,6 @@ export default {
     render() {
         const {
             $t: __,
-            help,
             error,
             isAdmin,
             isLoading,
@@ -496,7 +501,7 @@ export default {
             <div class="content Materials">
                 <div class="content__header header-page">
                     <div class="header-page__help">
-                        <Help message={help} error={error} isLoading={isLoading} />
+                        <Help message={__('page-materials.help')} error={error} isLoading={isLoading} />
                     </div>
                     <div class="header-page__actions">
                         <router-link to="/materials/new" custom>

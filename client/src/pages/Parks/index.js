@@ -1,5 +1,6 @@
 import './index.scss';
 import { Fragment } from 'vue-fragment';
+import initColumnsDisplay from '@/utils/initColumnsDisplay';
 import { confirm } from '@/utils/alert';
 import Config from '@/globals/config';
 import Help from '@/components/Help';
@@ -30,15 +31,19 @@ export default {
             options: {
                 columnsDropdown: true,
                 preserveState: true,
+                saveState: true,
                 orderBy: { column: 'name', ascending: true },
                 initialPage: this.$route.query.page || 1,
                 sortable: ['name'],
-                columnsDisplay: {
-                    // - This is a hack: init the table with hidden columns by default
-                    note: 'mobile',
-                    totalAmount: 'desktop',
-                    events: 'desktop',
-                },
+                columnsDisplay: initColumnsDisplay('parksTable', {
+                    name: true,
+                    address: true,
+                    opening_hours: true,
+                    totalItems: true,
+                    totalAmount: true,
+                    note: false,
+                    events: true,
+                }),
                 headings: {
                     name: __('name'),
                     address: __('address'),
@@ -46,7 +51,7 @@ export default {
                     totalItems: __('page-parks.total-items'),
                     totalAmount: __('total-amount'),
                     note: __('notes'),
-                    events: '',
+                    events: __('events'),
                     actions: '',
                 },
                 columnsClasses: {
@@ -69,7 +74,7 @@ export default {
                         const hasItems = park.total_items > 0;
                         if (!hasItems) {
                             return (
-                                <span v-else class="Parks__no-items">
+                                <span class="Parks__no-items">
                                     {__('no-items')}
                                 </span>
                             );
@@ -316,7 +321,7 @@ export default {
                 <div class="content__main-view">
                     <v-server-table
                         ref="DataTable"
-                        name="ParksTable"
+                        name="parksTable"
                         columns={columns}
                         options={options}
                     />

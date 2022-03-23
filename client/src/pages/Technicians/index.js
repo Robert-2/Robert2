@@ -1,5 +1,6 @@
 import './index.scss';
 import moment from 'moment';
+import initColumnsDisplay from '@/utils/initColumnsDisplay';
 import { confirm } from '@/utils/alert';
 import Page from '@/components/Page';
 import Datepicker from '@/components/Datepicker';
@@ -29,13 +30,19 @@ export default {
             options: {
                 columnsDropdown: true,
                 preserveState: true,
+                saveState: true,
                 orderBy: { column: 'last_name', ascending: true },
                 initialPage: this.$route.query.page || 1,
                 sortable: ['last_name', 'first_name', 'nickname', 'email'],
-                columnsDisplay: {
-                    // - This is a hack: init the table with hidden columns by default
-                    note: 'mobile',
-                },
+                columnsDisplay: initColumnsDisplay('techniciansTable', {
+                    last_name: true,
+                    first_name: true,
+                    nickname: true,
+                    email: true,
+                    phone: true,
+                    address: true,
+                    note: false,
+                }),
                 headings: {
                     last_name: this.$t('last-name'),
                     first_name: this.$t('first-name'),

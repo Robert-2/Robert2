@@ -18,12 +18,16 @@
 
     &__total-amount {
         width: 105px;
+
+        // - Pour surcharger la définition de VueTables th
         // stylelint-disable-next-line declaration-no-important
         text-align: center !important;
     }
 
     &__events {
-        text-align: center;
+        // - Pour surcharger la définition de VueTables th
+        // stylelint-disable-next-line declaration-no-important
+        text-align: center !important;
     }
 
     &__no-items {

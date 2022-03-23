@@ -1,5 +1,6 @@
 import './index.scss';
 import { Fragment } from 'vue-fragment';
+import initColumnsDisplay from '@/utils/initColumnsDisplay';
 import { confirm } from '@/utils/alert';
 import Config from '@/globals/config';
 import Page from '@/components/Page';
@@ -30,13 +31,20 @@ export default {
             options: {
                 columnsDropdown: true,
                 preserveState: true,
+                saveState: true,
                 orderBy: { column: 'last_name', ascending: true },
                 initialPage: this.$route.query.page || 1,
                 sortable: ['last_name', 'first_name', 'reference', 'company', 'email'],
-                columnsDisplay: {
-                    // - This is a hack: init the table with hidden columns by default
-                    note: 'mobile',
-                },
+                columnsDisplay: initColumnsDisplay('beneficiariesTable', {
+                    last_name: true,
+                    first_name: true,
+                    reference: true,
+                    company: true,
+                    email: true,
+                    phone: true,
+                    address: true,
+                    note: false,
+                }),
                 headings: {
                     last_name: __('last-name'),
                     first_name: __('first-name'),
@@ -274,7 +282,7 @@ export default {
             >
                 <v-server-table
                     ref="DataTable"
-                    name="BeneficiariesTable"
+                    name="beneficiariesTable"
                     columns={columns}
                     options={options}
                 />
