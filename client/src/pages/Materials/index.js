@@ -7,12 +7,12 @@ import queryClient from '@/globals/queryClient';
 import { confirm } from '@/utils/alert';
 import Help from '@/components/Help';
 import Dropdown, { getItemClassnames } from '@/components/Dropdown';
-import isValidInteger from '@/utils/isValidInteger';
 import formatAmount from '@/utils/formatAmount';
 import isSameDate from '@/utils/isSameDate';
 import apiMaterials from '@/stores/api/materials';
 import AssignTags from '@/components/AssignTags';
 import MaterialsFilters from '@/components/MaterialsFilters';
+import { getFiltersParams } from '@/components/MaterialsFilters/utils/initFilters';
 import MaterialTags from '@/components/MaterialTags';
 import Datepicker from '@/components/Datepicker';
 
@@ -330,23 +330,7 @@ export default {
         },
 
         getFilters() {
-            const params = {};
-
-            if (this.$route.query.park && isValidInteger(this.$route.query.park)) {
-                params.park = parseInt(this.$route.query.park, 10);
-            }
-
-            if (this.$route.query.category) {
-                params.category = this.$route.query.category;
-            }
-
-            if (this.$route.query.subCategory) {
-                params.subCategory = this.$route.query.subCategory;
-            }
-
-            if (this.$route.query.tags) {
-                params.tags = JSON.parse(this.$route.query.tags);
-            }
+            const params = getFiltersParams(this.$route.query);
 
             if (this.periodForQuantities) {
                 const [start, end] = this.periodForQuantities || [null, null];

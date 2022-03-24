@@ -1,6 +1,6 @@
 @use '~@/style/globals';
+@use '~@/components/Button/variables' as button;
 @use 'sass:math';
-@use 'sass:color';
 
 .MaterialsFilters {
     display: flex;
@@ -23,14 +23,13 @@
             margin-right: math.div(globals.$content-padding-small-vertical, 2);
             padding: 0 globals.$content-padding-small-horizontal;
         }
+
+        &--is-active {
+            background-color: button.$warning-variant-background;
+        }
     }
 
     &__reset {
         height: 35px;
-    }
-
-    &__item--is-active {
-        // stylelint-disable-next-line declaration-no-important
-        background-color: color.adjust(globals.$bg-color-button-warning, $lightness: -5%) !important;
     }
 }

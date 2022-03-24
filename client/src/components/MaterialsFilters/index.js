@@ -1,6 +1,8 @@
 import './index.scss';
 import { defineComponent } from '@vue/composition-api';
 import VueSelect from 'vue-select';
+import Button from '@/components/Button';
+import { initFilters } from './utils/initFilters';
 
 // @vue/component
 export default defineComponent({
@@ -8,12 +10,7 @@ export default defineComponent({
     components: { VueSelect },
     data() {
         return {
-            filters: {
-                park: this.$route.query.park || '',
-                category: this.$route.query.category || '',
-                subCategory: this.$route.query.subCategory || '',
-                tags: [],
-            },
+            filters: initFilters(this.$route.query),
         };
     },
     computed: {
@@ -56,18 +53,18 @@ export default defineComponent({
     methods: {
         changePark(e) {
             this.filters.park = parseInt(e.currentTarget.value, 10) || '';
-            this.setQueryFilters();
+            this.saveFilters();
         },
 
         changeCategory(e) {
             this.filters.category = parseInt(e.currentTarget.value, 10) || '';
             this.filters.subCategory = '';
-            this.setQueryFilters();
+            this.saveFilters();
         },
 
         changeSubCategory(e) {
             this.filters.subCategory = parseInt(e.currentTarget.value, 10) || '';
-            this.setQueryFilters();
+            this.saveFilters();
         },
 
         clearFilters() {
@@ -77,7 +74,7 @@ export default defineComponent({
                 subCategory: '',
                 tags: [],
             };
-            this.setQueryFilters();
+            this.saveFilters();
         },
 
         setQueryFilters() {
@@ -87,7 +84,7 @@ export default defineComponent({
                 park: park || null,
                 category: category || null,
                 subCategory: subCategory || null,
-                tags: tags.map((tag) => tag.label),
+                tags: tags.map((tag) => tag.label || tag),
             };
 
             const query = {};
@@ -101,11 +98,102 @@ export default defineComponent({
                 query.subCategory = subCategory;
             }
             if (tags.length > 0) {
-                query.tags = JSON.stringify(tags.map((tag) => tag.label));
+                query.tags = JSON.stringify(filters.tags);
             }
 
             this.$router.push({ query });
             this.$emit('change', filters);
         },
+
+        saveFilters() {
+            const { tags, ...otherFilters } = this.filters;
+            localStorage.setItem(`materialsFilters`, JSON.stringify({
+                ...otherFilters,
+                tags: tags.map((tag) => tag.label),
+            }));
+
+            this.setQueryFilters();
+        },
+    },
+    render() {
+        const {
+            $t: __,
+            filters,
+            parks,
+            changePark,
+            categories,
+            changeCategory,
+            subCategories,
+            changeSubCategory,
+            saveFilters,
+            isFilterEmpty,
+            clearFilters,
+        } = this;
+
+        return (
+            <div class="MaterialsFilters">
+                <select
+                    vModel={this.filters.park}
+                    onChange={changePark}
+                    class={{
+                        'MaterialsFilters__item': true,
+                        'MaterialsFilters__item--is-active': filters.park !== '',
+                    }}
+                >
+                    <option value="">{__('all-parks')}</option>
+                    {parks.map(({ id, name }) => (
+                        <option key={id} value={id}>{name}</option>
+                    ))}
+                </select>
+                <select
+                    vModel={this.filters.category}
+                    onChange={changeCategory}
+                    class={{
+                        'MaterialsFilters__item': true,
+                        'MaterialsFilters__item--is-active': filters.category !== '',
+                    }}
+                >
+                    <option value="">{__('all-categories')}</option>
+                    {categories.map(({ id, name }) => (
+                        <option key={id} value={id}>{name}</option>
+                    ))}
+                </select>
+                <select
+                    vModel={this.filters.subCategory}
+                    onChange={changeSubCategory}
+                    disabled={subCategories.length === 0}
+                    class={{
+                        'MaterialsFilters__item': true,
+                        'MaterialsFilters__item--is-active': filters.subCategory !== '',
+                    }}
+                >
+                    <option value="">{__('all-sub-categories')}</option>
+                    {subCategories.map(({ id, name }) => (
+                        <option key={id} value={id}>{name}</option>
+                    ))}
+                </select>
+                <VueSelect
+                    vModel={this.filters.tags}
+                    options={this.$store.getters['tags/options']}
+                    class={{
+                        'MaterialsFilters__item': true,
+                        'MaterialsFilters__item--tags': true,
+                        'MaterialsFilters__item--is-active': filters.tags.length > 0,
+                    }}
+                    placeholder={__('tags')}
+                    onInput={saveFilters}
+                    multiple
+                />
+                {!isFilterEmpty && (
+                    <Button
+                        type="warning"
+                        icon="backspace"
+                        onClick={clearFilters}
+                        vTooltip={__('clear-filters')}
+                        class="MaterialsFilters__reset"
+                    />
+                )}
+            </div>
+        );
     },
 });

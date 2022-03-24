@@ -9,6 +9,7 @@ import formatAmount from '@/utils/formatAmount';
 import apiMaterials from '@/stores/api/materials';
 import ErrorMessage from '@/components/ErrorMessage';
 import MaterialsFilters from '@/components/MaterialsFilters';
+import { initFilters } from '@/components/MaterialsFilters/utils/initFilters';
 import SwitchToggle from '@/components/SwitchToggle';
 import MaterialsStore from './_store';
 import { normalizeFilters } from './_utils';
@@ -55,22 +56,12 @@ const MaterialsListEditor = (props, { root, emit }) => {
     ]);
 
     const getFilters = (extended = true, isInit = false) => {
-        const filters = {};
+        const filters = initFilters(route.value?.query);
 
         if (extended) {
             filters.onlySelected = isInit
                 ? selected.value.length
                 : showSelectedOnly.value;
-        }
-
-        ['park', 'category', 'subCategory'].forEach((key) => {
-            if (route.value?.query && key in route.value.query) {
-                filters[key] = route.value?.query[key];
-            }
-        });
-
-        if (route.value?.query?.tags) {
-            filters.tags = JSON.parse(route.value.query.tags);
         }
 
         return normalizeFilters(filters, extended);
@@ -252,7 +243,7 @@ const MaterialsListEditor = (props, { root, emit }) => {
                 )}
                 <v-client-table
                     ref={dataTableRef}
-                    name="listTemplateMaterialsListTable"
+                    name="materialsListEditorTable"
                     data={materials.value || []}
                     columns={columns.value}
                     options={tableOptions.value}

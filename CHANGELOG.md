@@ -21,6 +21,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Corrige le comportement du sélecteur de la société associée au bénéficiaire, dans le formulaire d'édition, pour qu'il fonctionne avec un grand nombre de sociétés existantes (#340).
 - Corrige le tri des bénéficiaires par nom de la société (#342).
 - Corrige le problème de rafraîchissement du calcul du matériel disponible après changement des quantités dans l'édition des événements (#348).
+- Conserve en mémoire la sélection des filtres dans les listings du matériel, même après un rechargement de la page (#146).
 
 ## 0.17.1 (2022-01-06)
 
