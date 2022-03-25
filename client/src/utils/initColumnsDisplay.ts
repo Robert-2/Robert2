@@ -2,22 +2,22 @@ type ColumnsDisplay = Record<string, boolean>;
 type VueTableColumnVisibility = 'min_mobileP' | 'max_mobileP';
 type VueTableColumnsDisplay = Record<string, VueTableColumnVisibility>;
 
-const getForVueTable = (columns: ColumnsDisplay): VueTableColumnsDisplay => {
-    const vueTableColumnsDisplay: VueTableColumnsDisplay = {};
-    Object.keys(columns).forEach((columnName: string): void => {
-        const isVisible = columns[columnName] === true;
-        vueTableColumnsDisplay[columnName] = isVisible ? 'min_mobileP' : 'max_mobileP';
-    });
-    return vueTableColumnsDisplay;
-};
+const STORAGE_KEY_PREFIX = 'vuetables_';
 
 const initFromStorage = (tableName: string, columns: ColumnsDisplay): ColumnsDisplay => {
-    const storedTableState = localStorage.getItem(`vuetables_${tableName}`);
+    const storedTableState = localStorage.getItem(`${STORAGE_KEY_PREFIX}${tableName}`);
     if (!storedTableState) {
         return columns;
     }
 
-    const tableState = JSON.parse(storedTableState);
+    let tableState;
+    try {
+        tableState = JSON.parse(storedTableState);
+    } catch (error) {
+        localStorage.removeItem(`${STORAGE_KEY_PREFIX}${tableName}`);
+        return columns;
+    }
+
     if (!tableState) {
         return columns;
     }
@@ -27,16 +27,20 @@ const initFromStorage = (tableName: string, columns: ColumnsDisplay): ColumnsDis
         return columns;
     }
 
-    const columnsDisplay: ColumnsDisplay = {};
-    Object.keys(columns).forEach((columnName: string): void => {
-        columnsDisplay[columnName] = userColumnsDisplay.includes(columnName);
-    });
-
-    return columnsDisplay;
+    return Object.fromEntries(
+        Object.entries(columns).map(([column]: [string, boolean]) => (
+            [column, userColumnsDisplay.includes(column)]
+        )),
+    );
 };
 
 const initColumnsDisplay = (tableName: string, columns: ColumnsDisplay): VueTableColumnsDisplay => (
-    getForVueTable(initFromStorage(tableName, columns))
+    Object.fromEntries(
+        Object.entries(initFromStorage(tableName, columns))
+            .map(([name, value]: [string, boolean]) => (
+                [name, `${value === true ? 'min' : 'max'}_mobileP`]
+            )),
+    )
 );
 
 export default initColumnsDisplay;
