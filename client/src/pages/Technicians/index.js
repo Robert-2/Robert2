@@ -10,6 +10,8 @@ import ItemActions from './Actions';
 export default {
     name: 'Technicians',
     data() {
+        const { $t: __, $route, $options } = this;
+
         return {
             help: 'page-technicians.help',
             error: null,
@@ -32,9 +34,9 @@ export default {
                 preserveState: true,
                 saveState: true,
                 orderBy: { column: 'last_name', ascending: true },
-                initialPage: this.$route.query.page || 1,
+                initialPage: $route.query.page || 1,
                 sortable: ['last_name', 'first_name', 'nickname', 'email'],
-                columnsDisplay: initColumnsDisplay('techniciansTable', {
+                columnsDisplay: initColumnsDisplay($options.name, {
                     last_name: true,
                     first_name: true,
                     nickname: true,
@@ -44,13 +46,13 @@ export default {
                     note: false,
                 }),
                 headings: {
-                    last_name: this.$t('last-name'),
-                    first_name: this.$t('first-name'),
-                    nickname: this.$t('nickname'),
-                    email: this.$t('email'),
-                    phone: this.$t('phone'),
-                    address: this.$t('address'),
-                    note: this.$t('notes'),
+                    last_name: __('last-name'),
+                    first_name: __('first-name'),
+                    nickname: __('nickname'),
+                    email: __('email'),
+                    phone: __('phone'),
+                    address: __('address'),
+                    note: __('notes'),
                     actions: '',
                 },
                 columnsClasses: {
@@ -171,6 +173,7 @@ export default {
     render() {
         const {
             $t: __,
+            $options,
             help,
             error,
             isLoading,
@@ -218,7 +221,7 @@ export default {
                 </div>
                 <v-server-table
                     ref="DataTable"
-                    name="techniciansTable"
+                    name={$options.name}
                     columns={columns}
                     options={options}
                     scopedSlots={{

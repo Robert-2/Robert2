@@ -9,7 +9,7 @@ import Help from '@/components/Help';
 export default {
     name: 'Users',
     data() {
-        const { $t: __ } = this;
+        const { $t: __, $route, $options } = this;
 
         return {
             help: 'page-users.help',
@@ -31,9 +31,9 @@ export default {
                 preserveState: true,
                 saveState: true,
                 orderBy: { column: 'pseudo', ascending: true },
-                initialPage: this.$route.query.page || 1,
+                initialPage: $route.query.page || 1,
                 sortable: ['pseudo', 'group_id', 'email'],
-                columnsDisplay: initColumnsDisplay('usersTable', {
+                columnsDisplay: initColumnsDisplay($options.name, {
                     pseudo: true,
                     full_name: true,
                     group_id: true,
@@ -274,6 +274,7 @@ export default {
     render() {
         const {
             $t: __,
+            $options,
             help,
             error,
             isLoading,
@@ -307,7 +308,7 @@ export default {
                 <div class="content__main-view">
                     <v-server-table
                         ref="DataTable"
-                        name="usersTable"
+                        name={$options.name}
                         columns={columns}
                         options={options}
                     />

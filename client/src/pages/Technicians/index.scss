@@ -32,7 +32,8 @@
     }
 
     &__note {
-        white-space: pre-wrap;
+        max-width: 200px;
+        white-space: pre-line;
     }
 
     &__actions {

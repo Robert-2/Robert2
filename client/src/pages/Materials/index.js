@@ -21,7 +21,7 @@ import Datepicker from '@/components/Datepicker';
 export default {
     name: 'Materials',
     data() {
-        const { $t: __ } = this;
+        const { $t: __, $route, $options } = this;
         const { billingMode } = Config;
 
         // - Columns
@@ -54,9 +54,9 @@ export default {
                 preserveState: true,
                 saveState: true,
                 orderBy: { column: 'name', ascending: true },
-                initialPage: this.$route.query.page || 1,
+                initialPage: $route.query.page || 1,
                 sortable: [],
-                columnsDisplay: initColumnsDisplay('materialsTable', {
+                columnsDisplay: initColumnsDisplay($options.name, {
                     reference: true,
                     name: true,
                     description: false,
@@ -102,7 +102,14 @@ export default {
                             )}
                         </Fragment>
                     ),
-                    park: (h, material) => this.getParkName(material.park_id),
+                    park: (h, material) => (
+                        <router-link
+                            to={`/parks/${material.park_id}`}
+                            class="Materials__link"
+                        >
+                            {this.getParkName(material.park_id)}
+                        </router-link>
+                    ),
                     category: (h, material) => (
                         <Fragment>
                             <i class="fas fa-folder-open" />&nbsp;
@@ -336,22 +343,23 @@ export default {
         },
 
         getFilters() {
+            const { query } = this.$route;
             const params = {};
 
-            if (this.$route.query.park && isValidInteger(this.$route.query.park)) {
-                params.park = parseInt(this.$route.query.park, 10);
+            if (query.park && isValidInteger(query.park)) {
+                params.park = parseInt(query.park, 10);
             }
 
-            if (this.$route.query.category) {
-                params.category = this.$route.query.category;
+            if (query.category) {
+                params.category = query.category;
             }
 
-            if (this.$route.query.subCategory) {
-                params.subCategory = this.$route.query.subCategory;
+            if (query.subCategory) {
+                params.subCategory = query.subCategory;
             }
 
-            if (this.$route.query.tags) {
-                params.tags = JSON.parse(this.$route.query.tags);
+            if (query.tags) {
+                params.tags = JSON.parse(query.tags);
             }
 
             if (this.periodForQuantities) {
@@ -482,6 +490,7 @@ export default {
     render() {
         const {
             $t: __,
+            $options,
             error,
             isAdmin,
             isLoading,
@@ -570,7 +579,7 @@ export default {
                     </div>
                     <v-server-table
                         ref="DataTable"
-                        name="materialsTable"
+                        name={$options.name}
                         columns={columns}
                         options={dataTableOptions}
                     />

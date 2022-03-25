@@ -10,7 +10,7 @@ import Button from '@/components/Button';
 export default {
     name: 'Beneficiaries',
     data() {
-        const { $t: __ } = this;
+        const { $t: __, $route, $options } = this;
 
         return {
             error: null,
@@ -33,9 +33,9 @@ export default {
                 preserveState: true,
                 saveState: true,
                 orderBy: { column: 'last_name', ascending: true },
-                initialPage: this.$route.query.page || 1,
+                initialPage: $route.query.page || 1,
                 sortable: ['last_name', 'first_name', 'reference', 'company', 'email'],
-                columnsDisplay: initColumnsDisplay('beneficiariesTable', {
+                columnsDisplay: initColumnsDisplay($options.name, {
                     last_name: true,
                     first_name: true,
                     reference: true,
@@ -94,13 +94,9 @@ export default {
                     address: (h, beneficiary) => (
                         beneficiary.company?.full_address || beneficiary.full_address || ''
                     ),
-                    note: (h, beneficiary) => {
-                        const note = beneficiary.company
-                            ? beneficiary.company.note
-                            : beneficiary.note;
-
-                        return <pre>{note}</pre>;
-                    },
+                    note: (h, beneficiary) => (
+                        beneficiary.company ? beneficiary.company.note : beneficiary.note
+                    ),
                     actions: (h, beneficiary) => {
                         const {
                             isTrashDisplayed,
@@ -256,6 +252,7 @@ export default {
     render() {
         const {
             $t: __,
+            $options,
             error,
             isLoading,
             columns,
@@ -282,7 +279,7 @@ export default {
             >
                 <v-server-table
                     ref="DataTable"
-                    name="beneficiariesTable"
+                    name={$options.name}
                     columns={columns}
                     options={options}
                 />

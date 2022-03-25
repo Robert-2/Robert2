@@ -24,6 +24,11 @@
         text-align: center !important;
     }
 
+    &__note {
+        max-width: 200px;
+        white-space: pre-line;
+    }
+
     &__events {
         // - Pour surcharger la définition de VueTables th
         // stylelint-disable-next-line declaration-no-important
