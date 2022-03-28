@@ -1,5 +1,6 @@
 import './index.scss';
 import { debounce } from 'debounce';
+import queryClient from '@/globals/queryClient';
 import { DEBOUNCE_WAIT } from '@/globals/constants';
 import MaterialsListEditor from '@/components/MaterialsListEditor';
 import { getMaterialsQuantities, materialsHasChanged } from '@/components/MaterialsListEditor/_utils';
@@ -16,6 +17,12 @@ export default {
         return {
             materials: getMaterialsQuantities(this.event.materials),
         };
+    },
+    created() {
+        this.debouncedSave = debounce(this.save.bind(this), DEBOUNCE_WAIT);
+    },
+    beforeUnmount() {
+        this.debouncedSave.clear();
     },
     methods: {
         handleChange(newList) {
@@ -49,31 +56,26 @@ export default {
             }
         },
 
-        // - We're not using arrow function here because we need access to 'this'
-        // eslint-disable-next-line func-names
-        debouncedSave: debounce(function () {
-            this.save({ gotoStep: 4 });
-        }, DEBOUNCE_WAIT),
-
-        save(options) {
+        async save({ gotoStep } = { gotoStep: 4 }) {
             this.$emit('loading');
             const { id } = this.event;
             const { resource } = this.$route.meta;
 
             const materials = this.materials.filter(({ quantity }) => quantity > 0);
 
-            this.$http.put(`${resource}/${id}`, { materials })
-                .then(({ data }) => {
-                    const { gotoStep } = options;
-                    if (!gotoStep) {
-                        this.$router.push('/');
-                        return;
-                    }
-                    EventStore.commit('setIsSaved', true);
-                    this.$emit('updateEvent', data);
-                    this.$emit('gotoStep', gotoStep);
-                })
-                .catch(this.displayError);
+            try {
+                const { data } = await this.$http.put(`${resource}/${id}`, { materials });
+                queryClient.invalidateQueries('materials-while-event');
+                if (!gotoStep) {
+                    this.$router.push('/');
+                    return;
+                }
+                EventStore.commit('setIsSaved', true);
+                this.$emit('updateEvent', data);
+                this.$emit('gotoStep', gotoStep);
+            } catch (error) {
+                this.displayError(error);
+            }
         },
     },
 };

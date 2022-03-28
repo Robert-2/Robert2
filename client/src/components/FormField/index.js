@@ -1,12 +1,15 @@
 import './index.scss';
 import moment from 'moment';
+import { defineComponent } from '@vue/composition-api';
 import Datepicker from '@/components/Datepicker';
 import SwitchToggle from '@/components/SwitchToggle';
-import { defineComponent } from '@vue/composition-api';
+import InputCopy from '@/components/InputCopy';
 
 const ALLOWED_TYPES = [
     'text',
     'email',
+    'copy',
+    'static',
     'password',
     'number',
     'tel',
@@ -84,6 +87,7 @@ export default defineComponent({
     render() {
         const {
             $t: __,
+            $scopedSlots: slots,
             type,
             label,
             name,
@@ -202,11 +206,18 @@ export default defineComponent({
                         />
                     </div>
                 )}
+                {type === 'copy' && (
+                    <InputCopy class="FormField__input" value={value} />
+                )}
+                {type === 'static' && (
+                    <p class="FormField__static-value">{value}</p>
+                )}
                 {errors && (
                     <div class="FormField__error">
                         <span class="FormField__error__text">{errors[0]}</span>
                     </div>
                 )}
+                {(!errors && slots.help) && <div class="FormField__help">{slots.help()}</div>}
             </div>
         );
     },

@@ -1,6 +1,4 @@
 import Login from './Login';
-import UserProfile from './UserProfile';
-import UserSettings from './UserSettings';
 import Calendar from './Calendar';
 import Event from './Event';
 import EventReturn from './EventReturn';
@@ -20,7 +18,8 @@ import TechnicianView from './TechnicianView';
 import Categories from './Categories';
 import Parks from './Parks';
 import Park from './Park';
-import Settings from './Settings';
+import UserSettings from './Settings/User';
+import GlobalSettings from './Settings/Global';
 
 export default [
     {
@@ -28,18 +27,8 @@ export default [
         name: 'login',
         component: Login,
         meta: {
+            layout: 'minimalist',
             requiresAuth: false,
-        },
-    },
-    {
-        path: '/profile',
-        name: 'user-profile',
-        component: UserProfile,
-        meta: {
-            resource: 'users',
-            title: 'page-profile.title',
-            requiresAuth: true,
-            requiresGroups: ['admin', 'member', 'visitor'],
         },
     },
     {
@@ -47,8 +36,6 @@ export default [
         name: 'user-settings',
         component: UserSettings,
         meta: {
-            resource: 'users',
-            title: 'page-user-settings.title',
             requiresAuth: true,
             requiresGroups: ['admin', 'member', 'visitor'],
         },
@@ -102,7 +89,6 @@ export default [
         name: 'users',
         component: Users,
         meta: {
-            resource: 'users',
             title: 'page-users.title',
             requiresAuth: true,
             requiresGroups: ['admin'],
@@ -135,8 +121,6 @@ export default [
         name: 'beneficiaries',
         component: Beneficiaries,
         meta: {
-            resource: 'persons',
-            title: 'page-beneficiaries.title',
             requiresAuth: true,
             requiresGroups: ['admin', 'member'],
         },
@@ -256,7 +240,6 @@ export default [
         name: 'technicians',
         component: Technicians,
         meta: {
-            resource: 'persons',
             title: 'page-technicians.title',
             requiresAuth: true,
             requiresGroups: ['admin', 'member'],
@@ -311,7 +294,6 @@ export default [
         name: 'parks',
         component: Parks,
         meta: {
-            resource: 'parks',
             title: 'page-parks.title',
             requiresAuth: true,
             requiresGroups: ['admin'],
@@ -338,10 +320,8 @@ export default [
     {
         path: '/settings',
         name: 'settings',
-        component: Settings,
+        component: GlobalSettings,
         meta: {
-            resource: 'settings',
-            title: 'page-settings.title',
             requiresAuth: true,
             requiresGroups: ['admin'],
         },

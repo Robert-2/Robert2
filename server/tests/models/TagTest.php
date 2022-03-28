@@ -72,6 +72,7 @@ final class TagTest extends ModelTestCase
                 'updated_at' => null,
                 'deleted_at' => null,
                 'full_name' => 'Roger Rabbit',
+                'full_address' => null,
                 'company' => null,
                 'country' => null,
                 'pivot' => [

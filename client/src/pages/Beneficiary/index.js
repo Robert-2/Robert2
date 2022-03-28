@@ -1,6 +1,6 @@
 import './index.scss';
 import Config from '@/globals/config';
-import Help from '@/components/Help';
+import Page from '@/components/Page';
 import PersonForm from '@/components/PersonForm';
 
 const WIP_STORAGE_KEY = 'WIP-newBeneficiary';
@@ -12,7 +12,8 @@ export default {
         return {
             error: null,
             isLoading: false,
-            isSaved: false,
+            isFetched: false,
+            isSaving: false,
             person: {
                 id: this.$route.params.id || null,
                 first_name: '',
@@ -47,10 +48,15 @@ export default {
             const { id } = this.person;
             return !id || id === 'new';
         },
-        help() {
-            return this.isSaved
-                ? { type: 'success', text: 'page-beneficiaries.saved' }
-                : 'page-beneficiaries.help-edit';
+        pageTitle() {
+            const { $t: __, isNew, person } = this;
+            if (isNew) {
+                return __('page-beneficiary.title-create');
+            }
+
+            const { full_name: fullName, first_name: firstName, last_name: lastName } = person;
+            const name = fullName || `${firstName} ${lastName}`;
+            return __('page-beneficiary.title-edit', { name });
         },
     },
     mounted() {
@@ -63,7 +69,8 @@ export default {
         // -
         // ------------------------------------------------------
 
-        handleChange() {
+        handleChange(newPersonData) {
+            this.person = newPersonData;
             if (!this.isNew) {
                 return;
             }
@@ -90,6 +97,7 @@ export default {
         async fetchData() {
             if (this.isNew) {
                 const stashedData = localStorage.getItem(WIP_STORAGE_KEY);
+                this.isFetched = true;
                 if (!stashedData) {
                     return;
                 }
@@ -106,8 +114,8 @@ export default {
 
             try {
                 const { data } = await this.$http.get(`${resource}/${id}`);
-
-                this.setPerson(data);
+                this.person = data;
+                this.isFetched = true;
             } catch (error) {
                 this.displayError(error);
             } finally {
@@ -117,8 +125,7 @@ export default {
 
         async save() {
             this.error = null;
-            this.isSaved = false;
-            this.isLoading = true;
+            this.isSaving = true;
 
             const { id } = this.person;
             const { resource } = this.$route.meta;
@@ -130,16 +137,14 @@ export default {
                 route = `${resource}/${id}`;
             }
 
-            const personData = { ...this.person };
+            const { company, ...personData } = this.person;
             if (!id) {
                 personData.tags = [Config.beneficiaryTagName];
             }
 
             try {
                 const { data } = await request(route, personData);
-
-                this.isSaved = true;
-                this.setPerson(data);
+                this.person = data;
                 this.flushStashedData();
 
                 const redirect = () => { this.$router.push('/beneficiaries'); };
@@ -147,24 +152,17 @@ export default {
             } catch (error) {
                 this.displayError(error);
             } finally {
-                this.isLoading = false;
+                this.isSaving = false;
             }
         },
 
         displayError(error) {
             this.error = error;
-            this.isSaved = false;
 
             const { code, details } = error.response?.data?.error || { code: 0, details: {} };
             if (code === 400) {
                 this.errors = { ...details };
             }
-        },
-
-        setPerson(data) {
-            this.person = data;
-            const fullName = data.full_name || `${data.first_name} ${data.last_name}`;
-            this.$store.commit('setPageSubTitle', fullName);
         },
 
         flushStashedData() {
@@ -173,33 +171,40 @@ export default {
     },
     render() {
         const {
+            $t: __,
+            pageTitle,
+            isLoading,
+            isFetched,
             person,
             errors,
-            help,
             error,
-            isLoading,
+            isSaving,
             handleSave,
             handleChange,
             handleCancel,
         } = this;
 
         return (
-            <div class="content">
-                <div class="content__main-view">
-                    <div class="Beneficiary">
-                        <PersonForm
-                            person={person}
-                            errors={errors}
-                            onSubmit={handleSave}
-                            onChange={handleChange}
-                            onCancel={handleCancel}
-                            withCompany
-                            withReference
-                        />
-                        <Help message={help} error={error} isLoading={isLoading} />
-                    </div>
-                </div>
-            </div>
+            <Page
+                name="beneficiary-edit"
+                title={pageTitle}
+                help={__('page-beneficiary.help')}
+                error={error}
+                isLoading={isLoading}
+            >
+                {isFetched && (
+                    <PersonForm
+                        initialData={person}
+                        isSaving={isSaving}
+                        errors={errors}
+                        onSubmit={handleSave}
+                        onChange={handleChange}
+                        onCancel={handleCancel}
+                        withCompany
+                        withReference
+                    />
+                )}
+            </Page>
         );
     },
 };

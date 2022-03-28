@@ -1,0 +1,144 @@
+@use './variables' as *;
+@use '~@/style/globals';
+@use 'sass:color';
+
+.Button {
+    display: inline-block;
+    padding: 0.55rem 0.78rem;
+    border: none;
+    border-radius: 2px;
+    background-color: $default-background;
+    color: $default-color;
+    font-size: 1rem;
+    line-height: 1.25;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 300ms;
+
+    & + & {
+        margin-left: 5px;
+    }
+
+    &:visited {
+        color: $default-color;
+    }
+
+    &:hover,
+    &:focus {
+        outline: 0;
+        background-color: $default-focused-color;
+        color: $default-focused-background;
+    }
+
+    &:active {
+        background-color: $default-active-color;
+        color: $default-active-background;
+    }
+
+    //
+    // - Disabled
+    //
+
+    &--disabled {
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+
+    //
+    // - Loading
+    //
+
+    &--loading {
+        cursor: wait;
+        opacity: 0.75;
+    }
+
+    //
+    // - Icône
+    //
+
+    &::before,
+    &__icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 1.1em;
+        height: 1.1em;
+        font-size: 1.1em;
+        line-height: 1.35em;
+        text-align: center;
+        vertical-align: -0.05rem;
+    }
+
+    &__icon + &__content {
+        margin-left: $icon-margin;
+    }
+
+    //
+    // - Variantes
+    //
+
+    &--primary {
+        background-color: $primary-variant-background;
+        color: $primary-variant-color;
+
+        &:hover,
+        &:focus {
+            background-color: $primary-variant-focused-background;
+            color: $primary-variant-focused-color;
+        }
+
+        &:active {
+            background-color: $primary-variant-active-background;
+            color: $primary-variant-active-color;
+        }
+    }
+
+    &--success {
+        background-color: $success-variant-background;
+        color: $success-variant-color;
+
+        &:hover,
+        &:focus {
+            background-color: $success-variant-focused-background;
+            color: $success-variant-focused-color;
+        }
+
+        &:active {
+            background-color: $success-variant-active-background;
+            color: $success-variant-active-color;
+        }
+    }
+
+    &--warning {
+        background-color: $warning-variant-background;
+        color: $warning-variant-color;
+
+        &:hover,
+        &:focus {
+            background-color: $warning-variant-focused-background;
+            color: $warning-variant-focused-color;
+        }
+
+        &:active {
+            background-color: $warning-variant-active-background;
+            color: $warning-variant-active-color;
+        }
+    }
+
+    &--danger {
+        background-color: $danger-variant-background;
+        color: $danger-variant-color;
+
+        &:hover,
+        &:focus {
+            background-color: $danger-variant-focused-background;
+            color: $danger-variant-focused-color;
+        }
+
+        &:active {
+            background-color: $danger-variant-active-background;
+            color: $danger-variant-active-color;
+        }
+    }
+}

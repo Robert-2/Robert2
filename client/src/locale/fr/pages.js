@@ -7,36 +7,11 @@ export default {
         'connexion': "Connexion",
         'please-wait': "Authentification, merci de patienter...",
         'bye': "À bientôt\u00a0!",
-        'footer': "Robert2 est un logiciel libre. Vous pouvez le copier et le redistribuer librement, sauf pour une utilisation commerciale.",
-        'official-website': "Site web officiel",
-        'community-forum': "Forum de la communauté",
-
         'error': {
             'bad-infos': "Les informations fournies sont incorrectes. Utilisez votre adresse e-mail ou votre pseudo, et votre mot de passe.",
             'expired-session': "Votre session a expiré. Merci de vous reconnecter\u00a0!",
             'not-allowed': "Vous avez essayé d'accéder à une page dont l'accès vous est interdit. Merci de vous connecter avec un compte qui y a accès.",
         },
-    },
-
-    'page-profile': {
-        'title': "Votre profil",
-        'help': "Si vous modifiez votre email, votre pseudo ou votre mot de passe, ne les oubliez pas avant de vous déconnecter\u00a0!",
-        'you-are-group': "Vous êtes\u00a0: {group}.",
-        'edit-password': "Modifier votre mot de passe",
-        'password-confirmation': "Confirmation du mot passe",
-        'password-confirmation-must-match': "Le mot de passe et sa confirmation doivent être identiques.",
-        'password-modified': "Votre mot de passe a bien été modifié.",
-        'saved': "Votre profil a bien été sauvegardé.",
-    },
-
-    'page-user-settings': {
-        'title': "Vos paramètres",
-        'help': "La « durée d'une session » est le temps imparti avant votre déconnexion automatique de l'application.",
-        'auth-token-validity-duration': "Durée max. d'une session",
-        'interface': "Interface",
-        'language': "Langue",
-        'hours': "heures",
-        'saved': "Paramètres sauvegardés.",
     },
 
     'page-calendar': {
@@ -180,18 +155,23 @@ export default {
         'help': "Vous pouvez envoyer un email à un bénéficiaire en cliquant sur son adresse.",
         'action-add': "Nouveau bénéficiaire",
         'add': "Nouveau bénéficiaire",
-        'edit': "Modifier le bénéficiaire «\u00a0{pageSubTitle}\u00a0»",
-        'edit-title': "Modifier le bénéficiaire",
+        'edit': "Modifier le bénéficiaire ",
         'beneficiary-type': "Type de bénéficiaire",
         'person': "Personne physique (individu)",
         'company': "Personne morale (entreprise)",
-        'help-edit': (
-            `Seuls le nom et le prénom de la personne sont obligatoires.
-            La «\u00a0référence\u00a0» est un numéro client ou adhérent pour votre gestion interne, qui apparaîtra sur les fiches de sorties, les devis et les factures. Il doit être unique.`
-        ),
         'confirm-delete': "Mettre ce bénéficiaire à la corbeille\u00a0?",
         'confirm-permanently-delete': "Voulez-vous vraiment supprimer définitivement ce bénéficiaire\u00a0?",
         'confirm-restore': "Voulez-vous vraiment restaurer ce bénéficiaire\u00a0?",
+    },
+
+    'page-beneficiary': {
+        'title-create': "Nouveau bénéficiaire",
+        'title-edit': "Modifier le bénéficiaire «\u00a0{name}\u00a0»",
+        'help': (
+            `Seuls le nom et le prénom de la personne sont obligatoires.
+            La «\u00a0référence\u00a0» est un numéro client ou adhérent pour votre gestion interne, qui apparaîtra sur les fiches de sorties, les devis et les factures. Il doit être unique.`
+        ),
+        'type-to-search-company': "Entrez le nom d'une société...",
         'saved': "Bénéficiaire sauvegardé.",
     },
 
@@ -236,6 +216,7 @@ export default {
         'documents': {
             'no-document': "Aucun document pour le moment.",
             'drag-and-drop-files-here': "Glissez-déposez des fichiers ici ↓ pour les ajouter.",
+            'max-size': "Taille maximum {size}",
             'choose-files': "Ou cliquez ici pour choisir des fichiers à ajouter",
             'send-files': [
                 "Envoyer le fichier",
@@ -389,6 +370,51 @@ export default {
             'custom-text-title': "Titre du texte",
             'custom-text-content': "Contenu du texte",
             'saved': "Les paramètres des fiches de sortie ont bien été sauvegardés.",
+        },
+        'calendar': {
+            'title': "Calendrier",
+            'help': "Ici, vous pouvez personnaliser le calendrier et les événements affichés sur celui-ci.",
+            'saved': "Les paramètres du calendrier ont bien été sauvegardés.",
+            'events-display-section-title': "Données affichées dans les événements du calendrier",
+            'showLocation': "Afficher le lieu de l'événement\u00a0?",
+            'showBorrower': "Afficher le bénéficiaire / emprunteur\u00a0?",
+            'public-calendar-section-title': "Abonnement externe au calendrier",
+            'enable-public-calendar': "Activer l'accès externe au calendrier\u00a0?",
+            'public-calendar-url': "URL du calendrier externe",
+            'save-to-get-calendar-url': "Veuillez sauvegarder vos modifications pour obtenir l'URL.",
+            'public-calendar-help': (
+                `Ceci vous permet de publier le calendrier principal. Toute personne en possession de ce lien pourra donc consulter les événements de votre calendrier, sans être connecté à l'application\u00a0! Veillez donc bien à ne communiquer ce lien qu'à des personnes de confiance.\n
+                Pour utiliser ce lien, rendez-vous dans votre application de calendrier compatible, et cherchez la fonctionnalité "Abonnement à un calendrier". Veuillez noter que le taux de rafraîchissement des données dans ces applications est très variable, elles peuvent donc afficher les modifications des événements avec du retard.`
+            ),
+            'public-calendar-url-reset-help': "Si vous soupçonnez que le lien du calendrier a été communiqué à des tiers non désirés, vous pouvez re-générer le lien en cliquant ici\u00a0:",
+            'public-calendar-url-reset-warning': (
+                "Si vous re-générez le lien, le précédent sera révoqué et vous devrez communiquer ce nouveau lien aux personnes qui ont légitimement accès au calendrier pour qu'elles le mette à jour.\n\n" +
+                "Voulez-vous vraiment continuer\u00a0?"
+            ),
+            'public-calendar-url-reset-error': "Une erreur est survenue lors de la re-génération du lien du calendrier public, veuillez re-essayer.",
+            'public-calendar-url-reset-success': "Le lien du calendrier public a bien été re-généré\u00a0! Le nouveau lien est disponible ci-dessus.",
+        },
+    },
+
+    'page-user-settings': {
+        'title': "Vos paramètres",
+        'profile': {
+            'title': "Profil",
+            'help': "Si vous modifiez votre email, votre pseudo ou votre mot de passe, ne les oubliez pas avant de vous déconnecter\u00a0!",
+            'new-password': "Nouveau mot de passe",
+            'new-password-help': "Ne remplissez cette partie que si vous souhaitez changer de mot de passe.",
+            'password-confirmation': "Confirmation du mot passe",
+            'password-confirmation-must-match': "Le mot de passe et sa confirmation doivent être identiques.",
+            'saved': "Vos informations ont bien été enregistrées.",
+            'saved-with-password': "Vos informations et votre nouveau mot de passe ont bien été enregistrées.",
+        },
+        'interface': {
+            'title': "Interface",
+            'help': "La « durée d'une session » est le temps imparti avant votre déconnexion automatique de l'application.",
+            'auth-token-validity-duration': "Durée max. d'une session",
+            'language': "Langue",
+            'hours': "heures",
+            'saved': "Paramètres sauvegardés.",
         },
     },
 

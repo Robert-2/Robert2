@@ -2463,6 +2463,9 @@ return [
     "referenceAlreadyInUse"
     => "This reference is already in use.",
 
+    "invalid-uuid"
+    => "The unique identifier (UUID) is invalid.",
+
     "invalid-value"
     => "Invalid value.",
 
@@ -2477,6 +2480,31 @@ return [
 
     "technician-already-busy-for-this-period"
     => "This technician is already busy for this period.",
+
+    //
+    // - Upload messages
+    //
+
+    "no-uploaded-files"
+    => "No uploaded files.",
+
+    "upload-failed-error-code"
+    => "File upload failed. Error code: %d",
+
+    "file-exceeds-max-size"
+    => "This file exceeds maximum size allowed.",
+
+    "file-type-not-allowed"
+    => "This file type is not allowed.",
+
+    "saving-uploaded-file-failed"
+    => "Saving the uploaded file failed.",
+
+    "document-cannot-be-saved-in-db"
+    => "Document could not be saved in database. Reason: %s",
+
+    "material-picture-cannot-be-saved-in-db"
+    => "Material picture could not be saved in database. Reason: %s",
 
     //
     // - Install messages

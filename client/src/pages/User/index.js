@@ -88,7 +88,7 @@ export default {
             const { resource } = this.$route.meta;
 
             let request = this.$http.post;
-            let route = 'users/signup';
+            let route = resource;
             if (this.user.id) {
                 request = this.$http.put;
                 route = `${resource}/${id}`;

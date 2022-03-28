@@ -1,5 +1,6 @@
 import './index.scss';
 import moment from 'moment';
+import queryClient from '@/globals/queryClient';
 import { DATE_DB_FORMAT, DATE_QUERY_FORMAT } from '@/globals/constants';
 import Alert from '@/components/Alert';
 import Help from '@/components/Help';
@@ -130,6 +131,7 @@ export default {
                 .then(() => {
                     this.isLoading = false;
                     this.help = { type: 'success', text: 'page-calendar.event-saved' };
+                    queryClient.invalidateQueries('materials-while-event');
                     callback(item);
                     this.getEventsData();
                 })
@@ -154,6 +156,7 @@ export default {
                 this.error = null;
                 this.isLoading = true;
                 this.$http.delete(`${this.$route.meta.resource}/${item.id}`).then(() => {
+                    queryClient.invalidateQueries('materials-while-event');
                     callback(item);
                 });
             });
@@ -216,6 +219,7 @@ export default {
         },
 
         handleUpdateEvent(newEventData) {
+            queryClient.invalidateQueries('materials-while-event');
             const toUpdateIndex = this.events.findIndex(
                 (event) => event.id === newEventData.id,
             );

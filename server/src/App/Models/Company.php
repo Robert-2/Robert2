@@ -36,6 +36,7 @@ class Company extends BaseModel
     // ——————————————————————————————————————————————————————
 
     protected $appends = [
+        'full_address',
         'country'
     ];
 
@@ -64,6 +65,17 @@ class Company extends BaseModel
         'phone'       => 'string',
         'note'        => 'string',
     ];
+
+    public function getFullAddressAttribute()
+    {
+        if (empty($this->street) && empty($this->postal_code) && empty($this->locality)) {
+            return null;
+        }
+        if (empty($this->postal_code) && empty($this->locality)) {
+            return $this->street;
+        }
+        return "{$this->street}\n{$this->postal_code} {$this->locality}";
+    }
 
     public function getPersonsAttribute()
     {

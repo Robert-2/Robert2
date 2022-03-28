@@ -9,12 +9,13 @@ class Acl
         '/install',
         '/login',
 
+        '/calendar/public',
+
         //
         // - Api
         //
 
         '/api/session' => ['POST'],
-        '/api/users/signup',
     ];
 
     const DENY_LIST = [
@@ -31,6 +32,10 @@ class Acl
                 'create',
                 'delete',
                 'restore',
+            ],
+            'Setting' => [
+                'update',
+                'reset',
             ],
         ],
         'visitor' => [
@@ -54,9 +59,21 @@ class Acl
             ],
             'Event' => [
                 'create',
+                'duplicate',
                 'update',
                 'delete',
                 'restore',
+                'updateMaterialReturn',
+                'updateMaterialTerminate',
+            ],
+            'EventTechnician' => [
+                'create',
+                'update',
+                'delete',
+            ],
+            'Estimate' => [
+                'create',
+                'delete',
             ],
             'Bill' => [
                 'getOne',
@@ -65,12 +82,16 @@ class Acl
             ],
             'Attribute' => [
                 'create',
+                'update',
+                'delete',
             ],
             'Material' => [
                 'create',
                 'update',
                 'delete',
                 'restore',
+                'handleUploadDocuments',
+                'handleUploadPicture',
             ],
             'Park' => [
                 'create',
@@ -96,6 +117,13 @@ class Acl
                 'delete',
                 'restore',
             ],
+            'Setting' => [
+                'update',
+                'reset',
+            ],
+            'Document' => [
+                'delete',
+            ]
         ],
     ];
 }

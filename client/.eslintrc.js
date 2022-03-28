@@ -22,4 +22,12 @@ module.exports = {
             },
         },
     },
+
+    // - Overrides
+    overrides: [
+        {
+            files: ['**/*.tsx'],
+            extends: '@pulsanova/react',
+        },
+    ],
 };

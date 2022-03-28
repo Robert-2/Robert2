@@ -1,7 +1,7 @@
 import './index.scss';
 import moment from 'moment';
-import Alert from '@/components/Alert';
-import Help from '@/components/Help';
+import initColumnsDisplay from '@/utils/initColumnsDisplay';
+import { confirm } from '@/utils/alert';
 import Page from '@/components/Page';
 import Datepicker from '@/components/Datepicker';
 import ItemActions from './Actions';
@@ -9,8 +9,9 @@ import ItemActions from './Actions';
 // @vue/component
 export default {
     name: 'Technicians',
-    components: { Help },
     data() {
+        const { $t: __, $route, $options } = this;
+
         return {
             help: 'page-technicians.help',
             error: null,
@@ -31,21 +32,27 @@ export default {
             options: {
                 columnsDropdown: true,
                 preserveState: true,
+                saveState: true,
                 orderBy: { column: 'last_name', ascending: true },
-                initialPage: this.$route.query.page || 1,
+                initialPage: $route.query.page || 1,
                 sortable: ['last_name', 'first_name', 'nickname', 'email'],
-                columnsDisplay: {
-                    // - This is a hack: init the table with hidden columns by default
-                    note: 'mobile',
-                },
+                columnsDisplay: initColumnsDisplay($options.name, {
+                    last_name: true,
+                    first_name: true,
+                    nickname: true,
+                    email: true,
+                    phone: true,
+                    address: true,
+                    note: false,
+                }),
                 headings: {
-                    last_name: this.$t('last-name'),
-                    first_name: this.$t('first-name'),
-                    nickname: this.$t('nickname'),
-                    email: this.$t('email'),
-                    phone: this.$t('phone'),
-                    address: this.$t('address'),
-                    note: this.$t('notes'),
+                    last_name: __('last-name'),
+                    first_name: __('first-name'),
+                    nickname: __('nickname'),
+                    email: __('email'),
+                    phone: __('phone'),
+                    address: __('address'),
+                    note: __('notes'),
                     actions: '',
                 },
                 columnsClasses: {
@@ -55,28 +62,7 @@ export default {
                     note: 'Technicians__note',
                     actions: 'Technicians__actions',
                 },
-                requestFunction: (pagination) => {
-                    this.error = null;
-                    this.isLoading = true;
-
-                    const params = {
-                        ...pagination,
-                        deleted: this.isDisplayTrashed ? '1' : '0',
-                    };
-                    if (this.periodFilter) {
-                        const [start, end] = this.periodFilter;
-                        params.startDate = moment(start).format();
-                        params.endDate = moment(end).endOf('day').format();
-                    }
-
-                    return this.$http
-                        .get('technicians', { params })
-                        .catch(this.showError)
-                        .finally(() => {
-                            this.isTrashDisplayed = this.isDisplayTrashed;
-                            this.isLoading = false;
-                        });
-                },
+                requestFunction: this.fetch.bind(this),
             },
         };
     },
@@ -86,9 +72,46 @@ export default {
         },
     },
     methods: {
-        async handleRemove(id) {
+        async fetch(pagination) {
+            this.error = null;
+            this.isLoading = true;
+
+            try {
+                const params = {
+                    ...pagination,
+                    deleted: this.isDisplayTrashed ? '1' : '0',
+                };
+                if (this.periodFilter) {
+                    const [start, end] = this.periodFilter;
+                    params.startDate = moment(start).format();
+                    params.endDate = moment(end).endOf('day').format();
+                }
+                return await this.$http.get('technicians', { params });
+            } catch (error) {
+                this.error = error;
+            } finally {
+                this.isTrashDisplayed = this.isDisplayTrashed;
+                this.isLoading = false;
+            }
+
+            return undefined;
+        },
+
+        async deleteTechnician(id) {
+            const { $t: __ } = this;
             const isSoft = !this.isTrashDisplayed;
-            const { value: isConfirmed } = await Alert.ConfirmDelete(this.$t, 'technicians', isSoft);
+
+            const { value: isConfirmed } = await confirm({
+                type: isSoft ? 'warning' : 'danger',
+
+                text: isSoft
+                    ? __('page-technicians.confirm-delete')
+                    : __('page-technicians.confirm-permanently-delete'),
+
+                confirmButtonText: isSoft
+                    ? __('yes-delete')
+                    : __('yes-permanently-delete'),
+            });
             if (!isConfirmed) {
                 return;
             }
@@ -97,7 +120,7 @@ export default {
             this.isLoading = true;
 
             try {
-                await this.$http.delete(`${this.$route.meta.resource}/${id}`);
+                await this.$http.delete(`persons/${id}`);
                 this.refreshTable();
             } catch (error) {
                 this.error = error;
@@ -106,8 +129,14 @@ export default {
             }
         },
 
-        async handleRestore(id) {
-            const { value: isConfirmed } = await Alert.ConfirmRestore(this.$t, 'technicians');
+        async restoreTechnician(id) {
+            const { $t: __ } = this;
+
+            const { value: isConfirmed } = await confirm({
+                type: 'restore',
+                text: __('page-technicians.confirm-restore'),
+                confirmButtonText: __('yes-restore'),
+            });
             if (!isConfirmed) {
                 return;
             }
@@ -116,7 +145,7 @@ export default {
             this.isLoading = true;
 
             try {
-                await this.$http.put(`${this.$route.meta.resource}/restore/${id}`);
+                await this.$http.put(`persons/restore/${id}`);
                 this.refreshTable();
             } catch (error) {
                 this.error = error;
@@ -140,22 +169,18 @@ export default {
             this.isDisplayTrashed = !this.isDisplayTrashed;
             this.refreshTable();
         },
-
-        showError(error) {
-            this.isLoading = false;
-            this.error = error;
-        },
     },
     render() {
         const {
             $t: __,
+            $options,
             help,
             error,
             isLoading,
             columns,
             options,
-            handleRestore,
-            handleRemove,
+            restoreTechnician,
+            deleteTechnician,
             periodFilter,
             clearFilters,
             isTrashDisplayed,
@@ -196,7 +221,7 @@ export default {
                 </div>
                 <v-server-table
                     ref="DataTable"
-                    name="techniciansTable"
+                    name={$options.name}
                     columns={columns}
                     options={options}
                     scopedSlots={{
@@ -213,8 +238,8 @@ export default {
                             <ItemActions
                                 isTrashMode={isTrashDisplayed}
                                 id={row.id}
-                                onRemove={handleRemove}
-                                onRestore={handleRestore}
+                                onRemove={deleteTechnician}
+                                onRestore={restoreTechnician}
                             />
                         ),
                     }}

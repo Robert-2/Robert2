@@ -1,4 +1,4 @@
-import requester from '@/globals/requester';
+import apiSettings from '@/stores/api/settings';
 
 const getDefaults = () => ({
     'eventSummary': {
@@ -33,8 +33,7 @@ export default {
             commit('reset');
         },
         async fetch({ commit }) {
-            const { data } = await requester.get('/settings');
-            commit('set', data);
+            commit('set', await apiSettings.all());
         },
     },
 };

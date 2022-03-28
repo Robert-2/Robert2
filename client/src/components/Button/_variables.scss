@@ -1,0 +1,71 @@
+@use '~@/style/globals';
+@use 'sass:color';
+
+/// Marge entre l'icône et le texte des boutons (quand il y en a une, d'icône)
+/// @type Number
+$icon-margin: 0.3571rem !default;
+
+//
+// - Default variant
+//
+
+$default-color: globals.$color-base-button !default;
+$default-background: globals.$bg-color-button-default !default;
+
+$default-focused-color: color.adjust(globals.$bg-color-button-default, $lightness: 8%) !default;
+$default-focused-background: globals.$color-hover-button !default;
+
+$default-active-color: color.adjust(globals.$bg-color-button-default, $lightness: -8%) !default;
+$default-active-background: globals.$color-active-button !default;
+
+//
+// - Primary variant
+//
+
+$primary-variant-color: #fff !default;
+$primary-variant-background: #c35022 !default;
+
+$primary-variant-focused-color: $primary-variant-color !default;
+$primary-variant-focused-background: color.adjust(#e14407, $lightness: 5%) !default;
+
+$primary-variant-active-color: $primary-variant-color !default;
+$primary-variant-active-background: color.adjust(#e14407, $lightness: -5%) !default;
+
+//
+// - Success variant
+//
+
+$success-variant-color: #fff !default;
+$success-variant-background: globals.$bg-color-button-success !default;
+
+$success-variant-focused-color: $success-variant-color !default;
+$success-variant-focused-background: color.adjust(globals.$bg-color-button-success, $lightness: 5%) !default;
+
+$success-variant-active-color: globals.$color-active-button !default;
+$success-variant-active-background: color.adjust(globals.$bg-color-button-success, $lightness: -5%) !default;
+
+//
+// - Warning variant
+//
+
+$warning-variant-color: #fff !default;
+$warning-variant-background: #be692d !default;
+
+$warning-variant-focused-color: $warning-variant-color !default;
+$warning-variant-focused-background: color.adjust(#be692d, $lightness: 8%) !default;
+
+$warning-variant-active-color: globals.$color-active-button !default;
+$warning-variant-active-background: color.adjust(#be692d, $lightness: 8%) !default;
+
+//
+// - Danger variant
+//
+
+$danger-variant-color: #fff !default;
+$danger-variant-background: globals.$bg-color-button-danger !default;
+
+$danger-variant-focused-color: $danger-variant-color !default;
+$danger-variant-focused-background: color.adjust(globals.$bg-color-button-danger, $lightness: 8%) !default;
+
+$danger-variant-active-color: globals.$color-active-button !default;
+$danger-variant-active-background: color.adjust(globals.$bg-color-button-danger, $lightness: -8%) !default;

@@ -12,37 +12,22 @@
         margin-right: math.div(globals.$content-padding-small-vertical, 2);
         margin-bottom: globals.$content-padding-large-horizontal;
         margin-left: 0;
+    }
+
+    &__item {
         padding: 8px 10px;
-    }
 
-    /* stylelint-disable selector-class-pattern, selector-max-compound-selectors */
-    .v-select {
-        flex: 0 0 auto;
-        min-width: 150px;
-        margin-right: math.div(globals.$content-padding-small-vertical, 2);
-        margin-bottom: globals.$content-padding-large-horizontal;
-        padding: 5.5px 10px;
-
-        .vs__selected-options {
-            padding: 0;
-            font-size: 0.9rem;
-
-            .vs__selected {
-                margin: 0 0.2rem 0.2rem 0;
-                padding: 0.1rem 0.5rem;
-
-                .vs__deselect {
-                    margin: 0 0.2rem;
-                    padding: 0.3rem 0.4rem;
-                }
-            }
-        }
-
-        .vs__search {
-            padding: 0.3rem 0;
+        &--tags {
+            height: 35px;
+            min-width: 160px;
+            margin-right: math.div(globals.$content-padding-small-vertical, 2);
+            padding: 0 globals.$content-padding-small-horizontal;
         }
     }
-    /* stylelint-enable selector-class-pattern, selector-max-compound-selectors */
+
+    &__reset {
+        height: 35px;
+    }
 
     &__item--is-active {
         // stylelint-disable-next-line declaration-no-important

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Robert2\Tests;
 
-use Robert2\API\Models;
+use Robert2\API\Models\Category;
 
 final class CategoryTest extends ModelTestCase
 {
@@ -11,7 +11,7 @@ final class CategoryTest extends ModelTestCase
     {
         parent::setUp();
 
-        $this->model = new Models\Category();
+        $this->model = new Category();
     }
 
     public function testTableName(): void
@@ -41,6 +41,14 @@ final class CategoryTest extends ModelTestCase
                 'category_id' => 2,
             ],
         ], $results);
+    }
+
+    public function testHasSubCategories(): void
+    {
+        $this->assertTrue(Category::hasSubCategories(1));
+        $this->assertTrue(Category::hasSubCategories(2));
+        $this->assertFalse(Category::hasSubCategories(3));
+        $this->assertFalse(Category::hasSubCategories(4));
     }
 
     public function testGetMaterials(): void

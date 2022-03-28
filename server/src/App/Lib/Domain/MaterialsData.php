@@ -3,6 +3,10 @@ declare(strict_types=1);
 
 namespace Robert2\Lib\Domain;
 
+use Robert2\API\Models\Category;
+use Robert2\API\Models\Park;
+use Robert2\API\Models\SubCategory;
+
 class MaterialsData
 {
     protected $materials;
@@ -53,7 +57,7 @@ class MaterialsData
             if (!isset($categoriesMaterials[$categoryId])) {
                 $categoriesMaterials[$categoryId] = [
                     'id' => $categoryId ?: null,
-                    'name' => $this->getCategoryName($categoryId),
+                    'name' => Category::find($categoryId)->name,
                     'materials' => [],
                 ];
             }
@@ -64,13 +68,14 @@ class MaterialsData
             $replacementPrice = $material['replacement_price'];
 
             $withPark = count($this->parks) > 1 && !empty($material['park_id']);
+            $park = Park::find($material['park_id']);
 
             $categoriesMaterials[$categoryId]['materials'][$reference] = [
                 'reference' => $reference,
                 'name' => $material['name'],
                 'stockQuantity' => $stockQuantity,
                 'attributes' => $material['attributes'],
-                'park' => $withPark ? $this->getParkName($material['park_id']) : null,
+                'park' => ($withPark && $park) ? $park->name : null,
                 'quantity' => $quantity,
                 'rentalPrice' => $price,
                 'replacementPrice' => $replacementPrice,
@@ -98,12 +103,14 @@ class MaterialsData
 
             $categoryId = $material['category_id'];
             $subCategoryId = $material['sub_category_id'] ?: sprintf('c-%d', $categoryId);
+            $subCategory = SubCategory::find($material['sub_category_id']);
 
             if (!isset($subCategoriesMaterials[$subCategoryId])) {
                 $subCategoriesMaterials[$subCategoryId] = [
                     'id' => $subCategoryId,
-                    'name' => $this->getSubCategoryName($material['sub_category_id']),
-                    'category' => $this->getCategoryName($categoryId),
+                    'name' => $subCategory ? $subCategory->name : null,
+                    'category' => Category::find($categoryId)->name,
+                    'categoryHasSubCategories' => Category::hasSubCategories($categoryId),
                     'materials' => [],
                 ];
             }
@@ -113,13 +120,14 @@ class MaterialsData
             $replacementPrice = $material['replacement_price'];
 
             $withPark = count($this->parks) > 1 && !empty($material['park_id']);
+            $park = Park::find($material['park_id']);
 
             $subCategoriesMaterials[$subCategoryId]['materials'][$reference] = [
                 'reference' => $reference,
                 'name' => $material['name'],
                 'stockQuantity' => $material['stock_quantity'],
                 'attributes' => $material['attributes'],
-                'park' => $withPark ? $this->getParkName($material['park_id']) : null,
+                'park' => ($withPark && $park) ? $park->name : null,
                 'quantity' => $quantity,
                 'rentalPrice' => $price,
                 'replacementPrice' => $replacementPrice,
@@ -157,12 +165,13 @@ class MaterialsData
             $replacementPrice = $material['replacement_price'];
 
             $parkId = $material['park_id'];
+            $park = Park::find($parkId);
             $quantity = array_key_exists('pivot', $material) ? $material['pivot']['quantity'] : 0;
 
             if (!isset($parksMaterials[$parkId])) {
                 $parksMaterials[$parkId] = [
                     'id' => $parkId,
-                    'name' => $parkId ? $this->getParkName($parkId) : null,
+                    'name' => $park ? $park->name : null,
                     'materials' => [],
                 ];
             }
@@ -203,6 +212,7 @@ class MaterialsData
             }
 
             $withPark = count($this->parks) > 1 && !empty($material['park_id']);
+            $park = Park::find($material['park_id']);
 
             $reference = $material['reference'];
             $quantity = array_key_exists('pivot', $material) ? $material['pivot']['quantity'] : 0;
@@ -213,7 +223,7 @@ class MaterialsData
                 'name' => $material['name'],
                 'stockQuantity' => $material['stock_quantity'],
                 'attributes' => $material['attributes'],
-                'park' => $withPark ? $this->getParkName($material['park_id']) : null,
+                'park' => ($withPark && $park) ? $park->name : null,
                 'quantity' => $quantity,
                 'rentalPrice' => $price,
                 'replacementPrice' => $replacementPrice,
@@ -225,58 +235,5 @@ class MaterialsData
         ksort($flatMaterials, SORT_NATURAL | SORT_FLAG_CASE);
 
         return $flatMaterials;
-    }
-
-    // ------------------------------------------------------
-    // -
-    // -    Internal Methods
-    // -
-    // ------------------------------------------------------
-
-    protected function getCategoryName(int $categoryId): ?string
-    {
-        if (empty($this->categories)) {
-            throw new \InvalidArgumentException("Missing categories data.");
-        }
-
-        foreach ($this->categories as $category) {
-            if ($categoryId === $category['id']) {
-                return $category['name'];
-            }
-        }
-
-        return null;
-    }
-
-    protected function getSubCategoryName(?int $subCategoryId): ?string
-    {
-        if (empty($this->categories)) {
-            throw new \InvalidArgumentException("Missing categories data.");
-        }
-
-        foreach ($this->categories as $category) {
-            foreach ($category['sub_categories'] as $subCategory) {
-                if ($subCategoryId === $subCategory['id']) {
-                    return $subCategory['name'];
-                }
-            }
-        }
-
-        return null;
-    }
-
-    protected function getParkName(int $parkId): ?string
-    {
-        if (empty($this->parks)) {
-            throw new \InvalidArgumentException("Missing parks data.");
-        }
-
-        foreach ($this->parks as $park) {
-            if ($parkId === $park['id']) {
-                return $park['name'];
-            }
-        }
-
-        return null;
     }
 }

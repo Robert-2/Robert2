@@ -2,7 +2,6 @@
 
 export default {
     'hello-pseudo': "Bonjour {pseudo}\u00a0!",
-    'your-profile': "Votre profil",
     'your-settings': "Vos paramètres",
     'logout-quit': "Quitter Robert",
 
@@ -20,20 +19,25 @@ export default {
     'yes': "Oui",
     'no': "Non",
 
+    'warning': "Attention\u00a0!",
     'loading': "Chargement en cours...",
     'please-confirm': "Veuillez confirmer...",
     'yes-delete': "Oui, mettre à la corbeille",
     'yes-permanently-delete': "Oui, supprimer définitivement",
+    'yes-regenerate-link': "Oui, re-générer le lien",
     'yes-restore': "Oui, restaurer",
     'cancel': "Annuler",
     'close': "Fermer",
     'copy-to-clipboard': "Copier dans le presse-papier",
     'copied-in-clipboard': "Copié dans le presse-papier\u00a0!",
+    'copy': "Copier",
+    'copied': "Copié\u00a0!",
     'almost-done': "Presque terminé...",
     'done': "Terminé",
     'refresh-page': "Actualiser la page",
     'take-control': "Prendre la main",
     'update-in-progress': "Modification en cours",
+    'regenerate-link': "Re-générer le lien",
 
     'please-choose': "Veuillez choisir...",
     'start-typing-to-search': "Commencez à écrire pour rechercher...",
@@ -64,7 +68,7 @@ export default {
     'actions': "Actions",
     'informations': "Informations",
     'connexion-infos': "Informations de connexion",
-    'personnal-infos': "Informations personnelles",
+    'personal-infos': "Informations personnelles",
     'minimal-infos': "Informations minimales",
     'extra-infos': "Informations supplémentaires",
     'billing-infos': "Informations de facturation",
@@ -287,6 +291,7 @@ export default {
     'created-by': "Créé par",
 
     'event': "Événement",
+    'events': "Événements",
     'user': "Utilisateur",
     'beneficiary': "Bénéficiaire",
     'technicians': "Techniciens",
@@ -303,4 +308,10 @@ export default {
 
     'french': "Français",
     'english': "English",
+
+    'external-links': {
+        'official-website': "Site web officiel",
+        'community-forum': "Forum de la communauté",
+        'github-repository': 'Dépôt Github',
+    },
 };

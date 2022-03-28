@@ -32,12 +32,14 @@
     }
 
     &__note {
-        white-space: pre-wrap;
+        max-width: 200px;
+        white-space: pre-line;
     }
 
     &__actions {
-        min-width: 115px;
+        width: 1%;
         text-align: right;
+        white-space: nowrap;
     }
 
     @media (min-width: globals.$screen-mobile) {

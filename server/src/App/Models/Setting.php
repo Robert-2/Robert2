@@ -6,6 +6,7 @@ namespace Robert2\API\Models;
 use Adbar\Dot as DotArray;
 use Robert2\API\Validation\Validator as V;
 use Robert2\API\Errors\ValidationException;
+use Illuminate\Support\Str;
 
 class Setting extends BaseModel
 {
@@ -40,21 +41,25 @@ class Setting extends BaseModel
                     V::equals('parks'),
                     V::equals('flat')
                 ),
+                'sensitive' => false,
                 'default' => 'sub-categories',
             ],
             'eventSummary.customText.title' => [
                 'type' => 'string',
                 'validation' => V::optional(V::length(null, 191)),
+                'sensitive' => false,
                 'default' => null,
             ],
             'eventSummary.customText.content' => [
                 'type' => 'string',
                 'validation' => null,
+                'sensitive' => false,
                 'default' => null,
             ],
             'eventSummary.showLegalNumbers' => [
                 'type' => 'boolean',
                 'validation' => V::boolVal(),
+                'sensitive' => false,
                 'default' => true,
             ],
 
@@ -64,13 +69,27 @@ class Setting extends BaseModel
 
             'calendar.event.showLocation' => [
                 'type' => 'boolean',
-                'validation' => V::boolType(),
+                'validation' => V::boolVal(),
+                'sensitive' => false,
                 'default' => true,
             ],
             'calendar.event.showBorrower' => [
                 'type' => 'boolean',
-                'validation' => V::boolType(),
+                'validation' => V::boolVal(),
+                'sensitive' => false,
                 'default' => false,
+            ],
+            'calendar.public.enabled' => [
+                'type' => 'boolean',
+                'validation' => V::boolVal(),
+                'sensitive' => false,
+                'default' => false,
+            ],
+            'calendar.public.uuid' => [
+                'type' => 'string',
+                'validation' => V::Uuid(4),
+                'sensitive' => true,
+                'default' => (string) Str::uuid(),
             ],
         ];
     }
@@ -100,7 +119,7 @@ class Setting extends BaseModel
 
     // ——————————————————————————————————————————————————————
     // —
-    // —    Mutators
+    // —    Getters
     // —
     // ——————————————————————————————————————————————————————
 
@@ -133,9 +152,9 @@ class Setting extends BaseModel
         }
     }
 
-    public static function getList(): array
+    public static function getList($withSensitive = true): array
     {
-        return static::allTraversable()->all();
+        return static::allTraversable($withSensitive)->all();
     }
 
     public static function getWithKey(string $path)
@@ -158,15 +177,15 @@ class Setting extends BaseModel
         }
 
         $errors = [];
-        foreach ($data as $key => $value) {
+        foreach ((new DotArray($data))->flatten() as $key => $value) {
             try {
                 $model = static::find($key);
                 if (empty($model)) {
-                    $errors['key'] = ["This setting does not exists."];
+                    $errors[$key] = ["This setting does not exists."];
                     continue;
                 }
 
-                $value = $value && is_string($value) ? trim($value) : $value;
+                $value = is_string($value) ? trim($value) : $value;
                 $model->value = $value === '' ? null : $value;
                 $model->validate()->save();
             } catch (ValidationException $error) {
@@ -181,6 +200,19 @@ class Setting extends BaseModel
         }
 
         return new static;
+    }
+
+    public function reset()
+    {
+        $manifest = static::manifest();
+        if (!array_key_exists($this->key, $manifest)) {
+            throw new \LogicException(
+                sprintf('La configuration de la clé `%s` est manquante dans le manifeste.', $this->key)
+            );
+        }
+
+        $this->value = $manifest[$this->key]['default'];
+        $this->validate()->save();
     }
 
     public function remove($id, array $options = []): ?BaseModel
@@ -199,7 +231,7 @@ class Setting extends BaseModel
     // -
     // ------------------------------------------------------
 
-    protected static function allTraversable(): DotArray
+    protected static function allTraversable($withSensitive = true): DotArray
     {
         $settings = new DotArray;
 
@@ -208,6 +240,11 @@ class Setting extends BaseModel
         }
 
         foreach (static::manifest() as $key => $meta) {
+            if ($meta['sensitive'] && !$withSensitive) {
+                $settings->delete($key);
+                continue;
+            }
+
             if (!$settings->has($key)) {
                 $settings->set($key, $meta['default']);
             }

@@ -1,5 +1,6 @@
 import './index.scss';
-import { ALLOWED_IMAGE_TYPES, MAX_FILE_SIZE } from '@/globals/constants';
+import { ALLOWED_IMAGE_TYPES } from '@/globals/constants';
+import Config from '@/globals/config';
 import formatBytes from '@/utils/formatBytes';
 import Help from '@/components/Help';
 import emptyImageSrc from './assets/empty-image.png';
@@ -9,10 +10,9 @@ export default {
     name: 'ImageWithUpload',
     components: { Help },
     props: {
-        url: String,
-        name: String,
-        isLoading: Boolean,
-        error: null,
+        url: { type: String, default: null },
+        name: { type: String, default: null },
+        isLoading: { type: Boolean, required: true },
     },
     data() {
         return {
@@ -52,9 +52,9 @@ export default {
                 return;
             }
 
-            if (size > MAX_FILE_SIZE) {
+            if (size > Config.maxFileUploadSize) {
                 this.fileError = this.$t('errors.file-size-exceeded', {
-                    max: formatBytes(MAX_FILE_SIZE),
+                    max: formatBytes(Config.maxFileUploadSize),
                 });
                 return;
             }

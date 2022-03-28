@@ -9,6 +9,7 @@
         <h2 class="MaterialViewDocumentsUpload__title">
             {{ $t('page-materials-view.documents.drag-and-drop-files-here') }}
         </h2>
+        <p>{{ $t('page-materials-view.documents.max-size', { size: maxSize }) }}</p>
         <button class="MaterialViewDocumentsUpload__choose-files info" @click="openFilesBrowser">
             {{ $t('page-materials-view.documents.choose-files') }}
         </button>

@@ -43,7 +43,7 @@ return [
     ],
     'post' => [
         '/session[/]' => 'AuthController:loginWithForm',
-        '/users/signup[/]' => 'UserController:create',
+        '/users[/]' => 'UserController:create',
         '/categories[/]' => 'CategoryController:create',
         '/subcategories[/]' => 'SubCategoryController:create',
         '/tags[/]' => 'TagController:create',
@@ -101,5 +101,6 @@ return [
         '/bills/{id:[0-9]+}[/]' => 'BillController:delete',
         '/documents/{id:[0-9]+}[/]' => 'DocumentController:delete',
         '/estimates/{id:[0-9]+}[/]' => 'EstimateController:delete',
+        '/settings/{key:[a-zA-Z0-9-.]+}[/]' => 'SettingController:reset',
     ],
 ];

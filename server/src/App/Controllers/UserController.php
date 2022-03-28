@@ -14,7 +14,7 @@ use Slim\Http\ServerRequest as Request;
 class UserController extends BaseController
 {
     use WithCrud {
-        delete as originalDelete;
+        delete as protected _originalDelete;
     }
 
     public function getOne(Request $request, Response $response): Response
@@ -70,6 +70,6 @@ class UserController extends BaseController
                 ERROR_VALIDATION
             );
         }
-        return $this->originalDelete($request, $response);
+        return $this->_originalDelete($request, $response);
     }
 }

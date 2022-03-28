@@ -35,7 +35,7 @@ export default defineComponent({
     },
     render() {
         const { variant, isOpen, handleToggle, handleClose } = this;
-        const { buttonText, title, items } = this.$slots;
+        const { buttonText, title, items } = this.$scopedSlots;
 
         const classNames = ['Dropdown', {
             'Dropdown--open': isOpen,
@@ -46,15 +46,15 @@ export default defineComponent({
             <div class={classNames} vClickOutside={handleClose}>
                 <div class="Dropdown__button" onClick={handleToggle}>
                     <span class="Dropdown__button__text">
-                        {buttonText || <i class="Dropdown__button__icon fas fa-ellipsis-h" />}
+                        {buttonText?.() || <i class="Dropdown__button__icon fas fa-ellipsis-h" />}
                     </span>
                     {buttonText && (
                         <i class={`Dropdown__button__chevron fas fa-chevron-${isOpen ? 'up' : 'down'}`} />
                     )}
                 </div>
                 <div class="Dropdown__menu">
-                    {title && <h3 class="Dropdown__menu__title">{title}</h3>}
-                    <ul class="Dropdown__menu__items">{items}</ul>
+                    {title && <h3 class="Dropdown__menu__title">{title()}</h3>}
+                    <ul class="Dropdown__menu__items">{items?.()}</ul>
                 </div>
             </div>
         );

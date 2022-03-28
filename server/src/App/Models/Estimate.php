@@ -32,7 +32,7 @@ class Estimate extends BaseModel
             'event_id' => V::notEmpty()->numeric(),
             'beneficiary_id' => V::notEmpty()->numeric(),
             'materials' => V::notEmpty(),
-            'degressive_rate' => V::notEmpty()->floatVal()->between(0.0, 99.99, true),
+            'degressive_rate' => V::notEmpty()->floatVal()->between(0.0, 99999.99, true),
             'discount_rate' => V::optional(V::floatVal()->between(0.0, 99.9999, true)),
             'vat_rate' => V::optional(V::floatVal()->between(0.0, 99.99, true)),
             'due_amount' => V::notEmpty()->floatVal()->between(0.0, 999999.99, true),

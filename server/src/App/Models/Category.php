@@ -93,6 +93,15 @@ class Category extends BaseModel
         return $ids;
     }
 
+    public static function hasSubCategories(int $id): bool
+    {
+        $category = static::find($id);
+        if (!$category) {
+            return false;
+        }
+        return count($category['sub_categories']) > 0;
+    }
+
     // ——————————————————————————————————————————————————————
     // —
     // —    Setters

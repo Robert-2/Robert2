@@ -2,7 +2,6 @@
 
 export default {
     'hello-pseudo': "Hello {pseudo}!",
-    'your-profile': "Your profile",
     'your-settings': "Your settings",
     'logout-quit': "Quit Robert",
 
@@ -20,20 +19,25 @@ export default {
     'yes': "Yes",
     'no': "No",
 
+    'warning': "Warning!",
     'loading': "Loading...",
     'please-confirm': "Please confirm...",
     'yes-delete': "Yes, move in trash bin",
     'yes-permanently-delete': "Yes, permanently delete",
+    'yes-regenerate-link': "Yes, regenerate the link",
     'yes-restore': "Oui, restaurer",
     'cancel': "Cancel",
     'close': "Close",
     'copy-to-clipboard': "Copy to clipboard",
     'copied-in-clipboard': "Copied in clipboard!",
+    'copy': "Copy",
+    'copied': "Copied!",
     'almost-done': "Almost done...",
     'done': "Done",
     'refresh-page': "Refresh the page",
     'take-control': "Take control",
     'update-in-progress': "Update in progress",
+    'regenerate-link': "Regenerate link",
 
     'please-choose': "Please choose...",
     'start-typing-to-search': "Start typing to search...",
@@ -64,7 +68,7 @@ export default {
     'actions': "Actions",
     'informations': "Informations",
     'connexion-infos': "Credentials",
-    'personnal-infos': "Personal informations",
+    'personal-infos': "Personal informations",
     'minimal-infos': "Minimal informations",
     'extra-infos': "Additional informations",
     'billing-infos': "Billing informations",
@@ -287,6 +291,7 @@ export default {
     'created-by': "Created by",
 
     'event': "Event",
+    'events': "Events",
     'user': "User",
     'beneficiary': "Beneficiary",
     'technicians': "Technicians",
@@ -303,4 +308,10 @@ export default {
 
     'french': "Français",
     'english': "English",
+
+    'external-links': {
+        'official-website': "Official website",
+        'community-forum': "Community Forum",
+        'github-repository': 'Github repository',
+    },
 };

@@ -4,6 +4,25 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.18.0 (2022-03-28)
+
+- __[CHANGEMENT CRITIQUE]__ Robert2 requiert maintenant au minimum PHP 7.4 pour fonctionner (#327).
+- Augmente la taille du champ `degressive_rate` des tables `bills` et `estimates` pour qu'il accepte une valeur jusqu'à 99999,99 (quand un événement est très long), au lieu de juste 99,99 (#329).
+- Ajoute la possibilité de configurer les données affichées dans les événements du calendrier 
+  via la page des paramètres de l'application (fin du ticket #302).
+- Il est maintenant possible de s'abonner depuis votre application de calendrier préférée (Google Agenda, Apple Calendrier, etc.) au calendrier Robert2 / Loxya. 
+  Pour plus d'informations, rendez-vous dans les paramètres de votre instance Robert2 / Loxya, onglet "Calendrier" (#326).
+- Corrige un problème de formatage des données de configuration lors de l'installation (#100).
+- Ajoute une limite de taille des fichiers uploadés dans la configuration générale (valeur par défaut 25 Mo) (#332).
+- Ouvre le détail du matériel au clic sur son nom ou sa référence dans la liste (#331).
+- Sur la fiche de sortie, supprime la mention inutile "autre matériel" de la liste du matériel triée par sous-catégories, quand la catégorie n'a aucune sous-catégorie (#319).
+- Sur la fiche de sortie, affiche l'adresse de la société du bénéficiaire (si elle existe), à la place de celle de la personne (#341).
+- Enlève la possibilité de trier sur la colonne "quantité restante" dans la liste du matériel (#324).
+- Corrige le comportement du sélecteur de la société associée au bénéficiaire, dans le formulaire d'édition, pour qu'il fonctionne avec un grand nombre de sociétés existantes (#340).
+- Corrige le tri des bénéficiaires par nom de la société (#342).
+- Corrige le problème de rafraîchissement du calcul du matériel disponible après changement des quantités dans l'édition des événements (#348).
+- Conserve la sélection des colonnes affichées dans les listings, même après un rechargement de la page (#144).
+
 ## 0.17.1 (2022-01-06)
 
 - Corrige l'erreur de l'étape 5 du wizard d'installation (double boot du kernel).

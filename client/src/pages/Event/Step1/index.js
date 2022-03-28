@@ -1,6 +1,6 @@
 import './index.scss';
 import moment from 'moment';
-import pick from 'lodash.pick';
+import pick from 'lodash/pick';
 import Config from '@/globals/config';
 import { DATE_DB_FORMAT } from '@/globals/constants';
 import FormField from '@/components/FormField';

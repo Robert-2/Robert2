@@ -47,7 +47,7 @@
         </select>
         <VueSelect
             v-model="filters.tags"
-            class="MaterialsFilters__item"
+            class="MaterialsFilters__item MaterialsFilters__item--tags"
             :class="{ 'MaterialsFilters__item--is-active': filters.tags.length > 0 }"
             :options="$store.getters['tags/options']"
             :placeholder="$t('tags')"

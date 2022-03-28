@@ -319,6 +319,7 @@ final class EventTest extends ModelTestCase
                     'nickname' => null,
                     'full_name' => 'Jean Fountain',
                     'country' => null,
+                    'full_address' => null,
                     'company' => null,
                 ]
             ],
@@ -337,6 +338,7 @@ final class EventTest extends ModelTestCase
                     'nickname' => 'Riri',
                     'full_name' => 'Roger Rabbit',
                     'country' => null,
+                    'full_address' => null,
                     'company' => null,
                 ]
             ],
@@ -356,12 +358,14 @@ final class EventTest extends ModelTestCase
                 'full_name' => 'Client Benef',
                 'reference' => null,
                 'phone' => '+33123456789',
+                'email' => 'client@beneficiaires.com',
                 'street' => '156 bis, avenue des tests poussés',
                 'postal_code' => '88080',
                 'locality' => 'Wazzaville',
                 'company_id' => null,
                 'company' => null,
                 'country' => null,
+                'full_address' => "156 bis, avenue des tests poussés\n88080 Wazzaville",
                 'pivot' => ['event_id' => 1, 'person_id' => 3],
             ]
         ], $results);
@@ -395,6 +399,7 @@ final class EventTest extends ModelTestCase
                 'updated_at' => null,
                 'deleted_at' => null,
                 'full_name' => 'Jean Fountain',
+                'full_address' => "1, somewhere av.\n1234 Megacity",
                 'company' => [
                     'id' => 1,
                     'legal_name' => 'Testing, Inc',
@@ -412,6 +417,7 @@ final class EventTest extends ModelTestCase
                         'name' => 'France',
                         'code' => 'FR',
                     ],
+                    'full_address' => "1, company st.\n1234 Megacity",
                 ],
                 'country' => [
                     'id' => 1,

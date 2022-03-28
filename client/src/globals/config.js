@@ -29,6 +29,7 @@ const defaultConfig = {
     beneficiaryTagName: 'Bénéficiaire',
     technicianTagName: 'Technicien',
     billingMode: 'partial',
+    maxFileUploadSize: 25 * 1024 * 1024,
 
     // - Cette fonction doit retourner un nombre.
     degressiveRate: (daysCount) => (daysCount - 1) * 0.75 + 1,

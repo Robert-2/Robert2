@@ -61,6 +61,7 @@ class Person extends BaseModel
 
     protected $appends = [
         'full_name',
+        'full_address',
         'country',
         'company',
     ];
@@ -117,6 +118,17 @@ class Person extends BaseModel
         return "{$this->first_name} {$this->last_name}";
     }
 
+    public function getFullAddressAttribute()
+    {
+        if (empty($this->street) && empty($this->postal_code) && empty($this->locality)) {
+            return null;
+        }
+        if (empty($this->postal_code) && empty($this->locality)) {
+            return $this->street;
+        }
+        return "{$this->street}\n{$this->postal_code} {$this->locality}";
+    }
+
     public function getUserAttribute()
     {
         $user = $this->User()->first();
@@ -167,7 +179,9 @@ class Person extends BaseModel
         }
 
         if ($order === 'companies.legal_name') {
-            $builder = $builder->leftJoin('companies', 'persons.company_id', '=', 'companies.id');
+            $builder = $builder->leftJoin('companies', 'persons.company_id', '=', 'companies.id')
+                // - Hack pour éviter l'écrasement de l'ID de `Person` par celui de `Company` (voir #342)
+                ->select('companies.*', 'persons.*');
         }
 
         return $builder;

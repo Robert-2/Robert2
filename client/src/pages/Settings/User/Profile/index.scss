@@ -1,0 +1,33 @@
+@use '~@/style/globals';
+
+.ProfileUserSettings {
+    &__section {
+        margin-top: globals.$content-padding-large-vertical;
+
+        &__title {
+            margin: 0;
+        }
+
+        &__help {
+            margin-top: 0.2rem;
+            font-style: italic;
+        }
+
+        &__body {
+            margin-top: 1.2rem;
+
+            .FormField + .FormField {
+                margin-top: globals.$content-padding-small-vertical;
+            }
+        }
+    }
+
+    &__postal-code .FormField__input {
+        max-width: 120px;
+    }
+
+    &__actions {
+        margin-top: globals.$content-padding-large-vertical;
+        text-align: center;
+    }
+}

@@ -118,298 +118,6 @@ class MaterialController extends BaseController
         return $response->withJson($results);
     }
 
-    public function getAllWhileEvent(Request $request, Response $response): Response
-    {
-        $eventId = (int)$request->getAttribute('eventId');
-
-        $currentEvent = Event::find($eventId);
-        if (!$currentEvent) {
-            throw new HttpNotFoundException($request);
-        }
-
-        $results = (new Material)
-            ->setOrderBy('reference', true)
-            ->getAll()
-            ->get()
-            ->toArray();
-
-        if ($results && count($results) > 0) {
-            $results = Material::recalcQuantitiesForPeriod(
-                $results,
-                $currentEvent->start_date,
-                $currentEvent->end_date,
-                $eventId
-            );
-        }
-
-        return $response->withJson($results);
-    }
-
-    public function getParkAll(Request $request, Response $response): Response
-    {
-        $parkId = (int)$request->getAttribute('parkId');
-        if (!Park::staticExists($parkId)) {
-            throw new HttpNotFoundException($request);
-        }
-
-        $materials = Material::getParkAll($parkId);
-        return $response->withJson($materials);
-    }
-
-    // ------------------------------------------------------
-    // -
-    // -    Setters
-    // -
-    // ------------------------------------------------------
-
-    public function create(Request $request, Response $response): Response
-    {
-        $postData = (array)$request->getParsedBody();
-        $result = $this->_saveMaterial(null, $postData);
-        return $response->withJson($result, SUCCESS_CREATED);
-    }
-
-    public function update(Request $request, Response $response): Response
-    {
-        $id = (int)$request->getAttribute('id');
-        if (!Material::staticExists($id)) {
-            throw new HttpNotFoundException($request);
-        }
-
-        $postData = (array)$request->getParsedBody();
-        $result = $this->_saveMaterial($id, $postData);
-        return $response->withJson($result, SUCCESS_OK);
-    }
-
-    // ------------------------------------------------------
-    // —
-    // —    Internal Methods
-    // —
-    // ------------------------------------------------------
-
-    protected function _saveMaterial(?int $id, $postData): array
-    {
-        if (!is_array($postData) || empty($postData)) {
-            throw new \InvalidArgumentException(
-                "Missing request data to process validation",
-                ERROR_VALIDATION
-            );
-        }
-
-        if (array_key_exists('stock_quantity', $postData)) {
-            $stockQuantity = $postData['stock_quantity'];
-            if ($stockQuantity !== null && (int)$stockQuantity < 0) {
-                $postData['stock_quantity'] = 0;
-            }
-        }
-
-        if (array_key_exists('out_of_order_quantity', $postData)) {
-            $stockQuantity = (int)($postData['stock_quantity'] ?? 0);
-            $outOfOrderQuantity = (int)$postData['out_of_order_quantity'];
-            if ($outOfOrderQuantity > $stockQuantity) {
-                $outOfOrderQuantity = $stockQuantity;
-                $postData['out_of_order_quantity'] = $outOfOrderQuantity;
-            }
-            if ($outOfOrderQuantity <= 0) {
-                $postData['out_of_order_quantity'] = null;
-            }
-        }
-
-        // - Removing `picture` field because it must be edited
-        //   using handleUploadPicture() method (see below)
-        if (array_key_exists('picture', $postData) && !empty($postData['picture'])) {
-            unset($postData['picture']);
-        }
-
-        $result = Material::staticEdit($id, $postData);
-
-        if (isset($postData['attributes'])) {
-            $attributes = [];
-            foreach ($postData['attributes'] as $attribute) {
-                if (empty($attribute['value'])) {
-                    continue;
-                }
-
-                $attributes[$attribute['id']] = [
-                    'value' => (string)$attribute['value']
-                ];
-            }
-            $result->Attributes()->sync($attributes);
-        }
-
-        return Material::find($result->id)->toArray();
-    }
-
-    public function getAllDocuments(Request $request, Response $response): Response
-    {
-        $id = (int)$request->getAttribute('id');
-        $model = Material::find($id);
-        if (!$model) {
-            throw new HttpNotFoundException($request);
-        }
-
-        return $response->withJson($model->documents, SUCCESS_OK);
-    }
-
-    public function handleUploadDocuments(Request $request, Response $response): Response
-    {
-        $id = (int)$request->getAttribute('id');
-        if (!Material::staticExists($id)) {
-            throw new HttpNotFoundException($request);
-        }
-
-        $uploadedFiles = $request->getUploadedFiles();
-        $destDirectory = Document::getFilePath($id);
-
-        $errors = [];
-        $files = [];
-        foreach ($uploadedFiles as $file) {
-            if ($file->getError() !== UPLOAD_ERR_OK) {
-                $errors[$file->getClientFilename()] = 'File upload failed.';
-                continue;
-            }
-
-            $fileType = $file->getClientMediaType();
-            if (!in_array($fileType, Config::getSettings('authorizedFileTypes'))) {
-                $errors[$file->getClientFilename()] = 'This file type is not allowed.';
-                continue;
-            }
-
-            $filename = moveUploadedFile($destDirectory, $file);
-            if (!$filename) {
-                $errors[$file->getClientFilename()] = 'Saving file failed.';
-                continue;
-            }
-
-            $files[] = [
-                'material_id' => $id,
-                'name' => $filename,
-                'type' => $fileType,
-                'size' => $file->getSize(),
-            ];
-        }
-
-        foreach ($files as $document) {
-            try {
-                Document::updateOrCreate(
-                    ['material_id' => $id, 'name' => $document['name']],
-                    $document
-                );
-            } catch (\Exception $e) {
-                $filePath = Document::getFilePath($id, $document['name']);
-                unlink($filePath);
-                $errors[$document['name']] = sprintf(
-                    'Document could not be saved in database: %s',
-                    $e->getMessage()
-                );
-            }
-        }
-
-        if (count($errors) > 0) {
-            throw new \Exception(implode("\n", $errors));
-        }
-
-        $result = [
-            'saved_files' => $files,
-            'errors' => $errors,
-        ];
-        return $response->withJson($result, SUCCESS_OK);
-    }
-
-    public function handleUploadPicture(Request $request, Response $response): Response
-    {
-        $id = (int)$request->getAttribute('id');
-        if (!Material::staticExists($id)) {
-            throw new HttpNotFoundException($request);
-        }
-
-        $file = $request->getUploadedFiles()['picture-0'];
-
-        if (empty($file) || $file->getError() !== UPLOAD_ERR_OK) {
-            throw new \Exception("File upload failed.");
-        }
-
-        $fileType = $file->getClientMediaType();
-        if (!in_array($fileType, Config::getSettings('authorizedImageTypes'))) {
-            throw new \Exception("This file type is not allowed.");
-        }
-
-        $destDirectory = Material::getPicturePath($id);
-        $filename = moveUploadedFile($destDirectory, $file);
-        if (!$filename) {
-            throw new \Exception("Saving file failed.");
-        }
-
-        $materialBefore = Material::find($id)->toArray();
-
-        try {
-            Material::staticEdit($id, ['picture' => $filename]);
-
-            $previousPicture = $materialBefore['picture'];
-            if ($previousPicture !== null && $filename !== $previousPicture) {
-                $filePath = Material::getPicturePath($id, $previousPicture);
-                unlink($filePath);
-            }
-        } catch (\Exception $e) {
-            $filePath = Material::getPicturePath($id, $filename);
-            unlink($filePath);
-            throw new \Exception(sprintf(
-                "Material picture could not be saved in database: %s",
-                $e->getMessage()
-            ));
-        }
-
-        $result = ['saved_files' => 1];
-
-        return $response->withJson($result, SUCCESS_OK);
-    }
-
-    public function getEvents(Request $request, Response $response): Response
-    {
-        $id = (int)$request->getAttribute('id');
-        $material = Material::find($id);
-        if (!$material) {
-            throw new HttpNotFoundException($request);
-        }
-
-        $collection = [];
-        $useMultipleParks = Park::count() > 1;
-        foreach ($material->Events()->get() as $event) {
-            $event = $event->setAppends([
-                'has_missing_materials',
-                'has_not_returned_materials',
-            ]);
-
-            $collection[] = array_replace($event->toArray(), [
-                'parks' => $useMultipleParks
-                    ? Event::getParks($event['id'])
-                    : null
-            ]);
-        }
-
-        return $response->withJson($collection, SUCCESS_OK);
-    }
-
-    public function getPicture(Request $request, Response $response): Response
-    {
-        $id = (int)$request->getAttribute('id');
-        $model = Material::find($id);
-        if (!$model) {
-            throw new HttpNotFoundException($request);
-        }
-
-        $picturePath = Material::getPicturePath($id, $model->picture);
-
-        $pictureContent = file_get_contents($picturePath);
-        if (!$pictureContent) {
-            throw new HttpNotFoundException($request, "The picture file cannot be found.");
-        }
-
-        $response = $response->write($pictureContent);
-        $mimeType = mime_content_type($picturePath);
-        return $response->withHeader('Content-Type', $mimeType);
-    }
-
     public function getAllPdf(Request $request, Response $response): Response
     {
         $onlyParkId = $request->getQueryParam('park', null);
@@ -471,5 +179,315 @@ class MaterialController extends BaseController
         $fileContent = Pdf::createFromTemplate('materials-list-default', $data);
 
         return $this->_responseWithFile($response, $fileName, $fileContent);
+    }
+
+    public function getAllWhileEvent(Request $request, Response $response): Response
+    {
+        $eventId = (int)$request->getAttribute('eventId');
+
+        $currentEvent = Event::find($eventId);
+        if (!$currentEvent) {
+            throw new HttpNotFoundException($request);
+        }
+
+        $results = (new Material)
+            ->setOrderBy('reference', true)
+            ->getAll()
+            ->get()
+            ->toArray();
+
+        if ($results && count($results) > 0) {
+            $results = Material::recalcQuantitiesForPeriod(
+                $results,
+                $currentEvent->start_date,
+                $currentEvent->end_date,
+                $eventId
+            );
+        }
+
+        return $response->withJson($results);
+    }
+
+    public function getAllDocuments(Request $request, Response $response): Response
+    {
+        $id = (int)$request->getAttribute('id');
+        $model = Material::find($id);
+        if (!$model) {
+            throw new HttpNotFoundException($request);
+        }
+
+        return $response->withJson($model->documents, SUCCESS_OK);
+    }
+
+    public function getParkAll(Request $request, Response $response): Response
+    {
+        $parkId = (int)$request->getAttribute('parkId');
+        if (!Park::staticExists($parkId)) {
+            throw new HttpNotFoundException($request);
+        }
+
+        $materials = Material::getParkAll($parkId);
+        return $response->withJson($materials);
+    }
+
+    public function getEvents(Request $request, Response $response): Response
+    {
+        $id = (int)$request->getAttribute('id');
+        $material = Material::find($id);
+        if (!$material) {
+            throw new HttpNotFoundException($request);
+        }
+
+        $collection = [];
+        $useMultipleParks = Park::count() > 1;
+        foreach ($material->Events()->get() as $event) {
+            $event = $event->setAppends([
+                'has_missing_materials',
+                'has_not_returned_materials',
+            ]);
+
+            $collection[] = array_replace($event->toArray(), [
+                'parks' => $useMultipleParks
+                    ? Event::getParks($event['id'])
+                    : null
+            ]);
+        }
+
+        return $response->withJson($collection, SUCCESS_OK);
+    }
+
+    public function getPicture(Request $request, Response $response): Response
+    {
+        $id = (int)$request->getAttribute('id');
+        $model = Material::find($id);
+        if (!$model) {
+            throw new HttpNotFoundException($request);
+        }
+
+        $picturePath = Material::getPicturePath($id, $model->picture);
+
+        $pictureContent = file_get_contents($picturePath);
+        if (!$pictureContent) {
+            throw new HttpNotFoundException($request, "The picture file cannot be found.");
+        }
+
+        $response = $response->write($pictureContent);
+        $mimeType = mime_content_type($picturePath);
+        return $response->withHeader('Content-Type', $mimeType);
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Setters
+    // -
+    // ------------------------------------------------------
+
+    public function create(Request $request, Response $response): Response
+    {
+        $postData = (array)$request->getParsedBody();
+        $result = $this->_saveMaterial(null, $postData);
+        return $response->withJson($result, SUCCESS_CREATED);
+    }
+
+    public function update(Request $request, Response $response): Response
+    {
+        $id = (int)$request->getAttribute('id');
+        if (!Material::staticExists($id)) {
+            throw new HttpNotFoundException($request);
+        }
+
+        $postData = (array)$request->getParsedBody();
+        $result = $this->_saveMaterial($id, $postData);
+        return $response->withJson($result, SUCCESS_OK);
+    }
+
+    public function handleUploadDocuments(Request $request, Response $response): Response
+    {
+        $id = (int)$request->getAttribute('id');
+        if (!Material::staticExists($id)) {
+            throw new HttpNotFoundException($request);
+        }
+
+        $uploadedFiles = $request->getUploadedFiles();
+        $destDirectory = Document::getFilePath($id);
+
+        if (count($uploadedFiles) === 0) {
+            throw new \Exception($this->i18n->translate('no-uploaded-files'));
+        }
+
+        $files = [];
+        foreach ($uploadedFiles as $file) {
+            $error = $file->getError();
+            if ($error !== UPLOAD_ERR_OK) {
+                $errors[$file->getClientFilename()] = $this->i18n->translate(
+                    'upload-failed-error-code',
+                    [$error],
+                );
+                continue;
+            }
+
+            $fileSize = $file->getSize();
+            if ($fileSize > Config::getSettings('maxFileUploadSize')) {
+                $errors[$file->getClientFilename()] = $this->i18n->translate('file-exceeds-max-size');
+                continue;
+            }
+
+            $fileType = $file->getClientMediaType();
+            if (!in_array($fileType, Config::getSettings('authorizedFileTypes'))) {
+                $errors[$file->getClientFilename()] = $this->i18n->translate('file-type-not-allowed');
+                continue;
+            }
+
+            $filename = moveUploadedFile($destDirectory, $file);
+            if (!$filename) {
+                $errors[$file->getClientFilename()] = $this->i18n->translate('saving-uploaded-file-failed');
+                continue;
+            }
+
+            $files[] = [
+                'material_id' => $id,
+                'name' => $filename,
+                'type' => $fileType,
+                'size' => $file->getSize(),
+            ];
+        }
+
+        foreach ($files as $document) {
+            try {
+                Document::updateOrCreate(
+                    ['material_id' => $id, 'name' => $document['name']],
+                    $document
+                );
+            } catch (\Exception $e) {
+                $filePath = Document::getFilePath($id, $document['name']);
+                unlink($filePath);
+                $errors[$document['name']] = $this->i18n->translate(
+                    'document-cannot-be-saved-in-db',
+                    [$e->getMessage()],
+                );
+            }
+        }
+
+        if (count($errors) > 0) {
+            throw new \Exception(implode("\n", $errors));
+        }
+
+        $result = [
+            'saved_files' => $files,
+            'errors' => $errors,
+        ];
+        return $response->withJson($result, SUCCESS_OK);
+    }
+
+    public function handleUploadPicture(Request $request, Response $response): Response
+    {
+        $id = (int)$request->getAttribute('id');
+        if (!Material::staticExists($id)) {
+            throw new HttpNotFoundException($request);
+        }
+
+        $file = $request->getUploadedFiles()['picture-0'];
+
+        if (empty($file) || $file->getError() !== UPLOAD_ERR_OK) {
+            throw new \Exception($this->i18n->translate('no-uploaded-files'));
+        }
+
+        $fileSize = $file->getSize();
+        if ($fileSize > Config::getSettings('maxFileUploadSize')) {
+            throw new \Exception($this->i18n->translate('file-exceeds-max-size'));
+        }
+
+        $fileType = $file->getClientMediaType();
+        if (!in_array($fileType, Config::getSettings('authorizedImageTypes'))) {
+            throw new \Exception($this->i18n->translate('file-type-not-allowed'));
+        }
+
+        $destDirectory = Material::getPicturePath($id);
+        $filename = moveUploadedFile($destDirectory, $file);
+        if (!$filename) {
+            throw new \Exception($this->i18n->translate('saving-uploaded-file-failed'));
+        }
+
+        $materialBefore = Material::find($id)->toArray();
+
+        try {
+            Material::staticEdit($id, ['picture' => $filename]);
+
+            $previousPicture = $materialBefore['picture'];
+            if ($previousPicture !== null && $filename !== $previousPicture) {
+                $filePath = Material::getPicturePath($id, $previousPicture);
+                unlink($filePath);
+            }
+        } catch (\Exception $e) {
+            $filePath = Material::getPicturePath($id, $filename);
+            unlink($filePath);
+            throw new \Exception($this->i18n->translate(
+                'material-picture-cannot-be-saved-in-db',
+                [$e->getMessage()],
+            ));
+        }
+
+        $result = ['saved_files' => 1];
+
+        return $response->withJson($result, SUCCESS_OK);
+    }
+
+    // ------------------------------------------------------
+    // —
+    // —    Internal Methods
+    // —
+    // ------------------------------------------------------
+
+    protected function _saveMaterial(?int $id, $postData): array
+    {
+        if (!is_array($postData) || empty($postData)) {
+            throw new \InvalidArgumentException(
+                "Missing request data to process validation",
+                ERROR_VALIDATION
+            );
+        }
+
+        if (array_key_exists('stock_quantity', $postData)) {
+            $stockQuantity = $postData['stock_quantity'];
+            if ($stockQuantity !== null && (int)$stockQuantity < 0) {
+                $postData['stock_quantity'] = 0;
+            }
+        }
+
+        if (array_key_exists('out_of_order_quantity', $postData)) {
+            $stockQuantity = (int)($postData['stock_quantity'] ?? 0);
+            $outOfOrderQuantity = (int)$postData['out_of_order_quantity'];
+            if ($outOfOrderQuantity > $stockQuantity) {
+                $outOfOrderQuantity = $stockQuantity;
+                $postData['out_of_order_quantity'] = $outOfOrderQuantity;
+            }
+            if ($outOfOrderQuantity <= 0) {
+                $postData['out_of_order_quantity'] = null;
+            }
+        }
+
+        // - Removing `picture` field because it must be edited
+        //   using handleUploadPicture() method (see below)
+        if (array_key_exists('picture', $postData) && !empty($postData['picture'])) {
+            unset($postData['picture']);
+        }
+
+        $result = Material::staticEdit($id, $postData);
+
+        if (isset($postData['attributes'])) {
+            $attributes = [];
+            foreach ($postData['attributes'] as $attribute) {
+                if (empty($attribute['value'])) {
+                    continue;
+                }
+
+                $attributes[$attribute['id']] = [
+                    'value' => (string)$attribute['value']
+                ];
+            }
+            $result->Attributes()->sync($attributes);
+        }
+
+        return Material::find($result->id)->toArray();
     }
 }

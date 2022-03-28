@@ -1,6 +1,6 @@
 import './index.scss';
-import dispatchMaterialInSections from '@/utils/dispatchMaterialInSections';
 import invariant from 'invariant';
+import dispatchMaterialInSections from '@/utils/dispatchMaterialInSections';
 import Item from './Item';
 
 // @vue/component

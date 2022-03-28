@@ -2465,6 +2465,9 @@ return [
     "referenceAlreadyInUse"
     => "Cette référence est déjà utilisée.",
 
+    "invalid-uuid"
+    => "L'identifiant unique (UUID) est invalide.",
+
     "invalid-value"
     => "Valeur invalide.",
 
@@ -2479,6 +2482,31 @@ return [
 
     "technician-already-busy-for-this-period"
     => "Ce technicien est déjà occupé pour cette période.",
+
+    //
+    // - Upload messages
+    //
+
+    "no-uploaded-files"
+    => "Aucun fichier n'a été envoyé.",
+
+    "upload-failed-error-code"
+    => "L'envoi du fichier a échoué. Code d'erreur : %d",
+
+    "file-exceeds-max-size"
+    => "Ce fichier dépasse la taille maximum autorisée.",
+
+    "file-type-not-allowed"
+    => "Ce type de fichier n'est pas autorisé.",
+
+    "saving-uploaded-file-failed"
+    => "La sauvegarde du fichier envoyé a échoué.",
+
+    "document-cannot-be-saved-in-db"
+    => "Le document n'a pas pu être sauvegardé dans la base de données. Raison : %s",
+
+    "material-picture-cannot-be-saved-in-db"
+    => "L'image pour le matériel n'a pas pu être sauvegardé dans la base de données. Raison : %s",
 
     //
     // - Install messages

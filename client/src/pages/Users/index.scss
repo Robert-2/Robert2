@@ -20,12 +20,9 @@
     }
 
     &__actions {
-        width: 7.5rem;
-        min-width: 7.5rem;
-
-        .info {
-            font-size: 0.9rem;
-        }
+        width: 1%;
+        text-align: right;
+        white-space: nowrap;
     }
 
     @media (min-width: globals.$screen-tablet) {

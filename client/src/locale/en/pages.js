@@ -7,36 +7,11 @@ export default {
         'connexion': "Enter Robert",
         'please-wait': "Authentication, please wait...",
         'bye': "See you\u00a0!",
-        'footer': "Robert2 is a free (as in 'freedom') software. You can copy and redistribute it freely, except for commercial purpose.",
-        'official-website': "Official website",
-        'community-forum': "Community Forum",
-
         'error': {
             'bad-infos': "Given infos ar not correct. Please give your e-mail address or pseudo, and your password.",
             'expired-session': "Your session has expired. Please log back in!",
             'not-allowed': "You tried to visit a page with restricted access. Please log in with an account who can access this page.",
         },
-    },
-
-    'page-profile': {
-        'title': "Your profile",
-        'help': "If you change your email, pseudo or password, do not forget them before logging-out!",
-        'you-are-group': "You are: {group}.",
-        'edit-password': "Change your password",
-        'password-confirmation': "Password confirmation",
-        'password-confirmation-must-match': "Password and its confirmation must be identical.",
-        'password-modified': "Your password was modified.",
-        'saved': "Your profile was saved.",
-    },
-
-    'page-user-settings': {
-        'title': "Your settings",
-        'help': "The \"duration of a session\" is the time allowed before you're automatically logged out.",
-        'auth-token-validity-duration': "Max. duration of a session",
-        'interface': "Interface",
-        'language': "Language",
-        'hours': "hours",
-        'saved': "Settings saved.",
     },
 
     'page-calendar': {
@@ -180,18 +155,23 @@ export default {
         'help': "You can send an email to a beneficiary by clicking on his/her address.",
         'action-add': "New beneficiary",
         'add': "New beneficiary",
-        'edit': "Modify beneficiary \"{pageSubTitle}\"",
-        'edit-title': "Modify beneficiary",
+        'edit': "Modify beneficiary",
         'beneficiary-type': "Beneficiary type",
         'person': "Natural person (individual)",
         'company': "Legal entity (company)",
-        'help-edit': (
-            `Only first name and last name are mandatory.
-            The "reference" is a customer or member number for your internal management, which will appear on the output sheets, estimates and bills. It must be unique.`
-        ),
         'confirm-delete': "Move this beneficiary in trash bin?",
         'confirm-permanently-delete': "Do you really want to permanently delete this beneficiary?",
         'confirm-restore': "Do you really want to restore this beneficiary?",
+    },
+
+    'page-beneficiary': {
+        'title-create': "New beneficiary",
+        'title-edit': "Modify beneficiary \"{name}\"",
+        'help': (
+            `Only first name and last name are mandatory.
+            The "reference" is a customer or member number for your internal management, which will appear on the output sheets, estimates and bills. It must be unique.`
+        ),
+        'type-to-search-company': "Enter a company name...",
         'saved': "Beneficiary saved.",
     },
 
@@ -235,6 +215,7 @@ export default {
         'documents': {
             'no-document': "No document yet.",
             'drag-and-drop-files-here': "Drag and drop files here ↓ to add them.",
+            'max-size': "Maximum size {size}",
             'choose-files': "Or click here to choose files to add",
             'send-files': [
                 "Send file",
@@ -388,7 +369,53 @@ export default {
             'custom-text': "Custom text (bottom of page)",
             'custom-text-title': "Text title",
             'custom-text-content': "Text content",
-            'saved': "Event summaries settings were successfully saved.",
+            'saved': "Event summaries settings has been successfully saved.",
+        },
+        'calendar': {
+            'title': "Calendar",
+            'help': "Here you can customize the calendar and the events that are displayed on it.",
+            'saved': "Calendar settings has been successfully saved.",
+            'events-display-section-title': "Data that will be displayed in the calendar events",
+            'showLocation': "Show the location of the event?",
+            'showBorrower': "Show the beneficiary / borrower?",
+            'public-calendar-section-title': "Calendar external subscription",
+            'enable-public-calendar': "Enable external calendar access?",
+            'public-calendar-url': "External calendar URL",
+            'save-to-get-calendar-url': "Please save your changes to get the calendar URL.",
+            'public-calendar-help': (
+                `This allows you to publish the main calendar. Any person in possession of this link will be able to consult the events of your calendar, without being connected to the application! So be sure to only share this link with people you trust.\n
+                To use this link, go to your compatible calendar application, and look for the "New Calendar Subscription" feature. Please note that the refresh rate in these applications is highly variable, so they may display event changes with a delay.`
+            ),
+            'public-calendar-url-reset-help': "If you suspect that the calendar link has been shared with unwanted third parties, you can re-generate the link by clicking here:",
+            'public-calendar-url-reset-warning': (
+                "If you regenerate the link, the previous one will be revoked and you will need to communicate this new link again to people who legitimately have access to the calendar since theirs will be revoked.\n\n" +
+                "Do you really want to proceed?"
+            ),
+            'public-calendar-url-reset-error': "An error occurred while regenerating the public calendar link, please try again.",
+            'public-calendar-url-reset-success': "The public calendar link has been successfully re-generated! The new one is available above.",
+        },
+    },
+
+    'page-user-settings': {
+        'title': "Your settings",
+        'profile': {
+            'title': "Your profile",
+            'help': "If you change your email, pseudo or password, do not forget them before logging-out!",
+            'new-password': "New password",
+            'new-password-help': "Only fill this section if you want to change your password.",
+            'password-confirmation': "Password confirmation",
+            'password-confirmation-must-match': "Password and its confirmation must be identical.",
+            'password-modified': "Your password was modified.",
+            'saved': "Your informations have been successfully saved.",
+            'saved-with-password': "Your informations and your new password have been successfully saved.",
+        },
+        'interface': {
+            'title': "Interface",
+            'help': "The \"duration of a session\" is the time allowed before you're automatically logged out.",
+            'auth-token-validity-duration': "Max. duration of a session",
+            'language': "Language",
+            'hours': "hours",
+            'saved': "Settings saved.",
         },
     },
 

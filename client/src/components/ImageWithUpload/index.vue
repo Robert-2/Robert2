@@ -36,7 +36,7 @@
             <i class="fas fa-exclamation-triangle" />
             {{ fileError }}
         </div>
-        <Help message="" :error="error" :isLoading="isLoading" />
+        <Help message="" :isLoading="isLoading" />
     </div>
 </template>
 

@@ -1,5 +1,14 @@
 @use '~@/style/globals';
 
+.Page--beneficiaries {
+    display: flex;
+    flex-direction: column;
+
+    .VueTables {
+        flex: 1;
+    }
+}
+
 .Beneficiaries {
     &__nickname,
     &__email,
@@ -10,6 +19,17 @@
 
     &__address {
         white-space: pre-line;
+    }
+
+    &__note {
+        max-width: 200px;
+        white-space: pre-line;
+    }
+
+    &__actions {
+        width: 1%;
+        text-align: right;
+        white-space: nowrap;
     }
 
     @media (min-width: globals.$screen-mobile) {
