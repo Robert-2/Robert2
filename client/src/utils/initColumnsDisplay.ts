@@ -28,7 +28,7 @@ const initFromStorage = (tableName: string, columns: ColumnsDisplay): ColumnsDis
     }
 
     return Object.fromEntries(
-        Object.entries(columns).map(([column]: [string, boolean]) => (
+        Object.keys(columns).map((column: string) => (
             [column, userColumnsDisplay.includes(column)]
         )),
     );
