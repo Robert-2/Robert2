@@ -4,7 +4,7 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 0.18.0 (UNRELEASED)
+## 0.18.0 (2022-03-28)
 
 - __[CHANGEMENT CRITIQUE]__ Robert2 requiert maintenant au minimum PHP 7.4 pour fonctionner (#327).
 - Augmente la taille du champ `degressive_rate` des tables `bills` et `estimates` pour qu'il accepte une valeur jusqu'à 99999,99 (quand un événement est très long), au lieu de juste 99,99 (#329).
