@@ -1,5 +1,6 @@
 import './index.scss';
 import { Fragment } from 'vue-fragment';
+import initColumnsDisplay from '@/utils/initColumnsDisplay';
 import { confirm } from '@/utils/alert';
 import Config from '@/globals/config';
 import Help from '@/components/Help';
@@ -9,7 +10,7 @@ import ParkTotalAmount from '@/components/ParkTotalAmount';
 export default {
     name: 'Parks',
     data() {
-        const { $t: __ } = this;
+        const { $t: __, $route, $options } = this;
 
         return {
             help: 'page-parks.help',
@@ -22,38 +23,42 @@ export default {
                 'address',
                 'opening_hours',
                 'totalItems',
-                'totalAmount',
                 'note',
+                'totalAmount',
                 'events',
                 'actions',
             ],
             options: {
                 columnsDropdown: true,
                 preserveState: true,
+                saveState: true,
                 orderBy: { column: 'name', ascending: true },
-                initialPage: this.$route.query.page || 1,
+                initialPage: $route.query.page || 1,
                 sortable: ['name'],
-                columnsDisplay: {
-                    // - This is a hack: init the table with hidden columns by default
-                    note: 'mobile',
-                    totalAmount: 'desktop',
-                    events: 'desktop',
-                },
+                columnsDisplay: initColumnsDisplay($options.name, {
+                    name: true,
+                    address: true,
+                    opening_hours: true,
+                    totalItems: true,
+                    note: false,
+                    totalAmount: true,
+                    events: true,
+                }),
                 headings: {
                     name: __('name'),
                     address: __('address'),
                     opening_hours: __('opening-hours'),
                     totalItems: __('page-parks.total-items'),
-                    totalAmount: __('total-amount'),
                     note: __('notes'),
-                    events: '',
+                    totalAmount: __('total-amount'),
+                    events: __('events'),
                     actions: '',
                 },
                 columnsClasses: {
                     address: 'Parks__address',
                     opening_hours: 'Parks__opening-hours',
-                    totalAmount: 'Parks__total-amount',
                     note: 'Parks__note',
+                    totalAmount: 'Parks__total-amount',
                     events: 'Parks__events',
                     actions: 'Parks__actions',
                 },
@@ -69,7 +74,7 @@ export default {
                         const hasItems = park.total_items > 0;
                         if (!hasItems) {
                             return (
-                                <span v-else class="Parks__no-items">
+                                <span class="Parks__no-items">
                                     {__('no-items')}
                                 </span>
                             );
@@ -96,7 +101,6 @@ export default {
                         }
                         return <ParkTotalAmount parkId={park.id} />;
                     },
-                    note: (h, park) => <pre>{park.note}</pre>,
                     events: (h, park) => {
                         const { parksCount } = this;
                         const hasItems = park.total_items > 0;
@@ -287,6 +291,7 @@ export default {
     render() {
         const {
             $t: __,
+            $options,
             help,
             error,
             isLoading,
@@ -316,7 +321,7 @@ export default {
                 <div class="content__main-view">
                     <v-server-table
                         ref="DataTable"
-                        name="ParksTable"
+                        name={$options.name}
                         columns={columns}
                         options={options}
                     />

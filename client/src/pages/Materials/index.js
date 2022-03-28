@@ -7,6 +7,7 @@ import queryClient from '@/globals/queryClient';
 import { confirm } from '@/utils/alert';
 import Help from '@/components/Help';
 import Dropdown, { getItemClassnames } from '@/components/Dropdown';
+import initColumnsDisplay from '@/utils/initColumnsDisplay';
 import isValidInteger from '@/utils/isValidInteger';
 import formatAmount from '@/utils/formatAmount';
 import isSameDate from '@/utils/isSameDate';
@@ -20,7 +21,7 @@ import Datepicker from '@/components/Datepicker';
 export default {
     name: 'Materials',
     data() {
-        const { $t: __ } = this;
+        const { $t: __, $route, $options } = this;
         const { billingMode } = Config;
 
         // - Columns
@@ -42,7 +43,6 @@ export default {
         }
 
         return {
-            help: 'page-materials.help',
             error: null,
             isLoading: false,
             isDisplayTrashed: false,
@@ -52,16 +52,22 @@ export default {
             options: {
                 columnsDropdown: true,
                 preserveState: true,
+                saveState: true,
                 orderBy: { column: 'name', ascending: true },
-                initialPage: this.$route.query.page || 1,
+                initialPage: $route.query.page || 1,
                 sortable: [],
-                columnsDisplay: {
-                    // - This is a hack: init the table with hidden columns by default
-                    park: 'mobile',
-                    description: 'mobile',
-                    replacement_price: 'mobile',
-                    out_of_order_quantity: 'mobile',
-                },
+                columnsDisplay: initColumnsDisplay($options.name, {
+                    reference: true,
+                    name: true,
+                    description: false,
+                    park: false,
+                    category: true,
+                    rental_price: true,
+                    replacement_price: false,
+                    stock_quantity: true,
+                    out_of_order_quantity: false,
+                    tags: true,
+                }),
                 headings: {},
                 columnsClasses: {},
                 requestFunction: this.fetch.bind(this),
@@ -96,7 +102,14 @@ export default {
                             )}
                         </Fragment>
                     ),
-                    park: (h, material) => this.getParkName(material.park_id),
+                    park: (h, material) => (
+                        <router-link
+                            to={`/parks/${material.park_id}`}
+                            class="Materials__link"
+                        >
+                            {this.getParkName(material.park_id)}
+                        </router-link>
+                    ),
                     category: (h, material) => (
                         <Fragment>
                             <i class="fas fa-folder-open" />&nbsp;
@@ -110,10 +123,10 @@ export default {
                         </Fragment>
                     ),
                     rental_price: (h, material) => (
-                        formatAmount(material.rental_price)
+                        formatAmount(material.rental_price || 0)
                     ),
                     replacement_price: (h, material) => (
-                        formatAmount(material.replacement_price)
+                        formatAmount(material.replacement_price || 0)
                     ),
                     stock_quantity: (h, material) => (
                         this.getQuantity(material)
@@ -330,22 +343,23 @@ export default {
         },
 
         getFilters() {
+            const { query } = this.$route;
             const params = {};
 
-            if (this.$route.query.park && isValidInteger(this.$route.query.park)) {
-                params.park = parseInt(this.$route.query.park, 10);
+            if (query.park && isValidInteger(query.park)) {
+                params.park = parseInt(query.park, 10);
             }
 
-            if (this.$route.query.category) {
-                params.category = this.$route.query.category;
+            if (query.category) {
+                params.category = query.category;
             }
 
-            if (this.$route.query.subCategory) {
-                params.subCategory = this.$route.query.subCategory;
+            if (query.subCategory) {
+                params.subCategory = query.subCategory;
             }
 
-            if (this.$route.query.tags) {
-                params.tags = JSON.parse(this.$route.query.tags);
+            if (query.tags) {
+                params.tags = JSON.parse(query.tags);
             }
 
             if (this.periodForQuantities) {
@@ -476,7 +490,7 @@ export default {
     render() {
         const {
             $t: __,
-            help,
+            $options,
             error,
             isAdmin,
             isLoading,
@@ -496,7 +510,7 @@ export default {
             <div class="content Materials">
                 <div class="content__header header-page">
                     <div class="header-page__help">
-                        <Help message={help} error={error} isLoading={isLoading} />
+                        <Help message={__('page-materials.help')} error={error} isLoading={isLoading} />
                     </div>
                     <div class="header-page__actions">
                         <router-link to="/materials/new" custom>
@@ -565,7 +579,7 @@ export default {
                     </div>
                     <v-server-table
                         ref="DataTable"
-                        name="materialsTable"
+                        name={$options.name}
                         columns={columns}
                         options={dataTableOptions}
                     />
