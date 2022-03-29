@@ -312,6 +312,13 @@ export default {
         'period-of-availability': "Period of availability",
     },
 
+    'page-technician': {
+        'title-create': "New technician",
+        'title-edit': "Modify technician \"{name}\"",
+        'help': "Only first name and last name are mandatory.",
+        'saved': "Technician saved.",
+    },
+
     'page-technician-view': {
         'title': "Technicien \"{name}\"",
         'modify-associated-user': "Modify associated user",
