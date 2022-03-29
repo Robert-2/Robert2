@@ -4,6 +4,10 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.18.1 (2022-03-29)
+
+- Corrige la page d'édition des techniciens.
+
 ## 0.18.0 (2022-03-28)
 
 - __[CHANGEMENT CRITIQUE]__ Robert2 requiert maintenant au minimum PHP 7.4 pour fonctionner (#327).
