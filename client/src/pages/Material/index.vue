@@ -137,14 +137,11 @@
                             :errors="errors.is_hidden_on_bill"
                         />
                     </section>
-                    <section class="Form__fieldset">
+                    <section class="Form__fieldset" v-if="extraAttributes.length > 0">
                         <h4 class="Form__fieldset__title">
                             {{ $t('special-attributes') }}
                         </h4>
-                        <p v-if="extraAttributes.length === 0" class="Material__no-attribute-help">
-                            {{ $t('page-attributes.no-attribute-yet') }}
-                        </p>
-                        <div v-if="extraAttributes.length > 0" class="Material__attributes">
+                        <div class="Material__attributes">
                             <FormField
                                 v-for="extraAttribute in extraAttributes"
                                 :key="extraAttribute.id"
@@ -160,13 +157,6 @@
                             <i class="fas fa-info-circle Material__attributes-help__icon" />
                             {{ $t('page-materials.more-attribute-when-category-selected') }}
                         </p>
-                        <router-link
-                            v-if="isAdmin"
-                            to="/attributes"
-                            class="Material__modify-attribute-link"
-                        >
-                            <i class="fas fa-plus" /> {{ $t('page-attributes.add-attributes') }}
-                        </router-link>
                     </section>
                     <section class="Form__actions">
                         <button class="Form__actions__save success" type="submit">
