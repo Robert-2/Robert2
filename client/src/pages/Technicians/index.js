@@ -13,7 +13,6 @@ export default {
         const { $t: __, $route, $options } = this;
 
         return {
-            help: 'page-technicians.help',
             error: null,
             isLoading: false,
             isDisplayTrashed: false,
@@ -155,7 +154,6 @@ export default {
         },
 
         refreshTable() {
-            this.help = 'page-technicians.help';
             this.error = null;
             this.isLoading = true;
             this.$refs.DataTable.refresh();
@@ -174,7 +172,6 @@ export default {
         const {
             $t: __,
             $options,
-            help,
             error,
             isLoading,
             columns,
@@ -196,8 +193,9 @@ export default {
         return (
             <Page
                 name="technicians"
+                class="Technicians"
                 title={__('page-technicians.title')}
-                help={__(help)}
+                help={__('page-technicians.help')}
                 error={error}
                 isLoading={isLoading}
                 actions={headerActions}
