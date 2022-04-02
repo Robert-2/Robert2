@@ -1,3 +1,5 @@
+@use '~@fortawesome/fontawesome-free/scss/mixins' as fa-mixins;
+
 .header-page {
     display: flex;
     flex-wrap: wrap;
@@ -13,6 +15,25 @@
 
         .ErrorMessage {
             text-align: left;
+        }
+    }
+
+    &__intro {
+        position: relative;
+        padding-left: 1.8rem;
+
+        &::before {
+            @include fa-mixins.fa-icon;
+
+            content: '\f05a';
+            position: absolute;
+            top: 0;
+            left: 0;
+            margin-top: 0.15rem;
+            // stylelint-disable-next-line font-family-no-missing-generic-family-keyword
+            font-family: 'Font Awesome 5 Free';
+            font-size: 1.2rem;
+            font-weight: 900;
         }
     }
 
