@@ -1,5 +1,6 @@
 import './index.scss';
 import Logo from '@/components/Logo/vue';
+import Icon from '@/components/Icon';
 import Menu from './Menu';
 
 // @vue/component
@@ -35,7 +36,7 @@ export default {
                     <Logo minimalist />
                 </div>
                 <div class="DefaultLayoutHeader__menu-toggle" onClick={toggleMenu}>
-                    <i class="fas fa-bars fa-2x" />
+                    <Icon name="bars" />
                 </div>
                 <div class="DefaultLayoutHeader__title">{pageTitle}</div>
                 <Menu class="DefaultLayoutHeader__menu" />
