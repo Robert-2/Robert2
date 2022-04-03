@@ -8,7 +8,9 @@ select {
     border-radius: $input-border-radius;
     background-color: $bg-color-input-normal;
     color: $color-input;
+    font-family: $text-base-font-family;
     font-size: $input-font-size;
+    line-height: $input-line-height;
 
     &:focus {
         border-color: $bg-color-button-info;

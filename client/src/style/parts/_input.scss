@@ -11,6 +11,7 @@ textarea {
     color: $color-input;
     font-family: $text-base-font-family;
     font-size: $input-font-size;
+    line-height: $input-line-height;
 
     &:focus {
         border-color: $input-focus-border-color;

@@ -1,5 +1,32 @@
+.Notifications {
+    // Note: Increase specificity (for override `.toasted-container` definitions).
+    &#{&} {
+        min-width: 100%;
+        padding: 0 10px;
+
+        &.top-right {
+            top: 10px;
+            right: 0;
+        }
+
+        .Notification {
+            margin-top: 0;
+
+            + .Notification {
+                margin-top: 10px;
+            }
+        }
+
+        @media (min-width: $screen-mobile) {
+            min-width: auto;
+        }
+    }
+}
+
 .Notification {
-    &.toasted.toasted-primary {
+    // Note: Increase specificity (for override `.toasted` definitions).
+    &#{&}.toasted-primary {
+        padding: 8px 10px;
         border-radius: 3px;
         font-size: 1rem;
 
@@ -25,6 +52,11 @@
                 text-decoration: none;
                 opacity: 1;
             }
+        }
+
+        @media (min-width: $screen-mobile) {
+            padding-right: 20px;
+            padding-left: 20px;
         }
     }
 }

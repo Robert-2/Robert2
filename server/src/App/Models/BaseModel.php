@@ -171,6 +171,10 @@ abstract class BaseModel extends Model
                 ->setModel(get_class($this), $id);
         }
 
+        if (method_exists($this, 'unserialize')) {
+            $data = $this->unserialize($data);
+        }
+
         $data = cleanEmptyFields($data);
         $data = $this->_trimStringFields($data);
 
@@ -339,6 +343,14 @@ abstract class BaseModel extends Model
             $trimmedData[$field] = ($isString && $value) ? trim($value) : $value;
         }
         return $trimmedData;
+    }
+
+    public function jsonSerialize()
+    {
+        if (method_exists($this, 'serialize')) {
+            return $this->serialize();
+        }
+        return parent::jsonSerialize();
     }
 
     // @see https://laravel.com/docs/8.x/eloquent-serialization#customizing-the-default-date-format

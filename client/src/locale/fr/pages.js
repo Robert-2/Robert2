@@ -250,16 +250,14 @@ export default {
         'no-attribute-yet': "Aucune caractéristique spéciale pour le moment.",
         'add-btn': "Ajouter une caractéristique",
         'limited-to-categories': "Limitée aux catégories",
-        'confirm-permanently-delete': (
-            `Voulez-vous vraiment supprimer définitivement cette caractéristique spéciale\u00a0?
-
-            ATTENTION\u00a0: Toutes les données relative à cette caractéristique spéciale seront supprimées DÉFINITIVEMENT\u00a0!!`
-        ),
-        'second-confirm': {
-            'confirm-permanently-delete': (
-                `Désolé d'insister, mais cette opération IRRÉVERSIBLE.
-
-        Voulez-vous VRAIMENT supprimer cette caractéristique spéciale\u00a0?`
+        'confirm-permanently-delete': {
+            1: (
+                `Voulez-vous vraiment supprimer définitivement cette caractéristique spéciale\u00a0?\n
+                ATTENTION\u00a0: Toutes les données relative à cette caractéristique spéciale seront supprimées DÉFINITIVEMENT\u00a0!!`
+            ),
+            2: (
+                `Désolé d'insister, mais cette opération IRRÉVERSIBLE.\n
+                Voulez-vous VRAIMENT supprimer cette caractéristique spéciale\u00a0?`
             ),
         },
     },

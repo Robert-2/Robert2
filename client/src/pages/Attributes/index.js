@@ -1,144 +1,164 @@
 import './index.scss';
-import Alert from '@/components/Alert';
-import Help from '@/components/Help';
-import AttributeEditForm from './AttributeEditForm';
+import Page from '@/components/Page';
+import CriticalError from '@/components/CriticalError';
+import Loading from '@/components/Loading';
+import Button from '@/components/Button';
+import Item from './Item';
+import AddItem from './AddItem';
+import apiAttributes from '@/stores/api/attributes';
 
 // @vue/component
 export default {
     name: 'Attributes',
-    components: { Help, AttributeEditForm },
     data() {
         return {
             attributes: [],
-            isAddingMode: false,
-            errors: {},
-            help: 'page-attributes.help',
-            error: null,
+            isAdding: false,
+            isFetched: false,
             isLoading: false,
-            editAttribute: null,
-            editAttributeName: '',
-            currentlyDeleting: null,
+            hasCriticalError: false,
         };
     },
     mounted() {
-        this.fetchAttributes();
+        this.fetchData();
     },
     methods: {
-        fetchAttributes() {
-            this.isLoading = true;
-            this.$http.get('attributes')
-                .then(({ data }) => {
-                    this.attributes = data;
-                    this.isLoading = false;
-                })
-                .catch(this.displayError);
-        },
+        // ------------------------------------------------------
+        // -
+        // -    Handlers
+        // -
+        // ------------------------------------------------------
 
-        toggleAddingMode() {
-            this.isAddingMode = !this.isAddingMode;
-
-            if (!this.isAddingMode) {
-                this.resetForm();
-            }
-        },
-
-        handleTypeChange(e) {
-            const { value } = e.currentTarget;
-            this.hasMaxLength = value === 'string';
-            this.hasUnit = value === 'integer' || value === 'float';
-        },
-
-        saveAttribute() {
-            this.isLoading = true;
-            this.error = null;
-            this.errors = {};
-            const data = this.$refs.AttributeEditForm.getValues();
-
-            this.$http.post('/attributes', data)
-                .then(() => {
-                    this.resetForm();
-                    this.fetchAttributes();
-                })
-                .catch(this.displayError);
-        },
-
-        startEditAttribute(id, name) {
-            this.editAttributeName = name;
-            this.editAttribute = id;
-        },
-
-        cancelAttributeName() {
-            this.editAttributeName = '';
-            this.editAttribute = null;
-        },
-
-        saveAttributeName(id) {
-            this.isLoading = true;
-            this.error = null;
-            this.errors = {};
-
-            const name = this.editAttributeName;
-            this.$http.put(`/attributes/${id}`, { name })
-                .then(() => {
-                    this.fetchAttributes();
-                    this.editAttribute = null;
-                    this.editAttributeName = '';
-                })
-                .catch(this.displayError);
-        },
-
-        async deleteAttribute(id) {
-            this.currentlyDeleting = id;
-
-            const { value: firstConfirm } = await Alert.ConfirmDelete(this.$t, 'attributes', false);
-            if (!firstConfirm) {
-                this.currentlyDeleting = null;
+        handleAddItem() {
+            if (this.isAdding) {
                 return;
             }
 
-            const { value: secondConfirm } = await Alert.ConfirmDelete(
-                this.$t,
-                'attributes.second-confirm',
-                false,
-            );
-            if (!secondConfirm) {
-                this.currentlyDeleting = null;
-                return;
-            }
+            this.isAdding = true;
+            this.$nextTick(() => this.$refs.addItem.focus());
+        },
 
-            this.error = null;
+        handleItemAdded() {
+            this.isAdding = false;
+            this.fetchData();
+        },
+
+        handleItemChanged() {
+            this.fetchData();
+        },
+
+        handleCancelAdding() {
+            this.isAdding = false;
+        },
+
+        // ------------------------------------------------------
+        // -
+        // -    Internal methods
+        // -
+        // ------------------------------------------------------
+
+        async fetchData() {
             this.isLoading = true;
 
             try {
-                await this.$http.delete(`attributes/${id}`);
-                this.fetchAttributes();
+                this.attributes = await apiAttributes.all();
+                this.isFetched = true;
             } catch (error) {
-                this.displayError(error);
+                this.hasCriticalError = true;
             } finally {
-                this.currentlyDeleting = null;
+                this.isLoading = false;
             }
         },
+    },
+    render() {
+        const {
+            $t: __,
+            attributes,
+            hasCriticalError,
+            isAdding,
+            isLoading,
+            handleAddItem,
+            handleItemAdded,
+            handleItemChanged,
+            handleCancelAdding,
+        } = this;
 
-        displayError(error) {
-            this.isLoading = false;
-            this.error = error;
+        if (hasCriticalError || !this.isFetched) {
+            return (
+                <Page name="attributes" title={__('page-attributes.title')}>
+                    {hasCriticalError ? <CriticalError /> : <Loading />}
+                </Page>
+            );
+        }
 
-            const { code, details } = error.response?.data?.error || { code: 0, details: {} };
-            if (code === 400) {
-                this.errors = { ...details };
-            }
-        },
+        const isEmpty = !isAdding && attributes.length === 0;
 
-        resetForm() {
-            this.errors = {};
-            this.isLoading = false;
-            this.isAddingMode = false;
+        const headerActions = [
+            <Button
+                type="success"
+                icon="plus"
+                disabled={isAdding}
+                onClick={handleAddItem}
+            >
+                {__('page-attributes.add-btn')}
+            </Button>,
+        ];
 
-            this.$refs.AttributeEditForm.reset();
-        },
-
-        goBack() {
-            this.$router.back();
-        },
+        return (
+            <Page
+                name="attributes"
+                title={__('page-attributes.title')}
+                help={__('page-attributes.help')}
+                isLoading={isLoading}
+                actions={headerActions}
+            >
+                <div class="Attributes">
+                    <table class="Attributes__table">
+                        <thead class="Attributes__table__header">
+                            <tr>
+                                <th class="Attributes__table__col Attributes__table__col--name">
+                                    {__('page-attributes.name')}
+                                </th>
+                                <th class="Attributes__table__col Attributes__table__col--type">
+                                    {__('page-attributes.type')}
+                                </th>
+                                <th class="Attributes__table__col Attributes__table__col--unit">
+                                    {__('page-attributes.unit')}
+                                </th>
+                                <th class="Attributes__table__col Attributes__table__col--max-length">
+                                    {__('page-attributes.max-length')}
+                                </th>
+                                <th class="Attributes__table__col Attributes__table__col--categories">
+                                    {__('page-attributes.limited-to-categories')}
+                                </th>
+                                <th class="Attributes__table__col Attributes__table__col--actions" />
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {attributes.map((attribute) => (
+                                <Item
+                                    key={attribute.id}
+                                    attribute={attribute}
+                                    onUpdated={handleItemChanged}
+                                    onDeleted={handleItemChanged}
+                                />
+                            ))}
+                        </tbody>
+                    </table>
+                    {isEmpty && (
+                        <p class="Attributes__no-data">
+                            {__('page-attributes.no-attribute-yet')}
+                        </p>
+                    )}
+                    {isAdding && (
+                        <AddItem
+                            ref="addItem"
+                            onFinished={handleItemAdded}
+                            onCancelled={handleCancelAdding}
+                        />
+                    )}
+                </div>
+            </Page>
+        );
     },
 };

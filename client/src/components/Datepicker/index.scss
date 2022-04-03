@@ -32,7 +32,7 @@
         padding: globals.$input-padding-vertical globals.$input-padding-horizontal;
         background-color: globals.$bg-color-input-normal;
         font-size: globals.$input-font-size;
-        line-height: 1.2;
+        line-height: globals.$input-line-height;
         box-shadow: none;
 
         &:focus {

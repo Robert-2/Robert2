@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Robert2\API\Controllers;
 
+use Illuminate\Database\Eloquent\Builder;
 use Robert2\API\Controllers\Traits\WithCrud;
 use Robert2\API\Models\Attribute;
 use Slim\Http\Response;
@@ -14,6 +15,7 @@ class AttributeController extends BaseController
 
     public function getAll(Request $request, Response $response): Response
     {
+        /** @var Builder $attributes */
         $attributes = Attribute::orderBy('name', 'asc');
 
         $categoryId = $request->getQueryParam('category', null);
@@ -25,8 +27,7 @@ class AttributeController extends BaseController
                 });
         }
 
-        $results = $attributes->with('categories')->get()->toArray();
-        return $response->withJson($results);
+        return $response->withJson($attributes->get());
     }
 
     public function create(Request $request, Response $response): Response
@@ -44,9 +45,6 @@ class AttributeController extends BaseController
             $attribute->Categories()->sync($postData['categories']);
         }
 
-        $categories = $attribute->Categories()->get()->toArray();
-        $result = $attribute->toArray() + compact('categories');
-
-        return $response->withJson($result, SUCCESS_CREATED);
+        return $response->withJson($attribute, SUCCESS_CREATED);
     }
 }

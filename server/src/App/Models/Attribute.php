@@ -3,17 +3,24 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
-use Illuminate\Database\Eloquent\Builder;
 use Robert2\API\Validation\Validator as V;
+use Robert2\API\Models\Traits\Serializer;
 
 class Attribute extends BaseModel
 {
+    use Serializer {
+        serialize as baseSerialize;
+    }
+
     protected $orderField = 'id';
 
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
 
+        // TODO: Améliorer la validation:
+        // - `maxLength` ne peut être remplie que si `type` === `string`.
+        // - `unit` ne peut être remplie que si `type` === `integer` | `float`.
         $this->validation = [
             'name' => V::notEmpty()->alnum(static::EXTRA_CHARS)->length(2, 64),
             'type' => V::notEmpty()->oneOf(
@@ -33,6 +40,10 @@ class Attribute extends BaseModel
     // —    Relations
     // —
     // ——————————————————————————————————————————————————————
+
+    protected $appends = [
+        'categories'
+    ];
 
     public function Materials()
     {
@@ -70,19 +81,44 @@ class Attribute extends BaseModel
 
     public function getCategoriesAttribute()
     {
-        return $this->Categories()->get()->toArray();
+        return $this->Categories()->get();
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Getters
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Serialize
+    // -
+    // ------------------------------------------------------
 
-    public function getAll(bool $withDeleted = false): Builder
+    protected $serializedNames = [
+        'max_length' => 'maxLength',
+    ];
+
+    protected function serialize(): array
     {
-        $builder = parent::getAll($withDeleted);
-        return $builder->with('categories');
+        $data = $this->baseSerialize();
+
+        switch ($data['type']) {
+            case 'integer':
+            case 'float':
+                unset($data['maxLength']);
+                break;
+
+            case 'string':
+                unset($data['unit']);
+                break;
+
+            default:
+                unset($data['maxLength'], $data['unit']);
+        }
+
+        unset(
+            $data['created_at'],
+            $data['updated_at'],
+            $data['deleted_at'],
+        );
+
+        return $data;
     }
 
     // ——————————————————————————————————————————————————————

@@ -7,7 +7,9 @@
     border: $input-border-size solid $bg-color-input-normal;
     border-radius: $input-border-radius;
     background-color: $bg-color-input-normal;
+    font-family: $text-base-font-family;
     font-size: $input-font-size;
+    line-height: $input-line-height;
 }
 
 .vs {
