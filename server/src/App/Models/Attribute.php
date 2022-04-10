@@ -18,9 +18,6 @@ class Attribute extends BaseModel
     {
         parent::__construct($attributes);
 
-        // TODO: Améliorer la validation:
-        // - `maxLength` ne peut être remplie que si `type` === `string`.
-        // - `unit` ne peut être remplie que si `type` === `integer` | `float`.
         $this->validation = [
             'name' => V::notEmpty()->alnum(static::EXTRA_CHARS)->length(2, 64),
             'type' => V::notEmpty()->oneOf(
@@ -30,9 +27,25 @@ class Attribute extends BaseModel
                 v::equals('boolean'),
                 v::equals('date')
             ),
-            'unit' => V::optional(V::length(1, 8)),
-            'max_length' => V::optional(V::numeric()),
+            'unit' => V::callback([$this, 'checkUnit']),
+            'max_length' => V::callback([$this, 'checkMaxLength']),
         ];
+    }
+
+    public function checkUnit()
+    {
+        if (!in_array($this->type, ['integer', 'float'], true)) {
+            return V::nullType();
+        }
+        return V::optional(V::length(1, 8));
+    }
+
+    public function checkMaxLength()
+    {
+        if ($this->type !== 'string') {
+            return V::nullType();
+        }
+        return V::optional(V::numeric());
     }
 
     // ——————————————————————————————————————————————————————
@@ -40,10 +53,6 @@ class Attribute extends BaseModel
     // —    Relations
     // —
     // ——————————————————————————————————————————————————————
-
-    protected $appends = [
-        'categories'
-    ];
 
     public function Materials()
     {
@@ -139,14 +148,6 @@ class Attribute extends BaseModel
     // —    "Repository" methods
     // —
     // ——————————————————————————————————————————————————————
-
-    public function edit($id = null, array $data = []): BaseModel
-    {
-        if ($id) {
-            $data = ['name' => $data['name']];
-        }
-        return parent::edit($id, $data);
-    }
 
     public function remove($id, array $options = []): ?BaseModel
     {

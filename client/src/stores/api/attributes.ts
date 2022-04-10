@@ -18,7 +18,11 @@ export type Attribute = AttributeBase & (
     | { type: 'boolean' | 'date' }
 );
 
-export type AttributeEdit = Omit<Attribute, 'id'>;
+export type AttributeEdit = {
+    name: string,
+    categories: Array<Category['id']>,
+};
+
 export type AttributePut = Partial<Omit<AttributeEdit, 'type'>>;
 
 //
