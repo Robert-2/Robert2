@@ -38,13 +38,35 @@ export default {
             this.$nextTick(() => this.$refs.addItem.focus());
         },
 
-        handleItemAdded() {
+        handleItemAdded(attribute) {
             this.isAdding = false;
-            this.fetchData();
+
+            console.log('added', attribute);
+            this.attributes.push(attribute);
         },
 
-        handleItemChanged() {
-            this.fetchData();
+        handleItemUpdated(attribute) {
+            console.log('updated', attribute);
+            const index = this.attributes.findIndex(
+                ({ id }) => id === attribute.id,
+            );
+            if (index === -1) {
+                this.fetchData();
+                return;
+            }
+            this.$set(this.attributes, index, attribute);
+        },
+
+        handleItemDeleted(attribute) {
+            console.log('deleted', attribute);
+            const index = this.attributes.findIndex(
+                ({ id }) => id === attribute.id,
+            );
+            if (index === -1) {
+                this.fetchData();
+                return;
+            }
+            this.attributes.splice(index, 1);
         },
 
         handleCancelAdding() {
@@ -79,7 +101,8 @@ export default {
             isLoading,
             handleAddItem,
             handleItemAdded,
-            handleItemChanged,
+            handleItemUpdated,
+            handleItemDeleted,
             handleCancelAdding,
         } = this;
 
@@ -139,8 +162,8 @@ export default {
                                 <Item
                                     key={attribute.id}
                                     attribute={attribute}
-                                    onUpdated={handleItemChanged}
-                                    onDeleted={handleItemChanged}
+                                    onUpdated={handleItemUpdated}
+                                    onDeleted={handleItemDeleted}
                                 />
                             ))}
                         </tbody>

@@ -67,10 +67,10 @@ export default {
 
             try {
                 const data = this.$refs.form.getValues();
-                await apiAttributes.post(data);
+                const attribute = await apiAttributes.post(data);
 
                 this.$refs.form.reset();
-                this.$emit('finished');
+                this.$emit('finished', attribute);
             } catch (error) {
                 const { code, details } = error.response?.data?.error || { code: 0, details: {} };
                 if (code === 400) {

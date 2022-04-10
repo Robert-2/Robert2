@@ -36,12 +36,12 @@ const all = async (categoryId?: Category['id']): Promise<Attribute[]> => {
     return data;
 };
 
-const post = (data: AttributeEdit): Promise<Attribute> => (
-    requester.post('/attributes', data)
+const post = async (data: AttributeEdit): Promise<Attribute> => (
+    (await requester.post('/attributes', data)).data
 );
 
-const put = (id: number, data: AttributePut): Promise<Attribute> => (
-    requester.put(`/attributes/${id}`, data)
+const put = async (id: number, data: AttributePut): Promise<Attribute> => (
+    (await requester.put(`/attributes/${id}`, data)).data
 );
 
 const remove = async (id: number): Promise<void> => {

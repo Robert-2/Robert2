@@ -82,12 +82,12 @@ export default {
             this.validationErrors = null;
 
             try {
-                await apiAttributes.put(id, { name: this.newName });
+                const attribute = await apiAttributes.put(id, { name: this.newName });
 
                 this.newName = null;
                 this.isEditing = false;
 
-                this.$emit('updated', id);
+                this.$emit('updated', attribute);
             } catch (error) {
                 const { code, details } = error.response?.data?.error || { code: 0, details: {} };
                 if (code === 400) {
@@ -105,7 +105,7 @@ export default {
                 return;
             }
 
-            const { $t: __, attribute: { id } } = this;
+            const { $t: __, attribute } = this;
 
             // eslint-disable-next-line no-restricted-syntax
             for (const index of [1, 2]) {
@@ -122,10 +122,10 @@ export default {
 
             this.isDeleting = true;
             try {
-                await apiAttributes.remove(id);
+                await apiAttributes.remove(attribute.id);
 
                 this.isDeleted = true;
-                this.$emit('deleted', id);
+                this.$emit('deleted', attribute);
             } catch {
                 this.$toasted.error(__('errors.unexpected-while-deleting'));
             } finally {
