@@ -102,7 +102,7 @@ const SearchEvents = (props, { root, emit }) => {
                 <div class="SearchEvents__search">
                     <input
                         type="search"
-                        vModel={searchTerm.value}
+                        v-model={searchTerm.value}
                         placeholder={__('type-to-search-event')}
                         class="SearchEvents__search__input"
                         onKeyup={handleKeyUp}

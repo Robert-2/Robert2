@@ -83,7 +83,7 @@ export default {
                         return (
                             <Fragment>
                                 <router-link
-                                    vTooltip={__('page-parks.display-materials-of-this-park')}
+                                    v-tooltip={__('page-parks.display-materials-of-this-park')}
                                     to={`/materials?park=${park.id}`}
                                 >
                                     {__('items-count', { count: park.total_items }, park.total_items)}
@@ -127,7 +127,7 @@ export default {
                                 <Fragment>
                                     <button
                                         type="button"
-                                        vTooltip={__('action-restore')}
+                                        v-tooltip={__('action-restore')}
                                         class="item-actions__button info"
                                         onClick={() => { restorePark(park.id); }}
                                     >
@@ -135,7 +135,7 @@ export default {
                                     </button>
                                     <button
                                         type="button"
-                                        vTooltip={__('action-delete')}
+                                        v-tooltip={__('action-delete')}
                                         class="item-actions__button danger"
                                         onClick={() => { deletePark(park.id); }}
                                     >
@@ -152,7 +152,7 @@ export default {
                                         rel="noreferrer"
                                         target="_blank"
                                         class="button item-actions__button Parks__print-button"
-                                        vTooltip={__('page-parks.print-materials-of-this-park')}
+                                        v-tooltip={__('page-parks.print-materials-of-this-park')}
                                         href={getDownloadListingUrl(park.id)}
                                     >
                                         <i class="fas fa-clipboard-list" />
@@ -162,7 +162,7 @@ export default {
                                     {({ navigate }) => (
                                         <button
                                             type="button"
-                                            vTooltip={__('action-edit')}
+                                            v-tooltip={__('action-edit')}
                                             class="item-actions__button info"
                                             onClick={navigate}
                                         >
@@ -172,7 +172,7 @@ export default {
                                 </router-link>
                                 <button
                                     type="button"
-                                    vTooltip={__('action-trash')}
+                                    v-tooltip={__('action-trash')}
                                     class="item-actions__button warning"
                                     onClick={() => { deletePark(park.id); }}
                                 >

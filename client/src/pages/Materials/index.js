@@ -165,7 +165,7 @@ export default {
                                 <Fragment>
                                     <button
                                         type="button"
-                                        vTooltip={__('action-restore')}
+                                        v-tooltip={__('action-restore')}
                                         class="item-actions__button info"
                                         onClick={() => { restoreMaterial(material.id); }}
                                     >
@@ -173,7 +173,7 @@ export default {
                                     </button>
                                     <button
                                         type="button"
-                                        vTooltip={__('action-delete')}
+                                        v-tooltip={__('action-delete')}
                                         class="item-actions__button danger"
                                         onClick={() => { deleteMaterial(material.id); }}
                                     >
@@ -189,7 +189,7 @@ export default {
                                     {({ navigate }) => (
                                         <button
                                             type="button"
-                                            vTooltip={__('action-view')}
+                                            v-tooltip={__('action-view')}
                                             class="item-actions__button success"
                                             onClick={navigate}
                                         >
@@ -201,7 +201,7 @@ export default {
                                     {({ navigate }) => (
                                         <button
                                             type="button"
-                                            vTooltip={__('action-edit')}
+                                            v-tooltip={__('action-edit')}
                                             class="item-actions__button info"
                                             onClick={navigate}
                                         >
@@ -211,7 +211,7 @@ export default {
                                 </router-link>
                                 <button
                                     type="button"
-                                    vTooltip={__('action-trash')}
+                                    v-tooltip={__('action-trash')}
                                     class="item-actions__button warning"
                                     onClick={() => { deleteMaterial(material.id); }}
                                 >
@@ -560,7 +560,7 @@ export default {
                         <MaterialsFilters baseRoute="/materials" onChange={refreshTableAndPagination} />
                         <div class="Materials__quantities-date">
                             <Datepicker
-                                vModel={this.periodForQuantities}
+                                v-model={this.periodForQuantities}
                                 class="Materials__quantities-date__input"
                                 placeholder={__('page-materials.display-quantities-at-date')}
                                 isRange

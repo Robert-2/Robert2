@@ -112,14 +112,14 @@ export default {
                         <FormField
                             type="select"
                             options={langsOptions}
-                            vModel={settings.language}
+                            v-model={settings.language}
                             errors={errors.language}
                             name="language"
                             label="page-user-settings.interface.language"
                         />
                         <FormField
                             type="number"
-                            vModel={settings.auth_token_validity_duration}
+                            v-model={settings.auth_token_validity_duration}
                             errors={errors.auth_token_validity_duration}
                             name="auth_token_validity_duration"
                             label="page-user-settings.interface.auth-token-validity-duration"

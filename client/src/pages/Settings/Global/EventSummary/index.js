@@ -89,7 +89,7 @@ const EventSummaryGlobalSettings = (props, { root }) => {
                         label="page-settings.event-summary.display-legal-numbers"
                         name="eventSummary.showLegalNumbers"
                         errors={validationErrors.value?.['eventSummary.showLegalNumbers']}
-                        vModel={values.showLegalNumbers}
+                        v-model={values.showLegalNumbers}
                     />
                 </section>
                 <section class="EventSummaryGlobalSettings__section">
@@ -100,7 +100,7 @@ const EventSummaryGlobalSettings = (props, { root }) => {
                         name="eventSummary.materialDisplayMode"
                         options={listModeOptions.value}
                         errors={validationErrors.value?.['eventSummary.materialDisplayMode']}
-                        vModel={values.materialDisplayMode}
+                        v-model={values.materialDisplayMode}
                     />
                 </section>
                 <section class="EventSummaryGlobalSettings__section">
@@ -110,14 +110,14 @@ const EventSummaryGlobalSettings = (props, { root }) => {
                         label="page-settings.event-summary.custom-text-title"
                         name="eventSummary.customText.title"
                         errors={validationErrors.value?.['eventSummary.customText.title']}
-                        vModel={values.customText.title}
+                        v-model={values.customText.title}
                     />
                     <FormField
                         type="textarea"
                         label="page-settings.event-summary.custom-text-content"
                         name="eventSummary.customText.content"
                         errors={validationErrors.value?.['eventSummary.customText.content']}
-                        vModel={values.customText.content}
+                        v-model={values.customText.content}
                     />
                 </section>
                 <section class="EventSummaryGlobalSettings__actions">

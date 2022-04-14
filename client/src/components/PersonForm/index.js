@@ -52,14 +52,14 @@ const PersonForm = (props, { root, emit }) => {
                 <FormField
                     name="first_name"
                     label="first-name"
-                    vModel={person.value.first_name}
+                    v-model={person.value.first_name}
                     errors={errors.value.first_name}
                     required
                 />
                 <FormField
                     name="last_name"
                     label="last-name"
-                    vModel={person.value.last_name}
+                    v-model={person.value.last_name}
                     errors={errors.value.last_name}
                     required
                 />
@@ -67,7 +67,7 @@ const PersonForm = (props, { root, emit }) => {
                     <FormField
                         name="reference"
                         label="reference"
-                        vModel={person.value.reference}
+                        v-model={person.value.reference}
                         errors={errors.value.reference}
                     />
                 )}
@@ -75,7 +75,7 @@ const PersonForm = (props, { root, emit }) => {
                     <FormField
                         name="nickname"
                         label="nickname"
-                        vModel={person.value.nickname}
+                        v-model={person.value.nickname}
                         errors={errors.value.nickname}
                     />
                 )}
@@ -99,33 +99,33 @@ const PersonForm = (props, { root, emit }) => {
                     label="phone"
                     class="PersonForm__phone"
                     type="tel"
-                    vModel={person.value.phone}
+                    v-model={person.value.phone}
                     errors={errors.value.phone}
                 />
                 <FormField
                     name="email"
                     label="email"
                     type="email"
-                    vModel={person.value.email}
+                    v-model={person.value.email}
                     errors={errors.value.email}
                 />
                 <FormField
                     name="street"
                     label="street"
-                    vModel={person.value.street}
+                    v-model={person.value.street}
                     errors={errors.value.street}
                 />
                 <FormField
                     name="postal_code"
                     label="postal-code"
                     class="PersonForm__postal-code"
-                    vModel={person.value.postal_code}
+                    v-model={person.value.postal_code}
                     errors={errors.value.postal_code}
                 />
                 <FormField
                     name="locality"
                     label="city"
-                    vModel={person.value.locality}
+                    v-model={person.value.locality}
                     errors={errors.value.locality}
                 />
                 <FormField
@@ -133,7 +133,7 @@ const PersonForm = (props, { root, emit }) => {
                     label="country"
                     type="select"
                     options={countriesOptions.value}
-                    vModel={person.value.country_id}
+                    v-model={person.value.country_id}
                     errors={errors.value.country_id}
                     placeholder
                 />
@@ -145,7 +145,7 @@ const PersonForm = (props, { root, emit }) => {
                     name="note"
                     type="textarea"
                     class="PersonForm__notes"
-                    vModel={person.value.note}
+                    v-model={person.value.note}
                     errors={errors.value.note}
                 />
             </section>

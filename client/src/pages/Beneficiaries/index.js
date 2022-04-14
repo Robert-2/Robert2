@@ -72,7 +72,7 @@ export default {
 
                         return (
                             <router-link
-                                vTooltip={__('action-edit')}
+                                v-tooltip={__('action-edit')}
                                 to={`/companies/${beneficiary.company.id}`}
                             >
                                 {beneficiary.company.legal_name}{' '}
@@ -109,7 +109,7 @@ export default {
                                 <Fragment>
                                     <button
                                         type="button"
-                                        vTooltip={__('action-restore')}
+                                        v-tooltip={__('action-restore')}
                                         class="item-actions__button info"
                                         onClick={() => { restoreBeneficiary(beneficiary.id); }}
                                     >
@@ -117,7 +117,7 @@ export default {
                                     </button>
                                     <button
                                         type="button"
-                                        vTooltip={__('action-delete')}
+                                        v-tooltip={__('action-delete')}
                                         class="item-actions__button danger"
                                         onClick={() => { deleteBeneficiary(beneficiary.id); }}
                                     >
@@ -130,7 +130,7 @@ export default {
                         return (
                             <Fragment>
                                 <router-link
-                                    vTooltip={__('action-edit')}
+                                    v-tooltip={__('action-edit')}
                                     to={`/beneficiaries/${beneficiary.id}`}
                                     custom
                                 >
@@ -146,7 +146,7 @@ export default {
                                 </router-link>
                                 <button
                                     type="button"
-                                    vTooltip={__('action-trash')}
+                                    v-tooltip={__('action-trash')}
                                     class="item-actions__button warning"
                                     onClick={() => { deleteBeneficiary(beneficiary.id); }}
                                 >
