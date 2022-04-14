@@ -65,7 +65,7 @@ const EventSummaryGlobalSettings = (props, { root }) => {
         isSaving.value = true;
         error.value = null;
         try {
-            await apiSettings.put({ eventSummary: values });
+            await apiSettings.update({ eventSummary: values });
             root.$store.dispatch('settings/fetch');
             isSaved.value = true;
         } catch (err) {

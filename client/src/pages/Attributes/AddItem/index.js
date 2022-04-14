@@ -1,7 +1,7 @@
 import './index.scss';
+import apiAttributes from '@/stores/api/attributes';
 import Button from '@/components/Button';
 import Form from './Form';
-import apiAttributes from '@/stores/api/attributes';
 
 // @vue/component
 export default {
@@ -67,7 +67,7 @@ export default {
 
             try {
                 const data = this.$refs.form.getValues();
-                const attribute = await apiAttributes.post(data);
+                const attribute = await apiAttributes.create(data);
 
                 this.$refs.form.reset();
                 this.$emit('finished', attribute);

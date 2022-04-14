@@ -1,11 +1,11 @@
 import './index.scss';
+import apiAttributes from '@/stores/api/attributes';
 import Page from '@/components/Page';
 import CriticalError from '@/components/CriticalError';
 import Loading from '@/components/Loading';
 import Button from '@/components/Button';
 import Item from './Item';
 import AddItem from './AddItem';
-import apiAttributes from '@/stores/api/attributes';
 
 // @vue/component
 export default {
@@ -40,13 +40,10 @@ export default {
 
         handleItemAdded(attribute) {
             this.isAdding = false;
-
-            console.log('added', attribute);
             this.attributes.push(attribute);
         },
 
         handleItemUpdated(attribute) {
-            console.log('updated', attribute);
             const index = this.attributes.findIndex(
                 ({ id }) => id === attribute.id,
             );
@@ -58,7 +55,6 @@ export default {
         },
 
         handleItemDeleted(attribute) {
-            console.log('deleted', attribute);
             const index = this.attributes.findIndex(
                 ({ id }) => id === attribute.id,
             );

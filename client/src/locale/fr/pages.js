@@ -253,10 +253,10 @@ export default {
         'confirm-permanently-delete': {
             1: (
                 `Voulez-vous vraiment supprimer définitivement cette caractéristique spéciale\u00a0?\n
-                ATTENTION\u00a0: Toutes les données relative à cette caractéristique spéciale seront supprimées DÉFINITIVEMENT\u00a0!!`
+                ATTENTION\u00a0: Toutes les données relatives à cette caractéristique spéciale seront supprimées DÉFINITIVEMENT\u00a0!!`
             ),
             2: (
-                `Désolé d'insister, mais cette opération IRRÉVERSIBLE.\n
+                `Désolé d'insister, mais cette opération est IRRÉVERSIBLE.\n
                 Voulez-vous VRAIMENT supprimer cette caractéristique spéciale\u00a0?`
             ),
         },
@@ -396,7 +396,7 @@ export default {
                 "Si vous re-générez le lien, le précédent sera révoqué et vous devrez communiquer ce nouveau lien aux personnes qui ont légitimement accès au calendrier pour qu'elles le mette à jour.\n\n" +
                 "Voulez-vous vraiment continuer\u00a0?"
             ),
-            'public-calendar-url-reset-error': "Une erreur est survenue lors de la re-génération du lien du calendrier public, veuillez re-essayer.",
+            'public-calendar-url-reset-error': "Une erreur est survenue lors de la re-génération du lien du calendrier public, veuillez ré-essayer.",
             'public-calendar-url-reset-success': "Le lien du calendrier public a bien été re-généré\u00a0! Le nouveau lien est disponible ci-dessus.",
         },
     },

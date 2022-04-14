@@ -50,7 +50,7 @@ const CalendarGlobalSettings = (props, { root }) => {
         isSaving.value = true;
         error.value = null;
         try {
-            await apiSettings.put({ calendar: values });
+            await apiSettings.update({ calendar: values });
             root.$store.dispatch('settings/fetch');
             isSaved.value = true;
         } catch (err) {

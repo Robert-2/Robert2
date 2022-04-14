@@ -1,8 +1,8 @@
 import './index.scss';
 import { Fragment } from 'vue-fragment';
 import { confirm } from '@/utils/alert';
-import Button from '@/components/Button';
 import apiAttributes from '@/stores/api/attributes';
+import Button from '@/components/Button';
 
 // @vue/component
 export default {
@@ -82,7 +82,7 @@ export default {
             this.validationErrors = null;
 
             try {
-                const attribute = await apiAttributes.put(id, { name: this.newName });
+                const attribute = await apiAttributes.update(id, { name: this.newName });
 
                 this.newName = null;
                 this.isEditing = false;
@@ -228,7 +228,7 @@ export default {
                     {formattedMaxLength}
                 </td>
                 <td
-                    class={['AttributesItem__cell AttributesItem__cell--categories', {
+                    class={['AttributesItem__cell', 'AttributesItem__cell--categories', {
                         'AttributesItem__cell--empty': categories.length === 0,
                     }]}
                 >

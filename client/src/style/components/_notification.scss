@@ -1,5 +1,5 @@
 .Notifications {
-    // Note: Increase specificity (for override `.toasted-container` definitions).
+    // Note: Augmente la spécificité (pour surcharger la définition de `.toasted-container`).
     &#{&} {
         min-width: 100%;
         padding: 0 10px;
@@ -24,7 +24,7 @@
 }
 
 .Notification {
-    // Note: Increase specificity (for override `.toasted` definitions).
+    // Note: Augmente la spécificité (pour surcharger la définition de `.toasted`).
     &#{&}.toasted-primary {
         padding: 8px 10px;
         border-radius: 3px;
