@@ -25,6 +25,7 @@
 .swal2-file,
 .swal2-input,
 .swal2-textarea {
+    min-height: $input-min-height;
     padding: $input-padding-vertical $input-padding-horizontal;
     outline: 0;
     border: $input-border-size solid $bg-color-input-normal;

@@ -249,16 +249,14 @@ export default {
         'no-attribute-yet': "No attribute yet.",
         'add-btn': "Add an attribute",
         'limited-to-categories': "Limited to categories",
-        'confirm-permanently-delete': (
-            `Do you really want to permanently delete this special attribute?
-
-            WARNING: All data related to this special attribute will be deleted DEFINITIVELY!!`
-        ),
-        'second-confirm': {
-            'confirm-permanently-delete': (
-                `Sorry to insist, but this operation is IRREVERSIBLE.
-
-        Do you REALLY want to remove this special attribute?`
+        'confirm-permanently-delete': {
+            1: (
+                `Do you really want to permanently delete this special attribute?\n
+                WARNING: All data related to this special attribute will be deleted DEFINITIVELY!!`
+            ),
+            2: (
+                `Sorry to insist, but this operation is IRREVERSIBLE.\n
+                Do you REALLY want to remove this special attribute?`
             ),
         },
     },

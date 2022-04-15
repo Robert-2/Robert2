@@ -2,13 +2,16 @@
 
 select {
     flex: 0 0 auto;
+    min-height: $input-min-height;
     padding: calc(#{$input-padding-vertical} - 1px) $input-padding-horizontal;
     outline: 0;
     border: $input-border-size solid $bg-color-input-normal;
     border-radius: $input-border-radius;
     background-color: $bg-color-input-normal;
     color: $color-input;
+    font-family: $text-base-font-family;
     font-size: $input-font-size;
+    line-height: $input-line-height;
 
     &:focus {
         border-color: $bg-color-button-info;

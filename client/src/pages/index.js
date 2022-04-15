@@ -218,8 +218,6 @@ export default [
         name: 'attributes',
         component: Attributes,
         meta: {
-            resource: 'attributes',
-            title: 'page-attributes.title',
             requiresAuth: true,
             requiresGroups: ['admin'],
         },

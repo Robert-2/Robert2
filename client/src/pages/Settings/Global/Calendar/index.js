@@ -50,7 +50,7 @@ const CalendarGlobalSettings = (props, { root }) => {
         isSaving.value = true;
         error.value = null;
         try {
-            await apiSettings.put({ calendar: values });
+            await apiSettings.update({ calendar: values });
             root.$store.dispatch('settings/fetch');
             isSaved.value = true;
         } catch (err) {
@@ -147,14 +147,14 @@ const CalendarGlobalSettings = (props, { root }) => {
                             label="page-settings.calendar.showLocation"
                             name="calendar.event.showLocation"
                             errors={validationErrors.value?.['calendar.event.showLocation']}
-                            vModel={values.event.showLocation}
+                            v-model={values.event.showLocation}
                         />
                         <FormField
                             type="switch"
                             label="page-settings.calendar.showBorrower"
                             name="calendar.event.showBorrower"
                             errors={validationErrors.value?.['calendar.event.showBorrower']}
-                            vModel={values.event.showBorrower}
+                            v-model={values.event.showBorrower}
                         />
                     </section>
                     <section class="CalendarGlobalSettings__section">
@@ -165,7 +165,7 @@ const CalendarGlobalSettings = (props, { root }) => {
                             label="page-settings.calendar.enable-public-calendar"
                             name="calendar.public.enabled"
                             errors={validationErrors.value?.['calendar.public.enabled']}
-                            vModel={values.public.enabled}
+                            v-model={values.public.enabled}
                         />
                         {renderPublicCalendarUrl()}
                     </section>

@@ -14,41 +14,26 @@ final class AttributesTest extends ApiTestCase
                 'id' => 4,
                 'name' => "Conforme",
                 'type' => "boolean",
-                'unit' => null,
-                'max_length' => null,
                 'categories' => [],
-                'created_at' => null,
-                'updated_at' => null,
-                'deleted_at' => null,
             ],
             [
                 'id' => 2,
                 'name' => "Couleur",
                 'type' => "string",
-                'unit' => null,
-                'max_length' => null,
+                'maxLength' => null,
                 'categories' => [],
-                'created_at' => null,
-                'updated_at' => null,
-                'deleted_at' => null,
             ],
             [
                 'id' => 5,
                 'name' => "Date d'achat",
                 'type' => "date",
-                'unit' => null,
-                'max_length' => null,
                 'categories' => [],
-                'created_at' => null,
-                'updated_at' => null,
-                'deleted_at' => null,
             ],
             [
                 'id' => 1,
                 'name' => "Poids",
                 'type' => "float",
                 'unit' => "kg",
-                'max_length' => null,
                 'categories' => [
                     [
                         'id' => 2,
@@ -69,16 +54,12 @@ final class AttributesTest extends ApiTestCase
                         'pivot' => ['attribute_id' => 1, 'category_id' => 1]
                     ],
                 ],
-                'created_at' => null,
-                'updated_at' => null,
-                'deleted_at' => null,
             ],
             [
                 'id' => 3,
                 'name' => "Puissance",
                 'type' => "integer",
                 'unit' => "W",
-                'max_length' => null,
                 'categories' => [
                     [
                         'id' => 1,
@@ -90,9 +71,6 @@ final class AttributesTest extends ApiTestCase
                         'pivot' => ['attribute_id' => 3, 'category_id' => 1]
                     ],
                 ],
-                'created_at' => null,
-                'updated_at' => null,
-                'deleted_at' => null,
             ],
         ];
         $this->assertEquals($expected, $response);
@@ -110,34 +88,20 @@ final class AttributesTest extends ApiTestCase
                 'id' => 4,
                 'name' => "Conforme",
                 'type' => "boolean",
-                'unit' => null,
-                'max_length' => null,
                 'categories' => [],
-                'created_at' => null,
-                'updated_at' => null,
-                'deleted_at' => null,
             ],
             [
                 'id' => 2,
                 'name' => "Couleur",
                 'type' => "string",
-                'unit' => null,
-                'max_length' => null,
+                'maxLength' => null,
                 'categories' => [],
-                'created_at' => null,
-                'updated_at' => null,
-                'deleted_at' => null,
             ],
             [
                 'id' => 5,
                 'name' => "Date d'achat",
                 'type' => "date",
-                'unit' => null,
-                'max_length' => null,
                 'categories' => [],
-                'created_at' => null,
-                'updated_at' => null,
-                'deleted_at' => null,
             ],
         ];
         $this->assertEquals($expected, $response);
@@ -152,41 +116,26 @@ final class AttributesTest extends ApiTestCase
                 'id' => 4,
                 'name' => "Conforme",
                 'type' => "boolean",
-                'unit' => null,
-                'max_length' => null,
                 'categories' => [],
-                'created_at' => null,
-                'updated_at' => null,
-                'deleted_at' => null,
             ],
             [
                 'id' => 2,
                 'name' => "Couleur",
                 'type' => "string",
-                'unit' => null,
-                'max_length' => null,
+                'maxLength' => null,
                 'categories' => [],
-                'created_at' => null,
-                'updated_at' => null,
-                'deleted_at' => null,
             ],
             [
                 'id' => 5,
                 'name' => "Date d'achat",
                 'type' => "date",
-                'unit' => null,
-                'max_length' => null,
                 'categories' => [],
-                'created_at' => null,
-                'updated_at' => null,
-                'deleted_at' => null,
             ],
             [
                 'id' => 1,
                 'name' => "Poids",
                 'type' => "float",
                 'unit' => "kg",
-                'max_length' => null,
                 'categories' => [
                     [
                         'id' => 2,
@@ -207,9 +156,6 @@ final class AttributesTest extends ApiTestCase
                         'pivot' => ['attribute_id' => 1, 'category_id' => 1]
                     ],
                 ],
-                'created_at' => null,
-                'updated_at' => null,
-                'deleted_at' => null,
             ],
         ];
         $this->assertEquals($expected, $response);
@@ -222,7 +168,6 @@ final class AttributesTest extends ApiTestCase
             'name' => 'Speed',
             'type' => 'float',
             'unit' => 'km/h',
-            'max_length' => 4,
             'categories' => [2, 3],
         ];
         $this->client->post('/api/attributes', $data);
@@ -232,7 +177,6 @@ final class AttributesTest extends ApiTestCase
             'name' => 'Speed',
             'type' => 'float',
             'unit' => 'km/h',
-            'max_length' => 4,
             'categories' => [
                 [
                     'id' => 2,
@@ -250,11 +194,8 @@ final class AttributesTest extends ApiTestCase
                     'pivot' => ['attribute_id' => 6, 'category_id' => 3]
                 ],
             ],
-            'created_at' => 'fakedTestContent',
-            'updated_at' => 'fakedTestContent',
-            'deleted_at' => null,
         ];
-        $this->assertResponseData($expected, ['created_at', 'updated_at']);
+        $this->assertResponseData($expected);
     }
 
     public function testUpdateAttribute()
@@ -264,7 +205,6 @@ final class AttributesTest extends ApiTestCase
             'name' => 'Masse',
             'type' => 'integer',
             'unit' => 'g',
-            'max_length' => 10,
         ];
         $this->client->put('/api/attributes/1', $data);
         $this->assertStatusCode(SUCCESS_OK);
@@ -274,11 +214,27 @@ final class AttributesTest extends ApiTestCase
             'name' => 'Masse',
             'type' => 'float',
             'unit' => 'kg',
-            'max_length' => null,
-            'created_at' => null,
-            'updated_at' => 'fakedTestContent',
-            'deleted_at' => null,
+            'categories' => [
+                [
+                    'id' => 2,
+                    'name' => "light",
+                    'sub_categories' => [
+                        ['id' => 4, 'name' => 'dimmers', 'category_id' => 2],
+                        ['id' => 3, 'name' => 'projectors', 'category_id' => 2],
+                    ],
+                    'pivot' => ['attribute_id' => 1, 'category_id' => 2]
+                ],
+                [
+                    'id' => 1,
+                    'name' => "sound",
+                    'sub_categories' => [
+                        ['id' => 1, 'name' => 'mixers', 'category_id' => 1],
+                        ['id' => 2, 'name' => 'processors', 'category_id' => 1],
+                    ],
+                    'pivot' => ['attribute_id' => 1, 'category_id' => 1]
+                ],
+            ],
         ];
-        $this->assertResponseData($expected, ['updated_at']);
+        $this->assertResponseData($expected);
     }
 }

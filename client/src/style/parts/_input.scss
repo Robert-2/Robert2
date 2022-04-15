@@ -3,6 +3,7 @@
 input,
 textarea {
     flex: 0 0 auto;
+    min-height: $input-min-height;
     padding: $input-padding-vertical $input-padding-horizontal;
     outline: 0;
     border: $input-border-size solid $bg-color-input-normal;
@@ -11,6 +12,7 @@ textarea {
     color: $color-input;
     font-family: $text-base-font-family;
     font-size: $input-font-size;
+    line-height: $input-line-height;
 
     &:focus {
         border-color: $input-focus-border-color;

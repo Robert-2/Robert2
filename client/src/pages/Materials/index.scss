@@ -1,4 +1,5 @@
 @use '~@/style/globals';
+@use 'sass:math';
 
 .Materials {
     &__main-view {
@@ -146,6 +147,7 @@
             right: calc(#{globals.$content-padding-large-vertical} + 45px + #{globals.$content-padding-small-vertical});
             flex-wrap: nowrap;
             align-items: center;
+            margin-left: math.div(globals.$content-padding-small-vertical, 2);
 
             .MaterialsFilters {
                 flex-wrap: nowrap;

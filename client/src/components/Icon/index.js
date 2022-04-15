@@ -27,7 +27,7 @@ const Icon = (props) => {
     const baseClass = computed(() => VARIANT_MAP[variant.value]);
     return () => (
         <i
-            class={[baseClass.value, `fa-${name.value}`, { 'fa-spin': spin.value }]}
+            class={['Icon', baseClass.value, `fa-${name.value}`, { 'fa-spin': spin.value }]}
             aria-hidden="true"
         />
     );

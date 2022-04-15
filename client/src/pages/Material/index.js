@@ -1,6 +1,7 @@
 import './index.scss';
 import Config from '@/globals/config';
 import queryClient from '@/globals/queryClient';
+import apiAttributes from '@/stores/api/attributes';
 import formatOptions from '@/utils/formatOptions';
 import Help from '@/components/Help';
 import FormField from '@/components/FormField';
@@ -143,8 +144,7 @@ export default {
             }
 
             try {
-                const { data } = await this.$http.get(`attributes?category=${categoryId}`);
-                this.extraAttributes = data;
+                this.extraAttributes = await apiAttributes.all(categoryId);
             } catch (error) {
                 this.displayError(error);
             }

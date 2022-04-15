@@ -90,8 +90,9 @@ Vue.use(ServerTable, tablesConfig, true);
 // - Toast notifications
 Vue.use(Toasted, {
     duration: 5000,
-    position: 'bottom-right',
+    position: 'top-right',
     className: 'Notification',
+    containerClass: 'Notifications',
     action: {
         text: Vue.i18n.translate('close'),
         onClick: (e, toastObject) => {

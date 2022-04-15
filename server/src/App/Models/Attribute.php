@@ -3,11 +3,15 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
-use Illuminate\Database\Eloquent\Builder;
 use Robert2\API\Validation\Validator as V;
+use Robert2\API\Models\Traits\Serializer;
 
 class Attribute extends BaseModel
 {
+    use Serializer {
+        serialize as baseSerialize;
+    }
+
     protected $orderField = 'id';
 
     public function __construct(array $attributes = [])
@@ -23,9 +27,25 @@ class Attribute extends BaseModel
                 v::equals('boolean'),
                 v::equals('date')
             ),
-            'unit' => V::optional(V::length(1, 8)),
-            'max_length' => V::optional(V::numeric()),
+            'unit' => V::callback([$this, 'checkUnit']),
+            'max_length' => V::callback([$this, 'checkMaxLength']),
         ];
+    }
+
+    public function checkUnit()
+    {
+        if (!in_array($this->type, ['integer', 'float'], true)) {
+            return V::nullType();
+        }
+        return V::optional(V::length(1, 8));
+    }
+
+    public function checkMaxLength()
+    {
+        if ($this->type !== 'string') {
+            return V::nullType();
+        }
+        return V::optional(V::numeric());
     }
 
     // ——————————————————————————————————————————————————————
@@ -70,19 +90,44 @@ class Attribute extends BaseModel
 
     public function getCategoriesAttribute()
     {
-        return $this->Categories()->get()->toArray();
+        return $this->Categories()->get();
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Getters
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Serialize
+    // -
+    // ------------------------------------------------------
 
-    public function getAll(bool $withDeleted = false): Builder
+    protected $serializedNames = [
+        'max_length' => 'maxLength',
+    ];
+
+    protected function serialize(): array
     {
-        $builder = parent::getAll($withDeleted);
-        return $builder->with('categories');
+        $data = $this->baseSerialize();
+
+        switch ($data['type']) {
+            case 'integer':
+            case 'float':
+                unset($data['maxLength']);
+                break;
+
+            case 'string':
+                unset($data['unit']);
+                break;
+
+            default:
+                unset($data['maxLength'], $data['unit']);
+        }
+
+        unset(
+            $data['created_at'],
+            $data['updated_at'],
+            $data['deleted_at'],
+        );
+
+        return $data;
     }
 
     // ——————————————————————————————————————————————————————
@@ -103,14 +148,6 @@ class Attribute extends BaseModel
     // —    "Repository" methods
     // —
     // ——————————————————————————————————————————————————————
-
-    public function edit($id = null, array $data = []): BaseModel
-    {
-        if ($id) {
-            $data = ['name' => $data['name']];
-        }
-        return parent::edit($id, $data);
-    }
 
     public function remove($id, array $options = []): ?BaseModel
     {

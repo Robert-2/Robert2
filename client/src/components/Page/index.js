@@ -46,7 +46,9 @@ export default defineComponent({
                 <div class="header-page__help">
                     {isLoading && <Loading horizontal />}
                     {!isLoading && error && <ErrorMessage error={error} />}
-                    {!isLoading && !error && help}
+                    {!!(help && !error && !isLoading) && (
+                        <div class="header-page__intro">{help}</div>
+                    )}
                 </div>
             );
         };

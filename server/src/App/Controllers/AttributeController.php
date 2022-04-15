@@ -3,17 +3,23 @@ declare(strict_types=1);
 
 namespace Robert2\API\Controllers;
 
-use Robert2\API\Controllers\Traits\WithCrud;
+use Illuminate\Database\Eloquent\Builder;
 use Robert2\API\Models\Attribute;
 use Slim\Http\Response;
 use Slim\Http\ServerRequest as Request;
 
 class AttributeController extends BaseController
 {
-    use WithCrud;
+    public function getOne(Request $request, Response $response): Response
+    {
+        $id = (int)$request->getAttribute('id');
+        $attribute = Attribute::findOrFail($id)->append('categories');
+        return $response->withJson($attribute->toArray());
+    }
 
     public function getAll(Request $request, Response $response): Response
     {
+        /** @var Builder $attributes */
         $attributes = Attribute::orderBy('name', 'asc');
 
         $categoryId = $request->getQueryParam('category', null);
@@ -25,8 +31,8 @@ class AttributeController extends BaseController
                 });
         }
 
-        $results = $attributes->with('categories')->get()->toArray();
-        return $response->withJson($results);
+        $attributes = $attributes->with('categories');
+        return $response->withJson($attributes->get());
     }
 
     public function create(Request $request, Response $response): Response
@@ -44,9 +50,33 @@ class AttributeController extends BaseController
             $attribute->Categories()->sync($postData['categories']);
         }
 
-        $categories = $attribute->Categories()->get()->toArray();
-        $result = $attribute->toArray() + compact('categories');
+        $attribute = $attribute->append('categories');
+        return $response->withJson($attribute, SUCCESS_CREATED);
+    }
 
-        return $response->withJson($result, SUCCESS_CREATED);
+    public function update(Request $request, Response $response): Response
+    {
+        $rawData = (array)$request->getParsedBody();
+        if (empty($rawData) || !is_array($rawData)) {
+            throw new \InvalidArgumentException(
+                "Missing request data to process validation",
+                ERROR_VALIDATION
+            );
+        }
+
+        $id = (int)$request->getAttribute('id');
+        $data = array_intersect_key($rawData, array_flip(['name']));
+
+        $attribute = Attribute::staticEdit($id, $data)
+            ->append('categories');
+
+        return $response->withJson($attribute);
+    }
+
+    public function delete(Request $request, Response $response): Response
+    {
+        $id = (int)$request->getAttribute('id');
+        Attribute::staticRemove($id);
+        return $response;
     }
 }

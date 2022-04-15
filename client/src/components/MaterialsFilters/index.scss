@@ -15,10 +15,8 @@
     }
 
     &__item {
-        padding: 8px 10px;
-
         &--tags {
-            height: 35px;
+            height: 38px;
             min-width: 160px;
             margin-right: math.div(globals.$content-padding-small-vertical, 2);
             padding: 0 globals.$content-padding-small-horizontal;
@@ -26,7 +24,7 @@
     }
 
     &__reset {
-        height: 35px;
+        height: 38px;
     }
 
     &__item--is-active {

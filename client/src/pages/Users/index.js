@@ -124,7 +124,7 @@ export default {
                                 <Fragment>
                                     <button
                                         type="button"
-                                        vTooltip={__('action-restore')}
+                                        v-tooltip={__('action-restore')}
                                         class="item-actions__button info"
                                         onClick={() => { restoreUser(user.id); }}
                                     >
@@ -133,7 +133,7 @@ export default {
                                     {!isUserAdmin && (
                                         <button
                                             type="button"
-                                            vTooltip={__('action-delete')}
+                                            v-tooltip={__('action-delete')}
                                             class="item-actions__button danger"
                                             onClick={() => { deleteUser(user.id); }}
                                         >
@@ -150,7 +150,7 @@ export default {
                                     {({ navigate }) => (
                                         <button
                                             type="button"
-                                            vTooltip={__('action-edit')}
+                                            v-tooltip={__('action-edit')}
                                             class="item-actions__button info"
                                             onClick={navigate}
                                         >
@@ -162,7 +162,7 @@ export default {
                                 {!isUserAdmin && (
                                     <button
                                         type="button"
-                                        vTooltip={__('action-trash')}
+                                        v-tooltip={__('action-trash')}
                                         class="item-actions__button warning"
                                         onClick={() => { deleteUser(user.id); }}
                                     >

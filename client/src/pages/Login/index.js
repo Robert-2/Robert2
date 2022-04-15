@@ -82,14 +82,14 @@ export default {
                     <form class="Login__form" onSubmit={handleSubmit}>
                         <input
                             type="text"
-                            vModel={credentials.identifier}
+                            v-model={credentials.identifier}
                             autocomplete="username"
                             class="Login__form__input"
                             placeholder={__('email-address-or-pseudo')}
                         />
                         <input
                             type="password"
-                            vModel={credentials.password}
+                            v-model={credentials.password}
                             autocomplete="current-password"
                             class="Login__form__input"
                             placeholder={__('password')}

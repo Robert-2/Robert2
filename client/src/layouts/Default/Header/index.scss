@@ -24,16 +24,23 @@
         flex: 0 0 auto;
         display: flex;
         align-items: center;
-        padding: 0 globals.$content-padding-large-vertical;
+        padding: 0 1.5rem;
         cursor: pointer;
         align-self: stretch;
+
+        > .Icon {
+            font-size: 1.5rem;
+        }
     }
 
     &__title {
         flex: 1;
+        overflow: hidden;
         color: #fff;
-        font-size: 1.6rem;
+        font-size: 1.15rem;
         font-weight: 400;
+        white-space: nowrap;
+        text-overflow: ellipsis;
     }
 
     &__menu {
@@ -42,6 +49,10 @@
         flex-flow: row nowrap;
         align-self: stretch;
     }
+
+    //
+    // - Responsive
+    //
 
     @media (min-width: globals.$screen-mobile) {
         &__logo {
@@ -54,6 +65,12 @@
 
         &__title {
             padding-left: globals.$content-padding-small-vertical;
+        }
+    }
+
+    @media (min-width: globals.$screen-tablet) {
+        &__title {
+            font-size: 1.6rem;
         }
     }
 

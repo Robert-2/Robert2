@@ -31,7 +31,7 @@ const all = async (): Promise<Settings> => (
     (await requester.get('settings')).data
 );
 
-const put = async (data: Partial<Settings>): Promise<Settings> => (
+const update = async (data: Partial<Settings>): Promise<Settings> => (
     (await requester.put('settings', data)).data
 );
 
@@ -39,4 +39,4 @@ const reset = async (key: string): Promise<Settings> => (
     (await requester.delete(`/settings/${key}`)).data
 );
 
-export default { all, put, reset };
+export default { all, update, reset };

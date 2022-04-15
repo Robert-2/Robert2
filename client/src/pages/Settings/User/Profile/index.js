@@ -172,14 +172,14 @@ export default {
                         <h3 class="ProfileUserSettings__section__title">{__('connexion-infos')}</h3>
                         <div class="ProfileUserSettings__section__body">
                             <FormField
-                                vModel={user.pseudo}
+                                v-model={user.pseudo}
                                 name="pseudo"
                                 label="pseudo"
                                 required
                                 errors={errors.pseudo}
                             />
                             <FormField
-                                vModel={user.email}
+                                v-model={user.email}
                                 name="email"
                                 label="email"
                                 type="email"
@@ -197,14 +197,14 @@ export default {
                         </p>
                         <div class="ProfileUserSettings__section__body">
                             <FormField
-                                vModel={user.password}
+                                v-model={user.password}
                                 name="password"
                                 label="password"
                                 type="password"
                                 errors={errors.password}
                             />
                             <FormField
-                                vModel={user.password_confirmation}
+                                v-model={user.password_confirmation}
                                 name="passwordConfirmation"
                                 label="page-user-settings.profile.password-confirmation"
                                 type="password"
@@ -215,45 +215,45 @@ export default {
                         <h3 class="ProfileUserSettings__section__title">{__('personal-infos')}</h3>
                         <div class="ProfileUserSettings__section__body">
                             <FormField
-                                vModel={user.person.first_name}
+                                v-model={user.person.first_name}
                                 name="first_name"
                                 label="first-name"
                                 errors={errors.first_name}
                             />
                             <FormField
-                                vModel={user.person.last_name}
+                                v-model={user.person.last_name}
                                 name="last_name"
                                 label="last-name"
                                 errors={errors.last_name}
                             />
                             <FormField
-                                vModel={user.person.nickname}
+                                v-model={user.person.nickname}
                                 name="nickname"
                                 label="nickname"
                                 errors={errors.nickname}
                             />
                             <FormField
-                                vModel={user.person.phone}
+                                v-model={user.person.phone}
                                 name="phone"
                                 label="phone"
                                 type="tel"
                                 errors={errors.phone}
                             />
                             <FormField
-                                vModel={user.person.street}
+                                v-model={user.person.street}
                                 name="street"
                                 label="street"
                                 errors={errors.street}
                             />
                             <FormField
-                                vModel={user.person.postal_code}
+                                v-model={user.person.postal_code}
                                 name="postal_code"
                                 label="postal-code"
                                 class="ProfileUserSettings__postal-code"
                                 errors={errors.postal_code}
                             />
                             <FormField
-                                vModel={user.person.locality}
+                                v-model={user.person.locality}
                                 name="locality"
                                 label="city"
                                 errors={errors.locality}

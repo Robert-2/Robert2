@@ -30,7 +30,7 @@ const Button = (props, { slots, emit }) => {
         `Button--${type.value}`, {
             'Button--disabled': disabled.value || loading.value,
             'Button--loading': loading.value,
-            'Button--with-icon': !!_icon,
+            'Button--with-icon': !!_icon.value,
         },
     ]);
 
