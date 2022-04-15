@@ -3,6 +3,7 @@
 @import 'vue-select/src/scss/vue-select';
 
 .v-select {
+    min-height: $input-min-height;
     padding: 0 $input-padding-horizontal;
     border: $input-border-size solid $bg-color-input-normal;
     border-radius: $input-border-radius;

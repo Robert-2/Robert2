@@ -2,6 +2,7 @@
 
 select {
     flex: 0 0 auto;
+    min-height: $input-min-height;
     padding: calc(#{$input-padding-vertical} - 1px) $input-padding-horizontal;
     outline: 0;
     border: $input-border-size solid $bg-color-input-normal;

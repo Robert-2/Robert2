@@ -29,6 +29,7 @@
 
     &-input {
         height: auto;
+        min-height: globals.$input-min-height;
         padding: globals.$input-padding-vertical globals.$input-padding-horizontal;
         background-color: globals.$bg-color-input-normal;
         font-size: globals.$input-font-size;
