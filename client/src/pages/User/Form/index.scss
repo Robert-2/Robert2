@@ -1,0 +1,37 @@
+@use '~@/style/globals';
+
+.UserEditForm {
+    $block: &;
+
+    &__name {
+        display: flex;
+        margin-bottom: globals.$content-padding-small-vertical;
+
+        #{$block}__first-name,
+        #{$block}__last-name {
+            flex: 1;
+        }
+
+        #{$block}__last-name {
+            // stylelint-disable-next-line declaration-no-important -- Pour surcharger `.FormField`.
+            margin: 0 0 0 10px !important;
+        }
+    }
+
+    &__locality {
+        display: flex;
+        margin: globals.$content-padding-small-vertical 0;
+
+        #{$block}__postal-code {
+            flex: unset;
+            width: 120px;
+        }
+
+        #{$block}__city {
+            /* stylelint-disable declaration-no-important -- Pour surcharger `.FormField`. */
+            flex: 1 !important;
+            margin: 0 0 0 10px !important;
+            /* stylelint-enable declaration-no-important -- Pour surcharger `.FormField`. */
+        }
+    }
+}

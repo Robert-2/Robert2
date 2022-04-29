@@ -1,115 +1,174 @@
 import './index.scss';
-import Config from '@/globals/config';
-import Help from '@/components/Help';
-import CompanyForm from '@/components/CompanyForm';
+import Page from '@/components/Page';
+import CriticalError from '@/components/CriticalError';
+import Loading from '@/components/Loading';
+import Form from './Form';
+import apiCompanies from '@/stores/api/companies';
 
 // @vue/component
 export default {
     name: 'Company',
-    components: { Help, CompanyForm },
     data() {
+        const id = this.$route.params.id && this.$route.params.id !== 'new'
+            ? this.$route.params.id
+            : null;
+
         return {
-            help: 'page-companies.help-edit',
-            error: null,
-            isLoading: false,
-            isFetched: false,
-            company: {
-                id: this.$route.params.id || null,
-                legal_name: '',
-                street: '',
-                postal_code: '',
-                locality: '',
-                country_id: '',
-                phone: '',
-                note: '',
-            },
-            persons: [],
-            errors: {
-                legal_name: null,
-                street: null,
-                postal_code: null,
-                locality: null,
-                country_id: null,
-                phone: null,
-            },
+            id,
+            isFetched: id === null,
+            isSaving: false,
+            hasCriticalError: false,
+            company: null,
+            // persons: [],
+            validationErrors: null,
         };
     },
+    computed: {
+        isNew() {
+            return this.id === null;
+        },
+        pageTitle() {
+            const { $t: __, isNew, isFetched, company } = this;
+
+            if (isNew) {
+                return __('page-company.title-create');
+            }
+
+            return isFetched
+                ? __('page-company.title-edit', { name: company.legal_name })
+                : __('page-company.title-edit-simple');
+        },
+    },
     mounted() {
-        this.getData();
+        this.fetchData();
     },
     methods: {
-        async getData() {
-            const { id } = this.company;
-            if (!id || id === 'new') {
+        // ------------------------------------------------------
+        // -
+        // -    Handlers
+        // -
+        // ------------------------------------------------------
+
+        handleSubmit(data) {
+            this.save(data);
+        },
+
+        // ------------------------------------------------------
+        // -
+        // -    Internal methods
+        // -
+        // ------------------------------------------------------
+
+        async fetchData() {
+            if (this.isNew) {
                 this.isFetched = true;
                 return;
             }
 
-            this.resetHelpLoading();
-
             try {
-                const { data: companyData } = await this.$http.get(`companies/${id}`);
-                this.setCompany(companyData);
-
-                const { data: personsData } = await this.$http.get(`companies/${id}/persons`);
-                this.persons = personsData.data;
-            } catch (error) {
-                this.displayError(error);
-            } finally {
-                this.isLoading = false;
+                this.company = await apiCompanies.one(this.id);
                 this.isFetched = true;
+
+                // TODO: À refactorer si ré-introduit.
+                // const { data: personsData } = await this.$http.get(`companies/${this.id}/persons`);
+                // this.persons = personsData.data;
+            } catch {
+                this.hasCriticalError = true;
             }
         },
 
-        async save(formData) {
-            this.resetHelpLoading();
+        async save(data) {
+            if (this.isSaving) {
+                return;
+            }
 
-            const { id } = this.company;
+            const { $t: __ } = this;
 
-            const request = id ? this.$http.put : this.$http.post;
-            const route = id ? `companies/${id}` : 'companies';
+            this.isSaving = true;
+
+            const doRequest = () => {
+                // FIXME: Pourquoi caster `country_id` et surtout, sans checker sa valeur avant ?
+                const _data = { ...data, country_id: parseInt(data.country_id, 10) };
+                return this.id
+                    ? apiCompanies.update(this.id, _data)
+                    : apiCompanies.create(_data);
+            };
 
             try {
-                const companyData = { ...formData, country_id: parseInt(formData.country_id, 10) };
-                if (!id) {
-                    companyData.tags = [Config.beneficiaryTagName];
-                }
+                this.company = await doRequest();
+                this.id = this.company.id;
 
-                const { data } = await request(route, companyData);
-                this.setCompany(data);
-                this.help = { type: 'success', text: 'page-companies.saved' };
+                this.validationErrors = null;
 
+                // - Actualise la liste des sociétés dans le store global.
                 this.$store.dispatch('companies/refresh');
 
-                setTimeout(() => {
-                    this.$router.back();
-                }, 300);
+                // - Redirection...
+                this.$toasted.success(__('page-company.saved'));
+                this.$router.back();
             } catch (error) {
-                this.displayError();
+                const { code, details } = error.response?.data?.error || { code: 0, details: {} };
+                if (code === 400) {
+                    this.validationErrors = { ...details };
+                } else {
+                    this.$toasted.error(__('errors.unexpected-while-saving'));
+                }
             } finally {
-                this.isLoading = false;
+                this.isSaving = false;
             }
         },
+    },
+    render() {
+        const {
+            $t: __,
+            pageTitle,
+            isSaving,
+            isFetched,
+            company,
+            // persons,
+            handleSubmit,
+            hasCriticalError,
+            validationErrors,
+        } = this;
 
-        resetHelpLoading() {
-            this.help = 'page-companies.help-edit';
-            this.error = null;
-            this.isLoading = true;
-        },
+        if (hasCriticalError || !isFetched) {
+            return (
+                <Page name="company-edit" title={pageTitle}>
+                    {hasCriticalError ? <CriticalError /> : <Loading />}
+                </Page>
+            );
+        }
 
-        displayError(error) {
-            this.help = 'page-companies.help-edit';
-            this.error = error;
-
-            const { code, details } = error.response?.data?.error || { code: 0, details: {} };
-            if (code === 400) {
-                this.errors = { ...details };
-            }
-        },
-
-        setCompany(data) {
-            this.company = data;
-            this.$store.commit('setPageSubTitle', data.legal_name);
-        },
+        return (
+            <Page
+                name="company-edit"
+                title={pageTitle}
+                help={__('page-company.help')}
+                error={validationErrors ? __('errors.validation') : undefined}
+            >
+                <div class="CompanyEdit">
+                    <Form
+                        savedData={company}
+                        isSaving={isSaving}
+                        errors={validationErrors}
+                        onSubmit={handleSubmit}
+                    />
+                    {/*
+                    {persons.length > 0 && (
+                        <div class="CompanyEdit__persons">
+                            <h4 class="CompanyEdit__persons__title">
+                                {__('page-company.attached-persons')}
+                            </h4>
+                            <ul class="CompanyEdit__persons__list">
+                                {persons.map(({ id, full_name: fullName }) => (
+                                    <li key={id}>{fullName}</li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
+                    */}
+                </div>
+            </Page>
+        );
     },
 };

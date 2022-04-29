@@ -9,11 +9,7 @@
                     @change="handleFormChange"
                     :key="entitiesState"
                 >
-                    <section class="Form__fieldset">
-                        <h4 class="Form__fieldset__title">
-                            {{ $t('minimal-infos') }}
-                            <span class="FormField__label__required">*</span>
-                        </h4>
+                    <Fieldset :title="$t('minimal-infos')" required>
                         <FormField
                             v-model="material.name"
                             name="name"
@@ -78,11 +74,8 @@
                             class="Material__quantity"
                             :errors="errors.stock_quantity"
                         />
-                    </section>
-                    <section class="Form__fieldset">
-                        <h4 class="Form__fieldset__title">
-                            {{ $t('extra-infos') }}
-                        </h4>
+                    </Fieldset>
+                    <Fieldset :title="$t('extra-infos')">
                         <FormField
                             v-model="material.description"
                             name="description"
@@ -115,11 +108,8 @@
                             type="textarea"
                             :errors="errors.note"
                         />
-                    </section>
-                    <section v-if="showBilling" class="Form__fieldset">
-                        <h4 class="Form__fieldset__title">
-                            {{ $t('billing-infos') }}
-                        </h4>
+                    </Fieldset>
+                    <Fieldset v-if="showBilling" :title="$t('billing-infos')">
                         <FormField
                             v-model="material.is_discountable"
                             name="is_discountable"
@@ -136,11 +126,8 @@
                             type="switch"
                             :errors="errors.is_hidden_on_bill"
                         />
-                    </section>
-                    <section class="Form__fieldset" v-if="extraAttributes.length > 0">
-                        <h4 class="Form__fieldset__title">
-                            {{ $t('special-attributes') }}
-                        </h4>
+                    </Fieldset>
+                    <Fieldset v-if="extraAttributes.length > 0" :title="$t('special-attributes')">
                         <div class="Material__attributes">
                             <FormField
                                 v-for="extraAttribute in extraAttributes"
@@ -157,7 +144,7 @@
                             <i class="fas fa-info-circle Material__attributes-help__icon" />
                             {{ $t('page-materials.more-attribute-when-category-selected') }}
                         </p>
-                    </section>
+                    </Fieldset>
                     <section class="Form__actions">
                         <button class="Form__actions__save success" type="submit">
                             <i class="fas fa-save" />

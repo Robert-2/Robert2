@@ -24,15 +24,15 @@ export type Settings = {
 };
 
 //
-// - Functions
+// - Fonctions
 //
 
 const all = async (): Promise<Settings> => (
-    (await requester.get('settings')).data
+    (await requester.get('/settings')).data
 );
 
 const update = async (data: Partial<Settings>): Promise<Settings> => (
-    (await requester.put('settings', data)).data
+    (await requester.put('/settings', data)).data
 );
 
 const reset = async (key: string): Promise<Settings> => (

@@ -1,9 +1,27 @@
 @use '~@/style/globals';
 
+.Page--users {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+
+    .Users {
+        flex: 1;
+    }
+}
+
 .Users {
+    display: flex;
+    flex-direction: column;
+
+    &__table {
+        flex: 1;
+    }
+
     &__pseudo {
-        .fas {
-            padding-right: 0.5rem;
+        .Icon {
+            margin-right: 0.5rem;
         }
     }
 

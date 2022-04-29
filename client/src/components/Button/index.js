@@ -2,14 +2,74 @@ import './index.scss';
 import { toRefs, computed } from '@vue/composition-api';
 import { Fragment } from 'vue-fragment';
 import Icon from '@/components/Icon';
+import useI18n from '@/hooks/vue/useI18n';
 
-const BUTTON_TYPE = ['default', 'success', 'warning', 'danger', 'primary'];
+const TYPES = ['default', 'success', 'warning', 'danger', 'primary'];
+
+// NOTE: L'idée ici n'est pas d'ajouter tous les types possibles mais uniquement ceux
+// qui se retrouvent à de multiples endroits (pour éviter d'avoir des soucis de cohérence)
+const PREDEFINED_TYPES = {
+    add: {
+        type: 'success',
+        icon: 'plus',
+    },
+    edit: (__) => ({
+        type: 'success',
+        icon: 'edit',
+        tooltip: __('action-edit'),
+    }),
+    trash: (__) => ({
+        type: 'danger',
+        icon: 'trash',
+        tooltip: __('action-trash'),
+    }),
+    delete: (__) => ({
+        type: 'danger',
+        icon: 'trash-alt',
+        tooltip: __('action-delete'),
+    }),
+    restore: (__) => ({
+        type: 'success',
+        icon: 'trash-restore',
+        tooltip: __('action-restore'),
+    }),
+};
 
 // @vue/component
 const Button = (props, { slots, emit }) => {
-    const { htmlType, icon, disabled, type, to, loading } = toRefs(props);
+    const __ = useI18n();
+    const {
+        htmlType,
+        icon,
+        disabled,
+        type,
+        to,
+        loading,
+        tooltip,
+    } = toRefs(props);
+
+    const getPredefinedValue = (key) => {
+        if (!Object.keys(PREDEFINED_TYPES).includes(type.value)) {
+            return undefined;
+        }
+
+        const value = typeof PREDEFINED_TYPES[type.value] === 'function'
+            ? PREDEFINED_TYPES[type.value](__)
+            : PREDEFINED_TYPES[type.value];
+
+        return value[key] ?? null;
+    };
+
+    const _type = computed(() => {
+        const predefinedValue = getPredefinedValue('type');
+        return predefinedValue !== undefined
+            ? (predefinedValue ?? 'default')
+            : type.value;
+    });
+
     const _icon = computed(() => {
-        if (!icon.value) {
+        const __icon = icon.value ?? getPredefinedValue('icon');
+        if (!__icon) {
             return null;
         }
 
@@ -17,17 +77,33 @@ const Button = (props, { slots, emit }) => {
             return { name: 'spinner', spin: true };
         }
 
-        if (!icon.value.includes(':')) {
-            return { name: icon.value };
+        if (!__icon.includes(':')) {
+            return { name: __icon };
         }
 
-        const [iconType, variant] = icon.value.split(':');
+        const [iconType, variant] = __icon.split(':');
         return { name: iconType, variant };
+    });
+
+    const _tooltip = computed(() => {
+        const predefinedValue = getPredefinedValue('tooltip');
+        if (predefinedValue == null || typeof tooltip.value === 'string') {
+            return tooltip.value;
+        }
+
+        if (tooltip.value == null) {
+            return predefinedValue;
+        }
+
+        return {
+            ...tooltip.value,
+            'content': tooltip.value.content ?? predefinedValue,
+        };
     });
 
     const _className = computed(() => [
         'Button',
-        `Button--${type.value}`, {
+        `Button--${_type.value}`, {
             'Button--disabled': disabled.value || loading.value,
             'Button--loading': loading.value,
             'Button--with-icon': !!_icon.value,
@@ -48,7 +124,12 @@ const Button = (props, { slots, emit }) => {
             return (
                 <router-link to={to.value} custom>
                     {({ href, navigate: handleClick }) => (
-                        <a href={href} onClick={handleClick} class={_className.value}>
+                        <a
+                            href={href}
+                            onClick={handleClick}
+                            v-tooltip={_tooltip.value}
+                            class={_className.value}
+                        >
                             {content}
                         </a>
                     )}
@@ -62,6 +143,7 @@ const Button = (props, { slots, emit }) => {
                 type={htmlType.value}
                 class={_className.value}
                 disabled={disabled.value || loading.value}
+                v-tooltip={!disabled.value ? _tooltip.value : undefined}
                 onClick={emit.bind(null, 'click')}
             >
                 {content}
@@ -80,10 +162,18 @@ Button.props = {
     },
     type: {
         type: String,
-        validator: (value) => BUTTON_TYPE.includes(value),
+        validator: (value) => (
+            [TYPES, Object.keys(PREDEFINED_TYPES)]
+                .flat()
+                .includes(value)
+        ),
         default: 'default',
     },
     to: {
+        type: [String, Object],
+        default: undefined,
+    },
+    tooltip: {
         type: [String, Object],
         default: undefined,
     },

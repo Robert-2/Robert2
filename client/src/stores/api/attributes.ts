@@ -26,7 +26,7 @@ export type AttributeEdit = {
 export type AttributePut = Partial<Omit<AttributeEdit, 'type'>>;
 
 //
-// - Functions
+// - Fonctions
 //
 
 const all = async (categoryId?: Category['id']): Promise<Attribute[]> => {
@@ -40,11 +40,11 @@ const create = async (data: AttributeEdit): Promise<Attribute> => (
     (await requester.post('/attributes', data)).data
 );
 
-const update = async (id: number, data: AttributePut): Promise<Attribute> => (
+const update = async (id: Attribute['id'], data: AttributePut): Promise<Attribute> => (
     (await requester.put(`/attributes/${id}`, data)).data
 );
 
-const remove = async (id: number): Promise<void> => {
+const remove = async (id: Attribute['id']): Promise<void> => {
     await requester.delete(`/attributes/${id}`);
 };
 

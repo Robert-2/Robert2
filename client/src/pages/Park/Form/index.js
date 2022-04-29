@@ -6,6 +6,7 @@ import formatOptions from '@/utils/formatOptions';
 import apiCountries from '@/stores/api/countries';
 import useI18n from '@/hooks/vue/useI18n';
 import FormField from '@/components/FormField';
+import Fieldset from '@/components/Fieldset';
 
 // @vue/component
 const ParkForm = (props, { emit }) => {
@@ -34,10 +35,7 @@ const ParkForm = (props, { emit }) => {
             onSubmit={handleSubmit}
             onChange={handleChange}
         >
-            <section class="Form__fieldset">
-                <h4 class="Form__fieldset__title">
-                    {__('minimal-infos')} <span class="FormField__label__required">*</span>
-                </h4>
+            <Fieldset title={__('minimal-infos')} required>
                 <FormField
                     value={park.value.name}
                     name="name"
@@ -45,9 +43,8 @@ const ParkForm = (props, { emit }) => {
                     required
                     errors={errors.value.name}
                 />
-            </section>
-            <section class="Form__fieldset">
-                <h4 class="Form__fieldset__title">{__('contact-details')}</h4>
+            </Fieldset>
+            <Fieldset title={__('contact-details')}>
                 <FormField
                     value={park.value.street}
                     name="street"
@@ -76,9 +73,8 @@ const ParkForm = (props, { emit }) => {
                     errors={errors.value.country_id}
                     placeholder
                 />
-            </section>
-            <section class="Form__fieldset">
-                <h4 class="Form__fieldset__title">{__('other-infos')}</h4>
+            </Fieldset>
+            <Fieldset title={__('other-infos')}>
                 <FormField
                     value={park.value.opening_hours}
                     name="opening_hours"
@@ -92,7 +88,7 @@ const ParkForm = (props, { emit }) => {
                     type="textarea"
                     errors={errors.value.note}
                 />
-            </section>
+            </Fieldset>
             <section class="Form__actions">
                 <button class="Form__actions__save success" type="submit">
                     <i class="fas fa-save" /> {__('save')}

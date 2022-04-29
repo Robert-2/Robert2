@@ -8,47 +8,15 @@ final class TagsTest extends ApiTestCase
         $this->client->get('/api/tags');
         $this->assertStatusCode(SUCCESS_OK);
         $this->assertResponseData([
-            'pagination' => [
-                'current_page' => 1,
-                'from' => 1,
-                'last_page' => 1,
-                'path' => '/api/tags',
-                'first_page_url' => '/api/tags?page=1',
-                'next_page_url' => null,
-                'prev_page_url' => null,
-                'last_page_url' => '/api/tags?page=1',
-                'per_page' => $this->settings['maxItemsPerPage'],
-                'to' => 3,
-                'total' => 3,
-            ],
-            'data' => [
-                [
-                    'id' => 2,
-                    'name' => 'Beneficiary',
-                    'created_at' => null,
-                    'updated_at' => null,
-                    'deleted_at' => null,
-                ],
-                [
-                    'id' => 3,
-                    'name' => 'pro',
-                    'created_at' => null,
-                    'updated_at' => null,
-                    'deleted_at' => null,
-                ],
-                [
-                    'id' => 1,
-                    'name' => 'Technician',
-                    'created_at' => null,
-                    'updated_at' => null,
-                    'deleted_at' => null,
-                ],
+            [
+                'id' => 3,
+                'name' => 'pro',
             ],
         ]);
 
         $this->client->get('/api/tags?deleted=1');
         $this->assertStatusCode(SUCCESS_OK);
-        $this->assertResponsePaginatedData(0, '/api/tags', 'deleted=1');
+        $this->assertResponseData([]);
     }
 
     public function testCreateTagWithoutData()
@@ -147,6 +115,6 @@ final class TagsTest extends ApiTestCase
         $this->client->put('/api/tags/restore/3');
         $this->assertStatusCode(SUCCESS_OK);
         $response = $this->_getResponseAsArray();
-        $this->assertEmpty($response['deleted_at']);
+        $this->assertNotEmpty($response['id']);
     }
 }

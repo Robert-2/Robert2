@@ -5,9 +5,9 @@ import Inventory from '@/components/Inventory';
 export default {
     name: 'EventReturnMaterialsList',
     props: {
-        materials: Array,
-        quantities: Array,
-        errors: Array,
+        materials: { type: Array, required: true },
+        quantities: { type: Array, required: true },
+        errors: { type: Array, default: null },
         isLocked: Boolean,
         displayGroup: {
             default: 'categories',
@@ -39,6 +39,12 @@ export default {
         },
     },
     methods: {
+        // ------------------------------------------------------
+        // -
+        // -    Handlers
+        // -
+        // ------------------------------------------------------
+
         handleChange(id, quantities) {
             this.$emit('change', id, quantities);
         },
@@ -49,6 +55,7 @@ export default {
             quantities,
             awaitedMaterials,
             isLocked,
+            errors,
             isAllReturned,
             displayGroup,
             hasBroken,
@@ -66,7 +73,7 @@ export default {
                     quantities={quantities}
                     materials={awaitedMaterials}
                     displayGroup={displayGroup}
-                    errors={this.errors}
+                    errors={errors}
                     onChange={handleChange}
                     locked={isLocked}
                     strict

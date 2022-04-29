@@ -80,7 +80,12 @@ const tablesConfig = {
         if (!response) {
             return { data: [], count: 0 };
         }
-        const { data, pagination } = response.data;
+
+        const _data = response?.data?.data
+            ? response.data
+            : response;
+
+        const { data, pagination } = _data;
         return { data, count: pagination ? pagination.total : 0 };
     },
 };

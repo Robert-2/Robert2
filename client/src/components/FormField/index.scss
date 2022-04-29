@@ -62,10 +62,6 @@
 
     &__error {
         color: globals.$text-danger-color;
-
-        &__text {
-            padding-left: globals.$form-label-width;
-        }
     }
 
     &--with-addon {
@@ -91,26 +87,53 @@
         }
     }
 
+    &--vertical {
+        #{$block}__input,
+        #{$block}__textarea,
+        #{$block}__datepicker,
+        #{$block}__static-value,
+        #{$block}__select {
+            width: 100%;
+        }
+    }
+
     @media screen and (min-width: globals.$screen-tablet) {
-        display: flex;
-        flex-flow: row wrap;
-        align-items: center;
+        &--switch {
+            display: flex;
+            flex-flow: row wrap;
+            align-items: center;
 
-        &__label {
-            flex: 0 0 globals.$form-label-width;
-            padding: 0 globals.$input-padding-horizontal;
-            text-align: right;
+            #{$block}__label {
+                padding: 0 globals.$input-padding-horizontal 0 0;
+                text-align: right;
+            }
         }
 
-        &__input,
-        &__textarea,
-        &__datepicker,
-        &__static-value {
-            flex: 1;
-        }
+        &:not(&--vertical) {
+            display: flex;
+            flex-flow: row wrap;
+            align-items: center;
 
-        &__addon {
-            flex: 0 0 auto;
+            #{$block}__label {
+                flex: 0 0 globals.$form-label-width;
+                padding: 0 globals.$input-padding-horizontal;
+                text-align: right;
+            }
+
+            #{$block}__input,
+            #{$block}__textarea,
+            #{$block}__datepicker,
+            #{$block}__static-value {
+                flex: 1;
+            }
+
+            #{$block}__addon {
+                flex: 0 0 auto;
+            }
+
+            #{$block}__error__text {
+                padding-left: globals.$form-label-width;
+            }
         }
     }
 }

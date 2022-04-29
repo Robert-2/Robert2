@@ -118,13 +118,14 @@ export default {
     },
 
     'page-event-return': {
-        'title': "Return of the material of event \"{pageSubTitle}\"",
-        'help': "",
+        'title-simple': "Return of the material",
+        'title': "Return of the material of event \"{name}\"",
         'this-event-not-started-yet': "This event has not yet started, so it is not possible to check its return at the moment.",
         'this-event-is-not-past': "This event is not yet finished, you can start its inventory, but you cannot terminate it.",
         'confirm-terminate-title': "Do you really want to terminate this return inventory?",
         'confirm-terminate-text': "Please note that it will no longer be possible to modify it.",
         'confirm-terminate-text-with-broken': "This will update all the \"out of order\" quantities for the concerned materials, and it will no longer be possible to modify this inventory.",
+        'saved': "Inventory saved",
         'inventory-done': "Inventory done",
         'some-material-is-missing': "Some materials did not return from this event!",
         'all-material-returned': "Congratulations! All materials were returned for this event.",
@@ -134,28 +135,31 @@ export default {
     'page-users': {
         'title': "Users",
         'help': "You can send an email to an user by clicking on his/her address.",
-        'help-edit': (
+        'action-add': "New user",
+        'confirm-delete': "Move this user in trash bin?",
+        'confirm-permanently-delete': "Do you really want to permanently delete this user?",
+        'confirm-restore': "Do you really want to restore this user?",
+        'profile-missing-or-deleted': "Profile missing or deleted",
+    },
+
+    'page-user': {
+        'title-create': "New user",
+        'title-edit-simple': "Modify user",
+        'title-edit': "Modify user \"{pageSubTitle}\"",
+        'help': (
             `- Group "Administrator" group gives all access rights to user.
             - Group "Member" allow user to use most parts of Robert application.
             - Group "Visitor" group gives a limited access to some data.`
         ),
-        'action-add': "New user",
-        'add': "New user",
-        'edit': "Modify user \"{pageSubTitle}\"",
-        'edit-title': "Modify user",
-        'confirm-delete': "Move this user in trash bin?",
-        'confirm-permanently-delete': "Do you really want to permanently delete this user?",
-        'confirm-restore': "Do you really want to restore this user?",
+        'parks-access': "Access to material parks",
+        'restrict-access-to-parks': "Restrict access to some parks",
         'saved': "User saved.",
-        'profile-missing-or-deleted': "Profile missing or deleted",
     },
 
     'page-beneficiaries': {
         'title': "Beneficiaries",
         'help': "You can send an email to a beneficiary by clicking on his/her address.",
         'action-add': "New beneficiary",
-        'add': "New beneficiary",
-        'edit': "Modify beneficiary",
         'beneficiary-type': "Beneficiary type",
         'person': "Natural person (individual)",
         'company': "Legal entity (company)",
@@ -166,6 +170,7 @@ export default {
 
     'page-beneficiary': {
         'title-create': "New beneficiary",
+        'title-edit-simple': "Modify beneficiary",
         'title-edit': "Modify beneficiary \"{name}\"",
         'help': (
             `Only first name and last name are mandatory.
@@ -175,14 +180,11 @@ export default {
         'saved': "Beneficiary saved.",
     },
 
-    'page-companies': {
-        'title': "Companies",
-        'add': "New company",
-        'edit': "Modify company \"{pageSubTitle}\"",
-        'edit-title': "Modify company",
-        'edit-btn': "Modify company",
-        'create-new': "Add a new company",
-        'help-edit': "The legal name of the company is mandatory.",
+    'page-company': {
+        'title-create': "New company",
+        'title-edit-simple': "Modify company",
+        'title-edit': "Modify company \"{name}\"",
+        'help': "The legal name of the company is mandatory.",
         'attached-persons': "People attached to the company",
         'saved': "Company saved.",
     },
@@ -299,10 +301,6 @@ export default {
         'title': "Technicians",
         'help': "You can send an email to a technician by clicking on his/her address.",
         'action-add': "New technician",
-        'add': "New technician",
-        'edit': "Modify technician \"{pageSubTitle}\"",
-        'edit-title': "Modify technician",
-        'help-edit': "Only first name and last name are mandatory.",
         'confirm-delete': "Move this technician in trash bin?",
         'confirm-permanently-delete': "Do you really want to permanently delete this technician?",
         'confirm-restore': "Do you really want to restore this technician?",
@@ -312,6 +310,7 @@ export default {
 
     'page-technician': {
         'title-create': "New technician",
+        'title-edit-simple': "Modify technician",
         'title-edit': "Modify technician \"{name}\"",
         'help': "Only first name and last name are mandatory.",
         'saved': "Technician saved.",
@@ -342,20 +341,23 @@ export default {
 
     'page-tags': {
         'title': "Tags",
-        'help': "Non-modifiables tags are those used by the system.",
-        'no-item': "No tag yet.",
+        'help': (
+            `Tags help you quickly search for materials in lists.
+            Hover over a tag to rename or delete it.`
+        ),
+        'no-item': "There is no tag yet.",
         'no-item-in-trash': "No tag in trash bin.",
         'action-add': "New tag",
         'prompt-add': "New tag",
         'tag-name': "Tag name",
         'create': "Create tag",
-        'add': "New tag",
         'prompt-modify': "Modify tag",
         'confirm-delete': "Move this tag in trash bin?",
         'confirm-permanently-delete': "Do you really want to permanently delete this tag?",
         'confirm-restore': "Do you really want to restore this tag?",
         'saved': "Tag saved.",
         'deleted': "Tag deleted.",
+        'restored': "Tag restored.",
     },
 
     'page-settings': {

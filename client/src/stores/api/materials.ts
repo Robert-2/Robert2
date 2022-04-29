@@ -4,6 +4,7 @@ import requester from '@/globals/requester';
 import invariant from 'invariant';
 
 import type { PaginatedData, PaginationParams } from '@/stores/api/@types';
+import type { Event } from '@/stores/api/events';
 
 //
 // - Types
@@ -35,15 +36,6 @@ export type Material = {
     attributes: MaterialAttribute[],
 };
 
-export type MaterialWithPivot = Material & {
-    pivot: {
-        id: number,
-        event_id?: number,
-        material_id: number,
-        quantity: number,
-    },
-};
-
 type GetAllParams = {
     deleted?: boolean,
 };
@@ -52,20 +44,20 @@ type GetAllPaginated = GetAllParams & PaginationParams & { paginated?: true };
 type GetAllRaw = GetAllParams & { paginated: false };
 
 //
-// - Functions
+// - Fonctions
 //
 
 /* eslint-disable func-style */
 async function all(params: GetAllRaw): Promise<Material[]>;
 async function all(params: GetAllPaginated): Promise<PaginatedData<Material[]>>;
 async function all(params: GetAllPaginated | GetAllRaw): Promise<unknown> {
-    return (await requester.get('materials', { params })).data;
+    return (await requester.get('/materials', { params })).data;
 }
 /* eslint-enable func-style */
 
-const allWhileEvent = async (eventId: number): Promise<Material[]> => {
+const allWhileEvent = async (eventId: Event['id']): Promise<Material[]> => {
     invariant(eventId, 'Missing event id to fetch concurrent material of.');
-    return (await requester.get(`materials/while-event/${eventId}`)).data;
+    return (await requester.get(`/materials/while-event/${eventId}`)).data;
 };
 
 export default { all, allWhileEvent };

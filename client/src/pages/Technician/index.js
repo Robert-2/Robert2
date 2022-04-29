@@ -1,7 +1,9 @@
 import './index.scss';
-import Config from '@/globals/config';
 import Page from '@/components/Page';
-import PersonForm from '@/components/PersonForm';
+import CriticalError from '@/components/CriticalError';
+import Loading from '@/components/Loading';
+import Form from './Form';
+import apiTechnicians from '@/stores/api/technicians';
 
 const WIP_STORAGE_KEY = 'WIP-newTechnician';
 
@@ -9,47 +11,32 @@ const WIP_STORAGE_KEY = 'WIP-newTechnician';
 export default {
     name: 'Technician',
     data() {
+        const id = this.$route.params.id && this.$route.params.id !== 'new'
+            ? this.$route.params.id
+            : null;
+
         return {
-            error: null,
-            isLoading: false,
+            id,
             isFetched: false,
             isSaving: false,
-            person: {
-                id: this.$route.params.id || null,
-                first_name: '',
-                last_name: '',
-                nickname: '',
-                phone: '',
-                email: '',
-                street: '',
-                postal_code: '',
-                locality: '',
-                country_id: '',
-                note: '',
-            },
-            errors: {
-                first_name: null,
-                last_name: null,
-                nickname: null,
-                phone: null,
-                email: null,
-                street: null,
-                postal_code: null,
-                locality: null,
-                country_id: null,
-                note: null,
-            },
+            hasCriticalError: false,
+            person: null,
+            validationErrors: null,
         };
     },
     computed: {
         isNew() {
-            const { id } = this.person;
-            return !id || id === 'new';
+            return this.id === null;
         },
         pageTitle() {
-            const { $t: __, isNew, person } = this;
+            const { $t: __, isNew, isFetched, person } = this;
+
             if (isNew) {
                 return __('page-technician.title-create');
+            }
+
+            if (!isFetched) {
+                return __('page-technician.title-edit-simple');
             }
 
             const { full_name: fullName, first_name: firstName, last_name: lastName } = person;
@@ -67,19 +54,17 @@ export default {
         // -
         // ------------------------------------------------------
 
-        handleChange(newPersonData) {
-            this.person = newPersonData;
+        handleChange(data) {
             if (!this.isNew) {
                 return;
             }
 
-            const stashedData = JSON.stringify(this.person);
+            const stashedData = JSON.stringify(data);
             localStorage.setItem(WIP_STORAGE_KEY, stashedData);
         },
 
-        handleSave(e) {
-            e.preventDefault();
-            this.save();
+        handleSave(data) {
+            this.save(data);
         },
 
         handleCancel() {
@@ -95,80 +80,63 @@ export default {
         async fetchData() {
             if (this.isNew) {
                 const stashedData = localStorage.getItem(WIP_STORAGE_KEY);
-                this.isFetched = true;
-                if (!stashedData) {
-                    return;
+                if (stashedData) {
+                    try {
+                        this.person = JSON.parse(stashedData);
+                    } catch {
+                        // - On ne fait rien en cas d'erreur de parsing des données en cache.
+                    }
                 }
-
-                this.person = JSON.parse(stashedData);
+                this.isFetched = true;
                 return;
             }
 
-            this.error = null;
-            this.isLoading = true;
-
-            const { id } = this.person;
-            const { resource } = this.$route.meta;
-
             try {
-                const { data } = await this.$http.get(`${resource}/${id}`);
-                this.setPerson(data);
+                this.person = await apiTechnicians.one(this.id);
                 this.isFetched = true;
-            } catch (error) {
-                this.displayError(error);
-            } finally {
-                this.isLoading = false;
+            } catch {
+                this.hasCriticalError = true;
             }
         },
 
-        async save() {
-            this.error = null;
+        async save(data) {
+            if (this.isSaving) {
+                return;
+            }
+
+            const { $t: __ } = this;
             this.isSaving = true;
 
-            const { id } = this.person;
-            const { resource } = this.$route.meta;
-
-            let request = this.$http.post;
-            let route = resource;
-            if (id) {
-                request = this.$http.put;
-                route = `${resource}/${id}`;
-            }
-
-            const personData = { ...this.person };
-            if (!id) {
-                personData.tags = [Config.technicianTagName];
-            }
+            const doRequest = () => (
+                this.id
+                    ? apiTechnicians.update(this.id, data)
+                    : apiTechnicians.create(data)
+            );
 
             try {
-                const { data } = await request(route, personData);
-                this.setPerson(data);
+                this.person = await doRequest();
+                this.id = this.person.id;
+
+                this.validationErrors = null;
                 this.flushStashedData();
 
-                const redirect = () => {
-                    this.$router.push(`/technicians/${data.id}/view#infos`);
-                };
-                setTimeout(redirect, 300);
+                // - Redirection...
+                this.$toasted.success(__('page-technician.saved'));
+                this.$router.replace({
+                    name: 'view-technician',
+                    params: { id: this.id },
+                    hash: 'infos',
+                });
             } catch (error) {
-                this.displayError(error);
+                const { code, details } = error.response?.data?.error || { code: 0, details: {} };
+                if (code === 400) {
+                    this.validationErrors = { ...details };
+                } else {
+                    this.$toasted.error(__('errors.unexpected-while-saving'));
+                }
             } finally {
                 this.isSaving = false;
             }
-        },
-
-        displayError(error) {
-            this.error = error;
-
-            const { code, details } = error.response?.data?.error || { code: 0, details: {} };
-            if (code === 400) {
-                this.errors = { ...details };
-            }
-        },
-
-        setPerson(data) {
-            this.person = data;
-            const fullName = data.full_name || `${data.first_name} ${data.last_name}`;
-            this.$store.commit('setPageSubTitle', fullName);
         },
 
         flushStashedData() {
@@ -179,35 +147,41 @@ export default {
         const {
             $t: __,
             pageTitle,
-            isLoading,
+            isSaving,
             isFetched,
             person,
-            errors,
-            error,
-            isSaving,
             handleSave,
             handleChange,
             handleCancel,
+            hasCriticalError,
+            validationErrors,
         } = this;
+
+        if (hasCriticalError || !isFetched) {
+            return (
+                <Page name="technician-edit" title={pageTitle}>
+                    {hasCriticalError ? <CriticalError /> : <Loading />}
+                </Page>
+            );
+        }
 
         return (
             <Page
                 name="technician-edit"
                 title={pageTitle}
                 help={__('page-technician.help')}
-                error={error}
-                isLoading={isLoading}
+                error={validationErrors ? __('errors.validation') : undefined}
             >
-                {isFetched && (
-                    <PersonForm
-                        initialData={person}
+                <div class="TechnicianEdit">
+                    <Form
+                        savedData={person}
                         isSaving={isSaving}
-                        errors={errors}
+                        errors={validationErrors}
                         onSubmit={handleSave}
                         onChange={handleChange}
                         onCancel={handleCancel}
                     />
-                )}
+                </div>
             </Page>
         );
     },

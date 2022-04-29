@@ -1,0 +1,39 @@
+@use '~@/style/globals';
+
+.Fieldset {
+    $block: &;
+
+    &__title {
+        margin: 0 0 15px;
+        font-size: 1.3rem;
+    }
+
+    & + & {
+        margin-top: 40px;
+    }
+
+    //
+    // - Required
+    //
+
+    &--required {
+        #{$block}__title::after {
+            content: '*';
+            margin-left: 4px;
+            color: globals.$text-danger-color;
+        }
+    }
+
+    //
+    // - Responsive
+    //
+
+    @media screen and (min-width: globals.$screen-tablet) {
+        &:not(&--in-vertical-form) {
+            #{$block}__title {
+                margin-left: globals.$form-label-width;
+                font-size: 1.1rem;
+            }
+        }
+    }
+}

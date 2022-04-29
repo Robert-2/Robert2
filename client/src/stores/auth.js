@@ -10,7 +10,6 @@ const normalizeUser = (rawData) => ({
     pseudo: rawData.pseudo,
     email: rawData.email,
     locale: rawData.settings ? rawData.settings.language : 'en',
-    restrictedParks: rawData.restricted_parks,
 });
 
 const setSessionCookie = (token) => {

@@ -118,13 +118,14 @@ export default {
     },
 
     'page-event-return': {
-        'title': "Retour du matériel de l'événement «\u00a0{pageSubTitle}\u00a0»",
-        'help': "",
+        'title-simple': "Retour du matériel",
+        'title': "Retour du matériel de l'événement «\u00a0{name}\u00a0»",
         'this-event-not-started-yet': "Cet événement n'a pas encore commencé, il n'est donc pas possible de vérifier son retour pour le moment.",
         'this-event-is-not-past': "Cet événement n'est pas encore terminé, vous pouvez commencer son inventaire de retour, mais pas le terminer.",
         'confirm-terminate-title': "Voulez-vous vraiment terminer cet inventaire de retour\u00a0?",
         'confirm-terminate-text': "Veuillez noter qu'il ne sera plus possible de le modifier.",
         'confirm-terminate-text-with-broken': "Ceci aura pour effet de mettre à jour toutes les quantités «\u00a0en panne\u00a0» du matériel concerné, et il ne sera plus possible de modifier cet inventaire.",
+        'saved': "Inventaire sauvegardé",
         'inventory-done': "Inventaire terminé",
         'some-material-is-missing': "Du matériel n'est pas revenu de cet événement\u00a0!",
         'all-material-returned': "Félicitations\u00a0! Tout le matériel a bien été retourné pour cet événement.",
@@ -134,28 +135,31 @@ export default {
     'page-users': {
         'title': "Utilisateurs",
         'help': "Vous pouvez envoyer un email à un utilisateur en cliquant sur son adresse.",
-        'help-edit': (
+        'action-add': "Nouvel utilisateur",
+        'confirm-delete': "Mettre cet utilisateur à la corbeille\u00a0?",
+        'confirm-permanently-delete': "Voulez-vous vraiment supprimer définitivement cet utilisateur\u00a0?",
+        'confirm-restore': "Voulez-vous vraiment restaurer cet utilisateur\u00a0?",
+        'profile-missing-or-deleted': "Profil manquant ou supprimé",
+    },
+
+    'page-user': {
+        'title-create': "Nouvel utilisateur",
+        'title-edit-simple': "Modifier l'utilisateur",
+        'title-edit': "Modifier l'utilisateur «\u00a0{name}\u00a0»",
+        'help': (
             `- Le groupe «\u00a0Administrateur\u00a0» donne tous les droits à l'utilisateur.
             - Le groupe «\u00a0Membre\u00a0» permet à l'utilisateur d'utiliser la plupart des fonctions de Robert.
             - Le groupe «\u00a0Visiteur\u00a0» donne un accès limité à certaines données.`
         ),
-        'action-add': "Nouvel utilisateur",
-        'add': "Nouvel utilisateur",
-        'edit': "Modifier l'utilisateur «\u00a0{pageSubTitle}\u00a0»",
-        'edit-title': "Modifier l'utilisateur",
-        'confirm-delete': "Mettre cet utilisateur à la corbeille\u00a0?",
-        'confirm-permanently-delete': "Voulez-vous vraiment supprimer définitivement cet utilisateur\u00a0?",
-        'confirm-restore': "Voulez-vous vraiment restaurer cet utilisateur\u00a0?",
+        'parks-access': "Accès aux parcs de matériel",
+        'restrict-access-to-parks': "Restreindre l'accès à certains parcs",
         'saved': "Utilisateur sauvegardé.",
-        'profile-missing-or-deleted': "Profil manquant ou supprimé",
     },
 
     'page-beneficiaries': {
         'title': "Bénéficiaires",
         'help': "Vous pouvez envoyer un email à un bénéficiaire en cliquant sur son adresse.",
         'action-add': "Nouveau bénéficiaire",
-        'add': "Nouveau bénéficiaire",
-        'edit': "Modifier le bénéficiaire ",
         'beneficiary-type': "Type de bénéficiaire",
         'person': "Personne physique (individu)",
         'company': "Personne morale (entreprise)",
@@ -166,6 +170,7 @@ export default {
 
     'page-beneficiary': {
         'title-create': "Nouveau bénéficiaire",
+        'title-edit-simple': "Modifier le bénéficiaire",
         'title-edit': "Modifier le bénéficiaire «\u00a0{name}\u00a0»",
         'help': (
             `Seuls le nom et le prénom de la personne sont obligatoires.
@@ -175,21 +180,18 @@ export default {
         'saved': "Bénéficiaire sauvegardé.",
     },
 
-    'page-companies': {
-        'title': "Sociétés",
-        'add': "Nouvelle société",
-        'edit': "Modifier la société «\u00a0{pageSubTitle}\u00a0»",
-        'edit-title': "Modifier la société",
-        'edit-btn': "Modifier la société",
-        'create-new': "Ajouter une nouvelle société",
-        'help-edit': "La raison sociale (nom de la société) est obligatoire.",
+    'page-company': {
+        'title-create': "Nouvelle société",
+        'title-edit-simple': "Modifier la société",
+        'title-edit': "Modifier la société «\u00a0{name}\u00a0»",
+        'help': "La raison sociale (nom de la société) est obligatoire.",
         'attached-persons': "Personnes associées à la société",
         'saved': "Société sauvegardée.",
     },
 
     'page-materials': {
         'title': "Matériel",
-        'help': "Vous pouvez choisir un parc, une catégorie ou des étiquettes pour filtrer le matériel.",
+        'help': "Vous pouvez choisir un parc, une catégorie ou des tags pour filtrer le matériel.",
         'action-add': "Nouveau matériel",
         'manage-attributes': "Gérer les caractéristiques spéciales",
         'display-quantities-at-date': "Afficher les quantités à date...",
@@ -299,10 +301,6 @@ export default {
         'title': "Techniciens",
         'help': "Vous pouvez envoyer un email à un technicien en cliquant sur son adresse.",
         'action-add': "Nouveau technicien",
-        'add': "Nouveau technicien",
-        'edit': "Modifier le technicien «\u00a0{pageSubTitle}\u00a0»",
-        'edit-title': "Modifier le technicien",
-        'help-edit': "Seuls le nom et le prénom de la personne sont obligatoires.",
         'confirm-delete': "Mettre ce technicien à la corbeille\u00a0?",
         'confirm-permanently-delete': "Voulez-vous vraiment supprimer définitivement ce technicien\u00a0?",
         'confirm-restore': "Voulez-vous vraiment restaurer ce technicien\u00a0?",
@@ -312,6 +310,7 @@ export default {
 
     'page-technician': {
         'title-create': "Nouveau technicien",
+        'title-edit-simple': "Modifier le technicien",
         'title-edit': "Modifier le technicien «\u00a0{name}\u00a0»",
         'help': "Seuls le nom et le prénom de la personne sont obligatoires.",
         'saved': "Technicien sauvegardé.",
@@ -341,21 +340,24 @@ export default {
     },
 
     'page-tags': {
-        'title': "Étiquettes",
-        'help': "Les étiquettes non modifiables sont celles utilisées par le système.",
-        'no-item': "Aucune étiquette.",
-        'no-item-in-trash': "Aucune étiquette dans la corbeille.",
-        'action-add': "Nouvelle étiquette",
-        'prompt-add': "Nouvelle étiquette",
-        'tag-name': "Nom de l'étiquette",
-        'create': "Créer l'étiquette",
-        'add': "Nouvelle étiquette",
-        'prompt-modify': "Modifier l'étiquette",
-        'confirm-delete': "Mettre cette étiquette à la corbeille\u00a0?",
-        'confirm-permanently-delete': "Voulez-vous vraiment supprimer définitivement cette étiquette\u00a0?",
-        'confirm-restore': "Voulez-vous vraiment restaurer cette étiquette\u00a0?",
-        'saved': "Étiquette sauvegardée.",
-        'deleted': "Étiquette supprimée.",
+        'title': "Tags",
+        'help': (
+            `Les tags vous aident à rechercher rapidement du matériel dans les listes.
+            Survolez un tag pour le renommer, ou le supprimer.`
+        ),
+        'no-item': "Il n'y a aucun tag pour le moment.",
+        'no-item-in-trash': "Aucun tag dans la corbeille.",
+        'action-add': "Nouveau tag",
+        'prompt-add': "Nouveau tag",
+        'tag-name': "Nom du tag",
+        'create': "Créer le tag",
+        'prompt-modify': "Modifier le tag",
+        'confirm-delete': "Mettre ce tag à la corbeille\u00a0?",
+        'confirm-permanently-delete': "Voulez-vous vraiment supprimer définitivement ce tag\u00a0?",
+        'confirm-restore': "Voulez-vous vraiment restaurer ce tag\u00a0?",
+        'saved': "Tag sauvegardé.",
+        'deleted': "Tag supprimé.",
+        'restored': "Tag restauré.",
     },
 
     'page-settings': {

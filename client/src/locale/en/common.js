@@ -270,6 +270,10 @@ export default {
     'previous-month': "Previous month",
     'next-month': "Next month",
 
+    'create-company': "Add a new company",
+    'use': "Use",
+    'used-by': "Used by",
+
     'terminate-inventory': "Terminate inventory",
     'warning-terminate-inventory': "Beware, once this inventory terminated, it will no longer be modifiable.",
     'inventory-validation-error': "Some quantities are not valid. Please double-check the list.",

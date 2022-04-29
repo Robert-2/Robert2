@@ -1012,8 +1012,8 @@ final class EventsTest extends ApiTestCase
         $this->assertValidationErrorMessage();
         $response = $this->_getResponseAsArray();
         $expected = [
-            ['id' => 1, 'message' => "La quantité en panne ne peut pas être supérieure à la quantité retournée."],
-            ['id' => 2, 'message' => "La quantité retournée ne peut pas être supérieure à la quantité sortie."],
+            ['id' => 1, 'message' => "Broken quantity cannot be greater than returned quantity."],
+            ['id' => 2, 'message' => "Returned quantity cannot be greater than output quantity."],
         ];
         $this->assertEquals($expected, $response['error']['details']);
     }

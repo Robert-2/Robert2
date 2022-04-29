@@ -5,6 +5,7 @@ export default {
         'generic': "Error: {message}",
         'unexpected-while-saving': "An unexpected error occurred while saving, please try again.",
         'unexpected-while-deleting': "An unexpected error occurred while deleting, please try again.",
+        'unexpected-while-restoring': "An unexpected error occurred while restoring, please try again.",
         'api-unreachable': "Sorry, but Robert2 API is unreachable... Please check your access to network.",
         'not-found': "This record does not exist.",
         'unknown': "Unknown error.",

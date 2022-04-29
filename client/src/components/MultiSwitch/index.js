@@ -1,4 +1,5 @@
 import './index.scss';
+import Option from './Option';
 
 // @vue/component
 export default {
@@ -13,8 +14,13 @@ export default {
             ),
         },
     },
+    methods: {
+        handleSelect(selectedValue) {
+            this.$emit('change', selectedValue);
+        },
+    },
     render() {
-        const { options, value } = this;
+        const { options, value, handleSelect } = this;
 
         if (options.length === 0) {
             return null;
@@ -24,17 +30,12 @@ export default {
             <div class="MultiSwitch">
                 {options.map(({ value: optionValue, label, isDisplayed = true }) => (
                     isDisplayed && (
-                        <button
-                            key={label}
-                            type="button"
-                            onClick={() => { this.$emit('change', optionValue); }}
-                            class={{
-                                'MultiSwitch__option': true,
-                                'MultiSwitch__option--active': value === optionValue,
-                            }}
-                        >
-                            {label}
-                        </button>
+                        <Option
+                            value={optionValue}
+                            label={label}
+                            active={value === optionValue}
+                            onSelect={handleSelect}
+                        />
                     )
                 ))}
             </div>

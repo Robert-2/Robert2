@@ -1,6 +1,7 @@
 import './index.scss';
 import Config from '@/globals/config';
 import FormField from '@/components/FormField';
+import Fieldset from '@/components/Fieldset';
 
 // @vue/component
 export default {
@@ -114,8 +115,7 @@ export default {
                     <p class="BillingForm__no-discount">{__('no-discount-applicable')}</p>
                 )}
                 {isDiscountable && (
-                    <div class="Form__fieldset">
-                        <h4 class="Form__fieldset__title">{__('discount')}</h4>
+                    <Fieldset title={__('discount')}>
                         <FormField
                             type="number"
                             label="wanted-rate"
@@ -147,7 +147,7 @@ export default {
                             addon={currency}
                             onInput={handleChangeAmount}
                         />
-                    </div>
+                    </Fieldset>
                 )}
                 {!!beneficiary && (
                     <div class="BillingForm__beneficiary">

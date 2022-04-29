@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Robert2\API\Controllers;
 
+use DI\Container;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Robert2\API\Controllers\Traits\WithCrud;
 use Robert2\API\Controllers\Traits\WithPdf;
@@ -11,6 +12,7 @@ use Robert2\API\Models\Event;
 use Robert2\API\Models\Material;
 use Robert2\API\Models\Park;
 use Robert2\API\Services\Auth;
+use Robert2\API\Services\I18n;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
 use Slim\Http\ServerRequest as Request;
@@ -19,6 +21,15 @@ class EventController extends BaseController
 {
     use WithCrud;
     use WithPdf;
+
+    private I18n $i18n;
+
+    public function __construct(Container $container, I18n $i18n)
+    {
+        parent::__construct($container);
+
+        $this->i18n = $i18n;
+    }
 
     // ——————————————————————————————————————————————————————
     // —
@@ -210,13 +221,19 @@ class EventController extends BaseController
             $materialId = $quantity['id'];
 
             if (!array_key_exists('actual', $quantity) || !is_integer($quantity['actual'])) {
-                $errors[] = ['id' => $materialId, 'message' => "Quantité retournée invalide."];
+                $errors[] = [
+                    'id' => $materialId,
+                    'message' => $this->i18n->translate('returned-quantity-not-valid'),
+                ];
                 continue;
             }
             $actual = (int)$quantity['actual'];
 
             if (!array_key_exists('broken', $quantity) || !is_integer($quantity['broken'])) {
-                $errors[] = ['id' => $materialId, 'message' => "Quantité en panne invalide."];
+                $errors[] = [
+                    'id' => $materialId,
+                    'message' => $this->i18n->translate('broken-quantity-not-valid'),
+                ];
                 continue;
             }
             $broken = (int)$quantity['broken'];
@@ -224,7 +241,7 @@ class EventController extends BaseController
             if ($actual < 0 || $broken < 0) {
                 $errors[] = [
                     'id' => $materialId,
-                    'message' => "Les quantités ne peuvent pas être négatives."
+                    'message' => $this->i18n->translate('quantities-cannot-be-negative'),
                 ];
                 continue;
             }
@@ -232,7 +249,9 @@ class EventController extends BaseController
             if ($actual > $eventMaterialsQuantities[$materialId]) {
                 $errors[] = [
                     'id' => $materialId,
-                    'message' => "La quantité retournée ne peut pas être supérieure à la quantité sortie."
+                    'message' => $this->i18n->translate(
+                        'returned-quantity-cannot-be-greater-than-output-quantity'
+                    ),
                 ];
                 continue;
             }
@@ -240,7 +259,9 @@ class EventController extends BaseController
             if ($broken > $actual) {
                 $errors[] = [
                     'id' => $materialId,
-                    'message' => "La quantité en panne ne peut pas être supérieure à la quantité retournée."
+                    'message' => $this->i18n->translate(
+                        'broken-quantity-cannot-be-greater-than-returned-quantity'
+                    ),
                 ];
                 continue;
             }

@@ -55,12 +55,12 @@ export default {
                     actions: '',
                 },
                 columnsClasses: {
-                    address: 'Parks__address',
-                    opening_hours: 'Parks__opening-hours',
-                    note: 'Parks__note',
-                    totalAmount: 'Parks__total-amount',
-                    events: 'Parks__events',
-                    actions: 'Parks__actions',
+                    address: 'Parks__address ',
+                    opening_hours: 'Parks__opening-hours ',
+                    note: 'Parks__note ',
+                    totalAmount: 'Parks__total-amount ',
+                    events: 'Parks__events ',
+                    actions: 'Parks__actions ',
                 },
                 requestFunction: this.fetch.bind(this),
                 templates: {
@@ -128,7 +128,7 @@ export default {
                                     <button
                                         type="button"
                                         v-tooltip={__('action-restore')}
-                                        class="item-actions__button info"
+                                        class="info"
                                         onClick={() => { restorePark(park.id); }}
                                     >
                                         <i class="fas fa-trash-restore" />
@@ -136,7 +136,7 @@ export default {
                                     <button
                                         type="button"
                                         v-tooltip={__('action-delete')}
-                                        class="item-actions__button danger"
+                                        class="danger"
                                         onClick={() => { deletePark(park.id); }}
                                     >
                                         <i class="fas fa-trash-alt" />
@@ -151,7 +151,7 @@ export default {
                                     <a
                                         rel="noreferrer"
                                         target="_blank"
-                                        class="button item-actions__button Parks__print-button"
+                                        class="button Parks__print-button"
                                         v-tooltip={__('page-parks.print-materials-of-this-park')}
                                         href={getDownloadListingUrl(park.id)}
                                     >
@@ -163,7 +163,7 @@ export default {
                                         <button
                                             type="button"
                                             v-tooltip={__('action-edit')}
-                                            class="item-actions__button info"
+                                            class="info"
                                             onClick={navigate}
                                         >
                                             <i class="fas fa-edit" />
@@ -173,7 +173,7 @@ export default {
                                 <button
                                     type="button"
                                     v-tooltip={__('action-trash')}
-                                    class="item-actions__button warning"
+                                    class="warning"
                                     onClick={() => { deletePark(park.id); }}
                                 >
                                     <i class="fas fa-trash" />

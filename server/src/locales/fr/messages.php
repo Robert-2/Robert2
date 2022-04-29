@@ -2483,6 +2483,54 @@ return [
     "technician-already-busy-for-this-period"
     => "Ce technicien est déjà occupé pour cette période.",
 
+    "returned-quantity-not-valid"
+    => "Quantité retournée invalide.",
+
+    "broken-quantity-not-valid"
+    => "Quantité en panne invalide.",
+
+    "effective-quantity-not-valid"
+    => "Quantité effective invalide.",
+
+    "quantities-cannot-be-negative"
+    => "Les quantités ne peuvent pas être négatives.",
+
+    "returned-quantity-cannot-be-greater-than-output-quantity"
+    => "La quantité retournée ne peut pas être supérieure à la quantité sortie.",
+
+    "broken-quantity-cannot-be-greater-than-total-quantity"
+    => "La quantité en panne ne peut pas être supérieure à la quantité totale.",
+
+    "broken-quantity-cannot-be-greater-than-returned-quantity"
+    => "La quantité en panne ne peut pas être supérieure à la quantité retournée.",
+
+    "quantities-can-only-be-updated-for-existant-inventory"
+    => "Les quantités ne peuvent être mise à jour que pour un inventaire existant.",
+
+    "quantities-of-terminated-inventory-cannot-be-updated"
+    => "Les quantités d'un inventaire terminé ne peuvent pas être mise à jour.",
+
+    "material-units-cannot-be-broken-and-lost-at-the-same-time"
+    => "Les unités ne peuvent pas être \"en panne\" et \"perdues\" en même temps.",
+
+    "some-units-states-are-not-valid"
+    => "Certains états d'unité sont invalides.",
+
+    "only-existing-inventories-can-be-marked-as-terminated"
+    => "Seuls les inventaires existants peuvent être marqués comme terminés.",
+
+    "the-inventory-is-already-marked-as-terminated"
+    => "L'inventaire est déjà marqué comme terminé.",
+
+    "this-material-was-not-present-in-submitted-inventory"
+    => "Ce matériel n'était pas présent dans l'inventaire soumis.",
+
+    "managed-units-of-material-has-changed-please-check-its-quantities"
+    => "La gestion des unités du matériel a changé, veuillez vérifier ses quantités.",
+
+    "material-units-were-updated-since-submission"
+    => "Les unités de matériel ont été mises à jour depuis la soumission.",
+
     //
     // - Upload messages
     //

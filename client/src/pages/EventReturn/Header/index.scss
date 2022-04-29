@@ -6,13 +6,8 @@
     align-items: center;
     padding: globals.$content-padding-large-horizontal 0;
 
-    .Help {
-        flex: 1;
-        padding: 0 globals.$content-padding-small-vertical;
-    }
-
     &__infos {
-        flex: 0 0 auto;
+        flex: 1;
         display: flex;
         justify-content: flex-start;
     }

@@ -3,7 +3,6 @@
 input,
 textarea {
     flex: 0 0 auto;
-    min-height: $input-min-height;
     padding: $input-padding-vertical $input-padding-horizontal;
     outline: 0;
     border: $input-border-size solid $bg-color-input-normal;
@@ -23,4 +22,8 @@ textarea {
         background-color: $bg-color-input-disabled;
         color: $color-input-disabled;
     }
+}
+
+input[type='text'] {
+    min-height: $input-min-height;
 }

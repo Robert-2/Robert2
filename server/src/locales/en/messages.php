@@ -2481,6 +2481,54 @@ return [
     "technician-already-busy-for-this-period"
     => "This technician is already busy for this period.",
 
+    "returned-quantity-not-valid"
+    => "Returned quantity not valid.",
+
+    "broken-quantity-not-valid"
+    => "Broken quantity not valid.",
+
+    "effective-quantity-not-valid"
+    => "Effective quantity not valid.",
+
+    "quantities-cannot-be-negative"
+    => "Quantities cannot be negative.",
+
+    "returned-quantity-cannot-be-greater-than-output-quantity"
+    => "Returned quantity cannot be greater than output quantity.",
+
+    "broken-quantity-cannot-be-greater-than-total-quantity"
+    => "Broken quantity cannot be greater than total quantity.",
+
+    "broken-quantity-cannot-be-greater-than-returned-quantity"
+    => "Broken quantity cannot be greater than returned quantity.",
+
+    "quantities-can-only-be-updated-for-existant-inventory"
+    => "Quantities can only be updated for existant inventory.",
+
+    "quantities-of-terminated-inventory-cannot-be-updated"
+    => "Quantities of terminated inventory cannot be updated.",
+
+    "material-units-cannot-be-broken-and-lost-at-the-same-time"
+    => "Material units cannot be \"broken\" and \"lost\" at the same time",
+
+    "some-units-states-are-not-valid"
+    => "Some units states are not valid",
+
+    "only-existing-inventories-can-be-marked-as-terminated"
+    => "Only existing inventories can be marked as terminated.",
+
+    "the-inventory-is-already-marked-as-terminated"
+    => "The inventory is already marked as terminated.",
+
+    "this-material-was-not-present-in-submitted-inventory"
+    => "This material was not present in submitted inventory",
+
+    "managed-units-of-material-has-changed-please-check-its-quantities"
+    => "Managed units of material has changed please check its quantities",
+
+    "material-units-were-updated-since-submission"
+    => "Material units were updated since submission",
+
     //
     // - Upload messages
     //

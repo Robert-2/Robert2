@@ -15,12 +15,6 @@ const ONE_DAY = 1000 * 3600 * 24;
 // @vue/component
 export default {
     name: 'Calendar',
-    components: {
-        CalendarHeader,
-        Timeline,
-        Help,
-        CalendarCaption,
-    },
     data() {
         const isVisitor = this.$store.getters['auth/is']('visitor');
         const parkFilter = this.$route.query.park;
@@ -34,13 +28,13 @@ export default {
         }
 
         return {
-            help: 'page-calendar.help',
             error: null,
             isLoading: false,
+            isOverItem: false,
             fetchStart: moment(start).subtract(8, 'days').startOf('day'),
             fetchEnd: moment(end).add(1, 'months').endOf('month'),
             isModalOpened: false,
-            hasMissingMaterialFilter: false,
+            filterMissingMaterial: false,
             parkId: parkFilter ? Number.parseInt(parkFilter, 10) : null,
             events: [],
             timelineOptions: {
@@ -53,6 +47,13 @@ export default {
         };
     },
     computed: {
+        help() {
+            if (this.isOverItem) {
+                return 'page-calendar.help-timeline-event-operations';
+            }
+            return 'page-calendar.help';
+        },
+
         formattedEvents() {
             const { $t: __, $store: { state: { settings } } } = this;
             const { showLocation = true, showBorrower = false } = settings.calendar.event;
@@ -68,7 +69,7 @@ export default {
                 ));
             }
 
-            if (this.hasMissingMaterialFilter) {
+            if (this.filterMissingMaterial) {
                 events = events.filter(({ hasMissingMaterials }) => !!hasMissingMaterials);
             }
 
@@ -79,38 +80,87 @@ export default {
         this.getEventsData();
     },
     methods: {
-        getEventsData() {
-            this.error = null;
-            this.isLoading = true;
-            this.isModalOpened = false;
+        // ------------------------------------------------------
+        // -
+        // -    Handlers
+        // -
+        // ------------------------------------------------------
 
-            const params = {
-                start: this.fetchStart.format('YYYY-MM-DD HH:mm:ss'),
-                end: this.fetchEnd.format('YYYY-MM-DD HH:mm:ss'),
-            };
-            this.$http.get(this.$route.meta.resource, { params })
-                .then(({ data }) => {
-                    this.events = data.data;
-                    this.isLoading = false;
-                })
-                .catch((error) => {
-                    this.showError(error);
-                });
+        handleRefresh() {
+            this.getEventsData();
         },
 
-        setCenterDate(date) {
+        handleDoubleClick(e) {
+            // - On évite le double-call à cause d'un bug qui trigger l'event en double.
+            // - @see visjs bug here: https://github.com/visjs/vis-timeline/issues/301)
+            if (this.isModalOpened) {
+                return;
+            }
+
+            const eventId = e.item;
+            if (eventId) {
+                this.openEventModal(eventId);
+                this.isModalOpened = true;
+                return;
+            }
+
+            const atDate = moment(e.time).startOf('day').format(DATE_QUERY_FORMAT);
+            this.$router.push({
+                path: '/events/new',
+                query: { atDate },
+            });
+        },
+
+        handleRangeChanged(newPeriod) {
+            const dates = Object.fromEntries(['start', 'end'].map(
+                (type) => [type, moment(newPeriod[type])],
+            ));
+
+            localStorage.setItem('calendarStart', dates.start.format('YYYY-MM-DD HH:mm:ss'));
+            localStorage.setItem('calendarEnd', dates.end.format('YYYY-MM-DD HH:mm:ss'));
+            this.$refs.Header.changePeriod(dates);
+
+            let needFetch = false;
+            if (this.fetchStart.isAfter(dates.start)) {
+                this.fetchStart = moment(dates.start).subtract(8, 'days').startOf('day');
+                needFetch = true;
+            }
+
+            if (this.fetchEnd.isBefore(dates.end)) {
+                this.fetchEnd = moment(dates.end).add(1, 'months').endOf('month');
+                needFetch = true;
+            }
+
+            if (needFetch) {
+                this.getEventsData();
+            }
+        },
+
+        handleSetCenterDate(date) {
             this.$refs.Timeline.moveTo(date);
         },
 
-        onItemOver() {
-            this.help = 'page-calendar.help-timeline-event-operations';
+        handleFilterMissingMaterial(filterMissingMaterial) {
+            this.filterMissingMaterial = filterMissingMaterial;
         },
 
-        onItemOut() {
-            this.help = 'page-calendar.help';
+        handleFilterByPark(parkId) {
+            this.parkId = parkId === '' ? null : Number.parseInt(parkId, 10);
         },
 
-        onItemMoved(item, callback) {
+        //
+        // - Événements sur les items.
+        //
+
+        handleItemOver() {
+            this.isOverItem = true;
+        },
+
+        handleItemOut() {
+            this.isOverItem = false;
+        },
+
+        handleItemMoved(item, callback) {
             const isVisitor = this.$store.getters['auth/is']('visitor');
             if (isVisitor) {
                 return;
@@ -141,7 +191,7 @@ export default {
                 });
         },
 
-        onItemRemove(item, callback) {
+        handleItemRemove(item, callback) {
             const isVisitor = this.$store.getters['auth/is']('visitor');
             if (isVisitor || item.isConfirmed) {
                 return;
@@ -162,60 +212,39 @@ export default {
             });
         },
 
-        onItemRemoved() {
+        handleItemRemoved() {
             if (!this.isLoading) {
                 return;
             }
 
+            this.isLoading = false;
             this.help = { type: 'success', text: 'page-calendar.event-deleted' };
             this.error = null;
-            this.isLoading = false;
         },
 
-        onDoubleClick(e) {
-            // - On évite le double-call à cause d'un bug qui trigger l'event en double.
-            // - @see visjs bug here: https://github.com/visjs/vis-timeline/issues/301)
-            if (this.isModalOpened) {
-                return;
-            }
+        // ------------------------------------------------------
+        // -
+        // -    Méthodes internes
+        // -
+        // ------------------------------------------------------
 
-            const eventId = e.item;
-            if (eventId) {
-                this.openEventModal(eventId);
-                this.isModalOpened = true;
-                return;
-            }
+        getEventsData() {
+            this.error = null;
+            this.isLoading = true;
+            this.isModalOpened = false;
 
-            const atDate = moment(e.time).startOf('day').format(DATE_QUERY_FORMAT);
-            this.$router.push({
-                path: '/events/new',
-                query: { atDate },
-            });
-        },
-
-        onRangeChanged(newPeriod) {
-            const dates = Object.fromEntries(['start', 'end'].map(
-                (type) => [type, moment(newPeriod[type])],
-            ));
-
-            localStorage.setItem('calendarStart', dates.start.format('YYYY-MM-DD HH:mm:ss'));
-            localStorage.setItem('calendarEnd', dates.end.format('YYYY-MM-DD HH:mm:ss'));
-            this.$refs.Header.changePeriod(dates);
-
-            let needFetch = false;
-            if (this.fetchStart.isAfter(dates.start)) {
-                this.fetchStart = moment(dates.start).subtract(8, 'days').startOf('day');
-                needFetch = true;
-            }
-
-            if (this.fetchEnd.isBefore(dates.end)) {
-                this.fetchEnd = moment(dates.end).add(1, 'months').endOf('month');
-                needFetch = true;
-            }
-
-            if (needFetch) {
-                this.getEventsData();
-            }
+            const params = {
+                start: this.fetchStart.format('YYYY-MM-DD HH:mm:ss'),
+                end: this.fetchEnd.format('YYYY-MM-DD HH:mm:ss'),
+            };
+            this.$http.get(this.$route.meta.resource, { params })
+                .then(({ data }) => {
+                    this.events = data.data;
+                    this.isLoading = false;
+                })
+                .catch((error) => {
+                    this.showError(error);
+                });
         },
 
         handleUpdateEvent(newEventData) {
@@ -256,13 +285,60 @@ export default {
             this.error = error;
             this.isLoading = false;
         },
+    },
+    render() {
+        const {
+            isLoading,
+            help,
+            error,
+            filteredEvents,
+            timelineOptions,
+            handleRefresh,
+            handleDoubleClick,
+            handleRangeChanged,
+            handleFilterByPark,
+            handleSetCenterDate,
+            handleFilterMissingMaterial,
+            handleItemOver,
+            handleItemOut,
+            handleItemMoved,
+            handleItemRemove,
+            handleItemRemoved,
+        } = this;
 
-        handleFilterMissingMaterial(hasMissingMaterialFilter) {
-            this.hasMissingMaterialFilter = hasMissingMaterialFilter;
-        },
-
-        handleFilterByPark(parkId) {
-            this.parkId = parkId === '' ? null : Number.parseInt(parkId, 10);
-        },
+        return (
+            <div class="content">
+                <div class="content__header">
+                    <CalendarHeader
+                        ref="Header"
+                        isLoading={isLoading}
+                        onRefresh={handleRefresh}
+                        onSetCenterDate={handleSetCenterDate}
+                        onFilterMissingMaterials={handleFilterMissingMaterial}
+                        onFilterByPark={handleFilterByPark}
+                    />
+                </div>
+                <div ref="Container" class="content__main-view Calendar">
+                    <i class="fas fa-circle-notch fa-3x fa-spin Calendar__loading" />
+                    <Timeline
+                        ref="Timeline"
+                        class="Calendar__timeline"
+                        items={filteredEvents}
+                        options={timelineOptions}
+                        onItemOver={handleItemOver}
+                        onItemOut={handleItemOut}
+                        onItemMoved={handleItemMoved}
+                        onItemRemove={handleItemRemove}
+                        onItemRemoved={handleItemRemoved}
+                        onDoubleClick={handleDoubleClick}
+                        onRangeChanged={handleRangeChanged}
+                    />
+                    <div class="Calendar__footer">
+                        <Help message={help} error={error} />
+                        <CalendarCaption />
+                    </div>
+                </div>
+            </div>
+        );
     },
 };

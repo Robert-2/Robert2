@@ -13,15 +13,15 @@ export type Park = {
 };
 
 //
-// - Functions
+// - Fonctions
 //
 
 const all = async (): Promise<PaginatedData<Park[]>> => (
-    (await requester.get('parks')).data
+    (await requester.get('/parks')).data
 );
 
 const list = async (): Promise<Park[]> => (
-    (await requester.get('parks/list')).data
+    (await requester.get('/parks/list')).data
 );
 
 export default { all, list };

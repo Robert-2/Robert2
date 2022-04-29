@@ -1,25 +1,30 @@
 import './index.scss';
 import moment from 'moment';
+import { Fragment } from 'vue-fragment';
+import Loading from '@/components/Loading';
+import CriticalError from '@/components/CriticalError';
+import Page from '@/components/Page';
+import apiEvents from '@/stores/api/events';
 import { confirm } from '@/utils/alert';
-import formatAmount from '@/utils/formatAmount';
 import EventReturnHeader from './Header';
+import EventReturnNotStarted from './NotStarted';
 import MaterialsList from './MaterialsList';
+import EventReturnFooter from './Footer';
 
 // @vue/component
 export default {
     name: 'EventReturn',
-    components: { EventReturnHeader, MaterialsList },
     data() {
         return {
-            help: 'page-event-return.help',
-            error: null,
-            validationErrors: null,
             isLoading: false,
+            isFetched: false,
+            hasCriticalError: false,
+            validationErrors: null,
             isSaving: false,
             isTerminating: false,
             displayGroup: 'categories',
-            event: {
-                id: this.$route.params.id || null,
+            eventData: {
+                id: this.$route.params.id ?? null,
                 materials: [],
                 beneficiaries: [],
             },
@@ -29,62 +34,82 @@ export default {
         };
     },
     computed: {
+        pageTitle() {
+            const { $t: __ } = this;
+            const { title } = this.eventData;
+            return title
+                ? __('page-event-return.title', { name: title })
+                : __('page-event-return.title-simple');
+        },
+
         hasStarted() {
-            return this.startDate ? this.startDate.isSameOrBefore(new Date(), 'day') : false;
+            const { startDate } = this;
+            return startDate ? startDate.isSameOrBefore(new Date(), 'day') : false;
         },
 
         hasEnded() {
-            return this.endDate ? this.endDate.isSameOrBefore(new Date(), 'day') : false;
+            const { endDate } = this;
+            return endDate ? endDate.isSameOrBefore(new Date(), 'day') : false;
         },
 
         isDone() {
-            return !!this.event.is_return_inventory_done;
+            const { eventData } = this;
+            return !!eventData.is_return_inventory_done;
         },
     },
     mounted() {
-        this.getEventData();
+        this.fetchData();
     },
     methods: {
-        formatAmount(amount) {
-            return formatAmount(amount);
+        // ------------------------------------------------------
+        // -
+        // -    Handlers
+        // -
+        // ------------------------------------------------------
+
+        handleChangeQuantities(id, newQuantities) {
+            const { quantities } = this;
+            const index = quantities.findIndex(({ id: _id }) => id === _id);
+            if (index < 0) {
+                return;
+            }
+            const prevQuantities = quantities[index];
+            this.$set(quantities, index, { ...prevQuantities, ...newQuantities });
         },
 
-        async getEventData() {
-            const { id } = this.event;
-            if (!id) {
+        handleChangeDisplayGroup(group) {
+            this.displayGroup = group;
+        },
+
+        async handleSave() {
+            await this.save();
+        },
+
+        async handleTerminate() {
+            const hasBroken = this.quantities.some(({ broken }) => broken > 0);
+            const confirmation = await confirm({
+                title: this.$t('page-event-return.confirm-terminate-title'),
+                text: hasBroken
+                    ? this.$t('page-event-return.confirm-terminate-text-with-broken')
+                    : this.$t('page-event-return.confirm-terminate-text'),
+                confirmButtonText: this.$t('terminate-inventory'),
+            });
+
+            if (!confirmation.isConfirmed) {
                 return;
             }
 
-            this.isLoading = true;
-
-            try {
-                const { data } = await this.$http.get(`events/${id}`);
-                this.setEventData(data);
-            } catch (error) {
-                this.event.id = null;
-                this.displayError(error);
-            }
+            await this.save(true);
         },
 
-        setEventData(data) {
-            this.help = 'page-event-return.help';
-            this.error = null;
-            this.validationErrors = null;
-            this.isLoading = false;
-            this.isSaving = false;
-            this.isTerminating = false;
-
-            this.event = data;
-            this.startDate = moment(data.start_date);
-            this.endDate = moment(data.end_date);
-
-            this.initQuantities();
-
-            this.$store.commit('setPageSubTitle', data.title);
-        },
+        // ------------------------------------------------------
+        // -
+        // -    Méthodes internes
+        // -
+        // ------------------------------------------------------
 
         initQuantities() {
-            const { materials } = this.event;
+            const { materials } = this.eventData;
 
             this.quantities = materials.map(({ id, pivot }) => ({
                 id,
@@ -94,80 +119,127 @@ export default {
             }));
         },
 
-        handleChange(id, quantities) {
-            const index = this.quantities.findIndex(({ id: _id }) => id === _id);
-            if (index < 0) {
+        setEventData(data) {
+            this.eventData = data;
+            this.startDate = moment(data.start_date);
+            this.endDate = moment(data.end_date);
+
+            this.initQuantities();
+        },
+
+        async fetchData() {
+            const { eventData: { id } } = this;
+            if (!id) {
                 return;
             }
-            const prevQuantity = this.quantities[index];
-            this.$set(this.quantities, index, { ...prevQuantity, ...quantities });
+
+            this.isLoading = true;
+
+            try {
+                const eventData = await apiEvents.one(id);
+                this.setEventData(eventData);
+                this.isFetched = true;
+            } catch {
+                this.hasCriticalError = true;
+            } finally {
+                this.isLoading = false;
+            }
         },
 
-        setDisplayGroup(group) {
-            this.displayGroup = group;
-        },
-
-        async save() {
-            const { id } = this.event;
+        async save(terminate = false) {
+            const { $t: __, eventData: { id }, quantities } = this;
             if (!id) {
                 return;
             }
 
             this.isSaving = true;
-            this.validationErrors = null;
+
+            const doRequest = () => (
+                terminate ? apiEvents.terminate(id, quantities) : apiEvents.setReturn(id, quantities)
+            );
 
             try {
-                const { data } = await this.$http.put(`events/${id}/return`, this.quantities);
-                this.setEventData(data);
+                const eventNewData = await doRequest();
+                this.setEventData(eventNewData);
+                this.validationErrors = null;
+                this.$toasted.success(__('page-event-return.saved'));
             } catch (error) {
-                this.displayError(error);
+                const { code, details } = error.response?.data?.error || { code: 0, details: {} };
+                if (code === 400) {
+                    this.validationErrors = [...details];
+                } else {
+                    this.$toasted.error(__('errors.unexpected-while-saving'));
+                }
+            } finally {
+                this.isSaving = false;
             }
         },
+    },
+    render() {
+        const {
+            $t: __,
+            pageTitle,
+            isLoading,
+            isFetched,
+            eventData,
+            hasCriticalError,
+            validationErrors,
+            hasStarted,
+            isSaving,
+            isTerminating,
+            hasEnded,
+            isDone,
+            displayGroup,
+            quantities,
+            handleChangeDisplayGroup,
+            handleChangeQuantities,
+            handleSave,
+            handleTerminate,
+        } = this;
 
-        async terminate() {
-            const { id } = this.event;
-            if (!id) {
-                return;
-            }
+        if (hasCriticalError || !isFetched) {
+            return (
+                <Page name="event-return" title={__('page-event-return.material-return')}>
+                    {hasCriticalError ? <CriticalError /> : <Loading />}
+                </Page>
+            );
+        }
 
-            const hasBroken = this.quantities.some(({ broken }) => broken > 0);
-
-            const response = await confirm({
-                title: this.$t('page-event-return.confirm-terminate-title'),
-                text: hasBroken
-                    ? this.$t('page-event-return.confirm-terminate-text-with-broken')
-                    : this.$t('page-event-return.confirm-terminate-text'),
-                confirmButtonText: this.$t('terminate-inventory'),
-            });
-
-            if (!response.isConfirmed) {
-                return;
-            }
-
-            this.isSaving = true;
-            this.isTerminating = true;
-            this.validationErrors = null;
-
-            try {
-                const { data } = await this.$http.put(`events/${id}/terminate`, this.quantities);
-                this.setEventData(data);
-            } catch (error) {
-                this.displayError(error);
-            }
-        },
-
-        displayError(error) {
-            this.isLoading = false;
-            this.isSaving = false;
-            this.isTerminating = false;
-
-            if (error.response.status === 400) {
-                this.error = new Error(this.$t('inventory-validation-error'));
-                this.validationErrors = error.response.data.error.details;
-                return;
-            }
-
-            this.error = error;
-        },
+        return (
+            <Page
+                name="event-return"
+                title={pageTitle}
+                error={validationErrors ? __('errors.validation') : undefined}
+                isLoading={isLoading}
+            >
+                <div class="EventReturn">
+                    <EventReturnHeader
+                        eventData={eventData}
+                        hasStarted={hasStarted}
+                        onDisplayGroupChange={handleChangeDisplayGroup}
+                    />
+                    {!hasStarted && <EventReturnNotStarted />}
+                    {hasStarted && (
+                        <Fragment>
+                            <MaterialsList
+                                materials={eventData.materials}
+                                displayGroup={displayGroup}
+                                quantities={quantities}
+                                errors={validationErrors}
+                                isLocked={isDone}
+                                onChange={handleChangeQuantities}
+                            />
+                            <EventReturnFooter
+                                isDone={isDone}
+                                isSaving={isSaving || isTerminating}
+                                hasEnded={hasEnded}
+                                onSave={handleSave}
+                                onTerminate={handleTerminate}
+                            />
+                        </Fragment>
+                    )}
+                </div>
+            </Page>
+        );
     },
 };

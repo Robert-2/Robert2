@@ -166,7 +166,7 @@ export default {
                                     <button
                                         type="button"
                                         v-tooltip={__('action-restore')}
-                                        class="item-actions__button info"
+                                        class="info"
                                         onClick={() => { restoreMaterial(material.id); }}
                                     >
                                         <i class="fas fa-trash-restore" />
@@ -174,7 +174,7 @@ export default {
                                     <button
                                         type="button"
                                         v-tooltip={__('action-delete')}
-                                        class="item-actions__button danger"
+                                        class="danger"
                                         onClick={() => { deleteMaterial(material.id); }}
                                     >
                                         <i class="fas fa-trash-alt" />
@@ -190,7 +190,7 @@ export default {
                                         <button
                                             type="button"
                                             v-tooltip={__('action-view')}
-                                            class="item-actions__button success"
+                                            class="success"
                                             onClick={navigate}
                                         >
                                             <i class="fas fa-eye" />
@@ -202,7 +202,7 @@ export default {
                                         <button
                                             type="button"
                                             v-tooltip={__('action-edit')}
-                                            class="item-actions__button info"
+                                            class="info"
                                             onClick={navigate}
                                         >
                                             <i class="fas fa-edit" />
@@ -212,7 +212,7 @@ export default {
                                 <button
                                     type="button"
                                     v-tooltip={__('action-trash')}
-                                    class="item-actions__button warning"
+                                    class="warning"
                                     onClick={() => { deleteMaterial(material.id); }}
                                 >
                                     <i class="fas fa-trash" />
@@ -270,28 +270,28 @@ export default {
                 'out_of_order_quantity',
             ];
             const columnsClasses = {
-                reference: 'Materials__ref',
-                name: 'Materials__name',
-                park: 'Materials__park',
-                category: 'Materials__category',
-                description: 'Materials__description',
-                rental_price: 'Materials__rental-price',
-                replacement_price: 'Materials__replacement-price',
-                stock_quantity: 'Materials__quantity',
-                out_of_order_quantity: 'Materials__quantity-broken',
-                tags: 'Materials__tags',
-                actions: 'Materials__actions',
+                reference: 'Materials__ref ',
+                name: 'Materials__name ',
+                park: 'Materials__park ',
+                category: 'Materials__category ',
+                description: 'Materials__description ',
+                rental_price: 'Materials__rental-price ',
+                replacement_price: 'Materials__replacement-price ',
+                stock_quantity: 'Materials__quantity ',
+                out_of_order_quantity: 'Materials__quantity-broken ',
+                tags: 'Materials__tags ',
+                actions: 'Materials__actions ',
             };
 
             if (this.periodForQuantities) {
                 headings.stock_quantity = __('remaining-quantity');
-                columnsClasses.stock_quantity = 'Materials__quantity Materials__quantity--remaining';
+                columnsClasses.stock_quantity = 'Materials__quantity Materials__quantity--remaining ';
                 sortable = sortable.filter(
                     (sortColumn) => sortColumn !== 'stock_quantity',
                 );
             } else {
                 headings.stock_quantity = __('quantity');
-                columnsClasses.stock_quantity = 'Materials__quantity';
+                columnsClasses.stock_quantity = 'Materials__quantity ';
             }
 
             return { ...this.options, headings, sortable, columnsClasses };

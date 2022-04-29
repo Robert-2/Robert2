@@ -4,12 +4,13 @@ import pick from 'lodash/pick';
 import Config from '@/globals/config';
 import { DATE_DB_FORMAT } from '@/globals/constants';
 import FormField from '@/components/FormField';
+import Fieldset from '@/components/Fieldset';
 import EventStore from '../EventStore';
 
 // @vue/component
 export default {
     name: 'EventStep1',
-    components: { FormField },
+    components: { FormField, Fieldset },
     props: {
         event: { type: Object, required: true },
     },

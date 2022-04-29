@@ -1,63 +1,52 @@
 @use '~@/style/globals';
 
-.Company {
-    &__main {
-        display: flex;
-        flex-wrap: wrap;
-        padding-bottom: 3rem;
-    }
+.Page--company-edit {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
 
-    .CompanyForm {
-        flex: 2;
-        max-width: globals.$form-max-width;
-        min-width: globals.$form-min-width;
-        margin-right: 0;
-    }
-
-    &__extras {
+    .CompanyEdit {
         flex: 1;
-        min-width: 180px;
-        margin-top: 2.8rem;
+        align-self: center;
+    }
+}
+
+.CompanyEdit {
+    display: flex;
+    align-items: flex-start;
+    width: 600px;
+    max-width: 100%;
+
+    .CompanyEditForm {
+        flex: 1;
     }
 
-    .Help {
-        display: none;
-        margin-bottom: 1rem;
-    }
+    // &__persons {
+    //     display: none;
+    //     width: 260px;
+    //     margin-top: 2.5rem;
+    //     margin-left: 1.5rem;
+    //     padding: 1.5rem;
+    //     border-radius: 5px;
+    //     background-color: globals.$bg-color-side-nav;
+    //     color: globals.$text-base-color;
 
-    &__persons {
-        max-width: 350px;
-        padding: 0.5rem 1rem;
-        background-color: globals.$bg-color-side-nav;
-        color: globals.$text-base-color;
+    //     &__title {
+    //         margin: 0 0 0.5rem;
+    //         font-size: 1.1rem;
+    //     }
 
-        &__title {
-            margin: 0.5rem 0;
-            font-size: 1.1rem;
-        }
+    //     &__list {
+    //         margin-bottom: 0;
+    //         padding-left: 1.2rem;
+    //         word-wrap: break-word;
+    //     }
+    // }
 
-        &__list {
-            margin: 0;
-            padding: 0.5rem;
-        }
-
-        &__item {
-            margin-bottom: 0.5rem;
-            list-style: none;
-
-            .fas {
-                margin-right: 0.2rem;
-            }
-        }
-    }
-
-    @media screen and (min-width: globals.$screen-tablet) {
-        .CompanyForm {
-            margin-right: 1.5rem;
-        }
-
-        .Help {
-            display: block;
-        }
-    }
+    // @media screen and (min-width: globals.$screen-tablet) {
+    //     &__persons {
+    //         display: block;
+    //     }
+    // }
 }

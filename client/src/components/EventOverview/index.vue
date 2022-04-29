@@ -42,7 +42,7 @@
                                 </router-link>
                                 <router-link
                                     v-if="beneficiary.company"
-                                    :to="`/companies/${beneficiary.company_id}`"
+                                    :to="`/companies/${beneficiary.company.id}`"
                                     :title="$t('action-edit')"
                                 >
                                     ({{ beneficiary.company.legal_name }})

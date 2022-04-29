@@ -1,17 +1,13 @@
 import './index.scss';
 import moment from 'moment';
-import Help from '@/components/Help';
 import MultiSwitch from '@/components/MultiSwitch';
 
 // @vue/component
 export default {
     name: 'EventReturnHeader',
-    components: { Help, MultiSwitch },
     props: {
-        isLoading: Boolean,
-        error: Error,
-        help: String,
-        eventData: Object,
+        eventData: { type: Object, required: true },
+        hasStarted: Boolean,
     },
     data() {
         return {
@@ -32,25 +28,22 @@ export default {
         this.$store.dispatch('parks/fetch');
     },
     methods: {
+        // ------------------------------------------------------
+        // -
+        // -    Méthodes internes
+        // -
+        // ------------------------------------------------------
+
         setDisplayGroup(group) {
             this.displayGroup = group;
             this.$emit('displayGroupChange', group);
         },
     },
     render() {
-        const { isLoading, eventData, error } = this;
-
-        if (isLoading || !eventData.id) {
-            return (
-                <div class="EventReturnHeader">
-                    <Help message="" error={error} isLoading={isLoading} />
-                </div>
-            );
-        }
-
         const {
             $t: __,
-            help,
+            eventData,
+            hasStarted,
             endDate,
             displayGroup,
             setDisplayGroup,
@@ -81,21 +74,22 @@ export default {
                         </div>
                     )}
                 </div>
-                <Help message={help} error={error} />
-                <div class="EventReturnHeader__actions">
-                    <div class="EventReturnHeader__group-by">
-                        <span class="EventReturnHeader__group-by__label">{__('grouped-by')}</span>
-                        <MultiSwitch
-                            options={[
-                                { value: 'categories', label: __('categories') },
-                                { value: 'parks', label: __('parks'), isDisplayed: hasMultipleParks },
-                                { value: null, label: __('not-grouped') },
-                            ]}
-                            value={displayGroup}
-                            onChange={setDisplayGroup}
-                        />
+                {hasStarted && (
+                    <div class="EventReturnHeader__actions">
+                        <div class="EventReturnHeader__group-by">
+                            <span class="EventReturnHeader__group-by__label">{__('grouped-by')}</span>
+                            <MultiSwitch
+                                options={[
+                                    { value: 'categories', label: __('categories') },
+                                    { value: 'parks', label: __('parks'), isDisplayed: hasMultipleParks },
+                                    { value: null, label: __('not-grouped') },
+                                ]}
+                                value={displayGroup}
+                                onChange={setDisplayGroup}
+                            />
+                        </div>
                     </div>
-                </div>
+                )}
             </div>
         );
     },

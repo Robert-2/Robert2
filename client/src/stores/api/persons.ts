@@ -30,6 +30,17 @@ export type Person = {
     deleted_at: string | null,
 };
 
-export type PersonWithEventPivot = Person & {
-    pivot: { event_id: number, person_id: number },
+export type PersonEdit = {
+    first_name: string,
+    last_name: string,
+    nickname: string | null,
+    reference: string | null,
+    email: string | null,
+    phone: string | null,
+    company_id: number | null,
+    street: string | null,
+    postal_code: string | null,
+    locality: string | null,
+    country_id: number | null,
+    note: string | null,
 };

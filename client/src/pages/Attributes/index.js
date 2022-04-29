@@ -81,7 +81,7 @@ export default {
             try {
                 this.attributes = await apiAttributes.all();
                 this.isFetched = true;
-            } catch (error) {
+            } catch {
                 this.hasCriticalError = true;
             } finally {
                 this.isLoading = false;
@@ -94,6 +94,7 @@ export default {
             attributes,
             hasCriticalError,
             isAdding,
+            isFetched,
             isLoading,
             handleAddItem,
             handleItemAdded,
@@ -102,7 +103,7 @@ export default {
             handleCancelAdding,
         } = this;
 
-        if (hasCriticalError || !this.isFetched) {
+        if (hasCriticalError || !isFetched) {
             return (
                 <Page name="attributes" title={__('page-attributes.title')}>
                     {hasCriticalError ? <CriticalError /> : <Loading />}
@@ -114,8 +115,7 @@ export default {
 
         const headerActions = [
             <Button
-                type="success"
-                icon="plus"
+                type="add"
                 disabled={isAdding}
                 onClick={handleAddItem}
             >

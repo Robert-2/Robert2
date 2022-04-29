@@ -1,10 +1,6 @@
 <template>
     <form class="Form EventStep1" method="POST" @submit="saveAndBack">
-        <section class="Form__fieldset">
-            <h4 class="Form__fieldset__title">
-                {{ $t('minimal-infos') }}
-                <span class="FormField__label__required">*</span>
-            </h4>
+        <Fieldset :title="$t('minimal-infos')" required>
             <FormField
                 v-model="eventData.title"
                 name="title"
@@ -31,11 +27,8 @@
                     </span>
                 </div>
             </div>
-        </section>
-        <section class="Form__fieldset">
-            <h4 class="Form__fieldset__title">
-                {{ $t('event-details') }}
-            </h4>
+        </Fieldset>
+        <Fieldset :title="$t('event-details')">
             <FormField
                 v-model="eventData.location"
                 name="location"
@@ -72,7 +65,7 @@
                     </span>
                 </div>
             </div>
-        </section>
+        </Fieldset>
         <section class="Form__actions">
             <button class="EventStep1__save-btn info" type="submit">
                 <i class="fas fa-arrow-left" />

@@ -1,9 +1,12 @@
 import './index.scss';
 import { Fragment } from 'vue-fragment';
-import initColumnsDisplay from '@/utils/initColumnsDisplay';
-import { confirm } from '@/utils/alert';
+import Page from '@/components/Page';
+import CriticalError from '@/components/CriticalError';
 import Icon from '@/components/Icon';
-import Help from '@/components/Help';
+import Button from '@/components/Button';
+import { confirm } from '@/utils/alert';
+import apiUsers from '@/stores/api/users';
+import initColumnsDisplay from '@/utils/initColumnsDisplay';
 
 // @vue/component
 export default {
@@ -12,11 +15,15 @@ export default {
         const { $t: __, $route, $options } = this;
 
         return {
-            help: 'page-users.help',
-            error: null,
+            hasCriticalError: false,
             isLoading: false,
-            isDisplayTrashed: false,
+            shouldDisplayTrashed: false,
             isTrashDisplayed: false,
+
+            //
+            // - Tableau
+            //
+
             columns: [
                 'pseudo',
                 'full_name',
@@ -51,15 +58,15 @@ export default {
                     actions: '',
                 },
                 columnsClasses: {
-                    pseudo: 'Users__pseudo',
-                    full_name: 'Users__name',
-                    group_id: 'Users__group',
-                    email: 'Users__email',
-                    phone: 'Users__phone',
-                    address: 'Users__address',
-                    actions: 'VueTables__actions Users__actions',
+                    pseudo: 'Users__pseudo ',
+                    full_name: 'Users__name ',
+                    group_id: 'Users__group ',
+                    email: 'Users__email ',
+                    phone: 'Users__phone ',
+                    address: 'Users__address ',
+                    actions: 'VueTables__actions Users__actions ',
                 },
-                requestFunction: this.fetch.bind(this),
+                requestFunction: this.getData.bind(this),
                 templates: {
                     pseudo: (h, user) => {
                         const isActiveUser = user.id === this.currentUserId;
@@ -105,40 +112,28 @@ export default {
                     actions: (h, user) => {
                         const isActiveUser = user.id === this.currentUserId;
                         if (isActiveUser) {
-                            return (
-                                <router-link to="/user-settings" custom>
-                                    {({ navigate }) => (
-                                        <button type="button" onClick={navigate} class="info">
-                                            <i class="fas fa-edit" />
-                                        </button>
-                                    )}
-                                </router-link>
-                            );
+                            return <Button type="edit" to={{ name: 'user-settings' }} />;
                         }
 
                         const isUserAdmin = user.group_id === 'admin';
-                        const { isTrashDisplayed, restoreUser, deleteUser } = this;
+                        const {
+                            isTrashDisplayed,
+                            handleDeleteItem,
+                            handleRestoreItem,
+                        } = this;
 
                         if (isTrashDisplayed) {
                             return (
                                 <Fragment>
-                                    <button
-                                        type="button"
-                                        v-tooltip={__('action-restore')}
-                                        class="item-actions__button info"
-                                        onClick={() => { restoreUser(user.id); }}
-                                    >
-                                        <i class="fas fa-trash-restore" />
-                                    </button>
+                                    <Button
+                                        type="restore"
+                                        onClick={() => { handleRestoreItem(user.id); }}
+                                    />
                                     {!isUserAdmin && (
-                                        <button
-                                            type="button"
-                                            v-tooltip={__('action-delete')}
-                                            class="item-actions__button danger"
-                                            onClick={() => { deleteUser(user.id); }}
-                                        >
-                                            <i class="fas fa-trash-alt" />
-                                        </button>
+                                        <Button
+                                            type="delete"
+                                            onClick={() => { handleDeleteItem(user.id); }}
+                                        />
                                     )}
                                 </Fragment>
                             );
@@ -146,28 +141,18 @@ export default {
 
                         return (
                             <Fragment>
-                                <router-link to={`/users/${user.id}`} custom>
-                                    {({ navigate }) => (
-                                        <button
-                                            type="button"
-                                            v-tooltip={__('action-edit')}
-                                            class="item-actions__button info"
-                                            onClick={navigate}
-                                        >
-                                            <i class="fas fa-edit" />
-                                        </button>
-                                    )}
-
-                                </router-link>
+                                <Button
+                                    type="edit"
+                                    to={{
+                                        name: 'edit-user',
+                                        params: { id: user.id },
+                                    }}
+                                />
                                 {!isUserAdmin && (
-                                    <button
-                                        type="button"
-                                        v-tooltip={__('action-trash')}
-                                        class="item-actions__button warning"
-                                        onClick={() => { deleteUser(user.id); }}
-                                    >
-                                        <i class="fas fa-trash" />
-                                    </button>
+                                    <Button
+                                        type="trash"
+                                        onClick={() => { handleDeleteItem(user.id); }}
+                                    />
                                 )}
                             </Fragment>
                         );
@@ -182,27 +167,13 @@ export default {
         },
     },
     methods: {
-        async fetch(pagination) {
-            this.error = null;
-            this.isLoading = true;
+        // ------------------------------------------------------
+        // -
+        // -    Handlers
+        // -
+        // ------------------------------------------------------
 
-            try {
-                const params = {
-                    ...pagination,
-                    deleted: this.isDisplayTrashed ? '1' : '0',
-                };
-                return await this.$http.get('users', { params });
-            } catch (error) {
-                this.error = error;
-            } finally {
-                this.isTrashDisplayed = this.isDisplayTrashed;
-                this.isLoading = false;
-            }
-
-            return undefined;
-        },
-
-        async deleteUser(userId) {
+        async handleDeleteItem(id) {
             const { $t: __ } = this;
             const isSoft = !this.isTrashDisplayed;
 
@@ -221,20 +192,18 @@ export default {
                 return;
             }
 
-            this.error = null;
             this.isLoading = true;
-
             try {
-                await this.$http.delete(`users/${userId}`);
-                this.refreshTable();
-            } catch (error) {
-                this.error = error;
+                await apiUsers.remove(id);
+                this.$refs.table.refresh();
+            } catch {
+                this.$toasted.error(__('errors.unexpected-while-deleting'));
             } finally {
                 this.isLoading = false;
             }
         },
 
-        async restoreUser(userId) {
+        async handleRestoreItem(id) {
             const { $t: __ } = this;
 
             const { value: isConfirmed } = await confirm({
@@ -246,87 +215,103 @@ export default {
                 return;
             }
 
-            this.error = null;
             this.isLoading = true;
-
             try {
-                await this.$http.put(`users/restore/${userId}`);
-                this.refreshTable();
-            } catch (error) {
-                this.error = error;
+                await apiUsers.restore(id);
+                this.$refs.table.refresh();
+            } catch {
+                this.$toasted.error(__('errors.unexpected-while-restoring'));
             } finally {
                 this.isLoading = false;
             }
         },
 
-        refreshTable() {
-            this.help = 'page-users.help';
-            this.error = null;
-            this.isLoading = true;
-            this.$refs.DataTable.refresh();
+        handleShowTrashed() {
+            this.shouldDisplayTrashed = !this.shouldDisplayTrashed;
+            this.$refs.table.refresh();
         },
 
-        showTrashed() {
-            this.isDisplayTrashed = !this.isDisplayTrashed;
-            this.refreshTable();
+        // ------------------------------------------------------
+        // -
+        // -    Méthodes internes
+        // -
+        // ------------------------------------------------------
+
+        async getData(pagination) {
+            this.isLoading = true;
+
+            try {
+                const params = {
+                    ...pagination,
+                    deleted: this.shouldDisplayTrashed,
+                };
+                const data = await apiUsers.all(params);
+                this.isTrashDisplayed = this.shouldDisplayTrashed;
+                return data;
+            } catch {
+                this.hasCriticalError = true;
+            } finally {
+                this.isLoading = false;
+            }
+
+            return undefined;
         },
     },
     render() {
         const {
             $t: __,
             $options,
-            help,
-            error,
-            isLoading,
             columns,
             options,
+            isLoading,
             isTrashDisplayed,
-            showTrashed,
+            hasCriticalError,
+            handleShowTrashed,
         } = this;
 
+        if (hasCriticalError) {
+            return (
+                <Page name="users" title={__('page-users.title')}>
+                    <CriticalError />
+                </Page>
+            );
+        }
+
         return (
-            <div class="content Users">
-                <div class="content__header header-page">
-                    <div class="header-page__help">
-                        <Help message={help} error={error} isLoading={isLoading} />
-                    </div>
-                    <div class="header-page__actions">
-                        <router-link to="/users/new" custom>
-                            {({ navigate }) => (
-                                <button
-                                    type="button"
-                                    onClick={navigate}
-                                    class="Users__create success"
-                                >
-                                    <i class="fas fa-user-plus" />{' '}
-                                    {__('page-users.action-add')}
-                                </button>
-                            )}
-                        </router-link>
-                    </div>
-                </div>
-                <div class="content__main-view">
+            <Page
+                name="users"
+                title={__('page-users.title')}
+                help={__('page-users.help')}
+                isLoading={isLoading}
+                actions={[
+                    <Button
+                        type="add"
+                        icon="user-plus"
+                        to={{ name: 'add-user' }}
+                    >
+                        {__('page-users.action-add')}
+                    </Button>,
+                ]}
+            >
+                <div class="Users">
                     <v-server-table
-                        ref="DataTable"
+                        ref="table"
+                        class="Users__table"
                         name={$options.name}
                         columns={columns}
                         options={options}
                     />
+                    <div class="content__footer">
+                        <Button
+                            onClick={handleShowTrashed}
+                            icon={isTrashDisplayed ? 'eye' : 'trash'}
+                            type={isTrashDisplayed ? 'success' : 'danger'}
+                        >
+                            {isTrashDisplayed ? __('display-not-deleted-items') : __('open-trash-bin')}
+                        </Button>
+                    </div>
                 </div>
-                <div class="content__footer">
-                    <button
-                        type="button"
-                        onClick={showTrashed}
-                        class={[
-                            'Users__show-trashed',
-                            isTrashDisplayed ? 'info' : 'warning',
-                        ]}
-                    >
-                        <i class={['fas', isTrashDisplayed ? 'fa-eye' : 'fa-trash']} />{' '}
-                        {isTrashDisplayed ? __('display-not-deleted-items') : __('open-trash-bin')}
-                    </button>
-                </div>
-            </div>
+            </Page>
         );
     },
 };

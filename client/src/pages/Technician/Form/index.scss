@@ -1,6 +1,6 @@
 @use '~@/style/globals';
 
-.CompanyForm {
+.TechnicianEditForm {
     max-width: globals.$form-max-width;
     min-width: globals.$form-min-width;
     margin-right: 1rem;
@@ -21,6 +21,16 @@
 
         .FormField__textarea {
             min-height: 120px;
+        }
+    }
+
+    @media screen and (min-width: globals.$screen-tablet) {
+        &__company__edit-btn {
+            margin-top: 0;
+        }
+
+        &__add-company {
+            margin-left: globals.$form-label-width;
         }
     }
 }

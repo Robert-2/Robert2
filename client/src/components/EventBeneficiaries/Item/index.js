@@ -12,15 +12,24 @@ export default {
 
         return (
             <div class="EventBeneficiaryItem">
-                <router-link to={`/beneficiaries/${beneficiary.id}`} title={__('action-edit')}>
+                <router-link
+                    title={__('action-edit')}
+                    to={{
+                        name: 'edit-beneficiary',
+                        params: { id: beneficiary.id },
+                    }}
+                >
                     {beneficiary.full_name}
                 </router-link>
                 {beneficiary.company && (
                     <Fragment>
                         {' '}
                         <router-link
-                            to={`/companies/${beneficiary.company_id}`}
                             title={__('action-edit')}
+                            to={{
+                                name: 'edit-company',
+                                params: { id: beneficiary.company.id },
+                            }}
                         >
                             ({beneficiary.company.legal_name})
                         </router-link>

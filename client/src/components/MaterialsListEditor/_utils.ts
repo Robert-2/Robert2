@@ -1,6 +1,6 @@
 import isValidInteger from '@/utils/isValidInteger';
 
-import type { MaterialWithPivot } from '@/stores/api/materials';
+import type { Material } from '@/stores/api/materials';
 
 //
 // - Types
@@ -19,6 +19,13 @@ export type MaterialsFiltersType = {
     category?: number | null,
     subCategory?: number | null,
     tags?: string[],
+};
+
+export type MaterialWithPivot = Material & {
+    pivot: {
+        id: number,
+        quantity: number,
+    },
 };
 
 //

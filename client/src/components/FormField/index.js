@@ -22,6 +22,9 @@ const ALLOWED_TYPES = [
 // @vue/component
 export default defineComponent({
     name: 'FormField',
+    inject: {
+        verticalForm: { default: false },
+    },
     props: {
         label: { type: String, default: null },
         name: { type: String, default: null },
@@ -96,6 +99,7 @@ export default defineComponent({
             placeholder,
             required,
             disabled,
+            verticalForm: vertical,
             disabledReason,
             options,
             step,
@@ -119,7 +123,8 @@ export default defineComponent({
                 : __(placeholder);
         }
 
-        const classNames = ['FormField', {
+        const classNames = ['FormField', `FormField--${type}`, {
+            'FormField--vertical': !!vertical,
             'FormField--with-addon': !!addon,
             'FormField--with-error': errors && errors.length > 0,
         }];

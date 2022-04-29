@@ -3,8 +3,11 @@ import { debounce } from 'debounce';
 import queryClient from '@/globals/queryClient';
 import { DEBOUNCE_WAIT } from '@/globals/constants';
 import MaterialsListEditor from '@/components/MaterialsListEditor';
-import { getMaterialsQuantities, materialsHasChanged } from '@/components/MaterialsListEditor/_utils';
-import EventStore from '../EventStore';
+import eventStore from '../EventStore';
+import {
+    getMaterialsQuantities,
+    materialsHasChanged,
+} from '@/components/MaterialsListEditor/_utils';
 
 // @vue/component
 export default {
@@ -30,7 +33,7 @@ export default {
 
             const savedList = getMaterialsQuantities(this.event.materials);
             const hasDifference = materialsHasChanged(savedList, newList);
-            EventStore.commit('setIsSaved', !hasDifference);
+            eventStore.commit('setIsSaved', !hasDifference);
 
             if (hasDifference) {
                 this.debouncedSave();
@@ -70,12 +73,42 @@ export default {
                     this.$router.push('/');
                     return;
                 }
-                EventStore.commit('setIsSaved', true);
+                eventStore.commit('setIsSaved', true);
                 this.$emit('updateEvent', data);
                 this.$emit('gotoStep', gotoStep);
             } catch (error) {
                 this.displayError(error);
             }
         },
+    },
+    render() {
+        const {
+            $t: __,
+            event,
+            handleChange,
+            saveAndBack,
+            saveAndNext,
+        } = this;
+
+        return (
+            <form class="Form EventStep4" onSubmit={saveAndBack}>
+                <MaterialsListEditor
+                    selected={event.materials}
+                    event={event}
+                    onChange={handleChange}
+                    withTemplates
+                />
+                <section class="Form__actions">
+                    <button class="info" type="submit">
+                        <i class="fas fa-arrow-left" />
+                        {__('page-events.save-and-back-to-calendar')}
+                    </button>
+                    <button type="button" class="success" onClick={saveAndNext}>
+                        {__('page-events.save-and-continue')}
+                        <i class="fas fa-arrow-right" />
+                    </button>
+                </section>
+            </form>
+        );
     },
 };

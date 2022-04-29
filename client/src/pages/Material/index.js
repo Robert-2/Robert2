@@ -5,6 +5,7 @@ import apiAttributes from '@/stores/api/attributes';
 import formatOptions from '@/utils/formatOptions';
 import Help from '@/components/Help';
 import FormField from '@/components/FormField';
+import Fieldset from '@/components/Fieldset';
 import ImageWithUpload from '@/components/ImageWithUpload';
 import Progressbar from '@/components/Progressbar';
 
@@ -16,6 +17,7 @@ export default {
     components: {
         Help,
         FormField,
+        Fieldset,
         ImageWithUpload,
         Progressbar,
     },

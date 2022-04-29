@@ -37,7 +37,7 @@ export default {
             try {
                 this.searchError = null;
                 const params = { search, limit: 10 };
-                const { data } = await this.$http.get('companies', { params });
+                const { data } = await this.$http.get('companies', { params }); //-
                 this.companies = formatOptions(data.data, (item) => item.legal_name);
             } catch (error) {
                 this.searchError = error;
@@ -85,14 +85,21 @@ export default {
                     <div slot="no-options">
                         <p>{__('no-result-found-try-another-search')}</p>
                         <p>
-                            <router-link to="/companies/new">
-                                <Icon name="plus" /> {__('page-companies.create-new')}
+                            <router-link to={{ name: 'add-company' }}>
+                                <Icon name="plus" /> {__('create-company')}
                             </router-link>
                         </p>
                     </div>
                 </VueSelect>
                 {selectedValue?.value && (
-                    <Button icon="edit" type="default" to={`/companies/${selectedValue.value}`}>
+                    <Button
+                        icon="edit"
+                        type="default"
+                        to={{
+                            name: 'edit-company',
+                            params: { id: selectedValue.value },
+                        }}
+                    >
                         {__('action-edit')}
                     </Button>
                 )}

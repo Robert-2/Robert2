@@ -1,7 +1,16 @@
-@use '~@/style/globals';
-
 .Page--beneficiary-edit {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+
+    .BeneficiaryEdit {
+        flex: 1;
+        align-self: center;
+    }
+}
+
+.BeneficiaryEdit {
     width: 800px;
     max-width: 100%;
-    align-self: center;
 }
