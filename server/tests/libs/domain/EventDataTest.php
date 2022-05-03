@@ -160,6 +160,28 @@ final class EventDataTest extends ModelTestCase
         $result = $this->EventData->getMaterialByCategories();
         $expected = [
             [
+                'id' => 2,
+                'name' => 'light',
+                'materials' => [
+                    'SDS-6-01' => [
+                        'reference' => 'SDS-6-01',
+                        'name' => 'Showtec SDS-6',
+                        'stockQuantity' => 2,
+                        'attributes' => [
+                            ['id' => 4, 'name' => 'Conforme', 'type' => 'boolean', 'value' => true, 'unit' => null],
+                            ['id' => 3, 'name' => 'Puissance', 'type' => 'integer', 'value' => 60, 'unit' => 'W'],
+                            ['id' => 1, 'name' => 'Poids', 'type' => 'float', 'value' => 3.15, 'unit' => 'kg'],
+                        ],
+                        'park' => 'default',
+                        'quantity' => 1,
+                        'rentalPrice' => 15.95,
+                        'replacementPrice' => 59.0,
+                        'total' => 15.95,
+                        'totalReplacementPrice' => 59.0,
+                    ],
+                ],
+            ],
+            [
                 'id' => 1,
                 'name' => 'sound',
                 'materials' => [
@@ -193,28 +215,6 @@ final class EventDataTest extends ModelTestCase
                         'replacementPrice' => 349.9,
                         'total' => 25.5,
                         'totalReplacementPrice' => 349.9,
-                    ],
-                ],
-            ],
-            [
-                'id' => 2,
-                'name' => 'light',
-                'materials' => [
-                    'SDS-6-01' => [
-                        'reference' => 'SDS-6-01',
-                        'name' => 'Showtec SDS-6',
-                        'stockQuantity' => 2,
-                        'attributes' => [
-                            ['id' => 4, 'name' => 'Conforme', 'type' => 'boolean', 'value' => true, 'unit' => null],
-                            ['id' => 3, 'name' => 'Puissance', 'type' => 'integer', 'value' => 60, 'unit' => 'W'],
-                            ['id' => 1, 'name' => 'Poids', 'type' => 'float', 'value' => 3.15, 'unit' => 'kg'],
-                        ],
-                        'park' => 'default',
-                        'quantity' => 1,
-                        'rentalPrice' => 15.95,
-                        'replacementPrice' => 59.0,
-                        'total' => 15.95,
-                        'totalReplacementPrice' => 59.0,
                     ],
                 ],
             ],

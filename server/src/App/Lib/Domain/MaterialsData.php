@@ -88,7 +88,11 @@ class MaterialsData
             ksort($categoriesMaterials[$categoryId]['materials'], SORT_NATURAL | SORT_FLAG_CASE);
         }
 
-        return array_reverse(array_values($categoriesMaterials));
+        usort($categoriesMaterials, function ($a, $b) {
+            return strnatcasecmp($a['name'], $b['name']);
+        });
+
+        return $categoriesMaterials;
     }
 
     public function getBySubCategories(bool $withHidden = false): array
@@ -140,15 +144,14 @@ class MaterialsData
             ksort($subCategoriesMaterials[$subCategoryId]['materials'], SORT_NATURAL | SORT_FLAG_CASE);
         }
 
-        $results = array_values($subCategoriesMaterials);
-        usort($results, function ($a, $b) {
+        usort($subCategoriesMaterials, function ($a, $b) {
             $noNameSortReplacer = 'ZZZZZZZZ';
             $aString = sprintf('%s%s', $a['category'], $a['name'] ?: $noNameSortReplacer);
             $bString = sprintf('%s%s', $b['category'], $b['name'] ?: $noNameSortReplacer);
-            return strcasecmp($aString, $bString);
+            return strnatcasecmp($aString, $bString);
         });
 
-        return $results;
+        return $subCategoriesMaterials;
     }
 
     public function getByParks(bool $withHidden = false)
@@ -195,7 +198,7 @@ class MaterialsData
         }
 
         usort($parksMaterials, function ($a, $b) {
-            return strcmp($a['name'] ?: '', $b['name'] ?: '');
+            return strnatcasecmp($a['name'] ?: '', $b['name'] ?: '');
         });
 
         return array_values($parksMaterials);

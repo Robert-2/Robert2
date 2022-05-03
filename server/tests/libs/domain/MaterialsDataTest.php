@@ -44,24 +44,6 @@ final class MaterialsDataTest extends ModelTestCase
         $result = $this->MaterialsData->getByCategories();
         $expected = [
             [
-                'id' => 3,
-                'name' => 'transport',
-                'materials' => [
-                    'Transporter' => [
-                        'reference' => 'Transporter',
-                        'name' => 'Volkswagen Transporter',
-                        'park' => 'default',
-                        'stockQuantity' => 0,
-                        'attributes' => [],
-                        'quantity' => 0,
-                        'rentalPrice' => 300.0,
-                        'replacementPrice' => 32000.0,
-                        'total' => 0.0,
-                        'totalReplacementPrice' => 0.0,
-                    ],
-                ],
-            ],
-            [
                 'id' => 2,
                 'name' => 'light',
                 'materials' => [
@@ -225,6 +207,24 @@ final class MaterialsDataTest extends ModelTestCase
                         'quantity' => 0,
                         'rentalPrice' => 0.5,
                         'replacementPrice' => 9.5,
+                        'total' => 0.0,
+                        'totalReplacementPrice' => 0.0,
+                    ],
+                ],
+            ],
+            [
+                'id' => 3,
+                'name' => 'transport',
+                'materials' => [
+                    'Transporter' => [
+                        'reference' => 'Transporter',
+                        'name' => 'Volkswagen Transporter',
+                        'park' => 'default',
+                        'stockQuantity' => 0,
+                        'attributes' => [],
+                        'quantity' => 0,
+                        'rentalPrice' => 300.0,
+                        'replacementPrice' => 32000.0,
                         'total' => 0.0,
                         'totalReplacementPrice' => 0.0,
                     ],
