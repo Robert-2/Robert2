@@ -1,14 +1,6 @@
 @use '~@/style/globals';
 
 .Calendar {
-    position: relative;
-
-    &__loading {
-        position: absolute;
-        top: 50px;
-        left: 50%;
-    }
-
     &__timeline {
         flex: 1;
     }

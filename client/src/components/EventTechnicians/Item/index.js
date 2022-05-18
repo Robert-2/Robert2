@@ -12,7 +12,7 @@ export default {
         return (
             <div class="EventTechnicianItem">
                 <router-link
-                    to={`/technicians/${technician.id}/view#info`}
+                    to={{ name: 'view-technician', params: { id: technician.id } }}
                     title={__('action-view')}
                 >
                     {technician.full_name}

@@ -1,10 +1,10 @@
 @use '~@/style/globals';
 
-$info-spacing: 1.5rem;
-
 .EventStep5 {
+    $spacing: 1.5rem;
+
     .EventOverview {
-        margin-bottom: $info-spacing;
+        margin-bottom: $spacing;
     }
 
     .EventMissingMaterials {
@@ -12,8 +12,8 @@ $info-spacing: 1.5rem;
     }
 
     &__confirmation {
-        margin-bottom: $info-spacing;
-        padding-bottom: $info-spacing;
+        margin-bottom: $spacing;
+        padding-bottom: $spacing;
         border-bottom: 1px solid globals.$list-left-border-color;
 
         &__icon {
@@ -21,14 +21,14 @@ $info-spacing: 1.5rem;
         }
 
         &__title {
-            margin: 0 0 $info-spacing;
+            margin: 0 0 $spacing;
             color: globals.$text-base-color;
             font-size: 1.2rem;
             font-weight: 600;
         }
 
         &__help {
-            margin-bottom: $info-spacing;
+            margin-bottom: $spacing;
             color: globals.$text-warning-color;
 
             &--confirmed {

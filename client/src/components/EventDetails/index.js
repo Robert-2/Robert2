@@ -1,5 +1,5 @@
 import './index.scss';
-import { Tabs, Tab } from 'vue-slim-tabs';
+import { Tabs, Tab } from '@/components/Tabs';
 import Config from '@/globals/config';
 import ErrorMessage from '@/components/ErrorMessage';
 import Loading from '@/components/Loading';
@@ -167,32 +167,29 @@ export default {
                         />
                         <div class="EventDetails__content__body">
                             <Tabs defaultIndex={openedTabIndex}>
-                                <Tab title={<span><i class="fas fa-info-circle" /> {__('informations')}</span>}>
+                                <Tab title={__('informations')} icon="info-circle">
                                     <Infos event={event} />
                                 </Tab>
                                 <Tab
+                                    title={__('technicians')}
+                                    icon="people-carry"
                                     disabled={!hasEventTechnicians}
-                                    title={<span><i class="fas fa-people-carry" /> {__('technicians')}</span>}
                                 >
                                     <Technicians event={event} />
                                 </Tab>
                                 <Tab
+                                    title={__('material')}
+                                    icon="box"
                                     disabled={!hasMaterials}
-                                    title={(
-                                        <span>
-                                            <i class="fas fa-box" /> {__('material')}
-                                            {hasMaterialsProblems && (
-                                                <i class="fas fa-exclamation-triangle" />
-                                            )}
-                                        </span>
-                                    )}
+                                    warning={hasMaterialsProblems}
                                 >
                                     <Materials event={event} />
                                 </Tab>
                                 {showBilling && (
                                     <Tab
+                                        title={__('estimates')}
+                                        icon="file-signature"
                                         disabled={!hasMaterials}
-                                        title={<span><i class="fas fa-file-signature" /> {__('estimates')}</span>}
                                     >
                                         <Estimates
                                             event={event}
@@ -204,8 +201,9 @@ export default {
                                 )}
                                 {showBilling && (
                                     <Tab
+                                        title={__('bill')}
+                                        icon="file-invoice-dollar"
                                         disabled={!hasMaterials}
-                                        title={<span><i class="fas fa-file-invoice-dollar" /> {__('bill')}</span>}
                                     >
                                         <Billing
                                             event={event}

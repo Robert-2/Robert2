@@ -3,6 +3,7 @@ import './index.scss';
 import moment from 'moment';
 import { Timeline as TimelineCore, DataSet, DataView } from '@robert2/vis-timeline';
 import dateRoundMinutes from '@/utils/dateRoundMinutes';
+import Loading from '@/components/Loading';
 import { mountVisData } from './_utils';
 
 // @vue/component
@@ -147,6 +148,11 @@ export default {
     },
     render() {
         const _className = ['Timeline', { 'Timeline--grouped': !!this.groups }];
-        return <div class={_className} ref="visualization" />;
+        return (
+            <div class={_className}>
+                <Loading class="Timeline__loading" />
+                <div class="Timeline__content" ref="visualization" />
+            </div>
+        );
     },
 };

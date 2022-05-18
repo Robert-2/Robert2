@@ -59,17 +59,12 @@ export default {
         const { events, groups, timelineOptions } = this;
 
         return (
-            <div class="EventDetailsTechnicians">
-                <div class="EventDetailsTechnicians__loading">
-                    <i class="fas fa-circle-notch fa-3x fa-spin" />
-                </div>
-                <Timeline
-                    class="EventDetailsTechnicians__timeline"
-                    items={events}
-                    groups={groups}
-                    options={timelineOptions}
-                />
-            </div>
+            <Timeline
+                class="EventDetailsTechnicians"
+                items={events}
+                groups={groups}
+                options={timelineOptions}
+            />
         );
     },
 };

@@ -44,6 +44,7 @@ const Button = (props, { slots, emit }) => {
         disabled,
         type,
         to,
+        external,
         loading,
         tooltip,
     } = toRefs(props);
@@ -121,6 +122,18 @@ const Button = (props, { slots, emit }) => {
         );
 
         if (to.value && !disabled.value) {
+            if (external.value) {
+                return (
+                    <a
+                        href={to.value}
+                        v-tooltip={_tooltip.value}
+                        class={_className.value}
+                    >
+                        {content}
+                    </a>
+                );
+            }
+
             return (
                 <router-link to={to.value} custom>
                     {({ href, navigate: handleClick }) => (
@@ -180,6 +193,7 @@ Button.props = {
     icon: { type: String, default: undefined },
     loading: { type: Boolean, default: false },
     disabled: { type: Boolean, default: false },
+    external: { type: Boolean, default: false },
 };
 
 Button.emits = ['click'];

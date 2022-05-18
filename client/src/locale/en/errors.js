@@ -6,6 +6,7 @@ export default {
         'unexpected-while-saving': "An unexpected error occurred while saving, please try again.",
         'unexpected-while-deleting': "An unexpected error occurred while deleting, please try again.",
         'unexpected-while-restoring': "An unexpected error occurred while restoring, please try again.",
+        'unexpected-while-uploading': "An unexpected error occurred while sending your files, please try again.",
         'api-unreachable': "Sorry, but Robert2 API is unreachable... Please check your access to network.",
         'not-found': "This record does not exist.",
         'unknown': "Unknown error.",
@@ -23,7 +24,7 @@ export default {
         'details-file': "File:",
         'details-stacktrace': "Stack trace:",
         'critical': [
-            "A critical error has occured, please refresh the page.",
+            "A critical error has occurred, please refresh the page.",
             "If the problem persists, please contact an administrator.",
         ].join('\n'),
 

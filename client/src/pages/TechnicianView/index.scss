@@ -4,20 +4,8 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    height: 100%;
 
     .TechnicianView {
         flex: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-
-        .vue-tablist {
-            margin-bottom: globals.$content-padding-small-vertical;
-        }
-
-        .vue-tabpanel {
-            flex: 1;
-        }
     }
 }

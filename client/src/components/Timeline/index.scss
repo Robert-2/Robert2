@@ -5,6 +5,24 @@ $group-border-color: #636363 !default;
 $group-item-max-height: 65px !default;
 
 .Timeline {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+
+    &__loading {
+        position: absolute;
+        z-index: 0;
+        top: calc(50% - 40px);
+        left: calc(50% - 90px);
+        width: 180px;
+        height: 80px;
+    }
+
+    &__content {
+        z-index: 1;
+        flex: 1;
+    }
+
     .vis-timeline {
         border: none;
         background-color: globals.$calendar-main-background-color;

@@ -210,8 +210,9 @@ export default {
         'more-attribute-when-category-selected': "Après avoir sélectionné une catégorie, d'autres caractéristiques spéciales peuvent apparaître.",
     },
 
-    'page-materials-view': {
-        'title': "Détails du matériel «\u00a0{pageSubTitle}\u00a0»",
+    'page-material-view': {
+        'title-simple': "Détails du matériel",
+        'title': "Détails du matériel «\u00a0{name}\u00a0»",
         'infos': {
             'click-to-open-image': "Cliquez pour ouvrir l'image en grand dans un nouvel onglet.",
         },
@@ -317,6 +318,7 @@ export default {
     },
 
     'page-technician-view': {
+        'title-simple': "Technicien",
         'title': "Technicien «\u00a0{name}\u00a0»",
         'modify-associated-user': "Modifier l'utilisateur associé",
     },

@@ -24,6 +24,8 @@
     }
 
     &__item {
+        $sub-block: &;
+
         flex: 0 0 auto;
         display: flex;
         align-items: center;
@@ -32,10 +34,6 @@
         border-radius: 10px;
         background: globals.$bg-color-emphasis;
         font-size: 1.2rem;
-
-        & + & {
-            margin-top: 20px;
-        }
 
         &__name {
             flex: 1;
@@ -52,6 +50,14 @@
             transition: none;
         }
 
+        & + & {
+            margin-top: 20px;
+        }
+
+        //
+        // - Responsive
+        //
+
         @media (min-width: globals.$screen-tablet) {
             min-width: 350px;
         }
@@ -64,7 +70,7 @@
             }
 
             &:hover {
-                .Tags__item__actions {
+                #{$sub-block}__actions {
                     visibility: visible;
                 }
             }

@@ -108,25 +108,6 @@ export default {
         // -
         // ------------------------------------------------------
 
-        initQuantities() {
-            const { materials } = this.eventData;
-
-            this.quantities = materials.map(({ id, pivot }) => ({
-                id,
-                awaited_quantity: pivot.quantity || 0,
-                actual: pivot.quantity_returned || 0,
-                broken: pivot.quantity_broken || 0,
-            }));
-        },
-
-        setEventData(data) {
-            this.eventData = data;
-            this.startDate = moment(data.start_date);
-            this.endDate = moment(data.end_date);
-
-            this.initQuantities();
-        },
-
         async fetchData() {
             const { eventData: { id } } = this;
             if (!id) {
@@ -173,6 +154,22 @@ export default {
             } finally {
                 this.isSaving = false;
             }
+        },
+
+        setEventData(data) {
+            this.eventData = data;
+
+            this.startDate = moment(data.start_date);
+            this.endDate = moment(data.end_date);
+
+            this.quantities = data.materials.map(
+                ({ id, pivot }) => ({
+                    id,
+                    awaited_quantity: pivot.quantity || 0,
+                    actual: pivot.quantity_returned || 0,
+                    broken: pivot.quantity_broken || 0,
+                }),
+            );
         },
     },
     render() {

@@ -1,13 +1,20 @@
 @use '~@/style/globals';
 
 .MaterialViewInfosAttributes {
-    &__list {
-        &__item {
-            margin-bottom: 0.3rem;
+    &__attribute {
+        display: flex;
+        margin: 0 0 0.3rem;
 
-            &__value {
-                font-weight: 700;
+        &__name {
+            &::after {
+                content: ':';
             }
+        }
+
+        &__value {
+            flex: 1;
+            margin-left: 0.5rem;
+            font-weight: 700;
         }
     }
 }

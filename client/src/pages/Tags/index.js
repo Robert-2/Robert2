@@ -33,6 +33,7 @@ export default {
                 .sort(({ name: name1 }, { name: name2 }) => (
                     name1.localeCompare(name2)
                 ));
+
             return sortedTags;
         },
     },
@@ -48,6 +49,9 @@ export default {
 
         async handleCreate() {
             const { $t: __ } = this;
+
+            // TODO: À migrer vers une vraie modale.
+            //       (qui ne se ferme pas quand on a des erreurs de formulaire notamment)
             const { value: name } = await prompt(
                 __('page-tags.prompt-add'),
                 {
@@ -74,6 +78,9 @@ export default {
             }
 
             const { name } = tag;
+
+            // TODO: À migrer vers une vraie modale.
+            //       (qui ne se ferme pas quand on a des erreurs de formulaire notamment)
             const { value: newName } = await prompt(
                 __('page-tags.prompt-modify'),
                 { placeholder: name, inputValue: name },
@@ -182,7 +189,9 @@ export default {
             }
 
             const doRequest = () => (
-                isNew ? apiTags.create(data) : apiTags.update(id, data)
+                isNew
+                    ? apiTags.create(data)
+                    : apiTags.update(id, data)
             );
 
             const { $t: __ } = this;
@@ -260,16 +269,22 @@ export default {
                 >
                     <div class="Tags">
                         <EmptyMessage
-                            message={isTrashDisplayed
-                                ? __('page-tags.no-item-in-trash')
-                                : __('page-tags.no-item')}
-                            action={isTrashDisplayed ? {
-                                label: __('display-not-deleted-items'),
-                                onClick: handleToggleTrashed,
-                            } : {
-                                label: __('page-tags.action-add'),
-                                onClick: handleCreate,
-                            }}
+                            message={(
+                                isTrashDisplayed
+                                    ? __('page-tags.no-item-in-trash')
+                                    : __('page-tags.no-item')
+                            )}
+                            action={(
+                                isTrashDisplayed
+                                    ? {
+                                        label: __('display-not-deleted-items'),
+                                        onClick: handleToggleTrashed,
+                                    }
+                                    : {
+                                        label: __('page-tags.action-add'),
+                                        onClick: handleCreate,
+                                    }
+                            )}
                         />
                     </div>
                     {!isTrashDisplayed && (
@@ -342,9 +357,7 @@ export default {
                         icon={isTrashDisplayed ? 'eye' : 'trash'}
                         type={isTrashDisplayed ? 'success' : 'danger'}
                     >
-                        {isTrashDisplayed
-                            ? __('display-not-deleted-items')
-                            : __('open-trash-bin')}
+                        {isTrashDisplayed ? __('display-not-deleted-items') : __('open-trash-bin')}
                     </Button>
                 </div>
             </Page>

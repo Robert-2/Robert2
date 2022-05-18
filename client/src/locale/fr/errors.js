@@ -6,6 +6,7 @@ export default {
         'unexpected-while-saving': "Une erreur inattendue s'est produite lors de l'enregistrement, veuillez ré-essayer.",
         'unexpected-while-deleting': "Une erreur inattendue s'est produite lors de la suppression, veuillez ré-essayer.",
         'unexpected-while-restoring': "Une erreur inattendue s'est produite lors de la restauration, veuillez ré-essayer.",
+        'unexpected-while-uploading': "Une erreur inattendue s'est produite lors de l'envoi de vos fichiers, veuillez ré-essayer.",
         'api-unreachable': "Désolé, mais l'API de Robert2 est inaccessible... Veuillez vérifier votre accès au réseau.",
         'not-found': "Cet enregistrement n'existe pas.",
         'validation': "Veuillez vérifier les informations du formulaire.",

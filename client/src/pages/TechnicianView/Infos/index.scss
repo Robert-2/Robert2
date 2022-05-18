@@ -1,22 +1,8 @@
 @use '~@/style/globals';
 
 .TechnicianViewInfos {
-    display: flex;
-    flex-flow: row-reverse wrap;
-    justify-content: flex-end;
-    padding-bottom: 6rem;
-
-    &__main {
-        flex: 2;
-        min-width: 250px;
-        margin-right: 3rem;
-    }
-
-    &__actions {
-        flex: 1;
-        min-width: 120px;
-        padding: 1rem 0 0;
-    }
+    $icon-width: 25px;
+    font-size: 1.1rem;
 
     &__name,
     &__reference {
@@ -24,19 +10,55 @@
         color: globals.$text-base-color;
     }
 
-    &__section-title {
-        margin: globals.$content-padding-large-vertical 0 globals.$content-padding-small-horizontal;
+    &__reference {
+        @include globals.icon('hashtag') {
+            width: $icon-width;
+        }
     }
 
-    &__icon {
-        margin-right: globals.$content-padding-large-horizontal;
+    &__email {
+        @include globals.icon('at') {
+            width: $icon-width;
+        }
+    }
+
+    &__phone {
+        @include globals.icon('phone') {
+            width: $icon-width;
+        }
+    }
+
+    &__section-title {
+        margin: globals.$content-padding-large-vertical 0 globals.$content-padding-small-horizontal;
+
+        &--address {
+            @include globals.icon('envelope') {
+                width: $icon-width;
+            }
+        }
+
+        &--notes {
+            @include globals.icon('clipboard') {
+                width: $icon-width;
+            }
+        }
+
+        &--user {
+            @include globals.icon('user') {
+                width: $icon-width;
+            }
+        }
+    }
+
+    &__address {
+        white-space: pre-wrap;
     }
 
     &__address,
     &__note,
     &__user {
         margin-top: 0;
-        padding-left: globals.$content-padding-large-vertical;
+        padding-left: $icon-width;
         color: globals.$text-base-color;
     }
 

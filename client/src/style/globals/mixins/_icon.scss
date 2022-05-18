@@ -1,0 +1,97 @@
+@use '../variables' as globals;
+
+//
+// - Placeholders
+//
+
+/// Fourni le code de base pour utiliser la police icône.
+%icon-font {
+    display: inline-block;
+    /* stylelint-disable-next-line font-family-no-missing-generic-family-keyword */
+    font-family: 'Font Awesome 5 Free';
+    font-style: normal;
+    line-height: 1;
+    letter-spacing: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    word-wrap: normal;
+    white-space: nowrap;
+    text-transform: none;
+
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+//
+// - Functions
+//
+
+/// Permet de récupèrer le code lié au nom "textuel" d'une icône.
+///
+/// @example scss icon-code('plus'); // => '\f067'
+///
+/// @link https://fontawesome.com/v5/search?m=free Pour la liste des noms pris en charge.
+///
+/// @param {String} $icon-name Le nom "textuel" d'une icône
+/// @return {String} Le code de l'icône s'il a été trouvé, le nom textuel tel quel si non.
+///
+@function icon-code($icon-name) {
+    @if map-has-key(globals.$icons-list, $icon-name) {
+        @return map-get(globals.$icons-list, $icon-name);
+    }
+    @return $icon-name;
+}
+
+/// Permet de récupèrer la bonne graisse pour une variante donnée.
+///
+/// @example scss icon-weight('solid'); // => 900
+///
+/// @param {String} $variant La variante à utiliser ("solid", "regular" ou "light")
+/// @return {Number} La graisse résultante, sinon la graisse par défaut (400)
+///
+@function icon-weight($variant) {
+    $variant-map: (
+        solid: 900,
+        regular: 400,
+        light: 300,
+    );
+
+    @if (map-has-key($variant-map, $variant)) {
+        @return map-get($variant-map, $variant);
+    }
+    @return 400;
+}
+
+//
+// - Mixins
+//
+
+/// Helper permettant d'ajouter une icône en tant que pseudo-élément `::before` ou `::after`.
+///
+/// @param {String} $icon Le nom textuel de l'icône à ajouter. (e.g. `plus`)
+/// @param  {String} $variant La variante a utiliser ("solid" (default), "regular" ou "light")
+/// @param {Boolean} $after [false] Si `true` l'icône sera ajouté après, sinon avant.
+/// @content D'éventuelles autres propriétés à ajouter au pseudo-élément.
+/// @output Le pseudo-élément choisi avec l'icône demandée prête à être affichée.
+@mixin icon($icon, $variant: 'solid', $after: false) {
+    $weight: 400;
+    $pseudo-element: 'before';
+
+    @if ($after) {
+        $pseudo-element: 'after';
+    }
+
+    @if (type-of($variant) == bool) {
+        $after: $variant;
+        $variant: 'solid';
+    }
+
+    &::#{$pseudo-element} {
+        @extend %icon-font;
+
+        content: icon-code($icon);
+        /* stylelint-disable-next-line font-weight-notation */
+        font-weight: icon-weight($variant);
+        @content;
+    }
+}

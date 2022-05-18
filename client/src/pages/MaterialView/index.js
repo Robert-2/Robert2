@@ -1,81 +1,146 @@
 import './index.scss';
-import { Tabs, Tab } from 'vue-slim-tabs';
-import Help from '@/components/Help';
+import Page from '@/components/Page';
+import CriticalError from '@/components/CriticalError';
+import Loading from '@/components/Loading';
+import { Tabs, Tab } from '@/components/Tabs';
+import Button from '@/components/Button';
+import apiMaterials from '@/stores/api/materials';
 import Infos from './Infos';
 import Documents from './Documents';
 
 // @vue/component
 export default {
     name: 'MaterialView',
-    components: {
-        Tabs,
-        Tab,
-        Help,
-        Infos,
-        Documents,
-    },
     data() {
         return {
-            help: '',
-            error: null,
+            material: null,
             isLoading: false,
-            tabsIndexes: ['#infos', '#documents'],
+            isFetched: false,
+            hasCriticalError: false,
             selectedTabIndex: 0,
-            material: {
-                id: this.$route.params.id,
-                attributes: [],
-            },
         };
     },
-    created() {
-        const { hash } = this.$route;
-        if (hash && this.tabsIndexes.includes(hash)) {
-            this.selectedTabIndex = this.tabsIndexes.findIndex((tab) => tab === hash);
-        }
+    computed: {
+        pageTitle() {
+            const { $t: __, material } = this;
+
+            return material
+                ? __('page-material-view.title', { name: material.name })
+                : __('page-material-view.title-simple');
+        },
+
+        tabsIndexes() {
+            return ['#infos', '#documents'];
+        },
+
+        tabsActions() {
+            const { $t: __, tabsIndexes, selectedTabIndex } = this;
+            const { id } = this.$route.params;
+
+            switch (tabsIndexes[selectedTabIndex]) {
+                case '#infos':
+                    return [
+                        <Button type="edit" to={{ name: 'edit-material', params: { id } }}>
+                            {__('action-edit')}
+                        </Button>,
+                    ];
+                default:
+                    return [];
+            }
+        },
     },
     mounted() {
         this.$store.dispatch('categories/fetch');
 
-        this.fetchMaterial();
+        this.fetchData();
     },
     methods: {
-        onSelectTab(e, index) {
+        // ------------------------------------------------------
+        // -
+        // -    Handlers
+        // -
+        // ------------------------------------------------------
+
+        handleSelectTab(index) {
             this.selectedTabIndex = index;
-            this.$router.push(this.tabsIndexes[index]);
+            this.$router.replace(this.tabsIndexes[index]);
         },
 
-        fetchMaterial() {
-            const { id } = this.material;
+        // ------------------------------------------------------
+        // -
+        // -    Internal methods
+        // -
+        // ------------------------------------------------------
 
-            this.resetHelpLoading();
-
-            const { resource } = this.$route.meta;
-            this.$http.get(`${resource}/${id}`)
-                .then(({ data }) => {
-                    this.setMaterialData(data);
-                    this.isLoading = false;
-                })
-                .catch(this.displayError);
-        },
-
-        resetHelpLoading() {
-            this.error = null;
-            this.isLoading = true;
-        },
-
-        displayError(error) {
-            this.error = error;
-            this.isLoading = false;
-
-            const { code, details } = error.response?.data?.error || { code: 0, details: {} };
-            if (code === 400) {
-                this.errors = { ...details };
+        selectTabFromRouting() {
+            const { hash } = this.$route;
+            if (hash && this.tabsIndexes.includes(hash)) {
+                this.selectedTabIndex = this.tabsIndexes.findIndex((tab) => tab === hash);
             }
         },
 
-        setMaterialData(data) {
-            this.material = data;
-            this.$store.commit('setPageSubTitle', this.material.name);
+        async fetchData() {
+            const { id } = this.$route.params;
+
+            this.isLoading = true;
+
+            try {
+                const data = await apiMaterials.one(id);
+                this.material = data;
+                this.selectTabFromRouting();
+            } catch (error) {
+                const { code } = error.response?.data?.error ?? { code: 0 };
+                this.hasCriticalError = code === 404 ? 'not-found' : true;
+            } finally {
+                this.isLoading = false;
+                this.isFetched = true;
+            }
         },
+    },
+    render() {
+        const {
+            $t: __,
+            pageTitle,
+            tabsActions,
+            isLoading,
+            isFetched,
+            hasCriticalError,
+            material,
+            handleSelectTab,
+            selectedTabIndex,
+        } = this;
+
+        if (hasCriticalError || !isFetched) {
+            return (
+                <Page name="material-view" title={pageTitle}>
+                    {hasCriticalError
+                        ? <CriticalError type={hasCriticalError === 'not-found' ? 'not-found' : 'default'} />
+                        : <Loading />}
+                </Page>
+            );
+        }
+
+        return (
+            <Page
+                name="material-view"
+                title={pageTitle}
+                isLoading={isLoading}
+            >
+                <div class="MaterialView">
+                    <Tabs
+                        defaultIndex={selectedTabIndex}
+                        onSelect={handleSelectTab}
+                        actions={tabsActions}
+                    >
+                        <Tab title={__('informations')} icon="info-circle">
+                            <Infos material={material} />
+                        </Tab>
+                        <Tab title={__('documents')} icon="file-pdf">
+                            <Documents material={material} />
+                        </Tab>
+                    </Tabs>
+                </div>
+            </Page>
+        );
     },
 };

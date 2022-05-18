@@ -319,7 +319,6 @@ export default {
                     />
                 </div>
                 <div ref="Container" class="content__main-view Calendar">
-                    <i class="fas fa-circle-notch fa-3x fa-spin Calendar__loading" />
                     <Timeline
                         ref="Timeline"
                         class="Calendar__timeline"

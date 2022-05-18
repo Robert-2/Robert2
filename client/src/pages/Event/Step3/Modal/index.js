@@ -9,6 +9,9 @@ import ErrorMessage from '@/components/ErrorMessage';
 // @vue/component
 export default {
     name: 'EventStep3Modal',
+    provide: {
+        verticalForm: true,
+    },
     props: {
         eventDates: { type: Object, required: true },
         data: {
@@ -238,7 +241,7 @@ export default {
                     </button>
                 </header>
                 <div class="EventStep3Modal__body">
-                    <form class="EventStep3Modal__form" onSubmit={handleSubmit}>
+                    <form class="Form EventStep3Modal__form" onSubmit={handleSubmit}>
                         <FormField
                             type="date"
                             v-model={this.dates}

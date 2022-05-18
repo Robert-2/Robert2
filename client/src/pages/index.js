@@ -212,8 +212,6 @@ export default [
         path: '/materials/:id/view',
         component: MaterialView,
         meta: {
-            resource: 'materials',
-            title: 'page-materials-view.title',
             requiresAuth: true,
             requiresGroups: ['admin', 'member'],
         },
@@ -258,7 +256,6 @@ export default [
         path: '/technicians',
         component: Technicians,
         meta: {
-            title: 'page-technicians.title',
             requiresAuth: true,
             requiresGroups: ['admin', 'member'],
         },
@@ -286,8 +283,6 @@ export default [
         path: '/technicians/:id/view',
         component: TechnicianView,
         meta: {
-            resource: 'persons',
-            title: 'technician',
             requiresAuth: true,
             requiresGroups: ['admin', 'member'],
         },

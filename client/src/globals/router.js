@@ -74,7 +74,7 @@ router.beforeEach((to, from, next) => {
 
     if (restrictAccess) {
         store.dispatch('auth/logout').then(() => {
-            next({ path: '/login', hash: 'restricted' });
+            next({ path: '/login', hash: '#restricted' });
         });
         return;
     }

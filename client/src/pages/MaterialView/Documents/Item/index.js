@@ -2,6 +2,8 @@ import './index.scss';
 import Config from '@/globals/config';
 import formatBytes from '@/utils/formatBytes';
 import hasIncludes from '@/utils/hasIncludes';
+import Button from '@/components/Button';
+import Icon from '@/components/Icon';
 
 // @vue/component
 export default {
@@ -15,6 +17,12 @@ export default {
         },
 
         fileUrl() {
+            const { id } = this.file;
+            // - L'absence d'ID signifie que `this.file` est bien du type `File`
+            if (!id) {
+                const objectURL = URL.createObjectURL(this.file);
+                return objectURL;
+            }
             const { baseUrl } = Config;
             return `${baseUrl}/documents/${this.file.id}/download`;
         },
@@ -22,38 +30,67 @@ export default {
         iconName() {
             const { type } = this.file;
             if (type === 'application/pdf') {
-                return 'fa-file-pdf';
+                return 'file-pdf';
             }
             if (type.startsWith('image/')) {
-                return 'fa-file-image';
+                return 'file-image';
             }
             if (type.startsWith('video/')) {
-                return 'fa-file-video';
+                return 'file-video';
             }
             if (type.startsWith('audio/')) {
-                return 'fa-file-audio';
+                return 'file-audio';
             }
             if (type.startsWith('text/')) {
-                return 'fa-file-alt';
+                return 'file-alt';
             }
             if (hasIncludes(type, ['zip', 'octet-stream', 'x-rar', 'x-tar', 'x-7z'])) {
-                return 'fa-file-archive';
+                return 'file-archive';
             }
             if (hasIncludes(type, ['sheet', 'excel'])) {
-                return 'fa-file-excel';
+                return 'file-excel';
             }
             if (hasIncludes(type, ['wordprocessingml.document', 'msword'])) {
-                return 'fa-file-word';
+                return 'file-word';
             }
             if (hasIncludes(type, ['presentation', 'powerpoint'])) {
-                return 'fa-file-powerpoint';
+                return 'file-powerpoint';
             }
-            return 'fa-file';
+            return 'file';
         },
     },
     methods: {
+        // ------------------------------------------------------
+        // -
+        // -    Handlers
+        // -
+        // ------------------------------------------------------
+
         handleClickRemove() {
             this.$emit('remove', this.file);
         },
+    },
+    render() {
+        const { $t: __, file: { name }, fileUrl, iconName, fileSize, handleClickRemove } = this;
+
+        return (
+            <li class="MaterialViewDocumentsItem">
+                <a
+                    href={fileUrl}
+                    class="MaterialViewDocumentsItem__link"
+                    v-tooltip={__('page-material-view.documents.click-to-open')}
+                    download={name}
+                >
+                    <Icon class="MaterialViewDocumentsItem__icon" name={iconName} />
+                    {name}
+                </a>
+                <div class="MaterialViewDocumentsItem__size">
+                    {fileSize}
+                </div>
+                <div class="MaterialViewDocumentsItem__actions">
+                    <Button type="trash" onClick={handleClickRemove} />
+                </div>
+            </li>
+        );
     },
 };

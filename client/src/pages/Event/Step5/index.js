@@ -5,7 +5,6 @@ import EventOverview from '@/components/EventOverview';
 // @vue/component
 export default {
     name: 'EventStep5',
-    components: { EventOverview },
     props: {
         event: { type: Object, required: true },
     },

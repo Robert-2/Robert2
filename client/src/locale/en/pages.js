@@ -209,8 +209,9 @@ export default {
         'print-complete-list': "Print the complete materials list",
     },
 
-    'page-materials-view': {
-        'title': "Details of material \"{pageSubTitle}\"",
+    'page-material-view': {
+        'title-simple': "Details of material",
+        'title': "Details of material \"{name}\"",
         'infos': {
             'click-to-open-image': "Click to open image in a new tab.",
         },
@@ -317,6 +318,7 @@ export default {
     },
 
     'page-technician-view': {
+        'title-simple': "Technicien",
         'title': "Technicien \"{name}\"",
         'modify-associated-user': "Modify associated user",
     },

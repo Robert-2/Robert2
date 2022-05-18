@@ -122,11 +122,7 @@ export default {
 
                 // - Redirection...
                 this.$toasted.success(__('page-technician.saved'));
-                this.$router.replace({
-                    name: 'view-technician',
-                    params: { id: this.id },
-                    hash: 'infos',
-                });
+                this.$router.replace({ name: 'view-technician', params: { id: this.id } });
             } catch (error) {
                 const { code, details } = error.response?.data?.error || { code: 0, details: {} };
                 if (code === 400) {

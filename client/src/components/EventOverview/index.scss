@@ -19,7 +19,7 @@ $spacing: 1.5rem;
     &__description {
         margin: 0 0 $spacing 22px;
         padding-left: 5px;
-        border-left: 3px solid globals.$tabs-bottom-border-color;
+        border-left: 3px solid globals.$divider-color;
         font-size: 1.1rem;
         line-height: 1.5;
         white-space: pre-wrap;

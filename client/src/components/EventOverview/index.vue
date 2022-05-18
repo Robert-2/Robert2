@@ -5,7 +5,7 @@
             <section class="EventOverview__section">
                 <h2 class="EventOverview__dates-location">
                     <i class="fas fa-map-marker-alt" />
-                    <span v-if="event.location"> {{ $t('in') }} {{ event.location }}, </span>
+                    <span v-if="event.location"> {{ $t('in', { location: event.location }) }}, </span>
                     {{ $t('from-date-to-date', fromToDates) }}
                 </h2>
             </section>
@@ -118,35 +118,33 @@
             <tabs
                 v-if="showBilling && hasMaterials && event.is_billable"
                 :defaultIndex="hasBill ? 1 : 0"
-                :onSelect="handleChangeBillingTab"
+                @select="handleChangeBillingTab"
                 class="EventOverview__billing__tabs"
             >
-                <tab titleSlot="estimates">
-                    <EventEstimates
-                        :event="event"
-                        :loading="isCreating"
-                        :deletingId="deletingId"
-                        @discountRateChange="handleChangeDiscountRate"
-                        @createEstimate="handleCreateEstimate"
-                        @deleteEstimate="handleDeleteEstimate"
-                    />
-                    <Help :message="{ type: 'success', text: successMessage }" :error="error" />
+                <tab :title="$t('estimates')" icon="file-signature">
+                    <div>
+                        <EventEstimates
+                            :event="event"
+                            :loading="isCreating"
+                            :deletingId="deletingId"
+                            @discountRateChange="handleChangeDiscountRate"
+                            @createEstimate="handleCreateEstimate"
+                            @deleteEstimate="handleDeleteEstimate"
+                        />
+                        <Help :message="{ type: 'success', text: successMessage }" :error="error" />
+                    </div>
                 </tab>
-                <tab titleSlot="bill">
-                    <Help :message="{ type: 'success', text: successMessage }" :error="error" />
-                    <EventBilling
-                        :event="event"
-                        :loading="isCreating"
-                        @discountRateChange="handleChangeDiscountRate"
-                        @createBill="handleCreateBill"
-                    />
+                <tab :title="$t('bill')" icon="file-invoice-dollar">
+                    <div>
+                        <Help :message="{ type: 'success', text: successMessage }" :error="error" />
+                        <EventBilling
+                            :event="event"
+                            :loading="isCreating"
+                            @discountRateChange="handleChangeDiscountRate"
+                            @createBill="handleCreateBill"
+                        />
+                    </div>
                 </tab>
-                <template slot="estimates">
-                    <i class="fas fa-file-signature" /> {{ $t('estimates') }}
-                </template>
-                <template slot="bill">
-                    <i class="fas fa-file-invoice-dollar" /> {{ $t('bill') }}
-                </template>
             </tabs>
             <p v-if="!hasMaterials" class="EventOverview__materials__empty">
                 <i class="fas fa-exclamation-triangle" />

@@ -4,7 +4,7 @@
 .ReturnInventorySummary {
     margin-bottom: globals.$content-padding-large-horizontal;
     padding-bottom: globals.$content-padding-large-vertical;
-    border-bottom: 1px solid globals.$tabs-bottom-border-color;
+    border-bottom: 1px solid globals.$divider-color;
     text-align: center;
 
     &__title {

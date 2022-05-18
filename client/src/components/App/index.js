@@ -19,7 +19,7 @@ const App = (props, { root }) => {
         const { status } = error.response || { status: 0 };
         if (status === 401) {
             root.$store.dispatch('auth/logout').then(() => {
-                root.$router.replace({ path: '/login', hash: 'expired' })
+                root.$router.replace({ path: '/login', hash: '#expired' })
                     .catch(() => {});
             });
         }

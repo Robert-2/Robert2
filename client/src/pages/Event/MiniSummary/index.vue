@@ -16,7 +16,7 @@
         <div v-if="title" class="EventMiniSummary__title">
             {{ title }}
         </div>
-        <div v-if="location" class="EventMiniSummary__detail">{{ $t('in') }} {{ location }}</div>
+        <div v-if="location" class="EventMiniSummary__detail">{{ $t('in', { location }) }}</div>
         <div v-if="dates.start && dates.end" class="EventMiniSummary__detail">
             <span v-if="duration === 1">
                 {{ $t('on-date', { date: fromToDates.from }) }}

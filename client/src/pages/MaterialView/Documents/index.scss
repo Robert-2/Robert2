@@ -3,16 +3,14 @@
 .MaterialViewDocuments {
     display: flex;
     flex-wrap: wrap;
-    height: calc(100% - 10px);
+    align-items: center;
+    justify-content: center;
+    height: 100%;
 
     &__main {
         flex: 1;
+        height: 100%;
         min-width: 300px;
-
-        .Help {
-            margin-top: globals.$content-padding-large-vertical;
-            text-align: center;
-        }
     }
 
     &__no-document {
@@ -30,5 +28,6 @@
 
     .MaterialViewDocumentsUpload {
         flex: 1;
+        height: 100%;
     }
 }

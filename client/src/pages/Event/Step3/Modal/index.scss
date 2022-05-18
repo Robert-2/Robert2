@@ -26,29 +26,11 @@
         max-width: 360px;
         margin: 0 auto;
         padding: globals.$content-padding-large-vertical 0;
-
-        .FormField {
-            flex-direction: column;
-            align-items: flex-start;
-            margin-bottom: globals.$content-padding-large-vertical;
-
-            &__datepicker {
-                width: 100%;
-            }
-
-            &__label {
-                flex: 0 0 auto;
-                padding: 0 3px globals.$content-padding-small-horizontal;
-            }
-
-            &__error__text {
-                padding: 0;
-            }
-        }
     }
 
     &__actions {
         display: flex;
         justify-content: space-between;
+        margin-top: 25px;
     }
 }

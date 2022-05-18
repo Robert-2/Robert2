@@ -11,24 +11,17 @@
     color: globals.$text-base-color;
     list-style: none;
 
-    &__link,
-    &__no-link {
-        display: block;
+    &__link {
+        flex: 1;
+        display: flex;
+        align-items: center;
         padding: globals.$content-padding-small-vertical;
+        color: globals.$text-base-color;
     }
 
     &__icon {
-        flex: 0 0 auto;
+        margin-right: globals.$content-padding-small-vertical;
         font-size: 1.8rem;
-
-        .MaterialViewDocumentsItem__link,
-        .MaterialViewDocumentsItem__no-link {
-            margin-left: globals.$content-padding-small-vertical;
-        }
-    }
-
-    &__name {
-        flex: 1;
     }
 
     &__size {
@@ -40,25 +33,5 @@
     &__actions {
         flex: 0 0 auto;
         padding-right: globals.$content-padding-small-vertical;
-    }
-
-    &--with-link {
-        .MaterialViewDocumentsItem {
-            &__link,
-            &__no-link {
-                color: globals.$text-base-color;
-            }
-        }
-
-        &:hover {
-            background-color: color.adjust(globals.$bg-color-emphasis, $lightness: 5%);
-
-            .MaterialViewDocumentsItem {
-                &__link,
-                &__no-link {
-                    color: globals.$link-hover-color;
-                }
-            }
-        }
     }
 }

@@ -1,0 +1,26 @@
+@use './variables' as *;
+
+.Tabs {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    &__header {
+        display: flex;
+        margin: 0;
+        padding: 0;
+        border-bottom: 1px solid $header-border-color;
+    }
+
+    &__actions {
+        flex: 1;
+        display: flex;
+        align-items: flex-start;
+        justify-content: flex-end;
+    }
+
+    &__panel {
+        flex: 1;
+        margin-top: $panel-margin-top;
+    }
+}

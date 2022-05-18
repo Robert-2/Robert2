@@ -1,8 +1,10 @@
 import './index.scss';
-import { Tabs, Tab } from 'vue-slim-tabs';
+import { Tabs, Tab } from '@/components/Tabs';
 import CriticalError from '@/components/CriticalError';
 import Loading from '@/components/Loading';
 import Page from '@/components/Page';
+import Button from '@/components/Button';
+import apiTechnicians from '@/stores/api/technicians';
 import TechnicianInfos from './Infos';
 import TechnicianSchedule from './Schedule';
 
@@ -12,22 +14,37 @@ export default {
     data() {
         return {
             isLoading: false,
-            error: null,
+            isFetched: false,
+            hasCriticalError: false,
             technician: null,
             tabsIndexes: ['#infos', '#schedule'],
             selectedTabIndex: 0,
         };
     },
     computed: {
-        id() {
-            const { id } = this.$route.params;
-            if (!Number.isNaN(id) && Number.isFinite(parseInt(id, 10))) {
-                return parseInt(id, 10);
+        pageTitle() {
+            const { $t: __, technician } = this;
+
+            return technician
+                ? __('page-technician-view.title', { name: technician.full_name })
+                : __('technician');
+        },
+
+        tabsActions() {
+            const { $t: __, tabsIndexes, selectedTabIndex } = this;
+
+            if (tabsIndexes[selectedTabIndex] === '#infos') {
+                const { id } = this.$route.params;
+                return [
+                    <Button type="edit" to={{ name: 'edit-technician', params: { id } }}>
+                        {__('action-edit')}
+                    </Button>,
+                ];
             }
-            return null;
+
+            return [];
         },
     },
-
     created() {
         const { hash } = this.$route;
         if (hash && this.tabsIndexes.includes(hash)) {
@@ -35,58 +52,83 @@ export default {
         }
     },
     mounted() {
-        this.fetchTechnician();
+        this.fetchData();
     },
     methods: {
-        async fetchTechnician() {
-            const { id } = this;
+        // ------------------------------------------------------
+        // -
+        // -    Handlers
+        // -
+        // ------------------------------------------------------
+
+        handleSelectTab(index) {
+            this.selectedTabIndex = index;
+            this.$router.replace(this.tabsIndexes[index]);
+        },
+
+        // ------------------------------------------------------
+        // -
+        // -    Internal Methods
+        // -
+        // ------------------------------------------------------
+
+        async fetchData() {
+            const { id } = this.$route.params;
 
             this.isLoading = true;
 
             try {
-                const { resource } = this.$route.meta;
-                const { data } = await this.$http.get(`${resource}/${id}`);
-                this.setTechnicianData(data);
+                const data = await apiTechnicians.one(id);
+                this.technician = data;
             } catch (error) {
-                this.error = error;
+                const { code } = error.response?.data?.error ?? { code: 0 };
+                this.hasCriticalError = code === 404 ? 'not-found' : true;
             } finally {
+                this.isFetched = true;
                 this.isLoading = false;
             }
         },
-
-        setTechnicianData(data) {
-            this.technician = data;
-        },
     },
     render() {
-        const { $t: __, isLoading, error, technician, selectedTabIndex } = this;
+        const {
+            $t: __,
+            pageTitle,
+            tabsActions,
+            isLoading,
+            isFetched,
+            hasCriticalError,
+            technician,
+            selectedTabIndex,
+            handleSelectTab,
+        } = this;
 
-        let pageTitle = __('technician');
-        if (technician) {
-            pageTitle = __('page-technician-view.title', { name: technician.full_name });
+        if (hasCriticalError || !isFetched) {
+            return (
+                <Page name="technician-view" title={pageTitle}>
+                    {hasCriticalError
+                        ? <CriticalError type={hasCriticalError === 'not-found' ? 'not-found' : 'default'} />
+                        : <Loading />}
+                </Page>
+            );
         }
 
-        const render = () => {
-            if (error) {
-                return <CriticalError message={error.message} />;
-            }
-
-            if (isLoading || !technician) {
-                return <Loading />;
-            }
-
-            return (
-                <Tabs defaultIndex={selectedTabIndex} class="TechnicianView">
-                    <Tab title={<span><i class="fas fa-info-circle" /> {__('informations')}</span>}>
-                        <TechnicianInfos technician={technician} />
-                    </Tab>
-                    <Tab title={<span><i class="fas fa-calendar-alt" /> {__('schedule')}</span>}>
-                        <TechnicianSchedule technician={technician} />
-                    </Tab>
-                </Tabs>
-            );
-        };
-
-        return <Page name="technician-view" title={pageTitle} render={render} />;
+        return (
+            <Page name="technician-view" title={pageTitle} isLoading={isLoading}>
+                <div class="TechnicianView">
+                    <Tabs
+                        defaultIndex={selectedTabIndex}
+                        onSelect={handleSelectTab}
+                        actions={tabsActions}
+                    >
+                        <Tab title={__('informations')} icon="info-circle">
+                            <TechnicianInfos technician={technician} />
+                        </Tab>
+                        <Tab title={__('schedule')} icon="calendar-alt">
+                            <TechnicianSchedule technician={technician} />
+                        </Tab>
+                    </Tabs>
+                </div>
+            </Page>
+        );
     },
 };

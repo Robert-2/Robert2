@@ -36,11 +36,14 @@ export type BaseEvent = {
     start_date: string,
     end_date: string,
     location: string | null,
+    is_confirmed: boolean,
+    is_return_inventory_done: boolean,
+};
+
+export type Event = BaseEvent & {
     reference: string | null,
     description: string | null,
     is_billable: boolean,
-    is_confirmed: boolean,
-    is_return_inventory_done: boolean,
     beneficiaries: Array<PersonWithPivot<Beneficiary>>,
     technicians: Array<PersonWithPivot<Technician>>,
     materials: MaterialWithPivot[],
@@ -51,9 +54,7 @@ export type BaseEvent = {
     created_at: string,
     deleted_at: string,
     updated_at: string,
-};
-
-export type Event = BaseEvent & (
+} & (
     | {
         is_archived: true,
         has_missing_materials: null,

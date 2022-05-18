@@ -12,7 +12,7 @@ export default {
     methods: {
         logout() {
             this.$store.dispatch('auth/logout').then(() => {
-                this.$router.replace({ path: '/login', hash: 'bye' });
+                this.$router.replace({ path: '/login', hash: '#bye' });
             });
         },
     },
