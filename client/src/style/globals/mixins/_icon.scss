@@ -77,13 +77,13 @@
     $weight: 400;
     $pseudo-element: 'before';
 
-    @if ($after) {
-        $pseudo-element: 'after';
-    }
-
     @if (type-of($variant) == bool) {
         $after: $variant;
         $variant: 'solid';
+    }
+
+    @if ($after) {
+        $pseudo-element: 'after';
     }
 
     &::#{$pseudo-element} {

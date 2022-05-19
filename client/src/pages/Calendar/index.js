@@ -259,7 +259,8 @@ export default {
 
         handleDuplicateEvent(newEvent) {
             const { start_date: startDate } = newEvent;
-            this.setCenterDate(moment(startDate).toDate());
+            const date = moment(startDate).toDate();
+            this.$refs.Timeline.moveTo(date);
         },
 
         openEventModal(eventId) {

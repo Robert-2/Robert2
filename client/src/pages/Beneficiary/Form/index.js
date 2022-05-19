@@ -17,6 +17,7 @@ const DEFAULT_VALUES = Object.freeze({
     last_name: '',
     reference: '',
     company_id: '',
+    company: null,
     phone: '',
     email: '',
     street: '',
@@ -91,7 +92,7 @@ const BeneficiaryEditForm = (props, { root, emit }) => {
             </Fieldset>
             <Fieldset title={__('company')}>
                 <CompanySelect
-                    defaultCompany={data.value.company || null}
+                    defaultCompany={data.value.company ?? null}
                     onChange={handleChangeCompany}
                 />
                 <router-link to={{ name: 'add-company' }} class="BeneficiaryEditForm__add-company">
