@@ -1,28 +1,28 @@
 import './index.scss';
-import moment from 'moment';
-import { Fragment } from 'vue-fragment';
-import Config from '@/globals/config';
-import { DATE_QUERY_FORMAT } from '@/globals/constants';
+import config from '@/globals/config';
 import queryClient from '@/globals/queryClient';
 import { confirm } from '@/utils/alert';
-import Help from '@/components/Help';
-import Dropdown, { getItemClassnames } from '@/components/Dropdown';
 import initColumnsDisplay from '@/utils/initColumnsDisplay';
 import isValidInteger from '@/utils/isValidInteger';
 import formatAmount from '@/utils/formatAmount';
 import isSameDate from '@/utils/isSameDate';
 import apiMaterials from '@/stores/api/materials';
-import AssignTags from '@/components/AssignTags';
+import AssignTags from '@/modals/AssignTags';
+import Fragment from '@/components/Fragment';
+import Dropdown, { getItemClassnames } from '@/components/Dropdown';
+import Page from '@/components/Page';
+import CriticalError from '@/components/CriticalError';
+import Button from '@/components/Button';
+import Icon from '@/components/Icon';
 import MaterialsFilters from '@/components/MaterialsFilters';
-import MaterialTags from '@/components/MaterialTags';
+import TagsList from '@/components/TagsList';
 import Datepicker from '@/components/Datepicker';
 
 // @vue/component
 export default {
     name: 'Materials',
     data() {
-        const { $t: __, $route, $options } = this;
-        const { billingMode } = Config;
+        const { $route, $options } = this;
 
         // - Columns
         let columns = [
@@ -38,16 +38,21 @@ export default {
             'tags',
             'actions',
         ];
-        if (billingMode === 'none') {
+        if (config.billingMode === 'none') {
             columns = columns.filter((column) => column !== 'rental_price');
         }
 
         return {
-            error: null,
+            hasCriticalError: false,
             isLoading: false,
-            isDisplayTrashed: false,
+            shouldDisplayTrashed: false,
             isTrashDisplayed: false,
             periodForQuantities: null,
+
+            //
+            // - Tableau
+            //
+
             columns,
             options: {
                 columnsDropdown: true,
@@ -72,80 +77,100 @@ export default {
                 columnsClasses: {},
                 requestFunction: this.fetch.bind(this),
                 templates: {
-                    reference: (h, material) => (
-                        <Fragment>
-                            {!this.isTrashDisplayed && (
-                                <router-link
-                                    to={`/materials/${material.id}/view`}
-                                    class="Materials__link"
-                                >
-                                    {material.reference}
-                                </router-link>
-                            )}
-                            {this.isTrashDisplayed && (
-                                <span>{material.reference}</span>
-                            )}
-                        </Fragment>
-                    ),
-                    name: (h, material) => (
-                        <Fragment>
-                            {!this.isTrashDisplayed && (
-                                <router-link
-                                    to={`/materials/${material.id}/view`}
-                                    class="Materials__link"
-                                >
-                                    {material.name}
-                                </router-link>
-                            )}
-                            {this.isTrashDisplayed && (
-                                <span>{material.name}</span>
-                            )}
-                        </Fragment>
-                    ),
-                    park: (h, material) => (
-                        <router-link
-                            to={`/parks/${material.park_id}`}
-                            class="Materials__link"
-                        >
-                            {this.getParkName(material.park_id)}
-                        </router-link>
-                    ),
-                    category: (h, material) => (
-                        <Fragment>
-                            <i class="fas fa-folder-open" />&nbsp;
-                            {this.getCategoryName(material.category_id)}
-                            {!!material.sub_category_id && (
-                                <div>
-                                    <i class="fas fa-arrow-right" />&nbsp;
-                                    {this.getSubCategoryName(material.sub_category_id)}
-                                </div>
-                            )}
-                        </Fragment>
-                    ),
+                    reference: (h, { id, reference }) => {
+                        if (this.isTrashDisplayed) {
+                            return reference;
+                        }
+
+                        return (
+                            <router-link
+                                to={{ name: 'materials', params: { id } }}
+                                class="Materials__link"
+                            >
+                                {reference}
+                            </router-link>
+                        );
+                    },
+                    name: (h, { id, name }) => {
+                        if (this.isTrashDisplayed) {
+                            return name;
+                        }
+
+                        return (
+                            <router-link
+                                to={{ name: 'materials', params: { id } }}
+                                class="Materials__link"
+                            >
+                                {name}
+                            </router-link>
+                        );
+                    },
+                    park: (h, { park_id: parkId }) => {
+                        const parkName = this.$store.getters['parks/parkName'](parkId) || '--';
+
+                        return (
+                            <router-link
+                                to={{ name: 'parks', params: { id: parkId } }}
+                                class="Materials__link"
+                            >
+                                {parkName}
+                            </router-link>
+                        );
+                    },
+                    category: (h, material) => {
+                        const { $t: __ } = this;
+                        const { category_id: categoryId, sub_category_id: subCategoryId } = material;
+                        const categoryName = this.$store.getters['categories/categoryName'](categoryId);
+                        if (!categoryName) {
+                            return (
+                                <span class="Materials__not-categorized">
+                                    {__('not-categorized')}
+                                </span>
+                            );
+                        }
+
+                        const subCategoryName = subCategoryId
+                            ? this.$store.getters['categories/subCategoryName'](subCategoryId)
+                            : null;
+
+                        return (
+                            <Fragment>
+                                <Icon name="folder-open" />&nbsp;{categoryName}
+                                {!!subCategoryName && (
+                                    <div>
+                                        <Icon name="arrow-right" />&nbsp;{subCategoryName}
+                                    </div>
+                                )}
+                            </Fragment>
+                        );
+                    },
                     rental_price: (h, material) => (
                         formatAmount(material.rental_price || 0)
                     ),
                     replacement_price: (h, material) => (
                         formatAmount(material.replacement_price || 0)
                     ),
-                    stock_quantity: (h, material) => (
-                        this.getQuantity(material)
-                    ),
+                    stock_quantity: (h, material) => {
+                        if (this.periodForQuantities !== null) {
+                            return material.remaining_quantity;
+                        }
+
+                        return material.stock_quantity;
+                    },
                     out_of_order_quantity: (h, material) => (
                         material.out_of_order_quantity || ''
                     ),
                     tags: (h, material) => {
-                        const { isTrashDisplayed, setTags } = this;
-                        const showLabel = material.tags.length === 0 && !isTrashDisplayed;
+                        const { $t: __, isTrashDisplayed, handleSetTags } = this;
 
                         return (
                             <div
                                 class="Materials__tags-list"
                                 role="button"
-                                onClick={() => { setTags(material); }}
+                                onClick={() => { handleSetTags(material); }}
                             >
-                                <MaterialTags tags={material.tags} />
-                                {showLabel && (
+                                <TagsList tags={material.tags} />
+                                {(material.tags.length === 0 && !isTrashDisplayed) && (
                                     <span class="Materials__add-tags">
                                         {__('add-tags')}
                                     </span>
@@ -153,71 +178,43 @@ export default {
                             </div>
                         );
                     },
-                    actions: (h, material) => {
+                    actions: (h, { id }) => {
                         const {
                             isTrashDisplayed,
-                            deleteMaterial,
-                            restoreMaterial,
+                            handleRestoreItem,
+                            handleDeleteItem,
                         } = this;
 
                         if (isTrashDisplayed) {
                             return (
-                                <Fragment>
-                                    <button
-                                        type="button"
-                                        v-tooltip={__('action-restore')}
-                                        class="info"
-                                        onClick={() => { restoreMaterial(material.id); }}
-                                    >
-                                        <i class="fas fa-trash-restore" />
-                                    </button>
-                                    <button
-                                        type="button"
-                                        v-tooltip={__('action-delete')}
-                                        class="danger"
-                                        onClick={() => { deleteMaterial(material.id); }}
-                                    >
-                                        <i class="fas fa-trash-alt" />
-                                    </button>
-                                </Fragment>
+                                <div>
+                                    <Button
+                                        type="restore"
+                                        onClick={() => { handleRestoreItem(id); }}
+                                    />
+                                    <Button
+                                        type="delete"
+                                        onClick={() => { handleDeleteItem(id); }}
+                                    />
+                                </div>
                             );
                         }
 
                         return (
-                            <Fragment>
-                                <router-link to={`/materials/${material.id}/view`} custom>
-                                    {({ navigate }) => (
-                                        <button
-                                            type="button"
-                                            v-tooltip={__('action-view')}
-                                            class="success"
-                                            onClick={navigate}
-                                        >
-                                            <i class="fas fa-eye" />
-                                        </button>
-                                    )}
-                                </router-link>
-                                <router-link to={`/materials/${material.id}`} custom>
-                                    {({ navigate }) => (
-                                        <button
-                                            type="button"
-                                            v-tooltip={__('action-edit')}
-                                            class="info"
-                                            onClick={navigate}
-                                        >
-                                            <i class="fas fa-edit" />
-                                        </button>
-                                    )}
-                                </router-link>
-                                <button
-                                    type="button"
-                                    v-tooltip={__('action-trash')}
-                                    class="warning"
-                                    onClick={() => { deleteMaterial(material.id); }}
-                                >
-                                    <i class="fas fa-trash" />
-                                </button>
-                            </Fragment>
+                            <div>
+                                <Button
+                                    icon="eye"
+                                    to={{ name: 'view-material', params: { id } }}
+                                />
+                                <Button
+                                    type="edit"
+                                    to={{ name: 'edit-material', params: { id } }}
+                                />
+                                <Button
+                                    type="trash"
+                                    onClick={() => { handleDeleteItem(id); }}
+                                />
+                            </div>
                         );
                     },
                 },
@@ -227,11 +224,6 @@ export default {
     computed: {
         isAdmin() {
             return this.$store.getters['auth/is']('admin');
-        },
-
-        downloadListingUrl() {
-            const { baseUrl } = Config;
-            return `${baseUrl}/materials/pdf`;
         },
 
         dropdownItemClass() {
@@ -255,8 +247,8 @@ export default {
                 category: __('category'),
                 rental_price: __('rent-price'),
                 replacement_price: __('repl-price'),
-                stock_quantity: __('quantity'),
-                out_of_order_quantity: __('quantity-out-of-order'),
+                stock_quantity: __('stock-qty'),
+                out_of_order_quantity: __('out-of-order-qty'),
                 tags: __('tags'),
                 actions: '',
             };
@@ -284,13 +276,13 @@ export default {
             };
 
             if (this.periodForQuantities) {
-                headings.stock_quantity = __('remaining-quantity');
+                headings.stock_quantity = __('remaining-qty');
                 columnsClasses.stock_quantity = 'Materials__quantity Materials__quantity--remaining ';
                 sortable = sortable.filter(
                     (sortColumn) => sortColumn !== 'stock_quantity',
                 );
             } else {
-                headings.stock_quantity = __('quantity');
+                headings.stock_quantity = __('stock-qty');
                 columnsClasses.stock_quantity = 'Materials__quantity ';
             }
 
@@ -299,18 +291,118 @@ export default {
     },
     watch: {
         periodForQuantities() {
-            this.refreshTable();
+            queryClient.invalidateQueries('materials-while-event');
+            this.$refs.table.getData();
         },
     },
     mounted() {
         this.$store.dispatch('categories/fetch');
+        this.$store.dispatch('parks/fetch');
         this.$store.dispatch('tags/fetch');
     },
     methods: {
+        // ------------------------------------------------------
+        // -
+        // -    Handlers
+        // -
+        // ------------------------------------------------------
+
+        handleChangeFilters() {
+            // FIXME: Pourquoi invalider ça juste parce qu'on change les filtres ?
+            queryClient.invalidateQueries('materials-while-event');
+            this.$refs.table.getData();
+        },
+
+        handleRemoveDateForQuantities() {
+            this.periodForQuantities = null;
+            queryClient.invalidateQueries('materials-while-event');
+            this.$refs.table.getData();
+        },
+
+        async handleDeleteItem(id) {
+            const { $t: __ } = this;
+            const isSoft = !this.isTrashDisplayed;
+
+            const { value: isConfirmed } = await confirm({
+                type: isSoft ? 'warning' : 'danger',
+
+                text: isSoft
+                    ? __('page.materials.confirm-delete')
+                    : __('page.materials.confirm-permanently-delete'),
+
+                confirmButtonText: isSoft
+                    ? __('yes-delete')
+                    : __('yes-permanently-delete'),
+            });
+            if (!isConfirmed) {
+                return;
+            }
+
+            this.isLoading = true;
+            try {
+                await apiMaterials.remove(id);
+                this.$toasted.success(__('page.materials.deleted'));
+                queryClient.invalidateQueries('materials-while-event');
+                this.$refs.table.refresh();
+            } catch (error) {
+                this.$toasted.error(__('errors.unexpected-while-deleting'));
+            } finally {
+                this.isLoading = false;
+            }
+        },
+
+        async handleRestoreItem(id) {
+            const { $t: __ } = this;
+
+            const { value: isConfirmed } = await confirm({
+                type: 'restore',
+                text: __('page.materials.confirm-restore'),
+                confirmButtonText: __('yes-restore'),
+            });
+            if (!isConfirmed) {
+                return;
+            }
+
+            this.isLoading = true;
+            try {
+                await apiMaterials.restore(id);
+                this.$toasted.success(__('page.materials.restored'));
+                queryClient.invalidateQueries('materials-while-event');
+                this.$refs.table.refresh();
+            } catch (error) {
+                this.$toasted.error(__('errors.unexpected-while-restoring'));
+            } finally {
+                this.isLoading = false;
+            }
+        },
+
+        handleSetTags({ id, name, tags }) {
+            if (this.isTrashDisplayed) {
+                return;
+            }
+
+            this.$modal.show(
+                AssignTags,
+                { id, name, entity: 'materials', initialTags: tags },
+                { width: 600, draggable: true, clickToClose: false },
+                { 'before-close': () => { this.$refs.table.getData(); } },
+            );
+        },
+
+        handleShowTrashed() {
+            this.shouldDisplayTrashed = !this.shouldDisplayTrashed;
+            this.isTrashDisplayed = !this.isTrashDisplayed;
+            this.$refs.table.getData();
+        },
+
+        // ------------------------------------------------------
+        // -
+        // -    Méthodes internes
+        // -
+        // ------------------------------------------------------
+
         async fetch(pagination) {
             this.isLoading = true;
-            this.error = null;
-
             const filters = this.getFilters();
 
             try {
@@ -318,28 +410,16 @@ export default {
                     paginated: true,
                     ...pagination,
                     ...filters,
-                    deleted: this.isDisplayTrashed,
+                    deleted: this.shouldDisplayTrashed,
                 });
                 return { data };
-            } catch (err) {
-                this.error = err;
+            } catch {
+                this.hasCriticalError = true;
             } finally {
                 this.isLoading = false;
             }
 
             return undefined;
-        },
-
-        getParkName(parkId) {
-            return this.$store.getters['parks/parkName'](parkId) || '--';
-        },
-
-        getCategoryName(categoryId) {
-            return this.$store.getters['categories/categoryName'](categoryId);
-        },
-
-        getSubCategoryName(subCategoryId) {
-            return this.$store.getters['categories/subCategoryName'](subCategoryId);
         },
 
         getFilters() {
@@ -364,240 +444,128 @@ export default {
 
             if (this.periodForQuantities) {
                 const [start, end] = this.periodForQuantities || [null, null];
-                const startDate = start ? moment(start).format(DATE_QUERY_FORMAT) : null;
+
                 if (this.isSingleDayPeriodForQuantities) {
-                    params.dateForQuantities = startDate;
+                    params.dateForQuantities = start;
                 } else {
-                    const endDate = end ? moment(end).format(DATE_QUERY_FORMAT) : null;
-                    params['dateForQuantities[start]'] = startDate;
-                    params['dateForQuantities[end]'] = endDate;
+                    params['dateForQuantities[start]'] = start;
+                    params['dateForQuantities[end]'] = end;
                 }
             }
 
             return params;
-        },
-
-        async deleteMaterial(materialId) {
-            const { $t: __ } = this;
-            const isSoft = !this.isTrashDisplayed;
-
-            const { value: isConfirmed } = await confirm({
-                type: isSoft ? 'warning' : 'danger',
-
-                text: isSoft
-                    ? __('page-materials.confirm-delete')
-                    : __('page-materials.confirm-permanently-delete'),
-
-                confirmButtonText: isSoft
-                    ? __('yes-delete')
-                    : __('yes-permanently-delete'),
-            });
-            if (!isConfirmed) {
-                return;
-            }
-
-            this.error = null;
-            this.isLoading = true;
-
-            try {
-                await this.$http.delete(`materials/${materialId}`);
-                this.refreshTable();
-            } catch (error) {
-                this.error = error;
-            } finally {
-                this.isLoading = false;
-            }
-        },
-
-        async restoreMaterial(materialId) {
-            const { $t: __ } = this;
-
-            const { value: isConfirmed } = await confirm({
-                type: 'restore',
-                text: __('page-materials.confirm-restore'),
-                confirmButtonText: __('yes-restore'),
-            });
-            if (!isConfirmed) {
-                return;
-            }
-
-            this.error = null;
-            this.isLoading = true;
-
-            try {
-                await this.$http.put(`materials/restore/${materialId}`);
-                this.refreshTable();
-            } catch (error) {
-                this.error = error;
-            } finally {
-                this.isLoading = false;
-            }
-        },
-
-        setTags({ id, name, tags }) {
-            if (this.isTrashDisplayed) {
-                return;
-            }
-
-            this.$modal.show(
-                AssignTags,
-                { id, name, entity: 'materials', initialTags: tags },
-                { width: 600, draggable: true, clickToClose: false },
-                {
-                    'before-close': () => {
-                        this.refreshTable();
-                    },
-                },
-            );
-        },
-
-        refreshTable() {
-            queryClient.invalidateQueries('materials-while-event');
-
-            this.error = null;
-            this.isLoading = true;
-            this.$refs.DataTable.getData();
-        },
-
-        refreshTableAndPagination() {
-            this.error = null;
-            this.isLoading = true;
-            this.$refs.DataTable.refresh();
-        },
-
-        showTrashed() {
-            this.isDisplayTrashed = !this.isDisplayTrashed;
-            this.isTrashDisplayed = !this.isTrashDisplayed;
-            this.refreshTableAndPagination();
-        },
-
-        formatAmount(value) {
-            return value !== null ? formatAmount(value) : '';
-        },
-
-        getQuantity(material) {
-            if (this.periodForQuantities === null) {
-                return material.stock_quantity;
-            }
-            return material.remaining_quantity;
-        },
-
-        removeDateForQuantities() {
-            this.periodForQuantities = null;
-            this.refreshTable();
         },
     },
     render() {
         const {
             $t: __,
             $options,
-            error,
+            hasCriticalError,
             isAdmin,
             isLoading,
             columns,
             dataTableOptions,
             dropdownItemClass,
-            downloadListingUrl,
-            showTrashed,
+            handleShowTrashed,
             isTrashDisplayed,
             periodForQuantities,
-            removeDateForQuantities,
-            refreshTableAndPagination,
             isSingleDayPeriodForQuantities,
+            handleRemoveDateForQuantities,
+            handleChangeFilters,
         } = this;
 
-        return (
-            <div class="content Materials">
-                <div class="content__header header-page">
-                    <div class="header-page__help">
-                        <Help message={__('page-materials.help')} error={error} isLoading={isLoading} />
-                    </div>
-                    <div class="header-page__actions">
-                        <router-link to="/materials/new" custom>
-                            {({ navigate }) => (
-                                <button
-                                    type="button"
-                                    onClick={navigate}
-                                    class="Materials__create success"
+        if (hasCriticalError) {
+            return (
+                <Page name="materials" title={__('page.materials.title')}>
+                    <CriticalError />
+                </Page>
+            );
+        }
+
+        const pageActions = [
+            <Button type="add" to={{ name: 'add-material' }} icon="plus">
+                {__('page.materials.action-add')}
+            </Button>,
+        ];
+        if (isAdmin) {
+            pageActions.push(
+                <Dropdown
+                    variant="actions"
+                    scopedSlots={{
+                        items: () => (
+                            <Fragment>
+                                <router-link to="/attributes" custom>
+                                    {({ navigate }) => (
+                                        <li class={dropdownItemClass} onClick={navigate}>
+                                            <Icon name="cog" />
+                                            {__('page.materials.manage-attributes')}
+                                        </li>
+                                    )}
+                                </router-link>
+                                <a
+                                    class={dropdownItemClass}
+                                    href={`${config.baseUrl}/materials/pdf`}
+                                    rel="noreferrer"
+                                    target="_blank"
                                 >
-                                    <i class="fas fa-plus" />{' '}
-                                    {__('page-materials.action-add')}
-                                </button>
-                            )}
-                        </router-link>
-                        {isAdmin && (
-                            <Dropdown
-                                variant="actions"
-                                scopedSlots={{
-                                    items: () => (
-                                        <Fragment>
-                                            <router-link to="/attributes" custom>
-                                                {({ navigate }) => (
-                                                    <li class={dropdownItemClass} onClick={navigate}>
-                                                        <i class="fas fa-cog" />{' '}
-                                                        {__('page-materials.manage-attributes')}
-                                                    </li>
-                                                )}
-                                            </router-link>
-                                            <a
-                                                class={dropdownItemClass}
-                                                href={downloadListingUrl}
-                                                rel="noreferrer"
-                                                target="_blank"
-                                            >
-                                                <i class="fas fa-print" />{' '}
-                                                {__('page-materials.print-complete-list')}
-                                            </a>
-                                        </Fragment>
-                                    ),
-                                }}
-                            />
-                        )}
-                    </div>
-                </div>
-                <div class="content__main-view Materials__main-view">
+                                    <Icon name="print" />
+                                    {__('page.materials.print-complete-list')}
+                                </a>
+                            </Fragment>
+                        ),
+                    }}
+                />,
+            );
+        }
+
+        return (
+            <Page
+                name="materials"
+                title={__('page.materials.title')}
+                help={__('page.materials.help')}
+                isLoading={isLoading}
+                actions={pageActions}
+            >
+                <div class="Materials">
                     <div class="Materials__filters">
-                        <MaterialsFilters baseRoute="/materials" onChange={refreshTableAndPagination} />
+                        <MaterialsFilters onChange={handleChangeFilters} />
                         <div class="Materials__quantities-date">
                             <Datepicker
+                                type="date"
                                 v-model={this.periodForQuantities}
                                 class="Materials__quantities-date__input"
-                                placeholder={__('page-materials.display-quantities-at-date')}
-                                isRange
+                                placeholder={__('page.materials.display-quantities-at-date')}
+                                range
                             />
                             {!!periodForQuantities && (
-                                <button
-                                    type="button"
-                                    class="Materials__quantities-date__clear-button warning"
-                                    onClick={removeDateForQuantities}
+                                <Button
+                                    type="danger"
+                                    class="Materials__quantities-date__clear-button"
+                                    onClick={handleRemoveDateForQuantities}
+                                    icon="backspace"
                                 >
-                                    <i class="fas fa-backspace Materials__quantities-date__clear-button__icon" />{' '}
                                     {isSingleDayPeriodForQuantities ? __('reset-date') : __('reset-period')}
-                                </button>
+                                </Button>
                             )}
                         </div>
                     </div>
                     <v-server-table
-                        ref="DataTable"
+                        ref="table"
                         name={$options.name}
                         columns={columns}
                         options={dataTableOptions}
                     />
+                    <div class="content__footer">
+                        <Button
+                            onClick={handleShowTrashed}
+                            icon={isTrashDisplayed ? 'eye' : 'trash'}
+                            type={isTrashDisplayed ? 'success' : 'danger'}
+                        >
+                            {isTrashDisplayed ? __('display-not-deleted-items') : __('open-trash-bin')}
+                        </Button>
+                    </div>
                 </div>
-                <div class="content__footer">
-                    <button
-                        type="button"
-                        onClick={showTrashed}
-                        class={[
-                            'Materials__show-trashed',
-                            isTrashDisplayed ? 'info' : 'warning',
-                        ]}
-                    >
-                        <i class={['fas', isTrashDisplayed ? 'fa-eye' : 'fa-trash']} />{' '}
-                        {isTrashDisplayed ? __('display-not-deleted-items') : __('open-trash-bin')}
-                    </button>
-                </div>
-            </div>
+            </Page>
         );
     },
 };

@@ -1,5 +1,5 @@
 import './index.scss';
-import { Fragment } from 'vue-fragment';
+import Fragment from '@/components/Fragment';
 
 // @vue/component
 export default {

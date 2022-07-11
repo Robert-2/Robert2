@@ -1,5 +1,5 @@
 import './index.scss';
-import { Fragment } from 'vue-fragment';
+import Fragment from '@/components/Fragment';
 import Page from '@/components/Page';
 import CriticalError from '@/components/CriticalError';
 import Button from '@/components/Button';
@@ -69,7 +69,7 @@ export default {
                     note: 'Beneficiaries__note ',
                     actions: 'Beneficiaries__actions ',
                 },
-                requestFunction: this.getData.bind(this),
+                requestFunction: this.fetch.bind(this),
                 templates: {
                     company: (h, { company }) => {
                         if (!company) {
@@ -82,10 +82,8 @@ export default {
                             </router-link>
                         );
                     },
-                    email: (h, beneficiary) => (
-                        <a href={`mailto:${beneficiary.email}`}>
-                            {beneficiary.email}
-                        </a>
+                    email: (h, { email }) => (
+                        <a href={`mailto:${email}`}>{email}</a>
                     ),
                     phone: (h, beneficiary) => (
                         <Fragment>
@@ -158,8 +156,8 @@ export default {
                 type: isSoft ? 'warning' : 'danger',
 
                 text: isSoft
-                    ? __('page-beneficiaries.confirm-delete')
-                    : __('page-beneficiaries.confirm-permanently-delete'),
+                    ? __('page.beneficiaries.confirm-delete')
+                    : __('page.beneficiaries.confirm-permanently-delete'),
 
                 confirmButtonText: isSoft
                     ? __('yes-delete')
@@ -185,7 +183,7 @@ export default {
 
             const { value: isConfirmed } = await confirm({
                 type: 'restore',
-                text: __('page-beneficiaries.confirm-restore'),
+                text: __('page.beneficiaries.confirm-restore'),
                 confirmButtonText: __('yes-restore'),
             });
             if (!isConfirmed) {
@@ -214,15 +212,14 @@ export default {
         // -
         // ------------------------------------------------------
 
-        async getData(pagination) {
+        async fetch(pagination) {
             this.isLoading = true;
 
             try {
-                const params = {
+                const data = await apiBeneficiaries.all({
                     ...pagination,
                     deleted: this.shouldDisplayTrashed,
-                };
-                const data = await apiBeneficiaries.all(params);
+                });
                 this.isTrashDisplayed = this.shouldDisplayTrashed;
                 return data;
             } catch {
@@ -248,7 +245,7 @@ export default {
 
         if (hasCriticalError) {
             return (
-                <Page name="beneficiaries" title={__('page-beneficiaries.title')}>
+                <Page name="beneficiaries" title={__('page.beneficiaries.title')}>
                     <CriticalError />
                 </Page>
             );
@@ -257,16 +254,12 @@ export default {
         return (
             <Page
                 name="beneficiaries"
-                title={__('page-beneficiaries.title')}
-                help={__('page-beneficiaries.help')}
+                title={__('page.beneficiaries.title')}
+                help={__('page.beneficiaries.help')}
                 isLoading={isLoading}
                 actions={[
-                    <Button
-                        type="add"
-                        icon="user-plus"
-                        to={{ name: 'add-beneficiary' }}
-                    >
-                        {__('page-beneficiaries.action-add')}
+                    <Button type="add" icon="user-plus" to={{ name: 'add-beneficiary' }}>
+                        {__('page.beneficiaries.action-add')}
                     </Button>,
                 ]}
             >

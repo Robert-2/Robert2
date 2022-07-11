@@ -1,0 +1,46 @@
+title: Catégories
+help: Gestion des catégories et sous-catégories de matériel.
+
+no-category: Aucune catégorie.
+create-a-category: Créer une catégorie
+add-a-subcategory: Ajouter une sous-catégorie
+display-materials-list: Voir la liste du matériel
+
+name-length-not-valid: Le nom doit avoir une longueur entre 2 et 96 caractères.
+cannot-delete-not-empty: "Impossible de supprimer cette catégorie, car elle n'est pas vide\_!"
+
+#
+# - Catégories
+#
+
+create: Créer la catégorie
+modify: Modifier la catégorie
+delete: Supprimer la catégorie
+
+new-category: Nouvelle catégorie
+category-name: Nom de la catégorie
+name-already-exists: Une catégorie existe déjà avec ce nom.
+
+saved: Catégorie sauvegardée.
+deleted: Catégorie supprimée.
+
+confirm-permanently-delete: "Voulez-vous vraiment supprimer définitivement cette catégorie\_?"
+confirm-restore: "Voulez-vous vraiment restaurer cette catégorie\_?"
+
+#
+# - Sous-catégories
+#
+
+create-subcategory: Créer la sous-catégorie
+modify-subcategory: Modifier la sous-catégorie
+delete-subcategory: Supprimer la sous-catégorie
+
+new-subcategory: "Nouvelle sous-catégorie de «\_{categoryName}\_»"
+subcategory-name: Nom de la sous-catégorie
+subcategory-name-already-exists: Une sous-catégorie existe déjà avec ce nom.
+
+subcategory-saved: Sous-catégorie sauvegardée.
+subcategory-deleted: Sous-catégorie supprimée.
+
+confirm-permanently-delete-subcategory: "Voulez-vous vraiment supprimer définitivement cette sous-catégorie\_?"
+confirm-restore-subcategory: "Voulez-vous vraiment restaurer cette sous-catégorie\_?"

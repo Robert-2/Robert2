@@ -1,0 +1,8 @@
+title-create: New list template
+title-edit-simple: Modify list template
+title-edit: 'Modify list template "{name}"'
+
+confirm-save-empty: The materials list is empty. Do you really want to save an empty list template?
+
+not-saved: List modified but not saved!
+saved: List template saved.

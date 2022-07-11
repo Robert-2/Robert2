@@ -1,0 +1,10 @@
+menu:
+    calendar: Calendar
+    materials: Materials
+    technicians: Technicians
+    beneficiaries: Beneficiaries
+    categories: Categories
+    tags: Tags
+    parks: Material parks
+    users: Users
+    settings: Settings

@@ -53,10 +53,10 @@ export default {
             // TODO: À migrer vers une vraie modale.
             //       (qui ne se ferme pas quand on a des erreurs de formulaire notamment)
             const { value: name } = await prompt(
-                __('page-tags.prompt-add'),
+                __('page.tags.prompt-add'),
                 {
-                    placeholder: __('page-tags.tag-name'),
-                    confirmButtonText: __('page-tags.create'),
+                    placeholder: __('page.tags.tag-name'),
+                    confirmButtonText: __('page.tags.create'),
                 },
             );
             if (!name) {
@@ -82,7 +82,7 @@ export default {
             // TODO: À migrer vers une vraie modale.
             //       (qui ne se ferme pas quand on a des erreurs de formulaire notamment)
             const { value: newName } = await prompt(
-                __('page-tags.prompt-modify'),
+                __('page.tags.prompt-modify'),
                 { placeholder: name, inputValue: name },
             );
             if (!newName) {
@@ -103,8 +103,8 @@ export default {
             const { value: isConfirmed } = await confirm({
                 type: isSoft ? 'warning' : 'danger',
                 text: isSoft
-                    ? __('page-tags.confirm-delete')
-                    : __('page-tags.confirm-permanently-delete'),
+                    ? __('page.tags.confirm-delete')
+                    : __('page.tags.confirm-permanently-delete'),
                 confirmButtonText: isSoft
                     ? __('yes-delete')
                     : __('yes-permanently-delete'),
@@ -118,7 +118,7 @@ export default {
 
             try {
                 await apiTags.remove(id);
-                this.$toasted.success(__('page-tags.deleted'));
+                this.$toasted.success(__('page.tags.deleted'));
             } catch {
                 this.$toasted.error(__('errors.unexpected-while-deleting'));
                 this.fetchData();
@@ -135,7 +135,7 @@ export default {
             const { $t: __ } = this;
             const { value: isConfirmed } = await confirm({
                 type: 'restore',
-                text: __('page-tags.confirm-restore'),
+                text: __('page.tags.confirm-restore'),
                 confirmButtonText: __('yes-restore'),
             });
             if (!isConfirmed) {
@@ -147,7 +147,7 @@ export default {
 
             try {
                 await apiTags.restore(id);
-                this.$toasted.success(__('page-tags.restored'));
+                this.$toasted.success(__('page.tags.restored'));
             } catch {
                 this.$toasted.error(__('errors.unexpected-while-restoring'));
                 this.fetchData();
@@ -207,12 +207,17 @@ export default {
                     const toUpdateIndex = this.tags.findIndex((tag) => tag.id === id);
                     this.$set(this.tags, toUpdateIndex, newTagData);
                 }
-                this.$toasted.success(__('page-tags.saved'));
+                this.$toasted.success(__('page.tags.saved'));
             } catch (error) {
-                const { code } = error.response?.data?.error || { code: 0 };
-                this.$toasted.error(code === 400
-                    ? __('errors.validation')
-                    : __('errors.unexpected-while-saving'));
+                const { code, details } = error.response?.data?.error || { code: 0, details: {} };
+                let errorMessage = __('errors.unexpected-while-saving');
+                if (code === 400) {
+                    errorMessage = __('errors.validation');
+                    if (details.name) {
+                        [errorMessage] = details.name;
+                    }
+                }
+                this.$toasted.error(errorMessage);
             } finally {
                 if (!isNew) {
                     this.isProcessing = Array.from((new Set(this.isProcessing)).delete(id));
@@ -250,8 +255,8 @@ export default {
             return (
                 <Page
                     name="tags"
-                    title={__('page-tags.title')}
-                    help={__('page-tags.help')}
+                    title={__('page.tags.title')}
+                    help={__('page.tags.help')}
                     isLoading={displayLoading}
                 >
                     {hasCriticalError ? <CriticalError /> : <Loading />}
@@ -263,16 +268,16 @@ export default {
             return (
                 <Page
                     name="tags"
-                    title={__('page-tags.title')}
-                    help={__('page-tags.help')}
+                    title={__('page.tags.title')}
+                    help={__('page.tags.help')}
                     isLoading={displayLoading}
                 >
                     <div class="Tags">
                         <EmptyMessage
                             message={(
                                 isTrashDisplayed
-                                    ? __('page-tags.no-item-in-trash')
-                                    : __('page-tags.no-item')
+                                    ? __('page.tags.no-item-in-trash')
+                                    : __('page.tags.no-item')
                             )}
                             action={(
                                 isTrashDisplayed
@@ -281,7 +286,7 @@ export default {
                                         onClick: handleToggleTrashed,
                                     }
                                     : {
-                                        label: __('page-tags.action-add'),
+                                        label: __('page.tags.action-add'),
                                         onClick: handleCreate,
                                     }
                             )}
@@ -305,12 +310,12 @@ export default {
         return (
             <Page
                 name="tags"
-                title={__('page-tags.title')}
-                help={__('page-tags.help')}
+                title={__('page.tags.title')}
+                help={__('page.tags.help')}
                 isLoading={displayLoading}
                 actions={[
                     <Button type="add" onClick={handleCreate}>
-                        {__('page-tags.action-add')}
+                        {__('page.tags.action-add')}
                     </Button>,
                 ]}
             >

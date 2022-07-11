@@ -24,6 +24,11 @@ textarea {
     }
 }
 
+textarea {
+    min-height: 75px;
+    resize: vertical;
+}
+
 input[type='text'] {
     min-height: $input-min-height;
 }

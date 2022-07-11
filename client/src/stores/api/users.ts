@@ -1,30 +1,27 @@
 import requester from '@/globals/requester';
 
 import type { PaginatedData, PaginationParams } from '@/stores/api/@types';
+import type { Group } from '@/stores/api/groups';
 import type { Person } from '@/stores/api/persons';
 
 //
 // - Types
 //
 
-export type UserGroupId = 'admin' | 'member' | 'visitor';
-
+/* eslint-disable @typescript-eslint/naming-convention */
 export type User = {
-    /* eslint-disable @typescript-eslint/naming-convention */
     id: number,
     pseudo: string,
     email: string,
-    group_id: UserGroupId,
+    group_id: Group['id'],
     person: Person | null,
-    /* eslint-enable @typescript-eslint/naming-convention */
 };
 
 export type UserEdit = {
-    /* eslint-disable @typescript-eslint/naming-convention */
     pseudo: string,
     email: string,
     password?: string,
-    group_id: UserGroupId,
+    group_id: Group['id'],
     person: {
         first_name: string | null,
         last_name: string | null,
@@ -34,8 +31,8 @@ export type UserEdit = {
         postal_code: string | null,
         locality: string | null,
     },
-    /* eslint-enable @typescript-eslint/naming-convention */
 };
+/* eslint-enable @typescript-eslint/naming-convention */
 
 type GetAllParams = PaginationParams & { deleted?: boolean };
 

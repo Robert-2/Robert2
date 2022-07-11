@@ -1,0 +1,8 @@
+title-create: Nouveau modèle de liste de matériel
+title-edit-simple: Modifier un modèle de liste
+title-edit: "Modifier le modèle de liste «\_{name}\_»"
+
+confirm-save-empty: "La liste du matériel est vide. Voulez-vous vraiment sauvegarder un modèle de liste vide\_?"
+
+not-saved: "Liste modifiée non sauvegardée\_!"
+saved: Modèle de liste sauvegardé.

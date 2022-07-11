@@ -1,0 +1,11 @@
+title: Bénéficiaires
+help: Vous pouvez envoyer un email à un bénéficiaire en cliquant sur son adresse.
+
+action-add: Nouveau bénéficiaire
+beneficiary-type: Type de bénéficiaire
+person: Personne physique (individu)
+company: Personne morale (entreprise)
+
+confirm-delete: "Mettre ce bénéficiaire à la corbeille\_?"
+confirm-permanently-delete: "Voulez-vous vraiment supprimer définitivement ce bénéficiaire\_?"
+confirm-restore: "Voulez-vous vraiment restaurer ce bénéficiaire\_?"

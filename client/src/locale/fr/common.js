@@ -1,5 +1,3 @@
-/* eslint-disable quotes */
-
 export default {
     'hello-pseudo': "Bonjour {pseudo}\u00a0!",
     'your-settings': "Vos paramètres",
@@ -70,7 +68,8 @@ export default {
     'connexion-infos': "Informations de connexion",
     'personal-infos': "Informations personnelles",
     'minimal-infos': "Informations minimales",
-    'extra-infos': "Informations supplémentaires",
+    'extra-infos': "Informations additionnelles",
+    'stock-infos': "Informations liées au stock",
     'billing-infos': "Informations de facturation",
     'documents': "Documents",
     'billing': "Facturation",
@@ -85,13 +84,12 @@ export default {
     'nickname': "Surnom",
     'company': "Société",
     'legal-name': "Raison sociale",
-    'contact': "Contact",
     'contact-details': "Coordonnées",
     'other-infos': "Autres informations",
     'email': "E-mail",
     'phone': "Téléphone",
     'address': "Adresse",
-    'street': "Rue et N°",
+    'street': "Numéro et rue",
     'postal-code': "Code postal",
     'city': "Ville",
     'locality': "Ville",
@@ -116,11 +114,18 @@ export default {
     'repl-price': "Val. rempl.",
     'value-per-day': '{value}\u00a0/\u00a0jour',
     'serial-number': "N° de série",
+    'examples-list': "Exemples\u00a0: {list}, etc.",
+
     'qty': "Qté",
-    'quantity': "Qté stock",
+    'stock-qty': "Qté stock",
+    'stock-quantity': "Quantité en stock",
+    'out-of-order-qty': "Qté en panne",
+    'out-of-order-quantity': "Quantité en panne",
+    'remaining-qty': "Qté restante",
+    'awaited-qty-dots': "Qté attendue\u00a0:",
+    'actual-qty': "Qté effective",
     'quantities': "Quantités",
-    'quantity-out-of-order': "Qté en panne",
-    'remaining-quantity': "Qté restante",
+
     'discountable': "Remisable\u00a0?",
     'is-broken': "En panne\u00a0?",
     'is-lost': "Perdu\u00a0?",
@@ -139,6 +144,7 @@ export default {
     'updated-at': "Modifié le\u00a0:",
     'units': "Unités",
     'state': "État",
+    'picture': "Photo",
     'add-a-picture': "Ajouter une photo",
     'change-the-picture': "Changer la photo",
     'remove-the-picture': "Supprimer la photo",
@@ -192,6 +198,7 @@ export default {
     'no-bill-help': "Cet événement n'a aucune facture pour le moment.",
     'no-estimate-help': "Cet événement n'a aucun devis pour le moment.",
     'estimate-item-help': "Devis du {date} à {hour}",
+    'confirm-delete-estimate': "Voulez-vous vraiment supprimer ce devis\u00a0?",
     'warning-no-estimate-before-billing': "Attention, cet événement n'a pas eu de devis\u00a0!",
     'warning-event-has-bill': "Attention, cet événement a déjà une facture\u00a0!",
     'missing-beneficiary': "Bénéficiaire manquant",
@@ -244,6 +251,7 @@ export default {
     'total-amount': "Montant total",
     'total-amount-with-discount': "Total après remise",
     'replacement-total': "Valeur de remplacement totale",
+    'total-value': "Valeur totale",
     'total-quantity': "Quantité totale\u00a0: {total}",
     'daily-amount': "Montant journalier\u00a0: {amount}",
     'replacement-value-amount': "Valeur de remplacement\u00a0: {amount}",
@@ -257,15 +265,11 @@ export default {
     'ratio-long': "Coefficient",
     'tags': "Tags",
     'add-tags': "Ajouter des tags",
-    'choose-tags-below': "Choisissez les tags ci-dessous\u00a0:",
-    'entity-name-tags': "Tags de « {entityName} »",
     'remove-all-tags': "Enlever tous les tags",
     'remaining-count': "reste {count}",
     'return-inventory': "Inventaire de retour",
     'grouped-by': "Voir groupé par\u00a0:",
     'not-grouped': "Non groupé",
-    'awaited-quantity': "Qté attendue\u00a0:",
-    'actual-quantity': "Qté effective",
     'return-scheduled-on': "Retour prévu le",
     'back-to-calendar': "Retour au calendrier",
     'previous-month': "Mois précédent",
@@ -304,19 +308,45 @@ export default {
     'category': "Catégorie",
     'sub-category': "Sous-catégorie",
     'categories': "Catégories",
+    'not-categorized': "Non catégorisé",
     'parks': "Parcs",
     'technician': "Technicien",
 
-    'settings': "Paramètres",
-
     'this-feature-is-coming-soon': "Cette fonctionnalité est en cours de développement.",
-
-    'french': "Français",
-    'english': "English",
 
     'external-links': {
         'official-website': "Site web officiel",
         'community-forum': "Forum de la communauté",
         'github-repository': 'Dépôt Github',
+    },
+
+    'select-no-options': "Aucune option disponible.",
+    'select-no-matching-result': "Aucune option ne correspond à cette recherche",
+
+    '@event': {
+        'confirm-delete': "Mettre cet événement à la corbeille\u00a0?",
+        'no-units-available': "Aucune unité disponible pendant cet événement pour ce matériel.",
+
+        'event-missing-materials': "Matériel manquant",
+        'event-missing-materials-help': "Il s'agit du matériel manquant pour la période de l'événement, car il est utilisé dans un autre événement, le nombre voulu est trop important, ou quelques uns sont en panne. Ce matériel doit donc être ajouté au parc, ou bien loué auprès d'une autre société.",
+        'missing-material-count': "Besoin de {quantity}, il en manque\u00a0{missing}\u00a0!",
+
+        'warning-no-beneficiary': "Attention, cet événement n'a aucun bénéficiaire\u00a0!",
+        'warning-no-material': "Attention, cet événement est vide, il ne contient aucun matériel pour le moment\u00a0!",
+
+        'event-not-confirmed-help': "L'événement n'est pas encore confirmé, il est susceptible de changer à tout moment.",
+        'event-confirmed-help': "L'événement est confirmé\u00a0: Ses informations ne devraient plus changer.",
+
+        'statuses': {
+            'is-past': "Cet événement est passé.",
+            'is-currently-running': "Cet événement se déroule en ce moment.",
+            'is-confirmed': "Cet événement est confirmé.",
+            'is-not-confirmed': "Cet événement n'est pas encore confirmé\u00a0!",
+            'is-archived': "Cet événement est archivé.",
+            'is-locked': "Cet événement est verrouillé parce qu'il est confirmé ou que son inventaire de retour a été effectué.",
+            'has-missing-materials': "Cet événement a du matériel manquant.",
+            'needs-its-return-inventory': "Il faut faire l'inventaire de retour de cet événement\u00a0!",
+            'has-not-returned-materials': "Cet événement a du matériel qui n'a pas été retourné.",
+        },
     },
 };

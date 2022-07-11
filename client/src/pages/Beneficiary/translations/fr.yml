@@ -1,0 +1,11 @@
+title-create: Nouveau bénéficiaire
+title-edit-simple: Modifier le bénéficiaire
+title-edit: "Modifier le bénéficiaire «\_{name}\_»"
+
+help-reference: >-
+    Peut contenir un numéro client ou adhérent pour votre gestion interne, qui
+    apparaîtra sur les fiches de sorties, les devis et les factures. Il doit
+    être unique.
+
+type-to-search-company: Entrez le nom d'une société...
+saved: Bénéficiaire sauvegardé.

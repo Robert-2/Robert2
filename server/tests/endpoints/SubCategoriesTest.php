@@ -7,11 +7,11 @@ final class SubCategoriesTest extends ApiTestCase
     {
         $this->client->post('/api/subcategories', ['name' => 'Fail SubCategory']);
         $this->assertStatusCode(ERROR_VALIDATION);
-        $this->assertErrorMessage("Validation failed. See error[details] for more informations.");
+        $this->assertValidationErrorMessage();
         $this->assertErrorDetails([
             'category_id' => [
-                'category_id must not be empty',
-                'category_id must be numeric',
+                "This field is mandatory",
+                "This field must contain only numbers",
             ]
         ]);
     }

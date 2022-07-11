@@ -1,5 +1,5 @@
 import './index.scss';
-import { Fragment } from 'vue-fragment';
+import Fragment from '@/components/Fragment';
 import Page from '@/components/Page';
 import CriticalError from '@/components/CriticalError';
 import Icon from '@/components/Icon';
@@ -82,7 +82,7 @@ export default {
                         if (!user.person) {
                             return (
                                 <span class="Users__no-profile">
-                                    {__('page-users.profile-missing-or-deleted')}
+                                    {__('page.users.profile-missing-or-deleted')}
                                 </span>
                             );
                         }
@@ -91,7 +91,7 @@ export default {
                     group_id: (h, user) => __(user.group_id),
                     email: (h, user) => {
                         const isActiveUser = user.id === this.currentUserId;
-                        if (!isActiveUser) {
+                        if (isActiveUser) {
                             return user.email;
                         }
                         return <a href={`mailto:${user.email}`}>{user.email}</a>;
@@ -181,8 +181,8 @@ export default {
                 type: isSoft ? 'warning' : 'danger',
 
                 text: isSoft
-                    ? __('page-users.confirm-delete')
-                    : __('page-users.confirm-permanently-delete'),
+                    ? __('page.users.confirm-delete')
+                    : __('page.users.confirm-permanently-delete'),
 
                 confirmButtonText: isSoft
                     ? __('yes-delete')
@@ -208,7 +208,7 @@ export default {
 
             const { value: isConfirmed } = await confirm({
                 type: 'restore',
-                text: __('page-users.confirm-restore'),
+                text: __('page.users.confirm-restore'),
                 confirmButtonText: __('yes-restore'),
             });
             if (!isConfirmed) {
@@ -271,7 +271,7 @@ export default {
 
         if (hasCriticalError) {
             return (
-                <Page name="users" title={__('page-users.title')}>
+                <Page name="users" title={__('page.users.title')}>
                     <CriticalError />
                 </Page>
             );
@@ -280,8 +280,8 @@ export default {
         return (
             <Page
                 name="users"
-                title={__('page-users.title')}
-                help={__('page-users.help')}
+                title={__('page.users.title')}
+                help={__('page.users.help')}
                 isLoading={isLoading}
                 actions={[
                     <Button
@@ -289,7 +289,7 @@ export default {
                         icon="user-plus"
                         to={{ name: 'add-user' }}
                     >
-                        {__('page-users.action-add')}
+                        {__('page.users.action-add')}
                     </Button>,
                 ]}
             >

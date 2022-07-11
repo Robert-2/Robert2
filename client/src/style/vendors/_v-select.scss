@@ -1,8 +1,11 @@
 /* stylelint-disable selector-class-pattern, scss/no-global-function-names */
 
-@import 'vue-select/src/scss/vue-select';
+@use 'vue-select/src/scss/vue-select' with (
+    $vs-dropdown-min-width: 130px,
+);
 
 .v-select {
+    min-width: 130px;
     min-height: $input-min-height;
     padding: 0 $input-padding-horizontal;
     border: $input-border-size solid $bg-color-input-normal;
@@ -25,7 +28,7 @@
     &__dropdown-menu {
         left: -1px;
         width: calc(100% + 2px);
-        border: $input-border-size solid $bg-color-button-info;
+        border: $input-border-size solid $input-focus-border-color;
         border-top: none;
         border-radius: 0 0 4px 4px;
         background: $bg-color-input-normal;
@@ -36,7 +39,7 @@
         color: $color-input;
 
         &--highlight {
-            background: $bg-color-button-info;
+            background: rgba(255, 255, 255, 0.07);
             color: $color-input;
         }
     }
@@ -99,24 +102,26 @@
             // - Important, pour surcharger la règle `.button:not(.Button)`
             // stylelint-disable-next-line declaration-no-important
             background: none !important;
-            fill: $bg-color-button-danger;
+            color: inherit;
+            fill: currentColor;
+            transition: color ease-in 200ms;
             cursor: pointer;
 
             &:focus,
             &:hover {
-                background: none;
-                fill: adjust-color($bg-color-button-danger, $lightness: 10%);
+                color: adjust-color($text-nav-color, $lightness: 20%);
             }
         }
 
         #{$block}__open-indicator {
-            fill: $text-nav-color;
+            color: inherit;
+            fill: currentColor;
             cursor: pointer;
         }
     }
 
     &--open {
-        border-color: $bg-color-button-info;
+        border-color: $input-focus-border-color;
     }
 
     &--single {
@@ -125,11 +130,32 @@
             padding: 0;
             background: none;
         }
+    }
 
-        &#{$block}--open {
-            #{$block}__selected {
-                display: none;
+    &--disabled {
+        border-color: $bg-color-input-normal;
+        background-color: $bg-color-input-disabled;
+        color: $color-input-disabled;
+
+        #{$block}__dropdown-toggle,
+        #{$block}__clear,
+        #{$block}__search,
+        #{$block}__selected,
+        #{$block}__open-indicator {
+            // stylelint-disable-next-line declaration-no-important -- Pour surcharger le style "disabled" du "core".
+            background: none !important;
+        }
+
+        #{$block}__actions {
+            #{$block}__open-indicator {
+                fill: $bg-color-input-normal;
+                cursor: not-allowed;
             }
         }
+    }
+
+    &__no-options {
+        padding: 8px 0 10px;
+        font-style: italic;
     }
 }

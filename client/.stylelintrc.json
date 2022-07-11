@@ -1,3 +1,6 @@
 {
-    "extends": "@pulsanova/stylelint-config-scss"
+    "extends": "@pulsanova/stylelint-config-scss",
+    "rules": {
+        "custom-property-pattern": null
+    }
 }

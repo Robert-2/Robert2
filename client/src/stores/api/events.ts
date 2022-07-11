@@ -13,23 +13,20 @@ import type { Moment } from 'moment';
 // - Types
 //
 
+/* eslint-disable @typescript-eslint/naming-convention */
 type PersonWithPivot<T extends Beneficiary | Technician> = T & {
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     pivot: { event_id: Event['id'], person_id: T['id'] },
 };
 
 type MaterialWithPivot = Material & {
-    /* eslint-disable @typescript-eslint/naming-convention */
     pivot: {
         id: number,
         event_id: Event['id'],
         material_id: Material['id'],
         quantity: number,
     },
-    /* eslint-enable @typescript-eslint/naming-convention */
 };
 
-/* eslint-disable @typescript-eslint/naming-convention */
 export type BaseEvent = {
     id: number,
     title: string,
@@ -88,6 +85,11 @@ export type EventSummary = {
     location: string | null,
 };
 
+type GetAllInPeriodParams = {
+    start: string,
+    end: string,
+};
+
 type SearchParams = {
     search: string,
     exclude?: number | undefined,
@@ -97,9 +99,13 @@ type SearchParams = {
 // - Fonctions
 //
 
-const search = async (params: SearchParams): Promise<WithCount<EventSummary[]>> => (
-    (await requester.get(`/events`, { params })).data
-);
+/* eslint-disable func-style */
+async function all(params: GetAllInPeriodParams): Promise<EventSummary[]>;
+async function all(params: SearchParams): Promise<WithCount<EventSummary[]>>;
+async function all(params: SearchParams | GetAllInPeriodParams): Promise<EventSummary[] | WithCount<EventSummary[]>> {
+    return (await requester.get('/events', { params })).data;
+}
+/* eslint-enable func-style */
 
 const one = async (id: Event['id']): Promise<Event> => (
     (await requester.get(`/events/${id}`)).data
@@ -121,8 +127,21 @@ const terminate = async (id: Event['id'], quantities: any): Promise<Event> => (
     (await requester.put(`/events/${id}/terminate`, quantities)).data
 );
 
+const update = async (id: Event['id'], params: any): Promise<Event> => (
+    (await requester.put(`/events/${id}`, params)).data
+);
+
 const remove = async (id: Event['id']): Promise<void> => {
     await requester.delete(`/events/${id}`);
 };
 
-export default { search, one, setConfirmed, setArchived, setReturn, terminate, remove };
+export default {
+    all,
+    one,
+    setConfirmed,
+    setArchived,
+    setReturn,
+    terminate,
+    update,
+    remove,
+};

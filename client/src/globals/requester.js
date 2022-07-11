@@ -1,15 +1,65 @@
 import axios from 'axios';
-import Config from '@/globals/config';
-import Cookies from '@/utils/cookies';
+import deepObjectSet from 'lodash/set';
+import isPlainObject from 'lodash/isPlainObject';
+import flattenObject from '@/utils/flattenObject';
+import config from '@/globals/config';
+import cookies from '@/utils/cookies';
 
 const requester = axios.create({
-    baseURL: Config.api.url,
-    headers: Config.api.headers,
+    baseURL: config.api.url,
+    headers: config.api.headers,
 });
 
 requester.interceptors.request.use(
     (_request) => {
-        const { params, ...request } = _request;
+        const { params, onProgress, ...request } = _request;
+
+        // - Ajoute une méthode haut-niveau permettant de récupérer l'avancement sous forme numérique.
+        //   - Si la méthode de la requête est POST, PUT ou PATCH, c'est l'événement `onUploadProgress` qui sera écouté.
+        //   - Sinon ce sera `onDownloadProgress`
+        if (onProgress) {
+            const progressCallback = (event) => {
+                if (!event.lengthComputable) {
+                    return;
+                }
+
+                const { loaded, total } = event;
+                const percent = (loaded / total) * 100;
+                onProgress(percent);
+            };
+
+            if (request.method && ['POST', 'PUT', 'PATCH'].includes(request.method.toUpperCase())) {
+                request.onUploadProgress = progressCallback;
+            } else {
+                request.onDownloadProgress = progressCallback;
+            }
+        }
+
+        // - Traitement spécial des objets littéraux contenant des fichiers.
+        //   => On utilise un envoi via `multipart/form-data` et on met les données
+        //      supplémentaires éventuelles dans une clée spéciale `@data`)
+        const hasFiles = (
+            isPlainObject(request.data) &&
+            Object.values(request.data).some((value) => (
+                value instanceof File
+            ))
+        );
+        if (hasFiles) {
+            const formData = new FormData();
+            const data = Object.entries(flattenObject(request.data)).reduce(
+                (_data, [key, value]) => {
+                    if (value instanceof File) {
+                        formData.append(btoa(key), value);
+                        return _data;
+                    }
+                    return deepObjectSet(_data, key, value);
+                },
+                {},
+            );
+
+            formData.append('@data', JSON.stringify(data));
+            request.data = formData;
+        }
 
         if (params) {
             Object.keys(params).forEach((name) => {
@@ -23,7 +73,7 @@ requester.interceptors.request.use(
             request.params = params;
         }
 
-        const token = Cookies.get(Config.auth.cookie);
+        const token = cookies.get(config.auth.cookie);
         if (token) {
             request.headers.Authorization = `Bearer ${token}`;
         }

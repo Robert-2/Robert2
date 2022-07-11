@@ -1,101 +1,57 @@
 import './index.scss';
-import { ERROR_CODES } from '@/globals/constants';
 import { confirm, prompt } from '@/utils/alert';
+import apiCategories from '@/stores/api/categories';
 import Page from '@/components/Page';
-import Help from '@/components/Help';
+import CriticalError from '@/components/CriticalError';
 import Loading from '@/components/Loading';
+import Button from '@/components/Button';
 import EmptyMessage from '@/components/EmptyMessage';
-import Item from './Item';
+import Item from './components/Item';
 
 // @vue/component
 export default {
     name: 'Categories',
-    components: { Help, Loading, EmptyMessage },
     data() {
         return {
-            help: 'page-categories.help',
-            error: null,
+            hasCriticalError: false,
+            isFetching: false,
+            isFetched: false,
             isSaving: false,
-            validationError: null,
+            categories: [],
         };
     },
-    computed: {
-        categories() {
-            return this.$store.state.categories.list;
-        },
-
-        isFetched() {
-            return this.$store.state.categories.isFetched;
-        },
-    },
     mounted() {
-        this.$store.dispatch('categories/fetch');
+        this.fetchData();
     },
     methods: {
-        async handleCreateCategory() {
-            const { value: name } = await prompt(
-                this.$t('page-categories.prompt-add'),
-                {
-                    placeholder: this.$t('page-categories.category-name'),
-                    confirmButtonText: this.$t('page-categories.create'),
-                },
-            );
+        // ------------------------------------------------------
+        // -
+        // -    Handlers
+        // -
+        // ------------------------------------------------------
 
+        async handleClickNewCategory() {
+            const name = await this.askForName();
             if (!name) {
                 return;
             }
-
-            this.save('categories', null, name);
+            this.saveCategory(null, name);
         },
 
-        handleSaveCategory(id, name) {
-            this.save('categories', id, name);
-        },
-
-        async handleCreateSubCategory(categoryId, name) {
-            this.resetHelpLoading();
-
-            try {
-                await this.$http.post('subcategories', { name, category_id: categoryId });
-                this.help = 'page-subcategories.saved';
-                this.$store.dispatch('categories/refresh');
-            } catch (error) {
-                this.displayError(error);
-            } finally {
-                this.isSaving = false;
+        async handleEditCategory(id, previousName) {
+            const name = await this.askForName(previousName);
+            if (!name) {
+                return;
             }
+            this.saveCategory(id, name);
         },
 
-        handleSaveSubcategory(id, name) {
-            this.save('subcategories', id, name);
-        },
-
-        async save(entity, id, name) {
-            if (!['categories', 'subcategories'].includes(entity)) {
-                throw new Error(`Entité ${entity} non reconnue.`);
-            }
-
-            this.resetHelpLoading();
-
-            const request = id ? this.$http.put : this.$http.post;
-            const route = id ? `${entity}/${id}` : entity;
-
-            try {
-                await request(route, { name });
-                this.help = `page-${entity}.saved`;
-                this.$store.dispatch('categories/refresh');
-            } catch (error) {
-                this.displayError(error);
-            } finally {
-                this.isSaving = false;
-            }
-        },
-
-        async handleDeleteItem(entity, id) {
+        async handleDeleteCategory(id) {
+            const { $t: __ } = this;
             const { value: isConfirmed } = await confirm({
-                title: this.$t('please-confirm'),
-                text: this.$t(`page-${entity}.confirm-permanently-delete`),
-                confirmButtonText: this.$t(`yes-permanently-delete`),
+                title: __('please-confirm'),
+                text: __(`page.categories.confirm-permanently-delete`),
+                confirmButtonText: __(`yes-permanently-delete`),
                 type: 'danger',
             });
 
@@ -103,105 +59,162 @@ export default {
                 return;
             }
 
-            this.resetHelpLoading();
-
+            this.isSaving = true;
             try {
-                await this.$http.delete(`${entity}/${id}`);
-                this.help = `page-${entity}.deleted`;
+                await apiCategories.remove(id);
+                this.fetchData();
+                this.$toasted.success(__('page.categories.deleted'));
                 this.$store.dispatch('categories/refresh');
-            } catch (error) {
-                this.displayError(error);
+            } catch {
+                this.$toasted.error(__('errors.unexpected-while-deleting'));
             } finally {
                 this.isSaving = false;
             }
         },
 
-        resetHelpLoading() {
-            this.help = 'page-categories.help';
-            this.error = null;
-            this.isSaving = true;
-            this.validationError = null;
+        handleSubCategoryChange() {
+            this.fetchData();
         },
 
-        displayError(error) {
-            this.help = 'page-categories.help';
-            this.error = error;
-            this.validationError = null;
+        // ------------------------------------------------------
+        // -
+        // -    Méthodes internes
+        // -
+        // ------------------------------------------------------
 
-            const { code, details } = error.response?.data?.error || { code: 0, details: {} };
-            if (code === 400 && details.name) {
-                [this.validationError] = details.name;
+        async fetchData() {
+            if (this.isFetching) {
+                return;
             }
-            if (code === ERROR_CODES.SQL_RELATION_NOT_EMPTY) {
-                this.validationError = this.$t('page-categories.cannot-delete-not-empty');
+
+            try {
+                this.isFetching = true;
+                const data = await apiCategories.all({ paginated: false });
+                this.categories = data;
+            } catch {
+                this.hasCriticalError = true;
+            } finally {
+                this.isFetching = false;
+                this.isFetched = true;
+            }
+        },
+
+        async askForName(previousName = null) {
+            const { $t: __ } = this;
+            const isCreate = previousName === null;
+            const title = isCreate
+                ? __('page.categories.create')
+                : __('page.categories.modify');
+
+            const { value } = await prompt(title, {
+                placeholder: __('page.categories.category-name'),
+                inputValue: isCreate ? undefined : previousName,
+                confirmButtonText: isCreate ? __('page.categories.create') : undefined,
+            });
+
+            if (value === undefined) {
+                return null;
+            }
+
+            if (value.length < 2 || value.length > 96) {
+                this.$toasted.error(__('page.categories.name-length-not-valid'));
+                return this.askForName(value);
+            }
+
+            if (this.categories.some((category) => category.name === value)) {
+                this.$toasted.error(__('page.categories.name-already-exists'));
+                return this.askForName(value);
+            }
+
+            return value;
+        },
+
+        async saveCategory(id, name) {
+            const { $t: __, isSaving } = this;
+            if (isSaving) {
+                return;
+            }
+
+            const request = async () => {
+                if (id) {
+                    await apiCategories.update(id, { name });
+                } else {
+                    await apiCategories.create({ name });
+                }
+            };
+
+            this.isSaving = true;
+            try {
+                await request();
+                this.fetchData();
+                this.$toasted.success(__('page.categories.saved'));
+                this.$store.dispatch('categories/refresh');
+            } catch {
+                this.$toasted.error(__('errors.unexpected-while-saving'));
+            } finally {
+                this.isSaving = false;
             }
         },
     },
     render() {
         const {
             $t: __,
-            help,
-            error,
-            validationError,
+            hasCriticalError,
             isSaving,
             isFetched,
             categories,
-            handleCreateCategory,
-            handleSaveCategory,
-            handleCreateSubCategory,
-            handleSaveSubcategory,
-            handleDeleteItem,
+            handleClickNewCategory,
+            handleEditCategory,
+            handleDeleteCategory,
+            handleSubCategoryChange,
         } = this;
 
-        const actions = [
-            <button type="button" class="Categories__create success" onClick={handleCreateCategory}>
-                <i class="fas fa-plus" /> {__('page-categories.action-add')}
-            </button>,
-        ];
+        if (hasCriticalError || !isFetched) {
+            return (
+                <Page name="categories" title={__('page.categories.title')}>
+                    {hasCriticalError ? <CriticalError /> : <Loading />}
+                </Page>
+            );
+        }
 
-        const render = () => {
-            if (!isFetched) {
-                return <Loading />;
-            }
-
-            if (categories.length === 0) {
-                return (
+        if (categories.length === 0) {
+            return (
+                <Page name="categories" title={__('page.categories.title')}>
                     <EmptyMessage
-                        message={__('page-categories.no-category')}
+                        message={__('page.categories.no-category')}
                         action={{
-                            label: __('page-categories.create-a-category'),
-                            onClick: handleCreateCategory,
+                            label: __('page.categories.create-a-category'),
+                            onClick: handleClickNewCategory,
                         }}
                     />
-                );
-            }
+                </Page>
+            );
+        }
 
-            return (
+        return (
+            <Page
+                name="categories"
+                title={__('page.categories.title')}
+                help={__('page.categories.help')}
+                isLoading={isSaving}
+                actions={[
+                    <Button type="add" class="Categories__create" onClick={handleClickNewCategory}>
+                        {__('page.categories.new-category')}
+                    </Button>,
+                ]}
+            >
                 <ul class="Categories">
                     {categories.map((category) => (
                         <Item
                             key={category.id}
                             category={category}
-                            onSaveCategory={handleSaveCategory}
-                            onCreateSubCategory={handleCreateSubCategory}
-                            onSaveSubcategory={handleSaveSubcategory}
-                            onDeleteItem={handleDeleteItem}
+                            onEditCategory={handleEditCategory}
+                            onDeleteCategory={handleDeleteCategory}
+                            onSubcategoryChange={handleSubCategoryChange}
                         />
                     ))}
                 </ul>
-            );
-        };
-
-        return (
-            <Page
-                name="categories"
-                title={__('page-categories.title')}
-                help={__(help)}
-                error={validationError || error || null}
-                isLoading={isSaving}
-                actions={actions}
-                render={render}
-            />
+            </Page>
         );
     },
 };

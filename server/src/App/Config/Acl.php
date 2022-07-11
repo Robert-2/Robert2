@@ -91,7 +91,6 @@ class Acl
                 'delete',
                 'restore',
                 'handleUploadDocuments',
-                'handleUploadPicture',
             ],
             'Park' => [
                 'create',

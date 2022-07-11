@@ -1,14 +1,15 @@
 @use './variables' as *;
 @use '~@/style/globals';
 @use 'sass:color';
+@use 'sass:map';
 
 .Button {
+    $block: &;
+
     display: inline-block;
-    padding: 0.55rem 0.78rem;
-    border: none;
-    border-radius: 2px;
-    background-color: $default-background;
-    color: $default-color;
+    padding: $padding-y $padding-x;
+    border: $border-width solid;
+    border-radius: $border-radius;
     font-size: 1rem;
     line-height: 1.25;
     text-decoration: none;
@@ -19,20 +20,9 @@
         margin-left: 5px;
     }
 
-    &:visited {
-        color: $default-color;
-    }
-
     &:hover,
     &:focus {
         outline: 0;
-        background-color: $default-focused-color;
-        color: $default-focused-background;
-    }
-
-    &:active {
-        background-color: $default-active-color;
-        color: $default-active-background;
     }
 
     //
@@ -41,7 +31,7 @@
 
     &--disabled {
         cursor: not-allowed;
-        opacity: 0.6;
+        opacity: 0.5;
     }
 
     //
@@ -78,67 +68,48 @@
     // - Variantes
     //
 
-    &--primary {
-        background-color: $primary-variant-background;
-        color: $primary-variant-color;
+    // stylelint-disable-next-line scss/dollar-variable-first-in-block, order/order
+    $variants: (
+        default: $default-variant,
+        primary: $primary-variant,
+        secondary: $secondary-variant,
+        success: $success-variant,
+        warning: $warning-variant,
+        danger: $danger-variant,
+    );
 
-        &:hover,
-        &:focus {
-            background-color: $primary-variant-focused-background;
-            color: $primary-variant-focused-color;
-        }
+    @each $name, $variant in $variants {
+        // stylelint-disable-next-line scss/dollar-variable-pattern
+        $--modifier: if($name == 'default', null, --#{$name});
 
-        &:active {
-            background-color: $primary-variant-active-background;
-            color: $primary-variant-active-color;
-        }
-    }
+        &#{$--modifier} {
+            border-color: map.get($variant, border-color);
+            background: map.get($variant, background);
+            color: map.get($variant, color);
 
-    &--success {
-        background-color: $success-variant-background;
-        color: $success-variant-color;
+            &:hover,
+            &:focus {
+                border-color: map.get($variant, focused-border-color);
+                background-color: map.get($variant, focused-background);
+                color: map.get($variant, focused-color);
+            }
 
-        &:hover,
-        &:focus {
-            background-color: $success-variant-focused-background;
-            color: $success-variant-focused-color;
-        }
+            &:active {
+                border-color: map.get($variant, active-border-color);
+                background-color: map.get($variant, active-background);
+                color: map.get($variant, active-color);
+            }
 
-        &:active {
-            background-color: $success-variant-active-background;
-            color: $success-variant-active-color;
-        }
-    }
-
-    &--warning {
-        background-color: $warning-variant-background;
-        color: $warning-variant-color;
-
-        &:hover,
-        &:focus {
-            background-color: $warning-variant-focused-background;
-            color: $warning-variant-focused-color;
-        }
-
-        &:active {
-            background-color: $warning-variant-active-background;
-            color: $warning-variant-active-color;
-        }
-    }
-
-    &--danger {
-        background-color: $danger-variant-background;
-        color: $danger-variant-color;
-
-        &:hover,
-        &:focus {
-            background-color: $danger-variant-focused-background;
-            color: $danger-variant-focused-color;
-        }
-
-        &:active {
-            background-color: $danger-variant-active-background;
-            color: $danger-variant-active-color;
+            &#{$block}--disabled {
+                &,
+                &:hover,
+                &:focus,
+                &:active {
+                    border-color: map.get($variant, border-color);
+                    background-color: map.get($variant, background);
+                    color: map.get($variant, color);
+                }
+            }
         }
     }
 }

@@ -7,8 +7,30 @@ export default defineComponent({
     props: {
         horizontal: Boolean,
     },
+    data() {
+        return {
+            shown: this.horizontal,
+        };
+    },
+    created() {
+        if (!this.horizontal) {
+            this.shownTimer = setTimeout(
+                () => { this.shown = true; },
+                500,
+            );
+        }
+    },
+    beforeUnmount() {
+        if (this.shownTimer) {
+            clearTimeout(this.shownTimer);
+        }
+    },
     render() {
-        const { $t: __, horizontal } = this;
+        const { $t: __, horizontal, shown } = this;
+
+        if (!shown) {
+            return null;
+        }
 
         return (
             <div class={['Loading', { 'Loading--horizontal': horizontal }]}>

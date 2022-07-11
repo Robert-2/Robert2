@@ -25,7 +25,7 @@ final class DocumentsTest extends ApiTestCase
 
         // - Backup préalable à la suppression du document #1
         $document = Document::find(1);
-        $filePath = Document::getFilePath($document->material_id, $document->name);
+        $filePath = $document->file_path;
         copy($filePath, $filePath . '_backup.pdf');
         // - Suppression du document
         $this->client->delete('/api/documents/1');

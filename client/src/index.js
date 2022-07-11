@@ -86,7 +86,10 @@ const tablesConfig = {
             : response;
 
         const { data, pagination } = _data;
-        return { data, count: pagination ? pagination.total : 0 };
+        return {
+            data,
+            count: pagination?.total.items ?? 0,
+        };
     },
 };
 Vue.use(ClientTable, tablesConfig);
@@ -95,7 +98,7 @@ Vue.use(ServerTable, tablesConfig, true);
 // - Toast notifications
 Vue.use(Toasted, {
     duration: 5000,
-    position: 'top-right',
+    position: 'top-center',
     className: 'Notification',
     containerClass: 'Notifications',
     action: {

@@ -3,8 +3,7 @@ declare(strict_types=1);
 
 namespace Robert2\Tests;
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Robert2\API\Models;
+use Robert2\API\Models\Company;
 use Robert2\API\Errors\ValidationException;
 
 final class CompanyTest extends ModelTestCase
@@ -13,7 +12,7 @@ final class CompanyTest extends ModelTestCase
     {
         parent::setUp();
 
-        $this->model = new Models\Company();
+        $this->model = new Company();
     }
 
     public function testTableName(): void
@@ -150,21 +149,21 @@ final class CompanyTest extends ModelTestCase
     {
         $this->expectException(ValidationException::class);
         $this->expectExceptionCode(ERROR_VALIDATION);
-        $this->model->edit(null, []);
+        Company::staticEdit(null, []);
     }
 
     public function testCreateCompanyBadData(): void
     {
         $this->expectException(ValidationException::class);
         $this->expectExceptionCode(ERROR_VALIDATION);
-        $this->model->edit(null, ['foo' => 'bar']);
+        Company::staticEdit(null, ['foo' => 'bar']);
     }
 
     public function testCreateCompanyDuplicate(): void
     {
         $this->expectException(ValidationException::class);
-        $this->expectExceptionCode(ERROR_DUPLICATE);
-        $this->model->edit(null, ['legal_name' => 'Testing, Inc']);
+        $this->expectExceptionCode(ERROR_VALIDATION);
+        Company::staticEdit(null, ['legal_name' => 'Testing, Inc']);
     }
 
     public function testCreateCompany(): void
@@ -177,7 +176,7 @@ final class CompanyTest extends ModelTestCase
             'country_id' => 1,
             'phone' => '+00336 25 25 21 25',
         ];
-        $result = $this->model->edit(null, $data);
+        $result = Company::staticEdit(null, $data);
         $expected = [
             'id' => 3,
             'legal_name' => 'test company',
@@ -196,22 +195,6 @@ final class CompanyTest extends ModelTestCase
         ];
         unset($result->created_at, $result->updated_at, $result->deleted_at);
         $this->assertEquals($expected, $result->toArray());
-    }
-
-    public function testCreateCompanyWithTags(): void
-    {
-        $data = [
-            'legal_name' => 'test company',
-            'tags' => ['Bénéficiaire'],
-        ];
-        $result = $this->model->edit(null, $data);
-        $data = $result->toArray();
-        $this->assertEquals(3, $data['id']);
-        $this->assertEquals('test company', $data['legal_name']);
-        $expected = [
-            ['id' => 4, 'name' => 'Bénéficiaire'],
-        ];
-        $this->assertEquals($expected, $result->tags);
     }
 
     public function testCreateCompanyWithPersons(): void
@@ -227,7 +210,7 @@ final class CompanyTest extends ModelTestCase
                 ['first_name' => 'Laurent', 'last_name' => 'Bigboss']
             ],
         ];
-        $result   = $this->model->edit(null, $data);
+        $result = Company::staticEdit(null, $data);
         $expected = [
             'id' => 3,
             'legal_name' => 'test company',
@@ -248,26 +231,21 @@ final class CompanyTest extends ModelTestCase
         $this->assertEquals($expected, $result->toArray());
     }
 
-    public function testAddPersonsWithoutData(): void
+    public function testCreateCompanyWithPersonsBadData(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->model->addPersons(1, []);
-    }
-
-    public function testAddPersonsToInexistant(): void
-    {
-        $this->expectException(ModelNotFoundException::class);
-        $persons = [['first_name' => 'Laurent', 'last_name' => 'Bigboss']];
-        $this->model->addPersons(999, $persons);
-    }
-
-    public function testAddPersons(): void
-    {
-        $persons = [
-            ['first_name' => 'Laurent', 'last_name' => 'Bigboss'],
-            ['first_name' => 'Jeanine', 'last_name' => 'Secretary']
+        $data = [
+            'legal_name' => 'test company',
+            'street' => 'Somewhere street, 123',
+            'postal_code' => '75000',
+            'locality' => 'Paris',
+            'country_id' => 1,
+            'phone' => '+00336 25 25 21 25',
+            'persons' => [
+                ['first_name' => 'N', 'last_name' => null]
+            ],
         ];
-        $result = $this->model->addPersons(1, $persons);
-        $this->assertCount(3, $result);
+        $this->expectException(ValidationException::class);
+        $this->expectExceptionCode(ERROR_VALIDATION);
+        $result = Company::staticEdit(null, $data);
     }
 }

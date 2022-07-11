@@ -29,7 +29,7 @@ export type AttributePut = Partial<Omit<AttributeEdit, 'type'>>;
 // - Fonctions
 //
 
-const all = async (categoryId?: Category['id']): Promise<Attribute[]> => {
+const all = async (categoryId?: Category['id'] | 'none'): Promise<Attribute[]> => {
     const { data } = await requester.get('/attributes', {
         params: { category: categoryId },
     });

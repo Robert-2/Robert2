@@ -1,10 +1,14 @@
 import './index.scss';
 import moment from 'moment';
-import initColumnsDisplay from '@/utils/initColumnsDisplay';
-import { confirm } from '@/utils/alert';
+import Fragment from '@/components/Fragment';
 import Page from '@/components/Page';
+import CriticalError from '@/components/CriticalError';
+import Button from '@/components/Button';
 import Datepicker from '@/components/Datepicker';
-import ItemActions from './Actions';
+import formatAddress from '@/utils/formatAddress';
+import { confirm } from '@/utils/alert';
+import apiTechnicians from '@/stores/api/technicians';
+import initColumnsDisplay from '@/utils/initColumnsDisplay';
 
 // @vue/component
 export default {
@@ -13,11 +17,16 @@ export default {
         const { $t: __, $route, $options } = this;
 
         return {
-            error: null,
+            hasCriticalError: false,
             isLoading: false,
-            isDisplayTrashed: false,
+            shouldDisplayTrashed: false,
             isTrashDisplayed: false,
             periodFilter: null,
+
+            //
+            // - Tableau
+            //
+
             columns: [
                 'last_name',
                 'first_name',
@@ -62,41 +71,92 @@ export default {
                     actions: 'Technicians__actions ',
                 },
                 requestFunction: this.fetch.bind(this),
+                templates: {
+                    email: (h, { email }) => (
+                        <a href={`mailto:${email}`}>{email}</a>
+                    ),
+                    address: (h, technician) => (
+                        formatAddress(
+                            technician.street,
+                            technician.postal_code,
+                            technician.locality,
+                            technician.country,
+                        )
+                    ),
+                    actions: (h, { id }) => {
+                        const {
+                            isTrashDisplayed,
+                            handleDeleteItem,
+                            handleRestoreItem,
+                        } = this;
+
+                        if (isTrashDisplayed) {
+                            return (
+                                <Fragment>
+                                    <Button
+                                        type="restore"
+                                        onClick={() => { handleRestoreItem(id); }}
+                                    />
+                                    <Button
+                                        type="delete"
+                                        onClick={() => { handleDeleteItem(id); }}
+                                    />
+                                </Fragment>
+                            );
+                        }
+
+                        return (
+                            <Fragment>
+                                <Button
+                                    icon="eye"
+                                    to={{
+                                        name: 'view-technician',
+                                        params: { id },
+                                        hash: '#infos',
+                                    }}
+                                />
+                                <Button
+                                    icon="calendar-alt"
+                                    to={{
+                                        name: 'view-technician',
+                                        params: { id },
+                                        hash: '#schedule',
+                                    }}
+                                />
+                                <Button
+                                    type="edit"
+                                    to={{
+                                        name: 'edit-technician',
+                                        params: { id },
+                                    }}
+                                />
+                                <Button
+                                    type="trash"
+                                    onClick={() => { handleDeleteItem(id); }}
+                                />
+                            </Fragment>
+                        );
+                    },
+                },
             },
         };
     },
     watch: {
         periodFilter() {
-            this.refreshTable();
+            this.$refs.table.refresh();
         },
     },
     methods: {
-        async fetch(pagination) {
-            this.error = null;
-            this.isLoading = true;
+        // ------------------------------------------------------
+        // -
+        // -    Handlers
+        // -
+        // ------------------------------------------------------
 
-            try {
-                const params = {
-                    ...pagination,
-                    deleted: this.isDisplayTrashed ? '1' : '0',
-                };
-                if (this.periodFilter) {
-                    const [start, end] = this.periodFilter;
-                    params.startDate = moment(start).format();
-                    params.endDate = moment(end).endOf('day').format();
-                }
-                return await this.$http.get('technicians', { params });
-            } catch (error) {
-                this.error = error;
-            } finally {
-                this.isTrashDisplayed = this.isDisplayTrashed;
-                this.isLoading = false;
-            }
-
-            return undefined;
+        handleClearFilters() {
+            this.periodFilter = null;
         },
-
-        async deleteTechnician(id) {
+        async handleDeleteItem(id) {
             const { $t: __ } = this;
             const isSoft = !this.isTrashDisplayed;
 
@@ -104,8 +164,8 @@ export default {
                 type: isSoft ? 'warning' : 'danger',
 
                 text: isSoft
-                    ? __('page-technicians.confirm-delete')
-                    : __('page-technicians.confirm-permanently-delete'),
+                    ? __('page.technicians.confirm-delete')
+                    : __('page.technicians.confirm-permanently-delete'),
 
                 confirmButtonText: isSoft
                     ? __('yes-delete')
@@ -115,142 +175,149 @@ export default {
                 return;
             }
 
-            this.error = null;
             this.isLoading = true;
-
             try {
-                await this.$http.delete(`persons/${id}`);
-                this.refreshTable();
-            } catch (error) {
-                this.error = error;
+                await apiTechnicians.remove(id);
+                this.$toasted.success(__('page.technicians.deleted'));
+                this.$refs.table.refresh();
+            } catch {
+                this.$toasted.error(__('errors.unexpected-while-deleting'));
             } finally {
                 this.isLoading = false;
             }
         },
 
-        async restoreTechnician(id) {
+        async handleRestoreItem(id) {
             const { $t: __ } = this;
 
             const { value: isConfirmed } = await confirm({
                 type: 'restore',
-                text: __('page-technicians.confirm-restore'),
+                text: __('page.technicians.confirm-restore'),
                 confirmButtonText: __('yes-restore'),
             });
             if (!isConfirmed) {
                 return;
             }
 
-            this.error = null;
             this.isLoading = true;
-
             try {
-                await this.$http.put(`persons/restore/${id}`);
-                this.refreshTable();
-            } catch (error) {
-                this.error = error;
+                await apiTechnicians.restore(id);
+                this.$toasted.success(__('page.technicians.restored'));
+                this.$refs.table.refresh();
+            } catch {
+                this.$toasted.error(__('errors.unexpected-while-restoring'));
             } finally {
                 this.isLoading = false;
             }
         },
 
-        refreshTable() {
-            this.error = null;
+        handleShowTrashed() {
+            this.shouldDisplayTrashed = !this.shouldDisplayTrashed;
+            this.$refs.table.refresh();
+        },
+
+        // ------------------------------------------------------
+        // -
+        // -    Méthodes internes
+        // -
+        // ------------------------------------------------------
+
+        async fetch(pagination) {
             this.isLoading = true;
-            this.$refs.DataTable.refresh();
-        },
 
-        clearFilters() {
-            this.periodFilter = null;
-        },
+            try {
+                const filters = {};
+                if (this.periodFilter) {
+                    const [start, end] = this.periodFilter;
+                    filters.startDate = moment(start).format();
+                    filters.endDate = moment(end).endOf('day').format();
+                }
 
-        showTrashed() {
-            this.isDisplayTrashed = !this.isDisplayTrashed;
-            this.refreshTable();
+                const data = await apiTechnicians.all({
+                    ...pagination,
+                    ...filters,
+                    deleted: this.shouldDisplayTrashed,
+                });
+                this.isTrashDisplayed = this.shouldDisplayTrashed;
+                return data;
+            } catch {
+                this.hasCriticalError = true;
+            } finally {
+                this.isLoading = false;
+            }
+
+            return undefined;
         },
     },
     render() {
         const {
             $t: __,
             $options,
-            error,
-            isLoading,
             columns,
             options,
-            restoreTechnician,
-            deleteTechnician,
             periodFilter,
-            clearFilters,
+            handleClearFilters,
+            isLoading,
             isTrashDisplayed,
-            showTrashed,
+            hasCriticalError,
+            handleShowTrashed,
         } = this;
 
-        const headerActions = [
-            <router-link to="/technicians/new" class="button success">
-                <i class="fas fa-user-plus" /> {__('page-technicians.action-add')}
-            </router-link>,
-        ];
+        if (hasCriticalError) {
+            return (
+                <Page name="technicians" title={__('page.technicians.title')}>
+                    <CriticalError />
+                </Page>
+            );
+        }
 
         return (
             <Page
                 name="technicians"
-                class="Technicians"
-                title={__('page-technicians.title')}
-                help={__('page-technicians.help')}
-                error={error}
+                title={__('page.technicians.title')}
+                help={__('page.technicians.help')}
                 isLoading={isLoading}
-                actions={headerActions}
+                actions={[
+                    <Button type="add" icon="user-plus" to={{ name: 'add-technician' }}>
+                        {__('page.technicians.action-add')}
+                    </Button>,
+                ]}
             >
-                <div class="Technicians__filters">
-                    <Datepicker
-                        v-model={this.periodFilter}
-                        isRange
-                        placeholder={__('page-technicians.period-of-availability')}
+                <div class="Technicians">
+                    <div class="Technicians__filters">
+                        <Datepicker
+                            class="Technicians__filters__period"
+                            v-model={this.periodFilter}
+                            placeholder={__('page.technicians.period-of-availability')}
+                            range
+                        />
+                        {!!periodFilter && (
+                            <Button
+                                type="primary"
+                                class="Technicians__filters__clear-button"
+                                onClick={handleClearFilters}
+                                icon="backspace"
+                            >
+                                {__('reset-period')}
+                            </Button>
+                        )}
+                    </div>
+                    <v-server-table
+                        ref="table"
+                        class="Technicians__table"
+                        name={$options.name}
+                        columns={columns}
+                        options={options}
                     />
-                    {periodFilter && (
-                        <button
-                            type="button"
-                            class="Technicians__filters__clear-button warning"
-                            v-tooltip={__('clear-filters')}
-                            onClick={clearFilters}
+                    <div class="content__footer">
+                        <Button
+                            onClick={handleShowTrashed}
+                            icon={isTrashDisplayed ? 'eye' : 'trash'}
+                            type={isTrashDisplayed ? 'success' : 'danger'}
                         >
-                            <i class="fas fa-backspace" />
-                        </button>
-                    )}
-                </div>
-                <v-server-table
-                    ref="DataTable"
-                    name={$options.name}
-                    columns={columns}
-                    options={options}
-                    scopedSlots={{
-                        email: ({ row }) => (
-                            <a href={`mailto:${row.email}`}>{row.email}</a>
-                        ),
-                        address: ({ row }) => (
-                            <div>
-                                {row.street}<br />
-                                {row.postal_code} {row.locality}
-                            </div>
-                        ),
-                        actions: ({ row }) => (
-                            <ItemActions
-                                isTrashMode={isTrashDisplayed}
-                                id={row.id}
-                                onRemove={deleteTechnician}
-                                onRestore={restoreTechnician}
-                            />
-                        ),
-                    }}
-                />
-                <div class="content__footer">
-                    <button
-                        type="button"
-                        class={isTrashDisplayed ? 'info' : 'warning'}
-                        onClick={showTrashed}
-                    >
-                        <i class={['fas', { 'fa-trash': !isTrashDisplayed, 'fa-eye"': isTrashDisplayed }]} />{' '}
-                        {isTrashDisplayed ? __('display-not-deleted-items') : __('open-trash-bin')}
-                    </button>
+                            {isTrashDisplayed ? __('display-not-deleted-items') : __('open-trash-bin')}
+                        </Button>
+                    </div>
                 </div>
             </Page>
         );

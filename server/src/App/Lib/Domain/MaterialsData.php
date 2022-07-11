@@ -57,7 +57,7 @@ class MaterialsData
             if (!isset($categoriesMaterials[$categoryId])) {
                 $categoriesMaterials[$categoryId] = [
                     'id' => $categoryId ?: null,
-                    'name' => Category::find($categoryId)->name,
+                    'name' => $categoryId ? Category::find($categoryId)->name : null,
                     'materials' => [],
                 ];
             }
@@ -89,7 +89,13 @@ class MaterialsData
         }
 
         usort($categoriesMaterials, function ($a, $b) {
-            return strnatcasecmp($a['name'], $b['name']);
+            if ($a['name'] === null) {
+                return 1;
+            }
+            if ($b['name'] === null) {
+                return -1;
+            }
+            return strcasecmp($a['name'], $b['name']);
         });
 
         return $categoriesMaterials;
@@ -105,7 +111,7 @@ class MaterialsData
                 continue;
             }
 
-            $categoryId = $material['category_id'];
+            $categoryId = $material['category_id'] ?: 0;
             $subCategoryId = $material['sub_category_id'] ?: sprintf('c-%d', $categoryId);
             $subCategory = SubCategory::find($material['sub_category_id']);
 
@@ -113,8 +119,8 @@ class MaterialsData
                 $subCategoriesMaterials[$subCategoryId] = [
                     'id' => $subCategoryId,
                     'name' => $subCategory ? $subCategory->name : null,
-                    'category' => Category::find($categoryId)->name,
-                    'categoryHasSubCategories' => Category::hasSubCategories($categoryId),
+                    'category' => $categoryId ? Category::find($categoryId)->name : null,
+                    'categoryHasSubCategories' => $categoryId ? Category::hasSubCategories($categoryId) : false,
                     'materials' => [],
                 ];
             }
@@ -144,7 +150,14 @@ class MaterialsData
             ksort($subCategoriesMaterials[$subCategoryId]['materials'], SORT_NATURAL | SORT_FLAG_CASE);
         }
 
-        usort($subCategoriesMaterials, function ($a, $b) {
+        $results = array_values($subCategoriesMaterials);
+        usort($results, function ($a, $b) {
+            if ($a['category'] === null) {
+                return 1;
+            }
+            if ($b['category'] === null) {
+                return -1;
+            }
             $noNameSortReplacer = 'ZZZZZZZZ';
             $aString = sprintf('%s%s', $a['category'], $a['name'] ?: $noNameSortReplacer);
             $bString = sprintf('%s%s', $b['category'], $b['name'] ?: $noNameSortReplacer);

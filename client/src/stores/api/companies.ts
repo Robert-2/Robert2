@@ -1,14 +1,13 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-
-import config from '@/globals/config';
 import requester from '@/globals/requester';
 
 import type { Country } from '@/stores/api/countries';
+import type { PaginatedData, PaginationParams } from './@types';
 
 //
 // - Types
 //
 
+/* eslint-disable @typescript-eslint/naming-convention */
 export type Company = {
     id: number,
     legal_name: string | null,
@@ -33,22 +32,28 @@ export type CompanyEdit = {
     country_id: Country['id'] | null,
     note: string | null,
 };
+/* eslint-enable @typescript-eslint/naming-convention */
+
+type GetAllParams = PaginationParams & { deleted?: boolean };
 
 //
 // - Fonctions
 //
 
+const all = async (params: GetAllParams): Promise<PaginatedData<Company[]>> => (
+    (await requester.get('/companies', { params })).data
+);
+
 const one = async (id: Company['id']): Promise<Company> => (
     (await requester.get(`/companies/${id}`)).data
 );
 
-const create = async (data: CompanyEdit): Promise<Company> => {
-    const _data = { ...data, tags: [config.beneficiaryTagName] };
-    return (await requester.post('/companies', _data)).data;
-};
+const create = async (data: CompanyEdit): Promise<Company> => (
+    (await requester.post('/companies', data)).data
+);
 
 const update = async (id: Company['id'], data: CompanyEdit): Promise<Company> => (
     (await requester.put(`/companies/${id}`, data)).data
 );
 
-export default { one, create, update };
+export default { all, one, create, update };

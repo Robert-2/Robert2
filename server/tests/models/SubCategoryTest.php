@@ -128,9 +128,9 @@ final class SubCategoryTest extends ModelTestCase
 
         // - Tente d'ajouter une sous-catégorie qui existe déjà pour cette catégorie
         $this->expectException(Errors\ValidationException::class);
-        $this->expectExceptionCode(ERROR_DUPLICATE);
+        $this->expectExceptionCode(ERROR_VALIDATION);
         $this->model->edit(null, [
-            'name'        => 'dimmers',
+            'name' => 'dimmers',
             'category_id' => 2
         ]);
     }

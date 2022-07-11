@@ -32,6 +32,12 @@ class Attribute extends BaseModel
         ];
     }
 
+    // ------------------------------------------------------
+    // -
+    // -    Validation
+    // -
+    // ------------------------------------------------------
+
     public function checkUnit()
     {
         if (!in_array($this->type, ['integer', 'float'], true)) {

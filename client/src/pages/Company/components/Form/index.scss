@@ -1,0 +1,20 @@
+@use '~@/style/globals';
+
+.CompanyEditForm {
+    $block: &;
+
+    &__locality {
+        display: flex;
+        margin: globals.$content-padding-small-vertical 0;
+
+        #{$block}__postal-code {
+            flex: unset;
+            width: 120px;
+        }
+
+        #{$block}__city {
+            flex: 1;
+            margin: 0 0 0 10px;
+        }
+    }
+}

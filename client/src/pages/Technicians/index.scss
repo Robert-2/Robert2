@@ -4,26 +4,40 @@
 .Page--technicians {
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    height: 100%;
 
-    .VueTables {
+    .Technicians {
         flex: 1;
     }
 }
 
 .Technicians {
+    display: flex;
+    flex-direction: column;
+
     &__filters {
         position: absolute;
         z-index: 1;
         left: globals.$table-search-input;
         right: calc(#{globals.$content-padding-large-vertical} + 45px + #{globals.$content-padding-small-vertical});
+        flex: none;
         display: flex;
         flex-wrap: nowrap;
         align-items: center;
         margin-left: math.div(globals.$content-padding-small-vertical, 2);
 
+        &__period {
+            width: 220px;
+        }
+
         &__clear-button {
             margin-left: globals.$content-padding-small-horizontal;
         }
+    }
+
+    &__table {
+        flex: 1;
     }
 
     &__nickname,
@@ -31,6 +45,10 @@
     &__address,
     &__note {
         display: none;
+    }
+
+    &__address {
+        white-space: pre-line;
     }
 
     &__note {

@@ -1,0 +1,9 @@
+title-simple: Technicien
+title: "Technicien «\_{name}\_»"
+
+#
+# - Tabs
+#
+
+infos:
+    modify-associated-user: Modifier l'utilisateur associé

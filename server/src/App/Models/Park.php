@@ -18,15 +18,39 @@ class Park extends BaseModel
         parent::__construct($attributes);
 
         $this->validation = [
-            'name'          => V::notEmpty()->length(2, 96),
-            'person_id'     => V::optional(V::numeric()),
-            'company_id'    => V::optional(V::numeric()),
-            'street'        => V::optional(V::length(null, 191)),
-            'postal_code'   => V::optional(V::length(null, 10)),
-            'locality'      => V::optional(V::length(null, 191)),
-            'country_id'    => V::optional(V::numeric()),
+            'name' => V::callback([$this, 'checkName']),
+            'person_id' => V::optional(V::numeric()),
+            'company_id' => V::optional(V::numeric()),
+            'street' => V::optional(V::length(null, 191)),
+            'postal_code' => V::optional(V::length(null, 10)),
+            'locality' => V::optional(V::length(null, 191)),
+            'country_id' => V::optional(V::numeric()),
             'opening_hours' => V::optional(V::length(null, 255)),
         ];
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Validation
+    // -
+    // ------------------------------------------------------
+
+    public function checkName($value)
+    {
+        V::notEmpty()
+            ->length(2, 96)
+            ->check($value);
+
+        $query = static::where('name', $value);
+        if ($this->exists) {
+            $query->where('id', '!=', $this->id);
+        }
+
+        if ($query->withTrashed()->exists()) {
+            return 'park-name-already-in-use';
+        }
+
+        return true;
     }
 
     // ——————————————————————————————————————————————————————
@@ -68,15 +92,15 @@ class Park extends BaseModel
     // ——————————————————————————————————————————————————————
 
     protected $casts = [
-        'person_id'     => 'integer',
-        'company_id'    => 'integer',
-        'name'          => 'string',
-        'street'        => 'string',
-        'postal_code'   => 'string',
-        'locality'      => 'string',
-        'country_id'    => 'integer',
+        'person_id' => 'integer',
+        'company_id' => 'integer',
+        'name' => 'string',
+        'street' => 'string',
+        'postal_code' => 'string',
+        'locality' => 'string',
+        'country_id' => 'integer',
         'opening_hours' => 'string',
-        'note'          => 'string',
+        'note' => 'string',
     ];
 
     public function getMaterialsAttribute()
@@ -166,4 +190,15 @@ class Park extends BaseModel
         'opening_hours',
         'note',
     ];
+
+    public function delete()
+    {
+        if ($this->total_items > 0) {
+            throw new \LogicException(
+                sprintf("Le parc #%d contient du matériel et ne peut donc pas être supprimé.", $this->id)
+            );
+        }
+
+        return parent::delete();
+    }
 }

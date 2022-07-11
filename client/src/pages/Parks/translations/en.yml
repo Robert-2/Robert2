@@ -1,0 +1,14 @@
+title: Material parks
+help: You can click on the number of items in the park to display the list.
+
+action-add: New materials park
+display-events-for-park: See events
+display-materials-of-this-park: See materials list of this park
+print-materials-of-this-park: Print list of this park
+total-items: Totals
+
+confirm-restore: Do you really want to restore this park?
+confirm-delete: Move this park in trash bin? This won't delete materials in this park.
+confirm-permanently-delete: |-
+    Do you really want to permanently delete this park?
+    WARNING: this will delete all materials of this park!

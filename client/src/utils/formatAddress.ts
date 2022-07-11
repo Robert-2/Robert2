@@ -4,7 +4,7 @@ const formatAddress = (
     street: string | null,
     postalCode: string | null,
     locality: string | null,
-    country: Country | null,
+    country?: Country | null,
 ): string | null => {
     if (!street && !postalCode && !locality && !country) {
         return null;

@@ -29,5 +29,11 @@ module.exports = {
             files: ['**/*.tsx'],
             extends: '@pulsanova/react',
         },
+        {
+            files: ['**/locale/**/*'],
+            rules: {
+                quotes: ['off'],
+            },
+        },
     ],
 };

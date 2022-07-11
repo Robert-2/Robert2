@@ -38,7 +38,7 @@ final class EventMaterialObserver
             // phpcs:ignore Generic.Files.LineLength
             debug("[Event] Le matériel d'un événement a été modifié mais il n'a pas été possible de récupérer les modèles liés.");
             debug($eventMaterial->getAttributes());
-            container('cache')->invalidateTags(Event::getModelCacheKey());
+            container('cache')->invalidateTags([Event::getModelCacheKey()]);
             return;
         }
 

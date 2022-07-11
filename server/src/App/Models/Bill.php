@@ -28,7 +28,7 @@ class Bill extends BaseModel
         $this->pdfTemplate = 'bill-default';
 
         $this->validation = [
-            'number' => V::notEmpty()->length(4, 20),
+            'number' => V::callback([$this, 'checkNumber']),
             'date' => V::notEmpty()->date(),
             'event_id' => V::notEmpty()->numeric(),
             'beneficiary_id' => V::notEmpty()->numeric(),
@@ -41,6 +41,30 @@ class Bill extends BaseModel
             'currency' => V::notEmpty()->length(3),
             'user_id' => V::optional(V::numeric()),
         ];
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Validation
+    // -
+    // ------------------------------------------------------
+
+    public function checkNumber($value)
+    {
+        V::notEmpty()
+            ->length(4, 20)
+            ->check($value);
+
+        $query = static::where('number', $value);
+        if ($this->exists) {
+            $query->where('id', '!=', $this->id);
+        }
+
+        if ($query->withTrashed()->exists()) {
+            return 'bill-number-already-in-use';
+        }
+
+        return true;
     }
 
     // ------------------------------------------------------
@@ -131,8 +155,8 @@ class Bill extends BaseModel
 
         $this->deleteByNumber($newBillData['number']);
 
-        $newBill = new Bill();
-        $newBill->fill($newBillData)->save();
+        $newBill = new Bill($newBillData);
+        $newBill->save();
 
         return $newBill;
     }

@@ -4,8 +4,8 @@ import Page from '@/components/Page';
 import CriticalError from '@/components/CriticalError';
 import Loading from '@/components/Loading';
 import Button from '@/components/Button';
-import Item from './Item';
-import AddItem from './AddItem';
+import Item from './components/Item';
+import AddItem from './components/AddItem';
 
 // @vue/component
 export default {
@@ -105,7 +105,7 @@ export default {
 
         if (hasCriticalError || !isFetched) {
             return (
-                <Page name="attributes" title={__('page-attributes.title')}>
+                <Page name="attributes" title={__('page.attributes.title')}>
                     {hasCriticalError ? <CriticalError /> : <Loading />}
                 </Page>
             );
@@ -119,15 +119,15 @@ export default {
                 disabled={isAdding}
                 onClick={handleAddItem}
             >
-                {__('page-attributes.add-btn')}
+                {__('page.attributes.add-btn')}
             </Button>,
         ];
 
         return (
             <Page
                 name="attributes"
-                title={__('page-attributes.title')}
-                help={__('page-attributes.help')}
+                title={__('page.attributes.title')}
+                help={__('page.attributes.help')}
                 isLoading={isLoading}
                 actions={headerActions}
             >
@@ -136,19 +136,19 @@ export default {
                         <thead class="Attributes__table__header">
                             <tr>
                                 <th class="Attributes__table__col Attributes__table__col--name">
-                                    {__('page-attributes.name')}
+                                    {__('page.attributes.name')}
                                 </th>
                                 <th class="Attributes__table__col Attributes__table__col--type">
-                                    {__('page-attributes.type')}
+                                    {__('page.attributes.type')}
                                 </th>
                                 <th class="Attributes__table__col Attributes__table__col--unit">
-                                    {__('page-attributes.unit')}
+                                    {__('page.attributes.unit')}
                                 </th>
                                 <th class="Attributes__table__col Attributes__table__col--max-length">
-                                    {__('page-attributes.max-length')}
+                                    {__('page.attributes.max-length')}
                                 </th>
                                 <th class="Attributes__table__col Attributes__table__col--categories">
-                                    {__('page-attributes.limited-to-categories')}
+                                    {__('page.attributes.limited-to-categories')}
                                 </th>
                                 <th class="Attributes__table__col Attributes__table__col--actions" />
                             </tr>
@@ -166,7 +166,7 @@ export default {
                     </table>
                     {isEmpty && (
                         <p class="Attributes__no-data">
-                            {__('page-attributes.no-attribute-yet')}
+                            {__('page.attributes.no-attribute-yet')}
                         </p>
                     )}
                     {isAdding && (

@@ -3,12 +3,12 @@
 .Page--event-return {
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
     margin-bottom: 80px;
 
     .EventReturn {
         flex: 1;
+        align-self: center;
     }
 }
 

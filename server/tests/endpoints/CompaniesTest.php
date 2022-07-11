@@ -9,17 +9,9 @@ final class CompaniesTest extends ApiTestCase
         $this->assertStatusCode(SUCCESS_OK);
         $this->assertResponseData([
             'pagination' => [
-                'current_page' => 1,
-                'from' => 1,
-                'last_page' => 1,
-                'path' => '/api/companies',
-                'first_page_url' => '/api/companies?page=1',
-                'next_page_url' => null,
-                'prev_page_url' => null,
-                'last_page_url' => '/api/companies?page=1',
-                'per_page' => $this->settings['maxItemsPerPage'],
-                'to' => 2,
-                'total' => 2,
+                'currentPage' => 1,
+                'perPage' => $this->settings['maxItemsPerPage'],
+                'total' => ['items' => 2, 'pages' => 1],
             ],
             'data' => [
                 [
@@ -101,17 +93,9 @@ final class CompaniesTest extends ApiTestCase
         $this->assertStatusCode(SUCCESS_OK);
         $this->assertResponseData([
             'pagination' => [
-                'current_page' => 1,
-                'from' => 1,
-                'last_page' => 1,
-                'path' => '/api/companies',
-                'first_page_url' => '/api/companies?search=testin&page=1',
-                'next_page_url' => null,
-                'prev_page_url' => null,
-                'last_page_url' => '/api/companies?search=testin&page=1',
-                'per_page' => $this->settings['maxItemsPerPage'],
-                'to' => 1,
-                'total' => 1,
+                'currentPage' => 1,
+                'perPage' => $this->settings['maxItemsPerPage'],
+                'total' => ['items' => 1, 'pages' => 1],
             ],
             'data' => [
                 [
@@ -164,8 +148,7 @@ final class CompaniesTest extends ApiTestCase
         $this->assertValidationErrorMessage();
         $this->assertErrorDetails([
             'legal_name' => [
-                "legal_name must not be empty",
-                "legal_name must have a length between 1 and 191"
+                "This field is mandatory",
             ]
         ]);
     }
@@ -173,10 +156,10 @@ final class CompaniesTest extends ApiTestCase
     public function testCreateCompanyDuplicate()
     {
         $this->client->post('/api/companies', [
-            'id'         => null,
+            'id' => null,
             'legal_name' => 'Testing, Inc',
         ]);
-        $this->assertStatusCode(ERROR_DUPLICATE);
+        $this->assertStatusCode(ERROR_VALIDATION);
         $this->assertValidationErrorMessage();
     }
 

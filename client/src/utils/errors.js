@@ -33,7 +33,7 @@ const getErrorMessage = (error, __) => {
     }
 
     if (status === 404) {
-        return __('errors.not-found');
+        return __('errors.record-not-found');
     }
 
     if (status === 409) {

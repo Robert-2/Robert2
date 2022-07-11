@@ -238,84 +238,7 @@ final class MaterialsDataTest extends ModelTestCase
     {
         $result = $this->MaterialsData->getBySubCategories();
         $expected = [
-            [
-                'id' => 4,
-                'name' => 'dimmers',
-                'category' => 'light',
-                'categoryHasSubCategories' => true,
-                'materials' => [
-                    'SDS-6-01' => [
-                        'reference' => 'SDS-6-01',
-                        'name' => 'Showtec SDS-6',
-                        'park' => 'default',
-                        'stockQuantity' => 2,
-                        'attributes' => [
-                            [
-                                'id' => 4,
-                                'name' => 'Conforme',
-                                'type' => 'boolean',
-                                'value' => true,
-                                'unit' => null,
-                            ],
-                            [
-                                'id' => 3,
-                                'name' => 'Puissance',
-                                'type' => 'integer',
-                                'value' => 60,
-                                'unit' => 'W',
-                            ],
-                            [
-                                'id' => 1,
-                                'name' => 'Poids',
-                                'type' => 'float',
-                                'value' => 3.15,
-                                'unit' => 'kg',
-                            ],
-                        ],
-                        'quantity' => 0,
-                        'rentalPrice' => 15.95,
-                        'replacementPrice' => 59.0,
-                        'total' => 0.0,
-                        'totalReplacementPrice' => 0.0,
-                    ],
-                ],
-            ],
-            [
-                'id' => 3,
-                'name' => 'projectors',
-                'category' => 'light',
-                'categoryHasSubCategories' => true,
-                'materials' => [
-                    'PAR64LED' => [
-                        'reference' => 'PAR64LED',
-                        'name' => 'PAR64 LED',
-                        'park' => 'default',
-                        'stockQuantity' => 34,
-                        'attributes' => [
-                            [
-                                'id' => 3,
-                                'name' => 'Puissance',
-                                'type' => 'integer',
-                                'value' => 150,
-                                'unit' => 'W',
-                            ],
-                            [
-                                'id' => 1,
-                                'name' => 'Poids',
-                                'type' => 'float',
-                                'value' => 0.85,
-                                'unit' => 'kg',
-                            ],
-                        ],
-                        'quantity' => 0,
-                        'rentalPrice' => 3.5,
-                        'replacementPrice' => 89.0,
-                        'total' => 0.0,
-                        'totalReplacementPrice' => 0.0,
-                    ],
-                ],
-            ],
-            [
+            1 => [
                 'id' => 1,
                 'name' => 'mixers',
                 'category' => 'sound',
@@ -380,7 +303,7 @@ final class MaterialsDataTest extends ModelTestCase
                     ],
                 ],
             ],
-            [
+            2 => [
                 'id' => 2,
                 'name' => 'processors',
                 'category' => 'sound',
@@ -415,7 +338,84 @@ final class MaterialsDataTest extends ModelTestCase
                     ],
                 ],
             ],
-            [
+            3 => [
+                'id' => 3,
+                'name' => 'projectors',
+                'category' => 'light',
+                'categoryHasSubCategories' => true,
+                'materials' => [
+                    'PAR64LED' => [
+                        'reference' => 'PAR64LED',
+                        'name' => 'PAR64 LED',
+                        'park' => 'default',
+                        'stockQuantity' => 34,
+                        'attributes' => [
+                            [
+                                'id' => 3,
+                                'name' => 'Puissance',
+                                'type' => 'integer',
+                                'value' => 150,
+                                'unit' => 'W',
+                            ],
+                            [
+                                'id' => 1,
+                                'name' => 'Poids',
+                                'type' => 'float',
+                                'value' => 0.85,
+                                'unit' => 'kg',
+                            ],
+                        ],
+                        'quantity' => 0,
+                        'rentalPrice' => 3.5,
+                        'replacementPrice' => 89.0,
+                        'total' => 0.0,
+                        'totalReplacementPrice' => 0.0,
+                    ],
+                ],
+            ],
+            4 => [
+                'id' => 4,
+                'name' => 'dimmers',
+                'category' => 'light',
+                'categoryHasSubCategories' => true,
+                'materials' => [
+                    'SDS-6-01' => [
+                        'reference' => 'SDS-6-01',
+                        'name' => 'Showtec SDS-6',
+                        'park' => 'default',
+                        'stockQuantity' => 2,
+                        'attributes' => [
+                            [
+                                'id' => 4,
+                                'name' => 'Conforme',
+                                'type' => 'boolean',
+                                'value' => true,
+                                'unit' => null,
+                            ],
+                            [
+                                'id' => 3,
+                                'name' => 'Puissance',
+                                'type' => 'integer',
+                                'value' => 60,
+                                'unit' => 'W',
+                            ],
+                            [
+                                'id' => 1,
+                                'name' => 'Poids',
+                                'type' => 'float',
+                                'value' => 3.15,
+                                'unit' => 'kg',
+                            ],
+                        ],
+                        'quantity' => 0,
+                        'rentalPrice' => 15.95,
+                        'replacementPrice' => 59.0,
+                        'total' => 0.0,
+                        'totalReplacementPrice' => 0.0,
+                    ],
+                ],
+            ],
+            'c-1' => [
                 'id' => 'c-1',
                 'name' => null,
                 'category' => 'sound',
@@ -435,7 +435,7 @@ final class MaterialsDataTest extends ModelTestCase
                     ],
                 ],
             ],
-            [
+            'c-3' => [
                 'id' => 'c-3',
                 'name' => null,
                 'category' => 'transport',

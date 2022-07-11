@@ -176,12 +176,15 @@ export default {
                 <div class="InventoryItemMaterial__name">{name}</div>
                 <div class="InventoryItemMaterial__error">{error?.message}</div>
                 <div class="InventoryItemMaterial__awaited-quantity">
-                    {__('awaited-quantity')}
+                    {__('awaited-qty-dots')}
                     <strong class="InventoryItemMaterial__awaited-quantity__count">
                         {awaitedQuantity}
                     </strong>
                 </div>
-                <div class="InventoryItemMaterial__actual-quantity" title={__('actual-quantity')}>
+                <div
+                    class="InventoryItemMaterial__actual-quantity"
+                    title={__('actual-qty')}
+                >
                     {isReadOnly ? actualQuantity : (
                         <QuantityInput
                             value={actualQuantity}
@@ -195,7 +198,7 @@ export default {
                 </div>
                 <div
                     class="InventoryItemMaterial__quantity-broken"
-                    title={__('quantity-out-of-order')}
+                    title={__('out-of-order-qty')}
                 >
                     {isReadOnly ? brokenQuantity : (
                         <QuantityInput

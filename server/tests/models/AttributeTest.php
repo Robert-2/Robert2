@@ -146,8 +146,8 @@ final class AttributeTest extends ModelTestCase
             'max_length' => 100,
         ];
         $testValidation($testData, [
-            'unit' => ['unit must be null'],
-            'max_length' => ['max_length must be null'],
+            'unit' => ['Must be null'],
+            'max_length' => ['Must be null'],
         ]);
 
         // - Si `max_length` | `unit` à `null` pour les attributs autres (cf. commentaire au dessus) => Pas d'erreur.
@@ -162,7 +162,7 @@ final class AttributeTest extends ModelTestCase
             'max_length' => 'NOT_A_NUMBER',
         ];
         $testValidation($testData, [
-            'max_length' => ['max_length must be numeric'],
+            'max_length' => ['This field must contain only numbers'],
         ]);
 
         // - Test `max_length`: Si valide pour les attributs de type `string` => Pas d'erreur.
@@ -178,7 +178,7 @@ final class AttributeTest extends ModelTestCase
         foreach (['float', 'integer'] as $type) {
             $testData = array_replace($baseTestData, compact('type'));
             $testValidation($testData, [
-                'unit' => ['unit must have a length between 1 and 8'],
+                'unit' => ['1 min. characters, 8 max. characters'],
             ]);
         }
 

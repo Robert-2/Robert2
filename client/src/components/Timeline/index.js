@@ -30,9 +30,12 @@ export default {
     data: () => ({
         data: null,
         groupData: null,
+        loading: true,
     }),
     computed: {
         fullOptions() {
+            const { $t: __ } = this;
+
             return {
                 start: this.options?.min,
                 end: this.options?.max,
@@ -56,8 +59,8 @@ export default {
                 },
                 tooltipOnItemUpdateTime: {
                     template: ({ start, end }) => [
-                        this.$t('update-in-progress'),
-                        this.$t('from-date-to-date', {
+                        __('update-in-progress'),
+                        __('from-date-to-date', {
                             from: moment(start).format('L HH:mm'),
                             to: moment(end).format('L HH:mm'),
                         }),
@@ -114,6 +117,15 @@ export default {
             this.fullOptions,
         );
 
+        // Vu qu'il n'y a pas de moyen correct d'observer quand la timeline a terminé de rendre,
+        // On ajoute un MutationObserver et on passe en `loading=false` lorsqu'il y a un changement
+        // dans les enfants du conteneur de la timeline.
+        this.domObserver = new MutationObserver(() => {
+            this.loading = false;
+            this.domObserver.disconnect();
+        });
+        this.domObserver.observe(this.$refs.visualization, { childList: true });
+
         // - Binding des événements globaux.
         const globalsEvents = {
             itemover: 'itemOver',
@@ -140,6 +152,10 @@ export default {
     },
     beforeDestroy() {
         this.timeline.destroy();
+
+        if (this.domObserver) {
+            this.domObserver.disconnect();
+        }
     },
     methods: {
         moveTo(time, options) {
@@ -147,10 +163,15 @@ export default {
         },
     },
     render() {
-        const _className = ['Timeline', { 'Timeline--grouped': !!this.groups }];
+        const { loading, groups } = this;
+
+        const _className = ['Timeline', {
+            'Timeline--grouped': !!groups,
+        }];
+
         return (
             <div class={_className}>
-                <Loading class="Timeline__loading" />
+                {loading && <Loading class="Timeline__loading" />}
                 <div class="Timeline__content" ref="visualization" />
             </div>
         );

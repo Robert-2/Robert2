@@ -16,7 +16,7 @@ export type RawFilters = Record<string, number | string | string[] | boolean>;
 export type MaterialsFiltersType = {
     onlySelected?: boolean,
     park?: number | null,
-    category?: number | null,
+    category?: number | 'uncategorized' | null,
     subCategory?: number | null,
     tags?: string[],
 };
@@ -45,7 +45,15 @@ export const normalizeFilters = (rawFilters: RawFilters, extended: boolean = tru
         filters.tags = rawFilters.tags!;
     }
 
-    ['park', 'category', 'subCategory'].forEach((key: string) => {
+    if ('category' in rawFilters) {
+        if (rawFilters.category === 'uncategorized') {
+            filters.category = 'uncategorized';
+        } else if (isValidInteger(rawFilters.category)) {
+            filters.category = parseInt(rawFilters.category as string, 10);
+        }
+    }
+
+    ['park', 'subCategory'].forEach((key: string) => {
         if (key in rawFilters && isValidInteger(rawFilters[key])) {
             // @ts-ignore - Ici, on sait que `key` est un nombre.
             filters[key] = parseInt(rawFilters[key] as string, 10);

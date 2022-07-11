@@ -1,26 +1,29 @@
 import './index.scss';
+import config from '@/globals/config';
 import Button from '@/components/Button';
 
 // @vue/component
 export default {
     name: 'Login',
     data() {
+        const { $t: __ } = this;
+
         let type = 'default';
-        let text = this.$t('page-login.welcome');
+        let text = __('page.login.welcome');
 
         const { hash } = this.$route;
         switch (hash) {
             case '#bye':
                 type = 'success';
-                text = this.$t('page-login.bye');
+                text = __('page.login.bye');
                 break;
             case '#expired':
                 type = 'error';
-                text = this.$t('page-login.error.expired-session');
+                text = __('page.login.error.expired-session');
                 break;
             case '#restricted':
                 type = 'error';
-                text = this.$t('page-login.error.not-allowed');
+                text = __('page.login.error.not-allowed');
                 break;
             default:
                 break;
@@ -33,9 +36,11 @@ export default {
     },
     methods: {
         async login() {
+            const { $t: __ } = this;
+
             this.message = {
                 type: 'default',
-                text: this.$t('page-login.please-wait'),
+                text: __('page.login.please-wait'),
                 isLoading: true,
             };
 
@@ -56,10 +61,12 @@ export default {
         },
 
         errorMessage(error) {
-            let text = this.$t('errors.api-unreachable');
-            if (error.code === 404) {
-                text = this.$t('page-login.error.bad-infos');
-            }
+            const { $t: __ } = this;
+
+            const text = error.code === 404
+                ? __('page.login.error.bad-infos')
+                : __('errors.api-unreachable');
+
             this.message = { type: 'error', text, isLoading: false };
         },
 
@@ -80,6 +87,7 @@ export default {
                 </div>
                 <div class="Login__body">
                     <form class="Login__form" onSubmit={handleSubmit}>
+                        {/* => Input */}
                         <input
                             type="text"
                             v-model={credentials.identifier}
@@ -99,7 +107,7 @@ export default {
                             type="primary"
                             class="Login__form__submit"
                         >
-                            {__('page-login.connexion')}
+                            {__('page.login.connexion')}
                         </Button>
                     </form>
                 </div>

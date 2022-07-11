@@ -1,21 +1,26 @@
 import './index.scss';
 import { Tabs, Tab } from '@/components/Tabs';
-import CriticalError from '@/components/CriticalError';
+import CriticalError, { ERROR } from '@/components/CriticalError';
 import Loading from '@/components/Loading';
 import Page from '@/components/Page';
 import Button from '@/components/Button';
 import apiTechnicians from '@/stores/api/technicians';
-import TechnicianInfos from './Infos';
-import TechnicianSchedule from './Schedule';
+import TechnicianInfos from './tabs/Infos';
+import TechnicianSchedule from './tabs/Schedule';
 
 // @vue/component
 export default {
     name: 'TechnicianViewPage',
     data() {
+        const id = this.$route.params.id
+            ? parseInt(this.$route.params.id, 10)
+            : null;
+
         return {
+            id,
             isLoading: false,
             isFetched: false,
-            hasCriticalError: false,
+            criticalError: null,
             technician: null,
             tabsIndexes: ['#infos', '#schedule'],
             selectedTabIndex: 0,
@@ -23,10 +28,10 @@ export default {
     },
     computed: {
         pageTitle() {
-            const { $t: __, technician } = this;
+            const { $t: __, isFetched, technician } = this;
 
-            return technician
-                ? __('page-technician-view.title', { name: technician.full_name })
+            return isFetched
+                ? __('page.technician-view.title', { name: technician.full_name })
                 : __('technician');
         },
 
@@ -34,7 +39,8 @@ export default {
             const { $t: __, tabsIndexes, selectedTabIndex } = this;
 
             if (tabsIndexes[selectedTabIndex] === '#infos') {
-                const { id } = this.$route.params;
+                const { id } = this;
+
                 return [
                     <Button type="edit" to={{ name: 'edit-technician', params: { id } }}>
                         {__('action-edit')}
@@ -73,18 +79,15 @@ export default {
         // ------------------------------------------------------
 
         async fetchData() {
-            const { id } = this.$route.params;
-
             this.isLoading = true;
-
             try {
-                const data = await apiTechnicians.one(id);
+                const data = await apiTechnicians.one(this.id);
                 this.technician = data;
-            } catch (error) {
-                const { code } = error.response?.data?.error ?? { code: 0 };
-                this.hasCriticalError = code === 404 ? 'not-found' : true;
-            } finally {
                 this.isFetched = true;
+            } catch (error) {
+                const status = error?.response?.status ?? 500;
+                this.criticalError = status === 404 ? ERROR.NOT_FOUND : ERROR.UNKNOWN;
+            } finally {
                 this.isLoading = false;
             }
         },
@@ -96,18 +99,16 @@ export default {
             tabsActions,
             isLoading,
             isFetched,
-            hasCriticalError,
+            criticalError,
             technician,
             selectedTabIndex,
             handleSelectTab,
         } = this;
 
-        if (hasCriticalError || !isFetched) {
+        if (criticalError || !isFetched) {
             return (
                 <Page name="technician-view" title={pageTitle}>
-                    {hasCriticalError
-                        ? <CriticalError type={hasCriticalError === 'not-found' ? 'not-found' : 'default'} />
-                        : <Loading />}
+                    {criticalError ? <CriticalError type={criticalError} /> : <Loading />}
                 </Page>
             );
         }

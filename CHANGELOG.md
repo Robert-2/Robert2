@@ -4,6 +4,14 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.19.0 (UNRELEASED)
+
+- Empêche la suppression des parcs qui contiennent du matériel (#362).
+- Le nom et le prénom des utilisateurs sont maintenant obligatoires (#356).
+- Pour le matériel, la catégorie est devenue une donnée facultative. Un matériel sans catégorie est donc classé sous le label 
+  "Non catégorisé" dans les listes. Lors de la suppression d'une catégorie, le matériel qui lui était assigné devient donc "non catégorisé".
+- Quand la liste du matériel des fiches de sortie est triée par catégories, celles-ci apparaissent maintenant par ordre alphabétique.
+
 ## 0.18.1 (2022-03-29)
 
 - Corrige la page d'édition des techniciens.

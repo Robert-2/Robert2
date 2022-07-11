@@ -1,6 +1,6 @@
 import './index.scss';
 import moment from 'moment';
-import Config from '@/globals/config';
+import config from '@/globals/config';
 import formatAmount from '@/utils/formatAmount';
 
 // @vue/component
@@ -11,9 +11,8 @@ export default {
     },
     computed: {
         pdfUrl() {
-            const { baseUrl } = Config;
             const { id } = this.data || { id: null };
-            return `${baseUrl}/bills/${id}/pdf`;
+            return `${config.baseUrl}/bills/${id}/pdf`;
         },
 
         normalizedData() {

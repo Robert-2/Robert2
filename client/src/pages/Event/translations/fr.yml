@@ -1,0 +1,34 @@
+help-edit: ''
+back-to-calendar: Retour au calendrier
+add: Nouvel événement
+edit: "Modifier l'événement «\_{pageSubTitle}\_»"
+save-and-back-to-calendar: Sauvegarder et retour au calendrier
+save-and-continue: Sauvegarder et continuer
+continue: Continuer
+step: Étape
+event-informations: Informations
+event-beneficiaries: Bénéficiaires
+event-technicians: Techniciens
+event-materials: Matériel
+event-summary: Récapitulatif
+event-confirmation: Confirmation
+
+no-technician-pass-this-step: |-
+    Il n'y a aucun technicien disponible pour cette période.
+    Vous pouvez passer cette étape.
+
+technician-item:
+    confirm-permanently-delete: Voulez-vous vraiment supprimer l'assignation de ce technicien ?
+
+assign-technician: 'Assigner {name} en tant que technicien(ne)'
+assign-name: 'Assigner {name}'
+modify-assignment: Modifier l'assignation
+remove-assignment: Supprimer l'assignation
+period-assigned: Période assignée
+start-end-dates-and-time: Dates et heures de début et fin
+saved: Événement sauvegardé.
+not-saved: L'événement comporte des modifications non sauvegardées
+beneficiary-billing-help: Seul le premier bénéficiaire de la liste apparaîtra sur la facture.
+technicians-help: >-
+    Double-cliquez sur la ligne d'un technicien à la date/heure de début voulue
+    pour l'assigner à l'événement.

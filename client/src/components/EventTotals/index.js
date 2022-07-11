@@ -1,6 +1,6 @@
 import './index.scss';
 import moment from 'moment';
-import Config from '@/globals/config';
+import config from '@/globals/config';
 import formatAmount from '@/utils/formatAmount';
 import getEventMaterialItemsCount from '@/utils/getEventMaterialItemsCount';
 import getEventOneDayTotal from '@/utils/getEventOneDayTotal';
@@ -26,7 +26,7 @@ export default {
         },
 
         ratio() {
-            return Config.degressiveRate(this.duration);
+            return config.degressiveRate(this.duration);
         },
 
         itemsCount() {

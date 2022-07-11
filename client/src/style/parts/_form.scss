@@ -3,15 +3,7 @@
 .Form {
     &__actions {
         margin-top: 40px;
-        padding-bottom: 40px;
         text-align: left;
-    }
-
-    .FormField + .FormField,
-    .SelectSearch + .SelectSearch,
-    .FormField + .SelectSearch,
-    .SelectSearch + .FormField {
-        margin-top: $content-padding-small-vertical;
     }
 
     input + input {

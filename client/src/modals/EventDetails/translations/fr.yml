@@ -1,0 +1,20 @@
+edit-event: Modifier l'événement
+
+#
+# - Tabs
+#
+
+materials:
+    return-inventory-not-done-yet: L'inventaire du retour de matériel n'a pas été fait, ou n'est pas encore terminé.
+    problems-on-returned-materials: Problèmes sur le matériel retourné
+    do-or-terminate-return-inventory: Faire ou terminer l'inventaire de retour du matériel
+    all-material-returned: Tout le matériel a bien été retourné pour cet événement.
+    view-return-inventory: Voir l'inventaire de retour en détail
+
+    not-returned-material-count:
+        - "{returned} retourné sur {out}\_! Il en manque {missing}."
+        - "{returned} retournés sur {out}\_! Il en manque {missing}."
+
+    broken-material-count:
+        - "{broken} revenu en panne\_!"
+        - "{broken} revenus en panne\_!"

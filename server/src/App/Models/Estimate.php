@@ -125,8 +125,8 @@ class Estimate extends BaseModel
 
         $newEstimateData = $EventData->toModelArray();
 
-        $newEstimate = new Estimate();
-        $newEstimate->fill($newEstimateData)->save();
+        $newEstimate = new Estimate($newEstimateData);
+        $newEstimate->save();
 
         return $newEstimate;
     }

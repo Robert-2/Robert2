@@ -1,1707 +1,195 @@
 <?php
 return [
     "{{name}} must be iterable"
-    => "{{name}} doit être itérable",
+    => "Doit être itérable",
 
     "{{name}} must not be iterable"
-    => "{{name}} ne doit pas être itérable",
+    => "Ne doit pas être itérable",
 
     "{{name}} must be a valid slug"
-    => "{{name}} doit être un identifiant d'URL valide",
+    => "Doit être un identifiant d'URL valide",
 
     "{{name}} must not be a valid slug"
-    => "{{name}} ne doit pas être un identifiant d'URL valide",
+    => "Ne doit pas être un identifiant d'URL valide",
 
     "{{name}} must be identical as {{compareTo}}"
-    => "{{name}} doit être identique à {{compareTo}}",
+    => "Doit être identique à {{compareTo}}",
 
     "{{name}} must not be identical as {{compareTo}}"
-    => "{{name}} doit être différent de {{compareTo}}",
+    => "Doit être différent de {{compareTo}}",
 
     "{{name}} contain only hexadecimal digits"
-    => "{{name}} ne doit contenir que des chiffres ou  ",
+    => "Ne doit contenir que des chiffres ou  ",
 
     "{{name}} contain only hexadecimal digits and \"{{additionalChars}}\""
-    => "{{name}} ne doit contenir que des chiffres and \"{{additionalChars}}\"",
+    => "Ne doit contenir que des chiffres and \"{{additionalChars}}\"",
 
     "{{name}} must not contain hexadecimal digits"
-    => "{{name}} ne doit contenir aucun chiffre.",
+    => "Ne doit contenir aucun chiffre.",
 
     "{{name}} must not contain hexadecimal digits or \"{{additionalChars}}\""
-    => "{{name}} ne doit contenir aucun chiffre ni \"{{additionalChars}}\"",
+    => "Ne doit contenir aucun chiffre ni \"{{additionalChars}}\"",
 
     "{{name}} must be equals {{compareTo}}"
-    => "{{name}} doit être égal à {{compareTo}}",
+    => "Doit être égal à {{compareTo}}",
 
     "{{name}} must not be equals {{compareTo}}"
-    => "{{name}} ne doit pas être égal à {{compareTo}}",
+    => "Ne doit pas être égal à {{compareTo}}",
 
     "{{name}} must be an object"
-    => "{{name}} doit être un objet",
+    => "Doit être un objet",
 
     "{{name}} must not be an object"
-    => "{{name}} ne doit pas être un objet",
+    => "Ne doit pas être un objet",
 
     "{{name}} must be an integer number"
-    => "{{name}} doit être un nombre entier",
+    => "Doit être un nombre entier",
 
     "{{name}} must not be an integer number"
-    => "{{name}} ne doit pas être un nombre entier",
+    => "Ne doit pas être un nombre entier",
 
     "{{name}} must be a valid roman number"
-    => "{{name}} doit être un nombre romain",
+    => "Doit être un nombre romain",
 
     "{{name}} must not be a valid roman number"
-    => "{{name}} ne doit pas être un nombre romain",
+    => "Ne doit pas être un nombre romain",
 
     "{{name}} must contain only printable characters"
-    => "{{name}} ne doit contenir que des caractères imprimables",
+    => "Ne doit contenir que des caractères imprimables",
 
     "{{name}} must contain only printable characters and \"{{additionalChars}}\""
-    => "{{name}} ne doit contenir que des caractères imprimables et \"{{additionalChars}}\"",
+    => "Ne doit contenir que des caractères imprimables et \"{{additionalChars}}\"",
 
     "{{name}} must not contain printable characters"
-    => "{{name}} ne doit contenir aucun caractère imprimable",
+    => "Ne doit contenir aucun caractère imprimable",
 
     "{{name}} must not contain printable characters or \"{{additionalChars}}\""
-    => "{{name}} ne doit contenir aucun caractères imprimables ni \"{{additionalChars}}\"",
+    => "Ne doit contenir aucun caractères imprimables ni \"{{additionalChars}}\"",
 
     "{{name}} must be a bank account"
-    => "{{name}} doit être un compte bancaire",
+    => "Doit être un compte bancaire",
 
     "{{name}} must not be a bank account"
-    => "{{name}} ne doit pas être un compte bancaire",
+    => "Ne doit pas être un compte bancaire",
 
     "{{name}} must exists"
-    => "{{name}} doit exister",
+    => "Doit exister",
 
     "{{name}} must not exists"
-    => "{{name}} ne doit pas exister",
+    => "Ne doit pas exister",
 
     "{{name}} must be null"
-    => "{{name}} doit être null",
+    => "Doit être null",
 
     "{{name}} must not be null"
-    => "{{name}} ne doit pas être null",
+    => "Ne doit pas être null",
 
     "Data validation failed for {{name}}"
-    => "La validation des données a echoué pour {{name}}",
+    => "La validation des données a échoué pour {{name}}",
 
     "{{name}} must contain only letters (a-z)"
-    => "{{name}} ne doit contenir que des lettres (a-z)",
+    => "Ce champ ne peut contenir que des lettres",
 
     "{{name}} must contain only letters (a-z) and \"{{additionalChars}}\""
-    => "{{name}} ne doit contenir que des lettres (a-z) et \"{{additionalChars}}\"",
+    => "Ce champ contient des caractères non autorisés",
 
     "{{name}} must not contain letters (a-z)"
-    => "{{name}} ne doit contenir que des lettres (a-z)",
+    => "Ce champ ne peut pas contenir de lettre",
 
     "{{name}} must not contain letters (a-z) or \"{{additionalChars}}\""
-    => "{{name}} ne doit contenir aucune lettre (a-z) ni  \"{{additionalChars}}\"",
+    => "Ne doit contenir aucune lettre (a-z) ni  \"{{additionalChars}}\"",
 
     "{{name}} must be a valid postal code on {{countryCode}}"
-    => "{{name}} doit être un code postal vide pour {{countryCode}}",
+    => "Doit être un code postal vide pour {{countryCode}}",
 
     "{{name}} must not be a valid postal code on {{countryCode}}"
-    => "{{name}} ne doit pas être un code postal vide pour {{countryCode}}",
-
-    "{{name}} must be a subdivision code of Ivory Coast"
-    => "{{name}} doit être un secteur de Ivory Coast",
-
-    "{{name}} must be not a subdivision code of Ivory Coast"
-    => "{{name}} ne doit pas être un secteur de Ivory Coast",
-
-    "{{name}} must be a subdivision code of Brunei"
-    => "{{name}} doit être un secteur de Brunei",
-
-    "{{name}} must be not a subdivision code of Brunei"
-    => "{{name}} ne doit pas être un secteur de Brunei",
-
-    "{{name}} must be a subdivision code of Angola"
-    => "{{name}} doit être un secteur de Angola",
-
-    "{{name}} must be not a subdivision code of Angola"
-    => "{{name}} ne doit pas être un secteur de Angola",
-
-    "{{name}} must be a subdivision code of Costa Rica"
-    => "{{name}} doit être un secteur de Costa Rica",
-
-    "{{name}} must be not a subdivision code of Costa Rica"
-    => "{{name}} ne doit pas être un secteur de Costa Rica",
-
-    "{{name}} must be a subdivision code of Czech Republic"
-    => "{{name}} doit être un secteur de Czech Republic",
-
-    "{{name}} must be not a subdivision code of Czech Republic"
-    => "{{name}} ne doit pas être un secteur de Czech Republic",
-
-    "{{name}} must be a subdivision code of Italy"
-    => "{{name}} doit être un secteur de Italy",
-
-    "{{name}} must be not a subdivision code of Italy"
-    => "{{name}} ne doit pas être un secteur de Italy",
-
-    "{{name}} must be a subdivision code of Croatia"
-    => "{{name}} doit être un secteur de Croatia",
-
-    "{{name}} must be not a subdivision code of Croatia"
-    => "{{name}} ne doit pas être un secteur de Croatia",
-
-    "{{name}} must be a subdivision code of Slovenia"
-    => "{{name}} doit être un secteur de Slovenia",
-
-    "{{name}} must be not a subdivision code of Slovenia"
-    => "{{name}} ne doit pas être un secteur de Slovenia",
-
-    "{{name}} must be a subdivision code of French Southern Territories"
-    => "{{name}} doit être un secteur de French Southern Territories",
-
-    "{{name}} must be not a subdivision code of French Southern Territories"
-    => "{{name}} ne doit pas être un secteur de French Southern Territories",
-
-    "{{name}} must be a subdivision code of U.S. Virgin Islands"
-    => "{{name}} doit être un secteur de U.S. Virgin Islands",
-
-    "{{name}} must be not a subdivision code of U.S. Virgin Islands"
-    => "{{name}} ne doit pas être un secteur de U.S. Virgin Islands",
-
-    "{{name}} must be a subdivision code of Serbia And Montenegro"
-    => "{{name}} doit être un secteur de Serbia And Montenegro",
-
-    "{{name}} must be not a subdivision code of Serbia And Montenegro"
-    => "{{name}} ne doit pas être un secteur de Serbia And Montenegro",
-
-    "{{name}} must be a subdivision code of Hong Kong"
-    => "{{name}} doit être un secteur de Hong Kong",
-
-    "{{name}} must be not a subdivision code of Hong Kong"
-    => "{{name}} ne doit pas être un secteur de Hong Kong",
-
-    "{{name}} must be a subdivision code of Greece"
-    => "{{name}} doit être un secteur de Greece",
-
-    "{{name}} must be not a subdivision code of Greece"
-    => "{{name}} ne doit pas être un secteur de Greece",
-
-    "{{name}} must be a subdivision code of Ethiopia"
-    => "{{name}} doit être un secteur de Ethiopia",
-
-    "{{name}} must be not a subdivision code of Ethiopia"
-    => "{{name}} ne doit pas être un secteur de Ethiopia",
-
-    "{{name}} must be a subdivision code of Bangladesh"
-    => "{{name}} doit être un secteur de Bangladesh",
-
-    "{{name}} must be not a subdivision code of Bangladesh"
-    => "{{name}} ne doit pas être un secteur de Bangladesh",
-
-    "{{name}} must be a subdivision code of Egypt"
-    => "{{name}} doit être un secteur de Egypt",
-
-    "{{name}} must be not a subdivision code of Egypt"
-    => "{{name}} ne doit pas être un secteur de Egypt",
-
-    "{{name}} must be a subdivision code of Central African Republic"
-    => "{{name}} doit être un secteur de Central African Republic",
-
-    "{{name}} must be not a subdivision code of Central African Republic"
-    => "{{name}} ne doit pas être un secteur de Central African Republic",
-
-    "{{name}} must be a subdivision code of Sierra Leone"
-    => "{{name}} doit être un secteur de Sierra Leone",
-
-    "{{name}} must be not a subdivision code of Sierra Leone"
-    => "{{name}} ne doit pas être un secteur de Sierra Leone",
-
-    "{{name}} must be a subdivision code of Mexico"
-    => "{{name}} doit être un secteur de Mexico",
-
-    "{{name}} must be not a subdivision code of Mexico"
-    => "{{name}} ne doit pas être un secteur de Mexico",
-
-    "{{name}} must be a subdivision code of Turkey"
-    => "{{name}} doit être un secteur de Turkey",
-
-    "{{name}} must be not a subdivision code of Turkey"
-    => "{{name}} ne doit pas être un secteur de Turkey",
-
-    "{{name}} must be a subdivision code of Heard Island and McDonald Islands"
-    => "{{name}} doit être un secteur de Heard Island and McDonald Islands",
-
-    "{{name}} must be not a subdivision code of Heard Island and McDonald Islands"
-    => "{{name}} ne doit pas être un secteur de Heard Island and McDonald Islands",
-
-    "{{name}} must be a subdivision code of Nepal"
-    => "{{name}} doit être un secteur de Nepal",
-
-    "{{name}} must be not a subdivision code of Nepal"
-    => "{{name}} ne doit pas être un secteur de Nepal",
-
-    "{{name}} must be a subdivision code of Montenegro"
-    => "{{name}} doit être un secteur de Montenegro",
-
-    "{{name}} must be not a subdivision code of Montenegro"
-    => "{{name}} ne doit pas être un secteur de Montenegro",
-
-    "{{name}} must be a subdivision code of Tanzania"
-    => "{{name}} doit être un secteur de Tanzania",
-
-    "{{name}} must be not a subdivision code of Tanzania"
-    => "{{name}} ne doit pas être un secteur de Tanzania",
-
-    "{{name}} must be a subdivision code of Kosovo"
-    => "{{name}} doit être un secteur de Kosovo",
-
-    "{{name}} must be not a subdivision code of Kosovo"
-    => "{{name}} ne doit pas être un secteur de Kosovo",
-
-    "{{name}} must be a subdivision code of Bahamas"
-    => "{{name}} doit être un secteur de Bahamas",
-
-    "{{name}} must be not a subdivision code of Bahamas"
-    => "{{name}} ne doit pas être un secteur de Bahamas",
-
-    "{{name}} must be a subdivision code of Lithuania"
-    => "{{name}} doit être un secteur de Lithuania",
-
-    "{{name}} must be not a subdivision code of Lithuania"
-    => "{{name}} ne doit pas être un secteur de Lithuania",
-
-    "{{name}} must be a subdivision code of Zimbabwe"
-    => "{{name}} doit être un secteur de Zimbabwe",
-
-    "{{name}} must be not a subdivision code of Zimbabwe"
-    => "{{name}} ne doit pas être un secteur de Zimbabwe",
-
-    "{{name}} must be a subdivision code of Tuvalu"
-    => "{{name}} doit être un secteur de Tuvalu",
-
-    "{{name}} must be not a subdivision code of Tuvalu"
-    => "{{name}} ne doit pas être un secteur de Tuvalu",
-
-    "{{name}} must be a subdivision code of U.S. Minor Outlying Islands"
-    => "{{name}} doit être un secteur de U.S. Minor Outlying Islands",
-
-    "{{name}} must be not a subdivision code of U.S. Minor Outlying Islands"
-    => "{{name}} ne doit pas être un secteur de U.S. Minor Outlying Islands",
-
-    "{{name}} must be a subdivision code of Pitcairn Islands"
-    => "{{name}} doit être un secteur de Pitcairn Islands",
-
-    "{{name}} must be not a subdivision code of Pitcairn Islands"
-    => "{{name}} ne doit pas être un secteur de Pitcairn Islands",
-
-    "{{name}} must be a subdivision code of Belarus"
-    => "{{name}} doit être un secteur de Belarus",
-
-    "{{name}} must be not a subdivision code of Belarus"
-    => "{{name}} ne doit pas être un secteur de Belarus",
-
-    "{{name}} must be a subdivision code of Senegal"
-    => "{{name}} doit être un secteur de Senegal",
-
-    "{{name}} must be not a subdivision code of Senegal"
-    => "{{name}} ne doit pas être un secteur de Senegal",
-
-    "{{name}} must be a subdivision code of Vanuatu"
-    => "{{name}} doit être un secteur de Vanuatu",
-
-    "{{name}} must be not a subdivision code of Vanuatu"
-    => "{{name}} ne doit pas être un secteur de Vanuatu",
-
-    "{{name}} must be a subdivision code of Myanmar [Burma]"
-    => "{{name}} doit être un secteur de Myanmar [Burma]",
-
-    "{{name}} must be not a subdivision code of Myanmar [Burma]"
-    => "{{name}} ne doit pas être un secteur de Myanmar [Burma]",
-
-    "{{name}} must be a subdivision code of Guatemala"
-    => "{{name}} doit être un secteur de Guatemala",
-
-    "{{name}} must be not a subdivision code of Guatemala"
-    => "{{name}} ne doit pas être un secteur de Guatemala",
-
-    "{{name}} must be a subdivision code of Maldives"
-    => "{{name}} doit être un secteur de Maldives",
-
-    "{{name}} must be not a subdivision code of Maldives"
-    => "{{name}} ne doit pas être un secteur de Maldives",
-
-    "{{name}} must be a subdivision code of Grenada"
-    => "{{name}} doit être un secteur de Grenada",
-
-    "{{name}} must be not a subdivision code of Grenada"
-    => "{{name}} ne doit pas être un secteur de Grenada",
-
-    "{{name}} must be a subdivision code of Antarctica"
-    => "{{name}} doit être un secteur de Antarctica",
-
-    "{{name}} must be not a subdivision code of Antarctica"
-    => "{{name}} ne doit pas être un secteur de Antarctica",
-
-    "{{name}} must be a subdivision code of San Marino"
-    => "{{name}} doit être un secteur de San Marino",
-
-    "{{name}} must be not a subdivision code of San Marino"
-    => "{{name}} ne doit pas être un secteur de San Marino",
-
-    "{{name}} must be a subdivision code of Bahrain"
-    => "{{name}} doit être un secteur de Bahrain",
-
-    "{{name}} must be not a subdivision code of Bahrain"
-    => "{{name}} ne doit pas être un secteur de Bahrain",
-
-    "{{name}} must be a subdivision code of Romania"
-    => "{{name}} doit être un secteur de Romania",
-
-    "{{name}} must be not a subdivision code of Romania"
-    => "{{name}} ne doit pas être un secteur de Romania",
-
-    "{{name}} must be a subdivision code of Sweden"
-    => "{{name}} doit être un secteur de Sweden",
-
-    "{{name}} must be not a subdivision code of Sweden"
-    => "{{name}} ne doit pas être un secteur de Sweden",
-
-    "{{name}} must be a subdivision code of Mauritius"
-    => "{{name}} doit être un secteur de Mauritius",
-
-    "{{name}} must be not a subdivision code of Mauritius"
-    => "{{name}} ne doit pas être un secteur de Mauritius",
-
-    "{{name}} must be a subdivision code of Israel"
-    => "{{name}} doit être un secteur de Israel",
-
-    "{{name}} must be not a subdivision code of Israel"
-    => "{{name}} ne doit pas être un secteur de Israel",
-
-    "{{name}} must be a subdivision code of Denmark"
-    => "{{name}} doit être un secteur de Denmark",
-
-    "{{name}} must be not a subdivision code of Denmark"
-    => "{{name}} ne doit pas être un secteur de Denmark",
-
-    "{{name}} must be a subdivision code of Comoros"
-    => "{{name}} doit être un secteur de Comoros",
-
-    "{{name}} must be not a subdivision code of Comoros"
-    => "{{name}} ne doit pas être un secteur de Comoros",
-
-    "{{name}} must be a subdivision code of Madagascar"
-    => "{{name}} doit être un secteur de Madagascar",
-
-    "{{name}} must be not a subdivision code of Madagascar"
-    => "{{name}} ne doit pas être un secteur de Madagascar",
-
-    "{{name}} must be a subdivision code of Samoa"
-    => "{{name}} doit être un secteur de Samoa",
-
-    "{{name}} must be not a subdivision code of Samoa"
-    => "{{name}} ne doit pas être un secteur de Samoa",
-
-    "{{name}} must be a subdivision code of Norway"
-    => "{{name}} doit être un secteur de Norway",
-
-    "{{name}} must be not a subdivision code of Norway"
-    => "{{name}} ne doit pas être un secteur de Norway",
-
-    "{{name}} must be a subdivision code of Georgia"
-    => "{{name}} doit être un secteur de Georgia",
-
-    "{{name}} must be not a subdivision code of Georgia"
-    => "{{name}} ne doit pas être un secteur de Georgia",
-
-    "{{name}} must be a subdivision code of Palau"
-    => "{{name}} doit être un secteur de Palau",
-
-    "{{name}} must be not a subdivision code of Palau"
-    => "{{name}} ne doit pas être un secteur de Palau",
-
-    "{{name}} must be a subdivision code of British Virgin Islands"
-    => "{{name}} doit être un secteur de British Virgin Islands",
-
-    "{{name}} must be not a subdivision code of British Virgin Islands"
-    => "{{name}} ne doit pas être un secteur de British Virgin Islands",
-
-    "{{name}} must be a subdivision code of Netherlands"
-    => "{{name}} doit être un secteur de Netherlands",
-
-    "{{name}} must be not a subdivision code of Netherlands"
-    => "{{name}} ne doit pas être un secteur de Netherlands",
-
-    "{{name}} must be a subdivision code of Cook Islands"
-    => "{{name}} doit être un secteur de Cook Islands",
-
-    "{{name}} must be not a subdivision code of Cook Islands"
-    => "{{name}} ne doit pas être un secteur de Cook Islands",
-
-    "{{name}} must be a subdivision code of Saudi Arabia"
-    => "{{name}} doit être un secteur de Saudi Arabia",
-
-    "{{name}} must be not a subdivision code of Saudi Arabia"
-    => "{{name}} ne doit pas être un secteur de Saudi Arabia",
-
-    "{{name}} must be a subdivision code of Saint Helena"
-    => "{{name}} doit être un secteur de Saint Helena",
-
-    "{{name}} must be not a subdivision code of Saint Helena"
-    => "{{name}} ne doit pas être un secteur de Saint Helena",
-
-    "{{name}} must be a subdivision code of Taiwan"
-    => "{{name}} doit être un secteur de Taiwan",
-
-    "{{name}} must be not a subdivision code of Taiwan"
-    => "{{name}} ne doit pas être un secteur de Taiwan",
-
-    "{{name}} must be a subdivision code of Qatar"
-    => "{{name}} doit être un secteur de Qatar",
-
-    "{{name}} must be not a subdivision code of Qatar"
-    => "{{name}} ne doit pas être un secteur de Qatar",
-
-    "{{name}} must be a subdivision code of Niger"
-    => "{{name}} doit être un secteur de Niger",
-
-    "{{name}} must be not a subdivision code of Niger"
-    => "{{name}} ne doit pas être un secteur de Niger",
-
-    "{{name}} must be a subdivision code of North Korea"
-    => "{{name}} doit être un secteur de North Korea",
-
-    "{{name}} must be not a subdivision code of North Korea"
-    => "{{name}} ne doit pas être un secteur de North Korea",
-
-    "{{name}} must be a subdivision code of Trinidad and Tobago"
-    => "{{name}} doit être un secteur de Trinidad and Tobago",
-
-    "{{name}} must be not a subdivision code of Trinidad and Tobago"
-    => "{{name}} ne doit pas être un secteur de Trinidad and Tobago",
-
-    "{{name}} must be a subdivision code of Cuba"
-    => "{{name}} doit être un secteur de Cuba",
-
-    "{{name}} must be not a subdivision code of Cuba"
-    => "{{name}} ne doit pas être un secteur de Cuba",
-
-    "{{name}} must be a subdivision code of Guernsey"
-    => "{{name}} doit être un secteur de Guernsey",
-
-    "{{name}} must be not a subdivision code of Guernsey"
-    => "{{name}} ne doit pas être un secteur de Guernsey",
-
-    "{{name}} must be a subdivision code of Dominica"
-    => "{{name}} doit être un secteur de Dominica",
-
-    "{{name}} must be not a subdivision code of Dominica"
-    => "{{name}} ne doit pas être un secteur de Dominica",
-
-    "{{name}} must be a subdivision code of Chad"
-    => "{{name}} doit être un secteur de Chad",
-
-    "{{name}} must be not a subdivision code of Chad"
-    => "{{name}} ne doit pas être un secteur de Chad",
-
-    "{{name}} must be a subdivision code of Bhutan"
-    => "{{name}} doit être un secteur de Bhutan",
-
-    "{{name}} must be not a subdivision code of Bhutan"
-    => "{{name}} ne doit pas être un secteur de Bhutan",
-
-    "{{name}} must be a subdivision code of Benin"
-    => "{{name}} doit être un secteur de Benin",
-
-    "{{name}} must be not a subdivision code of Benin"
-    => "{{name}} ne doit pas être un secteur de Benin",
-
-    "{{name}} must be a subdivision code of Bonaire"
-    => "{{name}} doit être un secteur de Bonaire",
-
-    "{{name}} must be not a subdivision code of Bonaire"
-    => "{{name}} ne doit pas être un secteur de Bonaire",
-
-    "{{name}} must be a subdivision code of Montserrat"
-    => "{{name}} doit être un secteur de Montserrat",
-
-    "{{name}} must be not a subdivision code of Montserrat"
-    => "{{name}} ne doit pas être un secteur de Montserrat",
-
-    "{{name}} must be a subdivision code of Netherlands Antilles"
-    => "{{name}} doit être un secteur de Netherlands Antilles",
-
-    "{{name}} must be not a subdivision code of Netherlands Antilles"
-    => "{{name}} ne doit pas être un secteur de Netherlands Antilles",
-
-    "{{name}} must be a subdivision code of Papua New Guinea"
-    => "{{name}} doit être un secteur de Papua New Guinea",
-
-    "{{name}} must be not a subdivision code of Papua New Guinea"
-    => "{{name}} ne doit pas être un secteur de Papua New Guinea",
-
-    "{{name}} must be a subdivision code of Malta"
-    => "{{name}} doit être un secteur de Malta",
-
-    "{{name}} must be not a subdivision code of Malta"
-    => "{{name}} ne doit pas être un secteur de Malta",
-
-    "{{name}} must be a subdivision code of Hungary"
-    => "{{name}} doit être un secteur de Hungary",
-
-    "{{name}} must be not a subdivision code of Hungary"
-    => "{{name}} ne doit pas être un secteur de Hungary",
-
-    "{{name}} must be a subdivision code of Macedonia"
-    => "{{name}} doit être un secteur de Macedonia",
-
-    "{{name}} must be not a subdivision code of Macedonia"
-    => "{{name}} ne doit pas être un secteur de Macedonia",
-
-    "{{name}} must be a subdivision code of Fiji"
-    => "{{name}} doit être un secteur de Fiji",
-
-    "{{name}} must be not a subdivision code of Fiji"
-    => "{{name}} ne doit pas être un secteur de Fiji",
-
-    "{{name}} must be a subdivision code of Sri Lanka"
-    => "{{name}} doit être un secteur de Sri Lanka",
-
-    "{{name}} must be not a subdivision code of Sri Lanka"
-    => "{{name}} ne doit pas être un secteur de Sri Lanka",
-
-    "{{name}} must be a subdivision code of Mongolia"
-    => "{{name}} doit être un secteur de Mongolia",
-
-    "{{name}} must be not a subdivision code of Mongolia"
-    => "{{name}} ne doit pas être un secteur de Mongolia",
-
-    "{{name}} must be a subdivision code of Ecuador"
-    => "{{name}} doit être un secteur de Ecuador",
-
-    "{{name}} must be not a subdivision code of Ecuador"
-    => "{{name}} ne doit pas être un secteur de Ecuador",
-
-    "{{name}} must be a subdivision code of Tajikistan"
-    => "{{name}} doit être un secteur de Tajikistan",
-
-    "{{name}} must be not a subdivision code of Tajikistan"
-    => "{{name}} ne doit pas être un secteur de Tajikistan",
-
-    "{{name}} must be a subdivision code of Réunion"
-    => "{{name}} doit être un secteur de Réunion",
-
-    "{{name}} must be not a subdivision code of Réunion"
-    => "{{name}} ne doit pas être un secteur de Réunion",
-
-    "{{name}} must be a subdivision code of Switzerland"
-    => "{{name}} doit être un secteur de Switzerland",
-
-    "{{name}} must be not a subdivision code of Switzerland"
-    => "{{name}} ne doit pas être un secteur de Switzerland",
-
-    "{{name}} must be a subdivision code of Saint Pierre and Miquelon"
-    => "{{name}} doit être un secteur de Saint Pierre and Miquelon",
-
-    "{{name}} must be not a subdivision code of Saint Pierre and Miquelon"
-    => "{{name}} ne doit pas être un secteur de Saint Pierre and Miquelon",
-
-    "{{name}} must be a subdivision code of United Kingdom"
-    => "{{name}} doit être un secteur de United Kingdom",
-
-    "{{name}} must be not a subdivision code of United Kingdom"
-    => "{{name}} ne doit pas être un secteur de United Kingdom",
-
-    "{{name}} must be a subdivision code of Isle of Man"
-    => "{{name}} doit être un secteur de Isle of Man",
-
-    "{{name}} must be not a subdivision code of Isle of Man"
-    => "{{name}} ne doit pas être un secteur de Isle of Man",
-
-    "{{name}} must be a subdivision code of Slovakia"
-    => "{{name}} doit être un secteur de Slovakia",
-
-    "{{name}} must be not a subdivision code of Slovakia"
-    => "{{name}} ne doit pas être un secteur de Slovakia",
-
-    "{{name}} must be a subdivision code of Anguilla"
-    => "{{name}} doit être un secteur de Anguilla",
-
-    "{{name}} must be not a subdivision code of Anguilla"
-    => "{{name}} ne doit pas être un secteur de Anguilla",
-
-    "{{name}} must be a subdivision code of Monaco"
-    => "{{name}} doit être un secteur de Monaco",
-
-    "{{name}} must be not a subdivision code of Monaco"
-    => "{{name}} ne doit pas être un secteur de Monaco",
-
-    "{{name}} must be a subdivision code of Syria"
-    => "{{name}} doit être un secteur de Syria",
-
-    "{{name}} must be not a subdivision code of Syria"
-    => "{{name}} ne doit pas être un secteur de Syria",
-
-    "{{name}} must be a subdivision code of Sudan"
-    => "{{name}} doit être un secteur de Sudan",
-
-    "{{name}} must be not a subdivision code of Sudan"
-    => "{{name}} ne doit pas être un secteur de Sudan",
-
-    "{{name}} must be a subdivision code of Tunisia"
-    => "{{name}} doit être un secteur de Tunisia",
-
-    "{{name}} must be not a subdivision code of Tunisia"
-    => "{{name}} ne doit pas être un secteur de Tunisia",
-
-    "{{name}} must be a subdivision code of Honduras"
-    => "{{name}} doit être un secteur de Honduras",
-
-    "{{name}} must be not a subdivision code of Honduras"
-    => "{{name}} ne doit pas être un secteur de Honduras",
-
-    "{{name}} must be a subdivision code of Cameroon"
-    => "{{name}} doit être un secteur de Cameroon",
-
-    "{{name}} must be not a subdivision code of Cameroon"
-    => "{{name}} ne doit pas être un secteur de Cameroon",
-
-    "{{name}} must be a subdivision code of Nauru"
-    => "{{name}} doit être un secteur de Nauru",
-
-    "{{name}} must be not a subdivision code of Nauru"
-    => "{{name}} ne doit pas être un secteur de Nauru",
-
-    "{{name}} must be a subdivision code of Saint Lucia"
-    => "{{name}} doit être un secteur de Saint Lucia",
-
-    "{{name}} must be not a subdivision code of Saint Lucia"
-    => "{{name}} ne doit pas être un secteur de Saint Lucia",
-
-    "{{name}} must be a subdivision code of Andorra"
-    => "{{name}} doit être un secteur de Andorra",
-
-    "{{name}} must be not a subdivision code of Andorra"
-    => "{{name}} ne doit pas être un secteur de Andorra",
-
-    "{{name}} must be a subdivision code of Philippines"
-    => "{{name}} doit être un secteur de Philippines",
-
-    "{{name}} must be not a subdivision code of Philippines"
-    => "{{name}} ne doit pas être un secteur de Philippines",
-
-    "{{name}} must be a subdivision code of Bermuda"
-    => "{{name}} doit être un secteur de Bermuda",
-
-    "{{name}} must be not a subdivision code of Bermuda"
-    => "{{name}} ne doit pas être un secteur de Bermuda",
-
-    "{{name}} must be a subdivision code of East Timor"
-    => "{{name}} doit être un secteur de East Timor",
-
-    "{{name}} must be not a subdivision code of East Timor"
-    => "{{name}} ne doit pas être un secteur de East Timor",
-
-    "{{name}} must be a subdivision code of Bolivia"
-    => "{{name}} doit être un secteur de Bolivia",
-
-    "{{name}} must be not a subdivision code of Bolivia"
-    => "{{name}} ne doit pas être un secteur de Bolivia",
-
-    "{{name}} must be a subdivision code of Saint Martin"
-    => "{{name}} doit être un secteur de Saint Martin",
-
-    "{{name}} must be not a subdivision code of Saint Martin"
-    => "{{name}} ne doit pas être un secteur de Saint Martin",
-
-    "{{name}} must be a subdivision code of Algeria"
-    => "{{name}} doit être un secteur de Algeria",
-
-    "{{name}} must be not a subdivision code of Algeria"
-    => "{{name}} ne doit pas être un secteur de Algeria",
-
-    "{{name}} must be a subdivision code of Turks and Caicos Islands"
-    => "{{name}} doit être un secteur de Turks and Caicos Islands",
-
-    "{{name}} must be not a subdivision code of Turks and Caicos Islands"
-    => "{{name}} ne doit pas être un secteur de Turks and Caicos Islands",
-
-    "{{name}} must be a subdivision code of Wallis and Futuna"
-    => "{{name}} doit être un secteur de Wallis and Futuna",
-
-    "{{name}} must be not a subdivision code of Wallis and Futuna"
-    => "{{name}} ne doit pas être un secteur de Wallis and Futuna",
-
-    "{{name}} must be a subdivision code of Micronesia"
-    => "{{name}} doit être un secteur de Micronesia",
-
-    "{{name}} must be not a subdivision code of Micronesia"
-    => "{{name}} ne doit pas être un secteur de Micronesia",
-
-    "{{name}} must be a subdivision code of Malawi"
-    => "{{name}} doit être un secteur de Malawi",
-
-    "{{name}} must be not a subdivision code of Malawi"
-    => "{{name}} ne doit pas être un secteur de Malawi",
-
-    "{{name}} must be a subdivision code of Latvia"
-    => "{{name}} doit être un secteur de Latvia",
-
-    "{{name}} must be not a subdivision code of Latvia"
-    => "{{name}} ne doit pas être un secteur de Latvia",
-
-    "{{name}} must be a subdivision code of Puerto Rico"
-    => "{{name}} doit être un secteur de Puerto Rico",
-
-    "{{name}} must be not a subdivision code of Puerto Rico"
-    => "{{name}} ne doit pas être un secteur de Puerto Rico",
-
-    "{{name}} must be a subdivision code of Dominican Republic"
-    => "{{name}} doit être un secteur de Dominican Republic",
-
-    "{{name}} must be not a subdivision code of Dominican Republic"
-    => "{{name}} ne doit pas être un secteur de Dominican Republic",
-
-    "{{name}} must be a subdivision code of Belize"
-    => "{{name}} doit être un secteur de Belize",
-
-    "{{name}} must be not a subdivision code of Belize"
-    => "{{name}} ne doit pas être un secteur de Belize",
-
-    "{{name}} must be a subdivision code of Canada"
-    => "{{name}} doit être un secteur de Canada",
-
-    "{{name}} must be not a subdivision code of Canada"
-    => "{{name}} ne doit pas être un secteur de Canada",
-
-    "{{name}} must be a subdivision code of Thailand"
-    => "{{name}} doit être un secteur de Thailand",
-
-    "{{name}} must be not a subdivision code of Thailand"
-    => "{{name}} ne doit pas être un secteur de Thailand",
-
-    "{{name}} must be a subdivision code of Albania"
-    => "{{name}} doit être un secteur de Albania",
-
-    "{{name}} must be not a subdivision code of Albania"
-    => "{{name}} ne doit pas être un secteur de Albania",
-
-    "{{name}} must be a subdivision code of Djibouti"
-    => "{{name}} doit être un secteur de Djibouti",
-
-    "{{name}} must be not a subdivision code of Djibouti"
-    => "{{name}} ne doit pas être un secteur de Djibouti",
-
-    "{{name}} must be a subdivision code of Nicaragua"
-    => "{{name}} doit être un secteur de Nicaragua",
-
-    "{{name}} must be not a subdivision code of Nicaragua"
-    => "{{name}} ne doit pas être un secteur de Nicaragua",
-
-    "{{name}} must be a subdivision code of Equatorial Guinea"
-    => "{{name}} doit être un secteur de Equatorial Guinea",
-
-    "{{name}} must be not a subdivision code of Equatorial Guinea"
-    => "{{name}} ne doit pas être un secteur de Equatorial Guinea",
-
-    "{{name}} must be a subdivision code of Iran"
-    => "{{name}} doit être un secteur de Iran",
-
-    "{{name}} must be not a subdivision code of Iran"
-    => "{{name}} ne doit pas être un secteur de Iran",
-
-    "{{name}} must be a subdivision code of Germany"
-    => "{{name}} doit être un secteur de Germany",
-
-    "{{name}} must be not a subdivision code of Germany"
-    => "{{name}} ne doit pas être un secteur de Germany",
-
-    "{{name}} must be a subdivision code of Bulgaria"
-    => "{{name}} doit être un secteur de Bulgaria",
-
-    "{{name}} must be not a subdivision code of Bulgaria"
-    => "{{name}} ne doit pas être un secteur de Bulgaria",
-
-    "{{name}} must be a subdivision code of Gambia"
-    => "{{name}} doit être un secteur de Gambia",
-
-    "{{name}} must be not a subdivision code of Gambia"
-    => "{{name}} ne doit pas être un secteur de Gambia",
-
-    "{{name}} must be a subdivision code of Cocos [Keeling] Islands"
-    => "{{name}} doit être un secteur de Cocos [Keeling] Islands",
-
-    "{{name}} must be not a subdivision code of Cocos [Keeling] Islands"
-    => "{{name}} ne doit pas être un secteur de Cocos [Keeling] Islands",
-
-    "{{name}} must be a subdivision code of Lebanon"
-    => "{{name}} doit être un secteur de Lebanon",
-
-    "{{name}} must be not a subdivision code of Lebanon"
-    => "{{name}} ne doit pas être un secteur de Lebanon",
-
-    "{{name}} must be a subdivision code of Colombia"
-    => "{{name}} doit être un secteur de Colombia",
-
-    "{{name}} must be not a subdivision code of Colombia"
-    => "{{name}} ne doit pas être un secteur de Colombia",
-
-    "{{name}} must be a subdivision code of Tokelau"
-    => "{{name}} doit être un secteur de Tokelau",
-
-    "{{name}} must be not a subdivision code of Tokelau"
-    => "{{name}} ne doit pas être un secteur de Tokelau",
-
-    "{{name}} must be a subdivision code of Aruba"
-    => "{{name}} doit être un secteur de Aruba",
-
-    "{{name}} must be not a subdivision code of Aruba"
-    => "{{name}} ne doit pas être un secteur de Aruba",
-
-    "{{name}} must be a subdivision code of Jamaica"
-    => "{{name}} doit être un secteur de Jamaica",
-
-    "{{name}} must be not a subdivision code of Jamaica"
-    => "{{name}} ne doit pas être un secteur de Jamaica",
-
-    "{{name}} must be a subdivision code of Svalbard and Jan Mayen"
-    => "{{name}} doit être un secteur de Svalbard and Jan Mayen",
-
-    "{{name}} must be not a subdivision code of Svalbard and Jan Mayen"
-    => "{{name}} ne doit pas être un secteur de Svalbard and Jan Mayen",
-
-    "{{name}} must be a subdivision code of Chile"
-    => "{{name}} doit être un secteur de Chile",
-
-    "{{name}} must be not a subdivision code of Chile"
-    => "{{name}} ne doit pas être un secteur de Chile",
-
-    "{{name}} must be a subdivision code of Poland"
-    => "{{name}} doit être un secteur de Poland",
-
-    "{{name}} must be not a subdivision code of Poland"
-    => "{{name}} ne doit pas être un secteur de Poland",
-
-    "{{name}} must be a subdivision code of Mayotte"
-    => "{{name}} doit être un secteur de Mayotte",
-
-    "{{name}} must be not a subdivision code of Mayotte"
-    => "{{name}} ne doit pas être un secteur de Mayotte",
-
-    "{{name}} must be a subdivision code of Jordan"
-    => "{{name}} doit être un secteur de Jordan",
-
-    "{{name}} must be not a subdivision code of Jordan"
-    => "{{name}} ne doit pas être un secteur de Jordan",
-
-    "{{name}} must be a subdivision code of Luxembourg"
-    => "{{name}} doit être un secteur de Luxembourg",
-
-    "{{name}} must be not a subdivision code of Luxembourg"
-    => "{{name}} ne doit pas être un secteur de Luxembourg",
-
-    "{{name}} must be a subdivision code of Ghana"
-    => "{{name}} doit être un secteur de Ghana",
-
-    "{{name}} must be not a subdivision code of Ghana"
-    => "{{name}} ne doit pas être un secteur de Ghana",
-
-    "{{name}} must be a subdivision code of Cambodia"
-    => "{{name}} doit être un secteur de Cambodia",
-
-    "{{name}} must be not a subdivision code of Cambodia"
-    => "{{name}} ne doit pas être un secteur de Cambodia",
-
-    "{{name}} must be a subdivision code of Saint Vincent and the Grenadines"
-    => "{{name}} doit être un secteur de Saint Vincent and the Grenadines",
-
-    "{{name}} must be not a subdivision code of Saint Vincent and the Grenadines"
-    => "{{name}} ne doit pas être un secteur de Saint Vincent and the Grenadines",
-
-    "{{name}} must be a subdivision code of El Salvador"
-    => "{{name}} doit être un secteur de El Salvador",
-
-    "{{name}} must be not a subdivision code of El Salvador"
-    => "{{name}} ne doit pas être un secteur de El Salvador",
-
-    "{{name}} must be a subdivision code of Western Sahara"
-    => "{{name}} doit être un secteur de Western Sahara",
-
-    "{{name}} must be not a subdivision code of Western Sahara"
-    => "{{name}} ne doit pas être un secteur de Western Sahara",
-
-    "{{name}} must be a subdivision code of Mali"
-    => "{{name}} doit être un secteur de Mali",
-
-    "{{name}} must be not a subdivision code of Mali"
-    => "{{name}} ne doit pas être un secteur de Mali",
-
-    "{{name}} must be a subdivision code of Antigua and Barbuda"
-    => "{{name}} doit être un secteur de Antigua and Barbuda",
-
-    "{{name}} must be not a subdivision code of Antigua and Barbuda"
-    => "{{name}} ne doit pas être un secteur de Antigua and Barbuda",
-
-    "{{name}} must be a subdivision code of Ukraine"
-    => "{{name}} doit être un secteur de Ukraine",
-
-    "{{name}} must be not a subdivision code of Ukraine"
-    => "{{name}} ne doit pas être un secteur de Ukraine",
-
-    "{{name}} must be a subdivision code of Vatican City"
-    => "{{name}} doit être un secteur de Vatican City",
-
-    "{{name}} must be not a subdivision code of Vatican City"
-    => "{{name}} ne doit pas être un secteur de Vatican City",
-
-    "{{name}} must be a subdivision code of Saint Kitts and Nevis"
-    => "{{name}} doit être un secteur de Saint Kitts and Nevis",
-
-    "{{name}} must be not a subdivision code of Saint Kitts and Nevis"
-    => "{{name}} ne doit pas être un secteur de Saint Kitts and Nevis",
-
-    "{{name}} must be a subdivision code of New Caledonia"
-    => "{{name}} doit être un secteur de New Caledonia",
-
-    "{{name}} must be not a subdivision code of New Caledonia"
-    => "{{name}} ne doit pas être un secteur de New Caledonia",
-
-    "{{name}} must be a subdivision code of Republic of the Congo"
-    => "{{name}} doit être un secteur de Republic of the Congo",
-
-    "{{name}} must be not a subdivision code of Republic of the Congo"
-    => "{{name}} ne doit pas être un secteur de Republic of the Congo",
-
-    "{{name}} must be a subdivision code of São Tomé and Príncipe"
-    => "{{name}} doit être un secteur de São Tomé and Príncipe",
-
-    "{{name}} must be not a subdivision code of São Tomé and Príncipe"
-    => "{{name}} ne doit pas être un secteur de São Tomé and Príncipe",
-
-    "{{name}} must be a subdivision code of Cyprus"
-    => "{{name}} doit être un secteur de Cyprus",
-
-    "{{name}} must be not a subdivision code of Cyprus"
-    => "{{name}} ne doit pas être un secteur de Cyprus",
-
-    "{{name}} must be a subdivision code of Kuwait"
-    => "{{name}} doit être un secteur de Kuwait",
-
-    "{{name}} must be not a subdivision code of Kuwait"
-    => "{{name}} ne doit pas être un secteur de Kuwait",
-
-    "{{name}} must be a subdivision code of Burundi"
-    => "{{name}} doit être un secteur de Burundi",
-
-    "{{name}} must be not a subdivision code of Burundi"
-    => "{{name}} ne doit pas être un secteur de Burundi",
-
-    "{{name}} must be a subdivision code of Eritrea"
-    => "{{name}} doit être un secteur de Eritrea",
-
-    "{{name}} must be not a subdivision code of Eritrea"
-    => "{{name}} ne doit pas être un secteur de Eritrea",
-
-    "{{name}} must be a subdivision code of Sint Maarten"
-    => "{{name}} doit être un secteur de Sint Maarten",
-
-    "{{name}} must be not a subdivision code of Sint Maarten"
-    => "{{name}} ne doit pas être un secteur de Sint Maarten",
-
-    "{{name}} must be a subdivision code of Paraguay"
-    => "{{name}} doit être un secteur de Paraguay",
-
-    "{{name}} must be not a subdivision code of Paraguay"
-    => "{{name}} ne doit pas être un secteur de Paraguay",
-
-    "{{name}} must be a subdivision code of Democratic Republic of the Congo"
-    => "{{name}} doit être un secteur de Democratic Republic of the Congo",
-
-    "{{name}} must be not a subdivision code of Democratic Republic of the Congo"
-    => "{{name}} ne doit pas être un secteur de Democratic Republic of the Congo",
-
-    "{{name}} must be a subdivision code of Cape Verde"
-    => "{{name}} doit être un secteur de Cape Verde",
-
-    "{{name}} must be not a subdivision code of Cape Verde"
-    => "{{name}} ne doit pas être un secteur de Cape Verde",
-
-    "{{name}} must be a subdivision code of India"
-    => "{{name}} doit être un secteur de India",
-
-    "{{name}} must be not a subdivision code of India"
-    => "{{name}} ne doit pas être un secteur de India",
-
-    "{{name}} must be a subdivision code of Niue"
-    => "{{name}} doit être un secteur de Niue",
-
-    "{{name}} must be not a subdivision code of Niue"
-    => "{{name}} ne doit pas être un secteur de Niue",
-
-    "{{name}} must be a subdivision code of Gibraltar"
-    => "{{name}} doit être un secteur de Gibraltar",
-
-    "{{name}} must be not a subdivision code of Gibraltar"
-    => "{{name}} ne doit pas être un secteur de Gibraltar",
-
-    "{{name}} must be a subdivision code of China"
-    => "{{name}} doit être un secteur de China",
-
-    "{{name}} must be not a subdivision code of China"
-    => "{{name}} ne doit pas être un secteur de China",
-
-    "{{name}} must be a subdivision code of Saint Barthélemy"
-    => "{{name}} doit être un secteur de Saint Barthélemy",
-
-    "{{name}} must be not a subdivision code of Saint Barthélemy"
-    => "{{name}} ne doit pas être un secteur de Saint Barthélemy",
-
-    "{{name}} must be a subdivision code of Azerbaijan"
-    => "{{name}} doit être un secteur de Azerbaijan",
-
-    "{{name}} must be not a subdivision code of Azerbaijan"
-    => "{{name}} ne doit pas être un secteur de Azerbaijan",
-
-    "{{name}} must be a subdivision code of Lesotho"
-    => "{{name}} doit être un secteur de Lesotho",
-
-    "{{name}} must be not a subdivision code of Lesotho"
-    => "{{name}} ne doit pas être un secteur de Lesotho",
-
-    "{{name}} must be a subdivision code of Falkland Islands"
-    => "{{name}} doit être un secteur de Falkland Islands",
-
-    "{{name}} must be not a subdivision code of Falkland Islands"
-    => "{{name}} ne doit pas être un secteur de Falkland Islands",
-
-    "{{name}} must be a subdivision code of Tonga"
-    => "{{name}} doit être un secteur de Tonga",
-
-    "{{name}} must be not a subdivision code of Tonga"
-    => "{{name}} ne doit pas être un secteur de Tonga",
-
-    "{{name}} must be a subdivision code of British Indian Ocean Territory"
-    => "{{name}} doit être un secteur de British Indian Ocean Territory",
-
-    "{{name}} must be not a subdivision code of British Indian Ocean Territory"
-    => "{{name}} ne doit pas être un secteur de British Indian Ocean Territory",
-
-    "{{name}} must be a subdivision code of New Zealand"
-    => "{{name}} doit être un secteur de New Zealand",
-
-    "{{name}} must be not a subdivision code of New Zealand"
-    => "{{name}} ne doit pas être un secteur de New Zealand",
-
-    "{{name}} must be a subdivision code of Northern Mariana Islands"
-    => "{{name}} doit être un secteur de Northern Mariana Islands",
-
-    "{{name}} must be not a subdivision code of Northern Mariana Islands"
-    => "{{name}} ne doit pas être un secteur de Northern Mariana Islands",
-
-    "{{name}} must be a subdivision code of Belgium"
-    => "{{name}} doit être un secteur de Belgium",
-
-    "{{name}} must be not a subdivision code of Belgium"
-    => "{{name}} ne doit pas être un secteur de Belgium",
-
-    "{{name}} must be a subdivision code of Kazakhstan"
-    => "{{name}} doit être un secteur de Kazakhstan",
-
-    "{{name}} must be not a subdivision code of Kazakhstan"
-    => "{{name}} ne doit pas être un secteur de Kazakhstan",
-
-    "{{name}} must be a subdivision code of Macao"
-    => "{{name}} doit être un secteur de Macao",
-
-    "{{name}} must be not a subdivision code of Macao"
-    => "{{name}} ne doit pas être un secteur de Macao",
-
-    "{{name}} must be a subdivision code of France"
-    => "{{name}} doit être un secteur de France",
-
-    "{{name}} must be not a subdivision code of France"
-    => "{{name}} ne doit pas être un secteur de France",
-
-    "{{name}} must be a subdivision code of Malaysia"
-    => "{{name}} doit être un secteur de Malaysia",
-
-    "{{name}} must be not a subdivision code of Malaysia"
-    => "{{name}} ne doit pas être un secteur de Malaysia",
-
-    "{{name}} must be a subdivision code of Japan"
-    => "{{name}} doit être un secteur de Japan",
-
-    "{{name}} must be not a subdivision code of Japan"
-    => "{{name}} ne doit pas être un secteur de Japan",
-
-    "{{name}} must be a subdivision code of Seychelles"
-    => "{{name}} doit être un secteur de Seychelles",
-
-    "{{name}} must be not a subdivision code of Seychelles"
-    => "{{name}} ne doit pas être un secteur de Seychelles",
-
-    "{{name}} must be a subdivision code of Portugal"
-    => "{{name}} doit être un secteur de Portugal",
-
-    "{{name}} must be not a subdivision code of Portugal"
-    => "{{name}} ne doit pas être un secteur de Portugal",
-
-    "{{name}} must be a subdivision code of Swaziland"
-    => "{{name}} doit être un secteur de Swaziland",
-
-    "{{name}} must be not a subdivision code of Swaziland"
-    => "{{name}} ne doit pas être un secteur de Swaziland",
-
-    "{{name}} must be a subdivision code of Guinea-Bissau"
-    => "{{name}} doit être un secteur de Guinea-Bissau",
-
-    "{{name}} must be not a subdivision code of Guinea-Bissau"
-    => "{{name}} ne doit pas être un secteur de Guinea-Bissau",
-
-    "{{name}} must be a subdivision code of Ireland"
-    => "{{name}} doit être un secteur de Ireland",
-
-    "{{name}} must be not a subdivision code of Ireland"
-    => "{{name}} ne doit pas être un secteur de Ireland",
-
-    "{{name}} must be a subdivision code of Guinea"
-    => "{{name}} doit être un secteur de Guinea",
-
-    "{{name}} must be not a subdivision code of Guinea"
-    => "{{name}} ne doit pas être un secteur de Guinea",
-
-    "{{name}} must be a subdivision code of Togo"
-    => "{{name}} doit être un secteur de Togo",
-
-    "{{name}} must be not a subdivision code of Togo"
-    => "{{name}} ne doit pas être un secteur de Togo",
-
-    "{{name}} must be a subdivision code of Libya"
-    => "{{name}} doit être un secteur de Libya",
-
-    "{{name}} must be not a subdivision code of Libya"
-    => "{{name}} ne doit pas être un secteur de Libya",
-
-    "{{name}} must be a subdivision code of Panama"
-    => "{{name}} doit être un secteur de Panama",
-
-    "{{name}} must be not a subdivision code of Panama"
-    => "{{name}} ne doit pas être un secteur de Panama",
-
-    "{{name}} must be a subdivision code of Turkmenistan"
-    => "{{name}} doit être un secteur de Turkmenistan",
-
-    "{{name}} must be not a subdivision code of Turkmenistan"
-    => "{{name}} ne doit pas être un secteur de Turkmenistan",
-
-    "{{name}} must be a subdivision code of Jersey"
-    => "{{name}} doit être un secteur de Jersey",
-
-    "{{name}} must be not a subdivision code of Jersey"
-    => "{{name}} ne doit pas être un secteur de Jersey",
-
-    "{{name}} must be a subdivision code of Serbia"
-    => "{{name}} doit être un secteur de Serbia",
-
-    "{{name}} must be not a subdivision code of Serbia"
-    => "{{name}} ne doit pas être un secteur de Serbia",
-
-    "{{name}} must be a subdivision code of Bouvet Island"
-    => "{{name}} doit être un secteur de Bouvet Island",
-
-    "{{name}} must be not a subdivision code of Bouvet Island"
-    => "{{name}} ne doit pas être un secteur de Bouvet Island",
-
-    "{{name}} must be a subdivision code of Russia"
-    => "{{name}} doit être un secteur de Russia",
-
-    "{{name}} must be not a subdivision code of Russia"
-    => "{{name}} ne doit pas être un secteur de Russia",
-
-    "{{name}} must be a subdivision code of Palestine"
-    => "{{name}} doit être un secteur de Palestine",
-
-    "{{name}} must be not a subdivision code of Palestine"
-    => "{{name}} ne doit pas être un secteur de Palestine",
-
-    "{{name}} must be a subdivision code of Nigeria"
-    => "{{name}} doit être un secteur de Nigeria",
-
-    "{{name}} must be not a subdivision code of Nigeria"
-    => "{{name}} ne doit pas être un secteur de Nigeria",
-
-    "{{name}} must be a subdivision code of Zambia"
-    => "{{name}} doit être un secteur de Zambia",
-
-    "{{name}} must be not a subdivision code of Zambia"
-    => "{{name}} ne doit pas être un secteur de Zambia",
-
-    "{{name}} must be a subdivision code of Guyana"
-    => "{{name}} doit être un secteur de Guyana",
-
-    "{{name}} must be not a subdivision code of Guyana"
-    => "{{name}} ne doit pas être un secteur de Guyana",
-
-    "{{name}} must be a subdivision code of Australia"
-    => "{{name}} doit être un secteur de Australia",
-
-    "{{name}} must be not a subdivision code of Australia"
-    => "{{name}} ne doit pas être un secteur de Australia",
-
-    "{{name}} must be a subdivision code of Singapore"
-    => "{{name}} doit être un secteur de Singapore",
-
-    "{{name}} must be not a subdivision code of Singapore"
-    => "{{name}} ne doit pas être un secteur de Singapore",
-
-    "{{name}} must be a subdivision code of Vietnam"
-    => "{{name}} doit être un secteur de Vietnam",
-
-    "{{name}} must be not a subdivision code of Vietnam"
-    => "{{name}} ne doit pas être un secteur de Vietnam",
-
-    "{{name}} must be a subdivision code of Liberia"
-    => "{{name}} doit être un secteur de Liberia",
-
-    "{{name}} must be not a subdivision code of Liberia"
-    => "{{name}} ne doit pas être un secteur de Liberia",
-
-    "{{name}} must be a subdivision code of Curacao"
-    => "{{name}} doit être un secteur de Curacao",
-
-    "{{name}} must be not a subdivision code of Curacao"
-    => "{{name}} ne doit pas être un secteur de Curacao",
-
-    "{{name}} must be a subdivision code of Guadeloupe"
-    => "{{name}} doit être un secteur de Guadeloupe",
-
-    "{{name}} must be not a subdivision code of Guadeloupe"
-    => "{{name}} ne doit pas être un secteur de Guadeloupe",
-
-    "{{name}} must be a subdivision code of Kyrgyzstan"
-    => "{{name}} doit être un secteur de Kyrgyzstan",
-
-    "{{name}} must be not a subdivision code of Kyrgyzstan"
-    => "{{name}} ne doit pas être un secteur de Kyrgyzstan",
-
-    "{{name}} must be a subdivision code of Suriname"
-    => "{{name}} doit être un secteur de Suriname",
-
-    "{{name}} must be not a subdivision code of Suriname"
-    => "{{name}} ne doit pas être un secteur de Suriname",
-
-    "{{name}} must be a subdivision code of Solomon Islands"
-    => "{{name}} doit être un secteur de Solomon Islands",
-
-    "{{name}} must be not a subdivision code of Solomon Islands"
-    => "{{name}} ne doit pas être un secteur de Solomon Islands",
-
-    "{{name}} must be a subdivision code of Faroe Islands"
-    => "{{name}} doit être un secteur de Faroe Islands",
-
-    "{{name}} must be not a subdivision code of Faroe Islands"
-    => "{{name}} ne doit pas être un secteur de Faroe Islands",
-
-    "{{name}} must be a subdivision code of Moldova"
-    => "{{name}} doit être un secteur de Moldova",
-
-    "{{name}} must be not a subdivision code of Moldova"
-    => "{{name}} ne doit pas être un secteur de Moldova",
-
-    "{{name}} must be a subdivision code of Estonia"
-    => "{{name}} doit être un secteur de Estonia",
-
-    "{{name}} must be not a subdivision code of Estonia"
-    => "{{name}} ne doit pas être un secteur de Estonia",
-
-    "{{name}} must be a subdivision code of South Georgia and the South Sandwich Islands"
-    => "{{name}} doit être un secteur de South Georgia and the South Sandwich Islands",
-
-    "{{name}} must be not a subdivision code of South Georgia and the South Sandwich Islands"
-    => "{{name}} ne doit pas être un secteur de South Georgia and the South Sandwich Islands",
-
-    "{{name}} must be a subdivision code of Austria"
-    => "{{name}} doit être un secteur de Austria",
-
-    "{{name}} must be not a subdivision code of Austria"
-    => "{{name}} ne doit pas être un secteur de Austria",
-
-    "{{name}} must be a subdivision code of Botswana"
-    => "{{name}} doit être un secteur de Botswana",
-
-    "{{name}} must be not a subdivision code of Botswana"
-    => "{{name}} ne doit pas être un secteur de Botswana",
-
-    "{{name}} must be a subdivision code of Mauritania"
-    => "{{name}} doit être un secteur de Mauritania",
-
-    "{{name}} must be not a subdivision code of Mauritania"
-    => "{{name}} ne doit pas être un secteur de Mauritania",
-
-    "{{name}} must be a subdivision code of Haiti"
-    => "{{name}} doit être un secteur de Haiti",
-
-    "{{name}} must be not a subdivision code of Haiti"
-    => "{{name}} ne doit pas être un secteur de Haiti",
-
-    "{{name}} must be a subdivision code of Somalia"
-    => "{{name}} doit être un secteur de Somalia",
-
-    "{{name}} must be not a subdivision code of Somalia"
-    => "{{name}} ne doit pas être un secteur de Somalia",
-
-    "{{name}} must be a subdivision code of South Sudan"
-    => "{{name}} doit être un secteur de South Sudan",
-
-    "{{name}} must be not a subdivision code of South Sudan"
-    => "{{name}} ne doit pas être un secteur de South Sudan",
-
-    "{{name}} must be a subdivision code of Venezuela"
-    => "{{name}} doit être un secteur de Venezuela",
-
-    "{{name}} must be not a subdivision code of Venezuela"
-    => "{{name}} ne doit pas être un secteur de Venezuela",
-
-    "{{name}} must be a subdivision code of Christmas Island"
-    => "{{name}} doit être un secteur de Christmas Island",
-
-    "{{name}} must be not a subdivision code of Christmas Island"
-    => "{{name}} ne doit pas être un secteur de Christmas Island",
-
-    "{{name}} must be a subdivision code of Indonesia"
-    => "{{name}} doit être un secteur de Indonesia",
-
-    "{{name}} must be not a subdivision code of Indonesia"
-    => "{{name}} ne doit pas être un secteur de Indonesia",
-
-    "{{name}} must be a subdivision code of Yemen"
-    => "{{name}} doit être un secteur de Yemen",
-
-    "{{name}} must be not a subdivision code of Yemen"
-    => "{{name}} ne doit pas être un secteur de Yemen",
-
-    "{{name}} must be a subdivision code of Gabon"
-    => "{{name}} doit être un secteur de Gabon",
-
-    "{{name}} must be not a subdivision code of Gabon"
-    => "{{name}} ne doit pas être un secteur de Gabon",
-
-    "{{name}} must be a subdivision code of American Samoa"
-    => "{{name}} doit être un secteur de American Samoa",
-
-    "{{name}} must be not a subdivision code of American Samoa"
-    => "{{name}} ne doit pas être un secteur de American Samoa",
-
-    "{{name}} must be a subdivision code of Cayman Islands"
-    => "{{name}} doit être un secteur de Cayman Islands",
-
-    "{{name}} must be not a subdivision code of Cayman Islands"
-    => "{{name}} ne doit pas être un secteur de Cayman Islands",
-
-    "{{name}} must be a subdivision code of Namibia"
-    => "{{name}} doit être un secteur de Namibia",
-
-    "{{name}} must be not a subdivision code of Namibia"
-    => "{{name}} ne doit pas être un secteur de Namibia",
-
-    "{{name}} must be a subdivision code of French Polynesia"
-    => "{{name}} doit être un secteur de French Polynesia",
-
-    "{{name}} must be not a subdivision code of French Polynesia"
-    => "{{name}} ne doit pas être un secteur de French Polynesia",
-
-    "{{name}} must be a subdivision code of Burkina Faso"
-    => "{{name}} doit être un secteur de Burkina Faso",
-
-    "{{name}} must be not a subdivision code of Burkina Faso"
-    => "{{name}} ne doit pas être un secteur de Burkina Faso",
-
-    "{{name}} must be a subdivision code of Laos"
-    => "{{name}} doit être un secteur de Laos",
-
-    "{{name}} must be not a subdivision code of Laos"
-    => "{{name}} ne doit pas être un secteur de Laos",
-
-    "{{name}} must be a subdivision code of Kiribati"
-    => "{{name}} doit être un secteur de Kiribati",
-
-    "{{name}} must be not a subdivision code of Kiribati"
-    => "{{name}} ne doit pas être un secteur de Kiribati",
-
-    "{{name}} must be a subdivision code of Guam"
-    => "{{name}} doit être un secteur de Guam",
-
-    "{{name}} must be not a subdivision code of Guam"
-    => "{{name}} ne doit pas être un secteur de Guam",
-
-    "{{name}} must be a subdivision code of Rwanda"
-    => "{{name}} doit être un secteur de Rwanda",
-
-    "{{name}} must be not a subdivision code of Rwanda"
-    => "{{name}} ne doit pas être un secteur de Rwanda",
-
-    "{{name}} must be a subdivision code of United States"
-    => "{{name}} doit être un secteur de United States",
-
-    "{{name}} must be not a subdivision code of United States"
-    => "{{name}} ne doit pas être un secteur de United States",
-
-    "{{name}} must be a subdivision code of French Guiana"
-    => "{{name}} doit être un secteur de French Guiana",
-
-    "{{name}} must be not a subdivision code of French Guiana"
-    => "{{name}} ne doit pas être un secteur de French Guiana",
-
-    "{{name}} must be a subdivision code of Marshall Islands"
-    => "{{name}} doit être un secteur de Marshall Islands",
-
-    "{{name}} must be not a subdivision code of Marshall Islands"
-    => "{{name}} ne doit pas être un secteur de Marshall Islands",
-
-    "{{name}} must be a subdivision code of Brazil"
-    => "{{name}} doit être un secteur de Brazil",
-
-    "{{name}} must be not a subdivision code of Brazil"
-    => "{{name}} ne doit pas être un secteur de Brazil",
-
-    "{{name}} must be a subdivision code of Uganda"
-    => "{{name}} doit être un secteur de Uganda",
-
-    "{{name}} must be not a subdivision code of Uganda"
-    => "{{name}} ne doit pas être un secteur de Uganda",
-
-    "{{name}} must be a subdivision code of Pakistan"
-    => "{{name}} doit être un secteur de Pakistan",
-
-    "{{name}} must be not a subdivision code of Pakistan"
-    => "{{name}} ne doit pas être un secteur de Pakistan",
-
-    "{{name}} must be a subdivision code of Norfolk Island"
-    => "{{name}} doit être un secteur de Norfolk Island",
-
-    "{{name}} must be not a subdivision code of Norfolk Island"
-    => "{{name}} ne doit pas être un secteur de Norfolk Island",
-
-    "{{name}} must be a subdivision code of Peru"
-    => "{{name}} doit être un secteur de Peru",
-
-    "{{name}} must be not a subdivision code of Peru"
-    => "{{name}} ne doit pas être un secteur de Peru",
-
-    "{{name}} must be a subdivision code of South Korea"
-    => "{{name}} doit être un secteur de South Korea",
-
-    "{{name}} must be not a subdivision code of South Korea"
-    => "{{name}} ne doit pas être un secteur de South Korea",
-
-    "{{name}} must be a subdivision code of Bosnia and Herzegovina"
-    => "{{name}} doit être un secteur de Bosnia and Herzegovina",
-
-    "{{name}} must be not a subdivision code of Bosnia and Herzegovina"
-    => "{{name}} ne doit pas être un secteur de Bosnia and Herzegovina",
-
-    "{{name}} must be a subdivision code of Iceland"
-    => "{{name}} doit être un secteur de Iceland",
-
-    "{{name}} must be not a subdivision code of Iceland"
-    => "{{name}} ne doit pas être un secteur de Iceland",
-
-    "{{name}} must be a subdivision code of Argentina"
-    => "{{name}} doit être un secteur de Argentina",
-
-    "{{name}} must be not a subdivision code of Argentina"
-    => "{{name}} ne doit pas être un secteur de Argentina",
-
-    "{{name}} must be a subdivision code of Armenia"
-    => "{{name}} doit être un secteur de Armenia",
-
-    "{{name}} must be not a subdivision code of Armenia"
-    => "{{name}} ne doit pas être un secteur de Armenia",
-
-    "{{name}} must be a subdivision code of Spain"
-    => "{{name}} doit être un secteur de Spain",
-
-    "{{name}} must be not a subdivision code of Spain"
-    => "{{name}} ne doit pas être un secteur de Spain",
-
-    "{{name}} must be a subdivision code of Kenya"
-    => "{{name}} doit être un secteur de Kenya",
-
-    "{{name}} must be not a subdivision code of Kenya"
-    => "{{name}} ne doit pas être un secteur de Kenya",
-
-    "{{name}} must be a subdivision code of Liechtenstein"
-    => "{{name}} doit être un secteur de Liechtenstein",
-
-    "{{name}} must be not a subdivision code of Liechtenstein"
-    => "{{name}} ne doit pas être un secteur de Liechtenstein",
-
-    "{{name}} must be a subdivision code of South Africa"
-    => "{{name}} doit être un secteur de South Africa",
-
-    "{{name}} must be not a subdivision code of South Africa"
-    => "{{name}} ne doit pas être un secteur de South Africa",
-
-    "{{name}} must be a subdivision code of Greenland"
-    => "{{name}} doit être un secteur de Greenland",
-
-    "{{name}} must be not a subdivision code of Greenland"
-    => "{{name}} ne doit pas être un secteur de Greenland",
-
-    "{{name}} must be a subdivision code of Uzbekistan"
-    => "{{name}} doit être un secteur de Uzbekistan",
-
-    "{{name}} must be not a subdivision code of Uzbekistan"
-    => "{{name}} ne doit pas être un secteur de Uzbekistan",
-
-    "{{name}} must be a subdivision code of Finland"
-    => "{{name}} doit être un secteur de Finland",
-
-    "{{name}} must be not a subdivision code of Finland"
-    => "{{name}} ne doit pas être un secteur de Finland",
-
-    "{{name}} must be a subdivision code of Martinique"
-    => "{{name}} doit être un secteur de Martinique",
-
-    "{{name}} must be not a subdivision code of Martinique"
-    => "{{name}} ne doit pas être un secteur de Martinique",
-
-    "{{name}} must be a subdivision code of Uruguay"
-    => "{{name}} doit être un secteur de Uruguay",
-
-    "{{name}} must be not a subdivision code of Uruguay"
-    => "{{name}} ne doit pas être un secteur de Uruguay",
-
-    "{{name}} must be a subdivision code of Barbados"
-    => "{{name}} doit être un secteur de Barbados",
-
-    "{{name}} must be not a subdivision code of Barbados"
-    => "{{name}} ne doit pas être un secteur de Barbados",
-
-    "{{name}} must be a subdivision code of Afghanistan"
-    => "{{name}} doit être un secteur de Afghanistan",
-
-    "{{name}} must be not a subdivision code of Afghanistan"
-    => "{{name}} ne doit pas être un secteur de Afghanistan",
-
-    "{{name}} must be a subdivision code of United Arab Emirates"
-    => "{{name}} doit être un secteur de United Arab Emirates",
-
-    "{{name}} must be not a subdivision code of United Arab Emirates"
-    => "{{name}} ne doit pas être un secteur de United Arab Emirates",
-
-    "{{name}} must be a subdivision code of Oman"
-    => "{{name}} doit être un secteur de Oman",
-
-    "{{name}} must be not a subdivision code of Oman"
-    => "{{name}} ne doit pas être un secteur de Oman",
-
-    "{{name}} must be a subdivision code of Morocco"
-    => "{{name}} doit être un secteur de Morocco",
-
-    "{{name}} must be not a subdivision code of Morocco"
-    => "{{name}} ne doit pas être un secteur de Morocco",
-
-    "{{name}} must be a subdivision code of Iraq"
-    => "{{name}} doit être un secteur de Iraq",
-
-    "{{name}} must be not a subdivision code of Iraq"
-    => "{{name}} ne doit pas être un secteur de Iraq",
-
-    "{{name}} must be a subdivision code of Åland"
-    => "{{name}} doit être un secteur de Åland",
-
-    "{{name}} must be not a subdivision code of Åland"
-    => "{{name}} ne doit pas être un secteur de Åland",
-
-    "{{name}} must be a subdivision code of Mozambique"
-    => "{{name}} doit être un secteur de Mozambique",
-
-    "{{name}} must be not a subdivision code of Mozambique"
-    => "{{name}} ne doit pas être un secteur de Mozambique",
+    => "Ne doit pas être un code postal vide pour {{countryCode}}",
 
     "{{name}} must contain only space characters"
-    => "{{name}} ne doit contenir que des espaces",
+    => "Ne doit contenir que des espaces",
 
     "{{name}} must contain only space characters and \"{{additionalChars}}\""
-    => "{{name}} ne doit contenir que des espaces et \"{{additionalChars}}\"",
+    => "Ne doit contenir que des espaces et \"{{additionalChars}}\"",
 
     "{{name}} must not contain space characters"
-    => "{{name}} ne doit contenir aucun espace",
+    => "Ne doit contenir aucun espace",
 
     "{{name}} must not contain space characters or \"{{additionalChars}}\""
-    => "{{name}} ne doit contenir aucun espace ni \"{{additionalChars}}\"",
+    => "Ne doit contenir aucun espace ni \"{{additionalChars}}\"",
 
     "{{name}} must be a valid image"
-    => "{{name}} doit être une image valide",
+    => "Doit être une image valide",
 
     "{{name}} must not be a valid image"
-    => "{{name}} ne doit pas être une image valide",
+    => "Ne doit pas être une image valide",
 
     "{{name}} must be a BIC"
-    => "{{name}} doit être un numéro BIC",
+    => "Doit être un numéro BIC",
 
     "{{name}} must not be a BIC"
-    => "{{name}} ne doit pas être un numéro BIC",
+    => "Ne doit pas être un numéro BIC",
 
     "{{name}} must be a hex RGB color"
-    => "{{name}} doit être une couleur RVB héxadecimal",
+    => "Doit être une couleur RVB hexadécimale",
 
     "{{name}} must not be a hex RGB color"
-    => "{{name}} ne doit pas être une couleur RVB héxadecimal",
+    => "Ne doit pas être une couleur RVB hexadécimale",
 
     "At least {{howMany}} of the {{failed}} required rules must pass for {{name}}"
-    => "Au moins {{howMany}} sur {{failed}} règles requises doivent être validées pour {{name}}",
+    => "Au moins {{howMany}} sur {{failed}} règles requises doivent être validées",
 
     "At least {{howMany}} of the {{failed}} required rules must pass for {{name}}, only {{passed}} passed."
-    => "Au moins {{howMany}} sur {{failed}} règles requises doivent être validées "
-     . "pour {{name}}, seulement {{passed}} l'ont été",
+    => "Au moins {{howMany}} sur {{failed}} règles requises doivent être validées, " .
+    "seulement {{passed}} l'ont été",
 
     "At least {{howMany}} of the {{failed}} required rules must not pass for {{name}}"
-    => "Au moins {{howMany}} sur {{failed}} règles requises doivent être invalides pour {{name}}",
+    => "Au moins {{howMany}} sur {{failed}} règles requises ne doivent pas être validées",
 
     "At least {{howMany}} of the {{failed}} required rules must not pass for {{name}}, only {{passed}} passed."
-    => "Au moins {{howMany}} sur {{failed}} règles requises doivent être invalides "
-     . "pour {{name}}, seulement {{passed}} l'ont été",
+    => "Au moins {{howMany}} sur {{failed}} règles requises ne doivent pas être validées, " .
+    "seulement {{passed}} l'ont été",
 
     "{{name}} must be less than {{interval}}"
-    => "{{name}} doit être inférieur à {{interval}}",
+    => "Doit être inférieur à {{interval}}",
 
     "{{name}} must be less than or equal to {{interval}}"
-    => "{{name}} doit être inférieur ou égal à {{interval}}",
+    => "Doit être inférieur ou égal à {{interval}}",
 
     "{{name}} must not be less than {{interval}}"
-    => "{{name}} ne doit pas être inférieur à {{interval}}",
+    => "Ne doit pas être inférieur à {{interval}}",
 
     "{{name}} must not be less than or equal to {{interval}}"
-    => "{{name}} ne doit pas être inférieur ou égal à {{interval}}",
+    => "Ne doit pas être inférieur ou égal à {{interval}}",
 
     "{{name}} must be a callable"
-    => "{{name}} doit être de type callable",
+    => "Doit être de type callable",
 
     "{{name}} must not be a callable"
-    => "{{name}} ne doit pas être de type callable",
+    => "Ne doit pas être de type callable",
 
     "{{name}} must not contain whitespace"
-    => "{{name}} ne doit contenir aucun caractère d'espacement",
+    => "Ne doit contenir aucun caractère d'espacement",
 
     "{{name}} must not not contain whitespace"
-    => "{{name}} ne doit pas ne pas contenir de caractère d'espacement",
+    => "Doit contenir au moins un caractère d'espacement",
 
     "All of the required rules must pass for {{name}}"
-    => "Toutes les règles requises doivent être validées pour {{name}}",
+    => "Toutes les règles requises doivent être validées",
 
     "These rules must pass for {{name}}"
-    => "Ces règles doivent être validée pour {{name}}",
+    => "Ces règles doivent être validée",
 
     "None of there rules must pass for {{name}}"
-    => "Aucune de ces règles ne doit être validée pour {{name}}",
+    => "Aucune de ces règles ne doit être validée",
 
     "These rules must not pass for {{name}}"
-    => "Ces règles ne doivent pas être validées pour {{name}}",
+    => "Ces règles ne doivent pas être validées",
 
     "{{name}} must be a file"
-    => "{{name}} doit être un fichier",
+    => "Doit être un fichier",
 
     "{{name}} must not be a file"
-    => "{{name}} ne doit pas être un fichier",
+    => "Ne doit pas être un fichier",
 
     "Attribute {{name}} must be present"
     => "L'attribut {{name}} doit être présent",
@@ -1716,109 +204,109 @@ return [
     => "L'attribut {{name}} ne doit pas être valide",
 
     "{{name}} must be a float number"
-    => "{{name}} doit être un chiffre à virgule",
+    => "Doit être un chiffre à virgule",
 
     "{{name}} must not be a float number"
-    => "{{name}} ne doit pas être un chiffre à virgule",
+    => "Ne doit pas être un chiffre à virgule",
 
     "{{name}} must be an uploaded file"
-    => "{{name}} doit être un fichier téléversé",
+    => "Doit être un fichier téléversé",
 
     "{{name}} must not be an uploaded file"
-    => "{{name}} ne doit pas être un fichier téléversé",
+    => "Ne doit pas être un fichier téléversé",
 
     "{{name}} must be an executable file"
-    => "{{name}} doit être un fichier exécutable",
+    => "Doit être un fichier exécutable",
 
     "{{name}} must not be an executable file"
-    => "{{name}} ne doit pas être un fichier exécutable",
+    => "Ne doit pas être un fichier exécutable",
 
     "{{name}} must be between {{minValue}} and {{maxValue}}"
-    => "{{name}} doit être compris entre {{minValue}} et {{maxValue}}",
+    => "La valeur doit être comprise entre {{minValue}} et {{maxValue}}",
 
     "{{name}}  must be greater than {{minValue}}"
-    => "{name}} doit être supérieur à {{minValue}}",
+    => "La valeur doit être supérieure à {{minValue}}",
 
     "{{name}} must be lower than {{maxValue}}"
-    => "{{name}} doit être inférieur à {{maxValue}}",
+    => "La valeur doit être inférieure à {{maxValue}}",
 
     "{{name}} must not be between {{minValue}} and {{maxValue}}"
-    => "{{name}} ne doit pas être compris entre {{minValue}} et {{maxValue}}",
+    => "La valeur ne doit pas être comprise entre {{minValue}} et {{maxValue}}",
 
     "{{name}}  must not be greater than {{minValue}}"
-    => "{name}} ne doit pas être supérieur à {{minValue}}",
+    => "La valeur ne doit pas être supérieure à {{minValue}}",
 
     "{{name}} must not be lower than {{maxValue}}"
-    => "{{name}} ne doit pas être inférieur à {{maxValue}}",
+    => "La valeur ne doit pas être inférieure à {{maxValue}}",
 
     "{{name}} must be an instance of {{instanceName}}"
-    => "{{name}} doit être une instance de {{instanceName}}",
+    => "Doit être une instance de {{instanceName}}",
 
     "{{name}} must not be an instance of {{instanceName}}"
-    => "{{name}} ne doit pas être une instance de {{instanceName}}",
+    => "Ne doit pas être une instance de {{instanceName}}",
 
     "{{name}} must be between {{minSize}} and {{maxSize}}"
-    => "{{name}} doit être compris entre {{minSize}} and {{maxSize}}",
+    => "La taille doit être comprise entre {{minSize}} and {{maxSize}}",
 
     "{{name}} must be greater than {{minSize}}"
-    => "{{name}} doit être supérieur à {{minSize}}",
+    => "La taille doit être supérieure à {{minSize}}",
 
     "{{name}} must be lower than {{maxSize}}"
-    => "{{name}} doit être inférieur à {{maxSize}}",
+    => "La taille doit être inférieure à {{maxSize}}",
 
     "{{name}} must not be between {{minSize}} and {{maxSize}}"
-    => "{{name}} ne doit pas être compris entre {{minSize}} and {{maxSize}}",
+    => "La taille ne doit pas être comprise entre {{minSize}} and {{maxSize}}",
 
     "{{name}} must not be greater than {{minSize}}"
-    => "{{name}} ne doit pas être supérieur à {{minSize}}",
+    => "La taille ne doit pas être supérieure à {{minSize}}",
 
     "{{name}} must not be lower than {{maxSize}}"
-    => "{{name}} ne doit pas être inférieur à {{maxSize}}",
+    => "La taille ne doit pas être inférieure à {{maxSize}}",
 
     "{{name}} must be a valid PESEL"
-    => "{{name}} doit être un PESEL valide",
+    => "Doit être un PESEL valide",
 
     "{{name}} must not be a valid PESEL"
-    => "{{name}} ne doit pas être un PESEL valide",
+    => "Ne doit pas être un PESEL valide",
 
     "{{name}} must contain only vowels"
-    => "{{name}} ne doit contenir que des voyelles",
+    => "Ne doit contenir que des voyelles",
 
     "{{name}} must contain only vowels and \"{{additionalChars}}\""
-    => "{{name}} ne doit contenir que des voyelles et \"{{additionalChars}}\"",
+    => "Ne doit contenir que des voyelles et \"{{additionalChars}}\"",
 
     "{{name}} must not contain vowels"
-    => "{name}} ne doit contenir aucune voyelle",
+    => "Ne doit contenir aucune voyelle",
 
     "{{name}} must not contain vowels or \"{{additionalChars}}\""
-    => "{name}} ne doit contenir aucune voyelle ni \"{{additionalChars}}\"",
+    => "Ne doit contenir aucune voyelle ni \"{{additionalChars}}\"",
 
     "Each item in {{name}} must be valid"
-    => "Chaque élément dans {{name}} doit être valide",
+    => "Chaque élément dans ce champ doit être valide",
 
     "Each item in {{name}} must not validate"
-    => "Chaque élément dans {{name}} doit être invalide",
+    => "Tous les éléments dans ce champ doivent ne pas être valide",
 
     "{{name}} must be a valid NFe access key"
-    => "{{name}} doit être une clé d'accès NFe valide",
+    => "Doit être une clé d'accès NFe valide",
 
     "{{name}} must not be a valid NFe access key"
-    => "{{name}} ne doit pas être une clé d'accès NFe valide",
+    => "Ne doit pas être une clé d'accès NFe valide",
 
     "None of these rules must pass for {{name}}"
-    => "Aucune de ces règles ne doit être validée pour {{name}}",
+    => "Aucune de ces règles ne doit être validée pour ce champ",
 
     "{{name}} must be a valid date"
-    => "{{name}} doit être une date valide",
+    => "Cette date n'est pas valide",
 
     "{{name}} must be a valid date. Sample format: {{format}}"
-    => "{{name}} doit être une date valide. Format : {{format}}",
+    => "Cette date n'est pas valide. Format : {{format}}",
 
     "{{name}} must not be a valid date"
-    => "{{name}} ne doit pas être une date valide",
+    => "Ne doit pas être une date valide",
 
     "{{name}} must not be a valid date in the format {{format}}"
-    => "{{name}} ne doit pas être une date valide au format {{format}}",
+    => "Ne doit pas être une date valide au format {{format}}",
 
     "Key {{name}} must be present"
     => "La clé {{name}} doit être présente",
@@ -1833,220 +321,220 @@ return [
     => "La clé {{name}} ne doit pas être valide",
 
     "{{name}} must be a valid CNPJ number"
-    => "{{name}} doit être un numéro CNPJ valide",
+    => "Doit être un numéro CNPJ valide",
 
     "{{name}} must not be a valid CNPJ number"
-    => "{{name}} ne doit pas être un numéro CNPJ valide",
+    => "Ne doit pas être un numéro CNPJ valide",
 
     "{{name}} must be an URL"
-    => "{{name}} doit être une URL",
+    => "Doit être une URL",
 
     "{{name}} must not be an URL"
-    => "{{name}} ne doit pas être une URL",
+    => "Ne doit pas être une URL",
 
     "{{name}} must start with ({{startValue}})"
-    => "{{name}} doit démarrer par ({{startValue}})",
+    => "Doit démarrer par ({{startValue}})",
 
     "{{name}} must not start with ({{startValue}})"
-    => "{{name}} ne doit pas démarrer par ({{startValue}})",
+    => "Ne doit pas démarrer par ({{startValue}})",
 
     "{{name}} is not considered as \"False\""
-    => "{{name}} n'est pas considéré \"False\"",
+    => "N'est pas considéré \"False\"",
 
     "{{name}} is considered as \"False\""
-    => "{{name}} est considéré \"False\"",
+    => "Est considéré \"False\"",
 
     "{{name}} must be {{type}}"
-    => "{{name}} doit être {{type}}",
+    => "Doit être {{type}}",
 
     "{{name}} must not be {{type}}"
-    => "{{name}} ne doit pas être {{type}}",
+    => "Ne doit pas être {{type}}",
 
     "{{name}} must have {{mimetype}} mimetype"
-    => "{{name}} doit avoir un mimetype {{mimetype}}",
+    => "Doit avoir un mimetype {{mimetype}}",
 
     "{{name}} must not have {{mimetype}} mimetype"
-    => "{name}} ne doit pas avoir un mimetype {{mimetype}}",
+    => "Ne doit pas avoir un mimetype {{mimetype}}",
 
     "{{name}} must be of the type array"
-    => "{{name}} doit être de type array",
+    => "Doit être de type array",
 
     "{{name}} must not be of the type array"
-    => "{{name}} ne doit pas être de type array",
+    => "Ne doit pas être de type array",
 
     "{{name}} must be a BSN"
-    => "{{name}} doit être un BSN",
+    => "Doit être un BSN",
 
     "{{name}} must not be a BSN"
-    => "{{name}} ne doit pas être un BSN",
+    => "Ne doit pas être un BSN",
 
     "{{name}} must be a boolean"
-    => "{{name}} doit être un booléen",
+    => "Doit être un booléen",
 
     "{{name}} must not be a boolean"
-    => "{{name}} ne doit pas être un booléen",
+    => "Ne doit pas être un booléen",
 
     "The value must not be optional"
     => "La valeur ne doit pas être optionnelle",
 
     "{{name}} must not be optional"
-    => "{{name}} ne doit pas être optionnelle",
+    => "Ne doit pas être optionnelle",
 
     "The value must be optional"
     => "La valeur doit être optionnelle",
 
     "{{name}} must be optional"
-    => "{{name}} doit être optionnel",
+    => "Doit être optionnel",
 
     "{{name}} must be a scalar value"
-    => "{{name}} doit être une valeur scalaire",
+    => "Doit être une valeur scalaire",
 
     "{{name}} must not be a scalar value"
-    => "{{name}} ne doit pas être une valeur scalaire",
+    => "Ne doit pas être une valeur scalaire",
 
     "{{name}} must be a valid CNH number"
-    => "{{name}} doit être un numéro CNH valide",
+    => "Doit être un numéro CNH valide",
 
     "{{name}} must not be a valid CNH number"
-    => "{{name}} ne doit pas être un numéro CNH valide",
+    => "Ne doit pas être un numéro CNH valide",
 
     "{{name}} must be a german BIC"
-    => "{{name}} doit être un BIC allemand",
+    => "Doit être un BIC allemand",
 
     "{{name}} must not be a german BIC"
-    => "{{name}} ne doit pas être un BIC allemand",
+    => "Ne doit pas être un BIC allemand",
 
     "{{name}} must be a german bank"
-    => "{{name}} doit être une banque allemande",
+    => "Doit être une banque allemande",
 
     "{{name}} must not be a german bank"
-    => "{{name}} ne doit pas être une banque allemande",
+    => "Ne doit pas être une banque allemande",
 
     "{{name}} must be a german bank account"
-    => "{{name}} doit être un compte bancaire allemand",
+    => "Doit être un compte bancaire allemand",
 
     "{{name}} must not be a german bank account"
-    => "{{name}} ne doit pas être un compte bancaire allemand",
+    => "Ne doit pas être un compte bancaire allemand",
 
     "{{name}} must be a valid Polish Identity Card number"
-    => "{{name}} doit être un numéro de carte d'identité Polonais valide",
+    => "Doit être un numéro de carte d'identité Polonais valide",
 
     "{{name}} must not be a valid Polish Identity Card number"
-    => "{{name}} ne doit pas être un numéro de carte d'identité Polonais valide",
+    => "Ne doit pas être un numéro de carte d'identité Polonais valide",
 
     "{{name}} must be in the {{charset}} charset"
-    => "{{name}} doit être dans le charset {{charset}}",
+    => "Doit être dans le charset {{charset}}",
 
     "{{name}} must not be in the {{charset}} charset"
-    => "{{name}} ne doit pas être dans le charset {{charset}}",
+    => "Ne doit pas être dans le charset {{charset}}",
 
     "{{name}} must have {{extension}} extension"
-    => "{{name}} doit avoir l'extension {{extension}}",
+    => "Doit avoir l'extension {{extension}}",
 
     "{{name}} must not have {{extension}} extension"
-    => "{{name}}ne doit pas avoir l'extension {{extension}}",
+    => "Ne doit pas avoir l'extension {{extension}}",
 
     "{{name}} must be a valid Identity Card number for {{countryCode}}"
-    => "{{name}} doit être un numéro de carte d'identité valide pour {{countryCode}}",
+    => "Doit être un numéro de carte d'identité valide pour {{countryCode}}",
 
     "{{name}} must not be a valid Identity Card number for {{countryCode}}"
-    => "{{name}} ne doit pas être un numéro de carte d'identité valide pour {{countryCode}}",
+    => "Ne doit pas être un numéro de carte d'identité valide pour {{countryCode}}",
 
     "{{name}} must be an array"
-    => "{{name}} doit être un tableau",
+    => "Doit être un tableau",
 
     "{{name}} must not be an array"
-    => "{{name}} ne doit pas être un tableau",
+    => "Ne doit pas être un tableau",
 
     "{{name}} must contain only graphical characters"
-    => "{{name}} ne doit contenir que que des caractères graphiques",
+    => "Ne doit contenir que que des caractères graphiques",
 
     "{{name}} must contain only graphical characters and \"{{additionalChars}}\""
-    => "{{name}} ne doit contenir que des caractères graphiques et \"{{additionalChars}}\"",
+    => "Ne doit contenir que des caractères graphiques et \"{{additionalChars}}\"",
 
     "{{name}} must not contain graphical characters"
-    => "{{name}} ne doit contenir aucun caractère graphique",
+    => "Ne doit contenir aucun caractère graphique",
 
     "{{name}} must not contain graphical characters or \"{{additionalChars}}\""
-    => "{{name}} ne doit contenir aucjn caractères graphiques ni \"{{additionalChars}}\"",
+    => "Ne doit contenir aucun caractère graphique ni \"{{additionalChars}}\"",
 
     "{{name}} must be a version"
-    => "{{name}} doit être une version",
+    => "Doit être une version",
 
     "{{name}} must not be a version"
-    => "{{name}} ne doit pas être une version",
+    => "Ne doit pas être une version",
 
     "{{name}} must contain only consonants"
-    => "{{name}} ne doit contenir que des consonnes",
+    => "Ne doit contenir que des consonnes",
 
     "{{name}} must contain only consonants and \"{{additionalChars}}\""
-    => "{{name}} ne doit contenir que des consonnes et \"{{additionalChars}}\"",
+    => "Ne doit contenir que des consonnes et \"{{additionalChars}}\"",
 
     "{{name}} must not contain consonants"
-    => "{name}} ne doit contenir aucune consonne",
+    => "Ne doit contenir aucune consonne",
 
     "{{name}} must not contain consonants or \"{{additionalChars}}\""
-    => "{name}} ne doit contenir aucune consonne ni \"{{additionalChars}}\"",
+    => "Ne doit contenir aucune consonne ni \"{{additionalChars}}\"",
 
     "{{name}} must be a valid subdivision code for {{countryCode}}"
-    => "{{name}} doit être un secteur valide de {{countryCode}}",
+    => "Doit être un secteur valide de {{countryCode}}",
 
     "{{name}} must not be a valid subdivision code for {{countryCode}}"
-    => "{{name}} ne doit pas être un secteur valide de {{countryCode}}",
+    => "Ne doit pas être un secteur valide de {{countryCode}}",
 
     "{{name}} is always invalid"
-    => "{name}} est toujours invalide",
+    => "Ce champ est toujours non-valide",
 
     "{{name}} is not valid"
-    => "{name}} n'est pas valide",
+    => "Ce champ n'est pas valide",
 
     "{{name}} is always valid"
-    => "{name}} est toujours valide",
+    => "Ce champ est toujours valide",
 
     "{{name}} is valid"
-    => "{name}} est valide",
+    => "Ce champ est valide",
 
     "The value must not be empty"
     => "La valeur ne doit pas être vide",
 
     "{{name}} must not be empty"
-    => "{{name}} ne doit pas être vide",
+    => "Ce champ est obligatoire",
 
     "The value must be empty"
-    => "La valeur ne doit pas être vide",
+    => "La valeur doit être vide",
 
     "{{name}} must be empty"
-    => "{{name}} doit être vide",
+    => "Ce champ doit être vide",
 
     "{{name}} must be a symbolic link"
-    => "{{name}} doit être un lien symbolique",
+    => "Doit être un lien symbolique",
 
     "{{name}} must not be a symbolic link"
-    => "{{name}} ne doit pas être un lien symbolique",
+    => "Ne doit pas être un lien symbolique",
 
     "{{name}} must be a valid Credit Card number"
-    => "{{name}} doit être un numéro de carte de crédit valide",
+    => "Doit être un numéro de carte de crédit valide",
 
     "{{name}} must not be a valid Credit Card number"
-    => "{{name}} ne doit pas être un numéro de carte de crédit valide",
+    => "Ne doit pas être un numéro de carte de crédit valide",
 
     "{{name}} must be a resource"
-    => "{{name}} doit être une ressource",
+    => "Doit être une ressource",
 
     "{{name}} must not be a resource"
-    => "{{name}} ne doit pas être une ressource",
+    => "Ne doit pas être une ressource",
 
     "{{name}} must be greater than {{interval}}"
-    => "{{name}} doit être supérieur à {{interval}}",
+    => "Doit être supérieur à {{interval}}",
 
     "{{name}} must be greater than or equal to {{interval}}"
-    => "{{name}} doit être supérieur ou égal à {{interval}}",
+    => "Doit être supérieur ou égal à {{interval}}",
 
     "{{name}} must not be greater than {{interval}}"
-    => "{{name}} ne doit pas être supérieur à {{interval}}",
+    => "Ne doit pas être supérieur à {{interval}}",
 
     "{{name}} must not be greater than or equal to {{interval}}"
-    => "{{name}} ne doit pas être supérieur ou égal à {{interval}}",
+    => "Ne doit pas être supérieur ou égal à {{interval}}",
 
     "{{baseKey}} must be valid to validate {{comparedKey}}"
     => "{{baseKey}} doit être valide pour valider {{comparedKey}}",
@@ -2055,139 +543,139 @@ return [
     => "{{baseKey}} ne doit pas être valide pour valider {{comparedKey}}",
 
     "{{name}} must be a valid perfect square"
-    => "{{name}} doit être un carré parfait",
+    => "Doit être un carré parfait",
 
     "{{name}} must not be a valid perfect square"
-    => "{{name}} ne doit pas être un carré parfait",
+    => "Ne doit pas être un carré parfait",
 
     "{{name}} must be readable"
-    => "{{name}} doit être lisible",
+    => "Doit être lisible",
 
     "{{name}} must not be readable"
-    => "{{name}} ne doit pas être lisible",
+    => "Ne doit pas être lisible",
 
     "{{name}} must be a valid CPF number"
-    => "{{name}} doit être un numéro CPF valide",
+    => "Doit être un numéro CPF valide",
 
     "{{name}} must not be a valid CPF number"
-    => "{{name}} ne doit pas être un numéro CPF valide",
+    => "Ne doit pas être un numéro CPF valide",
 
     "All of these rules must pass for {{name}}"
-    => "Toutes les règles doivent passer pour {{name}}",
+    => "Toutes les règles doivent passer pour ce champ",
 
     "{{name}} must be writable"
-    => "{{name}} doit être accessible en écriture",
+    => "Doit être accessible en écriture",
 
     "{{name}} must not be writable"
-    => "{{name}} ne doit pas être accessible en écriture",
+    => "Ne doit pas être accessible en écriture",
 
     "{{name}} must be countable"
-    => "{{name}} doit être dénombrable",
+    => "Doit être dénombrable",
 
     "{{name}} must not be countable"
-    => "{{name}} ne doit pas être dénombrable",
+    => "Ne doit pas être dénombrable",
 
     "{{name}} must be valid"
-    => "{{name}} doit être valide",
+    => "Ce champ n'est pas valide",
 
     "{{name}} must not be valid"
-    => "{{name}} ne doit pas être valide",
+    => "Ne doit pas être valide",
 
     "At least one of these rules must pass for {{name}}"
-    => "Au moins une de ces règles doivent être validées pour {{name}}",
+    => "L'une des règles suivantes doit être vérifiée",
 
     "At least one of these rules must not pass for {{name}}"
-    => "Au moins une de ces règles doivent être invalidées pour {{name}}",
+    => "L'une des règles suivantes de doit pas être vérifiée",
 
     "{{name}} must be a valid top-level domain name"
-    => "{{name}} doit être un nom de domaine valide de premier niveau",
+    => "Doit être un nom de domaine valide de premier niveau",
 
     "{{name}} must not be a valid top-level domain name"
-    => "{{name}} ne doit pas être un nom de domaine valide de premier niveau",
+    => "Ne doit pas être un nom de domaine valide de premier niveau",
 
     "{{name}} must be a valid language"
-    => "{{name}} doit être un langage valide",
+    => "Doit être un langage valide",
 
     "{{name}} must not be a valid language"
-    => "{{name}} ne doit pas être un langage valide",
+    => "Ne doit pas être un langage valide",
 
     "{{name}} must validate against {{regex}}"
-    => "{{name}} doit être validé par {{regex}}",
+    => "Doit être validé par {{regex}}",
 
     "{{name}} must not validate against {{regex}}"
-    => "{{name}} ne doit pas être validé par {{regex}}",
+    => "Ne doit pas être validé par {{regex}}",
 
     "{{name}} must be an odd number"
-    => "{{name}} doit être un nombre impair",
+    => "Doit être un nombre impair",
 
     "{{name}} must not be an odd number"
-    => "{{name}} ne doit pas être un nombre impair",
+    => "Ne doit pas être un nombre impair",
 
     "{{name}} must be between {{minAge}} and {{maxAge}} years ago"
-    => "{{name}} doit être compris entre {{minAge}} and {{maxAge}} ans",
+    => "Doit être compris entre {{minAge}} and {{maxAge}} ans",
 
     "{{name}} must be lower than {{minAge}} years ago"
-    => "{{name}} doit être inférieur à {{minAge}}",
+    => "Doit être inférieur à {{minAge}}",
 
     "{{name}} must be greater than {{maxAge}} years ago"
-    => "{{name}} doit être supérieur à {{maxAge}}",
+    => "Doit être supérieur à {{maxAge}}",
 
     "{{name}} must not be between {{minAge}} and {{maxAge}} years ago"
-    => "{{name}} ne doit pas être compris entre {{minAge}} and {{maxAge}} ans",
+    => "Ne doit pas être compris entre {{minAge}} and {{maxAge}} ans",
 
     "{{name}} must not be lower than {{minAge}} years ago"
-    => "{{name}} ne doit pas être inférieur à {{minAge}}",
+    => "Ne doit pas être inférieur à {{minAge}}",
 
     "{{name}} must not be greater than {{maxAge}} years ago"
-    => "{{name}} ne doit pas être supérieur à {{maxAge}}",
+    => "Ne doit pas être supérieur à {{maxAge}}",
 
     "{{name}} must contain only letters (a-z) and digits (0-9)"
-    => "{{name}} ne doit contenir que des lettres (a-z) et des chiffres (0-9)",
+    => "Ce champ contient des caractères non autorisés",
 
     "{{name}} must contain only letters (a-z), digits (0-9) and {{additionalChars}}"
-    => "{{name}} ne doit contenir que des lettres (a-z) et des chiffres (0-9) et {{additionalChars}}",
+    => "Ce champ contient des caractères non autorisés",
 
     "{{name}} must not contain letters (a-z) or digits (0-9)"
-    => "{{name}} ne doit contenir aucune lettre (a-z) ni chiffre (0-9)",
+    => "Ce champ contient des caractères non autorisés",
 
     "{{name}} must not contain letters (a-z), digits (0-9) or {{additionalChars}}"
-    => "{{name}} ne doit contenir aucune lettre (a-z), chiffre (0-9) ou {{additionalChars}}",
+    => "Ce champ contient des caractères non autorisés",
 
     "{{name}} must be a valid currency"
-    => "{{name}} doit être une devise valide",
+    => "Doit être une devise valide",
 
     "{{name}} must not be a valid currency"
-    => "{{name}} ne doit pas être une devise valide",
+    => "Ne doit pas être une devise valide",
 
     "{{name}} must contain the value \"{{containsValue}}\""
-    => "{{name}} doit contenir la valeur \"{{containsValue}}\"",
+    => "Doit contenir la valeur \"{{containsValue}}\"",
 
     "{{name}} must not contain the value \"{{containsValue}}\""
-    => "{{name}} ne doit pas contenir la valeur \"{{containsValue}}\"",
+    => "Ne doit pas contenir la valeur \"{{containsValue}}\"",
 
     "{{name}} is not considered as \"Yes\""
-    => "{{name}} n'est pas considéré comme \"Yes\"",
+    => "N'est pas considéré comme \"Yes\"",
 
     "{{name}} is considered as \"Yes\""
-    => "{{name}} est considéré comme \"Yes\"",
+    => "Est considéré comme \"Yes\"",
 
     "{{name}} must be an infinite number"
-    => "{{name}} doit être un nombre infini",
+    => "Doit être un nombre infini",
 
     "{{name}} must not be an infinite number"
-    => "{{name}} ne doit pas être un nombre infini",
+    => "Ne doit pas être un nombre infini",
 
     "{{name}} must be a valid prime number"
-    => "{{name}} doit être un nombre premier valide",
+    => "Doit être un nombre premier valide",
 
     "{{name}} must not be a valid prime number"
-    => "{{name}} ne doit pas être un nombre premier valide",
+    => "Ne doit pas être un nombre premier valide",
 
     "{{name}} must be a valid telephone number"
-    => "{{name}} doit être un numéro de téléphone valide",
+    => "Ce numéro de téléphone n'est pas valide",
 
     "{{name}} must not be a valid telephone number"
-    => "{{name}} ne doit pas être un numéro de téléphone valide",
+    => "Ne doit pas être un numéro de téléphone valide",
 
     "Must have keys {{keys}}"
     => "Doit posséder les clés {{keys}}",
@@ -2196,190 +684,190 @@ return [
     => "Ne doit pas posséder les clés {{keys}}",
 
     "{{name}} must be a string"
-    => "{{name}} doit être une chaîne de caractères",
+    => "Doit être une chaîne de caractères",
 
     "{{name}} must not be string"
-    => "{{name}} ne doit pas être une chaîne de caractères",
+    => "Ne doit pas être une chaîne de caractères",
 
     "No items were found for key chain {{name}}"
-    => "Aucun élément n'a été trouvé dans la key-chain {{name}}",
+    => "Aucun élément n'a été trouvé dans cette key-chain",
 
     "Key chain {{name}} is not valid"
-    => "La key-chain {{name}} n'est pas valide",
+    => "Cette key-chain n'est pas valide",
 
     "Items for key chain {{name}} must not be present"
-    => "Les éléments pour la key-chain {{name}} ne doivent pas être présent",
+    => "Les éléments pour cette key-chain ne doivent pas être présents",
 
     "Key chain {{name}} must not be valid"
-    => "La key-chain {{name}} ne doit pas être valide",
+    => "Cette key-chain ne doit pas être valide",
 
     "{{name}} must be numeric"
-    => "{{name}} doit être numérique",
+    => "Ce champ ne peut contenir que des nombres",
 
     "{{name}} must not be numeric"
-    => "{{name}} ne doit pas être numérique",
+    => "Ce champ ne peut pas contenir de nombre",
 
     "{{name}} must be of the type integer"
-    => "{{name}} doit être de type integer",
+    => "Doit être de type integer",
 
     "{{name}} must not be of the type integer"
-    => "{{name}} ne doit pas être de type integer",
+    => "Ne doit pas être de type integer",
 
     "{{name}} must be positive"
-    => "{{name}} doit être positif",
+    => "Doit être positif",
 
     "{{name}} must not be positive"
-    => "{{name}} ne doit pas être positif",
+    => "Ne doit pas être positif",
 
     "{{name}} must be a valid video URL"
-    => "{{name}} doit être une URL de vidéo valide",
+    => "Doit être une URL de vidéo valide",
 
     "{{name}} must be a valid {{service}} video URL"
-    => "{{name}} doit être une URL de vidéo {{service}} validee",
+    => "Doit être une URL de vidéo {{service}} valide",
 
     "{{name}} must not be a valid video URL"
-    => "{{name}} ne doit pas être une URL de vidéo validee",
+    => "Ne doit pas être une URL de vidéo valide",
 
     "{{name}} must not be a valid {{service}} video URL"
-    => "{{name}} ne doit pas être une URL de vidéo {{service}} validee",
+    => "Ne doit pas être une URL de vidéo {{service}} valide",
 
     "{{name}} must contain only control characters"
-    => "{{name}} ne doit contenir que des caractères de contrôle",
+    => "Ne doit contenir que des caractères de contrôle",
 
     "{{name}} must contain only control characters and \"{{additionalChars}}\""
-    => "{{name}} ne doit contenir que des caractères de contrôle et \"{{additionalChars}}\"",
+    => "Ne doit contenir que des caractères de contrôle et \"{{additionalChars}}\"",
 
     "{{name}} must not contain control characters"
-    => "{{name}} ne doit contenir aucun caractère de contrôle et \"{{additionalChars}}\"",
+    => "Ne doit contenir aucun caractère de contrôle et \"{{additionalChars}}\"",
 
     "{{name}} must not contain control characters or \"{{additionalChars}}\""
-    => "{{name}} ne doit contenir que des caractères de contrôle et \"{{additionalChars}}\"",
+    => "Ne doit contenir que des caractères de contrôle et \"{{additionalChars}}\"",
 
     "{{name}} is not considered as \"No\""
-    => "{{name}} n'est pas considéré comme \"No\"",
+    => "N'est pas considéré comme \"No\"",
 
     "{{name}} is considered as \"No\""
-    => "{{name}} est considéré comme \"No\"",
+    => "Est considéré comme \"No\"",
 
     "{{name}} must be multiple of {{multipleOf}}"
-    => "{{name}} doit être un multiple de {{multipleOf}}",
+    => "Doit être un multiple de {{multipleOf}}",
 
     "{{name}} must not be multiple of {{multipleOf}}"
-    => "{{name}} ne doit pas être un multiple de {{multipleOf}}",
+    => "Ne doit pas être un multiple de {{multipleOf}}",
 
     "{{name}} must be an even number"
-    => "{{name}} doit être un nombre pair",
+    => "Doit être un nombre pair",
 
     "{{name}} must not be an even number"
-    => "{{name}} ne doit pas être un nombre pair",
+    => "Ne doit pas être un nombre pair",
 
     "{{name}} must be a valid domain"
-    => "{{name}} doit être un domaine valide",
+    => "Doit être un domaine valide",
 
     "{{name}} must not be a valid domain"
-    => "{{name}} ne doit pas être un domaine valide",
+    => "Ne doit pas être un domaine valide",
 
     "{{name}} must be a directory"
-    => "{{name}} doit être un répertoire",
+    => "Doit être un répertoire",
 
     "{{name}} must not be a directory"
-    => "{{name}} ne doit pas être un répertoire",
+    => "Ne doit pas être un répertoire",
 
     "{{name}} must be a valid mac address"
-    => "{{name}} doit être une adresse MAC valide",
+    => "Doit être une adresse MAC valide",
 
     "{{name}} must not be a valid mac address"
-    => "{{name}} ne doit pas être une adresse MAC valide",
+    => "Ne doit pas être une adresse MAC valide",
 
     "{{name}} must contain only digits (0-9)"
-    => "{{name}} ne doit contenir que des chiffres (0-9) ",
+    => "Ne doit contenir que des chiffres (0-9) ",
 
     "{{name}} must contain only digits (0-9) and \"{{additionalChars}}\""
-    => "{{name}} ne doit contenir que des chiffres (0-9) et \"{{additionalChars}}\"",
+    => "Ne doit contenir que des chiffres (0-9) et \"{{additionalChars}}\"",
 
     "{{name}} must not contain digits (0-9)"
-    => "{{name}} ne doit contenir aucun chiffre (0-9)",
+    => "Ne doit contenir aucun chiffre (0-9)",
 
     "{{name}} must not contain digits (0-9) or \"{{additionalChars}}\""
-    => "{{name}} ne doit contenir aucun chiffre (0-9) ni \"{{additionalChars}}\"",
+    => "Ne doit contenir aucun chiffre (0-9) ni \"{{additionalChars}}\"",
 
     "{{name}} must be uppercase"
-    => "{{name}} doit être en majuscule",
+    => "Doit être en majuscule",
 
     "{{name}} must not be uppercase"
-    => "{{name}} ne doit pas être en majuscule",
+    => "Ne doit pas être en majuscule",
 
     "The value must not be blank"
     => "La valeur ne doit pas être vide",
 
     "{{name}} must not be blank"
-    => "{{name}} ne doit pas être vide",
+    => "Ne doit pas être vide",
 
     "The value must be blank"
     => "La valeur doit être vide",
 
     "{{name}} must be blank"
-    => "{{name}} doit être vide",
+    => "Doit être vide",
 
     "{{name}} must be valid email"
-    => "{{name}} doit être une adresse email valide",
+    => "Cette adresse e-mail n'est pas valide",
 
     "{{name}} must not be an email"
-    => "{{name}} ne doit pas être une adresse email valide",
+    => "Ne doit pas être une adresse email valide",
 
     "{{name}} must be an IP address"
-    => "{{name}} doit être une adresse IP",
+    => "Doit être une adresse IP",
 
     "{{name}} must be an IP address in the {{range}} range"
-    => "{{name}} doit être une adresse IP dans la rangée {{range}}",
+    => "Doit être une adresse IP dans la rangée {{range}}",
 
     "{{name}} must not be an IP address"
-    => "{{name}} ne doit pas être une adresse IP",
+    => "Ne doit pas être une adresse IP",
 
     "{{name}} must not be an IP address in the {{range}} range"
-    => "{{name}} ne doit pas être une adresse IP dans la rangée {{range}}",
+    => "Ne doit pas être une adresse IP dans la rangée {{range}}",
 
     "{{name}} must be negative"
-    => "{{name}} doit être négatif",
+    => "Doit être négatif",
 
     "{{name}} must not be negative"
-    => "{{name}} ne doit pas être négatif",
+    => "Ne doit pas être négatif",
 
     "{{name}} must be of the type float"
-    => "{{name}} doit être de type float",
+    => "Doit être de type float",
 
     "{{name}} must not be of the type float"
-    => "{{name}} ne doit pas être de type float",
+    => "Ne doit pas être de type float",
 
     "{{name}} must be a finite number"
-    => "{{name}} doit être un nombre fini",
+    => "Doit être un nombre fini",
 
     "{{name}} must not be a finite number"
-    => "{{name}} ne doit pas être un nombre fini",
+    => "Ne doit pas être un nombre fini",
 
     "{{name}} must be a valid country"
-    => "{{name}} doit être un pays valide",
+    => "Doit être un pays valide",
 
     "{{name}} must not be a valid country"
-    => "{{name}} ne doit pas être un pays valide",
+    => "Ne doit pas être un pays valide",
 
     "{{name}} must have a length between {{minValue}} and {{maxValue}}"
-    => "{{name}} doit avoir une longueur entre {{minValue}} et {{maxValue}}",
+    => "{{minValue}} caractères min., {{maxValue}} caractères max.",
 
     "{{name}} must have a length greater than {{minValue}}"
-    => "{{name}} doit avoir une longueur supérieur à {{minValue}}",
+    => "{{minValue}} caractères min.",
 
     "{{name}} must have a length lower than {{maxValue}}"
-    => "{{name}} doit avoir une longueur inférieure à {{maxValue}}",
+    => "{{maxValue}} caractères max.",
 
     "{{name}} must not have a length between {{minValue}} and {{maxValue}}"
-    => "{{name}} ne doit pas avoir une longueur entre {{minValue}} et {{maxValue}}",
+    => "{{maxValue}} caractères min., ou {{minValue}} caractères max.",
 
     "{{name}} must not have a length greater than {{minValue}}"
-    => "{{name}} ne doit pas avoir une longueur supérieur à {{minValue}}",
+    => "{{minValue}} caractères min.",
 
     "{{name}} must not have a length lower than {{maxValue}}"
-    => "{{name}} ne doit pas avoir une longueur inférieure à {{maxValue}}",
+    => "{{maxValue}} caractères max.",
 
     "The age must be {{age}} years or more."
     => "L'âge doit être {{age}} ans ou plus",
@@ -2388,70 +876,70 @@ return [
     => "L'âge ne doit pas être plus de {{age}} ans ",
 
     "{{name}} must be a valid IMEI"
-    => "{{name}} doit être un numéro IMEI valide",
+    => "Doit être un numéro IMEI valide",
 
     "{{name}} must not be a valid IMEI"
-    => "{{name}} ne doit pas être un numéro IMEI valide",
+    => "Ne doit pas être un numéro IMEI valide",
 
     "{{name}} must end with ({{endValue}})"
-    => "{{name}} doit finir par ({{endValue}})",
+    => "Doit finir par ({{endValue}})",
 
     "{{name}} must not end with ({{endValue}})"
-    => "{{name}} ne doit pas finir par ({{endValue}})",
+    => "Ne doit pas finir par ({{endValue}})",
 
     "{{name}} must be a valid JSON string"
-    => "{{name}} doit être une chaîne JSON valide",
+    => "Doit être une chaîne JSON valide",
 
     "{{name}} must not be a valid JSON string"
-    => "{{name}} ne doit pas être une chaîne JSON valide",
+    => "Ne doit pas être une chaîne JSON valide",
 
     "{{name}} is not considered as \"True\""
-    => "{{name}} n'est pas considéré comme \"True\"",
+    => "N'est pas considéré comme \"True\"",
 
     "{{name}} is considered as \"True\""
-    => "{{name}} est considéré comme \"True\"",
+    => "Est considéré comme \"True\"",
 
     "{{name}} must be in {{haystack}}"
-    => "{{name}} doit être dans {{haystack}}",
+    => "Doit être dans {{haystack}}",
 
     "{{name}} must not be in {{haystack}}"
-    => "{{name}} ne doit pas être dans {{haystack}}",
+    => "Ne doit pas être dans {{haystack}}",
 
     "{{name}} must be a factor of {{dividend}}"
-    => "{{name}} doit être un facteur de {{dividend}}",
+    => "Doit être un facteur de {{dividend}}",
 
     "{{name}} must not be a factor of {{dividend}}"
-    => "{{name}} ne doit pas être un facteur de {{dividend}}",
+    => "Ne doit pas être un facteur de {{dividend}}",
 
     "{{name}} must be lowercase"
-    => "{{name}} doit être en minuscules",
+    => "Doit être en minuscules",
 
     "{{name}} must not be lowercase"
-    => "{{name}} ne doit pas être en minuscules",
+    => "Ne doit pas être en minuscules",
 
     "{{name}} must contain only punctuation characters"
-    => "{{name}} ne doit contenir que des caractères de ponctuation",
+    => "Ne doit contenir que des caractères de ponctuation",
 
     "{{name}} must contain only punctuation characters and \"{{additionalChars}}\""
-    => "{{name}} ne doit contenir que des caractères de ponctuation et \"{{additionalChars}}\"",
+    => "Ne doit contenir que des caractères de ponctuation et \"{{additionalChars}}\"",
 
     "{{name}} must not contain punctuation characters"
-    => "{{name}} ne doit contenir aucun caractère de ponctuation",
+    => "Ne doit contenir aucun caractère de ponctuation",
 
     "{{name}} must not contain punctuation characters or \"{{additionalChars}}\""
-    => "{{name}} ne doit contenir aucun caractère de ponctuation ni \"{{additionalChars}}\"",
+    => "Ne doit contenir aucun caractère de ponctuation ni \"{{additionalChars}}\"",
 
     "{{name}} must be a boolean value"
-    => "{{name}} doit être une valeur booléenne",
+    => "Doit être une valeur booléenne",
 
     "{{name}} must not be a boolean value"
-    => "{{name}} ne doit pas être une valeur booléenne",
+    => "Ne doit pas être une valeur booléenne",
 
     "{{name}} must be a bank"
-    => "{{name}} doit être une banque",
+    => "Doit être une banque",
 
     "{{name}} must not be a bank"
-    => "{{name}} ne doit pas être une banque",
+    => "Ne doit pas être une banque",
 
     "Missing value"
     => "Valeur manquante",
@@ -2462,14 +950,11 @@ return [
     "event-cannot-be-archived"
     => "Un événement ne peut pas être archivé si son inventaire de retour n'a pas encore été effectué !",
 
-    "referenceAlreadyInUse"
-    => "Cette référence est déjà utilisée.",
-
     "invalid-uuid"
-    => "L'identifiant unique (UUID) est invalide.",
+    => "L'identifiant unique (UUID) n'est pas valide.",
 
     "invalid-value"
-    => "Valeur invalide.",
+    => "La valeur n'est pas valide.",
 
     "technician-assignation-before-event"
     => "L'assignation de ce technicien commence avant l'événement.",
@@ -2510,12 +995,6 @@ return [
     "quantities-of-terminated-inventory-cannot-be-updated"
     => "Les quantités d'un inventaire terminé ne peuvent pas être mise à jour.",
 
-    "material-units-cannot-be-broken-and-lost-at-the-same-time"
-    => "Les unités ne peuvent pas être \"en panne\" et \"perdues\" en même temps.",
-
-    "some-units-states-are-not-valid"
-    => "Certains états d'unité sont invalides.",
-
     "only-existing-inventories-can-be-marked-as-terminated"
     => "Seuls les inventaires existants peuvent être marqués comme terminés.",
 
@@ -2525,11 +1004,45 @@ return [
     "this-material-was-not-present-in-submitted-inventory"
     => "Ce matériel n'était pas présent dans l'inventaire soumis.",
 
-    "managed-units-of-material-has-changed-please-check-its-quantities"
-    => "La gestion des unités du matériel a changé, veuillez vérifier ses quantités.",
+    "some-informations-are-not-valid"
+    => "Certaines informations ne sont pas valides.",
 
-    "material-units-were-updated-since-submission"
-    => "Les unités de matériel ont été mises à jour depuis la soumission.",
+    //
+    // - Existence messages
+    //
+
+    "bill-number-already-in-use"
+    => "Une facture existe déjà avec ce numéro",
+
+    "category-name-already-in-use"
+    => "Une catégorie existe déjà avec ce nom",
+
+    "company-legal-name-already-in-use"
+    => "Une société existe déjà avec cette raison sociale (nom)",
+
+    "document-already-in-use-for-this-material"
+    => "Un document avec le même nom existe déjà pour ce matériel",
+
+    "reference-already-in-use"
+    => "Cette référence est déjà utilisée",
+
+    "email-already-in-use"
+    => "Cette adresse e-mail est déjà utilisée",
+
+    "park-name-already-in-use"
+    => "Un parc avec ce nom existe déjà",
+
+    "subcategory-already-in-use-for-this-category"
+    => "Cette sous-catégorie existe déjà dans la catégorie",
+
+    "tag-name-already-in-use"
+    => "Ce tag existe déjà",
+
+    "user-pseudo-already-in-use"
+    => "Ce pseudo est déjà utilisé",
+
+    "user-email-already-in-use"
+    => "Cet e-mail est déjà utilisé",
 
     //
     // - Upload messages
@@ -2552,9 +1065,6 @@ return [
 
     "document-cannot-be-saved-in-db"
     => "Le document n'a pas pu être sauvegardé dans la base de données. Raison : %s",
-
-    "material-picture-cannot-be-saved-in-db"
-    => "L'image pour le matériel n'a pas pu être sauvegardé dans la base de données. Raison : %s",
 
     //
     // - Install messages
@@ -2827,6 +1337,9 @@ return [
 
     "materials"
     => "Matériel",
+
+    "notCategorized"
+    => "Non catégorisé",
 
     "otherMaterials"
     => "Autre matériel",

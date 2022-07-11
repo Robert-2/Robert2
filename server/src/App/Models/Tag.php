@@ -26,8 +26,32 @@ class Tag extends BaseModel
         parent::__construct($attributes);
 
         $this->validation = [
-            'name' => V::notEmpty()->length(1, 48)
+            'name' => V::callback([$this, 'checkName']),
         ];
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Validation
+    // -
+    // ------------------------------------------------------
+
+    public function checkName($value)
+    {
+        V::notEmpty()
+            ->length(1, 48)
+            ->check($value);
+
+        $query = static::where('name', $value);
+        if ($this->exists) {
+            $query->where('id', '!=', $this->id);
+        }
+
+        if ($query->withTrashed()->exists()) {
+            return 'tag-name-already-in-use';
+        }
+
+        return true;
     }
 
     // ——————————————————————————————————————————————————————
@@ -39,11 +63,6 @@ class Tag extends BaseModel
     public function Persons()
     {
         return $this->morphedByMany(Person::class, 'taggable');
-    }
-
-    public function Companies()
-    {
-        return $this->morphedByMany(Company::class, 'taggable');
     }
 
     public function Materials()

@@ -30,7 +30,7 @@ const App = (props, { root }) => {
     watch(route, () => { root.$modal.hideAll(); });
 
     return () => {
-        invariant(layout.value in layouts, `The "${layout}" layout doesn't exist.`);
+        invariant(layout.value in layouts, `Le layout "${layout}" n'existe pas.`);
         const Layout = layouts[layout.value];
 
         return (

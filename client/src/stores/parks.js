@@ -9,10 +9,7 @@ export default {
         error: null,
     },
     getters: {
-        options: (state, getters, rootState) => {
-            const { locale, translations } = rootState.i18n;
-            return formatOptions(state.list, null, translations[locale]['please-choose']);
-        },
+        options: (state) => formatOptions(state.list),
 
         parkName: (state) => (parkId) => {
             const park = state.list.find((_park) => _park.id === parkId);

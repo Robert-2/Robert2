@@ -1,0 +1,7 @@
+@use '~@/style/globals';
+
+.EventDetailsNotBillable {
+    color: globals.$text-warning-color;
+    font-size: 1.2rem;
+    text-align: center;
+}

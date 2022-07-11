@@ -161,6 +161,36 @@ final class AttributesTest extends ApiTestCase
         $this->assertEquals($expected, $response);
     }
 
+    public function testGetAllWithoutCategory()
+    {
+        // - Récupère les caractéristiques spéciales qui n'ont pas de catégorie.
+        $this->client->get('/api/attributes?category=none');
+        $this->assertStatusCode(SUCCESS_OK);
+        $response = $this->_getResponseAsArray();
+        $expected = [
+            [
+                'id' => 4,
+                'name' => "Conforme",
+                'type' => "boolean",
+                'categories' => [],
+            ],
+            [
+                'id' => 2,
+                'name' => "Couleur",
+                'type' => "string",
+                'maxLength' => null,
+                'categories' => [],
+            ],
+            [
+                'id' => 5,
+                'name' => "Date d'achat",
+                'type' => "date",
+                'categories' => [],
+            ],
+        ];
+        $this->assertEquals($expected, $response);
+    }
+
     public function testCreateAttribute()
     {
         // Crée une nouvelle caractéristique spéciale

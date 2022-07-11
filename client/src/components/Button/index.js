@@ -1,10 +1,10 @@
 import './index.scss';
 import { toRefs, computed } from '@vue/composition-api';
-import { Fragment } from 'vue-fragment';
+import Fragment from '@/components/Fragment';
 import Icon from '@/components/Icon';
 import useI18n from '@/hooks/vue/useI18n';
 
-const TYPES = ['default', 'success', 'warning', 'danger', 'primary'];
+const TYPES = ['default', 'success', 'warning', 'danger', 'primary', 'secondary'];
 
 // NOTE: L'idée ici n'est pas d'ajouter tous les types possibles mais uniquement ceux
 // qui se retrouvent à de multiples endroits (pour éviter d'avoir des soucis de cohérence)
@@ -48,6 +48,13 @@ const Button = (props, { slots, emit }) => {
         loading,
         tooltip,
     } = toRefs(props);
+
+    const handleClick = () => {
+        if (disabled.value) {
+            return;
+        }
+        emit('click');
+    };
 
     const getPredefinedValue = (key) => {
         if (!Object.keys(PREDEFINED_TYPES).includes(type.value)) {
@@ -136,10 +143,10 @@ const Button = (props, { slots, emit }) => {
 
             return (
                 <router-link to={to.value} custom>
-                    {({ href, navigate: handleClick }) => (
+                    {({ href, navigate: handleNavigate }) => (
                         <a
                             href={href}
-                            onClick={handleClick}
+                            onClick={handleNavigate}
                             v-tooltip={_tooltip.value}
                             class={_className.value}
                         >
@@ -157,7 +164,7 @@ const Button = (props, { slots, emit }) => {
                 class={_className.value}
                 disabled={disabled.value || loading.value}
                 v-tooltip={!disabled.value ? _tooltip.value : undefined}
-                onClick={emit.bind(null, 'click')}
+                onClick={handleClick}
             >
                 {content}
             </button>

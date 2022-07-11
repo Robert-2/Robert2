@@ -127,13 +127,13 @@ class EventData
                 continue;
             }
 
-            $categoryId = $material['category_id'];
+            $categoryId = $material['category_id'] ?: 0;
             $quantity = $material['pivot']['quantity'];
 
             if (!isset($categoriesTotals[$categoryId])) {
                 $categoriesTotals[$categoryId] = [
                     'id' => $categoryId,
-                    'name' => $this->getCategoryName($categoryId),
+                    'name' => $categoryId ? $this->getCategoryName($categoryId) : null,
                     'quantity' => $quantity,
                     'subTotal' => $quantity * $price,
                 ];
@@ -144,7 +144,17 @@ class EventData
             $categoriesTotals[$categoryId]['subTotal'] += $quantity * $price;
         }
 
-        return array_values($categoriesTotals);
+        usort($categoriesTotals, function ($a, $b) {
+            if ($a['name'] === null) {
+                return 1;
+            }
+            if ($b['name'] === null) {
+                return -1;
+            }
+            return strcasecmp($a['name'], $b['name']);
+        });
+
+        return $categoriesTotals;
     }
 
     public function getMaterialByCategories(bool $withHidden = false): array

@@ -1,0 +1,62 @@
+@use '~@/style/globals';
+
+.ProfileUserSettings {
+    $block: &;
+
+    &__section {
+        margin-top: globals.$content-padding-large-vertical;
+
+        &__title {
+            margin: 0;
+        }
+
+        &__help {
+            margin-top: 0.2rem;
+            font-style: italic;
+        }
+
+        &__body {
+            margin-top: 1.2rem;
+        }
+    }
+
+    &__name {
+        display: flex;
+        margin-bottom: globals.$content-padding-small-vertical;
+
+        #{$block}__first-name,
+        #{$block}__last-name {
+            flex: 1;
+            width: 50%;
+            margin: 0;
+        }
+
+        #{$block}__first-name {
+            margin-right: 5px;
+        }
+
+        #{$block}__last-name {
+            margin-left: 5px;
+        }
+    }
+
+    &__locality {
+        display: flex;
+        margin: globals.$content-padding-small-vertical 0 0;
+
+        #{$block}__postal-code {
+            flex: unset;
+            width: 120px;
+        }
+
+        #{$block}__city {
+            flex: 1;
+            margin: 0 0 0 10px;
+        }
+    }
+
+    &__actions {
+        margin-top: globals.$content-padding-large-vertical;
+        text-align: center;
+    }
+}

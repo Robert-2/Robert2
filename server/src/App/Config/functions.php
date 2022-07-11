@@ -145,20 +145,6 @@ function slugify(string $str): string
 }
 
 /**
- * Set all empty fields of an array to null
- *
- * @param array $data The array to clean.
- *
- * @return array
- */
-function cleanEmptyFields(array $data): array
-{
-    return array_map(function ($value) {
-        return ($value === '') ? null : $value;
-    }, $data);
-}
-
-/**
  * Permet de normaliser un numéro de téléphone.
  *
  * @param string $phone Le numéro de téléphone à normaliser.
@@ -250,7 +236,7 @@ function splitPeriods(array $slots): array
 }
 
 /**
- * Déplace un fichier uploaded dans le dossier des data en sécurisant son nom
+ * Déplace un fichier uploadé dans le dossier des data en sécurisant son nom
  *
  * @param string                $directory    Dossier dans lequel placer le fichier (sera créé si inexistant)
  * @param UploadedFileInterface $uploadedFile Le fichier à placer
@@ -315,4 +301,41 @@ function roundDate(\DateTime $originalDate, int $precision = 15): DateTime
 
     $date->setTime($hours + 1, 0);
     return $date;
+}
+
+/**
+ * Pour utiliser une transaction de DB, qui rollback les requêtes SQL en cas d'exception.
+ *
+ * @param callable $callback Le code effectuant les opérations sur la base de données.
+ *                           (et donc qui seront rollback en cas d'erreur)
+ *
+ * @return mixed Le retour de la fonction de callback.
+ */
+function dbTransaction(callable $callback)
+{
+    $dbConnection = container('database')->getConnection();
+
+    try {
+        $dbConnection->beginTransaction();
+        $result = $callback();
+        $dbConnection->commit();
+    } catch (\Exception $e) {
+        $dbConnection->rollBack();
+        throw $e;
+    }
+
+    return $result;
+}
+
+/**
+ * Permet de récuperer un sous-ensemble d'un tableau uniquement avec les clés spécifiées.
+ *
+ * @param array        $array Le tableau dont on veut récupérer les clés.
+ * @param array|string $keys  Les clés / La clé à récupérer dans le tableau.
+ *
+ * @return array Le tableau avec uniquement les clés spécifiées (si elles existent).
+ */
+function array_with_keys(array $array, $keys): array
+{
+    return array_intersect_key($array, array_flip((array) $keys));
 }

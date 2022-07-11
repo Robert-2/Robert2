@@ -4,7 +4,6 @@ a {
     text-decoration: none;
 
     &,
-    &:visited,
     &:active {
         color: $link-base-color;
         cursor: pointer;

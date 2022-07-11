@@ -1,6 +1,6 @@
 import './index.scss';
 import moment from 'moment';
-import Config from '@/globals/config';
+import config from '@/globals/config';
 import formatAmount from '@/utils/formatAmount';
 import getEventGrandTotal from '@/utils/getEventGrandTotal';
 import getEventOneDayTotal from '@/utils/getEventOneDayTotal';
@@ -154,9 +154,7 @@ export default {
             if (this.deletingId === id) {
                 return '#';
             }
-
-            const { baseUrl } = Config;
-            return `${baseUrl}/estimates/${id}/pdf`;
+            return `${config.baseUrl}/estimates/${id}/pdf`;
         },
 
         openCreateEstimate() {

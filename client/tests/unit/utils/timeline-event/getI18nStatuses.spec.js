@@ -1,6 +1,6 @@
-import getTimelineEventI18nStatuses from '@/utils/timeline-event/getI18nStatuses';
+import getTimelineEventStatuses from '@/utils/timeline-event/getStatuses';
 
-describe('getTimelineEventI18nStatuses', () => {
+describe('getTimelineEventStatuses', () => {
     test('When event is future, and not confirmed', () => {
         const formattedEvent = {
             isPast: false,
@@ -11,8 +11,8 @@ describe('getTimelineEventI18nStatuses', () => {
             hasMissingMaterials: false,
             hasNotReturnedMaterials: false,
         };
-        const result = getTimelineEventI18nStatuses(formattedEvent);
-        expect(result).toEqual([{ icon: 'question', i18nKey: 'this-event-is-not-confirmed' }]);
+        const result = getTimelineEventStatuses(formattedEvent, (v) => v);
+        expect(result).toEqual([{ icon: 'question', label: '@event.statuses.is-not-confirmed' }]);
     });
 
     test('When event is current, and not confirmed', () => {
@@ -25,10 +25,10 @@ describe('getTimelineEventI18nStatuses', () => {
             hasMissingMaterials: false,
             hasNotReturnedMaterials: false,
         };
-        const result = getTimelineEventI18nStatuses(formattedEvent);
+        const result = getTimelineEventStatuses(formattedEvent, (v) => v);
         expect(result).toEqual([
-            { icon: 'question', i18nKey: 'this-event-is-not-confirmed' },
-            { icon: 'running', i18nKey: 'this-event-is-currently-running' },
+            { icon: 'question', label: '@event.statuses.is-not-confirmed' },
+            { icon: 'running', label: '@event.statuses.is-currently-running' },
         ]);
     });
 
@@ -42,10 +42,10 @@ describe('getTimelineEventI18nStatuses', () => {
             hasMissingMaterials: null,
             hasNotReturnedMaterials: false,
         };
-        const result = getTimelineEventI18nStatuses(formattedEvent);
+        const result = getTimelineEventStatuses(formattedEvent, (v) => v);
         expect(result).toEqual([
-            { icon: 'history', i18nKey: 'this-event-is-past' },
-            { icon: 'exclamation-triangle', i18nKey: 'this-event-needs-its-return-inventory' },
+            { icon: 'history', label: '@event.statuses.is-past' },
+            { icon: 'exclamation-triangle', label: '@event.statuses.needs-its-return-inventory' },
         ]);
     });
 
@@ -59,8 +59,8 @@ describe('getTimelineEventI18nStatuses', () => {
             hasMissingMaterials: false,
             hasNotReturnedMaterials: false,
         };
-        const result = getTimelineEventI18nStatuses(formattedEvent);
-        expect(result).toEqual([{ icon: 'check', i18nKey: 'this-event-is-confirmed' }]);
+        const result = getTimelineEventStatuses(formattedEvent, (v) => v);
+        expect(result).toEqual([{ icon: 'check', label: '@event.statuses.is-confirmed' }]);
     });
 
     test('When event is current, and confirmed', () => {
@@ -73,10 +73,10 @@ describe('getTimelineEventI18nStatuses', () => {
             hasMissingMaterials: false,
             hasNotReturnedMaterials: false,
         };
-        const result = getTimelineEventI18nStatuses(formattedEvent);
+        const result = getTimelineEventStatuses(formattedEvent, (v) => v);
         expect(result).toEqual([
-            { icon: 'running', i18nKey: 'this-event-is-currently-running' },
-            { icon: 'check', i18nKey: 'this-event-is-confirmed' },
+            { icon: 'running', label: '@event.statuses.is-currently-running' },
+            { icon: 'check', label: '@event.statuses.is-confirmed' },
         ]);
     });
 
@@ -90,10 +90,10 @@ describe('getTimelineEventI18nStatuses', () => {
             hasMissingMaterials: null,
             hasNotReturnedMaterials: false,
         };
-        const result = getTimelineEventI18nStatuses(formattedEvent);
+        const result = getTimelineEventStatuses(formattedEvent, (v) => v);
         expect(result).toEqual([
-            { icon: 'lock', i18nKey: 'this-event-is-locked' },
-            { icon: 'exclamation-triangle', i18nKey: 'this-event-needs-its-return-inventory' },
+            { icon: 'lock', label: '@event.statuses.is-locked' },
+            { icon: 'exclamation-triangle', label: '@event.statuses.needs-its-return-inventory' },
         ]);
     });
 
@@ -106,8 +106,8 @@ describe('getTimelineEventI18nStatuses', () => {
             isInventoryDone: true,
             hasMissingMaterials: false,
         };
-        const result = getTimelineEventI18nStatuses(formattedEvent);
-        expect(result).toEqual([{ icon: 'archive', i18nKey: 'this-event-is-archived' }]);
+        const result = getTimelineEventStatuses(formattedEvent, (v) => v);
+        expect(result).toEqual([{ icon: 'archive', label: '@event.statuses.is-archived' }]);
     });
 
     test('When event is future, not confirmed and has missing materials', () => {
@@ -120,10 +120,10 @@ describe('getTimelineEventI18nStatuses', () => {
             hasMissingMaterials: true,
             hasNotReturnedMaterials: false,
         };
-        const result = getTimelineEventI18nStatuses(formattedEvent);
+        const result = getTimelineEventStatuses(formattedEvent, (v) => v);
         expect(result).toEqual([
-            { icon: 'question', i18nKey: 'this-event-is-not-confirmed' },
-            { icon: 'exclamation-triangle', i18nKey: 'this-event-has-missing-materials' },
+            { icon: 'question', label: '@event.statuses.is-not-confirmed' },
+            { icon: 'exclamation-triangle', label: '@event.statuses.has-missing-materials' },
         ]);
     });
 
@@ -137,11 +137,11 @@ describe('getTimelineEventI18nStatuses', () => {
             hasMissingMaterials: true,
             hasNotReturnedMaterials: false,
         };
-        const result = getTimelineEventI18nStatuses(formattedEvent);
+        const result = getTimelineEventStatuses(formattedEvent, (v) => v);
         expect(result).toEqual([
-            { icon: 'question', i18nKey: 'this-event-is-not-confirmed' },
-            { icon: 'running', i18nKey: 'this-event-is-currently-running' },
-            { icon: 'exclamation-triangle', i18nKey: 'this-event-has-missing-materials' },
+            { icon: 'question', label: '@event.statuses.is-not-confirmed' },
+            { icon: 'running', label: '@event.statuses.is-currently-running' },
+            { icon: 'exclamation-triangle', label: '@event.statuses.has-missing-materials' },
         ]);
     });
 
@@ -155,10 +155,10 @@ describe('getTimelineEventI18nStatuses', () => {
             hasMissingMaterials: null,
             hasNotReturnedMaterials: false,
         };
-        const result = getTimelineEventI18nStatuses(formattedEvent);
+        const result = getTimelineEventStatuses(formattedEvent, (v) => v);
         expect(result).toEqual([
-            { icon: 'history', i18nKey: 'this-event-is-past' },
-            { icon: 'exclamation-triangle', i18nKey: 'this-event-needs-its-return-inventory' },
+            { icon: 'history', label: '@event.statuses.is-past' },
+            { icon: 'exclamation-triangle', label: '@event.statuses.needs-its-return-inventory' },
         ]);
     });
 
@@ -172,10 +172,10 @@ describe('getTimelineEventI18nStatuses', () => {
             hasMissingMaterials: true,
             hasNotReturnedMaterials: false,
         };
-        const result = getTimelineEventI18nStatuses(formattedEvent);
+        const result = getTimelineEventStatuses(formattedEvent, (v) => v);
         expect(result).toEqual([
-            { icon: 'check', i18nKey: 'this-event-is-confirmed' },
-            { icon: 'exclamation-triangle', i18nKey: 'this-event-has-missing-materials' },
+            { icon: 'check', label: '@event.statuses.is-confirmed' },
+            { icon: 'exclamation-triangle', label: '@event.statuses.has-missing-materials' },
         ]);
     });
 
@@ -189,11 +189,11 @@ describe('getTimelineEventI18nStatuses', () => {
             hasMissingMaterials: true,
             hasNotReturnedMaterials: false,
         };
-        const result = getTimelineEventI18nStatuses(formattedEvent);
+        const result = getTimelineEventStatuses(formattedEvent, (v) => v);
         expect(result).toEqual([
-            { icon: 'running', i18nKey: 'this-event-is-currently-running' },
-            { icon: 'check', i18nKey: 'this-event-is-confirmed' },
-            { icon: 'exclamation-triangle', i18nKey: 'this-event-has-missing-materials' },
+            { icon: 'running', label: '@event.statuses.is-currently-running' },
+            { icon: 'check', label: '@event.statuses.is-confirmed' },
+            { icon: 'exclamation-triangle', label: '@event.statuses.has-missing-materials' },
         ]);
     });
 
@@ -207,10 +207,10 @@ describe('getTimelineEventI18nStatuses', () => {
             hasMissingMaterials: null,
             hasNotReturnedMaterials: false,
         };
-        const result = getTimelineEventI18nStatuses(formattedEvent);
+        const result = getTimelineEventStatuses(formattedEvent, (v) => v);
         expect(result).toEqual([
-            { icon: 'lock', i18nKey: 'this-event-is-locked' },
-            { icon: 'exclamation-triangle', i18nKey: 'this-event-needs-its-return-inventory' },
+            { icon: 'lock', label: '@event.statuses.is-locked' },
+            { icon: 'exclamation-triangle', label: '@event.statuses.needs-its-return-inventory' },
         ]);
     });
 
@@ -224,8 +224,8 @@ describe('getTimelineEventI18nStatuses', () => {
             hasMissingMaterials: null,
             hasNotReturnedMaterials: false,
         };
-        const result = getTimelineEventI18nStatuses(formattedEvent);
-        expect(result).toEqual([{ icon: 'lock', i18nKey: 'this-event-is-locked' }]);
+        const result = getTimelineEventStatuses(formattedEvent, (v) => v);
+        expect(result).toEqual([{ icon: 'lock', label: '@event.statuses.is-locked' }]);
     });
 
     test('When event is past, confirmed, inventory done, has materials not returned and not archived', () => {
@@ -238,10 +238,10 @@ describe('getTimelineEventI18nStatuses', () => {
             hasMissingMaterials: null,
             hasNotReturnedMaterials: true,
         };
-        const result = getTimelineEventI18nStatuses(formattedEvent);
+        const result = getTimelineEventStatuses(formattedEvent, (v) => v);
         expect(result).toEqual([
-            { icon: 'exclamation-triangle', i18nKey: 'this-event-has-not-returned-materials' },
-            { icon: 'lock', i18nKey: 'this-event-is-locked' },
+            { icon: 'exclamation-triangle', label: '@event.statuses.has-not-returned-materials' },
+            { icon: 'lock', label: '@event.statuses.is-locked' },
         ]);
     });
 
@@ -255,10 +255,10 @@ describe('getTimelineEventI18nStatuses', () => {
             hasMissingMaterials: null,
             hasNotReturnedMaterials: true,
         };
-        const result = getTimelineEventI18nStatuses(formattedEvent);
+        const result = getTimelineEventStatuses(formattedEvent, (v) => v);
         expect(result).toEqual([
-            { icon: 'exclamation-triangle', i18nKey: 'this-event-has-not-returned-materials' },
-            { icon: 'archive', i18nKey: 'this-event-is-archived' },
+            { icon: 'exclamation-triangle', label: '@event.statuses.has-not-returned-materials' },
+            { icon: 'archive', label: '@event.statuses.is-archived' },
         ]);
     });
 });

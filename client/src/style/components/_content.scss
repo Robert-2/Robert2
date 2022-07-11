@@ -16,7 +16,7 @@
         flex: 1;
         display: flex;
         flex-flow: column nowrap;
-        padding: $content-padding-small-horizontal $content-padding-small-vertical;
+        padding: 1rem;
     }
 
     &__header + &__main-view {
@@ -27,16 +27,16 @@
         flex: 0 0 auto;
         display: flex;
         justify-content: flex-end;
-        padding: 0 $content-padding-small-vertical $content-padding-small-horizontal;
+        padding: 0 1rem 1rem;
     }
 
-    @media (min-width: $screen-mobile) {
+    @media (min-width: $screen-tablet) {
         &__main-view {
-            padding: $content-padding-large-horizontal $content-padding-large-vertical;
+            padding: 2rem;
         }
 
         &__footer {
-            padding: 0 $content-padding-large-vertical $content-padding-large-horizontal;
+            padding: 0 2rem 2rem;
         }
     }
 }

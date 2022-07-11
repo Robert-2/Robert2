@@ -33,8 +33,7 @@ final class TagsTest extends ApiTestCase
         $this->assertValidationErrorMessage();
         $this->assertErrorDetails([
             'name' => [
-                "name must not be empty",
-                "name must have a length between 1 and 48"
+                "This field is mandatory",
             ],
         ]);
     }
@@ -42,7 +41,7 @@ final class TagsTest extends ApiTestCase
     public function testCreateTagDuplicate()
     {
         $this->client->post('/api/tags', ['name' => 'Beneficiary']);
-        $this->assertStatusCode(ERROR_DUPLICATE);
+        $this->assertStatusCode(ERROR_VALIDATION);
         $this->assertValidationErrorMessage();
     }
 

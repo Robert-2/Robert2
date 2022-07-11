@@ -15,6 +15,10 @@ export type TagEdit = {
 
 type GetAllParams = { deleted?: boolean };
 
+//
+// - Fonctions
+//
+
 const all = async (params: GetAllParams): Promise<Tag[]> => (
     (await requester.get('/tags', { params })).data
 );

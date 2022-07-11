@@ -1,5 +1,5 @@
 import './index.scss';
-import Config from '@/globals/config';
+import config from '@/globals/config';
 import FormField from '@/components/FormField';
 import Fieldset from '@/components/Fieldset';
 
@@ -24,7 +24,7 @@ export default {
     },
     data() {
         return {
-            currency: Config.currency.symbol,
+            currency: config.currency.symbol,
         };
     },
     computed: {
@@ -33,10 +33,7 @@ export default {
         },
     },
     methods: {
-        handleChangeRate(value, event) {
-            // - Controlled input...
-            event.target.value = this.discountRate;
-
+        handleChangeRate(value) {
             value = Number.parseFloat(value);
 
             if ((!value && value !== 0) || Number.isNaN(value) || !Number.isFinite(value)) {
@@ -54,10 +51,7 @@ export default {
             this.$emit('change', { field: 'rate', value });
         },
 
-        handleChangeAmount(value, event) {
-            // - Controlled input...
-            event.target.value = this.discountTarget;
-
+        handleChangeAmount(value) {
             value = Number.parseFloat(value);
 
             if ((!value && value !== 0) || Number.isNaN(value) || !Number.isFinite(value)) {

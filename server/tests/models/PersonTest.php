@@ -202,17 +202,15 @@ final class PersonTest extends ModelTestCase
         $this->model->edit(null, ['foo' => 'bar']);
     }
 
-    public function testCreatePersonDuplicate(): void
+    public function testCreatePersonDuplicateEmail(): void
     {
-        $result = $this->model->edit(null, [
+        $this->expectException(ValidationException::class);
+        $this->expectExceptionCode(ERROR_VALIDATION);
+        $this->model->edit(null, [
             'first_name' => 'Jean',
-            'last_name' => 'Fountain',
+            'last_name' => 'NewForTest',
             'email' => 'tester@robertmanager.net',
         ]);
-        $resultData = $result->toArray();
-        $this->assertEquals('1, somewhere av.', $resultData['street']);
-        $this->assertEquals('1234', $resultData['postal_code']);
-        $this->assertEquals('Megacity', $resultData['locality']);
     }
 
     public function testCreatePersonDuplicateRef(): void

@@ -1,32 +1,37 @@
 import './index.scss';
 import Page from '@/components/Page';
-import CriticalError from '@/components/CriticalError';
+import CriticalError, { ERROR } from '@/components/CriticalError';
 import Loading from '@/components/Loading';
 import { Tabs, Tab } from '@/components/Tabs';
 import Button from '@/components/Button';
 import apiMaterials from '@/stores/api/materials';
-import Infos from './Infos';
-import Documents from './Documents';
+import Infos from './tabs/Infos';
+import Documents from './tabs/Documents';
 
 // @vue/component
 export default {
     name: 'MaterialView',
     data() {
+        const id = this.$route.params.id
+            ? parseInt(this.$route.params.id, 10)
+            : null;
+
         return {
+            id,
             material: null,
             isLoading: false,
             isFetched: false,
-            hasCriticalError: false,
             selectedTabIndex: 0,
+            criticalError: null,
         };
     },
     computed: {
         pageTitle() {
-            const { $t: __, material } = this;
+            const { $t: __, isFetched, material } = this;
 
-            return material
-                ? __('page-material-view.title', { name: material.name })
-                : __('page-material-view.title-simple');
+            return isFetched
+                ? __('page.material-view.title', { name: material.name })
+                : __('page.material-view.title-simple');
         },
 
         tabsIndexes() {
@@ -34,8 +39,7 @@ export default {
         },
 
         tabsActions() {
-            const { $t: __, tabsIndexes, selectedTabIndex } = this;
-            const { id } = this.$route.params;
+            const { $t: __, id, tabsIndexes, selectedTabIndex } = this;
 
             switch (tabsIndexes[selectedTabIndex]) {
                 case '#infos':
@@ -80,20 +84,17 @@ export default {
         },
 
         async fetchData() {
-            const { id } = this.$route.params;
-
             this.isLoading = true;
-
             try {
-                const data = await apiMaterials.one(id);
+                const data = await apiMaterials.one(this.id);
                 this.material = data;
                 this.selectTabFromRouting();
+                this.isFetched = true;
             } catch (error) {
-                const { code } = error.response?.data?.error ?? { code: 0 };
-                this.hasCriticalError = code === 404 ? 'not-found' : true;
+                const status = error?.response?.status ?? 500;
+                this.criticalError = status === 404 ? ERROR.NOT_FOUND : ERROR.UNKNOWN;
             } finally {
                 this.isLoading = false;
-                this.isFetched = true;
             }
         },
     },
@@ -104,28 +105,22 @@ export default {
             tabsActions,
             isLoading,
             isFetched,
-            hasCriticalError,
+            criticalError,
             material,
             handleSelectTab,
             selectedTabIndex,
         } = this;
 
-        if (hasCriticalError || !isFetched) {
+        if (criticalError || !isFetched) {
             return (
                 <Page name="material-view" title={pageTitle}>
-                    {hasCriticalError
-                        ? <CriticalError type={hasCriticalError === 'not-found' ? 'not-found' : 'default'} />
-                        : <Loading />}
+                    {criticalError ? <CriticalError type={criticalError} /> : <Loading />}
                 </Page>
             );
         }
 
         return (
-            <Page
-                name="material-view"
-                title={pageTitle}
-                isLoading={isLoading}
-            >
+            <Page name="material-view" title={pageTitle} isLoading={isLoading}>
                 <div class="MaterialView">
                     <Tabs
                         defaultIndex={selectedTabIndex}

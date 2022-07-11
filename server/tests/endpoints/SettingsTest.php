@@ -54,20 +54,20 @@ final class SettingsTest extends ApiTestCase
         $this->assertValidationErrorMessage();
         $this->assertErrorDetails([
             'calendar.event.showBorrower' => [
-                'value must be a boolean value',
+                'Must be a boolean value',
             ],
             'eventSummary.materialDisplayMode' => [
-                'At least one of these rules must pass for value',
-                'value must be equals "categories"',
-                'value must be equals "sub-categories"',
-                'value must be equals "parks"',
-                'value must be equals "flat"',
+                'One of the following rules must be verified',
+                'Must be equal to "categories"',
+                'Must be equal to "sub-categories"',
+                'Must be equal to "parks"',
+                'Must be equal to "flat"',
             ],
             'eventSummary.customText.title' => [
-                'value must have a length lower than 191',
+                '191 max. characters',
             ],
             'calendar.public.uuid' => [
-                'The unique identifier (UUID) is invalid.',
+                'The unique identifier (UUID) is not valid.',
             ],
         ]);
     }

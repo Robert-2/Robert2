@@ -1,7 +1,13 @@
 import './index.scss';
-import { toRefs, ref, computed, onMounted, reactive } from '@vue/composition-api';
+import {
+    toRefs,
+    ref,
+    computed,
+    onMounted,
+    reactive,
+} from '@vue/composition-api';
 import { useQuery } from 'vue-query';
-import { Fragment } from 'vue-fragment';
+import Fragment from '@/components/Fragment';
 import config from '@/globals/config';
 import useI18n from '@/hooks/vue/useI18n';
 import useRouter from '@/hooks/vue/useRouter';
@@ -11,9 +17,13 @@ import ErrorMessage from '@/components/ErrorMessage';
 import MaterialsFilters from '@/components/MaterialsFilters';
 import SwitchToggle from '@/components/SwitchToggle';
 import MaterialsStore from './_store';
-import { normalizeFilters } from './_utils';
-import Quantity from './Quantity';
-import ReuseEventMaterials from './ReuseEventMaterials';
+import ReuseEventMaterials from './modals/ReuseEventMaterials';
+import Quantity from './components/Quantity';
+import {
+    normalizeFilters,
+    getMaterialsQuantities,
+    materialsHasChanged,
+} from './_utils';
 
 const noPaginationLimit = 100000;
 
@@ -127,7 +137,7 @@ const MaterialsListEditor = (props, { root, emit }) => {
             'qty': __('qty'),
             'reference': __('reference'),
             'name': __('name'),
-            'stock_quantity': __('quantity'),
+            'stock_quantity': __('stock-qty'),
             'quantity': '',
             'actions': '',
         },
@@ -160,7 +170,10 @@ const MaterialsListEditor = (props, { root, emit }) => {
             },
             {
                 name: 'category',
-                callback: (row, categoryId) => row.category_id === categoryId,
+                callback: (row, categoryId) => (
+                    (row.category_id === null && categoryId === 'uncategorized') ||
+                    row.category_id === categoryId
+                ),
             },
             {
                 name: 'subCategory',
@@ -228,10 +241,7 @@ const MaterialsListEditor = (props, { root, emit }) => {
     return () => (
         <div class="MaterialsListEditor">
             <header class="MaterialsListEditor__header">
-                <MaterialsFilters
-                    ref={filtersRef}
-                    onChange={handleFiltersChanges}
-                />
+                <MaterialsFilters ref={filtersRef} onChange={handleFiltersChanges} />
                 <div class="MaterialsListEditor__header__extra-filters">
                     {hasMaterials.value && (
                         <div class="MaterialsListEditor__header__extra-filters__filter">
@@ -335,5 +345,10 @@ MaterialsListEditor.props = {
 };
 
 MaterialsListEditor.emits = ['change'];
+
+export {
+    getMaterialsQuantities,
+    materialsHasChanged,
+};
 
 export default MaterialsListEditor;

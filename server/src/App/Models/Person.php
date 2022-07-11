@@ -42,8 +42,8 @@ class Person extends BaseModel
             'user_id' => V::optional(V::numeric()),
             'first_name' => V::notEmpty()->alpha(static::EXTRA_CHARS)->length(2, 96),
             'last_name' => V::notEmpty()->alpha(static::EXTRA_CHARS)->length(2, 96),
-            'reference' => V::optional(V::length(null, 191)),
-            'email' => V::optional(V::email()->length(null, 191)),
+            'reference' => V::callback([$this, 'checkReference']),
+            'email' => V::callback([$this, 'checkEmail']),
             'phone' => V::optional(V::phone()),
             'street' => V::optional(V::length(null, 191)),
             'postal_code' => V::optional(V::length(null, 10)),
@@ -51,6 +51,54 @@ class Person extends BaseModel
             'country_id' => V::optional(V::numeric()),
             'company_id' => V::optional(V::numeric()),
         ];
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Validation
+    // -
+    // ------------------------------------------------------
+
+    public function checkReference($value)
+    {
+        V::optional(V::length(null, 191))
+            ->check($value);
+
+        if (!$value) {
+            return true;
+        }
+
+        $query = static::where('reference', $value);
+        if ($this->exists) {
+            $query->where('id', '!=', $this->id);
+        }
+
+        if ($query->withTrashed()->exists()) {
+            return 'reference-already-in-use';
+        }
+
+        return true;
+    }
+
+    public function checkEmail($value)
+    {
+        V::optional(V::email()->length(null, 191))
+            ->check($value);
+
+        if (!$value) {
+            return true;
+        }
+
+        $query = static::where('email', $value);
+        if ($this->exists) {
+            $query->where('id', '!=', $this->id);
+        }
+
+        if ($query->withTrashed()->exists()) {
+            return 'email-already-in-use';
+        }
+
+        return true;
     }
 
     // ——————————————————————————————————————————————————————
@@ -216,16 +264,12 @@ class Person extends BaseModel
                 ->setModel(get_class($this), $id);
         }
 
-        $data = cleanEmptyFields($data);
-        $data = $this->_trimStringFields($data);
-
         if (!empty($data['phone'])) {
             $data['phone'] = normalizePhone($data['phone']);
         }
 
         try {
-            $person = static::firstOrNew(compact('id'));
-            $person->fill($data)->validate()->save();
+            $person = static::updateOrCreate(compact('id'), $data);
 
             if (!empty($data['tags'])) {
                 $this->setTags($person->id, $data['tags']);
@@ -240,7 +284,7 @@ class Person extends BaseModel
                 $i18n = new I18n(Config::getSettings('defaultLang'));
                 throw (new ValidationException)
                     ->setValidationErrors([
-                        'reference' => [$i18n->translate('referenceAlreadyInUse')]
+                        'reference' => [$i18n->translate('reference-already-in-use')]
                     ]);
             }
 

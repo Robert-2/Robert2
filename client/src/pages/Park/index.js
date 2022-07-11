@@ -1,157 +1,147 @@
 import './index.scss';
 import { computed, ref, onMounted } from '@vue/composition-api';
-import requester from '@/globals/requester';
 import useI18n from '@/hooks/vue/useI18n';
+import useRouteId from '@/hooks/vue/useRouteId';
 import useRouter from '@/hooks/vue/useRouter';
-import Help from '@/components/Help';
 import Page from '@/components/Page';
-import ParkForm from './Form';
-import ParkTotals from './Totals';
-
-const WIP_STORAGE_KEY = 'WIP-newPark';
+import CriticalError, { ERROR } from '@/components/CriticalError';
+import Loading from '@/components/Loading';
+import Form from './components/Form';
+import apiParks from '@/stores/api/parks';
 
 // @vue/component
 const ParkEditPage = (props, { root }) => {
     const __ = useI18n();
-    const { route, router } = useRouter();
-    const id = computed(() => route.value.params.id || null);
-    const isNew = computed(() => !id.value || id.value === 'new');
+    const { router } = useRouter();
+    const id = useRouteId();
+    const park = ref(null);
+    const isNew = computed(() => id.value === null);
+    const isFetched = ref(false);
+    const isSaving = ref(false);
+    const criticalError = ref(null);
+    const validationErrors = ref(null);
+    const pageRef = ref(null);
 
-    // TODO: Refactoriser ça + Utiliser des ref() séparées.
-    const state = ref({
-        help: 'page-parks.help-edit',
-        error: null,
-        isLoading: false,
-        isFetched: false,
-        park: {
-            id: id.value,
-            name: '',
-            street: '',
-            postal_code: '',
-            locality: '',
-            country_id: '',
-            total_amount: 0,
-            note: '',
-        },
-        errors: {
-            name: null,
-            street: null,
-            postal_code: null,
-            locality: null,
-            country_id: null,
-        },
+    // ------------------------------------------------------
+    // -
+    // -    Méthodes internes
+    // -
+    // ------------------------------------------------------
+
+    const fetchData = async () => {
+        if (isNew.value) {
+            isFetched.value = true;
+            return;
+        }
+
+        try {
+            park.value = await apiParks.one(id.value);
+            isFetched.value = true;
+        } catch (error) {
+            const status = error?.response?.status ?? 500;
+            criticalError.value = status === 404 ? ERROR.NOT_FOUND : ERROR.UNKNOWN;
+        }
+    };
+
+    const save = async (data) => {
+        if (isSaving.value) {
+            return;
+        }
+        isSaving.value = true;
+
+        const doRequest = () => (
+            !isNew.value
+                ? apiParks.update(id.value, data)
+                : apiParks.create(data)
+        );
+
+        try {
+            const _park = await doRequest();
+            if (!isNew.value) {
+                park.value = _park;
+            }
+
+            validationErrors.value = null;
+            root.$store.dispatch('parks/refresh');
+
+            // - Redirection...
+            root.$toasted.success(__('page.park.saved'));
+            router.replace({ name: 'parks' });
+        } catch (error) {
+            const { code, details } = error.response?.data?.error || { code: 0, details: {} };
+            if (code === 400) {
+                validationErrors.value = { ...details };
+                pageRef.value.scrollToTop();
+            } else {
+                root.$toasted.error(__('errors.unexpected-while-saving'));
+            }
+            isSaving.value = false;
+        }
+    };
+
+    // ------------------------------------------------------
+    // -
+    // -    Handlers
+    // -
+    // ------------------------------------------------------
+
+    onMounted(() => {
+        fetchData();
     });
 
-    const flushStashedData = () => {
-        localStorage.removeItem(WIP_STORAGE_KEY);
-    };
-
-    const resetHelpLoading = () => {
-        state.value.help = 'page-parks.help-edit';
-        state.value.error = null;
-        state.value.isLoading = true;
-    };
-
-    const displayError = (error) => {
-        state.value.help = 'page-parks.help-edit';
-        state.value.error = error;
-
-        // @ts-ignore TODO: Utiliser un typage correct pour la gestion des erreurs de validation de l'API
-        const { code, details } = error.response?.data?.error || { code: 0, details: {} };
-        if (code === 400) {
-            state.value.errors = { ...details };
-        }
-    };
-
-    const getParkData = async () => {
-        if (isNew.value) {
-            const stashedData = localStorage.getItem(WIP_STORAGE_KEY);
-            if (stashedData) {
-                state.value.park = JSON.parse(stashedData);
-            }
-            state.value.isFetched = true;
-            return;
-        }
-
-        resetHelpLoading();
-
-        try {
-            const { data } = await requester.get(`parks/${id.value}`);
-            state.value.park = data;
-            state.value.isFetched = true;
-        } catch (error) {
-            displayError(error);
-        } finally {
-            state.value.isLoading = false;
-        }
-    };
-
-    const save = async (parkData) => {
-        resetHelpLoading();
-
-        const request = isNew.value ? requester.post : requester.put;
-        const endpoint = isNew.value ? 'parks' : `parks/${id.value}`;
-
-        try {
-            const { data } = await request(endpoint, parkData);
-            state.value.park = data;
-            state.value.help = { type: 'success', text: 'page-parks.saved' };
-            flushStashedData();
-            root.$store.dispatch('parks/refresh');
-            setTimeout(() => { router.push('/parks'); }, 300);
-        } catch (error) {
-            displayError(error);
-        } finally {
-            state.value.isLoading = false;
-        }
-    };
-
-    const handleChange = (newData) => {
-        if (!isNew.value) {
-            return;
-        }
-
-        const stashedData = JSON.stringify(newData);
-        localStorage.setItem(WIP_STORAGE_KEY, stashedData);
+    const handleSubmit = (data) => {
+        save(data);
     };
 
     const handleCancel = () => {
-        flushStashedData();
         router.back();
     };
 
-    onMounted(() => {
-        getParkData();
+    // ------------------------------------------------------
+    // -
+    // -    Rendering
+    // -
+    // ------------------------------------------------------
+
+    const pageTitle = computed(() => {
+        if (isNew.value) {
+            return __('page.park.title-create');
+        }
+
+        if (!isFetched.value) {
+            return __('page.park.title-edit-simple');
+        }
+
+        const { name } = park.value;
+        return __('page.park.title-edit', { name });
     });
 
-    const pageTitle = isNew
-        ? __('page-parks.add')
-        : __('page-parks.edit', { pageSubTitle: state.value.park.name });
-
     return () => {
-        const {
-            isFetched,
-            park,
-            errors,
-            help,
-            error,
-            isLoading,
-        } = state.value;
+        if (criticalError.value || !isFetched.value) {
+            return (
+                <Page name="park-edit" title={pageTitle.value}>
+                    {criticalError.value
+                        ? <CriticalError type={criticalError.value} />
+                        : <Loading />}
+                </Page>
+            );
+        }
 
         return (
-            <Page name="park-edit" title={pageTitle}>
-                {isFetched && (
-                    <ParkForm
-                        park={park}
-                        errors={errors}
-                        onSubmit={save}
-                        onChange={handleChange}
+            <Page
+                ref={pageRef}
+                name="park-edit"
+                title={pageTitle.value}
+                hasValidationError={!!validationErrors.value}
+            >
+                <div class="ParkEdit">
+                    <Form
+                        savedData={park.value}
+                        isSaving={isSaving.value}
+                        errors={validationErrors.value}
+                        onSubmit={handleSubmit}
                         onCancel={handleCancel}
                     />
-                )}
-                <div class="Park__sidebar">
-                    <Help message={help} error={error} isLoading={isLoading} />
-                    {isFetched && !isNew.value && <ParkTotals park={park} />}
                 </div>
             </Page>
         );

@@ -8,21 +8,21 @@ export default {
     },
     props: {
         title: { type: String, default: undefined },
-        required: { type: Boolean, default: false },
+        help: { type: String, default: undefined },
     },
     render() {
-        const { title, required, verticalForm } = this;
+        const { title, help, verticalForm } = this;
         const children = this.$slots.default;
 
         const classNames = ['Fieldset', {
-            'Fieldset--required': required,
             'Fieldset--in-vertical-form': verticalForm,
         }];
 
         return (
             <section class={classNames}>
                 {title && <h3 class="Fieldset__title">{title}</h3>}
-                <div className="Fieldset__body">
+                {help && <p class="Fieldset__help">{help}</p>}
+                <div class="Fieldset__body">
                     {children}
                 </div>
             </section>

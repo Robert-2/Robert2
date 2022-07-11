@@ -2,49 +2,17 @@
 
 .Page--park-edit {
     display: flex;
-    flex-flow: column wrap;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
 
-    .ParkForm {
-        flex: 2;
-    }
-
-    @media screen and (min-width: globals.$screen-tablet) {
-        flex-direction: row;
+    .ParkEdit {
+        flex: 1;
+        align-self: center;
     }
 }
 
-.Park {
-    &__sidebar {
-        flex: 1;
-    }
-
-    &__totals {
-        margin: globals.$content-padding-small-vertical globals.$content-padding-large-horizontal;
-
-        &__stock {
-            color: globals.$text-light-color;
-        }
-
-        &__amount {
-            margin-top: globals.$content-padding-small-horizontal;
-
-            &__title {
-                padding: 7px 0;
-            }
-
-            .ParkTotalAmount {
-                display: inline-block;
-
-                &__amount {
-                    font-weight: 600;
-                }
-            }
-        }
-    }
-
-    @media screen and (min-width: globals.$screen-tablet) {
-        &__sidebar {
-            margin-top: 30px;
-        }
-    }
+.ParkEdit {
+    width: 600px;
+    max-width: 100%;
 }

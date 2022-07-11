@@ -1,0 +1,14 @@
+title: Parcs de matériel
+help: Vous pouvez cliquer sur le nombre d'articles que contient le parc pour en afficher la liste.
+
+action-add: Nouveau parc de matériel
+display-events-for-park: Voir les événements
+display-materials-of-this-park: Voir le matériel de ce parc
+print-materials-of-this-park: Imprimer la liste de ce parc
+total-items: Totaux
+
+confirm-restore: "Voulez-vous vraiment restaurer ce parc\_?"
+confirm-delete: "Mettre ce parc à la corbeille\_? Cela ne supprimera pas le matériel qu'il contient."
+confirm-permanently-delete:
+    "Voulez-vous vraiment supprimer définitivement ce parc\_?\n
+    ATTENTION, cela supprimera tout le matériel contenu dans ce parc\_!"

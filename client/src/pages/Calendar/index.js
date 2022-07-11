@@ -1,14 +1,16 @@
 import './index.scss';
 import moment from 'moment';
 import queryClient from '@/globals/queryClient';
-import { DATE_DB_FORMAT, DATE_QUERY_FORMAT } from '@/globals/constants';
-import Alert from '@/components/Alert';
-import Help from '@/components/Help';
-import EventDetails from '@/components/EventDetails';
+import { DATE_DB_FORMAT } from '@/globals/constants';
+import apiEvents from '@/stores/api/events';
+import { confirm } from '@/utils/alert';
+import EventDetails from '@/modals/EventDetails';
+import Page from '@/components/Page';
+import CriticalError from '@/components/CriticalError';
 import Timeline from '@/components/Timeline';
-import CalendarHeader from './Header';
-import CalendarCaption from './Caption';
-import formatEvent from './_utils';
+import CalendarHeader from './components/Header';
+import CalendarCaption from './components/Caption';
+import { formatEvent, getDefaultPeriod } from './_utils';
 
 const ONE_DAY = 1000 * 3600 * 24;
 
@@ -16,20 +18,14 @@ const ONE_DAY = 1000 * 3600 * 24;
 export default {
     name: 'Calendar',
     data() {
-        const isVisitor = this.$store.getters['auth/is']('visitor');
         const parkFilter = this.$route.query.park;
-
-        // - Intervalle affiché dans le calendrier.
-        let start = moment(localStorage.getItem('calendarStart'), 'YYYY-MM-DD HH:mm:ss');
-        let end = moment(localStorage.getItem('calendarEnd'), 'YYYY-MM-DD HH:mm:ss');
-        if (!start.isValid() || !end.isValid()) {
-            start = moment().subtract(2, 'days').startOf('day');
-            end = moment().add(5, 'days').endOf('day');
-        }
+        const { start, end } = getDefaultPeriod();
 
         return {
-            error: null,
+            hasCriticalError: false,
             isLoading: false,
+            isSaving: false,
+            isDeleting: false,
             isOverItem: false,
             fetchStart: moment(start).subtract(8, 'days').startOf('day'),
             fetchEnd: moment(end).add(1, 'months').endOf('month'),
@@ -37,39 +33,50 @@ export default {
             filterMissingMaterial: false,
             parkId: parkFilter ? Number.parseInt(parkFilter, 10) : null,
             events: [],
-            timelineOptions: {
+        };
+    },
+    computed: {
+        helpText() {
+            const { $t: __, isOverItem } = this;
+            return isOverItem
+                ? __('page.calendar.help-timeline-event-operations')
+                : __('page.calendar.help');
+        },
+
+        isVisitor() {
+            return this.$store.getters['auth/is']('visitor');
+        },
+
+        timelineOptions() {
+            const { isVisitor } = this;
+            const { start, end } = getDefaultPeriod();
+
+            return {
                 start,
                 end,
                 selectable: !isVisitor,
                 zoomMin: ONE_DAY * 7,
                 zoomMax: ONE_DAY * 6 * 30,
-            },
-        };
-    },
-    computed: {
-        help() {
-            if (this.isOverItem) {
-                return 'page-calendar.help-timeline-event-operations';
-            }
-            return 'page-calendar.help';
+            };
         },
 
         formattedEvents() {
-            const { $t: __, $store: { state: { settings } } } = this;
+            const { $t: __, $store: { state: { settings } }, events } = this;
             const { showLocation = true, showBorrower = false } = settings.calendar.event;
-            return this.events.map((event) => formatEvent(event, __, { showBorrower, showLocation }));
+            return events.map((event) => formatEvent(event, __, { showBorrower, showLocation }));
         },
 
         filteredEvents() {
-            let events = [...this.formattedEvents];
+            const { formattedEvents, parkId, filterMissingMaterial } = this;
+            let events = [...formattedEvents];
 
-            if (this.parkId) {
+            if (parkId) {
                 events = events.filter(({ parks: eventParks }) => (
-                    eventParks?.includes(this.parkId)
+                    eventParks === null || eventParks?.includes(this.parkId)
                 ));
             }
 
-            if (this.filterMissingMaterial) {
+            if (filterMissingMaterial) {
                 events = events.filter(({ hasMissingMaterials }) => !!hasMissingMaterials);
             }
 
@@ -90,25 +97,16 @@ export default {
             this.getEventsData();
         },
 
-        handleDoubleClick(e) {
-            // - On évite le double-call à cause d'un bug qui trigger l'event en double.
-            // - @see visjs bug here: https://github.com/visjs/vis-timeline/issues/301)
-            if (this.isModalOpened) {
-                return;
-            }
+        handleSetCenterDate(date) {
+            this.$refs.calendarTimeline.moveTo(date);
+        },
 
-            const eventId = e.item;
-            if (eventId) {
-                this.openEventModal(eventId);
-                this.isModalOpened = true;
-                return;
-            }
+        handleFilterMissingMaterial(filterMissingMaterial) {
+            this.filterMissingMaterial = filterMissingMaterial;
+        },
 
-            const atDate = moment(e.time).startOf('day').format(DATE_QUERY_FORMAT);
-            this.$router.push({
-                path: '/events/new',
-                query: { atDate },
-            });
+        handleFilterByPark(parkId) {
+            this.parkId = parkId === '' ? null : Number.parseInt(parkId, 10);
         },
 
         handleRangeChanged(newPeriod) {
@@ -136,20 +134,8 @@ export default {
             }
         },
 
-        handleSetCenterDate(date) {
-            this.$refs.Timeline.moveTo(date);
-        },
-
-        handleFilterMissingMaterial(filterMissingMaterial) {
-            this.filterMissingMaterial = filterMissingMaterial;
-        },
-
-        handleFilterByPark(parkId) {
-            this.parkId = parkId === '' ? null : Number.parseInt(parkId, 10);
-        },
-
         //
-        // - Événements sur les items.
+        // - Handlers pour les items.
         //
 
         handleItemOver() {
@@ -160,8 +146,37 @@ export default {
             this.isOverItem = false;
         },
 
-        handleItemMoved(item, callback) {
-            const isVisitor = this.$store.getters['auth/is']('visitor');
+        handleItemDoubleClick(e) {
+            const { isModalOpened, handleUpdateEvent, handleDuplicateEvent, getEventsData } = this;
+
+            // - On évite le double-call à cause d'un bug qui trigger l'event en double.
+            // - @see visjs bug here: https://github.com/visjs/vis-timeline/issues/301)
+            if (isModalOpened) {
+                return;
+            }
+
+            const eventId = e.item;
+            if (eventId) {
+                this.$modal.show(
+                    EventDetails,
+                    {
+                        eventId,
+                        onUpdateEvent: handleUpdateEvent,
+                        onDuplicateEvent: handleDuplicateEvent,
+                    },
+                    undefined,
+                    { 'before-close': () => { getEventsData(); } },
+                );
+                this.isModalOpened = true;
+                return;
+            }
+
+            const atDate = moment(e.time).startOf('day').format('YYYY-MM-DD');
+            this.$router.push({ name: 'add-event', query: { atDate } });
+        },
+
+        async handleItemMoved(item, callback) {
+            const { isVisitor } = this;
             if (isVisitor) {
                 return;
             }
@@ -175,76 +190,64 @@ export default {
                 end_date: itemEnd.format(DATE_DB_FORMAT),
             };
 
-            this.error = null;
-            this.isLoading = true;
-            this.$http.put(`${this.$route.meta.resource}/${item.id}`, data)
-                .then(() => {
-                    this.isLoading = false;
-                    this.help = { type: 'success', text: 'page-calendar.event-saved' };
-                    queryClient.invalidateQueries('materials-while-event');
-                    callback(item);
-                    this.getEventsData();
-                })
-                .catch((error) => {
-                    callback(null); // - Needed to cancel the move in timeline
-                    this.showError(error);
-                });
+            const { $t: __, getEventsData } = this;
+            this.isSaving = true;
+
+            try {
+                await apiEvents.update(item.id, data);
+
+                // - Permet de placer l'élément à sa nouvelle place sur la timeline
+                callback(item);
+
+                this.$toasted.success(__('page.calendar.event-saved'));
+                queryClient.invalidateQueries('materials-while-event');
+                getEventsData();
+            } catch {
+                this.$toasted.error(__('errors.unexpected-while-saving'));
+
+                // - Permet d'annuler le déplacement de l'élément sur la timeline
+                callback(null);
+            } finally {
+                this.isSaving = false;
+            }
         },
 
-        handleItemRemove(item, callback) {
-            const isVisitor = this.$store.getters['auth/is']('visitor');
+        async handleItemRemove(item, callback) {
+            const { isVisitor } = this;
             if (isVisitor || item.isConfirmed) {
                 return;
             }
 
-            Alert.ConfirmDelete(this.$t, 'calendar').then((result) => {
-                if (!result.value) {
-                    callback(null); // - Needed to cancel the deletion in timeline
-                    return;
-                }
+            const { $t: __, getEventsData } = this;
 
-                this.error = null;
-                this.isLoading = true;
-                this.$http.delete(`${this.$route.meta.resource}/${item.id}`).then(() => {
-                    queryClient.invalidateQueries('materials-while-event');
-                    callback(item);
-                });
+            const { value: isConfirmed } = await confirm({
+                type: 'warning',
+                text: __('@event.confirm-delete'),
+                confirmButtonText: __('yes-delete'),
             });
-        },
-
-        handleItemRemoved() {
-            if (!this.isLoading) {
+            if (!isConfirmed) {
+                // - Permet d'annuler la suppression de l'élément sur la timeline
+                callback(null);
                 return;
             }
 
-            this.isLoading = false;
-            this.help = { type: 'success', text: 'page-calendar.event-deleted' };
-            this.error = null;
-        },
+            this.isDeleting = true;
 
-        // ------------------------------------------------------
-        // -
-        // -    Méthodes internes
-        // -
-        // ------------------------------------------------------
+            try {
+                await apiEvents.remove(item.id);
 
-        getEventsData() {
-            this.error = null;
-            this.isLoading = true;
-            this.isModalOpened = false;
+                // - Permet de supprimer l'élément de la timeline
+                callback(item);
 
-            const params = {
-                start: this.fetchStart.format('YYYY-MM-DD HH:mm:ss'),
-                end: this.fetchEnd.format('YYYY-MM-DD HH:mm:ss'),
-            };
-            this.$http.get(this.$route.meta.resource, { params })
-                .then(({ data }) => {
-                    this.events = data.data;
-                    this.isLoading = false;
-                })
-                .catch((error) => {
-                    this.showError(error);
-                });
+                this.$toasted.success(__('page.calendar.event-deleted'));
+                queryClient.invalidateQueries('materials-while-event');
+                getEventsData();
+            } catch {
+                this.$toasted.error(__('errors.unexpected-while-saving'));
+                callback(null);
+            } finally {
+                this.isDeleting = false;
+            }
         },
 
         handleUpdateEvent(newEventData) {
@@ -260,42 +263,46 @@ export default {
         handleDuplicateEvent(newEvent) {
             const { start_date: startDate } = newEvent;
             const date = moment(startDate).toDate();
-            this.$refs.Timeline.moveTo(date);
+            this.$refs.calendarTimeline.moveTo(date);
         },
 
-        openEventModal(eventId) {
-            const { handleUpdateEvent, handleDuplicateEvent } = this;
+        // ------------------------------------------------------
+        // -
+        // -    Méthodes internes
+        // -
+        // ------------------------------------------------------
 
-            this.$modal.show(
-                EventDetails,
-                {
-                    eventId,
-                    onUpdateEvent: handleUpdateEvent,
-                    onDuplicateEvent: handleDuplicateEvent,
-                },
-                undefined,
-                {
-                    'before-close': () => {
-                        this.getEventsData();
-                    },
-                },
-            );
-        },
+        async getEventsData() {
+            this.isLoading = true;
+            this.isModalOpened = false;
 
-        showError(error) {
-            this.error = error;
-            this.isLoading = false;
+            const params = {
+                start: this.fetchStart.format('YYYY-MM-DD HH:mm:ss'),
+                end: this.fetchEnd.format('YYYY-MM-DD HH:mm:ss'),
+            };
+
+            try {
+                const { data } = await apiEvents.all(params);
+                this.events = data;
+            } catch {
+                this.hasCriticalError = true;
+            } finally {
+                this.isLoading = false;
+            }
         },
     },
     render() {
         const {
+            $t: __,
             isLoading,
-            help,
-            error,
+            isSaving,
+            isDeleting,
+            hasCriticalError,
+            helpText,
             filteredEvents,
             timelineOptions,
             handleRefresh,
-            handleDoubleClick,
+            handleItemDoubleClick,
             handleRangeChanged,
             handleFilterByPark,
             handleSetCenterDate,
@@ -304,24 +311,29 @@ export default {
             handleItemOut,
             handleItemMoved,
             handleItemRemove,
-            handleItemRemoved,
         } = this;
 
+        if (hasCriticalError) {
+            return (
+                <Page name="calendar" title={__('page.calendar.title')}>
+                    <CriticalError />
+                </Page>
+            );
+        }
+
         return (
-            <div class="content">
-                <div class="content__header">
+            <Page name="calendar" title={__('page.calendar.title')}>
+                <div class="Calendar">
                     <CalendarHeader
                         ref="Header"
-                        isLoading={isLoading}
+                        isLoading={isLoading || isSaving || isDeleting}
                         onRefresh={handleRefresh}
                         onSetCenterDate={handleSetCenterDate}
                         onFilterMissingMaterials={handleFilterMissingMaterial}
                         onFilterByPark={handleFilterByPark}
                     />
-                </div>
-                <div ref="Container" class="content__main-view Calendar">
                     <Timeline
-                        ref="Timeline"
+                        ref="calendarTimeline"
                         class="Calendar__timeline"
                         items={filteredEvents}
                         options={timelineOptions}
@@ -329,16 +341,15 @@ export default {
                         onItemOut={handleItemOut}
                         onItemMoved={handleItemMoved}
                         onItemRemove={handleItemRemove}
-                        onItemRemoved={handleItemRemoved}
-                        onDoubleClick={handleDoubleClick}
+                        onDoubleClick={handleItemDoubleClick}
                         onRangeChanged={handleRangeChanged}
                     />
                     <div class="Calendar__footer">
-                        <Help message={help} error={error} />
+                        <p class="Calendar__footer__help">{helpText}</p>
                         <CalendarCaption />
                     </div>
                 </div>
-            </div>
+            </Page>
         );
     },
 };

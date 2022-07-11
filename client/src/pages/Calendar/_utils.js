@@ -1,7 +1,8 @@
+import moment from 'moment';
 import formatTimelineEvent from '@/utils/timeline-event/format';
 import getMainIcon from '@/utils/timeline-event/getMainIcon';
 import getTimelineEventClassNames from '@/utils/timeline-event/getClassNames';
-import getTimelineEventI18nStatuses from '@/utils/timeline-event/getI18nStatuses';
+import getTimelineEventStatuses from '@/utils/timeline-event/getStatuses';
 
 const formatEvent = (dataEvent, __, options = {}) => {
     const { showLocation = true, showBorrower = false } = options;
@@ -100,8 +101,8 @@ const formatEvent = (dataEvent, __, options = {}) => {
     }
 
     // - Statut
-    const statusesText = getTimelineEventI18nStatuses(formattedEvent)
-        .map(({ icon, i18nKey }) => withIcon(icon, __(`page-calendar.${i18nKey}`)))
+    const statusesText = getTimelineEventStatuses(formattedEvent, __)
+        .map(({ icon, label }) => withIcon(icon, label))
         .join('\n');
 
     return {
@@ -119,4 +120,16 @@ const formatEvent = (dataEvent, __, options = {}) => {
     };
 };
 
-export default formatEvent;
+const getDefaultPeriod = () => {
+    let start = moment(localStorage.getItem('calendarStart'), 'YYYY-MM-DD HH:mm:ss');
+    let end = moment(localStorage.getItem('calendarEnd'), 'YYYY-MM-DD HH:mm:ss');
+
+    if (!start.isValid() || !end.isValid()) {
+        start = moment().subtract(2, 'days').startOf('day');
+        end = moment().add(5, 'days').endOf('day');
+    }
+
+    return { start, end };
+};
+
+export { formatEvent, getDefaultPeriod };

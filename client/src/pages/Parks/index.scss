@@ -1,19 +1,32 @@
 @use '~@/style/globals';
 
+.Page--parks {
+    display: flex;
+    flex-direction: column;
+
+    .Parks {
+        flex: 1;
+    }
+}
+
 .Parks {
-    &__print-button {
-        text-decoration: none;
+    display: flex;
+    flex-direction: column;
+
+    &__table {
+        flex: 1;
     }
 
     &__address,
     &__opening-hours,
-    &__note {
+    &__note,
+    &__total-amount,
+    &__events {
         display: none;
     }
 
-    &__total-stock {
-        display: block;
-        color: globals.$text-light-color;
+    &__address {
+        white-space: pre-line;
     }
 
     &__total-amount {
@@ -35,11 +48,6 @@
         text-align: center !important;
     }
 
-    &__no-items {
-        color: globals.$text-light-color;
-        font-style: italic;
-    }
-
     &__actions {
         width: 1%;
         text-align: right;
@@ -54,7 +62,14 @@
 
     @media (min-width: globals.$screen-tablet) {
         &__opening-hours,
-        &__note {
+        &__total-amount {
+            display: table-cell;
+        }
+    }
+
+    @media (min-width: globals.$screen-desktop) {
+        &__note,
+        &__events {
             display: table-cell;
         }
     }

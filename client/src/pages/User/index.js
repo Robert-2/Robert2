@@ -1,26 +1,24 @@
 import './index.scss';
 import Page from '@/components/Page';
-import CriticalError from '@/components/CriticalError';
+import CriticalError, { ERROR } from '@/components/CriticalError';
 import Loading from '@/components/Loading';
-import Form from './Form';
+import Form from './components/Form';
 import apiUsers from '@/stores/api/users';
-
-const WIP_STORAGE_KEY = 'WIP-newUser';
 
 // @vue/component
 export default {
     name: 'User',
     data() {
-        const id = this.$route.params.id && this.$route.params.id !== 'new'
-            ? this.$route.params.id
+        const id = this.$route.params.id
+            ? parseInt(this.$route.params.id, 10)
             : null;
 
         return {
             id,
             isFetched: false,
             isSaving: false,
-            hasCriticalError: false,
             user: null,
+            criticalError: null,
             validationErrors: null,
         };
     },
@@ -32,16 +30,17 @@ export default {
             const { $t: __, isNew, isFetched, user } = this;
 
             if (isNew) {
-                return __('page-user.title-create');
+                return __('page.user.title-create');
             }
 
             return isFetched
-                ? __('page-user.title-edit', { name: user.pseudo })
-                : __('page-user.title-edit-simple');
+                ? __('page.user.title-edit', { name: user.pseudo })
+                : __('page.user.title-edit-simple');
         },
     },
     mounted() {
         this.$store.dispatch('parks/fetch');
+
         this.fetchData();
     },
     methods: {
@@ -55,17 +54,7 @@ export default {
             this.save(data);
         },
 
-        handleChange(data) {
-            if (!this.isNew) {
-                return;
-            }
-
-            const stashedData = JSON.stringify(data);
-            localStorage.setItem(WIP_STORAGE_KEY, stashedData);
-        },
-
         handleCancel() {
-            this.flushStashedData();
             this.$router.back();
         },
 
@@ -77,14 +66,7 @@ export default {
 
         async fetchData() {
             if (this.isNew) {
-                const stashedData = localStorage.getItem(WIP_STORAGE_KEY);
-                if (stashedData) {
-                    try {
-                        this.user = JSON.parse(stashedData);
-                    } catch {
-                        // - On ne fait rien en cas d'erreur de parsing des données en cache.
-                    }
-                }
+                this.user = null;
                 this.isFetched = true;
                 return;
             }
@@ -92,8 +74,9 @@ export default {
             try {
                 this.user = await apiUsers.one(this.id);
                 this.isFetched = true;
-            } catch {
-                this.hasCriticalError = true;
+            } catch (error) {
+                const status = error?.response?.status ?? 500;
+                this.criticalError = status === 404 ? ERROR.NOT_FOUND : ERROR.UNKNOWN;
             }
         },
 
@@ -106,65 +89,60 @@ export default {
             this.isSaving = true;
 
             const doRequest = () => (
-                this.id
+                !this.isNew
                     ? apiUsers.update(this.id, data)
                     : apiUsers.create(data)
             );
 
             try {
-                this.user = await doRequest();
-                this.id = this.user.id;
+                const user = await doRequest();
+                if (!this.isNew) {
+                    this.user = user;
+                }
 
                 this.validationErrors = null;
-                this.flushStashedData();
 
                 // - Redirection...
-                this.$toasted.success(__('page-user.saved'));
+                this.$toasted.success(__('page.user.saved'));
                 this.$router.push({ name: 'users' });
             } catch (error) {
                 const { code, details } = error.response?.data?.error || { code: 0, details: {} };
                 if (code === 400) {
                     this.validationErrors = { ...details };
+                    this.$refs.page.scrollToTop();
                 } else {
                     this.$toasted.error(__('errors.unexpected-while-saving'));
                 }
-            } finally {
                 this.isSaving = false;
             }
-        },
-
-        flushStashedData() {
-            localStorage.removeItem(WIP_STORAGE_KEY);
         },
     },
     render() {
         const {
-            $t: __,
             pageTitle,
             isSaving,
             isFetched,
             user,
             handleSubmit,
-            handleChange,
             handleCancel,
-            hasCriticalError,
+            criticalError,
             validationErrors,
         } = this;
 
-        if (hasCriticalError || !isFetched) {
+        if (criticalError || !isFetched) {
             return (
                 <Page name="user-edit" title={pageTitle}>
-                    {hasCriticalError ? <CriticalError /> : <Loading />}
+                    {criticalError ? <CriticalError type={criticalError} /> : <Loading />}
                 </Page>
             );
         }
 
         return (
             <Page
+                ref="page"
                 name="user-edit"
                 title={pageTitle}
-                help={__('page-user.help')}
-                error={validationErrors ? __('errors.validation') : undefined}
+                hasValidationError={!!validationErrors}
             >
                 <div class="UserEdit">
                     <Form
@@ -172,7 +150,6 @@ export default {
                         isSaving={isSaving}
                         errors={validationErrors}
                         onSubmit={handleSubmit}
-                        onChange={handleChange}
                         onCancel={handleCancel}
                     />
                 </div>

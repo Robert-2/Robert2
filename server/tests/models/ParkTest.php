@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Robert2\Tests;
 
+use Robert2\API\Errors\ValidationException;
 use Robert2\API\Models;
 
 final class ParkTest extends ModelTestCase
@@ -126,5 +127,25 @@ final class ParkTest extends ModelTestCase
             'name' => 'France',
             'code' => 'FR',
         ], $Park->country);
+    }
+
+    public function testRemoveNotEmptyPark(): void
+    {
+        $this->expectException(\LogicException::class);
+        Models\Park::staticRemove(1);
+    }
+
+    public function testRemoveEmptyPark(): void
+    {
+        $newPark = Models\Park::create(['name' => 'Vide et éphémère']);
+        $result = Models\Park::staticRemove($newPark->id);
+        $this->assertNotEmpty($result->deleted_at);
+    }
+
+    public function testCreateParkDuplicate(): void
+    {
+        $this->expectException(ValidationException::class);
+        $this->expectExceptionCode(ERROR_VALIDATION);
+        $this->model->edit(null, ['name' => 'default']);
     }
 }

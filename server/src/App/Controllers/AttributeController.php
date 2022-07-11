@@ -24,11 +24,13 @@ class AttributeController extends BaseController
 
         $categoryId = $request->getQueryParam('category', null);
         if (!empty($categoryId)) {
-            $attributes
-                ->whereDoesntHave('categories')
-                ->orWhereHas('categories', function ($query) use ($categoryId) {
+            $attributes->whereDoesntHave('categories');
+
+            if ($categoryId !== 'none') {
+                $attributes->orWhereHas('categories', function ($query) use ($categoryId) {
                     $query->where('categories.id', $categoryId);
                 });
+            }
         }
 
         $attributes = $attributes->with('categories');
@@ -65,7 +67,7 @@ class AttributeController extends BaseController
         }
 
         $id = (int)$request->getAttribute('id');
-        $data = array_intersect_key($rawData, array_flip(['name']));
+        $data = array_with_keys($rawData, ['name']);
 
         $attribute = Attribute::staticEdit($id, $data)
             ->append('categories');

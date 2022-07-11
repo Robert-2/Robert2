@@ -14,7 +14,7 @@ select {
     line-height: $input-line-height;
 
     &:focus {
-        border-color: $bg-color-button-info;
+        border-color: $input-focus-border-color;
     }
 
     &:disabled {

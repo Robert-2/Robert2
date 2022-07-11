@@ -1,0 +1,14 @@
+title: Matériel
+help: Vous pouvez choisir un parc, une catégorie ou des tags pour filtrer le matériel.
+
+action-add: Nouveau matériel
+manage-attributes: Gérer les caractéristiques spéciales
+print-complete-list: Imprimer la liste complète du matériel
+display-quantities-at-date: Afficher les quantités à date...
+
+confirm-delete: "Mettre ce matériel à la corbeille\_?"
+confirm-permanently-delete: "Voulez-vous vraiment supprimer définitivement ce matériel\_?"
+confirm-restore: "Voulez-vous vraiment restaurer ce matériel\_?"
+
+deleted: Matériel supprimé.
+restored: Matériel restauré.

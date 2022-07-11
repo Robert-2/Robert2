@@ -1,14 +1,20 @@
 @use '~@/style/globals';
 @use 'sass:math';
 
-.Materials {
-    &__main-view {
-        position: relative;
-    }
+.Page--materials {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
 
-    &__print-button {
-        text-decoration: none;
+    .Materials {
+        flex: 1;
     }
+}
+
+.Materials {
+    display: flex;
+    flex-direction: column;
 
     &__filters {
         display: flex;
@@ -16,6 +22,9 @@
 
         .MaterialsFilters {
             flex: 0 1 auto;
+            margin-right: globals.$content-padding-small-vertical;
+            margin-bottom: globals.$content-padding-large-horizontal;
+            margin-left: math.div(globals.$content-padding-small-vertical, 2);
         }
     }
 
@@ -29,11 +38,6 @@
 
         &__clear-button {
             margin-left: globals.$content-padding-small-horizontal;
-            padding: 9px 10px;
-
-            &__icon {
-                margin-right: 2px;
-            }
         }
     }
 
@@ -64,6 +68,11 @@
 
     &__category {
         white-space: nowrap;
+    }
+
+    &__not-categorized {
+        color: globals.$text-light-color;
+        font-style: italic;
     }
 
     &__rental-price,
@@ -117,6 +126,10 @@
         text-align: right;
         white-space: nowrap;
     }
+
+    //
+    // - Responsive
+    //
 
     @media (min-width: globals.$screen-tablet) {
         &__ref,

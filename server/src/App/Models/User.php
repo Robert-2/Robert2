@@ -6,7 +6,7 @@ namespace Robert2\API\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Robert2\API\Config;
+use Robert2\API\Errors\ValidationException;
 use Robert2\API\Validation\Validator as V;
 
 class User extends BaseModel
@@ -23,8 +23,8 @@ class User extends BaseModel
         parent::__construct($attributes);
 
         $this->validation = [
-            'pseudo'   => V::notEmpty()->alnum('-', '_')->length(4, 100),
-            'email'    => V::notEmpty()->email()->length(5, 191),
+            'pseudo' => V::callback([$this, 'checkPseudo']),
+            'email' => V::callback([$this, 'checkEmail']),
             'group_id' => V::notEmpty()->oneOf(
                 V::equals('admin'),
                 V::equals('member'),
@@ -32,6 +32,50 @@ class User extends BaseModel
             ),
             'password' => V::notEmpty()->length(4, 191),
         ];
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Validation
+    // -
+    // ------------------------------------------------------
+
+    public function checkPseudo($value)
+    {
+        V::notEmpty()
+            ->alnum('-', '_')
+            ->length(4, 100)
+            ->check($value);
+
+        $query = static::where('pseudo', $value);
+        if ($this->exists) {
+            $query->where('id', '!=', $this->id);
+        }
+
+        if ($query->withTrashed()->exists()) {
+            return 'user-pseudo-already-in-use';
+        }
+
+        return true;
+    }
+
+    public function checkEmail($value)
+    {
+        V::notEmpty()
+            ->email()
+            ->length(5, 191)
+            ->check($value);
+
+        $query = static::where('email', $value);
+        if ($this->exists) {
+            $query->where('id', '!=', $this->id);
+        }
+
+        if ($query->withTrashed()->exists()) {
+            return 'user-email-already-in-use';
+        }
+
+        return true;
     }
 
     // ——————————————————————————————————————————————————————
@@ -76,8 +120,8 @@ class User extends BaseModel
     // ——————————————————————————————————————————————————————
 
     protected $casts = [
-        'pseudo'   => 'string',
-        'email'    => 'string',
+        'pseudo' => 'string',
+        'email' => 'string',
         'group_id' => 'string',
         'password' => 'string',
     ];
@@ -141,38 +185,56 @@ class User extends BaseModel
         'password',
     ];
 
-    public function edit($id = null, array $data = []): BaseModel
+    public static function staticEdit($id = null, array $data = []): BaseModel
     {
+        if ($id && !static::staticExists($id)) {
+            throw (new ModelNotFoundException)
+                ->setModel(get_class(), $id);
+        }
+
         if (isset($data['password']) && !empty($data['password'])) {
             $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
         } else {
             unset($data['password']);
         }
 
-        $user = parent::edit($id, $data);
-        $userId = (int)$user['id'];
-        $User = static::find($userId);
+        $personData = !empty($data['person']) && is_array($data['person']) ? $data['person'] : [];
+        unset($data['person']);
 
-        if (!$id) {
-            $settings = Config\Config::getSettings();
-            $User->Settings()->updateOrCreate(
-                ['user_id' => $userId],
-                [
-                    'language'                     => strtoupper($settings['defaultLang']),
+        return dbTransaction(function () use ($id, $data, $personData) {
+            $userId = $id;
+            $validationErrors = [];
+
+            try {
+                $user = static::updateOrCreate(compact('id'), $data);
+                $userId = $user->id;
+            } catch (ValidationException $e) {
+                $validationErrors = $e->getValidationErrors();
+            }
+
+            try {
+                Person::updateOrCreate(['user_id' => $userId], $personData);
+            } catch (ValidationException $e) {
+                $validationErrors = array_merge($validationErrors, [
+                    'person' => $e->getValidationErrors(),
+                ]);
+            }
+
+            if (!empty($validationErrors)) {
+                throw (new ValidationException())
+                    ->setValidationErrors($validationErrors);
+            }
+
+            if (!$id) {
+                $settings = container('settings');
+                $defaultSettings = [
+                    'language' => strtoupper($settings['defaultLang']),
                     'auth_token_validity_duration' => $settings['sessionExpireHours']
-                ]
-            );
-        }
+                ];
+                UserSetting::updateOrCreate(['user_id' => $userId], $defaultSettings);
+            }
 
-        if (!empty($data['person'])) {
-            $User->Person()->updateOrCreate(
-                ['user_id' => $userId],
-                $data['person']
-            );
-        }
-
-        unset($user['password']);
-
-        return $user;
+            return $user;
+        });
     }
 }

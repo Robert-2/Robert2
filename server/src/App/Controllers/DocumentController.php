@@ -21,9 +21,7 @@ class DocumentController extends BaseController
             throw new HttpNotFoundException($request);
         }
 
-        $filePath = Document::getFilePath((int)$model->material_id, $model->name);
-
-        $fileContent = file_get_contents($filePath);
+        $fileContent = file_get_contents($model->file_path);
         if (!$fileContent) {
             throw new HttpNotFoundException($request, "The file of the document cannot be found.");
         }

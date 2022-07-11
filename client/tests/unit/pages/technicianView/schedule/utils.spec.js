@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { formatTechnicianEvent } from '@/pages/TechnicianView/Schedule/_utils';
+import { formatTechnicianEvent } from '@/pages/TechnicianView/tabs/Schedule/_utils';
 
 describe('TechnicianView/Schedule/utils.formatTechnicianEvent', () => {
     test('returns data of event formatted for calendar usage with title and classes', () => {

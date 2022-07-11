@@ -21,7 +21,7 @@ final class EventsTest extends ApiTestCase
                     'is_archived' => true,
                     'location' => "Brousse",
                     'is_billable' => false,
-                    'is_return_inventory_done' => false,
+                    'is_return_inventory_done' => true,
                     'has_missing_materials' => null,
                     'has_not_returned_materials' => null,
                     'parks' => [1],
@@ -904,11 +904,11 @@ final class EventsTest extends ApiTestCase
         $response = $this->_getResponseAsArray();
         $expected = [
             'start_date' => [
-                'start_date must not be empty',
-                'start_date must be a valid date',
+                "This field is mandatory",
+                "This date is not valid",
             ],
             'end_date' => [
-                'end_date must be valid',
+                "This field is not valid",
             ],
         ];
         $this->assertEquals($expected, $response['error']['details']);
@@ -1180,7 +1180,7 @@ final class EventsTest extends ApiTestCase
                     'is_archived' => true,
                     'location' => 'Brousse',
                     'is_billable' => false,
-                    'is_return_inventory_done' => false,
+                    'is_return_inventory_done' => true,
                     'created_at' => null,
                     'updated_at' => null,
                     'deleted_at' => null,

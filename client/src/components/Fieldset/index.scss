@@ -8,20 +8,16 @@
         font-size: 1.3rem;
     }
 
-    & + & {
-        margin-top: 40px;
+    &__help {
+        color: globals.$text-light-color;
+
+        @include globals.icon('info-circle') {
+            margin-right: 0.3rem;
+        }
     }
 
-    //
-    // - Required
-    //
-
-    &--required {
-        #{$block}__title::after {
-            content: '*';
-            margin-left: 4px;
-            color: globals.$text-danger-color;
-        }
+    & + & {
+        margin-top: 40px;
     }
 
     //

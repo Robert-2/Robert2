@@ -45,8 +45,6 @@ export default [
         path: '/',
         component: Calendar,
         meta: {
-            resource: 'events',
-            title: 'page-calendar.title',
             requiresAuth: true,
             requiresGroups: ['admin', 'member', 'visitor'],
         },
@@ -57,7 +55,7 @@ export default [
         component: Event,
         meta: {
             resource: 'events',
-            title: 'page-events.add',
+            title: 'page.events.add',
             requiresAuth: true,
             requiresGroups: ['admin', 'member'],
         },
@@ -68,14 +66,14 @@ export default [
         component: Event,
         meta: {
             resource: 'events',
-            title: 'page-events.edit',
+            title: 'page.events.edit',
             requiresAuth: true,
             requiresGroups: ['admin', 'member'],
         },
     },
     {
         name: 'event-return-material',
-        path: '/event-return/:id',
+        path: '/event-return/:id(\\d+)',
         component: EventReturn,
         meta: {
             requiresAuth: true,
@@ -107,7 +105,7 @@ export default [
     },
     {
         name: 'edit-user',
-        path: '/users/:id',
+        path: '/users/:id(\\d+)',
         component: User,
         meta: {
             requiresAuth: true,
@@ -139,7 +137,7 @@ export default [
     },
     {
         name: 'edit-beneficiary',
-        path: '/beneficiaries/:id',
+        path: '/beneficiaries/:id(\\d+)',
         component: Beneficiary,
         meta: {
             requiresAuth: true,
@@ -162,7 +160,7 @@ export default [
     },
     {
         name: 'edit-company',
-        path: '/companies/:id',
+        path: '/companies/:id(\\d+)',
         component: Company,
         meta: {
             requiresAuth: true,
@@ -179,8 +177,6 @@ export default [
         path: '/materials',
         component: Materials,
         meta: {
-            resource: 'materials',
-            title: 'page-materials.title',
             requiresAuth: true,
             requiresGroups: ['admin', 'member'],
         },
@@ -190,26 +186,22 @@ export default [
         path: '/materials/new',
         component: Material,
         meta: {
-            resource: 'materials',
-            title: 'page-materials.add',
             requiresAuth: true,
             requiresGroups: ['admin', 'member'],
         },
     },
     {
         name: 'edit-material',
-        path: '/materials/:id',
+        path: '/materials/:id(\\d+)',
         component: Material,
         meta: {
-            resource: 'materials',
-            title: 'page-materials.edit',
             requiresAuth: true,
             requiresGroups: ['admin', 'member'],
         },
     },
     {
         name: 'view-material',
-        path: '/materials/:id/view',
+        path: '/materials/:id(\\d+)/view',
         component: MaterialView,
         meta: {
             requiresAuth: true,
@@ -240,8 +232,6 @@ export default [
         path: '/categories',
         component: Categories,
         meta: {
-            resource: 'categories',
-            title: 'page-categories.title',
             requiresAuth: true,
             requiresGroups: ['admin'],
         },
@@ -271,7 +261,7 @@ export default [
     },
     {
         name: 'edit-technician',
-        path: '/technicians/:id',
+        path: '/technicians/:id(\\d+)',
         component: Technician,
         meta: {
             requiresAuth: true,
@@ -280,7 +270,7 @@ export default [
     },
     {
         name: 'view-technician',
-        path: '/technicians/:id/view',
+        path: '/technicians/:id(\\d+)/view',
         component: TechnicianView,
         meta: {
             requiresAuth: true,
@@ -311,7 +301,6 @@ export default [
         path: '/parks',
         component: Parks,
         meta: {
-            title: 'page-parks.title',
             requiresAuth: true,
             requiresGroups: ['admin'],
         },
@@ -327,7 +316,7 @@ export default [
     },
     {
         name: 'edit-park',
-        path: '/parks/:id',
+        path: '/parks/:id(\\d+)',
         component: Park,
         meta: {
             requiresAuth: true,

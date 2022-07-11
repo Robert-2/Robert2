@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Robert2\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Slim\Psr7\UploadedFile;
+use Robert2\Lib\Filesystem\UploadedFile;
 
 final class FunctionsTest extends TestCase
 {
@@ -31,14 +31,6 @@ final class FunctionsTest extends TestCase
     {
         $this->assertEquals('un_test', slugify("un test"));
         $this->assertEquals('test_espace_insécable', slugify("test espace insécable"));
-    }
-
-    public function testCleanEmptyFields(): void
-    {
-        $data = ['field1' => 'not-empty', 'field2' => '', 'field3' => null];
-        $result = cleanEmptyFields($data);
-        $expected = ['field1' => 'not-empty', 'field2' => null, 'field3' => null];
-        $this->assertEquals($expected, $result);
     }
 
     public function testNormalizePhone(): void
@@ -116,18 +108,28 @@ final class FunctionsTest extends TestCase
     public function testMoveUploadedFile(): void
     {
         $sourceFile = DATA_FOLDER . DS . 'tmp' . DS . 'upload_file.pdf';
-        $destinationFolder = DATA_FOLDER . DS . 'materials' . DS . 'tests';
+        $destinationFolder = DATA_FOLDER . DS . 'tests';
 
-        // - Déplace le fichier de test d'upload dans
-        $file = new UploadedFile($sourceFile, 'Uploaded File for Tests.pdf', 'application/pdf', 13269);
-        // - Déplace le fichier de test d'upload dans le dossier d'un matériel
+        $file = new UploadedFile(
+            $sourceFile,
+            13269,
+            UPLOAD_ERR_OK,
+            'Uploaded File for Tests.pdf',
+            'application/pdf',
+        );
+
+        // - Déplace le fichier de test d'upload dans le dossier de destination.
         $filename = moveUploadedFile($destinationFolder, $file);
-        $this->assertEquals('Uploaded-File-for-Tests.pdf', $filename);
         $destinationFile = $destinationFolder . DS . $filename;
-        $this->assertTrue(file_exists($destinationFile));
-        // - Remet le fichier dans son dossier d'origine
-        rename($destinationFile, $sourceFile);
-        $this->assertTrue(file_exists($sourceFile));
+        $exists = file_exists($destinationFile);
+
+        // - Remet le fichier dans son dossier d'origine.
+        if ($exists) {
+            @rename($destinationFile, $sourceFile);
+        }
+
+        $this->assertEquals('Uploaded-File-for-Tests.pdf', $filename);
+        $this->assertTrue($exists);
     }
 
     public function testRoundDate(): void

@@ -11,8 +11,8 @@ export default defineComponent({
         name: { type: String, required: true },
         title: { type: String, default: null },
         help: { type: String, default: undefined },
-        error: { type: [String, Error], default: null },
-        isLoading: Boolean,
+        hasValidationError: { type: Boolean, default: false },
+        isLoading: { type: Boolean, default: false },
         actions: { type: Array, default: undefined },
         render: { type: Function, default: undefined },
     },
@@ -32,21 +32,34 @@ export default defineComponent({
             this.$store.commit('setPageRawTitle', newTitle ?? null);
             document.title = [newTitle, APP_NAME].filter(Boolean).join(' - ');
         },
+        scrollToTop() {
+            this.$refs.pageContent.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+        },
     },
     render() {
-        const { help, actions, error, isLoading, render } = this.$props;
+        const {
+            $t: __,
+            help,
+            actions,
+            hasValidationError,
+            isLoading,
+            render,
+        } = this;
+
         const content = render ? render() : this.$slots.default;
 
         const renderHelp = () => {
-            if (!isLoading && !error && !help) {
+            if (!isLoading && !hasValidationError && !help) {
                 return null;
             }
 
             return (
                 <div class="header-page__help">
                     {isLoading && <Loading horizontal />}
-                    {!isLoading && error && <ErrorMessage error={error} />}
-                    {!!(help && !error && !isLoading) && (
+                    {!isLoading && hasValidationError && (
+                        <ErrorMessage error={__('errors.validation')} />
+                    )}
+                    {!!(help && !hasValidationError && !isLoading) && (
                         <div class="header-page__intro">{help}</div>
                     )}
                 </div>
@@ -64,7 +77,7 @@ export default defineComponent({
                 <div class="content__header header-page">
                     {helpElement}
                     {hasActions && (
-                        <nav class="header-page__actions">
+                        <nav class="header-page__actions" key="actions">
                             {actions}
                         </nav>
                     )}
@@ -73,9 +86,9 @@ export default defineComponent({
         };
 
         return (
-            <div class="content">
+            <div class="content" ref="pageContent">
                 {renderHeader()}
-                <div class="content__main-view">
+                <div class="content__main-view" key="content">
                     <div class={['Page', `Page--${this.name}`]}>
                         {content}
                     </div>

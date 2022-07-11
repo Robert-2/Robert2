@@ -1,5 +1,3 @@
-/* eslint-disable quotes */
-
 const fr = {
     'count': "Enregistrements {from} à {to} sur {count}|{count} enregistrements|Un enregistrement",
     'first': "Première",

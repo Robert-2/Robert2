@@ -1,5 +1,5 @@
 import moment from 'moment';
-import formatEvent from '@/pages/Calendar/_utils';
+import { formatEvent } from '@/pages/Calendar/_utils';
 
 describe('Calendar/utils.formatEvent', () => {
     test('returns data of event formatted for timeline usage with classes and popups texts', () => {
@@ -53,9 +53,9 @@ describe('Calendar/utils.formatEvent', () => {
             '\n<i class="fas fa-clock"></i> from-date-to-date' +
             '\n<i class="fas fa-address-book"></i> for Jean Benef' +
             '\n<i class="fas fa-people-carry"></i> with Marc Tekos' +
-            '\n\n<i class="fas fa-exclamation-triangle"></i> page-calendar.this-event-has-not-returned-materials' +
-            '\n<i class="fas fa-history"></i> page-calendar.this-event-is-past' +
-            '\n<i class="fas fa-exclamation-triangle"></i> page-calendar.this-event-needs-its-return-inventory',
+            '\n\n<i class="fas fa-exclamation-triangle"></i> @event.statuses.has-not-returned-materials' +
+            '\n<i class="fas fa-history"></i> @event.statuses.is-past' +
+            '\n<i class="fas fa-exclamation-triangle"></i> @event.statuses.needs-its-return-inventory',
         );
         expect(result1.content).toEqual([
             '<i class="fas fa-question"></i> <i class="fas fa-exclamation-triangle"></i> Test event',

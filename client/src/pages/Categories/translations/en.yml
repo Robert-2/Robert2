@@ -1,0 +1,47 @@
+title: Categories
+help: Manage material's categories and sub-categories.
+
+no-category: No category.
+create-a-category: Create a category
+add-a-subcategory: Add a sub-category
+display-materials-list: See the material of this category
+
+name-length-not-valid: The name must have a length between 2 and 96 characters.
+cannot-delete-not-empty: 'Impossible to delete this category, because it''s not empty!'
+
+#
+# - Catégories
+#
+
+create: Create category
+modify: Modify category
+delete: Delete category
+
+new-category: New category
+category-name: Category name
+name-already-exists: A category already exists with this name.
+
+saved: Category saved.
+deleted: Category deleted.
+
+confirm-permanently-delete: Do you really want to permanently delete this category?
+confirm-restore: Do you really want to restore this category?
+
+#
+# - Sous-catégories
+#
+
+create-subcategory: Create the sub-category
+modify-subcategory: Modify the sub-category
+delete-subcategory: Delete the sub-category
+
+new-subcategory: "New sub-category of «\_{categoryName}\_»"
+subcategory-name: Name of the sub-category
+subcategory-name-already-exists: A sub-category already exists with this name.
+
+subcategory-saved: Sub-category saved.
+subcategory-deleted: Sub-category deleted.
+
+confirm-permanently-delete-subcategory: Do you really want to permanently delete this sub-category?
+confirm-restore-subcategory: Do you really want to restore this sub-category?
+

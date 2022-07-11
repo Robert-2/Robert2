@@ -31,7 +31,6 @@ class App
     {
         $this->container = Kernel::boot()->getContainer();
         $this->app = AppFactory::create(null, $this->container);
-        $this->app->addBodyParsingMiddleware();
 
         $this->configureMiddlewares();
         $this->configureRouter();
@@ -155,6 +154,7 @@ class App
 
     protected function configureMiddlewares()
     {
+        $this->app->add(new Middlewares\BodyParser);
         $this->app->add(new Middlewares\Acl);
         $this->app->add([$this->container->get('auth'), 'middleware']);
         $this->app->add(new Middlewares\Pagination);

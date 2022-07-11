@@ -1,5 +1,5 @@
 import apiTags from '@/stores/api/tags';
-import Config from '@/globals/config';
+import config from '@/globals/config';
 import formatOptions from '@/utils/formatOptions';
 
 export default {
@@ -9,8 +9,8 @@ export default {
         isFetched: false,
         error: null,
         protected: [
-            Config.beneficiaryTagName.toLowerCase(),
-            Config.technicianTagName.toLowerCase(),
+            config.beneficiaryTagName.toLowerCase(),
+            config.technicianTagName.toLowerCase(),
         ],
     },
     getters: {
