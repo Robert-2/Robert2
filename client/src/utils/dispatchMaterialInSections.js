@@ -32,7 +32,7 @@ const dispatchMaterialInSections = (
     const sections = new Map();
     materials.forEach((material) => {
         invariant(
-            Object.hasOwn(material, sectionIdentifier),
+            sectionIdentifier in material,
             `L'identifiant \`${sectionIdentifier}\` n'existe pas dans les données du matériel.`,
         );
 
