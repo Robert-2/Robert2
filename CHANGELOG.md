@@ -11,6 +11,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Pour le matériel, la catégorie est devenue une donnée facultative. Un matériel sans catégorie est donc classé sous le label 
   "Non catégorisé" dans les listes. Lors de la suppression d'une catégorie, le matériel qui lui était assigné devient donc "non catégorisé".
 - Quand la liste du matériel des fiches de sortie est triée par catégories, celles-ci apparaissent maintenant par ordre alphabétique.
+- Un problème a été corrigé dans l'agenda ICS "public", qui rendait impossible son utilisation dans certains cas (notamment Google Agenda) (#360).
 
 ## 0.18.1 (2022-03-29)
 
