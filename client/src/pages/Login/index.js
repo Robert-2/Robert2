@@ -1,5 +1,4 @@
 import './index.scss';
-import config from '@/globals/config';
 import Button from '@/components/Button';
 
 // @vue/component
