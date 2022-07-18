@@ -1,32 +1,9 @@
 /* stylelint-disable selector-max-type */
 
 .Form {
-    &__fieldset {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-
-        &__title {
-            margin: 0 0 15px;
-            font-size: 1.1rem;
-        }
-    }
-
-    &__fieldset + &__fieldset {
-        margin-top: 40px;
-    }
-
     &__actions {
         margin-top: 40px;
-        padding-bottom: 40px;
         text-align: left;
-    }
-
-    .FormField + .FormField,
-    .SelectSearch + .SelectSearch,
-    .FormField + .SelectSearch,
-    .SelectSearch + .FormField {
-        margin-top: $content-padding-small-vertical;
     }
 
     input + input {
@@ -59,12 +36,6 @@
     }
 
     @media screen and (min-width: $screen-tablet) {
-        &__fieldset {
-            &__title {
-                margin-left: $form-label-width;
-            }
-        }
-
         &__actions {
             padding-left: $form-label-width;
         }

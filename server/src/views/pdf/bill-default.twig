@@ -53,7 +53,13 @@
         <tbody>
             {% for category in categoriesSubTotals %}
             <tr>
-                <td>{{ category['name'] }}</td>
+                <td>
+                    {% if category['name'] is not empty %}
+                    {{ category['name'] }}
+                    {% else %}
+                    {{ translate('notCategorized') }}
+                    {% endif %}
+                </td>
                 <td class="center">{{ plural('itemsCount', category['quantity']) }}</td>
                 <td class="right">
                     {{ category['subTotal']|format_currency(currency, formatCurrencyOptions, locale) }}
@@ -213,10 +219,15 @@
         {% for subCategory in materialList %}
             <tr>
                 <td class="section-title" colspan="6">
-                    {% if subCategory['name'] is not empty %}
-                    {{ subCategory['category'] }} - {{ subCategory['name'] }}
+                    {% if subCategory['category'] is not empty %}
+                        {{ subCategory['category'] }}
                     {% else %}
-                    {{ subCategory['category'] }} - {{ translate('otherMaterials') }}
+                        {{ translate('notCategorized') }}
+                    {% endif %}
+                    {% if subCategory['name'] is not empty %}
+                    - {{ subCategory['name'] }}
+                    {% elseif subCategory['category'] %}
+                    - {{ translate('otherMaterials') }}
                     {% endif %}
                 </td>
             </tr>

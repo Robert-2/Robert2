@@ -1,71 +1,149 @@
 @use '~@/style/globals';
 @use 'sass:color';
+@use 'sass:map';
+
+/// Padding vertical des boutons.
+/// @type Number
+$padding-y: 0.396rem !default;
+
+/// Padding horizontal des boutons.
+/// @type Number
+$padding-x: 0.626rem !default;
 
 /// Marge entre l'icône et le texte des boutons (quand il y en a une, d'icône)
 /// @type Number
-$icon-margin: 0.3571rem !default;
+$icon-margin: 0.385rem !default;
+
+/// Largeur de la bordure des boutons.
+/// @type Number
+$border-width: 2px !default;
+
+/// Border radius des boutons.
+/// @type Number
+$border-radius: 4px !default;
 
 //
 // - Default variant
 //
 
-$default-color: globals.$color-base-button !default;
-$default-background: globals.$bg-color-button-default !default;
+// stylelint-disable-next-line value-list-max-empty-lines
+$default-variant: (
+    color: globals.$color-base-button,
+    background: globals.$bg-color-button-default,
+    border-color: globals.$bg-color-button-default,
 
-$default-focused-color: color.adjust(globals.$bg-color-button-default, $lightness: 8%) !default;
-$default-focused-background: globals.$color-hover-button !default;
+    // - Focused
+    focused-color: globals.$color-hover-button,
+    focused-background: color.adjust(globals.$bg-color-button-default, $lightness: 8%),
+    focused-border-color: color.adjust(globals.$bg-color-button-default, $lightness: 8%),
 
-$default-active-color: color.adjust(globals.$bg-color-button-default, $lightness: -8%) !default;
-$default-active-background: globals.$color-active-button !default;
+    // - Active
+    active-color: color.adjust(globals.$color-base-button, $lightness: -8%),
+    active-background: color.adjust(globals.$bg-color-button-default, $lightness: -8%),
+    active-border-color: color.adjust(globals.$bg-color-button-default, $lightness: -8%),
+) !default;
 
 //
 // - Primary variant
 //
 
-$primary-variant-color: #fff !default;
-$primary-variant-background: #c35022 !default;
+// stylelint-disable-next-line value-list-max-empty-lines
+$primary-variant: (
+    color: #fff,
+    background: globals.$primary-color,
+    border-color: globals.$primary-color,
 
-$primary-variant-focused-color: $primary-variant-color !default;
-$primary-variant-focused-background: color.adjust(#e14407, $lightness: 5%) !default;
+    // - Focused
+    focused-color: #fff,
+    focused-background: color.adjust(globals.$primary-color, $saturation: 23.3%, $lightness: 5.5%),
+    focused-border-color: color.adjust(globals.$primary-color, $saturation: 23.3%, $lightness: 5.5%),
 
-$primary-variant-active-color: $primary-variant-color !default;
-$primary-variant-active-background: color.adjust(#e14407, $lightness: -5%) !default;
+    // - Active
+    active-color: #fff,
+    active-background: color.adjust(globals.$primary-color, $saturation: 23.8%, $lightness: -4.5%),
+    active-border-color: color.adjust(globals.$primary-color, $saturation: 23.8%, $lightness: -4.5%),
+) !default;
+
+//
+// - Secondary variant
+//
+
+// stylelint-disable-next-line value-list-max-empty-lines
+$secondary-variant: (
+    color: #fff,
+    background: color.adjust(globals.$primary-color, $saturation: -25%, $lightness: -22%),
+    border-color: globals.$primary-color,
+
+    // - Focused
+    focused-color: map.get($primary-variant, focused-color),
+    focused-background: map.get($primary-variant, focused-background),
+    focused-border-color: map.get($primary-variant, focused-border-color),
+
+    // - Active
+    active-color: map.get($primary-variant, active-color),
+    active-background: map.get($primary-variant, active-background),
+    active-border-color: map.get($primary-variant, active-border-color),
+) !default;
 
 //
 // - Success variant
 //
 
-$success-variant-color: #fff !default;
-$success-variant-background: globals.$bg-color-button-success !default;
+// stylelint-disable-next-line value-list-max-empty-lines
+$success-variant: (
+    color: #fff,
+    background: globals.$bg-color-button-success,
+    border-color: globals.$bg-color-button-success,
 
-$success-variant-focused-color: $success-variant-color !default;
-$success-variant-focused-background: color.adjust(globals.$bg-color-button-success, $lightness: 5%) !default;
+    // - Focused
+    focused-color: #fff,
+    focused-background: color.adjust(globals.$bg-color-button-success, $lightness: 5%),
+    focused-border-color: color.adjust(globals.$bg-color-button-success, $lightness: 5%),
 
-$success-variant-active-color: globals.$color-active-button !default;
-$success-variant-active-background: color.adjust(globals.$bg-color-button-success, $lightness: -5%) !default;
+    // - Active
+    active-color: #fff,
+    active-background: color.adjust(globals.$bg-color-button-success, $lightness: -5%),
+    active-border-color: color.adjust(globals.$bg-color-button-success, $lightness: -5%),
+) !default;
 
 //
 // - Warning variant
 //
 
-$warning-variant-color: #fff !default;
-$warning-variant-background: #be692d !default;
+// stylelint-disable-next-line value-list-max-empty-lines
+$warning-variant: (
+    color: #fff,
+    background: #be692d,
+    border-color: #be692d,
 
-$warning-variant-focused-color: $warning-variant-color !default;
-$warning-variant-focused-background: color.adjust(#be692d, $lightness: 8%) !default;
+    // - Focused
+    focused-color: #fff,
+    focused-background: color.adjust(#be692d, $lightness: 8%),
+    focused-border-color: color.adjust(#be692d, $lightness: 8%),
 
-$warning-variant-active-color: globals.$color-active-button !default;
-$warning-variant-active-background: color.adjust(#be692d, $lightness: 8%) !default;
+    // - Active
+    active-color: #fff,
+    active-background: color.adjust(#be692d, $lightness: 8%),
+    active-border-color: color.adjust(#be692d, $lightness: 8%),
+) !default;
 
 //
 // - Danger variant
 //
 
-$danger-variant-color: #fff !default;
-$danger-variant-background: globals.$bg-color-button-danger !default;
+// stylelint-disable-next-line value-list-max-empty-lines
+$danger-variant: (
+    color: #fff,
+    background: globals.$bg-color-button-danger,
+    border-color: globals.$bg-color-button-danger,
 
-$danger-variant-focused-color: $danger-variant-color !default;
-$danger-variant-focused-background: color.adjust(globals.$bg-color-button-danger, $lightness: 8%) !default;
+    // - Focused
+    focused-color: #fff,
+    focused-background: color.adjust(globals.$bg-color-button-danger, $lightness: 8%),
+    focused-border-color: color.adjust(globals.$bg-color-button-danger, $lightness: 8%),
 
-$danger-variant-active-color: globals.$color-active-button !default;
-$danger-variant-active-background: color.adjust(globals.$bg-color-button-danger, $lightness: -8%) !default;
+    // - Active
+    active-color: #fff,
+    active-background: color.adjust(globals.$bg-color-button-danger, $lightness: -8%),
+    active-border-color: color.adjust(globals.$bg-color-button-danger, $lightness: -8%),
+) !default;

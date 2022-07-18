@@ -7,6 +7,10 @@ use Robert2\API\Validation\Validator as V;
 
 class Document extends BaseModel
 {
+    private const FILE_BASEPATH = (
+        DATA_FOLDER . DS . 'materials' . DS . 'documents'
+    );
+
     public $table = 'documents';
 
     protected $orderField = 'name';
@@ -18,10 +22,40 @@ class Document extends BaseModel
 
         $this->validation = [
             'material_id' => V::notEmpty()->numeric(),
-            'name' => V::notEmpty()->length(2, 191),
+            'name' => V::callback([$this, 'checkName']),
             'type' => V::notEmpty()->length(2, 191),
             'size' => V::notEmpty()->numeric(),
         ];
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Validation
+    // -
+    // ------------------------------------------------------
+
+    public function checkName($value)
+    {
+        V::notEmpty()
+            ->length(2, 191)
+            ->check($value);
+
+        if (empty($this->material_id)) {
+            return true;
+        }
+
+        $query = static::newQuery()
+            ->where('name', $value)
+            ->where('material_id', $this->material_id);
+        if ($this->exists) {
+            $query->where('id', '!=', $this->id);
+        }
+
+        if ($query->exists()) {
+            return 'document-already-in-use-for-this-material';
+        }
+
+        return true;
     }
 
     // ------------------------------------------------------
@@ -89,7 +123,7 @@ class Document extends BaseModel
             );
         }
 
-        $filePath = static::getFilePath((int)$document->material_id, $document->name);
+        $filePath = $document->file_path;
         if (!unlink($filePath)) {
             throw new \RuntimeException(
                 sprintf("Unable to delete file '%s' from data folder: %s", $document->name, $filePath)
@@ -101,7 +135,7 @@ class Document extends BaseModel
 
     public static function getFilePath(int $materialId, ?string $name = null): string
     {
-        $path = DATA_FOLDER . DS . 'materials'. DS . $materialId;
+        $path = static::FILE_BASEPATH . DS . $materialId;
         if ($name) {
             $path .= DS . $name;
         }

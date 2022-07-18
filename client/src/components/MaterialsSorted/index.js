@@ -7,17 +7,6 @@ import useI18n from '@/hooks/vue/useI18n';
 import apiCategories from '@/stores/api/categories';
 import MaterialsCategoryItem from './CategoryItem';
 
-// type Props = {
-//     /** La liste du matériel. */
-//     data: MaterialWithPivot[],
-
-//     /** Permet d'afficher les prix de location ou non. */
-//     withRentalPrices?: boolean,
-
-//     /** Pour déplier la liste à l'ouverture du component. */
-//     hideDetails?: boolean,
-// };
-
 const MIN_COUNT_FOR_HIDE_BUTTON = 20;
 
 // @vue/component

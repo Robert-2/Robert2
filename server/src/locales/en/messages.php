@@ -1,1705 +1,195 @@
 <?php
 return [
     "{{name}} must be iterable"
-    => "{{name}} must be iterable",
+    => "Must be iterable",
 
     "{{name}} must not be iterable"
-    => "{{name}} must not be iterable",
+    => "Must not be iterable",
 
     "{{name}} must be a valid slug"
-    => "{{name}} must be a valid slug",
+    => "Must be a valid slug",
 
     "{{name}} must not be a valid slug"
-    => "{{name}} must not be a valid slug",
+    => "Must not be a valid slug",
 
     "{{name}} must be identical as {{compareTo}}"
-    => "{{name}} must be identical as {{compareTo}}",
+    => "Must be identical as {{compareTo}}",
 
     "{{name}} must not be identical as {{compareTo}}"
-    => "{{name}} must not be identical as {{compareTo}}",
+    => "Must not be identical as {{compareTo}}",
 
     "{{name}} contain only hexadecimal digits"
-    => "{{name}} contain only hexadecimal digits",
+    => "Must contain only hexadecimal digits",
 
     "{{name}} contain only hexadecimal digits and \"{{additionalChars}}\""
-    => "{{name}} contain only hexadecimal digits and \"{{additionalChars}}\"",
+    => "Must contain only hexadecimal digits and \"{{additionalChars}}\"",
 
     "{{name}} must not contain hexadecimal digits"
-    => "{{name}} must not contain hexadecimal digits",
+    => "Must not contain hexadecimal digits",
 
     "{{name}} must not contain hexadecimal digits or \"{{additionalChars}}\""
-    => "{{name}} must not contain hexadecimal digits or \"{{additionalChars}}\"",
+    => "Must not contain hexadecimal digits or \"{{additionalChars}}\"",
 
     "{{name}} must be equals {{compareTo}}"
-    => "{{name}} must be equals {{compareTo}}",
+    => "Must be equal to {{compareTo}}",
 
     "{{name}} must not be equals {{compareTo}}"
-    => "{{name}} must not be equals {{compareTo}}",
+    => "Must not be equal to {{compareTo}}",
 
     "{{name}} must be an object"
-    => "{{name}} must be an object",
+    => "Must be an object",
 
     "{{name}} must not be an object"
-    => "{{name}} must not be an object",
+    => "Must not be an object",
 
     "{{name}} must be an integer number"
-    => "{{name}} must be an integer number",
+    => "Must be an integer number",
 
     "{{name}} must not be an integer number"
-    => "{{name}} must not be an integer number",
+    => "Must not be an integer number",
 
     "{{name}} must be a valid roman number"
-    => "{{name}} must be a valid roman number",
+    => "Must be a valid roman number",
 
     "{{name}} must not be a valid roman number"
-    => "{{name}} must not be a valid roman number",
+    => "Must not be a valid roman number",
 
     "{{name}} must contain only printable characters"
-    => "{{name}} must contain only printable characters",
+    => "Must contain only printable characters",
 
     "{{name}} must contain only printable characters and \"{{additionalChars}}\""
-    => "{{name}} must contain only printable characters and \"{{additionalChars}}\"",
+    => "Must contain only printable characters and \"{{additionalChars}}\"",
 
     "{{name}} must not contain printable characters"
-    => "{{name}} must not contain printable characters",
+    => "Must not contain printable characters",
 
     "{{name}} must not contain printable characters or \"{{additionalChars}}\""
-    => "{{name}} must not contain printable characters or \"{{additionalChars}}\"",
+    => "Must not contain printable characters or \"{{additionalChars}}\"",
 
     "{{name}} must be a bank account"
-    => "{{name}} must be a bank account",
+    => "Must be a bank account",
 
     "{{name}} must not be a bank account"
-    => "{{name}} must not be a bank account",
+    => "Must not be a bank account",
 
     "{{name}} must exists"
-    => "{{name}} must exists",
+    => "Must exists",
 
     "{{name}} must not exists"
-    => "{{name}} must not exists",
+    => "Must not exists",
 
     "{{name}} must be null"
-    => "{{name}} must be null",
+    => "Must be null",
 
     "{{name}} must not be null"
-    => "{{name}} must not be null",
+    => "Must not be null",
 
     "Data validation failed for {{name}}"
     => "Data validation failed for {{name}}",
 
     "{{name}} must contain only letters (a-z)"
-    => "{{name}} must contain only letters (a-z)",
+    => "This field must contain only letters",
 
     "{{name}} must contain only letters (a-z) and \"{{additionalChars}}\""
-    => "{{name}} must contain only letters (a-z) and \"{{additionalChars}}\"",
+    => "This field contains some unauthorized characters",
 
     "{{name}} must not contain letters (a-z)"
-    => "{{name}} must not contain letters (a-z)",
+    => "This field must not contain letters",
 
     "{{name}} must not contain letters (a-z) or \"{{additionalChars}}\""
-    => "{{name}} must not contain letters (a-z) or \"{{additionalChars}}\"",
+    => "Must not contain letters (a-z) or \"{{additionalChars}}\"",
 
     "{{name}} must be a valid postal code on {{countryCode}}"
-    => "{{name}} must be a valid postal code on {{countryCode}}",
+    => "Must be a valid postal code on {{countryCode}}",
 
     "{{name}} must not be a valid postal code on {{countryCode}}"
-    => "{{name}} must not be a valid postal code on {{countryCode}}",
-
-    "{{name}} must be a subdivision code of Ivory Coast"
-    => "{{name}} must be a subdivision code of Ivory Coast",
-
-    "{{name}} must be not a subdivision code of Ivory Coast"
-    => "{{name}} must be not a subdivision code of Ivory Coast",
-
-    "{{name}} must be a subdivision code of Brunei"
-    => "{{name}} must be a subdivision code of Brunei",
-
-    "{{name}} must be not a subdivision code of Brunei"
-    => "{{name}} must be not a subdivision code of Brunei",
-
-    "{{name}} must be a subdivision code of Angola"
-    => "{{name}} must be a subdivision code of Angola",
-
-    "{{name}} must be not a subdivision code of Angola"
-    => "{{name}} must be not a subdivision code of Angola",
-
-    "{{name}} must be a subdivision code of Costa Rica"
-    => "{{name}} must be a subdivision code of Costa Rica",
-
-    "{{name}} must be not a subdivision code of Costa Rica"
-    => "{{name}} must be not a subdivision code of Costa Rica",
-
-    "{{name}} must be a subdivision code of Czech Republic"
-    => "{{name}} must be a subdivision code of Czech Republic",
-
-    "{{name}} must be not a subdivision code of Czech Republic"
-    => "{{name}} must be not a subdivision code of Czech Republic",
-
-    "{{name}} must be a subdivision code of Italy"
-    => "{{name}} must be a subdivision code of Italy",
-
-    "{{name}} must be not a subdivision code of Italy"
-    => "{{name}} must be not a subdivision code of Italy",
-
-    "{{name}} must be a subdivision code of Croatia"
-    => "{{name}} must be a subdivision code of Croatia",
-
-    "{{name}} must be not a subdivision code of Croatia"
-    => "{{name}} must be not a subdivision code of Croatia",
-
-    "{{name}} must be a subdivision code of Slovenia"
-    => "{{name}} must be a subdivision code of Slovenia",
-
-    "{{name}} must be not a subdivision code of Slovenia"
-    => "{{name}} must be not a subdivision code of Slovenia",
-
-    "{{name}} must be a subdivision code of French Southern Territories"
-    => "{{name}} must be a subdivision code of French Southern Territories",
-
-    "{{name}} must be not a subdivision code of French Southern Territories"
-    => "{{name}} must be not a subdivision code of French Southern Territories",
-
-    "{{name}} must be a subdivision code of U.S. Virgin Islands"
-    => "{{name}} must be a subdivision code of U.S. Virgin Islands",
-
-    "{{name}} must be not a subdivision code of U.S. Virgin Islands"
-    => "{{name}} must be not a subdivision code of U.S. Virgin Islands",
-
-    "{{name}} must be a subdivision code of Serbia And Montenegro"
-    => "{{name}} must be a subdivision code of Serbia And Montenegro",
-
-    "{{name}} must be not a subdivision code of Serbia And Montenegro"
-    => "{{name}} must be not a subdivision code of Serbia And Montenegro",
-
-    "{{name}} must be a subdivision code of Hong Kong"
-    => "{{name}} must be a subdivision code of Hong Kong",
-
-    "{{name}} must be not a subdivision code of Hong Kong"
-    => "{{name}} must be not a subdivision code of Hong Kong",
-
-    "{{name}} must be a subdivision code of Greece"
-    => "{{name}} must be a subdivision code of Greece",
-
-    "{{name}} must be not a subdivision code of Greece"
-    => "{{name}} must be not a subdivision code of Greece",
-
-    "{{name}} must be a subdivision code of Ethiopia"
-    => "{{name}} must be a subdivision code of Ethiopia",
-
-    "{{name}} must be not a subdivision code of Ethiopia"
-    => "{{name}} must be not a subdivision code of Ethiopia",
-
-    "{{name}} must be a subdivision code of Bangladesh"
-    => "{{name}} must be a subdivision code of Bangladesh",
-
-    "{{name}} must be not a subdivision code of Bangladesh"
-    => "{{name}} must be not a subdivision code of Bangladesh",
-
-    "{{name}} must be a subdivision code of Egypt"
-    => "{{name}} must be a subdivision code of Egypt",
-
-    "{{name}} must be not a subdivision code of Egypt"
-    => "{{name}} must be not a subdivision code of Egypt",
-
-    "{{name}} must be a subdivision code of Central African Republic"
-    => "{{name}} must be a subdivision code of Central African Republic",
-
-    "{{name}} must be not a subdivision code of Central African Republic"
-    => "{{name}} must be not a subdivision code of Central African Republic",
-
-    "{{name}} must be a subdivision code of Sierra Leone"
-    => "{{name}} must be a subdivision code of Sierra Leone",
-
-    "{{name}} must be not a subdivision code of Sierra Leone"
-    => "{{name}} must be not a subdivision code of Sierra Leone",
-
-    "{{name}} must be a subdivision code of Mexico"
-    => "{{name}} must be a subdivision code of Mexico",
-
-    "{{name}} must be not a subdivision code of Mexico"
-    => "{{name}} must be not a subdivision code of Mexico",
-
-    "{{name}} must be a subdivision code of Turkey"
-    => "{{name}} must be a subdivision code of Turkey",
-
-    "{{name}} must be not a subdivision code of Turkey"
-    => "{{name}} must be not a subdivision code of Turkey",
-
-    "{{name}} must be a subdivision code of Heard Island and McDonald Islands"
-    => "{{name}} must be a subdivision code of Heard Island and McDonald Islands",
-
-    "{{name}} must be not a subdivision code of Heard Island and McDonald Islands"
-    => "{{name}} must be not a subdivision code of Heard Island and McDonald Islands",
-
-    "{{name}} must be a subdivision code of Nepal"
-    => "{{name}} must be a subdivision code of Nepal",
-
-    "{{name}} must be not a subdivision code of Nepal"
-    => "{{name}} must be not a subdivision code of Nepal",
-
-    "{{name}} must be a subdivision code of Montenegro"
-    => "{{name}} must be a subdivision code of Montenegro",
-
-    "{{name}} must be not a subdivision code of Montenegro"
-    => "{{name}} must be not a subdivision code of Montenegro",
-
-    "{{name}} must be a subdivision code of Tanzania"
-    => "{{name}} must be a subdivision code of Tanzania",
-
-    "{{name}} must be not a subdivision code of Tanzania"
-    => "{{name}} must be not a subdivision code of Tanzania",
-
-    "{{name}} must be a subdivision code of Kosovo"
-    => "{{name}} must be a subdivision code of Kosovo",
-
-    "{{name}} must be not a subdivision code of Kosovo"
-    => "{{name}} must be not a subdivision code of Kosovo",
-
-    "{{name}} must be a subdivision code of Bahamas"
-    => "{{name}} must be a subdivision code of Bahamas",
-
-    "{{name}} must be not a subdivision code of Bahamas"
-    => "{{name}} must be not a subdivision code of Bahamas",
-
-    "{{name}} must be a subdivision code of Lithuania"
-    => "{{name}} must be a subdivision code of Lithuania",
-
-    "{{name}} must be not a subdivision code of Lithuania"
-    => "{{name}} must be not a subdivision code of Lithuania",
-
-    "{{name}} must be a subdivision code of Zimbabwe"
-    => "{{name}} must be a subdivision code of Zimbabwe",
-
-    "{{name}} must be not a subdivision code of Zimbabwe"
-    => "{{name}} must be not a subdivision code of Zimbabwe",
-
-    "{{name}} must be a subdivision code of Tuvalu"
-    => "{{name}} must be a subdivision code of Tuvalu",
-
-    "{{name}} must be not a subdivision code of Tuvalu"
-    => "{{name}} must be not a subdivision code of Tuvalu",
-
-    "{{name}} must be a subdivision code of U.S. Minor Outlying Islands"
-    => "{{name}} must be a subdivision code of U.S. Minor Outlying Islands",
-
-    "{{name}} must be not a subdivision code of U.S. Minor Outlying Islands"
-    => "{{name}} must be not a subdivision code of U.S. Minor Outlying Islands",
-
-    "{{name}} must be a subdivision code of Pitcairn Islands"
-    => "{{name}} must be a subdivision code of Pitcairn Islands",
-
-    "{{name}} must be not a subdivision code of Pitcairn Islands"
-    => "{{name}} must be not a subdivision code of Pitcairn Islands",
-
-    "{{name}} must be a subdivision code of Belarus"
-    => "{{name}} must be a subdivision code of Belarus",
-
-    "{{name}} must be not a subdivision code of Belarus"
-    => "{{name}} must be not a subdivision code of Belarus",
-
-    "{{name}} must be a subdivision code of Senegal"
-    => "{{name}} must be a subdivision code of Senegal",
-
-    "{{name}} must be not a subdivision code of Senegal"
-    => "{{name}} must be not a subdivision code of Senegal",
-
-    "{{name}} must be a subdivision code of Vanuatu"
-    => "{{name}} must be a subdivision code of Vanuatu",
-
-    "{{name}} must be not a subdivision code of Vanuatu"
-    => "{{name}} must be not a subdivision code of Vanuatu",
-
-    "{{name}} must be a subdivision code of Myanmar [Burma]"
-    => "{{name}} must be a subdivision code of Myanmar [Burma]",
-
-    "{{name}} must be not a subdivision code of Myanmar [Burma]"
-    => "{{name}} must be not a subdivision code of Myanmar [Burma]",
-
-    "{{name}} must be a subdivision code of Guatemala"
-    => "{{name}} must be a subdivision code of Guatemala",
-
-    "{{name}} must be not a subdivision code of Guatemala"
-    => "{{name}} must be not a subdivision code of Guatemala",
-
-    "{{name}} must be a subdivision code of Maldives"
-    => "{{name}} must be a subdivision code of Maldives",
-
-    "{{name}} must be not a subdivision code of Maldives"
-    => "{{name}} must be not a subdivision code of Maldives",
-
-    "{{name}} must be a subdivision code of Grenada"
-    => "{{name}} must be a subdivision code of Grenada",
-
-    "{{name}} must be not a subdivision code of Grenada"
-    => "{{name}} must be not a subdivision code of Grenada",
-
-    "{{name}} must be a subdivision code of Antarctica"
-    => "{{name}} must be a subdivision code of Antarctica",
-
-    "{{name}} must be not a subdivision code of Antarctica"
-    => "{{name}} must be not a subdivision code of Antarctica",
-
-    "{{name}} must be a subdivision code of San Marino"
-    => "{{name}} must be a subdivision code of San Marino",
-
-    "{{name}} must be not a subdivision code of San Marino"
-    => "{{name}} must be not a subdivision code of San Marino",
-
-    "{{name}} must be a subdivision code of Bahrain"
-    => "{{name}} must be a subdivision code of Bahrain",
-
-    "{{name}} must be not a subdivision code of Bahrain"
-    => "{{name}} must be not a subdivision code of Bahrain",
-
-    "{{name}} must be a subdivision code of Romania"
-    => "{{name}} must be a subdivision code of Romania",
-
-    "{{name}} must be not a subdivision code of Romania"
-    => "{{name}} must be not a subdivision code of Romania",
-
-    "{{name}} must be a subdivision code of Sweden"
-    => "{{name}} must be a subdivision code of Sweden",
-
-    "{{name}} must be not a subdivision code of Sweden"
-    => "{{name}} must be not a subdivision code of Sweden",
-
-    "{{name}} must be a subdivision code of Mauritius"
-    => "{{name}} must be a subdivision code of Mauritius",
-
-    "{{name}} must be not a subdivision code of Mauritius"
-    => "{{name}} must be not a subdivision code of Mauritius",
-
-    "{{name}} must be a subdivision code of Israel"
-    => "{{name}} must be a subdivision code of Israel",
-
-    "{{name}} must be not a subdivision code of Israel"
-    => "{{name}} must be not a subdivision code of Israel",
-
-    "{{name}} must be a subdivision code of Denmark"
-    => "{{name}} must be a subdivision code of Denmark",
-
-    "{{name}} must be not a subdivision code of Denmark"
-    => "{{name}} must be not a subdivision code of Denmark",
-
-    "{{name}} must be a subdivision code of Comoros"
-    => "{{name}} must be a subdivision code of Comoros",
-
-    "{{name}} must be not a subdivision code of Comoros"
-    => "{{name}} must be not a subdivision code of Comoros",
-
-    "{{name}} must be a subdivision code of Madagascar"
-    => "{{name}} must be a subdivision code of Madagascar",
-
-    "{{name}} must be not a subdivision code of Madagascar"
-    => "{{name}} must be not a subdivision code of Madagascar",
-
-    "{{name}} must be a subdivision code of Samoa"
-    => "{{name}} must be a subdivision code of Samoa",
-
-    "{{name}} must be not a subdivision code of Samoa"
-    => "{{name}} must be not a subdivision code of Samoa",
-
-    "{{name}} must be a subdivision code of Norway"
-    => "{{name}} must be a subdivision code of Norway",
-
-    "{{name}} must be not a subdivision code of Norway"
-    => "{{name}} must be not a subdivision code of Norway",
-
-    "{{name}} must be a subdivision code of Georgia"
-    => "{{name}} must be a subdivision code of Georgia",
-
-    "{{name}} must be not a subdivision code of Georgia"
-    => "{{name}} must be not a subdivision code of Georgia",
-
-    "{{name}} must be a subdivision code of Palau"
-    => "{{name}} must be a subdivision code of Palau",
-
-    "{{name}} must be not a subdivision code of Palau"
-    => "{{name}} must be not a subdivision code of Palau",
-
-    "{{name}} must be a subdivision code of British Virgin Islands"
-    => "{{name}} must be a subdivision code of British Virgin Islands",
-
-    "{{name}} must be not a subdivision code of British Virgin Islands"
-    => "{{name}} must be not a subdivision code of British Virgin Islands",
-
-    "{{name}} must be a subdivision code of Netherlands"
-    => "{{name}} must be a subdivision code of Netherlands",
-
-    "{{name}} must be not a subdivision code of Netherlands"
-    => "{{name}} must be not a subdivision code of Netherlands",
-
-    "{{name}} must be a subdivision code of Cook Islands"
-    => "{{name}} must be a subdivision code of Cook Islands",
-
-    "{{name}} must be not a subdivision code of Cook Islands"
-    => "{{name}} must be not a subdivision code of Cook Islands",
-
-    "{{name}} must be a subdivision code of Saudi Arabia"
-    => "{{name}} must be a subdivision code of Saudi Arabia",
-
-    "{{name}} must be not a subdivision code of Saudi Arabia"
-    => "{{name}} must be not a subdivision code of Saudi Arabia",
-
-    "{{name}} must be a subdivision code of Saint Helena"
-    => "{{name}} must be a subdivision code of Saint Helena",
-
-    "{{name}} must be not a subdivision code of Saint Helena"
-    => "{{name}} must be not a subdivision code of Saint Helena",
-
-    "{{name}} must be a subdivision code of Taiwan"
-    => "{{name}} must be a subdivision code of Taiwan",
-
-    "{{name}} must be not a subdivision code of Taiwan"
-    => "{{name}} must be not a subdivision code of Taiwan",
-
-    "{{name}} must be a subdivision code of Qatar"
-    => "{{name}} must be a subdivision code of Qatar",
-
-    "{{name}} must be not a subdivision code of Qatar"
-    => "{{name}} must be not a subdivision code of Qatar",
-
-    "{{name}} must be a subdivision code of Niger"
-    => "{{name}} must be a subdivision code of Niger",
-
-    "{{name}} must be not a subdivision code of Niger"
-    => "{{name}} must be not a subdivision code of Niger",
-
-    "{{name}} must be a subdivision code of North Korea"
-    => "{{name}} must be a subdivision code of North Korea",
-
-    "{{name}} must be not a subdivision code of North Korea"
-    => "{{name}} must be not a subdivision code of North Korea",
-
-    "{{name}} must be a subdivision code of Trinidad and Tobago"
-    => "{{name}} must be a subdivision code of Trinidad and Tobago",
-
-    "{{name}} must be not a subdivision code of Trinidad and Tobago"
-    => "{{name}} must be not a subdivision code of Trinidad and Tobago",
-
-    "{{name}} must be a subdivision code of Cuba"
-    => "{{name}} must be a subdivision code of Cuba",
-
-    "{{name}} must be not a subdivision code of Cuba"
-    => "{{name}} must be not a subdivision code of Cuba",
-
-    "{{name}} must be a subdivision code of Guernsey"
-    => "{{name}} must be a subdivision code of Guernsey",
-
-    "{{name}} must be not a subdivision code of Guernsey"
-    => "{{name}} must be not a subdivision code of Guernsey",
-
-    "{{name}} must be a subdivision code of Dominica"
-    => "{{name}} must be a subdivision code of Dominica",
-
-    "{{name}} must be not a subdivision code of Dominica"
-    => "{{name}} must be not a subdivision code of Dominica",
-
-    "{{name}} must be a subdivision code of Chad"
-    => "{{name}} must be a subdivision code of Chad",
-
-    "{{name}} must be not a subdivision code of Chad"
-    => "{{name}} must be not a subdivision code of Chad",
-
-    "{{name}} must be a subdivision code of Bhutan"
-    => "{{name}} must be a subdivision code of Bhutan",
-
-    "{{name}} must be not a subdivision code of Bhutan"
-    => "{{name}} must be not a subdivision code of Bhutan",
-
-    "{{name}} must be a subdivision code of Benin"
-    => "{{name}} must be a subdivision code of Benin",
-
-    "{{name}} must be not a subdivision code of Benin"
-    => "{{name}} must be not a subdivision code of Benin",
-
-    "{{name}} must be a subdivision code of Bonaire"
-    => "{{name}} must be a subdivision code of Bonaire",
-
-    "{{name}} must be not a subdivision code of Bonaire"
-    => "{{name}} must be not a subdivision code of Bonaire",
-
-    "{{name}} must be a subdivision code of Montserrat"
-    => "{{name}} must be a subdivision code of Montserrat",
-
-    "{{name}} must be not a subdivision code of Montserrat"
-    => "{{name}} must be not a subdivision code of Montserrat",
-
-    "{{name}} must be a subdivision code of Netherlands Antilles"
-    => "{{name}} must be a subdivision code of Netherlands Antilles",
-
-    "{{name}} must be not a subdivision code of Netherlands Antilles"
-    => "{{name}} must be not a subdivision code of Netherlands Antilles",
-
-    "{{name}} must be a subdivision code of Papua New Guinea"
-    => "{{name}} must be a subdivision code of Papua New Guinea",
-
-    "{{name}} must be not a subdivision code of Papua New Guinea"
-    => "{{name}} must be not a subdivision code of Papua New Guinea",
-
-    "{{name}} must be a subdivision code of Malta"
-    => "{{name}} must be a subdivision code of Malta",
-
-    "{{name}} must be not a subdivision code of Malta"
-    => "{{name}} must be not a subdivision code of Malta",
-
-    "{{name}} must be a subdivision code of Hungary"
-    => "{{name}} must be a subdivision code of Hungary",
-
-    "{{name}} must be not a subdivision code of Hungary"
-    => "{{name}} must be not a subdivision code of Hungary",
-
-    "{{name}} must be a subdivision code of Macedonia"
-    => "{{name}} must be a subdivision code of Macedonia",
-
-    "{{name}} must be not a subdivision code of Macedonia"
-    => "{{name}} must be not a subdivision code of Macedonia",
-
-    "{{name}} must be a subdivision code of Fiji"
-    => "{{name}} must be a subdivision code of Fiji",
-
-    "{{name}} must be not a subdivision code of Fiji"
-    => "{{name}} must be not a subdivision code of Fiji",
-
-    "{{name}} must be a subdivision code of Sri Lanka"
-    => "{{name}} must be a subdivision code of Sri Lanka",
-
-    "{{name}} must be not a subdivision code of Sri Lanka"
-    => "{{name}} must be not a subdivision code of Sri Lanka",
-
-    "{{name}} must be a subdivision code of Mongolia"
-    => "{{name}} must be a subdivision code of Mongolia",
-
-    "{{name}} must be not a subdivision code of Mongolia"
-    => "{{name}} must be not a subdivision code of Mongolia",
-
-    "{{name}} must be a subdivision code of Ecuador"
-    => "{{name}} must be a subdivision code of Ecuador",
-
-    "{{name}} must be not a subdivision code of Ecuador"
-    => "{{name}} must be not a subdivision code of Ecuador",
-
-    "{{name}} must be a subdivision code of Tajikistan"
-    => "{{name}} must be a subdivision code of Tajikistan",
-
-    "{{name}} must be not a subdivision code of Tajikistan"
-    => "{{name}} must be not a subdivision code of Tajikistan",
-
-    "{{name}} must be a subdivision code of Réunion"
-    => "{{name}} must be a subdivision code of Réunion",
-
-    "{{name}} must be not a subdivision code of Réunion"
-    => "{{name}} must be not a subdivision code of Réunion",
-
-    "{{name}} must be a subdivision code of Switzerland"
-    => "{{name}} must be a subdivision code of Switzerland",
-
-    "{{name}} must be not a subdivision code of Switzerland"
-    => "{{name}} must be not a subdivision code of Switzerland",
-
-    "{{name}} must be a subdivision code of Saint Pierre and Miquelon"
-    => "{{name}} must be a subdivision code of Saint Pierre and Miquelon",
-
-    "{{name}} must be not a subdivision code of Saint Pierre and Miquelon"
-    => "{{name}} must be not a subdivision code of Saint Pierre and Miquelon",
-
-    "{{name}} must be a subdivision code of United Kingdom"
-    => "{{name}} must be a subdivision code of United Kingdom",
-
-    "{{name}} must be not a subdivision code of United Kingdom"
-    => "{{name}} must be not a subdivision code of United Kingdom",
-
-    "{{name}} must be a subdivision code of Isle of Man"
-    => "{{name}} must be a subdivision code of Isle of Man",
-
-    "{{name}} must be not a subdivision code of Isle of Man"
-    => "{{name}} must be not a subdivision code of Isle of Man",
-
-    "{{name}} must be a subdivision code of Slovakia"
-    => "{{name}} must be a subdivision code of Slovakia",
-
-    "{{name}} must be not a subdivision code of Slovakia"
-    => "{{name}} must be not a subdivision code of Slovakia",
-
-    "{{name}} must be a subdivision code of Anguilla"
-    => "{{name}} must be a subdivision code of Anguilla",
-
-    "{{name}} must be not a subdivision code of Anguilla"
-    => "{{name}} must be not a subdivision code of Anguilla",
-
-    "{{name}} must be a subdivision code of Monaco"
-    => "{{name}} must be a subdivision code of Monaco",
-
-    "{{name}} must be not a subdivision code of Monaco"
-    => "{{name}} must be not a subdivision code of Monaco",
-
-    "{{name}} must be a subdivision code of Syria"
-    => "{{name}} must be a subdivision code of Syria",
-
-    "{{name}} must be not a subdivision code of Syria"
-    => "{{name}} must be not a subdivision code of Syria",
-
-    "{{name}} must be a subdivision code of Sudan"
-    => "{{name}} must be a subdivision code of Sudan",
-
-    "{{name}} must be not a subdivision code of Sudan"
-    => "{{name}} must be not a subdivision code of Sudan",
-
-    "{{name}} must be a subdivision code of Tunisia"
-    => "{{name}} must be a subdivision code of Tunisia",
-
-    "{{name}} must be not a subdivision code of Tunisia"
-    => "{{name}} must be not a subdivision code of Tunisia",
-
-    "{{name}} must be a subdivision code of Honduras"
-    => "{{name}} must be a subdivision code of Honduras",
-
-    "{{name}} must be not a subdivision code of Honduras"
-    => "{{name}} must be not a subdivision code of Honduras",
-
-    "{{name}} must be a subdivision code of Cameroon"
-    => "{{name}} must be a subdivision code of Cameroon",
-
-    "{{name}} must be not a subdivision code of Cameroon"
-    => "{{name}} must be not a subdivision code of Cameroon",
-
-    "{{name}} must be a subdivision code of Nauru"
-    => "{{name}} must be a subdivision code of Nauru",
-
-    "{{name}} must be not a subdivision code of Nauru"
-    => "{{name}} must be not a subdivision code of Nauru",
-
-    "{{name}} must be a subdivision code of Saint Lucia"
-    => "{{name}} must be a subdivision code of Saint Lucia",
-
-    "{{name}} must be not a subdivision code of Saint Lucia"
-    => "{{name}} must be not a subdivision code of Saint Lucia",
-
-    "{{name}} must be a subdivision code of Andorra"
-    => "{{name}} must be a subdivision code of Andorra",
-
-    "{{name}} must be not a subdivision code of Andorra"
-    => "{{name}} must be not a subdivision code of Andorra",
-
-    "{{name}} must be a subdivision code of Philippines"
-    => "{{name}} must be a subdivision code of Philippines",
-
-    "{{name}} must be not a subdivision code of Philippines"
-    => "{{name}} must be not a subdivision code of Philippines",
-
-    "{{name}} must be a subdivision code of Bermuda"
-    => "{{name}} must be a subdivision code of Bermuda",
-
-    "{{name}} must be not a subdivision code of Bermuda"
-    => "{{name}} must be not a subdivision code of Bermuda",
-
-    "{{name}} must be a subdivision code of East Timor"
-    => "{{name}} must be a subdivision code of East Timor",
-
-    "{{name}} must be not a subdivision code of East Timor"
-    => "{{name}} must be not a subdivision code of East Timor",
-
-    "{{name}} must be a subdivision code of Bolivia"
-    => "{{name}} must be a subdivision code of Bolivia",
-
-    "{{name}} must be not a subdivision code of Bolivia"
-    => "{{name}} must be not a subdivision code of Bolivia",
-
-    "{{name}} must be a subdivision code of Saint Martin"
-    => "{{name}} must be a subdivision code of Saint Martin",
-
-    "{{name}} must be not a subdivision code of Saint Martin"
-    => "{{name}} must be not a subdivision code of Saint Martin",
-
-    "{{name}} must be a subdivision code of Algeria"
-    => "{{name}} must be a subdivision code of Algeria",
-
-    "{{name}} must be not a subdivision code of Algeria"
-    => "{{name}} must be not a subdivision code of Algeria",
-
-    "{{name}} must be a subdivision code of Turks and Caicos Islands"
-    => "{{name}} must be a subdivision code of Turks and Caicos Islands",
-
-    "{{name}} must be not a subdivision code of Turks and Caicos Islands"
-    => "{{name}} must be not a subdivision code of Turks and Caicos Islands",
-
-    "{{name}} must be a subdivision code of Wallis and Futuna"
-    => "{{name}} must be a subdivision code of Wallis and Futuna",
-
-    "{{name}} must be not a subdivision code of Wallis and Futuna"
-    => "{{name}} must be not a subdivision code of Wallis and Futuna",
-
-    "{{name}} must be a subdivision code of Micronesia"
-    => "{{name}} must be a subdivision code of Micronesia",
-
-    "{{name}} must be not a subdivision code of Micronesia"
-    => "{{name}} must be not a subdivision code of Micronesia",
-
-    "{{name}} must be a subdivision code of Malawi"
-    => "{{name}} must be a subdivision code of Malawi",
-
-    "{{name}} must be not a subdivision code of Malawi"
-    => "{{name}} must be not a subdivision code of Malawi",
-
-    "{{name}} must be a subdivision code of Latvia"
-    => "{{name}} must be a subdivision code of Latvia",
-
-    "{{name}} must be not a subdivision code of Latvia"
-    => "{{name}} must be not a subdivision code of Latvia",
-
-    "{{name}} must be a subdivision code of Puerto Rico"
-    => "{{name}} must be a subdivision code of Puerto Rico",
-
-    "{{name}} must be not a subdivision code of Puerto Rico"
-    => "{{name}} must be not a subdivision code of Puerto Rico",
-
-    "{{name}} must be a subdivision code of Dominican Republic"
-    => "{{name}} must be a subdivision code of Dominican Republic",
-
-    "{{name}} must be not a subdivision code of Dominican Republic"
-    => "{{name}} must be not a subdivision code of Dominican Republic",
-
-    "{{name}} must be a subdivision code of Belize"
-    => "{{name}} must be a subdivision code of Belize",
-
-    "{{name}} must be not a subdivision code of Belize"
-    => "{{name}} must be not a subdivision code of Belize",
-
-    "{{name}} must be a subdivision code of Canada"
-    => "{{name}} must be a subdivision code of Canada",
-
-    "{{name}} must be not a subdivision code of Canada"
-    => "{{name}} must be not a subdivision code of Canada",
-
-    "{{name}} must be a subdivision code of Thailand"
-    => "{{name}} must be a subdivision code of Thailand",
-
-    "{{name}} must be not a subdivision code of Thailand"
-    => "{{name}} must be not a subdivision code of Thailand",
-
-    "{{name}} must be a subdivision code of Albania"
-    => "{{name}} must be a subdivision code of Albania",
-
-    "{{name}} must be not a subdivision code of Albania"
-    => "{{name}} must be not a subdivision code of Albania",
-
-    "{{name}} must be a subdivision code of Djibouti"
-    => "{{name}} must be a subdivision code of Djibouti",
-
-    "{{name}} must be not a subdivision code of Djibouti"
-    => "{{name}} must be not a subdivision code of Djibouti",
-
-    "{{name}} must be a subdivision code of Nicaragua"
-    => "{{name}} must be a subdivision code of Nicaragua",
-
-    "{{name}} must be not a subdivision code of Nicaragua"
-    => "{{name}} must be not a subdivision code of Nicaragua",
-
-    "{{name}} must be a subdivision code of Equatorial Guinea"
-    => "{{name}} must be a subdivision code of Equatorial Guinea",
-
-    "{{name}} must be not a subdivision code of Equatorial Guinea"
-    => "{{name}} must be not a subdivision code of Equatorial Guinea",
-
-    "{{name}} must be a subdivision code of Iran"
-    => "{{name}} must be a subdivision code of Iran",
-
-    "{{name}} must be not a subdivision code of Iran"
-    => "{{name}} must be not a subdivision code of Iran",
-
-    "{{name}} must be a subdivision code of Germany"
-    => "{{name}} must be a subdivision code of Germany",
-
-    "{{name}} must be not a subdivision code of Germany"
-    => "{{name}} must be not a subdivision code of Germany",
-
-    "{{name}} must be a subdivision code of Bulgaria"
-    => "{{name}} must be a subdivision code of Bulgaria",
-
-    "{{name}} must be not a subdivision code of Bulgaria"
-    => "{{name}} must be not a subdivision code of Bulgaria",
-
-    "{{name}} must be a subdivision code of Gambia"
-    => "{{name}} must be a subdivision code of Gambia",
-
-    "{{name}} must be not a subdivision code of Gambia"
-    => "{{name}} must be not a subdivision code of Gambia",
-
-    "{{name}} must be a subdivision code of Cocos [Keeling] Islands"
-    => "{{name}} must be a subdivision code of Cocos [Keeling] Islands",
-
-    "{{name}} must be not a subdivision code of Cocos [Keeling] Islands"
-    => "{{name}} must be not a subdivision code of Cocos [Keeling] Islands",
-
-    "{{name}} must be a subdivision code of Lebanon"
-    => "{{name}} must be a subdivision code of Lebanon",
-
-    "{{name}} must be not a subdivision code of Lebanon"
-    => "{{name}} must be not a subdivision code of Lebanon",
-
-    "{{name}} must be a subdivision code of Colombia"
-    => "{{name}} must be a subdivision code of Colombia",
-
-    "{{name}} must be not a subdivision code of Colombia"
-    => "{{name}} must be not a subdivision code of Colombia",
-
-    "{{name}} must be a subdivision code of Tokelau"
-    => "{{name}} must be a subdivision code of Tokelau",
-
-    "{{name}} must be not a subdivision code of Tokelau"
-    => "{{name}} must be not a subdivision code of Tokelau",
-
-    "{{name}} must be a subdivision code of Aruba"
-    => "{{name}} must be a subdivision code of Aruba",
-
-    "{{name}} must be not a subdivision code of Aruba"
-    => "{{name}} must be not a subdivision code of Aruba",
-
-    "{{name}} must be a subdivision code of Jamaica"
-    => "{{name}} must be a subdivision code of Jamaica",
-
-    "{{name}} must be not a subdivision code of Jamaica"
-    => "{{name}} must be not a subdivision code of Jamaica",
-
-    "{{name}} must be a subdivision code of Svalbard and Jan Mayen"
-    => "{{name}} must be a subdivision code of Svalbard and Jan Mayen",
-
-    "{{name}} must be not a subdivision code of Svalbard and Jan Mayen"
-    => "{{name}} must be not a subdivision code of Svalbard and Jan Mayen",
-
-    "{{name}} must be a subdivision code of Chile"
-    => "{{name}} must be a subdivision code of Chile",
-
-    "{{name}} must be not a subdivision code of Chile"
-    => "{{name}} must be not a subdivision code of Chile",
-
-    "{{name}} must be a subdivision code of Poland"
-    => "{{name}} must be a subdivision code of Poland",
-
-    "{{name}} must be not a subdivision code of Poland"
-    => "{{name}} must be not a subdivision code of Poland",
-
-    "{{name}} must be a subdivision code of Mayotte"
-    => "{{name}} must be a subdivision code of Mayotte",
-
-    "{{name}} must be not a subdivision code of Mayotte"
-    => "{{name}} must be not a subdivision code of Mayotte",
-
-    "{{name}} must be a subdivision code of Jordan"
-    => "{{name}} must be a subdivision code of Jordan",
-
-    "{{name}} must be not a subdivision code of Jordan"
-    => "{{name}} must be not a subdivision code of Jordan",
-
-    "{{name}} must be a subdivision code of Luxembourg"
-    => "{{name}} must be a subdivision code of Luxembourg",
-
-    "{{name}} must be not a subdivision code of Luxembourg"
-    => "{{name}} must be not a subdivision code of Luxembourg",
-
-    "{{name}} must be a subdivision code of Ghana"
-    => "{{name}} must be a subdivision code of Ghana",
-
-    "{{name}} must be not a subdivision code of Ghana"
-    => "{{name}} must be not a subdivision code of Ghana",
-
-    "{{name}} must be a subdivision code of Cambodia"
-    => "{{name}} must be a subdivision code of Cambodia",
-
-    "{{name}} must be not a subdivision code of Cambodia"
-    => "{{name}} must be not a subdivision code of Cambodia",
-
-    "{{name}} must be a subdivision code of Saint Vincent and the Grenadines"
-    => "{{name}} must be a subdivision code of Saint Vincent and the Grenadines",
-
-    "{{name}} must be not a subdivision code of Saint Vincent and the Grenadines"
-    => "{{name}} must be not a subdivision code of Saint Vincent and the Grenadines",
-
-    "{{name}} must be a subdivision code of El Salvador"
-    => "{{name}} must be a subdivision code of El Salvador",
-
-    "{{name}} must be not a subdivision code of El Salvador"
-    => "{{name}} must be not a subdivision code of El Salvador",
-
-    "{{name}} must be a subdivision code of Western Sahara"
-    => "{{name}} must be a subdivision code of Western Sahara",
-
-    "{{name}} must be not a subdivision code of Western Sahara"
-    => "{{name}} must be not a subdivision code of Western Sahara",
-
-    "{{name}} must be a subdivision code of Mali"
-    => "{{name}} must be a subdivision code of Mali",
-
-    "{{name}} must be not a subdivision code of Mali"
-    => "{{name}} must be not a subdivision code of Mali",
-
-    "{{name}} must be a subdivision code of Antigua and Barbuda"
-    => "{{name}} must be a subdivision code of Antigua and Barbuda",
-
-    "{{name}} must be not a subdivision code of Antigua and Barbuda"
-    => "{{name}} must be not a subdivision code of Antigua and Barbuda",
-
-    "{{name}} must be a subdivision code of Ukraine"
-    => "{{name}} must be a subdivision code of Ukraine",
-
-    "{{name}} must be not a subdivision code of Ukraine"
-    => "{{name}} must be not a subdivision code of Ukraine",
-
-    "{{name}} must be a subdivision code of Vatican City"
-    => "{{name}} must be a subdivision code of Vatican City",
-
-    "{{name}} must be not a subdivision code of Vatican City"
-    => "{{name}} must be not a subdivision code of Vatican City",
-
-    "{{name}} must be a subdivision code of Saint Kitts and Nevis"
-    => "{{name}} must be a subdivision code of Saint Kitts and Nevis",
-
-    "{{name}} must be not a subdivision code of Saint Kitts and Nevis"
-    => "{{name}} must be not a subdivision code of Saint Kitts and Nevis",
-
-    "{{name}} must be a subdivision code of New Caledonia"
-    => "{{name}} must be a subdivision code of New Caledonia",
-
-    "{{name}} must be not a subdivision code of New Caledonia"
-    => "{{name}} must be not a subdivision code of New Caledonia",
-
-    "{{name}} must be a subdivision code of Republic of the Congo"
-    => "{{name}} must be a subdivision code of Republic of the Congo",
-
-    "{{name}} must be not a subdivision code of Republic of the Congo"
-    => "{{name}} must be not a subdivision code of Republic of the Congo",
-
-    "{{name}} must be a subdivision code of São Tomé and Príncipe"
-    => "{{name}} must be a subdivision code of São Tomé and Príncipe",
-
-    "{{name}} must be not a subdivision code of São Tomé and Príncipe"
-    => "{{name}} must be not a subdivision code of São Tomé and Príncipe",
-
-    "{{name}} must be a subdivision code of Cyprus"
-    => "{{name}} must be a subdivision code of Cyprus",
-
-    "{{name}} must be not a subdivision code of Cyprus"
-    => "{{name}} must be not a subdivision code of Cyprus",
-
-    "{{name}} must be a subdivision code of Kuwait"
-    => "{{name}} must be a subdivision code of Kuwait",
-
-    "{{name}} must be not a subdivision code of Kuwait"
-    => "{{name}} must be not a subdivision code of Kuwait",
-
-    "{{name}} must be a subdivision code of Burundi"
-    => "{{name}} must be a subdivision code of Burundi",
-
-    "{{name}} must be not a subdivision code of Burundi"
-    => "{{name}} must be not a subdivision code of Burundi",
-
-    "{{name}} must be a subdivision code of Eritrea"
-    => "{{name}} must be a subdivision code of Eritrea",
-
-    "{{name}} must be not a subdivision code of Eritrea"
-    => "{{name}} must be not a subdivision code of Eritrea",
-
-    "{{name}} must be a subdivision code of Sint Maarten"
-    => "{{name}} must be a subdivision code of Sint Maarten",
-
-    "{{name}} must be not a subdivision code of Sint Maarten"
-    => "{{name}} must be not a subdivision code of Sint Maarten",
-
-    "{{name}} must be a subdivision code of Paraguay"
-    => "{{name}} must be a subdivision code of Paraguay",
-
-    "{{name}} must be not a subdivision code of Paraguay"
-    => "{{name}} must be not a subdivision code of Paraguay",
-
-    "{{name}} must be a subdivision code of Democratic Republic of the Congo"
-    => "{{name}} must be a subdivision code of Democratic Republic of the Congo",
-
-    "{{name}} must be not a subdivision code of Democratic Republic of the Congo"
-    => "{{name}} must be not a subdivision code of Democratic Republic of the Congo",
-
-    "{{name}} must be a subdivision code of Cape Verde"
-    => "{{name}} must be a subdivision code of Cape Verde",
-
-    "{{name}} must be not a subdivision code of Cape Verde"
-    => "{{name}} must be not a subdivision code of Cape Verde",
-
-    "{{name}} must be a subdivision code of India"
-    => "{{name}} must be a subdivision code of India",
-
-    "{{name}} must be not a subdivision code of India"
-    => "{{name}} must be not a subdivision code of India",
-
-    "{{name}} must be a subdivision code of Niue"
-    => "{{name}} must be a subdivision code of Niue",
-
-    "{{name}} must be not a subdivision code of Niue"
-    => "{{name}} must be not a subdivision code of Niue",
-
-    "{{name}} must be a subdivision code of Gibraltar"
-    => "{{name}} must be a subdivision code of Gibraltar",
-
-    "{{name}} must be not a subdivision code of Gibraltar"
-    => "{{name}} must be not a subdivision code of Gibraltar",
-
-    "{{name}} must be a subdivision code of China"
-    => "{{name}} must be a subdivision code of China",
-
-    "{{name}} must be not a subdivision code of China"
-    => "{{name}} must be not a subdivision code of China",
-
-    "{{name}} must be a subdivision code of Saint Barthélemy"
-    => "{{name}} must be a subdivision code of Saint Barthélemy",
-
-    "{{name}} must be not a subdivision code of Saint Barthélemy"
-    => "{{name}} must be not a subdivision code of Saint Barthélemy",
-
-    "{{name}} must be a subdivision code of Azerbaijan"
-    => "{{name}} must be a subdivision code of Azerbaijan",
-
-    "{{name}} must be not a subdivision code of Azerbaijan"
-    => "{{name}} must be not a subdivision code of Azerbaijan",
-
-    "{{name}} must be a subdivision code of Lesotho"
-    => "{{name}} must be a subdivision code of Lesotho",
-
-    "{{name}} must be not a subdivision code of Lesotho"
-    => "{{name}} must be not a subdivision code of Lesotho",
-
-    "{{name}} must be a subdivision code of Falkland Islands"
-    => "{{name}} must be a subdivision code of Falkland Islands",
-
-    "{{name}} must be not a subdivision code of Falkland Islands"
-    => "{{name}} must be not a subdivision code of Falkland Islands",
-
-    "{{name}} must be a subdivision code of Tonga"
-    => "{{name}} must be a subdivision code of Tonga",
-
-    "{{name}} must be not a subdivision code of Tonga"
-    => "{{name}} must be not a subdivision code of Tonga",
-
-    "{{name}} must be a subdivision code of British Indian Ocean Territory"
-    => "{{name}} must be a subdivision code of British Indian Ocean Territory",
-
-    "{{name}} must be not a subdivision code of British Indian Ocean Territory"
-    => "{{name}} must be not a subdivision code of British Indian Ocean Territory",
-
-    "{{name}} must be a subdivision code of New Zealand"
-    => "{{name}} must be a subdivision code of New Zealand",
-
-    "{{name}} must be not a subdivision code of New Zealand"
-    => "{{name}} must be not a subdivision code of New Zealand",
-
-    "{{name}} must be a subdivision code of Northern Mariana Islands"
-    => "{{name}} must be a subdivision code of Northern Mariana Islands",
-
-    "{{name}} must be not a subdivision code of Northern Mariana Islands"
-    => "{{name}} must be not a subdivision code of Northern Mariana Islands",
-
-    "{{name}} must be a subdivision code of Belgium"
-    => "{{name}} must be a subdivision code of Belgium",
-
-    "{{name}} must be not a subdivision code of Belgium"
-    => "{{name}} must be not a subdivision code of Belgium",
-
-    "{{name}} must be a subdivision code of Kazakhstan"
-    => "{{name}} must be a subdivision code of Kazakhstan",
-
-    "{{name}} must be not a subdivision code of Kazakhstan"
-    => "{{name}} must be not a subdivision code of Kazakhstan",
-
-    "{{name}} must be a subdivision code of Macao"
-    => "{{name}} must be a subdivision code of Macao",
-
-    "{{name}} must be not a subdivision code of Macao"
-    => "{{name}} must be not a subdivision code of Macao",
-
-    "{{name}} must be a subdivision code of France"
-    => "{{name}} must be a subdivision code of France",
-
-    "{{name}} must be not a subdivision code of France"
-    => "{{name}} must be not a subdivision code of France",
-
-    "{{name}} must be a subdivision code of Malaysia"
-    => "{{name}} must be a subdivision code of Malaysia",
-
-    "{{name}} must be not a subdivision code of Malaysia"
-    => "{{name}} must be not a subdivision code of Malaysia",
-
-    "{{name}} must be a subdivision code of Japan"
-    => "{{name}} must be a subdivision code of Japan",
-
-    "{{name}} must be not a subdivision code of Japan"
-    => "{{name}} must be not a subdivision code of Japan",
-
-    "{{name}} must be a subdivision code of Seychelles"
-    => "{{name}} must be a subdivision code of Seychelles",
-
-    "{{name}} must be not a subdivision code of Seychelles"
-    => "{{name}} must be not a subdivision code of Seychelles",
-
-    "{{name}} must be a subdivision code of Portugal"
-    => "{{name}} must be a subdivision code of Portugal",
-
-    "{{name}} must be not a subdivision code of Portugal"
-    => "{{name}} must be not a subdivision code of Portugal",
-
-    "{{name}} must be a subdivision code of Swaziland"
-    => "{{name}} must be a subdivision code of Swaziland",
-
-    "{{name}} must be not a subdivision code of Swaziland"
-    => "{{name}} must be not a subdivision code of Swaziland",
-
-    "{{name}} must be a subdivision code of Guinea-Bissau"
-    => "{{name}} must be a subdivision code of Guinea-Bissau",
-
-    "{{name}} must be not a subdivision code of Guinea-Bissau"
-    => "{{name}} must be not a subdivision code of Guinea-Bissau",
-
-    "{{name}} must be a subdivision code of Ireland"
-    => "{{name}} must be a subdivision code of Ireland",
-
-    "{{name}} must be not a subdivision code of Ireland"
-    => "{{name}} must be not a subdivision code of Ireland",
-
-    "{{name}} must be a subdivision code of Guinea"
-    => "{{name}} must be a subdivision code of Guinea",
-
-    "{{name}} must be not a subdivision code of Guinea"
-    => "{{name}} must be not a subdivision code of Guinea",
-
-    "{{name}} must be a subdivision code of Togo"
-    => "{{name}} must be a subdivision code of Togo",
-
-    "{{name}} must be not a subdivision code of Togo"
-    => "{{name}} must be not a subdivision code of Togo",
-
-    "{{name}} must be a subdivision code of Libya"
-    => "{{name}} must be a subdivision code of Libya",
-
-    "{{name}} must be not a subdivision code of Libya"
-    => "{{name}} must be not a subdivision code of Libya",
-
-    "{{name}} must be a subdivision code of Panama"
-    => "{{name}} must be a subdivision code of Panama",
-
-    "{{name}} must be not a subdivision code of Panama"
-    => "{{name}} must be not a subdivision code of Panama",
-
-    "{{name}} must be a subdivision code of Turkmenistan"
-    => "{{name}} must be a subdivision code of Turkmenistan",
-
-    "{{name}} must be not a subdivision code of Turkmenistan"
-    => "{{name}} must be not a subdivision code of Turkmenistan",
-
-    "{{name}} must be a subdivision code of Jersey"
-    => "{{name}} must be a subdivision code of Jersey",
-
-    "{{name}} must be not a subdivision code of Jersey"
-    => "{{name}} must be not a subdivision code of Jersey",
-
-    "{{name}} must be a subdivision code of Serbia"
-    => "{{name}} must be a subdivision code of Serbia",
-
-    "{{name}} must be not a subdivision code of Serbia"
-    => "{{name}} must be not a subdivision code of Serbia",
-
-    "{{name}} must be a subdivision code of Bouvet Island"
-    => "{{name}} must be a subdivision code of Bouvet Island",
-
-    "{{name}} must be not a subdivision code of Bouvet Island"
-    => "{{name}} must be not a subdivision code of Bouvet Island",
-
-    "{{name}} must be a subdivision code of Russia"
-    => "{{name}} must be a subdivision code of Russia",
-
-    "{{name}} must be not a subdivision code of Russia"
-    => "{{name}} must be not a subdivision code of Russia",
-
-    "{{name}} must be a subdivision code of Palestine"
-    => "{{name}} must be a subdivision code of Palestine",
-
-    "{{name}} must be not a subdivision code of Palestine"
-    => "{{name}} must be not a subdivision code of Palestine",
-
-    "{{name}} must be a subdivision code of Nigeria"
-    => "{{name}} must be a subdivision code of Nigeria",
-
-    "{{name}} must be not a subdivision code of Nigeria"
-    => "{{name}} must be not a subdivision code of Nigeria",
-
-    "{{name}} must be a subdivision code of Zambia"
-    => "{{name}} must be a subdivision code of Zambia",
-
-    "{{name}} must be not a subdivision code of Zambia"
-    => "{{name}} must be not a subdivision code of Zambia",
-
-    "{{name}} must be a subdivision code of Guyana"
-    => "{{name}} must be a subdivision code of Guyana",
-
-    "{{name}} must be not a subdivision code of Guyana"
-    => "{{name}} must be not a subdivision code of Guyana",
-
-    "{{name}} must be a subdivision code of Australia"
-    => "{{name}} must be a subdivision code of Australia",
-
-    "{{name}} must be not a subdivision code of Australia"
-    => "{{name}} must be not a subdivision code of Australia",
-
-    "{{name}} must be a subdivision code of Singapore"
-    => "{{name}} must be a subdivision code of Singapore",
-
-    "{{name}} must be not a subdivision code of Singapore"
-    => "{{name}} must be not a subdivision code of Singapore",
-
-    "{{name}} must be a subdivision code of Vietnam"
-    => "{{name}} must be a subdivision code of Vietnam",
-
-    "{{name}} must be not a subdivision code of Vietnam"
-    => "{{name}} must be not a subdivision code of Vietnam",
-
-    "{{name}} must be a subdivision code of Liberia"
-    => "{{name}} must be a subdivision code of Liberia",
-
-    "{{name}} must be not a subdivision code of Liberia"
-    => "{{name}} must be not a subdivision code of Liberia",
-
-    "{{name}} must be a subdivision code of Curacao"
-    => "{{name}} must be a subdivision code of Curacao",
-
-    "{{name}} must be not a subdivision code of Curacao"
-    => "{{name}} must be not a subdivision code of Curacao",
-
-    "{{name}} must be a subdivision code of Guadeloupe"
-    => "{{name}} must be a subdivision code of Guadeloupe",
-
-    "{{name}} must be not a subdivision code of Guadeloupe"
-    => "{{name}} must be not a subdivision code of Guadeloupe",
-
-    "{{name}} must be a subdivision code of Kyrgyzstan"
-    => "{{name}} must be a subdivision code of Kyrgyzstan",
-
-    "{{name}} must be not a subdivision code of Kyrgyzstan"
-    => "{{name}} must be not a subdivision code of Kyrgyzstan",
-
-    "{{name}} must be a subdivision code of Suriname"
-    => "{{name}} must be a subdivision code of Suriname",
-
-    "{{name}} must be not a subdivision code of Suriname"
-    => "{{name}} must be not a subdivision code of Suriname",
-
-    "{{name}} must be a subdivision code of Solomon Islands"
-    => "{{name}} must be a subdivision code of Solomon Islands",
-
-    "{{name}} must be not a subdivision code of Solomon Islands"
-    => "{{name}} must be not a subdivision code of Solomon Islands",
-
-    "{{name}} must be a subdivision code of Faroe Islands"
-    => "{{name}} must be a subdivision code of Faroe Islands",
-
-    "{{name}} must be not a subdivision code of Faroe Islands"
-    => "{{name}} must be not a subdivision code of Faroe Islands",
-
-    "{{name}} must be a subdivision code of Moldova"
-    => "{{name}} must be a subdivision code of Moldova",
-
-    "{{name}} must be not a subdivision code of Moldova"
-    => "{{name}} must be not a subdivision code of Moldova",
-
-    "{{name}} must be a subdivision code of Estonia"
-    => "{{name}} must be a subdivision code of Estonia",
-
-    "{{name}} must be not a subdivision code of Estonia"
-    => "{{name}} must be not a subdivision code of Estonia",
-
-    "{{name}} must be a subdivision code of South Georgia and the South Sandwich Islands"
-    => "{{name}} must be a subdivision code of South Georgia and the South Sandwich Islands",
-
-    "{{name}} must be not a subdivision code of South Georgia and the South Sandwich Islands"
-    => "{{name}} must be not a subdivision code of South Georgia and the South Sandwich Islands",
-
-    "{{name}} must be a subdivision code of Austria"
-    => "{{name}} must be a subdivision code of Austria",
-
-    "{{name}} must be not a subdivision code of Austria"
-    => "{{name}} must be not a subdivision code of Austria",
-
-    "{{name}} must be a subdivision code of Botswana"
-    => "{{name}} must be a subdivision code of Botswana",
-
-    "{{name}} must be not a subdivision code of Botswana"
-    => "{{name}} must be not a subdivision code of Botswana",
-
-    "{{name}} must be a subdivision code of Mauritania"
-    => "{{name}} must be a subdivision code of Mauritania",
-
-    "{{name}} must be not a subdivision code of Mauritania"
-    => "{{name}} must be not a subdivision code of Mauritania",
-
-    "{{name}} must be a subdivision code of Haiti"
-    => "{{name}} must be a subdivision code of Haiti",
-
-    "{{name}} must be not a subdivision code of Haiti"
-    => "{{name}} must be not a subdivision code of Haiti",
-
-    "{{name}} must be a subdivision code of Somalia"
-    => "{{name}} must be a subdivision code of Somalia",
-
-    "{{name}} must be not a subdivision code of Somalia"
-    => "{{name}} must be not a subdivision code of Somalia",
-
-    "{{name}} must be a subdivision code of South Sudan"
-    => "{{name}} must be a subdivision code of South Sudan",
-
-    "{{name}} must be not a subdivision code of South Sudan"
-    => "{{name}} must be not a subdivision code of South Sudan",
-
-    "{{name}} must be a subdivision code of Venezuela"
-    => "{{name}} must be a subdivision code of Venezuela",
-
-    "{{name}} must be not a subdivision code of Venezuela"
-    => "{{name}} must be not a subdivision code of Venezuela",
-
-    "{{name}} must be a subdivision code of Christmas Island"
-    => "{{name}} must be a subdivision code of Christmas Island",
-
-    "{{name}} must be not a subdivision code of Christmas Island"
-    => "{{name}} must be not a subdivision code of Christmas Island",
-
-    "{{name}} must be a subdivision code of Indonesia"
-    => "{{name}} must be a subdivision code of Indonesia",
-
-    "{{name}} must be not a subdivision code of Indonesia"
-    => "{{name}} must be not a subdivision code of Indonesia",
-
-    "{{name}} must be a subdivision code of Yemen"
-    => "{{name}} must be a subdivision code of Yemen",
-
-    "{{name}} must be not a subdivision code of Yemen"
-    => "{{name}} must be not a subdivision code of Yemen",
-
-    "{{name}} must be a subdivision code of Gabon"
-    => "{{name}} must be a subdivision code of Gabon",
-
-    "{{name}} must be not a subdivision code of Gabon"
-    => "{{name}} must be not a subdivision code of Gabon",
-
-    "{{name}} must be a subdivision code of American Samoa"
-    => "{{name}} must be a subdivision code of American Samoa",
-
-    "{{name}} must be not a subdivision code of American Samoa"
-    => "{{name}} must be not a subdivision code of American Samoa",
-
-    "{{name}} must be a subdivision code of Cayman Islands"
-    => "{{name}} must be a subdivision code of Cayman Islands",
-
-    "{{name}} must be not a subdivision code of Cayman Islands"
-    => "{{name}} must be not a subdivision code of Cayman Islands",
-
-    "{{name}} must be a subdivision code of Namibia"
-    => "{{name}} must be a subdivision code of Namibia",
-
-    "{{name}} must be not a subdivision code of Namibia"
-    => "{{name}} must be not a subdivision code of Namibia",
-
-    "{{name}} must be a subdivision code of French Polynesia"
-    => "{{name}} must be a subdivision code of French Polynesia",
-
-    "{{name}} must be not a subdivision code of French Polynesia"
-    => "{{name}} must be not a subdivision code of French Polynesia",
-
-    "{{name}} must be a subdivision code of Burkina Faso"
-    => "{{name}} must be a subdivision code of Burkina Faso",
-
-    "{{name}} must be not a subdivision code of Burkina Faso"
-    => "{{name}} must be not a subdivision code of Burkina Faso",
-
-    "{{name}} must be a subdivision code of Laos"
-    => "{{name}} must be a subdivision code of Laos",
-
-    "{{name}} must be not a subdivision code of Laos"
-    => "{{name}} must be not a subdivision code of Laos",
-
-    "{{name}} must be a subdivision code of Kiribati"
-    => "{{name}} must be a subdivision code of Kiribati",
-
-    "{{name}} must be not a subdivision code of Kiribati"
-    => "{{name}} must be not a subdivision code of Kiribati",
-
-    "{{name}} must be a subdivision code of Guam"
-    => "{{name}} must be a subdivision code of Guam",
-
-    "{{name}} must be not a subdivision code of Guam"
-    => "{{name}} must be not a subdivision code of Guam",
-
-    "{{name}} must be a subdivision code of Rwanda"
-    => "{{name}} must be a subdivision code of Rwanda",
-
-    "{{name}} must be not a subdivision code of Rwanda"
-    => "{{name}} must be not a subdivision code of Rwanda",
-
-    "{{name}} must be a subdivision code of United States"
-    => "{{name}} must be a subdivision code of United States",
-
-    "{{name}} must be not a subdivision code of United States"
-    => "{{name}} must be not a subdivision code of United States",
-
-    "{{name}} must be a subdivision code of French Guiana"
-    => "{{name}} must be a subdivision code of French Guiana",
-
-    "{{name}} must be not a subdivision code of French Guiana"
-    => "{{name}} must be not a subdivision code of French Guiana",
-
-    "{{name}} must be a subdivision code of Marshall Islands"
-    => "{{name}} must be a subdivision code of Marshall Islands",
-
-    "{{name}} must be not a subdivision code of Marshall Islands"
-    => "{{name}} must be not a subdivision code of Marshall Islands",
-
-    "{{name}} must be a subdivision code of Brazil"
-    => "{{name}} must be a subdivision code of Brazil",
-
-    "{{name}} must be not a subdivision code of Brazil"
-    => "{{name}} must be not a subdivision code of Brazil",
-
-    "{{name}} must be a subdivision code of Uganda"
-    => "{{name}} must be a subdivision code of Uganda",
-
-    "{{name}} must be not a subdivision code of Uganda"
-    => "{{name}} must be not a subdivision code of Uganda",
-
-    "{{name}} must be a subdivision code of Pakistan"
-    => "{{name}} must be a subdivision code of Pakistan",
-
-    "{{name}} must be not a subdivision code of Pakistan"
-    => "{{name}} must be not a subdivision code of Pakistan",
-
-    "{{name}} must be a subdivision code of Norfolk Island"
-    => "{{name}} must be a subdivision code of Norfolk Island",
-
-    "{{name}} must be not a subdivision code of Norfolk Island"
-    => "{{name}} must be not a subdivision code of Norfolk Island",
-
-    "{{name}} must be a subdivision code of Peru"
-    => "{{name}} must be a subdivision code of Peru",
-
-    "{{name}} must be not a subdivision code of Peru"
-    => "{{name}} must be not a subdivision code of Peru",
-
-    "{{name}} must be a subdivision code of South Korea"
-    => "{{name}} must be a subdivision code of South Korea",
-
-    "{{name}} must be not a subdivision code of South Korea"
-    => "{{name}} must be not a subdivision code of South Korea",
-
-    "{{name}} must be a subdivision code of Bosnia and Herzegovina"
-    => "{{name}} must be a subdivision code of Bosnia and Herzegovina",
-
-    "{{name}} must be not a subdivision code of Bosnia and Herzegovina"
-    => "{{name}} must be not a subdivision code of Bosnia and Herzegovina",
-
-    "{{name}} must be a subdivision code of Iceland"
-    => "{{name}} must be a subdivision code of Iceland",
-
-    "{{name}} must be not a subdivision code of Iceland"
-    => "{{name}} must be not a subdivision code of Iceland",
-
-    "{{name}} must be a subdivision code of Argentina"
-    => "{{name}} must be a subdivision code of Argentina",
-
-    "{{name}} must be not a subdivision code of Argentina"
-    => "{{name}} must be not a subdivision code of Argentina",
-
-    "{{name}} must be a subdivision code of Armenia"
-    => "{{name}} must be a subdivision code of Armenia",
-
-    "{{name}} must be not a subdivision code of Armenia"
-    => "{{name}} must be not a subdivision code of Armenia",
-
-    "{{name}} must be a subdivision code of Spain"
-    => "{{name}} must be a subdivision code of Spain",
-
-    "{{name}} must be not a subdivision code of Spain"
-    => "{{name}} must be not a subdivision code of Spain",
-
-    "{{name}} must be a subdivision code of Kenya"
-    => "{{name}} must be a subdivision code of Kenya",
-
-    "{{name}} must be not a subdivision code of Kenya"
-    => "{{name}} must be not a subdivision code of Kenya",
-
-    "{{name}} must be a subdivision code of Liechtenstein"
-    => "{{name}} must be a subdivision code of Liechtenstein",
-
-    "{{name}} must be not a subdivision code of Liechtenstein"
-    => "{{name}} must be not a subdivision code of Liechtenstein",
-
-    "{{name}} must be a subdivision code of South Africa"
-    => "{{name}} must be a subdivision code of South Africa",
-
-    "{{name}} must be not a subdivision code of South Africa"
-    => "{{name}} must be not a subdivision code of South Africa",
-
-    "{{name}} must be a subdivision code of Greenland"
-    => "{{name}} must be a subdivision code of Greenland",
-
-    "{{name}} must be not a subdivision code of Greenland"
-    => "{{name}} must be not a subdivision code of Greenland",
-
-    "{{name}} must be a subdivision code of Uzbekistan"
-    => "{{name}} must be a subdivision code of Uzbekistan",
-
-    "{{name}} must be not a subdivision code of Uzbekistan"
-    => "{{name}} must be not a subdivision code of Uzbekistan",
-
-    "{{name}} must be a subdivision code of Finland"
-    => "{{name}} must be a subdivision code of Finland",
-
-    "{{name}} must be not a subdivision code of Finland"
-    => "{{name}} must be not a subdivision code of Finland",
-
-    "{{name}} must be a subdivision code of Martinique"
-    => "{{name}} must be a subdivision code of Martinique",
-
-    "{{name}} must be not a subdivision code of Martinique"
-    => "{{name}} must be not a subdivision code of Martinique",
-
-    "{{name}} must be a subdivision code of Uruguay"
-    => "{{name}} must be a subdivision code of Uruguay",
-
-    "{{name}} must be not a subdivision code of Uruguay"
-    => "{{name}} must be not a subdivision code of Uruguay",
-
-    "{{name}} must be a subdivision code of Barbados"
-    => "{{name}} must be a subdivision code of Barbados",
-
-    "{{name}} must be not a subdivision code of Barbados"
-    => "{{name}} must be not a subdivision code of Barbados",
-
-    "{{name}} must be a subdivision code of Afghanistan"
-    => "{{name}} must be a subdivision code of Afghanistan",
-
-    "{{name}} must be not a subdivision code of Afghanistan"
-    => "{{name}} must be not a subdivision code of Afghanistan",
-
-    "{{name}} must be a subdivision code of United Arab Emirates"
-    => "{{name}} must be a subdivision code of United Arab Emirates",
-
-    "{{name}} must be not a subdivision code of United Arab Emirates"
-    => "{{name}} must be not a subdivision code of United Arab Emirates",
-
-    "{{name}} must be a subdivision code of Oman"
-    => "{{name}} must be a subdivision code of Oman",
-
-    "{{name}} must be not a subdivision code of Oman"
-    => "{{name}} must be not a subdivision code of Oman",
-
-    "{{name}} must be a subdivision code of Morocco"
-    => "{{name}} must be a subdivision code of Morocco",
-
-    "{{name}} must be not a subdivision code of Morocco"
-    => "{{name}} must be not a subdivision code of Morocco",
-
-    "{{name}} must be a subdivision code of Iraq"
-    => "{{name}} must be a subdivision code of Iraq",
-
-    "{{name}} must be not a subdivision code of Iraq"
-    => "{{name}} must be not a subdivision code of Iraq",
-
-    "{{name}} must be a subdivision code of Åland"
-    => "{{name}} must be a subdivision code of Åland",
-
-    "{{name}} must be not a subdivision code of Åland"
-    => "{{name}} must be not a subdivision code of Åland",
-
-    "{{name}} must be a subdivision code of Mozambique"
-    => "{{name}} must be a subdivision code of Mozambique",
-
-    "{{name}} must be not a subdivision code of Mozambique"
-    => "{{name}} must be not a subdivision code of Mozambique",
+    => "Must not be a valid postal code on {{countryCode}}",
 
     "{{name}} must contain only space characters"
-    => "{{name}} must contain only space characters",
+    => "Must contain only space characters",
 
     "{{name}} must contain only space characters and \"{{additionalChars}}\""
-    => "{{name}} must contain only space characters and \"{{additionalChars}}\"",
+    => "Must contain only space characters and \"{{additionalChars}}\"",
 
     "{{name}} must not contain space characters"
-    => "{{name}} must not contain space characters",
+    => "Must not contain space characters",
 
     "{{name}} must not contain space characters or \"{{additionalChars}}\""
-    => "{{name}} must not contain space characters or \"{{additionalChars}}\"",
+    => "Must not contain space characters or \"{{additionalChars}}\"",
 
     "{{name}} must be a valid image"
-    => "{{name}} must be a valid image",
+    => "Must be a valid image",
 
     "{{name}} must not be a valid image"
-    => "{{name}} must not be a valid image",
+    => "Must not be a valid image",
 
     "{{name}} must be a BIC"
-    => "{{name}} must be a BIC",
+    => "Must be a BIC",
 
     "{{name}} must not be a BIC"
-    => "{{name}} must not be a BIC",
+    => "Must not be a BIC",
 
     "{{name}} must be a hex RGB color"
-    => "{{name}} must be a hex RGB color",
+    => "Must be a hex RGB color",
 
     "{{name}} must not be a hex RGB color"
-    => "{{name}} must not be a hex RGB color",
+    => "Must not be a hex RGB color",
 
     "At least {{howMany}} of the {{failed}} required rules must pass for {{name}}"
-    => "At least {{howMany}} of the {{failed}} required rules must pass for {{name}}",
+    => "At least {{howMany}} of the {{failed}} required rules must pass",
 
     "At least {{howMany}} of the {{failed}} required rules must pass for {{name}}, only {{passed}} passed."
-    => "At least {{howMany}} of the {{failed}} required rules must pass for {{name}}, only {{passed}} passed.",
+    => "At least {{howMany}} of the {{failed}} required rules must pass, " .
+    "only {{passed}} passed.",
 
     "At least {{howMany}} of the {{failed}} required rules must not pass for {{name}}"
-    => "At least {{howMany}} of the {{failed}} required rules must not pass for {{name}}",
+    => "At least {{howMany}} of the {{failed}} required rules must not pass",
 
     "At least {{howMany}} of the {{failed}} required rules must not pass for {{name}}, only {{passed}} passed."
-    => "At least {{howMany}} of the {{failed}} required rules must not pass for {{name}}, only {{passed}} passed.",
+    => "At least {{howMany}} of the {{failed}} required rules must not pass, " .
+    "only {{passed}} passed.",
 
     "{{name}} must be less than {{interval}}"
-    => "{{name}} must be less than {{interval}}",
+    => "Must be less than {{interval}}",
 
     "{{name}} must be less than or equal to {{interval}}"
-    => "{{name}} must be less than or equal to {{interval}}",
+    => "Must be less than or equal to {{interval}}",
 
     "{{name}} must not be less than {{interval}}"
-    => "{{name}} must not be less than {{interval}}",
+    => "Must not be less than {{interval}}",
 
     "{{name}} must not be less than or equal to {{interval}}"
-    => "{{name}} must not be less than or equal to {{interval}}",
+    => "Must not be less than or equal to {{interval}}",
 
     "{{name}} must be a callable"
-    => "{{name}} must be a callable",
+    => "Must be a callable",
 
     "{{name}} must not be a callable"
-    => "{{name}} must not be a callable",
+    => "Must not be a callable",
 
     "{{name}} must not contain whitespace"
-    => "{{name}} must not contain whitespace",
+    => "Must not contain whitespace",
 
     "{{name}} must not not contain whitespace"
-    => "{{name}} must not not contain whitespace",
+    => "Must contain at least one whitespace",
 
     "All of the required rules must pass for {{name}}"
-    => "All of the required rules must pass for {{name}}",
+    => "All of the required rules must pass",
 
     "These rules must pass for {{name}}"
-    => "These rules must pass for {{name}}",
+    => "These rules must pass",
 
     "None of there rules must pass for {{name}}"
-    => "None of there rules must pass for {{name}}",
+    => "None of there rules must pass",
 
     "These rules must not pass for {{name}}"
-    => "These rules must not pass for {{name}}",
+    => "These rules must not pass",
 
     "{{name}} must be a file"
-    => "{{name}} must be a file",
+    => "Must be a file",
 
     "{{name}} must not be a file"
-    => "{{name}} must not be a file",
+    => "Must not be a file",
 
     "Attribute {{name}} must be present"
     => "Attribute {{name}} must be present",
@@ -1714,109 +204,109 @@ return [
     => "Attribute {{name}} must not validate",
 
     "{{name}} must be a float number"
-    => "{{name}} must be a float number",
+    => "Must be a float number",
 
     "{{name}} must not be a float number"
-    => "{{name}} must not be a float number",
+    => "Must not be a float number",
 
     "{{name}} must be an uploaded file"
-    => "{{name}} must be an uploaded file",
+    => "Must be an uploaded file",
 
     "{{name}} must not be an uploaded file"
-    => "{{name}} must not be an uploaded file",
+    => "Must not be an uploaded file",
 
     "{{name}} must be an executable file"
-    => "{{name}} must be an executable file",
+    => "Must be an executable file",
 
     "{{name}} must not be an executable file"
-    => "{{name}} must not be an executable file",
+    => "Must not be an executable file",
 
     "{{name}} must be between {{minValue}} and {{maxValue}}"
-    => "{{name}} must be between {{minValue}} and {{maxValue}}",
+    => "Value must be between {{minValue}} and {{maxValue}}",
 
     "{{name}}  must be greater than {{minValue}}"
-    => "{{name}}  must be greater than {{minValue}}",
+    => "Value must be greater than {{minValue}}",
 
     "{{name}} must be lower than {{maxValue}}"
-    => "{{name}} must be lower than {{maxValue}}",
+    => "Value must be lower than {{maxValue}}",
 
     "{{name}} must not be between {{minValue}} and {{maxValue}}"
-    => "{{name}} must not be between {{minValue}} and {{maxValue}}",
+    => "Value must not be between {{minValue}} and {{maxValue}}",
 
     "{{name}}  must not be greater than {{minValue}}"
-    => "{{name}}  must not be greater than {{minValue}}",
+    => "Value must not be greater than {{minValue}}",
 
     "{{name}} must not be lower than {{maxValue}}"
-    => "{{name}} must not be lower than {{maxValue}}",
+    => "Value must not be lower than {{maxValue}}",
 
     "{{name}} must be an instance of {{instanceName}}"
-    => "{{name}} must be an instance of {{instanceName}}",
+    => "Must be an instance of {{instanceName}}",
 
     "{{name}} must not be an instance of {{instanceName}}"
-    => "{{name}} must not be an instance of {{instanceName}}",
+    => "Must not be an instance of {{instanceName}}",
 
     "{{name}} must be between {{minSize}} and {{maxSize}}"
-    => "{{name}} must be between {{minSize}} and {{maxSize}}",
+    => "Size must be between {{minSize}} and {{maxSize}}",
 
     "{{name}} must be greater than {{minSize}}"
-    => "{{name}} must be greater than {{minSize}}",
+    => "Size must be greater than {{minSize}}",
 
     "{{name}} must be lower than {{maxSize}}"
-    => "{{name}} must be lower than {{maxSize}}",
+    => "Size must be lower than {{maxSize}}",
 
     "{{name}} must not be between {{minSize}} and {{maxSize}}"
-    => "{{name}} must not be between {{minSize}} and {{maxSize}}",
+    => "Size must not be between {{minSize}} and {{maxSize}}",
 
     "{{name}} must not be greater than {{minSize}}"
-    => "{{name}} must not be greater than {{minSize}}",
+    => "Size must not be greater than {{minSize}}",
 
     "{{name}} must not be lower than {{maxSize}}"
-    => "{{name}} must not be lower than {{maxSize}}",
+    => "Size must not be lower than {{maxSize}}",
 
     "{{name}} must be a valid PESEL"
-    => "{{name}} must be a valid PESEL",
+    => "Must be a valid PESEL",
 
     "{{name}} must not be a valid PESEL"
-    => "{{name}} must not be a valid PESEL",
+    => "Must not be a valid PESEL",
 
     "{{name}} must contain only vowels"
-    => "{{name}} must contain only vowels",
+    => "Must contain only vowels",
 
     "{{name}} must contain only vowels and \"{{additionalChars}}\""
-    => "{{name}} must contain only vowels and \"{{additionalChars}}\"",
+    => "Must contain only vowels and \"{{additionalChars}}\"",
 
     "{{name}} must not contain vowels"
-    => "{{name}} must not contain vowels",
+    => "Must not contain vowels",
 
     "{{name}} must not contain vowels or \"{{additionalChars}}\""
-    => "{{name}} must not contain vowels or \"{{additionalChars}}\"",
+    => "Must not contain vowels or \"{{additionalChars}}\"",
 
     "Each item in {{name}} must be valid"
-    => "Each item in {{name}} must be valid",
+    => "Each item in this field must be valid",
 
     "Each item in {{name}} must not validate"
-    => "Each item in {{name}} must not validate",
+    => "Each item in this field must not be valid",
 
     "{{name}} must be a valid NFe access key"
-    => "{{name}} must be a valid NFe access key",
+    => "Must be a valid NFe access key",
 
     "{{name}} must not be a valid NFe access key"
-    => "{{name}} must not be a valid NFe access key",
+    => "Must not be a valid NFe access key",
 
     "None of these rules must pass for {{name}}"
-    => "None of these rules must pass for {{name}}",
+    => "None of these rules must pass for this field",
 
     "{{name}} must be a valid date"
-    => "{{name}} must be a valid date",
+    => "This date is not valid",
 
     "{{name}} must be a valid date. Sample format: {{format}}"
-    => "{{name}} must be a valid date. Sample format: {{format}}",
+    => "This date is not valid. Sample format: {{format}}",
 
     "{{name}} must not be a valid date"
-    => "{{name}} must not be a valid date",
+    => "Must not be a valid date",
 
     "{{name}} must not be a valid date in the format {{format}}"
-    => "{{name}} must not be a valid date in the format {{format}}",
+    => "Must not be a valid date in the format {{format}}",
 
     "Key {{name}} must be present"
     => "Key {{name}} must be present",
@@ -1831,220 +321,220 @@ return [
     => "Key {{name}} must not be valid",
 
     "{{name}} must be a valid CNPJ number"
-    => "{{name}} must be a valid CNPJ number",
+    => "Must be a valid CNPJ number",
 
     "{{name}} must not be a valid CNPJ number"
-    => "{{name}} must not be a valid CNPJ number",
+    => "Must not be a valid CNPJ number",
 
     "{{name}} must be an URL"
-    => "{{name}} must be an URL",
+    => "Must be an URL",
 
     "{{name}} must not be an URL"
-    => "{{name}} must not be an URL",
+    => "Must not be an URL",
 
     "{{name}} must start with ({{startValue}})"
-    => "{{name}} must start with ({{startValue}})",
+    => "Must start with ({{startValue}})",
 
     "{{name}} must not start with ({{startValue}})"
-    => "{{name}} must not start with ({{startValue}})",
+    => "Must not start with ({{startValue}})",
 
     "{{name}} is not considered as \"False\""
-    => "{{name}} is not considered as \"False\"",
+    => "Is not considered as \"False\"",
 
     "{{name}} is considered as \"False\""
-    => "{{name}} is considered as \"False\"",
+    => "Is considered as \"False\"",
 
     "{{name}} must be {{type}}"
-    => "{{name}} must be {{type}}",
+    => "Must be {{type}}",
 
     "{{name}} must not be {{type}}"
-    => "{{name}} must not be {{type}}",
+    => "Must not be {{type}}",
 
     "{{name}} must have {{mimetype}} mimetype"
-    => "{{name}} must have {{mimetype}} mimetype",
+    => "Must have {{mimetype}} mimetype",
 
     "{{name}} must not have {{mimetype}} mimetype"
-    => "{{name}} must not have {{mimetype}} mimetype",
+    => "Must not have {{mimetype}} mimetype",
 
     "{{name}} must be of the type array"
-    => "{{name}} must be of the type array",
+    => "Must be of the type array",
 
     "{{name}} must not be of the type array"
-    => "{{name}} must not be of the type array",
+    => "Must not be of the type array",
 
     "{{name}} must be a BSN"
-    => "{{name}} must be a BSN",
+    => "Must be a BSN",
 
     "{{name}} must not be a BSN"
-    => "{{name}} must not be a BSN",
+    => "Must not be a BSN",
 
     "{{name}} must be a boolean"
-    => "{{name}} must be a boolean",
+    => "Must be a boolean",
 
     "{{name}} must not be a boolean"
-    => "{{name}} must not be a boolean",
+    => "Must not be a boolean",
 
     "The value must not be optional"
     => "The value must not be optional",
 
     "{{name}} must not be optional"
-    => "{{name}} must not be optional",
+    => "Must not be optional",
 
     "The value must be optional"
     => "The value must be optional",
 
     "{{name}} must be optional"
-    => "{{name}} must be optional",
+    => "Must be optional",
 
     "{{name}} must be a scalar value"
-    => "{{name}} must be a scalar value",
+    => "Must be a scalar value",
 
     "{{name}} must not be a scalar value"
-    => "{{name}} must not be a scalar value",
+    => "Must not be a scalar value",
 
     "{{name}} must be a valid CNH number"
-    => "{{name}} must be a valid CNH number",
+    => "Must be a valid CNH number",
 
     "{{name}} must not be a valid CNH number"
-    => "{{name}} must not be a valid CNH number",
+    => "Must not be a valid CNH number",
 
     "{{name}} must be a german BIC"
-    => "{{name}} must be a german BIC",
+    => "Must be a german BIC",
 
     "{{name}} must not be a german BIC"
-    => "{{name}} must not be a german BIC",
+    => "Must not be a german BIC",
 
     "{{name}} must be a german bank"
-    => "{{name}} must be a german bank",
+    => "Must be a german bank",
 
     "{{name}} must not be a german bank"
-    => "{{name}} must not be a german bank",
+    => "Must not be a german bank",
 
     "{{name}} must be a german bank account"
-    => "{{name}} must be a german bank account",
+    => "Must be a german bank account",
 
     "{{name}} must not be a german bank account"
-    => "{{name}} must not be a german bank account",
+    => "Must not be a german bank account",
 
     "{{name}} must be a valid Polish Identity Card number"
-    => "{{name}} must be a valid Polish Identity Card number",
+    => "Must be a valid Polish Identity Card number",
 
     "{{name}} must not be a valid Polish Identity Card number"
-    => "{{name}} must not be a valid Polish Identity Card number",
+    => "Must not be a valid Polish Identity Card number",
 
     "{{name}} must be in the {{charset}} charset"
-    => "{{name}} must be in the {{charset}} charset",
+    => "Must be in the {{charset}} charset",
 
     "{{name}} must not be in the {{charset}} charset"
-    => "{{name}} must not be in the {{charset}} charset",
+    => "Must not be in the {{charset}} charset",
 
     "{{name}} must have {{extension}} extension"
-    => "{{name}} must have {{extension}} extension",
+    => "Must have {{extension}} extension",
 
     "{{name}} must not have {{extension}} extension"
-    => "{{name}} must not have {{extension}} extension",
+    => "Must not have {{extension}} extension",
 
     "{{name}} must be a valid Identity Card number for {{countryCode}}"
-    => "{{name}} must be a valid Identity Card number for {{countryCode}}",
+    => "Must be a valid Identity Card number for {{countryCode}}",
 
     "{{name}} must not be a valid Identity Card number for {{countryCode}}"
-    => "{{name}} must not be a valid Identity Card number for {{countryCode}}",
+    => "Must not be a valid Identity Card number for {{countryCode}}",
 
     "{{name}} must be an array"
-    => "{{name}} must be an array",
+    => "Must be an array",
 
     "{{name}} must not be an array"
-    => "{{name}} must not be an array",
+    => "Must not be an array",
 
     "{{name}} must contain only graphical characters"
-    => "{{name}} must contain only graphical characters",
+    => "Must contain only graphical characters",
 
     "{{name}} must contain only graphical characters and \"{{additionalChars}}\""
-    => "{{name}} must contain only graphical characters and \"{{additionalChars}}\"",
+    => "Must contain only graphical characters and \"{{additionalChars}}\"",
 
     "{{name}} must not contain graphical characters"
-    => "{{name}} must not contain graphical characters",
+    => "Must not contain graphical characters",
 
     "{{name}} must not contain graphical characters or \"{{additionalChars}}\""
-    => "{{name}} must not contain graphical characters or \"{{additionalChars}}\"",
+    => "Must not contain graphical characters or \"{{additionalChars}}\"",
 
     "{{name}} must be a version"
-    => "{{name}} must be a version",
+    => "Must be a version",
 
     "{{name}} must not be a version"
-    => "{{name}} must not be a version",
+    => "Must not be a version",
 
     "{{name}} must contain only consonants"
-    => "{{name}} must contain only consonants",
+    => "Must contain only consonants",
 
     "{{name}} must contain only consonants and \"{{additionalChars}}\""
-    => "{{name}} must contain only consonants and \"{{additionalChars}}\"",
+    => "Must contain only consonants and \"{{additionalChars}}\"",
 
     "{{name}} must not contain consonants"
-    => "{{name}} must not contain consonants",
+    => "Must not contain consonants",
 
     "{{name}} must not contain consonants or \"{{additionalChars}}\""
-    => "{{name}} must not contain consonants or \"{{additionalChars}}\"",
+    => "Must not contain consonants or \"{{additionalChars}}\"",
 
     "{{name}} must be a valid subdivision code for {{countryCode}}"
-    => "{{name}} must be a valid subdivision code for {{countryCode}}",
+    => "Must be a valid subdivision code for {{countryCode}}",
 
     "{{name}} must not be a valid subdivision code for {{countryCode}}"
-    => "{{name}} must not be a valid subdivision code for {{countryCode}}",
+    => "Must not be a valid subdivision code for {{countryCode}}",
 
     "{{name}} is always invalid"
-    => "{{name}} is always invalid",
+    => "This field is always invalid",
 
     "{{name}} is not valid"
-    => "{{name}} is not valid",
+    => "This field is not valid",
 
     "{{name}} is always valid"
-    => "{{name}} is always valid",
+    => "This field is always valid",
 
     "{{name}} is valid"
-    => "{{name}} is valid",
+    => "This field is valid",
 
     "The value must not be empty"
     => "The value must not be empty",
 
     "{{name}} must not be empty"
-    => "{{name}} must not be empty",
+    => "This field is mandatory",
 
     "The value must be empty"
     => "The value must be empty",
 
     "{{name}} must be empty"
-    => "{{name}} must be empty",
+    => "This field must be empty",
 
     "{{name}} must be a symbolic link"
-    => "{{name}} must be a symbolic link",
+    => "Must be a symbolic link",
 
     "{{name}} must not be a symbolic link"
-    => "{{name}} must not be a symbolic link",
+    => "Must not be a symbolic link",
 
     "{{name}} must be a valid Credit Card number"
-    => "{{name}} must be a valid Credit Card number",
+    => "Must be a valid Credit Card number",
 
     "{{name}} must not be a valid Credit Card number"
-    => "{{name}} must not be a valid Credit Card number",
+    => "Must not be a valid Credit Card number",
 
     "{{name}} must be a resource"
-    => "{{name}} must be a resource",
+    => "Must be a resource",
 
     "{{name}} must not be a resource"
-    => "{{name}} must not be a resource",
+    => "Must not be a resource",
 
     "{{name}} must be greater than {{interval}}"
-    => "{{name}} must be greater than {{interval}}",
+    => "Must be greater than {{interval}}",
 
     "{{name}} must be greater than or equal to {{interval}}"
-    => "{{name}} must be greater than or equal to {{interval}}",
+    => "Must be greater than or equal to {{interval}}",
 
     "{{name}} must not be greater than {{interval}}"
-    => "{{name}} must not be greater than {{interval}}",
+    => "Must not be greater than {{interval}}",
 
     "{{name}} must not be greater than or equal to {{interval}}"
-    => "{{name}} must not be greater than or equal to {{interval}}",
+    => "Must not be greater than or equal to {{interval}}",
 
     "{{baseKey}} must be valid to validate {{comparedKey}}"
     => "{{baseKey}} must be valid to validate {{comparedKey}}",
@@ -2053,139 +543,139 @@ return [
     => "{{baseKey}} must not be valid to validate {{comparedKey}}",
 
     "{{name}} must be a valid perfect square"
-    => "{{name}} must be a valid perfect square",
+    => "Must be a valid perfect square",
 
     "{{name}} must not be a valid perfect square"
-    => "{{name}} must not be a valid perfect square",
+    => "Must not be a valid perfect square",
 
     "{{name}} must be readable"
-    => "{{name}} must be readable",
+    => "Must be readable",
 
     "{{name}} must not be readable"
-    => "{{name}} must not be readable",
+    => "Must not be readable",
 
     "{{name}} must be a valid CPF number"
-    => "{{name}} must be a valid CPF number",
+    => "Must be a valid CPF number",
 
     "{{name}} must not be a valid CPF number"
-    => "{{name}} must not be a valid CPF number",
+    => "Must not be a valid CPF number",
 
     "All of these rules must pass for {{name}}"
-    => "All of these rules must pass for {{name}}",
+    => "All of these rules must pass for this field",
 
     "{{name}} must be writable"
-    => "{{name}} must be writable",
+    => "Must be writable",
 
     "{{name}} must not be writable"
-    => "{{name}} must not be writable",
+    => "Must not be writable",
 
     "{{name}} must be countable"
-    => "{{name}} must be countable",
+    => "Must be countable",
 
     "{{name}} must not be countable"
-    => "{{name}} must not be countable",
+    => "Must not be countable",
 
     "{{name}} must be valid"
-    => "{{name}} must be valid",
+    => "This field is not valid",
 
     "{{name}} must not be valid"
-    => "{{name}} must not be valid",
+    => "Must not be valid",
 
     "At least one of these rules must pass for {{name}}"
-    => "At least one of these rules must pass for {{name}}",
+    => "One of the following rules must be verified",
 
     "At least one of these rules must not pass for {{name}}"
-    => "At least one of these rules must not pass for {{name}}",
+    => "One of the following rules must not be verified",
 
     "{{name}} must be a valid top-level domain name"
-    => "{{name}} must be a valid top-level domain name",
+    => "Must be a valid top-level domain name",
 
     "{{name}} must not be a valid top-level domain name"
-    => "{{name}} must not be a valid top-level domain name",
+    => "Must not be a valid top-level domain name",
 
     "{{name}} must be a valid language"
-    => "{{name}} must be a valid language",
+    => "Must be a valid language",
 
     "{{name}} must not be a valid language"
-    => "{{name}} must not be a valid language",
+    => "Must not be a valid language",
 
     "{{name}} must validate against {{regex}}"
-    => "{{name}} must validate against {{regex}}",
+    => "Must validate against {{regex}}",
 
     "{{name}} must not validate against {{regex}}"
-    => "{{name}} must not validate against {{regex}}",
+    => "Must not validate against {{regex}}",
 
     "{{name}} must be an odd number"
-    => "{{name}} must be an odd number",
+    => "Must be an odd number",
 
     "{{name}} must not be an odd number"
-    => "{{name}} must not be an odd number",
+    => "Must not be an odd number",
 
     "{{name}} must be between {{minAge}} and {{maxAge}} years ago"
-    => "{{name}} must be between {{minAge}} and {{maxAge}} years ago",
+    => "Must be between {{minAge}} and {{maxAge}} years ago",
 
     "{{name}} must be lower than {{minAge}} years ago"
-    => "{{name}} must be lower than {{minAge}} years ago",
+    => "Must be lower than {{minAge}} years ago",
 
     "{{name}} must be greater than {{maxAge}} years ago"
-    => "{{name}} must be greater than {{maxAge}} years ago",
+    => "Must be greater than {{maxAge}} years ago",
 
     "{{name}} must not be between {{minAge}} and {{maxAge}} years ago"
-    => "{{name}} must not be between {{minAge}} and {{maxAge}} years ago",
+    => "Must not be between {{minAge}} and {{maxAge}} years ago",
 
     "{{name}} must not be lower than {{minAge}} years ago"
-    => "{{name}} must not be lower than {{minAge}} years ago",
+    => "Must not be lower than {{minAge}} years ago",
 
     "{{name}} must not be greater than {{maxAge}} years ago"
-    => "{{name}} must not be greater than {{maxAge}} years ago",
+    => "Must not be greater than {{maxAge}} years ago",
 
     "{{name}} must contain only letters (a-z) and digits (0-9)"
-    => "{{name}} must contain only letters (a-z) and digits (0-9)",
+    => "This field contains some unauthorized characters",
 
     "{{name}} must contain only letters (a-z), digits (0-9) and {{additionalChars}}"
-    => "{{name}} must contain only letters (a-z), digits (0-9) and {{additionalChars}}",
+    => "This field contains some unauthorized characters",
 
     "{{name}} must not contain letters (a-z) or digits (0-9)"
-    => "{{name}} must not contain letters (a-z) or digits (0-9)",
+    => "This field contains some unauthorized characters",
 
     "{{name}} must not contain letters (a-z), digits (0-9) or {{additionalChars}}"
-    => "{{name}} must not contain letters (a-z), digits (0-9) or {{additionalChars}}",
+    => "This field contains some unauthorized characters",
 
     "{{name}} must be a valid currency"
-    => "{{name}} must be a valid currency",
+    => "Must be a valid currency",
 
     "{{name}} must not be a valid currency"
-    => "{{name}} must not be a valid currency",
+    => "Must not be a valid currency",
 
     "{{name}} must contain the value \"{{containsValue}}\""
-    => "{{name}} must contain the value \"{{containsValue}}\"",
+    => "Must contain the value \"{{containsValue}}\"",
 
     "{{name}} must not contain the value \"{{containsValue}}\""
-    => "{{name}} must not contain the value \"{{containsValue}}\"",
+    => "Must not contain the value \"{{containsValue}}\"",
 
     "{{name}} is not considered as \"Yes\""
-    => "{{name}} is not considered as \"Yes\"",
+    => "Is not considered as \"Yes\"",
 
     "{{name}} is considered as \"Yes\""
-    => "{{name}} is considered as \"Yes\"",
+    => "Is considered as \"Yes\"",
 
     "{{name}} must be an infinite number"
-    => "{{name}} must be an infinite number",
+    => "Must be an infinite number",
 
     "{{name}} must not be an infinite number"
-    => "{{name}} must not be an infinite number",
+    => "Must not be an infinite number",
 
     "{{name}} must be a valid prime number"
-    => "{{name}} must be a valid prime number",
+    => "Must be a valid prime number",
 
     "{{name}} must not be a valid prime number"
-    => "{{name}} must not be a valid prime number",
+    => "Must not be a valid prime number",
 
     "{{name}} must be a valid telephone number"
-    => "{{name}} must be a valid telephone number",
+    => "This telephone number is not valid",
 
     "{{name}} must not be a valid telephone number"
-    => "{{name}} must not be a valid telephone number",
+    => "Must not be a valid telephone number",
 
     "Must have keys {{keys}}"
     => "Must have keys {{keys}}",
@@ -2194,190 +684,190 @@ return [
     => "Must not have keys {{keys}}",
 
     "{{name}} must be a string"
-    => "{{name}} must be a string",
+    => "Must be a string",
 
     "{{name}} must not be string"
-    => "{{name}} must not be string",
+    => "Must not be string",
 
     "No items were found for key chain {{name}}"
-    => "No items were found for key chain {{name}}",
+    => "No items were found for key this chain",
 
     "Key chain {{name}} is not valid"
-    => "Key chain {{name}} is not valid",
+    => "This key chain is not valid",
 
     "Items for key chain {{name}} must not be present"
-    => "Items for key chain {{name}} must not be present",
+    => "Items for this key chain must not be present",
 
     "Key chain {{name}} must not be valid"
-    => "Key chain {{name}} must not be valid",
+    => "This key chain must not be valid",
 
     "{{name}} must be numeric"
-    => "{{name}} must be numeric",
+    => "This field must contain only numbers",
 
     "{{name}} must not be numeric"
-    => "{{name}} must not be numeric",
+    => "This field must not contain numbers",
 
     "{{name}} must be of the type integer"
-    => "{{name}} must be of the type integer",
+    => "Must be of the type integer",
 
     "{{name}} must not be of the type integer"
-    => "{{name}} must not be of the type integer",
+    => "Must not be of the type integer",
 
     "{{name}} must be positive"
-    => "{{name}} must be positive",
+    => "Must be positive",
 
     "{{name}} must not be positive"
-    => "{{name}} must not be positive",
+    => "Must not be positive",
 
     "{{name}} must be a valid video URL"
-    => "{{name}} must be a valid video URL",
+    => "Must be a valid video URL",
 
     "{{name}} must be a valid {{service}} video URL"
-    => "{{name}} must be a valid {{service}} video URL",
+    => "Must be a valid {{service}} video URL",
 
     "{{name}} must not be a valid video URL"
-    => "{{name}} must not be a valid video URL",
+    => "Must not be a valid video URL",
 
     "{{name}} must not be a valid {{service}} video URL"
-    => "{{name}} must not be a valid {{service}} video URL",
+    => "Must not be a valid {{service}} video URL",
 
     "{{name}} must contain only control characters"
-    => "{{name}} must contain only control characters",
+    => "Must contain only control characters",
 
     "{{name}} must contain only control characters and \"{{additionalChars}}\""
-    => "{{name}} must contain only control characters and \"{{additionalChars}}\"",
+    => "Must contain only control characters and \"{{additionalChars}}\"",
 
     "{{name}} must not contain control characters"
-    => "{{name}} must not contain control characters",
+    => "Must not contain control characters",
 
     "{{name}} must not contain control characters or \"{{additionalChars}}\""
-    => "{{name}} must not contain control characters or \"{{additionalChars}}\"",
+    => "Must not contain control characters or \"{{additionalChars}}\"",
 
     "{{name}} is not considered as \"No\""
-    => "{{name}} is not considered as \"No\"",
+    => "Is not considered as \"No\"",
 
     "{{name}} is considered as \"No\""
-    => "{{name}} is considered as \"No\"",
+    => "Is considered as \"No\"",
 
     "{{name}} must be multiple of {{multipleOf}}"
-    => "{{name}} must be multiple of {{multipleOf}}",
+    => "Must be multiple of {{multipleOf}}",
 
     "{{name}} must not be multiple of {{multipleOf}}"
-    => "{{name}} must not be multiple of {{multipleOf}}",
+    => "Must not be multiple of {{multipleOf}}",
 
     "{{name}} must be an even number"
-    => "{{name}} must be an even number",
+    => "Must be an even number",
 
     "{{name}} must not be an even number"
-    => "{{name}} must not be an even number",
+    => "Must not be an even number",
 
     "{{name}} must be a valid domain"
-    => "{{name}} must be a valid domain",
+    => "Must be a valid domain",
 
     "{{name}} must not be a valid domain"
-    => "{{name}} must not be a valid domain",
+    => "Must not be a valid domain",
 
     "{{name}} must be a directory"
-    => "{{name}} must be a directory",
+    => "Must be a directory",
 
     "{{name}} must not be a directory"
-    => "{{name}} must not be a directory",
+    => "Must not be a directory",
 
     "{{name}} must be a valid mac address"
-    => "{{name}} must be a valid mac address",
+    => "Must be a valid mac address",
 
     "{{name}} must not be a valid mac address"
-    => "{{name}} must not be a valid mac address",
+    => "Must not be a valid mac address",
 
     "{{name}} must contain only digits (0-9)"
-    => "{{name}} must contain only digits (0-9)",
+    => "Must contain only digits (0-9)",
 
     "{{name}} must contain only digits (0-9) and \"{{additionalChars}}\""
-    => "{{name}} must contain only digits (0-9) and \"{{additionalChars}}\"",
+    => "Must contain only digits (0-9) and \"{{additionalChars}}\"",
 
     "{{name}} must not contain digits (0-9)"
-    => "{{name}} must not contain digits (0-9)",
+    => "Must not contain digits (0-9)",
 
     "{{name}} must not contain digits (0-9) or \"{{additionalChars}}\""
-    => "{{name}} must not contain digits (0-9) or \"{{additionalChars}}\"",
+    => "Must not contain digits (0-9) or \"{{additionalChars}}\"",
 
     "{{name}} must be uppercase"
-    => "{{name}} must be uppercase",
+    => "Must be uppercase",
 
     "{{name}} must not be uppercase"
-    => "{{name}} must not be uppercase",
+    => "Must not be uppercase",
 
     "The value must not be blank"
     => "The value must not be blank",
 
     "{{name}} must not be blank"
-    => "{{name}} must not be blank",
+    => "Must not be blank",
 
     "The value must be blank"
     => "The value must be blank",
 
     "{{name}} must be blank"
-    => "{{name}} must be blank",
+    => "Must be blank",
 
     "{{name}} must be valid email"
-    => "{{name}} must be valid email",
+    => "This email address is not valid",
 
     "{{name}} must not be an email"
-    => "{{name}} must not be an email",
+    => "Must not be an email",
 
     "{{name}} must be an IP address"
-    => "{{name}} must be an IP address",
+    => "Must be an IP address",
 
     "{{name}} must be an IP address in the {{range}} range"
-    => "{{name}} must be an IP address in the {{range}} range",
+    => "Must be an IP address in the {{range}} range",
 
     "{{name}} must not be an IP address"
-    => "{{name}} must not be an IP address",
+    => "Must not be an IP address",
 
     "{{name}} must not be an IP address in the {{range}} range"
-    => "{{name}} must not be an IP address in the {{range}} range",
+    => "Must not be an IP address in the {{range}} range",
 
     "{{name}} must be negative"
-    => "{{name}} must be negative",
+    => "Must be negative",
 
     "{{name}} must not be negative"
-    => "{{name}} must not be negative",
+    => "Must not be negative",
 
     "{{name}} must be of the type float"
-    => "{{name}} must be of the type float",
+    => "Must be of the type float",
 
     "{{name}} must not be of the type float"
-    => "{{name}} must not be of the type float",
+    => "Must not be of the type float",
 
     "{{name}} must be a finite number"
-    => "{{name}} must be a finite number",
+    => "Must be a finite number",
 
     "{{name}} must not be a finite number"
-    => "{{name}} must not be a finite number",
+    => "Must not be a finite number",
 
     "{{name}} must be a valid country"
-    => "{{name}} must be a valid country",
+    => "Must be a valid country",
 
     "{{name}} must not be a valid country"
-    => "{{name}} must not be a valid country",
+    => "Must not be a valid country",
 
     "{{name}} must have a length between {{minValue}} and {{maxValue}}"
-    => "{{name}} must have a length between {{minValue}} and {{maxValue}}",
+    => "{{minValue}} min. characters, {{maxValue}} max. characters",
 
     "{{name}} must have a length greater than {{minValue}}"
-    => "{{name}} must have a length greater than {{minValue}}",
+    => "{{minValue}} min. characters",
 
     "{{name}} must have a length lower than {{maxValue}}"
-    => "{{name}} must have a length lower than {{maxValue}}",
+    => "{{maxValue}} max. characters",
 
     "{{name}} must not have a length between {{minValue}} and {{maxValue}}"
-    => "{{name}} must not have a length between {{minValue}} and {{maxValue}}",
+    => "{{maxValue}} min. characters, or {{minValue}} max. characters",
 
     "{{name}} must not have a length greater than {{minValue}}"
-    => "{{name}} must not have a length greater than {{minValue}}",
+    => "{{minValue}} min. characters",
 
     "{{name}} must not have a length lower than {{maxValue}}"
-    => "{{name}} must not have a length lower than {{maxValue}}",
+    => "{{maxValue}} max. characters}",
 
     "The age must be {{age}} years or more."
     => "The age must be {{age}} years or more.",
@@ -2386,70 +876,70 @@ return [
     => "The age must not be {{age}} years or more.",
 
     "{{name}} must be a valid IMEI"
-    => "{{name}} must be a valid IMEI",
+    => "Must be a valid IMEI",
 
     "{{name}} must not be a valid IMEI"
-    => "{{name}} must not be a valid IMEI",
+    => "Must not be a valid IMEI",
 
     "{{name}} must end with ({{endValue}})"
-    => "{{name}} must end with ({{endValue}})",
+    => "Must end with ({{endValue}})",
 
     "{{name}} must not end with ({{endValue}})"
-    => "{{name}} must not end with ({{endValue}})",
+    => "Must not end with ({{endValue}})",
 
     "{{name}} must be a valid JSON string"
-    => "{{name}} must be a valid JSON string",
+    => "Must be a valid JSON string",
 
     "{{name}} must not be a valid JSON string"
-    => "{{name}} must not be a valid JSON string",
+    => "Must not be a valid JSON string",
 
     "{{name}} is not considered as \"True\""
-    => "{{name}} is not considered as \"True\"",
+    => "Is not considered as \"True\"",
 
     "{{name}} is considered as \"True\""
-    => "{{name}} is considered as \"True\"",
+    => "Is considered as \"True\"",
 
     "{{name}} must be in {{haystack}}"
-    => "{{name}} must be in {{haystack}}",
+    => "Must be in {{haystack}}",
 
     "{{name}} must not be in {{haystack}}"
-    => "{{name}} must not be in {{haystack}}",
+    => "Must not be in {{haystack}}",
 
     "{{name}} must be a factor of {{dividend}}"
-    => "{{name}} must be a factor of {{dividend}}",
+    => "Must be a factor of {{dividend}}",
 
     "{{name}} must not be a factor of {{dividend}}"
-    => "{{name}} must not be a factor of {{dividend}}",
+    => "Must not be a factor of {{dividend}}",
 
     "{{name}} must be lowercase"
-    => "{{name}} must be lowercase",
+    => "Must be lowercase",
 
     "{{name}} must not be lowercase"
-    => "{{name}} must not be lowercase",
+    => "Must not be lowercase",
 
     "{{name}} must contain only punctuation characters"
-    => "{{name}} must contain only punctuation characters",
+    => "Must contain only punctuation characters",
 
     "{{name}} must contain only punctuation characters and \"{{additionalChars}}\""
-    => "{{name}} must contain only punctuation characters and \"{{additionalChars}}\"",
+    => "Must contain only punctuation characters and \"{{additionalChars}}\"",
 
     "{{name}} must not contain punctuation characters"
-    => "{{name}} must not contain punctuation characters",
+    => "Must not contain punctuation characters",
 
     "{{name}} must not contain punctuation characters or \"{{additionalChars}}\""
-    => "{{name}} must not contain punctuation characters or \"{{additionalChars}}\"",
+    => "Must not contain punctuation characters or \"{{additionalChars}}\"",
 
     "{{name}} must be a boolean value"
-    => "{{name}} must be a boolean value",
+    => "Must be a boolean value",
 
     "{{name}} must not be a boolean value"
-    => "{{name}} must not be a boolean value",
+    => "Must not be a boolean value",
 
     "{{name}} must be a bank"
-    => "{{name}} must be a bank",
+    => "Must be a bank",
 
     "{{name}} must not be a bank"
-    => "{{name}} must not be a bank",
+    => "Must not be a bank",
 
     "Missing value"
     => "Missing value",
@@ -2460,14 +950,11 @@ return [
     "event-cannot-be-archived"
     => "An event cannot be archived if its return inventory is not done!",
 
-    "referenceAlreadyInUse"
-    => "This reference is already in use.",
-
     "invalid-uuid"
-    => "The unique identifier (UUID) is invalid.",
+    => "The unique identifier (UUID) is not valid.",
 
     "invalid-value"
-    => "Invalid value.",
+    => "This value is not valid.",
 
     "technician-assignation-before-event"
     => "Assignment of this technician begins before the event.",
@@ -2480,6 +967,82 @@ return [
 
     "technician-already-busy-for-this-period"
     => "This technician is already busy for this period.",
+
+    "returned-quantity-not-valid"
+    => "Returned quantity not valid.",
+
+    "broken-quantity-not-valid"
+    => "Broken quantity not valid.",
+
+    "effective-quantity-not-valid"
+    => "Effective quantity not valid.",
+
+    "quantities-cannot-be-negative"
+    => "Quantities cannot be negative.",
+
+    "returned-quantity-cannot-be-greater-than-output-quantity"
+    => "Returned quantity cannot be greater than output quantity.",
+
+    "broken-quantity-cannot-be-greater-than-total-quantity"
+    => "Broken quantity cannot be greater than total quantity.",
+
+    "broken-quantity-cannot-be-greater-than-returned-quantity"
+    => "Broken quantity cannot be greater than returned quantity.",
+
+    "quantities-can-only-be-updated-for-existant-inventory"
+    => "Quantities can only be updated for existant inventory.",
+
+    "quantities-of-terminated-inventory-cannot-be-updated"
+    => "Quantities of terminated inventory cannot be updated.",
+
+    "only-existing-inventories-can-be-marked-as-terminated"
+    => "Only existing inventories can be marked as terminated.",
+
+    "the-inventory-is-already-marked-as-terminated"
+    => "The inventory is already marked as terminated.",
+
+    "this-material-was-not-present-in-submitted-inventory"
+    => "This material was not present in submitted inventory",
+
+    "some-informations-are-not-valid"
+    => "Some informations are not valid.",
+
+    //
+    // - Existence messages
+    //
+
+    "bill-number-already-in-use"
+    => "An invoice already exists with this number",
+
+    "category-name-already-in-use"
+    => "A category already exists with this name",
+
+    "company-legal-name-already-in-use"
+    => "A company already exists with this legal name",
+
+    "document-already-in-use-for-this-material"
+    => "A document with the same name already exists for this material",
+
+    "reference-already-in-use"
+    => "This reference is already in use",
+
+    "email-already-in-use"
+    => "This email address is already in use",
+
+    "park-name-already-in-use"
+    => "A park with this name already exists",
+
+    "subcategory-already-in-use-for-this-category"
+    => "This sub-category already exists in this category",
+
+    "tag-name-already-in-use"
+    => "This tag already exists",
+
+    "user-pseudo-already-in-use"
+    => "This pseudo is already in use",
+
+    "user-email-already-in-use"
+    => "This email is already in use",
 
     //
     // - Upload messages
@@ -2502,9 +1065,6 @@ return [
 
     "document-cannot-be-saved-in-db"
     => "Document could not be saved in database. Reason: %s",
-
-    "material-picture-cannot-be-saved-in-db"
-    => "Material picture could not be saved in database. Reason: %s",
 
     //
     // - Install messages
@@ -2780,6 +1340,9 @@ return [
 
     "otherMaterials"
     => "Other Materials",
+
+    "notCategorized"
+    => "Not categorized",
 
     "Event"
     => "Release sheet",

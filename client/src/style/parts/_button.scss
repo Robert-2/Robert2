@@ -19,10 +19,6 @@ button:not(.Button),
         margin-left: 5px;
     }
 
-    &:visited {
-        color: $color-base-button;
-    }
-
     &:hover,
     &:focus {
         outline: 0;
@@ -100,8 +96,7 @@ button:not(.Button),
         text-decoration: none;
 
         &:hover,
-        &:focus,
-        &:visited {
+        &:focus {
             outline: 0;
             background-color: adjust-color($bg-color-button-default, $lightness: -15%);
             // stylelint-disable-next-line declaration-no-important

@@ -1,173 +1,241 @@
 import './index.scss';
 import moment from 'moment';
+import Fragment from '@/components/Fragment';
+import Loading from '@/components/Loading';
+import CriticalError, { ERROR } from '@/components/CriticalError';
+import Page from '@/components/Page';
+import apiEvents from '@/stores/api/events';
 import { confirm } from '@/utils/alert';
-import formatAmount from '@/utils/formatAmount';
-import EventReturnHeader from './Header';
-import MaterialsList from './MaterialsList';
+import EventReturnHeader from './components/Header';
+import EventReturnNotStarted from './components/NotStarted';
+import MaterialsList from './components/MaterialsList';
+import EventReturnFooter from './components/Footer';
 
 // @vue/component
 export default {
     name: 'EventReturn',
-    components: { EventReturnHeader, MaterialsList },
     data() {
+        const id = this.$route.params.id
+            ? parseInt(this.$route.params.id, 10)
+            : null;
+
         return {
-            help: 'page-event-return.help',
-            error: null,
-            validationErrors: null,
+            id,
+            event: null,
             isLoading: false,
+            isFetched: false,
             isSaving: false,
             isTerminating: false,
             displayGroup: 'categories',
-            event: {
-                id: this.$route.params.id || null,
-                materials: [],
-                beneficiaries: [],
-            },
             startDate: null,
             endDate: null,
             quantities: [],
+            criticalError: null,
+            validationErrors: null,
         };
     },
     computed: {
+        pageTitle() {
+            const { $t: __, isFetched, event } = this;
+
+            return isFetched
+                ? __('page.event-return.title', { name: event.title })
+                : __('page.event-return.title-simple');
+        },
+
         hasStarted() {
-            return this.startDate ? this.startDate.isSameOrBefore(new Date(), 'day') : false;
+            const { startDate } = this;
+            return startDate ? startDate.isSameOrBefore(new Date(), 'day') : false;
         },
 
         hasEnded() {
-            return this.endDate ? this.endDate.isSameOrBefore(new Date(), 'day') : false;
+            const { endDate } = this;
+            return endDate ? endDate.isSameOrBefore(new Date(), 'day') : false;
         },
 
         isDone() {
+            if (!this.isFetched) {
+                return false;
+            }
             return !!this.event.is_return_inventory_done;
         },
     },
     mounted() {
-        this.getEventData();
+        this.fetchData();
     },
     methods: {
-        formatAmount(amount) {
-            return formatAmount(amount);
-        },
+        // ------------------------------------------------------
+        // -
+        // -    Handlers
+        // -
+        // ------------------------------------------------------
 
-        async getEventData() {
-            const { id } = this.event;
-            if (!id) {
-                return;
-            }
-
-            this.isLoading = true;
-
-            try {
-                const { data } = await this.$http.get(`events/${id}`);
-                this.setEventData(data);
-            } catch (error) {
-                this.event.id = null;
-                this.displayError(error);
-            }
-        },
-
-        setEventData(data) {
-            this.help = 'page-event-return.help';
-            this.error = null;
-            this.validationErrors = null;
-            this.isLoading = false;
-            this.isSaving = false;
-            this.isTerminating = false;
-
-            this.event = data;
-            this.startDate = moment(data.start_date);
-            this.endDate = moment(data.end_date);
-
-            this.initQuantities();
-
-            this.$store.commit('setPageSubTitle', data.title);
-        },
-
-        initQuantities() {
-            const { materials } = this.event;
-
-            this.quantities = materials.map(({ id, pivot }) => ({
-                id,
-                awaited_quantity: pivot.quantity || 0,
-                actual: pivot.quantity_returned || 0,
-                broken: pivot.quantity_broken || 0,
-            }));
-        },
-
-        handleChange(id, quantities) {
-            const index = this.quantities.findIndex(({ id: _id }) => id === _id);
+        handleChangeQuantities(id, newQuantities) {
+            const { quantities } = this;
+            const index = quantities.findIndex(({ id: _id }) => id === _id);
             if (index < 0) {
                 return;
             }
-            const prevQuantity = this.quantities[index];
-            this.$set(this.quantities, index, { ...prevQuantity, ...quantities });
+            const prevQuantities = quantities[index];
+            this.$set(quantities, index, { ...prevQuantities, ...newQuantities });
         },
 
-        setDisplayGroup(group) {
+        handleChangeDisplayGroup(group) {
             this.displayGroup = group;
         },
 
-        async save() {
-            const { id } = this.event;
-            if (!id) {
-                return;
-            }
-
-            this.isSaving = true;
-            this.validationErrors = null;
-
-            try {
-                const { data } = await this.$http.put(`events/${id}/return`, this.quantities);
-                this.setEventData(data);
-            } catch (error) {
-                this.displayError(error);
-            }
+        async handleSave() {
+            await this.save();
         },
 
-        async terminate() {
-            const { id } = this.event;
-            if (!id) {
-                return;
-            }
+        async handleTerminate() {
+            const { $t: __ } = this;
 
             const hasBroken = this.quantities.some(({ broken }) => broken > 0);
-
-            const response = await confirm({
-                title: this.$t('page-event-return.confirm-terminate-title'),
+            const confirmation = await confirm({
+                title: __('page.event-return.confirm-terminate-title'),
+                confirmButtonText: __('terminate-inventory'),
                 text: hasBroken
-                    ? this.$t('page-event-return.confirm-terminate-text-with-broken')
-                    : this.$t('page-event-return.confirm-terminate-text'),
-                confirmButtonText: this.$t('terminate-inventory'),
+                    ? __('page.event-return.confirm-terminate-text-with-broken')
+                    : __('page.event-return.confirm-terminate-text'),
+
             });
 
-            if (!response.isConfirmed) {
+            if (!confirmation.isConfirmed) {
                 return;
             }
 
+            await this.save(true);
+        },
+
+        // ------------------------------------------------------
+        // -
+        // -    Méthodes internes
+        // -
+        // ------------------------------------------------------
+
+        async fetchData() {
+            try {
+                const event = await apiEvents.one(this.id);
+                this.setEvent(event);
+                this.isFetched = true;
+            } catch (error) {
+                const status = error?.response?.status ?? 500;
+                this.criticalError = status === 404 ? ERROR.NOT_FOUND : ERROR.UNKNOWN;
+            }
+        },
+
+        async save(terminate = false) {
+            if (this.isSaving) {
+                return;
+            }
             this.isSaving = true;
-            this.isTerminating = true;
-            this.validationErrors = null;
+            const { $t: __, quantities } = this;
+
+            const doRequest = () => (
+                terminate
+                    ? apiEvents.terminate(this.id, quantities)
+                    : apiEvents.setReturn(this.id, quantities)
+            );
 
             try {
-                const { data } = await this.$http.put(`events/${id}/terminate`, this.quantities);
-                this.setEventData(data);
+                const _event = await doRequest();
+                this.setEvent(_event);
+
+                this.validationErrors = null;
+                this.$toasted.success(__('page.event-return.saved'));
             } catch (error) {
-                this.displayError(error);
+                const { code, details } = error.response?.data?.error || { code: 0, details: {} };
+                if (code === 400) {
+                    this.validationErrors = [...details];
+                    this.$refs.page.scrollToTop();
+                } else {
+                    this.$toasted.error(__('errors.unexpected-while-saving'));
+                }
+            } finally {
+                this.isSaving = false;
             }
         },
 
-        displayError(error) {
-            this.isLoading = false;
-            this.isSaving = false;
-            this.isTerminating = false;
+        setEvent(event) {
+            this.event = event;
 
-            if (error.response.status === 400) {
-                this.error = new Error(this.$t('inventory-validation-error'));
-                this.validationErrors = error.response.data.error.details;
-                return;
-            }
+            this.startDate = moment(event.start_date);
+            this.endDate = moment(event.end_date);
 
-            this.error = error;
+            this.quantities = event.materials.map(
+                ({ id, pivot }) => ({
+                    id,
+                    awaited_quantity: pivot.quantity || 0,
+                    actual: pivot.quantity_returned || 0,
+                    broken: pivot.quantity_broken || 0,
+                }),
+            );
         },
+    },
+    render() {
+        const {
+            event,
+            pageTitle,
+            isFetched,
+            criticalError,
+            validationErrors,
+            hasStarted,
+            isSaving,
+            isTerminating,
+            hasEnded,
+            isDone,
+            displayGroup,
+            quantities,
+            handleChangeDisplayGroup,
+            handleChangeQuantities,
+            handleSave,
+            handleTerminate,
+        } = this;
+
+        if (criticalError || !isFetched) {
+            return (
+                <Page name="event-return" title={pageTitle}>
+                    {criticalError ? <CriticalError type={criticalError} /> : <Loading />}
+                </Page>
+            );
+        }
+
+        return (
+            <Page
+                ref="page"
+                name="event-return"
+                title={pageTitle}
+                hasValidationError={!!validationErrors}
+            >
+                <div class="EventReturn">
+                    <EventReturnHeader
+                        event={event}
+                        hasStarted={hasStarted}
+                        onDisplayGroupChange={handleChangeDisplayGroup}
+                    />
+                    {!hasStarted && <EventReturnNotStarted />}
+                    {hasStarted && (
+                        <Fragment>
+                            <MaterialsList
+                                materials={event.materials}
+                                displayGroup={displayGroup}
+                                quantities={quantities}
+                                errors={validationErrors}
+                                isLocked={isDone}
+                                onChange={handleChangeQuantities}
+                            />
+                            <EventReturnFooter
+                                isDone={isDone}
+                                isSaving={isSaving || isTerminating}
+                                hasEnded={hasEnded}
+                                onSave={handleSave}
+                                onTerminate={handleTerminate}
+                            />
+                        </Fragment>
+                    )}
+                </div>
+            </Page>
+        );
     },
 };

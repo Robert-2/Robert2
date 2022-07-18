@@ -9,17 +9,9 @@ final class UsersTest extends ApiTestCase
         $this->assertStatusCode(SUCCESS_OK);
         $this->assertResponseData([
             'pagination' => [
-                'current_page' => 1,
-                'from' => 1,
-                'last_page' => 1,
-                'path' => '/api/users',
-                'first_page_url' => '/api/users?page=1',
-                'next_page_url' => null,
-                'prev_page_url' => null,
-                'last_page_url' => '/api/users?page=1',
-                'per_page' => $this->settings['maxItemsPerPage'],
-                'to' => 3,
-                'total' => 3,
+                'currentPage' => 1,
+                'perPage' => $this->settings['maxItemsPerPage'],
+                'total' => ['items' => 3, 'pages' => 1],
             ],
             'data' => [
                 [
@@ -247,7 +239,7 @@ final class UsersTest extends ApiTestCase
     public function testCreateUserBadData()
     {
         $this->client->post('/api/users', [
-            'email' => '',
+            'email' => 'not-an-email',
             'person' => [
                 'first_name' => '',
                 'last_name' => '',
@@ -257,25 +249,57 @@ final class UsersTest extends ApiTestCase
         $this->assertValidationErrorMessage();
         $this->assertErrorDetails([
             'pseudo' => [
-                "pseudo must not be empty",
-                "pseudo must contain only letters (a-z), digits (0-9) and \"-\"",
-                "pseudo must have a length between 4 and 100",
+                "This field is mandatory",
             ],
             'email' => [
-                "email must not be empty",
-                "email must be valid email",
-                "email must have a length between 5 and 191",
+                "This email address is not valid",
             ],
             'group_id' => [
-                "group_id must not be empty",
-                "At least one of these rules must pass for group_id",
-                'group_id must be equals "admin"',
-                'group_id must be equals "member"',
-                'group_id must be equals "visitor"',
+                "This field is mandatory",
+                "One of the following rules must be verified",
+                'Must be equal to "admin"',
+                'Must be equal to "member"',
+                'Must be equal to "visitor"',
             ],
             'password' => [
-                "password must not be empty",
-                "password must have a length between 4 and 191",
+                "This field is mandatory",
+                "4 min. characters, 191 max. characters",
+            ],
+            'person' => [
+                'first_name' => [
+                    "This field is mandatory",
+                    "This field contains some unauthorized characters",
+                    "2 min. characters, 96 max. characters",
+                ],
+                'last_name' => [
+                    "This field is mandatory",
+                    "This field contains some unauthorized characters",
+                    "2 min. characters, 96 max. characters",
+                ],
+            ],
+        ]);
+    }
+
+    public function testCreateUserDuplicate()
+    {
+        $this->client->post('/api/users', [
+            'pseudo' => 'test1',
+            'email' => 'tester@robertmanager.net',
+            'password' => 'test-dupe',
+            'group_id' => 'member',
+            'person' => [
+                'first_name' => 'Nouveau',
+                'last_name' => 'Testeur',
+            ],
+        ]);
+        $this->assertStatusCode(ERROR_VALIDATION);
+        $this->assertValidationErrorMessage();
+        $this->assertErrorDetails([
+            'pseudo' => [
+                "This pseudo is already in use",
+            ],
+            'email' => [
+                "This email is already in use",
             ],
         ]);
     }
@@ -304,7 +328,6 @@ final class UsersTest extends ApiTestCase
             'email' => 'nobody@test.org',
             'pseudo' => 'Jeanne',
             'group_id' => 'member',
-            'cas_identifier' => null,
             'person' => [
                 'id' => 4,
                 'first_name' => 'Nobody',

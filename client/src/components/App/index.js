@@ -19,7 +19,7 @@ const App = (props, { root }) => {
         const { status } = error.response || { status: 0 };
         if (status === 401) {
             root.$store.dispatch('auth/logout').then(() => {
-                root.$router.replace({ path: '/login', hash: 'expired' })
+                root.$router.replace({ path: '/login', hash: '#expired' })
                     .catch(() => {});
             });
         }
@@ -30,7 +30,7 @@ const App = (props, { root }) => {
     watch(route, () => { root.$modal.hideAll(); });
 
     return () => {
-        invariant(layout.value in layouts, `The "${layout}" layout doesn't exist.`);
+        invariant(layout.value in layouts, `Le layout "${layout}" n'existe pas.`);
         const Layout = layouts[layout.value];
 
         return (

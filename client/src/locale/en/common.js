@@ -1,5 +1,3 @@
-/* eslint-disable quotes */
-
 export default {
     'hello-pseudo': "Hello {pseudo}!",
     'your-settings': "Your settings",
@@ -71,6 +69,7 @@ export default {
     'personal-infos': "Personal informations",
     'minimal-infos': "Minimal informations",
     'extra-infos': "Additional informations",
+    'stock-infos': "Stock informations",
     'billing-infos': "Billing informations",
     'documents': "Documents",
     'billing': "Billing",
@@ -85,7 +84,6 @@ export default {
     'nickname': "Nickname",
     'company': "Company",
     'legal-name': "Legal name",
-    'contact': "Contact",
     'contact-details': "Contact details",
     'other-infos': "Other informations",
     'email': "E-mail",
@@ -106,6 +104,7 @@ export default {
     'notes': "Notes",
     'description': "Description",
     'ref': "Ref.",
+    'ref-ref': "Ref.: {reference}",
     'reference': "Reference",
     'park': "Park",
     'prices': "Prices",
@@ -115,11 +114,18 @@ export default {
     'repl-price': "Repl. price",
     'value-per-day': '{value}\u00a0/\u00a0day',
     'serial-number': "Serial n°",
+    'examples-list': "Examples: {list}, etc.",
+
     'qty': "Qty",
-    'quantity': "Stock qty",
+    'stock-qty': "Stock qty",
+    'stock-quantity': "Stock quantity",
+    'out-of-order-qty': "Out of order qty",
+    'out-of-order-quantity': "Out of order quantity",
+    'remaining-qty': "Remaining qty",
+    'awaited-qty-dots': "Awaited qty:",
+    'actual-qty': "Actual qty",
     'quantities': "Quantities",
-    'quantity-out-of-order': "Out of order qty",
-    'remaining-quantity': "Remaining qty",
+
     'discountable': "Discountable?",
     'is-broken': "Out of order?",
     'is-lost': "Lost?",
@@ -131,6 +137,7 @@ export default {
     'all-parks': "All parks combined",
     'all-categories': "All categories",
     'all-sub-categories': "All sub-categories",
+    'not-categorized': "Not categorized",
     'not-limited': "not limited",
     'open-trash-bin': "Display trash bin",
     'display-not-deleted-items': "Display not deleted items",
@@ -138,6 +145,7 @@ export default {
     'updated-at': "Updated at:",
     'units': "Units",
     'state': "State",
+    'picture': "Picture",
     'add-a-picture': "Add a picture",
     'change-the-picture': "Change the picture",
     'remove-the-picture': "Remove the picture",
@@ -174,7 +182,7 @@ export default {
     'print': "Print",
     'print-summary': "Print this summary",
     'open': "Open",
-    'in': "In",
+    'in': "In {location}",
     'open-in-google-maps': "Open in Google Maps",
     'on-date': "On {date}",
     'from-date-to-date': "from\u00a0{from} to\u00a0{to}",
@@ -193,6 +201,7 @@ export default {
     'warning-no-estimate-before-billing': "Warning, this event does not have any estimate!",
     'warning-event-has-bill': "Warning, this event already have a bill!",
     'estimate-item-help': "Estimate of {date} at {hour}",
+    'confirm-delete-estimate': "Do you really want to delete this estimate?",
     'missing-beneficiary': "Missing beneficiary",
     'position-held': "Position held",
     'not-billable-help': "You can't create a bill (or estimate) for an event without at least one beneficiary.",
@@ -243,6 +252,7 @@ export default {
     'total-amount': "Total amount",
     'total-amount-with-discount': "Total with discount",
     'replacement-total': "Total replacement price",
+    'total-value': "Total value",
     'total-quantity': "Total quantity: {total}",
     'daily-amount': "Daily amount: {amount}",
     'replacement-value-amount': "Remplacement value\u00a0: {amount}",
@@ -256,19 +266,19 @@ export default {
     'ratio-long': "Ratio",
     'tags': "Tags",
     'add-tags': "Add tags",
-    'choose-tags-below': "Choose tags below:",
-    'entity-name-tags': "Tags of \"{entityName}\"",
     'remove-all-tags': "Remove all tags",
     'remaining-count': "{count} remaining",
     'return-inventory': "Return inventory",
     'grouped-by': "Display grouped by:",
     'not-grouped': "Not grouped",
-    'awaited-quantity': "Awaited qty:",
-    'actual-quantity': "Actual qty",
     'return-scheduled-on': "Return scheduled on",
     'back-to-calendar': "Back to calendar",
     'previous-month': "Previous month",
     'next-month': "Next month",
+
+    'create-company': "Add a new company",
+    'use': "Use",
+    'used-by': "Used by",
 
     'terminate-inventory': "Terminate inventory",
     'warning-terminate-inventory': "Beware, once this inventory terminated, it will no longer be modifiable.",
@@ -302,16 +312,41 @@ export default {
     'parks': "Parks",
     'technician': "Technicien",
 
-    'settings': "Settings",
-
     'this-feature-is-coming-soon': "This feature implementation is in progress.",
-
-    'french': "Français",
-    'english': "English",
 
     'external-links': {
         'official-website': "Official website",
         'community-forum': "Community Forum",
         'github-repository': 'Github repository',
+    },
+
+    'select-no-options': "No options available.",
+    'select-no-matching-result': "No matching options.",
+
+    '@event': {
+        'confirm-delete': "Move this event in trash bin?",
+        'no-units-available': "No unit available during this event for this material.",
+
+        'event-missing-materials': "Missing materials",
+        'event-missing-materials-help': "These are the missing materials for the period of the event, because it is used in another event, the number needed is too high, or there are some out of order. These materials must therefore be added to the park, or rented from another company.",
+        'missing-material-count': "Need {quantity}, missing\u00a0{missing}!",
+
+        'warning-no-beneficiary': "Warning: this event has no beneficiaries!",
+        'warning-no-material': "Warning: this event is empty, there is no material at the moment!",
+
+        'event-not-confirmed-help': "The event is not confirmed yet. It is subject to change at any time.",
+        'event-confirmed-help': "The event is confirmed: its information should no longer change.",
+
+        'statuses': {
+            'is-past': "This event is past.",
+            'is-currently-running': "This event is currently running.",
+            'is-confirmed': "This event is confirmed.",
+            'is-not-confirmed': "This event is not confirmed yet!",
+            'is-archived': "This event is archived.",
+            'is-locked': "This event is locked because it's confirmed or its return inventory is done.",
+            'has-missing-materials': "This event has missing materials.",
+            'needs-its-return-inventory': "It's necessary to make the return inventory of this event!",
+            'has-not-returned-materials': "This event has some not-returned materials.",
+        },
     },
 };

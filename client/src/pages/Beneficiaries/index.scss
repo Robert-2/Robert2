@@ -3,13 +3,22 @@
 .Page--beneficiaries {
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    height: 100%;
 
-    .VueTables {
+    .Beneficiaries {
         flex: 1;
     }
 }
 
 .Beneficiaries {
+    display: flex;
+    flex-direction: column;
+
+    &__table {
+        flex: 1;
+    }
+
     &__nickname,
     &__email,
     &__address,

@@ -1,4 +1,4 @@
-const formatOptions = (data, getLabel = null, emptyLabel = null) => {
+const formatOptions = (data, getLabel = null) => {
     if (data == null) {
         return [];
     }
@@ -8,10 +8,6 @@ const formatOptions = (data, getLabel = null, emptyLabel = null) => {
         const label = getLabel ? getLabel(item) : (item.name || 'N/A');
         return { value, label };
     });
-
-    if (emptyLabel) {
-        options.unshift({ value: '', label: emptyLabel });
-    }
 
     return options;
 };

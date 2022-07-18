@@ -1,0 +1,13 @@
+title: Techniciens
+help: Vous pouvez envoyer un email à un technicien en cliquant sur son adresse.
+
+action-add: Nouveau technicien
+period-of-availability: Période de disponibilité
+
+confirm-delete: "Mettre ce technicien à la corbeille\_?"
+confirm-permanently-delete: "Voulez-vous vraiment supprimer définitivement ce technicien\_?"
+confirm-restore: "Voulez-vous vraiment restaurer ce technicien\_?"
+
+saved: Technicien sauvegardé.
+deleted: Technicien supprimé.
+restored: Technicien restauré.

@@ -5,12 +5,10 @@ namespace Robert2\API\Models;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Robert2\API\Validation\Validator as V;
-use Robert2\API\Models\Traits\Taggable;
 
 class Company extends BaseModel
 {
     use SoftDeletes;
-    use Taggable;
 
     protected $orderField = 'legal_name';
     protected $searchField = 'legal_name';
@@ -20,13 +18,37 @@ class Company extends BaseModel
         parent::__construct($attributes);
 
         $this->validation = [
-            'legal_name'  => V::notEmpty()->length(1, 191),
-            'street'      => V::optional(V::length(null, 191)),
+            'legal_name' => V::callback([$this, 'checkLegalName']),
+            'street' => V::optional(V::length(null, 191)),
             'postal_code' => V::optional(V::length(null, 10)),
-            'locality'    => V::optional(V::length(null, 191)),
-            'country_id'  => V::optional(V::numeric()),
-            'phone'       => V::optional(V::phone()),
+            'locality' => V::optional(V::length(null, 191)),
+            'country_id' => V::optional(V::numeric()),
+            'phone' => V::optional(V::phone()),
         ];
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Validation
+    // -
+    // ------------------------------------------------------
+
+    public function checkLegalName($value)
+    {
+        V::notEmpty()
+            ->length(2, 191)
+            ->check($value);
+
+        $query = static::where('legal_name', $value);
+        if ($this->exists) {
+            $query->where('id', '!=', $this->id);
+        }
+
+        if ($query->withTrashed()->exists()) {
+            return 'company-legal-name-already-in-use';
+        }
+
+        return true;
     }
 
     // ——————————————————————————————————————————————————————
@@ -88,12 +110,6 @@ class Company extends BaseModel
         return $country ? $country->toArray() : null;
     }
 
-    public function getTagsAttribute()
-    {
-        $tags = $this->Tags()->get();
-        return Tag::format($tags);
-    }
-
     // ——————————————————————————————————————————————————————
     // —
     // —    Setters
@@ -110,39 +126,22 @@ class Company extends BaseModel
         'note',
     ];
 
-    public function edit($id = null, array $data = []): BaseModel
+    public static function staticEdit($id = null, array $data = []): BaseModel
     {
         if (!empty($data['phone'])) {
             $data['phone'] = normalizePhone($data['phone']);
         }
 
-        $company = parent::edit($id, $data);
+        $company = parent::staticEdit($id, $data);
 
         if (!empty($data['persons'])) {
-            $this->addPersons($company['id'], $data['persons']);
-        }
-
-        if (!empty($data['tags'])) {
-            $this->setTags($company['id'], $data['tags']);
+            $persons = [];
+            foreach ($data['persons'] as $personData) {
+                $persons[] = Person::firstOrNew($personData);
+            }
+            $company->Persons()->saveMany($persons);
         }
 
         return $company;
-    }
-
-    public function addPersons(int $id, array $persons)
-    {
-        if (empty($persons)) {
-            throw new \InvalidArgumentException("Missing persons data to add to company.");
-        }
-
-        $Company = static::findOrFail($id);
-        foreach ($persons as $person) {
-            $person['company_id'] = $Company->id;
-            $Person = new Person;
-            $Person->fill($person);
-            $Person->save();
-        }
-
-        return $Company->Persons;
     }
 }

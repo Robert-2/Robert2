@@ -33,6 +33,11 @@
         color: globals.$text-nav-color;
         font-size: 1.1rem;
 
+        #{$block}__spinner {
+            width: 2em;
+            height: 2em;
+        }
+
         #{$block}__text {
             margin-top: 0;
             margin-left: 10px;

@@ -4,7 +4,16 @@
 .FormField {
     $block: &;
 
-    flex: 1;
+    //
+    // - Custom properties
+    //
+
+    --label-width: var(--FormField--label-width, #{globals.$form-label-width});
+    --input-width: var(--FormField--input-width, 100%);
+
+    //
+    // - Règles
+    //
 
     &__label {
         display: block;
@@ -15,102 +24,111 @@
         }
     }
 
-    &__input-wrapper {
+    &__field {
         flex: 1;
-        display: flex;
-        flex-wrap: nowrap;
     }
 
-    &__input,
-    &__textarea,
-    &__datepicker,
-    &__static-value {
-        width: 90%;
-    }
-
-    &__static-value {
-        margin: 0;
-        padding: 10px 0;
-        font-weight: 500;
-        font-style: italic;
-    }
-
-    &__switch {
+    &__input-wrapper {
+        // - Là pour supprimer le spacing ajouté par les `display: inline-block`.
         display: flex;
     }
 
-    &__addon {
-        display: inline-block;
-        min-width: 2.7rem;
-        padding: globals.$input-padding-vertical globals.$input-padding-horizontal;
-        border: globals.$input-border-size solid globals.$bg-color-input-normal;
-        border-left: 0;
-        border-radius: 0 globals.$input-border-radius globals.$input-border-radius 0;
-        background-color: globals.$bg-color-input-normal;
-        color: globals.$color-input;
+    &__input {
+        width: 100%;
+        max-width: var(--input-width);
     }
 
-    &__textarea {
-        min-height: 50px;
-    }
+    //
+    // -- Aide / Erreur
+    //
 
     &__help,
     &__error {
-        flex: 0 0 100%;
+        overflow: hidden;
         margin-top: 0.3rem;
+        text-overflow: ellipsis;
+        white-space: pre-line;
+    }
+
+    &__help {
+        font-style: italic;
     }
 
     &__error {
         color: globals.$text-danger-color;
-
-        &__text {
-            padding-left: globals.$form-label-width;
-        }
     }
 
-    &--with-addon {
+    & + & {
+        margin-top: globals.$content-padding-small-vertical;
+    }
+
+    //
+    // -- Type: "Input" (text, number, etc.)
+    //
+
+    &--text,
+    &--email,
+    &--tel,
+    &--password,
+    &--number {
         #{$block}__input {
-            display: inline-block;
-            padding-right: 0;
-            border-right: 0;
-            border-radius: globals.$input-border-radius 0 0 globals.$input-border-radius;
+            --input-width: inherit;
 
-            &:focus + #{$block}__addon {
-                border-color: globals.$input-focus-border-color;
-            }
+            max-width: 100%;
         }
     }
 
-    &--with-error {
-        #{$block}__input:not(:focus),
-        #{$block}__datepicker .mx-input:not(:focus),
-        #{$block}__select:not(:focus),
-        #{$block}__textarea:not(:focus),
-        #{$block}__addon {
-            border-color: globals.$input-error-border-color;
+    //
+    // -- Type: Static
+    //
+
+    &--static {
+        #{$block}__input {
+            margin: 0;
+            padding: 10px 0;
+            font-weight: 500;
+            font-style: italic;
         }
     }
+
+    //
+    // - Responsive
+    //
 
     @media screen and (min-width: globals.$screen-tablet) {
-        display: flex;
-        flex-flow: row wrap;
-        align-items: center;
+        &--switch {
+            display: flex;
+            flex-flow: row wrap;
+            align-items: center;
 
-        &__label {
-            flex: 0 0 globals.$form-label-width;
-            padding: 0 globals.$input-padding-horizontal;
-            text-align: right;
+            #{$block}__label {
+                text-align: right;
+
+                /* stylelint-disable declaration-no-important, order/properties-order -- Pour surcharger la mise en forme verticale */
+                padding: 0 globals.$input-padding-horizontal 0 0 !important;
+                align-self: auto !important;
+                /* stylelint-enable declaration-no-important */
+            }
+
+            // - Si le switch est en mode vertical, on ne met pas le label
+            //   au dessus du switch mais on augmente la marge haute dans le
+            //   cas ou le champ est précédé par un autre champ.
+            #{$block} + &#{$block}--vertical {
+                margin-top: globals.$content-padding-small-vertical * 1.5;
+            }
         }
 
-        &__input,
-        &__textarea,
-        &__datepicker,
-        &__static-value {
-            flex: 1;
-        }
+        &:not(&--vertical) {
+            display: flex;
+            flex-flow: row wrap;
+            align-items: center;
 
-        &__addon {
-            flex: 0 0 auto;
+            #{$block}__label {
+                flex: 0 0 var(--label-width);
+                padding: 0.76rem globals.$input-padding-horizontal;
+                text-align: right;
+                align-self: flex-start;
+            }
         }
     }
 }

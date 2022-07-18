@@ -1,376 +1,229 @@
 import './index.scss';
-import Config from '@/globals/config';
+import config from '@/globals/config';
 import queryClient from '@/globals/queryClient';
-import formatOptions from '@/utils/formatOptions';
-import Help from '@/components/Help';
+import apiMaterials from '@/stores/api/materials';
 import FormField from '@/components/FormField';
-import ImageWithUpload from '@/components/ImageWithUpload';
-import Progressbar from '@/components/Progressbar';
-
-const storageKeyWIP = 'WIP-newMaterial';
+import InputImage from '@/components/InputImage';
+import Page from '@/components/Page';
+import CriticalError, { ERROR } from '@/components/CriticalError';
+import Loading from '@/components/Loading';
+import Form from './components/Form';
 
 // @vue/component
 export default {
     name: 'Material',
-    components: {
-        Help,
-        FormField,
-        ImageWithUpload,
-        Progressbar,
+    provide: {
+        verticalForm: true,
     },
     data() {
-        const showBilling = Config.billingMode !== 'none';
+        const id = this.$route.params.id
+            ? parseInt(this.$route.params.id, 10)
+            : null;
 
         return {
-            help: 'page-materials.help-edit',
-            error: null,
-            isLoading: false,
-            extraAttributes: [],
-            showBilling,
-            material: {
-                id: this.$route.params.id || null,
-                name: '',
-                reference: '',
-                park_id: this.$route.query.parkId || '',
-                category_id: '',
-                rental_price: showBilling ? '' : 0,
-                stock_quantity: '1',
-                description: '',
-                sub_category_id: '',
-                replacement_price: '',
-                out_of_order_quantity: '0',
-                picture: null,
-                note: '',
-                is_hidden_on_bill: false,
-                is_discountable: true,
-                attributes: [],
-            },
-            materialAttributes: {},
-            initialPicture: null,
-            newPicture: null,
-            isUploading: false,
-            uploadProgress: 0,
-            errors: {
-                name: null,
-                reference: null,
-                park_id: null,
-                category_id: null,
-                rental_price: null,
-                stock_quantity: null,
-            },
-            currency: Config.currency.symbol,
-            subCategoriesOptions: [
-                { value: '', label: this.$t('please-choose') },
-            ],
+            id,
+            wasNew: id === null,
+            material: null,
+            isFetched: false,
+            isSaving: false,
+            savePogress: 0,
+            criticalError: null,
+            validationErrors: null,
+            newPicture: undefined,
+            subCategoriesOptions: [],
         };
     },
     computed: {
         isNew() {
-            const { id } = this.material;
-            return !id || id === 'new';
+            return this.id === null;
         },
 
-        entitiesState() {
-            const { parks, categories } = this.$store.state;
-            return parks.isFetched && categories.isFetched ? 'ready' : 'fetching';
+        pageTitle() {
+            const { $t: __, isNew, wasNew, isFetched, material } = this;
+
+            if (isNew || wasNew) {
+                return __('page.material-edit.title-create');
+            }
+
+            if (!isFetched || !material) {
+                return __('page.material-edit.title-simple');
+            }
+
+            const { name } = material;
+            return __('page.material-edit.title', { name });
         },
 
-        parksOptions() {
-            return this.$store.getters['parks/options'];
-        },
+        picture() {
+            if (this.newPicture !== undefined) {
+                return this.newPicture;
+            }
 
-        firstPark() {
-            return this.$store.getters['parks/firstPark'];
-        },
+            const { id, material } = this;
+            if (!material) {
+                return null;
+            }
 
-        categoriesOptions() {
-            return this.$store.getters['categories/options'];
-        },
-
-        isAdmin() {
-            return this.$store.getters['auth/is']('admin');
-        },
-
-        pictureUrl() {
-            const { baseUrl } = Config;
-            const { id, picture } = this.material;
-            return picture ? `${baseUrl}/materials/${id}/picture` : null;
+            return material.picture
+                ? `${config.baseUrl}/materials/${id}/picture`
+                : null;
         },
     },
-    watch: {
-        firstPark() {
-            this.setDefaultPark();
-        },
+    errorCaptured(error) {
+        this.criticalError = ERROR.UNKNOWN;
+
+        // eslint-disable-next-line no-console
+        console.error(error);
+
+        return false;
     },
     mounted() {
-        this.$store.dispatch('parks/fetch');
-        this.$store.dispatch('categories/fetch');
-
-        if (this.isNew) {
-            this.initWithStash();
-        }
-
         this.fetchData();
-        this.setDefaultPark();
     },
     methods: {
-        async fetchData() {
-            this.resetHelpLoading();
-
-            const { id } = this.material;
-            const { resource } = this.$route.meta;
-
-            try {
-                if (!this.isNew) {
-                    const { data } = await this.$http.get(`${resource}/${id}`);
-                    this.setMaterialData(data);
-                }
-
-                await this.fetchAttributes();
-            } catch (error) {
-                this.displayError(error);
-            } finally {
-                this.isLoading = false;
-            }
-        },
-
-        async fetchAttributes() {
-            this.extraAttributes = [];
-
-            let { category_id: categoryId } = this.material;
-            if (!categoryId) {
-                categoryId = null;
-            }
-
-            try {
-                const { data } = await this.$http.get(`attributes?category=${categoryId}`);
-                this.extraAttributes = data;
-            } catch (error) {
-                this.displayError(error);
-            }
-        },
-
-        setDefaultPark() {
-            if (this.material.id === null && this.parksOptions.length === 1) {
-                this.material.park_id = this.firstPark?.id || '';
-            }
-        },
-
-        getAttributeType(attributeType) {
-            switch (attributeType) {
-                case 'integer':
-                case 'float':
-                    return 'number';
-                case 'boolean':
-                    return 'switch';
-                case 'date':
-                    return 'date';
-                default:
-                    return 'text';
-            }
-        },
-
-        handleAttributeChange(changed) {
-            const { field, newValue } = changed;
-            const attribute = this.extraAttributes.find((attr) => attr.name === field);
-            if (!attribute) {
-                return;
-            }
-
-            this.materialAttributes = {
-                ...this.materialAttributes,
-                [attribute.id]: newValue,
-            };
-        },
-
-        async saveMaterial(e) {
-            e.preventDefault();
-            this.resetHelpLoading();
-
-            const { id } = this.material;
-
-            const request = id ? this.$http.put : this.$http.post;
-            const route = id ? `materials/${id}` : 'materials';
-
-            const attributes = Object.keys(this.materialAttributes).map((attributeId) => (
-                { id: attributeId, value: this.materialAttributes[attributeId] }
-            ));
-
-            const postData = { ...this.material, attributes };
-
-            try {
-                const response = await request(route, postData);
-                const { data } = response;
-                this.setMaterialData(data);
-
-                await this.uploadNewPicture();
-
-                queryClient.invalidateQueries('materials-while-event');
-
-                this.help = { type: 'success', text: 'page-materials.saved' };
-
-                setTimeout(() => {
-                    this.$router.push(`/materials/${data.id}/view`);
-                }, 300);
-            } catch (error) {
-                this.displayError(error);
-            } finally {
-                this.isLoading = false;
-            }
-        },
-
-        async uploadNewPicture() {
-            if (!this.newPicture) {
-                return;
-            }
-
-            const { id } = this.material;
-            if (!id) {
-                throw new Error('Cannot upload picture to anonymous material. Please save it before.');
-            }
-
-            this.isUploading = true;
-
-            const formData = new FormData();
-            formData.append('picture-0', this.newPicture);
-
-            const onUploadProgress = (event) => {
-                if (!event.lengthComputable) {
-                    return;
-                }
-
-                const { loaded, total } = event;
-                this.uploadProgress = (loaded / total) * 100;
-            };
-
-            try {
-                await this.$http.post(`materials/${id}/picture`, formData, { onUploadProgress });
-            } catch (error) {
-                throw new Error(error.response?.data?.error?.message || error.message);
-            } finally {
-                this.isUploading = false;
-            }
-        },
+        // ------------------------------------------------------
+        // -
+        // -    Handlers
+        // -
+        // ------------------------------------------------------
 
         handleChangePicture(newPicture) {
-            this.material.picture = newPicture?.name || null;
             this.newPicture = newPicture;
         },
 
-        handleResetPicture() {
-            this.material.picture = this.initialPicture;
-            this.newPicture = null;
-        },
-
-        resetHelpLoading() {
-            this.help = 'page-materials.help-edit';
-            this.error = null;
-            this.isLoading = true;
-        },
-
-        displayError(error) {
-            this.help = 'page-materials.help-edit';
-            this.error = error;
-
-            const { code, details } = error.response?.data?.error || { code: 0, details: {} };
-            if (code === 400) {
-                this.errors = { ...details };
-            }
-        },
-
-        setMaterialData(data) {
-            this.material = data;
-            this.initialPicture = data.picture;
-            this.$store.commit('setPageSubTitle', this.material.name);
-            this.updateSubCategories();
-            this.setMaterialAttributes();
-            this.flushStashedData();
-        },
-
-        updateRentalPrice() {
-            if (this.material.rental_price > 0) {
-                this.material.is_hidden_on_bill = false;
-            }
-        },
-
-        handleCategoryChange() {
-            this.fetchAttributes();
-            this.material.sub_category_id = null;
-            this.updateSubCategories();
-        },
-
-        updateSubCategories() {
-            const categories = this.$store.state.categories.list;
-            const category = categories.find(
-                (_category) => parseInt(_category.id, 10) === parseInt(this.material.category_id, 10),
-            );
-            if (!category) {
-                return;
-            }
-
-            this.subCategoriesOptions = formatOptions(category.sub_categories, null, this.$t('please-choose'));
-
-            this.refreshSubCategorySelect();
-        },
-
-        setMaterialAttributes() {
-            this.materialAttributes = {};
-            this.material.attributes.forEach((attribute) => {
-                this.materialAttributes[attribute.id] = attribute.value;
-            });
-        },
-
-        refreshSubCategorySelect() {
-            const subCategoryId = parseInt(this.material.sub_category_id, 10) || '';
-            if (!subCategoryId) {
-                return;
-            }
-
-            const isInCategory = this.subCategoriesOptions.find(
-                (_subCategory) => _subCategory.value === subCategoryId,
-            );
-            if (!isInCategory) {
-                return;
-            }
-
-            this.material.sub_category_id = '';
-            setTimeout(() => {
-                this.material.sub_category_id = subCategoryId;
-            }, 0);
-        },
-
-        handleFormChange() {
-            if (!this.isNew) {
-                return;
-            }
-
-            const attributes = Object.keys(this.materialAttributes).map((key) => (
-                { id: key, value: this.materialAttributes[key] }
-            ));
-            const stashedMaterial = { ...this.material, attributes };
-            const stashedData = JSON.stringify(stashedMaterial);
-
-            localStorage.setItem(storageKeyWIP, stashedData);
+        handleSubmit(data, materialAttributes) {
+            this.save(data, materialAttributes);
         },
 
         handleCancel() {
-            this.flushStashedData();
             this.$router.back();
         },
 
-        initWithStash() {
-            const stashedData = localStorage.getItem(storageKeyWIP);
-            if (!stashedData) {
+        // ------------------------------------------------------
+        // -
+        // -    Méthodes internes
+        // -
+        // ------------------------------------------------------
+
+        async fetchData() {
+            const { isNew, id } = this;
+            if (isNew) {
+                this.isFetched = true;
                 return;
             }
 
-            this.material = JSON.parse(stashedData);
-            this.updateSubCategories();
-            this.setMaterialAttributes();
+            try {
+                this.material = await apiMaterials.one(id);
+                this.isFetched = true;
+            } catch (error) {
+                const status = error?.response?.status ?? 500;
+                this.criticalError = status === 404 ? ERROR.NOT_FOUND : ERROR.UNKNOWN;
+            }
         },
 
-        flushStashedData() {
-            localStorage.removeItem(storageKeyWIP);
+        async save(data) {
+            if (this.isSaving) {
+                return;
+            }
+
+            const { $t: __, id, newPicture, isNew } = this;
+            this.isSaving = true;
+            this.savePogress = 0;
+
+            const postData = { ...data };
+            if (newPicture !== undefined) {
+                postData.picture = newPicture ?? null;
+            }
+
+            const handleProgress = (percent) => {
+                this.savePogress = percent;
+            };
+
+            const doRequest = () => (
+                isNew
+                    ? apiMaterials.create(postData, handleProgress)
+                    : apiMaterials.update(id, postData, handleProgress)
+            );
+
+            try {
+                const material = await doRequest();
+                if (!this.isNew) {
+                    this.material = material;
+                }
+
+                this.validationErrors = null;
+                queryClient.invalidateQueries('materials-while-event');
+
+                // - Redirection...
+                this.$toasted.success(__('page.material-edit.saved'));
+                this.$router.push({ name: 'view-material', params: { id: material.id } });
+            } catch (error) {
+                const { code, details } = error.response?.data?.error || { code: 0, details: {} };
+                if (code === 400) {
+                    this.validationErrors = { ...details };
+                    this.$refs.page.scrollToTop();
+                } else {
+                    this.$toasted.error(__('errors.unexpected-while-saving'));
+                }
+                this.isSaving = false;
+            }
         },
+    },
+    render() {
+        const {
+            $t: __,
+            criticalError,
+            pageTitle,
+            material,
+            picture,
+            isFetched,
+            isSaving,
+            savePogress,
+            validationErrors,
+            handleChangePicture,
+            handleSubmit,
+            handleCancel,
+        } = this;
+
+        if (criticalError || !isFetched) {
+            return (
+                <Page name="material-edit" title={pageTitle}>
+                    {criticalError ? <CriticalError type={criticalError} /> : <Loading />}
+                </Page>
+            );
+        }
+
+        return (
+            <Page
+                ref="page"
+                name="material-edit"
+                title={pageTitle}
+                hasValidationError={!!validationErrors}
+            >
+                <div class="MaterialEdit">
+                    <Form
+                        class="MaterialEdit__body"
+                        savedData={material}
+                        isSaving={isSaving}
+                        errors={validationErrors}
+                        onSubmit={handleSubmit}
+                        onCancel={handleCancel}
+                    />
+                    <div class="MaterialEdit__side">
+                        <FormField
+                            type="custom"
+                            label={__('picture')}
+                            errors={validationErrors?.picture}
+                            // help={__('page.material-edit.help-picture')}
+                        >
+                            <InputImage
+                                value={picture}
+                                onChange={handleChangePicture}
+                                uploading={isSaving ? savePogress : false}
+                            />
+                        </FormField>
+                    </div>
+                </div>
+            </Page>
+        );
     },
 };

@@ -20,7 +20,9 @@ export default {
         pivotPlaceholder: String,
     },
     data() {
-        const defaultItem = { value: null, label: this.$t('please-choose') };
+        const { $t: __ } = this;
+
+        const defaultItem = { value: null, label: __('please-choose') };
 
         let itemsPivots = [];
         if (this.pivotField) {

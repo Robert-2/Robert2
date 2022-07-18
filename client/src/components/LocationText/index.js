@@ -13,8 +13,8 @@ export default defineComponent({
         return (
             <div class="LocationText">
                 <i class="fas fa-map-marker-alt" />
-                {` ${__('in')} `}
-                <strong>{location}</strong>
+                {' '}
+                <strong>{__('in', { location })}</strong>
                 {' '}
                 <a
                     rel="noopener noreferrer nofollow"

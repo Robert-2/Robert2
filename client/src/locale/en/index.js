@@ -1,11 +1,13 @@
 import common from './common';
-import pages from './pages';
 import errors from './errors';
-import layouts from './layouts';
+import layout from './layout';
+import page from './page';
+import modal from './modal';
 
 export default {
     ...common,
-    ...pages,
     ...errors,
-    layouts,
+    page,
+    modal,
+    layout,
 };

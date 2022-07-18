@@ -6,11 +6,17 @@ namespace Robert2\API\Models;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Robert2\API\Models\Traits\Taggable;
 use Robert2\API\Validation\Validator as V;
+use Psr\Http\Message\UploadedFileInterface;
+use Ramsey\Uuid\Uuid;
 
 class Material extends BaseModel
 {
     use SoftDeletes;
     use Taggable;
+
+    private const PICTURE_BASEPATH = (
+        DATA_FOLDER . DS . 'materials'. DS . 'picture'
+    );
 
     protected $searchField = ['name', 'reference'];
 
@@ -38,9 +44,10 @@ class Material extends BaseModel
 
         $this->validation = [
             'name' => V::notEmpty()->length(2, 191),
-            'reference' => V::notEmpty()->alnum('.,-+/_ ')->length(2, 64),
-            'park_id' => V::notEmpty()->numeric(),
-            'category_id' => V::notEmpty()->numeric(),
+            'reference' => V::callback([$this, 'checkReference']),
+            'picture' => V::callback([$this, 'checkPicture']),
+            'park_id' => V::callback([$this, 'checkParkId']),
+            'category_id' => V::optional(V::numeric()),
             'sub_category_id' => V::optional(V::numeric()),
             'rental_price' => V::floatVal()->max(999999.99, true),
             'stock_quantity' => V::intVal()->max(100000),
@@ -48,8 +55,80 @@ class Material extends BaseModel
             'replacement_price' => V::optional(V::floatVal()->max(999999.99, true)),
             'is_hidden_on_bill' => V::optional(V::boolType()),
             'is_discountable' => V::optional(V::boolType()),
-            'picture' => V::optional(V::length(5, 191)),
         ];
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Validation
+    // -
+    // ------------------------------------------------------
+
+    public function checkReference($value)
+    {
+        V::notEmpty()
+            ->alnum('.,-+/_ ')
+            ->length(2, 64)
+            ->check($value);
+
+        $query = static::where('reference', $value);
+        if ($this->exists) {
+            $query->where('id', '!=', $this->id);
+        }
+
+        if ($query->withTrashed()->exists()) {
+            return 'reference-already-in-use';
+        }
+
+        return true;
+    }
+
+    public function checkPicture($picture)
+    {
+        if (empty($picture)) {
+            return true;
+        }
+
+        if (is_string($picture)) {
+            V::length(5, 191)->check($picture);
+            return true;
+        }
+
+        if (!($picture instanceof UploadedFileInterface)) {
+            return false;
+        }
+        /** @var UploadedFileInterface $picture */
+
+        if ($picture->getError() !== UPLOAD_ERR_OK) {
+            return 'no-uploaded-files';
+        }
+
+        $settings = container('settings');
+        if ($picture->getSize() > $settings['maxFileUploadSize']) {
+            return 'file-exceeds-max-size';
+        }
+
+        $pictureType = $picture->getClientMediaType();
+        if (!in_array($pictureType, $settings['authorizedImageTypes'])) {
+            return 'file-type-not-allowed';
+        }
+
+        return true;
+    }
+
+    public function checkParkId($value)
+    {
+        return V::notEmpty()->numeric();
+    }
+
+    public function checkStockQuantity($value)
+    {
+        return V::intVal()->max(100000);
+    }
+
+    public function checkOutOfOrderQuantity($value)
+    {
+        return V::optional(V::intVal()->max(100000));
     }
 
     // ——————————————————————————————————————————————————————
@@ -135,33 +214,21 @@ class Material extends BaseModel
         'replacement_price' => 'float',
         'is_hidden_on_bill' => 'boolean',
         'is_discountable' => 'boolean',
-        'picture' => 'string',
-        'picture_path' => 'string',
         'note' => 'string',
     ];
 
     public function getStockQuantityAttribute($value)
     {
-        if ($this->is_unitary) {
-            $value = 0;
-        }
         return $this->castAttribute('stock_quantity', $value);
     }
 
     public function getOutOfOrderQuantityAttribute($value)
     {
-        if ($this->is_unitary) {
-            $value = 0;
-        }
         return $this->castAttribute('out_of_order_quantity', $value);
     }
 
     public function getParkAttribute()
     {
-        if ($this->is_unitary) {
-            return null;
-        }
-
         $park = $this->Park()->first();
         return $park ? $park->toArray() : null;
     }
@@ -215,6 +282,20 @@ class Material extends BaseModel
         return $events ? $events->toArray() : null;
     }
 
+    public function getPictureRealPathAttribute()
+    {
+        if (empty($this->picture)) {
+            return null;
+        }
+
+        // - Dans le cas d'un fichier tout juste uploadé + avant le save.
+        if ($this->picture instanceof UploadedFileInterface) {
+            throw new \LogicException("Impossible de récuperer le chemin de l'image avant de l'avoir persisté.");
+        }
+
+        return static::PICTURE_BASEPATH . DS . $this->picture;
+    }
+
     public function getDocumentsAttribute()
     {
         $documents = $this->Documents()->get();
@@ -243,6 +324,127 @@ class Material extends BaseModel
         'picture',
         'note',
     ];
+
+    // ------------------------------------------------------
+    // -
+    // -    Overwrited methods
+    // -
+    // ------------------------------------------------------
+
+    public function save(array $options = [])
+    {
+        $hasPictureChange = $this->isDirty('picture');
+        if (!$hasPictureChange) {
+            return parent::save($options);
+        }
+
+        // - On valide avant d'uploader...
+        if ($options['validate'] ?? true) {
+            $this->validate();
+        }
+        $options = array_replace($options, ['validate' => false]);
+
+        $previousPicture = $this->getOriginal('picture');
+        $newPicture = $this->getAttributeFromArray('picture');
+
+        // - Si ce n'est ni un upload de fichier, ni une "suppression" de l'image existante.
+        //   On vérifie que la chaîne de caractère passée (car ça doit en être une) correspond
+        //   bien à un fichier existant dans le dossier attendu, sinon on renvoi une erreur.
+        $isFileUpload = $newPicture instanceof UploadedFileInterface;
+        if (!empty($newPicture) && !$isFileUpload) {
+            if (!is_string($newPicture)) {
+                throw new \Exception(
+                    "Une erreur est survenue lors de l'upload de l'image: " .
+                    "Le format de l'image à uploader n'est pas pris en charge."
+                );
+            }
+
+            if (!@file_exists(static::PICTURE_BASEPATH . DS . $newPicture)) {
+                throw new \Exception(
+                    "Une erreur est survenue lors de l'upload de l'image: " .
+                    "La chaîne passée de correspond pas à un fichier existant dans le dossier de destination."
+                );
+            }
+        }
+
+        // - Si on a un nouvel upload d'image, on la déplace dans le bon dossier.
+        if ($isFileUpload) {
+            /** @var UploadedFileInterface $newPicture */
+            $extension = pathinfo($newPicture->getClientFilename(), PATHINFO_EXTENSION);
+            $filename = sprintf('%s.%s', Uuid::uuid4()->toString(), $extension);
+
+            if (!is_dir(static::PICTURE_BASEPATH)) {
+                mkdir(static::PICTURE_BASEPATH, 0777, true);
+            }
+
+            try {
+                $newPicture->moveTo(static::PICTURE_BASEPATH . DS . $filename);
+            } catch (\Throwable $e) {
+                throw new \Exception(
+                    "Une erreur est survenue lors de l'upload de l'image: " .
+                    "L'image n'a pas pû être déplacée dans le dossier de destination."
+                );
+            }
+
+            $this->picture = $filename;
+        }
+
+        $rollbackUpload = function () use ($isFileUpload, $newPicture) {
+            if (!$isFileUpload) {
+                return;
+            }
+
+            try {
+                @unlink(static::PICTURE_BASEPATH . DS . $this->picture);
+            } catch (\Throwable $e) {
+                // NOTE: On ne fait rien si la suppression plante car de toute
+                //       façon on est déjà dans un contexte d'erreur...
+            }
+
+            // - On remet l'`UploadedFile` en valeur de l'attribut `picture`.
+            $this->picture = $newPicture;
+        };
+
+        try {
+            $saved = parent::save($options);
+        } catch (\Throwable $e) {
+            $rollbackUpload();
+            throw $e;
+        }
+
+        if (!$saved) {
+            $rollbackUpload();
+            return false;
+        }
+
+        // - On supprime l'ancienne image...
+        if ($previousPicture !== null) {
+            try {
+                @unlink(static::PICTURE_BASEPATH . DS . $previousPicture);
+            } catch (\Throwable $e) {
+                // NOTE: On ne fait rien si la suppression plante, le fichier sera orphelin mais le
+                //       plantage de sa suppression ne justifie pas qu'on unsave le matériel, etc.
+            }
+        }
+
+        return true;
+    }
+
+    public function delete()
+    {
+        $deleted = parent::delete();
+
+        if ($this->forceDeleting && $deleted && !empty($this->picture)) {
+            try {
+                @unlink(static::PICTURE_BASEPATH . DS . $this->picture);
+            } catch (\Throwable $e) {
+                // NOTE: On ne fait rien si la suppression plante, le fichier sera orphelin mais le
+                //       plantage de sa suppression ne justifie pas qu'on undelete le matériel.
+            }
+        }
+
+        return $deleted;
+    }
 
     // ------------------------------------------------------
     // -
@@ -310,12 +512,11 @@ class Material extends BaseModel
         return static::where('park_id', $parkId)->get()->toArray();
     }
 
-    public static function getPicturePath(int $id, ?string $pictureName = null)
+    public static function getOneForUser(int $id, ?int $userId = null): array
     {
-        $path = DATA_FOLDER . DS . 'materials'. DS . $id;
-        if ($pictureName) {
-            $path .= DS . $pictureName;
-        }
-        return $path;
+        $material = static::findOrFail($id);
+        $materialData = $material->toArray();
+
+        return $materialData;
     }
 }

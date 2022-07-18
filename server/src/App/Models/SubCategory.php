@@ -14,9 +14,39 @@ class SubCategory extends BaseModel
         parent::__construct($attributes);
 
         $this->validation = [
-            'name'        => V::notEmpty()->length(2, 96),
+            'name' => V::callback([$this, 'checkName']),
             'category_id' => V::notEmpty()->numeric(),
         ];
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Validation
+    // -
+    // ------------------------------------------------------
+
+    public function checkName($value)
+    {
+        V::notEmpty()
+            ->length(2, 96)
+            ->check($value);
+
+        if (empty($this->category_id)) {
+            return true;
+        }
+
+        $query = static::newQuery()
+            ->where('name', $value)
+            ->where('category_id', $this->category_id);
+        if ($this->exists) {
+            $query->where('id', '!=', $this->id);
+        }
+
+        if ($query->exists()) {
+            return 'subcategory-already-in-use-for-this-category';
+        }
+
+        return true;
     }
 
     // ——————————————————————————————————————————————————————

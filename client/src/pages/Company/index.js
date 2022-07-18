@@ -1,115 +1,158 @@
 import './index.scss';
-import Config from '@/globals/config';
-import Help from '@/components/Help';
-import CompanyForm from '@/components/CompanyForm';
+import Page from '@/components/Page';
+import CriticalError, { ERROR } from '@/components/CriticalError';
+import Loading from '@/components/Loading';
+import Form from './components/Form';
+import apiCompanies from '@/stores/api/companies';
 
 // @vue/component
 export default {
     name: 'Company',
-    components: { Help, CompanyForm },
     data() {
+        const id = this.$route.params.id
+            ? parseInt(this.$route.params.id, 10)
+            : null;
+
         return {
-            help: 'page-companies.help-edit',
-            error: null,
-            isLoading: false,
-            isFetched: false,
-            company: {
-                id: this.$route.params.id || null,
-                legal_name: '',
-                street: '',
-                postal_code: '',
-                locality: '',
-                country_id: '',
-                phone: '',
-                note: '',
-            },
-            persons: [],
-            errors: {
-                legal_name: null,
-                street: null,
-                postal_code: null,
-                locality: null,
-                country_id: null,
-                phone: null,
-            },
+            id,
+            isFetched: id === null,
+            isSaving: false,
+            company: null,
+            criticalError: null,
+            validationErrors: null,
         };
     },
+    computed: {
+        isNew() {
+            return this.id === null;
+        },
+        pageTitle() {
+            const { $t: __, isNew, isFetched, company } = this;
+
+            if (isNew) {
+                return __('page.company.title-create');
+            }
+
+            return isFetched
+                ? __('page.company.title-edit', { name: company.legal_name })
+                : __('page.company.title-edit-simple');
+        },
+    },
     mounted() {
-        this.getData();
+        this.fetchData();
     },
     methods: {
-        async getData() {
-            const { id } = this.company;
-            if (!id || id === 'new') {
+        // ------------------------------------------------------
+        // -
+        // -    Handlers
+        // -
+        // ------------------------------------------------------
+
+        handleSubmit(data) {
+            this.save(data);
+        },
+
+        handleCancel() {
+            this.$router.back();
+        },
+
+        // ------------------------------------------------------
+        // -
+        // -    Internal methods
+        // -
+        // ------------------------------------------------------
+
+        async fetchData() {
+            if (this.isNew) {
                 this.isFetched = true;
                 return;
             }
 
-            this.resetHelpLoading();
-
             try {
-                const { data: companyData } = await this.$http.get(`companies/${id}`);
-                this.setCompany(companyData);
-
-                const { data: personsData } = await this.$http.get(`companies/${id}/persons`);
-                this.persons = personsData.data;
-            } catch (error) {
-                this.displayError(error);
-            } finally {
-                this.isLoading = false;
+                this.company = await apiCompanies.one(this.id);
                 this.isFetched = true;
+            } catch (error) {
+                const status = error?.response?.status ?? 500;
+                this.criticalError = status === 404 ? ERROR.NOT_FOUND : ERROR.UNKNOWN;
             }
         },
 
-        async save(formData) {
-            this.resetHelpLoading();
+        async save(data) {
+            if (this.isSaving) {
+                return;
+            }
 
-            const { id } = this.company;
+            const { $t: __ } = this;
+            this.isSaving = true;
 
-            const request = id ? this.$http.put : this.$http.post;
-            const route = id ? `companies/${id}` : 'companies';
+            const doRequest = () => {
+                // FIXME: Pourquoi caster `country_id` et surtout, sans checker sa valeur avant ?
+                const _data = { ...data, country_id: parseInt(data.country_id, 10) };
+                return !this.isNew
+                    ? apiCompanies.update(this.id, _data)
+                    : apiCompanies.create(_data);
+            };
 
             try {
-                const companyData = { ...formData, country_id: parseInt(formData.country_id, 10) };
-                if (!id) {
-                    companyData.tags = [Config.beneficiaryTagName];
+                const company = await doRequest();
+                if (!this.isNew) {
+                    this.company = company;
                 }
 
-                const { data } = await request(route, companyData);
-                this.setCompany(data);
-                this.help = { type: 'success', text: 'page-companies.saved' };
+                this.validationErrors = null;
 
-                this.$store.dispatch('companies/refresh');
-
-                setTimeout(() => {
-                    this.$router.back();
-                }, 300);
+                // - Redirection...
+                this.$toasted.success(__('page.company.saved'));
+                this.$router.back();
             } catch (error) {
-                this.displayError();
-            } finally {
-                this.isLoading = false;
+                const { code, details } = error.response?.data?.error || { code: 0, details: {} };
+                if (code === 400) {
+                    this.validationErrors = { ...details };
+                    this.$refs.page.scrollToTop();
+                } else {
+                    this.$toasted.error(__('errors.unexpected-while-saving'));
+                }
+                this.isSaving = false;
             }
         },
+    },
+    render() {
+        const {
+            pageTitle,
+            isSaving,
+            isFetched,
+            company,
+            handleSubmit,
+            handleCancel,
+            criticalError,
+            validationErrors,
+        } = this;
 
-        resetHelpLoading() {
-            this.help = 'page-companies.help-edit';
-            this.error = null;
-            this.isLoading = true;
-        },
+        if (criticalError || !isFetched) {
+            return (
+                <Page name="company-edit" title={pageTitle}>
+                    {criticalError ? <CriticalError type={criticalError} /> : <Loading />}
+                </Page>
+            );
+        }
 
-        displayError(error) {
-            this.help = 'page-companies.help-edit';
-            this.error = error;
-
-            const { code, details } = error.response?.data?.error || { code: 0, details: {} };
-            if (code === 400) {
-                this.errors = { ...details };
-            }
-        },
-
-        setCompany(data) {
-            this.company = data;
-            this.$store.commit('setPageSubTitle', data.legal_name);
-        },
+        return (
+            <Page
+                ref="page"
+                name="company-edit"
+                title={pageTitle}
+                hasValidationError={!!validationErrors}
+            >
+                <div class="CompanyEdit">
+                    <Form
+                        savedData={company}
+                        isSaving={isSaving}
+                        errors={validationErrors}
+                        onSubmit={handleSubmit}
+                        onCancel={handleCancel}
+                    />
+                </div>
+            </Page>
+        );
     },
 };

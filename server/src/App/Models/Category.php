@@ -16,8 +16,32 @@ class Category extends BaseModel
         parent::__construct($attributes);
 
         $this->validation = [
-            'name' => V::notEmpty()->length(2, 96)
+            'name' => V::callback([$this, 'checkName']),
         ];
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Validation
+    // -
+    // ------------------------------------------------------
+
+    public function checkName($value)
+    {
+        V::notEmpty()
+            ->length(2, 96)
+            ->check($value);
+
+        $query = static::where('name', $value);
+        if ($this->exists) {
+            $query->where('id', '!=', $this->id);
+        }
+
+        if ($query->exists()) {
+            return 'category-name-already-in-use';
+        }
+
+        return true;
     }
 
     // ——————————————————————————————————————————————————————
@@ -127,7 +151,7 @@ class Category extends BaseModel
             $categoriesNames
         );
 
-        $this->getConnection()->transaction(function () use ($categories) {
+        return dbTransaction(function () use ($categories) {
             try {
                 foreach ($categories as $category) {
                     if (!$category->exists || $category->isDirty()) {
@@ -138,9 +162,9 @@ class Category extends BaseModel
                 throw (new ValidationException)
                     ->setPDOValidationException($e);
             }
-        });
 
-        return $categories;
+            return $categories;
+        });
     }
 
     public function remove($id, array $options = []): ?BaseModel

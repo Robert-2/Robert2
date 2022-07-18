@@ -39,9 +39,9 @@ final class EventTechnicianTest extends ModelTestCase
         }
 
         $expectedErrors = [
-            'start_time' => ['start_time must be valid'],
-            'end_time' => ['end_time must be valid'],
-            'position' => ['position must have a length between 2 and 191'],
+            'start_time' => ['This field is not valid'],
+            'end_time' => ['This field is not valid'],
+            'position' => ['2 min. characters, 191 max. characters'],
         ];
         $this->assertEquals($expectedErrors, $errors);
     }

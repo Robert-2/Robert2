@@ -1,94 +1,20 @@
-@use 'sass:color';
 @use '~@/style/globals';
-@use '~vue2-datepicker/scss' as datepicker with (
-    $default-color: globals.$text-base-color,
-    $primary-color: globals.$link-base-color,
 
-    $border-color: globals.$bg-color-input-normal,
+.Datepicker {
+    display: inline-block;
+    width: 100%;
 
-    $input-border-color: globals.$bg-color-input-normal,
-    $input-color: globals.$color-input,
-    $input-hover-border-color: globals.$bg-color-input-normal,
-
-    $calendar-hover-color: globals.$text-base-color,
-    $calendar-hover-background-color: globals.$calendar-time-cursor-color,
-    $calendar-in-range-color: globals.$text-base-color,
-    $calendar-in-range-background-color: globals.$calendar-time-cursor-color,
-    $time-hover-color: globals.$text-base-color,
-    $time-hover-background-color: globals.$calendar-time-cursor-color,
-);
-
-.#{datepicker.$namespace} {
-    &-calendar {
-        min-width: 310px;
+    &__input {
+        width: 100%;
     }
 
-    &-range-wrapper &-calendar {
-        min-width: 250px;
-    }
+    //
+    // - Statut: Invalide
+    //
 
-    &-input {
-        height: auto;
-        padding: globals.$input-padding-vertical globals.$input-padding-horizontal;
-        background-color: globals.$bg-color-input-normal;
-        font-size: globals.$input-font-size;
-        line-height: 1.2;
-        box-shadow: none;
-
-        &:focus {
-            border-color: globals.$input-focus-border-color;
-        }
-    }
-
-    &-icon-calendar,
-    &-icon-clear {
-        color: globals.$text-nav-color;
-    }
-
-    &-datepicker-main,
-    &-time {
-        background-color: globals.$bg-color-input-normal;
-    }
-
-    &-table-date {
-        .cell.not-current-month {
-            color: globals.$text-nav-color;
-        }
-
-        .cell.disabled {
-            background-color: globals.$bg-color-input-normal;
-            color: globals.$text-muted-color;
-        }
-    }
-
-    &-datepicker-footer {
-        display: flex;
-        justify-content: center;
-    }
-
-    &-btn {
-        padding: 9px 10px;
-        border: none;
-        border-radius: 2px;
-        color: globals.$color-base-button;
-        font-size: 1rem;
-        line-height: 1.25;
-
-        &:hover,
-        &:focus {
-            outline: 0;
-            background-color: color.adjust(globals.$bg-color-button-default, $lightness: 8%);
-            color: globals.$color-hover-button;
-        }
-    }
-
-    &-datepicker-btn-confirm {
-        padding: 9px 15px;
-        background-color: globals.$bg-color-button-info;
-
-        &:hover,
-        &:focus {
-            background-color: color.adjust(globals.$bg-color-button-info, $lightness: 8%);
+    &--invalid {
+        .mx-input:not(:focus) {
+            border-color: globals.$input-error-border-color;
         }
     }
 }

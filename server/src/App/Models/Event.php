@@ -10,7 +10,7 @@ use Illuminate\Database\QueryException;
 use Robert2\API\Config\Config;
 use Robert2\API\Errors\ValidationException;
 use Robert2\API\Models\Traits\Cache;
-use Robert2\API\Models\Traits\JsonSerializer;
+use Robert2\API\Models\Traits\Serializer;
 use Robert2\API\Models\Traits\WithPdf;
 use Robert2\API\Validation\Validator as V;
 use Robert2\Lib\Domain\EventData;
@@ -23,7 +23,7 @@ use Symfony\Contracts\Cache\ItemInterface as CacheItemInterface;
  */
 class Event extends BaseModel
 {
-    use JsonSerializer;
+    use Serializer;
     use SoftDeletes;
     use WithPdf;
     use Cache;
@@ -42,7 +42,7 @@ class Event extends BaseModel
         $this->validation = [
             'user_id' => V::optional(V::numeric()),
             'title' => V::notEmpty()->length(2, 191),
-            'reference' => V::oneOf(V::nullType(), V::alnum('.,-/_ ')->length(1, 64)),
+            'reference' => V::callback([$this, 'checkReference']),
             'start_date' => V::notEmpty()->date(),
             'end_date' => V::callback([$this, 'checkEndDate']),
             'is_confirmed' => V::notOptional()->boolType(),
@@ -57,6 +57,29 @@ class Event extends BaseModel
     // -    Validation
     // -
     // ------------------------------------------------------
+
+    public function checkReference($value)
+    {
+        V::oneOf(
+            V::nullType(),
+            V::alnum('.,-/_ ')->length(1, 64)
+        )->check($value);
+
+        if (!$value) {
+            return true;
+        }
+
+        $query = static::where('reference', $value);
+        if ($this->exists) {
+            $query->where('id', '!=', $this->id);
+        }
+
+        if ($query->withTrashed()->exists()) {
+            return 'reference-already-in-use';
+        }
+
+        return true;
+    }
 
     public function checkEndDate($value)
     {
@@ -435,10 +458,7 @@ class Event extends BaseModel
             $originalStartDate = $event->getOriginal('start_date');
             $originalEndDate = $event->getOriginal('end_date');
 
-            $data = cleanEmptyFields($data);
-            $data = $event->_trimStringFields($data);
-
-            $event->fill($data)->validate()->save();
+            $event->fill($data)->save();
 
             if (isset($data['beneficiaries'])) {
                 if (!is_array($data['beneficiaries'])) {

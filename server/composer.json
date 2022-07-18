@@ -32,7 +32,7 @@
     },
     "require": {
         "php": ">=7.4",
-        "adbario/php-dot-notation": "2.2.0",
+        "adbario/php-dot-notation": "3.1.1",
         "cocur/slugify": "4.0.0",
         "delfimov/translate": "2.6.0",
         "dompdf/dompdf": "1.1.1",
@@ -42,7 +42,13 @@
         "illuminate/events": "v8.77.1",
         "illuminate/pagination": "8.51.0",
         "kirkbushell/eloquence": "8.0.0",
+        "league/flysystem": "2.4.5",
+        "league/flysystem-aws-s3-v3": "2.4.3",
+        "league/flysystem-ftp": "2.4.2",
+        "league/flysystem-sftp-v3": "2.4.5",
+        "mailjet/mailjet-apiv3-php": "1.5.5",
         "monolog/monolog": "2.3.2",
+        "notihnio/php-multipart-form-data-parser": "1.0.0",
         "php-di/php-di": "6.3.4",
         "ramsey/uuid": "4.2.3",
         "respect/validation": "1.1.31",
@@ -67,8 +73,7 @@
     "autoload": {
         "psr-4": {
             "Robert2\\API\\": "src/App",
-            "Robert2\\Lib\\Domain\\": "src/App/Lib/Domain",
-            "Robert2\\Lib\\Pdf\\": "src/App/Lib/Pdf",
+            "Robert2\\Lib\\": "src/App/Lib",
             "Robert2\\Install\\": "src/install",
             "Robert2\\Tests\\": "tests",
             "Robert2\\Fixtures\\": "tests/Fixtures"

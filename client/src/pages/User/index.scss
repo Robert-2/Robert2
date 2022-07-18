@@ -1,31 +1,16 @@
-@use '~@/style/globals';
-
-.User {
+.Page--user-edit {
     display: flex;
-    flex-flow: column-reverse wrap;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
 
-    .Form {
-        flex: 2;
-        max-width: globals.$form-max-width;
-        min-width: globals.$form-min-width;
-        margin-right: globals.$content-padding-large-horizontal;
-    }
-
-    &__postal-code .FormField__input {
-        max-width: 70px;
-    }
-
-    .Help {
+    .UserEdit {
         flex: 1;
-        min-width: 150px;
-        margin: 0 0 globals.$content-padding-large-vertical;
+        align-self: center;
     }
+}
 
-    @media screen and (min-width: globals.$screen-tablet) {
-        flex-direction: row;
-
-        .Help {
-            margin: 30px 0 0;
-        }
-    }
+.UserEdit {
+    width: 600px;
+    max-width: 100%;
 }

@@ -136,7 +136,7 @@
                     {% if category['name'] is not empty %}
                     {{ category['name'] }}
                     {% else %}
-                    {{ translate('otherMaterials') }}
+                    {{ translate('notCategorized') }}
                     {% endif %}
                 </td>
             </tr>
@@ -148,7 +148,11 @@
         {% for subCategory in materialList %}
             <tr>
                 <td class="section-title" colspan="6">
-                    {% if subCategory['category'] is not empty %}{{ subCategory['category'] }}{% endif %}
+                    {% if subCategory['category'] is not empty %}
+                    {{ subCategory['category'] }}
+                    {% else %}
+                    {{ translate('notCategorized') }}
+                    {% endif %}
                     {% if subCategory['name'] is not empty %}
                     - {{ subCategory['name'] }}
                     {% else %}

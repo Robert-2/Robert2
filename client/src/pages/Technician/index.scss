@@ -1,7 +1,16 @@
-@use '~@/style/globals';
-
 .Page--technician-edit {
-    width: 800px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+
+    .TechnicianEdit {
+        flex: 1;
+        align-self: center;
+    }
+}
+
+.TechnicianEdit {
+    width: 600px;
     max-width: 100%;
-    align-self: center;
 }

@@ -1,0 +1,34 @@
+@use '~@/style/globals';
+
+.Select {
+    $block: &;
+
+    display: inline-block;
+
+    &__input {
+        width: 100%;
+    }
+
+    //
+    // - Statut: Invalide
+    //
+
+    &--invalid {
+        // stylelint-disable-next-line selector-class-pattern
+        .v-select:not(.vs--open) {
+            border-color: globals.$input-error-border-color;
+        }
+    }
+
+    //
+    // - Statut: Highlight
+    //
+
+    &--highlight {
+        #{$block}__input {
+            background-color: globals.$primary-color;
+            color: #fff;
+            font-weight: 600;
+        }
+    }
+}

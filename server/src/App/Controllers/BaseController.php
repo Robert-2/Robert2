@@ -35,18 +35,19 @@ abstract class BaseController
 
         $result = $paginated
             ->withPath($basePath)
-            ->appends($params)
-            ->toArray();
-
-        $data = $result['data'];
-        unset(
-            $result['data'],
-            $result['links']
-        );
+            ->appends($params);
 
         return [
-            'pagination' => $result,
-            'data'       => $data
+            'pagination' => [
+                'perPage' => $result->perPage(),
+                'currentPage' => $result->currentPage(),
+                'total' => [
+                    'items' => $result->total(),
+                    'pages' => $result->lastPage(),
+                ],
+            ],
+            // TODO: Enlever le `->toArray()` pour profiter de la serialization des modèles ...
+            'data' => $result->getCollection()->toArray(),
         ];
     }
 }

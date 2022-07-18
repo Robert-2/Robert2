@@ -1,7 +1,7 @@
-import Config from '@/globals/config';
+import config from '@/globals/config';
 
 const formatAmount = (amount = 0) => {
-    const { iso } = Config.currency;
+    const { iso } = config.currency;
 
     return amount.toLocaleString(undefined, {
         style: 'currency',

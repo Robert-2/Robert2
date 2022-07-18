@@ -11,11 +11,11 @@ final class I18nTest extends ModelTestCase
     {
         $i18n = new I18n();
         $result = $i18n->translate("{{name}} must be iterable");
-        $this->assertEquals("{{name}} must be iterable", $result);
+        $this->assertEquals("Must be iterable", $result);
 
         $i18n = new I18n('fr');
         $result = $i18n->translate("{{name}} must be iterable");
-        $this->assertEquals("{{name}} doit être itérable", $result);
+        $this->assertEquals("Doit être itérable", $result);
     }
 
     public function testTranslatePlural()

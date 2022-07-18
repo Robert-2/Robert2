@@ -2,18 +2,45 @@ import './index.scss';
 import moment from 'moment';
 import { defineComponent } from '@vue/composition-api';
 import Datepicker from 'vue2-datepicker';
+import Fragment from '@/components/Fragment';
 import * as langs from './locale';
+
+export const TYPES = ['date', 'datetime'];
 
 // @vue/component
 export default defineComponent({
     name: 'Datepicker',
+    inject: {
+        'input.invalid': { default: { value: false } },
+        'input.disabled': { default: { value: false } },
+    },
     props: {
-        value: { type: [Date, Array], default: undefined },
-        withTime: { type: Boolean, default: false },
-        isRange: { type: Boolean, default: false },
-        isClearable: { type: Boolean, default: false },
-        displayFormat: { type: String, default: 'LL' },
+        name: { type: String, default: null },
+        type: {
+            validator: (type) => TYPES.includes(type),
+            default: 'date',
+        },
+        value: {
+            default: undefined,
+            validator(value) {
+                const isValidDateString = (_date) => (
+                    _date == null ||
+                    (typeof _date === 'string' && moment(_date).isValid())
+                );
+
+                if (Array.isArray(value)) {
+                    return !value.some((_date) => (
+                        !isValidDateString(_date)
+                    ));
+                }
+
+                return isValidDateString(value);
+            },
+        },
+        disabled: { type: Boolean, default: undefined },
+        invalid: { type: Boolean, default: undefined },
         placeholder: { type: String, default: undefined },
+        range: { type: Boolean, default: false },
         disabledDates: { type: Object, default: undefined },
     },
     data() {
@@ -22,13 +49,46 @@ export default defineComponent({
         return {
             lang: langs[locale] || undefined,
             formatter: {
-                stringify: (date, format) => (date ? moment(date).format(format) : ''),
+                stringify: (date, format) => (
+                    date ? moment(date).format(format) : ''
+                ),
+                parse: (value) => (
+                    value ? moment(value).toDate() : null
+                ),
             },
         };
+    },
+    computed: {
+        inheritedInvalid() {
+            if (this.invalid !== undefined) {
+                return this.invalid;
+            }
+            return this['input.invalid'].value;
+        },
+
+        inheritedDisabled() {
+            if (this.disabled !== undefined) {
+                return this.disabled;
+            }
+            return this['input.disabled'].value;
+        },
+
+        displayFormat() {
+            return this.type === 'datetime'
+                ? 'LL HH:mm'
+                : 'LL';
+        },
+
+        outputFormat() {
+            return this.type === 'datetime'
+                ? 'YYYY-MM-DD HH:mm'
+                : 'YYYY-MM-DD';
+        },
     },
     methods: {
         handleInput(newValue) {
             this.$emit('input', newValue);
+            this.$emit('change', newValue);
         },
 
         getDisabledDates(chosenDate) {
@@ -60,28 +120,71 @@ export default defineComponent({
         },
     },
     render() {
-        const { $t: __, $props, lang, formatter, handleInput, getDisabledDates } = this;
-        const { value, withTime, isRange, isClearable, displayFormat, placeholder } = $props;
+        const {
+            $t: __,
+            name,
+            lang,
+            type,
+            value,
+            range,
+            inheritedDisabled: disabled,
+            inheritedInvalid: invalid,
+            displayFormat,
+            outputFormat,
+            placeholder,
+            formatter,
+            handleInput,
+            getDisabledDates,
+        } = this;
+
+        const renderHiddenInput = () => {
+            if (!name || disabled) {
+                return null;
+            }
+
+            if (range) {
+                const [start, end] = value ?? [null, null];
+
+                return (
+                    <Fragment>
+                        <input type="hidden" name={`${name}[start]`} value={start ?? ''} />
+                        <input type="hidden" name={`${name}[end]`} value={end ?? ''} />
+                    </Fragment>
+                );
+            }
+
+            return <input type="hidden" name={name} value={value ?? ''} />;
+        };
+
+        const className = ['Datepicker', {
+            'Datepicker--invalid': invalid,
+        }];
 
         return (
-            <Datepicker
-                value={value}
-                type={withTime ? 'datetime' : 'date'}
-                range={isRange}
-                lang={lang}
-                onInput={handleInput}
-                minuteStep={15}
-                showSecond={false}
-                showTimeHeader={withTime}
-                clearable={isClearable}
-                placeholder={placeholder}
-                formatter={formatter}
-                format={withTime ? `${displayFormat} HH:mm` : displayFormat}
-                disabledDate={getDisabledDates}
-                rangeSeparator=" ⇒ "
-                confirm={withTime}
-                confirmText={__('done')}
-            />
+            <div class={className}>
+                <Datepicker
+                    class="Datepicker__input"
+                    disabled={disabled}
+                    type={type}
+                    range={range}
+                    lang={lang}
+                    onInput={handleInput}
+                    value={value}
+                    minuteStep={15}
+                    showSecond={false}
+                    clearable={false}
+                    showTimeHeader={type === 'datetime'}
+                    placeholder={placeholder}
+                    formatter={formatter}
+                    format={displayFormat}
+                    valueType={outputFormat}
+                    disabledDate={getDisabledDates}
+                    rangeSeparator=" ⇒ "
+                    confirm={type === 'datetime'}
+                    confirmText={__('done')}
+                />
+                {renderHiddenInput()}
+            </div>
         );
     },
 });

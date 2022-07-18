@@ -1,175 +1,159 @@
 import './index.scss';
-import Help from '@/components/Help';
-import FormField from '@/components/FormField';
-
-const storageKeyWIP = 'WIP-newUser';
+import Page from '@/components/Page';
+import CriticalError, { ERROR } from '@/components/CriticalError';
+import Loading from '@/components/Loading';
+import Form from './components/Form';
+import apiUsers from '@/stores/api/users';
 
 // @vue/component
 export default {
     name: 'User',
-    components: { Help, FormField },
     data() {
+        const id = this.$route.params.id
+            ? parseInt(this.$route.params.id, 10)
+            : null;
+
         return {
-            help: 'page-users.help-edit',
-            error: null,
-            isLoading: false,
-            user: {
-                id: this.$route.params.id || null,
-                pseudo: '',
-                email: '',
-                password: '',
-                group_id: 'member',
-                person: {
-                    first_name: '',
-                    last_name: '',
-                    nickname: '',
-                    phone: '',
-                    street: '',
-                    postal_code: '',
-                    locality: '',
-                },
-            },
-            errors: {
-                pseudo: null,
-                email: null,
-                password: null,
-                group_id: null,
-                person: {
-                    first_name: null,
-                    last_name: null,
-                    nickname: null,
-                    phone: null,
-                    street: null,
-                    postal_code: null,
-                    locality: null,
-                },
-            },
-            groupOptions: [
-                { value: 'admin', label: 'admin' },
-                { value: 'member', label: 'member' },
-                { value: 'visitor', label: 'visitor' },
-            ],
+            id,
+            isFetched: false,
+            isSaving: false,
+            user: null,
+            criticalError: null,
+            validationErrors: null,
         };
     },
     computed: {
         isNew() {
-            const { id } = this.user;
-            return !id || id === 'new';
+            return this.id === null;
+        },
+        pageTitle() {
+            const { $t: __, isNew, isFetched, user } = this;
+
+            if (isNew) {
+                return __('page.user.title-create');
+            }
+
+            return isFetched
+                ? __('page.user.title-edit', { name: user.pseudo })
+                : __('page.user.title-edit-simple');
         },
     },
     mounted() {
-        this.getUserData();
+        this.$store.dispatch('parks/fetch');
+
+        this.fetchData();
     },
     methods: {
-        getUserData() {
-            if (this.isNew) {
-                this.initWithStash();
-                return;
-            }
+        // ------------------------------------------------------
+        // -
+        // -    Handlers
+        // -
+        // ------------------------------------------------------
 
-            this.resetHelpLoading();
-
-            const { id } = this.user;
-            const { resource } = this.$route.meta;
-
-            this.$http.get(`${resource}/${id}`)
-                .then(({ data }) => {
-                    this.setUserData(data);
-                    this.isLoading = false;
-                })
-                .catch(this.displayError);
-        },
-
-        saveUser(e) {
-            e.preventDefault();
-            this.resetHelpLoading();
-
-            const { id } = this.user;
-            const { resource } = this.$route.meta;
-
-            let request = this.$http.post;
-            let route = resource;
-            if (this.user.id) {
-                request = this.$http.put;
-                route = `${resource}/${id}`;
-            }
-
-            request(route, { ...this.user })
-                .then(({ data }) => {
-                    this.isLoading = false;
-                    this.help = { type: 'success', text: 'page-users.saved' };
-                    this.setUserData(data);
-                    this.flushStashedData();
-
-                    setTimeout(() => {
-                        this.$router.push('/users');
-                    }, 300);
-                })
-                .catch(this.displayError);
-        },
-
-        resetHelpLoading() {
-            this.help = 'page-users.help-edit';
-            this.error = null;
-            this.isLoading = true;
-        },
-
-        displayError(error) {
-            this.help = 'page-users.help-edit';
-            this.error = error;
-            this.isLoading = false;
-
-            const { code, details } = error.response?.data?.error || { code: 0, details: {} };
-            if (code === 400) {
-                this.errors = { ...details };
-            }
-        },
-
-        setUserData(data) {
-            this.user = data;
-            if (!data.person) {
-                this.user.person = {
-                    first_name: '',
-                    last_name: '',
-                    nickname: '',
-                    phone: '',
-                    street: '',
-                    postal_code: '',
-                    locality: '',
-                };
-            }
-            this.$store.commit('setPageSubTitle', this.user.pseudo);
-        },
-
-        handleFormChange() {
-            if (!this.isNew) {
-                return;
-            }
-
-            const stashedData = JSON.stringify(this.user);
-            localStorage.setItem(storageKeyWIP, stashedData);
+        handleSubmit(data) {
+            this.save(data);
         },
 
         handleCancel() {
-            this.flushStashedData();
             this.$router.back();
         },
 
-        initWithStash() {
-            if (!this.isNew) {
+        // ------------------------------------------------------
+        // -
+        // -    Internal methods
+        // -
+        // ------------------------------------------------------
+
+        async fetchData() {
+            if (this.isNew) {
+                this.user = null;
+                this.isFetched = true;
                 return;
             }
 
-            const stashedData = localStorage.getItem(storageKeyWIP);
-            if (!stashedData) {
+            try {
+                this.user = await apiUsers.one(this.id);
+                this.isFetched = true;
+            } catch (error) {
+                const status = error?.response?.status ?? 500;
+                this.criticalError = status === 404 ? ERROR.NOT_FOUND : ERROR.UNKNOWN;
+            }
+        },
+
+        async save(data) {
+            if (this.isSaving) {
                 return;
             }
 
-            this.user = JSON.parse(stashedData);
-        },
+            const { $t: __ } = this;
+            this.isSaving = true;
 
-        flushStashedData() {
-            localStorage.removeItem(storageKeyWIP);
+            const doRequest = () => (
+                !this.isNew
+                    ? apiUsers.update(this.id, data)
+                    : apiUsers.create(data)
+            );
+
+            try {
+                const user = await doRequest();
+                if (!this.isNew) {
+                    this.user = user;
+                }
+
+                this.validationErrors = null;
+
+                // - Redirection...
+                this.$toasted.success(__('page.user.saved'));
+                this.$router.push({ name: 'users' });
+            } catch (error) {
+                const { code, details } = error.response?.data?.error || { code: 0, details: {} };
+                if (code === 400) {
+                    this.validationErrors = { ...details };
+                    this.$refs.page.scrollToTop();
+                } else {
+                    this.$toasted.error(__('errors.unexpected-while-saving'));
+                }
+                this.isSaving = false;
+            }
         },
+    },
+    render() {
+        const {
+            pageTitle,
+            isSaving,
+            isFetched,
+            user,
+            handleSubmit,
+            handleCancel,
+            criticalError,
+            validationErrors,
+        } = this;
+
+        if (criticalError || !isFetched) {
+            return (
+                <Page name="user-edit" title={pageTitle}>
+                    {criticalError ? <CriticalError type={criticalError} /> : <Loading />}
+                </Page>
+            );
+        }
+
+        return (
+            <Page
+                ref="page"
+                name="user-edit"
+                title={pageTitle}
+                hasValidationError={!!validationErrors}
+            >
+                <div class="UserEdit">
+                    <Form
+                        savedData={user}
+                        isSaving={isSaving}
+                        errors={validationErrors}
+                        onSubmit={handleSubmit}
+                        onCancel={handleCancel}
+                    />
+                </div>
+            </Page>
+        );
     },
 };

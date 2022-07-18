@@ -3,15 +3,21 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\QueryException;
-use Robert2\API\Validation\Validator as V;
+use Robert2\API\Config\Config;
 use Robert2\API\Errors\ValidationException;
+use Robert2\API\Models\Traits\Serializer;
+use Robert2\API\Validation\Validator as V;
 
 class Tag extends BaseModel
 {
     use SoftDeletes;
+    use Serializer {
+        serialize as baseSerialize;
+    }
 
     protected $searchField = 'name';
 
@@ -20,8 +26,32 @@ class Tag extends BaseModel
         parent::__construct($attributes);
 
         $this->validation = [
-            'name' => V::notEmpty()->length(1, 48)
+            'name' => V::callback([$this, 'checkName']),
         ];
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Validation
+    // -
+    // ------------------------------------------------------
+
+    public function checkName($value)
+    {
+        V::notEmpty()
+            ->length(1, 48)
+            ->check($value);
+
+        $query = static::where('name', $value);
+        if ($this->exists) {
+            $query->where('id', '!=', $this->id);
+        }
+
+        if ($query->withTrashed()->exists()) {
+            return 'tag-name-already-in-use';
+        }
+
+        return true;
     }
 
     // ——————————————————————————————————————————————————————
@@ -33,11 +63,6 @@ class Tag extends BaseModel
     public function Persons()
     {
         return $this->morphedByMany(Person::class, 'taggable');
-    }
-
-    public function Companies()
-    {
-        return $this->morphedByMany(Company::class, 'taggable');
     }
 
     public function Materials()
@@ -67,6 +92,19 @@ class Tag extends BaseModel
 
     // ——————————————————————————————————————————————————————
     // —
+    // —    Scopes
+    // —
+    // ——————————————————————————————————————————————————————
+
+    public function scopeWithoutProtected(Builder $query): Builder
+    {
+        $protectedTags = array_values(Config::getSettings('defaultTags'));
+
+        return $query->whereNotIn('name', $protectedTags);
+    }
+
+    // ——————————————————————————————————————————————————————
+    // —
     // —    Getters
     // —
     // ——————————————————————————————————————————————————————
@@ -74,7 +112,7 @@ class Tag extends BaseModel
     public function getIdsByNames(array $names): array
     {
         $tags = static::whereIn('name', $names)->get();
-        $ids  = [];
+        $ids = [];
         foreach ($tags as $tag) {
             $ids[] = $tag->id;
         }
@@ -120,6 +158,25 @@ class Tag extends BaseModel
         });
 
         return $tags;
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Serialize
+    // -
+    // ------------------------------------------------------
+
+    protected function serialize(): array
+    {
+        $data = $this->baseSerialize();
+
+        unset(
+            $data['createdAt'],
+            $data['updatedAt'],
+            $data['deletedAt'],
+        );
+
+        return $data;
     }
 
     // ——————————————————————————————————————————————————————

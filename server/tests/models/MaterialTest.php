@@ -322,13 +322,13 @@ final class MaterialTest extends ModelTestCase
     public function testCreateMaterialDuplicate(): void
     {
         $this->expectException(ValidationException::class);
-        $this->expectExceptionCode(ERROR_DUPLICATE);
+        $this->expectExceptionCode(ERROR_VALIDATION);
         $this->model->edit(null, [
-            'name'           => 'Test duplicate ref. CL3',
-            'reference'      => 'CL3',
-            'park_id'        => 1,
-            'category_id'    => 1,
-            'rental_price'   => 155,
+            'name' => 'Test duplicate ref. CL3',
+            'reference' => 'CL3',
+            'park_id' => 1,
+            'category_id' => 1,
+            'rental_price' => 155,
             'stock_quantity' => 10,
         ]);
     }
@@ -371,19 +371,5 @@ final class MaterialTest extends ModelTestCase
         ];
         unset($result->created_at, $result->updated_at, $result->deleted_at);
         $this->assertEquals($expected, $result->toArray());
-    }
-
-    public function testGetPicturePath()
-    {
-        // - Without a picture name
-        $result = $this->model::getPicturePath(1);
-        $this->assertEquals(DATA_FOLDER . DS . 'materials' . DS . '1', $result);
-
-        // - With a picture name
-        $result = $this->model::getPicturePath(1, 'picture.jpg');
-        $this->assertEquals(
-            DATA_FOLDER . DS . 'materials' . DS . '1' . DS . 'picture.jpg',
-            $result
-        );
     }
 }

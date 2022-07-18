@@ -70,7 +70,7 @@ final class EventTest extends ModelTestCase
                 'is_archived' => true,
                 'location' => "Brousse",
                 'is_billable' => false,
-                'is_return_inventory_done' => false,
+                'is_return_inventory_done' => true,
                 'deleted_at' => null,
             ],
         ];
@@ -94,7 +94,7 @@ final class EventTest extends ModelTestCase
                 'is_archived' => true,
                 'location' => "Brousse",
                 'is_billable' => false,
-                'is_return_inventory_done' => false,
+                'is_return_inventory_done' => true,
                 'created_at' => null,
                 'updated_at' => null,
                 'deleted_at' => null,
@@ -592,10 +592,9 @@ final class EventTest extends ModelTestCase
             (new Event($testData))->validate();
         }
 
-        // - Validation fail: Reference is an empty string
         $this->expectException(Errors\ValidationException::class);
         $this->expectExceptionCode(ERROR_VALIDATION);
-        $testData = array_merge($data, ['reference' => '']);
+        $testData = array_merge($data, ['reference' => 'forb1dden-ch@rs']);
         (new Event($testData))->validate();
     }
 

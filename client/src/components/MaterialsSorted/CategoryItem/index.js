@@ -18,7 +18,7 @@ const MaterialsCategoryItem = (props) => {
 
     return () => (
         <div class="MaterialsCategoryItem">
-            <h4 class="MaterialsCategoryItem__title">{data.value.name}</h4>
+            <h4 class="MaterialsCategoryItem__title">{data.value.name ?? __('not-categorized')}</h4>
             <ul class="MaterialsCategoryItem__list">
                 {data.value.materials.map((material) => (
                     <li key={material.id} class="MaterialsCategoryItem__material">

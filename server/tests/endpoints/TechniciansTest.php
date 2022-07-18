@@ -9,17 +9,9 @@ final class TechniciansTest extends ApiTestCase
         $this->assertStatusCode(SUCCESS_OK);
         $this->assertResponseData([
             'pagination' => [
-                'current_page' => 1,
-                'from' => 1,
-                'last_page' => 1,
-                'path' => '/api/technicians',
-                'first_page_url' => '/api/technicians?page=1',
-                'next_page_url' => null,
-                'prev_page_url' => null,
-                'last_page_url' => '/api/technicians?page=1',
-                'per_page' => $this->settings['maxItemsPerPage'],
-                'to' => 1,
-                'total' => 1,
+                'currentPage' => 1,
+                'perPage' => $this->settings['maxItemsPerPage'],
+                'total' => ['items' => 1, 'pages' => 1],
             ],
             'data' => [
                 [
@@ -55,14 +47,14 @@ final class TechniciansTest extends ApiTestCase
         $this->client->get('/api/technicians?startDate=2018-12-15&endDate=2018-12-20');
         $this->assertStatusCode(SUCCESS_OK);
         $response = $this->_getResponseAsArray();
-        $this->assertEquals(0, $response['pagination']['total']);
+        $this->assertEquals(0, $response['pagination']['total']['items']);
         $this->assertCount(0, $response['data']);
 
         // - Un technicien est disponible pendant ces dates
         $this->client->get('/api/technicians?startDate=2019-01-02&endDate=2019-01-06');
         $this->assertStatusCode(SUCCESS_OK);
         $response = $this->_getResponseAsArray();
-        $this->assertEquals(1, $response['pagination']['total']);
+        $this->assertEquals(1, $response['pagination']['total']['items']);
         $this->assertCount(1, $response['data']);
     }
 

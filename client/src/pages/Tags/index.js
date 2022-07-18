@@ -1,173 +1,371 @@
 import './index.scss';
-import { prompt } from '@/utils/alert';
-import Alert from '@/components/Alert';
-import Help from '@/components/Help';
+import Page from '@/components/Page';
+import CriticalError from '@/components/CriticalError';
+import Loading from '@/components/Loading';
+import EmptyMessage from '@/components/EmptyMessage';
+import Button from '@/components/Button';
+import Icon from '@/components/Icon';
+import { confirm, prompt } from '@/utils/alert';
+import apiTags from '@/stores/api/tags';
 
 // @vue/component
 export default {
     name: 'Tags',
-    components: { Help },
     data() {
         return {
-            help: 'page-tags.help',
-            error: null,
+            tags: null,
+            isFetched: false,
             isLoading: false,
-            validationError: null,
-            isDisplayTrashed: false,
+            isProcessing: [],
+            hasCriticalError: null,
+            shouldDisplayTrashed: false,
             isTrashDisplayed: false,
-            deletedTags: [],
         };
     },
     computed: {
-        tags() {
-            return this.$store.getters['tags/publicList'];
-        },
+        sortedTags() {
+            const { tags } = this;
+            if (!tags) {
+                return [];
+            }
 
-        isFetched() {
-            return this.$store.state.tags.isFetched;
+            const sortedTags = [...tags]
+                .sort(({ name: name1 }, { name: name2 }) => (
+                    name1.localeCompare(name2)
+                ));
+
+            return sortedTags;
         },
     },
     mounted() {
-        this.$store.dispatch('tags/fetch');
+        this.fetchData();
     },
     methods: {
-        async add() {
+        // ------------------------------------------------------
+        // -
+        // -    Handlers
+        // -
+        // ------------------------------------------------------
+
+        async handleCreate() {
+            const { $t: __ } = this;
+
+            // TODO: À migrer vers une vraie modale.
+            //       (qui ne se ferme pas quand on a des erreurs de formulaire notamment)
             const { value: name } = await prompt(
-                this.$t('page-tags.prompt-add'),
+                __('page.tags.prompt-add'),
                 {
-                    placeholder: this.$t('page-tags.tag-name'),
-                    confirmButtonText: this.$t('page-tags.create'),
+                    placeholder: __('page.tags.tag-name'),
+                    confirmButtonText: __('page.tags.create'),
                 },
             );
-
             if (!name) {
                 return;
             }
 
-            this.save(null, name);
+            this.save(null, { name });
         },
 
-        async edit(id) {
+        async handleEdit(id) {
+            if (this.isProcessing.includes(id)) {
+                return;
+            }
+
+            const { $t: __ } = this;
             const tag = this.tags.find((_tag) => _tag.id === id);
             if (tag === undefined) {
                 return;
             }
 
-            const { value: newName } = await prompt(
-                this.$t('page-tags.prompt-modify'),
-                { placeholder: tag.name, inputValue: tag.name },
-            );
+            const { name } = tag;
 
+            // TODO: À migrer vers une vraie modale.
+            //       (qui ne se ferme pas quand on a des erreurs de formulaire notamment)
+            const { value: newName } = await prompt(
+                __('page.tags.prompt-modify'),
+                { placeholder: name, inputValue: name },
+            );
             if (!newName) {
                 return;
             }
 
-            this.save(id, newName);
+            this.save(id, { name: newName });
         },
 
-        save(id, name) {
-            const { resource } = this.$route.meta;
-            let request = this.$http.post;
-            let route = resource;
-            if (id) {
-                request = this.$http.put;
-                route = `${resource}/${id}`;
+        async handleRemove(id) {
+            if (this.isProcessing.includes(id)) {
+                return;
             }
 
-            this.resetHelpLoading();
+            const { $t: __, isTrashDisplayed } = this;
+            const isSoft = !isTrashDisplayed;
 
-            request(route, { name })
-                .then(() => {
-                    this.help = { type: 'success', text: 'page-tags.saved' };
-                    this.isLoading = false;
-                    this.$store.dispatch('tags/refresh');
-                })
-                .catch(this.displayError);
-        },
-
-        remove(id) {
-            const isSoft = !this.isTrashDisplayed;
-            Alert.ConfirmDelete(this.$t, 'tags', isSoft).then((result) => {
-                if (!result.value) {
-                    return;
-                }
-
-                this.resetHelpLoading();
-
-                this.$http.delete(`tags/${id}`)
-                    .then(() => {
-                        this.help = { type: 'success', text: 'page-tags.deleted' };
-                        this.isLoading = false;
-                        if (this.isTrashDisplayed) {
-                            this.fetchDeleted();
-                        } else {
-                            this.$store.dispatch('tags/refresh');
-                        }
-                    })
-                    .catch(this.displayError);
+            const { value: isConfirmed } = await confirm({
+                type: isSoft ? 'warning' : 'danger',
+                text: isSoft
+                    ? __('page.tags.confirm-delete')
+                    : __('page.tags.confirm-permanently-delete'),
+                confirmButtonText: isSoft
+                    ? __('yes-delete')
+                    : __('yes-permanently-delete'),
             });
-        },
+            if (!isConfirmed) {
+                return;
+            }
 
-        restore(id) {
-            Alert.ConfirmRestore(this.$t, 'tags').then((result) => {
-                if (!result.value) {
-                    return;
-                }
+            this.isProcessing.push(id);
+            this.removeTagFromList(id);
 
-                this.resetHelpLoading();
-
-                this.$http.put(`${this.$route.meta.resource}/restore/${id}`)
-                    .then(() => {
-                        this.fetchDeleted();
-                        this.$store.dispatch('tags/refresh');
-                    })
-                    .catch(this.showError);
-            });
-        },
-
-        showTrashed() {
-            this.isDisplayTrashed = !this.isDisplayTrashed;
-            if (this.isDisplayTrashed) {
-                this.fetchDeleted();
-            } else {
-                this.$store.dispatch('tags/refresh');
-                this.isTrashDisplayed = false;
+            try {
+                await apiTags.remove(id);
+                this.$toasted.success(__('page.tags.deleted'));
+            } catch {
+                this.$toasted.error(__('errors.unexpected-while-deleting'));
+                this.fetchData();
+            } finally {
+                this.isProcessing = Array.from((new Set(this.isProcessing)).delete(id));
             }
         },
 
-        fetchDeleted() {
-            this.resetHelpLoading();
+        async handleRestore(id) {
+            if (this.isProcessing.includes(id)) {
+                return;
+            }
 
-            const params = { deleted: true };
-            this.$http
-                .get(this.$route.meta.resource, { params })
-                .then(({ data }) => {
-                    this.deletedTags = data.data;
-                    this.isLoading = false;
-                })
-                .catch(this.displayError)
-                .finally(() => {
-                    this.isTrashDisplayed = this.isDisplayTrashed;
-                });
+            const { $t: __ } = this;
+            const { value: isConfirmed } = await confirm({
+                type: 'restore',
+                text: __('page.tags.confirm-restore'),
+                confirmButtonText: __('yes-restore'),
+            });
+            if (!isConfirmed) {
+                return;
+            }
+
+            this.isProcessing.push(id);
+            this.removeTagFromList(id);
+
+            try {
+                await apiTags.restore(id);
+                this.$toasted.success(__('page.tags.restored'));
+            } catch {
+                this.$toasted.error(__('errors.unexpected-while-restoring'));
+                this.fetchData();
+            } finally {
+                this.isProcessing = Array.from((new Set(this.isProcessing)).delete(id));
+            }
         },
 
-        resetHelpLoading() {
-            this.help = 'page-tags.help';
-            this.error = null;
+        handleToggleTrashed() {
+            this.shouldDisplayTrashed = !this.shouldDisplayTrashed;
+            this.fetchData();
+        },
+
+        // ------------------------------------------------------
+        // -
+        // -    Méthodes internes
+        // -
+        // ------------------------------------------------------
+
+        async fetchData() {
             this.isLoading = true;
-            this.validationError = null;
-        },
-
-        displayError(error) {
-            this.help = 'page-tags.help';
-            this.isLoading = false;
-            this.error = error;
-            this.validationError = null;
-
-            const { code, details } = error.response?.data?.error || { code: 0, details: {} };
-            if (code === 400 && details.name) {
-                [this.validationError] = details.name;
+            try {
+                const deleted = this.shouldDisplayTrashed;
+                const data = await apiTags.all({ deleted });
+                this.tags = data;
+                this.isTrashDisplayed = this.shouldDisplayTrashed;
+                this.isFetched = true;
+            } catch {
+                this.hasCriticalError = true;
+            } finally {
+                this.isLoading = false;
             }
         },
+
+        async save(id, data) {
+            const isNew = id === null;
+            if (this.isProcessing.includes(id)) {
+                return;
+            }
+
+            const doRequest = () => (
+                isNew
+                    ? apiTags.create(data)
+                    : apiTags.update(id, data)
+            );
+
+            const { $t: __ } = this;
+            if (!isNew) {
+                this.isProcessing.push(id);
+            }
+
+            try {
+                const newTagData = await doRequest();
+                if (isNew) {
+                    this.tags.push(newTagData);
+                } else {
+                    const toUpdateIndex = this.tags.findIndex((tag) => tag.id === id);
+                    this.$set(this.tags, toUpdateIndex, newTagData);
+                }
+                this.$toasted.success(__('page.tags.saved'));
+            } catch (error) {
+                const { code, details } = error.response?.data?.error || { code: 0, details: {} };
+                let errorMessage = __('errors.unexpected-while-saving');
+                if (code === 400) {
+                    errorMessage = __('errors.validation');
+                    if (details.name) {
+                        [errorMessage] = details.name;
+                    }
+                }
+                this.$toasted.error(errorMessage);
+            } finally {
+                if (!isNew) {
+                    this.isProcessing = Array.from((new Set(this.isProcessing)).delete(id));
+                }
+            }
+        },
+
+        removeTagFromList(id) {
+            const index = this.tags.findIndex((tag) => tag.id === id);
+            if (index === -1) {
+                return;
+            }
+            this.$delete(this.tags, index);
+        },
+    },
+    render() {
+        const {
+            $t: __,
+            sortedTags,
+            isLoading,
+            isFetched,
+            isProcessing,
+            hasCriticalError,
+            isTrashDisplayed,
+            handleCreate,
+            handleEdit,
+            handleRemove,
+            handleRestore,
+            handleToggleTrashed,
+        } = this;
+
+        const displayLoading = isLoading || isProcessing.length > 0;
+
+        if (hasCriticalError || !isFetched) {
+            return (
+                <Page
+                    name="tags"
+                    title={__('page.tags.title')}
+                    help={__('page.tags.help')}
+                    isLoading={displayLoading}
+                >
+                    {hasCriticalError ? <CriticalError /> : <Loading />}
+                </Page>
+            );
+        }
+
+        if (sortedTags.length === 0) {
+            return (
+                <Page
+                    name="tags"
+                    title={__('page.tags.title')}
+                    help={__('page.tags.help')}
+                    isLoading={displayLoading}
+                >
+                    <div class="Tags">
+                        <EmptyMessage
+                            message={(
+                                isTrashDisplayed
+                                    ? __('page.tags.no-item-in-trash')
+                                    : __('page.tags.no-item')
+                            )}
+                            action={(
+                                isTrashDisplayed
+                                    ? {
+                                        label: __('display-not-deleted-items'),
+                                        onClick: handleToggleTrashed,
+                                    }
+                                    : {
+                                        label: __('page.tags.action-add'),
+                                        onClick: handleCreate,
+                                    }
+                            )}
+                        />
+                    </div>
+                    {!isTrashDisplayed && (
+                        <div class="content__footer">
+                            <Button
+                                onClick={handleToggleTrashed}
+                                icon="trash"
+                                type="danger"
+                            >
+                                {__('open-trash-bin')}
+                            </Button>
+                        </div>
+                    )}
+                </Page>
+            );
+        }
+
+        return (
+            <Page
+                name="tags"
+                title={__('page.tags.title')}
+                help={__('page.tags.help')}
+                isLoading={displayLoading}
+                actions={[
+                    <Button type="add" onClick={handleCreate}>
+                        {__('page.tags.action-add')}
+                    </Button>,
+                ]}
+            >
+                <div class="Tags">
+                    <ul class="Tags__list">
+                        {sortedTags.map(({ id, name }) => (
+                            <li key={id} class="Tags__item">
+                                <span class="Tags__item__name">
+                                    <Icon name="tag" /> {name}
+                                </span>
+                                {!isTrashDisplayed && (
+                                    <span class="Tags__item__actions">
+                                        <Button
+                                            type="edit"
+                                            onClick={() => { handleEdit(id); }}
+                                            disabled={isProcessing.includes(id)}
+                                        />
+                                        <Button
+                                            type="trash"
+                                            onClick={() => { handleRemove(id); }}
+                                            disabled={isProcessing.includes(id)}
+                                        />
+                                    </span>
+                                )}
+                                {isTrashDisplayed && (
+                                    <span class="Tags__item__actions">
+                                        <Button
+                                            type="restore"
+                                            onClick={() => { handleRestore(id); }}
+                                        />
+                                        <Button
+                                            type="delete"
+                                            onClick={() => { handleRemove(id); }}
+                                        />
+                                    </span>
+                                )}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+                <div class="content__footer">
+                    <Button
+                        onClick={handleToggleTrashed}
+                        icon={isTrashDisplayed ? 'eye' : 'trash'}
+                        type={isTrashDisplayed ? 'success' : 'danger'}
+                    >
+                        {isTrashDisplayed ? __('display-not-deleted-items') : __('open-trash-bin')}
+                    </Button>
+                </div>
+            </Page>
+        );
     },
 };

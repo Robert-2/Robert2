@@ -18,9 +18,53 @@ class Country extends BaseModel
         parent::__construct($attributes);
 
         $this->validation = [
-            'name' => V::notEmpty()->alpha(static::EXTRA_CHARS)->length(4, 96),
-            'code' => V::notEmpty()->alpha()->length(4, 4),
+            'name' => V::callback([$this, 'checkName']),
+            'code' => V::callback([$this, 'checkCode']),
         ];
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Validation
+    // -
+    // ------------------------------------------------------
+
+    public function checkName($value)
+    {
+        V::notEmpty()
+            ->alpha(static::EXTRA_CHARS)
+            ->length(4, 96)
+            ->check($value);
+
+        $query = static::where('name', $value);
+        if ($this->exists) {
+            $query->where('id', '!=', $this->id);
+        }
+
+        if ($query->withTrashed()->exists()) {
+            return 'country-name-already-in-use';
+        }
+
+        return true;
+    }
+
+    public function checkCode($value)
+    {
+        V::notEmpty()
+            ->alpha()
+            ->length(4, 4)
+            ->check($value);
+
+        $query = static::where('code', $value);
+        if ($this->exists) {
+            $query->where('id', '!=', $this->id);
+        }
+
+        if ($query->withTrashed()->exists()) {
+            return 'country-code-already-in-use';
+        }
+
+        return true;
     }
 
     // ——————————————————————————————————————————————————————

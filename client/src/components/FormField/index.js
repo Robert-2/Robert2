@@ -1,90 +1,127 @@
 import './index.scss';
-import moment from 'moment';
-import { defineComponent } from '@vue/composition-api';
-import Datepicker from '@/components/Datepicker';
+import warning from 'warning';
+import { computed, defineComponent } from '@vue/composition-api';
+import Select from '@/components/Select';
+import Datepicker, { TYPES as DATEPICKER_TYPES } from '@/components/Datepicker';
 import SwitchToggle from '@/components/SwitchToggle';
+import Input, { TYPES as INPUT_TYPES } from '@/components/Input';
+import Textarea from '@/components/Textarea';
 import InputCopy from '@/components/InputCopy';
 
-const ALLOWED_TYPES = [
-    'text',
-    'email',
+const TYPES = [
+    ...DATEPICKER_TYPES,
+    ...INPUT_TYPES,
     'copy',
     'static',
-    'password',
-    'number',
-    'tel',
     'select',
     'textarea',
-    'date',
     'switch',
+    'custom',
 ];
 
 // @vue/component
 export default defineComponent({
     name: 'FormField',
+    inject: {
+        verticalForm: { default: false },
+    },
+    provide() {
+        return {
+            'input.disabled': computed(() => this.disabled),
+            'input.invalid': computed(() => this.invalid),
+        };
+    },
     props: {
         label: { type: String, default: null },
-        name: { type: String, default: null },
+        name: { type: String, default: undefined },
         type: {
-            validator: (value) => ALLOWED_TYPES.includes(value),
+            validator: (value) => TYPES.includes(value),
             default: 'text',
         },
         required: { type: Boolean, default: false },
-        disabled: { type: Boolean, default: false },
-        disabledReason: { type: String, default: null },
-        placeholder: { type: [String, Boolean], default: false },
+        disabled: { type: [Boolean, String], default: false },
+        help: { type: String, default: undefined },
+        errors: { type: Array, default: null },
+        placeholder: { type: [String, Boolean], default: undefined },
         value: {
             type: [String, Number, Date, Array, Boolean],
-            default: '',
+            default: undefined,
         },
-        step: { type: Number, default: 0.01 },
-        min: { type: Number, default: null },
-        max: { type: Number, default: null },
-        addon: { type: String, default: null },
-        options: { type: Array, default: () => [] },
-        errors: { type: Array, default: null },
-        datepickerOptions: { type: Object, default: null },
+        rows: { type: Number, default: undefined },
+        step: { type: Number, default: undefined },
+        min: { type: Number, default: undefined },
+        max: { type: Number, default: undefined },
+        addon: { type: String, default: undefined },
+        options: { type: Array, default: undefined },
+        datepickerOptions: { type: Object, default: undefined },
     },
-    data() {
-        return {
-            renderKey: 1,
-        };
+    computed: {
+        invalid() {
+            return this.errors && this.errors.length > 0;
+        },
     },
     watch: {
-        options() {
-            this.renderKey += 1;
+        $slots: {
+            immediate: true,
+            handler() {
+                this.validateProps();
+            },
+        },
+        $props: {
+            immediate: true,
+            handler() {
+                this.validateProps();
+            },
         },
     },
     methods: {
-        handleInput(event) {
-            const { value } = event.target;
-            this.$emit('input', value, event);
+        handleChange(newValue) {
+            this.$emit('change', newValue);
         },
 
-        handleChange(event) {
-            const { value } = event.target;
-            this.$emit('change', value, event);
-        },
-
-        handleDatepickerChange(newDate) {
-            this.$emit('input', newDate);
-
-            let newValue;
-            if (Array.isArray(newDate)) {
-                newValue = newDate.map((date) => moment(date).format('YYYY-MM-DD'));
-            } else {
-                newValue = moment(newDate).format('YYYY-MM-DD');
-            }
-
-            this.$emit('change', { field: this.name, newValue, newDate });
-        },
-
-        handleSwitchChange(newValue) {
+        handleInput(newValue) {
             this.$emit('input', newValue);
-            this.$emit('change', { field: this.name, newValue });
+        },
+
+        // ------------------------------------------------------
+        // -
+        // -    Méthodes internes
+        // -
+        // ------------------------------------------------------
+
+        validateProps() {
+            const hasChildren = this.$slots.default !== undefined;
+
+            // - Fonction de rendu manquante pour un champ `custom`.
+            warning(
+                this.type !== 'custom' || hasChildren,
+                '<FormField> La prop. `children` est manquante (ou vide) alors ' +
+                `qu'elle est requise pour les champs \`custom\`.`,
+            );
+
+            // - Affiche un warning si si on a un champ non-`custom` et qu'une fonction de rendue a été fournie.
+            warning(
+                this.type === 'custom' || !hasChildren,
+                '<FormField> La prop. `children` a été fournie pour un champ non ' +
+                '`custom`, celle-ci ne sera pas utilisée.',
+            );
+
+            // - Affiche un warning si des props. sont passés à <FormField> alors qu'on est dans un champ `custom`.
+            const customUselessProps = [
+                'name', 'placeholder', 'value', 'rows', 'step',
+                'min', 'max', 'addon', 'options', 'datepickerOptions',
+            ];
+            customUselessProps.forEach((customUselessProp) => {
+                warning(
+                    this.type !== 'custom' || this[customUselessProp] === undefined,
+                    `<FormField> La prop. \`${customUselessProp}\` a été fournie pour ` +
+                    'un champ "custom", celle-ci ne sera pas utilisée.',
+                );
+            });
         },
     },
     render() {
+        const children = this.$slots.default;
         const {
             $t: __,
             $scopedSlots: slots,
@@ -95,33 +132,34 @@ export default defineComponent({
             addon,
             placeholder,
             required,
+            invalid,
             disabled,
-            disabledReason,
+            verticalForm: vertical,
             options,
             step,
             min,
             max,
-            datepickerOptions,
-            handleInput,
+            rows,
+            help,
             handleChange,
-            handleDatepickerChange,
-            handleSwitchChange,
+            handleInput,
+            datepickerOptions,
             errors,
-            renderKey,
         } = this;
 
         // - Placeholder.
         let _placeholder;
-        if (placeholder) {
-            // eslint-disable-next-line no-nested-ternary
-            _placeholder = placeholder === true
-                ? (type === 'select' ? __('please-choose') : label)
-                : __(placeholder);
+        if (placeholder !== undefined) {
+            if (type === 'select') {
+                _placeholder = typeof placeholder === 'boolean' ? placeholder : __(placeholder);
+            } else if (placeholder) {
+                _placeholder = placeholder === true ? label : __(placeholder);
+            }
         }
 
-        const classNames = ['FormField', {
-            'FormField--with-addon': !!addon,
-            'FormField--with-error': errors && errors.length > 0,
+        const classNames = ['FormField', `FormField--${type}`, {
+            'FormField--vertical': !!vertical,
+            'FormField--invalid': invalid,
         }];
 
         return (
@@ -131,93 +169,98 @@ export default defineComponent({
                         {__(label)} {required && <span class="FormField__label__required">*</span>}
                     </label>
                 )}
-                {['text', 'email', 'tel', 'password', 'number'].includes(type) && (
+                <div class="FormField__field">
                     <div class="FormField__input-wrapper">
-                        <input
-                            type={type}
-                            step={type === 'number' ? (step || 0.01) : null}
-                            min={type === 'number' && (min || min === 0) ? min : null}
-                            max={type === 'number' && (max || max === 0) ? max : null}
-                            name={name}
-                            autocomplete={type === 'password' ? 'new-password' : 'off'}
-                            disabled={disabled}
-                            placeholder={_placeholder}
-                            class="FormField__input"
-                            value={value}
-                            onInput={handleInput}
-                            onChange={handleChange}
-                        />
-                        {addon && <div class="FormField__addon">{addon}</div>}
+                        {INPUT_TYPES.includes(type) && (
+                            <Input
+                                class="FormField__input"
+                                type={type}
+                                step={step}
+                                min={min}
+                                max={max}
+                                name={name}
+                                autocomplete={type === 'password' ? 'new-password' : 'off'}
+                                disabled={!!disabled}
+                                invalid={invalid}
+                                placeholder={_placeholder}
+                                value={value}
+                                addon={addon}
+                                onInput={handleInput}
+                                onChange={handleChange}
+                            />
+                        )}
+                        {type === 'select' && (
+                            <Select
+                                class="FormField__input"
+                                name={name}
+                                options={options}
+                                placeholder={_placeholder}
+                                disabled={!!disabled}
+                                invalid={invalid}
+                                value={value}
+                                onInput={handleInput}
+                                onChange={handleChange}
+                            />
+                        )}
+                        {type === 'textarea' && (
+                            <Textarea
+                                class="FormField__input"
+                                name={name}
+                                value={value}
+                                rows={rows}
+                                disabled={!!disabled}
+                                invalid={invalid}
+                                placeholder={_placeholder}
+                                onInput={handleInput}
+                                onChange={handleChange}
+                            />
+                        )}
+                        {DATEPICKER_TYPES.includes(type) && (
+                            <Datepicker
+                                class="FormField__input"
+                                name={name}
+                                type={type}
+                                value={value}
+                                disabledDates={datepickerOptions?.disabled}
+                                range={datepickerOptions?.range}
+                                invalid={invalid}
+                                disabled={disabled}
+                                placeholder={_placeholder}
+                                onInput={handleInput}
+                                onChange={handleChange}
+                            />
+                        )}
+                        {type === 'switch' && (
+                            <SwitchToggle
+                                class="FormField__input"
+                                name={name}
+                                value={value ?? false}
+                                disabled={disabled}
+                                onInput={handleInput}
+                                onChange={handleChange}
+                            />
+                        )}
+                        {type === 'copy' && (
+                            <InputCopy class="FormField__input" value={value} />
+                        )}
+                        {type === 'custom' && (
+                            <div class="FormField__input">
+                                {children}
+                            </div>
+                        )}
+                        {type === 'static' && (
+                            <p class="FormField__input">{value}</p>
+                        )}
                     </div>
-                )}
-                {type === 'select' && (
-                    <select
-                        key={renderKey}
-                        name={name}
-                        class="FormField__select"
-                        value={value}
-                        disabled={disabled}
-                        onInput={handleInput}
-                        onChange={handleChange}
-                    >
-                        {_placeholder !== undefined && <option value="">{_placeholder}</option>}
-                        {options.map((option) => (
-                            <option key={option.value} value={option.value}>
-                                {__(option.label)}
-                            </option>
-                        ))}
-                    </select>
-                )}
-                {type === 'textarea' && (
-                    <textarea
-                        name={name}
-                        value={value}
-                        disabled={disabled}
-                        placeholder={_placeholder}
-                        class="FormField__textarea"
-                        onInput={handleInput}
-                    />
-                )}
-                {type === 'date' && (
-                    <Datepicker
-                        value={typeof value === 'string' ? moment(value).toDate() : value}
-                        displayFormat={datepickerOptions?.format}
-                        disabledDates={datepickerOptions?.disabled}
-                        isRange={datepickerOptions?.isRange}
-                        withTime={datepickerOptions?.withTime}
-                        placeholder={_placeholder}
-                        class="FormField__datepicker"
-                        onInput={handleDatepickerChange}
-                    />
-                )}
-                {type === 'switch' && (
-                    <div class="FormField__switch">
-                        <SwitchToggle
-                            value={value ?? false}
-                            locked={disabled}
-                            lockedReason={disabledReason}
-                            onInput={handleSwitchChange}
-                        />
-                        <input
-                            type="hidden"
-                            name={name}
-                            value={value ? '1' : '0'}
-                            readonly
-                        />
-                    </div>
-                )}
-                {type === 'copy' && (
-                    <InputCopy class="FormField__input" value={value} />
-                )}
-                {type === 'static' && (
-                    <p class="FormField__static-value">{value}</p>
-                )}
-                {errors && (
-                    <div class="FormField__error">
-                        <span class="FormField__error__text">{errors[0]}</span>
-                    </div>
-                )}
-                {(!errors && slots.help) && <div class="FormField__help">{slots.help()}</div>}
+                    {invalid && (
+                        <div class="FormField__error">
+                            <span class="FormField__error__text">{errors[0]}</span>
+                        </div>
+                    )}
+                    {!!(!invalid && (slots.help || help)) && (
+                        <div class="FormField__help">{slots.help?.() ?? help}</div>
+                    )}
+                </div>
             </div>
         );
     },

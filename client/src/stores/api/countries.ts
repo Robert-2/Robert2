@@ -11,11 +11,11 @@ export type Country = {
 };
 
 //
-// - Functions
+// - Fonctions
 //
 
 const all = async (): Promise<Country[]> => (
-    (await requester.get('countries')).data
+    (await requester.get('/countries')).data
 );
 
 export default { all };

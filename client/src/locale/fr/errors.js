@@ -1,10 +1,14 @@
-/* eslint-disable quotes */
-
 export default {
     errors: {
         'generic': "Erreur\u00a0: {message}",
+        'unexpected-while-saving': "Une erreur inattendue s'est produite lors de l'enregistrement, veuillez ré-essayer.",
+        'unexpected-while-deleting': "Une erreur inattendue s'est produite lors de la suppression, veuillez ré-essayer.",
+        'unexpected-while-restoring': "Une erreur inattendue s'est produite lors de la restauration, veuillez ré-essayer.",
+        'unexpected-while-uploading': "Une erreur inattendue s'est produite lors de l'envoi de vos fichiers, veuillez ré-essayer.",
+        'unexpected-while-calculating': "Une erreur inattendue s'est produite lors du calcul, veuillez ré-essayer.",
         'api-unreachable': "Désolé, mais l'API de Robert2 est inaccessible... Veuillez vérifier votre accès au réseau.",
-        'not-found': "Cet enregistrement n'existe pas.",
+        'record-not-found': "Cet enregistrement n'existe pas.",
+        'page-not-found': "La page demandée n'existe pas ou plus.",
         'validation': "Veuillez vérifier les informations du formulaire.",
         'unknown': "Erreur inconnue.",
         'already-exists': "Cet enregistrement existe déjà.",
@@ -27,5 +31,6 @@ export default {
         'file-type-not-allowed': "Le type '{type}' n'est pas pris en charge.",
         'file-size-exceeded': "Fichier trop gros. Maximum {max}.",
         'file-already-exists': "Ce fichier est déjà présent dans la liste.",
+        'file-not-a-valid-image': "Le fichier ne fait pas partie des types d'image accéptés.",
     },
 };

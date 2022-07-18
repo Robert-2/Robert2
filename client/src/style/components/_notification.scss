@@ -1,5 +1,31 @@
+.Notifications {
+    // Note: Augmente la spécificité (pour surcharger la définition de `.toasted-container`).
+    &#{&} {
+        min-width: 100%;
+        padding: 0 10px;
+
+        &.top-center {
+            top: 10px;
+        }
+
+        .Notification {
+            margin-top: 0;
+
+            + .Notification {
+                margin-top: 10px;
+            }
+        }
+
+        @media (min-width: $screen-mobile) {
+            min-width: auto;
+        }
+    }
+}
+
 .Notification {
-    &.toasted.toasted-primary {
+    // Note: Augmente la spécificité (pour surcharger la définition de `.toasted`).
+    &#{&}.toasted-primary {
+        padding: 8px 10px;
         border-radius: 3px;
         font-size: 1rem;
 
@@ -25,6 +51,11 @@
                 text-decoration: none;
                 opacity: 1;
             }
+        }
+
+        @media (min-width: $screen-mobile) {
+            padding-right: 20px;
+            padding-left: 20px;
         }
     }
 }

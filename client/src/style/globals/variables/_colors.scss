@@ -1,3 +1,5 @@
+$primary-color: #c35022;
+
 // -----------------------------------------
 // -
 // - Backgrounds colors
@@ -18,7 +20,7 @@ $bg-color-side-menu-item-active: #242424;
 $bg-color-tooltip: rgba(3, 3, 3, 0.75);
 
 $bg-color-input-normal: #454545;
-$bg-color-input-disabled: $bg-color-body;
+$bg-color-input-disabled: #242424;
 
 $bg-color-button-default: #616161;
 $bg-color-button-info: #116f49;
@@ -58,20 +60,16 @@ $color-base-button: #e0e0e0;
 $color-hover-button: #fff;
 $color-active-button: #e04406;
 
-$color-tab-active: $text-base-color;
-
 // -----------------------------------------
 // -
 // - Borders colors
 // -
 // -----------------------------------------
 
+$divider-color: #454545;
 $list-left-border-color: #383838;
-$tabs-bottom-border-color: #454545;
-$tabs-active-bottom-border-color: $bg-color-button-info;
 $input-focus-border-color: #943b0e;
 $input-error-border-color: #ad0101;
-$modal-footer-separator-color: #454545;
 
 // -----------------------------------------
 // -

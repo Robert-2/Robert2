@@ -4,6 +4,8 @@
 $size: 1.7rem;
 
 .SwitchToggle {
+    $block: &;
+
     display: inline-flex;
     align-items: center;
 
@@ -29,11 +31,11 @@ $size: 1.7rem;
     }
 
     &:hover {
-        .SwitchToggle__slide {
+        #{$block}__slide {
             background-color: color.adjust(globals.$bg-color-side-nav, $lightness: 5%);
         }
 
-        .SwitchToggle__button {
+        #{$block}__button {
             background-color: color.adjust(globals.$bg-color-button-default, $lightness: 8%);
         }
     }
@@ -42,41 +44,41 @@ $size: 1.7rem;
         flex: 1;
         margin-left: 0.5rem;
 
-        &__locked {
+        &__disabled-reason {
             margin-left: globals.$content-padding-small-horizontal;
             font-style: italic;
         }
     }
 
-    &--enabled {
-        .SwitchToggle__slide {
+    &--toggled {
+        #{$block}__slide {
             flex-direction: row-reverse;
         }
 
-        .SwitchToggle__button {
+        #{$block}__button {
             background-color: globals.$bg-color-button-success;
         }
 
         &:hover {
-            .SwitchToggle__button {
+            #{$block}__button {
                 background-color: color.adjust(globals.$bg-color-button-success, $lightness: 5%);
             }
         }
     }
 
-    &--locked {
-        .SwitchToggle__slide,
-        .SwitchToggle__button {
+    &--disabled {
+        #{$block}__slide,
+        #{$block}__button {
             opacity: 0.5;
             cursor: not-allowed;
         }
 
         &:hover {
-            .SwitchToggle__slide {
+            #{$block}__slide {
                 background: globals.$bg-color-side-nav;
             }
 
-            .SwitchToggle__button {
+            #{$block}__button {
                 background: globals.$bg-color-button-default;
             }
         }

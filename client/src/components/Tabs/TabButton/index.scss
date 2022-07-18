@@ -1,0 +1,37 @@
+@use '../variables' as *;
+@use '~@/style/globals';
+
+.TabButton {
+    position: relative;
+    bottom: -1px;
+    margin-right: 1px;
+    padding: 10px 16px;
+    border-bottom: 2px solid $header-border-color;
+    border-radius: $border-radius;
+    background-color: $background-color;
+    color: $text-color;
+    list-style: none;
+    user-select: none;
+    cursor: pointer;
+
+    &__icon {
+        margin-right: $icon-margin;
+    }
+
+    &--selected {
+        border-color: $header-border-color-active;
+        color: $text-color-active;
+    }
+
+    &--disabled {
+        color: $text-color-disabled;
+        cursor: not-allowed;
+    }
+
+    &--warning {
+        @include globals.icon('exclamation-triangle', true) {
+            margin-left: $icon-margin;
+            color: globals.$text-danger-color;
+        }
+    }
+}

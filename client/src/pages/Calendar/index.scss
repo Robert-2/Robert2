@@ -1,13 +1,18 @@
 @use '~@/style/globals';
 
-.Calendar {
-    position: relative;
+.Page--calendar {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 
-    &__loading {
-        position: absolute;
-        top: 50px;
-        left: 50%;
+    .Calendar {
+        flex: 1;
     }
+}
+
+.Calendar {
+    display: flex;
+    flex-direction: column;
 
     &__timeline {
         flex: 1;
@@ -18,16 +23,16 @@
         display: flex;
         flex-wrap: wrap;
 
-        .Help {
+        &__help {
             flex: 1;
             min-width: 300px;
             padding: globals.$content-padding-small-vertical globals.$content-padding-small-horizontal;
+            white-space: pre-line;
         }
 
         .CalendarCaption {
             flex: 0 0 auto;
             max-width: 100%;
-            padding: globals.$content-padding-small-vertical 0;
         }
     }
 }

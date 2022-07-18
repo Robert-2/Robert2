@@ -9,17 +9,9 @@ final class ParksTest extends ApiTestCase
         $this->assertStatusCode(SUCCESS_OK);
         $this->assertResponseData([
             'pagination' => [
-                'current_page' => 1,
-                'from' => 1,
-                'last_page' => 1,
-                'path' => '/api/parks',
-                'first_page_url' => '/api/parks?page=1',
-                'next_page_url' => null,
-                'prev_page_url' => null,
-                'last_page_url' => '/api/parks?page=1',
-                'per_page' => $this->settings['maxItemsPerPage'],
-                'to' => 2,
-                'total' => 2,
+                'currentPage' => 1,
+                'perPage' => $this->settings['maxItemsPerPage'],
+                'total' => ['items' => 2, 'pages' => 1],
             ],
             'data' => [
                 [

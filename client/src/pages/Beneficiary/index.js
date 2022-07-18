@@ -1,7 +1,9 @@
 import './index.scss';
-import Config from '@/globals/config';
 import Page from '@/components/Page';
-import PersonForm from '@/components/PersonForm';
+import CriticalError, { ERROR } from '@/components/CriticalError';
+import Loading from '@/components/Loading';
+import Form from './components/Form';
+import apiBeneficiaries from '@/stores/api/beneficiaries';
 
 const WIP_STORAGE_KEY = 'WIP-newBeneficiary';
 
@@ -9,54 +11,37 @@ const WIP_STORAGE_KEY = 'WIP-newBeneficiary';
 export default {
     name: 'Beneficiary',
     data() {
+        const id = this.$route.params.id
+            ? parseInt(this.$route.params.id, 10)
+            : null;
+
         return {
-            error: null,
-            isLoading: false,
+            id,
             isFetched: false,
             isSaving: false,
-            person: {
-                id: this.$route.params.id || null,
-                first_name: '',
-                last_name: '',
-                reference: '',
-                company_id: '',
-                phone: '',
-                email: '',
-                street: '',
-                postal_code: '',
-                locality: '',
-                country_id: '',
-                note: '',
-            },
-            errors: {
-                first_name: null,
-                last_name: null,
-                reference: null,
-                company_id: null,
-                phone: null,
-                email: null,
-                street: null,
-                postal_code: null,
-                locality: null,
-                country_id: null,
-                note: null,
-            },
+            person: null,
+            criticalError: null,
+            validationErrors: null,
         };
     },
     computed: {
         isNew() {
-            const { id } = this.person;
-            return !id || id === 'new';
+            return this.id === null;
         },
         pageTitle() {
-            const { $t: __, isNew, person } = this;
+            const { $t: __, isNew, isFetched, person } = this;
+
             if (isNew) {
-                return __('page-beneficiary.title-create');
+                return __('page.beneficiary.title-create');
+            }
+
+            if (!isFetched) {
+                return __('page.beneficiary.title-edit-simple');
             }
 
             const { full_name: fullName, first_name: firstName, last_name: lastName } = person;
             const name = fullName || `${firstName} ${lastName}`;
-            return __('page-beneficiary.title-edit', { name });
+            return __('page.beneficiary.title-edit', { name });
         },
     },
     mounted() {
@@ -69,99 +54,90 @@ export default {
         // -
         // ------------------------------------------------------
 
-        handleChange(newPersonData) {
-            this.person = newPersonData;
+        handleChange(data) {
             if (!this.isNew) {
                 return;
             }
 
-            const stashedData = JSON.stringify(this.person);
+            const stashedData = JSON.stringify(data);
             localStorage.setItem(WIP_STORAGE_KEY, stashedData);
         },
 
-        handleSave(e) {
-            e.preventDefault();
-            this.save();
+        handleSubmit(data) {
+            this.save(data);
         },
 
         handleCancel() {
             this.flushStashedData();
+            this.$router.back();
         },
 
         // ------------------------------------------------------
         // -
-        // -    Internal methods
+        // -    Méthodes internes
         // -
         // ------------------------------------------------------
 
         async fetchData() {
             if (this.isNew) {
                 const stashedData = localStorage.getItem(WIP_STORAGE_KEY);
-                this.isFetched = true;
-                if (!stashedData) {
-                    return;
+                if (stashedData) {
+                    try {
+                        // TODO: Ne devrait pas être mis là mais dans le data de <Form>...
+                        //       (overwrite de `DEFAULT_VALUES`)
+                        this.person = JSON.parse(stashedData);
+                    } catch {
+                        // - On ne fait rien en cas d'erreur de parsing des données en cache.
+                    }
                 }
-
-                this.person = JSON.parse(stashedData);
+                this.isFetched = true;
                 return;
             }
 
-            this.error = null;
-            this.isLoading = true;
-
-            const { id } = this.person;
-            const { resource } = this.$route.meta;
-
             try {
-                const { data } = await this.$http.get(`${resource}/${id}`);
-                this.person = data;
+                this.person = await apiBeneficiaries.one(this.id);
                 this.isFetched = true;
             } catch (error) {
-                this.displayError(error);
-            } finally {
-                this.isLoading = false;
+                const status = error?.response?.status ?? 500;
+                this.criticalError = status === 404 ? ERROR.NOT_FOUND : ERROR.UNKNOWN;
             }
         },
 
-        async save() {
-            this.error = null;
+        async save(data) {
+            if (this.isSaving) {
+                return;
+            }
+
+            const { $t: __ } = this;
             this.isSaving = true;
 
-            const { id } = this.person;
-            const { resource } = this.$route.meta;
-
-            let request = this.$http.post;
-            let route = resource;
-            if (id) {
-                request = this.$http.put;
-                route = `${resource}/${id}`;
-            }
-
-            const { company, ...personData } = this.person;
-            if (!id) {
-                personData.tags = [Config.beneficiaryTagName];
-            }
+            const doRequest = () => (
+                !this.isNew
+                    ? apiBeneficiaries.update(this.id, data)
+                    : apiBeneficiaries.create(data)
+            );
 
             try {
-                const { data } = await request(route, personData);
-                this.person = data;
+                const person = await doRequest();
+                if (!this.isNew) {
+                    this.person = person;
+                }
+
+                this.validationErrors = null;
                 this.flushStashedData();
 
-                const redirect = () => { this.$router.push('/beneficiaries'); };
-                setTimeout(redirect, 300);
+                // - Redirection...
+                this.$toasted.success(__('page.beneficiary.saved'));
+                this.$router.replace({ name: 'beneficiaries' });
             } catch (error) {
-                this.displayError(error);
-            } finally {
+                const { code, details } = error.response?.data?.error || { code: 0, details: {} };
+                if (code === 400) {
+                    this.validationErrors = { ...details };
+                    this.$refs.page.scrollToTop();
+                } else {
+                    this.$toasted.error(__('errors.unexpected-while-saving'));
+                }
                 this.isSaving = false;
-            }
-        },
-
-        displayError(error) {
-            this.error = error;
-
-            const { code, details } = error.response?.data?.error || { code: 0, details: {} };
-            if (code === 400) {
-                this.errors = { ...details };
             }
         },
 
@@ -171,39 +147,42 @@ export default {
     },
     render() {
         const {
-            $t: __,
             pageTitle,
-            isLoading,
+            isSaving,
             isFetched,
             person,
-            errors,
-            error,
-            isSaving,
-            handleSave,
+            handleSubmit,
             handleChange,
             handleCancel,
+            criticalError,
+            validationErrors,
         } = this;
+
+        if (criticalError || !isFetched) {
+            return (
+                <Page name="beneficiary-edit" title={pageTitle}>
+                    {criticalError ? <CriticalError type={criticalError} /> : <Loading />}
+                </Page>
+            );
+        }
 
         return (
             <Page
+                ref="page"
                 name="beneficiary-edit"
                 title={pageTitle}
-                help={__('page-beneficiary.help')}
-                error={error}
-                isLoading={isLoading}
+                hasValidationError={!!validationErrors}
             >
-                {isFetched && (
-                    <PersonForm
-                        initialData={person}
+                <div class="BeneficiaryEdit">
+                    <Form
+                        savedData={person}
                         isSaving={isSaving}
-                        errors={errors}
-                        onSubmit={handleSave}
+                        errors={validationErrors}
+                        onSubmit={handleSubmit}
                         onChange={handleChange}
                         onCancel={handleCancel}
-                        withCompany
-                        withReference
                     />
-                )}
+                </div>
             </Page>
         );
     },

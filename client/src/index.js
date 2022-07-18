@@ -80,8 +80,16 @@ const tablesConfig = {
         if (!response) {
             return { data: [], count: 0 };
         }
-        const { data, pagination } = response.data;
-        return { data, count: pagination ? pagination.total : 0 };
+
+        const _data = response?.data?.data
+            ? response.data
+            : response;
+
+        const { data, pagination } = _data;
+        return {
+            data,
+            count: pagination?.total.items ?? 0,
+        };
     },
 };
 Vue.use(ClientTable, tablesConfig);
@@ -90,8 +98,9 @@ Vue.use(ServerTable, tablesConfig, true);
 // - Toast notifications
 Vue.use(Toasted, {
     duration: 5000,
-    position: 'bottom-right',
+    position: 'top-center',
     className: 'Notification',
+    containerClass: 'Notifications',
     action: {
         text: Vue.i18n.translate('close'),
         onClick: (e, toastObject) => {

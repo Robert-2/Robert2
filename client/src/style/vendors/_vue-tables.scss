@@ -1,5 +1,7 @@
 /* stylelint-disable selector-max-type, selector-max-compound-selectors */
 
+@use 'sass:math';
+
 .VueTables {
     flex: 1;
     display: flex;
@@ -35,7 +37,7 @@
     }
 
     &__search-field input {
-        min-width: 180px;
+        width: 180px;
     }
 
     &__search-limit {
@@ -110,7 +112,7 @@
     &__columns-dropdown-wrapper {
         position: relative;
         display: none;
-        margin-left: 1rem;
+        margin-left: math.div($content-padding-small-vertical, 2);
         text-align: right;
 
         .dropdown-toggle {

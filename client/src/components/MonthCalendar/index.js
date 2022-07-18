@@ -80,7 +80,8 @@ export default {
                     items={events}
                     itemContentHeight="53px"
                     itemBorderHeight="0px"
-                    vOn:click-item={handleClickItem}
+                    // Note: Le camelCase (`onClickItem`) ne fonctionne pas.
+                    onClick-item={handleClickItem}
                 />
             </div>
         );

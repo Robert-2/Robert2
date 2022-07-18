@@ -1,7 +1,7 @@
 import './index.scss';
 import { ref, computed } from '@vue/composition-api';
-import Header from './Header';
-import Sidebar from './Sidebar';
+import Header from './components/Header';
+import Sidebar from './components/Sidebar';
 
 // @vue/component
 const DefaultLayout = (_, { root, slots }) => {

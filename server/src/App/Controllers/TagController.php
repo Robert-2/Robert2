@@ -13,6 +13,17 @@ class TagController extends BaseController
 {
     use WithCrud;
 
+    public function getAll(Request $request, Response $response): Response
+    {
+        $onlyDeleted = (bool)$request->getQueryParam('deleted', false);
+
+        $tags = Tag::withoutProtected()->orderBy('name');
+        if ($onlyDeleted) {
+            $tags->onlyTrashed();
+        }
+        return $response->withJson($tags->get());
+    }
+
     public function getPersons(Request $request, Response $response): Response
     {
         $id = (int)$request->getAttribute('id');

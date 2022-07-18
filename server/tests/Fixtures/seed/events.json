@@ -36,7 +36,7 @@
         "is_archived": true,
         "location": "Brousse",
         "is_billable": false,
-        "is_return_inventory_done": false
+        "is_return_inventory_done": true
     },
     {
         "id": 4,

@@ -1,4 +1,4 @@
-import Config from '@/globals/config';
+import config from '@/globals/config';
 
 const getEventGrandTotal = (total, daysCount) => {
     if (typeof total !== 'number' || Number.isNaN(total)) {
@@ -8,7 +8,7 @@ const getEventGrandTotal = (total, daysCount) => {
         return 0;
     }
 
-    const ratio = Config.degressiveRate(daysCount);
+    const ratio = config.degressiveRate(daysCount);
     return total * ratio;
 };
 

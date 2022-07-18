@@ -1,6 +1,6 @@
 import requester from '@/globals/requester';
-import Config from '@/globals/config';
-import Cookies from '@/utils/cookies';
+import config from '@/globals/config';
+import cookies from '@/utils/cookies';
 
 const normalizeUser = (rawData) => ({
     id: rawData.id,
@@ -10,11 +10,10 @@ const normalizeUser = (rawData) => ({
     pseudo: rawData.pseudo,
     email: rawData.email,
     locale: rawData.settings ? rawData.settings.language : 'en',
-    restrictedParks: rawData.restricted_parks,
 });
 
 const setSessionCookie = (token) => {
-    const { cookie, timeout } = Config.auth;
+    const { cookie, timeout } = config.auth;
 
     const cookieConfig = {};
     if (timeout) {
@@ -23,7 +22,7 @@ const setSessionCookie = (token) => {
         cookieConfig.expires = timeoutDate;
     }
 
-    Cookies.set(cookie, token, cookieConfig);
+    cookies.set(cookie, token, cookieConfig);
 };
 
 export default {
@@ -58,7 +57,7 @@ export default {
     },
     actions: {
         async fetch({ dispatch, commit }) {
-            if (!Cookies.get(Config.auth.cookie)) {
+            if (!cookies.get(config.auth.cookie)) {
                 commit('setUser', null);
                 return;
             }
@@ -90,7 +89,7 @@ export default {
             const hasPotentiallyStatefulSession = false;
 
             if (hasPotentiallyStatefulSession) {
-                window.location.assign(`${Config.baseUrl}/logout`);
+                window.location.assign(`${config.baseUrl}/logout`);
 
                 // - Timeout de 5 secondes avant de rejeter la promise.
                 // => L'idée étant que la redirection doit avoir lieu dans ce labs de temps.
@@ -103,7 +102,7 @@ export default {
             commit('parks/reset', undefined, { root: true });
             await dispatch('settings/reset', undefined, { root: true });
 
-            Cookies.remove(Config.auth.cookie);
+            cookies.remove(config.auth.cookie);
         },
     },
 };

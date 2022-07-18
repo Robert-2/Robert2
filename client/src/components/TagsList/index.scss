@@ -1,0 +1,17 @@
+@use '~@/style/globals';
+
+.TagsList {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+
+    &__item {
+        margin: 0 0.35rem 0.35rem 0;
+        padding: 0.3rem 0.5rem;
+        border-radius: 10px;
+        background: globals.$bg-color-emphasis;
+        list-style: none;
+    }
+}

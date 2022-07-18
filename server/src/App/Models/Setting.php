@@ -187,7 +187,7 @@ class Setting extends BaseModel
 
                 $value = is_string($value) ? trim($value) : $value;
                 $model->value = $value === '' ? null : $value;
-                $model->validate()->save();
+                $model->save();
             } catch (ValidationException $error) {
                 $errors[$key] = $error->getValidationErrors()['value'];
             }
@@ -212,7 +212,7 @@ class Setting extends BaseModel
         }
 
         $this->value = $manifest[$this->key]['default'];
-        $this->validate()->save();
+        $this->save();
     }
 
     public function remove($id, array $options = []): ?BaseModel

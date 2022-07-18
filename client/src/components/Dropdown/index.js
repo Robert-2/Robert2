@@ -43,7 +43,7 @@ export default defineComponent({
         }];
 
         return (
-            <div class={classNames} vClickOutside={handleClose}>
+            <div class={classNames} v-clickOutside={handleClose}>
                 <div class="Dropdown__button" onClick={handleToggle}>
                     <span class="Dropdown__button__text">
                         {buttonText?.() || <i class="Dropdown__button__icon fas fa-ellipsis-h" />}

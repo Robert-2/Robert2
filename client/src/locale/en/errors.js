@@ -1,10 +1,14 @@
-/* eslint-disable quotes */
-
 export default {
     errors: {
         'generic': "Error: {message}",
+        'unexpected-while-saving': "An unexpected error occurred while saving, please try again.",
+        'unexpected-while-deleting': "An unexpected error occurred while deleting, please try again.",
+        'unexpected-while-restoring': "An unexpected error occurred while restoring, please try again.",
+        'unexpected-while-uploading': "An unexpected error occurred while sending your files, please try again.",
+        'unexpected-while-calculating': "An unexpected error occurred while calculating, please try again.",
         'api-unreachable': "Sorry, but Robert2 API is unreachable... Please check your access to network.",
-        'not-found': "This record does not exist.",
+        'record-not-found': "This record does not exist.",
+        'page-not-found': "The requested page does not exist.",
         'unknown': "Unknown error.",
         'validation': "Please check form informations.",
         'already-exists': "This record already exists.",
@@ -20,12 +24,13 @@ export default {
         'details-file': "File:",
         'details-stacktrace': "Stack trace:",
         'critical': [
-            "A critical error has occured, please refresh the page.",
+            "A critical error has occurred, please refresh the page.",
             "If the problem persists, please contact an administrator.",
         ].join('\n'),
 
         'file-type-not-allowed': "Type '{type}' not supported.",
         'file-size-exceeded': "File too large. Maximum {max}.",
         'file-already-exists': "This file already exists in the list.",
+        'file-not-a-valid-image': "The file is not part of the accepted image types.",
     },
 };

@@ -17,6 +17,8 @@
     }
 
     &__button {
+        display: flex;
+        align-items: center;
         height: 100%;
         background-color: globals.$bg-color-button-default;
         color: globals.$color-base-button;
@@ -27,6 +29,7 @@
 
         &__text {
             display: inline-block;
+            line-height: 1.25;
         }
 
         &__chevron {
@@ -77,6 +80,7 @@
         display: flex;
         align-items: center;
         padding: globals.$content-padding-large-horizontal globals.$content-padding-small-vertical;
+        white-space: nowrap;
         list-style: none;
 
         /* stylelint-disable selector-max-type */
@@ -88,7 +92,6 @@
                 color: globals.$link-hover-color;
             }
 
-            &:visited,
             &:active {
                 color: globals.$text-base-color;
             }

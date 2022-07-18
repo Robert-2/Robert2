@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Robert2\Tests;
 
-use Robert2\API\Models;
+use Robert2\API\Models\Tag;
 use Robert2\API\Models\Person;
 
 final class TagTest extends ModelTestCase
@@ -12,7 +12,7 @@ final class TagTest extends ModelTestCase
     {
         parent::setUp();
 
-        $this->model = new Models\Tag();
+        $this->model = new Tag();
     }
 
     public function testTableName(): void
@@ -115,11 +115,25 @@ final class TagTest extends ModelTestCase
 
     public function testFormat(): void
     {
-        $Tags   = Models\Tag::where('name', 'like', '%ci%')->get();
-        $result = Models\Tag::format($Tags);
+        $Tags   = Tag::where('name', 'like', '%ci%')->get();
+        $result = Tag::format($Tags);
         $this->assertEquals([
             ['id' => 1, 'name' => 'Technician'],
             ['id' => 2, 'name' => 'Beneficiary'],
         ], $result);
+    }
+
+    public function testWithoutProtected(): void
+    {
+        $result = Tag::withoutProtected()->get();
+        $this->assertEquals([
+            [
+                'id' => 3,
+                'name' => 'pro',
+                'created_at' => null,
+                'updated_at' => null,
+                'deleted_at' => null,
+            ],
+        ], $result->toArray());
     }
 }

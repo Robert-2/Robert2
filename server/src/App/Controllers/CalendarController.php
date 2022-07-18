@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Robert2\API\Controllers;
 
+use Robert2\API\Config\Config;
 use Robert2\API\Models\Event;
 use Robert2\API\Models\Setting;
 use Slim\Exception\HttpNotFoundException;
@@ -43,7 +44,11 @@ class CalendarController extends BaseController
                 $calendarBoundaries['end'] = $eventEnd;
             }
 
-            $calendarEventId = new CalendarValue\UniqueIdentifier((string) $event->id);
+            $apiUrl = trim(Config::getSettings('apiUrl'), '/');
+
+            $calendarEventId = new CalendarValue\UniqueIdentifier(
+                md5(sprintf('%s/%d', $apiUrl, $event->id))
+            );
             $calendarEvent = (new CalendarEvent($calendarEventId))
                 ->setSummary($event->title)
                 ->setOccurrence(new CalendarValue\TimeSpan(

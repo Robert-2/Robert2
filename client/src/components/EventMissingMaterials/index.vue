@@ -2,10 +2,10 @@
     <div v-if="hasMissingMaterials || error" class="EventMissingMaterials">
         <h3 class="EventMissingMaterials__title">
             <i class="fas fa-box-open" />
-            {{ $t('page-events.event-missing-materials') }}
+            {{ $t('@event.event-missing-materials') }}
         </h3>
         <p class="EventMissingMaterials__help">
-            {{ $t('page-events.event-missing-materials-help') }}
+            {{ $t('@event.event-missing-materials-help') }}
         </p>
         <div v-if="error" class="EventMissingMaterials__error">
             {{ error }}
@@ -20,7 +20,7 @@
                     {{ missingMaterial.name }}
                 </div>
                 <div class="EventMissingMaterials__item__quantity">
-                    {{ $t('page-events.missing-material-count', getMissingCount(missingMaterial)) }}
+                    {{ $t('@event.missing-material-count', getMissingCount(missingMaterial)) }}
                 </div>
             </li>
         </ul>

@@ -11,6 +11,7 @@ textarea {
     color: $color-input;
     font-family: $text-base-font-family;
     font-size: $input-font-size;
+    line-height: $input-line-height;
 
     &:focus {
         border-color: $input-focus-border-color;
@@ -21,4 +22,13 @@ textarea {
         background-color: $bg-color-input-disabled;
         color: $color-input-disabled;
     }
+}
+
+textarea {
+    min-height: 75px;
+    resize: vertical;
+}
+
+input[type='text'] {
+    min-height: $input-min-height;
 }

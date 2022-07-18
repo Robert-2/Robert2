@@ -169,35 +169,45 @@ final class UserTest extends ModelTestCase
     {
         $this->expectException(ValidationException::class);
         $this->expectExceptionCode(ERROR_VALIDATION);
-        User::new(['foo' => 'bar']);
+        User::new(['pseudo' => 'Sans email!']);
     }
 
-    public function testUpdateNotFound(): void
+    public function testCreateWithoutPerson(): void
     {
-        $this->expectException(ModelNotFoundException::class);
-        $this->model->edit(999, []);
+        $this->expectException(ValidationException::class);
+        $this->expectExceptionCode(ERROR_VALIDATION);
+        User::new([
+            'pseudo' => 'owkay',
+            'email' => 'owkay@test.org',
+            'password' => 'testpw',
+        ]);
     }
 
     public function testCreate(): void
     {
         $data = [
-            'pseudo' => 'testadd',
-            'email' => 'testadd@robertmanager.net',
+            'pseudo' => 'testAdd',
+            'email' => 'testadd@testing.org',
             'password' => 'testadd',
             'group_id' => 'member',
+            'person' => [
+                'first_name' => 'Testing',
+                'last_name' => 'Add',
+                'reference' => 'test1',
+            ],
         ];
 
         $result = User::new($data);
-        $expected = [
-            'id' => 4,
-            'pseudo' => 'testadd',
-            'email' => 'testadd@robertmanager.net',
-            'group_id' => 'member',
-            'cas_identifier' => null,
-            'person' => null
-        ];
-        unset($result->created_at, $result->updated_at, $result->deleted_at);
-        $this->assertEquals($expected, $result->toArray());
+        $this->assertEquals(4, $result->id);
+        $this->assertEquals('testAdd', $result->pseudo);
+        $this->assertEquals('testadd@testing.org', $result->email);
+        $this->assertEquals('member', $result->group_id);
+        $this->assertNull($result->cas_identifier);
+        $this->assertEquals(4, $result->person['id']);
+        $this->assertEquals(4, $result->person['user_id']);
+        $this->assertEquals('Testing', $result->person['first_name']);
+        $this->assertEquals('Add', $result->person['last_name']);
+        $this->assertEquals('test1', $result->person['reference']);
 
         // - Vérifie que les settings ont été créé
         $settings = UserSetting::find(3);
@@ -211,26 +221,12 @@ final class UserTest extends ModelTestCase
         ], $settings->toArray());
     }
 
-    public function testCreateWithPerson(): void
+
+    public function testUpdateNotFound(): void
     {
-        $data = [
-            'pseudo' => 'testNewPerson',
-            'email' => 'testNewPerson@robertmanager.net',
-            'password' => 'testNewPerson',
-            'group_id' => 'member',
-            'person' => [
-                'first_name' => 'New',
-                'last_name' => 'TestPerson',
-                'nickname' => 'testNewPerson',
-            ],
-        ];
-
-        $result = User::new($data);
-        $this->assertEquals(4, $result['person']['id']);
-        $this->assertEquals(4, $result['person']['user_id']);
-        $this->assertEquals('testNewPerson', $result['person']['nickname']);
+        $this->expectException(ModelNotFoundException::class);
+        User::staticEdit(999, []);
     }
-
     public function testUpdate(): void
     {
         $data = [
@@ -238,7 +234,7 @@ final class UserTest extends ModelTestCase
             'email' => 'testUpdate@robertmanager.net',
         ];
 
-        $result = $this->model->edit(1, $data);
+        $result = User::staticEdit(1, $data);
         $this->assertEquals('testUpdate', $result['pseudo']);
 
         // - Test update avec des données de "Person"
@@ -249,7 +245,7 @@ final class UserTest extends ModelTestCase
                 'last_name' => 'Tester',
             ],
         ];
-        $result = $this->model->edit(3, $data);
+        $result = User::staticEdit(3, $data);
         $this->assertEquals('testEdit', $result['pseudo']);
         $this->assertEquals('Testing Tester', $result['person']['full_name']);
     }

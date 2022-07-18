@@ -11,17 +11,9 @@ final class MaterialsTest extends ApiTestCase
         $this->assertStatusCode(SUCCESS_OK);
         $this->assertResponseData([
             'pagination' => [
-                'current_page' => 1,
-                'from' => 1,
-                'last_page' => 1,
-                'path' => '/api/materials',
-                'first_page_url' => '/api/materials?page=1',
-                'next_page_url' => null,
-                'prev_page_url' => null,
-                'last_page_url' => '/api/materials?page=1',
-                'per_page' => $this->settings['maxItemsPerPage'],
-                'to' => 7,
-                'total' => 7,
+                'currentPage' => 1,
+                'perPage' => $this->settings['maxItemsPerPage'],
+                'total' => ['items' => 7, 'pages' => 1],
             ],
             'data' => [
                 [
@@ -675,20 +667,11 @@ final class MaterialsTest extends ApiTestCase
     {
         $this->client->get('/api/materials?tags[0]=notFound');
         $this->assertStatusCode(SUCCESS_OK);
-        $pagesUrl = '/api/materials?tags%5B0%5D=notFound&page=1';
         $this->assertResponseData([
             'pagination' => [
-                'current_page' => 1,
-                'from' => null,
-                'last_page' => 1,
-                'path' => '/api/materials',
-                'first_page_url' => $pagesUrl,
-                'next_page_url' => null,
-                'prev_page_url' => null,
-                'last_page_url' => $pagesUrl,
-                'per_page' => $this->settings['maxItemsPerPage'],
-                'to' => null,
-                'total' => 0,
+                'currentPage' => 1,
+                'perPage' => $this->settings['maxItemsPerPage'],
+                'total' => ['items' => 0, 'pages' => 1],
             ],
             'data' => [],
         ]);
@@ -699,19 +682,10 @@ final class MaterialsTest extends ApiTestCase
         $this->client->get('/api/materials?tags[0]=pro');
         $this->assertStatusCode(SUCCESS_OK);
         $response = $this->_getResponseAsArray();
-        $pagesUrl = '/api/materials?tags%5B0%5D=pro&page=1';
         $this->assertEquals([
-            'current_page' => 1,
-            'from' => 1,
-            'last_page' => 1,
-            'path' => '/api/materials',
-            'first_page_url' => $pagesUrl,
-            'next_page_url' => null,
-            'prev_page_url' => null,
-            'last_page_url' => $pagesUrl,
-            'per_page' => $this->settings['maxItemsPerPage'],
-            'to' => 3,
-            'total' => 3,
+            'currentPage' => 1,
+            'perPage' => $this->settings['maxItemsPerPage'],
+            'total' => ['items' => 3, 'pages' => 1],
         ], $response['pagination']);
         $this->assertCount(3, $response['data']);
     }
@@ -721,19 +695,10 @@ final class MaterialsTest extends ApiTestCase
         $this->client->get('/api/materials?parkId=1');
         $this->assertStatusCode(SUCCESS_OK);
         $response = $this->_getResponseAsArray();
-        $pagesUrl = '/api/materials?parkId=1&page=1';
         $this->assertEquals([
-            'current_page' => 1,
-            'from' => 1,
-            'last_page' => 1,
-            'path' => '/api/materials',
-            'first_page_url' => $pagesUrl,
-            'next_page_url' => null,
-            'prev_page_url' => null,
-            'last_page_url' => $pagesUrl,
-            'per_page' => $this->settings['maxItemsPerPage'],
-            'to' => 7,
-            'total' => 7,
+            'currentPage' => 1,
+            'perPage' => $this->settings['maxItemsPerPage'],
+            'total' => ['items' => 7, 'pages' => 1],
         ], $response['pagination']);
         $this->assertCount(7, $response['data']);
     }
@@ -743,19 +708,10 @@ final class MaterialsTest extends ApiTestCase
         $this->client->get('/api/materials?category=1&subCategory=1');
         $this->assertStatusCode(SUCCESS_OK);
         $response = $this->_getResponseAsArray();
-        $pagesUrl = '/api/materials?category=1&subCategory=1&page=1';
         $this->assertEquals([
-            'current_page' => 1,
-            'from' => 1,
-            'last_page' => 1,
-            'path' => '/api/materials',
-            'first_page_url' => $pagesUrl,
-            'next_page_url' => null,
-            'prev_page_url' => null,
-            'last_page_url' => $pagesUrl,
-            'per_page' => $this->settings['maxItemsPerPage'],
-            'to' => 2,
-            'total' => 2,
+            'currentPage' => 1,
+            'perPage' => $this->settings['maxItemsPerPage'],
+            'total' => ['items' => 2, 'pages' => 1],
         ], $response['pagination']);
         $this->assertCount(2, $response['data']);
     }
@@ -818,9 +774,7 @@ final class MaterialsTest extends ApiTestCase
         $this->assertValidationErrorMessage();
         $this->assertErrorDetails([
             'reference' => [
-                "reference must not be empty",
-                'reference must contain only letters (a-z), digits (0-9) and ".,-+/_ "',
-                "reference must have a length between 2 and 64",
+                "This field is mandatory",
             ],
         ]);
     }
@@ -836,7 +790,7 @@ final class MaterialsTest extends ApiTestCase
             'rental_price' => 500,
             'stock_quantity' => 1,
         ]);
-        $this->assertStatusCode(ERROR_DUPLICATE);
+        $this->assertStatusCode(ERROR_VALIDATION);
         $this->assertValidationErrorMessage();
     }
 
@@ -1115,17 +1069,9 @@ final class MaterialsTest extends ApiTestCase
         $this->assertStatusCode(SUCCESS_OK);
         $this->assertResponseData([
             'pagination' => [
-                'current_page' => 1,
-                'first_page_url' => '/api/materials?with-events=true&page=1',
-                'from' => 1,
-                'last_page' => 1,
-                'last_page_url' => '/api/materials?with-events=true&page=1',
-                'next_page_url' => null,
-                'path' => '/api/materials',
-                'per_page' => 100,
-                'prev_page_url' => null,
-                'to' => 7,
-                'total' => 7
+                'currentPage' => 1,
+                'perPage' => $this->settings['maxItemsPerPage'],
+                'total' => ['items' => 7, 'pages' => 1],
             ],
             'data' => [
                 [

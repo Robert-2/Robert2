@@ -1,36 +1,30 @@
 @use '~@/style/globals';
 @use 'sass:math';
-@use 'sass:color';
 
 .MaterialsFilters {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
 
-    &__item,
-    &__reset {
-        margin-right: math.div(globals.$content-padding-small-vertical, 2);
-        margin-bottom: globals.$content-padding-large-horizontal;
-        margin-left: 0;
-    }
-
     &__item {
-        padding: 8px 10px;
+        &--category {
+            min-width: 150px;
+        }
+
+        &--sub-category {
+            min-width: 180px;
+        }
 
         &--tags {
-            height: 35px;
             min-width: 160px;
-            margin-right: math.div(globals.$content-padding-small-vertical, 2);
-            padding: 0 globals.$content-padding-small-horizontal;
+        }
+
+        & + & {
+            margin-left: math.div(globals.$content-padding-small-vertical, 2);
         }
     }
 
     &__reset {
-        height: 35px;
-    }
-
-    &__item--is-active {
-        // stylelint-disable-next-line declaration-no-important
-        background-color: color.adjust(globals.$bg-color-button-warning, $lightness: -5%) !important;
+        margin-left: math.div(globals.$content-padding-small-vertical, 2);
     }
 }

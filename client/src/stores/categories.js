@@ -9,10 +9,7 @@ export default {
         error: null,
     },
     getters: {
-        options: (state, getters, rootState) => {
-            const { locale, translations } = rootState.i18n;
-            return formatOptions(state.list, null, translations[locale]['please-choose']);
-        },
+        options: (state) => formatOptions(state.list),
 
         categoryName: (state) => (categoryId) => {
             const category = state.list.find((_category) => _category.id === categoryId);

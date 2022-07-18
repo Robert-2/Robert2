@@ -13,7 +13,7 @@
 
         .MaterialsFilters {
             flex: 1;
-            margin: globals.$content-padding-small-vertical 0;
+            margin: globals.$content-padding-small-vertical 0 globals.$content-padding-large-horizontal;
         }
 
         &__extra-filters {

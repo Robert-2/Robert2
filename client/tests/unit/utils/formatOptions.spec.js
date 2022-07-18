@@ -7,16 +7,6 @@ describe('formatOptions', () => {
         expect(formatOptions(null)).toEqual([]);
     });
 
-    it('returns an array with the placeholder only if the list is explicitely empty', () => {
-        expect(formatOptions([], null, 'Choose...')).toEqual([
-            { value: '', label: 'Choose...' },
-        ]);
-
-        // -> Cas où les données passées ne sont pas explicitement vides (= tableau vide) => Pas de placeholder.
-        expect(formatOptions(undefined, null, 'Choose...')).toEqual([]);
-        expect(formatOptions(null, null, 'Choose...')).toEqual([]);
-    });
-
     it('returns a set of options with given list of entities', () => {
         const entities = [
             { id: 1, name: 'test1' },
@@ -48,19 +38,6 @@ describe('formatOptions', () => {
         expect(options).toEqual([
             { value: 1, label: 'test1 0123456789 − ' },
             { value: 2, label: 'test2 0987654321 − Testing' },
-        ]);
-    });
-
-    it('returns a set of options with given list of entities, plus an empty one at position 0', () => {
-        const entities = [
-            { id: 1, name: 'test1' },
-            { id: 2, name: 'test2' },
-        ];
-        const options = formatOptions(entities, null, 'Choose...');
-        expect(options).toEqual([
-            { value: '', label: 'Choose...' },
-            { value: 1, label: 'test1' },
-            { value: 2, label: 'test2' },
         ]);
     });
 });

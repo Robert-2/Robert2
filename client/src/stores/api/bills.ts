@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-
 //
 // - Types
 //
 
+/* eslint-disable @typescript-eslint/naming-convention */
 export type Bill = {
     id: number,
     number: string,
@@ -11,3 +10,4 @@ export type Bill = {
     discount_rate: number,
     due_amount: number,
 };
+/* eslint-enable @typescript-eslint/naming-convention */

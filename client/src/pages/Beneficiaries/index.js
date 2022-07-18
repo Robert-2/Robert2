@@ -1,10 +1,11 @@
 import './index.scss';
-import { Fragment } from 'vue-fragment';
-import initColumnsDisplay from '@/utils/initColumnsDisplay';
-import { confirm } from '@/utils/alert';
-import Config from '@/globals/config';
+import Fragment from '@/components/Fragment';
 import Page from '@/components/Page';
+import CriticalError from '@/components/CriticalError';
 import Button from '@/components/Button';
+import { confirm } from '@/utils/alert';
+import apiBeneficiaries from '@/stores/api/beneficiaries';
+import initColumnsDisplay from '@/utils/initColumnsDisplay';
 
 // @vue/component
 export default {
@@ -13,10 +14,15 @@ export default {
         const { $t: __, $route, $options } = this;
 
         return {
-            error: null,
+            hasCriticalError: false,
             isLoading: false,
-            isDisplayTrashed: false,
+            shouldDisplayTrashed: false,
             isTrashDisplayed: false,
+
+            //
+            // - Tableau
+            //
+
             columns: [
                 'last_name',
                 'first_name',
@@ -57,33 +63,27 @@ export default {
                     actions: '',
                 },
                 columnsClasses: {
-                    company: 'Beneficiaries__company',
-                    email: 'Beneficiaries__email',
-                    address: 'Beneficiaries__address',
-                    note: 'Beneficiaries__note',
-                    actions: 'Beneficiaries__actions',
+                    company: 'Beneficiaries__company ',
+                    email: 'Beneficiaries__email ',
+                    address: 'Beneficiaries__address ',
+                    note: 'Beneficiaries__note ',
+                    actions: 'Beneficiaries__actions ',
                 },
                 requestFunction: this.fetch.bind(this),
                 templates: {
-                    company: (h, beneficiary) => {
-                        if (!beneficiary.company) {
+                    company: (h, { company }) => {
+                        if (!company) {
                             return null;
                         }
 
                         return (
-                            <router-link
-                                vTooltip={__('action-edit')}
-                                to={`/companies/${beneficiary.company.id}`}
-                            >
-                                {beneficiary.company.legal_name}{' '}
-                                <i class="fas fa-edit" />
+                            <router-link to={{ name: 'edit-company', params: { id: company.id } }}>
+                                {company.legal_name}
                             </router-link>
                         );
                     },
-                    email: (h, beneficiary) => (
-                        <a href={`mailto:${beneficiary.email}`}>
-                            {beneficiary.email}
-                        </a>
+                    email: (h, { email }) => (
+                        <a href={`mailto:${email}`}>{email}</a>
                     ),
                     phone: (h, beneficiary) => (
                         <Fragment>
@@ -95,63 +95,45 @@ export default {
                         beneficiary.company?.full_address || beneficiary.full_address || ''
                     ),
                     note: (h, beneficiary) => (
-                        beneficiary.company ? beneficiary.company.note : beneficiary.note
+                        beneficiary.company
+                            ? beneficiary.company.note
+                            : beneficiary.note
                     ),
-                    actions: (h, beneficiary) => {
+                    actions: (h, { id }) => {
                         const {
                             isTrashDisplayed,
-                            deleteBeneficiary,
-                            restoreBeneficiary,
+                            handleDeleteItem,
+                            handleRestoreItem,
                         } = this;
 
                         if (isTrashDisplayed) {
                             return (
                                 <Fragment>
-                                    <button
-                                        type="button"
-                                        vTooltip={__('action-restore')}
-                                        class="item-actions__button info"
-                                        onClick={() => { restoreBeneficiary(beneficiary.id); }}
-                                    >
-                                        <i class="fas fa-trash-restore" />
-                                    </button>
-                                    <button
-                                        type="button"
-                                        vTooltip={__('action-delete')}
-                                        class="item-actions__button danger"
-                                        onClick={() => { deleteBeneficiary(beneficiary.id); }}
-                                    >
-                                        <i class="fas fa-trash-alt" />
-                                    </button>
+                                    <Button
+                                        type="restore"
+                                        onClick={() => { handleRestoreItem(id); }}
+                                    />
+                                    <Button
+                                        type="delete"
+                                        onClick={() => { handleDeleteItem(id); }}
+                                    />
                                 </Fragment>
                             );
                         }
 
                         return (
                             <Fragment>
-                                <router-link
-                                    vTooltip={__('action-edit')}
-                                    to={`/beneficiaries/${beneficiary.id}`}
-                                    custom
-                                >
-                                    {({ navigate }) => (
-                                        <button
-                                            type="button"
-                                            class="item-actions__button info"
-                                            onClick={navigate}
-                                        >
-                                            <i class="fas fa-edit" />
-                                        </button>
-                                    )}
-                                </router-link>
-                                <button
-                                    type="button"
-                                    vTooltip={__('action-trash')}
-                                    class="item-actions__button warning"
-                                    onClick={() => { deleteBeneficiary(beneficiary.id); }}
-                                >
-                                    <i class="fas fa-trash" />
-                                </button>
+                                <Button
+                                    type="edit"
+                                    to={{
+                                        name: 'edit-beneficiary',
+                                        params: { id },
+                                    }}
+                                />
+                                <Button
+                                    type="trash"
+                                    onClick={() => { handleDeleteItem(id); }}
+                                />
                             </Fragment>
                         );
                     },
@@ -160,28 +142,13 @@ export default {
         };
     },
     methods: {
-        async fetch(pagination) {
-            this.isLoading = true;
-            this.error = null;
+        // ------------------------------------------------------
+        // -
+        // -    Handlers
+        // -
+        // ------------------------------------------------------
 
-            try {
-                const params = {
-                    ...pagination,
-                    tags: [Config.beneficiaryTagName],
-                    deleted: this.isDisplayTrashed ? '1' : '0',
-                };
-                return await this.$http.get('persons', { params });
-            } catch (error) {
-                this.error = error;
-            } finally {
-                this.isTrashDisplayed = this.isDisplayTrashed;
-                this.isLoading = false;
-            }
-
-            return undefined;
-        },
-
-        async deleteBeneficiary(beneficiaryId) {
+        async handleDeleteItem(id) {
             const { $t: __ } = this;
             const isSoft = !this.isTrashDisplayed;
 
@@ -189,8 +156,8 @@ export default {
                 type: isSoft ? 'warning' : 'danger',
 
                 text: isSoft
-                    ? __('page-beneficiaries.confirm-delete')
-                    : __('page-beneficiaries.confirm-permanently-delete'),
+                    ? __('page.beneficiaries.confirm-delete')
+                    : __('page.beneficiaries.confirm-permanently-delete'),
 
                 confirmButtonText: isSoft
                     ? __('yes-delete')
@@ -200,97 +167,119 @@ export default {
                 return;
             }
 
-            this.error = null;
             this.isLoading = true;
-
             try {
-                await this.$http.delete(`persons/${beneficiaryId}`);
-                this.refreshTable();
-            } catch (error) {
-                this.error = error;
+                await apiBeneficiaries.remove(id);
+                this.$refs.table.refresh();
+            } catch {
+                this.$toasted.error(__('errors.unexpected-while-deleting'));
             } finally {
                 this.isLoading = false;
             }
         },
 
-        async restoreBeneficiary(beneficiaryId) {
+        async handleRestoreItem(id) {
             const { $t: __ } = this;
 
             const { value: isConfirmed } = await confirm({
                 type: 'restore',
-                text: __('page-beneficiaries.confirm-restore'),
+                text: __('page.beneficiaries.confirm-restore'),
                 confirmButtonText: __('yes-restore'),
             });
             if (!isConfirmed) {
                 return;
             }
 
-            this.error = null;
             this.isLoading = true;
-
             try {
-                await this.$http.put(`persons/restore/${beneficiaryId}`);
-                this.refreshTable();
-            } catch (error) {
-                this.error = error;
+                await apiBeneficiaries.restore(id);
+                this.$refs.table.refresh();
+            } catch {
+                this.$toasted.error(__('errors.unexpected-while-restoring'));
             } finally {
                 this.isLoading = false;
             }
         },
 
-        refreshTable() {
-            this.error = null;
-            this.isLoading = true;
-            this.$refs.DataTable.refresh();
+        handleShowTrashed() {
+            this.shouldDisplayTrashed = !this.shouldDisplayTrashed;
+            this.$refs.table.refresh();
         },
 
-        showTrashed() {
-            this.isDisplayTrashed = !this.isDisplayTrashed;
-            this.refreshTable();
+        // ------------------------------------------------------
+        // -
+        // -    Méthodes internes
+        // -
+        // ------------------------------------------------------
+
+        async fetch(pagination) {
+            this.isLoading = true;
+
+            try {
+                const data = await apiBeneficiaries.all({
+                    ...pagination,
+                    deleted: this.shouldDisplayTrashed,
+                });
+                this.isTrashDisplayed = this.shouldDisplayTrashed;
+                return data;
+            } catch {
+                this.hasCriticalError = true;
+            } finally {
+                this.isLoading = false;
+            }
+
+            return undefined;
         },
     },
     render() {
         const {
             $t: __,
             $options,
-            error,
-            isLoading,
             columns,
             options,
-            showTrashed,
+            isLoading,
             isTrashDisplayed,
+            hasCriticalError,
+            handleShowTrashed,
         } = this;
 
-        const headerActions = [
-            <Button icon="user-plus" type="success" to="/beneficiaries/new">
-                {__('page-beneficiaries.action-add')}
-            </Button>,
-        ];
+        if (hasCriticalError) {
+            return (
+                <Page name="beneficiaries" title={__('page.beneficiaries.title')}>
+                    <CriticalError />
+                </Page>
+            );
+        }
 
         return (
             <Page
                 name="beneficiaries"
-                class="Beneficiaries"
-                title={__('page-beneficiaries.title')}
-                help={__('page-beneficiaries.help')}
-                error={error}
+                title={__('page.beneficiaries.title')}
+                help={__('page.beneficiaries.help')}
                 isLoading={isLoading}
-                actions={headerActions}
+                actions={[
+                    <Button type="add" icon="user-plus" to={{ name: 'add-beneficiary' }}>
+                        {__('page.beneficiaries.action-add')}
+                    </Button>,
+                ]}
             >
-                <v-server-table
-                    ref="DataTable"
-                    name={$options.name}
-                    columns={columns}
-                    options={options}
-                />
-                <div class="content__footer">
-                    <Button
-                        onClick={showTrashed}
-                        icon={isTrashDisplayed ? 'eye' : 'trash'}
-                        type={isTrashDisplayed ? 'success' : 'danger'}
-                    >
-                        {isTrashDisplayed ? __('display-not-deleted-items') : __('open-trash-bin')}
-                    </Button>
+                <div class="Beneficiaries">
+                    <v-server-table
+                        ref="table"
+                        class="Beneficiaries__table"
+                        name={$options.name}
+                        columns={columns}
+                        options={options}
+                    />
+                    <div class="content__footer">
+                        <Button
+                            onClick={handleShowTrashed}
+                            icon={isTrashDisplayed ? 'eye' : 'trash'}
+                            type={isTrashDisplayed ? 'success' : 'danger'}
+                        >
+                            {isTrashDisplayed ? __('display-not-deleted-items') : __('open-trash-bin')}
+                        </Button>
+                    </div>
                 </div>
             </Page>
         );

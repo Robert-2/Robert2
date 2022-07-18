@@ -1,26 +1,18 @@
 @use '~@/style/globals';
 
+.Page--attributes {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+
+    .Attributes {
+        flex: 1;
+    }
+}
+
 .Attributes {
-    &__header {
-        .Help {
-            margin-top: globals.$content-padding-small-horizontal;
-        }
-    }
-
-    &__back-button {
-        margin-top: globals.$content-padding-small-horizontal;
-        margin-right: globals.$content-padding-small-vertical;
-    }
-
-    &__no-data {
-        margin: 0;
-        padding: 1.5rem 0.5rem;
-        background-color: globals.$bg-color-table-td;
-        font-style: italic;
-        text-align: center;
-    }
-
-    &__items {
+    &__table {
         width: 100%;
         min-width: 800px;
         margin: 0;
@@ -35,108 +27,44 @@
             text-align: left;
         }
 
-        &__name,
-        &__type,
-        &__unit,
-        &__max-length,
-        &__categories,
-        &__delete {
-            height: 45px;
+        &__col {
             padding: 0.8rem 0.5rem;
             border-bottom: 1px solid globals.$bg-color-body;
-        }
 
-        &__name {
-            width: 305px;
-            font-weight: 700;
-
-            &__content {
-                display: flex;
-                align-items: center;
+            &--name {
+                width: 300px;
             }
 
-            &__text {
-                flex: 1;
+            &--type {
+                width: 150px;
             }
 
-            &__actions {
-                margin-left: 10px;
+            &--unit,
+            &--max-length {
+                width: 120px;
+                text-align: center;
             }
 
-            &__input {
-                width: 100%;
-            }
+            &--max-length {
+                display: none;
 
-            &__error {
-                color: globals.$text-danger-color;
-                font-weight: 400;
-            }
-
-            &__edit-button {
-                padding: 5px 8px;
-                font-size: 0.9rem;
-                visibility: hidden;
-                transition: none;
-            }
-        }
-
-        &__delete {
-            width: 30px;
-
-            &__button {
-                padding: 5px 8px;
-                font-size: 0.9rem;
-                visibility: hidden;
-                transition: none;
-
-                &--show {
-                    visibility: visible;
+                @media (min-width: globals.$screen-big-desktop) {
+                    display: table-cell;
                 }
             }
-        }
 
-        &__line:hover {
-            .Attributes__items__name__edit-button,
-            .Attributes__items__delete__button {
-                visibility: visible;
-            }
-        }
-
-        &__type {
-            width: 170px;
-        }
-
-        &__unit {
-            width: 100px;
-            text-align: center;
-        }
-
-        &__max-length {
-            display: none;
-            width: 100px;
-            text-align: center;
-        }
-
-        &__categories {
-            &__empty {
-                color: globals.$text-light-color;
-                font-style: italic;
+            &--actions {
+                width: 1%;
+                white-space: nowrap;
             }
         }
     }
 
-    &__actions {
-        display: flex;
-        margin-top: 1rem;
-
-        &--add {
-            justify-content: flex-end;
-        }
-    }
-
-    @media (min-width: globals.$screen-big-desktop) {
-        &__items__max-length {
-            display: table-cell;
-        }
+    &__no-data {
+        margin: 0;
+        padding: 1.5rem 0.5rem;
+        background-color: globals.$bg-color-table-td;
+        font-style: italic;
+        text-align: center;
     }
 }

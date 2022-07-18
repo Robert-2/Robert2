@@ -9,17 +9,9 @@ final class PersonsTest extends ApiTestCase
         $this->assertStatusCode(SUCCESS_OK);
         $this->assertResponseData([
             'pagination' => [
-                'current_page' => 1,
-                'from' => 1,
-                'last_page' => 1,
-                'path' => '/api/persons',
-                'first_page_url' => '/api/persons?page=1',
-                'next_page_url' => null,
-                'prev_page_url' => null,
-                'last_page_url' => '/api/persons?page=1',
-                'per_page' => $this->settings['maxItemsPerPage'],
-                'to' => 3,
-                'total' => 3,
+                'currentPage' => 1,
+                'perPage' => $this->settings['maxItemsPerPage'],
+                'total' => ['items' => 3, 'pages' => 1],
             ],
             'data' => [
                 [
@@ -127,17 +119,9 @@ final class PersonsTest extends ApiTestCase
         $this->assertStatusCode(SUCCESS_OK);
         $this->assertResponseData([
             'pagination' => [
-                'current_page' => 1,
-                'from' => 1,
-                'last_page' => 2,
-                'path' => '/api/persons',
-                'first_page_url' => '/api/persons?limit=2&page=1',
-                'next_page_url' => '/api/persons?limit=2&page=2',
-                'prev_page_url' => null,
-                'last_page_url' => '/api/persons?limit=2&page=2',
-                'per_page' => 2,
-                'to' => 2,
-                'total' => 3,
+                'currentPage' => 1,
+                'perPage' => 2,
+                'total' => ['items' => 3, 'pages' => 2],
             ],
             'data' => [
                 [
@@ -293,20 +277,11 @@ final class PersonsTest extends ApiTestCase
     {
         $this->client->get('/api/persons?tags[0]=notFound');
         $this->assertStatusCode(SUCCESS_OK);
-        $pagesUrl = '/api/persons?tags%5B0%5D=notFound&page=1';
         $this->assertResponseData([
             'pagination' => [
-                'current_page' => 1,
-                'from' => null,
-                'last_page' => 1,
-                'path' => '/api/persons',
-                'first_page_url' => $pagesUrl,
-                'next_page_url' => null,
-                'prev_page_url' => null,
-                'last_page_url' => $pagesUrl,
-                'per_page' => $this->settings['maxItemsPerPage'],
-                'to' => null,
-                'total' => 0,
+                'currentPage' => 1,
+                'perPage' => $this->settings['maxItemsPerPage'],
+                'total' => ['items' => 0, 'pages' => 1],
             ],
             'data' => [],
         ]);
@@ -316,20 +291,11 @@ final class PersonsTest extends ApiTestCase
     {
         $this->client->get('/api/persons?tags[0]=Technician');
         $this->assertStatusCode(SUCCESS_OK);
-        $pagesUrl = '/api/persons?tags%5B0%5D=Technician&page=1';
         $this->assertResponseData([
             'pagination' => [
-                'current_page' => 1,
-                'from' => 1,
-                'last_page' => 1,
-                'path' => '/api/persons',
-                'first_page_url' => $pagesUrl,
-                'next_page_url' => null,
-                'prev_page_url' => null,
-                'last_page_url' => $pagesUrl,
-                'per_page' => $this->settings['maxItemsPerPage'],
-                'to' => 1,
-                'total' => 1,
+                'perPage' => $this->settings['maxItemsPerPage'],
+                'currentPage' => 1,
+                'total' => ['items' => 1, 'pages' => 1],
             ],
             'data' => [
                 [
@@ -373,19 +339,17 @@ final class PersonsTest extends ApiTestCase
         $this->assertValidationErrorMessage();
         $this->assertErrorDetails([
             'first_name' => [
-                "first_name must not be empty",
-                'first_name must contain only letters (a-z) and ' .
-                '""-_.\' ÇçàÀâÂäÄåÅèÈéÉêÊëËíÍìÌîÎïÏòÒóÓôÔöÖðÐõÕøØúÚùÙûÛüÜýÝÿŸŷŶøØæÆœŒñÑßÞ""',
-                "first_name must have a length between 2 and 96"
+                "This field is mandatory",
+                "This field contains some unauthorized characters",
+                "2 min. characters, 96 max. characters",
             ],
             'last_name' => [
-                "last_name must not be empty",
-                'last_name must contain only letters (a-z) and ' .
-                '""-_.\' ÇçàÀâÂäÄåÅèÈéÉêÊëËíÍìÌîÎïÏòÒóÓôÔöÖðÐõÕøØúÚùÙûÛüÜýÝÿŸŷŶøØæÆœŒñÑßÞ""',
-                "last_name must have a length between 2 and 96"
+                "This field is mandatory",
+                "This field contains some unauthorized characters",
+                "2 min. characters, 96 max. characters",
             ],
             'email' => [
-                "email must be valid email",
+                "This email address is not valid",
             ]
         ]);
     }
@@ -399,30 +363,13 @@ final class PersonsTest extends ApiTestCase
             'email' => 'tester2@robertmanager.net',
         ];
         $this->client->post('/api/persons', $data);
-        $this->assertStatusCode(SUCCESS_CREATED);
-        $this->assertResponseData([
-            'id' => 2,
-            'first_name' => 'Roger',
-            'last_name' => 'Rabbit',
-            'full_name' => 'Roger Rabbit',
-            'reference' => '0002',
-            'nickname' => 'Riri',
-            'email' => 'tester2@robertmanager.net',
-            'phone' => null,
-            'street' => null,
-            'postal_code' => null,
-            'locality' => null,
-            'user_id' => 2,
-            'country_id' => null,
-            'full_address' => null,
-            'company_id' => null,
-            'note' => null,
-            'created_at' => null,
-            'updated_at' => null,
-            'deleted_at' => null,
-            'company' => null,
-            'country' => null,
-        ], ['created_at', 'updated_at']);
+        $this->assertStatusCode(ERROR_VALIDATION);
+        $this->assertValidationErrorMessage();
+        $this->assertErrorDetails([
+            'email' => [
+                "This email address is already in use",
+            ]
+        ]);
     }
 
     public function testCreatePerson()
@@ -460,7 +407,7 @@ final class PersonsTest extends ApiTestCase
         $this->assertValidationErrorMessage();
         $this->assertErrorDetails([
             'phone' => [
-                'phone must be a valid telephone number'
+                'This telephone number is not valid'
             ]
         ]);
     }

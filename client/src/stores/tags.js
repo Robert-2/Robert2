@@ -1,5 +1,5 @@
-import requester from '@/globals/requester';
-import Config from '@/globals/config';
+import apiTags from '@/stores/api/tags';
+import config from '@/globals/config';
 import formatOptions from '@/utils/formatOptions';
 
 export default {
@@ -9,8 +9,8 @@ export default {
         isFetched: false,
         error: null,
         protected: [
-            Config.beneficiaryTagName.toLowerCase(),
-            Config.technicianTagName.toLowerCase(),
+            config.beneficiaryTagName.toLowerCase(),
+            config.technicianTagName.toLowerCase(),
         ],
     },
     getters: {
@@ -32,7 +32,7 @@ export default {
         },
     },
     mutations: {
-        init(state, data) {
+        set(state, data) {
             state.list = data;
             state.isFetched = true;
             state.error = null;
@@ -43,30 +43,13 @@ export default {
         },
     },
     actions: {
-        fetch({ state, commit }) {
-            if (state.isFetched) {
-                return;
+        async fetch({ commit }) {
+            try {
+                const data = await apiTags.all();
+                commit('set', data);
+            } catch (error) {
+                commit('setError', error);
             }
-
-            requester.get('tags')
-                .then(({ data }) => {
-                    commit('init', data.data);
-                })
-                .catch((error) => {
-                    commit('setError', error);
-                });
-        },
-
-        refresh({ state, commit }) {
-            state.isFetched = false;
-
-            requester.get('tags')
-                .then(({ data }) => {
-                    commit('init', data.data);
-                })
-                .catch((error) => {
-                    commit('setError', error);
-                });
         },
     },
 };

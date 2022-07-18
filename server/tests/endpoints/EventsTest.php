@@ -21,7 +21,7 @@ final class EventsTest extends ApiTestCase
                     'is_archived' => true,
                     'location' => "Brousse",
                     'is_billable' => false,
-                    'is_return_inventory_done' => false,
+                    'is_return_inventory_done' => true,
                     'has_missing_materials' => null,
                     'has_not_returned_materials' => null,
                     'parks' => [1],
@@ -904,11 +904,11 @@ final class EventsTest extends ApiTestCase
         $response = $this->_getResponseAsArray();
         $expected = [
             'start_date' => [
-                'start_date must not be empty',
-                'start_date must be a valid date',
+                "This field is mandatory",
+                "This date is not valid",
             ],
             'end_date' => [
-                'end_date must be valid',
+                "This field is not valid",
             ],
         ];
         $this->assertEquals($expected, $response['error']['details']);
@@ -1012,8 +1012,8 @@ final class EventsTest extends ApiTestCase
         $this->assertValidationErrorMessage();
         $response = $this->_getResponseAsArray();
         $expected = [
-            ['id' => 1, 'message' => "La quantité en panne ne peut pas être supérieure à la quantité retournée."],
-            ['id' => 2, 'message' => "La quantité retournée ne peut pas être supérieure à la quantité sortie."],
+            ['id' => 1, 'message' => "Broken quantity cannot be greater than returned quantity."],
+            ['id' => 2, 'message' => "Returned quantity cannot be greater than output quantity."],
         ];
         $this->assertEquals($expected, $response['error']['details']);
     }
@@ -1180,7 +1180,7 @@ final class EventsTest extends ApiTestCase
                     'is_archived' => true,
                     'location' => 'Brousse',
                     'is_billable' => false,
-                    'is_return_inventory_done' => false,
+                    'is_return_inventory_done' => true,
                     'created_at' => null,
                     'updated_at' => null,
                     'deleted_at' => null,

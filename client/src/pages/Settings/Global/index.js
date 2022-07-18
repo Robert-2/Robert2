@@ -1,8 +1,8 @@
 import './index.scss';
-import { Tabs, Tab } from 'vue-slim-tabs';
+import { Tabs, Tab } from '@/components/Tabs';
 import Page from '@/components/Page';
-import EventSummarySettings from './EventSummary';
-import CalendarSettings from './Calendar';
+import EventSummarySettings from './tabs/EventSummary';
+import CalendarSettings from './tabs/Calendar';
 
 // @vue/component
 export default {
@@ -11,18 +11,12 @@ export default {
         const { $t: __ } = this;
 
         return (
-            <Page name="global-settings" title={__('page-settings.title')}>
+            <Page name="global-settings" title={__('page.settings.title')}>
                 <Tabs>
-                    <template slot="event-summary">
-                        <i class="fas fa-print" /> {__('page-settings.event-summary.title')}
-                    </template>
-                    <template slot="calendar">
-                        <i class="fas fa-calendar-alt" /> {__('page-settings.calendar.title')}
-                    </template>
-                    <Tab title-slot="event-summary">
+                    <Tab title={__('page.settings.event-summary.title')} icon="print">
                         <EventSummarySettings />
                     </Tab>
-                    <Tab title-slot="calendar">
+                    <Tab title={__('page.settings.calendar.title')} icon="calendar-alt">
                         <CalendarSettings />
                     </Tab>
                 </Tabs>

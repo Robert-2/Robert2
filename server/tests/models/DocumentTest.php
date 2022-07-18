@@ -61,7 +61,7 @@ final class DocumentTest extends ModelTestCase
     {
         $document = $this->model::find(1);
         $this->assertEquals(
-            DATA_FOLDER . DS . 'materials'. DS .'1'. DS .'User-manual.pdf',
+            DATA_FOLDER . DS . 'materials' . DS . 'documents' . DS . '1' . DS . 'User-manual.pdf',
             $document->file_path
         );
     }
@@ -75,8 +75,7 @@ final class DocumentTest extends ModelTestCase
     public function testRemove()
     {
         $document = $this->model::find(1);
-        $filePath = $this->model::getFilePath($document->material_id, $document->name);
-
+        $filePath = $document->file_path;
         copy($filePath, $filePath . '_backup.pdf');
 
         $this->model->remove($document->id);
@@ -90,12 +89,12 @@ final class DocumentTest extends ModelTestCase
     {
         // - Without a filename
         $result = $this->model::getFilePath(1);
-        $this->assertEquals(DATA_FOLDER . DS . 'materials' . DS . '1', $result);
+        $this->assertEquals(DATA_FOLDER . DS . 'materials' . DS . 'documents' . DS . '1', $result);
 
         // - With a filename
         $result = $this->model::getFilePath(1, 'file.pdf');
         $this->assertEquals(
-            DATA_FOLDER . DS . 'materials' . DS . '1' . DS . 'file.pdf',
+            DATA_FOLDER . DS . 'materials' . DS . 'documents' . DS . '1' . DS . 'file.pdf',
             $result
         );
     }

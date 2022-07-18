@@ -22,103 +22,104 @@ import UserSettings from './Settings/User';
 import GlobalSettings from './Settings/Global';
 
 export default [
+    //
+    // - Authentification
+    //
+
     {
-        path: '/login',
         name: 'login',
+        path: '/login',
         component: Login,
         meta: {
             layout: 'minimalist',
             requiresAuth: false,
         },
     },
+
+    //
+    // - Événements
+    //
+
     {
-        path: '/user-settings',
-        name: 'user-settings',
-        component: UserSettings,
-        meta: {
-            requiresAuth: true,
-            requiresGroups: ['admin', 'member', 'visitor'],
-        },
-    },
-    {
+        name: 'events',
         path: '/',
-        name: 'calendar',
         component: Calendar,
         meta: {
-            resource: 'events',
-            title: 'page-calendar.title',
             requiresAuth: true,
             requiresGroups: ['admin', 'member', 'visitor'],
         },
     },
     {
+        name: 'add-event',
         path: '/events/new',
-        name: 'addEvent',
         component: Event,
         meta: {
             resource: 'events',
-            title: 'page-events.add',
+            title: 'page.events.add',
             requiresAuth: true,
             requiresGroups: ['admin', 'member'],
         },
     },
     {
+        name: 'edit-event',
         path: '/events/:id',
-        name: 'editEvent',
         component: Event,
         meta: {
             resource: 'events',
-            title: 'page-events.edit',
+            title: 'page.events.edit',
             requiresAuth: true,
             requiresGroups: ['admin', 'member'],
         },
     },
     {
-        path: '/event-return/:id',
-        name: 'eventReturnMaterial',
+        name: 'event-return-material',
+        path: '/event-return/:id(\\d+)',
         component: EventReturn,
         meta: {
-            resource: 'events',
-            title: 'page-event-return.title',
             requiresAuth: true,
             requiresGroups: ['admin', 'member'],
         },
     },
+
+    //
+    // - Utilisateurs
+    //
+
     {
-        path: '/users',
         name: 'users',
+        path: '/users',
         component: Users,
         meta: {
-            title: 'page-users.title',
             requiresAuth: true,
             requiresGroups: ['admin'],
         },
     },
     {
+        name: 'add-user',
         path: '/users/new',
-        name: 'addUser',
         component: User,
         meta: {
-            resource: 'users',
-            title: 'page-users.add',
             requiresAuth: true,
             requiresGroups: ['admin'],
         },
     },
     {
-        path: '/users/:id',
-        name: 'editUser',
+        name: 'edit-user',
+        path: '/users/:id(\\d+)',
         component: User,
         meta: {
-            resource: 'users',
-            title: 'page-users.edit',
             requiresAuth: true,
             requiresGroups: ['admin'],
         },
     },
+
+    //
+    // - Emprunteurs
+    //
+
     {
-        path: '/beneficiaries',
         name: 'beneficiaries',
+        path: '/beneficiaries',
         component: Beneficiaries,
         meta: {
             requiresAuth: true,
@@ -126,182 +127,187 @@ export default [
         },
     },
     {
+        name: 'add-beneficiary',
         path: '/beneficiaries/new',
-        name: 'addBeneficiary',
         component: Beneficiary,
         meta: {
-            resource: 'persons',
-            title: 'page-beneficiaries.add',
             requiresAuth: true,
             requiresGroups: ['admin', 'member'],
         },
     },
     {
-        path: '/beneficiaries/:id',
-        name: 'editBeneficiary',
+        name: 'edit-beneficiary',
+        path: '/beneficiaries/:id(\\d+)',
         component: Beneficiary,
         meta: {
-            resource: 'persons',
-            title: 'page-beneficiaries.edit',
             requiresAuth: true,
             requiresGroups: ['admin', 'member'],
         },
     },
+
+    //
+    // - Sociétés
+    //
+
     {
+        name: 'add-company',
         path: '/companies/new',
-        name: 'addCompany',
         component: Company,
         meta: {
-            resource: 'companies',
-            title: 'page-companies.add',
             requiresAuth: true,
             requiresGroups: ['admin', 'member'],
         },
     },
     {
-        path: '/companies/:id',
-        name: 'editCompany',
+        name: 'edit-company',
+        path: '/companies/:id(\\d+)',
         component: Company,
         meta: {
-            resource: 'companies',
-            title: 'page-companies.edit',
             requiresAuth: true,
             requiresGroups: ['admin', 'member'],
         },
     },
+
+    //
+    // - Matériel
+    //
+
     {
-        path: '/materials',
         name: 'materials',
+        path: '/materials',
         component: Materials,
         meta: {
-            resource: 'materials',
-            title: 'page-materials.title',
             requiresAuth: true,
             requiresGroups: ['admin', 'member'],
         },
     },
     {
+        name: 'add-material',
         path: '/materials/new',
-        name: 'addMaterial',
         component: Material,
         meta: {
-            resource: 'materials',
-            title: 'page-materials.add',
             requiresAuth: true,
             requiresGroups: ['admin', 'member'],
         },
     },
     {
-        path: '/materials/:id',
-        name: 'editMaterial',
+        name: 'edit-material',
+        path: '/materials/:id(\\d+)',
         component: Material,
         meta: {
-            resource: 'materials',
-            title: 'page-materials.edit',
             requiresAuth: true,
             requiresGroups: ['admin', 'member'],
         },
     },
     {
-        path: '/materials/:id/view',
-        name: 'viewMaterial',
+        name: 'view-material',
+        path: '/materials/:id(\\d+)/view',
         component: MaterialView,
         meta: {
-            resource: 'materials',
-            title: 'page-materials-view.title',
             requiresAuth: true,
             requiresGroups: ['admin', 'member'],
         },
     },
+
+    //
+    // - Attributs
+    //
+
     {
-        path: '/attributes',
         name: 'attributes',
+        path: '/attributes',
         component: Attributes,
         meta: {
-            resource: 'attributes',
-            title: 'page-attributes.title',
             requiresAuth: true,
             requiresGroups: ['admin'],
         },
     },
+
+    //
+    // - Catégories
+    //
+
     {
-        path: '/categories',
         name: 'categories',
+        path: '/categories',
         component: Categories,
         meta: {
-            resource: 'categories',
-            title: 'page-categories.title',
             requiresAuth: true,
             requiresGroups: ['admin'],
         },
     },
+
+    //
+    // - Techniciens
+    //
+
     {
-        path: '/technicians',
         name: 'technicians',
+        path: '/technicians',
         component: Technicians,
         meta: {
-            title: 'page-technicians.title',
             requiresAuth: true,
             requiresGroups: ['admin', 'member'],
         },
     },
     {
+        name: 'add-technician',
         path: '/technicians/new',
-        name: 'addTechnician',
         component: Technician,
         meta: {
-            resource: 'persons',
-            title: 'page-technicians.add',
             requiresAuth: true,
             requiresGroups: ['admin', 'member'],
         },
     },
     {
-        path: '/technicians/:id',
-        name: 'editTechnician',
+        name: 'edit-technician',
+        path: '/technicians/:id(\\d+)',
         component: Technician,
         meta: {
-            resource: 'persons',
-            title: 'page-technicians.edit',
             requiresAuth: true,
             requiresGroups: ['admin', 'member'],
         },
     },
     {
-        path: '/technicians/:id/view',
-        name: 'viewTechnician',
+        name: 'view-technician',
+        path: '/technicians/:id(\\d+)/view',
         component: TechnicianView,
         meta: {
-            resource: 'persons',
-            title: 'technician',
             requiresAuth: true,
             requiresGroups: ['admin', 'member'],
         },
     },
+
+    //
+    // - Tags
+    //
+
     {
-        path: '/tags',
         name: 'tags',
+        path: '/tags',
         component: Tags,
         meta: {
-            resource: 'tags',
-            title: 'page-tags.title',
             requiresAuth: true,
             requiresGroups: ['admin'],
         },
     },
+
+    //
+    // - Parcs
+    //
+
     {
-        path: '/parks',
         name: 'parks',
+        path: '/parks',
         component: Parks,
         meta: {
-            title: 'page-parks.title',
             requiresAuth: true,
             requiresGroups: ['admin'],
         },
     },
     {
+        name: 'add-park',
         path: '/parks/new',
-        name: 'addPark',
         component: Park,
         meta: {
             requiresAuth: true,
@@ -309,22 +315,41 @@ export default [
         },
     },
     {
-        path: '/parks/:id',
-        name: 'editPark',
+        name: 'edit-park',
+        path: '/parks/:id(\\d+)',
         component: Park,
         meta: {
             requiresAuth: true,
             requiresGroups: ['admin'],
         },
     },
+
+    //
+    // - Paramètres
+    //
+
     {
+        name: 'user-settings',
+        path: '/user-settings',
+        component: UserSettings,
+        meta: {
+            requiresAuth: true,
+            requiresGroups: ['admin', 'member', 'visitor'],
+        },
+    },
+    {
+        name: 'global-settings',
         path: '/settings',
-        name: 'settings',
         component: GlobalSettings,
         meta: {
             requiresAuth: true,
             requiresGroups: ['admin'],
         },
     },
+
+    //
+    // - Catch all.
+    //
+
     { path: '*', redirect: '/' },
 ];

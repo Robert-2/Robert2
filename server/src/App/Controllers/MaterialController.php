@@ -20,6 +20,7 @@ use Robert2\API\Services\I18n;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
 use Slim\Http\ServerRequest as Request;
+use Slim\HttpCache\CacheProvider as HttpCacheProvider;
 
 class MaterialController extends BaseController
 {
@@ -30,11 +31,15 @@ class MaterialController extends BaseController
     /** @var I18n */
     private $i18n;
 
-    public function __construct(Container $container, I18n $i18n)
+    /** @var HttpCacheProvider */
+    private $httpCache;
+
+    public function __construct(Container $container, I18n $i18n, HttpCacheProvider $httpCache)
     {
         parent::__construct($container);
 
         $this->i18n = $i18n;
+        $this->httpCache = $httpCache;
     }
 
     // ——————————————————————————————————————————————————————
@@ -61,7 +66,9 @@ class MaterialController extends BaseController
             $options['park_id'] = (int)$parkId;
         }
         if ($categoryId) {
-            $options['category_id'] = (int)$categoryId;
+            $options['category_id'] = $categoryId !== 'uncategorized'
+                ? (int)$categoryId
+                : null;
         }
         if ($subCategoryId) {
             $options['sub_category_id'] = (int)$subCategoryId;
@@ -264,16 +271,14 @@ class MaterialController extends BaseController
             throw new HttpNotFoundException($request);
         }
 
-        $picturePath = Material::getPicturePath($id, $model->picture);
-
-        $pictureContent = file_get_contents($picturePath);
-        if (!$pictureContent) {
-            throw new HttpNotFoundException($request, "The picture file cannot be found.");
+        $picturePath = $model->picture_real_path;
+        if (!$picturePath) {
+            throw new HttpNotFoundException($request, "Il n'y a pas d'image pour ce matériel.");
         }
 
-        $response = $response->write($pictureContent);
-        $mimeType = mime_content_type($picturePath);
-        return $response->withHeader('Content-Type', $mimeType);
+        /** @var Response $response */
+        $response = $this->httpCache->denyCache($response);
+        return $response->withFile($picturePath);
     }
 
     // ------------------------------------------------------
@@ -316,6 +321,7 @@ class MaterialController extends BaseController
         }
 
         $files = [];
+        $errors = [];
         foreach ($uploadedFiles as $file) {
             $error = $file->getError();
             if ($error !== UPLOAD_ERR_OK) {
@@ -372,64 +378,7 @@ class MaterialController extends BaseController
             throw new \Exception(implode("\n", $errors));
         }
 
-        $result = [
-            'saved_files' => $files,
-            'errors' => $errors,
-        ];
-        return $response->withJson($result, SUCCESS_OK);
-    }
-
-    public function handleUploadPicture(Request $request, Response $response): Response
-    {
-        $id = (int)$request->getAttribute('id');
-        if (!Material::staticExists($id)) {
-            throw new HttpNotFoundException($request);
-        }
-
-        $file = $request->getUploadedFiles()['picture-0'];
-
-        if (empty($file) || $file->getError() !== UPLOAD_ERR_OK) {
-            throw new \Exception($this->i18n->translate('no-uploaded-files'));
-        }
-
-        $fileSize = $file->getSize();
-        if ($fileSize > Config::getSettings('maxFileUploadSize')) {
-            throw new \Exception($this->i18n->translate('file-exceeds-max-size'));
-        }
-
-        $fileType = $file->getClientMediaType();
-        if (!in_array($fileType, Config::getSettings('authorizedImageTypes'))) {
-            throw new \Exception($this->i18n->translate('file-type-not-allowed'));
-        }
-
-        $destDirectory = Material::getPicturePath($id);
-        $filename = moveUploadedFile($destDirectory, $file);
-        if (!$filename) {
-            throw new \Exception($this->i18n->translate('saving-uploaded-file-failed'));
-        }
-
-        $materialBefore = Material::find($id)->toArray();
-
-        try {
-            Material::staticEdit($id, ['picture' => $filename]);
-
-            $previousPicture = $materialBefore['picture'];
-            if ($previousPicture !== null && $filename !== $previousPicture) {
-                $filePath = Material::getPicturePath($id, $previousPicture);
-                unlink($filePath);
-            }
-        } catch (\Exception $e) {
-            $filePath = Material::getPicturePath($id, $filename);
-            unlink($filePath);
-            throw new \Exception($this->i18n->translate(
-                'material-picture-cannot-be-saved-in-db',
-                [$e->getMessage()],
-            ));
-        }
-
-        $result = ['saved_files' => 1];
-
-        return $response->withJson($result, SUCCESS_OK);
+        return $response->withJson($files, SUCCESS_OK);
     }
 
     // ------------------------------------------------------
@@ -464,12 +413,6 @@ class MaterialController extends BaseController
             if ($outOfOrderQuantity <= 0) {
                 $postData['out_of_order_quantity'] = null;
             }
-        }
-
-        // - Removing `picture` field because it must be edited
-        //   using handleUploadPicture() method (see below)
-        if (array_key_exists('picture', $postData) && !empty($postData['picture'])) {
-            unset($postData['picture']);
         }
 
         $result = Material::staticEdit($id, $postData);

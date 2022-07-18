@@ -67,10 +67,15 @@
         {% for subCategory in park['materials'] %}
             <tr>
                 <td class="section-title" colspan="5">
-                    {% if subCategory['name'] is not empty %}
-                    {{ subCategory['category'] }} - {{ subCategory['name'] }}
+                    {% if subCategory['category'] is not empty %}
+                        {{ subCategory['category'] }}
                     {% else %}
-                    {{ subCategory['category'] }} - {{ translate('otherMaterials') }}
+                        {{ translate('notCategorized') }}
+                    {% endif %}
+                    {% if subCategory['name'] is not empty %}
+                        - {{ subCategory['name'] }}
+                    {% elseif subCategory['category'] is not empty %}
+                        - {{ translate('otherMaterials') }}
                     {% endif %}
                 </td>
             </tr>

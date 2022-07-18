@@ -57,7 +57,6 @@ define('ERROR_VALIDATION', 400);
 define('ERROR_UNAUTHORIZED', 401);
 define('ERROR_NOT_FOUND', 404);
 define('ERROR_NOT_ALLOWED', 405);
-define('ERROR_DUPLICATE', 409);
 define('ERROR_SERVER', 500);
 
 // - Success codes

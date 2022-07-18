@@ -126,20 +126,12 @@ class ApiTestCase extends TestCase
         $response    = $this->_getResponseAsArray();
         $extraParams = !empty($extraParams) ? $extraParams . '&' : '';
 
-        $this->assertEquals([
-            'current_page'   => 1,
-            'first_page_url' => "$baseUrl?" . $extraParams . "page=1",
-            'from'           => $count ? 1 : null,
-            'last_page'      => 1,
-            'last_page_url'  => "$baseUrl?" . $extraParams . "page=1",
-            'next_page_url'  => null,
-            'path'           => $baseUrl,
-            'per_page'       => 100,
-            'prev_page_url'  => null,
-            'to'             => $count ?: null,
-            'total'          => $count,
-        ], @$response['pagination']);
-
+        $expected = [
+            'currentPage' => 1,
+            'perPage' => 100,
+            'total' => ['items' => $count, 'pages' => 1],
+        ];
+        $this->assertEquals($expected, @$response['pagination']);
         $this->assertCount($count, @$response['data']);
     }
 

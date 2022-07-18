@@ -171,12 +171,12 @@ abstract class BaseModel extends Model
                 ->setModel(get_class($this), $id);
         }
 
-        $data = cleanEmptyFields($data);
-        $data = $this->_trimStringFields($data);
+        if (method_exists($this, 'unserialize')) {
+            $data = $this->unserialize($data);
+        }
 
         try {
-            $model = static::firstOrNew(compact('id'));
-            $model->fill($data)->validate()->save();
+            $model = static::updateOrCreate(compact('id'), $data);
         } catch (QueryException $e) {
             throw (new ValidationException)
                 ->setPDOValidationException($e);
@@ -213,6 +213,38 @@ abstract class BaseModel extends Model
             throw new \RuntimeException(sprintf("Unable to restore the record %d.", $id));
         }
         return $entity;
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Overwritten methods
+    // -
+    // ------------------------------------------------------
+
+    public function fill(array $attributes)
+    {
+        $data = array_map(
+            fn($value) => $value === '' ? null : $value,
+            $attributes,
+        );
+
+        $trimmedData = [];
+        foreach ($data as $field => $value) {
+            $isString = array_key_exists($field, $this->casts) && $this->casts[$field] === 'string';
+            $trimmedData[$field] = $isString && $value ? trim($value) : $value;
+        }
+
+        return parent::fill($trimmedData);
+    }
+
+    public function save(array $options = [])
+    {
+        if ($options['validate'] ?? true) {
+            $this->validate();
+        }
+
+        unset($options['validate']);
+        return parent::save($options);
     }
 
     // ——————————————————————————————————————————————————————
@@ -331,14 +363,12 @@ abstract class BaseModel extends Model
         return $builder->where($this->searchField, 'LIKE', $term);
     }
 
-    protected function _trimStringFields(array $data): array
+    public function jsonSerialize()
     {
-        $trimmedData = [];
-        foreach ($data as $field => $value) {
-            $isString = array_key_exists($field, $this->casts) && $this->casts[$field] === 'string';
-            $trimmedData[$field] = ($isString && $value) ? trim($value) : $value;
+        if (method_exists($this, 'serialize')) {
+            return $this->serialize();
         }
-        return $trimmedData;
+        return parent::jsonSerialize();
     }
 
     // @see https://laravel.com/docs/8.x/eloquent-serialization#customizing-the-default-date-format

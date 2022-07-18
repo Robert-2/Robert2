@@ -1,3 +1,5 @@
+import invariant from 'invariant';
+
 const getMaterialQuantity = (material) => {
     if ('awaited_quantity' in material) {
         return material.awaited_quantity;
@@ -29,9 +31,10 @@ const dispatchMaterialInSections = (
 
     const sections = new Map();
     materials.forEach((material) => {
-        if (!Object.prototype.hasOwnProperty.call(material, sectionIdentifier)) {
-            throw new Error(`Identifier '${sectionIdentifier}' doesn't exist in material data.`);
-        }
+        invariant(
+            sectionIdentifier in material,
+            `L'identifiant \`${sectionIdentifier}\` n'existe pas dans les données du matériel.`,
+        );
 
         const sectionId = material[sectionIdentifier];
         if (!sections.has(sectionId)) {

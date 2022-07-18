@@ -1,0 +1,36 @@
+@use '~@/style/globals';
+
+.EventStep3Modal {
+    &__header {
+        display: flex;
+        align-items: center;
+        padding: 0.7rem 1rem;
+        background-color: globals.$bg-color-main-header;
+
+        &__title {
+            flex: 1;
+            margin: 0 0 0.4rem;
+            color: globals.$text-base-color;
+            font-size: 1.4rem;
+            font-weight: 800;
+        }
+
+        .close {
+            flex: 0 0 auto;
+            border: none;
+            background: none;
+        }
+    }
+
+    &__form {
+        max-width: 360px;
+        margin: 0 auto;
+        padding: globals.$content-padding-large-vertical 0;
+    }
+
+    &__actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 25px;
+    }
+}

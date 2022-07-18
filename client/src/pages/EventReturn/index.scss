@@ -1,50 +1,32 @@
 @use '~@/style/globals';
 
+.Page--event-return {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-bottom: 80px;
+
+    .EventReturn {
+        flex: 1;
+        align-self: center;
+    }
+}
+
 .EventReturn {
     overflow: auto;
     width: 100%;
-    margin-bottom: 55px;
+    max-width: 1100px;
+    margin: 0 auto;
     padding: 0 globals.$content-padding-small-vertical globals.$content-padding-large-horizontal;
-
-    .EventReturnHeader,
-    &__list {
-        max-width: 1100px;
-        margin: 0 auto;
-    }
 
     .EventReturnHeader {
         margin-bottom: globals.$content-padding-large-horizontal;
     }
 
-    &__error {
-        margin: globals.$content-padding-large-vertical 0;
-        color: globals.$text-danger-color;
-        font-size: 1.2rem;
-        text-align: center;
-    }
-
-    &__warning {
-        color: globals.$text-warning-color;
-        font-size: 1.1rem;
-    }
-
-    &__footer {
+    .EventReturnFooter {
         position: fixed;
         left: 0;
         bottom: 0;
         right: 0;
-        padding: globals.$content-padding-large-horizontal 0;
-        background-color: globals.$bg-color-body;
-        text-align: center;
-    }
-
-    &__done {
-        display: inline-block;
-        padding: globals.$content-padding-large-horizontal globals.$content-padding-large-vertical;
-        color: globals.$text-success-color;
-    }
-
-    &__action {
-        margin-left: globals.$content-padding-small-vertical;
     }
 }

@@ -78,14 +78,16 @@ export default {
                 {list.map(({ id: sectionId, name: sectionName, materials }) => (
                     <div key={sectionId} class="Inventory__section">
                         <div class="Inventory__section__header">
-                            <h3 class="Inventory__section__title">
-                                {sectionId !== 'flat' ? sectionName : ''}
+                            {sectionId !== 'flat' && (
+                                <h3 class="Inventory__section__title">
+                                    {sectionName ?? __('not-categorized')}
+                                </h3>
+                            )}
+                            <h3 class="Inventory__section__quantity-title">
+                                {__('actual-qty')}
                             </h3>
                             <h3 class="Inventory__section__quantity-title">
-                                {__('actual-quantity')}
-                            </h3>
-                            <h3 class="Inventory__section__quantity-title">
-                                {__('quantity-out-of-order')}
+                                {__('out-of-order-qty')}
                             </h3>
                         </div>
                         <div class="Inventory__list">
