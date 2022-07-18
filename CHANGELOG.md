@@ -4,7 +4,7 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 0.19.0 (UNRELEASED)
+## 0.19.0 (2022-07-18)
 
 - Empêche la suppression des parcs qui contiennent du matériel (#362).
 - Le nom et le prénom des utilisateurs sont maintenant obligatoires (#356).
