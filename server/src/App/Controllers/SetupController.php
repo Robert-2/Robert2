@@ -97,8 +97,7 @@ class SetupController extends BaseController
 
                     if (!$stepSkipped) {
                         $installData['user']['group_id'] = 'admin';
-                        $user = new User();
-                        $user->edit(null, $installData['user']);
+                        User::staticEdit(null, $installData['user']);
                     }
                 }
 

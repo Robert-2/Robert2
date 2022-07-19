@@ -4,6 +4,10 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.19.2 (UNRELEASED)
+
+- Un problème lors de la création du premier utilisateur dans le wizard d'installation a été corrigé (#367).
+
 ## 0.19.1 (2022-07-19)
 
 - Corrige le titre de la page d'édition d'événement.
