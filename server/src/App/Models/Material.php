@@ -49,9 +49,9 @@ class Material extends BaseModel
             'park_id' => V::callback([$this, 'checkParkId']),
             'category_id' => V::optional(V::numeric()),
             'sub_category_id' => V::optional(V::numeric()),
-            'rental_price' => V::floatVal()->max(999999.99, true),
-            'stock_quantity' => V::intVal()->max(100000),
-            'out_of_order_quantity' => V::optional(V::intVal()->max(100000)),
+            'rental_price' => V::callback([$this, 'checkRentalPrice']),
+            'stock_quantity' => V::callback([$this, 'checkStockQuantity']),
+            'out_of_order_quantity' => V::callback([$this, 'checkOutOfOrderQuantity']),
             'replacement_price' => V::optional(V::floatVal()->max(999999.99, true)),
             'is_hidden_on_bill' => V::optional(V::boolType()),
             'is_discountable' => V::optional(V::boolType()),
@@ -129,6 +129,16 @@ class Material extends BaseModel
     public function checkOutOfOrderQuantity($value)
     {
         return V::optional(V::intVal()->max(100000));
+    }
+
+    public function checkRentalPrice($value)
+    {
+        $billingMode = container('settings')['billingMode'];
+        if ($billingMode === 'none') {
+            return empty($value);
+        }
+
+        return V::floatVal()->max(999999.99, true);
     }
 
     // ——————————————————————————————————————————————————————

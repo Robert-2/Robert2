@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Robert2\Lib\Domain;
 
+use Illuminate\Support\Carbon;
 use Robert2\API\Config\Config;
 
 class EventData
@@ -231,9 +232,12 @@ class EventData
                 ];
             }
 
+            $startTime = Carbon::createFromFormat('Y-m-d H:i:s', $eventTechnician['start_time'], 'UTC');
+            $endTime = Carbon::createFromFormat('Y-m-d H:i:s', $eventTechnician['end_time'], 'UTC');
+
             $technicians[$technicianId]['periods'][] = [
-                'from' => $eventTechnician['start_time'],
-                'to' => $eventTechnician['end_time'],
+                'from' => $startTime,
+                'to' => $endTime,
                 'position' => $eventTechnician['position'],
             ];
         }

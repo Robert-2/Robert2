@@ -4,6 +4,12 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.19.1 (2022-07-19)
+
+- Corrige le titre de la page d'édition d'événement.
+- Corrige les erreurs de validation pour la création des devis et du matériel en mode prêt.
+- Corrige l'affichage des horaires de techniciens sur la fiche de sortie (#366).
+
 ## 0.19.0 (2022-07-18)
 
 - Empêche la suppression des parcs qui contiennent du matériel (#362).
