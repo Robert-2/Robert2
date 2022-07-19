@@ -36,7 +36,7 @@ class Estimate extends BaseModel
             'discount_rate' => V::optional(V::floatVal()->between(0.0, 99.9999, true)),
             'vat_rate' => V::optional(V::floatVal()->between(0.0, 99.99, true)),
             'due_amount' => V::notEmpty()->floatVal()->between(0.0, 999999.99, true),
-            'replacement_amount' => V::notEmpty()->floatVal()->between(0.0, 999999.99, true),
+            'replacement_amount' => V::floatVal()->between(0.0, 999999.99, true),
             'currency' => V::notEmpty()->length(3),
             'user_id' => V::optional(V::numeric()),
         ];
