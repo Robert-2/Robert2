@@ -55,7 +55,7 @@ export default [
         component: Event,
         meta: {
             resource: 'events',
-            title: 'page.events.add',
+            title: 'page.event-edit.add',
             requiresAuth: true,
             requiresGroups: ['admin', 'member'],
         },
@@ -66,7 +66,7 @@ export default [
         component: Event,
         meta: {
             resource: 'events',
-            title: 'page.events.edit',
+            title: 'page.event-edit.edit',
             requiresAuth: true,
             requiresGroups: ['admin', 'member'],
         },
