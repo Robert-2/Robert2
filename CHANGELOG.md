@@ -4,7 +4,7 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 0.19.2 (UNRELEASED)
+## 0.19.2 (2022-07-29)
 
 - Un problème lors de la création du premier utilisateur dans le wizard d'installation a été corrigé (#367).
 - Dans la liste du matériel, le clic sur la référence ou le nom d'un matériel ouvre à nouveau sa page.
