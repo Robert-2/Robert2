@@ -8,6 +8,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 
 - Un problème lors de la création du premier utilisateur dans le wizard d'installation a été corrigé (#367).
 - Dans la liste du matériel, le clic sur la référence ou le nom d'un matériel ouvre à nouveau sa page.
+- La génération des factures fonctionne même si tout le matériel de la liste a une valeur de remplacement totale de 0.
 
 ## 0.19.1 (2022-07-19)
 
