@@ -72,6 +72,48 @@ export default {
                 },
                 requestFunction: this.fetch.bind(this),
                 templates: {
+                    last_name: (h, { id, last_name: lastName }) => {
+                        if (this.isTrashDisplayed) {
+                            return lastName;
+                        }
+
+                        return (
+                            <router-link
+                                to={{ name: 'view-technician', params: { id } }}
+                                class="Technicians__link"
+                            >
+                                {lastName}
+                            </router-link>
+                        );
+                    },
+                    first_name: (h, { id, first_name: firstName }) => {
+                        if (this.isTrashDisplayed) {
+                            return firstName;
+                        }
+
+                        return (
+                            <router-link
+                                to={{ name: 'view-technician', params: { id } }}
+                                class="Technicians__link"
+                            >
+                                {firstName}
+                            </router-link>
+                        );
+                    },
+                    nickname: (h, { id, nickname }) => {
+                        if (this.isTrashDisplayed) {
+                            return nickname;
+                        }
+
+                        return (
+                            <router-link
+                                to={{ name: 'view-technician', params: { id } }}
+                                class="Technicians__link"
+                            >
+                                {nickname}
+                            </router-link>
+                        );
+                    },
                     email: (h, { email }) => (
                         <a href={`mailto:${email}`}>{email}</a>
                     ),
