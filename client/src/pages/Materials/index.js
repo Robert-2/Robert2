@@ -84,7 +84,7 @@ export default {
 
                         return (
                             <router-link
-                                to={{ name: 'materials', params: { id } }}
+                                to={{ name: 'view-material', params: { id } }}
                                 class="Materials__link"
                             >
                                 {reference}
@@ -98,7 +98,7 @@ export default {
 
                         return (
                             <router-link
-                                to={{ name: 'materials', params: { id } }}
+                                to={{ name: 'view-material', params: { id } }}
                                 class="Materials__link"
                             >
                                 {name}
