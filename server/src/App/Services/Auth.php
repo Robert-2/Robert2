@@ -84,7 +84,7 @@ final class Auth
             return false;
         }
 
-        return in_array(static::user()->group_id, (array)$groups);
+        return in_array(static::user()->group, (array)$groups);
     }
 
     public static function isLoginRequest(Request $request): bool

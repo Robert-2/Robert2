@@ -117,7 +117,7 @@ class Person extends BaseModel
     public function User()
     {
         return $this->belongsTo(User::class)
-            ->select(['id', 'pseudo', 'email', 'group_id']);
+            ->select(['id', 'pseudo', 'email', 'group']);
     }
 
     public function Country()

@@ -13,7 +13,7 @@ export type User = {
     id: number,
     pseudo: string,
     email: string,
-    group_id: Group['id'],
+    group: Group,
     person: Person | null,
 };
 
@@ -21,7 +21,7 @@ export type UserEdit = {
     pseudo: string,
     email: string,
     password?: string,
-    group_id: Group['id'],
+    group_id: Group,
     person: {
         first_name: string | null,
         last_name: string | null,

@@ -17,6 +17,7 @@ import Icon from '@/components/Icon';
 import MaterialsFilters from '@/components/MaterialsFilters';
 import TagsList from '@/components/TagsList';
 import Datepicker from '@/components/Datepicker';
+import { Group } from '@/stores/api/groups';
 
 // @vue/component
 export default {
@@ -223,7 +224,7 @@ export default {
     },
     computed: {
         isAdmin() {
-            return this.$store.getters['auth/is']('admin');
+            return this.$store.getters['auth/is'](Group.ADMIN);
         },
 
         dropdownItemClass() {

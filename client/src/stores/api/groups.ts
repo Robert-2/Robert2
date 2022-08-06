@@ -1,11 +1,26 @@
 import Vue from 'vue';
 
 //
+// - Enums
+//
+
+export enum Group {
+    /** Représente le groupe des administrateurs. */
+    ADMIN = 'admin',
+
+    /** Représente le groupe des membres de l'équipe. */
+    MEMBER = 'member',
+
+    /** Représente le groupe des visiteurs. */
+    VISITOR = 'visitor',
+}
+
+//
 // - Types
 //
 
-export type Group = {
-    id: 'admin' | 'member' | 'visitor',
+export type GroupDetails = {
+    id: Group,
     name: string,
 };
 
@@ -13,13 +28,13 @@ export type Group = {
 // - Fonctions
 //
 
-const all = (): Group[] => {
+const all = (): GroupDetails[] => {
     const { translate: __ } = (Vue as any).i18n;
 
     return [
-        { id: 'admin', name: __('admin') },
-        { id: 'member', name: __('member') },
-        { id: 'visitor', name: __('visitor') },
+        { id: Group.ADMIN, name: __('admin') },
+        { id: Group.MEMBER, name: __('member') },
+        { id: Group.VISITOR, name: __('visitor') },
     ];
 };
 

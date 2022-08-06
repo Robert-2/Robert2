@@ -2,6 +2,7 @@ import { confirm } from '@/utils/alert';
 import Help from '@/components/Help';
 import EventEstimates from '@/components/EventEstimates';
 import NotBillable from '../@shared/NotBillable';
+import { Group } from '@/stores/api/groups';
 
 // @vue/component
 export default {
@@ -22,7 +23,7 @@ export default {
         },
 
         userCanEditEstimate() {
-            return this.$store.getters['auth/is'](['admin', 'member']);
+            return this.$store.getters['auth/is']([Group.ADMIN, Group.MEMBER]);
         },
     },
     methods: {

@@ -1,12 +1,13 @@
 import './index.scss';
+import { Group } from '@/stores/api/groups';
 
 // @vue/component
 export default {
     name: 'DefaultLayoutSidebarMenu',
     computed: {
         links() {
-            const isAdmin = this.$store.getters['auth/is']('admin');
-            const isMember = this.$store.getters['auth/is']('member');
+            const isAdmin = this.$store.getters['auth/is'](Group.ADMIN);
+            const isMember = this.$store.getters['auth/is'](Group.MEMBER);
 
             const links = [
                 { ident: 'calendar', url: '/', icon: 'calendar-alt', exact: true },

@@ -4,7 +4,7 @@ import cookies from '@/utils/cookies';
 
 const normalizeUser = (rawData) => ({
     id: rawData.id,
-    groupId: rawData.group_id,
+    group: rawData.group,
     firstName: rawData.first_name,
     lastName: rawData.last_name,
     pseudo: rawData.pseudo,
@@ -38,7 +38,7 @@ export default {
             }
 
             const normalizedGroups = Array.isArray(groups) ? groups : [groups];
-            return normalizedGroups.includes(state.user.groupId);
+            return normalizedGroups.includes(state.user.group);
         },
     },
     mutations: {

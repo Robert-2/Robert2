@@ -1,5 +1,6 @@
 import './index.scss';
 import ErrorMessage from '@/components/ErrorMessage';
+import { Group } from '@/stores/api/groups';
 
 // @vue/component
 export default {
@@ -16,7 +17,7 @@ export default {
     },
     computed: {
         userCanEdit() {
-            return this.$store.getters['auth/is'](['admin', 'member']);
+            return this.$store.getters['auth/is']([Group.ADMIN, Group.MEMBER]);
         },
     },
     methods: {

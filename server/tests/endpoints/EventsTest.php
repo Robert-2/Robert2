@@ -1,6 +1,8 @@
 <?php
 namespace Robert2\Tests;
 
+use Robert2\API\Models\Enums\Group;
+
 final class EventsTest extends ApiTestCase
 {
     public function testGetEvents()
@@ -196,7 +198,7 @@ final class EventsTest extends ApiTestCase
                 'id' => 1,
                 'pseudo' => 'test1',
                 'email' => 'tester@robertmanager.net',
-                'group_id' => 'admin',
+                'group' => Group::ADMIN,
                 'person' => [
                     'id' => 1,
                     'user_id' => 1,
@@ -549,7 +551,7 @@ final class EventsTest extends ApiTestCase
                 'id' => 1,
                 'pseudo' => 'test1',
                 'email' => 'tester@robertmanager.net',
-                'group_id' => 'admin',
+                'group' => Group::ADMIN,
                 'person' => [
                     'id' => 1,
                     'user_id' => 1,

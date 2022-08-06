@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Robert2\API\Errors\ValidationException;
+use Robert2\API\Models\Enums\Group;
 use Robert2\API\Validation\Validator as V;
 
 class User extends BaseModel
@@ -25,10 +26,10 @@ class User extends BaseModel
         $this->validation = [
             'pseudo' => V::callback([$this, 'checkPseudo']),
             'email' => V::callback([$this, 'checkEmail']),
-            'group_id' => V::notEmpty()->oneOf(
-                V::equals('admin'),
-                V::equals('member'),
-                V::equals('visitor')
+            'group' => V::notEmpty()->oneOf(
+                V::equals(Group::ADMIN),
+                V::equals(Group::MEMBER),
+                V::equals(Group::VISITOR)
             ),
             'password' => V::notEmpty()->length(4, 191),
         ];
@@ -122,7 +123,7 @@ class User extends BaseModel
     protected $casts = [
         'pseudo' => 'string',
         'email' => 'string',
-        'group_id' => 'string',
+        'group' => 'string',
         'password' => 'string',
     ];
 
@@ -154,7 +155,7 @@ class User extends BaseModel
 
     public function getAll(bool $softDeleted = false): Builder
     {
-        $fields = array_merge(['id', 'pseudo', 'email', 'group_id'], $this->dates);
+        $fields = array_merge(['id', 'pseudo', 'email', 'group'], $this->dates);
         return parent::getAll($softDeleted)->select($fields);
     }
 
@@ -181,7 +182,7 @@ class User extends BaseModel
     protected $fillable = [
         'pseudo',
         'email',
-        'group_id',
+        'group',
         'password',
     ];
 

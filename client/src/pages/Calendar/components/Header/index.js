@@ -5,6 +5,7 @@ import Datepicker from '@/components/Datepicker';
 import Select from '@/components/Select';
 import SwitchToggle from '@/components/SwitchToggle';
 import Loading from '@/components/Loading';
+import { Group } from '@/stores/api/groups';
 
 // @vue/component
 export default {
@@ -31,7 +32,7 @@ export default {
         },
 
         isVisitor() {
-            return this.$store.getters['auth/is']('visitor');
+            return this.$store.getters['auth/is'](Group.VISITOR);
         },
     },
     mounted() {

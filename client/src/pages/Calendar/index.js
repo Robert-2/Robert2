@@ -11,6 +11,7 @@ import Timeline from '@/components/Timeline';
 import CalendarHeader from './components/Header';
 import CalendarCaption from './components/Caption';
 import { formatEvent, getDefaultPeriod } from './_utils';
+import { Group } from '@/stores/api/groups';
 
 const ONE_DAY = 1000 * 3600 * 24;
 
@@ -44,7 +45,7 @@ export default {
         },
 
         isVisitor() {
-            return this.$store.getters['auth/is']('visitor');
+            return this.$store.getters['auth/is'](Group.VISITOR);
         },
 
         timelineOptions() {

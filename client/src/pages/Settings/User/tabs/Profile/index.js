@@ -22,7 +22,7 @@ export default {
                 email: user.email,
                 password: '',
                 password_confirmation: '',
-                group_id: user.groupId,
+                group: user.group,
                 restricted_parks: [],
                 person: {
                     first_name: '',
@@ -38,7 +38,7 @@ export default {
                 pseudo: null,
                 email: null,
                 password: null,
-                group_id: null,
+                group: null,
                 person: {
                     first_name: null,
                     last_name: null,

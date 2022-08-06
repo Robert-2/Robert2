@@ -6,13 +6,13 @@ import formatOptions from '@/utils/formatOptions';
 import FormField from '@/components/FormField';
 import Fieldset from '@/components/Fieldset';
 import Button from '@/components/Button';
-import apiGroups from '@/stores/api/groups';
+import apiGroups, { Group } from '@/stores/api/groups';
 
 const DEFAULT_VALUES = Object.freeze({
     pseudo: '',
     email: '',
     password: '',
-    group_id: 'member',
+    group: Group.MEMBER,
     restricted_parks: [],
     person: {
         first_name: '',
@@ -124,9 +124,9 @@ export default {
                     <FormField
                         label="group"
                         type="select"
-                        v-model={data.group_id}
+                        v-model={data.group}
                         options={groupsOptions}
-                        errors={errors?.group_id}
+                        errors={errors?.group}
                         onChange={handleGroupChange}
                         help={__('page.user.help-group')}
                         placeholder={false}

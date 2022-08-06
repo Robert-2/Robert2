@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Robert2\API\Config;
 
+use Robert2\API\Models\Enums\Group;
+
 class Acl
 {
     const PUBLIC_ROUTES = [
@@ -19,8 +21,8 @@ class Acl
     ];
 
     const DENY_LIST = [
-        'admin'  => [],
-        'member' => [
+        Group::ADMIN => [],
+        Group::MEMBER => [
             'Bill' => [
                 'delete',
             ],
@@ -38,7 +40,7 @@ class Acl
                 'reset',
             ],
         ],
-        'visitor' => [
+        Group::VISITOR => [
             'Category' => [
                 'create',
                 'update',

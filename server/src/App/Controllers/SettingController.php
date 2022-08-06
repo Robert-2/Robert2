@@ -5,6 +5,7 @@ namespace Robert2\API\Controllers;
 
 use DI\Container;
 use Robert2\API\Controllers\Traits\WithModel;
+use Robert2\API\Models\Enums\Group;
 use Robert2\API\Models\Setting;
 use Robert2\API\Services\Auth;
 use Slim\Http\Response;
@@ -36,7 +37,7 @@ class SettingController extends BaseController
 
     public function getAll(Request $request, Response $response): Response
     {
-        $isAdmin = Auth::is('admin');
+        $isAdmin = Auth::is(Group::ADMIN);
         $settings = Setting::getList($isAdmin);
 
         // - Ajout de l'URL public du calendrier, si activé.

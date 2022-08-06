@@ -1,6 +1,8 @@
 <?php
 namespace Robert2\Tests;
 
+use Robert2\API\Models\Enums\Group;
+
 final class TokenTest extends ApiTestCase
 {
     public function testAuthWithoutData()
@@ -58,7 +60,7 @@ final class TokenTest extends ApiTestCase
             'id' => 1,
             'email' => 'tester@robertmanager.net',
             'pseudo' => 'test1',
-            'group_id' => 'admin',
+            'group' => Group::ADMIN,
             'cas_identifier' => null,
             'created_at' => null,
             'updated_at' => null,

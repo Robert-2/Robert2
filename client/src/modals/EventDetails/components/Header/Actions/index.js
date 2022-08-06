@@ -6,6 +6,7 @@ import useI18n from '@/hooks/vue/useI18n';
 import apiEvents from '@/stores/api/events';
 import DuplicateEvent from '@/modals/DuplicateEvent';
 import Dropdown, { getItemClassnames } from '@/components/Dropdown';
+import { Group } from '@/stores/api/groups';
 
 // @vue/component
 const EventDetailsHeaderActions = (props, { root, emit }) => {
@@ -26,7 +27,7 @@ const EventDetailsHeaderActions = (props, { root, emit }) => {
     ));
 
     const isVisitor = computed(() => (
-        root.$store.getters['auth/is']('visitor')
+        root.$store.getters['auth/is'](Group.VISITOR)
     ));
 
     const isEditable = computed(() => {

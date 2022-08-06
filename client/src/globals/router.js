@@ -66,8 +66,8 @@ router.beforeEach((to, from, next) => {
             return;
         }
 
-        const { groupId } = store.state.auth.user;
-        if (!requiresGroups.includes(groupId)) {
+        const { group } = store.state.auth.user;
+        if (!requiresGroups.includes(group)) {
             restrictAccess = true;
         }
     }

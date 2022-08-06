@@ -1,5 +1,6 @@
 import './index.scss';
 import ReturnInventoryItem from './Item';
+import { Group } from '@/stores/api/groups';
 
 // @vue/component
 export default {
@@ -24,7 +25,7 @@ export default {
         },
 
         isVisitor() {
-            return this.$store.getters['auth/is']('visitor');
+            return this.$store.getters['auth/is'](Group.VISITOR);
         },
     },
     render() {

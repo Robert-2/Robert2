@@ -7,6 +7,7 @@ use DI\Container;
 use Robert2\API\Config\Config;
 use Robert2\API\Errors\ValidationException;
 use Robert2\API\Models\Category;
+use Robert2\API\Models\Enums\Group;
 use Robert2\API\Models\User;
 use Robert2\API\Services\I18n;
 use Robert2\API\Services\View;
@@ -89,14 +90,14 @@ class SetupController extends BaseController
                 }
 
                 if ($currentStep === 'adminUser') {
-                    if ($stepSkipped && !User::where('group_id', 'admin')->exists()) {
+                    if ($stepSkipped && !User::where('group', Group::ADMIN)->exists()) {
                         throw new \InvalidArgumentException(
                             "At least one user must exists. Please create an admin user."
                         );
                     }
 
                     if (!$stepSkipped) {
-                        $installData['user']['group_id'] = 'admin';
+                        $installData['user']['group'] = Group::ADMIN;
                         User::staticEdit(null, $installData['user']);
                     }
                 }
@@ -147,7 +148,7 @@ class SetupController extends BaseController
         }
 
         if ($installProgress['step'] === 'adminUser') {
-            $stepData['existingAdmins'] = User::where('group_id', 'admin')->get()->toArray();
+            $stepData['existingAdmins'] = User::where('group', Group::ADMIN)->get()->toArray();
         }
 
         return $this->view->render($response, 'install.twig', [

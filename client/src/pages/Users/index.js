@@ -6,6 +6,7 @@ import Icon from '@/components/Icon';
 import Button from '@/components/Button';
 import { confirm } from '@/utils/alert';
 import apiUsers from '@/stores/api/users';
+import { Group } from '@/stores/api/groups';
 import initColumnsDisplay from '@/utils/initColumnsDisplay';
 
 // @vue/component
@@ -27,7 +28,7 @@ export default {
             columns: [
                 'pseudo',
                 'full_name',
-                'group_id',
+                'group',
                 'email',
                 'phone',
                 'address',
@@ -39,11 +40,11 @@ export default {
                 saveState: true,
                 orderBy: { column: 'pseudo', ascending: true },
                 initialPage: $route.query.page || 1,
-                sortable: ['pseudo', 'group_id', 'email'],
+                sortable: ['pseudo', 'group', 'email'],
                 columnsDisplay: initColumnsDisplay($options.name, {
                     pseudo: true,
                     full_name: true,
-                    group_id: true,
+                    group: true,
                     email: true,
                     phone: true,
                     address: false,
@@ -51,7 +52,7 @@ export default {
                 headings: {
                     pseudo: __('pseudo'),
                     full_name: __('name'),
-                    group_id: __('group'),
+                    group: __('group'),
                     email: __('email'),
                     phone: __('phone'),
                     address: __('address'),
@@ -60,7 +61,7 @@ export default {
                 columnsClasses: {
                     pseudo: 'Users__pseudo ',
                     full_name: 'Users__name ',
-                    group_id: 'Users__group ',
+                    group: 'Users__group ',
                     email: 'Users__email ',
                     phone: 'Users__phone ',
                     address: 'Users__address ',
@@ -88,7 +89,7 @@ export default {
                         }
                         return `${user.person.first_name} ${user.person.last_name}`;
                     },
-                    group_id: (h, user) => __(user.group_id),
+                    group: (h, user) => __(user.group),
                     email: (h, user) => {
                         const isActiveUser = user.id === this.currentUserId;
                         if (isActiveUser) {
@@ -115,7 +116,7 @@ export default {
                             return <Button type="edit" to={{ name: 'user-settings' }} />;
                         }
 
-                        const isUserAdmin = user.group_id === 'admin';
+                        const isUserAdmin = user.group === Group.ADMIN;
                         const {
                             isTrashDisplayed,
                             handleDeleteItem,

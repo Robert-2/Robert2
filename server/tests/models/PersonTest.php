@@ -6,6 +6,7 @@ namespace Robert2\Tests;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Robert2\API\Models;
 use Robert2\API\Errors\ValidationException;
+use Robert2\API\Models\Enums\Group;
 
 final class PersonTest extends ModelTestCase
 {
@@ -73,7 +74,7 @@ final class PersonTest extends ModelTestCase
             'id' => 1,
             'pseudo' => 'test1',
             'email' => 'tester@robertmanager.net',
-            'group_id' => 'admin',
+            'group' => Group::ADMIN,
             'person' => [
                 'id' => 1,
                 'user_id' => 1,

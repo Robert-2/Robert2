@@ -130,7 +130,7 @@ class Event extends BaseModel
     public function User()
     {
         return $this->belongsTo(User::class)
-            ->select(['users.id', 'pseudo', 'email', 'group_id']);
+            ->select(['users.id', 'pseudo', 'email', 'group']);
     }
 
     public function Technicians()

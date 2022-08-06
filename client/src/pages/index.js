@@ -20,6 +20,7 @@ import Parks from './Parks';
 import Park from './Park';
 import UserSettings from './Settings/User';
 import GlobalSettings from './Settings/Global';
+import { Group } from '@/stores/api/groups';
 
 export default [
     //
@@ -46,7 +47,11 @@ export default [
         component: Calendar,
         meta: {
             requiresAuth: true,
-            requiresGroups: ['admin', 'member', 'visitor'],
+            requiresGroups: [
+                Group.ADMIN,
+                Group.MEMBER,
+                Group.VISITOR,
+            ],
         },
     },
     {
@@ -57,7 +62,7 @@ export default [
             resource: 'events',
             title: 'page.event-edit.add',
             requiresAuth: true,
-            requiresGroups: ['admin', 'member'],
+            requiresGroups: [Group.ADMIN, Group.MEMBER],
         },
     },
     {
@@ -68,7 +73,7 @@ export default [
             resource: 'events',
             title: 'page.event-edit.edit',
             requiresAuth: true,
-            requiresGroups: ['admin', 'member'],
+            requiresGroups: [Group.ADMIN, Group.MEMBER],
         },
     },
     {
@@ -77,7 +82,7 @@ export default [
         component: EventReturn,
         meta: {
             requiresAuth: true,
-            requiresGroups: ['admin', 'member'],
+            requiresGroups: [Group.ADMIN, Group.MEMBER],
         },
     },
 
@@ -91,7 +96,7 @@ export default [
         component: Users,
         meta: {
             requiresAuth: true,
-            requiresGroups: ['admin'],
+            requiresGroups: [Group.ADMIN],
         },
     },
     {
@@ -100,7 +105,7 @@ export default [
         component: User,
         meta: {
             requiresAuth: true,
-            requiresGroups: ['admin'],
+            requiresGroups: [Group.ADMIN],
         },
     },
     {
@@ -109,7 +114,7 @@ export default [
         component: User,
         meta: {
             requiresAuth: true,
-            requiresGroups: ['admin'],
+            requiresGroups: [Group.ADMIN],
         },
     },
 
@@ -123,7 +128,7 @@ export default [
         component: Beneficiaries,
         meta: {
             requiresAuth: true,
-            requiresGroups: ['admin', 'member'],
+            requiresGroups: [Group.ADMIN, Group.MEMBER],
         },
     },
     {
@@ -132,7 +137,7 @@ export default [
         component: Beneficiary,
         meta: {
             requiresAuth: true,
-            requiresGroups: ['admin', 'member'],
+            requiresGroups: [Group.ADMIN, Group.MEMBER],
         },
     },
     {
@@ -141,7 +146,7 @@ export default [
         component: Beneficiary,
         meta: {
             requiresAuth: true,
-            requiresGroups: ['admin', 'member'],
+            requiresGroups: [Group.ADMIN, Group.MEMBER],
         },
     },
 
@@ -155,7 +160,7 @@ export default [
         component: Company,
         meta: {
             requiresAuth: true,
-            requiresGroups: ['admin', 'member'],
+            requiresGroups: [Group.ADMIN, Group.MEMBER],
         },
     },
     {
@@ -164,7 +169,7 @@ export default [
         component: Company,
         meta: {
             requiresAuth: true,
-            requiresGroups: ['admin', 'member'],
+            requiresGroups: [Group.ADMIN, Group.MEMBER],
         },
     },
 
@@ -178,7 +183,7 @@ export default [
         component: Materials,
         meta: {
             requiresAuth: true,
-            requiresGroups: ['admin', 'member'],
+            requiresGroups: [Group.ADMIN, Group.MEMBER],
         },
     },
     {
@@ -187,7 +192,7 @@ export default [
         component: Material,
         meta: {
             requiresAuth: true,
-            requiresGroups: ['admin', 'member'],
+            requiresGroups: [Group.ADMIN, Group.MEMBER],
         },
     },
     {
@@ -196,7 +201,7 @@ export default [
         component: Material,
         meta: {
             requiresAuth: true,
-            requiresGroups: ['admin', 'member'],
+            requiresGroups: [Group.ADMIN, Group.MEMBER],
         },
     },
     {
@@ -205,7 +210,7 @@ export default [
         component: MaterialView,
         meta: {
             requiresAuth: true,
-            requiresGroups: ['admin', 'member'],
+            requiresGroups: [Group.ADMIN, Group.MEMBER],
         },
     },
 
@@ -219,7 +224,7 @@ export default [
         component: Attributes,
         meta: {
             requiresAuth: true,
-            requiresGroups: ['admin'],
+            requiresGroups: [Group.ADMIN],
         },
     },
 
@@ -233,7 +238,7 @@ export default [
         component: Categories,
         meta: {
             requiresAuth: true,
-            requiresGroups: ['admin'],
+            requiresGroups: [Group.ADMIN],
         },
     },
 
@@ -247,7 +252,7 @@ export default [
         component: Technicians,
         meta: {
             requiresAuth: true,
-            requiresGroups: ['admin', 'member'],
+            requiresGroups: [Group.ADMIN, Group.MEMBER],
         },
     },
     {
@@ -256,7 +261,7 @@ export default [
         component: Technician,
         meta: {
             requiresAuth: true,
-            requiresGroups: ['admin', 'member'],
+            requiresGroups: [Group.ADMIN, Group.MEMBER],
         },
     },
     {
@@ -265,7 +270,7 @@ export default [
         component: Technician,
         meta: {
             requiresAuth: true,
-            requiresGroups: ['admin', 'member'],
+            requiresGroups: [Group.ADMIN, Group.MEMBER],
         },
     },
     {
@@ -274,7 +279,7 @@ export default [
         component: TechnicianView,
         meta: {
             requiresAuth: true,
-            requiresGroups: ['admin', 'member'],
+            requiresGroups: [Group.ADMIN, Group.MEMBER],
         },
     },
 
@@ -288,7 +293,7 @@ export default [
         component: Tags,
         meta: {
             requiresAuth: true,
-            requiresGroups: ['admin'],
+            requiresGroups: [Group.ADMIN],
         },
     },
 
@@ -302,7 +307,7 @@ export default [
         component: Parks,
         meta: {
             requiresAuth: true,
-            requiresGroups: ['admin'],
+            requiresGroups: [Group.ADMIN],
         },
     },
     {
@@ -311,7 +316,7 @@ export default [
         component: Park,
         meta: {
             requiresAuth: true,
-            requiresGroups: ['admin'],
+            requiresGroups: [Group.ADMIN],
         },
     },
     {
@@ -320,7 +325,7 @@ export default [
         component: Park,
         meta: {
             requiresAuth: true,
-            requiresGroups: ['admin'],
+            requiresGroups: [Group.ADMIN],
         },
     },
 
@@ -334,7 +339,11 @@ export default [
         component: UserSettings,
         meta: {
             requiresAuth: true,
-            requiresGroups: ['admin', 'member', 'visitor'],
+            requiresGroups: [
+                Group.ADMIN,
+                Group.MEMBER,
+                Group.VISITOR,
+            ],
         },
     },
     {
@@ -343,7 +352,7 @@ export default [
         component: GlobalSettings,
         meta: {
             requiresAuth: true,
-            requiresGroups: ['admin'],
+            requiresGroups: [Group.ADMIN],
         },
     },
 

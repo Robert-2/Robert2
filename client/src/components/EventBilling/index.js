@@ -7,6 +7,7 @@ import getEventDiscountRate from '@/utils/getEventDiscountRate';
 import BillingForm from '@/components/BillingForm';
 import DisplayBill from './DisplayBill';
 import { round, floor } from '@/utils/decimalRound';
+import { Group } from '@/stores/api/groups';
 
 // @vue/component
 export default {
@@ -51,7 +52,7 @@ export default {
         },
 
         userCanEdit() {
-            return this.$store.getters['auth/is'](['admin', 'member']);
+            return this.$store.getters['auth/is']([Group.ADMIN, Group.MEMBER]);
         },
 
         userCanCreateBill() {

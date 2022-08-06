@@ -5,6 +5,7 @@ namespace Robert2\Tests;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Robert2\API\Errors\ValidationException;
+use Robert2\API\Models\Enums\Group;
 use Robert2\API\Models\User;
 use Robert2\API\Models\UserSetting;
 
@@ -26,7 +27,7 @@ final class UserTest extends ModelTestCase
         'id' => 1,
         'pseudo' => 'test1',
         'email' => 'tester@robertmanager.net',
-        'group_id' => 'admin',
+        'group' => Group::ADMIN,
         'created_at' => null,
         'updated_at' => null,
         'deleted_at' => null,
@@ -86,7 +87,7 @@ final class UserTest extends ModelTestCase
                 'id' => 3,
                 'pseudo' => 'nobody',
                 'email' => 'nobody@robertmanager.net',
-                'group_id' => 'member',
+                'group' => Group::MEMBER,
                 'created_at' => null,
                 'updated_at' => null,
                 'deleted_at' => null,
@@ -97,7 +98,7 @@ final class UserTest extends ModelTestCase
                 'id' => 2,
                 'pseudo' => 'test2',
                 'email' => 'tester2@robertmanager.net',
-                'group_id' => 'member',
+                'group' => Group::MEMBER,
                 'created_at' => null,
                 'updated_at' => null,
                 'deleted_at' => null,
@@ -189,7 +190,7 @@ final class UserTest extends ModelTestCase
             'pseudo' => 'testAdd',
             'email' => 'testadd@testing.org',
             'password' => 'testadd',
-            'group_id' => 'member',
+            'group' => Group::MEMBER,
             'person' => [
                 'first_name' => 'Testing',
                 'last_name' => 'Add',
@@ -201,7 +202,7 @@ final class UserTest extends ModelTestCase
         $this->assertEquals(4, $result->id);
         $this->assertEquals('testAdd', $result->pseudo);
         $this->assertEquals('testadd@testing.org', $result->email);
-        $this->assertEquals('member', $result->group_id);
+        $this->assertEquals(Group::MEMBER, $result->group);
         $this->assertNull($result->cas_identifier);
         $this->assertEquals(4, $result->person['id']);
         $this->assertEquals(4, $result->person['user_id']);
@@ -220,7 +221,6 @@ final class UserTest extends ModelTestCase
             'auth_token_validity_duration' => 12,
         ], $settings->toArray());
     }
-
 
     public function testUpdateNotFound(): void
     {

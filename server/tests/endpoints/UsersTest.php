@@ -1,6 +1,8 @@
 <?php
 namespace Robert2\Tests;
 
+use Robert2\API\Models\Enums\Group;
+
 final class UsersTest extends ApiTestCase
 {
     public function testGetUsers()
@@ -18,7 +20,7 @@ final class UsersTest extends ApiTestCase
                     'id' => 3,
                     'pseudo' => 'nobody',
                     'email' => 'nobody@robertmanager.net',
-                    'group_id' => 'member',
+                    'group' => Group::MEMBER,
                     'created_at' => null,
                     'updated_at' => null,
                     'deleted_at' => null,
@@ -28,7 +30,7 @@ final class UsersTest extends ApiTestCase
                     'id' => 1,
                     'pseudo' => 'test1',
                     'email' => 'tester@robertmanager.net',
-                    'group_id' => 'admin',
+                    'group' => Group::ADMIN,
                     'created_at' => null,
                     'updated_at' => null,
                     'deleted_at' => null,
@@ -82,7 +84,7 @@ final class UsersTest extends ApiTestCase
                     'id' => 2,
                     'pseudo' => 'test2',
                     'email' => 'tester2@robertmanager.net',
-                    'group_id' => 'member',
+                    'group' => Group::MEMBER,
                     'created_at' => null,
                     'updated_at' => null,
                     'deleted_at' => null,
@@ -132,7 +134,7 @@ final class UsersTest extends ApiTestCase
             'id' => 1,
             'pseudo' => 'test1',
             'email' => 'tester@robertmanager.net',
-            'group_id' => 'admin',
+            'group' => Group::ADMIN,
             'cas_identifier' => null,
             'created_at' => null,
             'updated_at' => null,
@@ -254,7 +256,7 @@ final class UsersTest extends ApiTestCase
             'email' => [
                 "This email address is not valid",
             ],
-            'group_id' => [
+            'group' => [
                 "This field is mandatory",
                 "One of the following rules must be verified",
                 'Must be equal to "admin"',
@@ -286,7 +288,7 @@ final class UsersTest extends ApiTestCase
             'pseudo' => 'test1',
             'email' => 'tester@robertmanager.net',
             'password' => 'test-dupe',
-            'group_id' => 'member',
+            'group' => Group::MEMBER,
             'person' => [
                 'first_name' => 'Nouveau',
                 'last_name' => 'Testeur',
@@ -310,7 +312,7 @@ final class UsersTest extends ApiTestCase
             'email' => 'nobody@test.org',
             'pseudo' => 'Jeanne',
             'password' => 'my-ultim4te-paßwor!',
-            'group_id' => 'member',
+            'group' => Group::MEMBER,
             'person' => [
                 'first_name' => 'Nobody',
                 'last_name' => 'Testeur',
@@ -327,7 +329,7 @@ final class UsersTest extends ApiTestCase
             'id' => 4,
             'email' => 'nobody@test.org',
             'pseudo' => 'Jeanne',
-            'group_id' => 'member',
+            'group' => Group::MEMBER,
             'person' => [
                 'id' => 4,
                 'first_name' => 'Nobody',
