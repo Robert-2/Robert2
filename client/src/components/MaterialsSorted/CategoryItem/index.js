@@ -22,9 +22,6 @@ const MaterialsCategoryItem = (props) => {
             <ul class="MaterialsCategoryItem__list">
                 {data.value.materials.map((material) => (
                     <li key={material.id} class="MaterialsCategoryItem__material">
-                        <div class="MaterialsCategoryItem__material__quantity-first">
-                            {material.pivot.quantity}
-                        </div>
                         <div class="MaterialsCategoryItem__material__name">
                             {material.name}
                         </div>

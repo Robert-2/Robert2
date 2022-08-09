@@ -21,6 +21,7 @@
     &__error {
         margin: 0 0 1.5rem;
         color: globals.$text-danger-color;
+        font-style: italic;
     }
 
     &__list {
@@ -30,7 +31,7 @@
 
     &__item {
         display: flex;
-        margin-bottom: 0.5rem;
+        padding: 0.7rem 0;
         border-bottom: 1px dashed globals.$list-left-border-color;
         color: globals.$text-danger-color;
         list-style: none;
@@ -41,7 +42,7 @@
 
         &__quantity {
             flex: 0 0 14.5rem;
-            margin: 0 0.8rem;
+            margin: 0 0 0 0.8rem;
         }
     }
 }

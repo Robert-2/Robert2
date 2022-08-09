@@ -6,6 +6,7 @@ export default {
         'unexpected-while-restoring': "An unexpected error occurred while restoring, please try again.",
         'unexpected-while-uploading': "An unexpected error occurred while sending your files, please try again.",
         'unexpected-while-calculating': "An unexpected error occurred while calculating, please try again.",
+        'unexpected-while-fetching': "An unexpected error occurred while retrieving the data.",
         'api-unreachable': "Sorry, but Robert2 API is unreachable... Please check your access to network.",
         'record-not-found': "This record does not exist.",
         'page-not-found': "The requested page does not exist.",

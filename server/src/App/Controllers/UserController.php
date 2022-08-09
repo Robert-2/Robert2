@@ -20,11 +20,7 @@ class UserController extends BaseController
     public function getOne(Request $request, Response $response): Response
     {
         $id = (int)$request->getAttribute('id');
-        $user = User::find($id);
-
-        if (!$user) {
-            throw new HttpNotFoundException($request);
-        }
+        $user = User::findOrFail($id);
 
         return $response->withJson($user->toArray());
     }
@@ -32,9 +28,9 @@ class UserController extends BaseController
     public function getSettings(Request $request, Response $response): Response
     {
         $id = (int)$request->getAttribute('id');
-        $user = User::find($id);
+        $user = User::findOrFail($id);
 
-        if (!$user || !$user->settings) {
+        if (!$user->settings) {
             throw new HttpNotFoundException($request);
         }
 
@@ -52,10 +48,7 @@ class UserController extends BaseController
         }
 
         $id = (int)$request->getAttribute('id');
-        $user = User::find($id);
-        if (!$user) {
-            throw new HttpNotFoundException($request);
-        }
+        $user = User::findOrFail($id);
 
         $result = UserSetting::editByUser($user, $postData);
         return $response->withJson($result->toArray(), SUCCESS_OK);

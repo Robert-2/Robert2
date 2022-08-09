@@ -322,7 +322,9 @@ export default {
                         <FormField
                             label="rental-price"
                             type="number"
-                            addon={config.currency.symbol}
+                            addon={__('page.material-edit.currency-per-day', {
+                                currency: config.currency.symbol,
+                            })}
                             class="MaterialEditForm__price"
                             v-model={data.rental_price}
                             errors={errors?.rental_price}

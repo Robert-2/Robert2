@@ -45,13 +45,14 @@ export default {
         // ------------------------------------------------------
 
         selectInputContent() {
-            const range = document.createRange();
-            range.selectNode(this.$refs.input);
+            this.$refs.input.select();
 
-            window.getSelection().removeAllRanges();
-            window.getSelection().addRange(range);
+            return () => {
+                this.$refs.input.blur();
 
-            return () => { window.getSelection().removeAllRanges(); };
+                // - Requis pour Chrome qui ne prend pas en compte le `blur`.
+                window.getSelection().removeAllRanges();
+            };
         },
     },
     render() {

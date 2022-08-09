@@ -84,10 +84,7 @@ trait WithCrud
         }
 
         $id = (int)$request->getAttribute('id');
-        $model = $this->getModelClass()::find($id);
-        if (!$model) {
-            throw new HttpNotFoundException($request);
-        }
+        $this->getModelClass()::findOrFail($id);
 
         $result = $this->getModelClass()::staticEdit($id, $postData);
         return $response->withJson($result->toArray(), SUCCESS_OK);

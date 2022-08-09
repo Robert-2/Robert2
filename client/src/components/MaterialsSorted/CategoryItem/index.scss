@@ -2,10 +2,10 @@
 
 .MaterialsCategoryItem {
     padding: 0 0.5rem;
-    border-left: 3px solid globals.$list-left-border-color;
 
     &__title {
         margin: 0 0 0.5rem;
+        font-size: 1.2rem;
     }
 
     &__list {
@@ -31,15 +31,8 @@
     }
 
     &__material {
-        margin-bottom: 0.35rem;
+        padding: 0.7rem 0;
         border-bottom: 1px dashed globals.$list-left-border-color;
-
-        &__quantity-first {
-            flex: 0 0 35px;
-            padding-right: globals.$content-padding-large-horizontal;
-            color: globals.$text-light-color;
-            text-align: right;
-        }
 
         &__quantity {
             flex: 0 0 3rem;
