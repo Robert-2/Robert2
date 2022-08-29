@@ -34,6 +34,7 @@ class Install
         'json',
         'intl',
         'pdo_mysql',
+        'iconv',
     ];
 
     const VALUE_TYPES = [

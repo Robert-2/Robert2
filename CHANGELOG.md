@@ -7,6 +7,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 ## 0.20.0 (UNRELEASED)
 
 - Corrige la copie via le bouton "Copier" dans le champ d'URL du calendrier public (#369).
+- Ajoute l'extension `iconv` dans la liste des extensions requises lors de l'installation (#371).
 
 ## 0.19.2 (2022-07-29)
 
