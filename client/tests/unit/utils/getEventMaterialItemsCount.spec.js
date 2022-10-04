@@ -1,5 +1,5 @@
 import getEventMaterialItemsCount from '@/utils/getEventMaterialItemsCount';
-import eventMaterials from './data/event-materials';
+import eventMaterials from '@fixtures/event-materials';
 
 describe('getEventMaterialItemsCount', () => {
     it('returns 0 with empty values', () => {

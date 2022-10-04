@@ -3,10 +3,14 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
+use Robert2\API\Contracts\Serializable;
+use Robert2\API\Models\Traits\Serializer;
 use Robert2\API\Validation\Validator as V;
 
-class SubCategory extends BaseModel
+class SubCategory extends BaseModel implements Serializable
 {
+    use Serializer;
+
     protected $searchField = 'name';
 
     public function __construct(array $attributes = [])
@@ -38,6 +42,7 @@ class SubCategory extends BaseModel
         $query = static::newQuery()
             ->where('name', $value)
             ->where('category_id', $this->category_id);
+
         if ($this->exists) {
             $query->where('id', '!=', $this->id);
         }
@@ -49,19 +54,18 @@ class SubCategory extends BaseModel
         return true;
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Relations
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Relations
+    // -
+    // ------------------------------------------------------
 
-    public function Category()
+    public function category()
     {
-        return $this->belongsTo(Category::class)
-            ->select(['id', 'name']);
+        return $this->belongsTo(Category::class);
     }
 
-    public function Materials()
+    public function materials()
     {
         $fields = [
             'id',
@@ -78,42 +82,57 @@ class SubCategory extends BaseModel
         return $this->hasMany(Material::class)->select($fields);
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Mutators
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Mutators
+    // -
+    // ------------------------------------------------------
 
     protected $casts = [
-        'name'        => 'string',
+        'name' => 'string',
         'category_id' => 'integer',
     ];
 
-    public function getCategoryAttribute()
-    {
-        return $this->Category()->get()->toArray();
-    }
-
-    public function getMaterialsAttribute()
-    {
-        return $this->Materials()->get()->toArray();
-    }
-
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Setters
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Setters
+    // -
+    // ------------------------------------------------------
 
     protected $fillable = [
         'name',
         'category_id'
     ];
 
-    public function remove($id, array $options = []): ?BaseModel
+    // ------------------------------------------------------
+    // -
+    // -    "Repository" methods
+    // -
+    // ------------------------------------------------------
+
+    public static function staticRemove($id, array $options = []): ?BaseModel
     {
-        $subCategory = static::findOrFail($id);
-        $subCategory->delete();
+        if (!static::findOrFail($id)->delete()) {
+            throw new \RuntimeException(sprintf("Unable to delete the sub-category #%d.", $id));
+        }
         return null;
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Serialization
+    // -
+    // ------------------------------------------------------
+
+    public function serialize(): array
+    {
+        $data = $this->attributesForSerialization();
+
+        unset(
+            $data['created_at'],
+            $data['updated_at'],
+        );
+
+        return $data;
     }
 }

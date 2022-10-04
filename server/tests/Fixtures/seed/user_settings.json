@@ -1,14 +1,14 @@
 [
     {
-        "id"                           : 1,
-        "user_id"                      : 1,
-        "language"                     : "EN",
-        "auth_token_validity_duration" : 12
+        "id": 1,
+        "user_id": 1,
+        "language": "en",
+        "auth_token_validity_duration": 12
     },
     {
-        "id"                           : 2,
-        "user_id"                      : 2,
-        "language"                     : "FR",
-        "auth_token_validity_duration" : 48
+        "id": 2,
+        "user_id": 2,
+        "language": "fr",
+        "auth_token_validity_duration": 48
     }
 ]

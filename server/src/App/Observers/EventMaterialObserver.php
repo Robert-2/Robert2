@@ -58,7 +58,7 @@ final class EventMaterialObserver
         //
 
         /** @var Robert2\API\Models\Event[] */
-        $events = $material->Events()
+        $events = $material->events()
             ->where($event->qualifyColumn('id'), '<>', $event->id)
             ->where(function (Builder $query) use ($event) {
                 $query->where([

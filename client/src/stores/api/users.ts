@@ -2,7 +2,7 @@ import requester from '@/globals/requester';
 
 import type { PaginatedData, PaginationParams } from '@/stores/api/@types';
 import type { Group } from '@/stores/api/groups';
-import type { Person } from '@/stores/api/persons';
+import type { Park } from '@/stores/api/parks';
 
 //
 // - Types
@@ -11,27 +11,30 @@ import type { Person } from '@/stores/api/persons';
 /* eslint-disable @typescript-eslint/naming-convention */
 export type User = {
     id: number,
+    group: Group,
     pseudo: string,
     email: string,
-    group: Group,
-    person: Person | null,
+    first_name: string,
+    last_name: string,
+    full_name: string,
+    phone: string,
+};
+
+export type UserDetails = User & {
+    restricted_parks: Array<Park['id']>,
 };
 
 export type UserEdit = {
+    first_name: string | null,
+    last_name: string | null,
     pseudo: string,
     email: string,
+    phone: string | null,
     password?: string,
-    group_id: Group,
-    person: {
-        first_name: string | null,
-        last_name: string | null,
-        nickname: string | null,
-        phone: string | null,
-        street: string | null,
-        postal_code: string | null,
-        locality: string | null,
-    },
+    group: Group,
 };
+
+type UserEditSelf = Omit<UserEdit, 'group' | 'restricted_parks'>;
 /* eslint-enable @typescript-eslint/naming-convention */
 
 type GetAllParams = PaginationParams & { deleted?: boolean };
@@ -44,21 +47,25 @@ const all = async (params: GetAllParams): Promise<PaginatedData<User[]>> => (
     (await requester.get('/users', { params })).data
 );
 
-const one = async (id: User['id']): Promise<User> => (
+const one = async (id: User['id'] | 'self'): Promise<UserDetails> => (
     (await requester.get(`/users/${id}`)).data
 );
 
-const create = async (data: UserEdit): Promise<User> => (
+const create = async (data: UserEdit): Promise<UserDetails> => (
     (await requester.post('/users', data)).data
 );
 
-const update = async (id: User['id'], data: UserEdit): Promise<User> => (
-    (await requester.put(`/users/${id}`, data)).data
-);
+/* eslint-disable func-style */
+async function update(id: 'self', data: UserEditSelf): Promise<UserDetails>;
+async function update(id: User['id'], data: UserEdit): Promise<UserDetails>;
+async function update(id: User['id'] | 'self', data: UserEdit | UserEditSelf): Promise<UserDetails> {
+    return (await requester.put(`/users/${id}`, data)).data;
+}
+/* eslint-enable func-style */
 
-const restore = async (id: User['id']): Promise<void> => {
-    await requester.put(`/users/restore/${id}`);
-};
+const restore = async (id: User['id']): Promise<UserDetails> => (
+    (await requester.put(`/users/restore/${id}`)).data
+);
 
 const remove = async (id: User['id']): Promise<void> => {
     await requester.delete(`/users/${id}`);

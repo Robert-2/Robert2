@@ -1,0 +1,15 @@
+@use '~@/themes/default/style/globals';
+
+.EventReturnNotStarted {
+    text-align: center;
+
+    &__warning {
+        margin: globals.$content-padding-large-vertical 0;
+        color: globals.$text-warning-color;
+        font-size: 1.2rem;
+
+        > .Icon {
+            margin-right: 0.5rem;
+        }
+    }
+}

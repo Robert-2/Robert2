@@ -1,16 +1,6 @@
-import requester from '@/globals/requester';
 import config from '@/globals/config';
 import cookies from '@/utils/cookies';
-
-const normalizeUser = (rawData) => ({
-    id: rawData.id,
-    group: rawData.group,
-    firstName: rawData.first_name,
-    lastName: rawData.last_name,
-    pseudo: rawData.pseudo,
-    email: rawData.email,
-    locale: rawData.settings ? rawData.settings.language : 'en',
-});
+import apiSession from '@/stores/api/session';
 
 const setSessionCookie = (token) => {
     const { cookie, timeout } = config.auth;
@@ -45,14 +35,11 @@ export default {
         setUser(state, user) {
             state.user = user;
         },
-        setUserProfile(state, newInfos) {
-            state.user.firstName = newInfos.first_name;
-            state.user.lastName = newInfos.last_name;
-            state.user.pseudo = newInfos.pseudo;
-            state.user.email = newInfos.email;
+        updateUser(state, newData) {
+            state.user = { ...state.user, ...newData };
         },
-        setLocale(state, locale) {
-            state.user.locale = locale;
+        setLocale(state, language) {
+            state.user.language = language;
         },
     },
     actions: {
@@ -63,8 +50,7 @@ export default {
             }
 
             try {
-                const { data } = await requester.get('/session');
-                commit('setUser', normalizeUser(data));
+                commit('setUser', await apiSession.get());
             } catch (error) {
                 // - Non connecté.
                 if (error.httpCode === 401 /* Unauthorized */) {
@@ -76,13 +62,12 @@ export default {
             }
         },
         async login({ dispatch, commit }, credentials) {
-            const { data } = await requester.post('session', credentials);
-            commit('setUser', normalizeUser(data.user));
-            setSessionCookie(data.token);
+            const { token, ...user } = await apiSession.create(credentials);
+            commit('setUser', user);
+            setSessionCookie(token);
 
-            const userLocale = data.user.settings.language.toLowerCase();
-            window.localStorage.setItem('userLocale', userLocale);
-            await dispatch('i18n/setLocale', { locale: userLocale }, { root: true });
+            window.localStorage.setItem('userLocale', user.language);
+            await dispatch('i18n/setLocale', { locale: user.language }, { root: true });
             await dispatch('settings/fetch', undefined, { root: true });
         },
         async logout({ dispatch, commit }) {

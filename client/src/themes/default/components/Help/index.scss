@@ -1,0 +1,66 @@
+@use '~@/themes/default/style/globals';
+@use '~@fortawesome/fontawesome-free/scss/mixins' as fa-mixins;
+
+.Help {
+    &__loading {
+        display: flex;
+        align-items: center;
+
+        .fa-spin {
+            margin-right: 0.5rem;
+            margin-bottom: 0.1rem;
+            font-size: 1.8rem;
+            line-height: 1rem;
+        }
+    }
+
+    &__message {
+        position: relative;
+        padding-left: 1.8rem;
+        text-align: left;
+        white-space: pre-line;
+
+        &::before {
+            @include fa-mixins.fa-icon;
+
+            position: absolute;
+            top: 0;
+            left: 0;
+            margin-top: 0.1rem;
+            // stylelint-disable-next-line font-family-no-missing-generic-family-keyword
+            font-family: 'Font Awesome 5 Free';
+            font-size: 1.2rem;
+            font-weight: 900;
+        }
+    }
+
+    &--success {
+        color: globals.$text-success-color;
+
+        .Help__message::before {
+            // TODO: Ré-introduire la variable font-awesome (ou refactoring) lorsque le ticket suivant aura été traité.
+            // @see https://github.com/FortAwesome/Font-Awesome/pull/17940
+            content: '\f00c'; // fa-content($fa-var-check);
+        }
+    }
+
+    &--info {
+        .Help__message::before {
+            // TODO: Ré-introduire la variable font-awesome (ou refactoring) lorsque le ticket suivant aura été traité.
+            // @see https://github.com/FortAwesome/Font-Awesome/pull/17940
+            content: '\f05a'; // fa-content($fa-var-info-circle);
+        }
+    }
+
+    &--error {
+        color: globals.$text-danger-color;
+        font-weight: 600;
+
+        .ErrorMessage {
+            margin: 0;
+            color: inherit;
+            font-weight: inherit;
+            text-align: left;
+        }
+    }
+}

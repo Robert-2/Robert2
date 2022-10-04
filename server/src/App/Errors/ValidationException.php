@@ -1,46 +1,18 @@
 <?php
 namespace Robert2\API\Errors;
 
-use Illuminate\Database\QueryException;
-
 class ValidationException extends \Exception
 {
-    private $_validation;
     protected $code;
+    protected $errors;
 
-    public function __construct(int $code = ERROR_VALIDATION)
+    public function __construct(array $errors = [])
     {
-        $this->code = $code;
+        $this->code = ERROR_VALIDATION;
+        $this->errors = $errors;
 
         $message = "Validation failed. See error[details] for more informations.";
-
-        parent::__construct($message, $code, null);
-    }
-
-    // ------------------------------------------------------
-    // -
-    // -    Setters
-    // -
-    // ------------------------------------------------------
-
-    public function setValidationErrors($validation): self
-    {
-        $this->_validation = (array)$validation;
-
-        return $this;
-    }
-
-    /**
-     * Parses PDO error codes to translate them into error exceptions
-     */
-    public function setPDOValidationException(QueryException $e): self
-    {
-        $message = "";
-        $details = $e->getMessage();
-
-        $this->setValidationErrors([$message, $details]);
-
-        return $this;
+        parent::__construct($message, ERROR_VALIDATION, null);
     }
 
     // ------------------------------------------------------
@@ -51,6 +23,6 @@ class ValidationException extends \Exception
 
     public function getValidationErrors()
     {
-        return $this->_validation;
+        return $this->errors;
     }
 }

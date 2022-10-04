@@ -19,52 +19,60 @@ class UserSetting extends BaseModel
         parent::__construct($attributes);
 
         $this->validation = [
-            'user_id'  => V::notEmpty()->intVal(),
+            'user_id' => V::notEmpty()->intVal(),
             'language' => V::optional(V::oneOf(
-                V::equals('EN'),
-                V::equals('FR')
+                V::equals('en'),
+                V::equals('fr')
             )),
             'auth_token_validity_duration' => V::optional(V::intVal()->max(744)), // - max 1 month
         ];
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Getters
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Getters
+    // -
+    // ------------------------------------------------------
 
     public function getAll(bool $softDeleted = false): Builder
     {
-        throw new \Exception(
-            "Cannot give all settings of all users at once.",
-            ERROR_NOT_ALLOWED
-        );
+        throw new \Exception("Cannot give all settings of all users at once.");
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Mutators
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Mutators
+    // -
+    // ------------------------------------------------------
 
     protected $casts = [
-        'user_id'                      => 'integer',
-        'language'                     => 'string',
+        'user_id' => 'integer',
+        'language' => 'string',
         'auth_token_validity_duration' => 'integer',
     ];
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Setters
-    // —
-    // ——————————————————————————————————————————————————————
+    public function getLanguageAttribute($value)
+    {
+        return strtolower($value);
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Setters
+    // -
+    // ------------------------------------------------------
 
     protected $fillable = [
         'user_id',
         'language',
-        'auth_token_validity_duration'
+        'auth_token_validity_duration',
     ];
+
+    // ------------------------------------------------------
+    // -
+    // -    "Repository" methods
+    // -
+    // ------------------------------------------------------
 
     public static function editByUser(User $user, array $data = []): UserSetting
     {
@@ -77,9 +85,13 @@ class UserSetting extends BaseModel
         return static::staticEdit($settings->id, $data);
     }
 
-    // - Prevents the deletion of a user's settings
-    public function remove($id, array $options = []): ?BaseModel
+    public static function staticRemove($id, array $options = []): ?BaseModel
     {
-        return null;
+        throw new \InvalidArgumentException("User settings cannot be deleted.");
+    }
+
+    public static function staticUnremove($id): BaseModel
+    {
+        throw new \InvalidArgumentException("User settings cannot be restored.");
     }
 }

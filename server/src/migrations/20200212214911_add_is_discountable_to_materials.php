@@ -8,7 +8,7 @@ class AddIsDiscountableToMaterials extends AbstractMigration
         $materials = $this->table('materials');
         $materials
             ->addColumn('is_discountable', 'boolean', [
-                'after'   => 'is_hidden_on_bill',
+                'after' => 'is_hidden_on_bill',
                 'default' => true,
             ])
             ->update();

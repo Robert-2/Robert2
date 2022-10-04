@@ -27,18 +27,18 @@ class CreateBills extends AbstractMigration
             ->addIndex(['beneficiary_id'])
             ->addIndex(['user_id'])
             ->addForeignKey('event_id', 'events', 'id', [
-                'delete'     => 'RESTRICT',
-                'update'     => 'RESTRICT',
+                'delete' => 'RESTRICT',
+                'update' => 'RESTRICT',
                 'constraint' => 'fk_bill_event'
             ])
             ->addForeignKey('beneficiary_id', 'persons', 'id', [
-                'delete'     => 'RESTRICT',
-                'update'     => 'NO_ACTION',
+                'delete' => 'RESTRICT',
+                'update' => 'NO_ACTION',
                 'constraint' => 'fk_bill_beneficiary'
             ])
             ->addForeignKey('user_id', 'users', 'id', [
-                'delete'     => 'NO_ACTION',
-                'update'     => 'NO_ACTION',
+                'delete' => 'NO_ACTION',
+                'update' => 'NO_ACTION',
                 'constraint' => 'fk_bill_user'
             ])
             ->create();

@@ -98,8 +98,8 @@ final class JWT implements AuthenticatorInterface
         $expires = new \DateTime(sprintf('now +%d hours', $duration));
 
         $payload = [
-            'iat'  => (new \DateTime())->getTimeStamp(),
-            'exp'  => $expires->getTimeStamp(),
+            'iat' => (new \DateTime())->getTimeStamp(),
+            'exp' => $expires->getTimeStamp(),
             'user' => $user->toArray()
         ];
 
@@ -135,6 +135,6 @@ final class JWT implements AuthenticatorInterface
         $settings = Config::getSettings();
 
         $defaultTokenDuration = $settings['sessionExpireHours'];
-        return $user->settings['auth_token_validity_duration'] ?: $defaultTokenDuration;
+        return $user->settings->auth_token_validity_duration ?: $defaultTokenDuration;
     }
 }

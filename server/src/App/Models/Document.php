@@ -47,6 +47,7 @@ class Document extends BaseModel
         $query = static::newQuery()
             ->where('name', $value)
             ->where('material_id', $this->material_id);
+
         if ($this->exists) {
             $query->where('id', '!=', $this->id);
         }
@@ -64,7 +65,7 @@ class Document extends BaseModel
     // -
     // ------------------------------------------------------
 
-    public function Material()
+    public function material()
     {
         return $this->belongsTo(Material::class)
             ->select(['id', 'name', 'reference']);
@@ -82,13 +83,6 @@ class Document extends BaseModel
         'type' => 'string',
         'size' => 'integer',
     ];
-
-    public function getMaterialAttribute()
-    {
-        $material = $this->Material()->first();
-        return $material ? $material->toArray() : null;
-    }
-
 
     public function getFilePathAttribute()
     {
@@ -110,17 +104,15 @@ class Document extends BaseModel
 
     // ------------------------------------------------------
     // -
-    // -    Custom Methods
+    // -    "Repository" methods
     // -
     // ------------------------------------------------------
 
-    public function remove($id, array $options = []): ?BaseModel
+    public static function staticRemove($id, array $options = []): ?BaseModel
     {
         $document = static::findOrFail($id);
         if (!$document->forceDelete()) {
-            throw new \RuntimeException(
-                sprintf("Unable to delete document %d.", $id)
-            );
+            throw new \RuntimeException(sprintf("Unable to delete the document #%d.", $id));
         }
 
         $filePath = $document->file_path;
@@ -132,6 +124,12 @@ class Document extends BaseModel
 
         return $document;
     }
+
+    // ------------------------------------------------------
+    // -
+    // -    Utils Methods
+    // -
+    // ------------------------------------------------------
 
     public static function getFilePath(int $materialId, ?string $name = null): string
     {

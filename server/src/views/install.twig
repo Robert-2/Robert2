@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block body %}
-     <div class="layout">
+    <div class="layout">
         <header class="layout__header header">
             {{ include('components/logo.svg.twig', { class: 'header__logo' }) }}
             <h3 class="header__title">{{ translate("Installation wizard") }}</h3>
@@ -18,7 +18,7 @@
         </div>
         <footer class="layout__footer footer">
             <div class="footer__version">
-                Robert2 API, version <strong>{{version()}}</strong>
+                Robert2, version <strong>{{version()}}</strong>
             </div>
             <div class="footer__licence">
                 &copy; Pulsanova 2017-{{ 'now'|date('Y') }} - Tous droits réservés.

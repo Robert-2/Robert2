@@ -9,23 +9,16 @@ use Robert2\API\Models\Tag;
 
 trait Taggable
 {
-    public function Tags()
+    public function tags()
     {
-        return $this->morphToMany(Tag::class, 'taggable')
-            ->select(['id', 'name']);
+        return $this->morphToMany(Tag::class, 'taggable');
     }
 
-    public function getTagsAttribute()
-    {
-        $tags = $this->Tags()->get();
-        return Tag::format($tags);
-    }
-
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Getters
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Getters
+    // -
+    // ------------------------------------------------------
 
     public function getAllFilteredOrTagged(array $conditions, array $tags = [], bool $withDeleted = false): Builder
     {
@@ -44,61 +37,48 @@ trait Taggable
         return $builder;
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Setters
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Setters
+    // -
+    // ------------------------------------------------------
 
-    public function edit($id = null, array $data = []): BaseModel
+    public static function staticEdit($id = null, array $data = []): BaseModel
     {
-        $entity = parent::edit($id, $data);
+        $entity = parent::staticEdit($id, $data);
 
         if (array_key_exists('tags', $data)) {
-            $this->setTags($entity['id'], $data['tags']);
+            $entity->setTags($data['tags']);
         }
 
         return $entity;
     }
 
-    public function setTags($id, ?array $tagNames): array
+    public function setTags(?array $tagNames): self
     {
-        $entity = static::findOrFail($id);
-
         if (empty($tagNames)) {
-            $entity->Tags()->sync([]);
-            return $entity->tags;
+            $this->tags()->sync([]);
+            $this->refresh();
+
+            return $this;
         }
 
         // - Filter list to keep only names
         // - in case $tagNames is in the form [{ id: number, name: string }]
-        $tagNames = array_map(function ($tag) {
-            return (is_array($tag) && array_key_exists('name', $tag)) ? $tag['name'] : $tag;
-        }, $tagNames);
+        $tagNames = array_map(
+            fn($tag) => (
+                is_array($tag) && array_key_exists('name', $tag)
+                    ? $tag['name']
+                    : $tag
+            ),
+            $tagNames
+        );
 
-        $Tag = new Tag();
-        $Tags = $Tag->bulkAdd($tagNames);
-        $tagsIds = [];
-        foreach ($Tags as $Tag) {
-            $tagsIds[] = $Tag->id;
-        }
+        $tags = Tag::bulkAdd($tagNames);
+        $tagsIds = array_map(fn($tag) => $tag->id, $tags);
+        $this->tags()->sync($tagsIds);
+        $this->refresh();
 
-        $entity->Tags()->sync($tagsIds);
-        return $entity->tags;
-    }
-
-    public function addTag($id, string $tagName): array
-    {
-        $entity = static::findOrFail($id);
-
-        $tagName = trim($tagName);
-        if (empty($tagName)) {
-            throw new \InvalidArgumentException("The new tag should not be empty.");
-        }
-
-        $Tag = Tag::firstOrCreate(['name' => $tagName]);
-
-        $entity->Tags()->attach($Tag->id);
-        return $entity->tags;
+        return $this;
     }
 }

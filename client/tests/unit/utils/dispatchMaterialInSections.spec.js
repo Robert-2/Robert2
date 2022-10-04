@@ -1,7 +1,7 @@
 import dispatchMaterialInSections from '@/utils/dispatchMaterialInSections';
-import eventMaterials from './data/event-materials';
-import eventReturnMaterials from './data/event-return-materials';
-import materials from './data/materials';
+import eventMaterials from '@fixtures/event-materials';
+import eventReturnMaterials from '@fixtures/event-return-materials';
+import materials from '@fixtures/materials';
 
 const sectionNameGetter = (id) => {
     switch (id) {

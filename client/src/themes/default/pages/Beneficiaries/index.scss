@@ -1,0 +1,55 @@
+@use '~@/themes/default/style/globals';
+
+.Page--beneficiaries {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+
+    .Beneficiaries {
+        flex: 1;
+    }
+}
+
+.Beneficiaries {
+    display: flex;
+    flex-direction: column;
+
+    &__table {
+        flex: 1;
+    }
+
+    &__email,
+    &__address,
+    &__note {
+        display: none;
+    }
+
+    &__address {
+        white-space: pre-line;
+    }
+
+    &__note {
+        max-width: 200px;
+        white-space: pre-line;
+    }
+
+    &__actions {
+        width: 1%;
+        text-align: right;
+        white-space: nowrap;
+    }
+
+    @media (min-width: globals.$screen-mobile) {
+        &__email {
+            display: table-cell;
+        }
+    }
+
+    @media (min-width: globals.$screen-desktop) {
+        &__address,
+        &__note {
+            display: table-cell;
+        }
+    }
+}

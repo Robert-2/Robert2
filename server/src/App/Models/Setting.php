@@ -117,11 +117,11 @@ class Setting extends BaseModel
         return $manifest[$this->key]['validation'] ?? true;
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Getters
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Getters
+    // -
+    // ------------------------------------------------------
 
     protected $casts = [
         'key' => 'string',
@@ -144,11 +144,14 @@ class Setting extends BaseModel
             case 'boolean':
                 return in_array($value, ['1', 'true', true], true);
 
+            case 'integer':
+                return (int) $value;
+
             case 'string':
                 return $value;
 
             default:
-                throw new \LogicException(sprintf("Type de données non pris en charge : %s", $type));
+                throw new \LogicException(sprintf("Unsupported data type: %s", $type));
         }
     }
 
@@ -162,18 +165,38 @@ class Setting extends BaseModel
         return static::allTraversable()->get($path);
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Setters
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Setters
+    // -
+    // ------------------------------------------------------
 
     protected $fillable = ['value'];
+
+    public function reset()
+    {
+        $manifest = static::manifest();
+        if (!array_key_exists($this->key, $manifest)) {
+            throw new \LogicException(
+                sprintf("The configuration of the key `%s` is missing in the manifest.", $this->key)
+            );
+        }
+
+        $this->value = $manifest[$this->key]['default'];
+        $this->save();
+        $this->refresh();
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    "Repository" methods
+    // -
+    // ------------------------------------------------------
 
     public static function staticEdit($id = null, array $data = []): BaseModel
     {
         if (empty($data)) {
-            throw new \InvalidArgumentException("No setting to update", ERROR_VALIDATION);
+            throw new \InvalidArgumentException("No setting to update.", ERROR_VALIDATION);
         }
 
         $errors = [];
@@ -194,33 +217,18 @@ class Setting extends BaseModel
         }
 
         if (count($errors) > 0) {
-            $exception = new ValidationException();
-            $exception->setValidationErrors($errors);
-            throw $exception;
+            throw new ValidationException($errors);
         }
 
         return new static;
     }
 
-    public function reset()
-    {
-        $manifest = static::manifest();
-        if (!array_key_exists($this->key, $manifest)) {
-            throw new \LogicException(
-                sprintf('La configuration de la clé `%s` est manquante dans le manifeste.', $this->key)
-            );
-        }
-
-        $this->value = $manifest[$this->key]['default'];
-        $this->save();
-    }
-
-    public function remove($id, array $options = []): ?BaseModel
+    public static function staticRemove($id, array $options = []): ?BaseModel
     {
         throw new \InvalidArgumentException("Settings cannot be deleted.");
     }
 
-    public function unremove($id): BaseModel
+    public static function staticUnremove($id): BaseModel
     {
         throw new \InvalidArgumentException("Settings cannot be restored.");
     }

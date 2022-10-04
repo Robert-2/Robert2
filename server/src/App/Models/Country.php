@@ -4,10 +4,13 @@ declare(strict_types=1);
 namespace Robert2\API\Models;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Robert2\API\Contracts\Serializable;
+use Robert2\API\Models\Traits\Serializer;
 use Robert2\API\Validation\Validator as V;
 
-class Country extends BaseModel
+class Country extends BaseModel implements Serializable
 {
+    use Serializer;
     use SoftDeletes;
 
     protected $allowedSearchFields = ['name', 'code'];
@@ -67,22 +70,41 @@ class Country extends BaseModel
         return true;
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Mutators
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Mutators
+    // -
+    // ------------------------------------------------------
 
     protected $casts = [
         'name' => 'string',
         'code' => 'string',
     ];
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Setters
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Setters
+    // -
+    // ------------------------------------------------------
 
     protected $fillable = ['name', 'code'];
+
+    // ------------------------------------------------------
+    // -
+    // -    Serialization
+    // -
+    // ------------------------------------------------------
+
+    public function serialize(): array
+    {
+        $data = $this->attributesForSerialization();
+
+        unset(
+            $data['created_at'],
+            $data['updated_at'],
+            $data['deleted_at'],
+        );
+
+        return $data;
+    }
 }

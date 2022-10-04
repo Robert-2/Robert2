@@ -6,10 +6,35 @@ namespace Robert2\API\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Database\QueryException;
 use Respect\Validation\Exceptions\NestedValidationException;
 use Robert2\API\Errors\ValidationException;
 
+/**
+ * @mixin \Illuminate\Database\Eloquent\Builder
+ *
+ * @method null|static first($columns = ['*'])
+ * @method static firstOrNew(array $attributes = [], array $values = [])
+ * @method static firstOrFail($columns = ['*'])
+ * @method static firstOrCreate(array $attributes, array $values = [])
+ * @method static firstOr($columns = ['*'], \Closure $callback = null)
+ * @method static firstWhere($column, $operator = null, $value = null, $boolean = 'and')
+ * @method static updateOrCreate(array $attributes, array $values = [])
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder|static query()
+ * @method static static make(array $attributes = [])
+ * @method static static create(array $attributes = [])
+ * @method static static forceCreate(array $attributes)
+ * @method static static findOrFail($id, $columns = ['*'])
+ * @method static static findOrNew($id, $columns = ['*'])
+ * @method static static firstOrNew(array $attributes = [], array $values = [])
+ * @method static static firstOrFail($columns = ['*'])
+ * @method static static firstOrCreate(array $attributes, array $values = [])
+ * @method static static firstOr($columns = ['*'], \Closure $callback = null)
+ * @method static static firstWhere($column, $operator = null, $value = null, $boolean = 'and')
+ * @method static static updateOrCreate(array $attributes, array $values = [])
+ * @method static null|static find($id, $columns = ['*'])
+ * @method static null|static first($columns = ['*'])
+ */
 abstract class BaseModel extends Model
 {
     private $columns;
@@ -33,30 +58,15 @@ abstract class BaseModel extends Model
 
     const EXTRA_CHARS = "-_.' ÇçàÀâÂäÄåÅèÈéÉêÊëËíÍìÌîÎïÏòÒóÓôÔöÖðÐõÕøØúÚùÙûÛüÜýÝÿŸŷŶøØæÆœŒñÑßÞ";
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Getters
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Getters
+    // -
+    // ------------------------------------------------------
 
     public function getAll(bool $withDeleted = false): Builder
     {
-        $builder = $this->_getOrderBy();
-
-        if (!empty($this->searchTerm)) {
-            $builder = $this->_setSearchConditions($builder);
-        }
-
-        if ($withDeleted) {
-            $builder = $builder->onlyTrashed();
-        }
-
-        return $builder;
-    }
-
-    public function getAllFiltered(array $conditions, bool $withDeleted = false): Builder
-    {
-        $builder = static::where($conditions);
+        $builder = static::query();
 
         if (!empty($this->searchTerm)) {
             $builder = $this->_setSearchConditions($builder);
@@ -67,6 +77,12 @@ abstract class BaseModel extends Model
         }
 
         return $this->_getOrderBy($builder);
+    }
+
+    public function getAllFiltered(array $conditions, bool $withDeleted = false): Builder
+    {
+        $builder = $this->getAll($withDeleted);
+        return $builder->where($conditions);
     }
 
     // ------------------------------------------------------
@@ -94,7 +110,9 @@ abstract class BaseModel extends Model
             $fields = !is_array($fields) ? explode('|', $fields) : $fields;
             foreach ($fields as $field) {
                 if (!in_array($field, $this->getAllowedSearchFields())) {
-                    throw new \InvalidArgumentException("Search field « $field » not allowed.");
+                    throw new \InvalidArgumentException(
+                        sprintf("Search field \"%s\" not allowed.", $field)
+                    );
                 }
                 $this->searchField = $field;
             }
@@ -129,64 +147,34 @@ abstract class BaseModel extends Model
         return $query;
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    "Repository" methods
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    "Repository" methods
+    // -
+    // ------------------------------------------------------
 
     public static function new(array $data = []): BaseModel
     {
-        // TODO: Migrer les éventuels overwrites de la méthode legacy dans les modèles.
-        //       puis déplacer l'implémentation depuis la methode legacy vers cette méthode.
         return static::staticEdit(null, $data);
+    }
+
+    public static function staticExists($id): bool
+    {
+        return static::where('id', $id)->exists();
     }
 
     public static function staticEdit($id = null, array $data = []): BaseModel
     {
-        // TODO: Migrer les éventuels overwrites de la méthode legacy dans les modèles.
-        //       puis déplacer l'implémentation depuis la methode legacy vers cette méthode.
-        return (new static)->edit($id, $data);
-    }
-
-    public static function staticRemove($id, array $options = []): ?BaseModel
-    {
-        // TODO: Migrer les éventuels overwrites de la méthode legacy dans les modèles.
-        //       puis déplacer l'implémentation depuis la methode legacy vers cette méthode.
-        return (new static)->remove($id, $options);
-    }
-
-    public static function staticUnremove($id): BaseModel
-    {
-        // TODO: Migrer les éventuels overwrites de la méthode legacy dans les modèles.
-        //       puis déplacer l'implémentation depuis la methode legacy vers cette méthode.
-        return (new static)->unremove($id);
-    }
-
-    /** @deprecated Veuillez utiliser `new` ou `staticEdit`. */
-    public function edit($id = null, array $data = []): BaseModel
-    {
         if ($id && !static::staticExists($id)) {
             throw (new ModelNotFoundException)
-                ->setModel(get_class($this), $id);
+                ->setModel(get_class(), $id);
         }
 
-        if (method_exists($this, 'unserialize')) {
-            $data = $this->unserialize($data);
-        }
-
-        try {
-            $model = static::updateOrCreate(compact('id'), $data);
-        } catch (QueryException $e) {
-            throw (new ValidationException)
-                ->setPDOValidationException($e);
-        }
-
+        $model = static::updateOrCreate(compact('id'), $data);
         return $model->refresh();
     }
 
-    /** @deprecated Veuillez utiliser `staticRemove`. */
-    public function remove($id, array $options = []): ?BaseModel
+    public static function staticRemove($id, array $options = []): ?BaseModel
     {
         $options = array_merge(['force' => false], $options);
 
@@ -205,8 +193,7 @@ abstract class BaseModel extends Model
         return $entity;
     }
 
-    /** @deprecated Veuillez utiliser `staticUnremove`. */
-    public function unremove($id): BaseModel
+    public static function staticUnremove($id): BaseModel
     {
         $entity = static::onlyTrashed()->findOrFail($id);
         if (!$entity->restore()) {
@@ -247,26 +234,37 @@ abstract class BaseModel extends Model
         return parent::save($options);
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Other useful methods
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Other useful methods
+    // -
+    // ------------------------------------------------------
 
-    public static function staticExists($id): bool
+    public function getTableColumns(): array
     {
-        // TODO: Migrer les éventuels overwrites de la méthode legacy dans les modèles.
-        //       puis déplacer l'implémentation depuis la methode legacy vers cette méthode.
-        return (new static)->exists($id);
+        if (!$this->columns) {
+            $this->columns = $this->getConnection()
+                ->getSchemaBuilder()
+                ->getColumnListing($this->getTable());
+        }
+        return $this->columns;
     }
 
-    /** @deprecated Veuillez utiliser `staticExists`. */
-    public function exists($id): bool
+    public function getAllowedSearchFields(): array
     {
-        return static::where('id', $id)->exists();
+        return array_unique(array_merge(
+            (array)$this->searchField,
+            (array)$this->allowedSearchFields
+        ));
     }
 
-    public function validate(): self
+    // ------------------------------------------------------
+    // -
+    // -    Validation related
+    // -
+    // ------------------------------------------------------
+
+    public function validationErrors(): array
     {
         $rules = $this->validation;
         if (empty($rules)) {
@@ -295,30 +293,21 @@ abstract class BaseModel extends Model
             }
         }
 
+        return $errors;
+    }
+
+    public function isValid(): bool
+    {
+        return count($this->validationErrors()) === 0;
+    }
+
+    public function validate(): self
+    {
+        $errors = $this->validationErrors();
         if (count($errors) > 0) {
-            throw (new ValidationException)
-                ->setValidationErrors($errors);
+            throw new ValidationException($errors);
         }
-
         return $this;
-    }
-
-    public function getTableColumns(): array
-    {
-        if (!$this->columns) {
-            $this->columns = $this->getConnection()
-                ->getSchemaBuilder()
-                ->getColumnListing($this->getTable());
-        }
-        return $this->columns;
-    }
-
-    public function getAllowedSearchFields(): array
-    {
-        return array_unique(array_merge(
-            (array)$this->searchField,
-            (array)$this->allowedSearchFields
-        ));
     }
 
     // ------------------------------------------------------
@@ -348,7 +337,6 @@ abstract class BaseModel extends Model
         if (!$this->searchField || !$this->searchTerm) {
             return $builder;
         }
-
         $term = sprintf('%%%s%%', addcslashes($this->searchTerm, '%_'));
 
         if (is_array($this->searchField)) {

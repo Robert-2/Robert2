@@ -3,30 +3,23 @@ declare(strict_types=1);
 
 namespace Robert2\API\Controllers;
 
+use Fig\Http\Message\StatusCodeInterface as StatusCode;
+use Robert2\API\Controllers\Traits\Crud;
 use Robert2\API\Models\Country;
-use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
 use Slim\Http\ServerRequest as Request;
 
 class CountryController extends BaseController
 {
+    use Crud\GetOne;
+
     public function getAll(Request $request, Response $response): Response
     {
-        $data = (new Country())
+        $countries = (new Country())
             ->setOrderBy('id', true)
             ->getAll()
-            ->get(['id', 'name', 'code']);
+            ->get();
 
-        return $response->withJson($data);
-    }
-
-    public function getOne(Request $request, Response $response): Response
-    {
-        $id = (int)$request->getAttribute('id');
-        $model = Country::find($id);
-        if (!$model) {
-            throw new HttpNotFoundException($request);
-        }
-        return $response->withJson($model->toArray());
+        return $response->withJson($countries, StatusCode::STATUS_OK);
     }
 }

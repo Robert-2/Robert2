@@ -10,7 +10,7 @@ class ChangeSubCategoriesUnicityConstraint extends AbstractMigration
             ->removeIndex(['name'])
             ->addIndex(['name', 'category_id'], [
                 'unique' => true,
-                'name'   => 'name_UNIQUE_category'
+                'name' => 'name_UNIQUE_category'
             ])
             ->update();
     }
@@ -22,7 +22,7 @@ class ChangeSubCategoriesUnicityConstraint extends AbstractMigration
         ->removeIndex(['name', 'category_id'])
             ->addIndex(['name'], [
                 'unique' => true,
-                'name'   => 'name_UNIQUE'
+                'name' => 'name_UNIQUE'
             ])
             ->update();
     }

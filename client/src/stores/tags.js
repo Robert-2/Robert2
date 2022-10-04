@@ -1,5 +1,4 @@
 import apiTags from '@/stores/api/tags';
-import config from '@/globals/config';
 import formatOptions from '@/utils/formatOptions';
 
 export default {
@@ -8,23 +7,9 @@ export default {
         list: [],
         isFetched: false,
         error: null,
-        protected: [
-            config.beneficiaryTagName.toLowerCase(),
-            config.technicianTagName.toLowerCase(),
-        ],
     },
     getters: {
-        options: (state, getters) => formatOptions(
-            state.list.filter((tag) => !getters.isProtected(tag.name)),
-        ),
-
-        publicList: (state, getters) => state.list.filter(
-            (tag) => !getters.isProtected(tag.name),
-        ),
-
-        isProtected: (state) => (tagName) => (
-            state.protected.includes(tagName.toLowerCase())
-        ),
+        options: (state) => formatOptions(state.list),
 
         tagName: (state) => (tagId) => {
             const tag = state.list.find((_tag) => _tag.id === tagId);

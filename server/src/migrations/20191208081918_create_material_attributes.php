@@ -29,13 +29,13 @@ class CreateMaterialAttributes extends AbstractMigration
             ->addIndex(['attribute_id'])
             ->addIndex(['material_id'])
             ->addForeignKey('material_id', 'materials', 'id', [
-                'delete'     => 'CASCADE',
-                'update'     => 'NO_ACTION',
+                'delete' => 'CASCADE',
+                'update' => 'NO_ACTION',
                 'constraint' => 'fk_material_attributes_material'
             ])
             ->addForeignKey('attribute_id', 'attributes', 'id', [
-                'delete'     => 'NO_ACTION',
-                'update'     => 'NO_ACTION',
+                'delete' => 'NO_ACTION',
+                'update' => 'NO_ACTION',
                 'constraint' => 'fk_material_attributes_attribute'
             ])
             ->create();

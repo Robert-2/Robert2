@@ -3,15 +3,20 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
+use Adbar\Dot as DotArray;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Robert2\API\Config\Config;
+use Robert2\API\Contracts\Serializable;
 use Robert2\API\Errors\ValidationException;
 use Robert2\API\Models\Enums\Group;
+use Robert2\API\Models\Traits\Serializer;
 use Robert2\API\Validation\Validator as V;
 
-class User extends BaseModel
+class User extends BaseModel implements Serializable
 {
+    use Serializer;
     use SoftDeletes;
 
     protected $orderField = 'pseudo';
@@ -79,27 +84,23 @@ class User extends BaseModel
         return true;
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Relations
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Relations
+    // -
+    // ------------------------------------------------------
 
-    protected $appends = [
-        'person',
-    ];
-
-    public function Person()
+    public function person()
     {
         return $this->hasOne(Person::class);
     }
 
-    public function Settings()
+    public function settings()
     {
         return $this->hasOne(UserSetting::class);
     }
 
-    public function Events()
+    public function events()
     {
         $selectFields = [
             'events.id',
@@ -120,6 +121,18 @@ class User extends BaseModel
     // —
     // ——————————————————————————————————————————————————————
 
+    protected $appends = [
+        'first_name',
+        'last_name',
+        'full_name',
+        'phone',
+    ];
+
+    protected $hidden = [
+        'cas_identifier',
+        'password',
+    ];
+
     protected $casts = [
         'pseudo' => 'string',
         'email' => 'string',
@@ -127,37 +140,78 @@ class User extends BaseModel
         'password' => 'string',
     ];
 
-    public function getPersonAttribute()
+    public function getLanguageAttribute(): string
     {
-        $person = $this->Person()->first();
-        return $person ? $person->toArray() : null;
+        $language = Config::getSettings('defaultLang');
+        if ($this->settings && $this->settings->language) {
+            $language = $this->settings->language;
+        }
+        return strtolower($language);
     }
 
-    public function getSettingsAttribute()
+    public function getFirstNameAttribute(): ?string
     {
-        $settings = $this->Settings()->first();
-        return $settings ? $settings->toArray() : null;
+        if (!$this->person) {
+            return null;
+        }
+        return $this->person->first_name;
     }
 
-    public function getEventsAttribute()
+    public function getLastNameAttribute(): ?string
     {
-        $events = $this->Events()->get();
-        return $events ? $events->toArray() : null;
+        if (!$this->person) {
+            return null;
+        }
+        return $this->person->last_name;
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Getters
-    // —
-    // ——————————————————————————————————————————————————————
+    public function getFullNameAttribute(): ?string
+    {
+        if (!$this->person) {
+            return null;
+        }
+        return $this->person->full_name;
+    }
 
-    protected $hidden = ['password'];
+    public function getPhoneAttribute(): ?string
+    {
+        if (!$this->person) {
+            return null;
+        }
+        return $this->person->phone;
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Getters
+    // -
+    // ------------------------------------------------------
 
     public function getAll(bool $softDeleted = false): Builder
     {
         $fields = array_merge(['id', 'pseudo', 'email', 'group'], $this->dates);
         return parent::getAll($softDeleted)->select($fields);
     }
+
+    // ------------------------------------------------------
+    // -
+    // -    Setters
+    // -
+    // ------------------------------------------------------
+
+    protected $fillable = [
+        'pseudo',
+        'email',
+        'group',
+        'password',
+        'cas_identifier',
+    ];
+
+    // ------------------------------------------------------
+    // -
+    // -    "Repository" methods
+    // -
+    // ------------------------------------------------------
 
     public static function fromLogin(string $identifier, string $password): User
     {
@@ -173,19 +227,6 @@ class User extends BaseModel
         return $user;
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Setters
-    // —
-    // ——————————————————————————————————————————————————————
-
-    protected $fillable = [
-        'pseudo',
-        'email',
-        'group',
-        'password',
-    ];
-
     public static function staticEdit($id = null, array $data = []): BaseModel
     {
         if ($id && !static::staticExists($id)) {
@@ -199,43 +240,102 @@ class User extends BaseModel
             unset($data['password']);
         }
 
-        $personData = !empty($data['person']) && is_array($data['person']) ? $data['person'] : [];
+        $personData = $data['person'] ?? [];
         unset($data['person']);
 
         return dbTransaction(function () use ($id, $data, $personData) {
             $userId = $id;
             $validationErrors = [];
+            $hasFailed = false;
 
             try {
                 $user = static::updateOrCreate(compact('id'), $data);
                 $userId = $user->id;
             } catch (ValidationException $e) {
                 $validationErrors = $e->getValidationErrors();
+                $hasFailed = true;
             }
 
             try {
                 Person::updateOrCreate(['user_id' => $userId], $personData);
             } catch (ValidationException $e) {
+                $hasFailed = true;
                 $validationErrors = array_merge($validationErrors, [
                     'person' => $e->getValidationErrors(),
                 ]);
             }
 
-            if (!empty($validationErrors)) {
-                throw (new ValidationException())
-                    ->setValidationErrors($validationErrors);
+            if ($hasFailed) {
+                throw new ValidationException($validationErrors);
             }
 
             if (!$id) {
                 $settings = container('settings');
                 $defaultSettings = [
-                    'language' => strtoupper($settings['defaultLang']),
+                    'language' => $settings['defaultLang'],
                     'auth_token_validity_duration' => $settings['sessionExpireHours']
                 ];
                 UserSetting::updateOrCreate(['user_id' => $userId], $defaultSettings);
             }
 
-            return $user;
+            return $user->refresh();
         });
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Serialization
+    // -
+    // ------------------------------------------------------
+
+    public function serialize(): array
+    {
+        $data = new DotArray($this->attributesForSerialization());
+
+        $data->delete([
+            'created_at',
+            'updated_at',
+            'deleted_at',
+        ]);
+
+        return $data->all();
+    }
+
+    public static function serializeValidation(array $data): array
+    {
+        $data = new DotArray($data);
+
+        foreach (['first_name', 'last_name', 'phone'] as $field) {
+            $originalPath = sprintf('person.%s', $field);
+            if ($data->has($originalPath) && !$data->has($field)) {
+                $data->set($field, $data->get($originalPath));
+            }
+            $data->delete($originalPath);
+        }
+
+        if ($data->isEmpty('person')) {
+            $data->delete('person');
+        }
+
+        return $data->all();
+    }
+
+    public static function unserialize(array $data): array
+    {
+        $data = new DotArray($data);
+
+        // - On supprime l'éventuel sous-object `person` dans le payload, non attendu sous cette forme.
+        //   (les données de la personne liée sont fusionnées avec les données de l'user)
+        $data->delete('person');
+
+        foreach (['first_name', 'last_name', 'phone'] as $field) {
+            $originalPath = sprintf('person.%s', $field);
+            if ($data->has($field)) {
+                $data->set($originalPath, $data->get($field));
+                $data->delete($field);
+            }
+        }
+
+        return $data->all();
     }
 }

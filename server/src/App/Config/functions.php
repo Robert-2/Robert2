@@ -328,7 +328,7 @@ function dbTransaction(callable $callback)
 }
 
 /**
- * Permet de récuperer un sous-ensemble d'un tableau uniquement avec les clés spécifiées.
+ * Permet de récupérer un sous-ensemble d'un tableau uniquement avec les clés spécifiées.
  *
  * @param array        $array Le tableau dont on veut récupérer les clés.
  * @param array|string $keys  Les clés / La clé à récupérer dans le tableau.
@@ -338,4 +338,33 @@ function dbTransaction(callable $callback)
 function array_with_keys(array $array, $keys): array
 {
     return array_intersect_key($array, array_flip((array) $keys));
+}
+
+/**
+ * Permet de récupérer un sous-ensemble d'un tableau sans les clés spécifiées.
+ *
+ * @param array        $array Le tableau dont on veut récupérer les clés.
+ * @param array|string $keys  Les clés / La clé à enlever du tableau.
+ *
+ * @return array Le tableau sans les clés spécifiées.
+ */
+function array_without_keys(array $array, $keys): array
+{
+    return array_diff_key($array, array_flip((array) $keys));
+}
+
+/**
+ * Permet de mapper sur un tableau tout en ayant accès aux clés de celui-ci.
+ *
+ * @param callable $callback Un callback qui sera appelé avec la clé et la valeur
+ *                           et qui devra retourner une nouvelle valeur pour cette clé.
+ * @param array    $array    Le tableau à mapper.
+ *
+ * @return array Un nouveau tableau dont les valeurs seront celles retournées par le callback.
+ *               (Les clés, elles, resteront inchangées)
+ */
+function array_map_with_keys(callable $callback, array $array)
+{
+    $keys = array_keys($array);
+    return array_combine($keys, array_map($callback, $keys, $array));
 }

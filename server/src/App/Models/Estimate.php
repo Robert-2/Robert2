@@ -5,13 +5,16 @@ namespace Robert2\API\Models;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Robert2\API\Config\Config;
+use Robert2\API\Contracts\Serializable;
+use Robert2\API\Models\Traits\Serializer;
 use Robert2\API\Models\Traits\WithPdf;
 use Robert2\API\Services\I18n;
 use Robert2\API\Validation\Validator as V;
 use Robert2\Lib\Domain\EventData;
 
-class Estimate extends BaseModel
+class Estimate extends BaseModel implements Serializable
 {
+    use Serializer;
     use SoftDeletes;
     use WithPdf;
 
@@ -48,22 +51,19 @@ class Estimate extends BaseModel
     // -
     // ------------------------------------------------------
 
-    public function Event()
+    public function event()
     {
-        return $this->belongsTo(Event::class)
-            ->select(['events.id', 'title', 'location', 'start_date', 'end_date']);
+        return $this->belongsTo(Event::class);
     }
 
-    public function Beneficiary()
+    public function beneficiary()
     {
-        return $this->belongsTo(Person::class)
-            ->select(['persons.id', 'first_name', 'last_name', 'street', 'postal_code', 'locality']);
+        return $this->belongsTo(Beneficiary::class);
     }
 
-    public function User()
+    public function user()
     {
-        return $this->belongsTo(User::class)
-            ->select(['users.id', 'pseudo', 'email', 'group']);
+        return $this->belongsTo(User::class);
     }
 
     // ------------------------------------------------------
@@ -88,6 +88,53 @@ class Estimate extends BaseModel
 
     // ------------------------------------------------------
     // -
+    // -    Getters
+    // -
+    // ------------------------------------------------------
+
+    public function getPdfName(int $id): string
+    {
+        $estimate = $this->withTrashed()->findOrFail($id);
+        $company = Config::getSettings('companyData');
+        $date = new \DateTime($estimate->date);
+
+        $i18n = new I18n(Config::getSettings('defaultLang'));
+        $fileName = sprintf(
+            '%s-%s-%s-%s.pdf',
+            $i18n->translate('Estimate'),
+            slugify($company['name']),
+            $date->format('Ymd-Hi'),
+            slugify($estimate->beneficiary->full_name)
+        );
+        if (Config::getEnv() === 'test') {
+            $fileName = sprintf('TEST-%s', $fileName);
+        }
+
+        return $fileName;
+    }
+
+    public function getPdfContent(int $id): string
+    {
+        $estimate = static::findOrFail($id);
+
+        $data = (new EventData($estimate->event))
+            ->setDiscountRate($estimate->discount_rate)
+            ->toBillingPdfData(new \DateTime($estimate->date));
+
+        $estimatePdf = $this->_getPdfAsString($data);
+        if (!$estimatePdf) {
+            $lastError = error_get_last();
+            throw new \RuntimeException(sprintf(
+                "Unable to create PDF file. Reason: %s",
+                $lastError['message']
+            ));
+        }
+
+        return $estimatePdf;
+    }
+
+    // ------------------------------------------------------
+    // -
     // -    Setters
     // -
     // ------------------------------------------------------
@@ -106,80 +153,45 @@ class Estimate extends BaseModel
         'user_id',
     ];
 
-    public static function createFromEvent(int $eventId, int $userId, float $discountRate = 0.0): Estimate
+    // ------------------------------------------------------
+    // -
+    // -    "Repository" methods
+    // -
+    // ------------------------------------------------------
+
+    public static function createFromEvent(int $eventId, int $creatorId, float $discountRate = 0.0): Estimate
     {
-        $estimateEvent = (new Event)
-            ->with('Beneficiaries')
-            ->with('Materials')
-            ->findOrFail($eventId);
-
-        $date = new \DateTime();
-        $eventData = $estimateEvent->toArray();
-
-        if (!$eventData['is_billable']) {
+        $event = Event::findOrFail($eventId);
+        if (!$event->is_billable) {
             throw new \InvalidArgumentException("Event is not billable.");
         }
 
-        $EventData = new EventData($date, $eventData, 'estimate', $userId);
-        $EventData->setDiscountRate($discountRate);
+        $data = (new EventData($event))
+            ->setDiscountRate($discountRate)
+            ->toBillingModelData($creatorId);
 
-        $newEstimateData = $EventData->toModelArray();
-
-        $newEstimate = new Estimate($newEstimateData);
+        $newEstimate = new Estimate($data);
         $newEstimate->save();
 
         return $newEstimate;
     }
 
-    public function getPdfName(int $id): string
-    {
-        $estimate = $this->withTrashed()->findOrFail($id);
-        $company = Config::getSettings('companyData');
-        $date = new \DateTime($estimate->date);
+    // ------------------------------------------------------
+    // -
+    // -    Serialization
+    // -
+    // ------------------------------------------------------
 
-        $i18n = new I18n(Config::getSettings('defaultLang'));
-        $fileName = sprintf(
-            '%s-%s-%s-%s.pdf',
-            $i18n->translate('Estimate'),
-            slugify($company['name']),
-            $date->format('Ymd-Hi'),
-            slugify($estimate->Beneficiary->full_name)
+    public function serialize(): array
+    {
+        $data = $this->attributesForSerialization();
+
+        unset(
+            $data['created_at'],
+            $data['updated_at'],
+            $data['deleted_at'],
         );
-        if (Config::getEnv() === 'test') {
-            $fileName = sprintf('TEST-%s', $fileName);
-        }
 
-        return $fileName;
-    }
-
-    public function getPdfContent(int $id): string
-    {
-        $estimate = static::findOrFail($id);
-        $date = new \DateTime($estimate->date);
-
-        $eventData = (new Event)
-            ->with('Beneficiaries')
-            ->with('Materials')
-            ->find($estimate->event_id)
-            ->toArray();
-
-        $categories = (new Category())->getAll()->get()->toArray();
-        $parks = (new Park())->getAll()->get()->toArray();
-
-        $EventData = new EventData($date, $eventData, 'estimate', $estimate->user_id);
-        $EventData->setDiscountRate($estimate->discount_rate)
-            ->setCategories($categories)
-            ->setParks($parks);
-
-        $estimatePdf = $this->_getPdfAsString($EventData->toPdfTemplateArray());
-        if (!$estimatePdf) {
-            $lastError = error_get_last();
-            throw new \RuntimeException(sprintf(
-                "Unable to create PDF file. Reason: %s",
-                $lastError['message']
-            ));
-        }
-
-        return $estimatePdf;
+        return $data;
     }
 }

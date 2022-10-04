@@ -11,14 +11,14 @@ class AddAttributesCategoriesRelation extends AbstractMigration
             ->addColumn('category_id', 'integer')
             ->addIndex(['attribute_id'])
             ->addForeignKey('attribute_id', 'attributes', 'id', [
-                'delete'     => 'CASCADE',
-                'update'     => 'NO_ACTION',
+                'delete' => 'CASCADE',
+                'update' => 'NO_ACTION',
                 'constraint' => 'fk_attribute_categories_attribute'
             ])
             ->addIndex(['category_id'])
             ->addForeignKey('category_id', 'categories', 'id', [
-                'delete'     => 'CASCADE',
-                'update'     => 'NO_ACTION',
+                'delete' => 'CASCADE',
+                'update' => 'NO_ACTION',
                 'constraint' => 'fk_attribute_categories_category'
             ])
             ->create();

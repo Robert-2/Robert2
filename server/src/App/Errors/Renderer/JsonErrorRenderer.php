@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Robert2\API\Errors\Renderer;
 
+use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Robert2\API\Errors\ValidationException;
 use Slim\Exception\HttpException;
@@ -26,15 +27,18 @@ class JsonErrorRenderer implements ErrorRendererInterface
     // -
     // ------------------------------------------------------
 
+    // FIXME: La clé `code` des erreurs ne devrait pas contenir les codes HTTP...
+    //        Cette clé devrait contenir uniquement les codes internes lorsque défini, un code `UNKNOWN` sinon.
+    //        (Le code HTTP est déjà récupérable via le status de réponse, à corriger côté front avant toute chose)
     private static function format(\Throwable $exception, bool $displayErrorDetails): array
     {
         $output = [
-            'code' => $exception->getCode() ?: ERROR_SERVER,
+            'code' => $exception->getCode() ?: StatusCode::STATUS_INTERNAL_SERVER_ERROR,
             'message' => $exception->getMessage(),
         ];
 
         if ($exception instanceof ModelNotFoundException) {
-            $output['code'] = ERROR_NOT_FOUND;
+            $output['code'] = StatusCode::STATUS_NOT_FOUND;
             $output['message'] = "Not found."; // "Entity not found."
             return $output;
         }
@@ -60,7 +64,7 @@ class JsonErrorRenderer implements ErrorRendererInterface
             return $output;
         }
 
-        if ($output['code'] === ERROR_NOT_FOUND) {
+        if ($output['code'] === StatusCode::STATUS_NOT_FOUND) {
             return $output;
         }
 

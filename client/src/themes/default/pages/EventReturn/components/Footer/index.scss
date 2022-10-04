@@ -1,0 +1,26 @@
+@use '~@/themes/default/style/globals';
+
+.EventReturnFooter {
+    padding: globals.$content-padding-large-horizontal 0;
+    background-color: globals.$bg-color-body;
+    text-align: center;
+
+    &__done {
+        display: inline-block;
+        padding: globals.$content-padding-large-horizontal globals.$content-padding-large-vertical;
+        color: globals.$text-success-color;
+    }
+
+    &__action {
+        margin-left: globals.$content-padding-small-vertical;
+    }
+
+    &__warning {
+        color: globals.$text-warning-color;
+        font-size: 1.1rem;
+
+        > .Icon {
+            margin-right: 0.5rem;
+        }
+    }
+}

@@ -24,7 +24,7 @@
                 {{ translate('beneficiary') }}
             </p>
             <h2 class="vspace10 indent5">
-                {{ include('blocks/beneficiary-address.twig', { person: event['beneficiaries'][0] }) }}
+                {{ include('blocks/beneficiary.twig', { beneficiary: beneficiary }) }}
             </h2>
         </td>
     </tr>
@@ -96,7 +96,7 @@
                 <td rowspan="{{ vatRate > 0 ? 3 : 1 }}" style="border-bottom: 1pt solid #888;">
                     <div class="vspace2">
                         {% if discountRate > 0 %}
-                        {{ discountRate|format_percent_number({fraction_digit: 4}) }}<br><br>
+                        {{ discountRate|format_percent_number({fraction_digit: 4}, locale=locale) }}<br><br>
                         - {{ discountAmount|format_currency(currency, formatCurrencyOptions, locale) }}
                         {% else %}
                         <span class="lighter">{{ translate('noDiscount') }}</span>
@@ -110,7 +110,7 @@
                         {{ totalDailyExclVat|format_currency(currency, formatCurrencyOptions, locale) }}
                     </div>
                     <div class="vspace2 right lighter">
-                        {{ translate('vat') }} ({{ vatRate|format_percent_number({fraction_digit: 1}) }})<br>
+                        {{ translate('vat') }} ({{ vatRate|format_percent_number({fraction_digit: 1}, locale=locale) }})<br>
                         {{ vatAmount|format_currency(currency, formatCurrencyOptions, locale) }}
                     </div>
                     {% endif %}
@@ -121,7 +121,7 @@
                 </td>
                 <td rowspan="{{ vatRate > 0 ? 3 : 1 }}" style="border-bottom: 1pt solid #888;">
                     <div class="vspace2">
-                        ×&nbsp;<strong>{{ degressiveRate|format_number }}</strong><br><br>
+                        ×&nbsp;<strong>{{ degressiveRate|format_number(locale=locale) }}</strong><br><br>
                         <span class="lighter">
                             ({{ plural('numberOfDays', daysCount) }})
                         </span>

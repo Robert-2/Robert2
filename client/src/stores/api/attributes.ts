@@ -9,7 +9,6 @@ import type { Category } from './categories';
 type AttributeBase = {
     id: number,
     name: string,
-    categories: Category[],
 };
 
 export type Attribute = AttributeBase & (
@@ -17,6 +16,10 @@ export type Attribute = AttributeBase & (
     | { type: 'integer' | 'float', unit: string | null }
     | { type: 'boolean' | 'date' }
 );
+
+export type AttributeDetails = Attribute & {
+    categories: Category[],
+};
 
 export type AttributeEdit = {
     name: string,
@@ -29,18 +32,18 @@ export type AttributePut = Partial<Omit<AttributeEdit, 'type'>>;
 // - Fonctions
 //
 
-const all = async (categoryId?: Category['id'] | 'none'): Promise<Attribute[]> => {
+const all = async (categoryId?: Category['id'] | 'none'): Promise<AttributeDetails[]> => {
     const { data } = await requester.get('/attributes', {
         params: { category: categoryId },
     });
     return data;
 };
 
-const create = async (data: AttributeEdit): Promise<Attribute> => (
+const create = async (data: AttributeEdit): Promise<AttributeDetails> => (
     (await requester.post('/attributes', data)).data
 );
 
-const update = async (id: Attribute['id'], data: AttributePut): Promise<Attribute> => (
+const update = async (id: Attribute['id'], data: AttributePut): Promise<AttributeDetails> => (
     (await requester.put(`/attributes/${id}`, data)).data
 );
 

@@ -7,17 +7,12 @@ import type { Material } from '@/stores/api/materials';
 import type { Estimate } from '@/stores/api/estimates';
 import type { Bill } from '@/stores/api/bills';
 import type { User } from '@/stores/api/users';
-import type { Moment } from 'moment';
 
 //
 // - Types
 //
 
 /* eslint-disable @typescript-eslint/naming-convention */
-type PersonWithPivot<T extends Beneficiary | Technician> = T & {
-    pivot: { event_id: Event['id'], person_id: T['id'] },
-};
-
 type MaterialWithPivot = Material & {
     pivot: {
         id: number,
@@ -41,15 +36,14 @@ export type Event = BaseEvent & {
     reference: string | null,
     description: string | null,
     is_billable: boolean,
-    beneficiaries: Array<PersonWithPivot<Beneficiary>>,
-    technicians: Array<PersonWithPivot<Technician>>,
+    beneficiaries: Beneficiary[],
+    technicians: Technician[],
     materials: MaterialWithPivot[],
     estimates: Estimate[],
     bills: Bill[],
     user_id: User['id'] | null,
     user: User | null,
     created_at: string,
-    deleted_at: string,
     updated_at: string,
 } & (
     | {
@@ -65,25 +59,13 @@ export type Event = BaseEvent & {
 );
 /* eslint-enable @typescript-eslint/naming-convention */
 
-export type FormatedEvent = Event & {
-    startDate: Moment,
-    endDate: Moment,
-    isCurrent: boolean,
-    isPast: boolean,
-    isConfirmed: boolean,
-    isInventoryDone: boolean,
-    isArchived: boolean,
-    hasMissingMaterials: boolean,
-    hasNotReturnedMaterials: boolean,
-};
-
-export type EventSummary = {
-    id: number,
-    title: string,
-    startDate: string,
-    endDate: string,
-    location: string | null,
-};
+export type EventSummary = Pick<Event, (
+    | 'id'
+    | 'title'
+    | 'start_date'
+    | 'end_date'
+    | 'location'
+)>;
 
 type GetAllInPeriodParams = {
     start: string,

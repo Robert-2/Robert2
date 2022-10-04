@@ -1,0 +1,33 @@
+@use '~@/themes/default/style/globals';
+
+.MaterialViewDocuments {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+
+    &__main {
+        flex: 1;
+        height: 100%;
+        min-width: 300px;
+    }
+
+    &__no-document {
+        margin: 30px 0 0;
+        color: globals.$text-light-color;
+        font-size: 1.2rem;
+        font-style: italic;
+        text-align: center;
+    }
+
+    &__list {
+        margin: 0;
+        padding: 0 globals.$content-padding-small-vertical 0 0;
+    }
+
+    .MaterialViewDocumentsUpload {
+        flex: 1;
+        height: 100%;
+    }
+}

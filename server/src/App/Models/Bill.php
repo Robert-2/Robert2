@@ -5,13 +5,16 @@ namespace Robert2\API\Models;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Robert2\API\Config\Config;
+use Robert2\API\Contracts\Serializable;
+use Robert2\API\Models\Traits\Serializer;
 use Robert2\API\Models\Traits\WithPdf;
 use Robert2\API\Services\I18n;
 use Robert2\API\Validation\Validator as V;
 use Robert2\Lib\Domain\EventData;
 
-class Bill extends BaseModel
+class Bill extends BaseModel implements Serializable
 {
+    use Serializer;
     use SoftDeletes;
     use WithPdf;
 
@@ -73,22 +76,19 @@ class Bill extends BaseModel
     // -
     // ------------------------------------------------------
 
-    public function Event()
+    public function event()
     {
-        return $this->belongsTo(Event::class)
-            ->select(['events.id', 'title', 'location', 'start_date', 'end_date']);
+        return $this->belongsTo(Event::class);
     }
 
-    public function Beneficiary()
+    public function beneficiary()
     {
-        return $this->belongsTo(Person::class)
-            ->select(['persons.id', 'first_name', 'last_name', 'street', 'postal_code', 'locality']);
+        return $this->belongsTo(Beneficiary::class);
     }
 
-    public function User()
+    public function user()
     {
-        return $this->belongsTo(User::class)
-            ->select(['users.id', 'pseudo', 'email', 'group']);
+        return $this->belongsTo(User::class);
     }
 
     // ------------------------------------------------------
@@ -98,19 +98,65 @@ class Bill extends BaseModel
     // ------------------------------------------------------
 
     protected $casts = [
-        'number'             => 'string',
-        'date'               => 'string',
-        'event_id'           => 'integer',
-        'beneficiary_id'     => 'integer',
-        'materials'          => 'array',
-        'degressive_rate'    => 'float',
-        'discount_rate'      => 'float',
-        'vat_rate'           => 'float',
-        'due_amount'         => 'float',
+        'number' => 'string',
+        'date' => 'string',
+        'event_id' => 'integer',
+        'beneficiary_id' => 'integer',
+        'materials' => 'array',
+        'degressive_rate' => 'float',
+        'discount_rate' => 'float',
+        'vat_rate' => 'float',
+        'due_amount' => 'float',
         'replacement_amount' => 'float',
-        'currency'           => 'string',
-        'user_id'            => 'integer',
+        'currency' => 'string',
+        'user_id' => 'integer',
     ];
+
+    // ------------------------------------------------------
+    // -
+    // -    Getters
+    // -
+    // ------------------------------------------------------
+
+    public function getPdfName(int $id): string
+    {
+        $bill = $this->withTrashed()->findOrFail($id);
+        $company = Config::getSettings('companyData');
+
+        $i18n = new I18n(Config::getSettings('defaultLang'));
+        $fileName = sprintf(
+            '%s-%s-%s-%s.pdf',
+            $i18n->translate('Bill'),
+            slugify($company['name']),
+            $bill->number,
+            slugify($bill->beneficiary->full_name)
+        );
+        if (Config::getEnv() === 'test') {
+            $fileName = sprintf('TEST-%s', $fileName);
+        }
+
+        return $fileName;
+    }
+
+    public function getPdfContent(int $id): string
+    {
+        $bill = static::findOrFail($id);
+
+        $data = (new EventData($bill->event))
+            ->setDiscountRate($bill->discount_rate)
+            ->toBillingPdfData(new \DateTime($bill->date), $bill->number);
+
+        $billPdf = $this->_getPdfAsString($data);
+        if (!$billPdf) {
+            $lastError = error_get_last();
+            throw new \RuntimeException(sprintf(
+                "Unable to create PDF file. Reason: %s",
+                $lastError['message']
+            ));
+        }
+
+        return $billPdf;
+    }
 
     // ------------------------------------------------------
     // -
@@ -133,92 +179,32 @@ class Bill extends BaseModel
         'user_id',
     ];
 
-    public function createFromEvent(int $eventId, int $userId, float $discountRate = 0.0): Bill
+    // ------------------------------------------------------
+    // -
+    // -    "Repository" methods
+    // -
+    // ------------------------------------------------------
+
+    public static function createFromEvent(int $eventId, int $creatorId, float $discountRate = 0.0): Bill
     {
-        $billEvent = (new Event)
-            ->with('Beneficiaries')
-            ->with('Materials')
-            ->findOrFail($eventId);
-
-        $date = new \DateTime();
-        $eventData = $billEvent->toArray();
-
-        if (!$eventData['is_billable']) {
+        $event = Event::findOrFail($eventId);
+        if (!$event->is_billable) {
             throw new \InvalidArgumentException("Event is not billable.");
         }
 
-        $newNumber = EventData::createBillNumber($date, $this->getLastBillNumber());
-        $EventData = new EventData($date, $eventData, $newNumber, $userId);
-        $EventData->setDiscountRate($discountRate);
+        $newNumber = static::getNextNumber();
+        $data = (new EventData($event))
+            ->setDiscountRate($discountRate)
+            ->toBillingModelData($creatorId, null, $newNumber);
 
-        $newBillData = $EventData->toModelArray();
-
-        $this->deleteByNumber($newBillData['number']);
-
-        $newBill = new Bill($newBillData);
+        static::deleteByNumber($data['number']);
+        $newBill = new Bill($data);
         $newBill->save();
 
         return $newBill;
     }
 
-    public function getPdfName(int $id): string
-    {
-        $bill = $this->withTrashed()->findOrFail($id);
-        $company = Config::getSettings('companyData');
-
-        $i18n = new I18n(Config::getSettings('defaultLang'));
-        $fileName = sprintf(
-            '%s-%s-%s-%s.pdf',
-            $i18n->translate('Bill'),
-            slugify($company['name']),
-            $bill->number,
-            slugify($bill->Beneficiary->full_name)
-        );
-        if (Config::getEnv() === 'test') {
-            $fileName = sprintf('TEST-%s', $fileName);
-        }
-
-        return $fileName;
-    }
-
-    public function getPdfContent(int $id): string
-    {
-        $bill = static::findOrFail($id);
-        $date = new \DateTime($bill->date);
-
-        $event = (new Event)
-            ->with('Beneficiaries')
-            ->with('Materials')
-            ->find($bill->event_id)
-            ->toArray();
-
-        $categories = (new Category())->getAll()->get()->toArray();
-        $parks = (new Park())->getAll()->get()->toArray();
-
-        $EventData = new EventData($date, $event, $bill->number, $bill->user_id);
-        $EventData->setDiscountRate($bill->discount_rate)
-            ->setCategories($categories)
-            ->setParks($parks);
-
-        $billPdf = $this->_getPdfAsString($EventData->toPdfTemplateArray());
-        if (!$billPdf) {
-            $lastError = error_get_last();
-            throw new \RuntimeException(sprintf(
-                "Unable to create PDF file. Reason: %s",
-                $lastError['message']
-            ));
-        }
-
-        return $billPdf;
-    }
-
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Setters
-    // —
-    // ——————————————————————————————————————————————————————
-
-    public function deleteByNumber(string $number): void
+    public static function deleteByNumber(string $number): void
     {
         $bill = static::where('number', $number);
         if (!$bill) {
@@ -228,18 +214,53 @@ class Bill extends BaseModel
         $bill->forceDelete();
     }
 
-    public function getLastBillNumber(): int
+    public static function getLastNumber(int $year = null): ?string
     {
-        $allBills = static::selectRaw('number')
-            ->whereRaw(sprintf('YEAR(date) = %s', date('Y')))
+        $year = (int)($year ?? date('Y'));
+
+        $bills = static::selectRaw('number')
+            ->whereRaw(sprintf('YEAR(date) = %s', $year))
             ->get();
 
-        $lastBillNumber = 0;
-        foreach ($allBills as $existingBill) {
-            $billNumber = explode('-', $existingBill->number);
-            $lastBillNumber = max((int)$billNumber[1], $lastBillNumber);
+        $lastBill = null;
+        foreach ($bills as $bill) {
+            $numericNumber = (int)explode('-', $bill->number)[1];
+            if ($lastBill === null || $numericNumber > $lastBill['numericNumber']) {
+                $lastBill = compact('bill', 'numericNumber');
+            }
         }
 
-        return $lastBillNumber;
+        return $lastBill ? $lastBill['bill']->number : null;
+    }
+
+    public static function getNextNumber(int $year = null): string
+    {
+        $year = (int)($year ?? date('Y'));
+
+        $lastNumber = static::getLastNumber($year);
+        if ($lastNumber !== null) {
+            $lastNumber = (int)explode('-', $lastNumber)[1];
+        }
+
+        return sprintf('%s-%05d', $year, ($lastNumber ?? 0) + 1);
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Serialization
+    // -
+    // ------------------------------------------------------
+
+    public function serialize(): array
+    {
+        $data = $this->attributesForSerialization();
+
+        unset(
+            $data['created_at'],
+            $data['updated_at'],
+            $data['deleted_at'],
+        );
+
+        return $data;
     }
 }

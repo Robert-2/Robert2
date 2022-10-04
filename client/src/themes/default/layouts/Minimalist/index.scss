@@ -1,0 +1,91 @@
+@use '~@/themes/default/style/globals';
+
+.MinimalistLayout {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    &__body {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    &__footer {
+        flex: none;
+        display: none;
+        width: 100%;
+        padding: 10px 15px;
+        background-color: globals.$bg-color-emphasis;
+        color: globals.$text-muted-color;
+        font-size: 0.8rem;
+        line-height: 1.52rem;
+        text-align: center;
+    }
+
+    //
+    // - Corps de la page
+    //
+
+    &__logo {
+        position: relative;
+        flex: 0 0 auto;
+        padding: 30px 20px;
+        text-align: center;
+
+        .Logo {
+            max-width: 100%;
+            max-height: 80px;
+        }
+
+        &__premium {
+            position: absolute;
+            bottom: 30px;
+            right: calc(50% - 75px);
+            color: globals.$text-base-color;
+            font-size: 1.1rem;
+        }
+    }
+
+    &__content {
+        flex: 0 0 auto;
+    }
+
+    //
+    // - Reponsive
+    //
+
+    @media (min-width: globals.$screen-mobile) {
+        &__logo {
+            .Logo {
+                max-height: 120px;
+            }
+
+            &__premium {
+                bottom: 28px;
+                right: calc(50% - 115px);
+                font-size: 1.4rem;
+            }
+        }
+    }
+
+    @media (min-width: globals.$screen-tablet) {
+        &__logo {
+            .Logo {
+                max-height: 150px;
+            }
+
+            &__premium {
+                bottom: 35px;
+                right: calc(50% - 185px);
+                font-size: 1.8rem;
+            }
+        }
+
+        &__footer {
+            display: block;
+        }
+    }
+}

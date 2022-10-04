@@ -1,5 +1,5 @@
 import getEventReplacementTotal from '@/utils/getEventReplacementTotal';
-import eventMaterials from './data/event-materials';
+import eventMaterials from '@fixtures/event-materials';
 
 describe('getEventReplacementTotal', () => {
     it('returns 0 with empty values', () => {

@@ -8,7 +8,7 @@ class AddIsBillableToEvents extends AbstractMigration
         $events = $this->table('events');
         $events
             ->addColumn('is_billable', 'boolean', [
-                'after'   => 'location',
+                'after' => 'location',
                 'default' => true,
             ])
             ->update();

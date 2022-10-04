@@ -1,0 +1,30 @@
+@use '~@/themes/default/style/globals';
+@use 'sass:math';
+
+.MaterialsFilters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+
+    &__item {
+        &--category {
+            min-width: 150px;
+        }
+
+        &--sub-category {
+            min-width: 180px;
+        }
+
+        &--tags {
+            min-width: 160px;
+        }
+
+        & + & {
+            margin-left: math.div(globals.$content-padding-small-vertical, 2);
+        }
+    }
+
+    &__reset {
+        margin-left: math.div(globals.$content-padding-small-vertical, 2);
+    }
+}

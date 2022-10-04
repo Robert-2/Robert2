@@ -13,7 +13,7 @@ class CreateCategories extends AbstractMigration
             ->addColumn('deleted_at', 'datetime', ['null' => true])
             ->addIndex(['name'], [
                 'unique' => true,
-                'name'   => 'name_UNIQUE'
+                'name' => 'name_UNIQUE'
             ])
             ->create();
 
@@ -27,11 +27,11 @@ class CreateCategories extends AbstractMigration
             ->addIndex(['category_id'])
             ->addIndex(['name'], [
                 'unique' => true,
-                'name'   => 'name_UNIQUE'
+                'name' => 'name_UNIQUE'
             ])
             ->addForeignKey('category_id', 'categories', 'id', [
-                'delete'     => 'CASCADE',
-                'update'     => 'NO_ACTION',
+                'delete' => 'CASCADE',
+                'update' => 'NO_ACTION',
                 'constraint' => 'fk_subcategory_category'
             ])
             ->create();

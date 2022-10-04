@@ -19,12 +19,7 @@
     },
     "billingMode": "partial",
     "degressiveRateFunction": "((daysCount - 1) * 0.75) + 1",
-    "defaultParkName": "Interne",
     "maxItemsPerPage": 100,
-    "defaultTags": {
-        "beneficiary": "Beneficiary",
-        "technician": "Technician"
-    },
     "db": {
         "driver": "mysql",
         "host": "127.0.0.1",

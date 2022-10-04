@@ -19,8 +19,8 @@ class CreateEvents extends AbstractMigration
             ->addColumn('deleted_at', 'datetime', ['null' => true])
             ->addIndex(['user_id'])
             ->addForeignKey('user_id', 'users', 'id', [
-                'delete'     => 'RESTRICT',
-                'update'     => 'NO_ACTION',
+                'delete' => 'RESTRICT',
+                'update' => 'NO_ACTION',
                 'constraint' => 'fk_events_users'
             ])
             ->create();
@@ -31,14 +31,14 @@ class CreateEvents extends AbstractMigration
             ->addColumn('material_id', 'integer')
             ->addIndex(['event_id'])
             ->addForeignKey('event_id', 'events', 'id', [
-                'delete'     => 'CASCADE',
-                'update'     => 'NO_ACTION',
+                'delete' => 'CASCADE',
+                'update' => 'NO_ACTION',
                 'constraint' => 'fk_event_materials_event'
             ])
             ->addIndex(['material_id'])
             ->addForeignKey('material_id', 'materials', 'id', [
-                'delete'     => 'CASCADE',
-                'update'     => 'NO_ACTION',
+                'delete' => 'CASCADE',
+                'update' => 'NO_ACTION',
                 'constraint' => 'fk_event_materials_material'
             ])
             ->create();
@@ -49,14 +49,14 @@ class CreateEvents extends AbstractMigration
             ->addColumn('person_id', 'integer')
             ->addIndex(['event_id'])
             ->addForeignKey('event_id', 'events', 'id', [
-                'delete'     => 'CASCADE',
-                'update'     => 'NO_ACTION',
+                'delete' => 'CASCADE',
+                'update' => 'NO_ACTION',
                 'constraint' => 'fk_event_assignees_event'
             ])
             ->addIndex(['person_id'])
             ->addForeignKey('person_id', 'persons', 'id', [
-                'delete'     => 'CASCADE',
-                'update'     => 'NO_ACTION',
+                'delete' => 'CASCADE',
+                'update' => 'NO_ACTION',
                 'constraint' => 'fk_event_assignees_person'
             ])
             ->create();
@@ -67,14 +67,14 @@ class CreateEvents extends AbstractMigration
             ->addColumn('person_id', 'integer')
             ->addIndex(['event_id'])
             ->addForeignKey('event_id', 'events', 'id', [
-                'delete'     => 'CASCADE',
-                'update'     => 'NO_ACTION',
+                'delete' => 'CASCADE',
+                'update' => 'NO_ACTION',
                 'constraint' => 'fk_event_beneficiaries_event'
             ])
             ->addIndex(['person_id'])
             ->addForeignKey('person_id', 'persons', 'id', [
-                'delete'     => 'CASCADE',
-                'update'     => 'NO_ACTION',
+                'delete' => 'CASCADE',
+                'update' => 'NO_ACTION',
                 'constraint' => 'fk_event_beneficiaries_person'
             ])
             ->create();

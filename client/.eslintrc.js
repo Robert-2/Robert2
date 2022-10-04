@@ -32,7 +32,34 @@ module.exports = {
         {
             files: ['**/locale/**/*'],
             rules: {
-                quotes: ['off'],
+                'quotes': ['off'],
+                'global-require': ['off'],
+            },
+        },
+        {
+            files: ['**/tests/**/*', '**/__tests__/*'],
+            env: { jest: true },
+            settings: {
+                'import/resolver': {
+                    'eslint-import-resolver-custom-alias': {
+                        alias: {
+                            '@fixtures': './tests/fixtures/',
+                        },
+                        extensions: [
+                            '.mjs',
+                            '.cjs',
+                            '.js',
+                            '.jsx',
+                            '.ts',
+                            '.tsx',
+                            '.d.ts',
+                            '.json',
+                        ],
+                    },
+                },
+            },
+            rules: {
+                'import/order': ['off'],
             },
         },
     ],

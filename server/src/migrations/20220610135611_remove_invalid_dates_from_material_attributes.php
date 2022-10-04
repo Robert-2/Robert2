@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 use Phinx\Migration\AbstractMigration;
-use Robert2\API\Config\Config as Config;
+use Robert2\API\Config\Config;
 
 final class RemoveInvalidDatesFromMaterialAttributes extends AbstractMigration
 {

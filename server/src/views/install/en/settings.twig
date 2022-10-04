@@ -90,19 +90,6 @@
             />
         </section>
         <section class="form__field">
-            <h3 class="form__field-title">Materials park</h3>
-            <p class="form__field-description">
-                The name of the <em>main</em> materials park which will be created. Of course
-                it will be possible to modify it and create others, once the application is installed.
-            </p>
-            <input
-                type="text"
-                name="defaultParkName"
-                placeholder="default"
-                value="Internal"
-            />
-        </section>
-        <section class="form__field">
             <h3 class="form__field-title">
                 Max items per page
             </h3>
@@ -117,30 +104,6 @@
                     value="{{config['maxItemsPerPage']}}"
                 />
                 <label for="maxItemsPerPage">items</label>
-            </div>
-        </section>
-        <section class="form__field">
-            <h3 class="form__field-title">Default tags</h3>
-            <p class="form__field-description">
-                Tags names to be used as identifier for people type.
-            </p>
-            <div class="form__input">
-                <label for="defaultTagBenef" style="width: 120px;">Beneficiaries:</label>
-                <input
-                    type="text"
-                    name="defaultTags[beneficiary]"
-                    id="defaultTagBenef"
-                    value="{{config['defaultTags']['beneficiary']}}"
-                />
-            </div>
-            <div class="form__input" style="margin-top: .5rem;">
-                <label for="defaultTagTech" style="width: 120px;">Technicians:</label>
-                <input
-                    type="text"
-                    name="defaultTags[technician]"
-                    id="defaultTagTech"
-                    value="{{config['defaultTags']['technician']}}"
-                />
             </div>
         </section>
         <section class="form__submit">

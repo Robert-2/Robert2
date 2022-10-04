@@ -1,7 +1,6 @@
 <?php
 use Phinx\Migration\AbstractMigration;
-
-use Robert2\API\Config as Config;
+use Robert2\API\Config\Config;
 
 class CreateGroupsOfUsers extends AbstractMigration
 {
@@ -24,7 +23,7 @@ class CreateGroupsOfUsers extends AbstractMigration
         $users->renameColumn('group', 'group_id')->save();
         $users->changeColumn('group_id', 'string', ['length' => 16])->save();
 
-        $prefix = Config\Config::getSettings('db')['prefix'];
+        $prefix = Config::getSettings('db')['prefix'];
 
         $this->execute(sprintf(
             "UPDATE `%susers` SET `group_id` = 'admin' WHERE `group_id` = '1'",
@@ -38,8 +37,8 @@ class CreateGroupsOfUsers extends AbstractMigration
         $users
             ->addIndex(['group_id'])
             ->addForeignKey('group_id', 'groups', 'id', [
-                'delete'     => 'RESTRICT',
-                'update'     => 'NO_ACTION',
+                'delete' => 'RESTRICT',
+                'update' => 'NO_ACTION',
                 'constraint' => 'fk_users_group'
             ])
             ->save();
@@ -53,7 +52,7 @@ class CreateGroupsOfUsers extends AbstractMigration
             ->removeIndex(['group_id'])
             ->save();
 
-        $prefix = Config\Config::getSettings('db')['prefix'];
+        $prefix = Config::getSettings('db')['prefix'];
 
         $this->execute(sprintf(
             "UPDATE `%susers` SET `group_id` = '1' WHERE `group_id` = 'admin'",

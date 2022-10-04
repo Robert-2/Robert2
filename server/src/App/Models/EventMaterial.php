@@ -11,11 +11,11 @@ class EventMaterial extends Pivot
 
     protected $table = 'event_materials';
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Mutators
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Mutators
+    // -
+    // ------------------------------------------------------
 
     protected $casts = [
         'event_id' => 'integer',
@@ -25,18 +25,18 @@ class EventMaterial extends Pivot
         'quantity_broken' => 'integer',
     ];
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Relations
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Relations
+    // -
+    // ------------------------------------------------------
 
-    public function Event()
+    public function event()
     {
         return $this->belongsTo(Event::class);
     }
 
-    public function Material()
+    public function material()
     {
         return $this->belongsTo(Material::class);
     }

@@ -1,121 +1,82 @@
 <?php
 namespace Robert2\Tests;
 
+use Fig\Http\Message\StatusCodeInterface as StatusCode;
+use Illuminate\Support\Collection;
+
 final class CategoriesTest extends ApiTestCase
 {
-    public function testGetCategories()
+    public static function data(int $id, $details = false)
+    {
+        $categories = new Collection([
+            [
+                'id' => 1,
+                'name' => 'Son',
+                'sub_categories' => [
+                    SubCategoriesTest::data(1),
+                    SubCategoriesTest::data(2),
+                ],
+            ],
+            [
+                'id' => 2,
+                'name' => 'Lumière',
+                'sub_categories' => [
+                    SubCategoriesTest::data(4),
+                    SubCategoriesTest::data(3),
+                ],
+            ],
+            [
+                'id' => 3,
+                'name' => 'Transport',
+                'sub_categories' => [],
+            ],
+            [
+                'id' => 4,
+                'name' => 'Décors',
+                'sub_categories' => [],
+            ],
+        ]);
+
+        if (!$details) {
+            $categories = $categories->map(fn($category) => (
+                array_without_keys($category, ['sub_categories'])
+            ));
+        }
+
+        return static::_dataFactory($id, $categories->all());
+    }
+
+    public function testGetAll()
     {
         $this->client->get('/api/categories');
-        $this->assertStatusCode(SUCCESS_OK);
+        $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData([
-            'pagination' => [
-                'currentPage' => 1,
-                'perPage' => $this->settings['maxItemsPerPage'],
-                'total' => ['items' => 4, 'pages' => 1],
-            ],
-            'data' => [
-                [
-                    'id' => 4,
-                    'name' => 'Décors',
-                    'created_at' => null,
-                    'updated_at' => null,
-                    'sub_categories' => [],
-                ],
-                [
-                    'id' => 2,
-                    'name' => 'light',
-                    'created_at' => null,
-                    'updated_at' => null,
-                    'sub_categories' => [
-                        [
-                            'id' => 4,
-                            'name' => 'dimmers',
-                            'category_id' => 2,
-                        ],
-                        [
-                            'id' => 3,
-                            'name' => 'projectors',
-                            'category_id' => 2,
-                        ],
-                    ],
-                ],
-                [
-                    'id' => 1,
-                    'name' => 'sound',
-                    'created_at' => null,
-                    'updated_at' => null,
-                    'sub_categories' => [
-                        [
-                            'id' => 1,
-                            'name' => 'mixers',
-                            'category_id' => 1,
-                        ],
-                        [
-                            'id' => 2,
-                            'name' => 'processors',
-                            'category_id' => 1,
-                        ],
-                    ],
-                ],
-                [
-                    'id' => 3,
-                    'name' => 'transport',
-                    'created_at' => null,
-                    'updated_at' => null,
-                    'sub_categories' => [],
-                ],
-            ],
+            self::data(4, true),
+            self::data(2, true),
+            self::data(1, true),
+            self::data(3, true),
         ]);
     }
 
-    public function testGetCategorieNotFound()
+    public function testCreate()
     {
-        $this->client->get('/api/categories/999');
-        $this->assertNotFound();
-    }
-
-    public function testGetCategory()
-    {
-        $this->client->get('/api/categories/1');
-        $this->assertStatusCode(SUCCESS_OK);
-        $this->assertResponseData([
-            'id' => 1,
-            'name' => 'sound',
-            'created_at' => null,
-            'updated_at' => null,
-            'sub_categories' => [
-                [
-                    'id' => 1,
-                    'name' => 'mixers',
-                    'category_id' => 1,
-                ],
-                [
-                    'id' => 2,
-                    'name' => 'processors',
-                    'category_id' => 1,
-                ],
-            ],
+        $this->client->post('/api/categories', [
+            'name' => 'New Category',
         ]);
-    }
 
-    public function testCreateCategory()
-    {
-        $this->client->post('/api/categories', ['name' => 'New Category']);
-        $this->assertStatusCode(SUCCESS_CREATED);
+        $this->assertStatusCode(StatusCode::STATUS_CREATED);
         $this->assertResponseData([
             'id' => 5,
             'name' => 'New Category',
             'sub_categories' => [],
-            'created_at' => 'fakedTestContent',
-            'updated_at' => 'fakedTestContent',
-        ], ['created_at', 'updated_at']);
+        ]);
     }
 
     public function testUpdateCategoryNoData()
     {
         $this->client->put('/api/categories/1', []);
-        $this->assertStatusCode(ERROR_VALIDATION);
-        $this->assertErrorMessage("Missing request data to process validation");
+        $this->assertStatusCode(StatusCode::STATUS_BAD_REQUEST);
+        $this->assertErrorMessage("No data was provided.");
     }
 
     public function testUpdateCategoryNotFound()
@@ -126,33 +87,20 @@ final class CategoriesTest extends ApiTestCase
 
     public function testUpdateCategory()
     {
-        $this->client->put('/api/categories/1', ['name' => 'Sound edited']);
-        $this->assertStatusCode(SUCCESS_OK);
-        $this->assertResponseData([
-            'id' => 1,
+        $updatedData = [
             'name' => 'Sound edited',
-            'created_at' => null,
-            'updated_at' => 'fakedTestContent',
-            'sub_categories' => [
-                [
-                    'id' => 1,
-                    'name' => 'mixers',
-                    'category_id' => 1,
-                ],
-                [
-                    'id' => 2,
-                    'name' => 'processors',
-                    'category_id' => 1,
-                ],
-            ],
-        ], ['updated_at']);
+        ];
+        $this->client->put('/api/categories/1', $updatedData);
+        $this->assertStatusCode(StatusCode::STATUS_OK);
+        $this->assertResponseData(
+            array_replace(self::data(1, true), $updatedData)
+        );
     }
 
     public function testDeleteCategory()
     {
         $this->client->delete('/api/categories/3');
-        $this->assertStatusCode(SUCCESS_OK);
-        $this->assertResponseData(['destroyed' => true]);
+        $this->assertStatusCode(StatusCode::STATUS_NO_CONTENT);
 
         $this->client->get('/api/categories/3');
         $this->assertNotFound();

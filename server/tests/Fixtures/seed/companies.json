@@ -1,22 +1,22 @@
 [
     {
-        "id"          : 1,
-        "legal_name"  : "Testing, Inc",
-        "street"      : "1, company st.",
-        "postal_code" : "1234",
-        "locality"    : "Megacity",
-        "country_id"  : 1,
-        "phone"       : "+4123456789",
-        "note"        : "Just for tests"
+        "id": 1,
+        "legal_name": "Testing, Inc",
+        "street": "1, company st.",
+        "postal_code": "1234",
+        "locality": "Megacity",
+        "country_id": 1,
+        "phone": "+4123456789",
+        "note": "Just for tests"
     },
     {
-        "id"          : 2,
-        "legal_name"  : "Obscure",
-        "street"      : null,
-        "postal_code" : null,
-        "locality"    : null,
-        "country_id"  : null,
-        "phone"       : null,
-        "note"        : null
+        "id": 2,
+        "legal_name": "Obscure",
+        "street": null,
+        "postal_code": null,
+        "locality": null,
+        "country_id": null,
+        "phone": null,
+        "note": null
     }
 ]

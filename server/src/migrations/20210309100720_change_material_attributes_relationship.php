@@ -9,8 +9,8 @@ class ChangeMaterialAttributesRelationship extends AbstractMigration
         $table->dropForeignKey('attribute_id')->save();
 
         $table->addForeignKey('attribute_id', 'attributes', 'id', [
-            'delete'     => 'CASCADE',
-            'update'     => 'NO_ACTION',
+            'delete' => 'CASCADE',
+            'update' => 'NO_ACTION',
             'constraint' => 'fk_material_attributes_attribute'
         ])->save();
     }
@@ -21,8 +21,8 @@ class ChangeMaterialAttributesRelationship extends AbstractMigration
         $table->dropForeignKey('attribute_id')->save();
 
         $table->addForeignKey('attribute_id', 'attributes', 'id', [
-            'delete'     => 'NO_ACTION',
-            'update'     => 'NO_ACTION',
+            'delete' => 'NO_ACTION',
+            'update' => 'NO_ACTION',
             'constraint' => 'fk_material_attributes_attribute'
         ])->save();
     }

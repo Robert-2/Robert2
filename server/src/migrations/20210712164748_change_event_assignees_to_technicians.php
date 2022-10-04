@@ -1,7 +1,6 @@
 <?php
 use Phinx\Migration\AbstractMigration;
-
-use Robert2\API\Config as Config;
+use Robert2\API\Config\Config;
 
 class ChangeEventAssigneesToTechnicians extends AbstractMigration
 {
@@ -27,7 +26,7 @@ class ChangeEventAssigneesToTechnicians extends AbstractMigration
             ])
             ->save();
 
-        $prefix = Config\Config::getSettings('db')['prefix'];
+        $prefix = Config::getSettings('db')['prefix'];
 
         $allEvents = $this->fetchAll(
             sprintf("SELECT `id`, `start_date`, `end_date` FROM `%sevents`", $prefix)

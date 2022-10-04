@@ -3,11 +3,14 @@ declare(strict_types=1);
 
 namespace Robert2\API\Controllers;
 
+use \phpCAS;
 use DI\Container;
+use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Robert2\API\Errors\ValidationException;
 use Robert2\API\Models\User;
 use Robert2\API\Services\Auth;
 use Robert2\API\Validation\Validator as V;
+use Slim\Exception\HttpBadRequestException;
 use Slim\Http\Response;
 use Slim\Http\ServerRequest as Request;
 
@@ -25,20 +28,30 @@ class AuthController extends BaseController
 
     public function getSelf(Request $request, Response $response): Response
     {
-        return $response->withJson(Auth::user(), SUCCESS_OK);
+        $user = Auth::user()
+            ->append('language');
+
+        return $response->withJson($user, StatusCode::STATUS_OK);
     }
 
     public function loginWithForm(Request $request, Response $response): Response
     {
-        $data = (array)$request->getParsedBody();
-        $this->_validateAuthRequest($data);
+        $postData = (array)$request->getParsedBody();
+        if (empty($postData)) {
+            throw new HttpBadRequestException($request, "No data was provided.");
+        }
 
-        $user = User::fromLogin($data['identifier'], $data['password']);
+        $this->_validateAuthRequest($postData);
 
-        $responseData['user'] = $user->toArray();
-        $responseData['token'] = Auth\JWT::generateToken($user);
+        $user = User::fromLogin($postData['identifier'], $postData['password']);
 
-        return $response->withJson($responseData, SUCCESS_OK);
+        $result = $user
+            ->append('language')
+            ->serialize();
+
+        $result['token'] = Auth\JWT::generateToken($user);
+
+        return $response->withJson($result, StatusCode::STATUS_OK);
     }
 
     public function logout(Request $request, Response $response)
@@ -52,11 +65,11 @@ class AuthController extends BaseController
         return $response->withRedirect('/login#bye');
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Internal Methods
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Internal Methods
+    // -
+    // ------------------------------------------------------
 
     protected function _validateAuthRequest(array $data): void
     {
@@ -79,8 +92,7 @@ class AuthController extends BaseController
         }
 
         if (!$valid) {
-            throw (new ValidationException)
-                ->setValidationErrors($errors);
+            throw new ValidationException($errors);
         }
     }
 }

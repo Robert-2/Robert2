@@ -4,10 +4,13 @@ declare(strict_types=1);
 namespace Robert2\API\Models;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Robert2\API\Contracts\Serializable;
+use Robert2\API\Models\Traits\Serializer;
 use Robert2\API\Validation\Validator as V;
 
-class Company extends BaseModel
+class Company extends BaseModel implements Serializable
 {
+    use Serializer;
     use SoftDeletes;
 
     protected $orderField = 'legal_name';
@@ -51,41 +54,41 @@ class Company extends BaseModel
         return true;
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Relations
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Relations
+    // -
+    // ------------------------------------------------------
 
-    protected $appends = [
-        'full_address',
-        'country'
-    ];
-
-    public function Persons()
+    public function beneficiaries()
     {
-        return $this->hasMany(Person::class);
+        return $this->hasMany(Beneficiary::class);
     }
 
-    public function Country()
+    public function country()
     {
         return $this->belongsTo(Country::class);
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Mutators
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Mutators
+    // -
+    // ------------------------------------------------------
+
+    protected $appends = [
+        'full_address',
+        'country',
+    ];
 
     protected $casts = [
-        'legal_name'  => 'string',
-        'street'      => 'string',
+        'legal_name' => 'string',
+        'street' => 'string',
         'postal_code' => 'string',
-        'locality'    => 'string',
-        'country_id'  => 'integer',
-        'phone'       => 'string',
-        'note'        => 'string',
+        'locality' => 'string',
+        'country_id' => 'integer',
+        'phone' => 'string',
+        'note' => 'string',
     ];
 
     public function getFullAddressAttribute()
@@ -99,22 +102,16 @@ class Company extends BaseModel
         return "{$this->street}\n{$this->postal_code} {$this->locality}";
     }
 
-    public function getPersonsAttribute()
-    {
-        return $this->Persons()->get()->toArray();
-    }
-
     public function getCountryAttribute()
     {
-        $country = $this->Country()->select(['id', 'name', 'code'])->first();
-        return $country ? $country->toArray() : null;
+        return $this->country()->first();
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Setters
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Setters
+    // -
+    // ------------------------------------------------------
 
     protected $fillable = [
         'legal_name',
@@ -131,17 +128,25 @@ class Company extends BaseModel
         if (!empty($data['phone'])) {
             $data['phone'] = normalizePhone($data['phone']);
         }
+        return parent::staticEdit($id, $data);
+    }
 
-        $company = parent::staticEdit($id, $data);
+    // ------------------------------------------------------
+    // -
+    // -    Serialization
+    // -
+    // ------------------------------------------------------
 
-        if (!empty($data['persons'])) {
-            $persons = [];
-            foreach ($data['persons'] as $personData) {
-                $persons[] = Person::firstOrNew($personData);
-            }
-            $company->Persons()->saveMany($persons);
-        }
+    public function serialize(): array
+    {
+        $data = $this->attributesForSerialization();
 
-        return $company;
+        unset(
+            $data['created_at'],
+            $data['updated_at'],
+            $data['deleted_at'],
+        );
+
+        return $data;
     }
 }

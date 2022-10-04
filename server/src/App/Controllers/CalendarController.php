@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Robert2\API\Controllers;
 
+use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Robert2\API\Config\Config;
 use Robert2\API\Models\Event;
 use Robert2\API\Models\Setting;
@@ -83,11 +84,13 @@ class CalendarController extends BaseController
         $calendar = (new Calendar($calendarEvents))
             ->addTimeZone($timeZone);
 
-        return $response->withFile(
-            (new StreamFactory())->createStream(
-                (string) (new CalendarFactory())->createCalendar($calendar)
-            ),
-            'text/calendar',
-        );
+        return $response
+            ->withStatus(StatusCode::STATUS_OK)
+            ->withFile(
+                (new StreamFactory())->createStream(
+                    (string) (new CalendarFactory())->createCalendar($calendar)
+                ),
+                'text/calendar',
+            );
     }
 }

@@ -24,18 +24,18 @@
         "quantity_broken": 1
     },
     {
-        "id" : 4,
-        "event_id" : 2,
-        "material_id" : 1,
-        "quantity" : 3,
+        "id": 4,
+        "event_id": 2,
+        "material_id": 1,
+        "quantity": 3,
         "quantity_returned": 2,
         "quantity_broken": 0
     },
     {
-        "id" : 5,
-        "event_id" : 2,
-        "material_id" : 2,
-        "quantity" : 2,
+        "id": 5,
+        "event_id": 2,
+        "material_id": 2,
+        "quantity": 2,
         "quantity_returned": 2,
         "quantity_broken": 0
     },

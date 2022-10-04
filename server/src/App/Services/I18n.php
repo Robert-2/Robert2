@@ -11,7 +11,7 @@ class I18n
     protected $translator;
 
     protected $config = [
-        'default'   => 'en',
+        'default' => 'en',
         'available' => ['en', 'fr'],
     ];
 

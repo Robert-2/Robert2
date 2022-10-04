@@ -20,11 +20,11 @@ class CreateCompanies extends AbstractMigration
             ->addIndex(['country_id'])
             ->addIndex(['legal_name'], [
                 'unique' => true,
-                'name'   => 'legal_name_UNIQUE'
+                'name' => 'legal_name_UNIQUE'
             ])
             ->addForeignKey('country_id', 'countries', 'id', [
-                'delete'     => 'NO_ACTION',
-                'update'     => 'NO_ACTION',
+                'delete' => 'NO_ACTION',
+                'update' => 'NO_ACTION',
                 'constraint' => 'fk_companies_countries'
             ])
             ->create();

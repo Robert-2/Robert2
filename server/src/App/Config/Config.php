@@ -30,10 +30,6 @@ class Config
         'sessionExpireHours' => 12,
         'maxItemsPerPage' => 100,
         'defaultLang' => 'fr',
-        'defaultTags' => [
-            'beneficiary' => 'Bénéficiaire',
-            'technician' => 'Technicien',
-        ],
         'billingMode' => 'partial', // - Valeurs possibles : 'none', 'partial', 'all'.
         'degressiveRateFunction' => '((daysCount - 1) * 0.75) + 1',
         'proxy' => [
@@ -142,7 +138,6 @@ class Config
         'billingMode' => 'string',
         'degressiveRateFunction' => 'string',
         'defaultLang' => 'string',
-        'defaultTags' => 'array',
         'currency' => 'array',
         'db' => 'array',
         'companyData' => 'array',
@@ -265,26 +260,7 @@ class Config
     /**
      * @codeCoverageIgnore
      */
-    public static function saveCustomConfig(array $customConfig, bool $forceOverwrite = false): void
-    {
-        if (file_exists(self::SETTINGS_FILE) && !$forceOverwrite) {
-            throw new \RuntimeException("Can't overwrite existing JSON settings file.");
-        }
-
-        self::_ValidateCustomConfigData($customConfig);
-
-        $jsonSettings = json_encode($customConfig, self::JSON_OPTIONS);
-
-        $saved = file_put_contents(self::SETTINGS_FILE, $jsonSettings);
-        if (!$saved) {
-            throw new \RuntimeException("Unable to write JSON settings file. Check write access to config folder.");
-        }
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    private static function _ValidateCustomConfigData(array $customConfig): void
+    public static function saveCustomConfig(array $customConfig): void
     {
         if (empty($customConfig)) {
             throw new \InvalidArgumentException("Custom config: empty data.");
@@ -303,6 +279,12 @@ class Config
                     "Custom config: Field '$requiredField' must be of type '$fieldType'."
                 );
             }
+        }
+
+        $jsonSettings = json_encode($customConfig, self::JSON_OPTIONS);
+        $saved = file_put_contents(self::SETTINGS_FILE, $jsonSettings);
+        if (!$saved) {
+            throw new \RuntimeException("Unable to write JSON settings file. Check write access to config folder.");
         }
     }
 

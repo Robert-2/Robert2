@@ -33,14 +33,18 @@
     display: none;
 }
 
-.install__admin-names {
+.install__admin-name {
     display: flex;
-    align-items: center;
+    margin-bottom: 2.2rem;
 }
-.install__admin-names label {
-    flex: 0 0 auto;
-}
-.install__admin-names input {
+.install__admin-name__first-name,
+.install__admin-name__last-name {
     flex: 1;
-    margin: 0 .5rem;
+    margin: 0;
+}
+.install__admin-name__first-name {
+    margin-right: .25rem;
+}
+.install__admin-name__last-name {
+    margin-left: .25rem;
 }

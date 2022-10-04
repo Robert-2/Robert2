@@ -89,7 +89,7 @@ final class FunctionsTest extends TestCase
             ['2021-05-04', '2021-10-01'],
         ]));
 
-        // - La fonction doit aussi accépter les `Datetime`.
+        // - La fonction doit aussi accepter les `Datetime`.
         $expected = [
             ['2020-01-01 00:00', '2020-06-01 12:00'],
             ['2020-06-01 12:00', '2020-06-30 22:00'],

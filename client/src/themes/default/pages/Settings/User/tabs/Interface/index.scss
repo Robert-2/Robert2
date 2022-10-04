@@ -1,0 +1,24 @@
+@use '~@/themes/default/style/globals';
+
+.InterfaceUserSettings {
+    &__inputs {
+        margin-top: globals.$content-padding-large-vertical;
+
+        .FormField {
+            --label-width: 200px;
+        }
+    }
+
+    &__hours {
+        --input-width: 70px;
+    }
+
+    &__language {
+        --input-width: 150px;
+    }
+
+    &__actions {
+        margin-top: globals.$content-padding-large-vertical;
+        text-align: center;
+    }
+}

@@ -1,0 +1,57 @@
+@use '~@/themes/default/style/globals';
+
+.Page--users {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+
+    .Users {
+        flex: 1;
+    }
+}
+
+.Users {
+    display: flex;
+    flex-direction: column;
+
+    &__table {
+        flex: 1;
+    }
+
+    &__pseudo {
+        .Icon {
+            margin-right: 0.5rem;
+        }
+    }
+
+    &__no-profile {
+        color: globals.$text-muted-color;
+        font-style: italic;
+    }
+
+    &__group,
+    &__email,
+    &__phone {
+        display: none;
+    }
+
+    &__actions {
+        width: 1%;
+        text-align: right;
+        white-space: nowrap;
+    }
+
+    @media (min-width: globals.$screen-tablet) {
+        &__group,
+        &__email {
+            display: table-cell;
+        }
+    }
+
+    @media (min-width: globals.$screen-desktop) {
+        &__phone {
+            display: table-cell;
+        }
+    }
+}

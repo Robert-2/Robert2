@@ -37,8 +37,11 @@ class SetupController extends BaseController
 
     public function index(Request $request, Response $response)
     {
-        $installProgress = Install::getInstallProgress();
-        $currentStep = $installProgress['step'];
+        $currentStep = Install::getStep();
+        if ($currentStep === 'end') {
+            return $response->withRedirect('/login');
+        }
+
         $stepData = [];
         $error = false;
         $validationErrors = null;
@@ -46,16 +49,30 @@ class SetupController extends BaseController
         $lang = $this->i18n->getCurrentLocale();
         $allCurrencies = Install::getAllCurrencies();
 
-        if ($request->isGet() && $currentStep === 'welcome') {
-            return $this->view->render(
-                $response,
-                'install.twig',
-                $this->_getCheckRequirementsData() + ['lang' => $lang]
-            );
+        if ($request->isGet()) {
+            if ($currentStep === 'welcome') {
+                return $this->view->render(
+                    $response,
+                    'install.twig',
+                    $this->_getCheckRequirementsData() + ['lang' => $lang]
+                );
+            }
+
+            if ($currentStep === 'company') {
+                $stepData = $this->settings['companyData'];
+            }
         }
 
         if ($request->isPost()) {
             $installData = $request->getParsedBody();
+
+            $stepSkipped = (
+                array_key_exists('skipped', $installData)
+                && $installData['skipped'] === 'yes'
+            );
+            if ($stepSkipped) {
+                $installData['skipped'] = true;
+            }
 
             if ($currentStep === 'settings') {
                 $installData['currency'] = $allCurrencies[$installData['currency']];
@@ -66,13 +83,8 @@ class SetupController extends BaseController
                 ksort($installData);
             }
 
-            $stepSkipped = array_key_exists('skipped', $installData) && $installData['skipped'] === 'yes';
-            if ($stepSkipped) {
-                $installData['skipped'] = true;
-            }
-
             try {
-                $installProgress = Install::setInstallProgress($currentStep, $installData);
+                Install::setInstallProgress($currentStep, $installData);
 
                 if ($currentStep === 'company') {
                     $this->_validateCompanyData($installData);
@@ -80,35 +92,35 @@ class SetupController extends BaseController
 
                 if ($currentStep === 'database') {
                     $settings = Install::getSettingsFromInstallData();
-                    Config::saveCustomConfig($settings, true);
+                    Config::saveCustomConfig($settings);
                     Config::getPDO(); // - Try to connect to DB
                 }
 
                 if ($currentStep === 'dbStructure') {
-                    Install::createMissingTables();
-                    Install::insertInitialDataIntoDB();
+                    Install::migrateDatabase();
                 }
 
                 if ($currentStep === 'adminUser') {
                     if ($stepSkipped && !User::where('group', Group::ADMIN)->exists()) {
                         throw new \InvalidArgumentException(
-                            "At least one user must exists. Please create an admin user."
+                            "At least one user must exists. Please create an administrator."
                         );
                     }
 
                     if (!$stepSkipped) {
                         $installData['user']['group'] = Group::ADMIN;
-                        User::staticEdit(null, $installData['user']);
+                        User::new($installData['user']);
                     }
                 }
 
                 if ($currentStep === 'categories') {
                     $categories = explode(',', $installData['categories']);
-                    $Category = new Category();
-                    $Category->bulkAdd(array_unique($categories));
+                    Category::bulkAdd(array_unique($categories));
                 }
+
+                return $response->withRedirect('/install');
             } catch (\Exception $e) {
-                $installProgress = Install::setInstallProgress($currentStep);
+                Install::setInstallProgress($currentStep);
 
                 $stepData = $installData;
                 $error = $e->getMessage();
@@ -123,15 +135,15 @@ class SetupController extends BaseController
             }
         }
 
-        if ($installProgress['step'] === 'coreSettings' && empty($stepData['JWTSecret'])) {
+        if ($currentStep === 'coreSettings' && empty($stepData['JWTSecret'])) {
             $stepData['JWTSecret'] = md5(uniqid('Robert2', true));
         }
 
-        if ($installProgress['step'] === 'settings') {
+        if ($currentStep === 'settings') {
             $stepData['currencies'] = $allCurrencies;
         }
 
-        if ($installProgress['step'] === 'dbStructure') {
+        if ($currentStep === 'dbStructure') {
             try {
                 $stepData = [
                     'migrationStatus' => Install::getMigrationsStatus(),
@@ -147,14 +159,14 @@ class SetupController extends BaseController
             }
         }
 
-        if ($installProgress['step'] === 'adminUser') {
+        if ($currentStep === 'adminUser') {
             $stepData['existingAdmins'] = User::where('group', Group::ADMIN)->get()->toArray();
         }
 
         return $this->view->render($response, 'install.twig', [
             'lang' => $lang,
-            'step' => $installProgress['step'],
-            'stepNumber' => array_search($installProgress['step'], Install::INSTALL_STEPS),
+            'step' => $currentStep,
+            'stepNumber' => array_search($currentStep, Install::INSTALL_STEPS),
             'error' => $error,
             'validationErrors' => $validationErrors,
             'stepData' => $stepData,
@@ -172,9 +184,7 @@ class SetupController extends BaseController
         Install::setInstallProgress($prevStep, ['skipped' => true]);
         Install::setInstallProgress($endStep, []);
 
-        return $response
-            ->withHeader('Location', '/login')
-            ->withStatus(302);
+        return $response->withRedirect('/login');
     }
 
     // ------------------------------------------------------
@@ -218,7 +228,6 @@ class SetupController extends BaseController
             return;
         }
 
-        throw (new ValidationException)
-            ->setValidationErrors($errors);
+        throw new ValidationException($errors);
     }
 }

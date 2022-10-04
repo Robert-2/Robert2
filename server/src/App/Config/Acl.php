@@ -100,7 +100,13 @@ class Acl
                 'delete',
                 'restore',
             ],
-            'Person' => [
+            'Beneficiary' => [
+                'create',
+                'update',
+                'delete',
+                'restore',
+            ],
+            'Technician' => [
                 'create',
                 'update',
                 'delete',

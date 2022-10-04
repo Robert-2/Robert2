@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 use Phinx\Migration\AbstractMigration;
-use Robert2\API\Config\Config as Config;
+use Robert2\API\Config\Config;
 use Illuminate\Support\Str;
 
 final class AddPublicCalendarSettings extends AbstractMigration

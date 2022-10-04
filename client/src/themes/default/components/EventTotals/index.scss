@@ -1,0 +1,38 @@
+@use '~@/themes/default/style/globals';
+
+.EventTotals {
+    flex: 0 0 auto;
+    padding: 0 0.5rem;
+    font-size: 1.1rem;
+    text-align: right;
+
+    .fas {
+        margin: 0 0.3rem;
+        color: globals.$text-light-color;
+        font-size: 0.95rem;
+    }
+
+    &__base {
+        margin-bottom: 1rem;
+    }
+
+    &__grand,
+    &__grand-discount {
+        margin-bottom: 0.5rem;
+        font-size: 1.7rem;
+    }
+
+    &__discountable,
+    &__discount {
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    &__daily {
+        color: globals.$text-light-color;
+    }
+
+    &__replacement {
+        margin-top: 1.5rem;
+    }
+}

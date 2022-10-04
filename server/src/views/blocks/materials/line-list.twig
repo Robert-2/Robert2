@@ -8,14 +8,6 @@
             {{ include('blocks/materials/attribute.twig', { attribute: attribute }) }}
         {% endfor %}
         {% endif %}
-
-        {% if material['units'] is not empty %}
-        <ul style="margin: 1mm 0 0;">
-        {% for unit in material['units'] %}
-            <li>{{ unit['name'] }}</li>
-        {% endfor %}
-        </ul>
-        {% endif %}
     </td>
     <td class="right lighter">
         {{ material['replacementPrice']|format_currency(currency, formatCurrencyOptions, locale) }}

@@ -1,0 +1,61 @@
+@use '~@/themes/default/style/globals';
+
+.EventDetails {
+    display: flex;
+    flex-direction: column;
+
+    .Loading,
+    .ErrorMessage {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 250px;
+        margin: 0;
+        background: globals.$bg-color-side-nav;
+
+        .fas {
+            margin-right: 0.3rem;
+        }
+    }
+
+    &__content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        max-height: 100vh;
+        min-height: 520px;
+
+        &__body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+            background-color: globals.$bg-color-body;
+
+            .Help {
+                margin-bottom: globals.$content-padding-small-vertical;
+            }
+        }
+    }
+
+    &__content + .ErrorMessage {
+        min-height: auto;
+        margin-bottom: globals.$content-padding-large-vertical;
+        background: none;
+    }
+
+    &__materials-empty {
+        margin-bottom: globals.$content-padding-small-vertical;
+        color: globals.$text-danger-color;
+        font-size: 1.2rem;
+        text-align: center;
+
+        .fas {
+            width: 1.5rem;
+            margin-right: 0.3rem;
+            text-align: center;
+        }
+    }
+}

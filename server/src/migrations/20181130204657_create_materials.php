@@ -26,24 +26,24 @@ class CreateMaterials extends AbstractMigration
             ->addIndex(['name'])
             ->addIndex(['reference'], [
                 'unique' => true,
-                'name'   => 'reference_UNIQUE'
+                'name' => 'reference_UNIQUE'
             ])
             ->addIndex(['park_id'])
             ->addIndex(['category_id'])
             ->addIndex(['sub_category_id'])
             ->addForeignKey('park_id', 'parks', 'id', [
-                'delete'     => 'CASCADE',
-                'update'     => 'NO_ACTION',
+                'delete' => 'CASCADE',
+                'update' => 'NO_ACTION',
                 'constraint' => 'fk_materials_park'
             ])
             ->addForeignKey('category_id', 'categories', 'id', [
-                'delete'     => 'CASCADE',
-                'update'     => 'NO_ACTION',
+                'delete' => 'CASCADE',
+                'update' => 'NO_ACTION',
                 'constraint' => 'fk_materials_category'
             ])
             ->addForeignKey('sub_category_id', 'sub_categories', 'id', [
-                'delete'     => 'CASCADE',
-                'update'     => 'NO_ACTION',
+                'delete' => 'CASCADE',
+                'update' => 'NO_ACTION',
                 'constraint' => 'fk_materials_subcategory'
             ])
             ->create();

@@ -1,6 +1,6 @@
 import moment from 'moment';
 import formatEventTechniciansList from '@/utils/formatEventTechniciansList';
-import eventTechniciansData from './data/event-technicians';
+import eventTechniciansData from '@fixtures/event-technicians';
 
 describe('formatEventTechniciansList', () => {
     it('returns an empty array when nothing passed', () => {

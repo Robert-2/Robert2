@@ -1,14 +1,14 @@
 [
     {
-        "id"   : "admin",
-        "name" : "Admin"
+        "id": "admin",
+        "name": "Admin"
     },
     {
-        "id"   : "member",
-        "name" : "Member"
+        "id": "member",
+        "name": "Member"
     },
     {
-        "id"   : "visitor",
-        "name" : "Visitor"
+        "id": "visitor",
+        "name": "Visitor"
     }
 ]

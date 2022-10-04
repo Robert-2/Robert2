@@ -7,20 +7,8 @@ use Robert2\API\Errors\ValidationException;
 use Robert2\API\Models\Event;
 use Robert2\API\Models\EventTechnician;
 
-final class EventTechnicianTest extends ModelTestCase
+final class EventTechnicianTest extends TestCase
 {
-    public function setup(): void
-    {
-        parent::setUp();
-
-        $this->model = new EventTechnician();
-    }
-
-    public function testTableName(): void
-    {
-        $this->assertEquals('event_technicians', $this->model->getTable());
-    }
-
     public function testValidation()
     {
         $data = [
@@ -33,7 +21,7 @@ final class EventTechnicianTest extends ModelTestCase
 
         $errors = null;
         try {
-            $this->model->fill($data)->validate();
+            (new EventTechnician($data))->validate();
         } catch (ValidationException $e) {
             $errors = $e->getValidationErrors();
         }
@@ -57,7 +45,7 @@ final class EventTechnicianTest extends ModelTestCase
 
         $errors = null;
         try {
-            $this->model->fill($data)->validate();
+            (new EventTechnician($data))->validate();
         } catch (ValidationException $e) {
             $errors = $e->getValidationErrors();
         }
@@ -80,7 +68,7 @@ final class EventTechnicianTest extends ModelTestCase
 
         $errors = null;
         try {
-            $this->model->fill($data)->validate();
+            (new EventTechnician($data))->validate();
         } catch (ValidationException $e) {
             $errors = $e->getValidationErrors();
         }
@@ -92,7 +80,7 @@ final class EventTechnicianTest extends ModelTestCase
 
         try {
             $data['start_time'] = '2019-05-01 10:00:00';
-            $this->model->fill($data)->validate();
+            (new EventTechnician($data))->validate();
         } catch (ValidationException $e) {
             $errors = $e->getValidationErrors();
         }
@@ -115,7 +103,7 @@ final class EventTechnicianTest extends ModelTestCase
                 'start_time' => '2018-12-18 22:12:00',
                 'end_time' => '2018-12-18 23:35:00',
             ];
-            $this->model->fill($data)->validate();
+            (new EventTechnician($data))->validate();
         } catch (ValidationException $e) {
             $errors = $e->getValidationErrors();
         }
@@ -136,7 +124,7 @@ final class EventTechnicianTest extends ModelTestCase
                 'start_time' => '2018-12-18 20:00:00',
                 'end_time' => '2018-12-18 22:00:00',
             ];
-            $this->model->fill($data)->validate();
+            (new EventTechnician($data))->validate();
         } catch (ValidationException $e) {
             $errors = $e->getValidationErrors();
         }
@@ -154,7 +142,7 @@ final class EventTechnicianTest extends ModelTestCase
                 'start_time' => '2018-12-17 07:00:00',
                 'end_time' => '2018-12-17 09:30:00',
             ];
-            $this->model->fill($data)->validate();
+            (new EventTechnician($data))->validate();
         } catch (ValidationException $e) {
             $errors = $e->getValidationErrors();
         }
@@ -172,7 +160,7 @@ final class EventTechnicianTest extends ModelTestCase
                 'start_time' => '2018-12-17 10:00:00',
                 'end_time' => '2018-12-18 20:00:00',
             ];
-            $this->model->fill($data)->validate();
+            (new EventTechnician($data))->validate();
         } catch (ValidationException $e) {
             $errors = $e->getValidationErrors();
         }
@@ -193,7 +181,7 @@ final class EventTechnicianTest extends ModelTestCase
                 'start_time' => '2018-12-18 22:15:00',
                 'end_time' => '2018-12-18 23:30:00',
             ];
-            $this->model->fill($data)->validate();
+            (new EventTechnician($data))->validate();
         } catch (ValidationException $e) {
             $errors = $e->getValidationErrors();
         }
@@ -201,7 +189,7 @@ final class EventTechnicianTest extends ModelTestCase
 
         // - Modification d'une assignation existante
         try {
-            $eventTechnician = $this->model->find(1);
+            $eventTechnician = (new EventTechnician)->find(1);
             $data = [
                 'technician_id' => 1,
                 'event_id' => 1,

@@ -5,7 +5,7 @@ namespace Robert2\Tests;
 
 use Robert2\API\Services\I18n;
 
-final class I18nTest extends ModelTestCase
+final class I18nTest extends TestCase
 {
     public function testTranslate()
     {

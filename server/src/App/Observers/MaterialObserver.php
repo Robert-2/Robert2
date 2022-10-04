@@ -17,7 +17,7 @@ final class MaterialObserver
         }
 
         /** @var Robert2\API\Models\Event $event */
-        foreach ($material->Events()->get() as $event) {
+        foreach ($material->events as $event) {
             $event->invalidateCache('has_missing_materials');
         }
     }
@@ -27,7 +27,7 @@ final class MaterialObserver
         debug("[Event] Matériel #%s restauré.", $material->id);
 
         /** @var Robert2\API\Models\Event $event */
-        foreach ($material->Events()->get() as $event) {
+        foreach ($material->events as $event) {
             $event->invalidateCache([
                 'has_missing_materials',
                 'has_not_returned_materials',
@@ -44,7 +44,7 @@ final class MaterialObserver
         }
 
         /** @var Robert2\API\Models\Event $event */
-        foreach ($material->Events()->get() as $event) {
+        foreach ($material->events as $event) {
             $event->invalidateCache([
                 'has_missing_materials',
                 'has_not_returned_materials',

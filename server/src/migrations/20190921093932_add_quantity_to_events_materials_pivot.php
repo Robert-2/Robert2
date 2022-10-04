@@ -8,10 +8,10 @@ class AddQuantityToEventsMaterialsPivot extends AbstractMigration
         $table = $this->table('event_materials');
         $table
             ->addColumn('quantity', 'integer', [
-                'after'   => 'material_id',
-                'null'    => false,
-                'signed'  => false,
-                'limit'   => 6,
+                'after' => 'material_id',
+                'null' => false,
+                'signed' => false,
+                'limit' => 6,
                 'default' => 1,
             ])
             ->update();

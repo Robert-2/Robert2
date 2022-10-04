@@ -1,20 +1,23 @@
 <?php
 namespace Robert2\Tests;
 
+use Fig\Http\Message\StatusCodeInterface as StatusCode;
+use Illuminate\Support\Collection;
+
 final class AttributesTest extends ApiTestCase
 {
-    public function testGetAll()
+    public static function data(int $id, $details = false)
     {
-        // - Récupère toutes les caractéristiques spéciales avec leurs catégories
-        $this->client->get('/api/attributes');
-        $this->assertStatusCode(SUCCESS_OK);
-        $response = $this->_getResponseAsArray();
-        $expected = [
+        $attributes = new Collection([
             [
-                'id' => 4,
-                'name' => "Conforme",
-                'type' => "boolean",
-                'categories' => [],
+                'id' => 1,
+                'name' => "Poids",
+                'type' => "float",
+                'unit' => "kg",
+                'categories' => [
+                    CategoriesTest::data(2),
+                    CategoriesTest::data(1),
+                ],
             ],
             [
                 'id' => 2,
@@ -22,38 +25,6 @@ final class AttributesTest extends ApiTestCase
                 'type' => "string",
                 'maxLength' => null,
                 'categories' => [],
-            ],
-            [
-                'id' => 5,
-                'name' => "Date d'achat",
-                'type' => "date",
-                'categories' => [],
-            ],
-            [
-                'id' => 1,
-                'name' => "Poids",
-                'type' => "float",
-                'unit' => "kg",
-                'categories' => [
-                    [
-                        'id' => 2,
-                        'name' => "light",
-                        'sub_categories' => [
-                            ['id' => 4, 'name' => 'dimmers', 'category_id' => 2],
-                            ['id' => 3, 'name' => 'projectors', 'category_id' => 2],
-                        ],
-                        'pivot' => ['attribute_id' => 1, 'category_id' => 2]
-                    ],
-                    [
-                        'id' => 1,
-                        'name' => "sound",
-                        'sub_categories' => [
-                            ['id' => 1, 'name' => 'mixers', 'category_id' => 1],
-                            ['id' => 2, 'name' => 'processors', 'category_id' => 1],
-                        ],
-                        'pivot' => ['attribute_id' => 1, 'category_id' => 1]
-                    ],
-                ],
             ],
             [
                 'id' => 3,
@@ -61,19 +32,44 @@ final class AttributesTest extends ApiTestCase
                 'type' => "integer",
                 'unit' => "W",
                 'categories' => [
-                    [
-                        'id' => 1,
-                        'name' => "sound",
-                        'sub_categories' => [
-                            ['id' => 1, 'name' => 'mixers', 'category_id' => 1],
-                            ['id' => 2, 'name' => 'processors', 'category_id' => 1],
-                        ],
-                        'pivot' => ['attribute_id' => 3, 'category_id' => 1]
-                    ],
+                    CategoriesTest::data(1),
                 ],
             ],
-        ];
-        $this->assertEquals($expected, $response);
+            [
+                'id' => 4,
+                'name' => "Conforme",
+                'type' => "boolean",
+                'categories' => [],
+            ],
+            [
+                'id' => 5,
+                'name' => "Date d'achat",
+                'type' => "date",
+                'categories' => [],
+            ],
+        ]);
+
+        if (!$details) {
+            $attributes = $attributes->map(fn($attribute) => (
+                array_without_keys($attribute, ['categories'])
+            ));
+        }
+
+        return static::_dataFactory($id, $attributes->all());
+    }
+
+    public function testGetAll()
+    {
+        // - Récupère toutes les caractéristiques spéciales avec leurs catégories
+        $this->client->get('/api/attributes');
+        $this->assertStatusCode(StatusCode::STATUS_OK);
+        $this->assertResponseData([
+            self::data(4, true),
+            self::data(2, true),
+            self::data(5, true),
+            self::data(1, true),
+            self::data(3, true),
+        ]);
     }
 
     public function testGetAllForCategory()
@@ -81,190 +77,71 @@ final class AttributesTest extends ApiTestCase
         // - Récupère les caractéristiques spéciales qui n'ont
         // - pas de catégorie, + celles de la catégorie #3
         $this->client->get('/api/attributes?category=3');
-        $this->assertStatusCode(SUCCESS_OK);
-        $response = $this->_getResponseAsArray();
-        $expected = [
-            [
-                'id' => 4,
-                'name' => "Conforme",
-                'type' => "boolean",
-                'categories' => [],
-            ],
-            [
-                'id' => 2,
-                'name' => "Couleur",
-                'type' => "string",
-                'maxLength' => null,
-                'categories' => [],
-            ],
-            [
-                'id' => 5,
-                'name' => "Date d'achat",
-                'type' => "date",
-                'categories' => [],
-            ],
-        ];
-        $this->assertEquals($expected, $response);
+        $this->assertStatusCode(StatusCode::STATUS_OK);
+        $this->assertResponseData([
+            self::data(4, true),
+            self::data(2, true),
+            self::data(5, true),
+        ]);
 
         // - Récupère les caractéristiques spéciales qui n'ont
         // - pas de catégorie, + celles de la catégorie #2
         $this->client->get('/api/attributes?category=2');
-        $this->assertStatusCode(SUCCESS_OK);
-        $response = $this->_getResponseAsArray();
-        $expected = [
-            [
-                'id' => 4,
-                'name' => "Conforme",
-                'type' => "boolean",
-                'categories' => [],
-            ],
-            [
-                'id' => 2,
-                'name' => "Couleur",
-                'type' => "string",
-                'maxLength' => null,
-                'categories' => [],
-            ],
-            [
-                'id' => 5,
-                'name' => "Date d'achat",
-                'type' => "date",
-                'categories' => [],
-            ],
-            [
-                'id' => 1,
-                'name' => "Poids",
-                'type' => "float",
-                'unit' => "kg",
-                'categories' => [
-                    [
-                        'id' => 2,
-                        'name' => "light",
-                        'sub_categories' => [
-                            ['id' => 4, 'name' => 'dimmers', 'category_id' => 2],
-                            ['id' => 3, 'name' => 'projectors', 'category_id' => 2],
-                        ],
-                        'pivot' => ['attribute_id' => 1, 'category_id' => 2]
-                    ],
-                    [
-                        'id' => 1,
-                        'name' => "sound",
-                        'sub_categories' => [
-                            ['id' => 1, 'name' => 'mixers', 'category_id' => 1],
-                            ['id' => 2, 'name' => 'processors', 'category_id' => 1],
-                        ],
-                        'pivot' => ['attribute_id' => 1, 'category_id' => 1]
-                    ],
-                ],
-            ],
-        ];
-        $this->assertEquals($expected, $response);
+        $this->assertStatusCode(StatusCode::STATUS_OK);
+        $this->assertResponseData([
+            self::data(4, true),
+            self::data(2, true),
+            self::data(5, true),
+            self::data(1, true),
+        ]);
     }
 
     public function testGetAllWithoutCategory()
     {
         // - Récupère les caractéristiques spéciales qui n'ont pas de catégorie.
         $this->client->get('/api/attributes?category=none');
-        $this->assertStatusCode(SUCCESS_OK);
-        $response = $this->_getResponseAsArray();
-        $expected = [
-            [
-                'id' => 4,
-                'name' => "Conforme",
-                'type' => "boolean",
-                'categories' => [],
-            ],
-            [
-                'id' => 2,
-                'name' => "Couleur",
-                'type' => "string",
-                'maxLength' => null,
-                'categories' => [],
-            ],
-            [
-                'id' => 5,
-                'name' => "Date d'achat",
-                'type' => "date",
-                'categories' => [],
-            ],
-        ];
-        $this->assertEquals($expected, $response);
+        $this->assertStatusCode(StatusCode::STATUS_OK);
+        $this->assertResponseData([
+            self::data(4, true),
+            self::data(2, true),
+            self::data(5, true),
+        ]);
     }
 
     public function testCreateAttribute()
     {
-        // Crée une nouvelle caractéristique spéciale
-        $data = [
+        $this->client->post('/api/attributes', [
             'name' => 'Speed',
             'type' => 'float',
             'unit' => 'km/h',
             'categories' => [2, 3],
-        ];
-        $this->client->post('/api/attributes', $data);
-        $this->assertStatusCode(SUCCESS_CREATED);
-        $expected = [
+        ]);
+        $this->assertStatusCode(StatusCode::STATUS_CREATED);
+        $this->assertResponseData([
             'id' => 6,
             'name' => 'Speed',
             'type' => 'float',
             'unit' => 'km/h',
             'categories' => [
-                [
-                    'id' => 2,
-                    'name' => "light",
-                    'sub_categories' => [
-                        ['id' => 4, 'name' => 'dimmers', 'category_id' => 2],
-                        ['id' => 3, 'name' => 'projectors', 'category_id' => 2],
-                    ],
-                    'pivot' => ['attribute_id' => 6, 'category_id' => 2]
-                ],
-                [
-                    'id' => 3,
-                    'name' => "transport",
-                    'sub_categories' => [],
-                    'pivot' => ['attribute_id' => 6, 'category_id' => 3]
-                ],
+                CategoriesTest::data(2),
+                CategoriesTest::data(3),
             ],
-        ];
-        $this->assertResponseData($expected);
+        ]);
     }
 
     public function testUpdateAttribute()
     {
-        // - Modifie une caractéristique spéciale
-        $data = [
+        $this->client->put('/api/attributes/1', [
             'name' => 'Masse',
             'type' => 'integer',
             'unit' => 'g',
-        ];
-        $this->client->put('/api/attributes/1', $data);
-        $this->assertStatusCode(SUCCESS_OK);
-        // - Uniquement le nom a été modifié
-        $expected = [
-            'id' => 1,
-            'name' => 'Masse',
-            'type' => 'float',
-            'unit' => 'kg',
-            'categories' => [
-                [
-                    'id' => 2,
-                    'name' => "light",
-                    'sub_categories' => [
-                        ['id' => 4, 'name' => 'dimmers', 'category_id' => 2],
-                        ['id' => 3, 'name' => 'projectors', 'category_id' => 2],
-                    ],
-                    'pivot' => ['attribute_id' => 1, 'category_id' => 2]
-                ],
-                [
-                    'id' => 1,
-                    'name' => "sound",
-                    'sub_categories' => [
-                        ['id' => 1, 'name' => 'mixers', 'category_id' => 1],
-                        ['id' => 2, 'name' => 'processors', 'category_id' => 1],
-                    ],
-                    'pivot' => ['attribute_id' => 1, 'category_id' => 1]
-                ],
-            ],
-        ];
-        $this->assertResponseData($expected);
+        ]);
+        $this->assertStatusCode(StatusCode::STATUS_OK);
+        $this->assertResponseData(
+            array_replace(self::data(1, true), [
+                // - Uniquement le nom a été modifié.
+                'name' => 'Masse',
+            ])
+        );
     }
 }

@@ -1,0 +1,41 @@
+@use '~@/themes/default/style/globals';
+@use 'sass:math';
+
+.InputCopy {
+    $block: &;
+
+    display: flex;
+    flex-wrap: nowrap;
+
+    &__input {
+        flex: 1;
+        padding-right: math.div(globals.$input-padding-horizontal, 2);
+        border-right: 0;
+        border-radius: globals.$input-border-radius 0 0 globals.$input-border-radius;
+
+        &:focus + #{$block}__button-wrapper {
+            border-color: globals.$input-focus-border-color;
+        }
+    }
+
+    &__button-wrapper {
+        display: inline-block;
+        min-width: 2.7rem;
+        border: globals.$input-border-size solid globals.$bg-color-input-normal;
+        border-left: 0;
+        border-radius: 0 globals.$input-border-radius globals.$input-border-radius 0;
+        background-color: globals.$bg-color-input-normal;
+        color: globals.$color-input;
+
+        // stylelint-disable-next-line order/properties-order
+        padding:
+            calc(#{globals.$input-padding-vertical} - 0.3rem)
+            calc(#{globals.$input-padding-horizontal} - 0.3rem)
+            calc(#{globals.$input-padding-vertical} - 0.3rem)
+            math.div(globals.$input-padding-horizontal, 2);
+
+        .Button {
+            padding: 0.4rem 0.7rem;
+        }
+    }
+}

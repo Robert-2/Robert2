@@ -6,11 +6,9 @@ namespace Robert2\Tests;
 use Robert2\Lib\Pdf\Pdf;
 use Robert2\Lib\Domain\EventData;
 use Robert2\API\Models\Event;
-use Robert2\API\Models\Category;
-use Robert2\API\Models\Park;
 use Robert2\Fixtures\RobertFixtures;
 
-final class PdfTest extends ModelTestCase
+final class PdfTest extends TestCase
 {
     protected $_testHtmlFile = __DIR__ . DS . 'files/test.html';
     protected $_pdfResultFile = __DIR__ . DS . 'files/result.pdf';
@@ -67,24 +65,11 @@ final class PdfTest extends ModelTestCase
         }
 
         // - Render a bill template to PDF
-        $Event = new Event();
-        $billEvent = $Event
-            ->with('Beneficiaries')
-            ->with('Materials')
-            ->find(1)
-            ->toArray();
-
-        $EventData = new EventData(new \DateTime('2020-02-10'), $billEvent, '2020-00002', 1);
-        $this->assertNotEmpty($EventData);
-
-        $EventData
+        $data = (new EventData(Event::find(1)))
             ->setDiscountRate(10.0)
-            ->setCategories((new Category())->getAll()->get()->toArray())
-            ->setParks((new Park())->getAll()->get()->toArray());
+            ->toBillingPdfData(new \DateTime('2020-02-10'), '2020-00002');
 
-        $billData = $EventData->toPdfTemplateArray();
-
-        $pdfContent = Pdf::createFromTemplate('bill-default', $billData, $this->_pdfResultFile);
+        $pdfContent = Pdf::createFromTemplate('bill-default', $data, $this->_pdfResultFile);
         $this->assertNotEmpty($pdfContent);
     }
 }

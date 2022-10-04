@@ -46,8 +46,7 @@ abstract class BaseController
                     'pages' => $result->lastPage(),
                 ],
             ],
-            // TODO: Enlever le `->toArray()` pour profiter de la serialization des modèles ...
-            'data' => $result->getCollection()->toArray(),
+            'data' => $result->getCollection(),
         ];
     }
 }

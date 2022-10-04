@@ -1,14 +1,6 @@
 [
     {
-        "id"   : 1,
-        "name" : "Technician"
-    },
-    {
-        "id"   : 2,
-        "name" : "Beneficiary"
-    },
-    {
-        "id"   : 3,
-        "name" : "pro"
+        "id": 1,
+        "name": "pro"
     }
 ]

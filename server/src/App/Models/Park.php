@@ -3,11 +3,20 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Robert2\API\Contracts\Serializable;
+use Robert2\API\Models\Traits\Serializer;
 use Robert2\API\Validation\Validator as V;
 
-class Park extends BaseModel
+/**
+ * Modèle Park.
+ *
+ * @method static Builder forUser(Builder $query, int $userId)
+ */
+class Park extends BaseModel implements Serializable
 {
+    use Serializer;
     use SoftDeletes;
 
     protected $orderField = 'name';
@@ -19,8 +28,6 @@ class Park extends BaseModel
 
         $this->validation = [
             'name' => V::callback([$this, 'checkName']),
-            'person_id' => V::optional(V::numeric()),
-            'company_id' => V::optional(V::numeric()),
             'street' => V::optional(V::length(null, 191)),
             'postal_code' => V::optional(V::length(null, 10)),
             'locality' => V::optional(V::length(null, 191)),
@@ -53,47 +60,34 @@ class Park extends BaseModel
         return true;
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Relations
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Relations
+    // -
+    // ------------------------------------------------------
+
+    public function materials()
+    {
+        return $this->hasMany(Material::class);
+    }
+
+    public function country()
+    {
+        return $this->belongsTo(Country::class);
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Mutators
+    // -
+    // ------------------------------------------------------
 
     protected $appends = [
         'total_items',
         'total_stock_quantity',
     ];
 
-    public function Materials()
-    {
-        return $this->hasMany(Material::class);
-    }
-
-    public function Person()
-    {
-        return $this->belongsTo(Person::class);
-    }
-
-    public function Company()
-    {
-        return $this->belongsTo(Company::class);
-    }
-
-    public function Country()
-    {
-        return $this->belongsTo(Country::class)
-            ->select(['id', 'name', 'code']);
-    }
-
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Mutators
-    // —
-    // ——————————————————————————————————————————————————————
-
     protected $casts = [
-        'person_id' => 'integer',
-        'company_id' => 'integer',
         'name' => 'string',
         'street' => 'string',
         'postal_code' => 'string',
@@ -103,24 +97,23 @@ class Park extends BaseModel
         'note' => 'string',
     ];
 
-    public function getMaterialsAttribute()
-    {
-        $materials = $this->Materials()->get();
-        return $materials ? $materials->toArray() : null;
-    }
-
     public function getTotalItemsAttribute()
     {
-        return $this->Materials()->count();
+        $total = $this->materials()->where('is_unitary', false)->count();
+
+        return $total;
     }
 
     public function getTotalStockQuantityAttribute()
     {
         $materials = $this->Materials()->get(['stock_quantity']);
         $total = 0;
+
+        $materials = $this->materials()->get(['stock_quantity', 'is_unitary']);
         foreach ($materials as $material) {
             $total += (int)$material->stock_quantity;
         }
+
         return $total;
     }
 
@@ -128,30 +121,12 @@ class Park extends BaseModel
     {
         $total = 0;
 
-        $materials = Material::getParkAll($this->id);
+        $materials = Material::getParkAll($this->id)->toArray();
         foreach ($materials as $material) {
             $total += ($material['replacement_price'] * (int)$material['stock_quantity']);
         }
 
         return $total;
-    }
-
-    public function getPersonAttribute()
-    {
-        $user = $this->Person()->first();
-        return $user ? $user->toArray() : null;
-    }
-
-    public function getCompanyAttribute()
-    {
-        $company = $this->Company()->first();
-        return $company ? $company->toArray() : null;
-    }
-
-    public function getCountryAttribute()
-    {
-        $country = $this->Country()->first();
-        return $country ? $country->toArray() : null;
     }
 
     public function getHasOngoingEventAttribute()
@@ -161,12 +136,12 @@ class Park extends BaseModel
         }
 
         $ongoingEvents = Event::inPeriod('today')
-            ->with('Materials')
+            ->with('materials')
             ->get();
 
         foreach ($ongoingEvents as $ongoingEvent) {
             foreach ($ongoingEvent->materials as $material) {
-                if ($material['park_id'] === $this->id) {
+                if ($material->park_id === $this->id) {
                     return true;
                 }
             }
@@ -175,11 +150,11 @@ class Park extends BaseModel
         return false;
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Setters
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Setters
+    // -
+    // ------------------------------------------------------
 
     protected $fillable = [
         'name',
@@ -195,10 +170,29 @@ class Park extends BaseModel
     {
         if ($this->total_items > 0) {
             throw new \LogicException(
-                sprintf("Le parc #%d contient du matériel et ne peut donc pas être supprimé.", $this->id)
+                sprintf("The park #%d contains material and therefore cannot be deleted.", $this->id)
             );
         }
 
         return parent::delete();
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Serialization
+    // -
+    // ------------------------------------------------------
+
+    public function serialize(): array
+    {
+        $data = $this->attributesForSerialization();
+
+        unset(
+            $data['created_at'],
+            $data['updated_at'],
+            $data['deleted_at'],
+        );
+
+        return $data;
     }
 }

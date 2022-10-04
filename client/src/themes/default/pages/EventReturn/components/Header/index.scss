@@ -1,0 +1,37 @@
+@use '~@/themes/default/style/globals';
+
+.EventReturnHeader {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: globals.$content-padding-large-horizontal 0;
+
+    &__infos {
+        flex: 1;
+        display: flex;
+        justify-content: flex-start;
+    }
+
+    &__actions {
+        flex: 0 0 auto;
+    }
+
+    &__info {
+        text-align: center;
+        line-height: 1.3;
+
+        &__important {
+            color: globals.$text-base-color;
+        }
+    }
+
+    &__info + &__info {
+        margin-left: globals.$content-padding-large-vertical;
+    }
+
+    &__group-by {
+        &__label {
+            padding: 0 globals.$content-padding-small-horizontal;
+        }
+    }
+}

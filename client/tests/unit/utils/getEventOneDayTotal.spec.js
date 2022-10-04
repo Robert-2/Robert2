@@ -1,5 +1,5 @@
 import getEventOneDayTotal from '@/utils/getEventOneDayTotal';
-import eventMaterials from './data/event-materials';
+import eventMaterials from '@fixtures/event-materials';
 
 describe('getEventOneDayTotal', () => {
     it('returns 0 with empty values', () => {

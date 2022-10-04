@@ -1,15 +1,30 @@
+const fs = require('fs');
+
+const THEMES_PATH = './src/themes';
 const DEV_CLIENT_URL = new URL('http://0.0.0.0:8081');
 
+const themes = fs.readdirSync(THEMES_PATH, { withFileTypes: true })
+    .filter((file) => file.isDirectory())
+    .map((dir) => dir.name);
+
 const config = {
+    pages: Object.fromEntries(themes.map(
+        (theme) => [theme, {
+            entry: `${THEMES_PATH}/${theme}/index.js`,
+            chunks: ['chunk-vendors', 'index'],
+        }],
+    )),
     publicPath: '/webclient/',
     runtimeCompiler: true,
     lintOnSave: false,
     productionSourceMap: false,
     filenameHashing: false,
     chainWebpack: (webpackConfig) => {
-        webpackConfig.plugins.delete('html');
-        webpackConfig.plugins.delete('preload');
-        webpackConfig.plugins.delete('prefetch');
+        themes.forEach((theme) => {
+            webpackConfig.plugins.delete(`html-${theme}`);
+            webpackConfig.plugins.delete(`preload-${theme}`);
+            webpackConfig.plugins.delete(`prefetch-${theme}`);
+        });
 
         if (process.env.NODE_ENV === 'production') {
             webpackConfig.plugins.delete('friendly-errors');

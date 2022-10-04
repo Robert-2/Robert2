@@ -1,0 +1,15 @@
+@use '~@/themes/default/style/globals';
+
+.MaterialsSorted {
+    &__categories {
+        margin-bottom: 1rem;
+    }
+
+    &__switch {
+        margin-bottom: 1rem;
+
+        &__text {
+            margin-left: globals.$content-padding-small-horizontal;
+        }
+    }
+}

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-use Robert2\API\Config\Config as Config;
+use Robert2\API\Config\Config;
 use Phinx\Migration\AbstractMigration;
 
 final class RemovesTagsFromCompanies extends AbstractMigration
@@ -19,6 +19,7 @@ final class RemovesTagsFromCompanies extends AbstractMigration
     public function down(): void
     {
         $prefix = Config::getSettings('db')['prefix'];
+        $defaultTags = Config::getSettings('defaultTags') ?? [];
 
         // - Récupère toutes les sociétés déjà en base.
         $builder = $this->getQueryBuilder();
@@ -36,7 +37,7 @@ final class RemovesTagsFromCompanies extends AbstractMigration
         $beneficiaryTag = $builder
             ->select(['id'])
             ->from(sprintf('%stags', $prefix))
-            ->where(['name' => Config::getSettings('defaultTags')['beneficiary']])
+            ->where(['name' => $defaultTags['beneficiary'] ?? 'Bénéficiaire'])
             ->execute()->fetch('assoc');
 
         if (!$beneficiaryTag) {

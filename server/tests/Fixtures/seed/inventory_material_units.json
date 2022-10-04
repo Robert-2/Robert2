@@ -1,2 +1,54 @@
 [
+    {
+        "id": 1,
+        "inventory_material_id": 6,
+        "material_unit_id": 1,
+        "reference": "XR18-1",
+        "is_new": false,
+        "is_lost_previous": true,
+        "is_lost_current": false,
+        "is_broken_previous": false,
+        "is_broken_current": false,
+        "state_previous": "brand-new",
+        "state_current": "state-of-use"
+    },
+    {
+        "id": 2,
+        "inventory_material_id": 6,
+        "material_unit_id": 2,
+        "reference": "XR18-2",
+        "is_new": true,
+        "is_lost_previous": null,
+        "is_lost_current": false,
+        "is_broken_previous": null,
+        "is_broken_current": false,
+        "state_previous": null,
+        "state_current": "excellent"
+    },
+    {
+        "id": 3,
+        "inventory_material_id": 7,
+        "material_unit_id": 3,
+        "reference": "XR18-3",
+        "is_new": false,
+        "is_lost_previous": null,
+        "is_lost_current": false,
+        "is_broken_previous": null,
+        "is_broken_current": true,
+        "state_previous": null,
+        "state_current": "bad"
+    },
+    {
+        "id": 4,
+        "inventory_material_id": 8,
+        "material_unit_id": 4,
+        "reference": "VHCL-1",
+        "is_new": false,
+        "is_lost_previous": null,
+        "is_lost_current": false,
+        "is_broken_previous": null,
+        "is_broken_current": false,
+        "state_previous": null,
+        "state_current": "state-of-use"
+    }
 ]

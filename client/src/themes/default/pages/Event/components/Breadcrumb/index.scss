@@ -1,0 +1,43 @@
+@use '~@/themes/default/style/globals';
+
+.Breadcrumb {
+    &__step {
+        padding: globals.$content-padding-small-vertical globals.$content-padding-large-horizontal;
+        border: 1px solid globals.$text-muted-color;
+        border-radius: 1.5rem;
+        color: globals.$text-muted-color;
+        font-size: 1.1rem;
+        text-align: left;
+        cursor: default;
+
+        &__id {
+            margin-left: globals.$content-padding-small-horizontal;
+        }
+
+        &__name {
+            margin-left: 0.3rem;
+            font-weight: 800;
+        }
+
+        &--active {
+            border-color: globals.$text-nav-color;
+            color: globals.$text-nav-color;
+            cursor: pointer;
+        }
+
+        &--current {
+            border-color: globals.$text-base-color;
+            color: globals.$text-base-color;
+        }
+
+        &--validated {
+            border-color: globals.$text-success-color;
+            color: globals.$text-success-color;
+            cursor: pointer;
+        }
+    }
+
+    &__step + &__step {
+        margin-top: globals.$content-padding-small-vertical;
+    }
+}

@@ -46,8 +46,8 @@
         "league/flysystem-aws-s3-v3": "2.4.3",
         "league/flysystem-ftp": "2.4.2",
         "league/flysystem-sftp-v3": "2.4.5",
-        "mailjet/mailjet-apiv3-php": "1.5.5",
         "monolog/monolog": "2.3.2",
+        "nesbot/carbon": "2.62.1",
         "notihnio/php-multipart-form-data-parser": "1.0.0",
         "php-di/php-di": "6.3.4",
         "ramsey/uuid": "4.2.3",
@@ -68,6 +68,7 @@
     "require-dev": {
         "ifsnop/mysqldump-php": "2.9.0",
         "phpunit/phpunit": "9.5.7",
+        "spatie/phpunit-snapshot-assertions": "4.2.15",
         "squizlabs/php_codesniffer": "3.6.0"
     },
     "autoload": {

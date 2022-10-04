@@ -1,0 +1,10 @@
+@use '~@/themes/default/style/globals';
+
+.ParksTotalAmount {
+    text-align: center;
+
+    &__amount {
+        padding: 7px 10px;
+        text-align: right;
+    }
+}

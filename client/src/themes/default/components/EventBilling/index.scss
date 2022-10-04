@@ -1,0 +1,97 @@
+@use '~@/themes/default/style/globals';
+
+.EventBilling {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: globals.$content-padding-large-vertical;
+
+    &__no-bill,
+    &__regenerate {
+        margin: 0 0 globals.$content-padding-large-horizontal;
+        color: globals.$text-light-color;
+        font-style: italic;
+        text-align: center;
+    }
+
+    &__regenerate {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        &__text {
+            margin: 0 0 globals.$content-padding-large-horizontal;
+        }
+
+        &__button {
+            border: none;
+            background: none;
+            color: globals.$link-base-color;
+
+            &:hover {
+                background: none;
+                color: globals.$link-hover-color;
+            }
+        }
+    }
+
+    &__list-title {
+        text-align: center;
+    }
+
+    &__list {
+        width: 100%;
+        max-width: 500px;
+        margin: 0 0 1rem;
+        padding: 0;
+        font-size: 1.1rem;
+
+        &__item {
+            width: 100%;
+            list-style: none;
+
+            .DisplayBill {
+                flex-direction: row;
+                align-items: center;
+                opacity: 0.66;
+
+                &__text {
+                    margin-right: globals.$content-padding-large-horizontal;
+                    font-size: 0.98rem;
+                }
+
+                &__actions {
+                    max-width: 140px;
+                    margin: 0;
+                    text-align: center;
+                }
+
+                &__download {
+                    font-size: 1rem;
+                }
+            }
+
+            &--current {
+                .DisplayBill {
+                    display: none;
+                }
+            }
+        }
+    }
+
+    &__warning-no-estimate {
+        margin: 0 0 globals.$content-padding-large-horizontal;
+        color: globals.$text-warning-color;
+        font-size: 1.1rem;
+        text-align: center;
+    }
+
+    &__not-billable {
+        color: globals.$text-danger-color;
+
+        &__text {
+            margin: 0;
+            font-style: italic;
+        }
+    }
+}

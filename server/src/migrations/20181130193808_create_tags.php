@@ -13,7 +13,7 @@ class CreateTags extends AbstractMigration
             ->addColumn('deleted_at', 'datetime', ['null' => true])
             ->addIndex(['name'], [
                 'unique' => true,
-                'name'   => 'name_UNIQUE'
+                'name' => 'name_UNIQUE'
             ])
             ->create();
     }

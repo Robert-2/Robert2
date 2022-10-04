@@ -3,37 +3,22 @@ declare(strict_types=1);
 
 namespace Robert2\Lib\Domain;
 
+use Illuminate\Support\Collection;
 use Robert2\API\Models\Category;
+use Robert2\API\Models\Material;
 use Robert2\API\Models\Park;
 use Robert2\API\Models\SubCategory;
 
 class MaterialsData
 {
     protected $materials;
-    protected $categories;
-    protected $parks;
 
-    public function __construct(array $materials)
+    /**
+     * @param Collection|Material[] $materials
+     */
+    public function __construct(Collection $materials)
     {
-        $this->materials = $materials;
-    }
-
-    // ------------------------------------------------------
-    // -
-    // -    Setters
-    // -
-    // ------------------------------------------------------
-
-    public function setCategories(array $categories): self
-    {
-        $this->categories = $categories;
-        return $this;
-    }
-
-    public function setParks(array $parks): self
-    {
-        $this->parks = $parks;
-        return $this;
+        $this->materials = $materials->toArray();
     }
 
     // ------------------------------------------------------
@@ -44,6 +29,8 @@ class MaterialsData
 
     public function getByCategories(bool $withHidden = false): array
     {
+        $hasMultipleParks = Park::count() > 1;
+
         $categoriesMaterials = [];
         foreach ($this->materials as $material) {
             $isHidden = $material['is_hidden_on_bill'];
@@ -67,7 +54,7 @@ class MaterialsData
             $quantity = array_key_exists('pivot', $material) ? $material['pivot']['quantity'] : 0;
             $replacementPrice = $material['replacement_price'];
 
-            $withPark = count($this->parks) > 1 && !empty($material['park_id']);
+            $withPark = $hasMultipleParks && !empty($material['park_id']);
             $park = Park::find($material['park_id']);
 
             $categoriesMaterials[$categoryId]['materials'][$reference] = [
@@ -103,6 +90,8 @@ class MaterialsData
 
     public function getBySubCategories(bool $withHidden = false): array
     {
+        $hasMultipleParks = Park::count() > 1;
+
         $subCategoriesMaterials = [];
         foreach ($this->materials as $material) {
             $isHidden = $material['is_hidden_on_bill'];
@@ -129,7 +118,7 @@ class MaterialsData
             $quantity = array_key_exists('pivot', $material) ? $material['pivot']['quantity'] : 0;
             $replacementPrice = $material['replacement_price'];
 
-            $withPark = count($this->parks) > 1 && !empty($material['park_id']);
+            $withPark = $hasMultipleParks && !empty($material['park_id']);
             $park = Park::find($material['park_id']);
 
             $subCategoriesMaterials[$subCategoryId]['materials'][$reference] = [
@@ -219,6 +208,8 @@ class MaterialsData
 
     public function getAllFlat(bool $withHidden = false)
     {
+        $hasMultipleParks = Park::count() > 1;
+
         $flatMaterials = [];
         foreach ($this->materials as $material) {
             $isHidden = $material['is_hidden_on_bill'];
@@ -227,12 +218,12 @@ class MaterialsData
                 continue;
             }
 
-            $withPark = count($this->parks) > 1 && !empty($material['park_id']);
-            $park = Park::find($material['park_id']);
-
             $reference = $material['reference'];
             $quantity = array_key_exists('pivot', $material) ? $material['pivot']['quantity'] : 0;
             $replacementPrice = $material['replacement_price'];
+
+            $withPark = $hasMultipleParks && !empty($material['park_id']);
+            $park = Park::find($material['park_id']);
 
             $flatMaterials[$reference] = [
                 'reference' => $reference,

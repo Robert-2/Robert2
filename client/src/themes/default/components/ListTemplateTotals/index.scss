@@ -1,0 +1,22 @@
+@use '~@/themes/default/style/globals';
+
+.ListTemplateTotals {
+    padding: globals.$content-padding-large-horizontal;
+    border: 1px solid globals.$list-left-border-color;
+    border-radius: globals.$input-border-radius;
+
+    &__item {
+        font-size: 1.15rem;
+        list-style: none;
+
+        &--empty {
+            color: globals.$text-muted-color;
+            font-style: italic;
+            text-align: center;
+        }
+    }
+
+    &__item + &__item {
+        margin-top: globals.$content-padding-large-horizontal;
+    }
+}

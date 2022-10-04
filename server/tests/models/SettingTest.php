@@ -6,14 +6,8 @@ namespace Robert2\Tests;
 use Robert2\API\Models\Setting;
 use Robert2\API\Errors\ValidationException;
 
-final class SettingTest extends ModelTestCase
+final class SettingTest extends TestCase
 {
-    public function testTableName(): void
-    {
-        $model = new Setting();
-        $this->assertEquals('settings', $model->getTable());
-    }
-
     public function testGetList(): void
     {
         // - Si non spécifiée (ou `withSensitive = true`), les données sensibles doivent être présentes.

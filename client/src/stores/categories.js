@@ -1,4 +1,4 @@
-import requester from '@/globals/requester';
+import apiCategories from '@/stores/api/categories';
 import formatOptions from '@/utils/formatOptions';
 
 export default {
@@ -41,30 +41,26 @@ export default {
         },
     },
     actions: {
-        fetch({ state, commit }) {
+        async fetch({ state, commit }) {
             if (state.isFetched) {
                 return;
             }
 
-            requester.get('categories')
-                .then(({ data }) => {
-                    commit('init', data.data);
-                })
-                .catch((error) => {
-                    commit('setError', error);
-                });
+            try {
+                commit('init', await apiCategories.all());
+            } catch (error) {
+                commit('setError', error);
+            }
         },
 
-        refresh({ state, commit }) {
+        async refresh({ state, commit }) {
             state.isFetched = false;
 
-            requester.get('categories')
-                .then(({ data }) => {
-                    commit('init', data.data);
-                })
-                .catch((error) => {
-                    commit('setError', error);
-                });
+            try {
+                commit('init', await apiCategories.all());
+            } catch (error) {
+                commit('setError', error);
+            }
         },
     },
 };

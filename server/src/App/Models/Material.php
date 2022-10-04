@@ -3,16 +3,23 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Robert2\API\Models\Traits\Taggable;
-use Robert2\API\Validation\Validator as V;
 use Psr\Http\Message\UploadedFileInterface;
 use Ramsey\Uuid\Uuid;
+use Robert2\API\Contracts\Serializable;
+use Robert2\API\Models\Traits\Serializer;
+use Robert2\API\Models\Traits\Taggable;
+use Robert2\API\Models\Traits\TransientAttributes;
+use Robert2\API\Validation\Validator as V;
 
-class Material extends BaseModel
+class Material extends BaseModel implements Serializable
 {
+    use Serializer;
     use SoftDeletes;
     use Taggable;
+    use TransientAttributes;
 
     private const PICTURE_BASEPATH = (
         DATA_FOLDER . DS . 'materials'. DS . 'picture'
@@ -116,17 +123,17 @@ class Material extends BaseModel
         return true;
     }
 
-    public function checkParkId($value)
+    public function checkParkId()
     {
         return V::notEmpty()->numeric();
     }
 
-    public function checkStockQuantity($value)
+    public function checkStockQuantity()
     {
         return V::intVal()->max(100000);
     }
 
-    public function checkOutOfOrderQuantity($value)
+    public function checkOutOfOrderQuantity()
     {
         return V::optional(V::intVal()->max(100000));
     }
@@ -141,36 +148,28 @@ class Material extends BaseModel
         return V::floatVal()->max(999999.99, true);
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Relations
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Relations
+    // -
+    // ------------------------------------------------------
 
-    protected $appends = [
-        'tags',
-        'attributes',
-    ];
-
-    public function Park()
+    public function park()
     {
-        return $this->belongsTo(Park::class)
-            ->select(['id', 'name']);
+        return $this->belongsTo(Park::class);
     }
 
-    public function Category()
+    public function category()
     {
-        return $this->belongsTo(Category::class)
-            ->select(['id', 'name']);
+        return $this->belongsTo(Category::class);
     }
 
-    public function SubCategory()
+    public function subCategory()
     {
-        return $this->belongsTo(SubCategory::class)
-            ->select(['id', 'name', 'category_id']);
+        return $this->belongsTo(SubCategory::class);
     }
 
-    public function Attributes()
+    public function attributes()
     {
         return $this->belongsToMany(Attribute::class, 'material_attributes')
             ->using(MaterialAttributesPivot::class)
@@ -178,7 +177,7 @@ class Material extends BaseModel
             ->select(['attributes.id', 'attributes.name', 'attributes.type', 'attributes.unit']);
     }
 
-    public function Events()
+    public function events()
     {
         $selectFields = [
             'events.id',
@@ -197,18 +196,23 @@ class Material extends BaseModel
             ->orderBy('start_date', 'desc');
     }
 
-    public function Documents()
+    public function documents()
     {
         return $this->hasMany(Document::class)
             ->orderBy('name', 'asc')
             ->select(['id', 'name', 'type', 'size']);
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Mutators
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Mutators
+    // -
+    // ------------------------------------------------------
+
+    protected $appends = [
+        'tags',
+        'attributes',
+    ];
 
     protected $casts = [
         'name' => 'string',
@@ -239,57 +243,46 @@ class Material extends BaseModel
 
     public function getParkAttribute()
     {
-        $park = $this->Park()->first();
-        return $park ? $park->toArray() : null;
+        return $this->park()->first();
+    }
+
+    public function getTagsAttribute()
+    {
+        return $this->tags()->get();
     }
 
     public function getCategoryAttribute()
     {
-        $category = $this->Category()->first();
-        if (!$category) {
-            return null;
-        }
-        $category = $category->toArray();
-        unset($category['sub_categories']);
-
-        return $category;
-    }
-
-    public function getSubCategoryAttribute()
-    {
-        $subCategory = $this->SubCategory()->first();
-        return $subCategory ? $subCategory->toArray() : null;
+        return $this->category()->first();
     }
 
     public function getAttributesAttribute()
     {
-        $attributes = $this->Attributes()->get();
+        $attributes = $this->attributes()->get();
         if (!$attributes) {
             return null;
         }
-        return array_map(function ($attribute) {
-            $type = $attribute['type'];
-            $value = $attribute['pivot']['value'];
-            if ($type === 'integer') {
-                $value = (int)$value;
-            }
-            if ($type === 'float') {
-                $value = (float)$value;
-            }
-            if ($type === 'boolean') {
-                $value = $value === 'true' || $value === '1';
-            }
-            $attribute['value'] = $value;
 
-            unset($attribute['pivot']);
-            return $attribute;
-        }, $attributes->toArray());
-    }
+        return array_map(
+            function ($attribute) {
+                $type = $attribute['type'];
+                $value = $attribute['pivot']['value'];
+                if ($type === 'integer') {
+                    $value = (int)$value;
+                }
+                if ($type === 'float') {
+                    $value = (float)$value;
+                }
+                if ($type === 'boolean') {
+                    $value = $value === 'true' || $value === '1';
+                }
+                $attribute['value'] = $value;
 
-    public function getEventsAttribute()
-    {
-        $events = $this->Events()->get();
-        return $events ? $events->toArray() : null;
+                unset($attribute['pivot']);
+                return $attribute;
+            },
+            $attributes->toArray()
+        );
     }
 
     public function getPictureRealPathAttribute()
@@ -300,23 +293,31 @@ class Material extends BaseModel
 
         // - Dans le cas d'un fichier tout juste uploadé + avant le save.
         if ($this->picture instanceof UploadedFileInterface) {
-            throw new \LogicException("Impossible de récuperer le chemin de l'image avant de l'avoir persisté.");
+            throw new \LogicException("Impossible de récupérer le chemin de l'image avant de l'avoir persisté.");
         }
 
         return static::PICTURE_BASEPATH . DS . $this->picture;
     }
 
-    public function getDocumentsAttribute()
+    public function getMissingQuantityAttribute(): int
     {
-        $documents = $this->Documents()->get();
-        return $documents ? $documents->toArray() : null;
+        return $this->getTransientAttribute('missing_quantity', 0);
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Setters
-    // —
-    // ——————————————————————————————————————————————————————
+    public function getAvailableQuantityAttribute(): int
+    {
+        $availableQuantity = $this->getTransientAttribute('available_quantity');
+        if (null !== $availableQuantity) {
+            return $availableQuantity;
+        }
+        return (int)$this->stock_quantity - (int)$this->out_of_order_quantity;
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Setters
+    // -
+    // ------------------------------------------------------
 
     protected $fillable = [
         'name',
@@ -335,9 +336,19 @@ class Material extends BaseModel
         'note',
     ];
 
+    public function setMissingQuantityAttribute(int $value)
+    {
+        $this->setTransientAttribute('missing_quantity', $value);
+    }
+
+    public function setAvailableQuantityAttribute(int $value)
+    {
+        $this->setTransientAttribute('available_quantity', $value);
+    }
+
     // ------------------------------------------------------
     // -
-    // -    Overwrited methods
+    // -    Overwritten methods
     // -
     // ------------------------------------------------------
 
@@ -462,14 +473,79 @@ class Material extends BaseModel
     // -
     // ------------------------------------------------------
 
-    public static function recalcQuantitiesForPeriod(
-        array $data,
+    public function getAllFiltered(array $conditions, bool $withDeleted = false): Builder
+    {
+        $parkId = array_key_exists('park_id', $conditions) ? $conditions['park_id'] : null;
+        unset($conditions['park_id']);
+
+        $builder = parent::getAllFiltered($conditions, $withDeleted);
+        return $parkId ? $builder->inPark($parkId) : $builder;
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    "Repository" methods
+    // -
+    // ------------------------------------------------------
+
+    /**
+     * @param integer $parkId
+     *
+     * @return Collection|Material[]
+     */
+    public static function getParkAll(int $parkId)
+    {
+        return static::inPark($parkId)
+            ->get();
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Query Scopes
+    // -
+    // ------------------------------------------------------
+
+    /**
+     * Permet de récupérer uniquement le matériel lié à un parc donné.
+     *
+     * @param Builder $query
+     * @param integer $parkId - Le parc concerné.
+     *
+     * @return Builder
+     */
+    public function scopeInPark(Builder $query, int $parkId): Builder
+    {
+        return $query->where(function ($query) use ($parkId) {
+            $query->where(function ($subQuery) use ($parkId) {
+                $subQuery
+                    ->where('is_unitary', false)
+                    ->where('park_id', $parkId);
+            });
+        });
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Utils methods
+    // -
+    // ------------------------------------------------------
+
+    /**
+     * @param Collection|Material[] $data
+     * @param string|null $start
+     * @param string|null $end
+     * @param integer|null $exceptEventId
+     *
+     * @return Collection|Material[]
+     */
+    public static function withAvailabilities(
+        Collection $materials,
         ?string $start = null,
         ?string $end = null,
         ?int $exceptEventId = null
-    ): array {
-        if (empty($data)) {
-            return [];
+    ): Collection {
+        if ($materials->isEmpty()) {
+            return new Collection([]);
         }
 
         $events = [];
@@ -478,13 +554,14 @@ class Material extends BaseModel
             if ($exceptEventId) {
                 $query = $query->where('id', '!=', $exceptEventId);
             }
-            $events = $query->with('Materials')->get()->toArray();
+            $events = $query->with('materials')->get()->toArray();
         }
 
-        $periods = splitPeriods($events);
+        return $materials->map(function ($material) use ($events) {
+            $material = clone $material;
 
-        foreach ($data as &$material) {
             $quantityPerPeriod = [0];
+            $periods = splitPeriods($events);
             foreach ($periods as $periodIndex => $period) {
                 $overlapEvents = array_filter($events, function ($event) use ($period) {
                     return (
@@ -495,38 +572,21 @@ class Material extends BaseModel
 
                 $quantityPerPeriod[$periodIndex] = 0;
                 foreach ($overlapEvents as $event) {
-                    $eventMaterialIndex = array_search($material['id'], array_column($event['materials'], 'id'));
-                    if ($eventMaterialIndex === false) {
+                    $eventMaterials = array_column($event['materials'], null, 'id');
+                    if (!array_key_exists($material->id, $eventMaterials)) {
                         continue;
                     }
-
-                    $eventMaterial = $event['materials'][$eventMaterialIndex];
+                    $eventMaterial = $eventMaterials[$material->id];
                     $quantityPerPeriod[$periodIndex] += $eventMaterial['pivot']['quantity'];
                 }
             }
+            $usedCount = max($quantityPerPeriod);
 
-            $remainingQuantity = (int)$material['stock_quantity'] - (int)$material['out_of_order_quantity'];
-            $material['remaining_quantity'] = max($remainingQuantity - max($quantityPerPeriod), 0);
-        }
+            $availableQuantity = (int)$material->stock_quantity - (int)$material->out_of_order_quantity;
+            $availableQuantity = max($availableQuantity - $usedCount, 0);
+            $material->available_quantity = $availableQuantity;
 
-        return $data;
-    }
-
-    /**
-     * @param integer $parkId
-     *
-     * @return Material[]
-     */
-    public static function getParkAll(int $parkId): array
-    {
-        return static::where('park_id', $parkId)->get()->toArray();
-    }
-
-    public static function getOneForUser(int $id, ?int $userId = null): array
-    {
-        $material = static::findOrFail($id);
-        $materialData = $material->toArray();
-
-        return $materialData;
+            return $material;
+        });
     }
 }

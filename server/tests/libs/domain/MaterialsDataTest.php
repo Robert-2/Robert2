@@ -5,11 +5,9 @@ namespace Robert2\Tests;
 
 use Robert2\Lib\Domain\MaterialsData;
 use Robert2\API\Models\Material;
-use Robert2\API\Models\Category;
-use Robert2\API\Models\Park;
 use Robert2\Fixtures\RobertFixtures;
 
-final class MaterialsDataTest extends ModelTestCase
+final class MaterialsDataTest extends TestCase
 {
     public function setUp(): void
     {
@@ -19,24 +17,10 @@ final class MaterialsDataTest extends ModelTestCase
         try {
             RobertFixtures::resetDataWithDump();
         } catch (\Exception $e) {
-            $this->fail(sprintf("Unable to reset fixtures: %s", $e->getMessage()));
+            throw new \Exception(sprintf("Unable to reset fixtures: %s", $e->getMessage()));
         }
 
-        try {
-            $this->_date = new \DateTime();
-
-            $materials = (new Material())->get()->toArray();
-            if (!$materials || count($materials) === 0) {
-                $this->fail("Unable to find materials' data");
-            }
-
-            $this->MaterialsData = new MaterialsData($materials);
-            $this->MaterialsData
-                ->setCategories(Category::get()->toArray())
-                ->setParks(Park::get()->toArray());
-        } catch (\Exception $e) {
-            $this->fail($e->getMessage());
-        }
+        $this->MaterialsData = new MaterialsData(Material::get());
     }
 
     public function testGetByCategories()
@@ -44,8 +28,26 @@ final class MaterialsDataTest extends ModelTestCase
         $result = $this->MaterialsData->getByCategories();
         $expected = [
             [
+                'id' => 4,
+                'name' => 'Décors',
+                'materials' => [
+                    'Decor-Forest' => [
+                        'reference' => 'Decor-Forest',
+                        'name' => 'Décor Thème Forêt',
+                        'park' => 'spare',
+                        'stockQuantity' => 1,
+                        'attributes' => [],
+                        'quantity' => 0,
+                        'rentalPrice' => 1500.0,
+                        'replacementPrice' => 8500.0,
+                        'total' => 0.0,
+                        'totalReplacementPrice' => 0.0,
+                    ],
+                ],
+            ],
+            [
                 'id' => 2,
-                'name' => 'light',
+                'name' => 'Lumière',
                 'materials' => [
                     'SDS-6-01' => [
                         'reference' => 'SDS-6-01',
@@ -112,7 +114,7 @@ final class MaterialsDataTest extends ModelTestCase
             ],
             [
                 'id' => 1,
-                'name' => 'sound',
+                'name' => 'Son',
                 'materials' => [
                     'CL3' => [
                         'reference' => 'CL3',
@@ -148,26 +150,6 @@ final class MaterialsDataTest extends ModelTestCase
                         'quantity' => 0,
                         'rentalPrice' => 300.0,
                         'replacementPrice' => 19400.0,
-                        'total' => 0.0,
-                        'totalReplacementPrice' => 0.0,
-                    ],
-                    'XR18' => [
-                        'reference' => 'XR18',
-                        'name' => 'Behringer X Air XR18',
-                        'stockQuantity' => 0,
-                        'attributes' => [
-                            [
-                                'id' => 5,
-                                'name' => "Date d'achat",
-                                'type' => 'date',
-                                'value' => '2021-01-28',
-                                'unit' => null,
-                            ],
-                        ],
-                        'park' => 'default',
-                        'quantity' => 0,
-                        'rentalPrice' => 49.99,
-                        'replacementPrice' => 419.0,
                         'total' => 0.0,
                         'totalReplacementPrice' => 0.0,
                     ],
@@ -210,17 +192,37 @@ final class MaterialsDataTest extends ModelTestCase
                         'total' => 0.0,
                         'totalReplacementPrice' => 0.0,
                     ],
+                    'XR18' => [
+                        'reference' => 'XR18',
+                        'name' => 'Behringer X Air XR18',
+                        'stockQuantity' => 0,
+                        'attributes' => [
+                            [
+                                'id' => 5,
+                                'name' => "Date d'achat",
+                                'type' => 'date',
+                                'value' => '2021-01-28',
+                                'unit' => null,
+                            ],
+                        ],
+                        'park' => 'default',
+                        'quantity' => 0,
+                        'rentalPrice' => 49.99,
+                        'replacementPrice' => 419.0,
+                        'total' => 0.0,
+                        'totalReplacementPrice' => 0.0,
+                    ],
                 ],
             ],
             [
                 'id' => 3,
-                'name' => 'transport',
+                'name' => 'Transport',
                 'materials' => [
                     'Transporter' => [
                         'reference' => 'Transporter',
                         'name' => 'Volkswagen Transporter',
-                        'park' => 'default',
-                        'stockQuantity' => 0,
+                        'park' => 'spare',
+                        'stockQuantity' => 1,
                         'attributes' => [],
                         'quantity' => 0,
                         'rentalPrice' => 300.0,
@@ -240,8 +242,8 @@ final class MaterialsDataTest extends ModelTestCase
         $expected = [
             1 => [
                 'id' => 1,
-                'name' => 'mixers',
-                'category' => 'sound',
+                'name' => 'Mixeurs',
+                'category' => 'Son',
                 'categoryHasSubCategories' => true,
                 'materials' => [
                     'CL3' => [
@@ -305,8 +307,8 @@ final class MaterialsDataTest extends ModelTestCase
             ],
             2 => [
                 'id' => 2,
-                'name' => 'processors',
-                'category' => 'sound',
+                'name' => 'Processeurs',
+                'category' => 'Son',
                 'categoryHasSubCategories' => true,
                 'materials' => [
                     'DBXPA2' => [
@@ -340,8 +342,8 @@ final class MaterialsDataTest extends ModelTestCase
             ],
             3 => [
                 'id' => 3,
-                'name' => 'projectors',
-                'category' => 'light',
+                'name' => 'Projecteurs',
+                'category' => 'Lumière',
                 'categoryHasSubCategories' => true,
                 'materials' => [
                     'PAR64LED' => [
@@ -375,8 +377,8 @@ final class MaterialsDataTest extends ModelTestCase
             ],
             4 => [
                 'id' => 4,
-                'name' => 'dimmers',
-                'category' => 'light',
+                'name' => 'Gradateurs',
+                'category' => 'Lumière',
                 'categoryHasSubCategories' => true,
                 'materials' => [
                     'SDS-6-01' => [
@@ -418,7 +420,7 @@ final class MaterialsDataTest extends ModelTestCase
             'c-1' => [
                 'id' => 'c-1',
                 'name' => null,
-                'category' => 'sound',
+                'category' => 'Son',
                 'categoryHasSubCategories' => true,
                 'materials' => [
                     'XLR10' => [
@@ -438,18 +440,38 @@ final class MaterialsDataTest extends ModelTestCase
             'c-3' => [
                 'id' => 'c-3',
                 'name' => null,
-                'category' => 'transport',
+                'category' => 'Transport',
                 'categoryHasSubCategories' => false,
                 'materials' => [
                     'Transporter' => [
                         'reference' => 'Transporter',
                         'name' => 'Volkswagen Transporter',
-                        'park' => 'default',
-                        'stockQuantity' => 0,
+                        'park' => 'spare',
+                        'stockQuantity' => 1,
                         'attributes' => [],
                         'quantity' => 0,
                         'rentalPrice' => 300.0,
                         'replacementPrice' => 32000.0,
+                        'total' => 0.0,
+                        'totalReplacementPrice' => 0.0,
+                    ],
+                ],
+            ],
+            'c-4' => [
+                'id' => 'c-4',
+                'name' => null,
+                'category' => 'Décors',
+                'categoryHasSubCategories' => false,
+                'materials' => [
+                    'Decor-Forest' => [
+                        'reference' => 'Decor-Forest',
+                        'name' => 'Décor Thème Forêt',
+                        'stockQuantity' => 1,
+                        'attributes' => [],
+                        'park' => 'spare',
+                        'quantity' => 0,
+                        'rentalPrice' => 1500.0,
+                        'replacementPrice' => 8500.0,
                         'total' => 0.0,
                         'totalReplacementPrice' => 0.0,
                     ],
@@ -467,18 +489,6 @@ final class MaterialsDataTest extends ModelTestCase
                 'id' => 1,
                 'name' => 'default',
                 'materials' => [
-                    'Transporter' => [
-                        'reference' => 'Transporter',
-                        'name' => 'Volkswagen Transporter',
-                        'stockQuantity' => 0,
-                        'attributes' => [],
-                        'park' => null,
-                        'quantity' => 0,
-                        'rentalPrice' => 300.0,
-                        'replacementPrice' => 32000.0,
-                        'total' => 0.0,
-                        'totalReplacementPrice' => 0.0,
-                    ],
                     'XR18' => [
                         'reference' => 'XR18',
                         'name' => 'Behringer X Air XR18',
@@ -638,6 +648,36 @@ final class MaterialsDataTest extends ModelTestCase
                     ],
                 ],
             ],
+            [
+                'id' => 2,
+                'name' => 'spare',
+                'materials' => [
+                    'Transporter' => [
+                        'reference' => 'Transporter',
+                        'name' => 'Volkswagen Transporter',
+                        'stockQuantity' => 1,
+                        'attributes' => [],
+                        'park' => null,
+                        'quantity' => 0,
+                        'rentalPrice' => 300.0,
+                        'replacementPrice' => 32000.0,
+                        'total' => 0.0,
+                        'totalReplacementPrice' => 0.0,
+                    ],
+                    'Decor-Forest' => [
+                        'reference' => 'Decor-Forest',
+                        'name' => 'Décor Thème Forêt',
+                        'stockQuantity' => 1,
+                        'attributes' => [],
+                        'park' => null,
+                        'quantity' => 0,
+                        'rentalPrice' => 1500.0,
+                        'replacementPrice' => 8500.0,
+                        'total' => 0.0,
+                        'totalReplacementPrice' => 0.0,
+                    ],
+                ],
+            ],
         ];
         $this->assertEquals($expected, $result);
     }
@@ -774,9 +814,9 @@ final class MaterialsDataTest extends ModelTestCase
             'Transporter' => [
                 'reference' => 'Transporter',
                 'name' => 'Volkswagen Transporter',
-                'stockQuantity' => 0,
+                'stockQuantity' => 1,
                 'attributes' => [],
-                'park' => 'default',
+                'park' => 'spare',
                 'quantity' => 0,
                 'rentalPrice' => 300.0,
                 'replacementPrice' => 32000.0,
@@ -812,6 +852,18 @@ final class MaterialsDataTest extends ModelTestCase
                 'quantity' => 0,
                 'rentalPrice' => 49.99,
                 'replacementPrice' => 419.0,
+                'total' => 0.0,
+                'totalReplacementPrice' => 0.0,
+            ],
+            'Decor-Forest' => [
+                'reference' => 'Decor-Forest',
+                'name' => 'Décor Thème Forêt',
+                'stockQuantity' => 1,
+                'attributes' => [],
+                'park' => 'spare',
+                'quantity' => 0,
+                'rentalPrice' => 1500.0,
+                'replacementPrice' => 8500.0,
                 'total' => 0.0,
                 'totalReplacementPrice' => 0.0,
             ],

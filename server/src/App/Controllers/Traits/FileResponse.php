@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Robert2\API\Controllers\Traits;
 
+use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Slim\Http\Response;
 use Slim\Psr7\Stream;
 
@@ -27,10 +28,11 @@ trait FileResponse
                 ->withHeader('Cache-Control', 'must-revalidate, post-check=0, pre-check=0')
                 ->withHeader('Pragma', 'public')
                 ->withHeader('Content-Length', $fileStream->getSize())
+                ->withStatus(StatusCode::STATUS_OK)
                 ->withBody($fileStream);
         } catch (\Exception $e) {
             throw new \RuntimeException(sprintf(
-                "Cannot send the file « %s ». Details: %s",
+                "Cannot send the file \"%s\". Details: %s",
                 $fileName,
                 $e->getMessage()
             ));

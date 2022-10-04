@@ -7,6 +7,7 @@ use Robert2\API\Config;
 use Robert2\API\Services\Auth;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Robert2\API\Models\Enums\Group;
+use Slim\Exception\HttpForbiddenException;
 use Slim\Exception\HttpUnauthorizedException;
 use Slim\Http\ServerRequest as Request;
 
@@ -35,7 +36,11 @@ class Acl
 
         $currentRoute = preg_replace('/^\/api/', '', $currentRoute) . '[/]';
         if (in_array($currentRoute, $deniedRoutes)) {
-            throw new HttpUnauthorizedException($request);
+            if (Auth::isAuthenticated()) {
+                throw new HttpForbiddenException($request);
+            } else {
+                throw new HttpUnauthorizedException($request);
+            }
         }
 
         return $handler->handle($request);

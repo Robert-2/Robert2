@@ -37,6 +37,7 @@ final class View
         //
 
         $this->view->getEnvironment()->addGlobal('env', Config::getEnv());
+        $this->view->getEnvironment()->addGlobal('locale', $i18n->getCurrentLocale());
 
         //
         // - Extensions
@@ -79,11 +80,11 @@ final class View
         return $response;
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Custom twig functions methods
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Custom twig functions methods
+    // -
+    // ------------------------------------------------------
 
     private function getVersion(): callable
     {

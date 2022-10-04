@@ -1,0 +1,13 @@
+@use '~@/themes/default/style/globals';
+
+.Textarea {
+    //
+    // - Invalide
+    //
+
+    &--invalid {
+        &:not(:focus) {
+            border-color: globals.$input-error-border-color;
+        }
+    }
+}

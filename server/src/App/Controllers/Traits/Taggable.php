@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace Robert2\API\Controllers\Traits;
 
+use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Illuminate\Database\Eloquent\Builder;
 use Robert2\API\Controllers\Traits\WithModel;
-use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
 use Slim\Http\ServerRequest as Request;
 
@@ -35,18 +35,14 @@ trait Taggable
             ->getAllFilteredOrTagged([], $tags, $withDeleted);
 
         $paginated = $this->paginate($request, $query, $limit ? (int)$limit : null);
-        return $response->withJson($paginated);
+        return $response->withJson($paginated, StatusCode::STATUS_OK);
     }
 
     public function getTags(Request $request, Response $response): Response
     {
         $id = (int)$request->getAttribute('id');
-        $model = $this->getModelClass()::find($id);
-        if (!$model) {
-            throw new HttpNotFoundException($request);
-        }
-
-        return $response->withJson($model->tags);
+        $model = $this->getModelClass()::findOrFail($id);
+        return $response->withJson($model->tags, StatusCode::STATUS_OK);
     }
 
     // ------------------------------------------------------

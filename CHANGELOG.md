@@ -8,6 +8,10 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 
 - Corrige la copie via le bouton "Copier" dans le champ d'URL du calendrier public (#369).
 - Ajoute l'extension `iconv` dans la liste des extensions requises lors de l'installation (#371).
+- Corrige le filtre sur les périodes de disponibilités dans le listing des techniciens qui ne prenait pas 
+  correctement en compte les événements dont la date de début était antérieure à la date de début du filtre 
+  (+ idem pour les dates de fin).
+- Corrige divers problèmes de sécurité liés aux comptes utilisateurs.
 
 ## 0.19.2 (2022-07-29)
 

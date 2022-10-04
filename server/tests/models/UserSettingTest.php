@@ -7,25 +7,12 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Robert2\API\Models\User;
 use Robert2\API\Models\UserSetting;
 
-final class UserSettingTest extends ModelTestCase
+final class UserSettingTest extends TestCase
 {
-    public function setup(): void
-    {
-        parent::setUp();
-
-        $this->model = new UserSetting();
-    }
-
-    public function testTableName(): void
-    {
-        $this->assertEquals('user_settings', $this->model->getTable());
-    }
-
     public function testGetAll(): void
     {
         $this->expectException(\Exception::class);
-        $this->expectExceptionCode(ERROR_NOT_ALLOWED);
-        $this->model->getAll();
+        (new UserSetting())->getAll();
     }
 
     public function testEditByUserWithNewUser(): void
@@ -37,22 +24,31 @@ final class UserSettingTest extends ModelTestCase
     public function testEditByUser(): void
     {
         $result = UserSetting::editByUser(User::find(1), [
-            'language'                     => 'FR',
+            'language' => 'fr',
             'auth_token_validity_duration' => 133,
         ]);
         unset($result->created_at);
         unset($result->updated_at);
 
         $this->assertEquals([
-            'id'                           => 1,
-            'user_id'                      => 1,
-            'language'                     => 'FR',
+            'id' => 1,
+            'user_id' => 1,
+            'language' => 'fr',
             'auth_token_validity_duration' => 133
         ], $result->toArray());
     }
 
     public function testRemove(): void
     {
-        $this->assertNull($this->model->remove(1));
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage("User settings cannot be deleted.");
+        UserSetting::staticRemove(1);
+    }
+
+    public function testUnremove(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage("User settings cannot be restored.");
+        UserSetting::staticUnremove(1);
     }
 }

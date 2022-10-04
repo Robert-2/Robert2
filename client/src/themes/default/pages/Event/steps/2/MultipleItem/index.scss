@@ -1,0 +1,58 @@
+@use '~@/themes/default/style/globals';
+
+.MultipleItem {
+    $block: &;
+
+    &__item-pivot-field {
+        width: 150px;
+        margin-left: 0.6rem;
+    }
+
+    &__item-action-btn {
+        height: 35px;
+        margin-left: 0.6rem;
+    }
+
+    &__value-field {
+        flex: 1;
+        min-height: 2.7rem;
+        padding: globals.$input-padding-vertical globals.$input-padding-horizontal;
+        border: globals.$input-border-size solid globals.$bg-color-input-normal;
+        border-radius: globals.$input-border-radius;
+        color: globals.$color-input;
+
+        &--loading {
+            color: globals.$text-light-color;
+        }
+
+        &--error {
+            color: globals.$text-danger-color;
+            font-style: italic;
+        }
+    }
+
+    // stylelint-disable-next-line selector-class-pattern
+    .v-select {
+        flex: 1;
+    }
+
+    &__actions {
+        margin-left: globals.$form-label-width;
+        padding: 1rem 0;
+
+        // stylelint-disable-next-line selector-max-type
+        button {
+            padding: 5px 10px;
+        }
+    }
+
+    //
+    // - Empty state
+    //
+
+    &--empty {
+        #{$block}__actions {
+            margin-left: 0;
+        }
+    }
+}

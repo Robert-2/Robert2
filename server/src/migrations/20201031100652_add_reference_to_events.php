@@ -16,7 +16,7 @@ class AddReferenceToEvents extends AbstractMigration
             ])
             ->addIndex(['reference'], [
                 'unique' => true,
-                'name'   => 'reference_UNIQUE'
+                'name' => 'reference_UNIQUE'
             ])
             ->update();
     }

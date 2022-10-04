@@ -1,26 +1,22 @@
 [
     {
-        "id"            : 1,
-        "name"          : "default",
-        "person_id"     : 1,
-        "company_id"    : null,
-        "street"        : "Hangar 951",
-        "postal_code"   : "01234",
-        "locality"      : "Secretville",
-        "country_id"    : 1,
-        "opening_hours" : "Du lundi au vendredi, de 09:00 à 19:00.",
-        "note"          : null
+        "id": 1,
+        "name": "default",
+        "street": "Hangar 951",
+        "postal_code": "01234",
+        "locality": "Secretville",
+        "country_id": 1,
+        "opening_hours": "Du lundi au vendredi, de 09:00 à 19:00.",
+        "note": null
     },
     {
-        "id"            : 2,
-        "name"          : "spare",
-        "person_id"     : null,
-        "company_id"    : 1,
-        "street"        : null,
-        "postal_code"   : null,
-        "locality"      : null,
-        "country_id"    : null,
-        "opening_hours" : null,
-        "note"          : "Les bidouilles de fond de tiroir"
+        "id": 2,
+        "name": "spare",
+        "street": null,
+        "postal_code": null,
+        "locality": null,
+        "country_id": null,
+        "opening_hours": null,
+        "note": "Les bidouilles de fond de tiroir"
     }
 ]

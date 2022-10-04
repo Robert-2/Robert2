@@ -1,0 +1,43 @@
+@use '~@/themes/default/style/globals';
+
+.QuantityInput {
+    display: inline-flex;
+    width: auto;
+    height: 28px;
+
+    &__button {
+        flex: 0 0 auto;
+        padding: 6px 8px;
+        border-radius: 0;
+
+        &:disabled {
+            background-color: globals.$bg-color-input-normal;
+            color: globals.$text-light-color;
+            opacity: 1;
+        }
+
+        &:first-child {
+            border-radius: 2px 0 0 2px;
+        }
+
+        &:last-child {
+            border-radius: 0 2px 2px 0;
+        }
+    }
+
+    &__input {
+        flex: 0 0 auto;
+        width: 3rem;
+        min-height: auto;
+        margin: 0;
+        padding: 5px 8px;
+        border-radius: 0;
+        appearance: textfield;
+
+        &::-webkit-outer-spin-button,
+        &::-webkit-inner-spin-button {
+            margin: 0;
+            appearance: none;
+        }
+    }
+}

@@ -5,7 +5,7 @@ namespace Robert2\Tests;
 
 use Robert2\API\Config;
 
-final class ConfigTest extends ModelTestCase
+final class ConfigTest extends TestCase
 {
     public function testGetSettings()
     {

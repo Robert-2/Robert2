@@ -1,18 +1,18 @@
 [
     {
-        "id"   : 1,
-        "name" : "sound"
+        "id": 1,
+        "name": "Son"
     },
     {
-        "id"   : 2,
-        "name" : "light"
+        "id": 2,
+        "name": "Lumière"
     },
     {
-        "id"   : 3,
-        "name" : "transport"
+        "id": 3,
+        "name": "Transport"
     },
     {
-        "id"   : 4,
-        "name" : "Décors"
+        "id": 4,
+        "name": "Décors"
     }
 ]

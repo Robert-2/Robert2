@@ -28,7 +28,7 @@ class EntryController extends BaseController
     public function index(Request $request, Response $response)
     {
         if (!Config::customConfigExists()) {
-            return $response->withRedirect('/install', 302); // 302 Redirect
+            return $response->withRedirect('/install', 302); // - 302 Redirect.
         }
 
         $serverConfig = $this->getServerConfig();
@@ -60,8 +60,6 @@ class EntryController extends BaseController
             'defaultPaginationLimit' => $rawConfig['maxItemsPerPage'],
             'defaultLang' => $rawConfig['defaultLang'],
             'currency' => $rawConfig['currency'],
-            'beneficiaryTagName' => $rawConfig['defaultTags']['beneficiary'],
-            'technicianTagName' => $rawConfig['defaultTags']['technician'],
             'billingMode' => $rawConfig['billingMode'],
             'maxFileUploadSize' => $rawConfig['maxFileUploadSize'],
             'degressiveRate' => sprintf(

@@ -1,5 +1,5 @@
 import getEventOneDayTotalDiscountable from '@/utils/getEventOneDayTotalDiscountable';
-import eventMaterials from './data/event-materials';
+import eventMaterials from '@fixtures/event-materials';
 
 describe('getEventOneDayTotalDiscountable', () => {
     it('returns 0 with empty values', () => {

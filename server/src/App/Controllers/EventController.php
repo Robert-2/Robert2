@@ -4,15 +4,19 @@ declare(strict_types=1);
 namespace Robert2\API\Controllers;
 
 use DI\Container;
+use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Robert2\API\Config\Config;
 use Robert2\API\Controllers\Traits\WithCrud;
 use Robert2\API\Controllers\Traits\WithPdf;
 use Robert2\API\Errors\ValidationException;
+use Robert2\API\Models\Enums\Group;
 use Robert2\API\Models\Event;
 use Robert2\API\Models\Material;
 use Robert2\API\Models\Park;
 use Robert2\API\Services\Auth;
 use Robert2\API\Services\I18n;
+use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
 use Slim\Http\ServerRequest as Request;
@@ -31,11 +35,11 @@ class EventController extends BaseController
         $this->i18n = $i18n;
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Actions
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Actions
+    // -
+    // ------------------------------------------------------
 
     public function getAll(Request $request, Response $response): Response
     {
@@ -63,34 +67,40 @@ class EventController extends BaseController
         $withMaterials = (bool)$request->getQueryParam('with-materials', false);
 
         $query = Event::inPeriod($startDate, $endDate)
-            ->with('Beneficiaries')
-            ->with('Technicians');
+            ->with('beneficiaries')
+            ->with('technicians');
 
         if ($deleted) {
             $query->onlyTrashed();
         }
 
+        $append = [
+            'technicians',
+            'beneficiaries',
+            'has_missing_materials',
+            'has_not_returned_materials',
+        ];
+
         if ($withMaterials) {
-            $query->with(['Materials' => function ($q) {
+            $append[] = 'materials';
+            $query->with(['materials' => function ($q) {
                 $q->orderBy('name', 'asc');
             }]);
         }
 
-        $data = $query->get()
-            ->each->setAppends([
-                'has_missing_materials',
-                'has_not_returned_materials',
-            ])
-            ->toArray();
+        $events = $query->get()->append($append)
+            ->map(fn($event) => $event->serialize())
+            ->all();
 
         $useMultipleParks = Park::count() > 1;
-        foreach ($data as $index => $event) {
-            $data[$index]['parks'] = $useMultipleParks
+        foreach ($events as $index => $event) {
+            $events[$index]['parks'] = $useMultipleParks
                 ? Event::getParks($event['id'])
                 : null;
         }
 
-        return $response->withJson(compact('data'));
+        // FIXME: Pourquoi le `['data' => ...]` ?
+        return $response->withJson(['data' => $events], StatusCode::STATUS_OK);
     }
 
     public function getOne(Request $request, Response $response): Response
@@ -100,26 +110,39 @@ class EventController extends BaseController
             throw new HttpNotFoundException($request);
         }
 
-        $eventData = $this->_getFormattedEvent($id, true);
-        return $response->withJson($eventData);
+        $eventData = $this->_getPopulatedEvent($id, true);
+        return $response->withJson($eventData, StatusCode::STATUS_OK);
     }
 
     public function getMissingMaterials(Request $request, Response $response): Response
     {
         $id = (int)$request->getAttribute('id');
-        $result = Event::findOrFail($id)->missingMaterials();
-        return $response->withJson($result ?: []);
+
+        $missingMaterials = Event::findOrFail($id)->missingMaterials()
+            ->map(fn($material) => (
+                array_replace(
+                    $material->append('missing_quantity')->serialize(),
+                    ['pivot' => $material->pivot->toArray()]
+                )
+            ));
+
+        return $response->withJson($missingMaterials, StatusCode::STATUS_OK);
     }
 
     public function create(Request $request, Response $response): Response
     {
         $postData = (array)$request->getParsedBody();
+        if (empty($postData)) {
+            throw new HttpBadRequestException($request, "No data was provided.");
+        }
+
         if (!isset($postData['user_id'])) {
             $postData['user_id'] = Auth::user()->id;
         }
-        $id = $this->_saveEvent(null, $postData);
 
-        return $response->withJson($this->_getFormattedEvent($id), SUCCESS_CREATED);
+        $event = Event::new($postData);
+        $formattedEvent = $this->_getPopulatedEvent($event->id);
+        return $response->withJson($formattedEvent, StatusCode::STATUS_CREATED);
     }
 
     public function update(Request $request, Response $response): Response
@@ -130,15 +153,26 @@ class EventController extends BaseController
         }
 
         $postData = (array)$request->getParsedBody();
-        $id = $this->_saveEvent($id, $postData);
+        if (empty($postData)) {
+            throw new HttpBadRequestException($request, "No data was provided.");
+        }
 
-        return $response->withJson($this->_getFormattedEvent($id), SUCCESS_OK);
+        $event = Event::staticEdit($id, $postData);
+        $formattedEvent = $this->_getPopulatedEvent($event->id);
+        return $response->withJson($formattedEvent, StatusCode::STATUS_OK);
     }
 
     public function duplicate(Request $request, Response $response): Response
     {
         $originalId = (int)$request->getAttribute('id');
+        if (!Event::staticExists($originalId)) {
+            throw new HttpNotFoundException($request);
+        }
+
         $postData = (array)$request->getParsedBody();
+        if (empty($postData)) {
+            throw new HttpBadRequestException($request, "No data was provided.");
+        }
 
         try {
             $newEvent = Event::duplicate($originalId, $postData);
@@ -146,7 +180,8 @@ class EventController extends BaseController
             throw new HttpNotFoundException($request);
         }
 
-        return $response->withJson($this->_getFormattedEvent($newEvent->id), SUCCESS_CREATED);
+        $formattedEvent = $this->_getPopulatedEvent($newEvent->id);
+        return $response->withJson($formattedEvent, StatusCode::STATUS_CREATED);
     }
 
     public function updateMaterialReturn(Request $request, Response $response): Response
@@ -156,10 +191,11 @@ class EventController extends BaseController
             throw new HttpNotFoundException($request);
         }
 
-        $data = (array)$request->getParsedBody();
-        $this->_saveReturnQuantities($id, $data);
+        $postData = (array)$request->getParsedBody();
+        $this->_saveReturnQuantities($id, $postData);
 
-        return $response->withJson($this->_getFormattedEvent($id), SUCCESS_OK);
+        $formattedEvent = $this->_getPopulatedEvent($id);
+        return $response->withJson($formattedEvent, StatusCode::STATUS_OK);
     }
 
     public function updateMaterialTerminate(Request $request, Response $response): Response
@@ -169,47 +205,33 @@ class EventController extends BaseController
             throw new HttpNotFoundException($request);
         }
 
-        $data = (array)$request->getParsedBody();
-        $this->_saveReturnQuantities($id, $data);
+        $postData = (array)$request->getParsedBody();
+        $this->_saveReturnQuantities($id, $postData);
 
         Event::staticEdit($id, [
             'is_confirmed' => true,
             'is_return_inventory_done' => true,
         ]);
 
-        $this->_setBrokenMaterialsQuantities($data);
+        $this->_setBrokenMaterialsQuantities($postData);
 
-        return $response->withJson($this->_getFormattedEvent($id), SUCCESS_OK);
+        $formattedEvent = $this->_getPopulatedEvent($id);
+        return $response->withJson($formattedEvent, StatusCode::STATUS_OK);
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Internal Methods
-    // —
-    // ——————————————————————————————————————————————————————
-
-    protected function _saveEvent(?int $id, array $postData): int
-    {
-        if (empty($postData)) {
-            throw new \InvalidArgumentException(
-                "Missing request data to process validation",
-                ERROR_VALIDATION
-            );
-        }
-
-        $event = Event::staticEdit($id, $postData);
-
-        return $event->id;
-    }
+    // ------------------------------------------------------
+    // -
+    // -    Internal Methods
+    // -
+    // ------------------------------------------------------
 
     protected function _saveReturnQuantities(int $id, array $data): void
     {
         $event = Event::find($id);
 
-        $eventMaterials = $event->Materials()->get()->toArray();
         $eventMaterialsQuantities = [];
-        foreach ($eventMaterials as $material) {
-            $eventMaterialsQuantities[$material['id']] = $material['pivot']['quantity'];
+        foreach ($event->materials as $material) {
+            $eventMaterialsQuantities[$material->id] = $material->pivot->quantity;
         };
 
         $quantities = [];
@@ -273,9 +295,7 @@ class EventController extends BaseController
         }
 
         if (!empty($errors)) {
-            $error = new ValidationException();
-            $error->setValidationErrors($errors);
-            throw $error;
+            throw new ValidationException($errors);
         }
 
         $event->Materials()->sync($quantities);
@@ -299,32 +319,29 @@ class EventController extends BaseController
         }
     }
 
-    protected function _getFormattedEvent(int $id, bool $withDetails = false): array
+    protected function _getPopulatedEvent(int $id, bool $withDetails = false): Event
     {
-        $model = (new Event)
-            ->with('User')
-            ->with('Technicians')
-            ->with('Beneficiaries')
-            ->with('Materials')
-            ->with('Bills')
-            ->with('Estimates')
-            ->find($id);
+        $appendRelations = [
+            'beneficiaries',
+            'technicians',
+            'materials',
+            'estimates',
+            'bills',
+            'user',
+        ];
+
+        $event = Event::query()
+            ->with($appendRelations)
+            ->find($id)
+            ->append($appendRelations);
 
         if ($withDetails) {
-            $model = $model->setAppends([
+            $event = $event->append([
                 'has_missing_materials',
                 'has_not_returned_materials',
             ]);
         }
 
-        $result = $model->toArray();
-        if ($model->bills) {
-            $result['bills'] = $model->bills;
-        }
-        if ($model->estimates) {
-            $result['estimates'] = $model->estimates;
-        }
-
-        return $result;
+        return $event;
     }
 }

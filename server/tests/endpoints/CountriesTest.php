@@ -1,13 +1,13 @@
 <?php
 namespace Robert2\Tests;
 
+use Fig\Http\Message\StatusCodeInterface as StatusCode;
+
 final class CountriesTest extends ApiTestCase
 {
-    public function testGetCountries()
+    public static function data(int $id)
     {
-        $this->client->get('/api/countries');
-        $this->assertStatusCode(SUCCESS_OK);
-        $this->assertResponseData([
+        return static::_dataFactory($id, [
             [
                 'id' => 1,
                 'name' => 'France',
@@ -26,6 +26,17 @@ final class CountriesTest extends ApiTestCase
         ]);
     }
 
+    public function testGetCountries()
+    {
+        $this->client->get('/api/countries');
+        $this->assertStatusCode(StatusCode::STATUS_OK);
+        $this->assertResponseData([
+            self::data(1),
+            self::data(2),
+            self::data(3),
+        ]);
+    }
+
     public function testGetCountryNotFound()
     {
         $this->client->get('/api/countries/999');
@@ -35,14 +46,7 @@ final class CountriesTest extends ApiTestCase
     public function testGetCountry()
     {
         $this->client->get('/api/countries/1');
-        $this->assertStatusCode(SUCCESS_OK);
-        $this->assertResponseData([
-            'id'         => 1,
-            'name'       => 'France',
-            'code'       => 'FR',
-            'created_at' => null,
-            'updated_at' => null,
-            'deleted_at' => null,
-        ]);
+        $this->assertStatusCode(StatusCode::STATUS_OK);
+        $this->assertResponseData(self::data(1));
     }
 }

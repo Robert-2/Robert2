@@ -30,13 +30,18 @@ export type Material = {
     sub_category_id: number,
     rental_price: number,
     stock_quantity: number,
-    remaining_quantity?: number,
     out_of_order_quantity: number | null,
     replacement_price: number,
     is_hidden_on_bill: boolean,
     is_discountable: boolean,
     tags: [],
     attributes: MaterialAttribute[],
+    created_at: string,
+    updated_at: string,
+};
+
+export type MaterialDetails = Material & {
+    available_quantity?: number,
 };
 
 export type MaterialEventWithPivot = BaseEvent & {
@@ -85,14 +90,14 @@ type GetAllRaw = GetAllParams & { paginated: false };
 //
 
 /* eslint-disable func-style */
-async function all(params: GetAllRaw): Promise<Material[]>;
-async function all(params: GetAllPaginated): Promise<PaginatedData<Material[]>>;
+async function all(params: GetAllRaw): Promise<MaterialDetails[]>;
+async function all(params: GetAllPaginated): Promise<PaginatedData<MaterialDetails[]>>;
 async function all(params: GetAllPaginated | GetAllRaw): Promise<unknown> {
     return (await requester.get('/materials', { params })).data;
 }
 /* eslint-enable func-style */
 
-const allWhileEvent = async (eventId: BaseEvent['id']): Promise<Material[]> => (
+const allWhileEvent = async (eventId: BaseEvent['id']): Promise<MaterialDetails[]> => (
     (await requester.get(`/materials/while-event/${eventId}`)).data
 );
 
@@ -108,9 +113,9 @@ const update = async (id: Material['id'], data: MaterialEdit, onProgress?: Progr
     (await requester.put(`/materials/${id}`, data, { onProgress })).data
 );
 
-const restore = async (id: Material['id']): Promise<void> => {
-    await requester.put(`/materials/restore/${id}`);
-};
+const restore = async (id: Material['id']): Promise<Material> => (
+    (await requester.put(`/materials/restore/${id}`)).data
+);
 
 const remove = async (id: Material['id']): Promise<void> => {
     await requester.delete(`/materials/${id}`);

@@ -4,36 +4,31 @@ declare(strict_types=1);
 namespace Robert2\API\Controllers;
 
 use DI\Container;
-use Robert2\API\Controllers\Traits\WithModel;
+use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Robert2\API\Models\Enums\Group;
 use Robert2\API\Models\Setting;
 use Robert2\API\Services\Auth;
+use Slim\Exception\HttpBadRequestException;
 use Slim\Http\Response;
 use Slim\Http\ServerRequest as Request;
 use Slim\Interfaces\RouteParserInterface;
 
 class SettingController extends BaseController
 {
-    use WithModel;
-
-    /** @var array */
-    private $globalSettings;
-
     private RouteParserInterface $routeParser;
 
     public function __construct(Container $container, RouteParserInterface $routeParser)
     {
         parent::__construct($container);
 
-        $this->globalSettings = $container->get('settings');
         $this->routeParser = $routeParser;
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Getters
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Getters
+    // -
+    // ------------------------------------------------------
 
     public function getAll(Request $request, Response $response): Response
     {
@@ -54,28 +49,25 @@ class SettingController extends BaseController
         }
         unset($settings['calendar']['public']['uuid']);
 
-        return $response->withJson($settings);
+        return $response->withJson($settings, StatusCode::STATUS_OK);
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Setters
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Setters
+    // -
+    // ------------------------------------------------------
 
     public function update(Request $request, Response $response): Response
     {
         $postData = (array)$request->getParsedBody();
         if (empty($postData)) {
-            throw new \InvalidArgumentException(
-                "Missing request data to process validation",
-                ERROR_VALIDATION
-            );
+            throw new HttpBadRequestException($request, "No data was provided.");
         }
 
         Setting::staticEdit(null, $postData);
 
-        return $this->getAll($request, $response);
+        return $this->getAll($request, $response, StatusCode::STATUS_OK);
     }
 
     public function reset(Request $request, Response $response): Response
@@ -90,6 +82,6 @@ class SettingController extends BaseController
 
         Setting::findOrFail($key)->reset();
 
-        return $this->getAll($request, $response);
+        return $this->getAll($request, $response, StatusCode::STATUS_OK);
     }
 }

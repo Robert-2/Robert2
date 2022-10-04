@@ -1374,12 +1374,6 @@ return [
     "park-value"
     => "Park: %s",
 
-    "Inventory"
-    => "Inventory",
-
-    "inventory-created-by"
-    => "Inventory created by",
-
     "enable-javascript-message"
     => "Please enable JavaScript to use this application.",
 

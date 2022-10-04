@@ -18,9 +18,6 @@ export type Company = {
     country_id: Country['id'] | null,
     country: Country | null,
     note: string | null,
-    created_at: string,
-    updated_at: string,
-    deleted_at: string | null,
 };
 
 export type CompanyEdit = {

@@ -4,16 +4,12 @@ declare(strict_types=1);
 namespace Robert2\Tests;
 
 use Adbar\Dot as DotArray;
-use PHPUnit\Framework\TestCase;
+use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Robert2\API\App;
 use Robert2\API\Kernel;
 
 class ApiTestCase extends TestCase
 {
-    use SettingsTrait {
-        setUp as baseSetUp;
-    }
-
     /** @var App */
     protected $app;
 
@@ -22,7 +18,7 @@ class ApiTestCase extends TestCase
 
     protected function setUp(): void
     {
-        $this->baseSetUp();
+        parent::setUp();
 
         $this->app = new App;
         $this->client = new ApiTestClient($this->app);
@@ -38,17 +34,18 @@ class ApiTestCase extends TestCase
         Kernel::reset();
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Assertion methods
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Assertion methods
+    // -
+    // ------------------------------------------------------
 
     public function assertStatusCode(int $expectedCode): void
     {
         $actualCode = $this->_getStatusCode();
 
-        if ($expectedCode !== 500 && $actualCode === 500) {
+        $serverErrorCode = StatusCode::STATUS_INTERNAL_SERVER_ERROR;
+        if ($expectedCode !== $serverErrorCode && $actualCode === $serverErrorCode) {
             $response = $this->_getResponseAsArray();
             $message = sprintf(
                 "%s, in %s\n",
@@ -75,21 +72,19 @@ class ApiTestCase extends TestCase
 
     public function assertNotFound(): void
     {
-        $this->assertStatusCode(ERROR_NOT_FOUND);
+        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
         $this->assertErrorMessage("Not found.");
     }
 
-    public function assertValidationErrorMessage(): void
+    public function assertValidationError($details = null): void
     {
-        $this->assertErrorMessage(
-            "Validation failed. See error[details] for more informations."
-        );
-    }
+        $this->assertStatusCode(StatusCode::STATUS_BAD_REQUEST);
+        $this->assertErrorMessage("Validation failed. See error[details] for more informations.");
 
-    public function assertErrorDetails(array $details): void
-    {
-        $result = $this->_getResponseAsArray();
-        $this->assertEquals($details, $result['error']['details']);
+        if ($details !== null) {
+            $result = $this->_getResponseAsArray();
+            $this->assertEquals($details, $result['error']['details']);
+        }
     }
 
     public function assertResponseData(array $expectedData, array $fakeTestFields = []): void
@@ -98,7 +93,7 @@ class ApiTestCase extends TestCase
 
         foreach ($fakeTestFields as $field) {
             if (isset($response[$field])) {
-                $response[$field] = 'fakedTestContent';
+                $response[$field] = '__FAKE_TEST_PLACEHOLDER__';
             }
         }
 
@@ -121,25 +116,36 @@ class ApiTestCase extends TestCase
         $this->assertNotEquals($expectedValue, $response->get($path));
     }
 
-    public function assertResponsePaginatedData(int $count, string $baseUrl, string $extraParams = ''): void
+    public function assertResponsePaginatedData(int $totalCount, $expectedData = null, array $fakeTestFields = []): void
     {
-        $response    = $this->_getResponseAsArray();
-        $extraParams = !empty($extraParams) ? $extraParams . '&' : '';
+        $response = new DotArray($this->_getResponseAsArray());
 
-        $expected = [
-            'currentPage' => 1,
-            'perPage' => 100,
-            'total' => ['items' => $count, 'pages' => 1],
-        ];
-        $this->assertEquals($expected, @$response['pagination']);
-        $this->assertCount($count, @$response['data']);
+        $this->assertTrue(
+            $response->has(['pagination', 'data']),
+            "La réponse ne semble pas être une réponse avec pagination."
+        );
+
+        $data = $response->get('data');
+
+        // - Vérifie les données de pagination.
+        $this->assertEquals($totalCount, $response->get('pagination.total.items'));
+
+        // - Vérifie les données paginées (optionnel).
+        if ($expectedData !== null) {
+            foreach ($fakeTestFields as $field) {
+                if (isset($$data[$field])) {
+                    $data[$field] = '__FAKE_TEST_PLACEHOLDER__';
+                }
+            }
+            $this->assertEquals($expectedData, $data);
+        }
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Protected methods
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Protected methods
+    // -
+    // ------------------------------------------------------
 
     protected function _getStatusCode(): ?int
     {
@@ -154,5 +160,11 @@ class ApiTestCase extends TestCase
         $response = (string)$this->client->response->getBody();
 
         return json_decode($response, true);
+    }
+
+    protected static function _dataFactory($id, array $data)
+    {
+        $data = array_column($data, null, 'id');
+        return $id ? $data[$id] : array_values($data);
     }
 }

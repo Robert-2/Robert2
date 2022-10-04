@@ -4,10 +4,15 @@ declare(strict_types=1);
 namespace Robert2\API\Models;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Robert2\API\Contracts\Serializable;
+use Robert2\API\Models\Traits\Serializer;
 use Robert2\API\Validation\Validator as V;
 
-class EventTechnician extends BaseModel
+class EventTechnician extends BaseModel implements Serializable
 {
+    use Serializer;
+
     public $timestamps = false;
 
     protected $withoutAlreadyBusyChecks = false;
@@ -78,33 +83,32 @@ class EventTechnician extends BaseModel
         return true;
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Relations
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Relations
+    // -
+    // ------------------------------------------------------
 
-    protected $appends = [
-        'technician',
-    ];
-
-    public function Event()
+    public function event()
     {
         return $this->belongsTo(Event::class, 'event_id');
     }
 
-    public function Technician()
+    public function technician()
     {
-        return $this->belongsTo(Person::class, 'technician_id')
-            ->select(['id', 'first_name', 'last_name', 'nickname', 'phone'])
+        return $this->belongsTo(Technician::class, 'technician_id')
             ->withTrashed();
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Mutators
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Mutators
+    // -
+    // ------------------------------------------------------
+
+    protected $appends = [
+        'technician',
+    ];
 
     protected $casts = [
         'event_id' => 'integer',
@@ -114,67 +118,21 @@ class EventTechnician extends BaseModel
         'position' => 'string',
     ];
 
-    public function getEventAttribute()
-    {
-        return $this->Event()->first();
-    }
-
     public function getTechnicianAttribute()
     {
-        return $this->Technician()->first();
+        return $this->getRelationValue('technician');
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Getters
-    // —
-    // ——————————————————————————————————————————————————————
-
-    public static function getForNewDates(array $eventTechnicians, \DateTime $prevStartDate, array $newEventData): array
+    public function getEventAttribute()
     {
-        $newStartDate = new \DateTime($newEventData['start_date']);
-        $newEndDate = new \DateTime($newEventData['end_date']);
-        $offsetInterval = $prevStartDate->diff($newStartDate);
-
-        $technicians = [];
-        foreach ($eventTechnicians as $technician) {
-            $technicianStartTime = roundDate(
-                (new \DateTime($technician['start_time']))->add($offsetInterval)
-            );
-            $technicianEndTime = roundDate(
-                (new \DateTime($technician['end_time']))->add($offsetInterval)
-            );
-
-            if ($technicianStartTime > $newEndDate) {
-                continue;
-            }
-            if ($technicianEndTime < $newStartDate) {
-                continue;
-            }
-            if ($technicianStartTime < $newStartDate) {
-                $technicianStartTime = $newStartDate;
-            }
-            if ($technicianEndTime >= $newEndDate) {
-                $technicianEndTime = clone($newEndDate)->setTime(23, 45, 0);
-            }
-
-            $technicians[] = [
-                'id' => $technician['technician_id'],
-                'start_time' => $technicianStartTime->format('Y-m-d H:i:s'),
-                'end_time' => $technicianEndTime->format('Y-m-d H:i:s'),
-                'position' => $technician['position'],
-            ];
-        }
-
-        return $technicians;
+        return $this->getRelationValue('event');
     }
 
-
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Setters
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Setters
+    // -
+    // ------------------------------------------------------
 
     protected $fillable = [
         'event_id',
@@ -204,5 +162,68 @@ class EventTechnician extends BaseModel
     {
         $this->withoutAlreadyBusyChecks = true;
         return $this;
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    "Repository" methods
+    // -
+    // ------------------------------------------------------
+
+    /**
+     * @param Collection|EventTechnician[] $eventTechnicians
+     * @param \DateTime $prevStartDate
+     * @param array $newEventData
+     *
+     * @return array
+     */
+    public static function getForNewDates(
+        Collection $eventTechnicians,
+        \DateTime $prevStartDate,
+        array $newEventData
+    ): array {
+        $newStartDate = new \DateTime($newEventData['start_date']);
+        $newEndDate = new \DateTime($newEventData['end_date']);
+        $offsetInterval = $prevStartDate->diff($newStartDate);
+
+        $technicians = [];
+        foreach ($eventTechnicians as $eventTechnician) {
+            $technicianStartTime = roundDate(
+                (new \DateTime($eventTechnician->start_time))->add($offsetInterval)
+            );
+            $technicianEndTime = roundDate(
+                (new \DateTime($eventTechnician->end_time))->add($offsetInterval)
+            );
+
+            if ($technicianStartTime > $newEndDate) {
+                continue;
+            }
+            if ($technicianEndTime < $newStartDate) {
+                continue;
+            }
+            if ($technicianStartTime < $newStartDate) {
+                $technicianStartTime = $newStartDate;
+            }
+            if ($technicianEndTime >= $newEndDate) {
+                $technicianEndTime = clone($newEndDate)->setTime(23, 45, 0);
+            }
+
+            $technicians[] = [
+                'id' => $eventTechnician->technician_id,
+                'start_time' => $technicianStartTime->format('Y-m-d H:i:s'),
+                'end_time' => $technicianEndTime->format('Y-m-d H:i:s'),
+                'position' => $eventTechnician->position,
+            ];
+        }
+
+        return $technicians;
+    }
+
+    public static function staticRemove($id, array $options = []): ?BaseModel
+    {
+        if (!static::findOrFail($id)->delete()) {
+            throw new \RuntimeException(sprintf("Unable to delete the event technician %d.", $id));
+        }
+        return null;
     }
 }

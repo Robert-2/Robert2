@@ -53,12 +53,6 @@ if (!defined('CONFIG_FOLDER')) {
 //
 
 // - Errors codes
+// FIXME: Ces constantes ne devrait pas avoir des codes qui matchent des codes http.
+//        (Cela porte à confusion, ces codes sont censés être internes)
 define('ERROR_VALIDATION', 400);
-define('ERROR_UNAUTHORIZED', 401);
-define('ERROR_NOT_FOUND', 404);
-define('ERROR_NOT_ALLOWED', 405);
-define('ERROR_SERVER', 500);
-
-// - Success codes
-define('SUCCESS_OK', 200);
-define('SUCCESS_CREATED', 201);

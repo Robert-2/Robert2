@@ -3,83 +3,27 @@ declare(strict_types=1);
 
 namespace Robert2\Tests;
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Robert2\API\Models;
+use Robert2\API\Models\Document;
 
-final class DocumentTest extends ModelTestCase
+final class DocumentTest extends TestCase
 {
-    public function setup(): void
-    {
-        parent::setUp();
-
-        $this->model = new Models\Document();
-    }
-
-    public function testTableName(): void
-    {
-        $this->assertEquals('documents', $this->model->getTable());
-    }
-
-    public function testGetMaterial()
-    {
-        $result = $this->model::find(1)->material;
-        $expected = [
-            'id' => 1,
-            'name' => "Console Yamaha CL3",
-            'reference' => "CL3",
-            'tags' => [
-                ['id' => 3, 'name' => 'pro'],
-            ],
-            'attributes' => [
-                [
-                    'id' => 3,
-                    'name' => "Puissance",
-                    'type' => "integer",
-                    'unit' => "W",
-                    'value' => 850,
-                ],
-                [
-                    'id' =>2,
-                    'name' => "Couleur",
-                    'type' => "string",
-                    'unit' => null,
-                    'value' => "Grise",
-                ],
-                [
-                    'id' => 1,
-                    'name' => "Poids",
-                    'type' => "float",
-                    'unit' => "kg",
-                    'value' => 36.5,
-                ],
-            ],
-        ];
-        $this->assertEquals($expected, $result);
-    }
-
     public function testGetFilePathAttribute()
     {
-        $document = $this->model::find(1);
+        $document = Document::find(1);
         $this->assertEquals(
             DATA_FOLDER . DS . 'materials' . DS . 'documents' . DS . '1' . DS . 'User-manual.pdf',
             $document->file_path
         );
     }
 
-    public function testRemoveNotExists()
-    {
-        $this->expectException(ModelNotFoundException::class);
-        $this->model->remove(9999);
-    }
-
     public function testRemove()
     {
-        $document = $this->model::find(1);
+        $document = Document::find(1);
         $filePath = $document->file_path;
         copy($filePath, $filePath . '_backup.pdf');
 
-        $this->model->remove($document->id);
-        $this->assertNull($this->model->find($document->id));
+        Document::staticRemove($document->id);
+        $this->assertNull(Document::find($document->id));
         $this->assertFalse(file_exists($filePath));
 
         rename($filePath . '_backup.pdf', $filePath);
@@ -88,11 +32,11 @@ final class DocumentTest extends ModelTestCase
     public function testGetFilePath()
     {
         // - Without a filename
-        $result = $this->model::getFilePath(1);
+        $result = Document::getFilePath(1);
         $this->assertEquals(DATA_FOLDER . DS . 'materials' . DS . 'documents' . DS . '1', $result);
 
         // - With a filename
-        $result = $this->model::getFilePath(1, 'file.pdf');
+        $result = Document::getFilePath(1, 'file.pdf');
         $this->assertEquals(
             DATA_FOLDER . DS . 'materials' . DS . 'documents' . DS . '1' . DS . 'file.pdf',
             $result

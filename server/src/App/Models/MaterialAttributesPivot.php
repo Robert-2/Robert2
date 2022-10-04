@@ -9,9 +9,15 @@ class MaterialAttributesPivot extends Pivot
 {
     protected $table = 'material_attributes';
 
+    // ------------------------------------------------------
+    // -
+    // -    Mutators
+    // -
+    // ------------------------------------------------------
+
     protected $casts = [
-        'material_id'  => 'integer',
+        'material_id' => 'integer',
         'attribute_id' => 'integer',
-        'value'        => 'string',
+        'value' => 'string',
     ];
 }

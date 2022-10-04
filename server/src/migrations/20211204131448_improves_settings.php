@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-use Robert2\API\Config\Config as Config;
+use Robert2\API\Config\Config;
 use Phinx\Migration\AbstractMigration;
 
 final class ImprovesSettings extends AbstractMigration

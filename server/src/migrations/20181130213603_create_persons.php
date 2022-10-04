@@ -27,40 +27,40 @@ class CreatePersons extends AbstractMigration
             ->addIndex(['company_id'])
             ->addIndex(['first_name', 'last_name', 'email'], [
                 'unique' => true,
-                'name'   => 'email_name_UNIQUE'
+                'name' => 'email_name_UNIQUE'
             ])
             ->addForeignKey('user_id', 'users', 'id', [
-                'delete'     => 'SET_NULL',
-                'update'     => 'NO_ACTION',
+                'delete' => 'SET_NULL',
+                'update' => 'NO_ACTION',
                 'constraint' => 'fk_persons_users'
             ])
             ->addForeignKey('country_id', 'countries', 'id', [
-                'delete'     => 'SET_NULL',
-                'update'     => 'NO_ACTION',
+                'delete' => 'SET_NULL',
+                'update' => 'NO_ACTION',
                 'constraint' => 'fk_persons_countries'
             ])
             ->addForeignKey('company_id', 'companies', 'id', [
-                'delete'     => 'SET_NULL',
-                'update'     => 'NO_ACTION',
+                'delete' => 'SET_NULL',
+                'update' => 'NO_ACTION',
                 'constraint' => 'fk_persons_companies'
             ])
             ->create();
 
         $personsTags = $this->table('persons_tags', [
-            'id'          => false,
+            'id' => false,
             'primary_key' => ['person_id', 'tag_id']
         ]);
         $personsTags
             ->addColumn('person_id', 'integer')
             ->addColumn('tag_id', 'integer')
             ->addForeignKey('person_id', 'persons', 'id', [
-                'delete'     => 'CASCADE',
-                'update'     => 'NO_ACTION',
+                'delete' => 'CASCADE',
+                'update' => 'NO_ACTION',
                 'constraint' => 'fk_personstags_persons'
             ])
             ->addForeignKey('tag_id', 'tags', 'id', [
-                'delete'     => 'CASCADE',
-                'update'     => 'NO_ACTION',
+                'delete' => 'CASCADE',
+                'update' => 'NO_ACTION',
                 'constraint' => 'fk_personstags_tags'
             ])
             ->create();

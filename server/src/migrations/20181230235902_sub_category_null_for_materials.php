@@ -13,8 +13,8 @@ class SubCategoryNullForMaterials extends AbstractMigration
 
         $materials
             ->addForeignKey('sub_category_id', 'sub_categories', 'id', [
-                'delete'     => 'SET_NULL',
-                'update'     => 'NO_ACTION',
+                'delete' => 'SET_NULL',
+                'update' => 'NO_ACTION',
                 'constraint' => 'fk_materials_subcategory'
             ])
             ->save();
@@ -30,8 +30,8 @@ class SubCategoryNullForMaterials extends AbstractMigration
         $materials
             ->changeColumn('sub_category_id', 'integer', ['null' => false])
             ->addForeignKey('sub_category_id', 'sub_categories', 'id', [
-                'delete'     => 'CASCADE',
-                'update'     => 'NO_ACTION',
+                'delete' => 'CASCADE',
+                'update' => 'NO_ACTION',
                 'constraint' => 'fk_materials_subcategory'
             ])
             ->save();

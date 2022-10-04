@@ -18,9 +18,6 @@ export type Park = {
     locality: string | null,
     country_id: number | null,
     note: string | null,
-    created_at: string,
-    updated_at: string,
-    deleted_at: string | null,
 };
 
 export type ParkEdit = {
@@ -31,6 +28,10 @@ export type ParkEdit = {
     country_id: number | null,
     opening_hours: string | null,
     note: string | null,
+};
+
+export type ParkDetails = Park & {
+    has_ongoing_event: boolean,
 };
 /* eslint-enable @typescript-eslint/naming-convention */
 
@@ -58,7 +59,7 @@ const list = async (): Promise<ParkSummary[]> => (
     (await requester.get('/parks/list')).data
 );
 
-const one = async (id: Park['id']): Promise<Park> => (
+const one = async (id: Park['id']): Promise<ParkDetails> => (
     (await requester.get(`/parks/${id}`)).data
 );
 
@@ -67,17 +68,17 @@ const totalAmount = async (id: Park['id']): Promise<ParkTotalAmountResult['total
     return data.totalAmount;
 };
 
-const create = async (data: ParkEdit): Promise<Park> => (
+const create = async (data: ParkEdit): Promise<ParkDetails> => (
     (await requester.post('/parks', data)).data
 );
 
-const update = async (id: Park['id'], data: ParkEdit): Promise<Park> => (
+const update = async (id: Park['id'], data: ParkEdit): Promise<ParkDetails> => (
     (await requester.put(`/parks/${id}`, data)).data
 );
 
-const restore = async (id: Park['id']): Promise<void> => {
-    await requester.put(`/parks/restore/${id}`);
-};
+const restore = async (id: Park['id']): Promise<ParkDetails> => (
+    (await requester.put(`/parks/restore/${id}`)).data
+);
 
 const remove = async (id: Park['id']): Promise<void> => {
     await requester.delete(`/parks/${id}`);

@@ -34,9 +34,7 @@
                     </td>
                     <td>
                         <p class="size12 spaceBottom5">
-                            {{ include('blocks/beneficiary-address.twig', {
-                                person: event['beneficiaries'][0]
-                            }) }}
+                            {{ include('blocks/beneficiary.twig', { beneficiary: beneficiaries[0] }) }}
                         </p>
                     </td>
                 </tr>
@@ -47,7 +45,7 @@
 
 <table class="layout-table">
     <tr>
-        <td class="{{ event['beneficiaries'][1] is defined ? 'third' : 'half' }} size11">
+        <td class="{{ beneficiaries|length > 1 ? 'third' : 'half' }} size11">
             {% if event['location'] %}
             <h3>{{ translate('location', [event['location']]) }}</h3>
             {% endif %}
@@ -67,7 +65,7 @@
                 {{ translate('printed-on-date', [date|format_date('long', locale=locale)]) }}
             </p>
         </td>
-        <td class="{{ event['beneficiaries'][1] is defined ? 'third' : 'half' }}">
+        <td class="{{ beneficiaries|length > 1 ? 'third' : 'half' }}">
             {% if technicians is not empty %}
             <h3>{{ translate('technicians') }}</h3>
             <ul class="spaceBottom5">
@@ -92,16 +90,14 @@
             </ul>
             {% endif %}
         </td>
-        {% if event['beneficiaries'][1] is defined %}
+        {% if beneficiaries|length > 1 %}
         <td class="third">
             <h3>{{ translate('otherBeneficiaries') }}</h3>
             <ul class="spaceBottom5">
-                {% for otherBeneficiary in event['beneficiaries'] %}
-                {% if loop.index0 > 0 %}
+                {% for otherBeneficiary in beneficiaries|slice(1) %}
                 <li class="spaceBottom2">
                     {{ include('blocks/beneficiary-address.twig', { person: otherBeneficiary }) }}
                 </li>
-                {% endif %}
                 {% endfor %}
             </ul>
         </td>

@@ -16,11 +16,11 @@ class CreateUsers extends AbstractMigration
             ->addColumn('deleted_at', 'datetime', ['null' => true])
             ->addIndex(['pseudo'], [
                 'unique' => true,
-                'name'   => 'pseudo_UNIQUE'
+                'name' => 'pseudo_UNIQUE'
             ])
             ->addIndex(['email'], [
                 'unique' => true,
-                'name'   => 'email_UNIQUE'
+                'name' => 'email_UNIQUE'
             ])
             ->create();
     }

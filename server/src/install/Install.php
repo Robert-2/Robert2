@@ -3,13 +3,15 @@ declare(strict_types=1);
 
 namespace Robert2\Install;
 
-use Robert2\API\Config as Config;
+use Robert2\API\Config\Config;
 use Robert2\API\Console\App as CliApp;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\StreamOutput;
 
 class Install
 {
+    protected const INSTALL_FILE = __DIR__ . '/progress.json';
+
     // See in SetupController for steps execution
     const INSTALL_STEPS = [
         'welcome',
@@ -22,9 +24,6 @@ class Install
         'categories',
         'end',
     ];
-
-    const INSTALL_FILE = __DIR__ . '/progress.json';
-    const DB_INIT_DATA_DIR = __DIR__ . '/data';
 
     const REQUIRED_EXTENSIONS = [
         'pcre',
@@ -47,70 +46,53 @@ class Install
         'vatRate' => 'float',
     ];
 
-    public static function getInstallProgress(): array
+    public static function getStep(): string
     {
-        $default = ['step' => 'welcome'];
-
-        if (!file_exists(self::INSTALL_FILE)) {
-            return $default;
-        }
-
-        $installProgress = json_decode(@file_get_contents(self::INSTALL_FILE), true);
-        if (!is_array($installProgress)) {
-            return $default;
-        }
-
-        return $installProgress;
+        $installData = static::_getInstallData();
+        return $installData['step'] ?? 'welcome';
     }
 
-    public static function setInstallProgress(string $step, ?array $data = null): array
-    {
-        $installProgress = self::getInstallProgress();
-
-        if ($data === null) {
-            $installProgress['step'] = $step;
-            $installProgress["config_$step"] = [];
-
-            return self::_saveInstallProcess($installProgress);
-        }
-
-        foreach ($data as $key => $value) {
-            $keyType = self::VALUE_TYPES[$key] ??  null;
-            if ($keyType === 'boolean') {
-                $data[$key] = (bool)$value;
-            }
-            if ($keyType === 'integer') {
-                $data[$key] = (int)$value;
-            }
-            if ($keyType === 'float') {
-                $data[$key] = (float)$value;
-            }
-        };
-
-        $installProgress["config_$step"] = $data;
-        $installProgress['step'] = self::getNextInstallStep($step);
-
-        return self::_saveInstallProcess($installProgress);
-    }
-
-    public static function getNextInstallStep(string $step): string
+    public static function setInstallProgress(string $step, ?array $stepData = null): array
     {
         if (!in_array($step, self::INSTALL_STEPS)) {
-            return 'welcome';
+            throw new \InvalidArgumentException(sprintf('Unknown step: %s', $step));
+        }
+
+        $installData = static::_getInstallData();
+
+        if ($stepData === null) {
+            $installData['step'] = $step;
+            $installData["config_$step"] = [];
+
+            return static::_saveInstallData($installData);
         }
 
         $stepIndex = array_search($step, self::INSTALL_STEPS);
+        $nextStep = self::INSTALL_STEPS[$stepIndex + 1] ?? 'end';
 
-        if (isset(self::INSTALL_STEPS[$stepIndex + 1])) {
-            return self::INSTALL_STEPS[$stepIndex + 1];
+        foreach ($stepData as $key => $value) {
+            $keyType = self::VALUE_TYPES[$key] ??  null;
+            if ($keyType === 'boolean') {
+                $stepData[$key] = (bool)$value;
+            }
+            if ($keyType === 'integer') {
+                $stepData[$key] = (int)$value;
+            }
+            if ($keyType === 'float') {
+                $stepData[$key] = (float)$value;
+            }
         }
 
-        return 'end';
+        $installData["config_$step"] = $stepData;
+        $installData['step'] = $nextStep;
+
+        return static::_saveInstallData($installData);
     }
 
     public static function getSettingsFromInstallData(): array
     {
-        $installData = self::getInstallProgress();
+        $installData = static::_getInstallData();
+
         $settings = array_merge(
             $installData['config_coreSettings'],
             $installData['config_settings']
@@ -124,71 +106,12 @@ class Install
     public static function getMigrationsStatus(): array
     {
         $output = self::_executePhinxCommand('status');
-
         return self::_formatPhinxStatusOutput($output);
     }
 
-    public static function createMissingTables(): array
+    public static function migrateDatabase(): array
     {
         return self::_executePhinxCommand('migrate');
-    }
-
-    public static function insertInitialDataIntoDB()
-    {
-        $initialDataSqlFile = sprintf('%s/initial.sql', self::DB_INIT_DATA_DIR);
-        try {
-            self::_executeSqlFile($initialDataSqlFile);
-        } catch (\PDOException $e) {
-            $details = $e->getMessage();
-            if ($e->getCode() === '23000') {
-                $subcode = explode(" ", explode(": ", $details)[2]);
-                if ($subcode[0] === '1062') {
-                    return;
-                }
-            }
-            throw new \RuntimeException(sprintf(
-                "Unable to insert initial data into database. Reason:\n%s",
-                $e->getMessage()
-            ));
-        }
-
-        $installData = self::getInstallProgress();
-        if (empty($installData['config_settings'])) {
-            return;
-        }
-
-        $prefix = Config\Config::getSettings('db')['prefix'];
-
-        $requests = [];
-        $now = date('Y-m-d H:i:s');
-        foreach ($installData['config_settings']['defaultTags'] as $tagName) {
-            $requests[] = sprintf(
-                "INSERT IGNORE INTO `%1\$stags` (`name`, `created_at`, `updated_at`) " .
-                "VALUES ('%2\$s', '%3\$s', '%3\$s')",
-                $prefix,
-                $tagName,
-                $now
-            );
-        }
-
-        $requests[] = sprintf(
-            "UPDATE `%1\$sparks` SET " .
-            "`name` = '%2\$s', `created_at` = '%3\$s', `updated_at` = '%3\$s' " .
-            "WHERE `name` = 'default'",
-            $prefix,
-            $installData['config_settings']['defaultParkName'],
-            $now
-        );
-
-        try {
-            $pdo = Config\Config::getPDO();
-            $pdo->query(implode(';', $requests));
-        } catch (\PDOException $e) {
-            throw new \RuntimeException(sprintf(
-                "Unable to insert initial data into database. Reason:\n%s",
-                $e->getMessage()
-            ));
-        }
     }
 
     public static function getAllCurrencies(): array
@@ -196,41 +119,38 @@ class Install
         return require 'data/currencies.php';
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Private methods
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Internal methods
+    // -
+    // ------------------------------------------------------
 
-    private static function _saveInstallProcess(array $installProgress): array
+    protected static function _getInstallData(): array
     {
-        $jsonInstallProgress = json_encode($installProgress, Config\Config::JSON_OPTIONS);
+        if (!file_exists(self::INSTALL_FILE)) {
+            return [];
+        }
 
-        $saved = file_put_contents(self::INSTALL_FILE, $jsonInstallProgress);
-        if (!$saved) {
+        $installData = json_decode(@file_get_contents(self::INSTALL_FILE), true);
+        if (!is_array($installData)) {
+            return [];
+        }
+
+        return $installData;
+    }
+
+    protected static function _saveInstallData(array $installData): array
+    {
+        $installDataAsJson = json_encode($installData, Config::JSON_OPTIONS);
+        if (!file_put_contents(self::INSTALL_FILE, $installDataAsJson)) {
             throw new \RuntimeException(
-                "Unable to write JSON install process file. Check write access to config folder."
+                "Unable to write JSON install data file. Check write access to `install` folder."
             );
         }
-
-        return $installProgress;
+        return $installData;
     }
 
-    private static function _executeSqlFile(string $sqlFile): void
-    {
-        $request = file_get_contents($sqlFile);
-        if (!$request) {
-            throw new \Exception("Unable to read file '$sqlFile'.");
-        }
-
-        $prefix  = Config\Config::getSettings('db')['prefix'];
-        $request = preg_replace('/INTO `/', "INTO `$prefix", $request);
-
-        $pdo = Config\Config::getPDO();
-        $pdo->query($request);
-    }
-
-    private static function _executePhinxCommand(string $command): array
+    protected static function _executePhinxCommand(string $command): array
     {
         if (!in_array($command, ['status', 'migrate', 'rollback'], true)) {
             throw new \InvalidArgumentException("Commande de migration inconnue.", 2);
@@ -254,7 +174,7 @@ class Install
         return explode(PHP_EOL, $output);
     }
 
-    private static function _formatPhinxStatusOutput($output)
+    protected static function _formatPhinxStatusOutput($output)
     {
         $start = array_search(str_repeat('-', 82), $output);
         $lines = array_splice($output, $start + 1);

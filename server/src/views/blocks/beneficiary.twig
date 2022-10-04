@@ -1,0 +1,25 @@
+{% if beneficiary['company'] is not empty %}
+    <strong>{{ beneficiary['company']['legal_name'] }}</strong><br>
+{% endif %}
+
+{{ beneficiary.full_name }}<br>
+
+{% if beneficiary['company']['full_address'] is not empty %}
+    {{ beneficiary['company']['full_address'] | nl2br }}<br>
+{% else %}
+    {{ beneficiary['full_address'] | nl2br }}<br>
+{% endif %}
+
+{% if beneficiary.reference is not empty %}
+    <small>({{ translate('beneficiaryReference', [beneficiary.reference]) }})</small><br>
+{% endif %}
+
+{% if beneficiary['company']['phone'] is not empty %}
+    <small>{{ translate('phone', [beneficiary['company']['phone']]) }}</small><br>
+{% elseif beneficiary.phone is not empty %}
+    <small>{{ translate('phone', [beneficiary.phone]) }}</small><br>
+{% endif %}
+
+{% if beneficiary.email is not empty %}
+    <small>{{ translate('email', [beneficiary.email]) }}</small><br>
+{% endif %}

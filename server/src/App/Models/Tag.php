@@ -3,21 +3,15 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\QueryException;
-use Robert2\API\Config\Config;
-use Robert2\API\Errors\ValidationException;
+use Robert2\API\Contracts\Serializable;
 use Robert2\API\Models\Traits\Serializer;
 use Robert2\API\Validation\Validator as V;
 
-class Tag extends BaseModel
+class Tag extends BaseModel implements Serializable
 {
     use SoftDeletes;
-    use Serializer {
-        serialize as baseSerialize;
-    }
+    use Serializer;
 
     protected $searchField = 'name';
 
@@ -54,80 +48,61 @@ class Tag extends BaseModel
         return true;
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Relations
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Relations
+    // -
+    // ------------------------------------------------------
 
-    public function Persons()
-    {
-        return $this->morphedByMany(Person::class, 'taggable');
-    }
-
-    public function Materials()
+    public function materials()
     {
         return $this->morphedByMany(Material::class, 'taggable');
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Mutators
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Mutators
+    // -
+    // ------------------------------------------------------
 
-    protected $casts = ['name' => 'string'];
+    protected $casts = [
+        'name' => 'string',
+    ];
 
-    public function getPersonsAttribute()
-    {
-        $persons = $this->Persons()->get();
-        return $persons ? $persons->toArray() : null;
-    }
-
-    public function getMaterialsAttribute()
-    {
-        $materials = $this->Materials()->get();
-        return $materials ? $materials->toArray() : null;
-    }
-
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Scopes
-    // —
-    // ——————————————————————————————————————————————————————
-
-    public function scopeWithoutProtected(Builder $query): Builder
-    {
-        $protectedTags = array_values(Config::getSettings('defaultTags'));
-
-        return $query->whereNotIn('name', $protectedTags);
-    }
-
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Getters
-    // —
-    // ——————————————————————————————————————————————————————
-
-    public function getIdsByNames(array $names): array
-    {
-        $tags = static::whereIn('name', $names)->get();
-        $ids = [];
-        foreach ($tags as $tag) {
-            $ids[] = $tag->id;
-        }
-        return $ids;
-    }
-
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Setters
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Setters
+    // -
+    // ------------------------------------------------------
 
     protected $fillable = ['name'];
 
-    public function bulkAdd(array $tagNames = []): array
+    // ------------------------------------------------------
+    // -
+    // -    Serialization
+    // -
+    // ------------------------------------------------------
+
+    public function serialize(): array
+    {
+        $data = $this->attributesForSerialization();
+
+        unset(
+            $data['created_at'],
+            $data['updated_at'],
+            $data['deleted_at'],
+        );
+
+        return $data;
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    "Repository" methods
+    // -
+    // ------------------------------------------------------
+
+    public static function bulkAdd(array $tagNames = []): array
     {
         $tags = array_map(
             function ($tagName) {
@@ -144,56 +119,14 @@ class Tag extends BaseModel
             $tagNames
         );
 
-        $this->getConnection()->transaction(function () use ($tags) {
-            try {
-                foreach ($tags as $tag) {
-                    if (!$tag->exists || $tag->isDirty()) {
-                        $tag->save();
-                    }
+        return dbTransaction(function () use ($tags) {
+            foreach ($tags as $tag) {
+                if (!$tag->exists || $tag->isDirty()) {
+                    $tag->save();
+                    $tag->refresh();
                 }
-            } catch (QueryException $e) {
-                throw (new ValidationException)
-                    ->setPDOValidationException($e);
             }
+            return $tags;
         });
-
-        return $tags;
-    }
-
-    // ------------------------------------------------------
-    // -
-    // -    Serialize
-    // -
-    // ------------------------------------------------------
-
-    protected function serialize(): array
-    {
-        $data = $this->baseSerialize();
-
-        unset(
-            $data['createdAt'],
-            $data['updatedAt'],
-            $data['deletedAt'],
-        );
-
-        return $data;
-    }
-
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Utility Methods
-    // —
-    // ——————————————————————————————————————————————————————
-
-    public static function format(Collection $Tags): array
-    {
-        $tags = [];
-        foreach ($Tags as $Tag) {
-            $tags[] = [
-                'id'   => $Tag->id,
-                'name' => $Tag->name,
-            ];
-        }
-        return $tags;
     }
 }

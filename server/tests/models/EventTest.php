@@ -6,23 +6,10 @@ namespace Robert2\Tests;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Robert2\API\Errors;
 use Robert2\API\Errors\ValidationException;
-use Robert2\API\Models\Enums\Group;
 use Robert2\API\Models\Event;
 
-final class EventTest extends ModelTestCase
+final class EventTest extends TestCase
 {
-    public function setup(): void
-    {
-        parent::setUp();
-
-        $this->model = new Event();
-    }
-
-    public function testTableName(): void
-    {
-        $this->assertEquals('events', $this->model->getTable());
-    }
-
     public function testGetAll(): void
     {
         // Préparation:
@@ -56,7 +43,7 @@ final class EventTest extends ModelTestCase
                 unset($result['created_at'], $result['updated_at']);
                 return $result;
             },
-            $this->model->getAll()->get()->toArray()
+            (new Event)->getAll()->get()->toArray()
         );
         $expected = [
             [
@@ -158,21 +145,13 @@ final class EventTest extends ModelTestCase
     {
         // - No missing materials for event #3
         $result = Event::find(3)->missingMaterials();
-        $this->assertNull($result);
+        $this->assertTrue($result->isEmpty());
 
         // - Get missing materials of event #1
         $result = Event::find(1)->missingMaterials();
-        $this->assertNotNull($result);
         $this->assertCount(1, $result);
-        $this->assertEquals('DBXPA2', $result[0]['reference']);
-        $this->assertEquals(1, $result[0]['missing_quantity']);
-
-        // - Get missing materials of event #4
-        $result = Event::find(4)->missingMaterials();
-        $this->assertNotNull($result);
-        $this->assertCount(2, $result);
-        $this->assertEquals('Transporter', $result[0]['reference']);
-        $this->assertEquals(3, $result[0]['missing_quantity']);
+        $this->assertEquals('DBXPA2', $result->get(0)['reference']);
+        $this->assertEquals(1, $result->get(0)['missing_quantity']);
     }
 
     public function testHasMissingMaterials(): void
@@ -218,6 +197,21 @@ final class EventTest extends ModelTestCase
         $this->assertSame(null, $result->hasNotReturnedMaterials);
     }
 
+    public function testDailyAmount()
+    {
+        $this->assertEquals(341.45, Event::find(1)->daily_amount);
+    }
+
+    public function testDiscountableDailyAmount()
+    {
+        $this->assertEquals(41.45, Event::find(1)->discountable_daily_amount);
+    }
+
+    public function testReplacementAmount()
+    {
+        $this->assertEquals(19808.9, Event::find(1)->replacement_amount);
+    }
+
     public function testGetParks(): void
     {
         // - Non-existant event
@@ -232,233 +226,15 @@ final class EventTest extends ModelTestCase
         $result = Event::getParks(3);
         $this->assertEquals([1], $result);
         $result = Event::getParks(5);
-        $this->assertEquals([], $result);
+        $this->assertEquals([2], $result);
 
         // - Event with material from two parks
         $result = Event::getParks(4);
-        $this->assertEquals([1], $result);
+        $this->assertEquals([2, 1], $result);
 
         // - Event without material (so without park)
         $result = Event::getParks(6);
         $this->assertEquals([], $result);
-    }
-
-    public function testGetMaterials(): void
-    {
-        $Event = $this->model::find(1);
-        $results = $Event->materials;
-        $this->assertCount(3, $results);
-        $expected = [
-            'id' => 4,
-            'name' => 'Showtec SDS-6',
-            'description' => "Console DMX (jeu d'orgue) Showtec 6 canaux",
-            'reference' => 'SDS-6-01',
-            'is_unitary' => false,
-            'park_id' => 1,
-            'category_id' => 2,
-            'sub_category_id' => 4,
-            'rental_price' => 15.95,
-            'stock_quantity' => 2,
-            'out_of_order_quantity' => null,
-            'replacement_price' => 59.0,
-            'is_hidden_on_bill' => false,
-            'is_discountable' => true,
-            'tags' => [],
-            'attributes' => [
-                [
-                    'id' => 4,
-                    'name' => 'Conforme',
-                    'type' => 'boolean',
-                    'unit' => null,
-                    'value' => true,
-                ],
-                [
-                    'id' => 3,
-                    'name' => 'Puissance',
-                    'type' => 'integer',
-                    'unit' => 'W',
-                    'value' => 60,
-                ],
-                [
-                    'id' => 1,
-                    'name' => 'Poids',
-                    'type' => 'float',
-                    'unit' => 'kg',
-                    'value' => 3.15,
-                ],
-            ],
-            'pivot' => [
-                'id' => 3,
-                'event_id' => 1,
-                'material_id' => 4,
-                'quantity' => 1,
-                'quantity_returned' => 1,
-                'quantity_broken' => 1,
-            ],
-        ];
-        $this->assertEquals($expected, $results[0]);
-    }
-
-    public function testGetTechnicians(): void
-    {
-        $Event = $this->model::find(1);
-        $results = $Event->technicians;
-        $this->assertCount(2, $results);
-        $expected = [
-            [
-                'id' => 1,
-                'event_id' => 1,
-                'technician_id' => 1,
-                'start_time' => '2018-12-17 09:00:00',
-                'end_time' => '2018-12-18 22:00:00',
-                'position' => 'Régisseur',
-                'technician' => [
-                    'id' => 1,
-                    'first_name' => 'Jean',
-                    'last_name' => 'Fountain',
-                    'phone' => null,
-                    'nickname' => null,
-                    'full_name' => 'Jean Fountain',
-                    'country' => null,
-                    'full_address' => null,
-                    'company' => null,
-                ]
-            ],
-            [
-                'id' => 2,
-                'event_id' => 1,
-                'technician_id' => 2,
-                'start_time' => '2018-12-18 14:00:00',
-                'end_time' => '2018-12-18 18:00:00',
-                'position' => 'Technicien plateau',
-                'technician' => [
-                    'id' => 2,
-                    'first_name' => 'Roger',
-                    'last_name' => 'Rabbit',
-                    'phone' => null,
-                    'nickname' => 'Riri',
-                    'full_name' => 'Roger Rabbit',
-                    'country' => null,
-                    'full_address' => null,
-                    'company' => null,
-                ]
-            ],
-        ];
-        $this->assertEquals($expected, $results);
-    }
-
-    public function testGetBeneficiaries(): void
-    {
-        $Event = $this->model::find(1);
-        $results = $Event->beneficiaries;
-        $this->assertEquals([
-            [
-                'id' => 3,
-                'first_name' => 'Client',
-                'last_name' => 'Benef',
-                'full_name' => 'Client Benef',
-                'reference' => null,
-                'phone' => '+33123456789',
-                'email' => 'client@beneficiaires.com',
-                'street' => '156 bis, avenue des tests poussés',
-                'postal_code' => '88080',
-                'locality' => 'Wazzaville',
-                'company_id' => null,
-                'company' => null,
-                'country' => null,
-                'full_address' => "156 bis, avenue des tests poussés\n88080 Wazzaville",
-                'pivot' => ['event_id' => 1, 'person_id' => 3],
-            ]
-        ], $results);
-    }
-
-    public function testGetUser()
-    {
-        $Event = $this->model::find(1);
-        $results = $Event->user;
-        $expected = [
-            'id' => 1,
-            'pseudo' => 'test1',
-            'email' => 'tester@robertmanager.net',
-            'group' => Group::ADMIN,
-            'person' => [
-                'id' => 1,
-                'user_id' => 1,
-                'first_name' => 'Jean',
-                'last_name' => 'Fountain',
-                'reference' => '0001',
-                'nickname' => null,
-                'email' => 'tester@robertmanager.net',
-                'phone' => null,
-                'street' => '1, somewhere av.',
-                'postal_code' => '1234',
-                'locality' => 'Megacity',
-                'country_id' => 1,
-                'company_id' => 1,
-                'note' => null,
-                'created_at' => null,
-                'updated_at' => null,
-                'deleted_at' => null,
-                'full_name' => 'Jean Fountain',
-                'full_address' => "1, somewhere av.\n1234 Megacity",
-                'company' => [
-                    'id' => 1,
-                    'legal_name' => 'Testing, Inc',
-                    'street' => '1, company st.',
-                    'postal_code' => '1234',
-                    'locality' => 'Megacity',
-                    'country_id' => 1,
-                    'phone' => '+4123456789',
-                    'note' => 'Just for tests',
-                    'created_at' => null,
-                    'updated_at' => null,
-                    'deleted_at' => null,
-                    'country' => [
-                        'id' => 1,
-                        'name' => 'France',
-                        'code' => 'FR',
-                    ],
-                    'full_address' => "1, company st.\n1234 Megacity",
-                ],
-                'country' => [
-                    'id' => 1,
-                    'name' => 'France',
-                    'code' => 'FR',
-                ],
-            ],
-        ];
-        $this->assertEquals($expected, $results);
-    }
-
-    public function testGetEstimates()
-    {
-        $Event = $this->model::find(1);
-        $results = $Event->estimates;
-        $expected = [
-            [
-                'id' => 1,
-                'date' => '2021-01-30 14:00:00',
-                'discount_rate' => 50.0,
-                'due_amount' => 325.5,
-            ]
-        ];
-        $this->assertEquals($expected, $results->toArray());
-    }
-
-    public function testGetBills()
-    {
-        $Event = $this->model::find(1);
-        $results = $Event->bills;
-        $expected = [
-            [
-                'id' => 1,
-                'number' => '2020-00001',
-                'date' => '2020-01-30 14:00:00',
-                'discount_rate' => 50.0,
-                'due_amount' => 325.5,
-            ]
-        ];
-        $this->assertEquals($expected, $results);
     }
 
     public function testAddSearch()
@@ -601,8 +377,11 @@ final class EventTest extends ModelTestCase
 
     public function testGetPdfContent()
     {
-        $result = $this->model->getPdfContent(1);
-        $this->assertNotEmpty($result);
+        $result = (new Event)->getPdfContent(1);
+        $this->assertMatchesHtmlSnapshot($result);
+
+        $result = (new Event)->getPdfContent(2);
+        $this->assertMatchesHtmlSnapshot($result);
     }
 
     public function testStaticEdit()
@@ -643,11 +422,11 @@ final class EventTest extends ModelTestCase
         $this->assertEquals('Client Benef', $event->beneficiaries[0]['full_name']);
 
         $this->assertEquals(2, count($event->technicians));
-        $this->assertEquals('Roger Rabbit', $event->technicians[0]['technician']['full_name']);
+        $this->assertEquals('Jean Technicien', $event->technicians[0]['technician']['full_name']);
         $this->assertEquals('2018-12-15 09:00:00', $event->technicians[0]['start_time']);
         $this->assertEquals('2018-12-15 16:00:00', $event->technicians[0]['end_time']);
         $this->assertEquals('Stagiaire observateur', $event->technicians[0]['position']);
-        $this->assertEquals('Jean Fountain', $event->technicians[1]['technician']['full_name']);
+        $this->assertEquals('Roger Rabbit', $event->technicians[1]['technician']['full_name']);
         $this->assertEquals('2018-12-15 10:00:00', $event->technicians[1]['start_time']);
         $this->assertEquals('2018-12-16 19:00:00', $event->technicians[1]['end_time']);
         $this->assertEquals('Testeur', $event->technicians[1]['position']);
@@ -719,15 +498,15 @@ final class EventTest extends ModelTestCase
         $event = Event::findOrFail(4);
         $event->syncTechnicians($technicians);
         $this->assertEquals(3, count($event->technicians));
-        $this->assertEquals('Jean Fountain', $event->technicians[0]['technician']['full_name']);
+        $this->assertEquals('Roger Rabbit', $event->technicians[0]['technician']['full_name']);
         $this->assertEquals('2019-03-01 08:00:00', $event->technicians[0]['start_time']);
         $this->assertEquals('2019-03-01 20:00:00', $event->technicians[0]['end_time']);
         $this->assertEquals('Roadie déballage', $event->technicians[0]['position']);
-        $this->assertEquals('Roger Rabbit', $event->technicians[1]['technician']['full_name']);
+        $this->assertEquals('Jean Technicien', $event->technicians[1]['technician']['full_name']);
         $this->assertEquals('2019-03-02 10:00:00', $event->technicians[1]['start_time']);
         $this->assertEquals('2019-04-09 17:00:00', $event->technicians[1]['end_time']);
         $this->assertEquals('Régisseur', $event->technicians[1]['position']);
-        $this->assertEquals('Jean Fountain', $event->technicians[2]['technician']['full_name']);
+        $this->assertEquals('Roger Rabbit', $event->technicians[2]['technician']['full_name']);
         $this->assertEquals('2019-04-10 08:00:00', $event->technicians[2]['start_time']);
         $this->assertEquals('2019-04-10 20:00:00', $event->technicians[2]['end_time']);
         $this->assertEquals('Roadie remballage', $event->technicians[2]['position']);
@@ -810,6 +589,7 @@ final class EventTest extends ModelTestCase
         $expected = [
             'id' => 7,
             'user_id' => 1,
+            'reference' => null,
             'title' => 'Premier événement',
             'description' => null,
             'start_date' => '2021-08-01 00:00:00',
@@ -820,9 +600,14 @@ final class EventTest extends ModelTestCase
             'is_billable' => true,
             'is_return_inventory_done' => false,
         ];
-        $newEventData = $newEvent->toArray();
-        unset($newEventData['created_at']);
-        unset($newEventData['updated_at']);
+
+        $newEventData = $newEvent->setAppends([])->attributesToArray();
+        unset(
+            $newEventData['created_at'],
+            $newEventData['updated_at'],
+            $newEventData['deleted_at']
+        );
+
         $this->assertEquals($expected, $newEventData);
         $this->assertCount(1, $newEvent->beneficiaries);
         $this->assertCount(2, $newEvent->technicians);
@@ -838,10 +623,10 @@ final class EventTest extends ModelTestCase
         ];
         $newEvent = Event::duplicate(1, $newEventData);
         $this->assertCount(2, $newEvent->technicians);
-        $this->assertEquals('Jean Fountain', $newEvent->technicians[0]['technician']['full_name']);
+        $this->assertEquals('Roger Rabbit', $newEvent->technicians[0]['technician']['full_name']);
         $this->assertEquals('2021-08-01 09:00:00', $newEvent->technicians[0]['start_time']);
         $this->assertEquals('2021-08-02 22:00:00', $newEvent->technicians[0]['end_time']);
-        $this->assertEquals('Roger Rabbit', $newEvent->technicians[1]['technician']['full_name']);
+        $this->assertEquals('Jean Technicien', $newEvent->technicians[1]['technician']['full_name']);
         $this->assertEquals('2021-08-02 14:00:00', $newEvent->technicians[1]['start_time']);
         $this->assertEquals('2021-08-02 18:00:00', $newEvent->technicians[1]['end_time']);
     }
@@ -855,7 +640,7 @@ final class EventTest extends ModelTestCase
         ];
         $newEvent = Event::duplicate(1, $newEventData);
         $this->assertCount(1, $newEvent->technicians);
-        $this->assertEquals('Jean Fountain', $newEvent->technicians[0]['technician']['full_name']);
+        $this->assertEquals('Roger Rabbit', $newEvent->technicians[0]['technician']['full_name']);
         $this->assertEquals('2021-08-01 09:00:00', $newEvent->technicians[0]['start_time']);
         $this->assertEquals('2021-08-01 23:45:00', $newEvent->technicians[0]['end_time']);
     }
@@ -866,10 +651,10 @@ final class EventTest extends ModelTestCase
             'end_date' => '2018-12-19 23:59:59', // - Un jour de plus
         ]);
         $this->assertCount(2, $event->technicians);
-        $this->assertEquals('Jean Fountain', $event->technicians[0]['technician']['full_name']);
+        $this->assertEquals('Roger Rabbit', $event->technicians[0]['technician']['full_name']);
         $this->assertEquals('2018-12-17 09:00:00', $event->technicians[0]['start_time']);
         $this->assertEquals('2018-12-18 22:00:00', $event->technicians[0]['end_time']);
-        $this->assertEquals('Roger Rabbit', $event->technicians[1]['technician']['full_name']);
+        $this->assertEquals('Jean Technicien', $event->technicians[1]['technician']['full_name']);
         $this->assertEquals('2018-12-18 14:00:00', $event->technicians[1]['start_time']);
         $this->assertEquals('2018-12-18 18:00:00', $event->technicians[1]['end_time']);
     }
@@ -880,8 +665,66 @@ final class EventTest extends ModelTestCase
             'end_date' => '2018-12-17 23:59:59', // - Un jour de moins
         ]);
         $this->assertCount(1, $event->technicians);
-        $this->assertEquals('Jean Fountain', $event->technicians[0]['technician']['full_name']);
+        $this->assertEquals('Roger Rabbit', $event->technicians[0]['technician']['full_name']);
         $this->assertEquals('2018-12-17 09:00:00', $event->technicians[0]['start_time']);
         $this->assertEquals('2018-12-17 23:45:00', $event->technicians[0]['end_time']);
+    }
+
+    public function testGetAllNotReturned(): void
+    {
+        $minDate = '2018-01-01';
+
+        // - Test à une date qui contient un événement avec inventaire fait (#1)
+        $this->assertEmpty(Event::getAllNotReturned('2018-12-18', $minDate)->get()->toArray());
+
+        // - Test à une date qui contient un événement  l'inventaire n'est pas terminé,
+        //   mais qui est archivé (#3)
+        $this->assertEmpty(Event::getAllNotReturned('2018-12-16', $minDate)->get()->toArray());
+
+        // - Test à une date qui contient un événement dont l'inventaire n'est pas terminé,
+        //   et qui n'est pas archivé (#4)
+        $results = Event::getAllNotReturned('2019-04-10', $minDate)->get()->toArray();
+        $this->assertCount(1, $results);
+        $this->assertEquals(4, $results[0]['id']);
+        $this->assertEquals('Concert X', $results[0]['title']);
+        $this->assertEquals('2019-04-10 23:59:59', $results[0]['end_date']);
+
+        // - Test à une date qui contient un événement non-archivé, avec inventaire non terminé,
+        //   en incluant tous les événements précédents jusqu'à la date $minDate
+        $results = Event::getAllNotReturned('2020-01-01', $minDate, 'withPrevious')->get()->toArray();
+        $this->assertCount(2, $results);
+        $this->assertEquals(4, $results[0]['id']);
+        $this->assertEquals('Concert X', $results[0]['title']);
+        $this->assertEquals(5, $results[1]['id']);
+        $this->assertEquals('Kermesse de l\'école des trois cailloux', $results[1]['title']);
+
+        // - Test à une date qui contient un événement dont l'inventaire n'est pas terminé,
+        //   mais avec une date minimum plus récente
+        $this->assertEmpty(Event::getAllNotReturned('2019-04-10', '2021-01-01')->get()->toArray());
+
+        // - Test avec des valeurs non valides
+        try {
+            Event::getAllNotReturned('', '2021-01-01')->get()->toArray();
+        } catch (\InvalidArgumentException $e) {
+            $this->assertEquals("La date de fin à utiliser n'est pas valide.", $e->getMessage());
+        }
+
+        try {
+            Event::getAllNotReturned('not-a-date', '2021-01-01')->get()->toArray();
+        } catch (\InvalidArgumentException $e) {
+            $this->assertEquals("La date de fin à utiliser n'est pas valide.", $e->getMessage());
+        }
+
+        try {
+            Event::getAllNotReturned('2019-04-10', '')->get()->toArray();
+        } catch (\InvalidArgumentException $e) {
+            $this->assertEquals("La date minimale à utiliser n'est pas valide.", $e->getMessage());
+        }
+
+        try {
+            Event::getAllNotReturned('2019-04-10', 'not-a-date')->get()->toArray();
+        } catch (\InvalidArgumentException $e) {
+            $this->assertEquals("La date minimale à utiliser n'est pas valide.", $e->getMessage());
+        }
     }
 }
