@@ -255,7 +255,7 @@ class MaterialController extends BaseController
 
             $collection[] = array_replace($event->toArray(), [
                 'parks' => $useMultipleParks
-                    ? Event::getParks($event['id'])
+                    ? Event::getParks($event['materials'])
                     : null
             ]);
         }

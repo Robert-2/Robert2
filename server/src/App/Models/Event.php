@@ -28,6 +28,8 @@ class Event extends BaseModel
     use WithPdf;
     use Cache;
 
+    public $__cachedConcurrentEvents = null;
+
     protected $orderField = 'start_date';
 
     protected $allowedSearchFields = ['title', 'start_date', 'end_date', 'location'];
@@ -334,6 +336,7 @@ class Event extends BaseModel
             $this->start_date,
             $this->end_date,
             $this->exists ? $this->id : null,
+            $this->__cachedConcurrentEvents
         );
 
         $missingMaterials = [];
@@ -350,16 +353,11 @@ class Event extends BaseModel
             : null;
     }
 
-    public static function getParks(int $id): array
+    public static function getParks(array $materials): array
     {
-        $event = static::with('Materials')->find($id);
-        if (!$event) {
-            return [];
-        }
-
         $materialParks = array_map(function ($material) {
             return $material['park_id'];
-        }, $event['materials']);
+        }, $materials);
 
         return array_values(array_unique($materialParks));
     }

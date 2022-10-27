@@ -466,30 +466,33 @@ class Material extends BaseModel
         array $data,
         ?string $start = null,
         ?string $end = null,
-        ?int $exceptEventId = null
+        ?int $exceptEventId = null,
+        ?array $concurrentEvents = null
     ): array {
         if (empty($data)) {
             return [];
         }
 
-        $events = [];
-        if (!empty($start) || !empty($end)) {
-            $query = Event::inPeriod($start, $end);
-            if ($exceptEventId) {
-                $query = $query->where('id', '!=', $exceptEventId);
+        if ($concurrentEvents === null) {
+            $concurrentEvents = [];
+            if (!empty($start) || !empty($end)) {
+                $query = Event::inPeriod($start, $end);
+                if ($exceptEventId) {
+                    $query = $query->where('id', '!=', $exceptEventId);
+                }
+                $concurrentEvents = $query->with('Materials')->get()->toArray();
             }
-            $events = $query->with('Materials')->get()->toArray();
         }
 
-        $periods = splitPeriods($events);
+        $periods = splitPeriods($concurrentEvents);
 
         foreach ($data as &$material) {
             $quantityPerPeriod = [0];
             foreach ($periods as $periodIndex => $period) {
-                $overlapEvents = array_filter($events, function ($event) use ($period) {
+                $overlapEvents = array_filter($concurrentEvents, function ($concurrentEvent) use ($period) {
                     return (
-                        strtotime($event['start_date']) < strtotime($period[1]) &&
-                        strtotime($event['end_date']) > strtotime($period[0])
+                        strtotime($concurrentEvent['start_date']) < strtotime($period[1]) &&
+                        strtotime($concurrentEvent['end_date']) > strtotime($period[0])
                     );
                 });
 
@@ -504,9 +507,10 @@ class Material extends BaseModel
                     $quantityPerPeriod[$periodIndex] += $eventMaterial['pivot']['quantity'];
                 }
             }
+            $usedCount = max($quantityPerPeriod);
 
             $remainingQuantity = (int)$material['stock_quantity'] - (int)$material['out_of_order_quantity'];
-            $material['remaining_quantity'] = max($remainingQuantity - max($quantityPerPeriod), 0);
+            $material['remaining_quantity'] = max($remainingQuantity - $usedCount, 0);
         }
 
         return $data;

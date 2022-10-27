@@ -13,6 +13,8 @@ import CalendarCaption from './components/Caption';
 import { formatEvent, getDefaultPeriod } from './_utils';
 
 const ONE_DAY = 1000 * 3600 * 24;
+const FETCH_DELTA_DAYS = 3;
+const MAX_ZOOM_MONTH = 3;
 
 // @vue/component
 export default {
@@ -27,8 +29,8 @@ export default {
             isSaving: false,
             isDeleting: false,
             isOverItem: false,
-            fetchStart: moment(start).subtract(8, 'days').startOf('day'),
-            fetchEnd: moment(end).add(1, 'months').endOf('month'),
+            fetchStart: moment(start).subtract(FETCH_DELTA_DAYS, 'days').startOf('day'),
+            fetchEnd: moment(end).add(FETCH_DELTA_DAYS, 'days').endOf('day'),
             isModalOpened: false,
             filterMissingMaterial: false,
             parkId: parkFilter ? Number.parseInt(parkFilter, 10) : null,
@@ -56,7 +58,7 @@ export default {
                 end,
                 selectable: !isVisitor,
                 zoomMin: ONE_DAY * 7,
-                zoomMax: ONE_DAY * 6 * 30,
+                zoomMax: ONE_DAY * 30 * MAX_ZOOM_MONTH,
             };
         },
 
@@ -82,9 +84,6 @@ export default {
 
             return events;
         },
-    },
-    mounted() {
-        this.getEventsData();
     },
     methods: {
         // ------------------------------------------------------
@@ -118,20 +117,10 @@ export default {
             localStorage.setItem('calendarEnd', dates.end.format('YYYY-MM-DD HH:mm:ss'));
             this.$refs.Header.changePeriod(dates);
 
-            let needFetch = false;
-            if (this.fetchStart.isAfter(dates.start)) {
-                this.fetchStart = moment(dates.start).subtract(8, 'days').startOf('day');
-                needFetch = true;
-            }
+            this.fetchStart = moment(dates.start).subtract(FETCH_DELTA_DAYS, 'days').startOf('day');
+            this.fetchEnd = moment(dates.end).add(FETCH_DELTA_DAYS, 'days').endOf('day');
 
-            if (this.fetchEnd.isBefore(dates.end)) {
-                this.fetchEnd = moment(dates.end).add(1, 'months').endOf('month');
-                needFetch = true;
-            }
-
-            if (needFetch) {
-                this.getEventsData();
-            }
+            this.getEventsData();
         },
 
         //
@@ -284,7 +273,12 @@ export default {
             try {
                 const { data } = await apiEvents.all(params);
                 this.events = data;
-            } catch {
+            } catch (error) {
+                const { status } = error.response ?? { status: 0 };
+                if (status === 416) {
+                    this.$refs.calendarTimeline.zoomIn(1, { animation: false });
+                    return;
+                }
                 this.hasCriticalError = true;
             } finally {
                 this.isLoading = false;
