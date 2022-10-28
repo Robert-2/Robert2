@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Robert2\Tests;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Robert2\API\Errors;
 use Robert2\API\Errors\ValidationException;
@@ -214,26 +215,20 @@ final class EventTest extends TestCase
 
     public function testGetParks(): void
     {
-        // - Non-existant event
-        $result = Event::getParks(999);
+        // - Sans matériel
+        $result = Event::getParks(new Collection());
         $this->assertEquals([], $result);
 
-        // - Events with material from one park
-        $result = Event::getParks(1);
-        $this->assertEquals([1], $result);
-        $result = Event::getParks(2);
-        $this->assertEquals([1], $result);
-        $result = Event::getParks(3);
-        $this->assertEquals([1], $result);
-        $result = Event::getParks(5);
-        $this->assertEquals([2], $result);
+        // - Events qui ont du matériel dans un seul parc
+        foreach ([1, 2, 3] as $eventId) {
+            $event = Event::find($eventId);
+            $result = Event::getParks($event->materials);
+            $this->assertEquals([1], $result);
+        }
 
-        // - Event with material from two parks
-        $result = Event::getParks(4);
-        $this->assertEquals([2, 1], $result);
-
-        // - Event without material (so without park)
-        $result = Event::getParks(6);
+        // - Event sans matériel
+        $event = Event::find(6);
+        $result = Event::getParks($event->materials);
         $this->assertEquals([], $result);
     }
 

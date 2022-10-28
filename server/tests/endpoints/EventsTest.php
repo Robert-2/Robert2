@@ -8,7 +8,7 @@ final class EventsTest extends ApiTestCase
 {
     public function testGetEvents()
     {
-        $this->client->get('/api/events?start=2018-01-01&end=2018-12-31');
+        $this->client->get('/api/events?start=2018-12-01&end=2018-12-31');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData([
             'data' => [
@@ -101,9 +101,16 @@ final class EventsTest extends ApiTestCase
             ]
         ]);
 
-        $this->client->get('/api/events?start=2018-01-01&end=2018-12-31&deleted=1');
+        $this->client->get('/api/events?start=2018-12-01&end=2018-12-31&deleted=1');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData(['data' => []]);
+    }
+
+    public function testGetEventsTooMuch()
+    {
+        $this->client->get('/api/events?start=2018-01-01&end=2018-12-31');
+        $this->assertStatusCode(StatusCode::STATUS_RANGE_NOT_SATISFIABLE);
+        $this->assertErrorMessage("The retrieval period for events may not exceed 105 days.");
     }
 
     public function testGetEventNotFound()

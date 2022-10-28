@@ -13,6 +13,10 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
   (+ idem pour les dates de fin).
 - Corrige divers problèmes de sécurité liés aux comptes utilisateurs.
 
+## 0.19.3 (2022-10-28)
+
+- Améliore le temps de chargement des événements dans le calendrier (#210).
+
 ## 0.19.2 (2022-07-29)
 
 - Un problème lors de la création du premier utilisateur dans le wizard d'installation a été corrigé (#367).

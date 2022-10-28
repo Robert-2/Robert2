@@ -542,31 +542,34 @@ class Material extends BaseModel implements Serializable
         Collection $materials,
         ?string $start = null,
         ?string $end = null,
-        ?int $exceptEventId = null
+        ?int $exceptEventId = null,
+        ?array $concurrentEvents = null
     ): Collection {
         if ($materials->isEmpty()) {
             return new Collection([]);
         }
 
-        $events = [];
-        if (!empty($start) || !empty($end)) {
-            $query = Event::inPeriod($start, $end);
-            if ($exceptEventId) {
-                $query = $query->where('id', '!=', $exceptEventId);
+        if ($concurrentEvents === null) {
+            $concurrentEvents = [];
+            if (!empty($start) || !empty($end)) {
+                $query = Event::inPeriod($start, $end);
+                if ($exceptEventId) {
+                    $query = $query->where('id', '!=', $exceptEventId);
+                }
+                $concurrentEvents = $query->with('materials')->get()->toArray();
             }
-            $events = $query->with('materials')->get()->toArray();
         }
 
-        return $materials->map(function ($material) use ($events) {
+        return $materials->map(function ($material) use ($concurrentEvents) {
             $material = clone $material;
 
             $quantityPerPeriod = [0];
-            $periods = splitPeriods($events);
+            $periods = splitPeriods($concurrentEvents);
             foreach ($periods as $periodIndex => $period) {
-                $overlapEvents = array_filter($events, function ($event) use ($period) {
+                $overlapEvents = array_filter($concurrentEvents, function ($concurrentEvent) use ($period) {
                     return (
-                        strtotime($event['start_date']) < strtotime($period[1]) &&
-                        strtotime($event['end_date']) > strtotime($period[0])
+                        strtotime($concurrentEvent['start_date']) < strtotime($period[1]) &&
+                        strtotime($concurrentEvent['end_date']) > strtotime($period[0])
                     );
                 });
 

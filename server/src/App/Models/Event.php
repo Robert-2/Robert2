@@ -31,6 +31,8 @@ class Event extends BaseModel implements Serializable
     use WithPdf;
     use Cache;
 
+    public $__cachedConcurrentEvents = null;
+
     protected $orderField = 'start_date';
 
     protected $allowedSearchFields = ['title', 'start_date', 'end_date', 'location'];
@@ -340,7 +342,8 @@ class Event extends BaseModel implements Serializable
             $this->materials,
             $this->start_date,
             $this->end_date,
-            $this->exists ? $this->id : null
+            $this->exists ? $this->id : null,
+            $this->__cachedConcurrentEvents
         );
 
         return $materials
@@ -471,15 +474,10 @@ class Event extends BaseModel implements Serializable
         return $builder;
     }
 
-    public static function getParks(int $id): array
+    public static function getParks(Collection $materials): array
     {
-        $event = static::with('materials')->find($id);
-        if (!$event) {
-            return [];
-        }
-
         $materialParks = [];
-        foreach ($event->materials as $material) {
+        foreach ($materials as $material) {
             $materialParks[] = $material->park_id;
         };
 

@@ -6,6 +6,7 @@ namespace Robert2\API\Controllers;
 use DI\Container;
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Carbon;
 use Robert2\API\Config\Config;
 use Robert2\API\Controllers\Traits\WithCrud;
 use Robert2\API\Controllers\Traits\WithPdf;
@@ -16,6 +17,7 @@ use Robert2\API\Models\Material;
 use Robert2\API\Models\Park;
 use Robert2\API\Services\Auth;
 use Robert2\API\Services\I18n;
+use Slim\Exception\HttpException;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
@@ -25,6 +27,8 @@ class EventController extends BaseController
 {
     use WithCrud;
     use WithPdf;
+
+    public const MAX_GET_ALL_PERIOD = 3.5 * 30; // - En jours
 
     private I18n $i18n;
 
@@ -63,15 +67,49 @@ class EventController extends BaseController
 
         $startDate = $request->getQueryParam('start', null);
         $endDate = $request->getQueryParam('end', null);
-        $deleted = (bool)$request->getQueryParam('deleted', false);
-        $withMaterials = (bool)$request->getQueryParam('with-materials', false);
+
+        // - Limitation de la période récupérable
+        $maxEndDate = Carbon::parse($startDate)->addDays(self::MAX_GET_ALL_PERIOD);
+        if (Carbon::parse($endDate)->greaterThan($maxEndDate)) {
+            throw new HttpException(
+                $request,
+                sprintf('The retrieval period for events may not exceed %s days.', self::MAX_GET_ALL_PERIOD),
+                StatusCode::STATUS_RANGE_NOT_SATISFIABLE
+            );
+        }
 
         $query = Event::inPeriod($startDate, $endDate)
             ->with('beneficiaries')
-            ->with('technicians');
+            ->with('technicians')
+            ->with(['materials' => function ($q) {
+                $q->orderBy('name', 'asc');
+            }]);
 
+        $deleted = (bool)$request->getQueryParam('deleted', false);
         if ($deleted) {
             $query->onlyTrashed();
+        }
+
+        $events = $query->get();
+
+        $concurrentEvents = Event::inPeriod($startDate, $endDate)
+            ->with('materials')
+            ->get()->toArray();
+
+        foreach ($events as $event) {
+            $event->__cachedConcurrentEvents = array_values(
+                array_filter($concurrentEvents, function ($otherEvent) use ($event) {
+                    $startDate = new \DateTime($event->start_date);
+                    $otherStartDate = new \DateTime($otherEvent['start_date']);
+                    $endDate = new \DateTime($event->end_date);
+                    $otherEndDate = new \DateTime($otherEvent['end_date']);
+                    return (
+                        $event->id !== $otherEvent['id'] &&
+                        $startDate <= $otherEndDate &&
+                        $endDate >= $otherStartDate
+                    );
+                })
+            );
         }
 
         $append = [
@@ -81,26 +119,19 @@ class EventController extends BaseController
             'has_not_returned_materials',
         ];
 
-        if ($withMaterials) {
-            $append[] = 'materials';
-            $query->with(['materials' => function ($q) {
-                $q->orderBy('name', 'asc');
-            }]);
-        }
-
-        $events = $query->get()->append($append)
+        $data = $query->get()->append($append)
             ->map(fn($event) => $event->serialize())
             ->all();
 
         $useMultipleParks = Park::count() > 1;
         foreach ($events as $index => $event) {
-            $events[$index]['parks'] = $useMultipleParks
-                ? Event::getParks($event['id'])
+            $data[$index]['parks'] = $useMultipleParks
+                ? Event::getParks($event->materials)
                 : null;
         }
 
         // FIXME: Pourquoi le `['data' => ...]` ?
-        return $response->withJson(['data' => $events], StatusCode::STATUS_OK);
+        return $response->withJson(['data' => $data], StatusCode::STATUS_OK);
     }
 
     public function getOne(Request $request, Response $response): Response
