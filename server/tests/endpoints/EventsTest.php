@@ -5,7 +5,7 @@ final class EventsTest extends ApiTestCase
 {
     public function testGetEvents()
     {
-        $this->client->get('/api/events?start=2018-01-01&end=2018-12-31');
+        $this->client->get('/api/events?start=2018-12-01&end=2018-12-31');
         $this->assertStatusCode(SUCCESS_OK);
         $this->assertResponseData([
             'data' => [
@@ -27,6 +27,120 @@ final class EventsTest extends ApiTestCase
                     'parks' => [1],
                     'beneficiaries' => [],
                     'technicians' => [],
+                    'materials' => [
+                        [
+                            'id' => 5,
+                            'name' => 'Câble XLR 10m',
+                            'reference' => 'XLR10',
+                            'description' => 'Câble audio XLR 10 mètres, mâle-femelle',
+                            'is_unitary' => false,
+                            'park_id' => 1,
+                            'category_id' => 1,
+                            'sub_category_id' => null,
+                            'rental_price' => 0.5,
+                            'stock_quantity' => 40,
+                            'out_of_order_quantity' => 8,
+                            'replacement_price' => 9.5,
+                            'is_hidden_on_bill' => true,
+                            'is_discountable' => true,
+                            'attributes' => [],
+                            'tags' => [],
+                            'pivot' => [
+                                'id' => 8,
+                                'event_id' => 3,
+                                'material_id' => 5,
+                                'quantity' => 12,
+                                'quantity_returned' => 0,
+                                'quantity_broken' => 0,
+                            ],
+                        ],
+                        [
+                            'id' => 3,
+                            'name' => 'PAR64 LED',
+                            'reference' => 'PAR64LED',
+                            'description' => 'Projecteur PAR64 à LED, avec son set de gélatines',
+                            'is_unitary' => false,
+                            'park_id' => 1,
+                            'category_id' => 2,
+                            'sub_category_id' => 3,
+                            'rental_price' => 3.5,
+                            'stock_quantity' => 34,
+                            'out_of_order_quantity' => 4,
+                            'replacement_price' => 89,
+                            'is_hidden_on_bill' => false,
+                            'is_discountable' => true,
+                            'attributes' => [
+                                [
+                                    'id' => 3,
+                                    'name' => 'Puissance',
+                                    'type' => 'integer',
+                                    'unit' => 'W',
+                                    'value' => 150,
+                                ],
+                                [
+                                    'id' => 1,
+                                    'name' => 'Poids',
+                                    'type' => 'float',
+                                    'unit' => 'kg',
+                                    'value' => 0.85,
+                                ],
+                            ],
+                            'tags' => [
+                                ['id' => 3, 'name' => 'pro'],
+                            ],
+                            'pivot' => [
+                                'id' => 6,
+                                'event_id' => 3,
+                                'material_id' => 3,
+                                'quantity' => 10,
+                                'quantity_returned' => 0,
+                                'quantity_broken' => 0,
+                            ],
+                        ],
+                        [
+                            'id' => 2,
+                            'name' => 'Processeur DBX PA2',
+                            'description' => 'Système de diffusion numérique',
+                            'reference' => 'DBXPA2',
+                            'is_unitary' => false,
+                            'park_id' => 1,
+                            'rental_price' => 25.5,
+                            'stock_quantity' => 2,
+                            'out_of_order_quantity' => null,
+                            'replacement_price' => 349.9,
+                            'is_hidden_on_bill' => false,
+                            'is_discountable' => true,
+                            'category_id' => 1,
+                            'sub_category_id' => 2,
+                            'tags' => [
+                                ['id' => 3, 'name' => 'pro'],
+                            ],
+                            'attributes' => [
+                                [
+                                    'id' => 3,
+                                    'name' => 'Puissance',
+                                    'type' => 'integer',
+                                    'unit' => 'W',
+                                    'value' => 35,
+                                ],
+                                [
+                                    'id' => 1,
+                                    'name' => 'Poids',
+                                    'type' => 'float',
+                                    'unit' => 'kg',
+                                    'value' => 2.2,
+                                ],
+                            ],
+                            'pivot' => [
+                                'id' => 7,
+                                'event_id' => 3,
+                                'material_id' => 2,
+                                'quantity' => 1,
+                                'quantity_returned' => 0,
+                                'quantity_broken' => 0,
+                            ],
+                        ],
+                    ],
                     'created_at' => null,
                     'updated_at' => null,
                     'deleted_at' => null,
@@ -109,6 +223,149 @@ final class EventsTest extends ApiTestCase
                             ],
                         ],
                     ],
+                    'materials' => [
+                        [
+                            'id' => 1,
+                            'name' => 'Console Yamaha CL3',
+                            'description' => 'Console numérique 64 entrées / 8 sorties + Master + Sub',
+                            'reference' => 'CL3',
+                            'is_unitary' => false,
+                            'park_id' => 1,
+                            'rental_price' => 300,
+                            'stock_quantity' => 5,
+                            'out_of_order_quantity' => 1,
+                            'replacement_price' => 19400,
+                            'is_hidden_on_bill' => false,
+                            'is_discountable' => false,
+                            'category_id' => 1,
+                            'sub_category_id' => 1,
+                            'tags' => [
+                                ['id' => 3, 'name' => 'pro'],
+                            ],
+                            'attributes' => [
+                                [
+                                    'id' => 3,
+                                    'name' => 'Puissance',
+                                    'type' => 'integer',
+                                    'unit' => 'W',
+                                    'value' => 850,
+                                ],
+                                [
+                                    'id' => 2,
+                                    'name' => 'Couleur',
+                                    'type' => 'string',
+                                    'unit' => null,
+                                    'value' => 'Grise',
+                                ],
+                                [
+                                    'id' => 1,
+                                    'name' => 'Poids',
+                                    'type' => 'float',
+                                    'unit' => 'kg',
+                                    'value' => 36.5,
+                                ],
+                            ],
+                            'pivot' => [
+                                'id' => 1,
+                                'event_id' => 1,
+                                'material_id' => 1,
+                                'quantity' => 1,
+                                'quantity_returned' => 1,
+                                'quantity_broken' => 0,
+                            ],
+                        ],
+                        [
+                            'id' => 2,
+                            'name' => 'Processeur DBX PA2',
+                            'description' => 'Système de diffusion numérique',
+                            'reference' => 'DBXPA2',
+                            'is_unitary' => false,
+                            'park_id' => 1,
+                            'rental_price' => 25.5,
+                            'stock_quantity' => 2,
+                            'out_of_order_quantity' => null,
+                            'replacement_price' => 349.9,
+                            'is_hidden_on_bill' => false,
+                            'is_discountable' => true,
+                            'category_id' => 1,
+                            'sub_category_id' => 2,
+                            'tags' => [
+                                ['id' => 3, 'name' => 'pro'],
+                            ],
+                            'attributes' => [
+                                [
+                                    'id' => 3,
+                                    'name' => 'Puissance',
+                                    'type' => 'integer',
+                                    'unit' => 'W',
+                                    'value' => 35,
+                                ],
+                                [
+                                    'id' => 1,
+                                    'name' => 'Poids',
+                                    'type' => 'float',
+                                    'unit' => 'kg',
+                                    'value' => 2.2,
+                                ],
+                            ],
+                            'pivot' => [
+                                'id' => 2,
+                                'event_id' => 1,
+                                'material_id' => 2,
+                                'quantity' => 1,
+                                'quantity_returned' => 1,
+                                'quantity_broken' => 0,
+                            ],
+                        ],
+                        [
+                            'id' => 4,
+                            'name' => 'Showtec SDS-6',
+                            'description' => "Console DMX (jeu d'orgue) Showtec 6 canaux",
+                            'reference' => 'SDS-6-01',
+                            'is_unitary' => false,
+                            'park_id' => 1,
+                            'rental_price' => 15.95,
+                            'stock_quantity' => 2,
+                            'out_of_order_quantity' => null,
+                            'replacement_price' => 59,
+                            'is_hidden_on_bill' => false,
+                            'is_discountable' => true,
+                            'category_id' => 2,
+                            'sub_category_id' => 4,
+                            'tags' => [],
+                            'attributes' => [
+                                [
+                                    'id' => 4,
+                                    'name' => 'Conforme',
+                                    'type' => 'boolean',
+                                    'unit' => null,
+                                    'value' => true,
+                                ],
+                                [
+                                    'id' => 3,
+                                    'name' => 'Puissance',
+                                    'type' => 'integer',
+                                    'unit' => 'W',
+                                    'value' => 60,
+                                ],
+                                [
+                                    'id' => 1,
+                                    'name' => 'Poids',
+                                    'type' => 'float',
+                                    'unit' => 'kg',
+                                    'value' => 3.15,
+                                ],
+                            ],
+                            'pivot' => [
+                                'id' => 3,
+                                'event_id' => 1,
+                                'material_id' => 4,
+                                'quantity' => 1,
+                                'quantity_returned' => 1,
+                                'quantity_broken' => 1,
+                            ],
+                        ],
+                    ],
                     'created_at' => null,
                     'updated_at' => null,
                     'deleted_at' => null,
@@ -152,6 +409,101 @@ final class EventsTest extends ApiTestCase
                         ],
                     ],
                     'technicians' => [],
+                    'materials' => [
+                        [
+                            'id' => 1,
+                            'name' => 'Console Yamaha CL3',
+                            'description' => 'Console numérique 64 entrées / 8 sorties + Master + Sub',
+                            'reference' => 'CL3',
+                            'is_unitary' => false,
+                            'park_id' => 1,
+                            'rental_price' => 300,
+                            'stock_quantity' => 5,
+                            'out_of_order_quantity' => 1,
+                            'replacement_price' => 19400,
+                            'is_hidden_on_bill' => false,
+                            'is_discountable' => false,
+                            'category_id' => 1,
+                            'sub_category_id' => 1,
+                            'tags' => [
+                                ['id' => 3, 'name' => 'pro'],
+                            ],
+                            'attributes' => [
+                                [
+                                    'id' => 3,
+                                    'name' => 'Puissance',
+                                    'type' => 'integer',
+                                    'unit' => 'W',
+                                    'value' => 850,
+                                ],
+                                [
+                                    'id' => 2,
+                                    'name' => 'Couleur',
+                                    'type' => 'string',
+                                    'unit' => null,
+                                    'value' => 'Grise',
+                                ],
+                                [
+                                    'id' => 1,
+                                    'name' => 'Poids',
+                                    'type' => 'float',
+                                    'unit' => 'kg',
+                                    'value' => 36.5,
+                                ],
+                            ],
+                            'pivot' => [
+                                'id' => 4,
+                                'event_id' => 2,
+                                'material_id' => 1,
+                                'quantity' => 3,
+                                'quantity_returned' => 2,
+                                'quantity_broken' => 0,
+                            ],
+                        ],
+                        [
+                            'id' => 2,
+                            'name' => 'Processeur DBX PA2',
+                            'description' => 'Système de diffusion numérique',
+                            'reference' => 'DBXPA2',
+                            'is_unitary' => false,
+                            'park_id' => 1,
+                            'rental_price' => 25.5,
+                            'stock_quantity' => 2,
+                            'out_of_order_quantity' => null,
+                            'replacement_price' => 349.9,
+                            'is_hidden_on_bill' => false,
+                            'is_discountable' => true,
+                            'category_id' => 1,
+                            'sub_category_id' => 2,
+                            'tags' => [
+                                ['id' => 3, 'name' => 'pro'],
+                            ],
+                            'attributes' => [
+                                [
+                                    'id' => 3,
+                                    'name' => 'Puissance',
+                                    'type' => 'integer',
+                                    'unit' => 'W',
+                                    'value' => 35,
+                                ],
+                                [
+                                    'id' => 1,
+                                    'name' => 'Poids',
+                                    'type' => 'float',
+                                    'unit' => 'kg',
+                                    'value' => 2.2,
+                                ],
+                            ],
+                            'pivot' => [
+                                'id' => 5,
+                                'event_id' => 2,
+                                'material_id' => 2,
+                                'quantity' => 2,
+                                'quantity_returned' => 2,
+                                'quantity_broken' => 0,
+                            ],
+                        ],
+                    ],
                     'created_at' => null,
                     'updated_at' => null,
                     'deleted_at' => null,
@@ -159,9 +511,16 @@ final class EventsTest extends ApiTestCase
             ]
         ]);
 
-        $this->client->get('/api/events?start=2018-01-01&end=2018-12-31&deleted=1');
+        $this->client->get('/api/events?start=2018-12-01&end=2018-12-31&deleted=1');
         $this->assertStatusCode(SUCCESS_OK);
         $this->assertResponseData(['data' => []]);
+    }
+
+    public function testGetEventsTooMuch()
+    {
+        $this->client->get('/api/events?start=2018-01-01&end=2018-12-31');
+        $this->assertStatusCode(416);
+        $this->assertErrorMessage("The retrieval period for events may not exceed 3.5 months.");
     }
 
     public function testGetEventNotFound()
@@ -1160,536 +1519,6 @@ final class EventsTest extends ApiTestCase
         $responseStream = $this->client->get('/events/1/pdf');
         $this->assertStatusCode(200);
         $this->assertTrue($responseStream->isReadable());
-    }
-
-    public function testGetEventsWithMaterials()
-    {
-        $this->client->get('/api/events?start=2018-01-01&end=2018-12-31&with-materials=true');
-        $this->assertStatusCode(SUCCESS_OK);
-        $this->assertResponseData([
-            'data' => [
-                [
-                    'id' => 3,
-                    'user_id' => 1,
-                    'title' => 'Avant-premier événement',
-                    'description' => null,
-                    'reference' => null,
-                    'start_date' => '2018-12-15 00:00:00',
-                    'end_date' => '2018-12-16 23:59:59',
-                    'is_confirmed' => false,
-                    'is_archived' => true,
-                    'location' => 'Brousse',
-                    'is_billable' => false,
-                    'is_return_inventory_done' => true,
-                    'created_at' => null,
-                    'updated_at' => null,
-                    'deleted_at' => null,
-                    'beneficiaries' => [],
-                    'technicians' => [],
-                    'materials' => [
-                        [
-                            'id' => 5,
-                            'name' => 'Câble XLR 10m',
-                            'description' => 'Câble audio XLR 10 mètres, mâle-femelle',
-                            'reference' => 'XLR10',
-                            'is_unitary' => false,
-                            'park_id' => 1,
-                            'category_id' => 1,
-                            'sub_category_id' => null,
-                            'rental_price' => 0.5,
-                            'stock_quantity' => 40,
-                            'out_of_order_quantity' => 8,
-                            'replacement_price' => 9.5,
-                            'is_hidden_on_bill' => true,
-                            'is_discountable' => true,
-                            'tags' => [
-                            ],
-                            'attributes' => [
-                            ],
-                            'pivot' => [
-                                'event_id' => 3,
-                                'material_id' => 5,
-                                'id' => 8,
-                                'quantity' => 12,
-                                'quantity_returned' => 0,
-                                'quantity_broken' => 0
-                            ]
-                        ],
-                        [
-                            'id' => 3,
-                            'name' => 'PAR64 LED',
-                            'description' => 'Projecteur PAR64 à LED, avec son set de gélatines',
-                            'reference' => 'PAR64LED',
-                            'is_unitary' => false,
-                            'park_id' => 1,
-                            'category_id' => 2,
-                            'sub_category_id' => 3,
-                            'rental_price' => 3.5,
-                            'stock_quantity' => 34,
-                            'out_of_order_quantity' => 4,
-                            'replacement_price' => 89,
-                            'is_hidden_on_bill' => false,
-                            'is_discountable' => true,
-                            'tags' => [
-                                [
-                                    'id' => 3,
-                                    'name' => 'pro'
-                                ]
-                            ],
-                            'attributes' => [
-                                [
-                                    'id' => 3,
-                                    'name' => 'Puissance',
-                                    'type' => 'integer',
-                                    'unit' => 'W',
-                                    'value' => 150
-                                ],
-                                [
-                                    'id' => 1,
-                                    'name' => 'Poids',
-                                    'type' => 'float',
-                                    'unit' => 'kg',
-                                    'value' => 0.85
-                                ]
-                            ],
-                            'pivot' => [
-                                'event_id' => 3,
-                                'material_id' => 3,
-                                'id' => 6,
-                                'quantity' => 10,
-                                'quantity_returned' => 0,
-                                'quantity_broken' => 0
-                            ]
-                        ],
-                        [
-                            'id' => 2,
-                            'name' => 'Processeur DBX PA2',
-                            'description' => 'Système de diffusion numérique',
-                            'reference' => 'DBXPA2',
-                            'is_unitary' => false,
-                            'park_id' => 1,
-                            'category_id' => 1,
-                            'sub_category_id' => 2,
-                            'rental_price' => 25.5,
-                            'stock_quantity' => 2,
-                            'out_of_order_quantity' => null,
-                            'replacement_price' => 349.9,
-                            'is_hidden_on_bill' => false,
-                            'is_discountable' => true,
-                            'tags' => [
-                                [
-                                    'id' => 3,
-                                    'name' => 'pro'
-                                ]
-                            ],
-                            'attributes' => [
-                                [
-                                    'id' => 3,
-                                    'name' => 'Puissance',
-                                    'type' => 'integer',
-                                    'unit' => 'W',
-                                    'value' => 35
-                                ],
-                                [
-                                    'id' => 1,
-                                    'name' => 'Poids',
-                                    'type' => 'float',
-                                    'unit' => 'kg',
-                                    'value' => 2.2
-                                ]
-                            ],
-                            'pivot' => [
-                                'event_id' => 3,
-                                'material_id' => 2,
-                                'id' => 7,
-                                'quantity' => 1,
-                                'quantity_returned' => 0,
-                                'quantity_broken' => 0
-                            ]
-                        ],
-                    ],
-                    'has_missing_materials' => null,
-                    'has_not_returned_materials' => null,
-                    'parks' => [1],
-                ],
-                [
-                    'id' => 1,
-                    'user_id' => 1,
-                    'title' => 'Premier événement',
-                    'description' => null,
-                    'reference' => null,
-                    'start_date' => '2018-12-17 00:00:00',
-                    'end_date' => '2018-12-18 23:59:59',
-                    'is_confirmed' => false,
-                    'is_archived' => false,
-                    'location' => 'Gap',
-                    'is_billable' => true,
-                    'is_return_inventory_done' => true,
-                    'created_at' => null,
-                    'updated_at' => null,
-                    'deleted_at' => null,
-                    'beneficiaries' => [
-                        [
-                            'id' => 3,
-                            'first_name' => 'Client',
-                            'last_name' => 'Benef',
-                            'full_name' => 'Client Benef',
-                            'country' => null,
-                            'company' => null,
-                            'reference' => null,
-                            'phone' => '+33123456789',
-                            'email' => 'client@beneficiaires.com',
-                            'company_id' => null,
-                            'street' => '156 bis, avenue des tests poussés',
-                            'postal_code' => '88080',
-                            'locality' => 'Wazzaville',
-                            'full_address' => "156 bis, avenue des tests poussés\n88080 Wazzaville",
-                            'pivot' => [
-                                'event_id' => '1',
-                                'person_id' => '3'
-                            ]
-                        ]
-                    ],
-                    'technicians' => [
-                        [
-                            'id' => 1,
-                            'event_id' => 1,
-                            'technician_id' => 1,
-                            'start_time' => '2018-12-17 09:00:00',
-                            'end_time' => '2018-12-18 22:00:00',
-                            'position' => 'Régisseur',
-                            'technician' => [
-                                'id' => 1,
-                                'first_name' => 'Jean',
-                                'last_name' => 'Fountain',
-                                'nickname' => null,
-                                'phone' => null,
-                                'full_name' => 'Jean Fountain',
-                                'country' => null,
-                                'full_address' => null,
-                                'company' => null
-                            ]
-                        ],
-                        [
-                            'id' => 2,
-                            'event_id' => 1,
-                            'technician_id' => 2,
-                            'start_time' => '2018-12-18 14:00:00',
-                            'end_time' => '2018-12-18 18:00:00',
-                            'position' => 'Technicien plateau',
-                            'technician' => [
-                                'id' => 2,
-                                'first_name' => 'Roger',
-                                'last_name' => 'Rabbit',
-                                'nickname' => 'Riri',
-                                'phone' => null,
-                                'full_name' => 'Roger Rabbit',
-                                'country' => null,
-                                'full_address' => null,
-                                'company' => null
-                            ]
-                        ]
-                    ],
-                    'materials' => [
-                        [
-                            'id' => 1,
-                            'name' => 'Console Yamaha CL3',
-                            'description' => 'Console numérique 64 entrées / 8 sorties + Master + Sub',
-                            'reference' => 'CL3',
-                            'is_unitary' => false,
-                            'park_id' => 1,
-                            'category_id' => 1,
-                            'sub_category_id' => 1,
-                            'rental_price' => 300,
-                            'stock_quantity' => 5,
-                            'out_of_order_quantity' => 1,
-                            'replacement_price' => 19400,
-                            'is_hidden_on_bill' => false,
-                            'is_discountable' => false,
-                            'tags' => [
-                                [
-                                    'id' => 3,
-                                    'name' => 'pro'
-                                ]
-                            ],
-                            'attributes' => [
-                                [
-                                    'id' => 3,
-                                    'name' => 'Puissance',
-                                    'type' => 'integer',
-                                    'unit' => 'W',
-                                    'value' => 850
-                                ],
-                                [
-                                    'id' => 2,
-                                    'name' => 'Couleur',
-                                    'type' => 'string',
-                                    'unit' => null,
-                                    'value' => 'Grise'
-                                ],
-                                [
-                                    'id' => 1,
-                                    'name' => 'Poids',
-                                    'type' => 'float',
-                                    'unit' => 'kg',
-                                    'value' => 36.5
-                                ]
-                            ],
-                            'pivot' => [
-                                'event_id' => 1,
-                                'material_id' => 1,
-                                'id' => 1,
-                                'quantity' => 1,
-                                'quantity_returned' => 1,
-                                'quantity_broken' => 0
-                            ]
-                        ],
-                        [
-                            'id' => 2,
-                            'name' => 'Processeur DBX PA2',
-                            'description' => 'Système de diffusion numérique',
-                            'reference' => 'DBXPA2',
-                            'is_unitary' => false,
-                            'park_id' => 1,
-                            'category_id' => 1,
-                            'sub_category_id' => 2,
-                            'rental_price' => 25.5,
-                            'stock_quantity' => 2,
-                            'out_of_order_quantity' => null,
-                            'replacement_price' => 349.9,
-                            'is_hidden_on_bill' => false,
-                            'is_discountable' => true,
-                            'tags' => [
-                                [
-                                    'id' => 3,
-                                    'name' => 'pro'
-                                ]
-                            ],
-                            'attributes' => [
-                                [
-                                    'id' => 3,
-                                    'name' => 'Puissance',
-                                    'type' => 'integer',
-                                    'unit' => 'W',
-                                    'value' => 35
-                                ],
-                                [
-                                    'id' => 1,
-                                    'name' => 'Poids',
-                                    'type' => 'float',
-                                    'unit' => 'kg',
-                                    'value' => 2.2
-                                ]
-                            ],
-                            'pivot' => [
-                                'event_id' => 1,
-                                'material_id' => 2,
-                                'id' => 2,
-                                'quantity' => 1,
-                                'quantity_returned' => 1,
-                                'quantity_broken' => 0
-                            ]
-                        ],
-                        [
-                            'id' => 4,
-                            'name' => 'Showtec SDS-6',
-                            'description' => "Console DMX (jeu d'orgue) Showtec 6 canaux",
-                            'reference' => 'SDS-6-01',
-                            'is_unitary' => false,
-                            'park_id' => 1,
-                            'category_id' => 2,
-                            'sub_category_id' => 4,
-                            'rental_price' => 15.95,
-                            'stock_quantity' => 2,
-                            'out_of_order_quantity' => null,
-                            'replacement_price' => 59,
-                            'is_hidden_on_bill' => false,
-                            'is_discountable' => true,
-                            'tags' => [
-                            ],
-                            'attributes' => [
-                                [
-                                    'id' => 4,
-                                    'name' => 'Conforme',
-                                    'type' => 'boolean',
-                                    'unit' => null,
-                                    'value' => true
-                                ],
-                                [
-                                    'id' => 3,
-                                    'name' => 'Puissance',
-                                    'type' => 'integer',
-                                    'unit' => 'W',
-                                    'value' => 60
-                                ],
-                                [
-                                    'id' => 1,
-                                    'name' => 'Poids',
-                                    'type' => 'float',
-                                    'unit' => 'kg',
-                                    'value' => 3.15
-                                ]
-                            ],
-                            'pivot' => [
-                                'event_id' => 1,
-                                'material_id' => 4,
-                                'id' => 3,
-                                'quantity' => 1,
-                                'quantity_returned' => 1,
-                                'quantity_broken' => 1
-                            ]
-                        ]
-                    ],
-                    'has_missing_materials' => null,
-                    'has_not_returned_materials' => false,
-                    'parks' => [1],
-                ],
-                [
-                    'id' => 2,
-                    'user_id' => 1,
-                    'title' => 'Second événement',
-                    'description' => null,
-                    'reference' => null,
-                    'start_date' => '2018-12-18 00:00:00',
-                    'end_date' => '2018-12-19 23:59:59',
-                    'is_confirmed' => false,
-                    'is_archived' => false,
-                    'location' => 'Lyon',
-                    'is_billable' => true,
-                    'is_return_inventory_done' => true,
-                    'created_at' => null,
-                    'updated_at' => null,
-                    'deleted_at' => null,
-                    'beneficiaries' => [
-                        [
-                            'id' => 3,
-                            'first_name' => 'Client',
-                            'last_name' => 'Benef',
-                            'full_name' => 'Client Benef',
-                            'country' => null,
-                            'company' => null,
-                            'reference' => null,
-                            'phone' => '+33123456789',
-                            'email' => 'client@beneficiaires.com',
-                            'company_id' => null,
-                            'street' => '156 bis, avenue des tests poussés',
-                            'postal_code' => '88080',
-                            'locality' => 'Wazzaville',
-                            'full_address' => "156 bis, avenue des tests poussés\n88080 Wazzaville",
-                            'pivot' => [
-                                'event_id' => '2',
-                                'person_id' => '3'
-                            ]
-                        ]
-                    ],
-                    'technicians' => [],
-                    'materials' => [
-                        [
-                            'id' => 1,
-                            'name' => 'Console Yamaha CL3',
-                            'description' => 'Console numérique 64 entrées / 8 sorties + Master + Sub',
-                            'reference' => 'CL3',
-                            'is_unitary' => false,
-                            'park_id' => 1,
-                            'category_id' => 1,
-                            'sub_category_id' => 1,
-                            'rental_price' => 300,
-                            'stock_quantity' => 5,
-                            'out_of_order_quantity' => 1,
-                            'replacement_price' => 19400,
-                            'is_hidden_on_bill' => false,
-                            'is_discountable' => false,
-                            'tags' => [
-                                [
-                                    'id' => 3,
-                                    'name' => 'pro'
-                                ]
-                            ],
-                            'attributes' => [
-                                [
-                                    'id' => 3,
-                                    'name' => 'Puissance',
-                                    'type' => 'integer',
-                                    'unit' => 'W',
-                                    'value' => 850
-                                ],
-                                [
-                                    'id' => 2,
-                                    'name' => 'Couleur',
-                                    'type' => 'string',
-                                    'unit' => null,
-                                    'value' => 'Grise'
-                                ],
-                                [
-                                    'id' => 1,
-                                    'name' => 'Poids',
-                                    'type' => 'float',
-                                    'unit' => 'kg',
-                                    'value' => 36.5
-                                ]
-                            ],
-                            'pivot' => [
-                                'event_id' => 2,
-                                'material_id' => 1,
-                                'id' => 4,
-                                'quantity' => 3,
-                                'quantity_returned' => 2,
-                                'quantity_broken' => 0
-                            ]
-                        ],
-                        [
-                            'id' => 2,
-                            'name' => 'Processeur DBX PA2',
-                            'description' => 'Système de diffusion numérique',
-                            'reference' => 'DBXPA2',
-                            'is_unitary' => false,
-                            'park_id' => 1,
-                            'category_id' => 1,
-                            'sub_category_id' => 2,
-                            'rental_price' => 25.5,
-                            'stock_quantity' => 2,
-                            'out_of_order_quantity' => null,
-                            'replacement_price' => 349.9,
-                            'is_hidden_on_bill' => false,
-                            'is_discountable' => true,
-                            'tags' => [
-                                [
-                                    'id' => 3,
-                                    'name' => 'pro'
-                                ]
-                            ],
-                            'attributes' => [
-                                [
-                                    'id' => 3,
-                                    'name' => 'Puissance',
-                                    'type' => 'integer',
-                                    'unit' => 'W',
-                                    'value' => 35
-                                ],
-                                [
-                                    'id' => 1,
-                                    'name' => 'Poids',
-                                    'type' => 'float',
-                                    'unit' => 'kg',
-                                    'value' => 2.2
-                                ]
-                            ],
-                            'pivot' => [
-                                'event_id' => 2,
-                                'material_id' => 2,
-                                'id' => 5,
-                                'quantity' => 2,
-                                'quantity_returned' => 2,
-                                'quantity_broken' => 0
-                            ]
-                        ]
-                    ],
-                    'has_missing_materials' => null,
-                    'has_not_returned_materials' => true,
-                    'parks' => [1],
-                ],
-            ],
-        ]);
     }
 
     public function testSearch()

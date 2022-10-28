@@ -161,6 +161,10 @@ export default {
         moveTo(time, options) {
             this.timeline.moveTo(time, options);
         },
+
+        zoomIn(percentage, options) {
+            this.timeline.zoomIn(percentage, options);
+        },
     },
     render() {
         const { loading, groups } = this;

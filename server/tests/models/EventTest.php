@@ -219,26 +219,20 @@ final class EventTest extends ModelTestCase
 
     public function testGetParks(): void
     {
-        // - Non-existant event
-        $result = Event::getParks(999);
+        // - Sans matériel
+        $result = Event::getParks([]);
         $this->assertEquals([], $result);
 
-        // - Events with material from one park
-        $result = Event::getParks(1);
-        $this->assertEquals([1], $result);
-        $result = Event::getParks(2);
-        $this->assertEquals([1], $result);
-        $result = Event::getParks(3);
-        $this->assertEquals([1], $result);
-        $result = Event::getParks(5);
-        $this->assertEquals([], $result);
+        // - Events qui ont du matériel dans un seul parc
+        foreach ([1, 2, 3] as $eventId) {
+            $event = Event::find($eventId);
+            $result = Event::getParks($event->materials);
+            $this->assertEquals([1], $result);
+        }
 
-        // - Event with material from two parks
-        $result = Event::getParks(4);
-        $this->assertEquals([1], $result);
-
-        // - Event without material (so without park)
-        $result = Event::getParks(6);
+        // - Event sans matériel
+        $event = Event::find(6);
+        $result = Event::getParks($event->materials);
         $this->assertEquals([], $result);
     }
 

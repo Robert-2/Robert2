@@ -13,6 +13,7 @@ use Robert2\API\Models\Material;
 use Robert2\API\Models\Park;
 use Robert2\API\Services\Auth;
 use Robert2\API\Services\I18n;
+use Slim\Exception\HttpException;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
 use Slim\Http\ServerRequest as Request;
@@ -59,25 +60,55 @@ class EventController extends BaseController
 
         $startDate = $request->getQueryParam('start', null);
         $endDate = $request->getQueryParam('end', null);
-        $deleted = (bool)$request->getQueryParam('deleted', false);
-        $withMaterials = (bool)$request->getQueryParam('with-materials', false);
+
+        // - Limitation de la période récupérable (en mois)
+        $maxMonth = 3.5;
+        $maxTime = 60 * 60 * 24 * 30 * $maxMonth;
+        $diffTime = strtotime($endDate) - strtotime($startDate);
+        if ($diffTime > $maxTime) {
+            throw new HttpException(
+                $request,
+                sprintf('The retrieval period for events may not exceed %s months.', $maxMonth),
+                416
+            );
+        }
 
         $query = Event::inPeriod($startDate, $endDate)
             ->with('Beneficiaries')
-            ->with('Technicians');
+            ->with('Technicians')
+            ->with(['Materials' => function ($q) {
+                $q->orderBy('name', 'asc');
+            }]);
 
+        $deleted = (bool)$request->getQueryParam('deleted', false);
         if ($deleted) {
             $query->onlyTrashed();
         }
 
-        if ($withMaterials) {
-            $query->with(['Materials' => function ($q) {
-                $q->orderBy('name', 'asc');
-            }]);
+        $events = $query->get();
+
+        $concurrentEvents = Event::inPeriod($startDate, $endDate)
+            ->with('Materials')
+            ->get()->toArray();
+
+        foreach ($events as $event) {
+            $event->__cachedConcurrentEvents = array_values(
+                array_filter($concurrentEvents, function ($otherEvent) use ($event) {
+                    $startDate = new \DateTime($event->start_date);
+                    $otherStartDate = new \DateTime($otherEvent['start_date']);
+                    $endDate = new \DateTime($event->end_date);
+                    $otherEndDate = new \DateTime($otherEvent['end_date']);
+                    return (
+                        $event->id !== $otherEvent['id'] &&
+                        $startDate <= $otherEndDate &&
+                        $endDate >= $otherStartDate
+                    );
+                })
+            );
         }
 
-        $data = $query->get()
-            ->each->setAppends([
+        $data = $events->each
+            ->setAppends([
                 'has_missing_materials',
                 'has_not_returned_materials',
             ])
@@ -86,7 +117,7 @@ class EventController extends BaseController
         $useMultipleParks = Park::count() > 1;
         foreach ($data as $index => $event) {
             $data[$index]['parks'] = $useMultipleParks
-                ? Event::getParks($event['id'])
+                ? Event::getParks($event['materials'])
                 : null;
         }
 
