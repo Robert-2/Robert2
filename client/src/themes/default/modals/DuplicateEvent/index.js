@@ -3,19 +3,26 @@ import moment from 'moment';
 import { DATE_DB_FORMAT } from '@/globals/constants';
 import FormField from '@/themes/default/components/FormField';
 import LocationText from '@/themes/default/components/LocationText';
+import Icon from '@/themes/default/components/Icon/index';
 import EventBeneficiaries from '@/themes/default/components/EventBeneficiaries';
 import EventTechnicians from '@/themes/default/components/EventTechnicians';
 import getEventMaterialItemsCount from '@/utils/getEventMaterialItemsCount';
+import { ApiErrorCode } from '@/stores/api/@codes';
 
 // @vue/component
 export default {
     name: 'DuplicateEvent',
+    modal: {
+        width: 600,
+        draggable: true,
+        clickToClose: false,
+    },
     provide: {
         verticalForm: true,
     },
     props: {
-        event: Object,
-        onDuplicated: Function,
+        event: { type: Object, required: true },
+        onDuplicated: { type: Function, required: true },
     },
     data() {
         return {
@@ -40,6 +47,10 @@ export default {
 
         itemsCount() {
             return getEventMaterialItemsCount(this.event.materials);
+        },
+
+        hasBeneficiary() {
+            return this.event.beneficiaries?.length > 0;
         },
     },
     methods: {
@@ -82,8 +93,8 @@ export default {
             } catch (error) {
                 this.error = error;
 
-                const { code, details } = error.response?.data?.error || { code: 0, details: {} };
-                if (code === 400) {
+                const { code, details } = error.response?.data?.error || { code: ApiErrorCode.UNKNOWN, details: {} };
+                if (code === ApiErrorCode.VALIDATION_FAILED) {
                     this.validationErrors = { ...details };
                 }
             } finally {
@@ -100,6 +111,7 @@ export default {
             $t: __,
             duration,
             itemsCount,
+            hasBeneficiary,
             error,
             validationErrors,
             datepickerOptions,
@@ -137,10 +149,15 @@ export default {
                             {duration ? __('duration-days', { duration }, duration) : `${__('duration')} ?`}
                         </div>
                         {location && <LocationText location={location} />}
-                        <EventBeneficiaries
-                            beneficiaries={beneficiaries}
-                            warningEmptyText={__('@event.warning-no-beneficiary')}
-                        />
+                        {!hasBeneficiary && (
+                            <p class="DuplicateEvent__main__infos__no-beneficiary">
+                                <Icon name="address-book" class="DuplicateEvent__main__infos__no-beneficiary__icon" />
+                                {__('@event.warning-no-beneficiary')}
+                            </p>
+                        )}
+                        {hasBeneficiary && (
+                            <EventBeneficiaries beneficiaries={beneficiaries} />
+                        )}
                         <EventTechnicians eventTechnicians={technicians} />
                         <div class="DuplicateEvent__main__infos__items-count">
                             <i class="fas fa-box" />{' '}

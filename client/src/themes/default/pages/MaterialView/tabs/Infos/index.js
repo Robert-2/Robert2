@@ -1,13 +1,14 @@
 import './index.scss';
 import moment from 'moment';
-import Fragment from '@/themes/default/components/Fragment';
+import { defineComponent } from '@vue/composition-api';
+import Fragment from '@/components/Fragment';
 import config from '@/globals/config';
 import formatAmount from '@/utils/formatAmount';
 import TagsList from '@/themes/default/components/TagsList';
 import Attributes from './Attributes';
 
 // @vue/component
-export default {
+const MaterialViewInfos = {
     name: 'MaterialViewInfos',
     props: {
         material: { required: true, type: Object },
@@ -68,14 +69,6 @@ export default {
                 subCategory: this.material.sub_category_id,
             };
         },
-
-        pictureUrl() {
-            const { id, picture } = this.material;
-
-            return picture
-                ? `${config.baseUrl}/materials/${id}/picture`
-                : null;
-        },
     },
     mounted() {
         this.$store.commit('setPageSubTitle', this.material.name);
@@ -91,7 +84,6 @@ export default {
             hasPricingData,
             rentalPrice,
             replacementPrice,
-            pictureUrl,
             createDate,
             updateDate,
             material,
@@ -106,8 +98,8 @@ export default {
             is_hidden_on_bill: isHiddenOnBill,
             is_discountable: isDiscountable,
             attributes,
-            note,
             picture,
+            note,
             tags,
         } = material;
 
@@ -159,7 +151,7 @@ export default {
                             </ul>
                             <h3>{__('billing')}</h3>
                             {isHiddenOnBill && (
-                                <p>{__('material-not-displayed-on-bill')}</p>
+                                <p>{__('material-not-displayed-on-invoice')}</p>
                             )}
                             {isDiscountable && (
                                 <p>{__('material-is-discountable')}</p>
@@ -177,13 +169,13 @@ export default {
                 {!!picture && (
                     <section class="MaterialViewInfos__picture">
                         <a
-                            href={pictureUrl}
+                            href={picture}
                             target="blank"
                             title={__('page.material-view.infos.click-to-open-image')}
                         >
                             <img
-                                src={pictureUrl}
-                                alt={picture}
+                                src={picture}
+                                alt={name}
                                 class="MaterialViewInfos__picture__img"
                             />
                         </a>
@@ -208,3 +200,5 @@ export default {
         );
     },
 };
+
+export default defineComponent(MaterialViewInfos);

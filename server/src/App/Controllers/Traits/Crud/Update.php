@@ -5,10 +5,10 @@ namespace Robert2\API\Controllers\Traits\Crud;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Robert2\API\Controllers\Traits\WithModel;
-use Robert2\API\Errors\ValidationException;
+use Robert2\API\Errors\Exception\ValidationException;
+use Robert2\API\Http\Request;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Http\Response;
-use Slim\Http\ServerRequest as Request;
 
 trait Update
 {
@@ -16,7 +16,7 @@ trait Update
 
     public function update(Request $request, Response $response): Response
     {
-        $postData = (array)$request->getParsedBody();
+        $postData = (array) $request->getParsedBody();
         if (empty($postData)) {
             throw new HttpBadRequestException($request, "No data was provided.");
         }
@@ -26,7 +26,7 @@ trait Update
         }
 
         try {
-            $id = (int)$request->getAttribute('id');
+            $id = (int) $request->getAttribute('id');
             $model = $this->getModelClass()::staticEdit($id, $postData);
         } catch (ValidationException $e) {
             $errors = $e->getValidationErrors();

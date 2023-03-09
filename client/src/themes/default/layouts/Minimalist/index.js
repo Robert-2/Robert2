@@ -1,7 +1,7 @@
 import './index.scss';
 import config from '@/globals/config';
-import Logo from '@/themes/default/components/Logo/vue';
-import useI18n from '@/hooks/vue/useI18n';
+import Logo from '@/themes/default/components/Logo';
+import useI18n from '@/hooks/useI18n';
 
 // @vue/component
 const MinimalistLayout = (_, { slots }) => {

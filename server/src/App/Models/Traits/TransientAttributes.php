@@ -16,4 +16,9 @@ trait TransientAttributes
     {
         return $this->transientAttributes[$key] ?? $default;
     }
+
+    protected function hasTransientAttribute(string $key): bool
+    {
+        return isset($this->transientAttributes[$key]);
+    }
 }

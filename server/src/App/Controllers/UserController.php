@@ -4,17 +4,16 @@ declare(strict_types=1);
 namespace Robert2\API\Controllers;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
+use Robert2\Support\Arr;
 use Robert2\API\Controllers\Traits\WithCrud;
-use Robert2\API\Errors\ValidationException;
+use Robert2\API\Errors\Exception\ValidationException;
+use Robert2\API\Http\Request;
 use Robert2\API\Models\Enums\Group;
 use Robert2\API\Models\User;
-use Robert2\API\Models\UserSetting;
 use Robert2\API\Services\Auth;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpForbiddenException;
-use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
-use Slim\Http\ServerRequest as Request;
 
 class UserController extends BaseController
 {
@@ -23,11 +22,40 @@ class UserController extends BaseController
         delete as protected _originalDelete;
     }
 
+    public function getAll(Request $request, Response $response): Response
+    {
+        $paginated = (bool) $request->getQueryParam('paginated', true);
+        $searchTerm = $request->getQueryParam('search', null);
+        $searchFields = $request->getQueryParam('searchBy', null);
+        $orderBy = $request->getQueryParam('orderBy', null);
+        $group = $request->getQueryParam('group', null);
+        $limit = $request->getQueryParam('limit', null);
+        $ascending = (bool) $request->getQueryParam('ascending', true);
+        $withDeleted = (bool) $request->getQueryParam('deleted', false);
+
+        $query = (new User())
+            ->setOrderBy($orderBy, $ascending)
+            ->setSearch($searchTerm, $searchFields)
+            ->getAll($withDeleted);
+
+        if (in_array($group, Group::all(), true)) {
+            $query->where('group', '=', $group);
+        }
+
+        if ($paginated) {
+            $results = $this->paginate($request, $query, is_numeric($limit) ? (int) $limit : null);
+        } else {
+            $results = $query->get();
+        }
+
+        return $response->withJson($results, StatusCode::STATUS_OK);
+    }
+
     public function getOne(Request $request, Response $response): Response
     {
         $id = $request->getAttribute('id');
         if ($id !== 'self') {
-            if (Auth::user()->id === (int)$id) {
+            if (Auth::user()->id === (int) $id) {
                 throw new HttpForbiddenException(
                     $request,
                     "Self retrieving this way is forbidden, use `GET /api/users/self`."
@@ -42,7 +70,7 @@ class UserController extends BaseController
             $id = Auth::user()->id;
         }
 
-        $user = static::_formatOne(User::findOrFail((int)$id));
+        $user = static::_formatOne(User::findOrFail((int) $id));
         return $response->withJson($user, StatusCode::STATUS_OK);
     }
 
@@ -50,7 +78,7 @@ class UserController extends BaseController
     {
         $id = $request->getAttribute('id');
         if ($id !== 'self') {
-            if (Auth::user()->id === (int)$id) {
+            if (Auth::user()->id === (int) $id) {
                 throw new HttpForbiddenException(
                     $request,
                     "Self update this way is forbidden, use `PUT /api/users/self`."
@@ -65,16 +93,16 @@ class UserController extends BaseController
             return $this->_originalUpdate($request, $response);
         }
 
-        $postData = (array)$request->getParsedBody();
+        $postData = (array) $request->getParsedBody();
         if (empty($postData)) {
             throw new HttpBadRequestException($request, "No data was provided.");
         }
 
         $postData = User::unserialize(
-            array_without_keys($postData, [
+            Arr::except($postData, array_merge(User::SETTINGS_ATTRIBUTES, [
                 'id',
                 'group',
-            ])
+            ]))
         );
 
         try {
@@ -93,33 +121,40 @@ class UserController extends BaseController
 
     public function getSettings(Request $request, Response $response): Response
     {
-        $id = (int)$request->getAttribute('id');
+        $id = (int) $request->getAttribute('id');
         $user = User::findOrFail($id);
-
-        if (!$user->settings) {
-            throw new HttpNotFoundException($request);
-        }
 
         return $response->withJson($user->settings, StatusCode::STATUS_OK);
     }
 
     public function updateSettings(Request $request, Response $response): Response
     {
-        $postData = (array)$request->getParsedBody();
+        $postData = (array) $request->getParsedBody();
         if (empty($postData)) {
             throw new HttpBadRequestException($request, "No data was provided.");
         }
 
-        $id = (int)$request->getAttribute('id');
-        $user = User::findOrFail($id);
+        $id = (int) $request->getAttribute('id');
+        $data = Arr::only($postData, User::SETTINGS_ATTRIBUTES);
 
-        $result = UserSetting::editByUser($user, $postData);
-        return $response->withJson($result, StatusCode::STATUS_OK);
+        try {
+            $user = User::staticEdit($id, $data);
+        } catch (ValidationException $e) {
+            $errors = $e->getValidationErrors();
+            if (empty($errors)) {
+                throw $e;
+            }
+
+            $errors = User::serializeValidation($errors);
+            throw new ValidationException($errors);
+        }
+
+        return $response->withJson($user->settings, StatusCode::STATUS_OK);
     }
 
     public function delete(Request $request, Response $response): Response
     {
-        $id = (int)$request->getAttribute('id');
+        $id = (int) $request->getAttribute('id');
         if (Auth::user()->id === $id) {
             throw new HttpForbiddenException($request, "Self deletion is forbidden.");
         }
@@ -132,8 +167,8 @@ class UserController extends BaseController
     // -
     // ------------------------------------------------------
 
-    protected static function _formatOne(User $user): User
+    protected static function _formatOne(User $user): array
     {
-        return $user;
+        return $user->serialize(User::SERIALIZE_DETAILS);
     }
 }

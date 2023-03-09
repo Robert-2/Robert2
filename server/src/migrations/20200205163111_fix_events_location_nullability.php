@@ -1,8 +1,10 @@
 <?php
+declare(strict_types=1);
+
 use Phinx\Migration\AbstractMigration;
 use Robert2\API\Config\Config;
 
-class FixEventsLocationNullability extends AbstractMigration
+final class FixEventsLocationNullability extends AbstractMigration
 {
     public function up()
     {
@@ -28,7 +30,10 @@ class FixEventsLocationNullability extends AbstractMigration
 
         $table = $this->table('events');
         $table
-            ->changeColumn('location', 'string', ['length' => 64])
+            ->changeColumn('location', 'string', [
+                'length' => 64,
+                'null' => false,
+            ])
             ->update();
     }
 }

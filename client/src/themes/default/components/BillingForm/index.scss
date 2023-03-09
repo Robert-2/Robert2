@@ -6,16 +6,9 @@
         text-align: center;
     }
 
-    &__discount-max-help {
-        color: globals.$text-light-color;
-    }
-
-    &__discount-input {
-        --input-width: 90px;
-    }
-
+    &__discount-input,
     &__discount-target-input {
-        --input-width: 110px;
+        --input-width: 250px;
     }
 
     &__beneficiary {
@@ -26,6 +19,10 @@
         &__label {
             display: block;
             padding: 5px 0;
+        }
+
+        &__name {
+            font-weight: 500;
         }
     }
 
@@ -52,10 +49,6 @@
     }
 
     @media (min-width: globals.$screen-tablet) {
-        &__discount-max-help {
-            padding-left: globals.$form-label-width;
-        }
-
         &__beneficiary {
             flex-direction: row;
             align-items: center;

@@ -1,0 +1,82 @@
+@use '~@/themes/default/style/globals';
+
+.EventDetailsEstimates {
+    $block: &;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: globals.$content-padding-small-vertical 0 0;
+
+    &__not-billable {
+        padding: 30px 0;
+        color: globals.$text-danger-color;
+        text-align: center;
+
+        &__title {
+            margin: 0;
+        }
+
+        &__text {
+            margin: 10px 0 0;
+            font-style: italic;
+        }
+    }
+
+    &__no-estimate,
+    &__create-new {
+        color: globals.$text-light-color;
+        font-style: italic;
+        text-align: center;
+    }
+
+    &__no-estimate {
+        max-width: 580px;
+        margin: auto;
+        padding: 20px 0 30px;
+        font-size: 1.15rem;
+
+        &__text {
+            margin: 0 0 15px;
+        }
+    }
+
+    &__list {
+        width: 100%;
+        max-width: 500px;
+        margin: 0;
+        padding: 0;
+        font-size: 1.1rem;
+
+        &__item {
+            width: 100%;
+            list-style: none;
+
+            & + & {
+                margin-top: globals.$content-padding-large-horizontal;
+            }
+        }
+    }
+
+    &__create-new {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: globals.$content-padding-large-vertical;
+
+        &__text {
+            margin: 0;
+        }
+
+        &__button {
+            margin-top: 5px;
+        }
+    }
+
+    &__warning-has-invoice {
+        margin: 0 0 globals.$content-padding-large-vertical;
+        color: globals.$text-warning-color;
+        font-size: 1.1rem;
+        text-align: center;
+    }
+}

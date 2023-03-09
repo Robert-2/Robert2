@@ -1,37 +1,34 @@
 import './index.scss';
+import axios from 'axios';
 import moment from 'moment';
-import Fragment from '@/themes/default/components/Fragment';
+import HttpCode from 'status-code-enum';
+import { ApiErrorCode } from '@/stores/api/@codes';
+import Fragment from '@/components/Fragment';
 import Loading from '@/themes/default/components/Loading';
 import CriticalError, { ERROR } from '@/themes/default/components/CriticalError';
 import Page from '@/themes/default/components/Page';
 import apiEvents from '@/stores/api/events';
 import { confirm } from '@/utils/alert';
-import EventReturnHeader from './components/Header';
-import EventReturnNotStarted from './components/NotStarted';
-import MaterialsList from './components/MaterialsList';
-import EventReturnFooter from './components/Footer';
+import Header from './components/Header';
+import Footer from './components/Footer';
+import NotStarted from './components/NotStarted';
+import Inventory, { DisplayGroup } from './components/Inventory';
 
 // @vue/component
 export default {
     name: 'EventReturn',
     data() {
-        const id = this.$route.params.id
-            ? parseInt(this.$route.params.id, 10)
-            : null;
-
         return {
-            id,
+            id: parseInt(this.$route.params.id, 10),
             event: null,
+            inventory: [],
             isLoading: false,
             isFetched: false,
             isSaving: false,
-            isTerminating: false,
-            displayGroup: 'categories',
-            startDate: null,
-            endDate: null,
-            quantities: [],
+            displayGroup: DisplayGroup.CATEGORIES,
             criticalError: null,
             validationErrors: null,
+            now: Date.now(),
         };
     },
     computed: {
@@ -44,13 +41,19 @@ export default {
         },
 
         hasStarted() {
-            const { startDate } = this;
-            return startDate ? startDate.isSameOrBefore(new Date(), 'day') : false;
+            if (!this.event) {
+                return false;
+            }
+            const startDate = moment(this.event.start_date);
+            return startDate.isSameOrBefore(this.now, 'day');
         },
 
         hasEnded() {
-            const { endDate } = this;
-            return endDate ? endDate.isSameOrBefore(new Date(), 'day') : false;
+            if (!this.event) {
+                return false;
+            }
+            const endDate = moment(this.event.end_date);
+            return endDate.isSameOrBefore(this.now, 'day');
         },
 
         isDone() {
@@ -62,6 +65,14 @@ export default {
     },
     mounted() {
         this.fetchData();
+
+        // - Actualise le timestamp courant toutes les minutes.
+        this.nowTimer = setInterval(() => { this.now = Date.now(); }, 60_000);
+    },
+    beforeUnmount() {
+        if (this.nowTimer) {
+            clearInterval(this.nowTimer);
+        }
     },
     methods: {
         // ------------------------------------------------------
@@ -70,14 +81,12 @@ export default {
         // -
         // ------------------------------------------------------
 
-        handleChangeQuantities(id, newQuantities) {
-            const { quantities } = this;
-            const index = quantities.findIndex(({ id: _id }) => id === _id);
+        handleChangeInventory(id, quantities) {
+            const index = this.inventory.findIndex(({ id: _id }) => id === _id);
             if (index < 0) {
                 return;
             }
-            const prevQuantities = quantities[index];
-            this.$set(quantities, index, { ...prevQuantities, ...newQuantities });
+            this.$set(this.inventory, index, { id, ...quantities });
         },
 
         handleChangeDisplayGroup(group) {
@@ -91,8 +100,8 @@ export default {
         async handleTerminate() {
             const { $t: __ } = this;
 
-            const hasBroken = this.quantities.some(({ broken }) => broken > 0);
-            const confirmation = await confirm({
+            const hasBroken = this.inventory.some(({ broken }) => broken > 0);
+            const isConfirmed = await confirm({
                 title: __('page.event-return.confirm-terminate-title'),
                 confirmButtonText: __('terminate-inventory'),
                 text: hasBroken
@@ -100,8 +109,7 @@ export default {
                     : __('page.event-return.confirm-terminate-text'),
 
             });
-
-            if (!confirmation.isConfirmed) {
+            if (!isConfirmed) {
                 return;
             }
 
@@ -120,22 +128,30 @@ export default {
                 this.setEvent(event);
                 this.isFetched = true;
             } catch (error) {
-                const status = error?.response?.status ?? 500;
-                this.criticalError = status === 404 ? ERROR.NOT_FOUND : ERROR.UNKNOWN;
+                if (!axios.isAxiosError(error)) {
+                    // eslint-disable-next-line no-console
+                    console.error(`Error ocurred while retrieving event #${this.id} data`, error);
+                    this.criticalError = ERROR.UNKNOWN;
+                } else {
+                    const { status = HttpCode.ServerErrorInternal } = error.response ?? {};
+                    this.criticalError = status === HttpCode.ClientErrorNotFound
+                        ? ERROR.NOT_FOUND
+                        : ERROR.UNKNOWN;
+                }
             }
         },
 
-        async save(terminate = false) {
+        async save(finish = false) {
             if (this.isSaving) {
                 return;
             }
             this.isSaving = true;
-            const { $t: __, quantities } = this;
+            const { $t: __, inventory } = this;
 
             const doRequest = () => (
-                terminate
-                    ? apiEvents.terminate(this.id, quantities)
-                    : apiEvents.setReturn(this.id, quantities)
+                finish
+                    ? apiEvents.finishReturnInventory(this.id, inventory)
+                    : apiEvents.updateReturnInventory(this.id, inventory)
             );
 
             try {
@@ -145,8 +161,9 @@ export default {
                 this.validationErrors = null;
                 this.$toasted.success(__('page.event-return.saved'));
             } catch (error) {
-                const { code, details } = error.response?.data?.error || { code: 0, details: {} };
-                if (code === 400) {
+                const { code, details } = error.response?.data?.error || { code: ApiErrorCode.UNKNOWN, details: {} };
+                if (code === ApiErrorCode.VALIDATION_FAILED) {
+                    // TODO: Valider que c'est bien au format `InventoryMaterialError[]` avec Zod ?
                     this.validationErrors = [...details];
                     this.$refs.page.scrollToTop();
                 } else {
@@ -159,22 +176,11 @@ export default {
 
         setEvent(event) {
             this.event = event;
-
-            this.startDate = moment(event.start_date);
-            this.endDate = moment(event.end_date);
-
-            this.quantities = event.materials.map(
-                ({ id, is_unitary: isUnitary, pivot }) => ({
+            this.inventory = event.materials.map(
+                ({ id, pivot }) => ({
                     id,
-                    awaited_quantity: pivot.quantity || 0,
                     actual: pivot.quantity_returned || 0,
-                    broken: pivot.quantity_broken || 0,
-                    is_unitary: isUnitary,
-                    units: pivot.units_with_return.map((unit) => ({
-                        id: unit.id,
-                        isLost: !unit.is_returned,
-                        isBroken: !!unit.is_returned_broken,
-                    })),
+                    broken: pivot.quantity_returned_broken || 0,
                 }),
             );
         },
@@ -182,19 +188,18 @@ export default {
     render() {
         const {
             event,
+            inventory,
             pageTitle,
             isFetched,
             criticalError,
             validationErrors,
             hasStarted,
             isSaving,
-            isTerminating,
             hasEnded,
             isDone,
             displayGroup,
-            quantities,
             handleChangeDisplayGroup,
-            handleChangeQuantities,
+            handleChangeInventory,
             handleSave,
             handleTerminate,
         } = this;
@@ -215,25 +220,25 @@ export default {
                 hasValidationError={!!validationErrors}
             >
                 <div class="EventReturn">
-                    <EventReturnHeader
+                    <Header
                         event={event}
                         hasStarted={hasStarted}
                         onDisplayGroupChange={handleChangeDisplayGroup}
                     />
-                    {!hasStarted && <EventReturnNotStarted />}
+                    {!hasStarted && <NotStarted />}
                     {hasStarted && (
                         <Fragment>
-                            <MaterialsList
+                            <Inventory
+                                inventory={inventory}
                                 materials={event.materials}
                                 displayGroup={displayGroup}
-                                quantities={quantities}
                                 errors={validationErrors}
                                 isLocked={isDone}
-                                onChange={handleChangeQuantities}
+                                onChange={handleChangeInventory}
                             />
-                            <EventReturnFooter
+                            <Footer
                                 isDone={isDone}
-                                isSaving={isSaving || isTerminating}
+                                isSaving={isSaving}
                                 hasEnded={hasEnded}
                                 onSave={handleSave}
                                 onTerminate={handleTerminate}

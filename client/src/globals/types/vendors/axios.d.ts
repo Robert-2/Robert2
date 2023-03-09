@@ -1,5 +1,7 @@
+import 'axios';
+
 declare module 'axios' {
-    export type ProgressCalback = (percent: number) => void;
+    export type ProgressCallback = (percent: number) => void;
 
     // TODO: Overwriter ça uniquement dans le custom requester et non globalement.
     interface AxiosRequestConfig {

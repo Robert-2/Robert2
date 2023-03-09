@@ -3,11 +3,47 @@ declare(strict_types=1);
 
 namespace Robert2\Tests;
 
-use Robert2\API\Errors\ValidationException;
+use Robert2\API\Errors\Exception\ValidationException;
+use Robert2\API\Models\Event;
 use Robert2\API\Models\Material;
+use Robert2\Support\Period;
 
 final class MaterialTest extends TestCase
 {
+    public function testValidation()
+    {
+        $data = [
+            'name' => 'A',
+            'reference' => 'ref-Te$t',
+            'picture' => 'pic',
+            'park_id' => 1,
+            'category_id' => 1,
+            'sub_category_id' => 2,
+            'rental_price' => -2.5,
+            'stock_quantity' => 120_000,
+            'out_of_order_quantity' => 110_000,
+            'replacement_price' => -10,
+        ];
+
+        $errors = null;
+        try {
+            (new Material($data))->validate();
+        } catch (ValidationException $e) {
+            $errors = $e->getValidationErrors();
+        }
+
+        $expectedErrors = [
+            'name' => ["2 caractères min., 191 caractères max."],
+            'reference' => ["Ce champ contient des caractères non autorisés"],
+            'picture' => ["5 caractères min., 191 caractères max."],
+            'rental_price' => ["Doit être supérieur ou égal à 0"],
+            'stock_quantity' => ["Doit être inférieur ou égal à 100000"],
+            'out_of_order_quantity' => ["Doit être inférieur ou égal à 100000"],
+            'replacement_price' => ["Doit être supérieur ou égal à 0"],
+        ];
+        $this->assertEquals($expectedErrors, $errors);
+    }
+
     public function testGetAllFiltered(): void
     {
         // - Récupération du matériel associé au parc n°1
@@ -46,35 +82,34 @@ final class MaterialTest extends TestCase
         $this->assertCount(2, $result);
     }
 
-    public function testWithAvailabilities(): void
+    public function testAllWithAvailabilities(): void
     {
         $originalMaterials =  Material::orderBy('id', 'asc')->get();
 
         // - Calcul des quantités restantes de chaque matériel sans spécifier de date (aucun événement)
-        $materials = Material::withAvailabilities($originalMaterials);
+        $materials = Material::allWithAvailabilities($originalMaterials);
         $this->assertCount(8, $materials);
         $this->assertEquals([4, 2, 30, 2, 32, 0, 1, 1], $materials->pluck('available_quantity')->all());
 
         // - Calcul des quantités restantes de chaque matériel pour une période sans événement
-        $materials = Material::withAvailabilities($originalMaterials, '2018-12-01', '2018-12-02');
+        $materials = Material::allWithAvailabilities($originalMaterials, new Period('2018-12-01', '2018-12-02'));
         $this->assertCount(8, $materials);
         $this->assertEquals([4, 2, 30, 2, 32, 0, 1, 1], $materials->pluck('available_quantity')->all());
 
         // - Calcul des quantités restantes de chaque matériel pour une période avec trois événements
-        $materials = Material::withAvailabilities($originalMaterials, '2018-12-15', '2018-12-20');
+        $materials = Material::allWithAvailabilities($originalMaterials, new Period('2018-12-15', '2018-12-20'));
         $this->assertCount(8, $materials);
         $this->assertEquals([0, 0, 20, 1, 20, 0, 1, 1], $materials->pluck('available_quantity')->all());
 
         // - Calcul des quantités restantes de chaque matériel pour une période avec un seul événement
-        $materials = Material::withAvailabilities($originalMaterials, '2018-12-19', '2018-12-20');
+        $materials = Material::allWithAvailabilities($originalMaterials, new Period('2018-12-19', '2018-12-20'));
         $this->assertCount(8, $materials);
         $this->assertEquals([1, 0, 30, 2, 32, 0, 1, 1], $materials->pluck('available_quantity')->all());
 
-        // - Calcul des quantités restantes de chaque matériel pour une période avec trois événements
-        // - en excluant l'événement n°2
-        $materials = Material::withAvailabilities($originalMaterials, '2018-12-15', '2018-12-20', 2);
+        // - Calcul des quantités restantes de chaque matériel pendant l'événement 1 (en l'excluant).
+        $materials = Material::allWithAvailabilities($originalMaterials, Event::find(1));
         $this->assertCount(8, $materials);
-        $this->assertEquals([3, 1, 20, 1, 20, 0, 1, 1], $materials->pluck('available_quantity')->all());
+        $this->assertEquals([1, 0, 30, 2, 32, 0, 1, 1], $materials->pluck('available_quantity')->all());
     }
 
     public function testSetSearch(): void
@@ -121,21 +156,18 @@ final class MaterialTest extends TestCase
     public function testCreateMaterialWithoutData(): void
     {
         $this->expectException(ValidationException::class);
-        $this->expectExceptionCode(ERROR_VALIDATION);
         Material::new([]);
     }
 
     public function testCreateMaterialBadData(): void
     {
         $this->expectException(ValidationException::class);
-        $this->expectExceptionCode(ERROR_VALIDATION);
         Material::new(['foo' => 'bar']);
     }
 
     public function testCreateMaterialDuplicate(): void
     {
         $this->expectException(ValidationException::class);
-        $this->expectExceptionCode(ERROR_VALIDATION);
         Material::new([
             'name' => 'Test duplicate ref. CL3',
             'reference' => 'CL3',
@@ -174,6 +206,7 @@ final class MaterialTest extends TestCase
             'stock_quantity' => 1,
             'is_hidden_on_bill' => false,
             'is_discountable' => true,
+            'is_reservable' => true,
             'picture' => null,
             'note' => null,
         ];

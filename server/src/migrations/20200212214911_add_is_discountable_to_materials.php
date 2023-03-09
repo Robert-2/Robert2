@@ -1,7 +1,9 @@
 <?php
+declare(strict_types=1);
+
 use Phinx\Migration\AbstractMigration;
 
-class AddIsDiscountableToMaterials extends AbstractMigration
+final class AddIsDiscountableToMaterials extends AbstractMigration
 {
     public function up()
     {
@@ -10,6 +12,7 @@ class AddIsDiscountableToMaterials extends AbstractMigration
             ->addColumn('is_discountable', 'boolean', [
                 'after' => 'is_hidden_on_bill',
                 'default' => true,
+                'null' => false,
             ])
             ->update();
     }

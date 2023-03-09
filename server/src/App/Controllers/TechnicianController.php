@@ -5,10 +5,11 @@ namespace Robert2\API\Controllers;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Robert2\API\Controllers\Traits\WithCrud;
+use Robert2\API\Http\Request;
 use Robert2\API\Models\Event;
 use Robert2\API\Models\Technician;
+use Robert2\Support\Arr;
 use Slim\Http\Response;
-use Slim\Http\ServerRequest as Request;
 
 class TechnicianController extends BaseController
 {
@@ -20,11 +21,11 @@ class TechnicianController extends BaseController
         $searchField = $request->getQueryParam('searchBy', null);
         $orderBy = $request->getQueryParam('orderBy', null);
         $limit = $request->getQueryParam('limit', null);
-        $ascending = (bool)$request->getQueryParam('ascending', true);
-        $withDeleted = (bool)$request->getQueryParam('deleted', false);
+        $ascending = (bool) $request->getQueryParam('ascending', true);
+        $withDeleted = (bool) $request->getQueryParam('deleted', false);
 
         // - Disponibilité dans une période donnée.
-        $availabilityPeriod = array_map_with_keys(
+        $availabilityPeriod = Arr::mapKeys(
             function ($key) use ($request) {
                 $rawDate = $request->getQueryParam(sprintf('%sDate', $key));
                 if (!$rawDate) {
@@ -62,13 +63,13 @@ class TechnicianController extends BaseController
             );
         }
 
-        $paginated = $this->paginate($request, $builder, $limit ? (int)$limit : null);
+        $paginated = $this->paginate($request, $builder, is_numeric($limit) ? (int) $limit : null);
         return $response->withJson($paginated, StatusCode::STATUS_OK);
     }
 
     public function getAllWhileEvent(Request $request, Response $response): Response
     {
-        $eventId = (int)$request->getAttribute('eventId');
+        $eventId = (int) $request->getAttribute('eventId');
         $event = Event::findOrFail($eventId);
 
         $technicians = (new Technician)

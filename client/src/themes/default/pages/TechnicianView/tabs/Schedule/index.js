@@ -3,6 +3,7 @@ import EventDetails from '@/themes/default/modals/EventDetails';
 import MonthCalendar from '@/themes/default/components/MonthCalendar';
 import ErrorMessage from '@/themes/default/components/ErrorMessage';
 import Loading from '@/themes/default/components/Loading';
+import showModal from '@/utils/showModal';
 import { formatTechnicianEvent } from './_utils';
 
 // @vue/component
@@ -65,17 +66,12 @@ export default {
             }, 300);
         },
 
-        openEventModal(eventId) {
-            this.$modal.show(
-                EventDetails,
-                { eventId, openedTab: 'technicians' },
-                undefined,
-                {
-                    'before-close': () => {
-                        this.fetchEvents();
-                    },
-                },
-            );
+        openEventModal(id) {
+            showModal(this.$modal, EventDetails, {
+                id,
+                openedTab: 'technicians',
+                onClose: () => { this.fetchEvents(); },
+            });
         },
     },
     render() {

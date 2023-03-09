@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Robert2\Tests;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
@@ -40,7 +42,7 @@ final class CountriesTest extends ApiTestCase
     public function testGetCountryNotFound()
     {
         $this->client->get('/api/countries/999');
-        $this->assertNotFound();
+        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
     public function testGetCountry()

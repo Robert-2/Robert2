@@ -1,15 +1,17 @@
 <?php
+declare(strict_types=1);
+
 use Phinx\Migration\AbstractMigration;
 use Robert2\API\Config\Config;
 
-class CreateGroupsOfUsers extends AbstractMigration
+final class CreateGroupsOfUsers extends AbstractMigration
 {
     public function up()
     {
         $groups = $this->table('groups', ['id' => false, 'primary_key' => 'id']);
         $groups
-            ->addColumn('id', 'string', ['length' => 16])
-            ->addColumn('name', 'string', ['length' => 32])
+            ->addColumn('id', 'string', ['length' => 16, 'null' => false])
+            ->addColumn('name', 'string', ['length' => 32, 'null' => false])
             ->create();
 
         $dataGroups = [
@@ -21,7 +23,9 @@ class CreateGroupsOfUsers extends AbstractMigration
 
         $users = $this->table('users');
         $users->renameColumn('group', 'group_id')->save();
-        $users->changeColumn('group_id', 'string', ['length' => 16])->save();
+        $users
+            ->changeColumn('group_id', 'string', ['length' => 16, 'null' => false])
+            ->save();
 
         $prefix = Config::getSettings('db')['prefix'];
 
@@ -39,7 +43,7 @@ class CreateGroupsOfUsers extends AbstractMigration
             ->addForeignKey('group_id', 'groups', 'id', [
                 'delete' => 'RESTRICT',
                 'update' => 'NO_ACTION',
-                'constraint' => 'fk_users_group'
+                'constraint' => 'fk_users_group',
             ])
             ->save();
     }
@@ -63,7 +67,12 @@ class CreateGroupsOfUsers extends AbstractMigration
             $prefix
         ));
 
-        $users->changeColumn('group_id', 'integer')->save();
+        $users
+            ->changeColumn('group_id', 'integer', [
+                'signed' => true,
+                'null' => false,
+            ])
+            ->save();
         $users->renameColumn('group_id', 'group')->save();
 
         $this->table('groups')->drop()->save();

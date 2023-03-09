@@ -6,10 +6,10 @@ namespace Robert2\API\Services;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Robert2\API\Config\Acl;
 use Robert2\API\Config\Config;
+use Robert2\API\Http\Request;
 use Robert2\API\Models\User;
 use Robert2\API\Services\Auth\AuthenticatorInterface;
 use Slim\Exception\HttpUnauthorizedException;
-use Slim\Http\ServerRequest as Request;
 use Slim\Psr7\Response;
 
 final class Auth
@@ -21,11 +21,11 @@ final class Auth
     private static $user = null;
 
     /**
-     * Contructeur.
+     * Constructeur.
      *
      * @param AuthenticatorInterface[] $authenticators
      */
-    public function __construct(array $authenticators = [])
+    public function __construct(array $authenticators)
     {
         $this->authenticators = $authenticators;
     }
@@ -44,20 +44,24 @@ final class Auth
         return $handler->handle($request);
     }
 
-    public function logout()
+    public function logout(bool $full = true)
     {
         if (!static::isAuthenticated()) {
             return true;
         }
 
-        $isFullyLogout = true;
+        // - Dispatch le logout aux authenticators.
+        $hasLogoutSucceeded = true;
         foreach ($this->authenticators as $auth) {
-            if (!$auth->logout()) {
-                $isFullyLogout = false;
+            if (!$auth->logout($full)) {
+                $hasLogoutSucceeded = false;
             }
         }
 
-        return $isFullyLogout;
+        // - Reset l'utilisateur connecté.
+        static::reset();
+
+        return $hasLogoutSucceeded;
     }
 
     // ------------------------------------------------------
@@ -68,33 +72,32 @@ final class Auth
 
     public static function user(): ?User
     {
-        return !empty(static::$user) ? static::$user : null;
+        if (empty(static::$user)) {
+            return static::$user;
+        }
+        return static::$user->refresh();
     }
 
     public static function isAuthenticated(): bool
     {
-        return (bool)static::user();
+        return (bool) static::user();
     }
 
     public static function is($groups): bool
     {
-        $groups = (array)$groups;
+        $groups = (array) $groups;
 
         if (!static::isAuthenticated()) {
             return false;
         }
 
-        return in_array(static::user()->group, (array)$groups);
+        return in_array(static::user()->group, (array) $groups, true);
     }
 
-    public static function isLoginRequest(Request $request): bool
+    public static function reset()
     {
-        return static::requestMatch($request, '/login');
-    }
-
-    public static function isApiRequest(Request $request): bool
-    {
-        return static::requestMatch($request, '/api');
+        static::$user = null;
+        container('i18n')->refreshLanguage();
     }
 
     // ------------------------------------------------------
@@ -111,7 +114,7 @@ final class Auth
         }
 
         // - Routes publiques
-        $isAllowedRoute = static::requestMatch($request, Acl::PUBLIC_ROUTES);
+        $isAllowedRoute = $request->match(Acl::PUBLIC_ROUTES);
         if ($isAllowedRoute) {
             return false;
         }
@@ -129,6 +132,11 @@ final class Auth
         // - Si on est en mode "test", on "fake" identifie l'utilisateur.
         if (Config::getEnv() === 'test') {
             static::$user = User::find(1);
+
+            // - L'utilisateur identifié a changé, on demande l'actualisation
+            //   de la langue détecté par l'i18n car la valeur a pu changer...
+            container('i18n')->refreshLanguage();
+
             return true;
         }
 
@@ -137,6 +145,11 @@ final class Auth
             $user = $auth->getUser($request);
             if (!empty($user) && $user instanceof User) {
                 static::$user = $user;
+
+                // - L'utilisateur identifié a changé, on demande l'actualisation
+                //   de la langue détecté par l'i18n car la valeur a pu changer...
+                container('i18n')->refreshLanguage();
+
                 return true;
             }
         }
@@ -146,41 +159,17 @@ final class Auth
 
     protected function unauthenticated(Request $request, RequestHandler $handler): Response
     {
-        if (static::isLoginRequest($request)) {
+        $isLoginRequest = $request->match(['/login', '/external/login']);
+        if ($isLoginRequest) {
             return $handler->handle($request);
         }
 
-        $isApiRequest = static::isApiRequest($request);
-        $isNormalRequest = !$request->isXhr() && !$isApiRequest;
-        if ($isNormalRequest) {
+        if (!$request->isXhr() && !$request->isApi()) {
             // TODO: globalConfig['client_url'] . '/login' à la place de '/login' ?
-            return (new Response(302))->withHeader('Location', '/login');
+            $route = '/login';
+            return (new Response(302))->withHeader('Location', $route);
         }
 
         throw new HttpUnauthorizedException($request);
-    }
-
-    protected static function requestMatch(Request $request, $paths): bool
-    {
-        $method = $request->getMethod();
-        $uri = '/' . $request->getUri()->getPath();
-        $uri = preg_replace('#/+#', '/', $uri);
-
-        foreach ((array)$paths as $path => $methods) {
-            if (is_numeric($path)) {
-                $path = $methods;
-                $methods = null;
-            }
-            $path = rtrim($path, '/');
-
-            $isUriMatching = preg_match(sprintf('@^%s(/.*)?$@', $path), $uri);
-            $isMethodMatching = $methods === null || in_array($method, $methods, true);
-
-            if ($isUriMatching && $isMethodMatching) {
-                return true;
-            }
-        }
-
-        return false;
     }
 }

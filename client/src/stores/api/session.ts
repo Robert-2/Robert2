@@ -3,6 +3,19 @@ import requester from '@/globals/requester';
 import type { UserDetails } from '@/stores/api/users';
 
 //
+// - Constants
+//
+
+/** Contextes de l'application (Où se trouve l'utilisateur ?). */
+export enum AppContext {
+    /**
+     * Back-office de l'application.
+     * (= Partie accessible par les membres du staff).
+     */
+    INTERNAL = 'internal',
+}
+
+//
 // - Types
 //
 
@@ -17,6 +30,7 @@ type NewSession = Session & {
 type Credentials = {
     identifier: string,
     password: string,
+    context?: AppContext,
 };
 
 //

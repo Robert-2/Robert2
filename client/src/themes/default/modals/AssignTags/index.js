@@ -6,6 +6,11 @@ import Header from './components/Header';
 export default {
     name: 'AssignTags',
     components: { Header, VueSelect },
+    modal: {
+        width: 600,
+        draggable: true,
+        clickToClose: false,
+    },
     props: {
         'entity': { type: String, required: true },
         'id': { type: [String, Number], required: true },

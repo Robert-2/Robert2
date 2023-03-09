@@ -1,8 +1,30 @@
 <?php
+declare(strict_types=1);
+
+//
+// -- Tests specifics paths
+//
+
 define('TESTS_FOLDER', dirname(__FILE__));
 
-define('FIXTURES_FOLDER', TESTS_FOLDER . DS . 'Fixtures');
+define('TESTS_FIXTURES_FOLDER', TESTS_FOLDER . DS . 'Fixtures');
 
-define('DATA_FOLDER', FIXTURES_FOLDER . DS . 'files');
+define('TESTS_FILES_FOLDER', TESTS_FIXTURES_FOLDER . DS . 'files');
 
-define('SNAPSHOTS_FOLDER', FIXTURES_FOLDER . DS . 'snapshots');
+define('TESTS_SNAPSHOTS_FOLDER', TESTS_FIXTURES_FOLDER . DS . 'snapshots');
+
+//
+// - Core Paths
+//
+
+define('ROOT_FOLDER', dirname(dirname(__FILE__)));
+
+define('VAR_FOLDER', ROOT_FOLDER . DS . 'src' . DS . 'var');
+
+define('CACHE_FOLDER', VAR_FOLDER . DS . 'cache' . DS . 'tests');
+
+define('TMP_FOLDER', VAR_FOLDER . DS . 'tmp' . DS . 'tests');
+
+define('LOGS_FOLDER', VAR_FOLDER . DS . 'logs' . DS . 'tests');
+
+define('DATA_FOLDER', TESTS_FILES_FOLDER);

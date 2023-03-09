@@ -5,6 +5,7 @@
     flex-flow: row-reverse wrap;
     justify-content: flex-end;
     padding-bottom: 6rem;
+    color: globals.$text-base-color;
 
     &__main {
         flex: 2;
@@ -45,7 +46,7 @@
 
     &__dates {
         margin-top: 1.5rem;
-        color: globals.$text-light-color;
+        color: globals.$text-soft-color;
     }
 
     &__notes {

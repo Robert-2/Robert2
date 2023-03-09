@@ -3,18 +3,18 @@ declare(strict_types=1);
 
 namespace Robert2\API\Console\Command\Migrations;
 
-use Robert2\API\Config\Config;
 use Phinx\Console\Command\Create as CoreCreateCommand;
+use Robert2\API\Config\Config;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[AsCommand(name: 'migrations:create')]
 class CreateCommand extends CoreCreateCommand
 {
     use ConfigurationTrait;
-
-    protected static $defaultName = 'migrations:create';
 
     protected function configure(): void
     {
@@ -23,13 +23,13 @@ class CreateCommand extends CoreCreateCommand
             ->addArgument('name', InputArgument::REQUIRED, "Nom de la classe de la migration (en CamelCase)?");
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         // - Phinx utilise `environment` plutôt que `env`, donc on ajoute l'alias artificiellement.
         $this->addOption('environment', null, InputOption::VALUE_REQUIRED, '', Config::getEnv());
 
         // - Options volontairement non exposées (= ne font pas sens dans le contexte de l'application).
-        foreach (['template', 'class', 'path'] as $coreOption) {
+        foreach (['template', 'class', 'path', 'style'] as $coreOption) {
             $this->addOption($coreOption);
         }
 

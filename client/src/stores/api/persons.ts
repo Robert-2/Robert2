@@ -1,13 +1,12 @@
 import requester from '@/globals/requester';
 
 import type { Country } from '@/stores/api/countries';
-import type { PaginatedData, PaginationParams } from './@types';
+import type { PaginatedData, ListingParams } from './@types';
 
 //
 // - Types
 //
 
-/* eslint-disable @typescript-eslint/naming-convention */
 export type Person = {
     id: number,
     first_name: string,
@@ -23,13 +22,12 @@ export type Person = {
     full_address: string | null,
     user_id: number | null,
 };
-/* eslint-enable @typescript-eslint/naming-convention */
 
 //
 // - Fonctions
 //
 
-const all = async (params: PaginationParams): Promise<PaginatedData<Person[]>> => (
+const all = async (params: ListingParams): Promise<PaginatedData<Person[]>> => (
     (await requester.get('/persons', { params })).data
 );
 

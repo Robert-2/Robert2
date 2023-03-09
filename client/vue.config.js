@@ -20,6 +20,8 @@ const config = {
     productionSourceMap: false,
     filenameHashing: false,
     chainWebpack: (webpackConfig) => {
+        webpackConfig.plugins.delete('fork-ts-checker');
+
         themes.forEach((theme) => {
             webpackConfig.plugins.delete(`html-${theme}`);
             webpackConfig.plugins.delete(`preload-${theme}`);

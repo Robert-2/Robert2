@@ -1,7 +1,9 @@
 <?php
+declare(strict_types=1);
+
 use Phinx\Migration\AbstractMigration;
 
-class ChangesMaterialUnitsConstraint extends AbstractMigration
+final class ChangesMaterialUnitsConstraint extends AbstractMigration
 {
     public function up()
     {

@@ -3,13 +3,24 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Robert2\API\Contracts\Serializable;
 use Robert2\API\Models\Traits\Serializer;
-use Robert2\API\Validation\Validator as V;
+use Respect\Validation\Validator as V;
 
-class EventTechnician extends BaseModel implements Serializable
+/**
+ * Technicien mandaté sur un événement.
+ *
+ * @property-read ?int $id
+ * @property-read int $event_id
+ * @property-read Event $event
+ * @property-read int $technician_id
+ * @property-read Technician $technician
+ * @property string $start_time
+ * @property string $end_time
+ * @property string|null $position
+ */
+final class EventTechnician extends BaseModel implements Serializable
 {
     use Serializer;
 
@@ -22,21 +33,21 @@ class EventTechnician extends BaseModel implements Serializable
         parent::__construct($attributes);
 
         $this->validation = [
-            'start_time' => V::callback([$this, 'checkDates']),
-            'end_time' => V::callback([$this, 'checkDates']),
+            'start_time' => V::custom([$this, 'checkDates']),
+            'end_time' => V::custom([$this, 'checkDates']),
             'position' => V::optional(V::length(2, 191)),
         ];
     }
 
     public function checkDates()
     {
-        $dateChecker = V::notEmpty()->date();
+        $dateChecker = V::notEmpty()->dateTime();
         if (!$dateChecker->validate($this->start_time)) {
-            return false;
+            return 'invalid-date';
         }
 
         if (!$dateChecker->validate($this->end_time)) {
-            return false;
+            return 'invalid-date';
         }
 
         $start = new \DateTime($this->start_time);
@@ -56,9 +67,9 @@ class EventTechnician extends BaseModel implements Serializable
         }
 
         $precision = [0, 15, 30, 45];
-        $startMinutes = (int)$start->format('i');
-        $endMinutes = (int)$end->format('i');
-        if (!in_array($startMinutes, $precision) || !in_array($endMinutes, $precision)) {
+        $startMinutes = (int) $start->format('i');
+        $endMinutes = (int) $end->format('i');
+        if (!in_array($startMinutes, $precision, true) || !in_array($endMinutes, $precision, true)) {
             return 'date-precision-must-be-quarter';
         }
 
@@ -72,9 +83,7 @@ class EventTechnician extends BaseModel implements Serializable
                 ['end_time', '>=', $this->start_time],
                 ['start_time', '<=', $this->end_time],
             ])
-            ->whereHas('event', function (Builder $query) {
-                $query->where('deleted_at', null);
-            })
+            ->whereRelation('event', 'deleted_at', null)
             ->exists();
         if ($technicianHasOtherEvents) {
             return 'technician-already-busy-for-this-period';
@@ -148,11 +157,6 @@ class EventTechnician extends BaseModel implements Serializable
         $this->attributes['position'] = $value;
     }
 
-    public static function flushForEvent(int $eventId)
-    {
-        static::where('event_id', $eventId)->delete();
-    }
-
     /**
      * Permet d'ignorer la validation qui vérifie le chevauchement avec les dates des autres assignations.
      * Utile quand on est certain que les autres assignations vont être supprimées avant le save
@@ -219,11 +223,8 @@ class EventTechnician extends BaseModel implements Serializable
         return $technicians;
     }
 
-    public static function staticRemove($id, array $options = []): ?BaseModel
+    public static function flushForEvent(int $eventId)
     {
-        if (!static::findOrFail($id)->delete()) {
-            throw new \RuntimeException(sprintf("Unable to delete the event technician %d.", $id));
-        }
-        return null;
+        static::where('event_id', $eventId)->delete();
     }
 }

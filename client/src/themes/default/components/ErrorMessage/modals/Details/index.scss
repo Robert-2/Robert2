@@ -37,7 +37,7 @@
     }
 
     &__content {
-        color: globals.$text-nav-color;
+        color: globals.$text-soft-color;
     }
 
     &__subtitle {
@@ -58,7 +58,7 @@
 
     &__trace-item {
         margin-bottom: 0.5rem;
-        color: globals.$text-nav-color;
+        color: globals.$text-soft-color;
 
         &__index {
             display: inline-block;
@@ -67,7 +67,7 @@
         }
 
         &__info {
-            color: globals.$text-nav-color;
+            color: globals.$text-soft-color;
             font-family: monospace;
         }
 

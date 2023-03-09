@@ -1,15 +1,17 @@
 import requester from '@/globals/requester';
 
-import type { PaginatedData, PaginationParams } from '@/stores/api/@types';
+import type { PaginatedData, ListingParams } from '@/stores/api/@types';
 import type { Group } from '@/stores/api/groups';
-import type { Park } from '@/stores/api/parks';
 
 //
 // - Types
 //
 
-/* eslint-disable @typescript-eslint/naming-convention */
-export type User = {
+type UserSettings = {
+    language: string,
+};
+
+export type User = UserSettings & {
     id: number,
     group: Group,
     pseudo: string,
@@ -17,12 +19,10 @@ export type User = {
     first_name: string,
     last_name: string,
     full_name: string,
-    phone: string,
+    phone: string | null,
 };
 
-export type UserDetails = User & {
-    restricted_parks: Array<Park['id']>,
-};
+export type UserDetails = User;
 
 export type UserEdit = {
     first_name: string | null,
@@ -34,10 +34,14 @@ export type UserEdit = {
     group: Group,
 };
 
-type UserEditSelf = Omit<UserEdit, 'group' | 'restricted_parks'>;
-/* eslint-enable @typescript-eslint/naming-convention */
+type UserSettingsEdit = Partial<UserSettings>;
 
-type GetAllParams = PaginationParams & { deleted?: boolean };
+type UserEditSelf = Omit<UserEdit, 'group'>;
+
+type GetAllParams = ListingParams & {
+    deleted?: boolean,
+    group?: Group,
+};
 
 //
 // - Fonctions
@@ -63,6 +67,14 @@ async function update(id: User['id'] | 'self', data: UserEdit | UserEditSelf): P
 }
 /* eslint-enable func-style */
 
+const getSettings = async (id: User['id']): Promise<UserSettings> => (
+    (await requester.get(`/users/${id}/settings`)).data
+);
+
+const saveSettings = async (id: User['id'], data: UserSettingsEdit): Promise<UserSettings> => (
+    (await requester.put(`/users/${id}/settings`, data)).data
+);
+
 const restore = async (id: User['id']): Promise<UserDetails> => (
     (await requester.put(`/users/restore/${id}`)).data
 );
@@ -71,4 +83,13 @@ const remove = async (id: User['id']): Promise<void> => {
     await requester.delete(`/users/${id}`);
 };
 
-export default { all, one, create, update, restore, remove };
+export default {
+    all,
+    one,
+    create,
+    update,
+    getSettings,
+    saveSettings,
+    restore,
+    remove,
+};

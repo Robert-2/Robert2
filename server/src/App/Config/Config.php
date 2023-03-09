@@ -5,22 +5,23 @@ namespace Robert2\API\Config;
 
 use Monolog\Logger;
 
-define('USE_SSL', isset($_SERVER['HTTPS']) ? (bool)$_SERVER['HTTPS'] : false);
-define('HOST_NAME', isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'localhost');
+define('USE_SSL', isset($_SERVER['HTTPS']) ? (bool) $_SERVER['HTTPS'] : false);
+define('HOST_NAME', $_SERVER['HTTP_HOST'] ?? 'localhost');
 
 class Config
 {
+    private const FILE = CONFIG_FOLDER . DS . 'settings.json';
+
     /**
-     * DEFAULT SETTINGS
+     * Configuration par défaut.
      *
-     * Please DO NOT modify them here.
-     * Use the `settings.json` file to overwrite settings,
-     * or even better, use the Installation Wizard.
+     * Veuillez NE PAS modifier les valeurs dans ce fichier.
+     * Utilisez le fichier `settings.json` pour surcharger les valeurs de certaines
+     * des options ci-dessous, ou mieux encore, utilisez l'assistant d'installation.
      */
-    const DEFAULT_SETTINGS = [
+    public const DEFAULT_SETTINGS = [
         'apiUrl' => (USE_SSL ? 'https://' : 'http://') . HOST_NAME,
         'apiHeaders' => ['Accept' => 'application/json'],
-        'basename' => "Robert2",
         'enableCORS' => false,
         'displayErrorDetails' => false,
         'useRouterCache' => true,
@@ -31,10 +32,10 @@ class Config
         'maxItemsPerPage' => 100,
         'defaultLang' => 'fr',
         'billingMode' => 'partial', // - Valeurs possibles : 'none', 'partial', 'all'.
-        'degressiveRateFunction' => '((daysCount - 1) * 0.75) + 1',
+        'degressiveRateFunction' => 'daysCount',
         'proxy' => [
             'enabled' => false,
-            'host' => 'proxy.robert2.local',
+            'host' => 'proxy.robert2.test',
             'port' => 3128,
         ],
         'auth' => [
@@ -44,16 +45,12 @@ class Config
             'symbol' => '€',
             'name' => 'Euro',
             'iso' => 'EUR',
-            'symbol_intl' => '€',
-            'decimal_digits' => 2,
-            'rounding' => 0,
         ],
         'db' => [
             'driver' => 'mysql',
             'host' => 'localhost',
             'port' => 3306,
-            'database' => 'robert2',
-            'testDatabase' => 'robert2_test',
+            'database' => 'loxya',
             'username' => 'root',
             'password' => '',
             'charset' => 'utf8mb4',
@@ -118,18 +115,15 @@ class Config
         ],
     ];
 
-    public const SETTINGS_FILE = __DIR__ . '/settings.json';
     public const JSON_OPTIONS = JSON_PRETTY_PRINT |
         JSON_UNESCAPED_UNICODE |
         JSON_UNESCAPED_SLASHES;
 
     public const CUSTOM_SETTINGS = [
         'apiUrl' => 'string',
-        'basename' => 'string',
         'enableCORS' => 'bool',
         'displayErrorDetails' => 'bool',
         'useRouterCache' => 'bool',
-        'useHTTPS' => 'bool',
         'useHTTPS' => 'bool',
         'JWTSecret' => 'string',
         'httpAuthHeader' => 'string',
@@ -139,19 +133,25 @@ class Config
         'degressiveRateFunction' => 'string',
         'defaultLang' => 'string',
         'currency' => 'array',
-        'db' => 'array',
+        'db?' => 'array',
         'companyData' => 'array',
     ];
 
     /** @var string|null La version de l'application, mise en "cache". */
     private static $versionCached;
 
+    /**
+     * @var array|null En environnement de test, plutôt que d'utiliser un
+     *                 vrai fichier, cette variable sera utilisée pour stocker
+     *                 la configuration.
+     */
+    private static $testConfig = null;
+
     public static function getSettings(?string $setting = null)
     {
-        $settings = self::DEFAULT_SETTINGS;
-        if (self::customConfigExists()) {
-            $settings = self::_readSettingsFile();
-        }
+        $settings = static::customConfigExists()
+            ? static::retrieveCustomConfig()
+            : static::DEFAULT_SETTINGS;
 
         if (empty($setting)) {
             return $settings;
@@ -160,15 +160,15 @@ class Config
         return $settings[$setting] ?? null;
     }
 
-    public static function getEnv()
+    public static function getEnv(bool $envOnly = false)
     {
-        $env = $_ENV['APP_ENV'] ?? $_SERVER['APP_ENV'] ?? static::getSettings('env') ?? 'production';
-
-        $availableEnvs = ['development', 'production', 'test'];
-        if (empty($env) || !in_array($env, $availableEnvs)) {
+        $env = env('APP_ENV');
+        if (!$envOnly && $env === null) {
+            $env = static::getSettings('env');
+        }
+        if (!in_array($env, ['development', 'production', 'test'], true)) {
             $env = 'production';
         }
-
         return $env;
     }
 
@@ -186,17 +186,26 @@ class Config
 
         $dbConfig = self::getSettings('db');
 
-        if (static::getEnv() === 'test') {
-            $dbConfig['database'] = $dbConfig['testDatabase'];
-        }
-
         // - Récupération des overwrites depuis les variables d'environnement.
-        $possibleEnvVars = ['port', 'host', 'name', 'user'];
-        foreach ($possibleEnvVars as $var) {
-            $value = getenv(sprintf('DB_%s', strtoupper($var)));
-            if ($value !== false) {
+        $envVars = [
+            'host' => 'host',
+            'port' => 'port',
+            'name' => 'database',
+            'test' => 'testDatabase',
+            'user' => 'username',
+            'pass' => 'password',
+        ];
+        foreach ($envVars as $envVar => $var) {
+            $value = env(sprintf('DB_%s', strtoupper($envVar)));
+            if ($value !== null) {
                 $dbConfig[$var] = $value;
             }
+        }
+
+        // - Si on est dans un environnement de test, on utilise la base de test.
+        if (static::getEnv() === 'test') {
+            $dbConfig['testDatabase'] ??= sprintf('%s_test', $dbConfig['database']);
+            $dbConfig['database'] = $dbConfig['testDatabase'];
         }
 
         $dbConfig['dsn'] = sprintf(
@@ -225,96 +234,112 @@ class Config
                 $dbConfig['password'],
                 $dbConfig['options']
             );
-            // @codeCoverageIgnoreStart
+
+        // @codeCoverageIgnoreStart
         } catch (\PDOException $e) {
-            switch ($e->getCode()) {
-                case 2002:
-                    $message = "Hostname '{$dbConfig['host']}' unreachable. Please check DB 'host' in config.";
-                    break;
-                case 1045:
-                    $message = "Bad credentials. Please check DB 'username' and 'password' in config.";
-                    break;
-                case 1049:
-                    $message  = "Database '{$dbConfig['database']}' is missing. ";
-                    $message .= "You should create it, or check its name in config.";
-                    break;
-                default:
-                    $message = "";
-                    break;
-            }
-            throw new \PDOException(sprintf(
-                "Unable to connect to database (error %s):\n    %s\n    PDO details: %s",
-                $e->getCode(),
-                $message,
-                $e->getMessage()
-            ));
+            $details = match ($e->getCode()) {
+                2002 => "Hostname '{$dbConfig['host']}' unreachable. Please check DB 'host' in config.",
+                1045 => "Bad credentials. Please check DB 'username' and 'password' in config.",
+                1049 => (
+                    "Database '{$dbConfig['database']}' is missing. " .
+                    "You should create it, or check its name in config."
+                ),
+                default => null,
+            };
+
+            $message = sprintf("Unable to connect to database (error %s)", $e->getCode());
+            $message .= $details !== null
+                ? sprintf(":\n    PDO details: %s", $e->getMessage())
+                : sprintf(":\n    %s", $details);
+
+            throw new \PDOException($message);
         }
         // @codeCoverageIgnoreEnd
     }
 
+    // ------------------------------------------------------
+    // -
+    // -    Config storage related.
+    // -
+    // ------------------------------------------------------
+
     public static function customConfigExists(): bool
     {
-        return file_exists(self::SETTINGS_FILE);
+        if (static::getEnv(true) === 'test') {
+            return static::$testConfig !== null;
+        }
+        return file_exists(static::FILE);
     }
 
-    /**
-     * @codeCoverageIgnore
-     */
     public static function saveCustomConfig(array $customConfig): void
     {
         if (empty($customConfig)) {
             throw new \InvalidArgumentException("Custom config: empty data.");
         }
 
-        foreach (self::CUSTOM_SETTINGS as $requiredField => $fieldType) {
-            if (!array_key_exists($requiredField, $customConfig)) {
-                throw new \InvalidArgumentException(
-                    "Custom config: Required field '$requiredField' is missing."
-                );
+        foreach (self::CUSTOM_SETTINGS as $field => $type) {
+            $isRequired = substr($field, -1) !== '?';
+            $field = rtrim($field, '?');
+
+            if (!array_key_exists($field, $customConfig)) {
+                if ($isRequired) {
+                    throw new \InvalidArgumentException(
+                        "Custom config: Required field '$field' is missing."
+                    );
+                }
+                continue;
             }
 
-            $functionTest = sprintf('is_%s', $fieldType);
-            if (!$functionTest($customConfig[$requiredField])) {
+            $functionTest = sprintf('is_%s', $type);
+            if (!$functionTest($customConfig[$field])) {
                 throw new \InvalidArgumentException(
-                    "Custom config: Field '$requiredField' must be of type '$fieldType'."
+                    "Custom config: Field '$field' must be of type '$type'."
                 );
             }
         }
 
+        if (static::getEnv(true) === 'test') {
+            static::$testConfig = $customConfig;
+            return;
+        }
+
         $jsonSettings = json_encode($customConfig, self::JSON_OPTIONS);
-        $saved = file_put_contents(self::SETTINGS_FILE, $jsonSettings);
+        $saved = file_put_contents(static::FILE, $jsonSettings);
         if (!$saved) {
             throw new \RuntimeException("Unable to write JSON settings file. Check write access to config folder.");
         }
     }
 
-    /**
-     * @codeCoverageIgnore
-     */
     public static function deleteCustomConfig(): void
     {
-        if (file_exists(self::SETTINGS_FILE)) {
-            unlink(self::SETTINGS_FILE);
+        if (static::getEnv(true) === 'test') {
+            static::$testConfig = null;
+            return;
+        }
+
+        if (file_exists(static::FILE)) {
+            unlink(static::FILE);
         }
     }
 
-    /**
-     * @codeCoverageIgnore
-     */
-    private static function _readSettingsFile(): array
+    private static function retrieveCustomConfig(): array
     {
-        if (!file_exists(self::SETTINGS_FILE)) {
-            throw new \RuntimeException("JSON settings file is missing. Please create one.");
+        if (!static::customConfigExists()) {
+            throw new \RuntimeException('Config file is missing. Please create one.');
         }
 
-        $fileContent = @file_get_contents(self::SETTINGS_FILE);
-        if ($fileContent === false) {
-            throw new \RuntimeException("Unable to read JSON settings file.");
-        }
+        if (static::getEnv(true) !== 'test') {
+            $fileContent = @file_get_contents(static::FILE);
+            if ($fileContent === false) {
+                throw new \RuntimeException('Unable to read the config file.');
+            }
 
-        $settings = json_decode($fileContent, true);
-        if (!is_array($settings)) {
-            throw new \RuntimeException("JSON settings file cannot be decoded. It may be malformed or corrupted.");
+            $settings = json_decode($fileContent, true);
+            if (!is_array($settings)) {
+                throw new \RuntimeException('Config file cannot be decoded. It may be malformed or corrupted.');
+            }
+        } else {
+            $settings = static::$testConfig;
         }
 
         return array_replace_recursive(self::DEFAULT_SETTINGS, $settings);

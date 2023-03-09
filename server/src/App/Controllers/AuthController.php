@@ -3,96 +3,77 @@ declare(strict_types=1);
 
 namespace Robert2\API\Controllers;
 
-use \phpCAS;
 use DI\Container;
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
-use Robert2\API\Errors\ValidationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Robert2\API\Config\Config;
+use Robert2\API\Http\Enums\AppContext;
+use Robert2\API\Http\Request;
 use Robert2\API\Models\User;
 use Robert2\API\Services\Auth;
-use Robert2\API\Validation\Validator as V;
 use Slim\Exception\HttpBadRequestException;
+use Slim\Exception\HttpUnauthorizedException;
 use Slim\Http\Response;
-use Slim\Http\ServerRequest as Request;
 
 class AuthController extends BaseController
 {
     /** @var Auth */
     protected $auth;
 
+    /** @var array */
+    private $settings;
+
     public function __construct(Container $container, Auth $auth)
     {
         parent::__construct($container);
 
         $this->auth = $auth;
+        $this->settings = $container->get('settings');
     }
 
     public function getSelf(Request $request, Response $response): Response
     {
-        $user = Auth::user()
-            ->append('language');
+        $user = Auth::user()->serialize(User::SERIALIZE_DETAILS);
 
         return $response->withJson($user, StatusCode::STATUS_OK);
     }
 
     public function loginWithForm(Request $request, Response $response): Response
     {
-        $postData = (array)$request->getParsedBody();
-        if (empty($postData)) {
-            throw new HttpBadRequestException($request, "No data was provided.");
+        $identifier = $request->getParsedBodyParam('identifier');
+        $password = $request->getParsedBodyParam('password');
+        $context = $request->getParsedBodyParam('context', AppContext::INTERNAL);
+
+        if (empty($identifier) || empty($password)) {
+            throw new HttpBadRequestException($request, "Insufficient credentials provided.");
         }
 
-        $this->_validateAuthRequest($postData);
+        try {
+            $user = User::fromLogin($identifier, $password);
+        } catch (ModelNotFoundException $e) {
+            throw new HttpUnauthorizedException($request, "Wrong credentials provided.");
+        }
 
-        $user = User::fromLogin($postData['identifier'], $postData['password']);
-
-        $result = $user
-            ->append('language')
-            ->serialize();
+        $result = $user->serialize(User::SERIALIZE_DETAILS);
 
         $result['token'] = Auth\JWT::generateToken($user);
+        if (Config::getEnv() === 'test') {
+            $result['token'] = '__FAKE-TOKEN__';
+        }
 
         return $response->withJson($result, StatusCode::STATUS_OK);
     }
 
     public function logout(Request $request, Response $response)
     {
+        $contextBasePath = '';
+
         if (!$this->auth->logout()) {
-            // TODO: Ajouter un message d'erreur passé au client (lorsqu'on aura un moyen de le faire)
-            //       l'informant du fait qu'il n'a pas été complétement
-            //       déconnécté.
-            return $response->withRedirect('/');
-        }
-        return $response->withRedirect('/login#bye');
-    }
-
-    // ------------------------------------------------------
-    // -
-    // -    Internal Methods
-    // -
-    // ------------------------------------------------------
-
-    protected function _validateAuthRequest(array $data): void
-    {
-        $valid  = true;
-        $errors = ['identifier' => [], 'password' => []];
-
-        if (!isset($data['identifier']) || !V::notEmpty()->validate($data['identifier'])) {
-            $errors['identifier'][] = "Identifier must not be empty";
-            $valid = false;
+            // TODO: Passer un message d'erreur au client (lorsqu'on aura un moyen de le faire)
+            //       l'informant du fait qu'il n'a pas été complètement déconnecté.
+            return $response->withRedirect(sprintf('%s/', $contextBasePath));
         }
 
-        if (!isset($data['password']) || !V::notEmpty()->validate($data['password'])) {
-            $errors['password'][] = "Password must not be empty";
-            $valid = false;
-        }
-
-        if (isset($data['password']) && !V::length(4)->validate($data['password'])) {
-            $errors['password'][] = "Password must have a length greater than 4";
-            $valid = false;
-        }
-
-        if (!$valid) {
-            throw new ValidationException($errors);
-        }
+        return $response->withRedirect(sprintf('%s/login', $contextBasePath));
     }
 }

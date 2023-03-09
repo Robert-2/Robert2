@@ -4,11 +4,35 @@ declare(strict_types=1);
 namespace Robert2\API\Models;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Str;
 use Robert2\API\Contracts\Serializable;
 use Robert2\API\Models\Traits\Serializer;
-use Robert2\API\Validation\Validator as V;
+use Respect\Validation\Validator as V;
 
-class Person extends BaseModel implements Serializable
+/**
+ * Une personne.
+ *
+ * @property-read ?int $id
+ * @property int|null $user_id
+ * @property-read User|null $user
+ * @property string $first_name
+ * @property string $last_name
+ * @property-read string $full_name
+ * @property string|null $email
+ * @property string|null $phone
+ * @property string|null $street
+ * @property string|null $postal_code
+ * @property string|null $locality
+ * @property int|null $country_id
+ * @property-read Country|null $country
+ * @property-read string|null $full_address
+ * @property-read Carbon $created_at
+ * @property-read Carbon|null $updated_at
+ *
+ * @property-read Beneficiary $beneficiary
+ * @property-read Technician $technician
+ */
+final class Person extends BaseModel implements Serializable
 {
     use Serializer;
 
@@ -22,15 +46,15 @@ class Person extends BaseModel implements Serializable
         parent::__construct($attributes);
 
         $this->validation = [
-            'user_id' => V::optional(V::numeric()),
-            'first_name' => V::notEmpty()->alpha(static::EXTRA_CHARS)->length(2, 35),
-            'last_name' => V::notEmpty()->alpha(static::EXTRA_CHARS)->length(2, 35),
-            'email' => V::callback([$this, 'checkEmail']),
+            'user_id' => V::optional(V::numericVal()),
+            'first_name' => V::notEmpty()->alnum(static::EXTRA_CHARS)->length(2, 35),
+            'last_name' => V::notEmpty()->alnum(static::EXTRA_CHARS)->length(2, 35),
+            'email' => V::custom([$this, 'checkEmail']),
             'phone' => V::optional(V::phone()),
             'street' => V::optional(V::length(null, 191)),
             'postal_code' => V::optional(V::length(null, 10)),
             'locality' => V::optional(V::length(null, 191)),
-            'country_id' => V::optional(V::numeric()),
+            'country_id' => V::optional(V::numericVal()),
         ];
     }
 
@@ -116,18 +140,21 @@ class Person extends BaseModel implements Serializable
 
     public function getCountryAttribute()
     {
-        return $this->country()->first();
+        return $this->getRelationValue('country');
     }
 
     public function getFullAddressAttribute()
     {
         $addressParts = [];
+
         $addressParts[] = trim($this->street ?? '');
         $addressParts[] = implode(' ', array_filter([
             trim($this->postal_code ?? ''),
             trim($this->locality ?? ''),
         ]));
-        return implode("\n", array_filter($addressParts));
+
+        $addressParts = array_filter($addressParts);
+        return !empty($addressParts) ? implode("\n", $addressParts) : null;
     }
 
     // ------------------------------------------------------
@@ -165,6 +192,7 @@ class Person extends BaseModel implements Serializable
             return $builder->orderBy($order, $direction);
         }
 
+        /** @var Builder $builder */
         return $builder
             ->orderBy('last_name', $direction)
             ->orderBy('first_name', $direction);
@@ -217,7 +245,7 @@ class Person extends BaseModel implements Serializable
     public static function staticEdit($id = null, array $data = []): BaseModel
     {
         if (!empty($data['phone'])) {
-            $data['phone'] = normalizePhone($data['phone']);
+            $data['phone'] = Str::remove(' ', $data['phone']);
         }
         return parent::staticEdit($id, $data);
     }

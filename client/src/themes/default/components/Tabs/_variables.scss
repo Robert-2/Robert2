@@ -20,9 +20,16 @@ $header-border-color-active: globals.$color-active-button !default;
 
 $border-radius: 4px 4px 0 0 !default;
 $icon-margin: 0.5rem !default;
-$text-color: globals.$text-nav-color !default;
+$text-color: globals.$text-soft-color !default;
 $text-color-active: globals.$text-base-color !default;
 $text-color-disabled: globals.$text-muted-color !default;
+
+//
+// - Counter
+//
+
+$counter-background-color: globals.$bg-color-button-danger !default;
+$counter-text-color: globals.$text-base-color !default;
 
 //
 // - Content panel

@@ -3,9 +3,11 @@ import moment from 'moment';
 import pick from 'lodash/pick';
 import config from '@/globals/config';
 import { DATE_DB_FORMAT } from '@/globals/constants';
+import apiEvents from '@/stores/api/events';
 import FormField from '@/themes/default/components/FormField';
 import Fieldset from '@/themes/default/components/Fieldset';
 import EventStore from '../../EventStore';
+import { ApiErrorCode } from '@/stores/api/@codes';
 
 // @vue/component
 export default {
@@ -40,6 +42,11 @@ export default {
                 description: null,
             },
         };
+    },
+    computed: {
+        isNew() {
+            return this.event.id === null;
+        },
     },
     watch: {
         event() {
@@ -126,23 +133,15 @@ export default {
         displayError(error) {
             this.$emit('error', error);
 
-            const { code, details } = error.response?.data?.error || { code: 0, details: {} };
-            if (code === 400) {
+            const { code, details } = error.response?.data?.error || { code: ApiErrorCode.UNKNOWN, details: {} };
+            if (code === ApiErrorCode.VALIDATION_FAILED) {
                 this.errors = { ...details };
             }
         },
 
-        save(options) {
+        async save(options) {
             this.$emit('loading');
-            const { id } = this.event;
-            const { resource } = this.$route.meta;
-
-            let request = this.$http.post;
-            let route = resource;
-            if (id) {
-                request = this.$http.put;
-                route = `${resource}/${id}`;
-            }
+            const { isNew } = this;
 
             const saveData = pick(this.eventData, [
                 'title',
@@ -160,18 +159,29 @@ export default {
                 end_date: moment(this.eventData.end_date).endOf('day').format(DATE_DB_FORMAT),
             };
 
-            request(route, postData)
-                .then(({ data }) => {
-                    const { gotoStep } = options;
-                    if (!gotoStep) {
-                        this.$router.push('/');
-                        return;
-                    }
-                    EventStore.commit('setIsSaved', true);
-                    this.$emit('updateEvent', data);
-                    this.$emit('gotoStep', gotoStep);
-                })
-                .catch(this.displayError);
+            const doRequest = () => (
+                isNew
+                    ? apiEvents.create(postData)
+                    : apiEvents.update(this.event.id, postData)
+            );
+
+            try {
+                const data = await doRequest();
+
+                const { gotoStep } = options;
+                if (!gotoStep) {
+                    this.$router.push('/');
+                    return;
+                }
+
+                EventStore.commit('setIsSaved', true);
+                this.$emit('updateEvent', data);
+                this.$emit('gotoStep', gotoStep);
+            } catch (error) {
+                this.displayError(error);
+            } finally {
+                this.$emit('stopLoading');
+            }
         },
     },
 };

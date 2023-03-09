@@ -13,7 +13,7 @@ const cleanFilePath = (path) => {
 export default {
     name: 'ErrorDetails',
     props: {
-        code: { type: Number, required: true },
+        statusCode: { type: Number, required: true },
         message: { type: String, required: true },
         details: { type: Object, default: null },
     },

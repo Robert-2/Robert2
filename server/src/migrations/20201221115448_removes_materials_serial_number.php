@@ -1,7 +1,9 @@
 <?php
+declare(strict_types=1);
+
 use Phinx\Migration\AbstractMigration;
 
-class RemovesMaterialsSerialNumber extends AbstractMigration
+final class RemovesMaterialsSerialNumber extends AbstractMigration
 {
     public function up()
     {
@@ -18,7 +20,7 @@ class RemovesMaterialsSerialNumber extends AbstractMigration
             ->addColumn('serial_number', 'string', [
                 'length' => 64,
                 'null' => true,
-                'after' => 'replacement_price'
+                'after' => 'replacement_price',
             ])
             ->save();
     }

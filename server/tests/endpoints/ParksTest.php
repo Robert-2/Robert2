@@ -1,8 +1,11 @@
 <?php
+declare(strict_types=1);
+
 namespace Robert2\Tests;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Illuminate\Support\Collection;
+use Robert2\Support\Arr;
 
 final class ParksTest extends ApiTestCase
 {
@@ -20,7 +23,7 @@ final class ParksTest extends ApiTestCase
                 'note' => null,
                 'total_items' => 6,
                 'total_stock_quantity' => 83,
-                'has_ongoing_event' => false,
+                'has_ongoing_booking' => false,
             ],
             [
                 'id' => 2,
@@ -33,14 +36,14 @@ final class ParksTest extends ApiTestCase
                 'note' => "Les bidouilles de fond de tiroir",
                 'total_items' => 2,
                 'total_stock_quantity' => 2,
-                'has_ongoing_event' => false,
+                'has_ongoing_booking' => false,
             ],
         ]);
 
         if (!$details) {
             $attributes = $attributes->map(fn($attribute) => (
-                array_without_keys($attribute, [
-                    'has_ongoing_event',
+                Arr::except($attribute, [
+                    'has_ongoing_booking',
                 ])
             ));
         }
@@ -68,7 +71,7 @@ final class ParksTest extends ApiTestCase
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData(
             (new Collection([self::data(1), self::data(2)]))
-                ->map(fn($park) => array_with_keys($park, ['id', 'name']))
+                ->map(fn($park) => Arr::only($park, ['id', 'name']))
                 ->all()
         );
     }
@@ -76,7 +79,7 @@ final class ParksTest extends ApiTestCase
     public function testGetOneNotFound()
     {
         $this->client->get('/api/parks/999');
-        $this->assertNotFound();
+        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
     public function testGetOne()
@@ -91,15 +94,15 @@ final class ParksTest extends ApiTestCase
         $this->client->get('/api/parks/2/materials');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData([
-            MaterialsTest::data(8),
             MaterialsTest::data(7),
+            MaterialsTest::data(8),
         ]);
     }
 
     public function testGetOneTotalAmountNotFound()
     {
         $this->client->get('/api/parks/999/total-amount');
-        $this->assertNotFound();
+        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
     public function testGetOneTotalAmount()
@@ -129,7 +132,7 @@ final class ParksTest extends ApiTestCase
             'note' => null,
             'total_items' => 0,
             'total_stock_quantity' => 0,
-            'has_ongoing_event' => false,
+            'has_ongoing_booking' => false,
         ]);
     }
 

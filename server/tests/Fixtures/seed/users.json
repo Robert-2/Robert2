@@ -4,20 +4,44 @@
         "pseudo": "test1",
         "group": "admin",
         "email": "tester@robertmanager.net",
-        "password": "$2y$10$o7Zu3VKby5bUzGk7uzSQqeUuXo5MSg7RpXQS3U3C541hjmzHeVY0O"
+        "password": "$2y$10$o7Zu3VKby5bUzGk7uzSQqeUuXo5MSg7RpXQS3U3C541hjmzHeVY0O",
+        "language": "en",
+        "notifications_enabled": true
     },
     {
         "id": 2,
         "pseudo": "test2",
         "group": "member",
         "email": "tester2@robertmanager.net",
-        "password": "$2y$10$VkEmVCo1wNxcfebjiOp50OHsdSzRPEqZA9MROgeS2pw5fqHIUCq16"
+        "password": "$2y$10$o7Zu3VKby5bUzGk7uzSQqeUuXo5MSg7RpXQS3U3C541hjmzHeVY0O",
+        "language": "fr",
+        "notifications_enabled": true
     },
     {
         "id": 3,
         "pseudo": "nobody",
         "group": "member",
         "email": "nobody@robertmanager.net",
-        "password": "$2y$10$VkEmVCo1wNxcfebjiOp50OHsdSzRPEqZA9MROgeS2pw5fqHIUCq16"
+        "password": "$2y$10$o7Zu3VKby5bUzGk7uzSQqeUuXo5MSg7RpXQS3U3C541hjmzHeVY0O",
+        "language": "fr",
+        "notifications_enabled": true
+    },
+    {
+        "id": 4,
+        "pseudo": "TheVisitor",
+        "group": "visitor",
+        "email": "visitor@robertmanager.net",
+        "password": "$2y$10$o7Zu3VKby5bUzGk7uzSQqeUuXo5MSg7RpXQS3U3C541hjmzHeVY0O",
+        "language": "fr",
+        "notifications_enabled": false
+    },
+    {
+        "id": 5,
+        "pseudo": "caroline",
+        "group": "external",
+        "email": "external@robertmanager.net",
+        "password": "$2y$10$o7Zu3VKby5bUzGk7uzSQqeUuXo5MSg7RpXQS3U3C541hjmzHeVY0O",
+        "language": "en",
+        "notifications_enabled": true
     }
 ]

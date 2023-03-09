@@ -1,15 +1,10 @@
 title: Login
 
 welcome: Hello! Who are you?
-connexion: Enter Robert
-login-with-cas: Login with CAS
+connexion: Connection
 
 please-wait: 'Authentication, please wait...'
 bye: "See you\_!"
-
-footer: >-
-    Robert2 "Premium" is a non-free version of the free software Robert2.
-    Copying and redistribution of this version is forbidden.
 
 error:
     expired-session: Your session has expired. Please log back in!

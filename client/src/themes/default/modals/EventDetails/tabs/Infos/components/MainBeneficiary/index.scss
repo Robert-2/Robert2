@@ -1,0 +1,13 @@
+.EventDetailsMainBeneficiary {
+    font-size: 1.1rem;
+
+    &__address,
+    &__phone,
+    &__email {
+        margin: 0 0 8px;
+    }
+
+    &__address {
+        white-space: pre-line;
+    }
+}

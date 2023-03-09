@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Robert2\Tests;
 
 use Robert2\API\Models\Attribute;
-use Robert2\API\Errors\ValidationException;
+use Robert2\API\Errors\Exception\ValidationException;
 use PHPUnit\Framework\Constraint\Exception as ExceptionConstraint;
 
 final class AttributeTest extends TestCase
@@ -34,8 +34,8 @@ final class AttributeTest extends TestCase
             'max_length' => 100,
         ];
         $testValidation($testData, [
-            'unit' => ['Must be null'],
-            'max_length' => ['Must be null'],
+            'unit' => ['Doit être non défini'],
+            'max_length' => ['Doit être non défini'],
         ]);
 
         // - Si `max_length` | `unit` à `null` pour les attributs autres (cf. commentaire au dessus) => Pas d'erreur.
@@ -50,7 +50,7 @@ final class AttributeTest extends TestCase
             'max_length' => 'NOT_A_NUMBER',
         ];
         $testValidation($testData, [
-            'max_length' => ['This field must contain only numbers'],
+            'max_length' => ['Ce champ ne peut contenir que des nombres'],
         ]);
 
         // - Test `max_length`: Si valide pour les attributs de type `string` => Pas d'erreur.
@@ -66,7 +66,7 @@ final class AttributeTest extends TestCase
         foreach (['float', 'integer'] as $type) {
             $testData = array_replace($baseTestData, compact('type'));
             $testValidation($testData, [
-                'unit' => ['1 min. characters, 8 max. characters'],
+                'unit' => ['1 caractères min., 8 caractères max.'],
             ]);
         }
 

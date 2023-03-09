@@ -1,6 +1,7 @@
 import './index.scss';
 import pick from 'lodash/pick';
 import cloneDeep from 'lodash/cloneDeep';
+import { defineComponent } from '@vue/composition-api';
 import config from '@/globals/config';
 import apiAttributes from '@/stores/api/attributes';
 import formatOptions from '@/utils/formatOptions';
@@ -27,7 +28,7 @@ const DEFAULT_VALUES = Object.freeze({
 });
 
 // @vue/component
-export default {
+const MaterialEditForm = {
     name: 'MaterialEditForm',
     provide: {
         verticalForm: true,
@@ -79,22 +80,22 @@ export default {
             return firstParkId !== parseInt(parkId, 10);
         },
 
-        subCategoriesOptions() {
-            let { category_id: categoryId } = this.data;
+        selectedCategory() {
+            const { category_id: categoryId } = this.data;
             if (!categoryId && categoryId !== 0) {
-                return [];
-            }
-            categoryId = parseInt(categoryId, 10);
-
-            const categories = this.$store.state.categories.list;
-            const category = categories.find(
-                (_category) => parseInt(_category.id, 10) === categoryId,
-            );
-            if (!category) {
-                return [];
+                return null;
             }
 
-            return formatOptions(category.sub_categories);
+            return this.$store.getters['categories/category'](categoryId);
+        },
+
+        subCategoriesOptions() {
+            const { selectedCategory } = this;
+            if (!selectedCategory) {
+                return [];
+            }
+
+            return formatOptions(selectedCategory.sub_categories);
         },
 
         parksOptions() {
@@ -137,6 +138,10 @@ export default {
                     ? firstParkId
                     : data.park_id;
             }
+
+            data.rental_price = config.billingMode !== 'none'
+                ? data.rental_price
+                : null;
 
             data.attributes = Object.entries(data.attributes).map(
                 ([id, value]) => ({ id: parseInt(id, 10), value }),
@@ -339,7 +344,7 @@ export default {
                             errors={errors?.is_discountable}
                         />
                         <FormField
-                            label="hidden-on-bill"
+                            label="hidden-on-invoice"
                             type="switch"
                             v-model={data.is_hidden_on_bill}
                             errors={errors?.is_hidden_on_bill}
@@ -390,3 +395,5 @@ export default {
         );
     },
 };
+
+export default defineComponent(MaterialEditForm);

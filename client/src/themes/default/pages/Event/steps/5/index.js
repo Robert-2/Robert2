@@ -1,5 +1,6 @@
 import './index.scss';
 import config from '@/globals/config';
+import apiEvents from '@/stores/api/events';
 import Overview from './Overview';
 
 // @vue/component
@@ -43,12 +44,11 @@ export default {
         // ------------------------------------------------------
 
         async setEventConfirmation(confirmed) {
-            const { id } = this.$props.event;
-            const url = `${this.$route.meta.resource}/${id}`;
+            const { id } = this.event;
             this.isConfirming = true;
 
             try {
-                const { data } = await this.$http.put(url, { id, is_confirmed: confirmed });
+                const data = await apiEvents.update(id, { is_confirmed: confirmed });
                 this.$emit('updateEvent', data);
             } catch (error) {
                 this.$emit('error', error);
@@ -129,7 +129,7 @@ export default {
                     {materials.length > 0 && beneficiaries.length > 0 && (
                         // eslint-disable-next-line react/jsx-no-target-blank
                         <a href={eventSummaryPdfUrl} target="_blank" class="button outline">
-                            <i class="fas fa-print" /> {__('print-summary')}
+                            <i class="fas fa-print" />&nbsp;{__('print-summary')}
                         </a>
                     )}
                 </section>

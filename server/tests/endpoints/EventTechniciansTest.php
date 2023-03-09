@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Robert2\Tests;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
@@ -62,7 +64,7 @@ final class EventTechniciansTest extends ApiTestCase
     {
         $this->client->put('/api/event-technicians/1', []);
         $this->assertStatusCode(StatusCode::STATUS_BAD_REQUEST);
-        $this->assertErrorMessage("No data was provided.");
+        $this->assertApiErrorMessage("No data was provided.");
     }
 
     public function testUpdateEventTechnician()

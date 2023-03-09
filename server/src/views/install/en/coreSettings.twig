@@ -18,22 +18,11 @@
             />
         </section>
         <p>
-            <a onclick="showHiddenFieldset()" id="showFieldset" class="form__fieldset-toggle">
+            <a onclick="showHiddenFieldset()" id="show-fieldset" class="form__fieldset-toggle">
                 Show advanced settings...
             </a>
         </p>
         <fieldset class="form__fieldset form__fieldset--hidden">
-            <section class="form__field form__field--hidden">
-                <h3 class="form__field-title">Application name</h3>
-                <p class="form__field-description">
-                    The name of the application. Actually, known as... well, "Robert2".
-                </p>
-                <input
-                    type="text"
-                    name="basename"
-                    value="{{config['basename']}}"
-                />
-            </section>
             <section class="form__field">
                 <h3 class="form__field-title">
                     Enable CORS (Cross Origin Resource Sharing)

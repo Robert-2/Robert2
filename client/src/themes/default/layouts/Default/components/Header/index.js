@@ -1,5 +1,5 @@
 import './index.scss';
-import Logo from '@/themes/default/components/Logo/vue';
+import Logo from '@/themes/default/components/Logo';
 import Icon from '@/themes/default/components/Icon';
 import Menu from './Menu';
 

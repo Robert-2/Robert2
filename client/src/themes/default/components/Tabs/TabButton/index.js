@@ -9,6 +9,7 @@ export default {
         icon: { type: String, default: null },
         disabled: { type: Boolean, default: false },
         warning: { type: Boolean, default: false },
+        counter: { type: Number, default: null },
         active: { type: Boolean, default: false },
     },
     methods: {
@@ -20,18 +21,25 @@ export default {
         },
     },
     render() {
-        const { title, icon, disabled, warning, active, handleClick } = this;
+        const { title, icon, disabled, warning, counter, active, handleClick } = this;
+        const hasCounter = counter !== null && counter > 0;
 
         const className = ['TabButton', {
             'TabButton--selected': active,
             'TabButton--disabled': disabled,
             'TabButton--warning': warning,
+            'TabButton--with-counter': hasCounter,
         }];
 
         return (
             <li role="tab" class={className} onClick={handleClick}>
                 {icon && <Icon name={icon} class="TabButton__icon" />}
                 {title}
+                {hasCounter && (
+                    <span class="TabButton__counter">
+                        {counter}
+                    </span>
+                )}
             </li>
         );
     },

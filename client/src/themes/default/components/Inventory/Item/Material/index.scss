@@ -21,7 +21,7 @@
 
     &__name {
         flex: 1;
-        color: globals.$text-nav-color;
+        color: globals.$text-soft-color;
     }
 
     &__error {
@@ -33,7 +33,7 @@
         flex: 0 0 auto;
         display: inline-flex;
         justify-content: center;
-        color: globals.$text-nav-color;
+        color: globals.$text-soft-color;
         text-align: right;
 
         &__count {

@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 // ------------------------------------------------------
 // -
 // -    List of common currencies
@@ -40,7 +42,7 @@ return [
     ],
     'BIF' => [
         'symbol' => 'FBu',
-        'name' => 'Franc Burundien',
+        'name' => 'Franc Burundais',
         'iso' => 'BIF',
         'symbol_intl' => 'FBu',
         'decimal_digits' => 0,
@@ -263,7 +265,7 @@ return [
     ],
     'BWP' => [
         'symbol' => 'P',
-        'name' => 'Botswanan Pula',
+        'name' => 'Botswana Pula',
         'iso' => 'BWP',
         'symbol_intl' => 'BWP',
         'decimal_digits' => 2,

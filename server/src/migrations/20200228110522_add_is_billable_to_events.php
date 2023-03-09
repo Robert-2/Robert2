@@ -1,7 +1,9 @@
 <?php
+declare(strict_types=1);
+
 use Phinx\Migration\AbstractMigration;
 
-class AddIsBillableToEvents extends AbstractMigration
+final class AddIsBillableToEvents extends AbstractMigration
 {
     public function up()
     {
@@ -10,6 +12,7 @@ class AddIsBillableToEvents extends AbstractMigration
             ->addColumn('is_billable', 'boolean', [
                 'after' => 'location',
                 'default' => true,
+                'null' => false,
             ])
             ->update();
     }

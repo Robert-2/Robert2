@@ -1,20 +1,22 @@
 <?php
+declare(strict_types=1);
+
 use Phinx\Migration\AbstractMigration;
 use Robert2\API\Config\Config;
 
-class CreateParks extends AbstractMigration
+final class CreateParks extends AbstractMigration
 {
     public function up()
     {
-        $parks = $this->table('parks');
+        $parks = $this->table('parks', ['signed' => true]);
         $parks
-            ->addColumn('name', 'string', ['length' => 96])
+            ->addColumn('name', 'string', ['length' => 96, 'null' => false])
             ->addColumn('created_at', 'datetime', ['null' => true])
             ->addColumn('updated_at', 'datetime', ['null' => true])
             ->addColumn('deleted_at', 'datetime', ['null' => true])
             ->addIndex(['name'], [
                 'unique' => true,
-                'name' => 'name_UNIQUE'
+                'name' => 'name_UNIQUE',
             ])
             ->create();
 

@@ -1,20 +1,15 @@
 @use '~@/themes/default/style/globals';
 
 .InterfaceUserSettings {
-    &__inputs {
-        margin-top: globals.$content-padding-large-vertical;
+    display: flex;
+    flex-direction: column;
 
-        .FormField {
-            --label-width: 200px;
-        }
-    }
-
-    &__hours {
-        --input-width: 70px;
+    &__loading {
+        margin-top: globals.$content-padding-small-vertical;
     }
 
     &__language {
-        --input-width: 150px;
+        --input-width: 180px;
     }
 
     &__actions {

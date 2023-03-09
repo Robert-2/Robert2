@@ -1,10 +1,11 @@
-title: "Retour du matériel de l'événement «\_{name}\_»"
-title-simple: Retour du matériel
+title: "Inventaire de retour de l'événement «\_{name}\_»"
+title-simple: Inventaire de retour de l'événement
 
-this-event-not-started-yet: >-
-    Cet événement n'a pas encore commencé, il n'est donc pas possible de
-    vérifier son retour pour le moment.
-this-event-is-not-past: >-
+not-started-yet-alert: >-
+    Cet événement n'a pas encore commencé, il n'est donc pas possible
+    de faire son inventaire de retour pour le moment.
+
+not-finished-yet-alert: >-
     Cet événement n'est pas encore terminé, vous pouvez commencer son inventaire
     de retour, mais pas le terminer.
 

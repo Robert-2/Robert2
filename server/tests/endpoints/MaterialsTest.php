@@ -1,14 +1,19 @@
 <?php
+declare(strict_types=1);
+
 namespace Robert2\Tests;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Robert2\API\Models\Material;
+use Robert2\Support\Arr;
 
 final class MaterialsTest extends ApiTestCase
 {
-    public static function data(int $id)
+    public static function data(int $id, string $format = Material::SERIALIZE_DEFAULT)
     {
-        return static::_dataFactory($id, [
+        $materials = new Collection([
             [
                 'id' => 1,
                 'name' => 'Console Yamaha CL3',
@@ -24,15 +29,16 @@ final class MaterialsTest extends ApiTestCase
                 'replacement_price' => 19400,
                 'is_hidden_on_bill' => false,
                 'is_discountable' => false,
-                'picture' => 'IMG-20210511-0001.jpg',
+                'is_reservable' => true,
+                'picture' => 'http://loxya.test/materials/1/picture',
                 'note' => null,
                 'attributes' => [
                     [
-                        'id' => 3,
-                        'name' => 'Puissance',
-                        'type' => 'integer',
-                        'unit' => 'W',
-                        'value' => 850,
+                        'id' => 1,
+                        'name' => 'Poids',
+                        'type' => 'float',
+                        'unit' => 'kg',
+                        'value' => 36.5,
                     ],
                     [
                         'id' => 2,
@@ -42,11 +48,11 @@ final class MaterialsTest extends ApiTestCase
                         'value' => 'Grise',
                     ],
                     [
-                        'id' => 1,
-                        'name' => 'Poids',
-                        'type' => 'float',
-                        'unit' => 'kg',
-                        'value' => 36.5,
+                        'id' => 3,
+                        'name' => 'Puissance',
+                        'type' => 'integer',
+                        'unit' => 'W',
+                        'value' => 850,
                     ],
                 ],
                 'tags' => [
@@ -71,22 +77,23 @@ final class MaterialsTest extends ApiTestCase
                 'replacement_price' => 349.9,
                 'is_hidden_on_bill' => false,
                 'is_discountable' => true,
+                'is_reservable' => false,
                 'picture' => null,
                 'note' => null,
                 'attributes' => [
-                    [
-                        'id' => 3,
-                        'name' => 'Puissance',
-                        'type' => 'integer',
-                        'unit' => 'W',
-                        'value' => 35,
-                    ],
                     [
                         'id' => 1,
                         'name' => 'Poids',
                         'type' => 'float',
                         'unit' => 'kg',
                         'value' => 2.2,
+                    ],
+                    [
+                        'id' => 3,
+                        'name' => 'Puissance',
+                        'type' => 'integer',
+                        'unit' => 'W',
+                        'value' => 35,
                     ],
                 ],
                 'tags' => [
@@ -111,22 +118,23 @@ final class MaterialsTest extends ApiTestCase
                 'replacement_price' => 89,
                 'is_hidden_on_bill' => false,
                 'is_discountable' => true,
+                'is_reservable' => true,
                 'picture' => null,
                 'note' => 'Soyez délicats avec ces projos !',
                 'attributes' => [
-                    [
-                        'id' => 3,
-                        'name' => 'Puissance',
-                        'type' => 'integer',
-                        'unit' => 'W',
-                        'value' => 150,
-                    ],
                     [
                         'id' => 1,
                         'name' => 'Poids',
                         'type' => 'float',
                         'unit' => 'kg',
                         'value' => 0.85,
+                    ],
+                    [
+                        'id' => 3,
+                        'name' => 'Puissance',
+                        'type' => 'integer',
+                        'unit' => 'W',
+                        'value' => 150,
                     ],
                 ],
                 'tags' => [
@@ -151,15 +159,16 @@ final class MaterialsTest extends ApiTestCase
                 'replacement_price' => 59,
                 'is_hidden_on_bill' => false,
                 'is_discountable' => true,
+                'is_reservable' => true,
                 'picture' => null,
                 'note' => null,
                 'attributes' => [
                     [
-                        'id' => 4,
-                        'name' => 'Conforme',
-                        'type' => 'boolean',
-                        'unit' => null,
-                        'value' => true,
+                        'id' => 1,
+                        'name' => 'Poids',
+                        'type' => 'float',
+                        'unit' => 'kg',
+                        'value' => 3.15,
                     ],
                     [
                         'id' => 3,
@@ -169,11 +178,11 @@ final class MaterialsTest extends ApiTestCase
                         'value' => 60,
                     ],
                     [
-                        'id' => 1,
-                        'name' => 'Poids',
-                        'type' => 'float',
-                        'unit' => 'kg',
-                        'value' => 3.15,
+                        'id' => 4,
+                        'name' => 'Conforme',
+                        'type' => 'boolean',
+                        'unit' => null,
+                        'value' => true,
                     ],
                 ],
                 'tags' => [],
@@ -196,6 +205,7 @@ final class MaterialsTest extends ApiTestCase
                 'replacement_price' => 9.5,
                 'is_hidden_on_bill' => true,
                 'is_discountable' => true,
+                'is_reservable' => true,
                 'picture' => null,
                 'note' => null,
                 'attributes' => [],
@@ -219,6 +229,7 @@ final class MaterialsTest extends ApiTestCase
                 'replacement_price' => 419,
                 'is_hidden_on_bill' => false,
                 'is_discountable' => false,
+                'is_reservable' => true,
                 'picture' => null,
                 'note' => null,
                 'created_at' => null,
@@ -250,6 +261,7 @@ final class MaterialsTest extends ApiTestCase
                 'replacement_price' => 32000,
                 'is_hidden_on_bill' => false,
                 'is_discountable' => false,
+                'is_reservable' => true,
                 'picture' => null,
                 'note' => null,
                 'created_at' => null,
@@ -273,6 +285,7 @@ final class MaterialsTest extends ApiTestCase
                 'replacement_price' => 8500,
                 'is_hidden_on_bill' => false,
                 'is_discountable' => true,
+                'is_reservable' => true,
                 'picture' => null,
                 'note' => null,
                 'created_at' => null,
@@ -282,6 +295,23 @@ final class MaterialsTest extends ApiTestCase
                 'attributes' => [],
             ],
         ]);
+
+        $materials = match ($format) {
+            Material::SERIALIZE_DEFAULT => $materials,
+            Material::SERIALIZE_DETAILS => $materials,
+            Material::SERIALIZE_PUBLIC => $materials->map(fn($material) => (
+                Arr::only($material, [
+                    'id',
+                    'name',
+                    'description',
+                    'picture',
+                    'rental_price',
+                ])
+            )),
+            default => throw new \InvalidArgumentException(sprintf("Unknown format \"%s\"", $format)),
+        };
+
+        return static::_dataFactory($id, $materials->all());
     }
 
     public function testGetAll()
@@ -341,9 +371,6 @@ final class MaterialsTest extends ApiTestCase
         $this->assertEquals('Behringer X Air XR18', $results[0]['name']);
         $this->assertEquals(0, $results[0]['stock_quantity']);
         $this->assertEquals(0, $results[0]['available_quantity']);
-        $this->assertEquals('Câble XLR 10m', $results[1]['name']);
-        $this->assertEquals(40, $results[1]['stock_quantity']);
-        $this->assertEquals(32, $results[1]['available_quantity']);
 
         $this->client->get('/api/materials?deleted=1');
         $this->assertStatusCode(StatusCode::STATUS_OK);
@@ -372,10 +399,10 @@ final class MaterialsTest extends ApiTestCase
     public function testGetMaterialNotFound()
     {
         $this->client->get('/api/materials/999');
-        $this->assertNotFound();
+        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
-    public function testGetMaterialsWhileEvent()
+    public function testGetAllWhileEvent()
     {
         $this->client->get('/api/materials/while-event/1');
         $this->assertStatusCode(StatusCode::STATUS_OK);
@@ -407,17 +434,17 @@ final class MaterialsTest extends ApiTestCase
         ]);
     }
 
-    public function testGetMaterial()
+    public function testGetOne()
     {
         $this->client->get('/api/materials/1');
         $this->assertStatusCode(StatusCode::STATUS_OK);
-        $this->assertResponseData(self::data(1));
+        $this->assertResponseData(self::data(1, Material::SERIALIZE_DETAILS));
     }
 
     public function testGetTagsNotFound()
     {
         $this->client->get('/api/materials/999/tags');
-        $this->assertNotFound();
+        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
     public function testGetTags()
@@ -436,7 +463,7 @@ final class MaterialsTest extends ApiTestCase
         $this->assertResponseData([
             'pagination' => [
                 'currentPage' => 1,
-                'perPage' => $this->settings['maxItemsPerPage'],
+                'perPage' => 100,
                 'total' => ['items' => 0, 'pages' => 1],
             ],
             'data' => [],
@@ -447,39 +474,21 @@ final class MaterialsTest extends ApiTestCase
     {
         $this->client->get('/api/materials?tags[0]=pro');
         $this->assertStatusCode(StatusCode::STATUS_OK);
-        $response = $this->_getResponseAsArray();
-        $this->assertEquals([
-            'currentPage' => 1,
-            'perPage' => $this->settings['maxItemsPerPage'],
-            'total' => ['items' => 3, 'pages' => 1],
-        ], $response['pagination']);
-        $this->assertCount(3, $response['data']);
+        $this->assertResponsePaginatedData(3);
     }
 
     public function testGetMaterialsByPark()
     {
         $this->client->get('/api/materials?park=1');
         $this->assertStatusCode(StatusCode::STATUS_OK);
-        $response = $this->_getResponseAsArray();
-        $this->assertEquals([
-            'currentPage' => 1,
-            'perPage' => $this->settings['maxItemsPerPage'],
-            'total' => ['items' => 6, 'pages' => 1],
-        ], $response['pagination']);
-        $this->assertCount(6, $response['data']);
+        $this->assertResponsePaginatedData(6);
     }
 
     public function testGetMaterialsByCategoryAndSubCategory()
     {
         $this->client->get('/api/materials?category=1&subCategory=1');
         $this->assertStatusCode(StatusCode::STATUS_OK);
-        $response = $this->_getResponseAsArray();
-        $this->assertEquals([
-            'currentPage' => 1,
-            'perPage' => $this->settings['maxItemsPerPage'],
-            'total' => ['items' => 2, 'pages' => 1],
-        ], $response['pagination']);
-        $this->assertCount(2, $response['data']);
+        $this->assertResponsePaginatedData(2);
     }
 
     public function testGetMaterialsWithDateForQuantities()
@@ -520,14 +529,14 @@ final class MaterialsTest extends ApiTestCase
         }
     }
 
-    public function testCreateMaterialWithoutData()
+    public function testCreateWithoutData()
     {
         $this->client->post('/api/materials');
         $this->assertStatusCode(StatusCode::STATUS_BAD_REQUEST);
-        $this->assertErrorMessage("No data was provided.");
+        $this->assertApiErrorMessage("No data was provided.");
     }
 
-    public function testCreateMaterialBadData()
+    public function testCreateBadData()
     {
         $this->client->post('/api/materials', [
             'name' => 'Analog Mixing Console Yamaha RM800',
@@ -538,14 +547,12 @@ final class MaterialsTest extends ApiTestCase
             'rental_price' => 100,
             'stock_quantity' => 1,
         ]);
-        $this->assertValidationError([
-            'reference' => [
-                "This field is mandatory",
-            ],
+        $this->assertApiValidationError([
+            'reference' => ['This field is mandatory'],
         ]);
     }
 
-    public function testCreateMaterialDuplicate()
+    public function testCreateDuplicate()
     {
         $this->client->post('/api/materials', [
             'name' => 'Analog Mixing Console Yamaha CL3',
@@ -556,12 +563,14 @@ final class MaterialsTest extends ApiTestCase
             'rental_price' => 500,
             'stock_quantity' => 1,
         ]);
-        $this->assertValidationError();
+        $this->assertApiValidationError();
     }
 
-    public function testCreateMaterialWithTags()
+    public function testCreateWithTags()
     {
-        $data = [
+        Carbon::setTestNow(Carbon::create(2022, 10, 22, 18, 42, 36));
+
+        $this->client->post('/api/materials', [
             'name' => 'Analog Mixing Console Yamaha RM800',
             'reference' => 'RM800',
             'park_id' => 1,
@@ -571,8 +580,7 @@ final class MaterialsTest extends ApiTestCase
             'replacement_price' => 357.0,
             'stock_quantity' => 1,
             'tags' => ['old matos', 'vintage'],
-        ];
-        $this->client->post('/api/materials', $data);
+        ]);
         $this->assertStatusCode(StatusCode::STATUS_CREATED);
         $this->assertResponseData([
             'id' => 9,
@@ -588,6 +596,7 @@ final class MaterialsTest extends ApiTestCase
             'out_of_order_quantity' => null,
             'is_hidden_on_bill' => false,
             'is_discountable' => true,
+            'is_reservable' => true,
             'description' => null,
             'picture' => null,
             'note' => null,
@@ -596,15 +605,17 @@ final class MaterialsTest extends ApiTestCase
                 ['id' => 2, 'name' => 'old matos'],
                 ['id' => 3, 'name' => 'vintage'],
             ],
-            'created_at' => '__FAKE_TEST_PLACEHOLDER__',
-            'updated_at' => '__FAKE_TEST_PLACEHOLDER__',
+            'created_at' => '2022-10-22 18:42:36',
+            'updated_at' => '2022-10-22 18:42:36',
             'deleted_at' => null,
-        ], ['created_at', 'updated_at']);
+        ]);
     }
 
     public function testCreateMaterialWithAttributes()
     {
-        $data = [
+        Carbon::setTestNow(Carbon::create(2022, 10, 22, 18, 42, 36));
+
+        $this->client->post('/api/materials', [
             'name' => 'Console numérique Yamaha 01V96 V2',
             'reference' => '01V96-v2',
             'park_id' => 1,
@@ -618,8 +629,7 @@ final class MaterialsTest extends ApiTestCase
                 ['id' => 3, 'value' => 60],
                 ['id' => 4, 'value' => 'true'],
             ],
-        ];
-        $this->client->post('/api/materials', $data);
+        ]);
         $this->assertStatusCode(StatusCode::STATUS_CREATED);
         $this->assertResponseData([
             'id' => 9,
@@ -635,16 +645,17 @@ final class MaterialsTest extends ApiTestCase
             'out_of_order_quantity' => null,
             'is_hidden_on_bill' => false,
             'is_discountable' => true,
+            'is_reservable' => true,
             'description' => null,
             'picture' => null,
             'note' => null,
             'attributes' => [
                 [
-                    'id' => 4,
-                    'name' => 'Conforme',
-                    'type' => 'boolean',
-                    'unit' => null,
-                    'value' => true,
+                    'id' => 1,
+                    'name' => 'Poids',
+                    'type' => 'float',
+                    'unit' => 'kg',
+                    'value' => 12.5,
                 ],
                 [
                     'id' => 3,
@@ -654,18 +665,18 @@ final class MaterialsTest extends ApiTestCase
                     'value' => 60,
                 ],
                 [
-                    'id' => 1,
-                    'name' => 'Poids',
-                    'type' => 'float',
-                    'unit' => 'kg',
-                    'value' => 12.5,
+                    'id' => 4,
+                    'name' => 'Conforme',
+                    'type' => 'boolean',
+                    'unit' => null,
+                    'value' => true,
                 ],
             ],
             'tags' => [],
-            'created_at' => '__FAKE_TEST_PLACEHOLDER__',
-            'updated_at' => '__FAKE_TEST_PLACEHOLDER__',
+            'created_at' => '2022-10-22 18:42:36',
+            'updated_at' => '2022-10-22 18:42:36',
             'deleted_at' => null,
-        ], ['created_at', 'updated_at']);
+        ]);
     }
 
     public function testUpdateMaterial()
@@ -700,22 +711,22 @@ final class MaterialsTest extends ApiTestCase
     public function testDeleteAndDestroyMaterial()
     {
         // - First call: soft delete.
-        $this->client->delete('/api/materials/3');
+        $this->client->delete('/api/materials/5');
         $this->assertStatusCode(StatusCode::STATUS_NO_CONTENT);
-        $softDeleted = Material::withTrashed()->find(3);
+        $softDeleted = Material::withTrashed()->find(5);
         $this->assertNotNull($softDeleted);
         $this->assertNotEmpty($softDeleted->deleted_at);
 
         // - Second call: actually DESTROY record from DB
-        $this->client->delete('/api/materials/3');
+        $this->client->delete('/api/materials/5');
         $this->assertStatusCode(StatusCode::STATUS_NO_CONTENT);
-        $this->assertNull(Material::withTrashed()->find(3));
+        $this->assertNull(Material::withTrashed()->find(5));
     }
 
     public function testRestoreMaterialNotFound()
     {
         $this->client->put('/api/materials/restore/999');
-        $this->assertNotFound();
+        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
     public function testRestoreMaterial()
@@ -740,14 +751,14 @@ final class MaterialsTest extends ApiTestCase
                 'id' => 1,
                 'name' => 'User-manual.pdf',
                 'type' => 'application/pdf',
-                'size' => 54681233
+                'size' => 54681233,
             ],
             [
                 'id' => 2,
                 'name' => 'warranty.pdf',
                 'type' => 'application/pdf',
-                'size' => 124068
-            ]
+                'size' => 124068,
+            ],
         ]);
 
         // - Get all documents of material #2
@@ -756,13 +767,14 @@ final class MaterialsTest extends ApiTestCase
         $this->assertResponseData([]);
     }
 
-    public function testGetEvents()
+    public function testGetBookings()
     {
-        $this->client->get('/api/materials/1/events');
+        $this->client->get('/api/materials/1/bookings');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData([
             [
                 'id' => 4,
+                'entity' => 'event',
                 'title' => 'Concert X',
                 'start_date' => '2019-03-01 00:00:00',
                 'end_date' => '2019-04-10 23:59:59',
@@ -772,16 +784,16 @@ final class MaterialsTest extends ApiTestCase
                 'is_return_inventory_done' => false,
                 'has_missing_materials' => null,
                 'has_not_returned_materials' => null,
-                'parks' => [2, 1],
+                'parks' => [1, 2],
                 'pivot' => [
-                    'id' => 9,
-                    'material_id' => 1,
-                    'event_id' => 4,
                     'quantity' => 1,
                 ],
+                'beneficiaries' => [],
+                'technicians' => [],
             ],
             [
                 'id' => 2,
+                'entity' => 'event',
                 'title' => 'Second événement',
                 'start_date' => '2018-12-18 00:00:00',
                 'end_date' => '2018-12-19 23:59:59',
@@ -793,14 +805,16 @@ final class MaterialsTest extends ApiTestCase
                 'has_not_returned_materials' => true,
                 'parks' => [1],
                 'pivot' => [
-                    'id' => 4,
-                    'material_id' => 1,
-                    'event_id' => 2,
                     'quantity' => 3,
                 ],
+                'beneficiaries' => [
+                    BeneficiariesTest::data(3),
+                ],
+                'technicians' => [],
             ],
             [
                 'id' => 1,
+                'entity' => 'event',
                 'title' => 'Premier événement',
                 'start_date' => '2018-12-17 00:00:00',
                 'end_date' => '2018-12-18 23:59:59',
@@ -812,17 +826,39 @@ final class MaterialsTest extends ApiTestCase
                 'has_not_returned_materials' => false,
                 'parks' => [1],
                 'pivot' => [
-                    'id' => 1,
-                    'material_id' => 1,
-                    'event_id' => 1,
                     'quantity' => 1,
                 ],
-            ]
+                'beneficiaries' => [
+                    BeneficiariesTest::data(1),
+                ],
+                'technicians' => [
+                    [
+                        'id' => 1,
+                        'event_id' => 1,
+                        'technician_id' => 1,
+                        'start_time' => '2018-12-17 09:00:00',
+                        'end_time' => '2018-12-18 22:00:00',
+                        'position' => 'Régisseur',
+                        'technician' => TechniciansTest::data(1),
+                    ],
+                    [
+                        'id' => 2,
+                        'event_id' => 1,
+                        'technician_id' => 2,
+                        'start_time' => '2018-12-18 14:00:00',
+                        'end_time' => '2018-12-18 18:00:00',
+                        'position' => 'Technicien plateau',
+                        'technician' => TechniciansTest::data(2),
+                    ],
+                ],
+            ],
         ]);
     }
 
     public function testGetAllPdf()
     {
+        Carbon::setTestNow(Carbon::create(2022, 9, 23, 12, 0, 0));
+
         $responseStream = $this->client->get('/materials/pdf');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertTrue($responseStream->isReadable());

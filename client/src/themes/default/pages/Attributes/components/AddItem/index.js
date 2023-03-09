@@ -2,6 +2,7 @@ import './index.scss';
 import apiAttributes from '@/stores/api/attributes';
 import Button from '@/themes/default/components/Button';
 import Form from './Form';
+import { ApiErrorCode } from '@/stores/api/@codes';
 
 // @vue/component
 export default {
@@ -72,8 +73,8 @@ export default {
                 this.$refs.form.reset();
                 this.$emit('finished', attribute);
             } catch (error) {
-                const { code, details } = error.response?.data?.error || { code: 0, details: {} };
-                if (code === 400) {
+                const { code, details } = error.response?.data?.error || { code: ApiErrorCode.UNKNOWN, details: {} };
+                if (code === ApiErrorCode.VALIDATION_FAILED) {
                     this.validationErrors = { ...details };
                 } else {
                     this.$toasted.error(__('errors.unexpected-while-saving'));

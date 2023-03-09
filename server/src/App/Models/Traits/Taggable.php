@@ -4,9 +4,13 @@ declare(strict_types=1);
 namespace Robert2\API\Models\Traits;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Robert2\API\Models\BaseModel;
 use Robert2\API\Models\Tag;
 
+/**
+ * @property-read Collection|Tag[] $tags
+ */
 trait Taggable
 {
     public function tags()
@@ -47,7 +51,7 @@ trait Taggable
     {
         $entity = parent::staticEdit($id, $data);
 
-        if (array_key_exists('tags', $data)) {
+        if (array_key_exists('tags', $data) && is_array($data['tags'])) {
             $entity->setTags($data['tags']);
         }
 

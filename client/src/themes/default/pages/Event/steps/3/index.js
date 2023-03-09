@@ -2,6 +2,7 @@ import './index.scss';
 import moment from 'moment';
 import dateRoundMinutes from '@/utils/dateRoundMinutes';
 import { confirm } from '@/utils/alert';
+import showModal from '@/utils/showModal';
 import CriticalError from '@/themes/default/components/CriticalError';
 import Help from '@/themes/default/components/Help';
 import Loading from '@/themes/default/components/Loading';
@@ -11,6 +12,7 @@ import apiTechnicians from '@/stores/api/technicians';
 import formatEventTechnician from '@/utils/formatEventTechnician';
 import EventStore from '../../EventStore';
 import Modal from './Modal';
+import { ApiErrorCode } from '@/stores/api/@codes';
 import {
     TECHNICIAN_EVENT_STEP,
     TECHNICIAN_EVENT_MIN_DURATION,
@@ -129,7 +131,7 @@ export default {
 
         handleDoubleClick(e) {
             // - On évite le double-call à cause d'un bug qui trigger l'event en double.
-            // - @see visjs bug here: https://github.com/visjs/vis-timeline/issues/301)
+            // - @see Vis-js bug here: https://github.com/visjs/vis-timeline/issues/301)
             if (this.isModalOpened) {
                 return;
             }
@@ -221,8 +223,8 @@ export default {
                 callback(item);
             } catch (error) {
                 callback(null);
-                const { code, details } = error.response?.data?.error || { code: 0, details: null };
-                if (code === 400 && details.start_time && details.start_time.length > 0) {
+                const { code, details } = error.response?.data?.error || { code: ApiErrorCode.UNKNOWN, details: null };
+                if (code === ApiErrorCode.VALIDATION_FAILED && details.start_time && details.start_time.length > 0) {
                     this.$toasted.error(details.start_time[0]);
                 }
             } finally {
@@ -233,7 +235,7 @@ export default {
         async handleItemRemove(item, callback) {
             const { $t: __ } = this;
 
-            const { value: isConfirmed } = await confirm({
+            const isConfirmed = await confirm({
                 text: __('page.event-edit.technician-item.confirm-permanently-delete'),
                 confirmButtonText: __('yes-permanently-delete'),
                 type: 'danger',
@@ -291,14 +293,17 @@ export default {
 
         openModal(data) {
             const { start_date: start, end_date: end } = this.event;
-            const eventDates = { start, end };
 
             this.isModalOpened = true;
-            this.$modal.show(Modal, { data, eventDates }, { clickToClose: false, width: 600 }, {
-                'before-close': () => {
+            showModal(this.$modal, Modal, {
+                data,
+                eventDates: { start, end },
+                onClose: () => {
                     this.isLoading = true;
-                    this.isModalOpened = false;
                     this.updateEvent();
+                },
+                onClosed: () => {
+                    this.isModalOpened = false;
                 },
             });
         },

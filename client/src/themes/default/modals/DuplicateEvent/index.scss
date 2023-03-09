@@ -4,12 +4,17 @@
     &__header {
         display: flex;
         align-items: center;
-        padding: globals.$content-padding-small-horizontal globals.$content-padding-large-vertical;
+        padding: 15px;
         background-color: globals.$bg-color-main-header;
+        gap: 10px;
 
         &__title {
             flex: 1;
+            overflow: hidden;
+            margin: 0;
             font-size: 1.4rem;
+            white-space: nowrap;
+            text-overflow: ellipsis;
         }
 
         &__btn-close {
@@ -32,6 +37,16 @@
         &__infos {
             min-width: 300px;
             margin-top: globals.$content-padding-small-vertical;
+
+            &__no-beneficiary {
+                color: globals.$text-danger-color;
+
+                &__icon {
+                    width: 1.5rem;
+                    margin-right: 0.5rem;
+                    text-align: center;
+                }
+            }
 
             .LocationText,
             .EventBeneficiaries,

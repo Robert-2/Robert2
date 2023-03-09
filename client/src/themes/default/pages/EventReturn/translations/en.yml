@@ -1,8 +1,13 @@
-title: 'Return of the material of event "{name}"'
-title-simple: Return of the material
+title: 'Return Inventory of the event "{name}"'
+title-simple: Return Inventory of the event
 
-this-event-not-started-yet: This event has not yet started, so it is not possible to check its return at the moment.
-this-event-is-not-past: This event is not yet finished, you can start its inventory, but you cannot terminate it.
+not-started-yet-alert:  >-
+    This event has not started yet, so it's not possible to do
+    its return inventory for the moment.
+
+not-finished-yet-alert: >-
+    This event is not yet finished, you can start its inventory,
+    but you cannot terminate it.
 
 all-material-returned: Congratulations! All materials were returned for this event.
 some-material-is-missing: Some materials did not return from this event!

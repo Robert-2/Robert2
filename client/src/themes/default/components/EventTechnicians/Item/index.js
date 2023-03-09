@@ -1,4 +1,5 @@
 import './index.scss';
+import { Group } from '@/stores/api/groups';
 
 // @vue/component
 export default {
@@ -7,16 +8,16 @@ export default {
         technician: { type: Object, required: true },
     },
     computed: {
-        isVisitor() {
-            return this.$store.getters['auth/is']('visitor');
+        isTeamMember() {
+            return this.$store.getters['auth/is']([Group.ADMIN, Group.MEMBER]);
         },
     },
     render() {
-        const { $t: __, technician, isVisitor } = this;
+        const { $t: __, technician, isTeamMember } = this;
 
         return (
             <div class="EventTechnicianItem">
-                {isVisitor ? technician.full_name : (
+                {!isTeamMember ? technician.full_name : (
                     <router-link
                         to={{ name: 'view-technician', params: { id: technician.id } }}
                         title={__('action-view')}

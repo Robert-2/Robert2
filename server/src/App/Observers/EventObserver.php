@@ -7,6 +7,8 @@ use Robert2\API\Models\Event;
 
 final class EventObserver
 {
+    public $afterCommit = true;
+
     public function created(Event $event)
     {
         debug("[Event] Événement #%s ajouté.", $event->id);
@@ -18,13 +20,15 @@ final class EventObserver
         $event->invalidateCache();
 
         //
-        // - On invalide le cache du matériel manquant des événéments voisins à celui qui vient d'être créé.
+        // - On invalide le cache du matériel manquant des bookables voisins à celui qui vient d'être créé.
         //
 
-        /** @var Event[] */
-        $neighborEvents = Event::inPeriod($event->start_date, $event->end_date)->get();
+        //
+        // -- Événements ...
+        //
+
+        $neighborEvents = Event::inPeriod($event)->get();
         foreach ($neighborEvents as $neighborEvent) {
-            // TODO: N'invalider que si pour les events avec du matériel en commun ?
             $neighborEvent->invalidateCache('has_missing_materials');
         }
     }
@@ -33,58 +37,14 @@ final class EventObserver
     {
         debug("[Event] Événement #%s modifié.", $event->id);
 
-        //
-        // - On invalide le cache du présent événement.
-        //
-
-        $event->invalidateCache();
-
-        //
-        // - On invalide le cache du matériel manquant des événéments voisins à celui qui vient
-        //   d'être modifié lors de la modification de la date de début / fin d'événement d'événement.
-        //   (anciens voisins ou nouveau, peu importe)
-        //
-
-        if (!$event->wasChanged(['start_date', 'end_date'])) {
-            return;
-        }
-        $oldData = $event->getOriginal();
-
-        $oldNeighborEvents = Event::inPeriod($oldData['start_date'], $oldData['end_date'])->get();
-        $newNeighborEvents = Event::inPeriod($event->start_date, $event->end_date)->get();
-
-        /** @var Event[] */
-        $neighborEvents = $oldNeighborEvents->merge($newNeighborEvents)
-            ->unique('id')
-            ->values();
-
-        foreach ($neighborEvents as $neighborEvent) {
-            // TODO: N'invalider que si pour les events avec du matériel en commun ?
-            $neighborEvent->invalidateCache('has_missing_materials');
-        }
+        $this->onUpdateSyncCache($event);
     }
 
     public function restored(Event $event)
     {
         debug("[Event] Événement #%s restauré.", $event->id);
 
-        //
-        // - Dans le doute, on supprime le cache de l'événement lors de son rétablissement.
-        //
-
-        $event->invalidateCache();
-
-        //
-        // - On invalide le cache du matériel manquant des événéments voisins à celui-ci
-        //   qui vient d'être restauré.
-        //
-
-        /** @var Event[] */
-        $neighborEvents = Event::inPeriod($event->start_date, $event->end_date)->get();
-        foreach ($neighborEvents as $neighborEvent) {
-            // TODO: N'invalider que si pour les events avec du matériel en commun ?
-            $neighborEvent->invalidateCache('has_missing_materials');
-        }
+        $this->onRestoreSyncCache($event);
     }
 
     public function deleting(Event $event)
@@ -103,13 +63,95 @@ final class EventObserver
         $event->invalidateCache();
 
         //
-        // - On invalide le cache du matériel manquant des événéments voisins à celui-ci.
+        // - On invalide le cache du matériel manquant des bookables voisins à celui-ci.
         //
 
-        /** @var Event[] */
-        $neighborEvents = Event::inPeriod($event->start_date, $event->end_date)->get();
+        //
+        // -- Événements ...
+        //
+
+        $neighborEvents = Event::inPeriod($event)->get();
         foreach ($neighborEvents as $neighborEvent) {
-            // TODO: N'invalider que si pour les events avec du matériel en commun ?
+            $neighborEvent->invalidateCache('has_missing_materials');
+        }
+    }
+
+    public function deleted(Event $event)
+    {
+        //
+        // - Supprime les factures et devis liés.
+        //   (Doit être géré manuellement car tables polymorphes)
+        //
+
+        $event->invoices()->delete();
+        $event->estimates()->delete();
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Event sub-processing
+    // -
+    // ------------------------------------------------------
+
+    private function onUpdateSyncCache(Event $event): void
+    {
+        //
+        // - On invalide le cache du présent événement.
+        //
+
+        $event->invalidateCache();
+
+        //
+        // - On invalide le cache du matériel manquant des bookables voisins à celui qui vient
+        //   d'être modifié lors de la modification de la date de début / fin d'événement.
+        //   (anciens voisins ou nouveau, peu importe)
+        //
+
+        if (!$event->wasChanged(['start_date', 'end_date'])) {
+            return;
+        }
+        $oldData = $event->getOriginal();
+
+        //
+        // -- Événements ...
+        //
+
+        $newNeighborEvents = Event::inPeriod($event)->get();
+        $oldNeighborEvents = Event::query()
+            ->inPeriod(
+                $oldData['start_date'],
+                $oldData['end_date']
+            )
+            ->get();
+
+        $neighborEvents = $oldNeighborEvents->merge($newNeighborEvents)
+            ->unique('id')
+            ->values();
+
+        foreach ($neighborEvents as $neighborEvent) {
+            $neighborEvent->invalidateCache('has_missing_materials');
+        }
+    }
+
+    private function onRestoreSyncCache(Event $event): void
+    {
+        //
+        // - Dans le doute, on supprime le cache de l'événement lors de son rétablissement.
+        //
+
+        $event->invalidateCache();
+
+        //
+        // - On invalide le cache du matériel manquant des bookables voisins à celui
+        //   qui vient d'être restauré.
+        //
+
+        //
+        // -- Événements ...
+        //
+
+        $neighborEvents = Event::inPeriod($event)->get();
+        foreach ($neighborEvents as $neighborEvent) {
             $neighborEvent->invalidateCache('has_missing_materials');
         }
     }

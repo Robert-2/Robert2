@@ -1,9 +1,9 @@
 <?php
-// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
+declare(strict_types=1);
 
 use Phinx\Migration\AbstractMigration;
 
-class AddReferenceToEvents extends AbstractMigration
+final class AddReferenceToEvents extends AbstractMigration
 {
     public function up()
     {
@@ -16,7 +16,7 @@ class AddReferenceToEvents extends AbstractMigration
             ])
             ->addIndex(['reference'], [
                 'unique' => true,
-                'name' => 'reference_UNIQUE'
+                'name' => 'reference_UNIQUE',
             ])
             ->update();
     }
@@ -29,5 +29,3 @@ class AddReferenceToEvents extends AbstractMigration
             ->update();
     }
 }
-
-// phpcs:enable

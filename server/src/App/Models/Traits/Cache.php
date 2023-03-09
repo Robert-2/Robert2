@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace Robert2\API\Models\Traits;
 
 use LogicException;
+use Robert2\API\Config\Config;
+use Robert2\Support\Str;
 use Symfony\Contracts\Cache\ItemInterface as CacheItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
@@ -11,7 +13,7 @@ trait Cache
 {
     public static function getModelCacheKey(): string
     {
-        $model = alphanumericalize(class_basename(static::class));
+        $model = Str::slug(class_basename(static::class));
         return sprintf('model.%s', $model);
     }
 
@@ -25,7 +27,7 @@ trait Cache
 
     public function cacheGet($scope, ?callable $callback = null)
     {
-        /** @var TagAwareCacheInterface */
+        /** @var TagAwareCacheInterface $cache */
         $cache = container('cache');
 
         if (func_num_args() === 1) {
@@ -35,6 +37,11 @@ trait Cache
 
         // - Si dirty, on ne fait pas confiance au cache.
         if ($this->isDirty()) {
+            return $callback(null);
+        }
+
+        // - Si on est dans un environnement de test, on ne met pas réellement en cache.
+        if (Config::getEnv() === 'test') {
             return $callback(null);
         }
 
@@ -56,16 +63,16 @@ trait Cache
     /**
      * @param string|array|null $scopes
      *
-     * @return boolean
+     * @return bool
      */
     public function invalidateCache($scopes = null): bool
     {
-        /** @var TagAwareCacheInterface */
+        /** @var TagAwareCacheInterface $cache */
         $cache = container('cache');
 
         $entityCacheKey = $this->getCacheKey();
 
-        // - Si pas de scope, on invalide toutes les entrées taggées avec ce modèle en particulier.
+        // - Si pas de scope, on invalide toutes les entrées taguées avec ce modèle en particulier.
         if (empty($scopes)) {
             debug('Invalidation de toutes les entrées de cache du modèle #%s.', $this->id);
             return $cache->invalidateTags([$entityCacheKey]);

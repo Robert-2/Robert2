@@ -1,9 +1,11 @@
 import invariant from 'invariant';
+import HttpCode from 'status-code-enum';
 import { useQueryProvider } from 'vue-query';
 import { computed, watch } from '@vue/composition-api';
 import queryClient from '@/globals/queryClient';
-import useRouter from '@/hooks/vue/useRouter';
+import useRouter from '@/hooks/useRouter';
 import layouts from '@/themes/default/layouts';
+import { isRequestErrorStatusCode } from '@/utils/errors';
 
 // @vue/component
 const App = (props, { root }) => {
@@ -16,8 +18,7 @@ const App = (props, { root }) => {
 
     // - Configure Axios pour qu'il redirige en cas de soucis de connexion lors des requêtes API.
     root.$http.interceptors.response.use((response) => response, (error) => {
-        const { status } = error.response || { status: 0 };
-        if (status === 401) {
+        if (isRequestErrorStatusCode(error, HttpCode.ClientErrorUnauthorized)) {
             root.$store.dispatch('auth/logout').then(() => {
                 root.$router.replace({ path: '/login', hash: '#expired' })
                     .catch(() => {});

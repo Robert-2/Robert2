@@ -45,7 +45,7 @@ $group-item-max-height: 65px !default;
 
             // stylelint-disable-next-line selector-max-compound-selectors
             .vis-text {
-                color: globals.$text-nav-color;
+                color: globals.$text-soft-color;
                 text-align: center;
 
                 // stylelint-disable-next-line selector-max-compound-selectors
@@ -113,8 +113,9 @@ $group-item-max-height: 65px !default;
         }
 
         .vis-item-content {
+            overflow: hidden;
             padding: 0;
-            white-space: pre-line;
+            text-overflow: ellipsis;
         }
 
         // stylelint-disable-next-line selector-class-pattern
@@ -178,6 +179,7 @@ $group-item-max-height: 65px !default;
     }
 
     .vis-tooltip {
+        overflow: hidden;
         max-width: 50%;
         margin: 30px 0 0 15px;
         padding: globals.$content-padding-small-horizontal globals.$content-padding-small-vertical;
@@ -187,6 +189,7 @@ $group-item-max-height: 65px !default;
         color: globals.$text-base-color;
         font-family: globals.$text-base-font-family;
         white-space: pre-wrap;
+        text-overflow: ellipsis;
 
         .fas,
         .far {

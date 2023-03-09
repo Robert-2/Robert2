@@ -3,7 +3,8 @@ declare(strict_types=1);
 
 namespace Robert2\Tests;
 
-use Carbon\Carbon;
+use Illuminate\Support\Carbon;
+use Adbar\Dot as DotArray;
 use Robert2\API\Config\Config;
 use Robert2\Fixtures\RobertFixtures;
 use PHPUnit\Framework\TestCase as CoreTestCase;
@@ -13,14 +14,11 @@ class TestCase extends CoreTestCase
 {
     use MatchesSnapshots;
 
-    protected $settings = [];
-    protected $Fixtures = null;
-
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->_initSettings();
+        static::setCustomConfig();
 
         try {
             RobertFixtures::resetDataWithDump();
@@ -31,7 +29,7 @@ class TestCase extends CoreTestCase
 
     protected function tearDown(): void
     {
-        $this->_restoreLocalSettings();
+        Config::deleteCustomConfig();
 
         if (Carbon::hasTestNow()) {
             Carbon::setTestNow(null);
@@ -42,7 +40,7 @@ class TestCase extends CoreTestCase
 
     protected function getSnapshotDirectory(): string
     {
-        return SNAPSHOTS_FOLDER;
+        return TESTS_SNAPSHOTS_FOLDER;
     }
 
     // ------------------------------------------------------
@@ -51,17 +49,10 @@ class TestCase extends CoreTestCase
     // -
     // ------------------------------------------------------
 
-    protected function _initSettings()
+    protected static function setCustomConfig(array $customValues = [])
     {
-        $localSettings = Config::getSettings();
-
-        if (!isset($localSettings['db']['testDatabase'])) {
-            $localSettings['db']['testDatabase'] = 'robert2_test';
-        }
-
-        $this->settings = [
-            'apiUrl' => $localSettings['apiUrl'],
-            'basename' => 'Robert2',
+        $config = new DotArray([
+            'apiUrl' => 'http://loxya.test',
             'enableCORS' => true,
             'displayErrorDetails' => true,
             'useRouterCache' => false,
@@ -74,14 +65,10 @@ class TestCase extends CoreTestCase
                 'symbol' => '€',
                 'name' => 'Euro',
                 'iso' => 'EUR',
-                'symbol_intl' => '€',
-                'decimal_digits' => 2,
-                'rounding' => 0
             ],
             'billingMode' => 'partial',
             'degressiveRateFunction' => '((daysCount - 1) * 0.75) + 1',
             'maxItemsPerPage' => 100,
-            'db' => $localSettings['db'],
             'companyData' => [
                 'name' => 'Testing corp.',
                 'street' => '5 rue des tests',
@@ -97,29 +84,48 @@ class TestCase extends CoreTestCase
                     ['name' => 'APE', 'value' => '947A'],
                 ],
             ],
-            'email' => [
-                'from' => 'testing@loxya.com',
-            ],
             'maxFileUploadSize' => 25 * 1024 * 1024,
-        ];
+        ]);
 
-        $this->_setTestSettings();
+        $config = $config->set($customValues)->all();
+        Config::saveCustomConfig($config);
     }
 
-    protected function _setTestSettings()
-    {
-        $localSettingsFile = Config::SETTINGS_FILE;
-        $testsSettingsContent = json_encode($this->settings, JSON_PRETTY_PRINT);
+    // ------------------------------------------------------
+    // -
+    // -    Custom assertions
+    // -
+    // ------------------------------------------------------
 
-        copy($localSettingsFile, $localSettingsFile . '.bckp');
-        file_put_contents($localSettingsFile, $testsSettingsContent);
+    public function assertSameCanonicalize($expected, $actual, string $message = ''): void
+    {
+        $canonicalize = function (&$value) use (&$canonicalize) {
+            if (is_array($value)) {
+                ksort($value);
+                foreach ($value as &$subValue) {
+                    $canonicalize($subValue);
+                }
+            }
+        };
+        $canonicalize($expected);
+        $canonicalize($actual);
+
+        $this->assertSame($expected, $actual, $message);
     }
 
-    protected function _restoreLocalSettings()
+    public function assertNotSameCanonicalize($expected, $actual, string $message = ''): void
     {
-        $localSettingsFile = Config::SETTINGS_FILE;
+        $canonicalize = function (&$value) use (&$canonicalize) {
+            if (is_array($value)) {
+                ksort($value);
+                foreach ($value as &$subValue) {
+                    $canonicalize($subValue);
+                }
+            }
+        };
+        $canonicalize($expected);
+        $canonicalize($actual);
 
-        copy($localSettingsFile . '.bckp', $localSettingsFile);
-        unlink($localSettingsFile . '.bckp');
+        $this->assertNotSame($expected, $actual, $message);
     }
 }

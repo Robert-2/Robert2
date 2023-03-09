@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Robert2\Tests;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Robert2\API\Errors\ValidationException;
+use Robert2\API\Errors\Exception\ValidationException;
 use Robert2\API\Models\Technician;
 
 final class TechnicianTest extends TestCase
@@ -101,21 +101,18 @@ final class TechnicianTest extends TestCase
     public function testCreateWithoutData(): void
     {
         $this->expectException(ValidationException::class);
-        $this->expectExceptionCode(ERROR_VALIDATION);
         Technician::new([]);
     }
 
     public function testCreateBadData(): void
     {
         $this->expectException(ValidationException::class);
-        $this->expectExceptionCode(ERROR_VALIDATION);
         Technician::new(['pseudo' => 'Sans email!']);
     }
 
     public function testCreateWithoutPerson(): void
     {
         $this->expectException(ValidationException::class);
-        $this->expectExceptionCode(ERROR_VALIDATION);
         Technician::new(['nickname' => 'Gégé']);
     }
 
@@ -139,7 +136,7 @@ final class TechnicianTest extends TestCase
         $result = Technician::new($data);
         $this->assertEquals(3, $result->id);
         $this->assertEquals('Gégé', $result->nickname);
-        $this->assertEquals(5, $result->person->id);
+        $this->assertEquals(8, $result->person->id);
         $this->assertEquals('José', $result->person->first_name);
         $this->assertEquals('Gatillon', $result->person->last_name);
         $this->assertEquals('Annecy', $result->person->locality);

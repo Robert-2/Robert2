@@ -1,7 +1,7 @@
 import './index.scss';
 import { ref, computed } from '@vue/composition-api';
-import useI18n from '@/hooks/vue/useI18n';
-import useRouter from '@/hooks/vue/useRouter';
+import useI18n from '@/hooks/useI18n';
+import useRouter from '@/hooks/useRouter';
 import Loading from '@/themes/default/components/Loading';
 import ErrorMessage from '@/themes/default/components/ErrorMessage/index';
 import MaterialsSorted from '@/themes/default/components/MaterialsSorted';
@@ -69,10 +69,7 @@ const ReuseEventMaterials = (props, { emit }) => {
                 <div class="ReuseEventMaterials__selected">
                     <h3>{__('event-materials', { name: selected.value.title })}</h3>
                     <p class="ReuseEventMaterials__selected__description">{selected.value.description}</p>
-                    <MaterialsSorted
-                        data={selected.value.materials}
-                        hideDetails={selected.value.materials.length > 10}
-                    />
+                    <MaterialsSorted data={selected.value.materials} />
                     <p class="ReuseEventMaterials__selected__warning">
                         <i class="fas fa-exclamation-triangle" />
                         {__('reuse-list-from-event-warning')}
@@ -116,6 +113,12 @@ const ReuseEventMaterials = (props, { emit }) => {
             </div>
         );
     };
+};
+
+ReuseEventMaterials.modal = {
+    width: 700,
+    draggable: true,
+    clickToClose: true,
 };
 
 export default ReuseEventMaterials;

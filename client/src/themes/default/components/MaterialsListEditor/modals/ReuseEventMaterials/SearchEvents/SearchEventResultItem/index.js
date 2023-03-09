@@ -1,7 +1,7 @@
 import './index.scss';
 import moment from 'moment';
 import { toRefs, computed } from '@vue/composition-api';
-import useI18n from '@/hooks/vue/useI18n';
+import useI18n from '@/hooks/useI18n';
 
 // @vue/component
 const SearchEventResultItem = (props, { emit }) => {

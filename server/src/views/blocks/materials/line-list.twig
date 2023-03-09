@@ -1,19 +1,19 @@
 <tr>
-    <td>{{ material['reference'] }}</td>
+    <td>{{ material.reference }}</td>
     <td>
-        {{ material['name'] }}
-        {% if material['attributes'] is not empty %}
-        <br />
-        {% for attribute in material['attributes'] %}
-            {{ include('blocks/materials/attribute.twig', { attribute: attribute }) }}
-        {% endfor %}
+        {{ material.name }}
+        {% if material.attributes is not empty %}
+            <br />
+            {% for attribute in material.attributes %}
+                {{ include('blocks/materials/attribute.twig', { attribute: attribute }) }}
+            {% endfor %}
         {% endif %}
     </td>
     <td class="right lighter">
-        {{ material['replacementPrice']|format_currency(currency, formatCurrencyOptions, locale) }}
+        {{ material.replacement_price|format_currency(currency, locale=locale) }}
     </td>
     <td class="center">
-        {{ material['stockQuantity'] }}
+        {{ material.stock_quantity }}
     </td>
     <td></td>
 </tr>

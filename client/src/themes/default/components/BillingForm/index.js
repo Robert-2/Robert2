@@ -1,7 +1,8 @@
 import './index.scss';
+import Decimal from 'decimal.js';
 import config from '@/globals/config';
+import Fragment from '@/components/Fragment';
 import FormField from '@/themes/default/components/FormField';
-import Fieldset from '@/themes/default/components/Fieldset';
 
 // @vue/component
 export default {
@@ -9,9 +10,8 @@ export default {
     props: {
         discountRate: { type: Number, required: true },
         discountTarget: { type: Number, required: true },
-        maxRate: { type: Number, default: 100 },
-        maxAmount: { type: Number, default: undefined },
-        isRegeneration: { type: Boolean, default: false },
+        maxRate: { type: Object, default: () => new Decimal(100) },
+        maxAmount: { type: Object, default: undefined },
         loading: { type: Boolean, default: false },
         beneficiary: { type: Object, default: undefined },
         saveLabel: {
@@ -22,49 +22,47 @@ export default {
             },
         },
     },
-    data() {
-        return {
-            currency: config.currency.symbol,
-        };
-    },
     computed: {
         isDiscountable() {
-            return this.maxRate > 0;
+            const { maxRate } = this;
+            return maxRate.greaterThan(0);
+        },
+
+        targetAmount() {
+            const { discountTarget } = this;
+            return (new Decimal(discountTarget)).toFixed(2);
+        },
+
+        currency() {
+            return config.currency.symbol;
         },
     },
     methods: {
-        handleChangeRate(value) {
-            value = Number.parseFloat(value);
+        handleChangeRate(givenValue) {
+            const rate = new Decimal(givenValue);
 
-            if ((!value && value !== 0) || Number.isNaN(value) || !Number.isFinite(value)) {
+            if (rate.isNaN() || !rate.isFinite()) {
                 return;
             }
 
-            if (value < 0) {
-                value = 0;
-            }
-
-            if (value > this.maxRate) {
-                value = this.maxRate;
-            }
+            const value = rate.clampedTo(0, this.maxRate);
 
             this.$emit('change', { field: 'rate', value });
         },
 
-        handleChangeAmount(value) {
-            value = Number.parseFloat(value);
+        handleChangeAmount(givenValue) {
+            const amount = new Decimal(givenValue);
 
-            if ((!value && value !== 0) || Number.isNaN(value) || !Number.isFinite(value)) {
+            if (amount.isNaN() || !amount.isFinite()) {
                 return;
             }
 
-            if (value < 0) {
-                value = 0;
+            let max = new Decimal(Infinity);
+            if (amount.greaterThan(this.maxAmount ?? Infinity)) {
+                max = Decimal.clone(this.maxAmount);
             }
 
-            if (this.maxAmount != null && value > this.maxAmount) {
-                value = this.maxAmount;
-            }
+            const value = amount.clampedTo(0, max);
 
             this.$emit('change', { field: 'amount', value });
         },
@@ -89,8 +87,7 @@ export default {
             maxAmount,
             isDiscountable,
             discountRate,
-            discountTarget,
-            isRegeneration,
+            targetAmount,
             handleSubmit,
             handleCancel,
             handleChangeRate,
@@ -109,39 +106,39 @@ export default {
                     <p class="BillingForm__no-discount">{__('no-discount-applicable')}</p>
                 )}
                 {isDiscountable && (
-                    <Fieldset title={__('discount')}>
+                    <Fragment>
                         <FormField
                             type="number"
-                            label="wanted-rate"
+                            label="wanted-discount-rate"
                             class="BillingForm__discount-input"
                             name="discountRate"
                             disabled={loading}
                             value={discountRate}
                             step={0.0001}
                             min={0.0}
-                            max={maxRate}
+                            max={maxRate.toNumber()}
                             addon="%"
                             onInput={handleChangeRate}
+                            help={(
+                                maxRate.lessThan(100)
+                                    ? __('max-discount-rate-help', { rate: maxRate.toFixed(4) })
+                                    : undefined
+                            )}
                         />
-                        {maxRate < 100 && (
-                            <p class="BillingForm__discount-max-help">
-                                {__('max-discount-rate-help', { rate: maxRate })}
-                            </p>
-                        )}
                         <FormField
                             type="number"
-                            label="wanted-amount"
+                            label="wanted-total-amount"
                             class="BillingForm__discount-target-input"
                             name="discountTarget"
                             disabled={loading}
-                            value={discountTarget}
+                            value={targetAmount}
                             step={0.01}
                             min={0}
-                            max={maxAmount}
+                            max={maxAmount.toNumber()}
                             addon={currency}
-                            onInput={handleChangeAmount}
+                            onChange={handleChangeAmount}
                         />
-                    </Fieldset>
+                    </Fragment>
                 )}
                 {!!beneficiary && (
                     <div class="BillingForm__beneficiary">
@@ -149,9 +146,7 @@ export default {
                             {__('beneficiary')}
                         </div>
                         <div class="BillingForm__beneficiary__name">
-                            <router-link to={`/beneficiaries/${beneficiary.id}`} title={__('action-edit')}>
-                                {beneficiary.full_name}
-                            </router-link>
+                            {beneficiary.full_name}
                         </div>
                     </div>
                 )}
@@ -160,11 +155,9 @@ export default {
                         <i class={['fas', loading ? 'fa-circle-notch fa-spin' : 'fa-plus']} />{' '}
                         {saveLabel}
                     </button>
-                    {isRegeneration && (
-                        <button onClick={handleCancel} type="button" disabled={loading}>
-                            {__('cancel')}
-                        </button>
-                    )}
+                    <button onClick={handleCancel} type="button" disabled={loading}>
+                        {__('cancel')}
+                    </button>
                 </div>
             </form>
         );

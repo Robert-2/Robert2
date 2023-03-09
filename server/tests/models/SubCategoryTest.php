@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Robert2\Tests;
 
-use Robert2\API\Errors;
+use Robert2\API\Errors\Exception\ValidationException;
 use Robert2\API\Models\SubCategory;
 
 final class SubCategoryTest extends TestCase
@@ -16,8 +16,7 @@ final class SubCategoryTest extends TestCase
         $this->assertNotNull($result->toArray());
 
         // - Tente d'ajouter une sous-catégorie qui existe déjà pour cette catégorie
-        $this->expectException(Errors\ValidationException::class);
-        $this->expectExceptionCode(ERROR_VALIDATION);
+        $this->expectException(ValidationException::class);
         SubCategory::new(['name' => 'Gradateurs', 'category_id' => 2]);
     }
 }

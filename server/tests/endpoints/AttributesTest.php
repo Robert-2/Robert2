@@ -1,7 +1,10 @@
 <?php
+declare(strict_types=1);
+
 namespace Robert2\Tests;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
+use Robert2\Support\Arr;
 use Illuminate\Support\Collection;
 
 final class AttributesTest extends ApiTestCase
@@ -51,7 +54,7 @@ final class AttributesTest extends ApiTestCase
 
         if (!$details) {
             $attributes = $attributes->map(fn($attribute) => (
-                array_without_keys($attribute, ['categories'])
+                Arr::except($attribute, ['categories'])
             ));
         }
 

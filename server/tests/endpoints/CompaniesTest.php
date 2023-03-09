@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Robert2\Tests;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
@@ -53,7 +55,7 @@ final class CompaniesTest extends ApiTestCase
     public function testGetCompanyNotFound()
     {
         $this->client->get('/api/companies/999');
-        $this->assertNotFound();
+        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
     public function testGetCompany()
@@ -81,7 +83,7 @@ final class CompaniesTest extends ApiTestCase
         $this->assertResponseData([
             'pagination' => [
                 'currentPage' => 1,
-                'perPage' => $this->settings['maxItemsPerPage'],
+                'perPage' => 100,
                 'total' => ['items' => 1, 'pages' => 1],
             ],
             'data' => [
@@ -105,13 +107,13 @@ final class CompaniesTest extends ApiTestCase
     {
         $this->client->post('/api/companies');
         $this->assertStatusCode(StatusCode::STATUS_BAD_REQUEST);
-        $this->assertErrorMessage("No data was provided.");
+        $this->assertApiErrorMessage("No data was provided.");
     }
 
     public function testCreateCompanyBadData()
     {
         $this->client->post('/api/companies', ['foo' => 'bar']);
-        $this->assertValidationError([
+        $this->assertApiValidationError([
             'legal_name' => ["This field is mandatory"],
         ]);
     }
@@ -122,7 +124,7 @@ final class CompaniesTest extends ApiTestCase
             'id' => null,
             'legal_name' => 'Testing, Inc',
         ]);
-        $this->assertValidationError();
+        $this->assertApiValidationError();
     }
 
     public function testCreateCompany()
@@ -195,7 +197,7 @@ final class CompaniesTest extends ApiTestCase
     public function testRestoreCompanyNotFound()
     {
         $this->client->put('/api/companies/restore/999');
-        $this->assertNotFound();
+        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
     public function testRestoreCompany()

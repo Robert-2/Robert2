@@ -1,5 +1,5 @@
 import './index.scss';
-import Fragment from '@/themes/default/components/Fragment';
+import Fragment from '@/components/Fragment';
 import Icon from '@/themes/default/components/Icon';
 import Button from '@/themes/default/components/Button';
 
@@ -70,7 +70,7 @@ export default {
                         {!hasEnded && (
                             <p class="EventReturnFooter__warning">
                                 <Icon name="exclamation-triangle" />
-                                {__('page.event-return.this-event-is-not-past')}
+                                {__('page.event-return.not-finished-yet-alert')}
                             </p>
                         )}
                     </Fragment>

@@ -1,7 +1,9 @@
 <?php
+declare(strict_types=1);
+
 use Phinx\Migration\AbstractMigration;
 
-class AddQuantityToEventsMaterialsPivot extends AbstractMigration
+final class AddQuantityToEventsMaterialsPivot extends AbstractMigration
 {
     public function up()
     {

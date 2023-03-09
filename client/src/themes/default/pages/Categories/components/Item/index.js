@@ -1,11 +1,12 @@
 import './index.scss';
+import { defineComponent } from '@vue/composition-api';
 import apiSubcategories from '@/stores/api/subcategories';
 import { confirm, prompt } from '@/utils/alert';
 import Button from '@/themes/default/components/Button';
 import Dropdown from '@/themes/default/components/Dropdown';
 
 // @vue/component
-export default {
+const CategoriesItem = {
     name: 'CategoriesItem',
     props: {
         category: { type: Object, required: true },
@@ -54,13 +55,11 @@ export default {
                 return;
             }
 
-            const { value: isConfirmed } = await confirm({
-                title: __('please-confirm'),
+            const isConfirmed = await confirm({
                 text: __('page.categories.confirm-permanently-delete-subcategory'),
                 confirmButtonText: __('yes-permanently-delete'),
                 type: 'danger',
             });
-
             if (!isConfirmed) {
                 return;
             }
@@ -175,14 +174,17 @@ export default {
                                     <Button
                                         to={{ name: 'materials', query: { category: id } }}
                                         icon="list"
+                                        class="CategoriesItem__category__dropdown-action__button"
                                     >
                                         {__('page.categories.display-materials-list')}
                                     </Button>
                                 </li>
                                 <li class="CategoriesItem__category__dropdown-action">
                                     <Button
-                                        type="edit"
+                                        type="primary"
+                                        icon="edit"
                                         onClick={() => { handleEditCategory(name); }}
+                                        class="CategoriesItem__category__dropdown-action__button"
                                     >
                                         {__('page.categories.modify')}
                                     </Button>
@@ -191,6 +193,7 @@ export default {
                                     <Button
                                         type="delete"
                                         onClick={() => { handleRemoveCategory(); }}
+                                        class="CategoriesItem__category__dropdown-action__button"
                                     >
                                         {__('page.categories.delete')}
                                     </Button>
@@ -215,16 +218,19 @@ export default {
                                                     query: { category: id, subCategory: subCategoryId },
                                                 }}
                                                 icon="list"
+                                                class="CategoriesItem__category__dropdown-action__button"
                                             >
                                                 {__('page.categories.display-materials-list')}
                                             </Button>
                                         </li>
                                         <li class="CategoriesItem__subcategory__dropdown-action">
                                             <Button
-                                                type="edit"
+                                                type="primary"
+                                                icon="edit"
                                                 onClick={() => {
                                                     handleEditSubcategory(subCategoryId, subCategoryName);
                                                 }}
+                                                class="CategoriesItem__category__dropdown-action__button"
                                             >
                                                 {__('page.categories.modify-subcategory')}
                                             </Button>
@@ -233,6 +239,7 @@ export default {
                                             <Button
                                                 type="delete"
                                                 onClick={() => { handleRemoveSubcategory(subCategoryId); }}
+                                                class="CategoriesItem__category__dropdown-action__button"
                                             >
                                                 {__('page.categories.delete-subcategory')}
                                             </Button>
@@ -247,3 +254,5 @@ export default {
         );
     },
 };
+
+export default defineComponent(CategoriesItem);

@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Robert2\Tests;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
@@ -27,18 +29,18 @@ final class SubCategoriesTest extends ApiTestCase
                 'id' => 4,
                 'name' => 'Gradateurs',
                 'category_id' => 2,
-            ]
+            ],
         ]);
     }
 
     public function testCreateSubCategoryNoCategoryId()
     {
         $this->client->post('/api/subcategories', ['name' => 'Fail SubCategory']);
-        $this->assertValidationError([
+        $this->assertApiValidationError([
             'category_id' => [
                 "This field is mandatory",
                 "This field must contain only numbers",
-            ]
+            ],
         ]);
     }
 
@@ -60,15 +62,15 @@ final class SubCategoriesTest extends ApiTestCase
     {
         $this->client->put('/api/subcategories/1', []);
         $this->assertStatusCode(StatusCode::STATUS_BAD_REQUEST);
-        $this->assertErrorMessage("No data was provided.");
+        $this->assertApiErrorMessage("No data was provided.");
     }
 
     public function testUpdateSubCategoryNotFound()
     {
         $this->client->put('/api/subcategories/999', [
-            'something' => '__inexistant__'
+            'something' => '__inexistant__',
         ]);
-        $this->assertNotFound();
+        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
     public function testUpdateSubCategory()
@@ -89,6 +91,6 @@ final class SubCategoriesTest extends ApiTestCase
         $this->assertStatusCode(StatusCode::STATUS_NO_CONTENT);
 
         $this->client->get('/api/subcategories/3');
-        $this->assertNotFound();
+        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 }

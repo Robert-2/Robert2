@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 return [
     ['name' => 'France', 'code' => 'FR'],
     ['name' => 'Belgique', 'code' => 'BE'],

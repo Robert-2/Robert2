@@ -1,12 +1,18 @@
 import Vue from 'vue';
-import Swal from 'sweetalert2/dist/sweetalert2';
+import Sweetalert from 'sweetalert2/dist/sweetalert2';
 
-export const confirm = ({ title, text, confirmButtonText, type = 'info' }) => {
+export const confirm = async (options) => {
     const { translate: __ } = Vue.i18n;
+    const {
+        type = 'info',
+        title = __('please-confirm'),
+        confirmButtonText = __('confirm'),
+        text,
+    } = options;
 
-    return Swal.fire({
+    const { isConfirmed } = await Sweetalert.fire({
         icon: 'warning',
-        title: title ?? __('please-confirm'),
+        title,
         text,
         showCancelButton: true,
         customClass: {
@@ -15,6 +21,8 @@ export const confirm = ({ title, text, confirmButtonText, type = 'info' }) => {
         confirmButtonText,
         cancelButtonText: __('cancel'),
     });
+
+    return isConfirmed;
 };
 
 export const prompt = (title, options = {}) => {
@@ -27,7 +35,7 @@ export const prompt = (title, options = {}) => {
         inputValue = '',
     } = options;
 
-    return Swal.fire({
+    return Sweetalert.fire({
         title,
         input: inputType,
         inputPlaceholder: placeholder,

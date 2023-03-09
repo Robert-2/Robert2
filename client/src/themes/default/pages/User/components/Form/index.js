@@ -43,12 +43,10 @@ export default {
             return this.savedData === null;
         },
 
-        isAdmin() {
-            return this.data.group === Group.ADMIN;
-        },
-
         groupsOptions() {
-            return formatOptions(apiGroups.all());
+            const groups = apiGroups.all();
+
+            return formatOptions(groups);
         },
     },
     methods: {

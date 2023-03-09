@@ -5,12 +5,12 @@ namespace Robert2\API\Controllers;
 
 use DI\Container;
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
+use Robert2\API\Http\Request;
 use Robert2\API\Models\Enums\Group;
 use Robert2\API\Models\Setting;
 use Robert2\API\Services\Auth;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Http\Response;
-use Slim\Http\ServerRequest as Request;
 use Slim\Interfaces\RouteParserInterface;
 
 class SettingController extends BaseController
@@ -43,7 +43,7 @@ class SettingController extends BaseController
                 $settings['calendar']['public']['url'] = $this
                     ->routeParser
                     ->fullUrlFor($request->getUri(), 'public-calendar', [
-                        'uuid' => $publicCalendar['uuid']
+                        'uuid' => $publicCalendar['uuid'],
                     ]);
             }
         }
@@ -60,21 +60,21 @@ class SettingController extends BaseController
 
     public function update(Request $request, Response $response): Response
     {
-        $postData = (array)$request->getParsedBody();
+        $postData = (array) $request->getParsedBody();
         if (empty($postData)) {
             throw new HttpBadRequestException($request, "No data was provided.");
         }
 
         Setting::staticEdit(null, $postData);
 
-        return $this->getAll($request, $response, StatusCode::STATUS_OK);
+        return $this->getAll($request, $response);
     }
 
     public function reset(Request $request, Response $response): Response
     {
         $key = $request->getAttribute('key');
 
-        // - La partie client manipule l'URL formattée du calendrier public
+        // - La partie client manipule l'URL formatée du calendrier public
         //   => On permet donc le reset via cette "clé".
         if ($key === 'calendar.public.url') {
             $key = 'calendar.public.uuid';
@@ -82,6 +82,6 @@ class SettingController extends BaseController
 
         Setting::findOrFail($key)->reset();
 
-        return $this->getAll($request, $response, StatusCode::STATUS_OK);
+        return $this->getAll($request, $response);
     }
 }

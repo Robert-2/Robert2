@@ -9,11 +9,12 @@ final class CategoryTest extends TestCase
 {
     public function testHasSubCategories(): void
     {
-        $this->assertTrue(Category::hasSubCategories(1));
-        $this->assertTrue(Category::hasSubCategories(2));
-        $this->assertFalse(Category::hasSubCategories(3));
-        $this->assertFalse(Category::hasSubCategories(4));
+        $this->assertTrue(Category::findOrFail(1)->has_sub_categories);
+        $this->assertTrue(Category::findOrFail(2)->has_sub_categories);
+        $this->assertFalse(Category::findOrFail(3)->has_sub_categories);
+        $this->assertFalse(Category::findOrFail(4)->has_sub_categories);
     }
+
     public function testBulkAdd(): void
     {
         $this->assertEmpty(Category::bulkAdd([]));

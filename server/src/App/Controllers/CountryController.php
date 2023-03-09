@@ -5,9 +5,9 @@ namespace Robert2\API\Controllers;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Robert2\API\Controllers\Traits\Crud;
+use Robert2\API\Http\Request;
 use Robert2\API\Models\Country;
 use Slim\Http\Response;
-use Slim\Http\ServerRequest as Request;
 
 class CountryController extends BaseController
 {

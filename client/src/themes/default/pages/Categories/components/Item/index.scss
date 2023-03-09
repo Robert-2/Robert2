@@ -31,13 +31,14 @@
         }
 
         &__dropdown-action {
-            min-width: 250px;
+            min-width: 280px;
             margin: 0 0 3px;
             list-style: none;
 
-            .Button {
+            &__button {
+                display: flex;
+                align-items: center;
                 width: 100%;
-                text-align: left;
             }
         }
     }

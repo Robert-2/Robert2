@@ -1,11 +1,13 @@
 <?php
+declare(strict_types=1);
+
 use Phinx\Migration\AbstractMigration;
 
-class AddFieldsToMaterialUnits extends AbstractMigration
+final class AddFieldsToMaterialUnits extends AbstractMigration
 {
     public function up()
     {
-        $table = $this->table('material_units');
+        $table = $this->table('material_units', ['signed' => true]);
         $table
             ->addColumn('is_lost', 'boolean', [
                 'null' => false,
@@ -13,6 +15,7 @@ class AddFieldsToMaterialUnits extends AbstractMigration
                 'after' => 'is_broken',
             ])
             ->addColumn('material_unit_state_id', 'integer', [
+                'signed' => true,
                 'null' => true,
                 'after' => 'is_lost',
             ])

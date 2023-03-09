@@ -3,8 +3,8 @@ title-edit-simple: Modify user
 title-edit: 'Modify user "{name}"'
 
 help-group: |-
-    - Group "Administrator" group gives all access rights to user.
-    - Group "Member" allow user to use most parts of Robert application.
-    - Group "Visitor" group gives a limited access to some data.
+    - "Administrator" group gives all access rights to user.
+    - "Member" group allow user to use most parts of the application.
+    - "Visitor" group gives a limited access to some data.
 
 saved: User saved.

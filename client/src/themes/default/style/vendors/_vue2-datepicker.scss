@@ -54,7 +54,7 @@
 
     &-icon-calendar,
     &-icon-clear {
-        color: $text-nav-color;
+        color: $text-soft-color;
     }
 
     &-datepicker-main,
@@ -64,7 +64,7 @@
 
     &-table-date {
         .cell.not-current-month {
-            color: $text-nav-color;
+            color: $text-soft-color;
         }
 
         .cell.disabled {

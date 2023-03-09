@@ -1,4 +1,5 @@
 import './index.scss';
+import { defineComponent } from '@vue/composition-api';
 import { confirm, prompt } from '@/utils/alert';
 import apiCategories from '@/stores/api/categories';
 import Page from '@/themes/default/components/Page';
@@ -9,7 +10,7 @@ import EmptyMessage from '@/themes/default/components/EmptyMessage';
 import Item from './components/Item';
 
 // @vue/component
-export default {
+const Categories = {
     name: 'Categories',
     data() {
         return {
@@ -48,13 +49,11 @@ export default {
 
         async handleDeleteCategory(id) {
             const { $t: __ } = this;
-            const { value: isConfirmed } = await confirm({
-                title: __('please-confirm'),
+            const isConfirmed = await confirm({
                 text: __(`page.categories.confirm-permanently-delete`),
                 confirmButtonText: __(`yes-permanently-delete`),
                 type: 'danger',
             });
-
             if (!isConfirmed) {
                 return;
             }
@@ -217,3 +216,5 @@ export default {
         );
     },
 };
+
+export default defineComponent(Categories);

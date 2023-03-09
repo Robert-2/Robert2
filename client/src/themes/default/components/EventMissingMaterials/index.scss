@@ -4,7 +4,7 @@
     color: globals.$text-base-color;
 
     &__title {
-        margin-bottom: 1rem;
+        margin: 0 0 1rem;
         font-size: 1.2rem;
 
         .fas {
@@ -15,7 +15,7 @@
     }
 
     &__help {
-        color: globals.$text-nav-color;
+        color: globals.$text-soft-color;
     }
 
     &__error {

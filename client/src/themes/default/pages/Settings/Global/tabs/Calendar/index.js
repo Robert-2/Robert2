@@ -5,7 +5,8 @@ import pick from 'lodash/pick';
 import cloneDeep from 'lodash/cloneDeep';
 import { confirm } from '@/utils/alert';
 import apiSettings from '@/stores/api/settings';
-import useI18n from '@/hooks/vue/useI18n';
+import { ApiErrorCode } from '@/stores/api/@codes';
+import useI18n from '@/hooks/useI18n';
 import Help from '@/themes/default/components/Help';
 import FormField from '@/themes/default/components/FormField';
 import Button from '@/themes/default/components/Button';
@@ -14,7 +15,6 @@ import Button from '@/themes/default/components/Button';
 const CalendarGlobalSettings = (props, { root }) => {
     const __ = useI18n();
     const isSaving = ref(false);
-    const isSaved = ref(false);
     const error = ref(null);
 
     // - State "temporaire" juste pendant la durée de vie de ce formulaire.
@@ -29,32 +29,28 @@ const CalendarGlobalSettings = (props, { root }) => {
         'public.enabled',
     ]));
 
-    const help = computed(() => (
-        isSaved.value
-            ? { type: 'success', text: 'page.settings.calendar.saved' }
-            : 'page.settings.calendar.help'
-    ));
-
     const validationErrors = computed(() => {
         if (!error.value || !axios.isAxiosError(error.value)) {
             return null;
         }
 
-        const { code, details } = error.value.response?.data?.error || { code: 0, details: {} };
-        return code === 400 ? { ...details } : null;
+        const { code, details } = error.value.response?.data?.error || { code: ApiErrorCode.UNKNOWN, details: {} };
+        return code === ApiErrorCode.VALIDATION_FAILED ? { ...details } : null;
     });
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (isSaving.value) {
+            return;
+        }
 
         isSaving.value = true;
         error.value = null;
         try {
             await apiSettings.update({ calendar: values });
             root.$store.dispatch('settings/fetch');
-            isSaved.value = true;
+            root.$toasted.success(__('page.settings.calendar.saved'));
         } catch (err) {
-            isSaved.value = false;
             if (err instanceof Error) {
                 error.value = err;
             }
@@ -64,7 +60,7 @@ const CalendarGlobalSettings = (props, { root }) => {
     };
 
     const handleRegenerateCalendarUrl = async () => {
-        const { value: isConfirmed } = await confirm({
+        const isConfirmed = await confirm({
             title: __('warning'),
             text: __('page.settings.calendar.public-calendar-url-reset-warning'),
             confirmButtonText: __('yes-regenerate-link'),
@@ -138,7 +134,10 @@ const CalendarGlobalSettings = (props, { root }) => {
 
         return (
             <div class="CalendarGlobalSettings">
-                <Help message={help.value} error={error.value} isLoading={isSaving.value} />
+                <Help
+                    message={__('page.settings.calendar.help')}
+                    error={error.value}
+                />
                 <form class="CalendarGlobalSettings__form" onSubmit={handleSubmit}>
                     <section class="CalendarGlobalSettings__section">
                         <h2>{__('page.settings.calendar.events-display-section-title')}</h2>
@@ -174,7 +173,7 @@ const CalendarGlobalSettings = (props, { root }) => {
                             icon="save"
                             htmlType="submit"
                             type="success"
-                            disabled={isSaving.value}
+                            loading={isSaving.value}
                         >
                             {isSaving.value ? __('saving') : __('save')}
                         </Button>

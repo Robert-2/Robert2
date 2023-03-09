@@ -6,9 +6,9 @@ namespace Robert2\API\Controllers;
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Illuminate\Database\Eloquent\Builder;
 use Robert2\API\Controllers\Traits\Crud;
+use Robert2\API\Http\Request;
 use Robert2\API\Models\Attribute;
 use Slim\Http\Response;
-use Slim\Http\ServerRequest as Request;
 
 class AttributeController extends BaseController
 {
@@ -27,12 +27,7 @@ class AttributeController extends BaseController
             $query->whereDoesntHave('categories');
 
             if ($categoryId !== 'none') {
-                $query->orWhereHas(
-                    'categories',
-                    function ($query) use ($categoryId) {
-                        $query->where('categories.id', $categoryId);
-                    }
-                );
+                $query->orWhereRelation('categories', 'categories.id', $categoryId);
             }
         }
 

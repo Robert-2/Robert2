@@ -1,6 +1,6 @@
 import './index.scss';
 import VueSelect from 'vue-select';
-import Fragment from '@/themes/default/components/Fragment';
+import Fragment from '@/components/Fragment';
 import icons from './icons';
 
 // @vue/component

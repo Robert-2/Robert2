@@ -2,7 +2,7 @@ import './index.scss';
 import debounce from 'debounce';
 import { ref, toRefs } from '@vue/composition-api';
 import { getErrorMessage } from '@/utils/errors';
-import useI18n from '@/hooks/vue/useI18n';
+import useI18n from '@/hooks/useI18n';
 import apiEvents from '@/stores/api/events';
 import SearchEventResultItem from './SearchEventResultItem';
 

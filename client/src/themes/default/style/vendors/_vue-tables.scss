@@ -55,6 +55,7 @@
     }
 
     th {
+        padding: 0.78rem 0.35rem;
         background: $bg-color-table-th;
         text-align: left;
         white-space: nowrap;
@@ -65,7 +66,6 @@
     }
 
     &__sortable {
-        padding: 0.78rem 0.35rem;
         cursor: pointer;
     }
 

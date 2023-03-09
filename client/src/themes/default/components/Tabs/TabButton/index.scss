@@ -18,6 +18,20 @@
         margin-right: $icon-margin;
     }
 
+    &__counter {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: 5px;
+        padding: 3px 6px;
+        border-radius: 10px;
+        background-color: $counter-background-color;
+        color: $counter-text-color;
+        font-size: 11px;
+        font-weight: 600;
+        line-height: 1;
+    }
+
     &--selected {
         border-color: $header-border-color-active;
         color: $text-color-active;

@@ -4,18 +4,18 @@ declare(strict_types=1);
 namespace Robert2\Fixtures;
 
 use Ifsnop\Mysqldump as IMysqldump;
-
-use Robert2\API\Config;
+use Robert2\API\Config\Config;
 
 class RobertFixtures
 {
-    const DUMP_DIR         = __DIR__ . DS . 'tmp' . DS;
-    const DATA_DUMP_FILE   = __DIR__ . DS . 'tmp' . DS . 'data.sql';
-    const SCHEMA_DUMP_FILE = __DIR__ . DS . 'tmp' . DS . 'schema.sql';
+    protected const DATA_DUMP_FILE = TMP_FOLDER . DS . 'data.sql';
+    protected const SCHEMA_DUMP_FILE = TMP_FOLDER . DS . 'schema.sql';
+
+    protected static $alreadyCreated = false;
 
     public static function getConnection(): \PDO
     {
-        return Config\Config::getPDO();
+        return Config::getPDO();
     }
 
     public static function resetTestDatabase(): void
@@ -29,7 +29,7 @@ class RobertFixtures
 
     public static function dropCreateTestDatabase(): void
     {
-        $dbConfig = Config\Config::getDbConfig();
+        $dbConfig = Config::getDbConfig();
 
         static::_log(sprintf("Drop and re-create database `%s`...", $dbConfig['testDatabase']));
 
@@ -64,7 +64,7 @@ class RobertFixtures
 
     public static function getAllTables(): array
     {
-        $dbConfig = Config\Config::getDbConfig();
+        $dbConfig = Config::getDbConfig();
 
         $query = sprintf("
             SELECT `TABLE_NAME` FROM `information_schema`.`TABLES`
@@ -88,7 +88,7 @@ class RobertFixtures
             static::_log("Temporary dump directory created.\n");
         }
 
-        $dbConfig = Config\Config::getDbConfig(['noCharset' => true]);
+        $dbConfig = Config::getDbConfig(['noCharset' => true]);
         static::_log(sprintf("Dumping test database `%s`...\n", $dbConfig['testDatabase']));
 
         $dump = new IMysqldump\Mysqldump(
@@ -110,15 +110,10 @@ class RobertFixtures
         static::_log("Optimizing dump file (Memory engine, varchar, etc.)...\n");
 
         $dumpContent  = sprintf("USE `%s`;\n", $dbConfig['testDatabase']);
-        $dumpContent .= file_get_contents($dumpFile);
+        $dumpContent .= file_get_contents($dumpFile) . "\n\n";
 
         $prefixedTable = sprintf('CREATE TABLE `%s`.', $dbConfig['testDatabase']);
-        $dumpContent   = str_replace('CREATE TABLE ', $prefixedTable, $dumpContent);
-
-        $dumpContent = str_replace('` text', '` varchar(1024)', $dumpContent);
-        $dumpContent = str_replace('` json', '` varchar(1024)', $dumpContent);
-        $dumpContent = str_replace('InnoDB', 'MEMORY', $dumpContent);
-        $dumpContent = str_replace('` longtext', '` varchar(1024)', $dumpContent);
+        $dumpContent = str_replace('CREATE TABLE ', $prefixedTable, $dumpContent);
 
         file_put_contents($dumpFile, $dumpContent);
 
@@ -151,8 +146,11 @@ class RobertFixtures
         try {
             $pdo = self::getConnection();
 
-            $querySchema = file_get_contents(self::SCHEMA_DUMP_FILE);
-            $pdo->prepare($querySchema)->execute();
+            if (!static::$alreadyCreated) {
+                $querySchema = file_get_contents(self::SCHEMA_DUMP_FILE);
+                $pdo->prepare($querySchema)->execute();
+                static::$alreadyCreated = true;
+            }
 
             $queryData = file_get_contents(self::DATA_DUMP_FILE);
             $pdo->prepare($queryData)->execute();

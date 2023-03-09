@@ -19,13 +19,16 @@
 
     &__details {
         flex: 1;
-        color: globals.$text-nav-color;
+        color: globals.$text-soft-color;
 
         &__title {
+            @include globals.line-clamp(2);
+
             margin: 0 0 0.4rem;
             color: globals.$text-base-color;
             font-size: 1.4rem;
             font-weight: 800;
+            word-break: break-word;
         }
 
         &__location-dates {
@@ -45,7 +48,7 @@
         margin: 0 1rem;
     }
 
-    .close {
+    &__close {
         flex: 0 0 auto;
         border: none;
         background: none;

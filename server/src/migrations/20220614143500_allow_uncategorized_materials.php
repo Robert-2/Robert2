@@ -10,7 +10,10 @@ final class AllowUncategorizedMaterials extends AbstractMigration
     {
         $materials = $this->table('materials');
         $materials
-            ->changeColumn('category_id', 'integer', ['length' => 11, 'null' => true])
+            ->changeColumn('category_id', 'integer', [
+                'signed' => true,
+                'null' => true,
+            ])
             ->dropForeignKey('category_id', 'fk_materials_category')
             ->save();
 
@@ -18,7 +21,7 @@ final class AllowUncategorizedMaterials extends AbstractMigration
             ->addForeignKey('category_id', 'categories', 'id', [
                 'delete' => 'SET_NULL',
                 'update' => 'NO_ACTION',
-                'constraint' => 'fk_materials_category'
+                'constraint' => 'fk_materials_category',
             ])
             ->save();
     }
@@ -49,11 +52,11 @@ final class AllowUncategorizedMaterials extends AbstractMigration
             ->execute();
 
         $materials
-            ->changeColumn('category_id', 'integer', ['length' => 11, 'null' => false])
+            ->changeColumn('category_id', 'integer', ['signed' => true, 'null' => false])
             ->addForeignKey('category_id', 'categories', 'id', [
                 'delete' => 'RESTRICT',
                 'update' => 'NO_ACTION',
-                'constraint' => 'fk_materials_category'
+                'constraint' => 'fk_materials_category',
             ])
             ->save();
     }

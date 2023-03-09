@@ -1,9 +1,10 @@
 import './index.scss';
+import { defineComponent } from '@vue/composition-api';
 import TabButton from './TabButton';
 import Tab from './Tab';
 
 // @vue/component
-const Tabs = {
+const Tabs = defineComponent({
     name: 'Tabs',
     props: {
         defaultIndex: { type: Number, default: 0 },
@@ -52,6 +53,6 @@ const Tabs = {
             </div>
         );
     },
-};
+});
 
 export { Tabs, Tab };

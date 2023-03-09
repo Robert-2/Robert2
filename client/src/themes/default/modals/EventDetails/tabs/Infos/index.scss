@@ -4,30 +4,35 @@
     display: flex;
     flex-direction: column;
 
-    &__base-infos {
+    &__people-location {
         display: flex;
         flex-wrap: wrap;
 
-        .LocationText,
-        .EventBeneficiaries,
-        .EventTechnicians,
+        &__beneficiary,
+        &__location,
+        &__technicians,
         &__creator {
             flex: 1 0 auto;
             max-width: 100%;
-            margin: 0 globals.$content-padding-small-horizontal globals.$content-padding-large-vertical 0;
+            margin: 0 globals.$content-padding-small-horizontal 15px 0;
+            font-size: 1.1rem;
         }
 
         &__creator {
-            font-size: 1rem;
-
             &__icon {
                 margin-right: 0.3rem;
             }
-
-            &__link {
-                margin-left: 0.3rem;
-            }
         }
+    }
+
+    &__no-beneficiary {
+        color: globals.$text-danger-color;
+        font-size: 1.2rem;
+        text-align: center;
+    }
+
+    &__beneficiary-details {
+        margin: 0 0 15px;
     }
 
     &__description,
@@ -35,7 +40,7 @@
         margin-bottom: globals.$content-padding-large-vertical;
         font-size: 1.2rem;
 
-        .fas {
+        &__icon {
             width: 1.5rem;
             margin-right: 0.5rem;
             text-align: center;
@@ -44,7 +49,7 @@
 
     &__description {
         margin-top: 0;
-        color: globals.$text-nav-color;
+        color: globals.$text-soft-color;
         line-height: 1.5;
         white-space: pre-wrap;
     }
@@ -55,10 +60,5 @@
         &--confirmed {
             color: globals.$text-success-color;
         }
-    }
-
-    .EventTotals {
-        padding: 0;
-        text-align: left;
     }
 }

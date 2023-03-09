@@ -1,6 +1,7 @@
 import './index.scss';
 import moment from 'moment';
 import MultiSwitch from '@/themes/default/components/MultiSwitch';
+import { DisplayGroup } from '../Inventory';
 
 // @vue/component
 export default {
@@ -11,13 +12,13 @@ export default {
     },
     data() {
         return {
-            displayGroup: 'categories',
+            displayGroup: DisplayGroup.CATEGORIES,
         };
     },
     computed: {
-        hasMultipleParks() {
-            return this.$store.state.parks.list.length > 1;
-        },
+        // hasMultipleParks() {
+        //     return this.$store.state.parks.list.length > 1;
+        // },
 
         endDate() {
             return moment(this.event.end_date);
@@ -82,10 +83,9 @@ export default {
                             <span class="EventReturnHeader__group-by__label">{__('grouped-by')}</span>
                             <MultiSwitch
                                 options={[
-                                    { value: 'categories', label: __('categories') },
-                                    // FIXME: Réhabiliter le groupage par parc pour le faire fonctionner avec les unités
-                                    // { value: 'parks', label: __('parks'), isDisplayed: hasMultipleParks },
-                                    { value: null, label: __('not-grouped') },
+                                    { value: DisplayGroup.CATEGORIES, label: __('categories') },
+                                    // { value: DisplayGroup.PARKS, label: __('parks'), isDisplayed: hasMultipleParks },
+                                    { value: DisplayGroup.NONE, label: __('not-grouped') },
                                 ]}
                                 value={displayGroup}
                                 onChange={setDisplayGroup}

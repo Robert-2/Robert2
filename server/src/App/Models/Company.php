@@ -3,15 +3,36 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Str;
 use Robert2\API\Contracts\Serializable;
 use Robert2\API\Models\Traits\Serializer;
-use Robert2\API\Validation\Validator as V;
+use Respect\Validation\Validator as V;
+use Robert2\API\Models\Traits\SoftDeletable;
 
-class Company extends BaseModel implements Serializable
+/**
+ * Société.
+ *
+ * @property-read ?int $id
+ * @property string $legal_name
+ * @property string|null $phone
+ * @property string|null $street
+ * @property string|null $postal_code
+ * @property string|null $locality
+ * @property int|null $country_id
+ * @property-read Country|null $country
+ * @property-read string|null $full_address
+ * @property string|null $note
+ * @property-read Carbon $created_at
+ * @property-read Carbon|null $updated_at
+ * @property-read Carbon|null $deleted_at
+ *
+ * @property-read Collection|Beneficiary[] $beneficiaries
+ */
+final class Company extends BaseModel implements Serializable
 {
     use Serializer;
-    use SoftDeletes;
+    use SoftDeletable;
 
     protected $orderField = 'legal_name';
     protected $searchField = 'legal_name';
@@ -21,11 +42,11 @@ class Company extends BaseModel implements Serializable
         parent::__construct($attributes);
 
         $this->validation = [
-            'legal_name' => V::callback([$this, 'checkLegalName']),
+            'legal_name' => V::custom([$this, 'checkLegalName']),
             'street' => V::optional(V::length(null, 191)),
             'postal_code' => V::optional(V::length(null, 10)),
             'locality' => V::optional(V::length(null, 191)),
-            'country_id' => V::optional(V::numeric()),
+            'country_id' => V::optional(V::numericVal()),
             'phone' => V::optional(V::phone()),
         ];
     }
@@ -93,18 +114,21 @@ class Company extends BaseModel implements Serializable
 
     public function getFullAddressAttribute()
     {
-        if (empty($this->street) && empty($this->postal_code) && empty($this->locality)) {
-            return null;
-        }
-        if (empty($this->postal_code) && empty($this->locality)) {
-            return $this->street;
-        }
-        return "{$this->street}\n{$this->postal_code} {$this->locality}";
+        $addressParts = [];
+
+        $addressParts[] = trim($this->street ?? '');
+        $addressParts[] = implode(' ', array_filter([
+            trim($this->postal_code ?? ''),
+            trim($this->locality ?? ''),
+        ]));
+
+        $addressParts = array_filter($addressParts);
+        return !empty($addressParts) ? implode("\n", $addressParts) : null;
     }
 
     public function getCountryAttribute()
     {
-        return $this->country()->first();
+        return $this->getRelationValue('country');
     }
 
     // ------------------------------------------------------
@@ -126,7 +150,7 @@ class Company extends BaseModel implements Serializable
     public static function staticEdit($id = null, array $data = []): BaseModel
     {
         if (!empty($data['phone'])) {
-            $data['phone'] = normalizePhone($data['phone']);
+            $data['phone'] = Str::remove(' ', $data['phone']);
         }
         return parent::staticEdit($id, $data);
     }

@@ -1,8 +1,10 @@
 import './index.scss';
+import { defineComponent } from '@vue/composition-api';
 import { Group } from '@/stores/api/groups';
+import Item from './Item';
 
 // @vue/component
-export default {
+const DefaultLayoutSidebarMenu = defineComponent({
     name: 'DefaultLayoutSidebarMenu',
     computed: {
         links() {
@@ -35,25 +37,23 @@ export default {
         },
     },
     render() {
-        const { $t: __, links } = this;
+        const { links } = this;
 
         return (
             <ul class="DefaultLayoutSidebarMenu">
-                {links.map(({ ident, icon, url, exact = false }) => (
-                    <router-link key={ident} to={url} exact={exact} custom>
-                        {({ href, navigate, isActive }) => (
-                            <li class={['DefaultLayoutSidebarMenu__item', { 'DefaultLayoutSidebarMenu__item--active': isActive }]}>
-                                <a href={href} onClick={navigate} class="DefaultLayoutSidebarMenu__item__link">
-                                    <i class={['DefaultLayoutSidebarMenu__item__icon', 'fas', `fa-${icon}`]} /><br />
-                                    <span class="DefaultLayoutSidebarMenu__item__title">
-                                        {__(`layout.default.menu.${ident}`)}
-                                    </span>
-                                </a>
-                            </li>
-                        )}
-                    </router-link>
+                {links.map(({ ident, icon, url, counter, exact }) => (
+                    <Item
+                        key={ident}
+                        ident={ident}
+                        url={url}
+                        icon={icon}
+                        counter={counter}
+                        exact={exact}
+                    />
                 ))}
             </ul>
         );
     },
-};
+});
+
+export default DefaultLayoutSidebarMenu;

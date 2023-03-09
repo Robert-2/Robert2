@@ -3,23 +3,30 @@
         "baseUrl": ".",
         "outDir": "./dist",
         "allowJs": true,
-        "target": "esnext",
-        "module": "esnext",
-        "moduleResolution": "node",
-        "strict": true,
-        "jsx": "preserve",
-        "sourceMap": true,
-        "resolveJsonModule": true,
-        "esModuleInterop": true,
-        "skipLibCheck": true,
         "allowSyntheticDefaultImports": true,
-        "forceConsistentCasingInFileNames": true,
+        "esModuleInterop": true,
         "exactOptionalPropertyTypes": true,
-        "useDefineForClassFields": true,
-        "noFallthroughCasesInSwitch": true,
+        "forceConsistentCasingInFileNames": true,
+        "importsNotUsedAsValues": "error",
+        "jsx": "preserve",
         "lib": ["esnext", "dom", "dom.iterable"],
+        "module": "esnext",
+        "moduleDetection": "auto",
+        "moduleResolution": "node",
+        "moduleSuffixes": [""],
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitReturns": true,
+        // "noUncheckedIndexedAccess": true,
+        "preserveValueImports": true,
+        "resolveJsonModule": true,
+        "skipLibCheck": true,
+        "sourceMap": true,
+        "strict": true,
+        "target": "ESNext",
+        "useDefineForClassFields": true,
         "paths": {
-            "@/*": ["./src/*"]
+            "@/*": ["./src/*"],
+            "@fixtures/*": ["./tests/fixtures/*"]
         }
     },
     "include": [
@@ -27,6 +34,5 @@
         "src/**/*.tsx",
         "tests/**/*.ts",
         "tests/**/*.tsx"
-    ],
-    "exclude": ["node_modules"]
+    ]
 }

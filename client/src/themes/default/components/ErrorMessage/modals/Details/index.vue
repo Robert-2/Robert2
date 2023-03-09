@@ -16,7 +16,7 @@
                     {{ $t('errors.details-intro-forum') }}
                 </a>
                 {{ $t('errors.details-intro3') }}
-                <a href="https://github.com/Robert-2/Robert2/issues" target="_blank">Github</a>.
+                <a href="https://github.com/Robert-2/Robert2/issues" target="_blank">GitHub</a>.
             </p>
             <p v-if="!details" class="ErrorDetails__no-details-info">
                 <i class="fas fa-info-circle" />
@@ -30,7 +30,7 @@
                 </div>
                 <h3 class="ErrorDetails__subtitle">
                     #### {{ $t('errors.details-message') }}
-                    (<span class="ErrorDetails__code">{{ code }}</span>) :
+                    (<span class="ErrorDetails__statusCode">{{ statusCode }}</span>) :
                 </h3>
                 <p class="ErrorDetails__message">`{{ message }}`</p>
                 <div v-if="file.length > 0">

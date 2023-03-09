@@ -1,23 +1,25 @@
 <?php
+declare(strict_types=1);
+
 use Phinx\Migration\AbstractMigration;
 
-class CreateEstimates extends AbstractMigration
+final class CreateEstimates extends AbstractMigration
 {
     public function up()
     {
-        $table = $this->table('estimates');
+        $table = $this->table('estimates', ['signed' => true]);
         $table
-            ->addColumn('date', 'datetime')
-            ->addColumn('event_id', 'integer')
-            ->addColumn('beneficiary_id', 'integer')
-            ->addColumn('materials', 'json')
-            ->addColumn('degressive_rate', 'decimal', ['precision' => 4, 'scale' => 2])
+            ->addColumn('date', 'datetime', ['null' => false])
+            ->addColumn('event_id', 'integer', ['signed' => true, 'null' => false])
+            ->addColumn('beneficiary_id', 'integer', ['signed' => true, 'null' => false])
+            ->addColumn('materials', 'json', ['null' => false])
+            ->addColumn('degressive_rate', 'decimal', ['null' => false, 'precision' => 4, 'scale' => 2])
             ->addColumn('discount_rate', 'decimal', ['null' => true, 'precision' => 6, 'scale' => 4])
             ->addColumn('vat_rate', 'decimal', ['null' => true, 'precision' => 4, 'scale' => 2])
-            ->addColumn('due_amount', 'decimal', ['precision' => 8, 'scale' => 2])
-            ->addColumn('replacement_amount', 'decimal', ['precision' => 8, 'scale' => 2])
-            ->addColumn('currency', 'string', ['length' => 3])
-            ->addColumn('user_id', 'integer', ['null' => true])
+            ->addColumn('due_amount', 'decimal', ['null' => false, 'precision' => 8, 'scale' => 2])
+            ->addColumn('replacement_amount', 'decimal', ['null' => false, 'precision' => 8, 'scale' => 2])
+            ->addColumn('currency', 'string', ['length' => 3, 'null' => false])
+            ->addColumn('user_id', 'integer', ['signed' => true, 'null' => true])
             ->addColumn('created_at', 'datetime', ['null' => true])
             ->addColumn('updated_at', 'datetime', ['null' => true])
             ->addColumn('deleted_at', 'datetime', ['null' => true])
@@ -27,17 +29,17 @@ class CreateEstimates extends AbstractMigration
             ->addForeignKey('event_id', 'events', 'id', [
                 'delete' => 'CASCADE',
                 'update' => 'NO_ACTION',
-                'constraint' => 'fk_estimate_event'
+                'constraint' => 'fk_estimate_event',
             ])
             ->addForeignKey('beneficiary_id', 'persons', 'id', [
                 'delete' => 'CASCADE',
                 'update' => 'NO_ACTION',
-                'constraint' => 'fk_estimate_beneficiary'
+                'constraint' => 'fk_estimate_beneficiary',
             ])
             ->addForeignKey('user_id', 'users', 'id', [
                 'delete' => 'SET_NULL',
                 'update' => 'NO_ACTION',
-                'constraint' => 'fk_estimate_user'
+                'constraint' => 'fk_estimate_user',
             ])
             ->create();
     }

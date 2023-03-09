@@ -1,41 +1,58 @@
 import './index.scss';
-import Dropdown, { getItemClassnames } from '@/themes/default/components/Dropdown';
+import { mapState, mapActions } from 'vuex';
+import Dropdown from '@/themes/default/components/Dropdown';
+import Fragment from '@/components/Fragment';
+import Button from '@/themes/default/components/Button';
 
 // @vue/component
 export default {
     name: 'DefaultLayoutHeaderMenu',
     computed: {
-        pseudo() {
-            return this.$store.state.auth.user.pseudo;
-        },
+        ...mapState('auth', ['user']),
     },
     methods: {
-        logout() {
-            this.$store.dispatch('auth/logout').then(() => {
-                this.$router.replace({ path: '/login', hash: '#bye' });
-            });
+        ...mapActions('auth', ['logout']),
+
+        // ------------------------------------------------------
+        // -
+        // -    Handlers
+        // -
+        // ------------------------------------------------------
+
+        async handleLogout() {
+            await this.logout();
+            this.$router.replace({ path: '/login', hash: '#bye' });
         },
     },
     render() {
-        const { $t: __, pseudo, logout } = this;
+        const { $t: __, user, handleLogout } = this;
+        const { first_name: name } = user;
 
         return (
             <nav class="DefaultLayoutHeaderMenu">
-                <Dropdown>
-                    <template slot="buttonText">{__('hello-pseudo', { pseudo })}</template>
-                    <template slot="items">
-                        <router-link to="/user-settings" custom>
-                            {({ navigate, isActive }) => (
-                                <li onClick={navigate} class={getItemClassnames(isActive)}>
-                                    <i class="fas fa-cogs" /> {__('your-settings')}
-                                </li>
-                            )}
-                        </router-link>
-                        <li class="Dropdown__item" onClick={logout}>
-                            <i class="fas fa-power-off" /> {__('logout-quit')}
-                        </li>
-                    </template>
-                </Dropdown>
+                <Dropdown
+                    scopedSlots={{
+                        buttonText: () => __('hello-name', { name }),
+                        items: () => (
+                            <Fragment>
+                                <Button
+                                    to={{ name: 'user-settings' }}
+                                    icon="cogs"
+                                    class="DefaultLayoutHeaderMenu__dropdown-item"
+                                >
+                                    {__('your-settings')}
+                                </Button>
+                                <Button
+                                    icon="power-off"
+                                    onClick={handleLogout}
+                                    class="DefaultLayoutHeaderMenu__dropdown-item"
+                                >
+                                    {__('logout-quit')}
+                                </Button>
+                            </Fragment>
+                        ),
+                    }}
+                />
             </nav>
         );
     },

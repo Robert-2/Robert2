@@ -31,8 +31,8 @@ export default {
             return moment(this.centerDate).isSame(moment(), 'day');
         },
 
-        isVisitor() {
-            return this.$store.getters['auth/is'](Group.VISITOR);
+        isTeamMember() {
+            return this.$store.getters['auth/is']([Group.ADMIN, Group.MEMBER]);
         },
     },
     mounted() {
@@ -91,7 +91,7 @@ export default {
             centerDate,
             filters,
             isToday,
-            isVisitor,
+            isTeamMember,
             isLoading,
             parksOptions,
             handleSetTodayDate,
@@ -166,7 +166,7 @@ export default {
                     </div>
                 </div>
                 <div class="CalendarHeader__actions">
-                    {!isVisitor && (
+                    {isTeamMember && (
                         <Button type="add" to={{ name: 'add-event' }}>
                             {__('page.calendar.add-event')}
                         </Button>

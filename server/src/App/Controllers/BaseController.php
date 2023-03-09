@@ -5,7 +5,8 @@ namespace Robert2\API\Controllers;
 
 use DI\Container;
 use Illuminate\Database\Eloquent\Builder;
-use Slim\Http\ServerRequest as Request;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Robert2\API\Http\Request;
 
 abstract class BaseController
 {
@@ -27,8 +28,9 @@ abstract class BaseController
     protected function paginate(Request $request, $query, ?int $limit = null): array
     {
         $maxItemsPerPage = $this->container->get('settings')['maxItemsPerPage'] ?? 100;
-        $limit = min($limit ? (int)$limit : $maxItemsPerPage, $maxItemsPerPage);
+        $limit = min($limit ? (int) $limit : $maxItemsPerPage, $maxItemsPerPage);
 
+        /** @var LengthAwarePaginator $paginated */
         $paginated = $query->paginate($limit);
         $basePath = $request->getUri()->getPath();
         $params = $request->getQueryParams();

@@ -1,6 +1,6 @@
 import './index.scss';
 import config from '@/globals/config';
-import Logo from '@/themes/default/components/Logo/vue';
+import Logo from '@/themes/default/components/Logo';
 import Menu from './Menu';
 
 // @vue/component

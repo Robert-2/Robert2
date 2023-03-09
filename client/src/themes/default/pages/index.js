@@ -38,11 +38,11 @@ export default [
     },
 
     //
-    // - Événements
+    // - Calendrier
     //
 
     {
-        name: 'events',
+        name: 'calendar',
         path: '/',
         component: Calendar,
         meta: {
@@ -54,13 +54,25 @@ export default [
             ],
         },
     },
+
+    //
+    // - Événements
+    //
+
     {
         name: 'add-event',
         path: '/events/new',
         component: Event,
         meta: {
-            resource: 'events',
-            title: 'page.event-edit.add',
+            requiresAuth: true,
+            requiresGroups: [Group.ADMIN, Group.MEMBER],
+        },
+    },
+    {
+        name: 'event-return-inventory',
+        path: '/events/:id(\\d+)/return-inventory',
+        component: EventReturn,
+        meta: {
             requiresAuth: true,
             requiresGroups: [Group.ADMIN, Group.MEMBER],
         },
@@ -69,17 +81,6 @@ export default [
         name: 'edit-event',
         path: '/events/:id',
         component: Event,
-        meta: {
-            resource: 'events',
-            title: 'page.event-edit.edit',
-            requiresAuth: true,
-            requiresGroups: [Group.ADMIN, Group.MEMBER],
-        },
-    },
-    {
-        name: 'event-return-material',
-        path: '/event-return/:id(\\d+)',
-        component: EventReturn,
         meta: {
             requiresAuth: true,
             requiresGroups: [Group.ADMIN, Group.MEMBER],

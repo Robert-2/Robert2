@@ -1,7 +1,9 @@
 import './index.scss';
 import config from '@/globals/config';
+import apiEvents from '@/stores/api/events';
 import MultipleItem from './MultipleItem';
 import EventStore from '../../EventStore';
+import { ApiErrorCode } from '@/stores/api/@codes';
 
 // @vue/component
 export default {
@@ -58,30 +60,35 @@ export default {
         displayError(error) {
             this.$emit('error', error);
 
-            const { code, details } = error.response?.data?.error || { code: 0, details: {} };
-            if (code === 400) {
+            const { code, details } = error.response?.data?.error || { code: ApiErrorCode.UNKNOWN, details: {} };
+            if (code === ApiErrorCode.VALIDATION_FAILED) {
                 this.errors = { ...details };
             }
         },
 
-        save(options) {
+        async save(options) {
             this.$emit('loading');
+
             const { id } = this.event;
-            const { resource } = this.$route.meta;
             const postData = { beneficiaries: this.beneficiariesIds };
 
-            this.$http.put(`${resource}/${id}`, postData)
-                .then(({ data }) => {
-                    const { gotoStep } = options;
-                    if (!gotoStep) {
-                        this.$router.push('/');
-                        return;
-                    }
-                    EventStore.commit('setIsSaved', true);
-                    this.$emit('updateEvent', data);
-                    this.$emit('gotoStep', gotoStep);
-                })
-                .catch(this.displayError);
+            try {
+                const data = await apiEvents.update(id, postData);
+
+                const { gotoStep } = options;
+                if (!gotoStep) {
+                    this.$router.push('/');
+                    return;
+                }
+
+                EventStore.commit('setIsSaved', true);
+                this.$emit('updateEvent', data);
+                this.$emit('gotoStep', gotoStep);
+            } catch (error) {
+                this.displayError(error);
+            } finally {
+                this.$emit('stopLoading');
+            }
         },
     },
     render() {

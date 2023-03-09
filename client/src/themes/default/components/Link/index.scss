@@ -1,0 +1,23 @@
+@use './variables' as *;
+@use '~@/themes/default/style/globals';
+
+.Link {
+    @extend %reset-button;
+    @extend %reset-link;
+
+    color: $color;
+    touch-action: auto;
+    cursor: pointer;
+
+    &:hover {
+        color: $hover-color;
+    }
+
+    //
+    // - Icône
+    //
+
+    &__icon + &__content {
+        margin-left: $icon-margin;
+    }
+}

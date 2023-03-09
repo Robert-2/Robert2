@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Respect\Validation\Exceptions\NestedValidationException;
-use Robert2\API\Errors\ValidationException;
+use Robert2\API\Errors\Exception\ValidationException;
 
 /**
  * @mixin \Illuminate\Database\Eloquent\Builder
@@ -56,7 +56,7 @@ abstract class BaseModel extends Model
 
     public $validation;
 
-    const EXTRA_CHARS = "-_.' ÇçàÀâÂäÄåÅèÈéÉêÊëËíÍìÌîÎïÏòÒóÓôÔöÖðÐõÕøØúÚùÙûÛüÜýÝÿŸŷŶøØæÆœŒñÑßÞ";
+    protected const EXTRA_CHARS = "-_.' ÇçàÀâÂäÄåÅèÈéÉêÊëËíÍìÌîÎïÏòÒóÓôÔöÖðÐõÕøØúÚùÙûÛüÜýÝÿŸŷŶøØæÆœŒñÑßÞ";
 
     // ------------------------------------------------------
     // -
@@ -109,7 +109,7 @@ abstract class BaseModel extends Model
         if ($fields) {
             $fields = !is_array($fields) ? explode('|', $fields) : $fields;
             foreach ($fields as $field) {
-                if (!in_array($field, $this->getAllowedSearchFields())) {
+                if (!in_array($field, $this->getAllowedSearchFields(), true)) {
                     throw new \InvalidArgumentException(
                         sprintf("Search field \"%s\" not allowed.", $field)
                     );
@@ -120,31 +120,6 @@ abstract class BaseModel extends Model
 
         $this->searchTerm = trim($term);
         return $this;
-    }
-
-    public function addSearch(string $term, ?array $fields = null): Builder
-    {
-        if (!$term) {
-            throw new \InvalidArgumentException();
-        }
-
-        $trimmedTerm = trim($term);
-        if (strlen($trimmedTerm) < 2) {
-            throw new \InvalidArgumentException();
-        }
-
-        $safeTerm = sprintf('%%%s%%', addcslashes($trimmedTerm, '%_'));
-
-        if (empty($fields)) {
-            return $this->where($this->searchField, 'LIKE', $safeTerm);
-        }
-
-        $query = $this;
-        foreach ($fields as $field) {
-            $query = $query->orWhere($field, 'LIKE', $safeTerm);
-        }
-
-        return $query;
     }
 
     // ------------------------------------------------------
@@ -167,39 +142,16 @@ abstract class BaseModel extends Model
     {
         if ($id && !static::staticExists($id)) {
             throw (new ModelNotFoundException)
-                ->setModel(get_class(), $id);
+                ->setModel(self::class, $id);
         }
 
         $model = static::updateOrCreate(compact('id'), $data);
         return $model->refresh();
     }
 
-    public static function staticRemove($id, array $options = []): ?BaseModel
+    public static function staticDelete($id): bool|null
     {
-        $options = array_merge(['force' => false], $options);
-
-        $entity = static::withTrashed()->findOrFail($id);
-        if ($entity->trashed() || $options['force'] === true) {
-            if (!$entity->forceDelete()) {
-                throw new \RuntimeException(sprintf("Unable to destroy the record %d.", $id));
-            }
-            return null;
-        }
-
-        if (!$entity->delete()) {
-            throw new \RuntimeException(sprintf("Unable to delete the record %d.", $id));
-        }
-
-        return $entity;
-    }
-
-    public static function staticUnremove($id): BaseModel
-    {
-        $entity = static::onlyTrashed()->findOrFail($id);
-        if (!$entity->restore()) {
-            throw new \RuntimeException(sprintf("Unable to restore the record %d.", $id));
-        }
-        return $entity;
+        return static::find($id)?->delete();
     }
 
     // ------------------------------------------------------
@@ -218,7 +170,7 @@ abstract class BaseModel extends Model
         $trimmedData = [];
         foreach ($data as $field => $value) {
             $isString = array_key_exists($field, $this->casts) && $this->casts[$field] === 'string';
-            $trimmedData[$field] = $isString && $value ? trim($value) : $value;
+            $trimmedData[$field] = $isString && $value && is_string($value) ? trim($value) : $value;
         }
 
         return parent::fill($trimmedData);
@@ -253,8 +205,8 @@ abstract class BaseModel extends Model
     public function getAllowedSearchFields(): array
     {
         return array_unique(array_merge(
-            (array)$this->searchField,
-            (array)$this->allowedSearchFields
+            (array) $this->searchField,
+            (array) $this->allowedSearchFields
         ));
     }
 
@@ -266,6 +218,7 @@ abstract class BaseModel extends Model
 
     public function validationErrors(): array
     {
+        /** @var array<string, \Respect\Validation\Rules\AbstractRule> $rules */
         $rules = $this->validation;
         if (empty($rules)) {
             throw new \RuntimeException("Validation rules cannot be empty.");
@@ -289,7 +242,7 @@ abstract class BaseModel extends Model
             try {
                 $rule->setName($field)->assert($data[$field] ?? null);
             } catch (NestedValidationException $e) {
-                $errors[$field] = $e->getMessages();
+                $errors[$field] = array_values($e->getMessages());
             }
         }
 
@@ -301,7 +254,7 @@ abstract class BaseModel extends Model
         return count($this->validationErrors()) === 0;
     }
 
-    public function validate(): self
+    public function validate(): static
     {
         $errors = $this->validationErrors();
         if (count($errors) > 0) {
@@ -322,7 +275,7 @@ abstract class BaseModel extends Model
 
         $order = $this->orderField;
         if (!$order) {
-            $order = in_array('name', $this->getTableColumns()) ? 'name' : 'id';
+            $order = in_array('name', $this->getTableColumns(), true) ? 'name' : 'id';
         }
 
         if ($builder) {
@@ -351,7 +304,7 @@ abstract class BaseModel extends Model
         return $builder->where($this->searchField, 'LIKE', $term);
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         if (method_exists($this, 'serialize')) {
             return $this->serialize();

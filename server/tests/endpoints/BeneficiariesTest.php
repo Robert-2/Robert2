@@ -1,14 +1,18 @@
 <?php
+declare(strict_types=1);
+
 namespace Robert2\Tests;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
+use Robert2\Support\Arr;
 use Robert2\API\Models\Beneficiary;
+use Illuminate\Support\Collection;
 
 final class BeneficiariesTest extends ApiTestCase
 {
-    public static function data(int $id)
+    public static function data(int $id, string $format = Beneficiary::SERIALIZE_DEFAULT)
     {
-        return static::_dataFactory($id, [
+        $beneficiaries = new Collection([
             [
                 'id' => 1,
                 'first_name' => 'Jean',
@@ -27,6 +31,8 @@ final class BeneficiariesTest extends ApiTestCase
                 'note' => null,
                 'company' => CompaniesTest::data(1),
                 'country' => CountriesTest::data(1),
+                'can_make_reservation' => true,
+                'user' => UsersTest::data(1),
             ],
             [
                 'id' => 2,
@@ -46,6 +52,8 @@ final class BeneficiariesTest extends ApiTestCase
                 'note' => null,
                 'company' => null,
                 'country' => null,
+                'can_make_reservation' => true,
+                'user' => UsersTest::data(2),
             ],
             [
                 'id' => 3,
@@ -65,17 +73,51 @@ final class BeneficiariesTest extends ApiTestCase
                 'note' => null,
                 'company' => null,
                 'country' => null,
+                'can_make_reservation' => false,
+                'user' => null,
+            ],
+            [
+                'id' => 4,
+                'first_name' => 'Alphonse',
+                'last_name' => 'Latour',
+                'full_name' => 'Alphonse Latour',
+                'reference' => '0004',
+                'email' => 'alphonse@latour.test',
+                'phone' => null,
+                'street' => null,
+                'postal_code' => null,
+                'locality' => null,
+                'full_address' => null,
+                'user_id' => null,
+                'country_id' => null,
+                'company_id' => null,
+                'note' => null,
+                'company' => null,
+                'country' => null,
+                'can_make_reservation' => false,
+                'user' => null,
             ],
         ]);
+
+        $beneficiaries = match ($format) {
+            Beneficiary::SERIALIZE_DEFAULT => $beneficiaries->map(fn($material) => (
+                Arr::except($material, ['user'])
+            )),
+            Beneficiary::SERIALIZE_DETAILS => $beneficiaries,
+            default => throw new \InvalidArgumentException(sprintf("Unknown format \"%s\"", $format)),
+        };
+
+        return static::_dataFactory($id, $beneficiaries->all());
     }
 
     public function testGetAll()
     {
         $this->client->get('/api/beneficiaries');
         $this->assertStatusCode(StatusCode::STATUS_OK);
-        $this->assertResponsePaginatedData(3, [
+        $this->assertResponsePaginatedData(4, [
             self::data(3),
             self::data(1),
+            self::data(4),
             self::data(2),
         ]);
     }
@@ -129,33 +171,32 @@ final class BeneficiariesTest extends ApiTestCase
     public function testGetOneNotFound()
     {
         $this->client->get('/api/beneficiaries/999');
-        $this->assertNotFound();
+        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
     public function testGetOne()
     {
         $this->client->get('/api/beneficiaries/1');
         $this->assertStatusCode(StatusCode::STATUS_OK);
-        $this->assertResponseData(self::data(1));
+        $this->assertResponseData(self::data(1, Beneficiary::SERIALIZE_DETAILS));
     }
 
     public function testCreateWithoutData()
     {
         $this->client->post('/api/beneficiaries');
         $this->assertStatusCode(StatusCode::STATUS_BAD_REQUEST);
-        $this->assertErrorMessage("No data was provided.");
+        $this->assertApiErrorMessage("No data was provided.");
     }
 
     public function testCreateBadData()
     {
-        // - Test 1.
         $this->client->post('/api/beneficiaries', [
             'foo' => 'bar',
             'first_name' => 'Jean-j@cques',
             'email' => 'invalid',
             'reference' => '0001',
         ]);
-        $this->assertValidationError([
+        $this->assertApiValidationError([
             'first_name' => ['This field contains some unauthorized characters'],
             'last_name' => [
                 "This field is mandatory",
@@ -165,18 +206,6 @@ final class BeneficiariesTest extends ApiTestCase
             'reference' => ['This reference is already in use'],
             'email' => ["This email address is not valid"],
         ]);
-
-        // - Test 2.
-        $this->client->put('/api/beneficiaries/2', [
-            'first_name' => 'Tester',
-            'last_name' => 'Tagger',
-            'email' => 'tester@robertmanager.net',
-            'phone' => 'notAphoneNumber',
-        ]);
-        $this->assertValidationError([
-            'email' => ['This email address is already in use'],
-            'phone' => ['This telephone number is not valid']
-        ]);
     }
 
     public function testCreate()
@@ -185,23 +214,24 @@ final class BeneficiariesTest extends ApiTestCase
             'first_name' => 'José',
             'last_name' => 'Gatillon',
             'email' => 'test@other-benef.net',
-            'reference' => '0004',
+            'reference' => '0005',
             'company_id' => 2,
             'phone' => null,
             'street' => '1 rue du test',
             'postal_code' => '74000',
             'locality' => 'Annecy',
             'country_id' => 2,
+            'can_make_reservation' => false,
             'note' => null,
         ]);
 
         $this->assertStatusCode(StatusCode::STATUS_CREATED);
         $this->assertResponseData([
-            'id' => 4,
+            'id' => 5,
             'user_id' => null,
             'first_name' => 'José',
             'last_name' => 'Gatillon',
-            'reference' => '0004',
+            'reference' => '0005',
             'email' => 'test@other-benef.net',
             'full_name' => 'José Gatillon',
             'company_id' => 2,
@@ -213,7 +243,23 @@ final class BeneficiariesTest extends ApiTestCase
             'country_id' => 2,
             'country' => CountriesTest::data(2),
             'full_address' => "1 rue du test\n74000 Annecy",
+            'can_make_reservation' => false,
+            'user' => null,
             'note' => null,
+        ]);
+    }
+
+    public function testUpdateBadData()
+    {
+        $this->client->put('/api/beneficiaries/2', [
+            'first_name' => 'Tester',
+            'last_name' => 'Tagger',
+            'email' => 'invalid',
+            'phone' => 'notAphoneNumber',
+        ]);
+        $this->assertApiValidationError([
+            'email' => ['This email address is not valid'],
+            'phone' => ['This telephone number is not valid'],
         ]);
     }
 
@@ -229,17 +275,25 @@ final class BeneficiariesTest extends ApiTestCase
         ]);
 
         $this->assertStatusCode(StatusCode::STATUS_OK);
-        $this->assertResponseData(array_replace(static::data(1), [
-            'first_name' => 'José',
-            'last_name' => 'Gatillon',
-            'full_name' => 'José Gatillon',
-            'postal_code' => '74000',
-            'locality' => 'Annecy',
-            'country_id' => 2,
-            'country' => CountriesTest::data(2),
-            'full_address' => "1, somewhere av.\n74000 Annecy",
-            'note' => "Très bon client.",
-        ]));
+        $this->assertResponseData(array_replace(
+            self::data(1, Beneficiary::SERIALIZE_DETAILS),
+            [
+                'first_name' => 'José',
+                'last_name' => 'Gatillon',
+                'full_name' => 'José Gatillon',
+                'postal_code' => '74000',
+                'locality' => 'Annecy',
+                'country_id' => 2,
+                'country' => CountriesTest::data(2),
+                'full_address' => "1, somewhere av.\n74000 Annecy",
+                'note' => "Très bon client.",
+                'user' => array_merge(UsersTest::data(1), [
+                    'first_name' => 'José',
+                    'last_name' => 'Gatillon',
+                    'full_name' => 'José Gatillon',
+                ]),
+            ]
+        ));
     }
 
     public function testDeleteAndDestroy()
@@ -260,7 +314,7 @@ final class BeneficiariesTest extends ApiTestCase
     public function testRestoreNotFound()
     {
         $this->client->put('/api/beneficiaries/restore/999');
-        $this->assertNotFound();
+        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
     public function testRestore()
@@ -272,6 +326,6 @@ final class BeneficiariesTest extends ApiTestCase
         // - Then, restore person #2
         $this->client->put('/api/beneficiaries/restore/2');
         $this->assertStatusCode(StatusCode::STATUS_OK);
-        $this->assertNotNull(Beneficiary::find(2));
+        $this->assertNotNull(self::data(2, Beneficiary::SERIALIZE_DETAILS));
     }
 }

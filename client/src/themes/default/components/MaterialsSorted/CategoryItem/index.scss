@@ -1,15 +1,15 @@
 @use '~@/themes/default/style/globals';
 
 .MaterialsCategoryItem {
-    padding: 0 0.5rem;
+    padding: 0 5px;
 
     &__title {
-        margin: 0 0 0.5rem;
+        margin: 0 0 5px;
         font-size: 1.2rem;
     }
 
     &__list {
-        margin: 0 0 0.5rem;
+        margin: 0 0 5px;
         padding: 0;
     }
 
@@ -38,8 +38,8 @@
             flex: 0 0 3rem;
             margin: 0 0.8rem;
 
-            .fa-times {
-                margin-right: 0.2rem;
+            &__icon {
+                margin-right: 3px;
                 color: globals.$text-light-color;
                 font-size: 0.8rem;
             }

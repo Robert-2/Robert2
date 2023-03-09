@@ -5,27 +5,25 @@ namespace Robert2\API\Controllers;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Robert2\API\Controllers\Traits\WithCrud;
+use Robert2\API\Http\Request;
 use Robert2\API\Models\Material;
 use Robert2\API\Models\Park;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
-use Slim\Http\ServerRequest as Request;
 
 class ParkController extends BaseController
 {
-    use WithCrud {
-        getOne as protected _originalGetOne;
-    }
+    use WithCrud;
 
     public function getAll(Request $request, Response $response): Response
     {
-        $paginated = (bool)$request->getQueryParam('paginated', true);
+        $paginated = (bool) $request->getQueryParam('paginated', true);
         $searchTerm = $request->getQueryParam('search', null);
         $searchField = $request->getQueryParam('searchBy', null);
         $orderBy = $request->getQueryParam('orderBy', null);
         $limit = $request->getQueryParam('limit', null);
-        $ascending = (bool)$request->getQueryParam('ascending', true);
-        $withDeleted = (bool)$request->getQueryParam('deleted', false);
+        $ascending = (bool) $request->getQueryParam('ascending', true);
+        $withDeleted = (bool) $request->getQueryParam('deleted', false);
 
         $query = $this->getModel()
             ->setOrderBy($orderBy, $ascending)
@@ -33,7 +31,7 @@ class ParkController extends BaseController
             ->getAll($withDeleted);
 
         if ($paginated) {
-            $results = $this->paginate($request, $query, $limit ? (int)$limit : null);
+            $results = $this->paginate($request, $query, is_numeric($limit) ? (int) $limit : null);
         } else {
             $results = $query->get();
         }
@@ -49,16 +47,9 @@ class ParkController extends BaseController
         return $response->withJson($results, StatusCode::STATUS_OK);
     }
 
-    public function getOne(Request $request, Response $response): Response
-    {
-        $id = (int)$request->getAttribute('id');
-        return $this->_originalGetOne($request, $response);
-    }
-
     public function getOneMaterials(Request $request, Response $response): Response
     {
-        $id = (int)$request->getAttribute('id');
-
+        $id = (int) $request->getAttribute('id');
         if (!Park::staticExists($id)) {
             throw new HttpNotFoundException($request);
         }
@@ -69,8 +60,7 @@ class ParkController extends BaseController
 
     public function getOneTotalAmount(Request $request, Response $response): Response
     {
-        $id = (int)$request->getAttribute('id');
-
+        $id = (int) $request->getAttribute('id');
         $park = Park::withTrashed()->findOrFail($id)->append(['total_amount']);
         $result = ['id' => $id, 'totalAmount' => $park->total_amount];
         return $response->withJson($result, StatusCode::STATUS_OK);
@@ -85,7 +75,7 @@ class ParkController extends BaseController
     protected static function _formatOne(Park $park): Park
     {
         return $park->append([
-            'has_ongoing_event',
+            'has_ongoing_booking',
         ]);
     }
 }

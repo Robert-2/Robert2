@@ -1,0 +1,34 @@
+/// Reset des `<button>`
+%reset-button {
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background: none;
+    color: inherit;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    font-style: inherit;
+    line-height: inherit;
+    text-align: left;
+    cursor: pointer;
+    touch-action: manipulation;
+    appearance: none;
+
+    &:focus {
+        outline: none;
+    }
+}
+
+/// Reset des `<a>`
+%reset-link {
+    touch-action: manipulation;
+
+    &,
+    &:focus,
+    &:active,
+    &:hover {
+        color: inherit;
+        text-decoration: inherit;
+    }
+}

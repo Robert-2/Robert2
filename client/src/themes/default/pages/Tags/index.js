@@ -7,6 +7,7 @@ import Button from '@/themes/default/components/Button';
 import Icon from '@/themes/default/components/Icon';
 import { confirm, prompt } from '@/utils/alert';
 import apiTags from '@/stores/api/tags';
+import { ApiErrorCode } from '@/stores/api/@codes';
 
 // @vue/component
 export default {
@@ -100,7 +101,7 @@ export default {
             const { $t: __, isTrashDisplayed } = this;
             const isSoft = !isTrashDisplayed;
 
-            const { value: isConfirmed } = await confirm({
+            const isConfirmed = await confirm({
                 type: isSoft ? 'warning' : 'danger',
                 text: isSoft
                     ? __('page.tags.confirm-delete')
@@ -133,7 +134,7 @@ export default {
             }
 
             const { $t: __ } = this;
-            const { value: isConfirmed } = await confirm({
+            const isConfirmed = await confirm({
                 type: 'restore',
                 text: __('page.tags.confirm-restore'),
                 confirmButtonText: __('yes-restore'),
@@ -209,9 +210,9 @@ export default {
                 }
                 this.$toasted.success(__('page.tags.saved'));
             } catch (error) {
-                const { code, details } = error.response?.data?.error || { code: 0, details: {} };
+                const { code, details } = error.response?.data?.error || { code: ApiErrorCode.UNKNOWN, details: {} };
                 let errorMessage = __('errors.unexpected-while-saving');
-                if (code === 400) {
+                if (code === ApiErrorCode.VALIDATION_FAILED) {
                     errorMessage = __('errors.validation');
                     if (details.name) {
                         [errorMessage] = details.name;

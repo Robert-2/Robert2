@@ -1,9 +1,11 @@
 import './index.scss';
-import Fragment from '@/themes/default/components/Fragment';
+import { defineComponent } from '@vue/composition-api';
+import apiEvents from '@/stores/api/events';
+import Fragment from '@/components/Fragment';
 import Icon from '@/themes/default/components/Icon';
 
 // @vue/component
-export default {
+const EventMissingMaterials = {
     name: 'EventMissingMaterials',
     props: {
         eventId: { type: Number, required: true },
@@ -24,21 +26,16 @@ export default {
     },
     methods: {
         async fetchData() {
+            const { eventId } = this;
             try {
-                const { data } = await this.$http.get(`events/${this.eventId}/missing-materials`);
-                this.missingMaterials = data;
-            } catch {
+                this.missingMaterials = await apiEvents.missingMaterials(eventId);
+            } catch (err) {
                 this.hasFetchError = true;
             }
         },
     },
     render() {
-        const {
-            $t: __,
-            missingMaterials,
-            hasFetchError,
-            hasMissingMaterials,
-        } = this;
+        const { $t: __, missingMaterials, hasFetchError, hasMissingMaterials } = this;
 
         if (!hasMissingMaterials && !hasFetchError) {
             return null;
@@ -73,7 +70,7 @@ export default {
                                     <div class="EventMissingMaterials__item__quantity">
                                         {__('@event.missing-material-count', {
                                             quantity: missingMaterial.pivot.quantity,
-                                            missing: missingMaterial.missing_quantity,
+                                            missing: missingMaterial.pivot.quantity_missing,
                                         })}
                                     </div>
                                 </li>
@@ -85,3 +82,5 @@ export default {
         );
     },
 };
+
+export default defineComponent(EventMissingMaterials);

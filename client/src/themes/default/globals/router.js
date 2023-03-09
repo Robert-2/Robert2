@@ -1,8 +1,8 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import store from '@/globals/store';
 import { APP_NAME } from '@/globals/constants';
 import routes from '@/themes/default/pages';
+import store from './store';
 
 Vue.use(Router);
 
@@ -51,6 +51,9 @@ router.beforeEach((to, from, next) => {
     }
 
     if (!requiresAuth) {
+        // - Si l'authentification est marquée explicitement comme non requise (= `false`).
+        //   => Redirige vers l'accueil si authentifié car la route ne peut être accédée que
+        //      par les utilisateurs non connectés.
         if (requiresAuth === false && isLogged) {
             next('/');
             return;

@@ -16,68 +16,89 @@
         "migration-status": "bin/console migrations:status",
         "migrate": "bin/console migrations:migrate",
         "rollback": "bin/console migrations:rollback",
-        "lint": "vendors/bin/phpcs -s --colors -p ./src/App/",
-        "test": "vendors/bin/phpunit --colors=always --coverage-html tests/coverage",
-        "testapi": "vendors/bin/phpunit --colors=always --testsuite api --filter",
-        "testmodels": "vendors/bin/phpunit --colors=always --testsuite models --filter",
-        "testlibs": "vendors/bin/phpunit --colors=always --testsuite libs --filter",
-        "testother": "vendors/bin/phpunit --colors=always --testsuite other --filter"
+        "lint": "vendors/bin/phpcs",
+        "lint:fix": "vendors/bin/phpcbf",
+        "phpstan": "vendors/bin/phpstan analyse --memory-limit=1G",
+        "test": "vendors/bin/phpunit --colors=always"
     },
-    "config": {
-        "vendor-dir": "vendors",
-        "sort-packages": true,
-        "platform": {
-            "php": "7.4"
+    "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/Loxya-vendors/Validation-PHP.git"
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/Loxya-vendors/PDF417-PHP.git"
         }
-    },
+    ],
     "require": {
-        "php": ">=7.4",
-        "adbario/php-dot-notation": "3.1.1",
-        "cocur/slugify": "4.0.0",
+        "php": "~8.0.2",
+        "adbario/php-dot-notation": "3.2.0",
+        "brick/math": "0.10.2",
+        "cocur/slugify": "v4.2.0",
         "delfimov/translate": "2.6.0",
-        "dompdf/dompdf": "1.1.1",
-        "eluceo/ical": "2.4.0",
-        "firebase/php-jwt": "5.4.0",
-        "illuminate/database": "8.51.0",
-        "illuminate/events": "v8.77.1",
-        "illuminate/pagination": "8.51.0",
-        "kirkbushell/eloquence": "8.0.0",
-        "league/flysystem": "2.4.5",
-        "league/flysystem-aws-s3-v3": "2.4.3",
-        "league/flysystem-ftp": "2.4.2",
-        "league/flysystem-sftp-v3": "2.4.5",
-        "monolog/monolog": "2.3.2",
+        "dompdf/dompdf": "v2.0.1",
+        "eluceo/ical": "2.7.0",
+        "firebase/php-jwt": "v6.3.0",
+        "illuminate/database": "v9.37.0",
+        "illuminate/events": "v9.37.0",
+        "illuminate/pagination": "v9.37.0",
+        "illuminate/support": "v9.37.0",
+        "jasig/phpcas": "1.5.0",
+        "league/flysystem": "3.10.2",
+        "league/flysystem-aws-s3-v3": "3.10.0",
+        "league/flysystem-ftp": "3.4.0",
+        "league/flysystem-sftp-v3": "3.6.0",
+        "mailjet/mailjet-apiv3-php": "v1.5.8",
+        "monolog/monolog": "2.8.0",
         "nesbot/carbon": "2.62.1",
-        "notihnio/php-multipart-form-data-parser": "1.0.0",
-        "php-di/php-di": "6.3.4",
-        "ramsey/uuid": "4.2.3",
-        "respect/validation": "1.1.31",
-        "robmorgan/phinx": "0.12.7",
+        "php-di/php-di": "6.4.0",
+        "phpmailer/phpmailer": "v6.6.5",
+        "ramsey/uuid": "4.5.1",
+        "respect/validation": "2.3.1",
+        "robmorgan/phinx": "0.13.1",
         "slim/http": "1.2.0",
         "slim/http-cache": "1.1.0",
-        "slim/psr7": "1.4.0",
-        "slim/slim": "4.8.1",
-        "slim/twig-view": "3.2.0",
-        "symfony/cache": "v5.3.8",
-        "twig/html-extra": "3.3.0",
-        "twig/intl-extra": "3.3.0",
-        "twig/string-extra": "3.3.1",
-        "twig/twig": "v3.3.3",
-        "vlucas/phpdotenv": "5.3.0"
+        "slim/psr7": "1.5",
+        "slim/slim": "4.10.0",
+        "slim/twig-view": "3.3.0",
+        "soundasleep/html2text": "2.0.0",
+        "symfony/cache": "v6.0.15",
+        "symfony/console": "v6.0.15",
+        "symfony/finder": "v6.0.11",
+        "twig/html-extra": "v3.4.0",
+        "twig/intl-extra": "v3.4.2",
+        "twig/string-extra": "v3.4.0",
+        "twig/twig": "v3.4.3",
+        "vlucas/phpdotenv": "v5.5.0"
     },
     "require-dev": {
         "ifsnop/mysqldump-php": "2.9.0",
-        "phpunit/phpunit": "9.5.7",
-        "spatie/phpunit-snapshot-assertions": "4.2.15",
-        "squizlabs/php_codesniffer": "3.6.0"
+        "phpstan/phpstan": "1.8.11",
+        "phpunit/phpunit": "9.5.26",
+        "slevomat/coding-standard": "8.6.2",
+        "spatie/phpunit-snapshot-assertions": "4.2.16",
+        "squizlabs/php_codesniffer": "3.7.1",
+        "symfony/var-dumper": "v6.0.14"
     },
     "autoload": {
         "psr-4": {
             "Robert2\\API\\": "src/App",
-            "Robert2\\Lib\\": "src/App/Lib",
+            "Robert2\\Support\\": "src/App/Support",
             "Robert2\\Install\\": "src/install",
             "Robert2\\Tests\\": "tests",
             "Robert2\\Fixtures\\": "tests/Fixtures"
+        }
+    },
+    "config": {
+        "vendor-dir": "vendors",
+        "process-timeout": 0,
+        "sort-packages": true,
+        "platform": {
+            "php": "8.0.2"
+        },
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
         }
     }
 }

@@ -4,11 +4,17 @@ declare(strict_types=1);
 namespace Robert2\API\Models;
 
 use Adbar\Dot as DotArray;
-use Robert2\API\Validation\Validator as V;
-use Robert2\API\Errors\ValidationException;
+use Respect\Validation\Validator as V;
+use Robert2\API\Errors\Exception\ValidationException;
 use Illuminate\Support\Str;
 
-class Setting extends BaseModel
+/**
+ * Configuration de l'application.
+ *
+ * @property string $key
+ * @property mixed $value
+ */
+final class Setting extends BaseModel
 {
     protected $primaryKey = 'key';
 
@@ -20,8 +26,8 @@ class Setting extends BaseModel
         parent::__construct($attributes);
 
         $this->validation = [
-            'key' => V::callback([$this, 'checkKey']),
-            'value' => V::callback([$this, 'checkValue']),
+            'key' => V::custom([$this, 'checkKey']),
+            'value' => V::custom([$this, 'checkValue']),
         ];
     }
 
@@ -35,7 +41,7 @@ class Setting extends BaseModel
 
             'eventSummary.materialDisplayMode' => [
                 'type' => 'string',
-                'validation' => V::notEmpty()->oneOf(
+                'validation' => V::notEmpty()->anyOf(
                     V::equals('categories'),
                     V::equals('sub-categories'),
                     V::equals('parks'),
@@ -105,7 +111,7 @@ class Setting extends BaseModel
         if (empty($keyName)) {
             return false;
         }
-        return in_array($keyName, array_keys(static::manifest()));
+        return in_array($keyName, array_keys(static::manifest()), true);
     }
 
     public function checkValue()
@@ -195,24 +201,23 @@ class Setting extends BaseModel
 
     public static function staticEdit($id = null, array $data = []): BaseModel
     {
-        if (empty($data)) {
-            throw new \InvalidArgumentException("No setting to update.", ERROR_VALIDATION);
-        }
-
         $errors = [];
-        foreach ((new DotArray($data))->flatten() as $key => $value) {
-            try {
-                $model = static::find($key);
-                if (empty($model)) {
-                    $errors[$key] = ["This setting does not exists."];
-                    continue;
-                }
 
-                $value = is_string($value) ? trim($value) : $value;
-                $model->value = $value === '' ? null : $value;
-                $model->save();
-            } catch (ValidationException $error) {
-                $errors[$key] = $error->getValidationErrors()['value'];
+        if (!empty($data)) {
+            foreach ((new DotArray($data))->flatten() as $key => $value) {
+                try {
+                    $model = static::find($key);
+                    if (empty($model)) {
+                        $errors[$key] = ["This setting does not exists."];
+                        continue;
+                    }
+
+                    $value = is_string($value) ? trim($value) : $value;
+                    $model->value = $value === '' ? null : $value;
+                    $model->save();
+                } catch (ValidationException $error) {
+                    $errors[$key] = $error->getValidationErrors()['value'];
+                }
             }
         }
 
@@ -223,14 +228,15 @@ class Setting extends BaseModel
         return new static;
     }
 
-    public static function staticRemove($id, array $options = []): ?BaseModel
-    {
-        throw new \InvalidArgumentException("Settings cannot be deleted.");
-    }
+    // ------------------------------------------------------
+    // -
+    // -    Overwritten methods
+    // -
+    // ------------------------------------------------------
 
-    public static function staticUnremove($id): BaseModel
+    public function delete()
     {
-        throw new \InvalidArgumentException("Settings cannot be restored.");
+        throw new \LogicException('Settings cannot be deleted.');
     }
 
     // ------------------------------------------------------

@@ -1,8 +1,9 @@
 import './index.scss';
+import { defineComponent } from '@vue/composition-api';
 import QuantityInput from '@/themes/default/components/QuantityInput';
 
 // @vue/component
-export default {
+const InventoryItemMaterial = defineComponent({
     name: 'InventoryItemMaterial',
     props: {
         material: { type: Object, required: true },
@@ -221,4 +222,6 @@ export default {
             </div>
         );
     },
-};
+});
+
+export default InventoryItemMaterial;

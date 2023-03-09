@@ -1,8 +1,9 @@
 import './index.scss';
+import { defineComponent } from '@vue/composition-api';
 import Option from './Option';
 
 // @vue/component
-export default {
+const MultiSwitch = defineComponent({
     name: 'MultiSwitch',
     props: {
         options: { type: Array, required: true },
@@ -41,4 +42,6 @@ export default {
             </div>
         );
     },
-};
+});
+
+export default MultiSwitch;

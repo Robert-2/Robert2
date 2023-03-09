@@ -37,22 +37,22 @@ if (!defined('CACHE_FOLDER')) {
     define('CACHE_FOLDER', VAR_FOLDER . DS . 'cache');
 }
 
+if (!defined('TMP_FOLDER')) {
+    define('TMP_FOLDER', VAR_FOLDER . DS . 'tmp');
+}
+
+if (!defined('LOGS_FOLDER')) {
+    define('LOGS_FOLDER', VAR_FOLDER . DS . 'logs');
+}
+
 if (!defined('VIEWS_FOLDER')) {
     define('VIEWS_FOLDER', SRC_FOLDER . DS . 'views');
 }
-if (!defined('CONFIG_FOLDER')) {
-    define('CONFIG_FOLDER', SRC_FOLDER . DS . 'App' . DS . 'Config');
+
+if (!defined('APP_FOLDER')) {
+    define('APP_FOLDER', SRC_FOLDER . DS . 'App');
 }
 
 if (!defined('CONFIG_FOLDER')) {
-    define('CONFIG_FOLDER', SRC_FOLDER . DS . 'App' . DS . 'Config');
+    define('CONFIG_FOLDER', APP_FOLDER . DS . 'Config');
 }
-
-//
-// - Api codes
-//
-
-// - Errors codes
-// FIXME: Ces constantes ne devrait pas avoir des codes qui matchent des codes http.
-//        (Cela porte à confusion, ces codes sont censés être internes)
-define('ERROR_VALIDATION', 400);

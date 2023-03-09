@@ -5,9 +5,8 @@ namespace Robert2\API\Controllers\Traits;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Illuminate\Database\Eloquent\Builder;
-use Robert2\API\Controllers\Traits\WithModel;
+use Robert2\API\Http\Request;
 use Slim\Http\Response;
-use Slim\Http\ServerRequest as Request;
 
 trait Taggable
 {
@@ -20,8 +19,8 @@ trait Taggable
         $tags = $request->getQueryParam('tags', []);
         $orderBy = $request->getQueryParam('orderBy', null);
         $limit = $request->getQueryParam('limit', null);
-        $ascending = (bool)$request->getQueryParam('ascending', true);
-        $withDeleted = (bool)$request->getQueryParam('deleted', false);
+        $ascending = (bool) $request->getQueryParam('ascending', true);
+        $withDeleted = (bool) $request->getQueryParam('deleted', false);
 
         $model = $this->getModel();
         if (!method_exists($model, 'getAllFilteredOrTagged')) {
@@ -34,13 +33,13 @@ trait Taggable
             ->setSearch($searchTerm, $searchField)
             ->getAllFilteredOrTagged([], $tags, $withDeleted);
 
-        $paginated = $this->paginate($request, $query, $limit ? (int)$limit : null);
+        $paginated = $this->paginate($request, $query, is_numeric($limit) ? (int) $limit : null);
         return $response->withJson($paginated, StatusCode::STATUS_OK);
     }
 
     public function getTags(Request $request, Response $response): Response
     {
-        $id = (int)$request->getAttribute('id');
+        $id = (int) $request->getAttribute('id');
         $model = $this->getModelClass()::findOrFail($id);
         return $response->withJson($model->tags, StatusCode::STATUS_OK);
     }

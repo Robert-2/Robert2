@@ -60,5 +60,4 @@ calendar:
         An error occurred while regenerating the public calendar link, please try again.
 
     public-calendar-url-reset-success: >-
-        The public calendar link has been successfully re-generated!
-        The new one is available above.
+        The public calendar link has been successfully re-generated! The new one is available above.

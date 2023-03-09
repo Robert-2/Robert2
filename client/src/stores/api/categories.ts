@@ -6,7 +6,6 @@ import type { Subcategory } from '@/stores/api/subcategories';
 // - Types
 //
 
-/* eslint-disable @typescript-eslint/naming-convention */
 export type Category = {
     id: number,
     name: string,
@@ -15,7 +14,6 @@ export type Category = {
 export type CategoryDetails = Category & {
     sub_categories: Subcategory[],
 };
-/* eslint-enable @typescript-eslint/naming-convention */
 
 export type CategoryEdit = {
     name: string,

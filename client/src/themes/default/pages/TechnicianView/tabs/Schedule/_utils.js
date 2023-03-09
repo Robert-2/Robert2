@@ -1,4 +1,5 @@
 /* eslint-disable import/prefer-default-export */
+
 import formatEventTechnician from '@/utils/formatEventTechnician';
 
 export const formatTechnicianEvent = (technicianEvent) => {

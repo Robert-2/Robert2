@@ -5,7 +5,8 @@ namespace Robert2\API\Controllers;
 
 use DI\Container;
 use Robert2\API\Config\Config;
-use Robert2\API\Errors\ValidationException;
+use Robert2\API\Errors\Exception\ValidationException;
+use Robert2\API\Http\Request;
 use Robert2\API\Models\Category;
 use Robert2\API\Models\Enums\Group;
 use Robert2\API\Models\User;
@@ -13,7 +14,6 @@ use Robert2\API\Services\I18n;
 use Robert2\API\Services\View;
 use Robert2\Install\Install;
 use Slim\Http\Response;
-use Slim\Http\ServerRequest as Request;
 
 class SetupController extends BaseController
 {
@@ -46,7 +46,7 @@ class SetupController extends BaseController
         $error = false;
         $validationErrors = null;
 
-        $lang = $this->i18n->getCurrentLocale();
+        $lang = $this->i18n->getLanguage();
         $allCurrencies = Install::getAllCurrencies();
 
         if ($request->isGet()) {
@@ -136,7 +136,7 @@ class SetupController extends BaseController
         }
 
         if ($currentStep === 'coreSettings' && empty($stepData['JWTSecret'])) {
-            $stepData['JWTSecret'] = md5(uniqid('Robert2', true));
+            $stepData['JWTSecret'] = md5(uniqid('Loxya', true));
         }
 
         if ($currentStep === 'settings') {
@@ -147,14 +147,14 @@ class SetupController extends BaseController
             try {
                 $stepData = [
                     'migrationStatus' => Install::getMigrationsStatus(),
-                    'canProcess' => true
+                    'canProcess' => true,
                 ];
             } catch (\Exception $e) {
                 $stepData = [
                     'migrationStatus' => [],
                     'errorCode' => $e->getCode(),
                     'error' => $e->getMessage(),
-                    'canProcess' => false
+                    'canProcess' => false,
                 ];
             }
         }
@@ -196,14 +196,14 @@ class SetupController extends BaseController
     private function _getCheckRequirementsData(): array
     {
         $phpVersion = PHP_VERSION;
-        if (strpos(PHP_VERSION, '+')) {
+        if (str_contains(PHP_VERSION, '+')) {
             $phpVersion = substr(PHP_VERSION, 0, strpos(PHP_VERSION, '+'));
         }
 
-        $phpversionOK = version_compare(PHP_VERSION, '7.4.0') >= 0;
+        $phpversionOK = version_compare(PHP_VERSION, '8.0.0') >= 0;
         $loadedExtensions = get_loaded_extensions();
-        $neededExstensions = Install::REQUIRED_EXTENSIONS;
-        $missingExtensions = array_diff($neededExstensions, $loadedExtensions);
+        $neededExtensions = Install::REQUIRED_EXTENSIONS;
+        $missingExtensions = array_diff($neededExtensions, $loadedExtensions);
 
         return [
             'step' => 'welcome',
@@ -217,9 +217,9 @@ class SetupController extends BaseController
     private function _validateCompanyData($companyData): void
     {
         $errors = [];
-        foreach (['name', 'street', 'zipCode', 'locality'] as $mandatoryfield) {
-            if (empty($companyData[$mandatoryfield])) {
-                $errors[$mandatoryfield] = "Missing value";
+        foreach (['name', 'street', 'zipCode', 'locality'] as $mandatoryField) {
+            if (empty($companyData[$mandatoryField])) {
+                $errors[$mandatoryField] = "Missing value";
                 continue;
             }
         }

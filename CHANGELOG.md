@@ -6,12 +6,20 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 
 ## 0.20.0 (UNRELEASED)
 
+- __[CHANGEMENT CRITIQUE]__ Loxya (Robert2) requiert maintenant au minimum PHP 8.0 pour fonctionner (#375).
+- Ajoute le support PHP 8.1 (#328).
+- Change le nom de l'application en "Loxya (Robert2)" partout.
 - Corrige la copie via le bouton "Copier" dans le champ d'URL du calendrier public (#369).
 - Ajoute l'extension `iconv` dans la liste des extensions requises lors de l'installation (#371).
 - Corrige le filtre sur les périodes de disponibilités dans le listing des techniciens qui ne prenait pas 
   correctement en compte les événements dont la date de début était antérieure à la date de début du filtre 
   (+ idem pour les dates de fin).
 - Corrige divers problèmes de sécurité liés aux comptes utilisateurs.
+- Corrige, sur la page de calendrier sur mobile, l'affichage de la fenêtre de détails des événements lors du double-click (#359).
+- Corrige la traduction anglaise du mot "facture" ("bill" -> "invoice") partout (#377).
+- Améliore le système de traduction, et formate des dates correctement pour la langue anglaise (#378).
+- Dans la fenêtre des événements, les totaux affichent plus de détails (montants H.T. et T.T.C., et remise éventuelle).
+- Dans la fenêtre des événements, les coordonnées du bénéficiaire principal sont affichées dans l'onglet "informations".
 
 ## 0.19.3 (2022-10-28)
 

@@ -2,7 +2,7 @@ import './index.scss';
 import { computed, toRefs, ref, provide } from '@vue/composition-api';
 import { useQuery } from 'vue-query';
 import pick from 'lodash/pick';
-import useI18n from '@/hooks/vue/useI18n';
+import useI18n from '@/hooks/useI18n';
 import formatOptions from '@/utils/formatOptions';
 import apiCountries from '@/stores/api/countries';
 import FormField from '@/themes/default/components/FormField';

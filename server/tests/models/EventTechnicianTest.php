@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Robert2\Tests;
 
-use Robert2\API\Errors\ValidationException;
+use Robert2\API\Errors\Exception\ValidationException;
 use Robert2\API\Models\Event;
 use Robert2\API\Models\EventTechnician;
 
@@ -27,9 +27,9 @@ final class EventTechnicianTest extends TestCase
         }
 
         $expectedErrors = [
-            'start_time' => ['This field is not valid'],
-            'end_time' => ['This field is not valid'],
-            'position' => ['2 min. characters, 191 max. characters'],
+            'start_time' => ["Cette date n'est pas valide"],
+            'end_time' => ["Cette date n'est pas valide"],
+            'position' => ['2 caractères min., 191 caractères max.'],
         ];
         $this->assertEquals($expectedErrors, $errors);
     }
@@ -51,8 +51,8 @@ final class EventTechnicianTest extends TestCase
         }
 
         $expectedErrors = [
-            'start_time' => ['End date must be later than start date'],
-            'end_time' => ['End date must be later than start date'],
+            'start_time' => ['La date de fin doit être postérieure à la date de début'],
+            'end_time' => ['La date de fin doit être postérieure à la date de début'],
         ];
         $this->assertEquals($expectedErrors, $errors);
     }
@@ -73,8 +73,8 @@ final class EventTechnicianTest extends TestCase
             $errors = $e->getValidationErrors();
         }
         $expectedErrors = [
-            'start_time' => ['Assignment of this technician begins before the event.'],
-            'end_time' => ['Assignment of this technician begins before the event.'],
+            'start_time' => ["L'assignation de ce technicien commence avant l'événement."],
+            'end_time' => ["L'assignation de ce technicien commence avant l'événement."],
         ];
         $this->assertEquals($expectedErrors, $errors);
 
@@ -86,8 +86,8 @@ final class EventTechnicianTest extends TestCase
         }
 
         $expectedErrors = [
-            'start_time' => ['Assignment of this technician ends after the event.'],
-            'end_time' => ['Assignment of this technician ends after the event.'],
+            'start_time' => ["L'assignation de ce technicien se termine après l'événement."],
+            'end_time' => ["L'assignation de ce technicien se termine après l'événement."],
         ];
         $this->assertEquals($expectedErrors, $errors);
     }
@@ -108,8 +108,8 @@ final class EventTechnicianTest extends TestCase
             $errors = $e->getValidationErrors();
         }
         $this->assertEquals([
-            'start_time' => ['Date must respect precision of a quarter (:00, :15, :30 or :45).'],
-            'end_time' => ['Date must respect precision of a quarter (:00, :15, :30 or :45).'],
+            'start_time' => ["La date doit respecter une précision d'un quart d'heure (:00, :15, :30 ou :45)."],
+            'end_time' => ["La date doit respecter une précision d'un quart d'heure (:00, :15, :30 ou :45)."],
         ], $errors);
     }
 
@@ -129,8 +129,8 @@ final class EventTechnicianTest extends TestCase
             $errors = $e->getValidationErrors();
         }
         $this->assertEquals([
-            'start_time' => ['This technician is already busy for this period.'],
-            'end_time' => ['This technician is already busy for this period.'],
+            'start_time' => ['Ce technicien est déjà occupé pour cette période.'],
+            'end_time' => ['Ce technicien est déjà occupé pour cette période.'],
         ], $errors);
 
         // - Dates qui chevauchent le début d'une assignation existante
@@ -147,8 +147,8 @@ final class EventTechnicianTest extends TestCase
             $errors = $e->getValidationErrors();
         }
         $this->assertEquals([
-            'start_time' => ['This technician is already busy for this period.'],
-            'end_time' => ['This technician is already busy for this period.'],
+            'start_time' => ['Ce technicien est déjà occupé pour cette période.'],
+            'end_time' => ['Ce technicien est déjà occupé pour cette période.'],
         ], $errors);
 
         // - Dates qui sont comprises dans une assignation existante
@@ -165,8 +165,8 @@ final class EventTechnicianTest extends TestCase
             $errors = $e->getValidationErrors();
         }
         $this->assertEquals([
-            'start_time' => ['This technician is already busy for this period.'],
-            'end_time' => ['This technician is already busy for this period.'],
+            'start_time' => ['Ce technicien est déjà occupé pour cette période.'],
+            'end_time' => ['Ce technicien est déjà occupé pour cette période.'],
         ], $errors);
     }
 
@@ -225,7 +225,7 @@ final class EventTechnicianTest extends TestCase
                 'start_time' => '2018-11-18 14:00:00',
                 'end_time' => '2018-11-18 18:00:00',
                 'position' => 'Technicien plateau',
-            ]
+            ],
         ];
         $this->assertEquals($expected, $newTechnicians);
 
@@ -246,7 +246,7 @@ final class EventTechnicianTest extends TestCase
                 'start_time' => '2019-01-18 14:00:00',
                 'end_time' => '2019-01-18 18:00:00',
                 'position' => 'Technicien plateau',
-            ]
+            ],
         ];
         $this->assertEquals($expected, $newTechnicians);
 

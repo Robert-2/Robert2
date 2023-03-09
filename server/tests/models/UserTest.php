@@ -4,10 +4,9 @@ declare(strict_types=1);
 namespace Robert2\Tests;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Robert2\API\Errors\ValidationException;
+use Robert2\API\Errors\Exception\ValidationException;
 use Robert2\API\Models\Enums\Group;
 use Robert2\API\Models\User;
-use Robert2\API\Models\UserSetting;
 
 final class UserTest extends TestCase
 {
@@ -39,26 +38,23 @@ final class UserTest extends TestCase
     public function testCreateWithoutData(): void
     {
         $this->expectException(ValidationException::class);
-        $this->expectExceptionCode(ERROR_VALIDATION);
         User::new([]);
     }
 
     public function testCreateBadData(): void
     {
         $this->expectException(ValidationException::class);
-        $this->expectExceptionCode(ERROR_VALIDATION);
         User::new(['pseudo' => 'Sans email!']);
     }
 
     public function testCreateWithoutPerson(): void
     {
         $this->expectException(ValidationException::class);
-        $this->expectExceptionCode(ERROR_VALIDATION);
         User::new([
-            'pseudo' => 'owkay',
+            'pseudo' => 'Owkay',
             'email' => 'owkay@test.org',
             'group' => Group::ADMIN,
-            'password' => 'testpw',
+            'password' => 'test-pw',
         ]);
     }
 
@@ -67,7 +63,7 @@ final class UserTest extends TestCase
         $data = [
             'pseudo' => 'testAdd',
             'email' => 'testadd@testing.org',
-            'password' => 'testadd',
+            'password' => 'test-add',
             'group' => Group::MEMBER,
             'person' => [
                 'first_name' => 'Testing',
@@ -77,26 +73,15 @@ final class UserTest extends TestCase
         ];
 
         $result = User::new($data);
-        $this->assertEquals(4, $result->id);
+        $this->assertEquals(6, $result->id);
         $this->assertEquals('testAdd', $result->pseudo);
         $this->assertEquals('testadd@testing.org', $result->email);
         $this->assertEquals(Group::MEMBER, $result->group);
         $this->assertNull($result->cas_identifier);
-        $this->assertEquals(5, $result->person->id);
-        $this->assertEquals(4, $result->person->user_id);
+        $this->assertEquals(8, $result->person->id);
+        $this->assertEquals(6, $result->person->user_id);
         $this->assertEquals('Testing', $result->person->first_name);
         $this->assertEquals('Add', $result->person->last_name);
-
-        // - Vérifie que les settings ont été créé
-        $settings = UserSetting::find(3);
-        unset($settings->created_at);
-        unset($settings->updated_at);
-        $this->assertEquals([
-            'id' => 3,
-            'user_id' => 4,
-            'language' => 'fr',
-            'auth_token_validity_duration' => 12,
-        ], $settings->toArray());
     }
 
     public function testUpdateNotFound(): void
@@ -104,6 +89,7 @@ final class UserTest extends TestCase
         $this->expectException(ModelNotFoundException::class);
         User::staticEdit(999, []);
     }
+
     public function testUpdate(): void
     {
         $data = [

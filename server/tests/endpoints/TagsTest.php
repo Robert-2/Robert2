@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Robert2\Tests;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
@@ -33,13 +35,13 @@ final class TagsTest extends ApiTestCase
     {
         $this->client->post('/api/tags');
         $this->assertStatusCode(StatusCode::STATUS_BAD_REQUEST);
-        $this->assertErrorMessage("No data was provided.");
+        $this->assertApiErrorMessage("No data was provided.");
     }
 
     public function testCreateTagBadData()
     {
         $this->client->post('/api/tags', ['foo' => 'bar']);
-        $this->assertValidationError([
+        $this->assertApiValidationError([
             'name' => ["This field is mandatory"],
         ]);
     }
@@ -47,7 +49,7 @@ final class TagsTest extends ApiTestCase
     public function testCreateTagDuplicate()
     {
         $this->client->post('/api/tags', ['name' => 'pro']);
-        $this->assertValidationError();
+        $this->assertApiValidationError();
     }
 
     public function testCreateTag()
@@ -78,7 +80,7 @@ final class TagsTest extends ApiTestCase
     public function testRestoreTagNotFound()
     {
         $this->client->put('/api/tags/restore/999');
-        $this->assertNotFound();
+        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
     public function testRestoreTag()

@@ -1,7 +1,8 @@
+title-create: New event
+title-simple: Modify event
+title: 'Modify event "{title}"'
 help-edit: ''
 back-to-calendar: Back to calendar
-add: New event
-edit: 'Modify event "{pageSubTitle}"'
 save-and-back-to-calendar: Save and back to calendar
 save-and-continue: Save and continue
 continue: Continue
@@ -28,7 +29,7 @@ period-assigned: Assigned period
 start-end-dates-and-time: Start and End dates and times
 saved: Event saved.
 not-saved: Event has not saved modifications
-beneficiary-billing-help: Only the first beneficiary in the list will be displayed on the bill.
+beneficiary-billing-help: Only the first beneficiary in the list will be displayed on the invoice.
 technicians-help: >-
     Double-click on a technician's line to assign her/him to the event at the
     needed start date/time.

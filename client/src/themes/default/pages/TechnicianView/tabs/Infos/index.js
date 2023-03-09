@@ -1,5 +1,5 @@
 import './index.scss';
-import Fragment from '@/themes/default/components/Fragment';
+import Fragment from '@/components/Fragment';
 import formatAddress from '@/utils/formatAddress';
 
 // @vue/component

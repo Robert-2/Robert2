@@ -1,6 +1,6 @@
 import './index.scss';
 import cloneDeep from 'lodash/cloneDeep';
-import Fragment from '@/themes/default/components/Fragment';
+import Fragment from '@/components/Fragment';
 import Input from '@/themes/default/components/Input';
 import Select from '@/themes/default/components/Select';
 
@@ -26,7 +26,7 @@ export default {
             return this.$store.getters['categories/options'];
         },
 
-        typesOtions() {
+        typesOptions() {
             const { $t: __ } = this;
 
             return [
@@ -107,7 +107,7 @@ export default {
             data,
             errors: validationErrors,
             categoriesOptions,
-            typesOtions,
+            typesOptions,
             hasUnit,
             hasMaxLength,
             handleToggleCategory,
@@ -133,7 +133,7 @@ export default {
                         <Select
                             placeholder={false}
                             class="AttributesAddItemForm__select"
-                            options={typesOtions}
+                            options={typesOptions}
                             v-model={data.type}
                         />
                         {validationErrors?.type && (

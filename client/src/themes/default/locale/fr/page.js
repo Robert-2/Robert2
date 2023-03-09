@@ -1,6 +1,7 @@
 export default {
     'login': require('@/themes/default/pages/Login/translations/fr.yml'),
     'calendar': require('@/themes/default/pages/Calendar/translations/fr.yml'),
+    'event-edit': require('@/themes/default/pages/Event/translations/fr.yml'),
     'event-return': require('@/themes/default/pages/EventReturn/translations/fr.yml'),
     'users': require('@/themes/default/pages/Users/translations/fr.yml'),
     'user': require('@/themes/default/pages/User/translations/fr.yml'),
@@ -20,5 +21,4 @@ export default {
     'tags': require('@/themes/default/pages/Tags/translations/fr.yml'),
     'settings': require('@/themes/default/pages/Settings/Global/translations/fr.yml'),
     'user-settings': require('@/themes/default/pages/Settings/User/translations/fr.yml'),
-    'event-edit': require('@/themes/default/pages/Event/translations/fr.yml'),
 };

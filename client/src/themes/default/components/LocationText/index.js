@@ -1,5 +1,6 @@
 import './index.scss';
 import { defineComponent } from '@vue/composition-api';
+import Icon from '@/themes/default/components/Icon';
 
 // @vue/component
 export default defineComponent({
@@ -12,18 +13,19 @@ export default defineComponent({
 
         return (
             <div class="LocationText">
-                <i class="fas fa-map-marker-alt" />
-                {' '}
-                <strong>{__('in', { location })}</strong>
-                {' '}
-                <a
-                    rel="noopener noreferrer nofollow"
-                    href={`https://maps.google.com/?q=${location}`}
-                    title={__('open-in-google-maps')}
-                    target="_blank"
-                >
-                    <i class="fas fa-external-link-alt" />
-                </a>
+                <Icon name="map-marker-alt" class="LocationText__icon" />
+                <span>
+                    <strong>{__('in', { location })}</strong>
+                    {' '}
+                    <a
+                        rel="noopener noreferrer nofollow"
+                        href={`https://maps.google.com/?q=${location}`}
+                        title={__('open-in-google-maps')}
+                        target="_blank"
+                    >
+                        <Icon name="external-link-alt" />
+                    </a>
+                </span>
             </div>
         );
     },

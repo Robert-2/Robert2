@@ -2,37 +2,40 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Fiche de sortie</title>
+    <title>Release sheet</title>
+    <link href="/fonts/Roboto/index.css" rel="stylesheet">
     <style type="text/css">
         html {
             margin: 9mm 8mm;
-            font-family: -apple-system, 'Segoe UI', Roboto, Ubuntu, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';;
-            font-size: 10pt;
+            font-family: Roboto;
+            font-weight: 400;
+            font-size: 9pt;
         }
         body {
             margin: 0;
         }
         h1 {
-            font-size: 14pt;
+            font-size: 1.5rem;
             margin: 0 0 3mm 0;
         }
         h2 {
-            font-size: 12pt;
+            font-size: 1.25rem;
             margin: 0 0 3mm 0;
         }
         h3 {
-            font-size: 11pt;
+            font-size: 1.125rem;
             margin: 0 0 3mm 0;
         }
         h4 {
-            font-size: 10pt;
+            font-size: 1rem;
             margin: 0 0 3mm 0;
         }
         p {
+            font-size: 1rem;
             margin: 0 0 3mm 0;
         }
         small {
-            font-size: 10pt;
+            font-size: 0.85rem;
         }
         ul, ol {
             margin: 2mm 0 3mm 0;
@@ -76,20 +79,20 @@
             page-break-after: avoid;
         }
         .listing-table > thead > tr > th {
-            font-size: 8.5pt;
+            font-size: 0.8rem;
             border-bottom: 1pt solid #888;
             vertical-align: middle;
         }
         .listing-table > tbody > tr > td {
             padding: 2mm;
-            font-size: 7.5pt;
+            font-size: 0.7rem;
             border: none;
             border-bottom: 1pt solid #ccc;
             vertical-align: middle;
         }
         .listing-table > tbody > tr > td.section-title {
             padding: 4mm 2mm 2mm;
-            font-size: 8.5pt;
+            font-size: 0.8rem;
             color: #888;
         }
         .listing-table > tbody > tr > td:first-child {
@@ -110,10 +113,9 @@
         .right { text-align: right; }
         .sizeTitle { font-size: 16pt; }
         .sizeSubtitle { font-size: 14pt; }
-        .size12 { font-size: 12pt; }
-        .size10 { font-size: 10pt; }
-        .size8 { font-size: 8pt; }
-        .size7 { font-size: 7pt; }
+        .size12 { font-size: 1rem; }
+        .size10 { font-size: 0.9rem; }
+        .size8 { font-size: 0.85rem; }
         .vspace2 { margin: 0; padding: 2mm 0; }
         .vspace5 { margin: 0; padding: 5mm 0; }
         .vspace10 { margin: 0; padding: 10mm 0; }
@@ -126,8 +128,8 @@
             background-color: #eee;
             border-radius: 3pt;
         }
-        .strong { font-weight: bold; }
-        .normal { font-weight: normal; }
+        .strong { font-weight: 700; }
+        .normal { font-weight: 400; }
         .light { color: #333; }
         .lighter { color: #666; }
         .lightest { color: #aaa; }
@@ -153,45 +155,46 @@
             </p>
 
 <p>
-        T&eacute;l.&nbsp;: +33123456789<br>
-            E-mail&nbsp;: jean@testing-corp.dev
+        Phone: +33123456789<br>
+            E-mail: jean@testing-corp.dev
     </p>
 
 <p>
-    N&deg; TVA Intracom.&nbsp;: FR11223344556600
+    VAT number: FR11223344556600
 </p>
 
         </td>
         <td class="half">
             <h1 class="box center spaceBottom5">
-                Fiche de sortie
+                Release sheet
             </h1>
             <h2 class="">
-                &Eacute;v&eacute;nement&nbsp;: Premier &eacute;v&eacute;nement
+                Event: Premier &eacute;v&eacute;nement
             </h2>
             <h3>
-                Du 17/12/2018 au 18/12/2018
+                From 17/12/2018 to 18/12/2018
             </h3>
 
             <table class="layout-table">
                 <tr>
                     <td class="third">
-                        <h3>B&eacute;n&eacute;ficiaire</h3>
+                        <h3>Beneficiary</h3>
                     </td>
                     <td>
                         <p class="size12 spaceBottom5">
                                 <strong>Testing, Inc</strong><br>
 
+    Contact:
 Jean Fountain<br>
 
     1, company st.<br>
 1234 Megacity<br>
 
-    <small>(R&eacute;f. 0001)</small><br>
+    <small>(Ref. 0001)</small><br>
 
-    <small>T&eacute;l.&nbsp;: +4123456789</small><br>
+    <small>Phone: +4123456789</small><br>
 
-    <small>E-mail&nbsp;: tester@robertmanager.net</small><br>
+    <small>E-mail: tester@robertmanager.net</small><br>
 
                         </p>
                     </td>
@@ -204,175 +207,171 @@ Jean Fountain<br>
 <table class="layout-table">
     <tr>
         <td class="half size11">
-                        <h3>Lieu&nbsp;: Gap</h3>
-                                                <p class="lighter">
-                Montant total de remplacement&nbsp;:&nbsp;19808,90&nbsp;&euro;
-            </p>
+                            <h3>Location: Gap</h3>
+                                                    <p class="lighter">
+                    Total replacement amount: &euro;19,808.90
+                </p>
                         <p class="lighter">
-                Imprim&eacute; le 23 septembre 2022
+                Printed on 23 September 2022
             </p>
         </td>
         <td class="half">
-                        <h3>Techniciens</h3>
-            <ul class="spaceBottom5">
-                                <li class="spaceBottom2">
-                    Roger Rabbit
-                                                            <br>
-                    <span class="lighter size8">
-                        17 d&eacute;c. 09:00 &gt;
-                        18 d&eacute;c. 22:00
-                    </span>
-                                        <span class="lighter">- R&eacute;gisseur</span>
-                                                        </li>
-                                <li class="spaceBottom2">
-                    Jean Technicien
-                                        <span class="lighter">- +33645698520</span>
-                                                            <br>
-                    <span class="lighter size8">
-                        18 d&eacute;c. 14:00 &gt;
-                        18 d&eacute;c. 18:00
-                    </span>
-                                        <span class="lighter">- Technicien plateau</span>
-                                                        </li>
-                            </ul>
+                            <h3>Technicians</h3>
+                <ul class="spaceBottom5">
+                                        <li class="spaceBottom2">
+                        Roger Rabbit
+                                                                            <br>
+                            <span class="lighter size8">
+                                17 Dec 09:00 &gt;
+                                18 Dec 22:00
+                            </span>
+                                                            <span class="lighter size8">- R&eacute;gisseur</span>
+                                                                        </li>
+                                        <li class="spaceBottom2">
+                        Jean Technicien
+                                                    <span class="lighter">- +33645698520</span>
+                                                                            <br>
+                            <span class="lighter size8">
+                                18 Dec 14:00 &gt;
+                                18 Dec 18:00
+                            </span>
+                                                            <span class="lighter size8">- Technicien plateau</span>
+                                                                        </li>
+                                    </ul>
                     </td>
             </tr>
 </table>
 
 
-<h2 class="vspace2">Mat&eacute;riel</h2>
+<h2 class="vspace2">Materials</h2>
 <table class="size9 listing-table">
     <thead>
         <tr>
-            <th>R&eacute;f.</th>
-            <th>D&eacute;signation</th>
-            <th>Qt&eacute;</th>
-            <th>Val. Remp.</th>
-            <th>Val. Remp. Totale</th>
-            <th>Qt&eacute; Retour</th>
+            <th>Ref.</th>
+            <th>Designation</th>
+            <th>Qty</th>
+            <th>Repl. Val.</th>
+            <th>Total Repl. Val.</th>
+            <th>Qty Return</th>
         </tr>
     </thead>
     <tbody>
-                            <tr>
-                <td class="section-title" colspan="6">
-                                        Lumi&egrave;re
-                                    </td>
-            </tr>
-                            <tr>
+                                    <tr>
+                    <td class="section-title" colspan="6">
+                        Lumi&egrave;re
+                    </td>
+                </tr>
+                                    <tr>
     <td>SDS-6-01</td>
     <td>
         Showtec SDS-6
-                <em class="lighter">(default)</em>
-                        <br>
-                    <span class="lighter">
-    Conforme&nbsp;:&nbsp;Oui.</span>
-
-                    <span class="lighter">
-    Puissance&nbsp;:&nbsp;60&nbsp;W.</span>
-
-                    <span class="lighter">
+                    <em class="lighter">(default)</em>
+                            <br>
+                            <span class="lighter">
     Poids&nbsp;:&nbsp;3.15&nbsp;kg.</span>
 
-                    </td>
+                            <span class="lighter">
+    Puissance&nbsp;:&nbsp;60&nbsp;W.</span>
+
+                            <span class="lighter">
+    Conforme&nbsp;:&nbsp;Yes.</span>
+
+                        </td>
     <td class="center">
         1
     </td>
     <td class="right lighter">
-        59,00&nbsp;&euro;
+        &euro;59.00
     </td>
     <td class="right lighter">
-        59,00&nbsp;&euro;
+        &euro;59.00
     </td>
-    <td>
-    </td>
+    <td></td>
 </tr>
 
-                                <tr>
-                <td class="section-title" colspan="6">
-                                        Son
-                                    </td>
-            </tr>
-                            <tr>
+                                            <tr>
+                    <td class="section-title" colspan="6">
+                        Son
+                    </td>
+                </tr>
+                                    <tr>
     <td>CL3</td>
     <td>
         Console Yamaha CL3
-                <em class="lighter">(default)</em>
-                        <br>
-                    <span class="lighter">
-    Puissance&nbsp;:&nbsp;850&nbsp;W.</span>
-
-                    <span class="lighter">
-    Couleur&nbsp;:&nbsp;Grise</span>
-
-                    <span class="lighter">
+                    <em class="lighter">(default)</em>
+                            <br>
+                            <span class="lighter">
     Poids&nbsp;:&nbsp;36.5&nbsp;kg.</span>
 
-                    </td>
+                            <span class="lighter">
+    Couleur&nbsp;:&nbsp;Grise</span>
+
+                            <span class="lighter">
+    Puissance&nbsp;:&nbsp;850&nbsp;W.</span>
+
+                        </td>
     <td class="center">
         1
     </td>
     <td class="right lighter">
-        19400,00&nbsp;&euro;
+        &euro;19,400.00
     </td>
     <td class="right lighter">
-        19400,00&nbsp;&euro;
+        &euro;19,400.00
     </td>
-    <td>
-    </td>
+    <td></td>
 </tr>
 
-                            <tr>
+                                    <tr>
     <td>DBXPA2</td>
     <td>
         Processeur DBX PA2
-                <em class="lighter">(default)</em>
-                        <br>
-                    <span class="lighter">
-    Puissance&nbsp;:&nbsp;35&nbsp;W.</span>
-
-                    <span class="lighter">
+                    <em class="lighter">(default)</em>
+                            <br>
+                            <span class="lighter">
     Poids&nbsp;:&nbsp;2.2&nbsp;kg.</span>
 
-                    </td>
+                            <span class="lighter">
+    Puissance&nbsp;:&nbsp;35&nbsp;W.</span>
+
+                        </td>
     <td class="center">
         1
     </td>
     <td class="right lighter">
-        349,90&nbsp;&euro;
+        &euro;349.90
     </td>
     <td class="right lighter">
-        349,90&nbsp;&euro;
+        &euro;349.90
     </td>
-    <td>
-    </td>
+    <td></td>
 </tr>
 
-                                </tbody>
+                                        </tbody>
 </table>
 
+<div style="padding: 3mm 0; margin-bottom: 5mm;">
+        <h2>Contrat</h2>
+        <p>Un petit contrat de test.</p>
+</div>
 
 <table class="layout-table">
-        <tr>
-        <td style="padding: 3mm 0;" colspan="2">
-            <h2>Contrat</h2>            <p>Un petit contrat de test.</p>
-        </td>
-    </tr>
-        <tr>
+    <tr>
         <td class="half inset">
-            <h3 class="center">Sortie</h3>
+            <h3 class="center">Output</h3>
             <p class="strong">
-                Pr&eacute;vue le&nbsp;: 17 d&eacute;cembre 2018
+                Scheduled for: 17 December 2018
             </p>
-            <p>Date effective&nbsp;:</p>
-            <p class="strong vspace5 spaceBottom5">Signature&nbsp;:</p>
+            <p>Effective date:</p>
+            <p class="strong vspace5 spaceBottom5">Signature:</p>
         </td>
         <td class="inset">
-            <h3 class="center">Retour</h3>
+            <h3 class="center">Return</h3>
             <p class="strong">
-                Pr&eacute;vu le&nbsp;: 18 d&eacute;cembre 2018
+                Scheduled for: 18 December 2018
             </p>
-            <p>Date effective&nbsp;:</p>
-            <p class="strong vspace5 spaceBottom5">Signature&nbsp;:</p>
+            <p>Effective date:</p>
+            <p class="strong vspace5 spaceBottom5">Signature:</p>
         </td>
     </tr>
 </table>

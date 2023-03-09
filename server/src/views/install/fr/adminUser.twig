@@ -13,7 +13,7 @@
         <li><strong>{{ adminUser['pseudo'] }}</strong> ({{ adminUser['email'] }})</li>
         {% endfor %}
     </ul>
-    <form method="POST" class="install__admin-form" {% if error %}style="display: none;"{% endif %} id="adminFormSkip">
+    <form method="POST" class="install__admin-form" {% if error %}style="display: none;"{% endif %} id="admin-form-skip">
         <p>
             Voulez-vous créer un nouvel utilisateur admin, afin de pouvoir accéder à l'application
             avec celui-ci&nbsp;?
@@ -37,7 +37,7 @@
         l'application, il aura tous les droits.
     </p>
     {% endif %}
-    <div {% if stepData['existingAdmins'] and not error %}style="display: none;"{% endif %} id="adminFormData">
+    <div {% if stepData['existingAdmins'] and not error %}style="display: none;"{% endif %} id="admin-form-data">
         <form method="POST" class="form">
             <div class="install__admin-name">
                 <div class="form__field install__admin-name__first-name">

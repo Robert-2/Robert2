@@ -13,7 +13,7 @@
             }) }}
         </td>
         <td class="half">
-            <h2 class="box center">{{ translate('estimateTitle', [currencyName]) }}</h2>
+            <h2 class="box center">{{ translate('estimate-title', [currencyName]) }}</h2>
             <table class="layout-table">
                 <tr>
                     <td class="size12">{{ translate('on-date', date|format_date('short', locale=locale)) }}</td>
@@ -31,15 +31,17 @@
 </table>
 
 <div class="vspace5">
-    <p>{{ translate('event', [event['title']]) }}</p>
+    {% if booking.title is not empty -%}
+    <p>{{ translate('event', [booking.title]) }}</p>
+    {% endif -%}
     <p class="strong">
-        {% if event['start_date'] == event['end_date'] %}
-        {{ translate('on-date', [event['start_date']|format_date('full', locale=locale)]) }},
+        {% if booking.start_date == booking.end_date %}
+        {{ translate('on-date', [booking.start_date|format_date('full', locale=locale)]) }},
         {% else %}
-        {{ translate('fromToDates', [event['start_date']|format_date('full', locale=locale), event['end_date']|format_date('full', locale=locale)]) }},
+        {{ translate('from-to-dates', [booking.start_date|format_date('full', locale=locale), booking.end_date|format_date('full', locale=locale)]) }},
         {% endif %}
-        {% if event['location'] %}
-        {{ translate('inLocation', [event['location']]) }}
+        {% if booking.location %}
+        {{ translate('inLocation', [booking.location]) }}
         {% endif %}
     </p>
     <table>
@@ -47,7 +49,7 @@
             <tr>
                 <th class="left">{{ translate('category') }}</th>
                 <th>{{ translate('quantity') }}</th>
-                <th>{{ translate(vatRate > 0 ? 'totalDayExclVat' : 'totalDay') }}</th>
+                <th>{{ translate(hasVat ? 'daily-total-excl-tax' : 'daily-total') }}</th>
             </tr>
         </thead>
         <tbody>
@@ -57,122 +59,122 @@
                     {% if category['name'] is not empty %}
                     {{ category['name'] }}
                     {% else %}
-                    {{ translate('notCategorized') }}
+                    {{ translate('not-categorized') }}
                     {% endif %}
                 </td>
-                <td class="center">{{ plural('itemsCount', category['quantity']) }}</td>
+                <td class="center">{{ plural('items-count', category['quantity']) }}</td>
                 <td class="right">
-                    {{ category['subTotal']|format_currency(currency, formatCurrencyOptions, locale) }}
+                    {{ category['subTotal']|format_currency(currency, locale=locale) }}
                 </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
-    <p class="size8 lighter">{{ translate('billNoteDetailNextPage') }}</p>
+    <p class="size8 lighter">{{ translate('invoice-note-detail-next-page') }}</p>
 </div>
 
 <div class="vspace5 size8">
     <table>
         <thead>
             <tr>
-                <th>{{ translate(vatRate > 0 ? 'dailyAmountExclVat' : 'dailyAmount') }}</th>
-                <th>{{ translate('discountRate') }}</th>
-                <th>{{ translate('totalDay') }}</th>
-                <th>{{ translate('degressiveRate') }}</th>
+                <th>{{ translate(hasVat ? 'daily-amount-excl-tax' : 'daily-amount') }}</th>
+                <th>{{ translate('discount-rate') }}</th>
+                <th>{{ translate('daily-total') }}</th>
+                <th>{{ translate('degressive-rate') }}</th>
                 <th colspan="2">{{ translate('totals') }}</th>
             </tr>
         </thead>
         <tbody>
             <tr class="center">
-                <td rowspan="{{ vatRate > 0 ? 3 : 1 }}" style="border-bottom: 1pt solid #888;">
+                <td rowspan="{{ hasVat ? 3 : 1 }}" style="border-bottom: 1pt solid #888;">
                     <div class="vspace2">
-                        {{ dailyAmount|format_currency(currency, formatCurrencyOptions, locale) }}
+                        {{ dailyTotalWithoutDiscount|format_currency(currency, locale=locale) }}
                     </div>
                     <div class="vspace2 lighter">
-                        {{ translate('discountableTotal') }}<br>
-                        {{ discountableDailyAmount|format_currency(currency, formatCurrencyOptions, locale) }}
+                        {{ translate('discountable') }}<br>
+                        {{ dailyTotalDiscountable|format_currency(currency, locale=locale) }}
                     </div>
                 </td>
-                <td rowspan="{{ vatRate > 0 ? 3 : 1 }}" style="border-bottom: 1pt solid #888;">
+                <td rowspan="{{ hasVat ? 3 : 1 }}" style="border-bottom: 1pt solid #888;">
                     <div class="vspace2">
-                        {% if discountRate > 0 %}
+                        {% if hasDiscount %}
                         {{ discountRate|format_percent_number({fraction_digit: 4}, locale=locale) }}<br><br>
-                        - {{ discountAmount|format_currency(currency, formatCurrencyOptions, locale) }}
+                        - {{ dailyTotalDiscount|format_currency(currency, locale=locale) }}
                         {% else %}
-                        <span class="lighter">{{ translate('noDiscount') }}</span>
+                        <span class="lighter">{{ translate('no-discount') }}</span>
                         {% endif %}
                     </div>
                 </td>
-                <td rowspan="{{ vatRate > 0 ? 3 : 1 }}" style="border-bottom: 1pt solid #888;">
-                    {% if vatRate > 0 %}
+                <td rowspan="{{ hasVat ? 3 : 1 }}" style="border-bottom: 1pt solid #888;">
+                    {% if hasVat %}
                     <div class="vspace2 right">
-                        {{ translate('exclVat') }}<br>
-                        {{ totalDailyExclVat|format_currency(currency, formatCurrencyOptions, locale) }}
+                        {{ translate('excl-tax') }}<br>
+                        {{ dailyTotalWithoutTaxes|format_currency(currency, locale=locale) }}
                     </div>
                     <div class="vspace2 right lighter">
-                        {{ translate('vat') }} ({{ vatRate|format_percent_number({fraction_digit: 1}, locale=locale) }})<br>
-                        {{ vatAmount|format_currency(currency, formatCurrencyOptions, locale) }}
+                        {{ translate('taxes') }} ({{ vatRate|format_percent_number({fraction_digit: 1}, locale=locale) }})<br>
+                        {{ dailyTotalTaxes|format_currency(currency, locale=locale) }}
                     </div>
                     {% endif %}
                     <div class="vspace2 right">
-                        {% if vatRate > 0 %}{{ translate('inclVat') }}<br>{% endif %}
-                        {{ totalDailyInclVat|format_currency(currency, formatCurrencyOptions, locale) }}
+                        {% if hasVat %}{{ translate('incl-tax') }}<br>{% endif %}
+                        {{ dailyTotalWithTaxes|format_currency(currency, locale=locale) }}
                     </div>
                 </td>
-                <td rowspan="{{ vatRate > 0 ? 3 : 1 }}" style="border-bottom: 1pt solid #888;">
+                <td rowspan="{{ hasVat ? 3 : 1 }}" style="border-bottom: 1pt solid #888;">
                     <div class="vspace2">
                         ×&nbsp;<strong>{{ degressiveRate|format_number(locale=locale) }}</strong><br><br>
                         <span class="lighter">
-                            ({{ plural('numberOfDays', daysCount) }})
+                            ({{ plural('number-of-days', booking.duration) }})
                         </span>
                     </div>
                 </td>
-                {% if vatRate > 0 %}
+                {% if hasVat %}
                 <td>
-                    <div class="vspace2 strong center">{{ translate('totalExclVat') }}</div>
+                    <div class="vspace2 strong center">{{ translate('total-excl-tax') }}</div>
                 </td>
                 <td>
                     <div class="vspace2 right">
-                        {{ totalExclVat|format_currency(currency, formatCurrencyOptions, locale) }}
+                        {{ totalWithoutTaxes|format_currency(currency, locale=locale) }}
                     </div>
                 </td>
                 {% endif %}
-                {% if vatRate == 0 %}
+                {% if not hasVat %}
                 <td rowspan="1">
                     <div class="vspace2 strong size10 center">
-                        {{ translate('totalDue') }}
+                        {{ translate('total-due') }}
                     </div>
                     <div class="vspace2 size9 center">
-                        {{ translate('vatNotApplicable') }}
+                        {{ translate('tax-not-applicable') }}
                     </div>
                 </td>
                 <td rowspan="1">
                     <div class="vspace2 size10 strong right">
-                        {{ totalInclVat|format_currency(currency, formatCurrencyOptions, locale) }}
+                        {{ totalWithTaxes|format_currency(currency, locale=locale) }}
                     </div>
                 </td>
                 {% endif %}
             </tr>
-            {% if vatRate > 0 %}
+            {% if hasVat %}
             <tr>
                 <td>
-                    <div class="vspace2 strong center">{{ translate('totalInclVat') }}</div>
+                    <div class="vspace2 strong center">{{ translate('total-incl-taxes') }}</div>
                 </td>
                 <td>
                     <div class="vspace2 right">
-                        {{ totalInclVat|format_currency(currency, formatCurrencyOptions, locale) }}
+                        {{ totalWithTaxes|format_currency(currency, locale=locale) }}
                     </div>
                 </td>
             </tr>
             <tr>
                 <td>
                     <div class="vspace2 strong size10 center">
-                        {{ translate('totalDue') }}
+                        {{ translate('total-due') }}
                     </div>
                 </td>
                 <td>
                     <div class="vspace2 size10 strong right">
-                        {{ totalInclVat|format_currency(currency, formatCurrencyOptions, locale) }}
+                        {{ totalWithTaxes|format_currency(currency, locale=locale) }}
                     </div>
                 </td>
             </tr>
@@ -181,10 +183,10 @@
     </table>
 
     <p class="vspace5 size10">
-        {{ translate('estimateAcceptanceDate') }}
+        {{ translate('estimate-acceptance-date') }}
     </p>
     <p class="size10">
-        {{ translate('estimateAcceptanceSignature') }}
+        {{ translate('estimate-acceptance-signature') }}
     </p>
 </div>
 
@@ -199,7 +201,7 @@
                 }) }}
             </td>
             <td class="half">
-                <h2 class="box center">{{ translate('estimateDetailsTitle') }}</h2>
+                <h2 class="box center">{{ translate('estimate-details-title') }}</h2>
                 <table class="layout-table">
                     <tr>
                         <td class="size12">{{ translate('on-date', date|format_date('short', locale=locale)) }}</td>
@@ -217,29 +219,37 @@
             <th>{{ translate('ref') }}</th>
             <th>{{ translate('designation') }}</th>
             <th>{{ translate('qty') }}</th>
-            <th>{{ translate(vatRate > 0 ? 'unitPriceExclVat' : 'unitPrice') }}</th>
+            <th>{{ translate(hasVat ? 'unit-price-excl-tax' : 'unit-price') }}</th>
             <th>{{ translate('replacement-value') }}</th>
-            <th>{{ translate(vatRate > 0 ? 'totalExclVat' : 'total') }}</th>
+            <th>{{ translate(hasVat ? 'total-excl-tax' : 'total') }}</th>
         </tr>
     </thead>
     <tbody>
-        {% for subCategory in materialList %}
+        {% for subCategory, materialsList in materials %}
             <tr>
                 <td class="section-title" colspan="6">
-                    {% if subCategory['category'] is not empty %}
-                        {{ subCategory['category'] }}
+                    {% if subCategory == '--' %}
+                        {{ translate('not-categorized') }}
                     {% else %}
-                        {{ translate('notCategorized') }}
-                    {% endif %}
-                    {% if subCategory['name'] is not empty %}
-                    - {{ subCategory['name'] }}
-                    {% elseif subCategory['category'] %}
-                    - {{ translate('otherMaterials') }}
+                        {{ subCategory|replace({ '__other': translate('other-materials') }) }}
                     {% endif %}
                 </td>
             </tr>
-            {% for material in subCategory['materials'] %}
-                {{ include('blocks/materials/line-bill-estimate.twig', { material: material }) }}
+            {% for material in materialsList %}
+            <tr>
+                <td>{{ material.reference }}</td>
+                <td>{{ material.name }}</td>
+                <td class="center">{{ material.quantity }}</td>
+                <td class="right">
+                    {{ material.unit_price|format_currency(currency, locale=locale) }}
+                </td>
+                <td class="right">
+                    {{ material.replacement_price|format_currency(currency, locale=locale) }}
+                </td>
+                <td class="right">
+                    {{ material.total_price|format_currency(currency, locale=locale) }}
+                </td>
+            </tr>
             {% endfor %}
         {% endfor %}
     </tbody>

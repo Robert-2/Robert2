@@ -1,7 +1,9 @@
 <?php
+declare(strict_types=1);
+
 use Phinx\Migration\AbstractMigration;
 
-class FixTaggablesPrimaryConstraint extends AbstractMigration
+final class FixTaggablesPrimaryConstraint extends AbstractMigration
 {
     public function up()
     {

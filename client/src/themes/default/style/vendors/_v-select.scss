@@ -73,7 +73,7 @@
                 background-color: $bg-color-button-default;
 
                 svg {
-                    fill: $text-nav-color;
+                    fill: $text-soft-color;
                 }
             }
         }
@@ -109,7 +109,7 @@
 
             &:focus,
             &:hover {
-                color: adjust-color($text-nav-color, $lightness: 20%);
+                color: adjust-color($text-soft-color, $lightness: 20%);
             }
         }
 

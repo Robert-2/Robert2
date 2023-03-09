@@ -2,14 +2,14 @@ import './index.scss';
 import { provide, computed, toRefs, ref } from '@vue/composition-api';
 import { useQuery } from 'vue-query';
 import pick from 'lodash/pick';
-import useI18n from '@/hooks/vue/useI18n';
+import useI18n from '@/hooks/useI18n';
 import formatOptions from '@/utils/formatOptions';
 import apiCountries from '@/stores/api/countries';
 import FormField from '@/themes/default/components/FormField';
 import Fieldset from '@/themes/default/components/Fieldset';
 import Button from '@/themes/default/components/Button';
 
-// TODO: Mise en forme du formulaire (code postal / localité, etc), cf. beneficiaires.
+// TODO: Mise en forme du formulaire (code postal / localité, etc), cf. bénéficiaires.
 
 const DEFAULT_VALUES = Object.freeze({
     first_name: '',

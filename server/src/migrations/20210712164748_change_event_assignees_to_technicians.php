@@ -1,8 +1,10 @@
 <?php
+declare(strict_types=1);
+
 use Phinx\Migration\AbstractMigration;
 use Robert2\API\Config\Config;
 
-class ChangeEventAssigneesToTechnicians extends AbstractMigration
+final class ChangeEventAssigneesToTechnicians extends AbstractMigration
 {
     public function up()
     {
@@ -22,7 +24,7 @@ class ChangeEventAssigneesToTechnicians extends AbstractMigration
             ->addForeignKey('technician_id', 'persons', 'id', [
                 'delete' => 'CASCADE',
                 'update' => 'NO_ACTION',
-                'constraint' => 'fk_event_technicians_technician'
+                'constraint' => 'fk_event_technicians_technician',
             ])
             ->save();
 
@@ -46,7 +48,7 @@ class ChangeEventAssigneesToTechnicians extends AbstractMigration
             ->changeColumn('end_time', 'datetime', ['null' => false])
             ->save();
 
-        $table->rename(sprintf('%sevent_technicians', $prefix))->update();
+        $table->rename('event_technicians')->update();
     }
 
     public function down()

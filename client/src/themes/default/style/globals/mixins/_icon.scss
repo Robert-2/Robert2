@@ -26,7 +26,7 @@
 // - Functions
 //
 
-/// Permet de récupèrer le code lié au nom "textuel" d'une icône.
+/// Permet de récupérer le code lié au nom "textuel" d'une icône.
 ///
 /// @example scss icon-code('plus'); // => '\f067'
 ///
@@ -42,7 +42,7 @@
     @return $icon-name;
 }
 
-/// Permet de récupèrer la bonne graisse pour une variante donnée.
+/// Permet de récupérer la bonne graisse pour une variante donnée.
 ///
 /// @example scss icon-weight('solid'); // => 900
 ///

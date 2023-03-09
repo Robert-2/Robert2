@@ -9,36 +9,42 @@ use Robert2\API\Models\EventMaterial;
 
 final class EventMaterialObserver
 {
-    public function saved(EventMaterial $eventMaterial)
+    public $afterCommit = true;
+
+    public function created(EventMaterial $eventMaterial)
     {
-        $this->_handle($eventMaterial);
+        $this->syncCache($eventMaterial);
+    }
+
+    public function updated(EventMaterial $eventMaterial)
+    {
+        $this->syncCache($eventMaterial);
     }
 
     public function deleting(EventMaterial $eventMaterial)
     {
-        $this->_handle($eventMaterial);
+        $this->syncCache($eventMaterial);
     }
 
     // ------------------------------------------------------
     // -
-    // -    Internal methods
+    // -    Event sub-processing
     // -
     // ------------------------------------------------------
 
-    private function _handle(EventMaterial $eventMaterial)
+    private function syncCache(EventMaterial $eventMaterial): void
     {
-        /** @var Robert2\API\Models\Event */
         $event = $eventMaterial->event;
-
-        /** @var Robert2\API\Models\Material */
         $material = $eventMaterial->material;
 
-        // - Edge case: L'event n'est pas complet => On invalide tout le cache event.
+        // - Edge case: L'event n'est pas complet => On invalide tout le cache des bookables.
         if (!$event || !$material) {
             // phpcs:ignore Generic.Files.LineLength
             debug("[Event] Le matériel d'un événement a été modifié mais il n'a pas été possible de récupérer les modèles liés.");
             debug($eventMaterial->getAttributes());
-            container('cache')->invalidateTags([Event::getModelCacheKey()]);
+            container('cache')->invalidateTags([
+                Event::getModelCacheKey(),
+            ]);
             return;
         }
 
@@ -54,10 +60,14 @@ final class EventMaterialObserver
         ]);
 
         //
-        // - On invalide le cache des autres événements ayant le matériel lié parmis leurs "dépendances".
+        // - On invalide le cache des autres bookables ayant le matériel lié parmi leurs "dépendances".
         //
 
-        /** @var Robert2\API\Models\Event[] */
+        //
+        // -- Événements ...
+        //
+
+        /** @var \Robert2\API\Models\Event[] $events */
         $events = $material->events()
             ->where($event->qualifyColumn('id'), '<>', $event->id)
             ->where(function (Builder $query) use ($event) {

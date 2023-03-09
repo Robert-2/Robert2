@@ -3,21 +3,41 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Collection;
 use Robert2\API\Contracts\Serializable;
 use Robert2\API\Models\Traits\Serializer;
-use Robert2\API\Validation\Validator as V;
+use Respect\Validation\Validator as V;
+use Robert2\API\Models\Traits\SoftDeletable;
 
 /**
- * Modèle Park.
+ * Parc de matériel.
  *
- * @method static Builder forUser(Builder $query, int $userId)
+ * @property-read ?int $id
+ * @property string $name
+ * @property string|null $street
+ * @property string|null $postal_code
+ * @property string|null $locality
+ * @property int|null $country_id
+ * @property-read Country|null $country
+ * @property string|null $opening_hours
+ * @property string|null $note
+ * @property-read int $total_items
+ * @property-read int $total_stock_quantity
+ * @property-read float $total_amount
+ * @property-read bool $has_ongoing_booking
+ * @property-read Collection|Material[] $materials
+ * @property-read Carbon $created_at
+ * @property-read Carbon $updated_at
+ * @property-read Carbon|null $deleted_at
+ *
+ * @method static Builder|static forUser(int $userId)
  */
-class Park extends BaseModel implements Serializable
+final class Park extends BaseModel implements Serializable
 {
     use Serializer;
-    use SoftDeletes;
+    use SoftDeletable;
 
     protected $orderField = 'name';
     protected $searchField = 'name';
@@ -27,11 +47,11 @@ class Park extends BaseModel implements Serializable
         parent::__construct($attributes);
 
         $this->validation = [
-            'name' => V::callback([$this, 'checkName']),
+            'name' => V::custom([$this, 'checkName']),
             'street' => V::optional(V::length(null, 191)),
             'postal_code' => V::optional(V::length(null, 10)),
             'locality' => V::optional(V::length(null, 191)),
-            'country_id' => V::optional(V::numeric()),
+            'country_id' => V::optional(V::numericVal()),
             'opening_hours' => V::optional(V::length(null, 255)),
         ];
     }
@@ -99,19 +119,18 @@ class Park extends BaseModel implements Serializable
 
     public function getTotalItemsAttribute()
     {
-        $total = $this->materials()->where('is_unitary', false)->count();
+        $total = $this->materials()->count();
 
         return $total;
     }
 
     public function getTotalStockQuantityAttribute()
     {
-        $materials = $this->Materials()->get(['stock_quantity']);
         $total = 0;
 
-        $materials = $this->materials()->get(['stock_quantity', 'is_unitary']);
+        $materials = $this->materials()->get(['stock_quantity']);
         foreach ($materials as $material) {
-            $total += (int)$material->stock_quantity;
+            $total += (int) $material->stock_quantity;
         }
 
         return $total;
@@ -123,13 +142,13 @@ class Park extends BaseModel implements Serializable
 
         $materials = Material::getParkAll($this->id)->toArray();
         foreach ($materials as $material) {
-            $total += ($material['replacement_price'] * (int)$material['stock_quantity']);
+            $total += ($material['replacement_price'] * (int) $material['stock_quantity']);
         }
 
         return $total;
     }
 
-    public function getHasOngoingEventAttribute()
+    public function getHasOngoingBookingAttribute()
     {
         if (!$this->exists || !$this->id) {
             return false;

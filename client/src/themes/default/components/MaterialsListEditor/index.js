@@ -4,14 +4,14 @@ import {
     ref,
     computed,
     onMounted,
-    onBeforeUnmount,
     reactive,
 } from '@vue/composition-api';
 import { useQuery } from 'vue-query';
-import Fragment from '@/themes/default/components/Fragment';
+import Fragment from '@/components/Fragment';
 import config from '@/globals/config';
-import useI18n from '@/hooks/vue/useI18n';
-import useRouter from '@/hooks/vue/useRouter';
+import useI18n from '@/hooks/useI18n';
+import useRouter from '@/hooks/useRouter';
+import showModal from '@/utils/showModal';
 import formatAmount from '@/utils/formatAmount';
 import apiMaterials from '@/stores/api/materials';
 import ErrorMessage from '@/themes/default/components/ErrorMessage';
@@ -38,7 +38,6 @@ const MaterialsListEditor = (props, { root, emit }) => {
     const filtersRef = ref(null);
     const showSelectedOnly = ref(selected.value.length > 0);
     const manualOrder = ref([]);
-    const cancelScanObservation = ref(null);
     const { data: materials, isLoading, error } = useQuery(
         reactive(['materials-while-event', { eventId: event?.value?.id }]),
         () => (
@@ -121,7 +120,6 @@ const MaterialsListEditor = (props, { root, emit }) => {
         columnsDropdown: false,
         preserveState: false,
         orderBy: { column: 'reference', ascending: true },
-        initialPage: 1,
         perPage: hasMaterials.value ? noPaginationLimit : config.defaultPaginationLimit,
         sortable: ['reference', 'name'],
         columnsClasses: {
@@ -214,12 +212,6 @@ const MaterialsListEditor = (props, { root, emit }) => {
         MaterialsStore.commit('init', selected.value);
     });
 
-    onBeforeUnmount(() => {
-        if (cancelScanObservation.value) {
-            cancelScanObservation.value();
-        }
-    });
-
     const handleSelectMany = (materialsToAdd) => {
         const shouldDisplayOnlySelected = !selected.value || selected.value.length === 0;
 
@@ -236,18 +228,13 @@ const MaterialsListEditor = (props, { root, emit }) => {
     };
 
     const handleShowReuseEventModal = () => {
-        root.$modal.show(
-            ReuseEventMaterials,
-            undefined,
-            { width: 700, draggable: true, clickToClose: true },
-            {
-                'before-close': ({ params }) => {
-                    if (params) {
-                        handleSelectMany(params.materials);
-                    }
-                },
+        showModal(root.$modal, ReuseEventMaterials, {
+            onClose: ({ params }) => {
+                if (params) {
+                    handleSelectMany(params.materials);
+                }
             },
-        );
+        });
     };
 
     return () => (
@@ -282,7 +269,7 @@ const MaterialsListEditor = (props, { root, emit }) => {
                 )}
                 <v-client-table
                     ref={dataTableRef}
-                    name="listTemplateMaterialsListTable"
+                    name="materialsListEditorTable"
                     data={materials.value || []}
                     columns={columns.value}
                     options={tableOptions.value}
@@ -303,7 +290,7 @@ const MaterialsListEditor = (props, { root, emit }) => {
                         ),
                         'price': ({ row }) => (
                             <Fragment>
-                                {formatAmount(row.rental_price)} <i class="fas fa-times" />
+                                {formatAmount(row.rental_price ?? 0)} <i class="fas fa-times" />
                             </Fragment>
                         ),
                         'quantity': ({ row }) => (
@@ -315,7 +302,7 @@ const MaterialsListEditor = (props, { root, emit }) => {
                         ),
                         'amount': ({ row }) => (
                             <span>
-                                {formatAmount(row.rental_price * getQuantity(row))}
+                                {formatAmount((row.rental_price ?? 0) * getQuantity(row))}
                             </span>
                         ),
                         'actions': ({ row }) => (

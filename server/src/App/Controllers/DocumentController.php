@@ -5,10 +5,10 @@ namespace Robert2\API\Controllers;
 
 use Robert2\API\Controllers\Traits\Crud;
 use Robert2\API\Controllers\Traits\FileResponse;
+use Robert2\API\Http\Request;
 use Robert2\API\Models\Document;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
-use Slim\Http\ServerRequest as Request;
 
 class DocumentController extends BaseController
 {
@@ -17,7 +17,7 @@ class DocumentController extends BaseController
 
     public function getOne(Request $request, Response $response): Response
     {
-        $id = (int)$request->getAttribute('id');
+        $id = (int) $request->getAttribute('id');
         $document = Document::findOrFail($id);
 
         $fileContent = file_get_contents($document->file_path);

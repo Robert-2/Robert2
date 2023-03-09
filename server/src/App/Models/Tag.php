@@ -3,14 +3,26 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Collection;
 use Robert2\API\Contracts\Serializable;
 use Robert2\API\Models\Traits\Serializer;
-use Robert2\API\Validation\Validator as V;
+use Respect\Validation\Validator as V;
+use Robert2\API\Models\Traits\SoftDeletable;
 
-class Tag extends BaseModel implements Serializable
+/**
+ * Tag.
+ *
+ * @property-read ?int $id
+ * @property string $name
+ * @property-read Carbon $created_at
+ * @property-read Carbon|null $updated_at
+ * @property-read Carbon|null $deleted_at
+ *
+ * @property-read Collection|Material[] $materials
+ */
+final class Tag extends BaseModel implements Serializable
 {
-    use SoftDeletes;
+    use SoftDeletable;
     use Serializer;
 
     protected $searchField = 'name';
@@ -20,7 +32,7 @@ class Tag extends BaseModel implements Serializable
         parent::__construct($attributes);
 
         $this->validation = [
-            'name' => V::callback([$this, 'checkName']),
+            'name' => V::custom([$this, 'checkName']),
         ];
     }
 

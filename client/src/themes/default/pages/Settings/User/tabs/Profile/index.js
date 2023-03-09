@@ -3,6 +3,7 @@ import Help from '@/themes/default/components/Help';
 import FormField from '@/themes/default/components/FormField';
 import Button from '@/themes/default/components/Button';
 import apiUsers from '@/stores/api/users';
+import { ApiErrorCode } from '@/stores/api/@codes';
 
 // @vue/component
 export default {
@@ -71,6 +72,7 @@ export default {
 
             const hasPassword = !!postData.password;
             if (hasPassword) {
+                this.errors ??= { password: null };
                 if (postData.password !== postData.password_confirmation) {
                     this.errors.password = [__('page.user-settings.profile.password-confirmation-must-match')];
                     this.displayError(__('errors.validation'));
@@ -108,8 +110,8 @@ export default {
             this.error = error;
             this.isLoading = false;
 
-            const { code, details } = error.response?.data?.error || { code: 0, details: {} };
-            if (code === 400) {
+            const { code, details } = error.response?.data?.error || { code: ApiErrorCode.UNKNOWN, details: {} };
+            if (code === ApiErrorCode.VALIDATION_FAILED) {
                 this.errors = { ...details };
             }
         },

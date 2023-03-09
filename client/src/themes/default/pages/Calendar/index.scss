@@ -20,7 +20,7 @@
 
     &__footer {
         flex: 0 0 50px;
-        display: flex;
+        display: none;
         flex-wrap: wrap;
 
         &__help {
@@ -33,6 +33,22 @@
         .CalendarCaption {
             flex: 0 0 auto;
             max-width: 100%;
+        }
+    }
+
+    //
+    // - Responsive
+    //
+
+    @media (min-width: globals.$screen-tablet) {
+        &__footer {
+            display: flex;
+        }
+    }
+
+    @media (max-height: 700px) {
+        &__footer {
+            display: none;
         }
     }
 }

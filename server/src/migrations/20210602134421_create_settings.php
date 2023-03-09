@@ -1,7 +1,9 @@
 <?php
+declare(strict_types=1);
+
 use Phinx\Migration\AbstractMigration;
 
-class CreateSettings extends AbstractMigration
+final class CreateSettings extends AbstractMigration
 {
     public function up()
     {

@@ -3,9 +3,10 @@ declare(strict_types=1);
 
 namespace Robert2\API\Errors\Renderer;
 
-use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Robert2\API\Errors\ValidationException;
+use Robert2\API\Errors\Enums\ApiErrorCode;
+use Robert2\API\Errors\Exception\ApiException;
+use Robert2\API\Errors\Exception\ValidationException;
 use Slim\Exception\HttpException;
 use Slim\Exception\HttpMethodNotAllowedException;
 use Slim\Interfaces\ErrorRendererInterface;
@@ -27,24 +28,11 @@ class JsonErrorRenderer implements ErrorRendererInterface
     // -
     // ------------------------------------------------------
 
-    // FIXME: La clé `code` des erreurs ne devrait pas contenir les codes HTTP...
-    //        Cette clé devrait contenir uniquement les codes internes lorsque défini, un code `UNKNOWN` sinon.
-    //        (Le code HTTP est déjà récupérable via le status de réponse, à corriger côté front avant toute chose)
     private static function format(\Throwable $exception, bool $displayErrorDetails): array
     {
-        $output = [
-            'code' => $exception->getCode() ?: StatusCode::STATUS_INTERNAL_SERVER_ERROR,
-            'message' => $exception->getMessage(),
-        ];
+        $output = ['code' => ApiErrorCode::UNKNOWN];
 
         if ($exception instanceof ModelNotFoundException) {
-            $output['code'] = StatusCode::STATUS_NOT_FOUND;
-            $output['message'] = "Not found."; // "Entity not found."
-            return $output;
-        }
-
-        if ($exception instanceof ValidationException) {
-            $output['details'] = $exception->getValidationErrors();
             return $output;
         }
 
@@ -59,18 +47,31 @@ class JsonErrorRenderer implements ErrorRendererInterface
                         $requestDetail
                     );
                 }
+                $output['message'] = $exception->getMessage();
                 $output['debug'] = ['requested' => $requestDetail];
             }
             return $output;
         }
 
-        if ($output['code'] === StatusCode::STATUS_NOT_FOUND) {
+        if ($exception instanceof ValidationException) {
+            $output['code'] = ApiErrorCode::VALIDATION_FAILED;
+            $output['message'] = $exception->getMessage();
+            $output['details'] = $exception->getValidationErrors();
+            return $output;
+        }
+
+        if ($exception instanceof ApiException) {
+            $output['code'] = $exception->getCode();
+            if (!empty($exception->getMessage())) {
+                $output['message'] = $exception->getMessage();
+            }
             return $output;
         }
 
         if ($displayErrorDetails) {
             $output['debug'] = [
                 'file' => sprintf('%s, line %s.', $exception->getFile(), $exception->getLine()),
+                'message' => $exception->getMessage(),
                 'stackTrace' => $exception->getTrace(),
             ];
         }

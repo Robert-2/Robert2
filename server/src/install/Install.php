@@ -13,7 +13,7 @@ class Install
     protected const INSTALL_FILE = __DIR__ . '/progress.json';
 
     // See in SetupController for steps execution
-    const INSTALL_STEPS = [
+    public const INSTALL_STEPS = [
         'welcome',
         'coreSettings',
         'settings',
@@ -25,18 +25,23 @@ class Install
         'end',
     ];
 
-    const REQUIRED_EXTENSIONS = [
+    public const REQUIRED_EXTENSIONS = [
+        'apcu',
+        'bcmath',
+        'dom',
+        'fileinfo',
+        'gettext',
+        'iconv',
+        'intl',
+        'json',
+        'mbstring',
         'pcre',
         'PDO',
-        'mbstring',
-        'fileinfo',
-        'json',
-        'intl',
         'pdo_mysql',
-        'iconv',
+        'xml',
     ];
 
-    const VALUE_TYPES = [
+    protected const VALUE_TYPES = [
         'enableCORS' => 'boolean',
         'displayErrorDetails' => 'boolean',
         'useRouterCache' => 'boolean',
@@ -54,7 +59,7 @@ class Install
 
     public static function setInstallProgress(string $step, ?array $stepData = null): array
     {
-        if (!in_array($step, self::INSTALL_STEPS)) {
+        if (!in_array($step, self::INSTALL_STEPS, true)) {
             throw new \InvalidArgumentException(sprintf('Unknown step: %s', $step));
         }
 
@@ -73,13 +78,13 @@ class Install
         foreach ($stepData as $key => $value) {
             $keyType = self::VALUE_TYPES[$key] ??  null;
             if ($keyType === 'boolean') {
-                $stepData[$key] = (bool)$value;
+                $stepData[$key] = (bool) $value;
             }
             if ($keyType === 'integer') {
-                $stepData[$key] = (int)$value;
+                $stepData[$key] = (int) $value;
             }
             if ($keyType === 'float') {
-                $stepData[$key] = (float)$value;
+                $stepData[$key] = (float) $value;
             }
         }
 
@@ -167,7 +172,7 @@ class Install
         $output = stream_get_contents($stream, -1, 0);
         fclose($stream);
 
-        if (!in_array($exitCode, [0, 3])) {
+        if (!in_array($exitCode, [0, 3], true)) {
             throw new \RuntimeException($output, $exitCode);
         }
 
@@ -191,7 +196,7 @@ class Install
 
             $status[] = [
                 'table' => end($infos),
-                'state' => $infos[0]
+                'state' => $infos[0],
             ];
         }
 

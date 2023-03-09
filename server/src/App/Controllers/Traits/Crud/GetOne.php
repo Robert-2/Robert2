@@ -5,8 +5,8 @@ namespace Robert2\API\Controllers\Traits\Crud;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Robert2\API\Controllers\Traits\WithModel;
+use Robert2\API\Http\Request;
 use Slim\Http\Response;
-use Slim\Http\ServerRequest as Request;
 
 trait GetOne
 {
@@ -14,7 +14,7 @@ trait GetOne
 
     public function getOne(Request $request, Response $response): Response
     {
-        $id = (int)$request->getAttribute('id');
+        $id = (int) $request->getAttribute('id');
 
         $model = $this->getModelClass()::findOrFail($id);
         if (method_exists(static::class, '_formatOne')) {

@@ -1,17 +1,19 @@
 <?php
+declare(strict_types=1);
+
 use Phinx\Migration\AbstractMigration;
 
-class CreateCompanies extends AbstractMigration
+final class CreateCompanies extends AbstractMigration
 {
     public function up()
     {
-        $table = $this->table('companies');
+        $table = $this->table('companies', ['signed' => true]);
         $table
-            ->addColumn('legal_name', 'string', ['length' => 191])
+            ->addColumn('legal_name', 'string', ['length' => 191, 'null' => false])
             ->addColumn('street', 'string', ['length' => 191, 'null' => true])
             ->addColumn('postal_code', 'string', ['length' => 10, 'null' => true])
             ->addColumn('locality', 'string', ['length' => 191, 'null' => true])
-            ->addColumn('country_id', 'integer', ['null' => true])
+            ->addColumn('country_id', 'integer', ['signed' => true, 'null' => true])
             ->addColumn('phone', 'string', ['length' => 24, 'null' => true])
             ->addColumn('note', 'text', ['null' => true])
             ->addColumn('created_at', 'datetime', ['null' => true])
@@ -20,12 +22,12 @@ class CreateCompanies extends AbstractMigration
             ->addIndex(['country_id'])
             ->addIndex(['legal_name'], [
                 'unique' => true,
-                'name' => 'legal_name_UNIQUE'
+                'name' => 'legal_name_UNIQUE',
             ])
             ->addForeignKey('country_id', 'countries', 'id', [
                 'delete' => 'NO_ACTION',
                 'update' => 'NO_ACTION',
-                'constraint' => 'fk_companies_countries'
+                'constraint' => 'fk_companies_countries',
             ])
             ->create();
     }

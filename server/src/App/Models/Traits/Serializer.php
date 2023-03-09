@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Robert2\API\Models\Traits;
 
 use Adbar\Dot as DotArray;
+use Brick\Math\BigDecimal as Decimal;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Collection;
 use Robert2\API\Contracts\Serializable;
@@ -23,6 +24,7 @@ trait Serializer
 
         $data = new DotArray($data);
 
+        // @phpstan-ignore-next-line
         foreach (static::$serializedNames as $originalPath => $aliasPath) {
             if ($aliasPath !== null) {
                 $data->set($aliasPath, $data->get($originalPath, null));
@@ -47,6 +49,7 @@ trait Serializer
 
         $data = new DotArray($data);
 
+        // @phpstan-ignore-next-line
         foreach (static::$serializedNames as $originalPath => $aliasPath) {
             if ($data->has($originalPath) && !$data->has($aliasPath)) {
                 $data->set($aliasPath, $data->get($originalPath));
@@ -65,6 +68,7 @@ trait Serializer
 
         $data = new DotArray($data);
 
+        // @phpstan-ignore-next-line
         foreach (static::$serializedNames as $originalPath => $aliasPath) {
             if ($data->has($aliasPath) && !$data->has($originalPath)) {
                 $data->set($originalPath, $data->get($aliasPath));
@@ -112,30 +116,32 @@ trait Serializer
             ? $this->getClassCastableAttributeValue($key, $value)
             : $this->mutateAttribute($key, $value);
 
+        $serialize = function ($value) {
+            if ($value instanceof Serializable) {
+                return $value->serialize();
+            }
+
+            if ($value instanceof Decimal) {
+                return (string) $value;
+            }
+
+            if ($value instanceof \DateTimeInterface) {
+                return $this->serializeDate($value);
+            }
+
+            if ($value instanceof Arrayable) {
+                return $value->toArray();
+            }
+
+            return $value;
+        };
+
         if ($value instanceof Collection) {
             return $value
-                ->map(function ($value) {
-                    if ($value instanceof Serializable) {
-                        return $value->serialize();
-                    }
-
-                    if ($value instanceof Arrayable) {
-                        return $value->toArray();
-                    }
-
-                    return $value;
-                })
+                ->map(fn($value) => $serialize($value))
                 ->all();
         }
 
-        if ($value instanceof Serializable) {
-            return $value->serialize();
-        }
-
-        if ($value instanceof Arrayable) {
-            return $value->toArray();
-        }
-
-        return $value;
+        return $serialize($value);
     }
 }

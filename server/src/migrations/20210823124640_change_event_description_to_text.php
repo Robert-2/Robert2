@@ -1,7 +1,9 @@
 <?php
+declare(strict_types=1);
+
 use Phinx\Migration\AbstractMigration;
 
-class ChangeEventDescriptionToText extends AbstractMigration
+final class ChangeEventDescriptionToText extends AbstractMigration
 {
     public function up()
     {

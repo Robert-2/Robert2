@@ -1,4 +1,5 @@
 title: Vos paramètres
+saved: Paramètres sauvegardés.
 
 #
 # - Tabs
@@ -19,10 +20,5 @@ profile:
 
 interface:
     title: Interface
-    help: La « durée d'une session » est le temps imparti avant votre déconnexion automatique de l'application.
 
-    auth-token-validity-duration: Durée max. d'une session
     language: Langue
-    hours: heures
-
-    saved: Paramètres sauvegardés.

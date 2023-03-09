@@ -1,5 +1,5 @@
 import './index.scss';
-import Fragment from '@/themes/default/components/Fragment';
+import Fragment from '@/components/Fragment';
 import Page from '@/themes/default/components/Page';
 import CriticalError from '@/themes/default/components/CriticalError';
 import Icon from '@/themes/default/components/Icon';
@@ -13,7 +13,7 @@ import initColumnsDisplay from '@/utils/initColumnsDisplay';
 export default {
     name: 'Users',
     data() {
-        const { $t: __, $route, $options } = this;
+        const { $t: __, $options } = this;
 
         return {
             hasCriticalError: false,
@@ -38,7 +38,6 @@ export default {
                 preserveState: true,
                 saveState: true,
                 orderBy: { column: 'pseudo', ascending: true },
-                initialPage: $route.query.page || 1,
                 sortable: ['pseudo', 'group', 'email'],
                 columnsDisplay: initColumnsDisplay($options.name, {
                     pseudo: true,
@@ -162,7 +161,7 @@ export default {
             const { $t: __ } = this;
             const isSoft = !this.isTrashDisplayed;
 
-            const { value: isConfirmed } = await confirm({
+            const isConfirmed = await confirm({
                 type: isSoft ? 'warning' : 'danger',
 
                 text: isSoft
@@ -191,7 +190,7 @@ export default {
         async handleRestoreItem(id) {
             const { $t: __ } = this;
 
-            const { value: isConfirmed } = await confirm({
+            const isConfirmed = await confirm({
                 type: 'restore',
                 text: __('page.users.confirm-restore'),
                 confirmButtonText: __('yes-restore'),
@@ -213,6 +212,7 @@ export default {
 
         handleShowTrashed() {
             this.shouldDisplayTrashed = !this.shouldDisplayTrashed;
+            this.$refs.table.setPage(1);
             this.$refs.table.refresh();
         },
 

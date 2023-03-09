@@ -11,8 +11,14 @@
             flex: 1;
         }
 
+        &__columns {
+            flex: 0 0 260px;
+            display: flex;
+            margin-left: auto;
+        }
+
         &__quantity-title {
-            flex: 0 0 95px;
+            flex: 1;
             margin-left: globals.$content-padding-large-vertical;
             font-size: 1rem;
             text-align: center;

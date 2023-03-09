@@ -4,13 +4,13 @@ declare(strict_types=1);
 namespace Robert2\API;
 
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Robert2\API\Config\Config;
 use Robert2\API\Errors\ErrorHandler;
-use Robert2\API\Kernel;
+use Robert2\API\Http\Request as Request;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Factory\AppFactory;
+use Slim\Factory\ServerRequestCreatorFactory;
 use Slim\Http\Response;
 use Slim\Interfaces\RouteParserInterface;
 use Slim\Routing\RouteCollectorProxy;
@@ -20,7 +20,6 @@ use Slim\Routing\RouteCollectorProxy;
  *
  * @method self add(\Psr\Http\Server\MiddlewareInterface|string|callable $middleware)
  * @method Response handle(Request $request)
- * @method void run(Request|null $request = null)
  */
 class App
 {
@@ -38,6 +37,20 @@ class App
         $this->configureCors();
     }
 
+    /**
+     * @inheritDoc
+     */
+    public function run(): void
+    {
+        // - Crée la requête.
+        ServerRequestCreatorFactory::setSlimHttpDecoratorsAutomaticDetection(false);
+        $serverRequestCreator = ServerRequestCreatorFactory::create();
+        $request = new Request($serverRequestCreator->createServerRequestFromGlobals());
+
+        // - Lance l'application.
+        $this->app->run($request);
+    }
+
     public function __call($name, $arguments)
     {
         return \call_user_func_array([$this->app, $name], $arguments);
@@ -51,13 +64,13 @@ class App
 
     protected function configureCors()
     {
-        $isCORSEnabled = (bool)$this->container->get('settings')['enableCORS'];
+        $isCORSEnabled = (bool) $this->container->get('settings')['enableCORS'];
         if (Config::getEnv() === 'test' || !$isCORSEnabled) {
             return;
         }
 
         $this->app->add(function (Request $request, RequestHandler $handler): ResponseInterface {
-            /** @var \Slim\Http\Response */
+            /** @var \Slim\Http\Response $response */
             $response = $handler->handle($request);
 
             $response = $response->withHeader('Access-Control-Allow-Origin', '*');
@@ -74,8 +87,8 @@ class App
     protected function configureRouter()
     {
         $settings = $this->container->get('settings');
-        $isCORSEnabled = (bool)$settings['enableCORS'] && Config::getEnv() !== 'test';
-        $useRouterCache = (bool)$settings['useRouterCache'] && Config::getEnv() === 'production';
+        $isCORSEnabled = (bool) $settings['enableCORS'] && Config::getEnv() !== 'test';
+        $useRouterCache = (bool) $settings['useRouterCache'] && Config::getEnv() === 'production';
         $routeCollector = $this->app->getRouteCollector();
 
         // - Ajoute le parseur de route au conteneur.
@@ -98,11 +111,11 @@ class App
         // -- Routes: Api
         //
 
-        $getActionFqdn = function ($action) {
+        $getActionFqn = function ($action) {
             return sprintf('Robert2\\API\\Controllers\\%s', $action);
         };
 
-        $this->app->group('/api', function (RouteCollectorProxy $group) use ($isCORSEnabled, $getActionFqdn) {
+        $this->app->group('/api', function (RouteCollectorProxy $group) use ($isCORSEnabled, $getActionFqn) {
             // - Autorise les requêtes de type OPTIONS sur les routes d'API.
             if ($isCORSEnabled) {
                 $group->options('/{routes:.+}', function (Request $request, Response $response) {
@@ -114,14 +127,16 @@ class App
             $routeMethods = include CONFIG_FOLDER . DS . 'routes.php';
             foreach ($routeMethods as $method => $routes) {
                 foreach ($routes as $route => $action) {
-                    $group->$method($route, $getActionFqdn($action));
+                    $group->$method($route, $getActionFqn($action));
                 }
             }
 
             // - Not found API
-            $group->any('/[{path:.*}]', function (Request $request) {
-                throw new HttpNotFoundException($request);
-            });
+            $group
+                ->any('/[{path:.*}]', function (Request $request) {
+                    throw new HttpNotFoundException($request);
+                })
+                ->setName('api-catch-not-found');
         });
 
         //
@@ -129,27 +144,25 @@ class App
         //
 
         // - Install
-        $this->app->map(['GET', 'POST'], '/install', $getActionFqdn('SetupController:index'));
-        $this->app->get('/install/end', $getActionFqdn('SetupController:endInstall'));
-
+        $this->app->map(['GET', 'POST'], '/install', $getActionFqn('SetupController:index'));
+        $this->app->get('/install/end', $getActionFqn('SetupController:endInstall'));
 
         // - "Raw" / Download files
-        $this->app->get('/bills/{id:[0-9]+}/pdf[/]', $getActionFqdn('BillController:getOnePdf'));
-        $this->app->get('/estimates/{id:[0-9]+}/pdf[/]', $getActionFqdn('EstimateController:getOnePdf'));
-        $this->app->get('/events/{id:[0-9]+}/pdf[/]', $getActionFqdn('EventController:getOnePdf'));
-        $this->app->get('/documents/{id:[0-9]+}/download[/]', $getActionFqdn('DocumentController:getOne'));
-        $this->app->get('/materials/{id:[0-9]+}/picture[/]', $getActionFqdn('MaterialController:getPicture'));
-        $this->app->get('/materials/pdf[/]', $getActionFqdn('MaterialController:getAllPdf'));
+        $this->app->get('/estimates/{id:[0-9]+}/pdf[/]', $getActionFqn('EstimateController:getOnePdf'));
+        $this->app->get('/invoices/{id:[0-9]+}/pdf[/]', $getActionFqn('InvoiceController:getOnePdf'));
+        $this->app->get('/events/{id:[0-9]+}/pdf[/]', $getActionFqn('EventController:getOnePdf'));
+        $this->app->get('/documents/{id:[0-9]+}/download[/]', $getActionFqn('DocumentController:getOne'));
+        $this->app->get('/materials/{id:[0-9]+}/picture[/]', $getActionFqn('MaterialController:getPicture'));
+        $this->app->get('/materials/pdf[/]', $getActionFqn('MaterialController:getAllPdf'));
 
-        $this->app->get('/calendar/public/{uuid:[a-z0-9-]+}.ics', $getActionFqdn('CalendarController:public'))
+        $this->app->get('/calendar/public/{uuid:[a-z0-9-]+}.ics', $getActionFqn('CalendarController:public'))
             ->setName('public-calendar');
 
         // - Login services
-        $this->app->get('/logout', $getActionFqdn('AuthController:logout'));
+        $this->app->get('/logout', $getActionFqn('AuthController:logout'));
 
-        // - All remaining non-API routes should be handled by Front-End Router
-        $this->app->get('/[{path:.*}]', $getActionFqdn('EntryController:index'))
-            ->setName('catch-all');
+        // - Points d'entrée de l'application
+        $this->app->get('/[{path:.*}]', $getActionFqn('EntryController:default'));
     }
 
     protected function configureMiddlewares()
@@ -164,7 +177,7 @@ class App
     {
         $shouldLog = Config::getEnv() !== 'test';
         $displayErrorDetails = (
-            (bool)$this->container->get('settings')['displayErrorDetails']
+            (bool) $this->container->get('settings')['displayErrorDetails']
             || in_array(Config::getEnv(), ['production', 'test'], true)
         );
 

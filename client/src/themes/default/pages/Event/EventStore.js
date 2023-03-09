@@ -1,13 +1,17 @@
 import Vuex from 'vuex';
+import Decimal from 'decimal.js';
 import isSameDate from '@/utils/isSameDate';
 
 export default new Vuex.Store({
     state: {
         title: '',
         dates: { start: null, end: null },
+        duration: null,
         location: null,
         description: null,
         materials: [],
+        totalWithoutTaxes: new Decimal(0),
+        degressiveRate: new Decimal(1),
         isConfirmed: false,
         isBillable: true,
         isSaved: false,
@@ -16,9 +20,12 @@ export default new Vuex.Store({
         reset(state) {
             state.title = '';
             state.dates = { start: null, end: null };
+            state.duration = null;
             state.location = null;
             state.description = null;
             state.materials = [];
+            state.totalWithoutTaxes = new Decimal(0);
+            state.degressiveRate = new Decimal(1);
             state.isConfirmed = false;
             state.isBillable = true;
             state.isSaved = true;
@@ -27,10 +34,13 @@ export default new Vuex.Store({
         init(state, event) {
             state.title = event.title;
             state.dates = { start: event.start_date, end: event.end_date };
+            state.duration = event.duration;
             state.location = event.location;
             state.description = event.description;
             state.isBillable = event.is_billable;
             state.materials = event.materials;
+            state.totalWithoutTaxes = event.total_without_taxes ?? new Decimal(0);
+            state.degressiveRate = event.degressive_rate ?? new Decimal(1);
             state.isConfirmed = event.is_confirmed;
         },
 

@@ -2,7 +2,7 @@ import './index.scss';
 import moment from 'moment';
 import { defineComponent } from '@vue/composition-api';
 import Datepicker from 'vue2-datepicker';
-import Fragment from '@/themes/default/components/Fragment';
+import Fragment from '@/components/Fragment';
 import * as langs from './locale';
 
 export const TYPES = ['date', 'datetime'];

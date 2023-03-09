@@ -1,5 +1,7 @@
 import './index.scss';
-import config from '@/globals/config';
+import axios from 'axios';
+import HttpCode from 'status-code-enum';
+import { ApiErrorCode } from '@/stores/api/@codes';
 import queryClient from '@/globals/queryClient';
 import apiMaterials from '@/stores/api/materials';
 import FormField from '@/themes/default/components/FormField';
@@ -26,7 +28,7 @@ export default {
             material: null,
             isFetched: false,
             isSaving: false,
-            savePogress: 0,
+            saveProgress: 0,
             criticalError: null,
             validationErrors: null,
             newPicture: undefined,
@@ -58,14 +60,8 @@ export default {
                 return this.newPicture;
             }
 
-            const { id, material } = this;
-            if (!material) {
-                return null;
-            }
-
-            return material.picture
-                ? `${config.baseUrl}/materials/${id}/picture`
-                : null;
+            const { material } = this;
+            return material?.picture;
         },
     },
     errorCaptured(error) {
@@ -115,8 +111,16 @@ export default {
                 this.material = await apiMaterials.one(id);
                 this.isFetched = true;
             } catch (error) {
-                const status = error?.response?.status ?? 500;
-                this.criticalError = status === 404 ? ERROR.NOT_FOUND : ERROR.UNKNOWN;
+                if (!axios.isAxiosError(error)) {
+                    // eslint-disable-next-line no-console
+                    console.error(`Error ocurred while retrieving material #${this.id} data`, error);
+                    this.criticalError = ERROR.UNKNOWN;
+                } else {
+                    const { status = HttpCode.ServerErrorInternal } = error.response ?? {};
+                    this.criticalError = status === HttpCode.ClientErrorNotFound
+                        ? ERROR.NOT_FOUND
+                        : ERROR.UNKNOWN;
+                }
             }
         },
 
@@ -127,7 +131,7 @@ export default {
 
             const { $t: __, id, newPicture, isNew } = this;
             this.isSaving = true;
-            this.savePogress = 0;
+            this.saveProgress = 0;
 
             const postData = { ...data };
             if (newPicture !== undefined) {
@@ -135,7 +139,7 @@ export default {
             }
 
             const handleProgress = (percent) => {
-                this.savePogress = percent;
+                this.saveProgress = percent;
             };
 
             const doRequest = () => (
@@ -157,8 +161,8 @@ export default {
                 this.$toasted.success(__('page.material-edit.saved'));
                 this.$router.push({ name: 'view-material', params: { id: material.id } });
             } catch (error) {
-                const { code, details } = error.response?.data?.error || { code: 0, details: {} };
-                if (code === 400) {
+                const { code, details } = error.response?.data?.error || { code: ApiErrorCode.UNKNOWN, details: {} };
+                if (code === ApiErrorCode.VALIDATION_FAILED) {
                     this.validationErrors = { ...details };
                     this.$refs.page.scrollToTop();
                 } else {
@@ -177,7 +181,7 @@ export default {
             picture,
             isFetched,
             isSaving,
-            savePogress,
+            saveProgress,
             validationErrors,
             handleChangePicture,
             handleSubmit,
@@ -218,7 +222,7 @@ export default {
                             <InputImage
                                 value={picture}
                                 onChange={handleChangePicture}
-                                uploading={isSaving ? savePogress : false}
+                                uploading={isSaving ? saveProgress : false}
                             />
                         </FormField>
                     </div>

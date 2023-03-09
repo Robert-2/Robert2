@@ -2,6 +2,8 @@ import './index.scss';
 import { debounce } from 'debounce';
 import queryClient from '@/globals/queryClient';
 import { DEBOUNCE_WAIT } from '@/globals/constants';
+import { ApiErrorCode } from '@/stores/api/@codes';
+import apiEvents from '@/stores/api/events';
 import eventStore from '../../EventStore';
 import MaterialsListEditor, {
     getMaterialsQuantities,
@@ -52,21 +54,20 @@ export default {
         displayError(error) {
             this.$emit('error', error);
 
-            const { code, details } = error.response?.data?.error || { code: 0, details: {} };
-            if (code === 400) {
+            const { code, details } = error.response?.data?.error || { code: ApiErrorCode.UNKNOWN, details: {} };
+            if (code === ApiErrorCode.VALIDATION_FAILED) {
                 this.errors = { ...details };
             }
         },
 
         async save({ gotoStep } = { gotoStep: 4 }) {
             this.$emit('loading');
-            const { id } = this.event;
-            const { resource } = this.$route.meta;
 
+            const { id } = this.event;
             const materials = this.materials.filter(({ quantity }) => quantity > 0);
 
             try {
-                const { data } = await this.$http.put(`${resource}/${id}`, { materials });
+                const data = await apiEvents.update(id, { materials });
                 queryClient.invalidateQueries('materials-while-event');
                 if (!gotoStep) {
                     this.$router.push('/');
@@ -98,11 +99,11 @@ export default {
                 />
                 <section class="Form__actions">
                     <button class="info" type="submit">
-                        <i class="fas fa-arrow-left" />
+                        <i class="fas fa-arrow-left" />&nbsp;
                         {__('page.event-edit.save-and-back-to-calendar')}
                     </button>
                     <button type="button" class="success" onClick={saveAndNext}>
-                        {__('page.event-edit.save-and-continue')}
+                        {__('page.event-edit.save-and-continue')}&nbsp;
                         <i class="fas fa-arrow-right" />
                     </button>
                 </section>

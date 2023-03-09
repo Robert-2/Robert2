@@ -1,8 +1,8 @@
 import './index.scss';
 import { toRefs, computed } from '@vue/composition-api';
-import Fragment from '@/themes/default/components/Fragment';
+import Fragment from '@/components/Fragment';
 import Icon from '@/themes/default/components/Icon';
-import useI18n from '@/hooks/vue/useI18n';
+import useI18n from '@/hooks/useI18n';
 
 const TYPES = ['default', 'success', 'warning', 'danger', 'primary', 'secondary'];
 
@@ -130,11 +130,16 @@ const Button = (props, { slots, emit }) => {
 
         if (to.value && !disabled.value) {
             if (external.value) {
+                const isOutside = typeof to.value === 'string' && to.value.includes('://');
+
                 return (
+                    // eslint-disable-next-line react/jsx-no-target-blank
                     <a
                         href={to.value}
                         v-tooltip={_tooltip.value}
                         class={_className.value}
+                        target={isOutside ? '_blank' : undefined}
+                        rel={isOutside ? 'noreferrer noopener' : undefined}
                     >
                         {content}
                     </a>

@@ -3,11 +3,24 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Robert2\API\Contracts\Serializable;
 use Robert2\API\Models\Traits\Serializer;
-use Robert2\API\Validation\Validator as V;
+use Respect\Validation\Validator as V;
 
-class SubCategory extends BaseModel implements Serializable
+/**
+ * Sous-catégorie de matériel.
+ *
+ * @property-read ?int $id
+ * @property string $name
+ * @property int $category_id
+ * @property-read Category $category
+ * @property-read Carbon $created_at
+ * @property-read Carbon|null $updated_at
+ *
+ * @property-read Collection|Material[] $materials
+ */
+final class SubCategory extends BaseModel implements Serializable
 {
     use Serializer;
 
@@ -18,8 +31,8 @@ class SubCategory extends BaseModel implements Serializable
         parent::__construct($attributes);
 
         $this->validation = [
-            'name' => V::callback([$this, 'checkName']),
-            'category_id' => V::notEmpty()->numeric(),
+            'name' => V::custom([$this, 'checkName']),
+            'category_id' => V::notEmpty()->numericVal(),
         ];
     }
 
@@ -101,22 +114,8 @@ class SubCategory extends BaseModel implements Serializable
 
     protected $fillable = [
         'name',
-        'category_id'
+        'category_id',
     ];
-
-    // ------------------------------------------------------
-    // -
-    // -    "Repository" methods
-    // -
-    // ------------------------------------------------------
-
-    public static function staticRemove($id, array $options = []): ?BaseModel
-    {
-        if (!static::findOrFail($id)->delete()) {
-            throw new \RuntimeException(sprintf("Unable to delete the sub-category #%d.", $id));
-        }
-        return null;
-    }
 
     // ------------------------------------------------------
     // -

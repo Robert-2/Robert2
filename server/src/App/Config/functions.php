@@ -1,11 +1,13 @@
 <?php
 declare(strict_types=1);
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\QueryException;
 use Monolog\Logger;
 use Psr\Http\Message\UploadedFileInterface;
 use Robert2\API\Kernel;
+use Respect\Validation\Validator as V;
+use Robert2\Support\Period;
 
 /**
  * Retourne le conteneur courant ou le service lié à l'id dans le conteneur si fourni.
@@ -20,33 +22,6 @@ function container(?string $id)
 {
     $container = Kernel::get()->getContainer();
     return $id ? $container->get($id) : $container;
-}
-
-/**
- * Affiche le contenu d'une variable.
- *
- * @param mixed $var Le message ou la variable à afficher.
- *
- * @codeCoverageIgnore
- */
-function dump($var): void
-{
-    $wrap = ['<pre>', '</pre>'];
-    if (in_array(PHP_SAPI, ['cli', 'phpdbg'], true)) {
-        $wrap = ["\n\033[35m", "\033[0m\n"];
-    }
-
-    echo $wrap[0];
-    if ($var instanceof Builder) {
-        echo $var->toSql();
-    } elseif (is_string($var)) {
-        echo $var;
-    } elseif (is_array($var) || is_object($var) || is_callable($var)) {
-        print_r($var);
-    } else {
-        var_dump($var);
-    }
-    echo $wrap[1];
 }
 
 /**
@@ -91,148 +66,10 @@ function debug($message, ...$vars)
  */
 function getExecutionTime(?float $start = null): string
 {
-    $start       = $start ?: (float)$_SERVER['REQUEST_TIME_FLOAT'];
+    $start       = $start ?: (float) $_SERVER['REQUEST_TIME_FLOAT'];
     $elapsedTime = microtime(true) - $start;
 
     return number_format($elapsedTime, 3) . "s";
-}
-
-/**
- * Transform any snake_case string into camelCase string
- *
- * @param string $str                   The string to transform.
- * @param bool   $capitalizeFirstLetter Wether to capitalize the first letter or not.
- *
- * @return string
- */
-function snakeToCamelCase(string $str, bool $capitalizeFirstLetter = false): string
-{
-    $string = str_replace('_', '', ucwords($str, '_'));
-
-    if (!$capitalizeFirstLetter) {
-        return lcfirst($string);
-    }
-
-    return $string;
-}
-
-/**
- * Transforme une chaîne de caractère en snake_case.
- *
- * @return string
- */
-function snakeCase(string $value): string
-{
-    if (ctype_lower($value)) {
-        return $value;
-    }
-
-    $value = preg_replace('/\s+/u', '', ucwords($value));
-    $value = preg_replace('/(.)(?=[A-Z])/u', '$1_', $value);
-    return mb_strtolower($value, 'UTF-8');
-}
-
-/**
- * Transform any spaces (normal & unbreakable) in a string into underscores
- *
- * @param string $str The string to transform.
- *
- * @return string
- */
-function slugify(string $str): string
-{
-    return preg_replace('/\s|\xc2\xa0/', '_', $str);
-}
-
-/**
- * Permet de normaliser un numéro de téléphone.
- *
- * @param string $phone Le numéro de téléphone à normaliser.
- *
- * @return string Le numéro de téléphone normalisé.
- */
-function normalizePhone(string $phone): string
-{
-    return preg_replace('/ /', '', $phone);
-}
-
-/**
- * Permet de normaliser une chaîne en caractères alphanumériques.
- *
- * @param string $string La chaîne à normaliser.
- *
- * @return string La chaîne normalisée en caractères alphanumériques.
- */
-function alphanumericalize(string $string): string
-{
-    return (new Cocur\Slugify\Slugify())
-        ->slugify($string, ['separator' => '-']);
-}
-
-/**
- * Set all empty fields of an array to null
- *
- * @param QueryException $e The PDO Exception thrown
- *
- * @return bool
- */
-function isDuplicateException(QueryException $e): bool
-{
-    if ($e->getCode() != '23000') {
-        return false;
-    }
-
-    $details = $e->getMessage();
-    $subCode = explode(' ', explode(': ', $details)[2]);
-
-    return $subCode[0] == '1062';
-}
-
-function splitPeriods(array $slots): array
-{
-    $normalizeDate = function ($date, $defaultTime) {
-        if (!($date instanceof \DateTime)) {
-            $parsedTime = date_parse($date);
-            if (!$parsedTime || $parsedTime['error_count'] > 0) {
-                throw new \InvalidArgumentException(
-                    sprintf("La date \"%s\" est invalide.", $date)
-                );
-            }
-
-            $date = new \DateTime($date);
-            if ($parsedTime['hour'] === false) {
-                $timeParts = array_map('intval', explode(':', $defaultTime));
-                call_user_func_array([$date, 'setTime'], $timeParts);
-            }
-        }
-        return $date->format('Y-m-d H:i');
-    };
-
-    $timeLine = [];
-    foreach ($slots as $slot) {
-        $timeLine[] = $normalizeDate($slot['start_date'], '00:00');
-        $timeLine[] = $normalizeDate($slot['end_date'], '23:59');
-    }
-
-    $timeLine = array_unique($timeLine);
-    $timeLineCount = count($timeLine);
-    if ($timeLineCount < 2) {
-        return [];
-    }
-
-    usort($timeLine, function ($dateTime1, $dateTime2) {
-        if ($dateTime1 === $dateTime2) {
-            return 0;
-        }
-        return strtotime($dateTime1) < strtotime($dateTime2) ? -1 : 1;
-    });
-
-    $periods = [];
-    for ($i = 0; $i < $timeLineCount - 1; $i++) {
-        $periods[] = [$timeLine[$i], $timeLine[$i + 1]];
-    }
-
-    return $periods;
 }
 
 /**
@@ -279,12 +116,12 @@ function roundDate(\DateTime $originalDate, int $precision = 15): DateTime
 
     $steps = range(0, 60, $precision);
 
-    $minutes = (int)$originalDate->format('i');
-    if (in_array($minutes, $steps)) {
+    $minutes = (int) $originalDate->format('i');
+    if (in_array($minutes, $steps, true)) {
         return $date;
     }
 
-    $hours = (int)$originalDate->format('H');
+    $hours = (int) $originalDate->format('H');
     $roundedMinutes = ((round($minutes / $precision)) * $precision) % 60;
     $date->setTime($hours, $roundedMinutes);
 
@@ -328,43 +165,57 @@ function dbTransaction(callable $callback)
 }
 
 /**
- * Permet de récupérer un sous-ensemble d'un tableau uniquement avec les clés spécifiées.
+ * Permet de récupérer une période depuis un tableau de dates.
  *
- * @param array        $array Le tableau dont on veut récupérer les clés.
- * @param array|string $keys  Les clés / La clé à récupérer dans le tableau.
+ * Si le tableau de contient pas ces clés ou que celles-ci ne sont pas valide, `null` sera retourné.
  *
- * @return array Le tableau avec uniquement les clés spécifiées (si elles existent).
+ * @param array $array - Le tableau à convertir en période, deux formats sont acceptés:
+ *                       - Soit `['start' => '[Date début]', 'end' => '[Date fin]']`.
+ *                       - Soit `['[Date début]', '[Date fin]']`.
+ *
+ * @return Period|null - La période ou `null` si le tableau était invalide.
  */
-function array_with_keys(array $array, $keys): array
+function getPeriodFromArray(array $array): ?Period
 {
-    return array_intersect_key($array, array_flip((array) $keys));
+    if (!array_key_exists('start', $array) || !array_key_exists('end', $array)) {
+        $keys = array_keys($array);
+        if (count($array) !== 2 || !is_numeric($keys[0]) || !is_numeric($keys[1])) {
+            return null;
+        }
+        $array = array_combine(['start', 'end'], array_values($array));
+    }
+
+    $dateChecker = V::notEmpty()->dateTime();
+    foreach (['start', 'end'] as $type) {
+        if (!$dateChecker->validate($array[$type])) {
+            return null;
+        }
+    }
+
+    try {
+        $start = (new Carbon($array['start']))->setTime(0, 0);
+        $end = (new Carbon($array['end']))->setTime(23, 59, 59);
+        if ($end < $start) {
+            return null;
+        }
+
+        return new Period($start, $end);
+    } catch (\Throwable $e) {
+        return null;
+    }
 }
 
 /**
- * Permet de récupérer un sous-ensemble d'un tableau sans les clés spécifiées.
+ * Traduit une clé de traduction pour la langue courante.
  *
- * @param array        $array Le tableau dont on veut récupérer les clés.
- * @param array|string $keys  Les clés / La clé à enlever du tableau.
+ * ATTENTION, cette fonction n'est à utiliser que dans de rares cas, il faut
+ * privilégier l'injection de dépendance quand c'est possible.
  *
- * @return array Le tableau sans les clés spécifiées.
+ * @param string $key La clé de traduction à utiliser
+ *
+ * @return string - La traduction, ou la clé elle-même si non trouvée.
  */
-function array_without_keys(array $array, $keys): array
+function __(string $key): string
 {
-    return array_diff_key($array, array_flip((array) $keys));
-}
-
-/**
- * Permet de mapper sur un tableau tout en ayant accès aux clés de celui-ci.
- *
- * @param callable $callback Un callback qui sera appelé avec la clé et la valeur
- *                           et qui devra retourner une nouvelle valeur pour cette clé.
- * @param array    $array    Le tableau à mapper.
- *
- * @return array Un nouveau tableau dont les valeurs seront celles retournées par le callback.
- *               (Les clés, elles, resteront inchangées)
- */
-function array_map_with_keys(callable $callback, array $array)
-{
-    $keys = array_keys($array);
-    return array_combine($keys, array_map($callback, $keys, $array));
+    return container('i18n')->translate($key);
 }

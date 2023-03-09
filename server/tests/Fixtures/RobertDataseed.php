@@ -5,19 +5,16 @@ namespace Robert2\Fixtures;
 
 use Robert2\API\Config;
 
-class RobertDataseed
+final class RobertDataseed
 {
-    public $dataseedQuery = '';
+    private string $tablePrefix;
+    private string $dataseedQuery = '';
+
+    private static array $cachedData = [];
 
     public function __construct()
     {
-        $this->pdo      = RobertFixtures::getConnection();
-        $this->dbConfig = Config\Config::getDbConfig();
-    }
-
-    public function __destruct()
-    {
-        $this->pdo = null;
+        $this->tablePrefix = Config\Config::getDbConfig()['prefix'] ?? '';
     }
 
     public function set(string $table): void
@@ -26,27 +23,35 @@ class RobertDataseed
             throw new \Exception("Missing 'table' argument.");
         }
 
-        $this->data = $this->_getData($table);
-        if (empty($this->data)) {
+        $tableQuery = sprintf("TRUNCATE `%s`;\n", $table);
+
+        $tableData = $this->_getData($table);
+        if (empty($tableData)) {
+            $this->dataseedQuery .= sprintf("%s\n", $tableQuery);
             return;
         }
 
-        $fields = implode('`,`', array_keys($this->data[0]));
+        $fields = implode('`,`', array_keys($tableData[0]));
+        $tableQuery .= vsprintf(
+            "INSERT INTO `%s` (`%s`) VALUES",
+            [$table, $fields]
+        );
 
-        $tableQuery = "INSERT INTO `$table` (`$fields`) VALUES";
-        foreach ($this->data as $entry) {
+        foreach ($tableData as $entry) {
             $values = array_map([$this, '_formatValue'], array_values($entry));
-            $values = implode(', ', $values);
-
-            $tableQuery .= "\n($values),";
+            $tableQuery .= sprintf("\n(%s),", implode(', ', $values));
         }
 
-        $this->dataseedQuery .= trim($tableQuery, ',') . ";\n";
+        $this->dataseedQuery .= sprintf("%s;\n", trim($tableQuery, ','));
     }
 
     public function getFinalQuery()
     {
-        return $this->dataseedQuery;
+        $query  = "SET FOREIGN_KEY_CHECKS=0;\n\n";
+        $query .= $this->dataseedQuery . "\n";
+        $query .= "SET FOREIGN_KEY_CHECKS=1;";
+
+        return $query;
     }
 
     // ------------------------------------------------------
@@ -55,12 +60,14 @@ class RobertDataseed
     // -
     // ------------------------------------------------------
 
-    protected function _getData($table): array
+    private function _getData($table): array
     {
-        $table = preg_replace('/^' . $this->dbConfig['prefix'] . '/', '', $table);
+        $table = preg_replace(sprintf('/^%s/', preg_quote($this->tablePrefix, '/')), '', $table);
+        if (array_key_exists($table, static::$cachedData)) {
+            return static::$cachedData[$table];
+        }
 
         $seedFilePath = sprintf('tests/Fixtures/seed/%s.json', $table);
-
         if (!is_file($seedFilePath)) {
             throw new \Exception("Missing json data seed file for model '$table'.");
         }
@@ -70,7 +77,7 @@ class RobertDataseed
             throw new \Exception("Unable to json decode data seed file.");
         }
 
-        return $seedData;
+        return static::$cachedData[$table] = $seedData;
     }
 
     private function _formatValue($value)
@@ -82,7 +89,7 @@ class RobertDataseed
         } elseif (is_bool($value)) {
             $value = sprintf('%s', $value ? 1 : 0);
         } else {
-            $value = sprintf('"%s"', addslashes((string)$value));
+            $value = sprintf('"%s"', addslashes((string) $value));
         }
         return $value;
     }

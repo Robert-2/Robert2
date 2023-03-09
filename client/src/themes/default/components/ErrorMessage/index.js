@@ -1,7 +1,9 @@
 import './index.scss';
+import HttpCode from 'status-code-enum';
 import { defineComponent } from '@vue/composition-api';
 import { getErrorMessage } from '@/utils/errors';
-import Details from './modals/Details';
+import showModal from '@/utils/showModal';
+import Modal from './modals/Details';
 
 // @vue/component
 export default defineComponent({
@@ -15,12 +17,12 @@ export default defineComponent({
         };
     },
     computed: {
-        code() {
+        statusCode() {
             const { error } = this;
             if (!error.response) {
                 return -1;
             }
-            return error.response?.status ?? 500;
+            return error.response?.status ?? HttpCode.ServerErrorInternal;
         },
 
         message() {
@@ -42,24 +44,25 @@ export default defineComponent({
                 return;
             }
             this.isDetailsModalOpened = true;
-            const { code, message, details } = this;
 
-            this.$modal.show(Details, { code, message, details }, undefined, {
-                'before-close': () => {
+            const { statusCode, message, details } = this;
+            showModal(this.$modal, Modal, {
+                ...{ statusCode, message, details },
+                onClosed: () => {
                     this.isDetailsModalOpened = false;
                 },
             });
         },
     },
     render() {
-        const { $t: __, code, message, handleShowDetails } = this;
+        const { $t: __, statusCode, message, handleShowDetails } = this;
 
         return (
             <p class="ErrorMessage">
                 <span class="ErrorMessage__message">
                     <i class="fas fa-exclamation-triangle" />&nbsp;{message}
                 </span>
-                {code === 500 && (
+                {statusCode === HttpCode.ServerErrorInternal && (
                     <a class="ErrorMessage__show-details" onClick={handleShowDetails}>
                         <i class="fas fa-external-link-alt" />&nbsp;{__('errors.show-details')}
                     </a>

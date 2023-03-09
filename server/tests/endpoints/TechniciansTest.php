@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Robert2\Tests;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
@@ -133,7 +135,7 @@ final class TechniciansTest extends ApiTestCase
     public function testGetEventNotFound()
     {
         $this->client->get('/api/technicians/999/events');
-        $this->assertNotFound();
+        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
     public function testGetEvents()
@@ -161,8 +163,8 @@ final class TechniciansTest extends ApiTestCase
                     'location' => 'Gap',
                     'is_billable' => true,
                     'is_return_inventory_done' => true,
-                    'created_at' => null,
-                    'updated_at' => null,
+                    'created_at' => '2018-12-01 12:50:45',
+                    'updated_at' => '2018-12-05 08:31:21',
                 ],
             ],
         ]);
@@ -190,8 +192,8 @@ final class TechniciansTest extends ApiTestCase
                     'location' => 'Gap',
                     'is_billable' => true,
                     'is_return_inventory_done' => true,
-                    'created_at' => null,
-                    'updated_at' => null,
+                    'created_at' => '2018-12-01 12:50:45',
+                    'updated_at' => '2018-12-05 08:31:21',
                 ],
             ],
         ]);
@@ -200,7 +202,7 @@ final class TechniciansTest extends ApiTestCase
     public function testGetOneNotFound()
     {
         $this->client->get('/api/technicians/999');
-        $this->assertNotFound();
+        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
     public function testGetOne()
@@ -214,7 +216,7 @@ final class TechniciansTest extends ApiTestCase
     {
         $this->client->post('/api/technicians');
         $this->assertStatusCode(StatusCode::STATUS_BAD_REQUEST);
-        $this->assertErrorMessage("No data was provided.");
+        $this->assertApiErrorMessage("No data was provided.");
     }
 
     public function testCreateBadData()
@@ -226,7 +228,7 @@ final class TechniciansTest extends ApiTestCase
             'email' => 'invalid',
             'nickname' => 'ilestvraimeeeentrèslongcesurnom',
         ]);
-        $this->assertValidationError([
+        $this->assertApiValidationError([
             'nickname' => ["30 max. characters"],
             'first_name' => ['This field contains some unauthorized characters'],
             'last_name' => [
@@ -241,13 +243,13 @@ final class TechniciansTest extends ApiTestCase
         $this->client->put('/api/technicians/2', [
             'first_name' => 'Tester',
             'last_name' => 'Tagger',
-            'nickname' => 'Tagz',
+            'nickname' => 'TagZz',
             'email' => 'tester2@robertmanager.net',
             'phone' => 'notAphoneNumber',
         ]);
-        $this->assertValidationError([
+        $this->assertApiValidationError([
             'email' => ['This email address is already in use'],
-            'phone' => ['This telephone number is not valid']
+            'phone' => ['This telephone number is not valid'],
         ]);
     }
 
@@ -329,7 +331,7 @@ final class TechniciansTest extends ApiTestCase
     public function testRestoreNotFound()
     {
         $this->client->put('/api/technicians/restore/999');
-        $this->assertNotFound();
+        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
     public function testRestore()

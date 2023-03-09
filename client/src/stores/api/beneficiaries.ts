@@ -2,13 +2,13 @@ import requester from '@/globals/requester';
 
 import type { Company } from '@/stores/api/companies';
 import type { Country } from '@/stores/api/countries';
-import type { PaginatedData, PaginationParams } from './@types';
+import type { User } from '@/stores/api/users';
+import type { PaginatedData, ListingParams } from './@types';
 
 //
 // - Types
 //
 
-/* eslint-disable @typescript-eslint/naming-convention */
 export type Beneficiary = {
     id: number,
     first_name: string,
@@ -28,6 +28,10 @@ export type Beneficiary = {
     user_id: number | null,
 };
 
+export type BeneficiaryDetails = Beneficiary & {
+    user: User | null,
+};
+
 export type BeneficiaryEdit = {
     first_name: string,
     last_name: string,
@@ -41,9 +45,8 @@ export type BeneficiaryEdit = {
     country_id: number | null,
     note: string | null,
 };
-/* eslint-enable @typescript-eslint/naming-convention */
 
-type GetAllParams = PaginationParams & { deleted?: boolean };
+type GetAllParams = ListingParams & { deleted?: boolean };
 
 //
 // - Fonctions
@@ -53,19 +56,19 @@ const all = async (params: GetAllParams): Promise<PaginatedData<Beneficiary[]>> 
     (await requester.get('/beneficiaries', { params })).data
 );
 
-const one = async (id: Beneficiary['id']): Promise<Beneficiary> => (
+const one = async (id: Beneficiary['id']): Promise<BeneficiaryDetails> => (
     (await requester.get(`/beneficiaries/${id}`)).data
 );
 
-const create = async (data: BeneficiaryEdit): Promise<Beneficiary> => (
+const create = async (data: BeneficiaryEdit): Promise<BeneficiaryDetails> => (
     (await requester.post('/beneficiaries', data)).data
 );
 
-const update = async (id: Beneficiary['id'], data: BeneficiaryEdit): Promise<Beneficiary> => (
+const update = async (id: Beneficiary['id'], data: BeneficiaryEdit): Promise<BeneficiaryDetails> => (
     (await requester.put(`/beneficiaries/${id}`, data)).data
 );
 
-const restore = async (id: Beneficiary['id']): Promise<Beneficiary> => (
+const restore = async (id: Beneficiary['id']): Promise<BeneficiaryDetails> => (
     (await requester.put(`/beneficiaries/restore/${id}`)).data
 );
 

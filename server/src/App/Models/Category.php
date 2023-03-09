@@ -3,11 +3,27 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Robert2\API\Contracts\Serializable;
-use Robert2\API\Validation\Validator as V;
+use Respect\Validation\Validator as V;
 use Robert2\API\Models\Traits\Serializer;
 
-class Category extends BaseModel implements Serializable
+/**
+ * Catégorie de matériel.
+ *
+ * @property-read ?int $id
+ * @property string $name
+ * @property-read bool $has_sub_categories
+ * @property-read Carbon $created_at
+ * @property-read Carbon|null $updated_at
+ *
+ * @property-read Collection|SubCategory[] $subCategories
+ * @property-read Collection|SubCategory[] $sub_categories
+ * @property-read Collection|Material[] $materials
+ * @property-read Collection|Attribute[] $attributes
+ * @property-read Collection|User[] $approvers
+ */
+final class Category extends BaseModel implements Serializable
 {
     use Serializer;
 
@@ -16,7 +32,7 @@ class Category extends BaseModel implements Serializable
         parent::__construct($attributes);
 
         $this->validation = [
-            'name' => V::callback([$this, 'checkName']),
+            'name' => V::custom([$this, 'checkName']),
         ];
     }
 
@@ -64,7 +80,6 @@ class Category extends BaseModel implements Serializable
     public function attributes()
     {
         return $this->belongsToMany(Attribute::class, 'attribute_categories')
-            ->using(AttributeCategoriesPivot::class)
             ->select([
                 'attributes.id',
                 'attributes.name',
@@ -85,22 +100,12 @@ class Category extends BaseModel implements Serializable
 
     public function getSubCategoriesAttribute()
     {
-        return $this->subCategories()->get();
+        return $this->getRelationValue('subCategories');
     }
 
-    // ------------------------------------------------------
-    // -
-    // -    Getters
-    // -
-    // ------------------------------------------------------
-
-    public static function hasSubCategories(int $id): bool
+    public function getHasSubCategoriesAttribute(): bool
     {
-        $category = static::find($id);
-        if (!$category) {
-            return false;
-        }
-        return $category->sub_categories->isNotEmpty();
+        return $this->subCategories->isNotEmpty();
     }
 
     // ------------------------------------------------------
@@ -143,14 +148,6 @@ class Category extends BaseModel implements Serializable
             }
             return $categories;
         });
-    }
-
-    public static function staticRemove($id, array $options = []): ?BaseModel
-    {
-        if (!static::findOrFail($id)->delete()) {
-            throw new \RuntimeException(sprintf("Unable to delete the category #%d.", $id));
-        }
-        return null;
     }
 
     // ------------------------------------------------------

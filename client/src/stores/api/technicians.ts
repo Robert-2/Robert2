@@ -1,14 +1,13 @@
 import requester from '@/globals/requester';
 
-import type { PaginatedData, PaginationParams } from '@/stores/api/@types';
+import type { PaginatedData, ListingParams } from '@/stores/api/@types';
 import type { Country } from '@/stores/api/countries';
-import type { BaseEvent } from './events';
+import type { Event } from './events';
 
 //
 // - Types
 //
 
-/* eslint-disable @typescript-eslint/naming-convention */
 export type Technician = {
     id: number,
     first_name: string,
@@ -39,9 +38,8 @@ export type TechnicianEdit = {
     country_id: number | null,
     note: string | null,
 };
-/* eslint-enable @typescript-eslint/naming-convention */
 
-type GetAllParams = PaginationParams & { deleted?: boolean };
+type GetAllParams = ListingParams & { deleted?: boolean };
 
 //
 // - Fonctions
@@ -51,7 +49,7 @@ const all = async (params: GetAllParams): Promise<PaginatedData<Technician[]>> =
     (await requester.get('/technicians', { params })).data
 );
 
-const allWhileEvent = async (eventId: BaseEvent['id']): Promise<Technician[]> => (
+const allWhileEvent = async (eventId: Event['id']): Promise<Technician[]> => (
     (await requester.get(`/technicians/while-event/${eventId}`)).data
 );
 

@@ -40,7 +40,7 @@ export default {
         async handleDeleteDocument(file) {
             const { $t: __ } = this;
 
-            const { value: isConfirmed } = await confirm({
+            const isConfirmed = await confirm({
                 type: 'danger',
                 text: __('page.material-view.documents.confirm-permanently-delete'),
                 confirmButtonText: __('yes-permanently-delete'),

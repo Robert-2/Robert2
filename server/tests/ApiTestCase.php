@@ -6,7 +6,9 @@ namespace Robert2\Tests;
 use Adbar\Dot as DotArray;
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Robert2\API\App;
+use Robert2\API\Errors\Enums\ApiErrorCode;
 use Robert2\API\Kernel;
+use Robert2\API\Services\Auth;
 
 class ApiTestCase extends TestCase
 {
@@ -31,6 +33,7 @@ class ApiTestCase extends TestCase
     {
         parent::tearDown();
 
+        Auth::reset();
         Kernel::reset();
     }
 
@@ -49,55 +52,107 @@ class ApiTestCase extends TestCase
             $response = $this->_getResponseAsArray();
             $message = sprintf(
                 "%s, in %s\n",
-                $response['error']['message'],
-                $response['error']['debug']['file']
+                $response['error']['message'] ?? 'Unknown error',
+                $response['error']['debug']['file'] ?? 'Unknown'
             );
-            throw new \Exception($message, (int)$response['error']['code']);
+            throw new \Exception($message, (int) $response['error']['code']);
         }
 
-        $this->assertEquals($expectedCode, $this->_getStatusCode());
+        $this->assertEquals($expectedCode, $actualCode);
     }
 
-    public function assertErrorMessage(string $message): void
+    public function assertApiError($code, ?string $message = null): void
     {
         $result = $this->_getResponseAsArray();
-        if (!isset($result['error']['message'])) {
-            $this->fail(sprintf(
-                "No expected error message. Actual output:\n%s",
+
+        foreach (['success', 'error'] as $key) {
+            $this->assertArrayHasKey($key, $result, sprintf(
+                "The expected error payload is missing. Actual output:\n%s",
                 json_encode($result, JSON_PRETTY_PRINT)
             ));
         }
-        $this->assertEquals($message, $result['error']['message']);
+
+        $this->assertFalse($result['success']);
+        $this->assertApiErrorCode($code);
+        if ($message !== null) {
+            $this->assertApiErrorMessage($message);
+        }
     }
 
-    public function assertNotFound(): void
+    public function assertApiErrorCode($code): void
     {
-        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
-        $this->assertErrorMessage("Not found.");
+        $result = $this->_getResponseAsArray();
+
+        if (!isset($result['error']['code'])) {
+            $this->fail(sprintf(
+                "The expected error code is missing. Actual output:\n%s",
+                json_encode($result, JSON_PRETTY_PRINT)
+            ));
+        }
+
+        $resultCode = $result['error']['code'];
+        $this->assertSame(
+            $code,
+            $resultCode,
+            // phpcs:ignore Generic.Files.LineLength
+            sprintf("The API error code does not match the expected one (got %s instead of %s).\n", $resultCode, $code) .
+            sprintf("Full output:\n%s", json_encode($result, JSON_PRETTY_PRINT))
+        );
     }
 
-    public function assertValidationError($details = null): void
+    public function assertApiErrorMessage(string $message): void
+    {
+        $result = $this->_getResponseAsArray();
+
+        if (!isset($result['error']['message'])) {
+            $this->fail(sprintf(
+                "The expected error message is missing. Actual output:\n%s",
+                json_encode($result, JSON_PRETTY_PRINT)
+            ));
+        }
+
+        $resultMessage = $result['error']['message'];
+        $this->assertSame(
+            $message,
+            $resultMessage,
+            sprintf(
+                "The API error message does not match the expected one (got \"%s\" instead of \"%s\").\n",
+                is_string($resultMessage) ? $resultMessage : var_export($resultMessage, true),
+                $message
+            ) .
+            sprintf("Full output:\n%s", json_encode($result, JSON_PRETTY_PRINT))
+        );
+    }
+
+    public function assertApiValidationError($details = null): void
     {
         $this->assertStatusCode(StatusCode::STATUS_BAD_REQUEST);
-        $this->assertErrorMessage("Validation failed. See error[details] for more informations.");
+        $this->assertApiErrorCode(ApiErrorCode::VALIDATION_FAILED);
 
         if ($details !== null) {
             $result = $this->_getResponseAsArray();
-            $this->assertEquals($details, $result['error']['details']);
+            $this->assertSameCanonicalize($details, $result['error']['details']);
         }
     }
 
-    public function assertResponseData(array $expectedData, array $fakeTestFields = []): void
+    public function assertResponseData(array $expectedData): void
     {
         $response = $this->_getResponseAsArray();
+        $this->assertSameCanonicalize($expectedData, $response);
+    }
 
-        foreach ($fakeTestFields as $field) {
-            if (isset($response[$field])) {
-                $response[$field] = '__FAKE_TEST_PLACEHOLDER__';
-            }
-        }
+    public function assertResponseHasKey(string $path): void
+    {
+        $response = new DotArray($this->_getResponseAsArray());
 
-        $this->assertEquals($expectedData, $response);
+        $this->assertTrue($response->has($path), sprintf("La clé \"%s\" n'existe pas dans la réponse.", $path));
+    }
+
+    public function assertResponseHasNotKey(string $path): void
+    {
+        $response = new DotArray($this->_getResponseAsArray());
+
+        $this->assertFalse($response->has($path), sprintf("La clé \"%s\" existe dans la réponse.", $path));
     }
 
     public function assertResponseHasKeyEquals(string $path, $expectedValue): void
@@ -105,7 +160,7 @@ class ApiTestCase extends TestCase
         $response = new DotArray($this->_getResponseAsArray());
 
         $this->assertTrue($response->has($path), sprintf("La clé \"%s\" n'existe pas dans la réponse.", $path));
-        $this->assertEquals($expectedValue, $response->get($path));
+        $this->assertSameCanonicalize($expectedValue, $response->get($path));
     }
 
     public function assertResponseHasKeyNotEquals(string $path, $expectedValue): void
@@ -113,10 +168,10 @@ class ApiTestCase extends TestCase
         $response = new DotArray($this->_getResponseAsArray());
 
         $this->assertTrue($response->has($path), sprintf("La clé \"%s\" n'existe pas dans la réponse.", $path));
-        $this->assertNotEquals($expectedValue, $response->get($path));
+        $this->assertNotSameCanonicalize($expectedValue, $response->get($path));
     }
 
-    public function assertResponsePaginatedData(int $totalCount, $expectedData = null, array $fakeTestFields = []): void
+    public function assertResponsePaginatedData(int $totalCount, $expectedData = null): void
     {
         $response = new DotArray($this->_getResponseAsArray());
 
@@ -128,16 +183,11 @@ class ApiTestCase extends TestCase
         $data = $response->get('data');
 
         // - Vérifie les données de pagination.
-        $this->assertEquals($totalCount, $response->get('pagination.total.items'));
+        $this->assertSame($totalCount, $response->get('pagination.total.items'));
 
         // - Vérifie les données paginées (optionnel).
         if ($expectedData !== null) {
-            foreach ($fakeTestFields as $field) {
-                if (isset($$data[$field])) {
-                    $data[$field] = '__FAKE_TEST_PLACEHOLDER__';
-                }
-            }
-            $this->assertEquals($expectedData, $data);
+            $this->assertSameCanonicalize($expectedData, $data);
         }
     }
 
@@ -157,7 +207,7 @@ class ApiTestCase extends TestCase
 
     protected function _getResponseAsArray(): ?array
     {
-        $response = (string)$this->client->response->getBody();
+        $response = (string) $this->client->response->getBody();
 
         return json_decode($response, true);
     }

@@ -1,6 +1,6 @@
 import './index.scss';
 import moment from 'moment';
-import Fragment from '@/themes/default/components/Fragment';
+import Fragment from '@/components/Fragment';
 import Page from '@/themes/default/components/Page';
 import CriticalError from '@/themes/default/components/CriticalError';
 import Button from '@/themes/default/components/Button';
@@ -14,7 +14,7 @@ import initColumnsDisplay from '@/utils/initColumnsDisplay';
 export default {
     name: 'Technicians',
     data() {
-        const { $t: __, $route, $options } = this;
+        const { $t: __, $options } = this;
 
         return {
             hasCriticalError: false,
@@ -41,7 +41,6 @@ export default {
                 preserveState: true,
                 saveState: true,
                 orderBy: { column: 'full_name', ascending: true },
-                initialPage: $route.query.page || 1,
                 sortable: ['full_name', 'nickname', 'email'],
                 columnsDisplay: initColumnsDisplay($options.name, {
                     full_name: true,
@@ -181,11 +180,12 @@ export default {
         handleClearFilters() {
             this.periodFilter = null;
         },
+
         async handleDeleteItem(id) {
             const { $t: __ } = this;
             const isSoft = !this.isTrashDisplayed;
 
-            const { value: isConfirmed } = await confirm({
+            const isConfirmed = await confirm({
                 type: isSoft ? 'warning' : 'danger',
 
                 text: isSoft
@@ -215,7 +215,7 @@ export default {
         async handleRestoreItem(id) {
             const { $t: __ } = this;
 
-            const { value: isConfirmed } = await confirm({
+            const isConfirmed = await confirm({
                 type: 'restore',
                 text: __('page.technicians.confirm-restore'),
                 confirmButtonText: __('yes-restore'),
@@ -238,6 +238,7 @@ export default {
 
         handleShowTrashed() {
             this.shouldDisplayTrashed = !this.shouldDisplayTrashed;
+            this.$refs.table.setPage(1);
             this.$refs.table.refresh();
         },
 

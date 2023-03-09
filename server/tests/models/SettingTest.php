@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Robert2\Tests;
 
 use Robert2\API\Models\Setting;
-use Robert2\API\Errors\ValidationException;
+use Robert2\API\Errors\Exception\ValidationException;
 
 final class SettingTest extends TestCase
 {
@@ -63,28 +63,12 @@ final class SettingTest extends TestCase
         $result = Setting::get()->toArray();
         $expected = [
             [
-                'key' => 'eventSummary.materialDisplayMode',
-                'value' => 'categories',
-            ],
-            [
-                'key' => 'eventSummary.customText.title',
-                'value' => "Contrat",
-            ],
-            [
-                'key' => 'eventSummary.customText.content',
-                'value' => "Un petit contrat de test.",
-            ],
-            [
-                'key' => 'eventSummary.showLegalNumbers',
-                'value' => true,
+                'key' => 'calendar.event.showBorrower',
+                'value' => false,
             ],
             [
                 'key' => 'calendar.event.showLocation',
                 'value' => true,
-            ],
-            [
-                'key' => 'calendar.event.showBorrower',
-                'value' => false,
             ],
             [
                 'key' => 'calendar.public.enabled',
@@ -93,6 +77,22 @@ final class SettingTest extends TestCase
             [
                 'key' => 'calendar.public.uuid',
                 'value' => 'dfe7cd82-52b9-4c9b-aaed-033df210f23b',
+            ],
+            [
+                'key' => 'eventSummary.customText.content',
+                'value' => "Un petit contrat de test.",
+            ],
+            [
+                'key' => 'eventSummary.customText.title',
+                'value' => "Contrat",
+            ],
+            [
+                'key' => 'eventSummary.materialDisplayMode',
+                'value' => 'categories',
+            ],
+            [
+                'key' => 'eventSummary.showLegalNumbers',
+                'value' => true,
             ],
         ];
         $this->assertEquals($expected, $result);
@@ -128,14 +128,12 @@ final class SettingTest extends TestCase
     public function testUpdateBadKey(): void
     {
         $this->expectException(ValidationException::class);
-        $this->expectExceptionCode(ERROR_VALIDATION);
         Setting::staticEdit(null, ['inexistant' => 'some-text']);
     }
 
     public function testUpdateBadValue(): void
     {
         $this->expectException(ValidationException::class);
-        $this->expectExceptionCode(ERROR_VALIDATION);
         Setting::staticEdit(null, ['eventSummary.materialDisplayMode' => 'not-valid']);
     }
 
@@ -189,15 +187,8 @@ final class SettingTest extends TestCase
 
     public function testRemove(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(\LogicException::class);
         $this->expectExceptionMessage("Settings cannot be deleted.");
-        Setting::staticRemove(1);
-    }
-
-    public function testUnremove(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage("Settings cannot be restored.");
-        Setting::staticUnremove(1);
+        Setting::findOrFail('calendar.public.enabled')->delete();
     }
 }

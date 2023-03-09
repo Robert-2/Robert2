@@ -1,13 +1,16 @@
 import './index.scss';
+import axios from 'axios';
+import HttpCode from 'status-code-enum';
 import { computed, ref, onMounted } from '@vue/composition-api';
-import useI18n from '@/hooks/vue/useI18n';
-import useRouteId from '@/hooks/vue/useRouteId';
-import useRouter from '@/hooks/vue/useRouter';
+import useI18n from '@/hooks/useI18n';
+import useRouteId from '@/hooks/useRouteId';
+import useRouter from '@/hooks/useRouter';
 import Page from '@/themes/default/components/Page';
 import CriticalError, { ERROR } from '@/themes/default/components/CriticalError';
 import Loading from '@/themes/default/components/Loading';
 import Form from './components/Form';
 import apiParks from '@/stores/api/parks';
+import { ApiErrorCode } from '@/stores/api/@codes';
 
 // @vue/component
 const ParkEditPage = (props, { root }) => {
@@ -38,8 +41,16 @@ const ParkEditPage = (props, { root }) => {
             park.value = await apiParks.one(id.value);
             isFetched.value = true;
         } catch (error) {
-            const status = error?.response?.status ?? 500;
-            criticalError.value = status === 404 ? ERROR.NOT_FOUND : ERROR.UNKNOWN;
+            if (!axios.isAxiosError(error)) {
+                // eslint-disable-next-line no-console
+                console.error(`Error ocurred while retrieving park #${id.value} data`, error);
+                criticalError.value = ERROR.UNKNOWN;
+            } else {
+                const { status = HttpCode.ServerErrorInternal } = error.response ?? {};
+                criticalError.value = status === HttpCode.ClientErrorNotFound
+                    ? ERROR.NOT_FOUND
+                    : ERROR.UNKNOWN;
+            }
         }
     };
 
@@ -68,8 +79,8 @@ const ParkEditPage = (props, { root }) => {
             root.$toasted.success(__('page.park.saved'));
             router.replace({ name: 'parks' });
         } catch (error) {
-            const { code, details } = error.response?.data?.error || { code: 0, details: {} };
-            if (code === 400) {
+            const { code, details } = error.response?.data?.error || { code: ApiErrorCode.UNKNOWN, details: {} };
+            if (code === ApiErrorCode.VALIDATION_FAILED) {
                 validationErrors.value = { ...details };
                 pageRef.value.scrollToTop();
             } else {

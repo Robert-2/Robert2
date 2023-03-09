@@ -2,8 +2,7 @@ import './index.scss';
 import moment from 'moment';
 import config from '@/globals/config';
 import formatAmount from '@/utils/formatAmount';
-import getEventOneDayTotal from '@/utils/getEventOneDayTotal';
-import getEventGrandTotal from '@/utils/getEventGrandTotal';
+import Icon from '@/themes/default/components/Icon';
 import EventStore from '../../EventStore';
 
 // @vue/component
@@ -12,8 +11,10 @@ export default {
     computed: {
         title() { return EventStore.state.title; },
         dates() { return EventStore.state.dates; },
+        duration() { return EventStore.state.duration; },
         location() { return EventStore.state.location; },
-        materials() { return EventStore.state.materials; },
+        totalWithoutTaxes() { return EventStore.state.totalWithoutTaxes; },
+        degressiveRate() { return EventStore.state.degressiveRate; },
         isConfirmed() { return EventStore.state.isConfirmed; },
         isSaved() { return EventStore.state.isSaved; },
 
@@ -28,25 +29,67 @@ export default {
                 to: end ? moment(end).format('L') : '',
             };
         },
-
-        duration() {
-            const { start, end } = this.dates;
-            return start && end ? moment(end).diff(start, 'days') + 1 : 0;
-        },
-
-        ratio() {
-            return config.degressiveRate(this.duration);
-        },
-
-        grandTotal() {
-            const total = getEventOneDayTotal(this.materials);
-            const grandTotal = getEventGrandTotal(total, this.duration);
-            return formatAmount(grandTotal);
-        },
     },
-    methods: {
-        formatAmount(amount) {
-            return formatAmount(amount);
-        },
+    render() {
+        const {
+            $t: __,
+            isConfirmed,
+            isSaved,
+            title,
+            location,
+            duration,
+            fromToDates,
+            dates,
+            showPrices,
+            totalWithoutTaxes,
+            degressiveRate,
+        } = this;
+
+        return (
+            <div
+                class={['EventMiniSummary', {
+                    'EventMiniSummary--confirmed': isConfirmed,
+                    'EventMiniSummary--not-saved': !isSaved,
+                }]}
+            >
+                {!isSaved && (
+                    <div
+                        v-tooltip={{ placement: 'right-end', content: __('page.event-edit.not-saved') }}
+                        class="EventMiniSummary__not-saved"
+                    >
+                        <Icon name="exclamation-triangle" />
+                    </div>
+                )}
+                {!!title && (
+                    <div class="EventMiniSummary__title">
+                        {title}
+                    </div>
+                )}
+                {!!location && (
+                    <div class="EventMiniSummary__detail">{__('in', { location })}</div>
+                )}
+                {(!!dates.start && !!dates.end) && (
+                    <div class="EventMiniSummary__detail">
+                        {duration === 1 && __('on-date', { date: fromToDates.from })}
+                        {duration > 1 && __('from-date-to-date', fromToDates)}
+                        <br />
+                        {__('duration-days', { duration }, duration)}
+                        {showPrices && <div>{__('ratio')} {degressiveRate.toString()}</div>}
+                    </div>
+                )}
+                {showPrices && (
+                    <div class="EventMiniSummary__total">
+                        {__('total')} <strong>{formatAmount(totalWithoutTaxes.toNumber())}</strong>
+                    </div>
+                )}
+                <div class="EventMiniSummary__detail">
+                    <Icon
+                        name={isConfirmed ? 'check' : 'question-circle'}
+                        class="EventMiniSummary__status-icon"
+                    />
+                    {isConfirmed ? __('confirmed') : __('not-confirmed')}
+                </div>
+            </div>
+        );
     },
 };

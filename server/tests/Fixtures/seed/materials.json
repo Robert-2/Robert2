@@ -14,6 +14,7 @@
         "replacement_price": 19400,
         "is_hidden_on_bill": false,
         "is_discountable": false,
+        "is_reservable": true,
         "picture": "IMG-20210511-0001.jpg",
         "note": null
     },
@@ -32,6 +33,7 @@
         "replacement_price": 349.9,
         "is_hidden_on_bill": false,
         "is_discountable": true,
+        "is_reservable": false,
         "picture": null,
         "note": null
     },
@@ -50,6 +52,7 @@
         "replacement_price": 89,
         "is_hidden_on_bill": false,
         "is_discountable": true,
+        "is_reservable": true,
         "picture": null,
         "note": "Soyez délicats avec ces projos !"
     },
@@ -68,6 +71,7 @@
         "replacement_price": 59,
         "is_hidden_on_bill": false,
         "is_discountable": true,
+        "is_reservable": true,
         "picture": null,
         "note": null
     },
@@ -86,6 +90,7 @@
         "replacement_price": 9.5,
         "is_hidden_on_bill": true,
         "is_discountable": true,
+        "is_reservable": true,
         "picture": null,
         "note": null
     },
@@ -104,6 +109,7 @@
         "replacement_price": 419,
         "is_hidden_on_bill": false,
         "is_discountable": false,
+        "is_reservable": true,
         "picture": null,
         "note": null
     },
@@ -122,6 +128,7 @@
         "replacement_price": 32000,
         "is_hidden_on_bill": false,
         "is_discountable": false,
+        "is_reservable": true,
         "picture": null,
         "note": null
     },
@@ -140,6 +147,7 @@
         "replacement_price": 8500,
         "is_hidden_on_bill": false,
         "is_discountable": true,
+        "is_reservable": true,
         "picture": null,
         "note": null
     }

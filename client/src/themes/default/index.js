@@ -10,7 +10,7 @@ import Toasted from 'vue-toasted';
 
 import config from '@/globals/config';
 import requester from '@/globals/requester';
-import store from '@/globals/store';
+import store from '@/themes/default/globals/store';
 import router from '@/themes/default/globals/router';
 import translations from '@/themes/default/locale';
 import vueTableTranslations from '@/themes/default/locale/vendors/vue-tables';
@@ -21,7 +21,7 @@ Vue.config.productionTip = false;
 // - Vue Composition API
 Vue.use(vueCompositionApî);
 
-// - HTTP (ajax) lib
+// - HTTP (Ajax) lib
 Vue.prototype.$http = requester;
 
 // - Modal

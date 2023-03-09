@@ -19,4 +19,23 @@ class Group
 
     /** Représente le groupe des visiteurs. */
     public const VISITOR = 'visitor';
+
+    /** Représente le groupe des externes (= Pas d'accès à l'administration). */
+    public const EXTERNAL = 'external';
+
+    // ------------------------------------------------------
+    // -
+    // -    Public methods
+    // -
+    // ------------------------------------------------------
+
+    public static function all(): array
+    {
+        return [
+            Group::EXTERNAL,
+            Group::VISITOR,
+            Group::MEMBER,
+            Group::ADMIN,
+        ];
+    }
 }

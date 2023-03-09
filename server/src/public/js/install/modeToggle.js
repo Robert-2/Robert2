@@ -1,6 +1,6 @@
-var degressiveRateField = document.getElementById('degressiveRateField');
+const $degressiveRateField = document.querySelector('#degressiveRateField');
 
-function handleBillingModeChange(input) {
-    var display = input.value === 'none' ? 'none' : 'block';
-    degressiveRateField.style.display = display;
+function handleBillingModeChange($input) {
+    const display = $input.value === 'none' ? 'none' : 'block';
+    $degressiveRateField.style.display = display;
 }

@@ -1,19 +1,21 @@
 <?php
+declare(strict_types=1);
+
 use Phinx\Migration\AbstractMigration;
 
-class CreateEvents extends AbstractMigration
+final class CreateEvents extends AbstractMigration
 {
     public function up()
     {
-        $table = $this->table('events');
+        $table = $this->table('events', ['signed' => true]);
         $table
-            ->addColumn('user_id', 'integer')
-            ->addColumn('title', 'string', ['length' => 191])
+            ->addColumn('user_id', 'integer', ['signed' => true, 'null' => false])
+            ->addColumn('title', 'string', ['length' => 191, 'null' => false])
             ->addColumn('description', 'string', ['length' => 255, 'null' => true])
-            ->addColumn('start_date', 'datetime')
-            ->addColumn('end_date', 'datetime')
-            ->addColumn('is_confirmed', 'boolean', ['default' => false])
-            ->addColumn('location', 'string', ['length' => 64])
+            ->addColumn('start_date', 'datetime', ['null' => false])
+            ->addColumn('end_date', 'datetime', ['null' => false])
+            ->addColumn('is_confirmed', 'boolean', ['default' => false, 'null' => false])
+            ->addColumn('location', 'string', ['length' => 64, 'null' => false])
             ->addColumn('created_at', 'datetime', ['null' => true])
             ->addColumn('updated_at', 'datetime', ['null' => true])
             ->addColumn('deleted_at', 'datetime', ['null' => true])
@@ -21,61 +23,61 @@ class CreateEvents extends AbstractMigration
             ->addForeignKey('user_id', 'users', 'id', [
                 'delete' => 'RESTRICT',
                 'update' => 'NO_ACTION',
-                'constraint' => 'fk_events_users'
+                'constraint' => 'fk_events_users',
             ])
             ->create();
 
-        $table = $this->table('event_materials');
+        $table = $this->table('event_materials', ['signed' => true]);
         $table
-            ->addColumn('event_id', 'integer')
-            ->addColumn('material_id', 'integer')
+            ->addColumn('event_id', 'integer', ['signed' => true, 'null' => false])
+            ->addColumn('material_id', 'integer', ['signed' => true, 'null' => false])
             ->addIndex(['event_id'])
             ->addForeignKey('event_id', 'events', 'id', [
                 'delete' => 'CASCADE',
                 'update' => 'NO_ACTION',
-                'constraint' => 'fk_event_materials_event'
+                'constraint' => 'fk_event_materials_event',
             ])
             ->addIndex(['material_id'])
             ->addForeignKey('material_id', 'materials', 'id', [
                 'delete' => 'CASCADE',
                 'update' => 'NO_ACTION',
-                'constraint' => 'fk_event_materials_material'
+                'constraint' => 'fk_event_materials_material',
             ])
             ->create();
 
-        $table = $this->table('event_assignees');
+        $table = $this->table('event_assignees', ['signed' => true]);
         $table
-            ->addColumn('event_id', 'integer')
-            ->addColumn('person_id', 'integer')
+            ->addColumn('event_id', 'integer', ['signed' => true, 'null' => false])
+            ->addColumn('person_id', 'integer', ['signed' => true, 'null' => false])
             ->addIndex(['event_id'])
             ->addForeignKey('event_id', 'events', 'id', [
                 'delete' => 'CASCADE',
                 'update' => 'NO_ACTION',
-                'constraint' => 'fk_event_assignees_event'
+                'constraint' => 'fk_event_assignees_event',
             ])
             ->addIndex(['person_id'])
             ->addForeignKey('person_id', 'persons', 'id', [
                 'delete' => 'CASCADE',
                 'update' => 'NO_ACTION',
-                'constraint' => 'fk_event_assignees_person'
+                'constraint' => 'fk_event_assignees_person',
             ])
             ->create();
 
-        $table = $this->table('event_beneficiaries');
+        $table = $this->table('event_beneficiaries', ['signed' => true]);
         $table
-            ->addColumn('event_id', 'integer')
-            ->addColumn('person_id', 'integer')
+            ->addColumn('event_id', 'integer', ['signed' => true, 'null' => false])
+            ->addColumn('person_id', 'integer', ['signed' => true, 'null' => false])
             ->addIndex(['event_id'])
             ->addForeignKey('event_id', 'events', 'id', [
                 'delete' => 'CASCADE',
                 'update' => 'NO_ACTION',
-                'constraint' => 'fk_event_beneficiaries_event'
+                'constraint' => 'fk_event_beneficiaries_event',
             ])
             ->addIndex(['person_id'])
             ->addForeignKey('person_id', 'persons', 'id', [
                 'delete' => 'CASCADE',
                 'update' => 'NO_ACTION',
-                'constraint' => 'fk_event_beneficiaries_person'
+                'constraint' => 'fk_event_beneficiaries_person',
             ])
             ->create();
     }

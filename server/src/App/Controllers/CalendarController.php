@@ -3,18 +3,19 @@ declare(strict_types=1);
 
 namespace Robert2\API\Controllers;
 
-use Fig\Http\Message\StatusCodeInterface as StatusCode;
-use Robert2\API\Config\Config;
-use Robert2\API\Models\Event;
-use Robert2\API\Models\Setting;
-use Slim\Exception\HttpNotFoundException;
-use Slim\Http\Response;
-use Slim\Http\ServerRequest as Request;
+use Carbon\Carbon;
 use Eluceo\iCal\Domain\Entity\Calendar as Calendar;
 use Eluceo\iCal\Domain\Entity\Event as CalendarEvent;
 use Eluceo\iCal\Domain\Entity\TimeZone as CalendarTimeZone;
 use Eluceo\iCal\Domain\ValueObject as CalendarValue;
 use Eluceo\iCal\Presentation\Factory\CalendarFactory;
+use Fig\Http\Message\StatusCodeInterface as StatusCode;
+use Robert2\API\Config\Config;
+use Robert2\API\Http\Request;
+use Robert2\API\Models\Event;
+use Robert2\API\Models\Setting;
+use Slim\Exception\HttpNotFoundException;
+use Slim\Http\Response;
 use Slim\Psr7\Factory\StreamFactory;
 
 class CalendarController extends BaseController
@@ -23,20 +24,26 @@ class CalendarController extends BaseController
     {
         $uuid = $request->getAttribute('uuid');
         $settings = Setting::getWithKey('calendar.public');
+        $apiUrl = trim(Config::getSettings('apiUrl'), '/');
         if (!$settings['enabled'] || !$uuid || $uuid !== $settings['uuid']) {
             throw new HttpNotFoundException($request);
         }
 
+        $calendarEvents = [];
+        $calendarBoundaries = ['start' => null, 'end' => null];
+
+        //
+        // - Événements.
+        //
+
         $events = Event::orderBy('start_date', 'asc')
-            ->where('end_date', '>=', new \DateTime('3 months ago 00:00:00'))
+            ->where('end_date', '>=', new Carbon('3 months ago 00:00:00'))
             ->where('is_archived', false)
             ->get();
 
-        $calendarEvents = [];
-        $calendarBoundaries = ['start' => null, 'end' => null];
         foreach ($events as $event) {
-            $eventStart = new \DateTimeImmutable($event->start_date);
-            $eventEnd = new \DateTimeImmutable($event->end_date);
+            $eventStart = $event->getStartDate();
+            $eventEnd = $event->getEndDate();
 
             if (!$calendarBoundaries['start'] || $eventStart < $calendarBoundaries['start']) {
                 $calendarBoundaries['start'] = $eventStart;
@@ -45,10 +52,8 @@ class CalendarController extends BaseController
                 $calendarBoundaries['end'] = $eventEnd;
             }
 
-            $apiUrl = trim(Config::getSettings('apiUrl'), '/');
-
             $calendarEventId = new CalendarValue\UniqueIdentifier(
-                md5(sprintf('%s/%d', $apiUrl, $event->id))
+                md5(sprintf('%s/event/%d', $apiUrl, $event->id))
             );
             $calendarEvent = (new CalendarEvent($calendarEventId))
                 ->setSummary($event->title)
@@ -69,20 +74,28 @@ class CalendarController extends BaseController
                 $eventLastTouch = !empty($event->updated_at)
                     ? $event->updated_at
                     : $event->created_at;
-                $event->touch(new CalendarValue\Timestamp($eventLastTouch));
+                $calendarEvent->touch(new CalendarValue\Timestamp($eventLastTouch));
             }
 
             $calendarEvents[] = $calendarEvent;
         }
 
+        //
+        // - Rendu.
+        //
+
         $timeZone = CalendarTimeZone::createFromPhpDateTimeZone(
             new \DateTimeZone(@date_default_timezone_get()),
-            $calendarBoundaries['start'] ?? new \DateTimeImmutable('today 00:00:00'),
-            $calendarBoundaries['end'] ?? new \DateTimeImmutable('today 23:59:59'),
+            $calendarBoundaries['start'] ?? new Carbon('today 00:00:00'),
+            $calendarBoundaries['end'] ?? new Carbon('today 23:59:59'),
         );
 
         $calendar = (new Calendar($calendarEvents))
             ->addTimeZone($timeZone);
+
+        // - Specifies a suggested iCalendar file download frequency for clients with sync capabilities.
+        // @see https://learn.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxcical/1fc7b244-ecd1-4d28-ac0c-2bb4df855a1f
+        $calendar->setPublishedTTL(new \DateInterval('PT5M'));
 
         return $response
             ->withStatus(StatusCode::STATUS_OK)

@@ -1,4 +1,5 @@
 import './index.scss';
+import HttpCode from 'status-code-enum';
 import Button from '@/themes/default/components/Button';
 
 // @vue/component
@@ -47,26 +48,21 @@ export default {
                 await this.$store.dispatch('auth/login', { ...this.credentials });
                 this.$router.replace('/');
             } catch (error) {
-                if (!error.response) {
-                    this.errorMessage({ code: 0, message: 'network error' });
-                    return;
+                const { status = HttpCode.ServerErrorInternal } = error.response ?? {};
+
+                let message;
+                switch (status) {
+                    // - Si les données transmises sont incomplètes ou les identifiants invalides.
+                    case HttpCode.ClientErrorBadRequest:
+                    case HttpCode.ClientErrorUnauthorized:
+                        message = __('page.login.error.bad-infos');
+                        break;
+
+                    default:
+                        message = __('errors.api-unreachable');
                 }
-
-                const { status, data } = error.response;
-                const code = status === 404 && !data.error ? 0 : 404;
-                const message = data.error ? data.error.message : 'network error';
-                this.errorMessage({ code, message });
+                this.message = { type: 'error', text: message, isLoading: false };
             }
-        },
-
-        errorMessage(error) {
-            const { $t: __ } = this;
-
-            const text = error.code === 404
-                ? __('page.login.error.bad-infos')
-                : __('errors.api-unreachable');
-
-            this.message = { type: 'error', text, isLoading: false };
         },
 
         handleSubmit(e) {

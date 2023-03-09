@@ -13,11 +13,11 @@ export default {
         return (
             <Page name="global-settings" title={__('page.settings.title')}>
                 <Tabs>
-                    <Tab title={__('page.settings.event-summary.title')} icon="print">
-                        <EventSummarySettings />
-                    </Tab>
                     <Tab title={__('page.settings.calendar.title')} icon="calendar-alt">
                         <CalendarSettings />
+                    </Tab>
+                    <Tab title={__('page.settings.event-summary.title')} icon="print">
+                        <EventSummarySettings />
                     </Tab>
                 </Tabs>
             </Page>

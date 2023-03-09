@@ -4,12 +4,12 @@ describe('MaterialsListEditor', () => {
     describe('Utils / getMaterialsQuantities()', () => {
         it('should return an object containing the quantities related to a material', () => {
             const materials = [
-                { id: 1, is_unitary: true, pivot: { quantity: 2 } },
-                { id: 2, is_unitary: false, pivot: { quantity: 6 } },
-                { id: 3, is_unitary: false, pivot: { quantity: 0 } },
-                { id: 4, is_unitary: false },
-                { id: 5, is_unitary: true },
-                { id: 6, is_unitary: true, pivot: { units: [1] } },
+                { id: 1, pivot: { quantity: 2 } },
+                { id: 2, pivot: { quantity: 6 } },
+                { id: 3, pivot: { quantity: 0 } },
+                { id: 4 },
+                { id: 5 },
+                { id: 6 },
             ];
             expect(getMaterialsQuantities(materials)).toEqual([
                 { id: 1, quantity: 2 },
@@ -60,15 +60,6 @@ describe('MaterialsListEditor', () => {
             const before1 = [{ id: 1, quantity: 1 }];
             const after1 = [{ id: 1, quantity: 1 }];
             expect(materialsHasChanged(before1, after1)).toBe(false);
-
-            // - Test de changement dans les unités.
-            const before2 = [{ id: 1, quantity: 1 }];
-            const after2 = [{ id: 1, quantity: 1 }];
-            expect(materialsHasChanged(before2, after2)).toBe(false);
-
-            // - Test de changement dans les unités.
-            const before3 = [{ id: 1, quantity: 0 }];
-            expect(materialsHasChanged(before3, [])).toBe(false);
 
             // - Test avec plusieurs matériels.
             const before4 = [

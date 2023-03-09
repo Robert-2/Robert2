@@ -1,3 +1,4 @@
+import HttpCode from 'status-code-enum';
 import config from '@/globals/config';
 import cookies from '@/utils/cookies';
 import apiSession from '@/stores/api/session';
@@ -22,6 +23,7 @@ export default {
     },
     getters: {
         isLogged: (state) => !!state.user,
+
         is: (state) => (groups) => {
             if (!state.user) {
                 return false;
@@ -35,9 +37,11 @@ export default {
         setUser(state, user) {
             state.user = user;
         },
+
         updateUser(state, newData) {
             state.user = { ...state.user, ...newData };
         },
+
         setLocale(state, language) {
             state.user.language = language;
         },
@@ -53,7 +57,7 @@ export default {
                 commit('setUser', await apiSession.get());
             } catch (error) {
                 // - Non connecté.
-                if (error.httpCode === 401 /* Unauthorized */) {
+                if (error.httpCode === HttpCode.ClientErrorUnauthorized) {
                     dispatch('logout');
                 } else {
                     // eslint-disable-next-line no-console
@@ -61,6 +65,7 @@ export default {
                 }
             }
         },
+
         async login({ dispatch, commit }, credentials) {
             const { token, ...user } = await apiSession.create(credentials);
             commit('setUser', user);
@@ -70,24 +75,16 @@ export default {
             await dispatch('i18n/setLocale', { locale: user.language }, { root: true });
             await dispatch('settings/fetch', undefined, { root: true });
         },
-        async logout({ dispatch, commit }) {
-            const hasPotentiallyStatefulSession = false;
 
-            if (hasPotentiallyStatefulSession) {
-                window.location.assign(`${config.baseUrl}/logout`);
-
-                // - Timeout de 5 secondes avant de rejeter la promise.
-                // => L'idée étant que la redirection doit avoir lieu dans ce labs de temps.
-                // => Cela permet aussi de "bloquer" les listeners de cette méthodes pour éviter
-                //    qu'ils exécutent des process post-logout (redirection, vidage de store ...)
-                await new Promise((_, reject) => { setTimeout(reject, 5000); });
-            }
-
-            commit('setUser', null);
-            commit('parks/reset', undefined, { root: true });
-            await dispatch('settings/reset', undefined, { root: true });
-
+        async logout() {
             cookies.remove(config.auth.cookie);
+            window.location.assign(`${config.baseUrl}/login`);
+
+            // - Timeout de 5 secondes avant de rejeter la promise.
+            // => L'idée étant que la redirection doit avoir lieu dans ce laps de temps.
+            // => Cela permet aussi de "bloquer" les listeners de cette méthode pour éviter
+            //    qu'ils exécutent des process post-logout (redirection, vidage de store ...)
+            await new Promise((_, reject) => { setTimeout(reject, 5000); });
         },
     },
 };

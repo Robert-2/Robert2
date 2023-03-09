@@ -1,4 +1,7 @@
 import './index.scss';
+import axios from 'axios';
+import HttpCode from 'status-code-enum';
+import { defineComponent } from '@vue/composition-api';
 import Page from '@/themes/default/components/Page';
 import CriticalError, { ERROR } from '@/themes/default/components/CriticalError';
 import Loading from '@/themes/default/components/Loading';
@@ -9,15 +12,11 @@ import Infos from './tabs/Infos';
 import Documents from './tabs/Documents';
 
 // @vue/component
-export default {
+const MaterialView = {
     name: 'MaterialView',
     data() {
-        const id = this.$route.params.id
-            ? parseInt(this.$route.params.id, 10)
-            : null;
-
         return {
-            id,
+            id: parseInt(this.$route.params.id, 10),
             material: null,
             isLoading: false,
             isFetched: false,
@@ -35,12 +34,7 @@ export default {
         },
 
         tabsIndexes() {
-            const { material } = this;
-            const allTabs = ['#infos', '#units', '#documents', '#availabilities'];
-            if (material && !material.is_unitary) {
-                return allTabs.filter((tabName) => tabName !== '#units');
-            }
-            return allTabs;
+            return ['#infos', '#documents'];
         },
 
         tabsActions() {
@@ -84,10 +78,6 @@ export default {
             this.$router.replace(this.tabsIndexes[index]);
         },
 
-        handleOutdated() {
-            this.fetchData();
-        },
-
         // ------------------------------------------------------
         // -
         // -    Internal methods
@@ -109,8 +99,16 @@ export default {
                 this.selectTabFromRouting();
                 this.isFetched = true;
             } catch (error) {
-                const status = error?.response?.status ?? 500;
-                this.criticalError = status === 404 ? ERROR.NOT_FOUND : ERROR.UNKNOWN;
+                if (!axios.isAxiosError(error)) {
+                    // eslint-disable-next-line no-console
+                    console.error(`Error ocurred while retrieving material #${this.id} data`, error);
+                    this.criticalError = ERROR.UNKNOWN;
+                } else {
+                    const { status = HttpCode.ServerErrorInternal } = error.response ?? {};
+                    this.criticalError = status === HttpCode.ClientErrorNotFound
+                        ? ERROR.NOT_FOUND
+                        : ERROR.UNKNOWN;
+                }
             } finally {
                 this.isLoading = false;
             }
@@ -157,3 +155,5 @@ export default {
         );
     },
 };
+
+export default defineComponent(MaterialView);

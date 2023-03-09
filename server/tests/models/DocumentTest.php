@@ -22,7 +22,7 @@ final class DocumentTest extends TestCase
         $filePath = $document->file_path;
         copy($filePath, $filePath . '_backup.pdf');
 
-        Document::staticRemove($document->id);
+        $this->assertTrue(Document::findOrFail($document->id)->delete());
         $this->assertNull(Document::find($document->id));
         $this->assertFalse(file_exists($filePath));
 

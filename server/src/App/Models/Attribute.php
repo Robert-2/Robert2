@@ -3,12 +3,30 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Robert2\Support\Arr;
 use Robert2\API\Contracts\Serializable;
 use Robert2\API\Models\Traits\Serializer;
-use Robert2\API\Validation\Validator as V;
+use Respect\Validation\Validator as V;
 
-class Attribute extends BaseModel implements Serializable
+/**
+ * Attribut de matériel personnalisé.
+ *
+ * @property-read ?int $id
+ * @property string $name
+ * @property string $type
+ * @property string|null $unit
+ * @property int|null $max_length
+ * @property-read Carbon $created_at
+ * @property-read ?Carbon $updated_at
+ * @property-read ?Carbon $deleted_at
+ *
+ * @property-read Collection|Category[] $categories
+ * @property-read Collection|Material[] $materials
+ */
+final class Attribute extends BaseModel implements Serializable
 {
     use Serializer {
         serialize as baseSerialize;
@@ -22,15 +40,15 @@ class Attribute extends BaseModel implements Serializable
 
         $this->validation = [
             'name' => V::notEmpty()->alnum(static::EXTRA_CHARS)->length(2, 64),
-            'type' => V::notEmpty()->oneOf(
-                v::equals('string'),
-                v::equals('integer'),
-                v::equals('float'),
-                v::equals('boolean'),
-                v::equals('date')
+            'type' => V::notEmpty()->anyOf(
+                V::equals('string'),
+                V::equals('integer'),
+                V::equals('float'),
+                V::equals('boolean'),
+                V::equals('date')
             ),
-            'unit' => V::callback([$this, 'checkUnit']),
-            'max_length' => V::callback([$this, 'checkMaxLength']),
+            'unit' => V::custom([$this, 'checkUnit']),
+            'max_length' => V::custom([$this, 'checkMaxLength']),
         ];
     }
 
@@ -53,7 +71,7 @@ class Attribute extends BaseModel implements Serializable
         if ($this->type !== 'string') {
             return V::nullType();
         }
-        return V::optional(V::numeric());
+        return V::optional(V::numericVal());
     }
 
     // ------------------------------------------------------
@@ -65,7 +83,7 @@ class Attribute extends BaseModel implements Serializable
     public function materials()
     {
         return $this->belongsToMany(Material::class, 'material_attributes')
-            ->using(MaterialAttributesPivot::class)
+            ->using(MaterialAttribute::class)
             ->withPivot('value');
     }
 
@@ -155,12 +173,12 @@ class Attribute extends BaseModel implements Serializable
         if (!$isCreate) {
             if (!static::staticExists($id)) {
                 throw (new ModelNotFoundException)
-                    ->setModel(get_class(), $id);
+                    ->setModel(self::class, $id);
             }
 
             // - À l'edition on ne permet pas les changements autre que le nom.
             //   (Vu qu'il peut y avoir déjà des valeurs un peu partout pour cet attribut)
-            $data = array_with_keys($data, ['name']);
+            $data = Arr::only($data, ['name']);
         }
 
         return dbTransaction(function () use ($id, $isCreate, $data) {
@@ -172,13 +190,5 @@ class Attribute extends BaseModel implements Serializable
 
             return $attribute->refresh();
         });
-    }
-
-    public static function staticRemove($id, array $options = []): ?BaseModel
-    {
-        if (!static::findOrFail($id)->delete()) {
-            throw new \RuntimeException(sprintf("Unable to delete the attribute #%d.", $id));
-        }
-        return null;
     }
 }

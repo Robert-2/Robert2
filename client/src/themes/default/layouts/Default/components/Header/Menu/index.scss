@@ -10,4 +10,30 @@
             background-color: color.adjust(globals.$bg-color-main-header, $lightness: 8%);
         }
     }
+
+    &__item,
+    &__dropdown-item {
+        display: flex;
+        align-items: center;
+        height: 100%;
+        border: none;
+        border-radius: 0;
+        background-color: globals.$bg-color-main-header;
+
+        &:hover {
+            background-color: color.adjust(globals.$bg-color-main-header, $lightness: 8%);
+        }
+    }
+
+    &__item {
+        padding: 0 globals.$content-padding-small-vertical;
+    }
+
+    &__dropdown-item {
+        padding: globals.$content-padding-large-horizontal globals.$content-padding-small-vertical;
+
+        & + & {
+            margin-left: 0;
+        }
+    }
 }

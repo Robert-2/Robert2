@@ -12,7 +12,8 @@ $spacing: 1.5rem;
         font-size: 1.5rem;
     }
 
-    &__dates-location,
+    &__dates,
+    &__location,
     &__duration {
         margin: 0;
         font-size: 1.2rem;
@@ -26,16 +27,16 @@ $spacing: 1.5rem;
         line-height: 1.5;
         white-space: pre-wrap;
 
-        .fas {
+        .Icon {
             margin-left: -30px;
         }
     }
 
-    &__dates-location,
+    &__dates,
+    &__location,
     &__duration,
     &__description {
-        .fas,
-        .far {
+        .Icon {
             width: 1.5rem;
             margin-right: 0.5rem;
             margin-bottom: 0.5rem;
@@ -50,7 +51,7 @@ $spacing: 1.5rem;
 
         &__item {
             padding-left: 20px;
-            color: globals.$text-nav-color;
+            color: globals.$text-soft-color;
             list-style: none;
         }
     }
@@ -86,8 +87,7 @@ $spacing: 1.5rem;
         font-size: 1.2rem;
         font-weight: 600;
 
-        .fas,
-        .far {
+        .Icon {
             width: 1.5rem;
             margin-right: 0.5rem;
             margin-bottom: 0.5rem;
@@ -139,10 +139,18 @@ $spacing: 1.5rem;
     }
 
     &__materials {
+        &__list {
+            margin-bottom: 20px;
+        }
+
+        &__totals {
+            padding-right: 5px;
+        }
+
         &__empty {
             color: globals.$text-danger-color;
 
-            .fas {
+            .Icon {
                 margin-right: 0.3rem;
             }
         }
@@ -152,28 +160,6 @@ $spacing: 1.5rem;
         display: flex;
         flex-direction: column;
         padding-bottom: $spacing;
-
-        .EventTotals {
-            flex: 0 0 auto;
-            padding:
-                globals.$content-padding-small-vertical
-                globals.$content-padding-large-horizontal
-                globals.$content-padding-large-vertical;
-            border-left: 3px solid #383838;
-            text-align: left;
-        }
-
-        &__tabs {
-            flex: 1;
-            min-width: 350px;
-            padding: 0 globals.$content-padding-large-horizontal;
-            border-left: 3px solid #383838;
-
-            .DisplayBill__actions {
-                max-width: 140px;
-                text-align: center;
-            }
-        }
 
         .Help {
             margin-bottom: globals.$content-padding-small-vertical;

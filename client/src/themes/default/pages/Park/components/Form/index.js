@@ -4,7 +4,7 @@ import { useQuery } from 'vue-query';
 import pick from 'lodash/pick';
 import formatOptions from '@/utils/formatOptions';
 import apiCountries from '@/stores/api/countries';
-import useI18n from '@/hooks/vue/useI18n';
+import useI18n from '@/hooks/useI18n';
 import FormField from '@/themes/default/components/FormField';
 import Fieldset from '@/themes/default/components/Fieldset';
 import Button from '@/themes/default/components/Button';

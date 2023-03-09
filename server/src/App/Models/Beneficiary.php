@@ -4,18 +4,52 @@ declare(strict_types=1);
 namespace Robert2\API\Models;
 
 use Adbar\Dot as DotArray;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Robert2\API\Contracts\Serializable;
-use Robert2\API\Errors\ValidationException;
+use Robert2\API\Errors\Exception\ValidationException;
 use Robert2\API\Models\Traits\Serializer;
-use Robert2\API\Validation\Validator as V;
+use Respect\Validation\Validator as V;
+use Robert2\API\Models\Enums\Group;
+use Robert2\API\Models\Traits\SoftDeletable;
 
-class Beneficiary extends BaseModel implements Serializable
+/**
+ * Bénéficiaire / emprunteur.
+ *
+ * @property-read ?int $id
+ * @property int $person_id
+ * @property-read Person $person
+ * @property-read int|null $user_id
+ * @property-read User|null $user
+ * @property string|null $reference
+ * @property-read string $first_name
+ * @property-read string $last_name
+ * @property-read string $full_name
+ * @property int|null $company_id
+ * @property-read Company|null $company
+ * @property-read string|null $email
+ * @property-read string|null $phone
+ * @property-read string|null $street
+ * @property-read string|null $postal_code
+ * @property-read string|null $locality
+ * @property-read int|null $country_id
+ * @property-read Country|null $country
+ * @property-read string|null $full_address
+ * @property bool $can_make_reservation
+ * @property string|null $note
+ * @property-read Carbon $created_at
+ * @property-read Carbon|null $updated_at
+ * @property-read Carbon|null $deleted_at
+ */
+final class Beneficiary extends BaseModel implements Serializable
 {
     use Serializer;
-    use SoftDeletes;
+    use SoftDeletable;
+
+    // - Types de sérialisation.
+    public const SERIALIZE_DEFAULT = 'default';
+    public const SERIALIZE_DETAILS = 'details';
 
     protected $table = 'beneficiaries';
 
@@ -34,9 +68,9 @@ class Beneficiary extends BaseModel implements Serializable
         $this->validation = [
             // Note: Le champ `person_id` est requis mais peuplé après coup par la relation
             //       d'ou le `optional` pour ne valider que si il est directement spécifié.
-            'person_id' => V::optional(V::numeric()),
-            'reference' => V::callback([$this, 'checkReference']),
-            'company_id' => V::optional(V::numeric()),
+            'person_id' => V::optional(V::numericVal()),
+            'reference' => V::custom([$this, 'checkReference']),
+            'company_id' => V::optional(V::numericVal()),
         ];
     }
 
@@ -110,13 +144,14 @@ class Beneficiary extends BaseModel implements Serializable
         'person_id' => 'integer',
         'company_id' => 'integer',
         'note' => 'string',
+        'can_make_reservation' => 'boolean',
     ];
 
     public function getFirstNameAttribute(): string
     {
         if (!$this->person) {
             throw new \LogicException(
-                'The beneficiary\'s related person is missing, ' +
+                'The beneficiary\'s related person is missing, ' .
                 'this relation should always be defined.'
             );
         }
@@ -127,7 +162,7 @@ class Beneficiary extends BaseModel implements Serializable
     {
         if (!$this->person) {
             throw new \LogicException(
-                'The beneficiary\'s related person is missing, ' +
+                'The beneficiary\'s related person is missing, ' .
                 'this relation should always be defined.'
             );
         }
@@ -138,7 +173,7 @@ class Beneficiary extends BaseModel implements Serializable
     {
         if (!$this->person) {
             throw new \LogicException(
-                'The beneficiary\'s related person is missing, ' +
+                'The beneficiary\'s related person is missing, ' .
                 'this relation should always be defined.'
             );
         }
@@ -154,7 +189,7 @@ class Beneficiary extends BaseModel implements Serializable
     {
         if (!$this->person) {
             throw new \LogicException(
-                'The beneficiary\'s related person is missing, ' +
+                'The beneficiary\'s related person is missing, ' .
                 'this relation should always be defined.'
             );
         }
@@ -165,7 +200,7 @@ class Beneficiary extends BaseModel implements Serializable
     {
         if (!$this->person) {
             throw new \LogicException(
-                'The beneficiary\'s related person is missing, ' +
+                'The beneficiary\'s related person is missing, ' .
                 'this relation should always be defined.'
             );
         }
@@ -176,7 +211,7 @@ class Beneficiary extends BaseModel implements Serializable
     {
         if (!$this->person) {
             throw new \LogicException(
-                'The beneficiary\'s related person is missing, ' +
+                'The beneficiary\'s related person is missing, ' .
                 'this relation should always be defined.'
             );
         }
@@ -187,7 +222,7 @@ class Beneficiary extends BaseModel implements Serializable
     {
         if (!$this->person) {
             throw new \LogicException(
-                'The beneficiary\'s related person is missing, ' +
+                'The beneficiary\'s related person is missing, ' .
                 'this relation should always be defined.'
             );
         }
@@ -198,40 +233,18 @@ class Beneficiary extends BaseModel implements Serializable
     {
         if (!$this->person) {
             throw new \LogicException(
-                'The beneficiary\'s related person is missing, ' +
+                'The beneficiary\'s related person is missing, ' .
                 'this relation should always be defined.'
             );
         }
         return $this->person->locality;
     }
 
-    public function getFullAddressAttribute()
-    {
-        if (!$this->person) {
-            throw new \LogicException(
-                'The beneficiary\'s related person is missing, ' +
-                'this relation should always be defined.'
-            );
-        }
-        return $this->person->full_address;
-    }
-
-    public function getUserIdAttribute()
-    {
-        if (!$this->person) {
-            throw new \LogicException(
-                'The beneficiary\'s related person is missing, ' +
-                'this relation should always be defined.'
-            );
-        }
-        return $this->person->user_id;
-    }
-
     public function getCountryIdAttribute()
     {
         if (!$this->person) {
             throw new \LogicException(
-                'The beneficiary\'s related person is missing, ' +
+                'The beneficiary\'s related person is missing, ' .
                 'this relation should always be defined.'
             );
         }
@@ -242,11 +255,44 @@ class Beneficiary extends BaseModel implements Serializable
     {
         if (!$this->person) {
             throw new \LogicException(
-                'The beneficiary\'s related person is missing, ' +
+                'The beneficiary\'s related person is missing, ' .
                 'this relation should always be defined.'
             );
         }
         return $this->person->country;
+    }
+
+    public function getFullAddressAttribute()
+    {
+        if (!$this->person) {
+            throw new \LogicException(
+                'The beneficiary\'s related person is missing, ' .
+                'this relation should always be defined.'
+            );
+        }
+        return $this->person->full_address;
+    }
+
+    public function getUserIdAttribute()
+    {
+        if (!$this->person) {
+            throw new \LogicException(
+                'The beneficiary\'s related person is missing, ' .
+                'this relation should always be defined.'
+            );
+        }
+        return $this->person->user_id;
+    }
+
+    public function getUserAttribute()
+    {
+        if (!$this->person) {
+            throw new \LogicException(
+                'The beneficiary\'s related person is missing, ' .
+                'this relation should always be defined.'
+            );
+        }
+        return $this->person->user;
     }
 
     // ------------------------------------------------------
@@ -295,6 +341,7 @@ class Beneficiary extends BaseModel implements Serializable
             $subQuery = $subQuery->whereColumn('id', 'beneficiaries.person_id');
         }
 
+        /** @var Builder $builder */
         return $builder->orderBy($subQuery, $direction);
     }
 
@@ -316,9 +363,7 @@ class Beneficiary extends BaseModel implements Serializable
         }
 
         if ($this->searchField === 'email') {
-            return $builder->whereHas('person', function (Builder $query) use ($term) {
-                $query->where('email', 'LIKE', $term);
-            });
+            return $builder->whereRelation('person', 'email', 'LIKE', $term);
         }
 
         if ($this->searchField === 'everywhere') {
@@ -335,9 +380,7 @@ class Beneficiary extends BaseModel implements Serializable
                             ->orWhereRaw('CONCAT(first_name, \' \', last_name) LIKE ?', [$term])
                             ->orWhere('email', 'LIKE', $term);
                     })
-                    ->orWhereHas('company', function (Builder $subQuery) use ($term) {
-                        $subQuery->where('legal_name', 'LIKE', $term);
-                    });
+                    ->orWhereRelation('company', 'legal_name', 'LIKE', $term);
             };
             return $builder->where($group);
         }
@@ -357,7 +400,7 @@ class Beneficiary extends BaseModel implements Serializable
         if ($id) {
             if (!static::staticExists($id)) {
                 throw (new ModelNotFoundException)
-                    ->setModel(get_class(), $id);
+                    ->setModel(self::class, $id);
             }
             $personId = static::find($id)->person_id;
         }
@@ -365,16 +408,38 @@ class Beneficiary extends BaseModel implements Serializable
         $personData = $data['person'] ?? [];
         unset($data['person']);
 
+        $userData = $data['user'] ?? [];
+        unset($data['user']);
+
         $beneficiary = static::firstOrNew(compact('id'))->fill($data);
         $person = Person::firstOrNew(['id' => $personId])->fill($personData);
-        if (!$beneficiary->isValid() || !$person->isValid()) {
+
+        $user = null;
+        if ($beneficiary->can_make_reservation === true && !$beneficiary->person?->user) {
+            $user = (new User)->fill(array_merge($userData, [
+                'group' => Group::EXTERNAL,
+                'password' => !empty($userData['password'])
+                    ? password_hash($userData['password'], PASSWORD_DEFAULT)
+                    : null,
+            ]));
+        }
+
+        if (!$beneficiary->isValid() || !$person->isValid() || ($user && !$user->isValid())) {
             throw new ValidationException(array_merge(
                 $beneficiary->validationErrors(),
-                ['person' => $person->validationErrors()]
+                ['person' => $person->validationErrors()],
+                ['user' => $user?->validationErrors() ?? null],
             ));
         }
 
-        return dbTransaction(function () use ($person, $beneficiary) {
+        return dbTransaction(function () use ($person, $user, $beneficiary) {
+            if ($user && !$user->exists) {
+                if (!$user->save()) {
+                    throw new \RuntimeException("Unable to create the beneficiary's related user.");
+                }
+                $person->user()->associate($user);
+            }
+
             if (!$person->save()) {
                 throw new \RuntimeException("Unable to save the beneficiary's related person.");
             }
@@ -394,9 +459,15 @@ class Beneficiary extends BaseModel implements Serializable
     // -
     // ------------------------------------------------------
 
-    public function serialize(): array
+    public function serialize(string $format = self::SERIALIZE_DEFAULT): array
     {
-        $data = $this->attributesForSerialization();
+        $beneficiary = tap(clone $this, function (Beneficiary $beneficiary) use ($format) {
+            if ($format === self::SERIALIZE_DETAILS) {
+                $beneficiary->append('user');
+            }
+        });
+
+        $data = $beneficiary->attributesForSerialization();
 
         unset(
             $data['person_id'],
@@ -434,6 +505,19 @@ class Beneficiary extends BaseModel implements Serializable
             $data->delete('person');
         }
 
+        $userFields = ['pseudo', 'email', 'password', 'group'];
+        foreach ($userFields as $field) {
+            $originalPath = sprintf('user.%s', $field);
+            if ($data->has($originalPath) && !$data->has($field)) {
+                $data->set($field, $data->get($originalPath));
+            }
+            $data->delete($originalPath);
+        }
+
+        if ($data->isEmpty('user')) {
+            $data->delete('user');
+        }
+
         return $data->all();
     }
 
@@ -441,14 +525,20 @@ class Beneficiary extends BaseModel implements Serializable
     {
         $data = new DotArray($data);
 
-        // - On supprime l'éventuel sous-object `person` dans le payload, non attendu sous cette forme.
-        //   (les données de la personne liée sont fusionnées avec les données du bénéficiaire)
-        $data->delete(['person', 'person_id']);
+        // - On supprime les éventuels sous-object `person` et `user` dans le payload,
+        //   non attendus sous cette forme (les données de la personne liée et de
+        //   l'utilisateur lié doivent être fusionnées avec les données du bénéficiaire).
+        $data->delete(['person', 'person_id', 'user', 'user_id']);
+
+        if ($data->has('email')) {
+            $data->set('person.email', $data->get('email'));
+            $data->set('user.email', $data->get('email'));
+            $data->delete('email');
+        }
 
         $personFields = [
             'first_name',
             'last_name',
-            'email',
             'phone',
             'street',
             'postal_code',
@@ -457,6 +547,15 @@ class Beneficiary extends BaseModel implements Serializable
         ];
         foreach ($personFields as $field) {
             $originalPath = sprintf('person.%s', $field);
+            if ($data->has($field)) {
+                $data->set($originalPath, $data->get($field));
+                $data->delete($field);
+            }
+        }
+
+        $userFields = ['pseudo', 'password'];
+        foreach ($userFields as $field) {
+            $originalPath = sprintf('user.%s', $field);
             if ($data->has($field)) {
                 $data->set($originalPath, $data->get($field));
                 $data->delete($field);

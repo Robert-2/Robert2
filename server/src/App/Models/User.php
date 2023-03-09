@@ -4,20 +4,49 @@ declare(strict_types=1);
 namespace Robert2\API\Models;
 
 use Adbar\Dot as DotArray;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Robert2\API\Config\Config;
 use Robert2\API\Contracts\Serializable;
-use Robert2\API\Errors\ValidationException;
+use Robert2\API\Errors\Exception\ValidationException;
 use Robert2\API\Models\Enums\Group;
 use Robert2\API\Models\Traits\Serializer;
-use Robert2\API\Validation\Validator as V;
+use Respect\Validation\Validator as V;
+use Robert2\API\Models\Traits\SoftDeletable;
+use Robert2\Support\Arr;
 
-class User extends BaseModel implements Serializable
+/**
+ * Utilisateur de l'application.
+ *
+ * @property-read ?int $id
+ * @property string $pseudo
+ * @property-read string $first_name
+ * @property-read string $last_name
+ * @property-read string $full_name
+ * @property string $email
+ * @property-read string|null $phone
+ * @property string $group
+ * @property string $password
+ * @property string $language
+ * @property-read Carbon $created_at
+ * @property-read Carbon|null $updated_at
+ * @property-read Carbon|null $deleted_at
+ *
+ * @property-read Person $person
+ * @property-read Beneficiary $beneficiary
+ * @property-read Technician $technician
+ * @property-read Collection|Event[] $events
+ */
+final class User extends BaseModel implements Serializable
 {
     use Serializer;
-    use SoftDeletes;
+    use SoftDeletable;
+
+    // - Types de sérialisation.
+    public const SERIALIZE_DEFAULT = 'default';
+    public const SERIALIZE_DETAILS = 'details';
+
+    // - Champs spécifiques aux settings utilisateur
+    public const SETTINGS_ATTRIBUTES = ['language'];
 
     protected $orderField = 'pseudo';
 
@@ -29,14 +58,19 @@ class User extends BaseModel implements Serializable
         parent::__construct($attributes);
 
         $this->validation = [
-            'pseudo' => V::callback([$this, 'checkPseudo']),
-            'email' => V::callback([$this, 'checkEmail']),
-            'group' => V::notEmpty()->oneOf(
+            'pseudo' => V::custom([$this, 'checkPseudo']),
+            'email' => V::custom([$this, 'checkEmail']),
+            'group' => V::notEmpty()->anyOf(
                 V::equals(Group::ADMIN),
                 V::equals(Group::MEMBER),
-                V::equals(Group::VISITOR)
+                V::equals(Group::VISITOR),
+                V::equals(Group::EXTERNAL),
             ),
             'password' => V::notEmpty()->length(4, 191),
+            'language' => V::optional(V::anyOf(
+                V::equals('en'),
+                V::equals('fr')
+            )),
         ];
     }
 
@@ -95,11 +129,6 @@ class User extends BaseModel implements Serializable
         return $this->hasOne(Person::class);
     }
 
-    public function settings()
-    {
-        return $this->hasOne(UserSetting::class);
-    }
-
     public function events()
     {
         $selectFields = [
@@ -115,11 +144,11 @@ class User extends BaseModel implements Serializable
             ->orderBy('start_date');
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Mutators
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Mutators
+    // -
+    // ------------------------------------------------------
 
     protected $appends = [
         'first_name',
@@ -138,16 +167,9 @@ class User extends BaseModel implements Serializable
         'email' => 'string',
         'group' => 'string',
         'password' => 'string',
+        'language' => 'string',
+        'notifications_enabled' => 'boolean',
     ];
-
-    public function getLanguageAttribute(): string
-    {
-        $language = Config::getSettings('defaultLang');
-        if ($this->settings && $this->settings->language) {
-            $language = $this->settings->language;
-        }
-        return strtolower($language);
-    }
 
     public function getFirstNameAttribute(): ?string
     {
@@ -181,16 +203,25 @@ class User extends BaseModel implements Serializable
         return $this->person->phone;
     }
 
-    // ------------------------------------------------------
-    // -
-    // -    Getters
-    // -
-    // ------------------------------------------------------
-
-    public function getAll(bool $softDeleted = false): Builder
+    public function getBeneficiaryAttribute(): ?Beneficiary
     {
-        $fields = array_merge(['id', 'pseudo', 'email', 'group'], $this->dates);
-        return parent::getAll($softDeleted)->select($fields);
+        if (!$this->person) {
+            return null;
+        }
+        return $this->person->beneficiary;
+    }
+
+    public function getTechnicianAttribute(): ?Technician
+    {
+        if (!$this->person) {
+            return null;
+        }
+        return $this->person->technician;
+    }
+
+    public function getSettingsAttribute(): array
+    {
+        return Arr::only($this->toArray(), self::SETTINGS_ATTRIBUTES);
     }
 
     // ------------------------------------------------------
@@ -204,7 +235,7 @@ class User extends BaseModel implements Serializable
         'email',
         'group',
         'password',
-        'cas_identifier',
+        'language',
     ];
 
     // ------------------------------------------------------
@@ -217,7 +248,6 @@ class User extends BaseModel implements Serializable
     {
         $user = static::where('email', $identifier)
             ->orWhere('pseudo', $identifier)
-            ->with('settings')
             ->firstOrFail();
 
         if (!password_verify($password, $user->password)) {
@@ -231,7 +261,7 @@ class User extends BaseModel implements Serializable
     {
         if ($id && !static::staticExists($id)) {
             throw (new ModelNotFoundException)
-                ->setModel(get_class(), $id);
+                ->setModel(self::class, $id);
         }
 
         if (isset($data['password']) && !empty($data['password'])) {
@@ -240,13 +270,18 @@ class User extends BaseModel implements Serializable
             unset($data['password']);
         }
 
+        if (!$id && !isset($data['language'])) {
+            $data['language'] = container('settings')['defaultLang'];
+        }
+
         $personData = $data['person'] ?? [];
         unset($data['person']);
 
         return dbTransaction(function () use ($id, $data, $personData) {
+            $user = null;
             $userId = $id;
-            $validationErrors = [];
             $hasFailed = false;
+            $validationErrors = [];
 
             try {
                 $user = static::updateOrCreate(compact('id'), $data);
@@ -269,15 +304,6 @@ class User extends BaseModel implements Serializable
                 throw new ValidationException($validationErrors);
             }
 
-            if (!$id) {
-                $settings = container('settings');
-                $defaultSettings = [
-                    'language' => $settings['defaultLang'],
-                    'auth_token_validity_duration' => $settings['sessionExpireHours']
-                ];
-                UserSetting::updateOrCreate(['user_id' => $userId], $defaultSettings);
-            }
-
             return $user->refresh();
         });
     }
@@ -288,9 +314,11 @@ class User extends BaseModel implements Serializable
     // -
     // ------------------------------------------------------
 
-    public function serialize(): array
+    public function serialize(string $format = self::SERIALIZE_DEFAULT): array
     {
-        $data = new DotArray($this->attributesForSerialization());
+        $user = clone $this;
+
+        $data = new DotArray($user->attributesForSerialization());
 
         $data->delete([
             'created_at',

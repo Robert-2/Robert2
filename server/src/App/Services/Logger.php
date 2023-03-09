@@ -3,9 +3,10 @@ declare(strict_types=1);
 
 namespace Robert2\API\Services;
 
-use Monolog\Handler;
 use Monolog\Formatter\LineFormatter;
+use Monolog\Handler;
 use Psr\Log\LoggerTrait;
+use Robert2\Support\Str;
 
 final class Logger
 {
@@ -29,7 +30,7 @@ final class Logger
     {
         $this->settings = array_replace($this->settings, $settings);
 
-        if (null !== $this->settings['timezone']) {
+        if ($this->settings['timezone'] !== null) {
             if (is_string($this->settings['timezone'])) {
                 $this->settings['timezone'] = new \DateTimeZone($this->settings['timezone']);
             }
@@ -37,7 +38,7 @@ final class Logger
 
         if (!is_numeric($this->settings['level'])) {
             $levels = array_keys(\Monolog\Logger::getLevels());
-            if (!in_array(strtoupper($this->settings['level']), $levels)) {
+            if (!in_array(strtoupper($this->settings['level']), $levels, true)) {
                 $this->settings['level'] = \Monolog\Logger::NOTICE;
             }
         }
@@ -66,7 +67,7 @@ final class Logger
         }
 
         // - Handler
-        $path = VAR_FOLDER . DS . 'logs' . DS . \slugify($name) . '.log';
+        $path = LOGS_FOLDER . DS . Str::slug($name) . '.log';
         $handler = new Handler\RotatingFileHandler(
             $path,
             $this->settings['max_files'],
@@ -81,9 +82,9 @@ final class Logger
     /**
      * Ajoute un message de log.
      *
-     * @param  integer $level   Le niveau de log.
-     * @param  string  $message Le message à logger.
-     * @param  array   $context Le contexte du log (si utile).
+     * @param int $level Le niveau de log.
+     * @param string $message Le message à logger.
+     * @param array $context Le contexte du log (si utile).
      *
      * @return void
      */

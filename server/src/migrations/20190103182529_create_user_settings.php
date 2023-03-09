@@ -1,23 +1,32 @@
 <?php
+declare(strict_types=1);
+
 use Phinx\Migration\AbstractMigration;
 use Robert2\API\Config\Config;
 
-class CreateUserSettings extends AbstractMigration
+final class CreateUserSettings extends AbstractMigration
 {
     public function up()
     {
-        $userSettings = $this->table('user_settings');
+        $userSettings = $this->table('user_settings', ['signed' => true]);
         $userSettings
-            ->addColumn('user_id', 'integer')
-            ->addColumn('language', 'char', ['limit' => 2, 'default' => 'en'])
-            ->addColumn('auth_token_validity_duration', 'integer', ['default' => 12])
+            ->addColumn('user_id', 'integer', ['signed' => true, 'null' => false])
+            ->addColumn('language', 'char', [
+                'limit' => 2,
+                'default' => 'en',
+                'null' => false,
+            ])
+            ->addColumn('auth_token_validity_duration', 'integer', [
+                'default' => 12,
+                'null' => false,
+            ])
             ->addColumn('created_at', 'datetime', ['null' => true])
             ->addColumn('updated_at', 'datetime', ['null' => true])
             ->addIndex(['user_id'], ['unique' => true])
             ->addForeignKey('user_id', 'users', 'id', [
                 'delete' => 'CASCADE',
                 'update' => 'NO_ACTION',
-                'constraint' => 'fk_user_settings_users'
+                'constraint' => 'fk_user_settings_users',
             ])
             ->create();
 

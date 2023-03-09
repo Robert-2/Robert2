@@ -7,7 +7,7 @@ export default defineComponent({
     name: 'Help',
     props: {
         message: { type: [String, Object], required: true },
-        error: { type: Error, default: null },
+        error: { type: [String, Error], default: null },
         isLoading: { type: Boolean, default: false },
     },
     computed: {

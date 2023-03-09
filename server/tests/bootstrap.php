@@ -12,7 +12,7 @@ use Robert2\API\Kernel;
 use Robert2\Fixtures;
 
 // - Chargement de l'environnement
-$dotenv = Dotenv\Dotenv::createImmutable(ROOT_FOLDER);
+$dotenv = Dotenv\Dotenv::createImmutable(ROOT_FOLDER, ['.env', '.env.test'], false);
 $dotenv->safeLoad();
 
 $echoError = function (string $msg) {
@@ -22,11 +22,11 @@ $echoError = function (string $msg) {
 
 echo "\033[33m
  _
-| |                            _            _
-| |     _____  ___   _  __ _  | |_ ___  ___| |_ ___
-| |    / _ \ \/ / | | |/ _` | | __/ _ \/ __| __/ __|
-| |___| (_) >  <| |_| | (_| | | ||  __/\__ \ |_\__ \
-\_____/\___/_/\_\\\__, |\__,_|  \__\___||___/\__|___/
+| |                             _            _
+| |     _____  ___   _  __ _   | |_ ___  ___| |_ ___
+| |    / _ \ \/ / | | |/ _` |  | __/ _ \/ __| __/ __|
+| |___| (_) >  <| |_| | (_| |  | ||  __/\__ \ |_\__ \
+\_____/\___/_/\_\\\__, |\__,_|   \__\___||___/\__|___/
                   __/ |
                  |___/
 

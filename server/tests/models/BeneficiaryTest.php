@@ -4,7 +4,8 @@ declare(strict_types=1);
 namespace Robert2\Tests;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Robert2\API\Errors\ValidationException;
+use Illuminate\Support\Carbon;
+use Robert2\API\Errors\Exception\ValidationException;
 use Robert2\API\Models\Beneficiary;
 
 final class BeneficiaryTest extends TestCase
@@ -54,6 +55,8 @@ final class BeneficiaryTest extends TestCase
             'postal_code' => null,
             'locality' => null,
             'country_id' => null,
+            'pseudo' => 'robbie',
+            'password' => '123abc',
             'note' => null,
         ]);
         $expected = [
@@ -68,6 +71,11 @@ final class BeneficiaryTest extends TestCase
                 'postal_code' => null,
                 'locality' => null,
                 'country_id' => null,
+            ],
+            'user' => [
+                'email' => 'tester2@robertmanager.net',
+                'pseudo' => 'robbie',
+                'password' => '123abc',
             ],
         ];
         $this->assertEquals($expected, $result);
@@ -106,21 +114,18 @@ final class BeneficiaryTest extends TestCase
     public function testCreateWithoutData(): void
     {
         $this->expectException(ValidationException::class);
-        $this->expectExceptionCode(ERROR_VALIDATION);
         Beneficiary::new([]);
     }
 
     public function testBadData(): void
     {
         $this->expectException(ValidationException::class);
-        $this->expectExceptionCode(ERROR_VALIDATION);
         Beneficiary::new(['pseudo' => 'Sans email!']);
     }
 
     public function testBadDataDuplicateRef(): void
     {
         $this->expectException(ValidationException::class);
-        $this->expectExceptionCode(ERROR_VALIDATION);
         Beneficiary::new([
             'first_name' => 'Paul',
             'last_name' => 'Newtests',
@@ -132,12 +137,13 @@ final class BeneficiaryTest extends TestCase
     public function testCreateWithoutPerson(): void
     {
         $this->expectException(ValidationException::class);
-        $this->expectExceptionCode(ERROR_VALIDATION);
         Beneficiary::new(['reference' => '0009']);
     }
 
     public function testCreate(): void
     {
+        Carbon::setTestNow(Carbon::create(2023, 2, 10, 15, 00, 00));
+
         $data = [
             'note' => null,
             'person' => [
@@ -152,13 +158,65 @@ final class BeneficiaryTest extends TestCase
             ],
         ];
 
-        $result = Beneficiary::new($data);
-        $this->assertEquals(4, $result->id);
-        $this->assertEquals(5, $result->person->id);
-        $this->assertEquals('José', $result->person->first_name);
-        $this->assertEquals('Gatillon', $result->person->last_name);
-        $this->assertEquals('Annecy', $result->person->locality);
-        $this->assertEquals('Suisse', $result->person->country->name);
+        $result = Beneficiary::new($data)->append('user')->toArray();
+        $expected = [
+            'id' => 5,
+            'reference' => null,
+            'person_id' => 8,
+            'company_id' => null,
+            'can_make_reservation' => false,
+            'note' => null,
+            'created_at' => '2023-02-10 15:00:00',
+            'updated_at' => '2023-02-10 15:00:00',
+            'deleted_at' => null,
+            'first_name' => 'José',
+            'last_name' => 'Gatillon',
+            'full_name' => 'José Gatillon',
+            'email' => 'test@other-benef.net',
+            'phone' => null,
+            'street' => null,
+            'postal_code' => '74000',
+            'locality' => 'Annecy',
+            'full_address' => '74000 Annecy',
+            'company' => null,
+            'country' => [
+                'id' => 2,
+                'name' => 'Suisse',
+                'code' => 'CH',
+                'created_at' => null,
+                'updated_at' => null,
+                'deleted_at' => null,
+            ],
+            'country_id' => 2,
+            'user_id' => null,
+            'user' => null,
+            'person' => [
+                'id' => 8,
+                'user_id' => null,
+                'first_name' => 'José',
+                'last_name' => 'Gatillon',
+                'email' => 'test@other-benef.net',
+                'phone' => null,
+                'street' => null,
+                'postal_code' => '74000',
+                'locality' => 'Annecy',
+                'country_id' => 2,
+                'created_at' => '2023-02-10 15:00:00',
+                'updated_at' => '2023-02-10 15:00:00',
+                'full_name' => 'José Gatillon',
+                'full_address' => '74000 Annecy',
+                'country' => [
+                    'id' => 2,
+                    'name' => 'Suisse',
+                    'code' => 'CH',
+                    'created_at' => null,
+                    'updated_at' => null,
+                    'deleted_at' => null,
+                ],
+                'user' => null,
+            ],
+        ];
+        $this->assertSame($expected, $result);
     }
 
     public function testUpdateNotFound(): void

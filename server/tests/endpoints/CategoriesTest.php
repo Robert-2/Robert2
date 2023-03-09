@@ -1,8 +1,11 @@
 <?php
+declare(strict_types=1);
+
 namespace Robert2\Tests;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Illuminate\Support\Collection;
+use Robert2\Support\Arr;
 
 final class CategoriesTest extends ApiTestCase
 {
@@ -39,7 +42,7 @@ final class CategoriesTest extends ApiTestCase
 
         if (!$details) {
             $categories = $categories->map(fn($category) => (
-                array_without_keys($category, ['sub_categories'])
+                Arr::except($category, ['sub_categories'])
             ));
         }
 
@@ -58,6 +61,23 @@ final class CategoriesTest extends ApiTestCase
         ]);
     }
 
+    public function testCreateWithoutData()
+    {
+        $this->client->post('/api/categories');
+        $this->assertStatusCode(StatusCode::STATUS_BAD_REQUEST);
+        $this->assertApiErrorMessage("No data was provided.");
+    }
+
+    public function testCreateBadData()
+    {
+        $this->client->post('/api/categories', [
+            'name' => '',
+        ]);
+        $this->assertApiValidationError([
+            'name' => ['This field is mandatory'],
+        ]);
+    }
+
     public function testCreate()
     {
         $this->client->post('/api/categories', [
@@ -72,20 +92,20 @@ final class CategoriesTest extends ApiTestCase
         ]);
     }
 
-    public function testUpdateCategoryNoData()
+    public function testUpdateNoData()
     {
         $this->client->put('/api/categories/1', []);
         $this->assertStatusCode(StatusCode::STATUS_BAD_REQUEST);
-        $this->assertErrorMessage("No data was provided.");
+        $this->assertApiErrorMessage("No data was provided.");
     }
 
     public function testUpdateCategoryNotFound()
     {
         $this->client->put('/api/categories/999', ['name' => '__inexistant__']);
-        $this->assertNotFound();
+        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
-    public function testUpdateCategory()
+    public function testUpdate()
     {
         $updatedData = [
             'name' => 'Sound edited',
@@ -97,12 +117,12 @@ final class CategoriesTest extends ApiTestCase
         );
     }
 
-    public function testDeleteCategory()
+    public function testDelete()
     {
         $this->client->delete('/api/categories/3');
         $this->assertStatusCode(StatusCode::STATUS_NO_CONTENT);
 
         $this->client->get('/api/categories/3');
-        $this->assertNotFound();
+        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 }

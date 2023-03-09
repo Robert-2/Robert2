@@ -3,32 +3,28 @@ declare(strict_types=1);
 
 namespace Robert2\API\Controllers;
 
+use Brick\Math\BigDecimal as Decimal;
 use DI\Container;
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Support\Carbon;
-use Robert2\API\Config\Config;
 use Robert2\API\Controllers\Traits\WithCrud;
 use Robert2\API\Controllers\Traits\WithPdf;
-use Robert2\API\Errors\ValidationException;
-use Robert2\API\Models\Enums\Group;
+use Robert2\API\Errors\Exception\ValidationException;
+use Robert2\API\Http\Request;
+use Robert2\API\Models\Estimate;
 use Robert2\API\Models\Event;
+use Robert2\API\Models\Invoice;
 use Robert2\API\Models\Material;
-use Robert2\API\Models\Park;
 use Robert2\API\Services\Auth;
 use Robert2\API\Services\I18n;
-use Slim\Exception\HttpException;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
-use Slim\Http\ServerRequest as Request;
 
 class EventController extends BaseController
 {
     use WithCrud;
     use WithPdf;
-
-    public const MAX_GET_ALL_PERIOD = 3.5 * 30; // - En jours
 
     private I18n $i18n;
 
@@ -50,111 +46,34 @@ class EventController extends BaseController
         $search = $request->getQueryParam('search', null);
         $exclude = $request->getQueryParam('exclude', null);
 
-        if ($search) {
-            $query = (new Event)
-                ->addSearch($search)
-                ->select(['id', 'title', 'start_date', 'end_date', 'location'])
-                ->whereHas('materials');
+        $query = Event::query()
+            ->when($search !== null, fn ($builder) => (
+                $builder->search($search)
+            ))
+            ->when($exclude !== null, fn ($builder) => (
+                $builder->where('id', '<>', $exclude)
+            ))
+            ->select(['id', 'title', 'start_date', 'end_date', 'location'])
+            ->orderBy('start_date', 'desc')
+            ->whereHas('materials');
 
-            if ($exclude) {
-                $query->where('id', '<>', $exclude);
-            }
-
-            $count = $query->count();
-            $results = $query->orderBy('start_date', 'desc')->limit(10)->get();
-            return $response->withJson(['count' => $count, 'data' => $results]);
-        }
-
-        $startDate = $request->getQueryParam('start', null);
-        $endDate = $request->getQueryParam('end', null);
-
-        // - Limitation de la période récupérable
-        $maxEndDate = Carbon::parse($startDate)->addDays(self::MAX_GET_ALL_PERIOD);
-        if (Carbon::parse($endDate)->greaterThan($maxEndDate)) {
-            throw new HttpException(
-                $request,
-                sprintf('The retrieval period for events may not exceed %s days.', self::MAX_GET_ALL_PERIOD),
-                StatusCode::STATUS_RANGE_NOT_SATISFIABLE
-            );
-        }
-
-        $query = Event::inPeriod($startDate, $endDate)
-            ->with('beneficiaries')
-            ->with('technicians')
-            ->with(['materials' => function ($q) {
-                $q->orderBy('name', 'asc');
-            }]);
-
-        $deleted = (bool)$request->getQueryParam('deleted', false);
-        if ($deleted) {
-            $query->onlyTrashed();
-        }
-
-        $events = $query->get();
-
-        $concurrentEvents = Event::inPeriod($startDate, $endDate)
-            ->with('materials')
-            ->get()->toArray();
-
-        foreach ($events as $event) {
-            $event->__cachedConcurrentEvents = array_values(
-                array_filter($concurrentEvents, function ($otherEvent) use ($event) {
-                    $startDate = new \DateTime($event->start_date);
-                    $otherStartDate = new \DateTime($otherEvent['start_date']);
-                    $endDate = new \DateTime($event->end_date);
-                    $otherEndDate = new \DateTime($otherEvent['end_date']);
-                    return (
-                        $event->id !== $otherEvent['id'] &&
-                        $startDate <= $otherEndDate &&
-                        $endDate >= $otherStartDate
-                    );
-                })
-            );
-        }
-
-        $append = [
-            'technicians',
-            'beneficiaries',
-            'has_missing_materials',
-            'has_not_returned_materials',
-        ];
-
-        $data = $query->get()->append($append)
-            ->map(fn($event) => $event->serialize())
-            ->all();
-
-        $useMultipleParks = Park::count() > 1;
-        foreach ($events as $index => $event) {
-            $data[$index]['parks'] = $useMultipleParks
-                ? Event::getParks($event->materials)
-                : null;
-        }
-
-        // FIXME: Pourquoi le `['data' => ...]` ?
-        return $response->withJson(['data' => $data], StatusCode::STATUS_OK);
-    }
-
-    public function getOne(Request $request, Response $response): Response
-    {
-        $id = (int)$request->getAttribute('id');
-        if (!Event::staticExists($id)) {
-            throw new HttpNotFoundException($request);
-        }
-
-        $eventData = $this->_getPopulatedEvent($id, true);
-        return $response->withJson($eventData, StatusCode::STATUS_OK);
+        return $response->withJson([
+            'count' => $query->count(),
+            'data' => $query->limit(10)->get(),
+        ]);
     }
 
     public function getMissingMaterials(Request $request, Response $response): Response
     {
-        $id = (int)$request->getAttribute('id');
+        $id = (int) $request->getAttribute('id');
 
         $missingMaterials = Event::findOrFail($id)->missingMaterials()
             ->map(fn($material) => (
-                array_replace(
-                    $material->append('missing_quantity')->serialize(),
-                    ['pivot' => $material->pivot->toArray()]
-                )
+                array_replace($material->serialize(), [
+                    'pivot' => $material->pivot
+                        ->append('quantity_missing')
+                        ->toArray(),
+                ])
             ));
 
         return $response->withJson($missingMaterials, StatusCode::STATUS_OK);
@@ -162,7 +81,7 @@ class EventController extends BaseController
 
     public function create(Request $request, Response $response): Response
     {
-        $postData = (array)$request->getParsedBody();
+        $postData = (array) $request->getParsedBody();
         if (empty($postData)) {
             throw new HttpBadRequestException($request, "No data was provided.");
         }
@@ -172,35 +91,17 @@ class EventController extends BaseController
         }
 
         $event = Event::new($postData);
-        $formattedEvent = $this->_getPopulatedEvent($event->id);
-        return $response->withJson($formattedEvent, StatusCode::STATUS_CREATED);
-    }
-
-    public function update(Request $request, Response $response): Response
-    {
-        $id = (int)$request->getAttribute('id');
-        if (!Event::staticExists($id)) {
-            throw new HttpNotFoundException($request);
-        }
-
-        $postData = (array)$request->getParsedBody();
-        if (empty($postData)) {
-            throw new HttpBadRequestException($request, "No data was provided.");
-        }
-
-        $event = Event::staticEdit($id, $postData);
-        $formattedEvent = $this->_getPopulatedEvent($event->id);
-        return $response->withJson($formattedEvent, StatusCode::STATUS_OK);
+        return $response->withJson(static::_formatOne($event), StatusCode::STATUS_CREATED);
     }
 
     public function duplicate(Request $request, Response $response): Response
     {
-        $originalId = (int)$request->getAttribute('id');
+        $originalId = (int) $request->getAttribute('id');
         if (!Event::staticExists($originalId)) {
             throw new HttpNotFoundException($request);
         }
 
-        $postData = (array)$request->getParsedBody();
+        $postData = (array) $request->getParsedBody();
         if (empty($postData)) {
             throw new HttpBadRequestException($request, "No data was provided.");
         }
@@ -211,43 +112,115 @@ class EventController extends BaseController
             throw new HttpNotFoundException($request);
         }
 
-        $formattedEvent = $this->_getPopulatedEvent($newEvent->id);
-        return $response->withJson($formattedEvent, StatusCode::STATUS_CREATED);
+        return $response->withJson(static::_formatOne($newEvent), StatusCode::STATUS_CREATED);
     }
 
-    public function updateMaterialReturn(Request $request, Response $response): Response
+    public function updateReturnInventory(Request $request, Response $response): Response
     {
-        $id = (int)$request->getAttribute('id');
+        $id = (int) $request->getAttribute('id');
         if (!Event::staticExists($id)) {
             throw new HttpNotFoundException($request);
         }
 
-        $postData = (array)$request->getParsedBody();
-        $this->_saveReturnQuantities($id, $postData);
+        $postData = (array) $request->getParsedBody();
+        $this->_saveReturnInventory($id, $postData);
 
-        $formattedEvent = $this->_getPopulatedEvent($id);
-        return $response->withJson($formattedEvent, StatusCode::STATUS_OK);
+        $event = Event::findOrFail($id);
+        return $response->withJson(static::_formatOne($event), StatusCode::STATUS_OK);
     }
 
-    public function updateMaterialTerminate(Request $request, Response $response): Response
+    public function finishReturnInventory(Request $request, Response $response): Response
     {
-        $id = (int)$request->getAttribute('id');
+        $id = (int) $request->getAttribute('id');
         if (!Event::staticExists($id)) {
             throw new HttpNotFoundException($request);
         }
 
-        $postData = (array)$request->getParsedBody();
-        $this->_saveReturnQuantities($id, $postData);
+        $postData = (array) $request->getParsedBody();
+        dbTransaction(function () use ($id, $postData) {
+            $this->_saveReturnInventory($id, $postData);
 
-        Event::staticEdit($id, [
-            'is_confirmed' => true,
-            'is_return_inventory_done' => true,
-        ]);
+            Event::staticEdit($id, [
+                'is_confirmed' => true,
+                'is_return_inventory_done' => true,
+            ]);
 
-        $this->_setBrokenMaterialsQuantities($postData);
+            $this->_setBrokenMaterialsQuantities($postData);
+        });
 
-        $formattedEvent = $this->_getPopulatedEvent($id);
-        return $response->withJson($formattedEvent, StatusCode::STATUS_OK);
+        $event = Event::findOrFail($id);
+        return $response->withJson(static::_formatOne($event), StatusCode::STATUS_OK);
+    }
+
+    public function createEstimate(Request $request, Response $response): Response
+    {
+        $id = (int) $request->getAttribute('id');
+        $event = Event::findOrFail($id);
+
+        $discountRate = $request->getParsedBodyParam('discountRate', 0);
+        $event->discount_rate = is_numeric($discountRate)
+            ? Decimal::of($discountRate)
+            : Decimal::zero();
+
+        $estimate = Estimate::createFromBooking($event, Auth::user());
+        return $response->withJson($estimate, StatusCode::STATUS_CREATED);
+    }
+
+    public function createInvoice(Request $request, Response $response): Response
+    {
+        $id = (int) $request->getAttribute('id');
+        $event = Event::findOrFail($id);
+
+        $discountRate = $request->getParsedBodyParam('discountRate', 0);
+        $event->discount_rate = is_numeric($discountRate)
+            ? Decimal::of($discountRate)
+            : Decimal::zero();
+
+        $invoice = Invoice::createFromBooking($event, Auth::user());
+        return $response->withJson($invoice, StatusCode::STATUS_CREATED);
+    }
+
+    public function archive(Request $request, Response $response): Response
+    {
+        $id = (int) $request->getAttribute('id');
+        $event = Event::findOrFail($id);
+
+        $event->is_archived = true;
+        $event->save();
+
+        return $response->withJson(static::_formatOne($event), StatusCode::STATUS_OK);
+    }
+
+    public function unarchive(Request $request, Response $response): Response
+    {
+        $id = (int) $request->getAttribute('id');
+        $event = Event::findOrFail($id);
+
+        $event->is_archived = false;
+        $event->save();
+
+        return $response->withJson(static::_formatOne($event), StatusCode::STATUS_OK);
+    }
+
+    public function delete(Request $request, Response $response): Response
+    {
+        $id = (int) $request->getAttribute('id');
+        $event = Event::withTrashed()
+            ->orWhere(function ($query) {
+                $query->where('is_confirmed', false)
+                    ->where('is_return_inventory_done', false);
+            })
+            ->findOrFail($id);
+
+        $isDeleted = $event->trashed()
+            ? $event->forceDelete()
+            : $event->delete();
+
+        if (!$isDeleted) {
+            throw new \RuntimeException("An unknown error occurred while deleting the event.");
+        }
+
+        return $response->withStatus(StatusCode::STATUS_NO_CONTENT);
     }
 
     // ------------------------------------------------------
@@ -256,14 +229,12 @@ class EventController extends BaseController
     // -
     // ------------------------------------------------------
 
-    protected function _saveReturnQuantities(int $id, array $data): void
+    protected function _saveReturnInventory(int $id, array $data): void
     {
         $event = Event::find($id);
-
-        $eventMaterialsQuantities = [];
-        foreach ($event->materials as $material) {
-            $eventMaterialsQuantities[$material->id] = $material->pivot->quantity;
-        };
+        $eventMaterials = $event->materials
+            ->keyBy('id')
+            ->all();
 
         $quantities = [];
         $errors = [];
@@ -271,57 +242,50 @@ class EventController extends BaseController
             if (!array_key_exists('id', $quantity)) {
                 continue;
             }
+
             $materialId = $quantity['id'];
+            $addError = function ($message) use ($materialId, &$errors) {
+                $errors[] = [
+                    'id' => $materialId,
+                    'message' => $this->i18n->translate($message),
+                ];
+            };
+
+            if (!array_key_exists($materialId, $eventMaterials)) {
+                continue;
+            }
+            $material = $eventMaterials[$materialId];
 
             if (!array_key_exists('actual', $quantity) || !is_integer($quantity['actual'])) {
-                $errors[] = [
-                    'id' => $materialId,
-                    'message' => $this->i18n->translate('returned-quantity-not-valid'),
-                ];
+                $addError('returned-quantity-not-valid');
                 continue;
             }
-            $actual = (int)$quantity['actual'];
+            $actual = (int) $quantity['actual'];
 
             if (!array_key_exists('broken', $quantity) || !is_integer($quantity['broken'])) {
-                $errors[] = [
-                    'id' => $materialId,
-                    'message' => $this->i18n->translate('broken-quantity-not-valid'),
-                ];
+                $addError('broken-quantity-not-valid');
                 continue;
             }
-            $broken = (int)$quantity['broken'];
+            $broken = (int) $quantity['broken'];
 
             if ($actual < 0 || $broken < 0) {
-                $errors[] = [
-                    'id' => $materialId,
-                    'message' => $this->i18n->translate('quantities-cannot-be-negative'),
-                ];
+                $addError('quantities-cannot-be-negative');
                 continue;
             }
 
-            if ($actual > $eventMaterialsQuantities[$materialId]) {
-                $errors[] = [
-                    'id' => $materialId,
-                    'message' => $this->i18n->translate(
-                        'returned-quantity-cannot-be-greater-than-output-quantity'
-                    ),
-                ];
+            if ($actual > $material->pivot->quantity) {
+                $addError('returned-quantity-cannot-be-greater-than-output-quantity');
                 continue;
             }
 
             if ($broken > $actual) {
-                $errors[] = [
-                    'id' => $materialId,
-                    'message' => $this->i18n->translate(
-                        'broken-quantity-cannot-be-greater-than-returned-quantity'
-                    ),
-                ];
+                $addError('broken-quantity-cannot-be-greater-than-returned-quantity');
                 continue;
             }
 
             $quantities[$materialId] = [
                 'quantity_returned' => $actual,
-                'quantity_broken' => $broken,
+                'quantity_returned_broken' => $broken,
             ];
         }
 
@@ -329,13 +293,13 @@ class EventController extends BaseController
             throw new ValidationException($errors);
         }
 
-        $event->Materials()->sync($quantities);
+        $event->materials()->sync($quantities);
     }
 
     protected function _setBrokenMaterialsQuantities(array $data): void
     {
         foreach ($data as $quantities) {
-            $broken = (int)$quantities['broken'];
+            $broken = (int) $quantities['broken'];
             if ($broken === 0) {
                 continue;
             }
@@ -345,34 +309,16 @@ class EventController extends BaseController
                 continue;
             }
 
-            $material->out_of_order_quantity += (int)$quantities['broken'];
+            // FIXME: Cette façon de faire n'est pas safe car si le matériel sortie
+            //        - non unitaire - était du matériel externe, on le compte comme
+            //        cassé dans le stock réel...
+            $material->out_of_order_quantity += (int) $quantities['broken'];
             $material->save();
         }
     }
 
-    protected function _getPopulatedEvent(int $id, bool $withDetails = false): Event
+    protected static function _formatOne(Event $event): array
     {
-        $appendRelations = [
-            'beneficiaries',
-            'technicians',
-            'materials',
-            'estimates',
-            'bills',
-            'user',
-        ];
-
-        $event = Event::query()
-            ->with($appendRelations)
-            ->find($id)
-            ->append($appendRelations);
-
-        if ($withDetails) {
-            $event = $event->append([
-                'has_missing_materials',
-                'has_not_returned_materials',
-            ]);
-        }
-
-        return $event;
+        return $event->serialize(Event::SERIALIZE_DETAILS);
     }
 }

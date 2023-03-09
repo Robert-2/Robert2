@@ -1,24 +1,35 @@
 import './index.scss';
+import moment from 'moment';
 import { toRefs, computed, ref } from '@vue/composition-api';
+import axios from 'axios';
 import config from '@/globals/config';
 import { confirm } from '@/utils/alert';
-import useI18n from '@/hooks/vue/useI18n';
+import showModal from '@/utils/showModal';
+import useI18n from '@/hooks/useI18n';
+import useNow from '@/hooks/useNow';
+import { ApiErrorCode } from '@/stores/api/@codes';
 import apiEvents from '@/stores/api/events';
 import DuplicateEvent from '@/themes/default/modals/DuplicateEvent';
-import ListTemplateFromEvent from '@/themes/default/modals/ListTemplateFromEvent';
 import Dropdown, { getItemClassnames } from '@/themes/default/components/Dropdown';
+import Button from '@/themes/default/components/Button';
 import { Group } from '@/stores/api/groups';
 
 // @vue/component
 const EventDetailsHeaderActions = (props, { root, emit }) => {
-    const __ = useI18n();
     const { event } = toRefs(props);
+    const __ = useI18n();
+    const now = useNow();
+
     const isConfirming = ref(false);
     const isArchiving = ref(false);
     const isDeleting = ref(false);
+
+    const startDate = computed(() => moment(event.value.start_date));
+    const endDate = computed(() => moment(event.value.end_date));
     const hasMaterials = computed(() => event.value.materials.length > 0);
-    const isConfirmable = computed(() => event.value.materials?.length === 0);
-    const hasStarted = computed(() => event.value.startDate.isSameOrBefore(new Date(), 'day'));
+    const isConfirmable = computed(() => event.value.materials.length === 0);
+    const hasStarted = computed(() => startDate.value.isSameOrBefore(now.value));
+    const isEventPast = computed(() => endDate.value.isBefore(now.value, 'day'));
 
     const isPrintable = computed(() => (
         event.value.materials &&
@@ -27,17 +38,25 @@ const EventDetailsHeaderActions = (props, { root, emit }) => {
         event.value.beneficiaries.length > 0
     ));
 
-    const isVisitor = computed(() => (
-        root.$store.getters['auth/is'](Group.VISITOR)
+    const isTeamMember = computed(() => (
+        root.$store.getters['auth/is']([Group.MEMBER, Group.ADMIN])
     ));
 
     const isEditable = computed(() => {
-        const { isPast, isConfirmed, isInventoryDone } = event.value;
-        return !isPast || !(isInventoryDone || isConfirmed);
+        const {
+            is_confirmed: isConfirmed,
+            is_return_inventory_done: isInventoryDone,
+        } = event.value;
+
+        return !isEventPast.value || !(isInventoryDone || isConfirmed);
     });
 
     const isRemovable = computed(() => {
-        const { isConfirmed, isInventoryDone } = event.value;
+        const {
+            is_confirmed: isConfirmed,
+            is_return_inventory_done: isInventoryDone,
+        } = event.value;
+
         return !(isConfirmed || isInventoryDone);
     });
 
@@ -47,47 +66,60 @@ const EventDetailsHeaderActions = (props, { root, emit }) => {
     });
 
     const handleToggleConfirm = async () => {
-        if (isVisitor.value || isConfirming.value) {
+        if (!isTeamMember.value || isConfirming.value) {
             return;
         }
         isConfirming.value = true;
 
-        const { id, isConfirmed } = event.value;
+        const { id, is_confirmed: isConfirmed } = event.value;
 
         try {
             const data = await apiEvents.setConfirmed(id, !isConfirmed);
             emit('saved', data);
         } catch (error) {
-            emit('error', error);
+            root.$toasted.error(__('errors.unexpected-while-saving'));
         } finally {
             isConfirming.value = false;
         }
     };
 
     const handleToggleArchived = async () => {
-        if (isVisitor.value || isArchiving.value) {
+        if (!isTeamMember.value || isArchiving.value) {
             return;
         }
         isArchiving.value = true;
 
-        const { id, isArchived } = event.value;
+        const { id, is_archived: isArchived } = event.value;
 
         try {
-            const data = await apiEvents.setArchived(id, !isArchived);
+            const data = isArchived
+                ? await apiEvents.unarchive(id)
+                : await apiEvents.archive(id);
+
             emit('saved', data);
         } catch (error) {
-            emit('error', error);
+            const defaultMessage = __('errors.unexpected-while-saving');
+            if (!axios.isAxiosError(error)) {
+                root.$toasted.error(defaultMessage);
+            } else {
+                const { code = ApiErrorCode.UNKNOWN, details = {} } = error.response?.data?.error ?? {};
+                if (code === ApiErrorCode.VALIDATION_FAILED) {
+                    root.$toasted.error(details.is_archived ?? defaultMessage);
+                } else {
+                    root.$toasted.error(defaultMessage);
+                }
+            }
         } finally {
             isArchiving.value = false;
         }
     };
 
     const handleDelete = async () => {
-        if (isVisitor.value || !isRemovable.value || isDeleting.value) {
+        if (!isTeamMember.value || !isRemovable.value || isDeleting.value) {
             return;
         }
 
-        const { value: isConfirmed } = await confirm({
+        const isConfirmed = await confirm({
             title: __('please-confirm'),
             text: __('@event.confirm-delete'),
             confirmButtonText: __('yes-delete'),
@@ -104,7 +136,7 @@ const EventDetailsHeaderActions = (props, { root, emit }) => {
             await apiEvents.remove(id);
             emit('deleted', id);
         } catch (error) {
-            emit('error', error);
+            root.$toasted.error(__('errors.unexpected-while-deleting'));
         } finally {
             isDeleting.value = false;
         }
@@ -115,114 +147,101 @@ const EventDetailsHeaderActions = (props, { root, emit }) => {
     };
 
     const askDuplicate = () => {
-        if (isVisitor.value) {
+        if (!isTeamMember.value) {
             return;
         }
 
-        root.$modal.show(DuplicateEvent, { event: event.value, onDuplicated: handleDuplicated }, {
-            width: 600,
-            draggable: true,
-            clickToClose: false,
-        });
-    };
-
-    const handleCreateListTemplate = () => {
-        if (isVisitor.value) {
-            return;
-        }
-
-        const { materials } = event.value;
-
-        root.$modal.show(ListTemplateFromEvent, { materials }, {
-            width: 600,
-            draggable: true,
-            clickToClose: false,
+        showModal(root.$modal, DuplicateEvent, {
+            event: event.value,
+            onDuplicated: handleDuplicated,
         });
     };
 
     return () => {
         const {
             id,
-            isPast,
-            isConfirmed,
-            isInventoryDone,
-            isArchived,
+            is_confirmed: isConfirmed,
+            is_return_inventory_done: isReturnInventoryDone,
+            is_archived: isArchived,
         } = event.value;
 
         return (
             <div class="EventDetailsHeaderActions">
                 {isPrintable.value && (
-                    <a href={eventSummaryPdfUrl.value} class="button outline" target="_blank" rel="noreferrer">
-                        <i class="fas fa-print" /> {__('print')}
-                    </a>
+                    <Button
+                        icon="print"
+                        type="secondary"
+                        to={eventSummaryPdfUrl.value}
+                        external
+                    >
+                        {__('print')}
+                    </Button>
                 )}
-                {isEditable.value && !isVisitor.value && (
-                    <router-link to={`/events/${id}`} class="button info">
-                        <i class="fas fa-edit" /> {__('action-edit')}
-                    </router-link>
+                {isEditable.value && isTeamMember.value && (
+                    <Button
+                        type="primary"
+                        icon="edit"
+                        to={{ name: 'edit-event', params: { id } }}
+                    >
+                        {__('action-edit')}
+                    </Button>
                 )}
-                {(isPast || hasStarted.value) && !isArchived && !isVisitor.value && (
-                    <router-link to={`/event-return/${id}`} class="button info">
-                        <i class="fas fa-tasks" /> {__('return-inventory')}
-                    </router-link>
+                {(isEventPast.value || hasStarted.value) && !isArchived && isTeamMember.value && (
+                    <Button
+                        type="primary"
+                        icon="tasks"
+                        to={{ name: 'event-return-inventory', params: { id } }}
+                    >
+                        {__('return-inventory')}
+                    </Button>
                 )}
-                {!isVisitor.value && (
+                {isTeamMember.value && (
                     <Dropdown variant="actions">
                         <template slot="items">
-                            {!isPast && (
-                                <button
-                                    type="button"
-                                    class={{
-                                        ...getItemClassnames(),
-                                        info: isConfirmed,
-                                        success: !isConfirmed,
-                                    }}
+                            {!isEventPast.value && (
+                                <Button
+                                    type={isConfirmed ? 'warning' : 'success'}
+                                    icon={isConfirmed ? 'hourglass-half' : 'check'}
+                                    class={{ ...getItemClassnames() }}
                                     disabled={isConfirmable.value}
+                                    loading={isConfirming.value}
                                     onClick={handleToggleConfirm}
                                 >
-                                    {(!isConfirming.value && !isConfirmed) && <i class="fas fa-check" />}
-                                    {(!isConfirming.value && isConfirmed) && <i class="fas fa-hourglass-half" />}
-                                    {isConfirming.value && <i class="fas fa-circle-notch fa-spin" />}
-                                    {' '}{isConfirmed ? __('unconfirm-event') : __('confirm-event')}
-                                </button>
+                                    {isConfirmed ? __('unconfirm-event') : __('confirm-event')}
+                                </Button>
                             )}
-                            {isPast && isInventoryDone && (
-                                <button
-                                    type="button"
-                                    class={{ ...getItemClassnames(), info: !isArchived }}
+                            {isEventPast.value && isReturnInventoryDone && (
+                                <Button
+                                    type={isArchived ? 'default' : 'primary'}
+                                    icon="archive"
+                                    class={{ ...getItemClassnames() }}
+                                    loading={isArchiving.value}
                                     onClick={handleToggleArchived}
                                 >
-                                    {!isArchiving.value && <i class="fas fa-archive" />}
-                                    {isArchiving.value && <i class="fas fa-circle-notch fa-spin" />}
-                                    {' '}{isArchived ? __('unarchive-event') : __('archive-event')}
-                                </button>
+                                    {
+                                        isArchived
+                                            ? __('modal.event-details.unarchive')
+                                            : __('modal.event-details.archive')
+                                    }
+                                </Button>
                             )}
-                            <button
-                                type="button"
-                                class={{ ...getItemClassnames(), warning: true }}
+                            <Button
+                                type="primary"
+                                class={{ ...getItemClassnames() }}
+                                icon="copy"
                                 onClick={askDuplicate}
                             >
-                                <i class="fas fa-copy" /> {__('duplicate-event')}
-                            </button>
+                                {__('duplicate-event')}
+                            </Button>
                             {isRemovable.value && (
-                                <button
-                                    type="button"
-                                    class={{ ...getItemClassnames(), danger: true }}
+                                <Button
+                                    type="delete"
+                                    class={{ ...getItemClassnames() }}
+                                    loading={isDeleting.value}
                                     onClick={handleDelete}
                                 >
-                                    {!isDeleting.value && <i class="fas fa-trash" />}
-                                    {isDeleting.value && <i class="fas fa-circle-notch fa-spin" />}
-                                    {' '}{__('delete-event')}
-                                </button>
-                            )}
-                            {hasMaterials.value && (
-                                <button
-                                    type="button"
-                                    class={{ ...getItemClassnames() }}
-                                    onClick={handleCreateListTemplate}
-                                >
-                                    <i class="fas fa-list" /> {__('create-list-template-from-event')}
-                                </button>
+                                    {__('delete-event')}
+                                </Button>
                             )}
                         </template>
                     </Dropdown>
@@ -236,6 +255,6 @@ EventDetailsHeaderActions.props = {
     event: { type: Object, required: true },
 };
 
-EventDetailsHeaderActions.emits = ['saved', 'deleted', 'duplicated', 'error'];
+EventDetailsHeaderActions.emits = ['saved', 'deleted', 'duplicated'];
 
 export default EventDetailsHeaderActions;

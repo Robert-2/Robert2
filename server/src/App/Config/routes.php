@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 return [
     'get' => [
         '/session[/]' => 'AuthController:getSelf',
@@ -39,7 +41,7 @@ return [
         '/materials/{id:[0-9]+}[/]' => 'MaterialController:getOne',
         '/materials/{id:[0-9]+}/tags[/]' => 'MaterialController:getTags',
         '/materials/{id:[0-9]+}/documents[/]' => 'MaterialController:getAllDocuments',
-        '/materials/{id:[0-9]+}/events[/]' => 'MaterialController:getEvents',
+        '/materials/{id:[0-9]+}/bookings[/]' => 'MaterialController:getBookings',
         '/materials/while-event/{eventId:[0-9]+}[/]' => 'MaterialController:getAllWhileEvent',
 
         '/events[/]' => 'EventController:getAll',
@@ -48,11 +50,9 @@ return [
 
         '/event-technicians/{id:[0-9]+}[/]' => 'EventTechnicianController:getOne',
 
-        '/bills/{id:[0-9]+}[/]' => 'BillController:getOne',
-
-        '/estimates/{id:[0-9]+}[/]' => 'EstimateController:getOne',
-
         '/settings[/]' => 'SettingController:getAll',
+
+        '/bookings[/]' => 'BookingController:getAll',
     ],
     'post' => [
         '/session[/]' => 'AuthController:loginWithForm',
@@ -80,8 +80,8 @@ return [
 
         '/events[/]' => 'EventController:create',
         '/events/{id:[0-9]+}/duplicate[/]' => 'EventController:duplicate',
-        '/events/{eventId:[0-9]+}/bill[/]' => 'BillController:create',
-        '/events/{eventId:[0-9]+}/estimate[/]' => 'EstimateController:create',
+        '/events/{id:[0-9]+}/invoices[/]' => 'EventController:createInvoice',
+        '/events/{id:[0-9]+}/estimates[/]' => 'EventController:createEstimate',
 
         '/event-technicians[/]' => 'EventTechnicianController:create',
     ],
@@ -118,8 +118,10 @@ return [
 
         '/events/{id:[0-9]+}[/]' => 'EventController:update',
         '/events/restore/{id:[0-9]+}[/]' => 'EventController:restore',
-        '/events/{id:[0-9]+}/return[/]' => 'EventController:updateMaterialReturn',
-        '/events/{id:[0-9]+}/terminate[/]' => 'EventController:updateMaterialTerminate',
+        '/events/{id:[0-9]+}/inventory[/]' => 'EventController:updateReturnInventory',
+        '/events/{id:[0-9]+}/inventory/finish[/]' => 'EventController:finishReturnInventory',
+        '/events/{id:[0-9]+}/archive[/]' => 'EventController:archive',
+        '/events/{id:[0-9]+}/unarchive[/]' => 'EventController:unarchive',
 
         '/event-technicians/{id:[0-9]+}[/]' => 'EventTechnicianController:update',
 
@@ -138,7 +140,6 @@ return [
         '/attributes/{id:[0-9]+}[/]' => 'AttributeController:delete',
         '/events/{id:[0-9]+}[/]' => 'EventController:delete',
         '/event-technicians/{id:[0-9]+}[/]' => 'EventTechnicianController:delete',
-        '/bills/{id:[0-9]+}[/]' => 'BillController:delete',
         '/documents/{id:[0-9]+}[/]' => 'DocumentController:delete',
         '/estimates/{id:[0-9]+}[/]' => 'EstimateController:delete',
         '/settings/{key:[a-zA-Z0-9-.]+}[/]' => 'SettingController:reset',

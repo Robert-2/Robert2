@@ -3,9 +3,24 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
-use Robert2\API\Validation\Validator as V;
+use Monolog\Logger;
+use Respect\Validation\Validator as V;
 
-class Document extends BaseModel
+/**
+ * Document d'un matériel.
+ *
+ * @property-read ?int $id
+ * @property int $material_id
+ * @property-read Material $material
+ * @property string $name
+ * @property string $type
+ * @property int $size
+ * @property-read string $file_path
+ * @property-read Carbon $created_at
+ * @property-read Carbon|null $updated_at
+ * @property-read Carbon|null $deleted_at
+ */
+final class Document extends BaseModel
 {
     private const FILE_BASEPATH = (
         DATA_FOLDER . DS . 'materials' . DS . 'documents'
@@ -21,10 +36,10 @@ class Document extends BaseModel
         parent::__construct($attributes);
 
         $this->validation = [
-            'material_id' => V::notEmpty()->numeric(),
-            'name' => V::callback([$this, 'checkName']),
+            'material_id' => V::notEmpty()->numericVal(),
+            'name' => V::custom([$this, 'checkName']),
             'type' => V::notEmpty()->length(2, 191),
-            'size' => V::notEmpty()->numeric(),
+            'size' => V::notEmpty()->numericVal(),
         ];
     }
 
@@ -67,8 +82,7 @@ class Document extends BaseModel
 
     public function material()
     {
-        return $this->belongsTo(Material::class)
-            ->select(['id', 'name', 'reference']);
+        return $this->belongsTo(Material::class);
     }
 
     // ------------------------------------------------------
@@ -104,25 +118,25 @@ class Document extends BaseModel
 
     // ------------------------------------------------------
     // -
-    // -    "Repository" methods
+    // -    Overwritten methods
     // -
     // ------------------------------------------------------
 
-    public static function staticRemove($id, array $options = []): ?BaseModel
+    public function delete()
     {
-        $document = static::findOrFail($id);
-        if (!$document->forceDelete()) {
-            throw new \RuntimeException(sprintf("Unable to delete the document #%d.", $id));
+        if (!parent::delete()) {
+            return false;
         }
 
-        $filePath = $document->file_path;
-        if (!unlink($filePath)) {
-            throw new \RuntimeException(
-                sprintf("Unable to delete file '%s' from data folder: %s", $document->name, $filePath)
+        $filePath = $this->file_path;
+        if (file_exists($filePath) && !unlink($filePath)) {
+            container('logger')->log(
+                Logger::WARNING,
+                sprintf('Unable to delete file "%s" (path: %s)', $this->name, $filePath)
             );
-        };
+        }
 
-        return $document;
+        return true;
     }
 
     // ------------------------------------------------------

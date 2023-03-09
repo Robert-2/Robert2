@@ -6,9 +6,10 @@ import initColumnsDisplay from '@/utils/initColumnsDisplay';
 import isValidInteger from '@/utils/isValidInteger';
 import formatAmount from '@/utils/formatAmount';
 import isSameDate from '@/utils/isSameDate';
+import showModal from '@/utils/showModal';
 import apiMaterials from '@/stores/api/materials';
 import AssignTags from '@/themes/default/modals/AssignTags';
-import Fragment from '@/themes/default/components/Fragment';
+import Fragment from '@/components/Fragment';
 import Dropdown, { getItemClassnames } from '@/themes/default/components/Dropdown';
 import Page from '@/themes/default/components/Page';
 import CriticalError from '@/themes/default/components/CriticalError';
@@ -23,7 +24,7 @@ import { Group } from '@/stores/api/groups';
 export default {
     name: 'Materials',
     data() {
-        const { $route, $options } = this;
+        const { $options } = this;
 
         // - Columns
         let columns = [
@@ -60,7 +61,6 @@ export default {
                 preserveState: true,
                 saveState: true,
                 orderBy: { column: 'name', ascending: true },
-                initialPage: $route.query.page || 1,
                 sortable: [],
                 columnsDisplay: initColumnsDisplay($options.name, {
                     reference: true,
@@ -146,29 +146,17 @@ export default {
                         );
                     },
                     rental_price: (h, material) => (
-                        formatAmount(material.rental_price || 0)
+                        formatAmount(material.rental_price ?? 0)
                     ),
                     replacement_price: (h, material) => (
-                        formatAmount(material.replacement_price || 0)
+                        formatAmount(material.replacement_price ?? 0)
                     ),
                     stock_quantity: (h, material) => {
-                        const filters = this.getFilters();
-                        if (!material.is_unitary || !filters.park) {
-                            if (this.periodForQuantities !== null) {
-                                return material.available_quantity;
-                            }
-
-                            return material.stock_quantity;
+                        if (this.periodForQuantities !== null) {
+                            return material.available_quantity;
                         }
 
-                        const parkUnits = material.units.filter((unit) => {
-                            const isInPark = unit.park_id === filters.park;
-                            if (this.dateForQuantities !== null) {
-                                return isInPark && unit.is_available;
-                            }
-                            return isInPark;
-                        });
-                        return parkUnits.length;
+                        return material.stock_quantity;
                     },
                     out_of_order_quantity: (h, material) => (
                         material.out_of_order_quantity || ''
@@ -305,7 +293,7 @@ export default {
     watch: {
         periodForQuantities() {
             queryClient.invalidateQueries('materials-while-event');
-            this.$refs.table.getData();
+            this.$refs.table.refresh();
         },
     },
     mounted() {
@@ -321,22 +309,21 @@ export default {
         // ------------------------------------------------------
 
         handleChangeFilters() {
-            // FIXME: Pourquoi invalider ça juste parce qu'on change les filtres ?
-            queryClient.invalidateQueries('materials-while-event');
-            this.$refs.table.getData();
+            this.$refs.table.setPage(1);
+            this.$refs.table.refresh();
         },
 
         handleRemoveDateForQuantities() {
             this.periodForQuantities = null;
             queryClient.invalidateQueries('materials-while-event');
-            this.$refs.table.getData();
+            this.$refs.table.refresh();
         },
 
         async handleDeleteItem(id) {
             const { $t: __ } = this;
             const isSoft = !this.isTrashDisplayed;
 
-            const { value: isConfirmed } = await confirm({
+            const isConfirmed = await confirm({
                 type: isSoft ? 'warning' : 'danger',
 
                 text: isSoft
@@ -367,7 +354,7 @@ export default {
         async handleRestoreItem(id) {
             const { $t: __ } = this;
 
-            const { value: isConfirmed } = await confirm({
+            const isConfirmed = await confirm({
                 type: 'restore',
                 text: __('page.materials.confirm-restore'),
                 confirmButtonText: __('yes-restore'),
@@ -394,18 +381,22 @@ export default {
                 return;
             }
 
-            this.$modal.show(
-                AssignTags,
-                { id, name, entity: 'materials', initialTags: tags },
-                { width: 600, draggable: true, clickToClose: false },
-                { 'before-close': () => { this.$refs.table.getData(); } },
-            );
+            showModal(this.$modal, AssignTags, {
+                id,
+                name,
+                entity: 'materials',
+                initialTags: tags,
+                onClose: () => {
+                    this.$refs.table.refresh();
+                },
+            });
         },
 
         handleShowTrashed() {
             this.shouldDisplayTrashed = !this.shouldDisplayTrashed;
             this.isTrashDisplayed = !this.isTrashDisplayed;
-            this.$refs.table.getData();
+            this.$refs.table.setPage(1);
+            this.$refs.table.refresh();
         },
 
         // ------------------------------------------------------

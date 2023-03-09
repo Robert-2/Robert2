@@ -1,9 +1,10 @@
 import './index.scss';
-import Fragment from '@/themes/default/components/Fragment';
+import Fragment from '@/components/Fragment';
 import { confirm } from '@/utils/alert';
 import apiAttributes from '@/stores/api/attributes';
 import Input from '@/themes/default/components/Input';
 import Button from '@/themes/default/components/Button';
+import { ApiErrorCode } from '@/stores/api/@codes';
 
 // @vue/component
 export default {
@@ -90,8 +91,8 @@ export default {
 
                 this.$emit('updated', attribute);
             } catch (error) {
-                const { code, details } = error.response?.data?.error || { code: 0, details: {} };
-                if (code === 400) {
+                const { code, details } = error.response?.data?.error || { code: ApiErrorCode.UNKNOWN, details: {} };
+                if (code === ApiErrorCode.VALIDATION_FAILED) {
                     this.validationErrors = { ...details };
                 } else {
                     this.$toasted.error(__('errors.unexpected-while-saving'));
@@ -111,7 +112,7 @@ export default {
             // eslint-disable-next-line no-restricted-syntax
             for (const index of [1, 2]) {
                 // eslint-disable-next-line no-await-in-loop
-                const { value: isConfirmed } = await confirm({
+                const isConfirmed = await confirm({
                     type: 'danger',
                     text: __(`page.attributes.confirm-permanently-delete.${index}`),
                     confirmButtonText: __('yes-permanently-delete'),

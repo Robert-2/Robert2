@@ -26,9 +26,9 @@
             <h3 class="center">
                 {{ translate('as-of-date', date|format_date('long', locale=locale)) }}
                 {% if parkOnlyName is not null %}
-                {{ translate('for-park') }}
+                    {{ translate('for-park') }}
                 {% else %}
-                ({{ translate('all-parks') }})
+                    ({{ translate('all-parks') }})
                 {% endif %}
             </h3>
             {% if parkOnlyName is not null %}
@@ -42,9 +42,9 @@
     {% if parkOnlyName is null %}
     <h3 class="listing-title">
         {% if park['name'] is not empty %}
-        {{ park['name'] }}
+            {{ park['name'] }}
         {% else %}
-        ({{ translate('unknown-park') }})
+            ({{ translate('unknown-park') }})
         {% endif %}
     </h3>
     {% endif %}
@@ -55,7 +55,7 @@
                 <th>
                     {{ translate('designation') }}
                     {% if park['name'] is not empty %}
-                    <span class="normal lightest">- {{ translate('park-name', park['name']) }}</span>
+                        <span class="normal lightest">- {{ translate('park-name', park['name']) }}</span>
                     {% endif %}
                 </th>
                 <th style="width: 20mm;">{{ translate('replacement-value') }}</th>
@@ -64,22 +64,17 @@
             </tr>
         </thead>
         <tbody>
-        {% for subCategory in park['materials'] %}
+        {% for subCategory, materialsList in park['materials'] %}
             <tr>
                 <td class="section-title" colspan="5">
-                    {% if subCategory['category'] is not empty %}
-                        {{ subCategory['category'] }}
+                    {% if subCategory == '--' %}
+                        {{ translate('not-categorized') }}
                     {% else %}
-                        {{ translate('notCategorized') }}
-                    {% endif %}
-                    {% if subCategory['name'] is not empty %}
-                        - {{ subCategory['name'] }}
-                    {% elseif subCategory['category'] is not empty %}
-                        - {{ translate('otherMaterials') }}
+                        {{ subCategory|replace({ '__other': translate('other-materials') }) }}
                     {% endif %}
                 </td>
             </tr>
-            {% for material in subCategory['materials'] %}
+            {% for material in materialsList %}
                 {{ include('blocks/materials/line-list.twig', { material: material }) }}
             {% endfor %}
         {% endfor %}

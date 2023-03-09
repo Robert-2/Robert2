@@ -41,11 +41,9 @@ export default {
         },
 
         timelineOptions() {
-            const { start_date: startDate, end_date: endDate } = this.event;
-
             return {
-                min: startDate,
-                max: endDate,
+                min: this.event.start_date,
+                max: this.event.end_date,
                 showCurrentTime: false,
                 margin: { axis: 0 },
                 type: 'background',

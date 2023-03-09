@@ -1,0 +1,26 @@
+<tr>
+    <td>{{ material.material.reference }}</td>
+    <td>
+        {{ material.material.name }}
+        {% if not withoutPark and material.material.park_id is not null %}
+            <em class="lighter">({{ material.material.park.name }})</em>
+        {% endif %}
+        {% if material.material.attributes is not empty %}
+            <br />
+            {% for attribute in material.material.attributes %}
+                {{ include('blocks/materials/attribute.twig', { attribute: attribute }) }}
+            {% endfor %}
+        {% endif %}
+    </td>
+    <td class="center">
+        {{ material.quantity }}
+    </td>
+    <td class="right lighter">
+        {{ material.material.replacement_price|format_currency(currency, locale=locale) }}
+    </td>
+    <td class="right lighter">
+        {{ (material.material.replacement_price * material.quantity)|format_currency(currency, locale=locale) }}
+    </td>
+    <td>
+    </td>
+</tr>

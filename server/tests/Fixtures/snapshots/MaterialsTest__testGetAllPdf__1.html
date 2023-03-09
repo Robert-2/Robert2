@@ -3,36 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <title></title>
+    <link href="/fonts/Roboto/index.css" rel="stylesheet">
     <style type="text/css">
         html {
             margin: 9mm 8mm;
-            font-family: -apple-system, 'Segoe UI', Roboto, Ubuntu, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';;
-            font-size: 10pt;
+            font-family: Roboto;
+            font-weight: 400;
+            font-size: 9pt;
         }
         body {
             margin: 0;
         }
         h1 {
-            font-size: 14pt;
+            font-size: 1.5rem;
             margin: 0 0 3mm 0;
         }
         h2 {
-            font-size: 12pt;
+            font-size: 1.25rem;
             margin: 0 0 3mm 0;
         }
         h3 {
-            font-size: 11pt;
+            font-size: 1.125rem;
             margin: 0 0 3mm 0;
         }
         h4 {
-            font-size: 10pt;
+            font-size: 1rem;
             margin: 0 0 3mm 0;
         }
         p {
+            font-size: 1rem;
             margin: 0 0 3mm 0;
         }
         small {
-            font-size: 10pt;
+            font-size: 0.85rem;
         }
         ul, ol {
             margin: 2mm 0 3mm 0;
@@ -76,20 +79,20 @@
             page-break-after: avoid;
         }
         .listing-table > thead > tr > th {
-            font-size: 8.5pt;
+            font-size: 0.8rem;
             border-bottom: 1pt solid #888;
             vertical-align: middle;
         }
         .listing-table > tbody > tr > td {
             padding: 2mm;
-            font-size: 7.5pt;
+            font-size: 0.7rem;
             border: none;
             border-bottom: 1pt solid #ccc;
             vertical-align: middle;
         }
         .listing-table > tbody > tr > td.section-title {
             padding: 4mm 2mm 2mm;
-            font-size: 8.5pt;
+            font-size: 0.8rem;
             color: #888;
         }
         .listing-table > tbody > tr > td:first-child {
@@ -110,10 +113,9 @@
         .right { text-align: right; }
         .sizeTitle { font-size: 16pt; }
         .sizeSubtitle { font-size: 14pt; }
-        .size12 { font-size: 12pt; }
-        .size10 { font-size: 10pt; }
-        .size8 { font-size: 8pt; }
-        .size7 { font-size: 7pt; }
+        .size12 { font-size: 1rem; }
+        .size10 { font-size: 0.9rem; }
+        .size8 { font-size: 0.85rem; }
         .vspace2 { margin: 0; padding: 2mm 0; }
         .vspace5 { margin: 0; padding: 5mm 0; }
         .vspace10 { margin: 0; padding: 10mm 0; }
@@ -126,8 +128,8 @@
             background-color: #eee;
             border-radius: 3pt;
         }
-        .strong { font-weight: bold; }
-        .normal { font-weight: normal; }
+        .strong { font-weight: 700; }
+        .normal { font-weight: 400; }
         .light { color: #333; }
         .lighter { color: #666; }
         .lightest { color: #aaa; }
@@ -157,62 +159,116 @@
 
 
 <p>
-        T&eacute;l.&nbsp;: +33123456789<br>
-            E-mail&nbsp;: jean@testing-corp.dev
+        Phone: +33123456789<br>
+            E-mail: jean@testing-corp.dev
     </p>
 
 
         </td>
         <td class="two-third">
-            <h1 class="box center">Liste du mat&eacute;riel</h1>
+            <h1 class="box center">Materials list</h1>
             <h3 class="center">
-                Au 23 septembre 2022
-                                (tous les parcs)
+                As of 23 September 2022
+                                    (all parks)
                             </h3>
                     </td>
     </tr>
 </table>
 
         <h3 class="listing-title">
-                default
+                    default
             </h3>
         <table class="listing-table">
         <thead>
             <tr>
-                <th style="width: 30mm;">R&eacute;f&eacute;rence</th>
+                <th style="width: 30mm;">Reference</th>
                 <th>
-                    D&eacute;signation
-                                        <span class="normal lightest">- Parc default</span>
+                    Designation
+                                            <span class="normal lightest">- Park default</span>
                                     </th>
-                <th style="width: 20mm;">Val. Remp.</th>
-                <th style="width: 16mm;">Quantit&eacute; en stock</th>
-                <th style="width: 25mm;">Quantit&eacute; recompt&eacute;e</th>
+                <th style="width: 20mm;">Repl. Val.</th>
+                <th style="width: 16mm;">Stock quantity</th>
+                <th style="width: 25mm;">Recount quantity</th>
             </tr>
         </thead>
         <tbody>
                     <tr>
                 <td class="section-title" colspan="5">
-                                            Son
-                                                                - Mixeurs
+                                            Lumi&egrave;re - Gradateurs
+                                    </td>
+            </tr>
+                            <tr>
+    <td>SDS-6-01</td>
+    <td>
+        Showtec SDS-6
+                    <br>
+                            <span class="lighter">
+    Poids&nbsp;:&nbsp;3.15&nbsp;kg.</span>
+
+                            <span class="lighter">
+    Puissance&nbsp;:&nbsp;60&nbsp;W.</span>
+
+                            <span class="lighter">
+    Conforme&nbsp;:&nbsp;Yes.</span>
+
+                        </td>
+    <td class="right lighter">
+        &euro;59.00
+    </td>
+    <td class="center">
+        2
+    </td>
+    <td></td>
+</tr>
+
+                                <tr>
+                <td class="section-title" colspan="5">
+                                            Lumi&egrave;re - Projecteurs
+                                    </td>
+            </tr>
+                            <tr>
+    <td>PAR64LED</td>
+    <td>
+        PAR64 LED
+                    <br>
+                            <span class="lighter">
+    Poids&nbsp;:&nbsp;0.85&nbsp;kg.</span>
+
+                            <span class="lighter">
+    Puissance&nbsp;:&nbsp;150&nbsp;W.</span>
+
+                        </td>
+    <td class="right lighter">
+        &euro;89.00
+    </td>
+    <td class="center">
+        34
+    </td>
+    <td></td>
+</tr>
+
+                                <tr>
+                <td class="section-title" colspan="5">
+                                            Son - Mixeurs
                                     </td>
             </tr>
                             <tr>
     <td>CL3</td>
     <td>
         Console Yamaha CL3
-                <br>
-                    <span class="lighter">
-    Puissance&nbsp;:&nbsp;850&nbsp;W.</span>
-
-                    <span class="lighter">
-    Couleur&nbsp;:&nbsp;Grise</span>
-
-                    <span class="lighter">
+                    <br>
+                            <span class="lighter">
     Poids&nbsp;:&nbsp;36.5&nbsp;kg.</span>
 
-                    </td>
+                            <span class="lighter">
+    Couleur&nbsp;:&nbsp;Grise</span>
+
+                            <span class="lighter">
+    Puissance&nbsp;:&nbsp;850&nbsp;W.</span>
+
+                        </td>
     <td class="right lighter">
-        19400,00&nbsp;&euro;
+        &euro;19,400.00
     </td>
     <td class="center">
         5
@@ -224,13 +280,13 @@
     <td>XR18</td>
     <td>
         Behringer X Air XR18
-                <br>
-                    <span class="lighter">
+                    <br>
+                            <span class="lighter">
     Date d'achat&nbsp;:&nbsp;28/01/2021.</span>
 
-                    </td>
+                        </td>
     <td class="right lighter">
-        419,00&nbsp;&euro;
+        &euro;419.00
     </td>
     <td class="center">
         0
@@ -240,8 +296,33 @@
 
                                 <tr>
                 <td class="section-title" colspan="5">
-                                            Son
-                                                                - Autre mat&eacute;riel
+                                            Son - Processeurs
+                                    </td>
+            </tr>
+                            <tr>
+    <td>DBXPA2</td>
+    <td>
+        Processeur DBX PA2
+                    <br>
+                            <span class="lighter">
+    Poids&nbsp;:&nbsp;2.2&nbsp;kg.</span>
+
+                            <span class="lighter">
+    Puissance&nbsp;:&nbsp;35&nbsp;W.</span>
+
+                        </td>
+    <td class="right lighter">
+        &euro;349.90
+    </td>
+    <td class="center">
+        2
+    </td>
+    <td></td>
+</tr>
+
+                                <tr>
+                <td class="section-title" colspan="5">
+                                            Son - Other Materials
                                     </td>
             </tr>
                             <tr>
@@ -250,7 +331,7 @@
         C&acirc;ble XLR 10m
             </td>
     <td class="right lighter">
-        9,50&nbsp;&euro;
+        &euro;9.50
     </td>
     <td class="center">
         40
@@ -258,113 +339,28 @@
     <td></td>
 </tr>
 
-                                <tr>
-                <td class="section-title" colspan="5">
-                                            Lumi&egrave;re
-                                                                - Gradateurs
-                                    </td>
-            </tr>
-                            <tr>
-    <td>SDS-6-01</td>
-    <td>
-        Showtec SDS-6
-                <br>
-                    <span class="lighter">
-    Conforme&nbsp;:&nbsp;Oui.</span>
-
-                    <span class="lighter">
-    Puissance&nbsp;:&nbsp;60&nbsp;W.</span>
-
-                    <span class="lighter">
-    Poids&nbsp;:&nbsp;3.15&nbsp;kg.</span>
-
-                    </td>
-    <td class="right lighter">
-        59,00&nbsp;&euro;
-    </td>
-    <td class="center">
-        2
-    </td>
-    <td></td>
-</tr>
-
-                                <tr>
-                <td class="section-title" colspan="5">
-                                            Lumi&egrave;re
-                                                                - Projecteurs
-                                    </td>
-            </tr>
-                            <tr>
-    <td>PAR64LED</td>
-    <td>
-        PAR64 LED
-                <br>
-                    <span class="lighter">
-    Puissance&nbsp;:&nbsp;150&nbsp;W.</span>
-
-                    <span class="lighter">
-    Poids&nbsp;:&nbsp;0.85&nbsp;kg.</span>
-
-                    </td>
-    <td class="right lighter">
-        89,00&nbsp;&euro;
-    </td>
-    <td class="center">
-        34
-    </td>
-    <td></td>
-</tr>
-
-                                <tr>
-                <td class="section-title" colspan="5">
-                                            Son
-                                                                - Processeurs
-                                    </td>
-            </tr>
-                            <tr>
-    <td>DBXPA2</td>
-    <td>
-        Processeur DBX PA2
-                <br>
-                    <span class="lighter">
-    Puissance&nbsp;:&nbsp;35&nbsp;W.</span>
-
-                    <span class="lighter">
-    Poids&nbsp;:&nbsp;2.2&nbsp;kg.</span>
-
-                    </td>
-    <td class="right lighter">
-        349,90&nbsp;&euro;
-    </td>
-    <td class="center">
-        2
-    </td>
-    <td></td>
-</tr>
-
                             </tbody>
     </table>
         <h3 class="listing-title">
-                spare
+                    spare
             </h3>
         <table class="listing-table">
         <thead>
             <tr>
-                <th style="width: 30mm;">R&eacute;f&eacute;rence</th>
+                <th style="width: 30mm;">Reference</th>
                 <th>
-                    D&eacute;signation
-                                        <span class="normal lightest">- Parc spare</span>
+                    Designation
+                                            <span class="normal lightest">- Park spare</span>
                                     </th>
-                <th style="width: 20mm;">Val. Remp.</th>
-                <th style="width: 16mm;">Quantit&eacute; en stock</th>
-                <th style="width: 25mm;">Quantit&eacute; recompt&eacute;e</th>
+                <th style="width: 20mm;">Repl. Val.</th>
+                <th style="width: 16mm;">Stock quantity</th>
+                <th style="width: 25mm;">Recount quantity</th>
             </tr>
         </thead>
         <tbody>
                     <tr>
                 <td class="section-title" colspan="5">
-                                            D&eacute;cors
-                                                                - Autre mat&eacute;riel
+                                            D&eacute;cors - Other Materials
                                     </td>
             </tr>
                             <tr>
@@ -373,7 +369,7 @@
         D&eacute;cor Th&egrave;me For&ecirc;t
             </td>
     <td class="right lighter">
-        8500,00&nbsp;&euro;
+        &euro;8,500.00
     </td>
     <td class="center">
         1
@@ -383,8 +379,7 @@
 
                                 <tr>
                 <td class="section-title" colspan="5">
-                                            Transport
-                                                                - Autre mat&eacute;riel
+                                            Transport - Other Materials
                                     </td>
             </tr>
                             <tr>
@@ -393,7 +388,7 @@
         Volkswagen Transporter
             </td>
     <td class="right lighter">
-        32000,00&nbsp;&euro;
+        &euro;32,000.00
     </td>
     <td class="center">
         1

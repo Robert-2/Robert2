@@ -1,12 +1,11 @@
 import requester from '@/globals/requester';
 
-import type { PaginatedData, PaginationParams } from '@/stores/api/@types';
+import type { PaginatedData, ListingParams } from '@/stores/api/@types';
 
 //
 // - Types
 //
 
-/* eslint-disable @typescript-eslint/naming-convention */
 export type Park = {
     id: number,
     name: string,
@@ -31,9 +30,8 @@ export type ParkEdit = {
 };
 
 export type ParkDetails = Park & {
-    has_ongoing_event: boolean,
+    has_ongoing_booking: boolean,
 };
-/* eslint-enable @typescript-eslint/naming-convention */
 
 export type ParkSummary = {
     id: Park['id'],
@@ -45,7 +43,7 @@ export type ParkTotalAmountResult = {
     totalAmount: number,
 };
 
-type GetAllParams = PaginationParams & { deleted?: boolean };
+type GetAllParams = ListingParams & { deleted?: boolean };
 
 //
 // - Fonctions

@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Robert2\Tests;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
@@ -37,7 +39,7 @@ final class SettingsTest extends ApiTestCase
             'inexistant_settings' => 'some-value',
             'eventSummary.customText.title' => null,
         ]);
-        $this->assertValidationError([
+        $this->assertApiValidationError([
             'inexistant_settings' => ["This setting does not exists."],
         ]);
     }
@@ -50,16 +52,16 @@ final class SettingsTest extends ApiTestCase
             'eventSummary.customText.title' => str_repeat('A', 192),
             'calendar.public.uuid' => 'not-valid',
         ]);
-        $this->assertValidationError([
+        $this->assertApiValidationError([
             'calendar.event.showBorrower' => [
                 'Must be a boolean value',
             ],
             'eventSummary.materialDisplayMode' => [
                 'One of the following rules must be verified',
-                'Must be equal to "categories"',
-                'Must be equal to "sub-categories"',
-                'Must be equal to "parks"',
-                'Must be equal to "flat"',
+                'Must equal "categories"',
+                'Must equal "sub-categories"',
+                'Must equal "parks"',
+                'Must equal "flat"',
             ],
             'eventSummary.customText.title' => [
                 '191 max. characters',

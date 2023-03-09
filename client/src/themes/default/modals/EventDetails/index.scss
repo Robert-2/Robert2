@@ -1,61 +1,37 @@
 @use '~@/themes/default/style/globals';
 
 .EventDetails {
-    display: flex;
-    flex-direction: column;
+    position: relative;
+    min-width: 850px;
 
-    .Loading,
-    .ErrorMessage {
-        flex: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 250px;
-        margin: 0;
-        background: globals.$bg-color-side-nav;
+    &__close {
+        padding: 10px;
+        text-align: right;
 
-        .fas {
-            margin-right: 0.3rem;
+        &__button {
+            border: none;
+            background: none;
         }
+    }
+
+    &__loading {
+        flex: 1;
     }
 
     &__content {
-        flex: 1;
         display: flex;
         flex-direction: column;
-        overflow-y: auto;
         max-height: 100vh;
-        min-height: 520px;
-
-        &__body {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            padding: 1.5rem;
-            background-color: globals.$bg-color-body;
-
-            .Help {
-                margin-bottom: globals.$content-padding-small-vertical;
-            }
-        }
+        padding: 20px;
     }
 
-    &__content + .ErrorMessage {
-        min-height: auto;
-        margin-bottom: globals.$content-padding-large-vertical;
-        background: none;
-    }
-
-    &__materials-empty {
-        margin-bottom: globals.$content-padding-small-vertical;
+    &__no-material {
         color: globals.$text-danger-color;
         font-size: 1.2rem;
         text-align: center;
 
-        .fas {
-            width: 1.5rem;
-            margin-right: 0.3rem;
-            text-align: center;
+        &__icon {
+            margin-right: 5px;
         }
     }
 }

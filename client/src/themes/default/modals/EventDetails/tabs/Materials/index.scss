@@ -1,19 +1,16 @@
 .EventDetailsMaterials {
     display: flex;
     flex-direction: column;
+    max-height: calc(100vh - 250px);
 
-    .MaterialsSorted__categories {
+    &__list {
+        flex: 1;
         overflow-y: auto;
-        max-height: 350px;
+        margin-bottom: 20px;
         padding-right: 10px;
     }
 
-    .EventMissingMaterials__title {
-        margin-top: 0;
-    }
-
-    .EventTotals {
-        padding: 0;
-        text-align: left;
+    &__totals {
+        padding-right: 15px;
     }
 }

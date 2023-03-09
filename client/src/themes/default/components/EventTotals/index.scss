@@ -1,38 +1,54 @@
 @use '~@/themes/default/style/globals';
 
 .EventTotals {
-    flex: 0 0 auto;
-    padding: 0 0.5rem;
-    font-size: 1.1rem;
-    text-align: right;
+    display: flex;
 
-    .fas {
-        margin: 0 0.3rem;
-        color: globals.$text-light-color;
-        font-size: 0.95rem;
+    &__infos,
+    &__billing {
+        flex: 1;
     }
 
-    &__base {
-        margin-bottom: 1rem;
+    &__billing {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
     }
 
-    &__grand,
-    &__grand-discount {
-        margin-bottom: 0.5rem;
-        font-size: 1.7rem;
+    &__items-count,
+    &__duration,
+    &__total-replacement {
+        margin-bottom: globals.$content-padding-large-horizontal;
+        font-size: 1.2rem;
+        font-weight: 600;
     }
 
-    &__discountable,
-    &__discount {
-        margin-top: 1rem;
-        margin-bottom: 0.5rem;
-    }
+    &__line {
+        $line: &;
 
-    &__daily {
-        color: globals.$text-light-color;
-    }
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        margin-bottom: globals.$content-padding-small-horizontal;
+        font-size: 1.1rem;
 
-    &__replacement {
-        margin-top: 1.5rem;
+        &__title {
+            width: 240px;
+            margin-right: 5px;
+        }
+
+        &__price {
+            width: 120px;
+            text-align: right;
+        }
+
+        &--grand-total {
+            margin-bottom: globals.$content-padding-large-horizontal;
+
+            #{$line}__title,
+            #{$line}__price {
+                font-size: 1.2rem;
+                font-weight: 600;
+            }
+        }
     }
 }

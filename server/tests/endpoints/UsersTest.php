@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Robert2\Tests;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
@@ -8,9 +10,9 @@ use Robert2\API\Models\User;
 
 final class UsersTest extends ApiTestCase
 {
-    public static function data(int $id, $details = false)
+    public static function data(int $id, string $format = User::SERIALIZE_DEFAULT)
     {
-        $attributes = new Collection([
+        $users = new Collection([
             [
                 'id' => 1,
                 'pseudo' => 'test1',
@@ -20,6 +22,8 @@ final class UsersTest extends ApiTestCase
                 'phone' => null,
                 'email' => 'tester@robertmanager.net',
                 'group' => Group::ADMIN,
+                'language' => 'en',
+                'notifications_enabled' => true,
             ],
             [
                 'id' => 2,
@@ -30,6 +34,8 @@ final class UsersTest extends ApiTestCase
                 'phone' => null,
                 'email' => 'tester2@robertmanager.net',
                 'group' => Group::MEMBER,
+                'language' => 'fr',
+                'notifications_enabled' => true,
             ],
             [
                 'id' => 3,
@@ -40,20 +46,54 @@ final class UsersTest extends ApiTestCase
                 'phone' => null,
                 'email' => 'nobody@robertmanager.net',
                 'group' => Group::MEMBER,
+                'language' => 'fr',
+                'notifications_enabled' => true,
+            ],
+            [
+                'id' => 4,
+                'pseudo' => 'TheVisitor',
+                'first_name' => 'Henry',
+                'last_name' => 'Berluc',
+                'full_name' => 'Henry Berluc',
+                'phone' => '+33724000000',
+                'email' => 'visitor@robertmanager.net',
+                'group' => Group::VISITOR,
+                'language' => 'fr',
+                'notifications_enabled' => false,
+            ],
+            [
+                'id' => 5,
+                'pseudo' => 'caroline',
+                'first_name' => 'Caroline',
+                'last_name' => 'Farol',
+                'full_name' => 'Caroline Farol',
+                'phone' => '+33786325500',
+                'email' => 'external@robertmanager.net',
+                'group' => Group::EXTERNAL,
+                'language' => 'en',
+                'notifications_enabled' => true,
             ],
         ]);
 
-        return static::_dataFactory($id, $attributes->all());
+        $users = match ($format) {
+            User::SERIALIZE_DEFAULT => $users,
+            User::SERIALIZE_DETAILS => $users,
+            default => throw new \InvalidArgumentException(sprintf("Unknown format \"%s\"", $format)),
+        };
+
+        return static::_dataFactory($id, $users->all());
     }
 
     public function testGetAll()
     {
         $this->client->get('/api/users');
         $this->assertStatusCode(StatusCode::STATUS_OK);
-        $this->assertResponsePaginatedData(3, [
+        $this->assertResponsePaginatedData(5, [
+            self::data(5),
             self::data(3),
             self::data(1),
             self::data(2),
+            self::data(4),
         ]);
 
         $this->client->get('/api/users?deleted=1');
@@ -61,10 +101,20 @@ final class UsersTest extends ApiTestCase
         $this->assertResponsePaginatedData(0);
     }
 
+    public function testGetAllOnlyMembers()
+    {
+        $this->client->get(sprintf('/api/users?group=%s', Group::MEMBER));
+        $this->assertStatusCode(StatusCode::STATUS_OK);
+        $this->assertResponsePaginatedData(2, [
+            self::data(3),
+            self::data(2),
+        ]);
+    }
+
     public function testGetOneNotFound()
     {
         $this->client->get('/api/users/9999');
-        $this->assertNotFound();
+        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
     public function testForbidGetSelfWithId()
@@ -77,19 +127,13 @@ final class UsersTest extends ApiTestCase
     {
         $this->client->get('/api/users/self');
         $this->assertStatusCode(StatusCode::STATUS_OK);
-        $this->assertResponseData(self::data(1, true));
+        $this->assertResponseData(self::data(1, User::SERIALIZE_DETAILS));
     }
 
     public function testGetOneSettingsNotFound()
     {
         $this->client->get('/api/users/9999/settings');
-        $this->assertNotFound();
-    }
-
-    public function testGetOneSettingsNoSettingFound()
-    {
-        $this->client->get('/api/users/3/settings');
-        $this->assertNotFound();
+        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
     public function testGetOneSettings()
@@ -97,12 +141,7 @@ final class UsersTest extends ApiTestCase
         $this->client->get('/api/users/1/settings');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData([
-            'id' => 1,
-            'user_id' => 1,
             'language' => 'en',
-            'auth_token_validity_duration' => 12,
-            'created_at' => null,
-            'updated_at' => null,
         ]);
     }
 
@@ -110,25 +149,24 @@ final class UsersTest extends ApiTestCase
     {
         $this->client->put('/api/users/1/settings', []);
         $this->assertStatusCode(StatusCode::STATUS_BAD_REQUEST);
-        $this->assertErrorMessage("No data was provided.");
+        $this->assertApiErrorMessage("No data was provided.");
     }
 
     public function testUpdateSettingsNoUser()
     {
         $this->client->put('/api/users/999/settings', ['language' => 'fr']);
-        $this->assertNotFound();
+        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
     public function testUpdateSettings()
     {
         $this->client->put('/api/users/1/settings', [
             'language' => 'fr',
-            'auth_token_validity_duration' => 72,
         ]);
         $this->assertStatusCode(StatusCode::STATUS_OK);
-        $response = $this->_getResponseAsArray();
-        $this->assertEquals('fr', $response['language']);
-        $this->assertEquals(72, $response['auth_token_validity_duration']);
+        $this->assertResponseData([
+            'language' => 'fr',
+        ]);
     }
 
     public function testCreateBadData()
@@ -138,7 +176,7 @@ final class UsersTest extends ApiTestCase
             'first_name' => '',
             'last_name' => '',
         ]);
-        $this->assertValidationError([
+        $this->assertApiValidationError([
             'pseudo' => [
                 "This field is mandatory",
             ],
@@ -148,9 +186,10 @@ final class UsersTest extends ApiTestCase
             'group' => [
                 "This field is mandatory",
                 "One of the following rules must be verified",
-                'Must be equal to "admin"',
-                'Must be equal to "member"',
-                'Must be equal to "visitor"',
+                'Must equal "admin"',
+                'Must equal "member"',
+                'Must equal "visitor"',
+                'Must equal "external"',
             ],
             'password' => [
                 "This field is mandatory",
@@ -179,7 +218,7 @@ final class UsersTest extends ApiTestCase
             'password' => 'test-dupe',
             'group' => Group::MEMBER,
         ]);
-        $this->assertValidationError([
+        $this->assertApiValidationError([
             'pseudo' => ["This pseudo is already in use"],
             'email' => ["This email is already in use"],
         ]);
@@ -197,7 +236,7 @@ final class UsersTest extends ApiTestCase
         ]);
         $this->assertStatusCode(StatusCode::STATUS_CREATED);
         $this->assertResponseData([
-            'id' => 4,
+            'id' => 6,
             'first_name' => 'Nobody',
             'last_name' => 'Testeur',
             'full_name' => 'Nobody Testeur',
@@ -205,6 +244,8 @@ final class UsersTest extends ApiTestCase
             'email' => 'nobody@test.org',
             'pseudo' => 'Jeanne',
             'group' => Group::MEMBER,
+            'language' => 'fr',
+            'notifications_enabled' => true,
         ]);
     }
 
@@ -212,13 +253,13 @@ final class UsersTest extends ApiTestCase
     {
         $this->client->put('/api/users/2', []);
         $this->assertStatusCode(StatusCode::STATUS_BAD_REQUEST);
-        $this->assertErrorMessage("No data was provided.");
+        $this->assertApiErrorMessage("No data was provided.");
     }
 
     public function testUpdateNotFound()
     {
         $this->client->put('/api/users/999', ['pseudo' => '__inexistant__']);
-        $this->assertNotFound();
+        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
     public function testForbidUpdateSelfWithId()
@@ -233,9 +274,10 @@ final class UsersTest extends ApiTestCase
         $updatedData = ['pseudo' => 'Admin'];
         $this->client->put('/api/users/self', $updatedData);
         $this->assertStatusCode(StatusCode::STATUS_OK);
-        $this->assertResponseData(
-            array_replace(self::data(1, true), $updatedData)
-        );
+        $this->assertResponseData(array_replace(
+            self::data(1, User::SERIALIZE_DETAILS),
+            $updatedData
+        ));
 
         // - Un autre utilisateur (en tant qu'admin)
         $updatedData = [
@@ -247,9 +289,10 @@ final class UsersTest extends ApiTestCase
         ];
         $this->client->put('/api/users/3', $updatedData);
         $this->assertStatusCode(StatusCode::STATUS_OK);
-        $this->assertResponseData(
-            array_replace(self::data(3, true), $updatedData)
-        );
+        $this->assertResponseData(array_replace(
+            self::data(3, User::SERIALIZE_DETAILS),
+            $updatedData
+        ));
     }
 
     public function testDeleteAndDestroy()
@@ -265,12 +308,19 @@ final class UsersTest extends ApiTestCase
         $this->client->delete('/api/users/3');
         $this->assertStatusCode(StatusCode::STATUS_NO_CONTENT);
         $this->assertNull(User::withTrashed()->find(3));
+
+        // - Test de suppression d'un utilisateur qui a un bénéficiaire lié
+        $this->client->delete('/api/users/2');
+        $this->assertStatusCode(StatusCode::STATUS_NO_CONTENT);
+        $user = User::withTrashed()->find(2);
+        $this->assertNotNull($user);
+        $this->assertNotEmpty($user->deleted_at);
     }
 
     public function testRestoreNotFound()
     {
         $this->client->put('/api/users/restore/999');
-        $this->assertNotFound();
+        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
     public function testRestore()

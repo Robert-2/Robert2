@@ -1,7 +1,9 @@
 <?php
+declare(strict_types=1);
+
 use Phinx\Migration\AbstractMigration;
 
-class AddPictureToMaterials extends AbstractMigration
+final class AddPictureToMaterials extends AbstractMigration
 {
     public function up()
     {

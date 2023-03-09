@@ -5,9 +5,9 @@ namespace Robert2\API\Controllers;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Robert2\API\Controllers\Traits\WithCrud;
+use Robert2\API\Http\Request;
 use Robert2\API\Models\Tag;
 use Slim\Http\Response;
-use Slim\Http\ServerRequest as Request;
 
 class TagController extends BaseController
 {
@@ -15,7 +15,7 @@ class TagController extends BaseController
 
     public function getAll(Request $request, Response $response): Response
     {
-        $onlyDeleted = (bool)$request->getQueryParam('deleted', false);
+        $onlyDeleted = (bool) $request->getQueryParam('deleted', false);
 
         $tags = Tag::orderBy('name');
         if ($onlyDeleted) {

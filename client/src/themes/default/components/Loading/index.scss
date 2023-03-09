@@ -30,7 +30,7 @@
 
     &--horizontal {
         flex-direction: row;
-        color: globals.$text-nav-color;
+        color: globals.$text-soft-color;
         font-size: 1.1rem;
 
         #{$block}__spinner {

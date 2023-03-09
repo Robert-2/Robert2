@@ -37,11 +37,11 @@ export default {
                     </div>
                 </div>
                 <div class="CalendarCaption__group">
-                    <div class="timeline-event timeline-event--current">
+                    <div class="timeline-event timeline-event--in-progress">
                         <Icon name="check" />
                         {__('page.calendar.caption.current-confirmed')}
                     </div>
-                    <div class="timeline-event timeline-event--current timeline-event--not-confirmed">
+                    <div class="timeline-event timeline-event--in-progress timeline-event--not-confirmed">
                         <Icon name="question" />
                         {__('page.calendar.caption.current-not-confirmed')}
                     </div>

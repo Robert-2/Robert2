@@ -39,6 +39,11 @@ trait ConfigurationTrait
         return $this->config;
     }
 
+    public function hasConfig(): bool
+    {
+        return true;
+    }
+
     public function setConfig(ConfigInterface $config)
     {
         throw new \Exception('Non implémenté.');
@@ -50,11 +55,11 @@ trait ConfigurationTrait
     // -
     // ------------------------------------------------------
 
-    protected function configure()
+    protected function configure(): void
     {
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         // - Phinx utilise `environment` plutôt que `env`, donc on ajoute l'alias artificiellement.
         $this->addOption('environment', null, InputOption::VALUE_REQUIRED, '', Config::getEnv());
@@ -62,12 +67,12 @@ trait ConfigurationTrait
         return parent::execute($input, $output);
     }
 
-    protected function getMigrationTemplateFilename()
+    protected function getMigrationTemplateFilename(string $style): string
     {
         return __DIR__ . '/templates/Migration.php.template';
     }
 
-    protected function getSeedTemplateFilename()
+    protected function getSeedTemplateFilename(): string
     {
         return __DIR__ . '/templates/Seed.php.template';
     }

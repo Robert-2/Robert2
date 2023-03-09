@@ -1,20 +1,25 @@
 import './index.scss';
-import { toRefs } from '@vue/composition-api';
-import useI18n from '@/hooks/vue/useI18n';
+import { computed, toRefs } from '@vue/composition-api';
+import useI18n from '@/hooks/useI18n';
+import getMaterialQuantity from '../utils/getMaterialQuantity';
+import getMaterialUnitPrice from '../utils/getMaterialUnitPrice';
 import formatAmount from '@/utils/formatAmount';
-
-// type Props = {
-//     /** La catégorie avec matériel à afficher. */
-//     data: MaterialCategoryItem,
-
-//     /** Permet d'afficher les prix de location ou non. */
-//     withRentalPrices?: boolean,
-// };
+import Icon from '@/themes/default/components/Icon';
 
 // @vue/component
 const MaterialsCategoryItem = (props) => {
     const __ = useI18n();
     const { data, withRentalPrices } = toRefs(props);
+
+    const subTotal = computed(() => {
+        if (!withRentalPrices.value) {
+            return 0;
+        }
+
+        return data.value.materials.reduce((total, material) => (
+            total + (getMaterialQuantity(material) * getMaterialUnitPrice(material))
+        ), 0);
+    });
 
     return () => (
         <div class="MaterialsCategoryItem">
@@ -25,29 +30,33 @@ const MaterialsCategoryItem = (props) => {
                         <div class="MaterialsCategoryItem__material__name">
                             {material.name}
                         </div>
-                        {withRentalPrices?.value && (
+                        {withRentalPrices.value && (
                             <div class="MaterialsCategoryItem__material__price">
-                                {formatAmount(material.rental_price)}
+                                {formatAmount(getMaterialUnitPrice(material))}
                             </div>
                         )}
                         <div class="MaterialsCategoryItem__material__quantity">
-                            <i class="fas fa-times" /> {material.pivot.quantity}
+                            <Icon
+                                name="times"
+                                class="MaterialsCategoryItem__material__quantity__icon"
+                            />
+                            {getMaterialQuantity(material)}
                         </div>
-                        {withRentalPrices?.value && (
+                        {withRentalPrices.value && (
                             <div class="MaterialsCategoryItem__material__total">
-                                {formatAmount(material.pivot.quantity * material.rental_price)}
+                                {formatAmount(getMaterialQuantity(material) * getMaterialUnitPrice(material))}
                             </div>
                         )}
                     </li>
                 ))}
             </ul>
-            {withRentalPrices?.value && (
+            {withRentalPrices.value && (
                 <div class="MaterialsCategoryItem__subtotal">
                     <div class="MaterialsCategoryItem__subtotal__name">
                         {__('sub-total')}
                     </div>
                     <div class="MaterialsCategoryItem__subtotal__price">
-                        {formatAmount(data.value.subTotal)}
+                        {formatAmount(subTotal.value)}
                     </div>
                 </div>
             )}

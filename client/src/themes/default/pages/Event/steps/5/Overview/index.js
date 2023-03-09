@@ -1,36 +1,21 @@
 import './index.scss';
+import { defineComponent } from '@vue/composition-api';
 import moment from 'moment';
-import config from '@/globals/config';
-import { confirm } from '@/utils/alert';
-import getEventDiscountRate from '@/utils/getEventDiscountRate';
 import formatEventTechniciansList from '@/utils/formatEventTechniciansList';
-import Help from '@/themes/default/components/Help';
-import { Tabs, Tab } from '@/themes/default/components/Tabs';
+import Fragment from '@/components/Fragment';
+import Icon from '@/themes/default/components/Icon';
 import MaterialsSorted from '@/themes/default/components/MaterialsSorted';
 import EventMissingMaterials from '@/themes/default/components/EventMissingMaterials';
-import EventBilling from '@/themes/default/components/EventBilling';
-import EventEstimates from '@/themes/default/components/EventEstimates';
 import EventTotals from '@/themes/default/components/EventTotals';
 
 // @vue/component
-export default {
+const EventStep5Overview = defineComponent({
     name: 'EventStep5Overview',
-    components: {
-        Tabs,
-        Tab,
-        Help,
-        MaterialsSorted,
-        EventMissingMaterials,
-        EventBilling,
-        EventEstimates,
-        EventTotals,
-    },
     props: {
         event: { type: Object, required: true },
     },
     data: () => ({
         unsavedDiscountRate: null,
-        showBilling: config.billingMode !== 'none',
         isCreating: false,
         deletingId: null,
         successMessage: null,
@@ -51,120 +36,152 @@ export default {
                 to: moment(this.event.end_date).format('L'),
             };
         },
-
-        duration() {
-            const { start_date: start, end_date: end } = this.event;
-            return start && end ? moment(end).diff(start, 'days') + 1 : 0;
-        },
-
-        hasBill() {
-            return this.event.bills.length > 0;
-        },
-
-        discountRate() {
-            if (this.unsavedDiscountRate !== null) {
-                return this.unsavedDiscountRate;
-            }
-            return getEventDiscountRate(this.event);
-        },
     },
-    methods: {
-        handleChangeDiscountRate(discountRate) {
-            this.unsavedDiscountRate = discountRate ?? null;
-        },
+    render() {
+        const { $t: __, event, technicians, fromToDates, hasMaterials } = this;
+        const { duration } = event;
 
-        handleChangeBillingTab() {
-            this.successMessage = null;
-            this.unsavedDiscountRate = null;
-        },
-
-        async handleCreateEstimate(discountRate) {
-            if (this.isCreating || this.deletingId) {
-                return;
-            }
-            this.isCreating = true;
-
-            this.error = null;
-            this.successMessage = null;
-
-            const { $t: __, event } = this;
-            const { id, estimates: prevEstimates } = event;
-
-            try {
-                const { data: newEstimate } = await this.$http.post(`events/${id}/estimate`, { discountRate });
-                this.successMessage = __('estimate-created');
-                this.unsavedDiscountRate = null;
-
-                const updatedEvent = { ...this.event, estimates: [newEstimate, ...prevEstimates] };
-                this.$emit('updateEvent', updatedEvent);
-            } catch (error) {
-                this.error = error;
-            } finally {
-                this.isCreating = false;
-            }
-        },
-
-        async handleDeleteEstimate(id) {
-            if (this.deletingId || this.isCreating) {
-                return;
-            }
-
-            const { $t: __ } = this;
-            const { value: isConfirmed } = await confirm({
-                type: 'warning',
-                text: __('confirm-delete-estimate'),
-                confirmButtonText: __('yes-delete'),
-            });
-            if (!isConfirmed) {
-                return;
-            }
-
-            this.error = null;
-            this.successMessage = null;
-            this.deletingId = id;
-
-            try {
-                await this.$http.delete(`estimates/${id}`);
-                this.successMessage = __('estimate-deleted');
-
-                const updatedEvent = {
-                    ...this.event,
-                    estimates: this.event.estimates.filter(
-                        (estimate) => estimate.id !== id,
-                    ),
-                };
-                this.$emit('updateEvent', updatedEvent);
-            } catch (error) {
-                this.error = error;
-            } finally {
-                this.deletingId = null;
-            }
-        },
-
-        async handleCreateBill(discountRate) {
-            if (this.isCreating || this.deletingId) {
-                return;
-            }
-            this.isCreating = true;
-
-            this.error = null;
-            this.successMessage = null;
-
-            const { $t: __, event } = this;
-            const { id, bills: prevBills } = event;
-
-            try {
-                const { data: newBill } = await this.$http.post(`events/${id}/bill`, { discountRate });
-                this.successMessage = __('bill-created');
-                this.unsavedDiscountRate = null;
-
-                const updatedEvent = { ...event, bills: [newBill, ...prevBills] };
-                this.$emit('updateEvent', updatedEvent);
-            } catch (error) {
-                this.error = error;
-            } finally {
-                this.isCreating = false;
-            }
-        },
+        return (
+            <div class="EventStep5Overview">
+                <h1 class="EventStep5Overview__title">{event.title}</h1>
+                <div class="EventStep5Overview__header">
+                    <section class="EventStep5Overview__section">
+                        {!event.location && (
+                            <h2 class="EventStep5Overview__dates">
+                                <Icon name="calendar-alt" />
+                                {__('from-date-to-date', fromToDates)}
+                            </h2>
+                        )}
+                        {event.location && (
+                            <h2 class="EventStep5Overview__location">
+                                <Icon name="map-marker-alt" />
+                                {__('in', { location: event.location ?? '?' })},{' '}
+                                {__('from-date-to-date', fromToDates)}
+                            </h2>
+                        )}
+                    </section>
+                    <section class="EventStep5Overview__section">
+                        <h2 class="EventStep5Overview__duration">
+                            <Icon name="clock" />{' '}
+                            {__('duration')} {__('days-count', { duration }, duration)}
+                        </h2>
+                    </section>
+                </div>
+                {!!event.description && (
+                    <p class="EventStep5Overview__description">
+                        <Icon name="clipboard" /> {event.description}
+                    </p>
+                )}
+                <div class="EventStep5Overview__main">
+                    {event.beneficiaries.length > 0 && (
+                        <section class="EventStep5Overview__section">
+                            <dl class="EventStep5Overview__info EventStep5Overview__info--vertical">
+                                <dt class="EventStep5Overview__info__term">
+                                    <Icon name="address-book" />{' '}
+                                    {__('page.event-edit.event-beneficiaries')}
+                                </dt>
+                                <dd class="EventStep5Overview__info__value">
+                                    <ul class="EventStep5Overview__info__list">
+                                        {event.beneficiaries.map((beneficiary) => (
+                                            <li key={beneficiary.id} class="EventStep5Overview__info__list-item">
+                                                <router-link to={{ name: 'edit-beneficiary', params: { id: beneficiary.id } }}>
+                                                    {beneficiary.full_name}
+                                                </router-link>
+                                                {!!beneficiary.company && (
+                                                    <Fragment>
+                                                        {' '}
+                                                        <router-link to={{ name: 'edit-company', params: { id: beneficiary.company.id } }}>
+                                                            {beneficiary.company.legal_name}
+                                                        </router-link>
+                                                    </Fragment>
+                                                )}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </dd>
+                            </dl>
+                        </section>
+                    )}
+                    {technicians.length > 0 && (
+                        <section class="EventStep5Overview__section">
+                            <dl class="EventStep5Overview__info EventStep5Overview__info--vertical">
+                                <dt class="EventStep5Overview__info__term">
+                                    <Icon name="people-carry" />{' '}
+                                    {__('page.event-edit.event-technicians')}
+                                </dt>
+                                <dd class="EventStep5Overview__info__value">
+                                    <ul class="EventStep5Overview__info__list">
+                                        {technicians.map((technician) => (
+                                            <li key={technician.id} class="EventStep5Overview__info__list-item">
+                                                <router-link
+                                                    class="EventStep5Overview__info__link"
+                                                    to={{
+                                                        name: 'edit-technician',
+                                                        params: { id: technician.id },
+                                                        hash: '#infos',
+                                                    }}
+                                                >
+                                                    {technician.name}
+                                                </router-link>
+                                                {!!technician.phone && (
+                                                    <Fragment>
+                                                        {' '}-{' '}
+                                                        <span>{technician.phone}</span>
+                                                    </Fragment>
+                                                )}
+                                                <br />
+                                                <ul class="EventStep5Overview__technician-periods">
+                                                    {technician.periods.map((period) => (
+                                                        <li
+                                                            key={period.id}
+                                                            class="EventStep5Overview__technician-periods__item"
+                                                        >
+                                                            {period.from.format('DD MMM LT')}
+                                                            {' '}⇒{' '}
+                                                            {period.to.format('DD MMM LT')}
+                                                            {' '}:{' '}
+                                                            {period.position}
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </dd>
+                            </dl>
+                        </section>
+                    )}
+                </div>
+                <div class="EventStep5Overview__materials">
+                    <h3 class="EventStep5Overview__materials__title">
+                        <Icon name="box" /> {__('page.event-edit.event-materials')}
+                    </h3>
+                    {!hasMaterials && (
+                        <p class="EventStep5Overview__materials__empty">
+                            <Icon name="exclamation-triangle" />{' '}
+                            {__('@event.warning-no-material')}
+                        </p>
+                    )}
+                    {hasMaterials && (
+                        <Fragment>
+                            <div class="EventStep5Overview__materials__list">
+                                <MaterialsSorted
+                                    data={event.materials}
+                                    withRentalPrices={event.is_billable}
+                                />
+                            </div>
+                            <div class="EventStep5Overview__materials__totals">
+                                <EventTotals event={event} />
+                            </div>
+                        </Fragment>
+                    )}
+                </div>
+                <div class="EventStep5Overview__missing-materials">
+                    <EventMissingMaterials eventId={event.id} />
+                </div>
+            </div>
+        );
     },
-};
+});
+
+export default EventStep5Overview;

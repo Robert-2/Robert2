@@ -1,7 +1,8 @@
+title-create: Nouvel événement
+title-simple: Modifier l'événement
+title: "Modifier l'événement «\_{title}\_»"
 help-edit: ''
 back-to-calendar: Retour au calendrier
-add: Nouvel événement
-edit: "Modifier l'événement «\_{pageSubTitle}\_»"
 save-and-back-to-calendar: Sauvegarder et retour au calendrier
 save-and-continue: Sauvegarder et continuer
 continue: Continuer

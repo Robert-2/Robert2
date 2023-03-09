@@ -7,6 +7,28 @@ use Robert2\API\Models\Person;
 
 final class PersonTest extends TestCase
 {
+    public function testValidation(): void
+    {
+        // - Avec un nom / prénom alambiqué, mais valide.
+        $data = [
+            'first_name' => 'Joséphine 1ère',
+            'last_name' => 'De Latour-Dupin',
+        ];
+        $this->assertTrue((new Person($data))->isValid());
+
+        // - Si le nom et/ou prénom contiennent des caractères invalides...
+        $person = new Person([
+            'first_name' => 'xav1er-7e$t',
+            'last_name' => 'fo#32;reux',
+        ]);
+        $expectedErrors = [
+            'first_name' => ['Ce champ contient des caractères non autorisés'],
+            'last_name' => ['Ce champ contient des caractères non autorisés'],
+        ];
+        $this->assertFalse($person->isValid());
+        $this->assertSame($expectedErrors, $person->validationErrors());
+    }
+
     public function testSetSearch(): void
     {
         $result = (new Person)->setSearch('Jean')->getAll()->get();

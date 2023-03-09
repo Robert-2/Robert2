@@ -1,4 +1,6 @@
 import './index.scss';
+import axios from 'axios';
+import HttpCode from 'status-code-enum';
 import { Tabs, Tab } from '@/themes/default/components/Tabs';
 import CriticalError, { ERROR } from '@/themes/default/components/CriticalError';
 import Loading from '@/themes/default/components/Loading';
@@ -12,12 +14,8 @@ import TechnicianSchedule from './tabs/Schedule';
 export default {
     name: 'TechnicianViewPage',
     data() {
-        const id = this.$route.params.id
-            ? parseInt(this.$route.params.id, 10)
-            : null;
-
         return {
-            id,
+            id: parseInt(this.$route.params.id, 10),
             isLoading: false,
             isFetched: false,
             criticalError: null,
@@ -85,8 +83,16 @@ export default {
                 this.technician = data;
                 this.isFetched = true;
             } catch (error) {
-                const status = error?.response?.status ?? 500;
-                this.criticalError = status === 404 ? ERROR.NOT_FOUND : ERROR.UNKNOWN;
+                if (!axios.isAxiosError(error)) {
+                    // eslint-disable-next-line no-console
+                    console.error(`Error ocurred while retrieving technician #${this.id} data`, error);
+                    this.criticalError = ERROR.UNKNOWN;
+                } else {
+                    const { status = HttpCode.ServerErrorInternal } = error.response ?? {};
+                    this.criticalError = status === HttpCode.ClientErrorNotFound
+                        ? ERROR.NOT_FOUND
+                        : ERROR.UNKNOWN;
+                }
             } finally {
                 this.isLoading = false;
             }

@@ -1,7 +1,8 @@
+import { defineComponent } from '@vue/composition-api';
 import Material from './Material';
 
 // @vue/component
-export default {
+const InventoryItem = defineComponent({
     name: 'InventoryItem',
     props: {
         material: { type: Object, required: true },
@@ -50,4 +51,6 @@ export default {
             </div>
         );
     },
-};
+});
+
+export default InventoryItem;

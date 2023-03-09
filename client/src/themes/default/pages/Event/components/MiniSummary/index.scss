@@ -1,11 +1,13 @@
 @use '~@/themes/default/style/globals';
 
 .EventMiniSummary {
+    $block: &;
+
     position: relative;
     padding: 1rem 0.8rem;
     border: 1px solid globals.$text-muted-color;
     border-radius: 8px;
-    color: globals.$text-nav-color;
+    color: globals.$text-soft-color;
     text-align: center;
 
     &__not-saved {
@@ -14,8 +16,11 @@
     }
 
     &__title {
+        @include globals.line-clamp(4);
+
         font-size: 1.1rem;
         font-weight: 800;
+        word-break: break-word;
     }
 
     &__detail,
@@ -30,12 +35,16 @@
         font-size: 1.4rem;
     }
 
+    &__status-icon {
+        margin-right: 5px;
+    }
+
     &--not-saved {
         border-color: globals.$text-warning-color;
     }
 
     &--confirmed {
-        .fa-check {
+        #{$block}__status-icon {
             color: globals.$text-success-color;
         }
     }

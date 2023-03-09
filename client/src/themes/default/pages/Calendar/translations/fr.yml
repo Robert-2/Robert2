@@ -6,14 +6,13 @@ help: |-
     Double-cliquez sur une colonne vide pour créer un événement avec la date de départ pré-remplie.
 
 add-event: Nouvel événement
-event-deleted: L'événement a bien été supprimé.
 event-saved: L'événement a bien été sauvegardé.
 loading-event: Chargement de l'événement...
-center-on-today: Centrer sur aujourd'hui
+center-on-today: Centrer sur aujourd’hui
 display-all-parks: Tous les parcs
 event-with-missing-material-only: "Événements en manque de matériel uniquement\_?"
 help-add-event: Créer un nouvel événement
-help-center-view-on-today: Centrer le calendrier sur aujourd'hui
+help-center-view-on-today: Centrer le calendrier sur aujourd’hui
 help-timeline-event-operations: |-
     Cliquez une fois pour sélectionner l'événement, afin de le déplacer, le redimensionner ou le supprimer.
     Double-cliquez sur l'événement pour en ouvrir l'aperçu, et en modifier les détails.

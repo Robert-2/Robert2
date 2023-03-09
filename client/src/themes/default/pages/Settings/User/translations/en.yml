@@ -1,4 +1,5 @@
 title: Your settings
+saved: Settings saved.
 
 #
 # - Tabs
@@ -19,10 +20,5 @@ profile:
 
 interface:
     title: Interface
-    help: The "duration of a session" is the time allowed before you're automatically logged out.
 
-    auth-token-validity-duration: Max. duration of a session
     language: Language
-    hours: hours
-
-    saved: Settings saved.

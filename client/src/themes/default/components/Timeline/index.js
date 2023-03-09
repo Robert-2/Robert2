@@ -132,10 +132,23 @@ export default {
             itemout: 'itemOut',
             rangechanged: 'rangeChanged',
             doubleClick: 'doubleClick',
+            doubletap: 'doubleClick',
             click: 'click',
         };
         Object.entries(globalsEvents).forEach(([originalName, name]) => {
-            this.timeline.on(originalName, (props) => { this.$emit(name, props); });
+            this.timeline.on(originalName, (props) => {
+                // - L'événement `doubleClick` n'est pas trigger correctement dans tous les
+                //   cas sur mobile, on observe donc l'événement `doubletap`, mais comme celui-ci
+                //   est bas niveau, on est obligé de récupérer les propriétés customs de
+                //   l'événement "à la main".
+                // @see https://github.com/visjs/vis-timeline/blob/v7.4.7/lib/timeline/Core.js#L160
+                // @see https://github.com/visjs/vis-timeline/blob/v7.4.7/lib/timeline/Timeline.js#L165
+                // @see https://github.com/visjs/vis-timeline/blob/v7.4.7/lib/timeline/component/item/Item.js#L203
+                if (originalName === 'doubletap') {
+                    props = this.timeline.getEventProperties(props);
+                }
+                this.$emit(name, props);
+            });
         });
 
         // - Binding des événements liés aux données.

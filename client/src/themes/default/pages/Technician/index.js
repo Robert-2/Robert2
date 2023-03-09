@@ -1,4 +1,7 @@
 import './index.scss';
+import axios from 'axios';
+import HttpCode from 'status-code-enum';
+import { ApiErrorCode } from '@/stores/api/@codes';
 import Page from '@/themes/default/components/Page';
 import CriticalError, { ERROR } from '@/themes/default/components/CriticalError';
 import Loading from '@/themes/default/components/Loading';
@@ -74,8 +77,16 @@ export default {
                 this.technician = await apiTechnicians.one(this.id);
                 this.isFetched = true;
             } catch (error) {
-                const status = error?.response?.status ?? 500;
-                this.criticalError = status === 404 ? ERROR.NOT_FOUND : ERROR.UNKNOWN;
+                if (!axios.isAxiosError(error)) {
+                    // eslint-disable-next-line no-console
+                    console.error(`Error ocurred while retrieving technician #${this.id} data`, error);
+                    this.criticalError = ERROR.UNKNOWN;
+                } else {
+                    const { status = HttpCode.ServerErrorInternal } = error.response ?? {};
+                    this.criticalError = status === HttpCode.ClientErrorNotFound
+                        ? ERROR.NOT_FOUND
+                        : ERROR.UNKNOWN;
+                }
             }
         },
 
@@ -105,8 +116,8 @@ export default {
                 this.$toasted.success(__('page.technician.saved'));
                 this.$router.replace({ name: 'view-technician', params: { id: technician.id } });
             } catch (error) {
-                const { code, details } = error.response?.data?.error || { code: 0, details: {} };
-                if (code === 400) {
+                const { code, details } = error.response?.data?.error || { code: ApiErrorCode.UNKNOWN, details: {} };
+                if (code === ApiErrorCode.VALIDATION_FAILED) {
                     this.validationErrors = { ...details };
                     this.$refs.page.scrollToTop();
                 } else {

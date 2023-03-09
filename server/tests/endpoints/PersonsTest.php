@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Robert2\Tests;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
@@ -68,6 +70,51 @@ final class PersonsTest extends ApiTestCase
                 'full_address' => null,
                 'country' => CountriesTest::data(2),
             ],
+            [
+                'id' => 5,
+                'user_id' => null,
+                'first_name' => 'Alphonse',
+                'last_name' => 'Latour',
+                'full_name' => 'Alphonse Latour',
+                'email' => 'alphonse@latour.test',
+                'phone' => null,
+                'street' => null,
+                'postal_code' => null,
+                'locality' => null,
+                'country_id' => null,
+                'full_address' => null,
+                'country' => null,
+            ],
+            [
+                'id' => 6,
+                'user_id' => 4,
+                'first_name' => 'Henry',
+                'last_name' => 'Berluc',
+                'full_name' => 'Henry Berluc',
+                'email' => 'visitor@robertmanager.net',
+                'phone' => '+33724000000',
+                'street' => '30 avenue du chateau',
+                'postal_code' => '75000',
+                'locality' => 'Paris',
+                'country_id' => 1,
+                'full_address' => "30 avenue du chateau\n75000 Paris",
+                'country' => CountriesTest::data(1),
+            ],
+            [
+                'id' => 7,
+                'user_id' => 5,
+                'first_name' => 'Caroline',
+                'last_name' => 'Farol',
+                'full_name' => 'Caroline Farol',
+                'email' => 'external@robertmanager.net',
+                'phone' => '+33786325500',
+                'street' => null,
+                'postal_code' => null,
+                'locality' => null,
+                'country_id' => null,
+                'full_address' => null,
+                'country' => null,
+            ],
         ]);
     }
 
@@ -75,9 +122,12 @@ final class PersonsTest extends ApiTestCase
     {
         $this->client->get('/api/persons');
         $this->assertStatusCode(StatusCode::STATUS_OK);
-        $this->assertResponsePaginatedData(4, [
+        $this->assertResponsePaginatedData(7, [
             self::data(3),
+            self::data(6),
+            self::data(7),
             self::data(1),
+            self::data(5),
             self::data(2),
             self::data(4),
         ]);
@@ -110,10 +160,10 @@ final class PersonsTest extends ApiTestCase
         $this->client->get('/api/persons?limit=2');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseHasKeyEquals('pagination.perPage', 2);
-        $this->assertResponseHasKeyEquals('pagination.total.pages', 2);
-        $this->assertResponsePaginatedData(4, [
+        $this->assertResponseHasKeyEquals('pagination.total.pages', 4);
+        $this->assertResponsePaginatedData(7, [
             self::data(3),
-            self::data(1),
+            self::data(6),
         ]);
     }
 }

@@ -9,6 +9,10 @@ import ErrorMessage from '@/themes/default/components/ErrorMessage';
 // @vue/component
 export default {
     name: 'EventStep3Modal',
+    modal: {
+        width: 600,
+        clickToClose: false,
+    },
     provide: {
         verticalForm: true,
     },
@@ -203,7 +207,7 @@ export default {
             }
 
             const { $t: __ } = this;
-            const { value: isConfirmed } = await confirm({
+            const isConfirmed = await confirm({
                 text: __('page.event-edit.technician-item.confirm-permanently-delete'),
                 confirmButtonText: __('yes-permanently-delete'),
                 type: 'danger',

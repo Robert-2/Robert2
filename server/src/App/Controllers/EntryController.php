@@ -5,34 +5,38 @@ namespace Robert2\API\Controllers;
 
 use DI\Container;
 use Robert2\API\Config\Config;
+use Robert2\API\Http\Request;
+use Robert2\API\Services\Auth;
 use Robert2\API\Services\View;
 use Slim\Http\Response;
-use Slim\Http\ServerRequest as Request;
 
 class EntryController extends BaseController
 {
-    /** @var View */
-    private $view;
+    private View $view;
 
-    /** @var array */
-    private $settings;
+    private Auth $auth;
 
-    public function __construct(Container $container, View $view)
+    private array $settings;
+
+    public function __construct(Container $container, View $view, Auth $auth)
     {
         parent::__construct($container);
 
         $this->view = $view;
+        $this->auth = $auth;
         $this->settings = $container->get('settings');
     }
 
-    public function index(Request $request, Response $response)
+    public function default(Request $request, Response $response)
     {
         if (!Config::customConfigExists()) {
             return $response->withRedirect('/install', 302); // - 302 Redirect.
         }
 
+        $user = Auth::user();
+
         $serverConfig = $this->getServerConfig();
-        return $this->view->render($response, 'webclient.twig', \compact('serverConfig'));
+        return $this->view->render($response, 'entries/default.twig', \compact('serverConfig'));
     }
 
     // ------------------------------------------------------
@@ -44,7 +48,7 @@ class EntryController extends BaseController
     protected function getServerConfig(): string
     {
         $rawConfig = $this->settings;
-        $baseUrl = preg_replace('/\/$/', '', $rawConfig['apiUrl']);
+        $baseUrl = rtrim($rawConfig['apiUrl'], '/');
 
         $config = [
             'baseUrl' => $baseUrl,
@@ -57,6 +61,7 @@ class EntryController extends BaseController
                 'cookie' => $rawConfig['auth']['cookie'],
                 'timeout' => $rawConfig['sessionExpireHours'],
             ],
+            'companyName' => $rawConfig['companyData']['name'],
             'defaultPaginationLimit' => $rawConfig['maxItemsPerPage'],
             'defaultLang' => $rawConfig['defaultLang'],
             'currency' => $rawConfig['currency'],

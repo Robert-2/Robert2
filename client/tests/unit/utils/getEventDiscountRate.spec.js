@@ -1,19 +1,19 @@
 import getEventDiscountRate from '@/utils/getEventDiscountRate';
 
 describe('getEventDiscountRate', () => {
-    it('should return default value when the event has no bill or estimate', () => {
+    it('should return default value when the event has no invoice or estimate', () => {
         expect(getEventDiscountRate({}, 32)).toEqual(32);
-        expect(getEventDiscountRate({ bills: [], estimates: [] }, 32)).toEqual(32);
+        expect(getEventDiscountRate({ invoices: [], estimates: [] }, 32)).toEqual(32);
     });
 
-    it('should return 0 when the event has no bill or estimate and no default value specified', () => {
+    it('should return 0 when the event has no invoice or estimate and no default value specified', () => {
         expect(getEventDiscountRate({})).toEqual(0);
-        expect(getEventDiscountRate({ bills: [], estimates: [] })).toEqual(0);
+        expect(getEventDiscountRate({ invoices: [], estimates: [] })).toEqual(0);
     });
 
-    it('should return the last bill discount rate first', () => {
+    it('should return the last invoice discount rate first', () => {
         const event = {
-            bills: [
+            invoices: [
                 { discount_rate: 15 },
                 { discount_rate: 20 },
             ],
@@ -24,9 +24,9 @@ describe('getEventDiscountRate', () => {
         expect(getEventDiscountRate(event, 100)).toEqual(15);
     });
 
-    it('returns the last estimate discount rate when no last bill given', () => {
+    it('returns the last estimate discount rate when no last invoice given', () => {
         const event = {
-            bills: [],
+            invoices: [],
             estimates: [
                 { discount_rate: 20 },
                 { discount_rate: 25 },

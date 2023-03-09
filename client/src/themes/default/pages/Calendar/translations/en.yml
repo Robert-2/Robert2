@@ -6,7 +6,6 @@ help: |-
     Double-click on an empty column to create an event with start date pre-filled.
 
 add-event: New event
-event-deleted: The event was deleted.
 event-saved: The event was saved.
 loading-event: Loading event...
 center-on-today: Center on today

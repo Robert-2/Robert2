@@ -1,6 +1,6 @@
 {% extends "pdf/base.twig" %}
 
-{% block title %}{{ translate("releaseSheet") }}{% endblock %}
+{% block title %}{{ translate("release-sheet") }}{% endblock %}
 
 {% block content %}
 <table class="layout-table">
@@ -14,14 +14,14 @@
         </td>
         <td class="half">
             <h1 class="box center spaceBottom5">
-                {{ translate('releaseSheet') }}
+                {{ translate('release-sheet') }}
             </h1>
             <h2 class="">
                 {{ translate('event', [event['title']]) }}
             </h2>
             <h3>
                 {{ translate(
-                    'fromToDates',
+                    'from-to-dates',
                     [event['start_date']|format_date('short', locale=locale),
                     event['end_date']|format_date('short', locale=locale)]
                 ) }}
@@ -47,19 +47,19 @@
     <tr>
         <td class="{{ beneficiaries|length > 1 ? 'third' : 'half' }} size11">
             {% if event['location'] %}
-            <h3>{{ translate('location', [event['location']]) }}</h3>
+                <h3>{{ translate('location', [event['location']]) }}</h3>
             {% endif %}
             {% if event['is_confirmed'] %}
-            <p class="lighter">
-                {{ translate('thisEventIsConfirmed') }}
-            </p>
+                <p class="lighter">
+                    {{ translate('this-event-is-confirmed') }}
+                </p>
             {% endif %}
             {% if replacementAmount %}
-            <p class="lighter">
-                {{ translate('eventTotalReplacementAmount', [
-                    replacementAmount|format_currency(currency, formatCurrencyOptions, locale)
-                ]) }}
-            </p>
+                <p class="lighter">
+                    {{ translate('total-replacement-amount', [
+                        replacementAmount|format_currency(currency, locale=locale)
+                    ]) }}
+                </p>
             {% endif %}
             <p class="lighter">
                 {{ translate('printed-on-date', [date|format_date('long', locale=locale)]) }}
@@ -67,36 +67,36 @@
         </td>
         <td class="{{ beneficiaries|length > 1 ? 'third' : 'half' }}">
             {% if technicians is not empty %}
-            <h3>{{ translate('technicians') }}</h3>
-            <ul class="spaceBottom5">
-                {% for technician in technicians %}
-                <li class="spaceBottom2">
-                    {{ technician['name'] }}
-                    {% if technician['phone'] is not empty %}
-                    <span class="lighter">- {{ technician['phone'] }}</span>
-                    {% endif %}
-                    {% for period in technician['periods'] %}
-                    <br />
-                    <span class="lighter size8">
-                        {{ period['from']|format_datetime(pattern='dd MMM HH:mm', locale=locale) }} >
-                        {{ period['to']|format_datetime(pattern='dd MMM HH:mm', locale=locale) }}
-                    </span>
-                    {% if period['position'] is not empty %}
-                    <span class="lighter">- {{ period['position'] }}</span>
-                    {% endif %}
+                <h3>{{ translate('technicians') }}</h3>
+                <ul class="spaceBottom5">
+                    {% for technician in technicians %}
+                    <li class="spaceBottom2">
+                        {{ technician['name'] }}
+                        {% if technician['phone'] is not empty %}
+                            <span class="lighter">- {{ technician['phone'] }}</span>
+                        {% endif %}
+                        {% for period in technician['periods'] %}
+                            <br />
+                            <span class="lighter size8">
+                                {{ period['from']|format_datetime(pattern='dd MMM HH:mm', locale=locale) }} >
+                                {{ period['to']|format_datetime(pattern='dd MMM HH:mm', locale=locale) }}
+                            </span>
+                            {% if period['position'] is not empty %}
+                                <span class="lighter size8">- {{ period['position'] }}</span>
+                            {% endif %}
+                        {% endfor %}
+                    </li>
                     {% endfor %}
-                </li>
-                {% endfor %}
-            </ul>
+                </ul>
             {% endif %}
         </td>
         {% if beneficiaries|length > 1 %}
         <td class="third">
-            <h3>{{ translate('otherBeneficiaries') }}</h3>
+            <h3>{{ translate('other-beneficiaries') }}</h3>
             <ul class="spaceBottom5">
                 {% for otherBeneficiary in beneficiaries|slice(1) %}
                 <li class="spaceBottom2">
-                    {{ include('blocks/beneficiary-address.twig', { person: otherBeneficiary }) }}
+                    {{ include('blocks/beneficiary.twig', { beneficiary: otherBeneficiary }) }}
                 </li>
                 {% endfor %}
             </ul>
@@ -106,10 +106,10 @@
 </table>
 
 {% if event['description'] is not empty %}
-<h2>{{ translate('descriptionNotes') }}</h2>
-<p>
-    {{ event['description']|nl2br }}
-</p>
+    <h2>{{ translate('description-notes') }}</h2>
+    <p>
+        {{ event['description']|nl2br }}
+    </p>
 {% endif %}
 
 <h2 class="vspace2">{{ translate('materials') }}</h2>
@@ -120,96 +120,85 @@
             <th>{{ translate('designation') }}</th>
             <th>{{ translate('qty') }}</th>
             <th>{{ translate('replacement-value') }}</th>
-            <th>{{ translate('totalReplacementValue') }}</th>
-            <th>{{ translate('qtyReturned') }}</th>
+            <th>{{ translate('total-replacement-value') }}</th>
+            <th>{{ translate('qty-returned') }}</th>
         </tr>
     </thead>
     <tbody>
         {% if materialDisplayMode == 'categories' %}
-        {% for category in materialList %}
-            <tr>
-                <td class="section-title" colspan="6">
-                    {% if category['name'] is not empty %}
-                    {{ category['name'] }}
-                    {% else %}
-                    {{ translate('notCategorized') }}
-                    {% endif %}
-                </td>
-            </tr>
-            {% for material in category['materials'] %}
-                {{ include('blocks/materials/line-summary.twig', { material: material }) }}
+            {% for category, materialsList in sortedMaterials %}
+                <tr>
+                    <td class="section-title" colspan="6">
+                        {{ category|replace({ '__other': translate('not-categorized') }) }}
+                    </td>
+                </tr>
+                {% for material in materialsList %}
+                    {{ include('blocks/materials/line-event-summary.twig', { material: material }) }}
+                {% endfor %}
             {% endfor %}
-        {% endfor %}
         {% elseif materialDisplayMode == 'sub-categories' %}
-        {% for subCategory in materialList %}
-            <tr>
-                <td class="section-title" colspan="6">
-                    {% if subCategory['category'] is not empty %}
-                    {{ subCategory['category'] }}
-                    {% else %}
-                    {{ translate('notCategorized') }}
-                    {% endif %}
-                    {% if subCategory['name'] is not empty %}
-                    - {{ subCategory['name'] }}
-                    {% else %}
-                        {% if subCategory['categoryHasSubCategories'] == true %}
-                        - {{ translate('otherMaterials') }}
+            {% for subCategory, materialsList in sortedMaterials %}
+                <tr>
+                    <td class="section-title" colspan="6">
+                        {% if subCategory == '--' %}
+                            {{ translate('not-categorized') }}
+                        {% else %}
+                            {{ subCategory|replace({ '__other': translate('other-materials') }) }}
                         {% endif %}
-                    {% endif %}
-                </td>
-            </tr>
-            {% for material in subCategory['materials'] %}
-                {{ include('blocks/materials/line-summary.twig', { material: material }) }}
+                    </td>
+                </tr>
+                {% for material in materialsList %}
+                    {{ include('blocks/materials/line-event-summary.twig', { material: material }) }}
+                {% endfor %}
             {% endfor %}
-        {% endfor %}
         {% elseif materialDisplayMode == 'parks' %}
-        {% for park in materialList %}
-            <tr>
-                <td class="section-title" colspan="6">
-                    {% if park['name'] is not empty %}
-                        {{ park['name'] }}
-                    {% else %}
-                        ({{ translate('unknown-park') }})
-                    {% endif %}
-                </td>
-            </tr>
-            {% for material in park['materials'] %}
-                {{ include('blocks/materials/line-summary.twig', { material: material }) }}
+            {% for park, materialsList in sortedMaterials %}
+                <tr>
+                    <td class="section-title" colspan="6">
+                        {% if park is not empty %}
+                            {{ park }}
+                        {% else %}
+                            ({{ translate('unknown-park') }})
+                        {% endif %}
+                    </td>
+                </tr>
+                {% for material in materialsList %}
+                    {{ include('blocks/materials/line-event-summary.twig', { material: material, withoutPark: true }) }}
+                {% endfor %}
             {% endfor %}
-        {% endfor %}
         {% else %}
-            {% for material in materialList %}
-                {{ include('blocks/materials/line-summary.twig', { material: material }) }}
+            {% for material in sortedMaterials %}
+                {{ include('blocks/materials/line-event-summary.twig', { material: material }) }}
             {% endfor %}
         {% endif %}
     </tbody>
 </table>
 
+{% if customText and customText['content'] is not empty %}
+<div style="padding: 3mm 0; margin-bottom: 5mm;">
+    {% if customText['title'] is not empty %}
+    <h2>{{ customText['title'] }}</h2>
+    {% endif %}
+    <p>{{ customText['content']|nl2br }}</p>
+</div>
+{% endif %}
 
 <table class="layout-table">
-    {% if customText and customText['content'] is not empty %}
-    <tr>
-        <td style="padding: 3mm 0;" colspan="2">
-            {% if customText['title'] is not empty %}<h2>{{ customText['title'] }}</h2>{% endif %}
-            <p>{{ customText['content']|nl2br }}</p>
-        </td>
-    </tr>
-    {% endif %}
     <tr>
         <td class="half inset">
             <h3 class="center">{{ translate('output') }}</h3>
             <p class="strong">
-                {{ translate('outputScheduledFor', [event['start_date']|format_date('long', locale=locale)]) }}
+                {{ translate('output-scheduled-for', [event['start_date']|format_date('long', locale=locale)]) }}
             </p>
-            <p>{{ translate('effectiveDate') }}</p>
+            <p>{{ translate('effective-date') }}</p>
             <p class="strong vspace5 spaceBottom5">{{ translate('signature') }}</p>
         </td>
         <td class="inset">
             <h3 class="center">{{ translate('return') }}</h3>
             <p class="strong">
-                {{ translate('returnScheduledFor', [event['end_date']|format_date('long', locale=locale)]) }}
+                {{ translate('return-scheduled-for-date', [event['end_date']|format_date('long', locale=locale)]) }}
             </p>
-            <p>{{ translate('effectiveDate') }}</p>
+            <p>{{ translate('effective-date') }}</p>
             <p class="strong vspace5 spaceBottom5">{{ translate('signature') }}</p>
         </td>
     </tr>

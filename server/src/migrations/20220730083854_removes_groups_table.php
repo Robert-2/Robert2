@@ -21,6 +21,7 @@ final class RemovesGroupsTable extends AbstractMigration
         $users
             ->changeColumn('group', 'enum', [
                 'values' => ['visitor', 'member', 'admin'],
+                'null' => false,
             ])
             ->addIndex(['group'])
             ->save();
@@ -32,8 +33,8 @@ final class RemovesGroupsTable extends AbstractMigration
     {
         $groups = $this->table('groups', ['id' => false, 'primary_key' => 'id']);
         $groups
-            ->addColumn('id', 'string', ['length' => 16])
-            ->addColumn('name', 'string', ['length' => 32])
+            ->addColumn('id', 'string', ['length' => 16, 'null' => false])
+            ->addColumn('name', 'string', ['length' => 32, 'null' => false])
             ->create();
 
         $dataGroups = [
@@ -55,7 +56,10 @@ final class RemovesGroupsTable extends AbstractMigration
             ->save();
 
         $users
-            ->changeColumn('group_id', 'string', ['length' => 16])
+            ->changeColumn('group_id', 'string', [
+                'length' => 16,
+                'null' => false,
+            ])
             ->save();
 
         $users
@@ -63,7 +67,7 @@ final class RemovesGroupsTable extends AbstractMigration
             ->addForeignKey('group_id', 'groups', 'id', [
                 'delete' => 'RESTRICT',
                 'update' => 'NO_ACTION',
-                'constraint' => 'fk_users_group'
+                'constraint' => 'fk_users_group',
             ])
             ->save();
     }

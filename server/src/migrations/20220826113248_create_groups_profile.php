@@ -29,13 +29,17 @@ final class CreateGroupsProfile extends AbstractMigration
         // - Bénéficiaires
         //
 
-        $beneficiaries = $this->table('beneficiaries');
+        $beneficiaries = $this->table('beneficiaries', ['signed' => true]);
         $beneficiaries
             ->addColumn('reference', 'string', ['length' => 96, 'null' => true])
-            ->addColumn('person_id', 'integer')
-            ->addColumn('company_id', 'integer', ['null' => true, 'default' => null])
+            ->addColumn('person_id', 'integer', ['signed' => true, 'null' => false])
+            ->addColumn('company_id', 'integer', [
+                'signed' => true,
+                'null' => true,
+                'default' => null,
+            ])
             ->addColumn('note', 'text', ['null' => true])
-            ->addColumn('created_at', 'datetime')
+            ->addColumn('created_at', 'datetime', ['null' => false])
             ->addColumn('updated_at', 'datetime', ['null' => true])
             ->addColumn('deleted_at', 'datetime', ['null' => true])
             ->addIndex(['reference'], ['unique' => true])
@@ -107,12 +111,16 @@ final class CreateGroupsProfile extends AbstractMigration
         $event_beneficiaries
             ->dropForeignKey('person_id')
             ->removeIndex(['person_id'])
-            ->addColumn('beneficiary_id', 'integer', ['after' => 'event_id', 'null' => true])
+            ->addColumn('beneficiary_id', 'integer', [
+                'signed' => true,
+                'null' => true,
+                'after' => 'event_id',
+            ])
             ->addIndex(['beneficiary_id'])
             ->addForeignKey('beneficiary_id', 'beneficiaries', 'id', [
                 'delete' => 'CASCADE',
                 'update' => 'NO_ACTION',
-                'constraint' => 'fk__event_beneficiary__beneficiary'
+                'constraint' => 'fk__event_beneficiary__beneficiary',
             ])
             ->update();
 
@@ -125,7 +133,7 @@ final class CreateGroupsProfile extends AbstractMigration
         }
 
         $event_beneficiaries
-            ->changeColumn('beneficiary_id', 'integer')
+            ->changeColumn('beneficiary_id', 'integer', ['signed' => true, 'null' => false])
             ->removeColumn('person_id')
             ->update();
 
@@ -147,17 +155,21 @@ final class CreateGroupsProfile extends AbstractMigration
                 ->update();
 
             $table
-                ->addColumn('beneficiary_id', 'integer', ['after' => 'event_id', 'null' => true])
+                ->addColumn('beneficiary_id', 'integer', [
+                    'signed' => true,
+                    'null' => true,
+                    'after' => 'event_id',
+                ])
                 ->addIndex(['beneficiary_id'])
                 ->addForeignKey('beneficiary_id', 'beneficiaries', 'id', [
                     'delete' => 'CASCADE',
                     'update' => 'NO_ACTION',
-                    'constraint' => sprintf('fk__%s__beneficiary', $billTableSingularName)
+                    'constraint' => sprintf('fk__%s__beneficiary', $billTableSingularName),
                 ])
                 ->addForeignKey('event_id', 'events', 'id', [
                     'delete' => 'CASCADE',
                     'update' => 'NO_ACTION',
-                    'constraint' => sprintf('fk__%s__event', $billTableSingularName)
+                    'constraint' => sprintf('fk__%s__event', $billTableSingularName),
                 ])
                 ->update();
 
@@ -170,7 +182,7 @@ final class CreateGroupsProfile extends AbstractMigration
             }
 
             $table
-                ->changeColumn('beneficiary_id', 'integer')
+                ->changeColumn('beneficiary_id', 'integer', ['signed' => true, 'null' => false])
                 ->removeColumn('person_id')
                 ->update();
         }
@@ -179,12 +191,12 @@ final class CreateGroupsProfile extends AbstractMigration
         // - Techniciens
         //
 
-        $technicians = $this->table('technicians');
+        $technicians = $this->table('technicians', ['signed' => true]);
         $technicians
-            ->addColumn('person_id', 'integer')
+            ->addColumn('person_id', 'integer', ['signed' => true, 'null' => false])
             ->addColumn('nickname', 'string', ['length' => 96, 'null' => true])
             ->addColumn('note', 'text', ['null' => true])
-            ->addColumn('created_at', 'datetime')
+            ->addColumn('created_at', 'datetime', ['null' => false])
             ->addColumn('updated_at', 'datetime', ['null' => true])
             ->addColumn('deleted_at', 'datetime', ['null' => true])
             ->addIndex(['person_id'], ['unique' => true])
@@ -254,12 +266,16 @@ final class CreateGroupsProfile extends AbstractMigration
             ->update();
 
         $event_technicians
-            ->addColumn('technician_id', 'integer', ['after' => 'event_id', 'null' => true])
+            ->addColumn('technician_id', 'integer', [
+                'signed' => true,
+                'null' => true,
+                'after' => 'event_id',
+            ])
             ->addIndex(['technician_id'])
             ->addForeignKey('technician_id', 'technicians', 'id', [
                 'delete' => 'CASCADE',
                 'update' => 'NO_ACTION',
-                'constraint' => 'fk__event_technician__technician'
+                'constraint' => 'fk__event_technician__technician',
             ])
             ->update();
 
@@ -272,7 +288,7 @@ final class CreateGroupsProfile extends AbstractMigration
         }
 
         $event_technicians
-            ->changeColumn('technician_id', 'integer')
+            ->changeColumn('technician_id', 'integer', ['signed' => true, 'null' => false])
             ->removeColumn('person_id')
             ->update();
 
@@ -372,6 +388,7 @@ final class CreateGroupsProfile extends AbstractMigration
                 'after' => 'reference',
             ])
             ->addColumn('company_id', 'integer', [
+                'signed' => true,
                 'null' => true,
                 'after' => 'country_id',
             ])
@@ -388,7 +405,7 @@ final class CreateGroupsProfile extends AbstractMigration
             ->addForeignKey('company_id', 'companies', 'id', [
                 'delete' => 'SET_NULL',
                 'update' => 'NO_ACTION',
-                'constraint' => 'fk__person__company'
+                'constraint' => 'fk__person__company',
             ])
             ->update();
 
@@ -433,82 +450,90 @@ final class CreateGroupsProfile extends AbstractMigration
                     array_keys($personBeneficiaryMap),
                 ))
                 ->saveData();
+        }
 
-            //
-            // -- Bénéficiaires des événements
-            //
+        //
+        // -- Bénéficiaires des événements
+        //
 
-            $event_beneficiaries = $this->table('event_beneficiaries');
-            $event_beneficiaries
-                ->dropForeignKey('beneficiary_id')
+        $event_beneficiaries = $this->table('event_beneficiaries');
+        $event_beneficiaries
+            ->dropForeignKey('beneficiary_id')
+            ->removeIndex(['beneficiary_id'])
+            ->addColumn('person_id', 'integer', [
+                'signed' => true,
+                'null' => true,
+                'after' => 'event_id',
+            ])
+            ->addIndex(['person_id'])
+            ->addForeignKey('person_id', 'persons', 'id', [
+                'delete' => 'CASCADE',
+                'update' => 'NO_ACTION',
+                'constraint' => 'fk__event_beneficiary__person',
+            ])
+            ->update();
+
+        foreach ($personBeneficiaryMap as $personId => $beneficiaryId) {
+            $this->getQueryBuilder()
+                ->update(sprintf('%sevent_beneficiaries', $prefix))
+                ->set(['person_id' => $personId])
+                ->where(['beneficiary_id' => $beneficiaryId])
+                ->execute();
+        }
+
+        $event_beneficiaries
+            ->changeColumn('person_id', 'integer', ['signed' => true, 'null' => false])
+            ->removeColumn('beneficiary_id')
+            ->update();
+
+        //
+        // -- Bénéficiaires des Factures / Devis
+        //
+
+        $billTables = ['bills' => 'bill', 'estimates' => 'estimate'];
+        foreach ($billTables as $billTableName => $billTableSingularName) {
+            $table = $this->table($billTableName);
+            $table
                 ->removeIndex(['beneficiary_id'])
-                ->addColumn('person_id', 'integer', ['after' => 'event_id', 'null' => true])
-                ->addIndex(['person_id'])
-                ->addForeignKey('person_id', 'persons', 'id', [
+                ->dropForeignKey('beneficiary_id')
+                ->dropForeignKey('event_id')
+                ->update();
+
+            $table
+                ->renameColumn('beneficiary_id', 'old_beneficiary_id')
+                ->update();
+
+            $table
+                ->addColumn('beneficiary_id', 'integer', [
+                    'signed' => true,
+                    'null' => true,
+                    'after' => 'event_id',
+                ])
+                ->addIndex(['beneficiary_id'])
+                ->addForeignKey('beneficiary_id', 'persons', 'id', [
                     'delete' => 'CASCADE',
                     'update' => 'NO_ACTION',
-                    'constraint' => 'fk__event_beneficiary__person'
+                    'constraint' => sprintf('fk__%s__beneficiary', $billTableSingularName),
+                ])
+                ->addForeignKey('event_id', 'events', 'id', [
+                    'delete' => 'CASCADE',
+                    'update' => 'NO_ACTION',
+                    'constraint' => sprintf('fk__%s__event', $billTableSingularName),
                 ])
                 ->update();
 
             foreach ($personBeneficiaryMap as $personId => $beneficiaryId) {
                 $this->getQueryBuilder()
-                    ->update(sprintf('%sevent_beneficiaries', $prefix))
-                    ->set(['person_id' => $personId])
-                    ->where(['beneficiary_id' => $beneficiaryId])
+                    ->update(sprintf('%s%s', $prefix, $billTableName))
+                    ->set(['beneficiary_id' => $personId])
+                    ->where(['old_beneficiary_id' => $beneficiaryId])
                     ->execute();
             }
 
-            $event_beneficiaries
-                ->changeColumn('person_id', 'integer')
-                ->removeColumn('beneficiary_id')
+            $table
+                ->changeColumn('beneficiary_id', 'integer', ['signed' => true, 'null' => false])
+                ->removeColumn('old_beneficiary_id')
                 ->update();
-
-            //
-            // -- Bénéficiaires des Factures / Devis
-            //
-
-            $billTables = ['bills' => 'bill', 'estimates' => 'estimate'];
-            foreach ($billTables as $billTableName => $billTableSingularName) {
-                $table = $this->table($billTableName);
-                $table
-                    ->removeIndex(['beneficiary_id'])
-                    ->dropForeignKey('beneficiary_id')
-                    ->dropForeignKey('event_id')
-                    ->update();
-
-                $table
-                    ->renameColumn('beneficiary_id', 'old_beneficiary_id')
-                    ->update();
-
-                $table
-                    ->addColumn('beneficiary_id', 'integer', ['after' => 'event_id', 'null' => true])
-                    ->addIndex(['beneficiary_id'])
-                    ->addForeignKey('beneficiary_id', 'persons', 'id', [
-                        'delete' => 'CASCADE',
-                        'update' => 'NO_ACTION',
-                        'constraint' => sprintf('fk__%s__beneficiary', $billTableSingularName)
-                    ])
-                    ->addForeignKey('event_id', 'events', 'id', [
-                        'delete' => 'CASCADE',
-                        'update' => 'NO_ACTION',
-                        'constraint' => sprintf('fk__%s__event', $billTableSingularName)
-                    ])
-                    ->update();
-
-                foreach ($personBeneficiaryMap as $personId => $beneficiaryId) {
-                    $this->getQueryBuilder()
-                        ->update(sprintf('%s%s', $prefix, $billTableName))
-                        ->set(['beneficiary_id' => $personId])
-                        ->where(['old_beneficiary_id' => $beneficiaryId])
-                        ->execute();
-                }
-
-                $table
-                    ->changeColumn('beneficiary_id', 'integer')
-                    ->removeColumn('old_beneficiary_id')
-                    ->update();
-            }
         }
 
         $this->table('beneficiaries')->drop()->save();
@@ -552,44 +577,48 @@ final class CreateGroupsProfile extends AbstractMigration
                     array_keys($personTechnicianMap),
                 ))
                 ->saveData();
-
-            //
-            // -- Techniciens des événements
-            //
-
-            $event_technicians = $this->table('event_technicians');
-            $event_technicians
-                ->dropForeignKey('technician_id')
-                ->removeIndex(['technician_id'])
-                ->update();
-
-            $event_technicians
-                ->renameColumn('technician_id', 'old_technician_id')
-                ->update();
-
-            $event_technicians
-                ->addColumn('technician_id', 'integer', ['after' => 'event_id', 'null' => true])
-                ->addIndex(['technician_id'])
-                ->addForeignKey('technician_id', 'persons', 'id', [
-                    'delete' => 'CASCADE',
-                    'update' => 'NO_ACTION',
-                    'constraint' => 'fk__event_technician__technician'
-                ])
-                ->update();
-
-            foreach ($personTechnicianMap as $personId => $technicianId) {
-                $this->getQueryBuilder()
-                    ->update(sprintf('%sevent_technicians', $prefix))
-                    ->set(['technician_id' => $personId])
-                    ->where(['old_technician_id' => $technicianId])
-                    ->execute();
-            }
-
-            $event_technicians
-                ->changeColumn('technician_id', 'integer')
-                ->removeColumn('old_technician_id')
-                ->update();
         }
+
+        //
+        // -- Techniciens des événements
+        //
+
+        $event_technicians = $this->table('event_technicians');
+        $event_technicians
+            ->dropForeignKey('technician_id')
+            ->removeIndex(['technician_id'])
+            ->update();
+
+        $event_technicians
+            ->renameColumn('technician_id', 'old_technician_id')
+            ->update();
+
+        $event_technicians
+            ->addColumn('technician_id', 'integer', [
+                'signed' => true,
+                'null' => true,
+                'after' => 'event_id',
+            ])
+            ->addIndex(['technician_id'])
+            ->addForeignKey('technician_id', 'persons', 'id', [
+                'delete' => 'CASCADE',
+                'update' => 'NO_ACTION',
+                'constraint' => 'fk__event_technician__technician',
+            ])
+            ->update();
+
+        foreach ($personTechnicianMap as $personId => $technicianId) {
+            $this->getQueryBuilder()
+                ->update(sprintf('%sevent_technicians', $prefix))
+                ->set(['technician_id' => $personId])
+                ->where(['old_technician_id' => $technicianId])
+                ->execute();
+        }
+
+        $event_technicians
+            ->changeColumn('technician_id', 'integer', ['signed' => true, 'null' => false])
+            ->removeColumn('old_technician_id')
+            ->update();
 
         $this->table('technicians')->drop()->save();
 
@@ -600,12 +629,14 @@ final class CreateGroupsProfile extends AbstractMigration
         $parks = $this->table('parks');
         $parks
             ->addColumn('person_id', 'integer', [
+                'signed' => true,
                 'null' => true,
-                'after' => 'name'
+                'after' => 'name',
             ])
             ->addColumn('company_id', 'integer', [
+                'signed' => true,
                 'null' => true,
-                'after' => 'person_id'
+                'after' => 'person_id',
             ])
             ->addIndex(['person_id'])
             ->addForeignKey('person_id', 'persons', 'id', [
