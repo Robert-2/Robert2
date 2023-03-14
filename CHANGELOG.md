@@ -4,7 +4,7 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 0.20.0 (UNRELEASED)
+## 0.20.0 (2023-03-14)
 
 ### Variante open-source
 
