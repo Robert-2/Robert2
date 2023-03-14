@@ -1,0 +1,51 @@
+@use '../variables' as *;
+@use '~@/themes/default/style/globals';
+
+.TabButton {
+    position: relative;
+    bottom: -1px;
+    margin-right: 1px;
+    padding: 10px 16px;
+    border-bottom: 2px solid $header-border-color;
+    border-radius: $border-radius;
+    background-color: $background-color;
+    color: $text-color;
+    list-style: none;
+    user-select: none;
+    cursor: pointer;
+
+    &__icon {
+        margin-right: $icon-margin;
+    }
+
+    &__counter {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: 5px;
+        padding: 3px 6px;
+        border-radius: 10px;
+        background-color: $counter-background-color;
+        color: $counter-text-color;
+        font-size: 11px;
+        font-weight: 600;
+        line-height: 1;
+    }
+
+    &--selected {
+        border-color: $header-border-color-active;
+        color: $text-color-active;
+    }
+
+    &--disabled {
+        color: $text-color-disabled;
+        cursor: not-allowed;
+    }
+
+    &--warning {
+        @include globals.icon('exclamation-triangle', true) {
+            margin-left: $icon-margin;
+            color: globals.$text-danger-color;
+        }
+    }
+}

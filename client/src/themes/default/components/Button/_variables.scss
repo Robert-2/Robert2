@@ -1,0 +1,186 @@
+@use '~@/themes/default/style/globals';
+@use 'sass:color';
+@use 'sass:map';
+
+/// Padding vertical des boutons.
+/// @type Number
+$padding-y: 0.396rem !default;
+
+/// Padding horizontal des boutons.
+/// @type Number
+$padding-x: 0.626rem !default;
+
+/// Marge entre l'icône et le texte des boutons (quand il y en a une, d'icône)
+/// @type Number
+$icon-margin: 0.385rem !default;
+
+/// Largeur de la bordure des boutons.
+/// @type Number
+$border-width: 2px !default;
+
+/// Border radius des boutons.
+/// @type Number
+$border-radius: 4px !default;
+
+//
+// - Tailles
+//
+
+/// Padding vertical des boutons en version "large".
+/// @type Number
+$large-padding-y: 0.75rem;
+
+/// Padding horizontal des boutons en version "large".
+/// @type Number
+$large-padding-x: 1.5rem;
+
+/// Taille de la police des boutons en version "large".
+/// @type Number
+$large-font-size: 1.2rem;
+
+//
+// - Default variant
+//
+
+// stylelint-disable-next-line value-list-max-empty-lines
+$default-variant: (
+    color: globals.$color-base-button,
+    background: rgba(255, 255, 255, 0.06),
+    border-color: transparent,
+
+    // - Focused
+    focused-color: globals.$color-hover-button,
+    focused-background: rgba(255, 255, 255, 0.15),
+    focused-border-color: transparent,
+
+    // - Active
+    active-color: color.adjust(globals.$color-base-button, $lightness: -8%),
+    active-background: rgba(255, 255, 255, 0.03),
+    active-border-color: transparent,
+) !default;
+
+//
+// - Primary variant
+//
+
+// stylelint-disable-next-line value-list-max-empty-lines
+$primary-variant: (
+    color: #fff,
+    background: globals.$primary-color,
+    border-color: globals.$primary-color,
+
+    // - Focused
+    focused-color: #fff,
+    focused-background: color.adjust(globals.$primary-color, $saturation: 23.3%, $lightness: 5.5%),
+    focused-border-color: color.adjust(globals.$primary-color, $saturation: 23.3%, $lightness: 5.5%),
+
+    // - Active
+    active-color: #fff,
+    active-background: color.adjust(globals.$primary-color, $saturation: 23.8%, $lightness: -4.5%),
+    active-border-color: color.adjust(globals.$primary-color, $saturation: 23.8%, $lightness: -4.5%),
+) !default;
+
+//
+// - Secondary variant
+//
+
+// stylelint-disable-next-line value-list-max-empty-lines
+$secondary-variant: (
+    color: #fff,
+    background: color.adjust(globals.$primary-color, $saturation: -25%, $lightness: -22%),
+    border-color: globals.$primary-color,
+
+    // - Focused
+    focused-color: map.get($primary-variant, focused-color),
+    focused-background: map.get($primary-variant, focused-background),
+    focused-border-color: map.get($primary-variant, focused-border-color),
+
+    // - Active
+    active-color: map.get($primary-variant, active-color),
+    active-background: map.get($primary-variant, active-background),
+    active-border-color: map.get($primary-variant, active-border-color),
+) !default;
+
+//
+// - Transparent variant
+//
+
+// stylelint-disable-next-line value-list-max-empty-lines
+$transparent-variant: (
+    color: globals.$color-base-button,
+    background: transparent,
+    border-color: transparent,
+
+    // - Focused
+    focused-color: globals.$color-hover-button,
+    focused-background: rgba(255, 255, 255, 0.06),
+    focused-border-color: transparent,
+
+    // - Active
+    active-color: globals.$color-hover-button,
+    active-background: transparent,
+    active-border-color: transparent,
+) !default;
+
+//
+// - Success variant
+//
+
+// stylelint-disable-next-line value-list-max-empty-lines
+$success-variant: (
+    color: #fff,
+    background: globals.$bg-color-button-success,
+    border-color: globals.$bg-color-button-success,
+
+    // - Focused
+    focused-color: #fff,
+    focused-background: color.adjust(globals.$bg-color-button-success, $lightness: 5%),
+    focused-border-color: color.adjust(globals.$bg-color-button-success, $lightness: 5%),
+
+    // - Active
+    active-color: #fff,
+    active-background: color.adjust(globals.$bg-color-button-success, $lightness: -5%),
+    active-border-color: color.adjust(globals.$bg-color-button-success, $lightness: -5%),
+) !default;
+
+//
+// - Warning variant
+//
+
+// stylelint-disable-next-line value-list-max-empty-lines
+$warning-variant: (
+    color: #fff,
+    background: #be692d,
+    border-color: #be692d,
+
+    // - Focused
+    focused-color: #fff,
+    focused-background: color.adjust(#be692d, $lightness: 8%),
+    focused-border-color: color.adjust(#be692d, $lightness: 8%),
+
+    // - Active
+    active-color: #fff,
+    active-background: color.adjust(#be692d, $lightness: 8%),
+    active-border-color: color.adjust(#be692d, $lightness: 8%),
+) !default;
+
+//
+// - Danger variant
+//
+
+// stylelint-disable-next-line value-list-max-empty-lines
+$danger-variant: (
+    color: #fff,
+    background: globals.$bg-color-button-danger,
+    border-color: globals.$bg-color-button-danger,
+
+    // - Focused
+    focused-color: #fff,
+    focused-background: color.adjust(globals.$bg-color-button-danger, $lightness: 8%),
+    focused-border-color: color.adjust(globals.$bg-color-button-danger, $lightness: 8%),
+
+    // - Active
+    active-color: #fff,
+    active-background: color.adjust(globals.$bg-color-button-danger, $lightness: -8%),
+    active-border-color: color.adjust(globals.$bg-color-button-danger, $lightness: -8%),
+) !default;

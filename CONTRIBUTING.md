@@ -24,7 +24,7 @@ Par exemple, dans l'installation de développement, des liens symboliques sont u
 (`/server/src/VERSION` et `/server/src/public/webclient`) et ceux-ci devront être re-créés manuellement avec leur équivalent 
 sous windows qui ne supporte pas les liens symboliques tel qu'ils apparaissent dans le repository.
 
-De la même façon, sous MacOs, certains des utilitaires globaux (tel que `sed`, `grep`, etc.) diffèrent des utilitaires GNU utilisés sous linux.  
+De la même façon, sous MacOs, certains des utilitaires globaux (tel que `sed`, `grep`, etc.) diffèrent des utilitaires GNU utilisés sous Linux.  
 Pour ceux-ci, nous vous conseillons d'installer les paquets [Homebrew](https://brew.sh/index_fr) liés (`coreutils`, `gnu-sed`, etc.) et de mettre 
 ces exécutables par défaut via votre $PATH.  
 (ceci sera au moins à faire pour `grep` et `sed` sans quoi vous ne pourrez pas exécuter le script de releasing)
@@ -64,12 +64,12 @@ Les deux branches principales qui **existent en permanence** sont :
 
 Quand vous voulez modifier le code, commencez par créer une branche `feature/nom-de-la-fonctionnalité`, qui est basée sur `develop`.
 Ensuite, utilisez cette branche pour créer une pull-request dont la branche de destination est `develop`.
-Avant d'être mergée, le fonctionnement de l'application sur cette branche doit impérativement être stable et dépourvu de bug.
-Une fois la PR mergée, la branche doit être supprimée.
+Avant d'être fusionnée, le fonctionnement de l'application sur cette branche doit impérativement être stable et dépourvu de bug.
+Une fois la PR fusionnée, la branche doit être supprimée.
 
 ## Version et Changelog
 
-Robert2 utilise la nomenclature de version [Semantic Versionning (semver)](https://semver.org/) pour ses numéros de version. La version actuelle qui 
+Robert2 utilise la nomenclature de version [Semantic Versioning (semver)](https://semver.org/) pour ses numéros de version. La version actuelle qui 
 correspond à celle se trouvant dans la branche `master` est définie dans le fichier `/VERSION`.
 
 Un fichier de changelog est présent à la racine du projet, montrant l'évolution des fonctionnalités au fil du temps et des versions.   
@@ -152,9 +152,25 @@ yarn test --watch
 ```
 
 Pour les tests unitaires côté back, nous utilisons __PHPUnit__. Pour ceux-ci, vous aurez besoin d'une
-base de données dédiée aux tests. Par défaut, cette base s'appelle `robert2_test`, mais vous pouvez
-spécifier un autre nom en ajoutant la ligne `"testDatabase": "le_nom_que_vous_voulez"` dans le fichier
-`server/src/App/Config/settings.json`.
+base de données dédiée aux tests. 
+
+Pour pouvoir être exécutées, il faudra définir certaines variables d'environnement pour configurer 
+l'accès à votre base de données de test. 
+
+Ceci peut-être effectué en créant un fichier `.env.test` à la racine de votre dossier `/server` :
+
+__*Exemple de fichier `.env.test`*__
+```env
+DB_HOST='localhost'  # - L'hôte de votre base de données.
+DB_TEST='Loxya-Test' # - Le nom de votre base de données de test.
+DB_USER='root'       # - L'utilisateur de votre base de données.
+DB_PASS=''           # - Le mot de passe d'accès à votre base de données.
+DB_PORT=3306         # - Le port de connexion à votre base de données.
+```
+
+⚠️ Sans ces variables d'environnement, les tests ne pourront pas s'exécuter correctement 
+vu que ceux-ci n'utilisent pas de fichier `settings.json` comme c'est le cas pour l'application
+lorsqu'elle est utilisée "normalement".
 
 Ensuite, vous pouvez exécuter les tests via :
 
@@ -165,14 +181,8 @@ cd server
 # - Lancer tous les tests
 composer test
 
-# - Pour ne lancer qu'une testSuite à la fois :
-composer testapi Test     # - testSuite des contrôleurs
-composer testmodels Test  # - testSuite des modèles
-composer testlibs Test    # - testSuite des libs
-composer testother Test   # - testSuite des "autres" (fonctions, config, install...)
-
 # - On peut aussi ne lancer qu'un seul fichier de test en particulier, par ex. :
-composer testmodels EventTest # - Lance les tests du fichier tests/models/EventTest.php
+composer test -- --filter EventTest # - Lance les tests du fichier tests/models/EventTest.php
 ```
 
 ### Qu'est-ce que l'on teste ?
@@ -187,7 +197,7 @@ plus il y a de test, mieux c'est !
 
 ## Linting
 
-Le projet suit des règles strictes de linting (avec PHPCS pour le back et ESLint pour le Front).   
+Le projet suit des règles strictes de linting (avec PHPcs pour le back et ESLint pour le Front).   
 Un fichier `.editorconfig` existe à la racine du projet pour permettre aux IDE d'automatiser la
 présentation de base du code (voir [editorconfig.org](https://editorconfig.org/), ainsi que
 [l'extension VSCode](https://marketplace.visualstudio.com/items?itemName=EditorConfig.EditorConfig) dédiée).

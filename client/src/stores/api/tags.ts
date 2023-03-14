@@ -31,9 +31,9 @@ const update = async (id: Tag['id'], data: TagEdit): Promise<Tag> => (
     (await requester.put(`/tags/${id}`, data)).data
 );
 
-const restore = async (id: Tag['id']): Promise<void> => {
-    await requester.put(`/tags/restore/${id}`);
-};
+const restore = async (id: Tag['id']): Promise<Tag> => (
+    (await requester.put(`/tags/restore/${id}`)).data
+);
 
 const remove = async (id: Tag['id']): Promise<void> => {
     await requester.delete(`/tags/${id}`);

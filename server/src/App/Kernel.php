@@ -4,14 +4,15 @@ declare(strict_types=1);
 namespace Robert2\API;
 
 use DI\ContainerBuilder;
+use Illuminate\Container\Container as IlluminateContainer;
 use Illuminate\Database\Capsule\Manager as Database;
+use Illuminate\Database\DatabaseTransactionsManager;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Events\Dispatcher as EventDispatcher;
 use Psr\Container\ContainerInterface;
+use Respect\Validation\Factory as ValidatorFactory;
 use Robert2\API\Config\Config;
-use Robert2\API\Models;
-use Robert2\API\Observers\EventMaterialObserver;
-use Robert2\API\Observers\EventObserver;
-use Robert2\API\Observers\MaterialObserver;
 
 final class Kernel
 {
@@ -49,13 +50,14 @@ final class Kernel
     private function __construct()
     {
         $this->initializeContainer();
+        $this->initializeValidator();
         $this->initializeDatabase();
     }
 
     public function getContainer(): ContainerInterface
     {
         if (!$this->container) {
-            throw new \LogicException("Impossible de récupérer le conteneur à partir d'un kernel non booté.");
+            throw new \LogicException("Impossible de récupérer le conteneur à partir d'un kernel non initialisé.");
         }
         return $this->container;
     }
@@ -66,7 +68,7 @@ final class Kernel
     // -
     // ------------------------------------------------------
 
-    protected function initializeContainer(): ContainerInterface
+    protected function initializeContainer(): void
     {
         $builder = new ContainerBuilder();
 
@@ -79,23 +81,51 @@ final class Kernel
         //
 
         $container->set('settings', Config::getSettings());
-
-        return $this->container = $container;
+        $this->container = $container;
     }
 
-    protected function initializeDatabase()
+    protected function initializeValidator(): void
     {
-        $database = new Database();
+        ValidatorFactory::setDefaultInstance(
+            (new ValidatorFactory())
+                ->withTranslator(fn($value) => (
+                    $this->container->get('i18n')->translate($value)
+                ))
+        );
+    }
 
+    protected function initializeDatabase(): void
+    {
+        // - Illuminate container.
+        $illuminateContainer = new IlluminateContainer;
+        $illuminateContainer->singleton('db.transactions', fn() => (
+            new DatabaseTransactionsManager
+        ));
+
+        // - Database.
+        $database = new Database($illuminateContainer);
         $database->addConnection(Config::getDbConfig());
-        $database->setEventDispatcher(new EventDispatcher());
+        $database->setEventDispatcher(
+            new EventDispatcher($illuminateContainer)
+        );
         $database->bootEloquent();
 
         $this->container->set('database', $database);
 
+        // - Configuration du fonctionnement des modèles.
+        // TODO: Model::preventSilentlyDiscardingAttributes();
+        Model::preventAccessingMissingAttributes();
+
+        // - Morphs
+        // TODO: `Relation::enforceMorphMap()` quand les tags seront migrés.
+        Relation::morphMap([
+            Models\Event::TYPE => Models\Event::class,
+        ]);
+
         // - Observers
-        Models\Event::observe(EventObserver::class);
-        Models\Material::observe(MaterialObserver::class);
-        Models\EventMaterial::observe(EventMaterialObserver::class);
+        Models\Event::observe(Observers\EventObserver::class);
+        Models\EventMaterial::observe(Observers\EventMaterialObserver::class);
+        Models\Material::observe(Observers\MaterialObserver::class);
+        Models\Park::observe(Observers\ParkObserver::class);
     }
 }

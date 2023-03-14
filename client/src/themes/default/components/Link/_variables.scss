@@ -1,0 +1,17 @@
+@use '~@/themes/default/style/globals';
+
+/// Couleur des liens.
+/// @type Color
+$color: globals.$link-base-color !default;
+
+/// Marge entre l'icône et le texte des liens (quand il y en a une, d'icône)
+/// @type Number
+$icon-margin: 0.385rem !default;
+
+//
+// - Hover
+//
+
+/// Couleur des liens survolés.
+/// @type Color
+$hover-color: globals.$link-hover-color !default;

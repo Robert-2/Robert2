@@ -1,7 +1,9 @@
 <?php
+declare(strict_types=1);
+
 use Phinx\Migration\AbstractMigration;
 
-class ChangeSubCategoriesUnicityConstraint extends AbstractMigration
+final class ChangeSubCategoriesUnicityConstraint extends AbstractMigration
 {
     public function up()
     {
@@ -10,7 +12,7 @@ class ChangeSubCategoriesUnicityConstraint extends AbstractMigration
             ->removeIndex(['name'])
             ->addIndex(['name', 'category_id'], [
                 'unique' => true,
-                'name'   => 'name_UNIQUE_category'
+                'name' => 'name_UNIQUE_category',
             ])
             ->update();
     }
@@ -19,10 +21,10 @@ class ChangeSubCategoriesUnicityConstraint extends AbstractMigration
     {
         $table = $this->table('sub_categories');
         $table
-        ->removeIndex(['name', 'category_id'])
+            ->removeIndex(['name', 'category_id'])
             ->addIndex(['name'], [
                 'unique' => true,
-                'name'   => 'name_UNIQUE'
+                'name' => 'name_UNIQUE',
             ])
             ->update();
     }

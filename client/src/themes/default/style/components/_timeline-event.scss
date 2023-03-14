@@ -1,0 +1,79 @@
+/* stylelint-disable scss/no-global-function-names */
+
+.timeline-event {
+    .fas,
+    .far {
+        width: 1.2rem;
+        text-align: center;
+    }
+
+    .fa-exclamation-triangle {
+        color: $text-danger-color;
+    }
+
+    &--not-confirmed {
+        opacity: $calendar-event-not-confirmed-opacity;
+    }
+
+    &--with-warning {
+        font-weight: 600;
+    }
+
+    &--past {
+        // stylelint-disable-next-line declaration-no-important
+        background-color: $calendar-event-past-color !important;
+
+        &.vis-selected {
+            // stylelint-disable-next-line declaration-no-important
+            background-color: adjust-color($calendar-event-past-color, $lightness: 10%) !important;
+        }
+    }
+
+    &--no-return-inventory {
+        // stylelint-disable-next-line declaration-no-important
+        background-color: $calendar-event-no-return-inventory-color !important;
+
+        &.vis-selected {
+            // stylelint-disable-next-line declaration-no-important
+            background-color: adjust-color($calendar-event-no-return-inventory-color, $lightness: 10%) !important;
+        }
+    }
+
+    &--archived {
+        /* stylelint-disable declaration-no-important */
+        background-color: $calendar-event-archived-color !important;
+        color: $calendar-event-archived-text-color !important;
+        /* stylelint-enable declaration-no-important */
+
+        &.vis-selected {
+            // stylelint-disable-next-line declaration-no-important
+            background-color: adjust-color($calendar-event-archived-color, $lightness: 5%) !important;
+        }
+    }
+
+    &--in-progress {
+        background-image:
+            linear-gradient(
+                45deg,
+                rgba(255, 255, 255, 0.1) 25%,
+                transparent 25%,
+                transparent 50%,
+                rgba(255, 255, 255, 0.1) 50%,
+                rgba(255, 255, 255, 0.1) 75%,
+                transparent 75%,
+                transparent
+            );
+        background-size: 40px 40px;
+        animation: timeline-event--background-animation 3000ms linear infinite;
+    }
+}
+
+@keyframes timeline-event--background-animation {
+    from {
+        background-position: 0 0;
+    }
+
+    to {
+        background-position: 40px 0;
+    }
+}

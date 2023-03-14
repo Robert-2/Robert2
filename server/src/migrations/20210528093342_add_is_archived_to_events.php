@@ -1,7 +1,9 @@
 <?php
+declare(strict_types=1);
+
 use Phinx\Migration\AbstractMigration;
 
-class AddIsArchivedToEvents extends AbstractMigration
+final class AddIsArchivedToEvents extends AbstractMigration
 {
     public function up()
     {

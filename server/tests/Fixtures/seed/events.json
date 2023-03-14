@@ -2,6 +2,7 @@
     {
         "id": 1,
         "user_id": 1,
+        "reference": null,
         "title": "Premier événement",
         "description": null,
         "start_date": "2018-12-17 00:00:00",
@@ -10,11 +11,15 @@
         "is_archived": false,
         "location": "Gap",
         "is_billable": true,
-        "is_return_inventory_done": true
+        "is_return_inventory_done": true,
+        "created_at": "2018-12-01 12:50:45",
+        "updated_at": "2018-12-05 08:31:21",
+        "deleted_at": null
     },
     {
         "id": 2,
         "user_id": 1,
+        "reference": null,
         "title": "Second événement",
         "description": null,
         "start_date": "2018-12-18 00:00:00",
@@ -23,11 +28,15 @@
         "is_archived": false,
         "location": "Lyon",
         "is_billable": true,
-        "is_return_inventory_done": true
+        "is_return_inventory_done": true,
+        "created_at": "2018-12-16 12:50:45",
+        "updated_at": null,
+        "deleted_at": null
     },
     {
         "id": 3,
         "user_id": 1,
+        "reference": null,
         "title": "Avant-premier événement",
         "description": null,
         "start_date": "2018-12-15 00:00:00",
@@ -36,11 +45,15 @@
         "is_archived": true,
         "location": "Brousse",
         "is_billable": false,
-        "is_return_inventory_done": true
+        "is_return_inventory_done": true,
+        "created_at": "2018-12-14 12:20:00",
+        "updated_at": "2018-12-14 12:30:00",
+        "deleted_at": null
     },
     {
         "id": 4,
         "user_id": 1,
+        "reference": null,
         "title": "Concert X",
         "description": null,
         "start_date": "2019-03-01 00:00:00",
@@ -49,11 +62,15 @@
         "is_archived": false,
         "location": "Moon",
         "is_billable": false,
-        "is_return_inventory_done": false
+        "is_return_inventory_done": false,
+        "created_at": "2019-01-01 20:12:00",
+        "updated_at": null,
+        "deleted_at": null
     },
     {
         "id": 5,
         "user_id": 1,
+        "reference": null,
         "title": "Kermesse de l'école des trois cailloux",
         "description": null,
         "start_date": "2020-01-01 00:00:00",
@@ -62,11 +79,15 @@
         "is_archived": false,
         "location": "Saint-Jean-la-Forêt",
         "is_billable": false,
-        "is_return_inventory_done": false
+        "is_return_inventory_done": false,
+        "created_at": "2019-12-25 14:59:40",
+        "updated_at": null,
+        "deleted_at": null
     },
     {
         "id": 6,
         "user_id": 1,
+        "reference": null,
         "title": "Un événement sans inspiration",
         "description": null,
         "start_date": "2019-03-15 00:00:00",
@@ -75,6 +96,9 @@
         "is_archived": false,
         "location": "La Clusaz",
         "is_billable": false,
-        "is_return_inventory_done": false
+        "is_return_inventory_done": false,
+        "created_at": "2019-02-01 12:00:00",
+        "updated_at": "2019-02-01 12:05:00",
+        "deleted_at": null
     }
 ]

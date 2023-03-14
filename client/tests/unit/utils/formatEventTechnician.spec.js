@@ -1,6 +1,6 @@
 import moment from 'moment';
 import formatEventTechnician from '@/utils/formatEventTechnician';
-import eventTechniciansData from './data/event-technicians';
+import eventTechniciansData from '@fixtures/event-technicians';
 
 describe('formatEventTechnician', () => {
     it('returns null when nothing passed', () => {

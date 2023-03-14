@@ -1,0 +1,41 @@
+[
+    {
+        "id": 1,
+        "estimate_id": 1,
+        "material_id": 1,
+        "name": "Console Yamaha CL3",
+        "reference": "PM5D",
+        "quantity": 1,
+        "unit_price": 300,
+        "total_price": 300,
+        "replacement_price": 19400,
+        "is_hidden_on_bill": false,
+        "is_discountable": false
+    },
+    {
+        "id": 2,
+        "estimate_id": 1,
+        "material_id": 2,
+        "name": "Processeur DBX PA2",
+        "reference": "DBXPA2",
+        "quantity": 1,
+        "unit_price": 25.5,
+        "total_price": 25.5,
+        "replacement_price": 349.9,
+        "is_hidden_on_bill": false,
+        "is_discountable": true
+    },
+    {
+        "id": 3,
+        "estimate_id": 1,
+        "material_id": null,
+        "name": "Cable XX1",
+        "reference": "XX1",
+        "quantity": 2,
+        "unit_price": 2.75,
+        "total_price": 5.5,
+        "replacement_price": 10,
+        "is_hidden_on_bill": false,
+        "is_discountable": true
+    }
+]

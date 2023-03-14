@@ -1,0 +1,14 @@
+title: Login
+
+welcome: Hello! Who are you?
+connexion: Connection
+
+please-wait: 'Authentication, please wait...'
+bye: "See you\_!"
+
+error:
+    expired-session: Your session has expired. Please log back in!
+    bad-infos: Given infos ar not correct. Please give your e-mail address or pseudo, and your password.
+    not-allowed: >-
+        You tried to visit a page with restricted access.
+        Please log in with an account who can access this page.

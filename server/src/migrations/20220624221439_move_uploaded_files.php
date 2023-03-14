@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-use Robert2\API\Config\Config as Config;
 use Phinx\Migration\AbstractMigration;
-use Robert2\Lib\Filesystem\FilesystemFactory;
-use Ramsey\Uuid\Uuid;
+use Robert2\API\Config\Config;
+use Robert2\Support\Filesystem\FilesystemFactory;
+use Robert2\Support\Str;
 
 final class MoveUploadedFiles extends AbstractMigration
 {
@@ -46,7 +46,7 @@ final class MoveUploadedFiles extends AbstractMigration
                 $oldPath = $rootOldDirectory . DS . $material['id'] . DS . $material['picture'];
                 if ($fs->fileExists($oldPath)) {
                     $extension = pathinfo($material['picture'], PATHINFO_EXTENSION);
-                    $filename = sprintf('%s.%s', Uuid::uuid4()->toString(), $extension);
+                    $filename = sprintf('%s.%s', (string) Str::uuid(), $extension);
                     $fs->copy($oldPath, 'picture' . DS . $filename);
                     $qb->set('picture', $filename);
                 } else {
@@ -126,6 +126,7 @@ final class MoveUploadedFiles extends AbstractMigration
 
         if (!empty($documents)) {
             foreach ($documents as $document) {
+                // phpcs:ignore Generic.Files.LineLength
                 $oldPath = $rootOldDirectory . DS . 'documents' . DS . $document['material_id'] . DS . $document['name'];
                 if ($fs->fileExists($oldPath)) {
                     $fs->copy($oldPath, $document['material_id'] . DS . $document['name']);

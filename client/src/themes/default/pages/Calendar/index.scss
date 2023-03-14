@@ -1,0 +1,54 @@
+@use '~@/themes/default/style/globals';
+
+.Page--calendar {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    .Calendar {
+        flex: 1;
+    }
+}
+
+.Calendar {
+    display: flex;
+    flex-direction: column;
+
+    &__timeline {
+        flex: 1;
+    }
+
+    &__footer {
+        flex: 0 0 50px;
+        display: none;
+        flex-wrap: wrap;
+
+        &__help {
+            flex: 1;
+            min-width: 300px;
+            padding: globals.$content-padding-small-vertical globals.$content-padding-small-horizontal;
+            white-space: pre-line;
+        }
+
+        .CalendarCaption {
+            flex: 0 0 auto;
+            max-width: 100%;
+        }
+    }
+
+    //
+    // - Responsive
+    //
+
+    @media (min-width: globals.$screen-tablet) {
+        &__footer {
+            display: flex;
+        }
+    }
+
+    @media (max-height: 700px) {
+        &__footer {
+            display: none;
+        }
+    }
+}

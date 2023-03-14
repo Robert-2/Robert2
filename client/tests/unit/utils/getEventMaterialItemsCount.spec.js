@@ -1,5 +1,5 @@
 import getEventMaterialItemsCount from '@/utils/getEventMaterialItemsCount';
-import eventMaterials from './data/event-materials';
+import eventMaterials from '@fixtures/event-materials';
 
 describe('getEventMaterialItemsCount', () => {
     it('returns 0 with empty values', () => {
@@ -9,6 +9,6 @@ describe('getEventMaterialItemsCount', () => {
     });
 
     it('calculates the total count of items in a set of materials', () => {
-        expect(getEventMaterialItemsCount(eventMaterials)).toBe(7);
+        expect(getEventMaterialItemsCount(eventMaterials)).toBe(10);
     });
 });

@@ -3,23 +3,33 @@ declare(strict_types=1);
 
 namespace Robert2\API\Controllers;
 
+use Carbon\CarbonImmutable;
 use DI\Container;
-use Illuminate\Support\Carbon;
+use Fig\Http\Message\StatusCodeInterface as StatusCode;
+use Illuminate\Support\Collection;
 use Robert2\API\Config\Config;
+use Robert2\API\Contracts\PeriodInterface;
+use Robert2\API\Controllers\Traits\FileResponse;
 use Robert2\API\Controllers\Traits\Taggable;
 use Robert2\API\Controllers\Traits\WithCrud;
-use Robert2\API\Controllers\Traits\FileResponse;
-use Robert2\Lib\Pdf\Pdf;
-use Robert2\Lib\Domain\MaterialsData;
+use Robert2\API\Errors\Exception\ValidationException;
+use Robert2\API\Http\Request;
 use Robert2\API\Models\Document;
+use Robert2\API\Models\Enums\Group;
 use Robert2\API\Models\Event;
 use Robert2\API\Models\Material;
-use Robert2\API\Models\Category;
 use Robert2\API\Models\Park;
+use Robert2\API\Models\Tag;
+use Robert2\API\Models\User;
+use Robert2\API\Services\Auth;
 use Robert2\API\Services\I18n;
+use Robert2\Support\Collections\MaterialsCollection;
+use Robert2\Support\Pdf;
+use Robert2\Support\Period;
+use Robert2\Support\Str;
+use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
-use Slim\Http\ServerRequest as Request;
 use Slim\HttpCache\CacheProvider as HttpCacheProvider;
 
 class MaterialController extends BaseController
@@ -42,40 +52,49 @@ class MaterialController extends BaseController
         $this->httpCache = $httpCache;
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Getters
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Getters
+    // -
+    // ------------------------------------------------------
+
+    public function getOne(Request $request, Response $response): Response
+    {
+        $id = (int) $request->getAttribute('id');
+        $material = Material::findOrFail($id);
+
+        $materialData = $this->_getSafeMaterialSerializedData($material);
+        return $response->withJson($materialData, StatusCode::STATUS_OK);
+    }
 
     public function getAll(Request $request, Response $response): Response
     {
-        $paginated = (bool)$request->getQueryParam('paginated', true);
+        $paginated = (bool) $request->getQueryParam('paginated', true);
+        $limit = $request->getQueryParam('limit', null);
         $searchTerm = $request->getQueryParam('search', null);
         $searchField = $request->getQueryParam('searchBy', null);
         $parkId = $request->getQueryParam('park', null);
         $categoryId = $request->getQueryParam('category', null);
         $subCategoryId = $request->getQueryParam('subCategory', null);
         $dateForQuantities = $request->getQueryParam('dateForQuantities', null);
-        $withDeleted = (bool)$request->getQueryParam('deleted', false);
+        $withDeleted = (bool) $request->getQueryParam('deleted', false);
         $tags = $request->getQueryParam('tags', []);
-        $withEvents = (bool)$request->getQueryParam('with-events', false);
 
         $options = [];
-        if ($parkId) {
-            $options['park_id'] = (int)$parkId;
+        if (is_numeric($parkId)) {
+            $options['park_id'] = (int) $parkId;
         }
-        if ($categoryId) {
+        if ($categoryId === 'uncategorized' || is_numeric($categoryId)) {
             $options['category_id'] = $categoryId !== 'uncategorized'
-                ? (int)$categoryId
+                ? (int) $categoryId
                 : null;
         }
-        if ($subCategoryId) {
-            $options['sub_category_id'] = (int)$subCategoryId;
+        if (is_numeric($subCategoryId)) {
+            $options['sub_category_id'] = (int) $subCategoryId;
         }
 
         $orderBy = $request->getQueryParam('orderBy', null);
-        $ascending = (bool)$request->getQueryParam('ascending', true);
+        $ascending = (bool) $request->getQueryParam('ascending', true);
 
         $model = (new Material)
             ->setOrderBy($orderBy, $ascending)
@@ -86,68 +105,75 @@ class MaterialController extends BaseController
         } else {
             $model = $model->getAllFilteredOrTagged($options, $tags, $withDeleted);
         }
-        if ($withEvents) {
-            $model
-                ->with('Events', function ($query) {
-                    $query->where('end_date', '>=', Carbon::now());
-                })
-                ->get();
-        }
 
-        if ($paginated) {
-            $results = $this->paginate($request, $model);
-        } else {
-            $results = ['data' => $model->get()->toArray()];
-        }
+        $results = $paginated
+            ? $this->paginate($request, $model, is_numeric($limit) ? (int) $limit : null)
+            : ['data' => $model->get()];
 
         // - Filtre des quantités pour une date ou une période donnée
-        if (!is_array($dateForQuantities)) {
-            $dateForQuantities = array_fill_keys(['start', 'end'], $dateForQuantities);
-        }
-        if (empty($dateForQuantities['start']) ||
-            !is_string($dateForQuantities['start']) ||
-            empty($dateForQuantities['end']) ||
-            !is_string($dateForQuantities['end'])
-        ) {
-            $dateForQuantities = array_fill_keys(['start', 'end'], null);
+        $periodForQuantities = null;
+        if ($dateForQuantities !== null) {
+            $dateForQuantities = !is_array($dateForQuantities)
+                ? [$dateForQuantities, $dateForQuantities]
+                : $dateForQuantities;
+
+            $periodForQuantities = getPeriodFromArray($dateForQuantities);
         }
 
-        $results['data'] = Material::recalcQuantitiesForPeriod(
-            $results['data'],
-            $dateForQuantities['start'],
-            $dateForQuantities['end']
-        );
+        $results['data'] = Material::allWithAvailabilities($results['data'], $periodForQuantities);
+        $results['data'] = $results['data']->map(function ($material) {
+            $material->append('available_quantity');
+            return $material->serialize();
+        });
 
-        if (!$paginated) {
-            $results = $results['data'];
+        $results = $paginated ? $results : $results['data'];
+        return $response->withJson($results, StatusCode::STATUS_OK);
+    }
+
+    public function getAllWhileEvent(Request $request, Response $response): Response
+    {
+        $eventId = (int) $request->getAttribute('eventId');
+
+        $currentEvent = Event::find($eventId);
+        if (!$currentEvent) {
+            throw new HttpNotFoundException($request);
         }
 
-        return $response->withJson($results);
+        $materials = (new Material)
+            ->setOrderBy('reference', true)
+            ->getAll()
+            ->get();
+
+        $materials = Material::allWithAvailabilities($materials, $currentEvent);
+        $materials = $materials->map(function ($material) {
+            $material->append('available_quantity');
+            return $material->serialize();
+        });
+
+        return $response->withJson($materials, StatusCode::STATUS_OK);
     }
 
     public function getAllPdf(Request $request, Response $response): Response
     {
         $onlyParkId = $request->getQueryParam('park', null);
 
-        $categories = Category::get()->toArray();
-        $parks = Park::with('materials')->get()->each->setAppends([])->toArray();
-
         $parksMaterials = [];
+        $parks = Park::with('materials')->get();
         foreach ($parks as $park) {
-            if ($onlyParkId && (int)$onlyParkId !== $park['id']) {
+            if (is_numeric($onlyParkId) && (int) $onlyParkId !== $park->id) {
                 continue;
             }
 
-            if (empty($park['materials'])) {
+            $parkMaterials = $park->materials->values();
+
+            if ($parkMaterials->isEmpty()) {
                 continue;
             }
 
-            $materialsData = new MaterialsData(array_values($park['materials']));
-            $materialsData->setParks($parks)->setCategories($categories);
             $parksMaterials[] = [
-                'id' => $park['id'],
-                'name' => $park['name'],
-                'materials' => $materialsData->getBySubCategories(true),
+                'id' => $park->id,
+                'name' => $park->name,
+                'materials' => (new MaterialsCollection($parkMaterials))->bySubCategories(),
             ];
         }
 
@@ -155,130 +181,127 @@ class MaterialController extends BaseController
             return strcmp($a['name'], $b['name'] ?: '');
         });
 
-        $company = Config::getSettings('companyData');
-
+        // - Nom du parc (si export pour un seul parc)
         $parkOnlyName = null;
-        if ($onlyParkId) {
-            $parkKey = array_search($onlyParkId, array_column($parks, 'id'));
-            if ($parkKey !== false) {
-                $parkOnlyName = $parks[$parkKey]['name'];
+        if (is_numeric($onlyParkId)) {
+            $parksName = $parks->pluck('name', 'id')->all();
+            if (array_key_exists($onlyParkId, $parksName)) {
+                $parkOnlyName = $parksName[$onlyParkId];
             }
         }
 
-        $fileName = sprintf(
-            '%s-%s-%s.pdf',
-            slugify($this->i18n->translate('materials-list')),
-            slugify($parkOnlyName ?: $company['name']),
-            (new \DateTime())->format('Y-m-d')
-        );
-        if (Config::getEnv() === 'test') {
-            $fileName = sprintf('TEST-%s', $fileName);
-        }
+        $date = CarbonImmutable::now();
+        $company = Config::getSettings('companyData');
+        $fileName = Str::slug(implode('-', [
+            $this->i18n->translate('materials-list'),
+            $parkOnlyName ?: $company['name'],
+            $date->format('Y-m-d'),
+        ]));
 
-        $data = [
-            'locale' => Config::getSettings('defaultLang'),
+        $pdf = Pdf::createFromTemplate('materials-list-default', $this->i18n, $fileName, [
+            'date' => $date,
             'company' => $company,
             'parkOnlyName' => $parkOnlyName,
             'currency' => Config::getSettings('currency')['iso'],
             'parksMaterialsList' => $parksMaterials,
-        ];
+        ]);
 
-        $fileContent = Pdf::createFromTemplate('materials-list-default', $data);
-
-        return $this->_responseWithFile($response, $fileName, $fileContent);
-    }
-
-    public function getAllWhileEvent(Request $request, Response $response): Response
-    {
-        $eventId = (int)$request->getAttribute('eventId');
-
-        $currentEvent = Event::find($eventId);
-        if (!$currentEvent) {
-            throw new HttpNotFoundException($request);
-        }
-
-        $results = (new Material)
-            ->setOrderBy('reference', true)
-            ->getAll()
-            ->get()
-            ->toArray();
-
-        if ($results && count($results) > 0) {
-            $results = Material::recalcQuantitiesForPeriod(
-                $results,
-                $currentEvent->start_date,
-                $currentEvent->end_date,
-                $eventId
-            );
-        }
-
-        return $response->withJson($results);
+        return $pdf->asResponse($response);
     }
 
     public function getAllDocuments(Request $request, Response $response): Response
     {
-        $id = (int)$request->getAttribute('id');
-        $model = Material::find($id);
-        if (!$model) {
-            throw new HttpNotFoundException($request);
-        }
+        $id = (int) $request->getAttribute('id');
+        $material = Material::findOrFail($id);
 
-        return $response->withJson($model->documents, SUCCESS_OK);
+        return $response->withJson($material->documents, StatusCode::STATUS_OK);
     }
 
-    public function getParkAll(Request $request, Response $response): Response
+    // TODO: Limiter aux 3 derniers mois + Tous les futurs.
+    public function getBookings(Request $request, Response $response): Response
     {
-        $parkId = (int)$request->getAttribute('parkId');
-        if (!Park::staticExists($parkId)) {
-            throw new HttpNotFoundException($request);
+        $id = (int) $request->getAttribute('id');
+        $material = Material::findOrFail($id);
+
+        /** @var Collection|(Event)[] $bookings */
+        $bookings = (new Collection())
+            // - Événements.
+            ->concat(
+                $material->events()
+                    ->with('beneficiaries')
+                    ->with('technicians')
+                    ->with(['materials' => function ($q) {
+                        $q->reorder('name', 'asc');
+                    }])
+                    ->get()
+            );
+
+        if ($bookings->isEmpty()) {
+            return $response->withJson([], StatusCode::STATUS_OK);
         }
 
-        $materials = Material::getParkAll($parkId);
-        return $response->withJson($materials);
-    }
+        $period = $bookings->reduce(
+            fn(?Period $currentPeriod, PeriodInterface $booking) => (
+                $currentPeriod === null
+                    ? new Period($booking)
+                    : $currentPeriod->merge($booking)
+            )
+        );
 
-    public function getEvents(Request $request, Response $response): Response
-    {
-        $id = (int)$request->getAttribute('id');
-        $material = Material::find($id);
-        if (!$material) {
-            throw new HttpNotFoundException($request);
+        $allConcurrentBookables = (new Collection())
+            // - Événements.
+            ->concat(
+                Event::inPeriod($period)
+                    ->with('materials')->get()
+            );
+
+        foreach ($bookings as $booking) {
+            $booking->__cachedConcurrentBookables = $allConcurrentBookables
+                ->filter(fn($otherBookable) => (
+                    !$booking->is($otherBookable) &&
+                    $booking->getStartDate() <= $otherBookable->getEndDate() &&
+                    $booking->getEndDate() >= $otherBookable->getStartDate()
+                ))
+                ->values();
         }
 
-        $collection = [];
         $useMultipleParks = Park::count() > 1;
-        foreach ($material->Events()->get() as $event) {
-            $event = $event->setAppends([
-                'has_missing_materials',
-                'has_not_returned_materials',
-            ]);
 
-            $collection[] = array_replace($event->toArray(), [
-                'parks' => $useMultipleParks
-                    ? Event::getParks($event['materials'])
-                    : null
-            ]);
-        }
+        $data = $bookings
+            ->map(fn($booking) => array_merge(
+                $booking->serialize($booking::SERIALIZE_BOOKING),
+                [
+                    'entity' => Str::slug(class_basename($booking)),
+                    'pivot' => [
+                        'quantity' => $booking->pivot->quantity,
+                    ],
+                    'parks' => (
+                        $useMultipleParks
+                            ? $booking->parks
+                            : null
+                    ),
+                ]
+            ))
+            ->all();
 
-        return $response->withJson($collection, SUCCESS_OK);
+        return $response->withJson($data, StatusCode::STATUS_OK);
     }
 
     public function getPicture(Request $request, Response $response): Response
     {
-        $id = (int)$request->getAttribute('id');
-        $model = Material::find($id);
-        if (!$model) {
-            throw new HttpNotFoundException($request);
-        }
+        $id = (int) $request->getAttribute('id');
+        $material = Material::findOrFail($id);
 
-        $picturePath = $model->picture_real_path;
+        $picturePath = $material->picture_real_path;
         if (!$picturePath) {
             throw new HttpNotFoundException($request, "Il n'y a pas d'image pour ce matériel.");
         }
 
         /** @var Response $response */
         $response = $this->httpCache->denyCache($response);
-        return $response->withFile($picturePath);
+        return $response
+            ->withStatus(StatusCode::STATUS_OK)
+            ->withFile($picturePath);
     }
 
     // ------------------------------------------------------
@@ -289,29 +312,37 @@ class MaterialController extends BaseController
 
     public function create(Request $request, Response $response): Response
     {
-        $postData = (array)$request->getParsedBody();
-        $result = $this->_saveMaterial(null, $postData);
-        return $response->withJson($result, SUCCESS_CREATED);
+        $postData = (array) $request->getParsedBody();
+        if (empty($postData)) {
+            throw new HttpBadRequestException($request, "No data was provided.");
+        }
+
+        $material = $this->_saveMaterial(null, $postData);
+
+        $materialData = $this->_getSafeMaterialSerializedData($material);
+        return $response->withJson($materialData, StatusCode::STATUS_CREATED);
     }
 
     public function update(Request $request, Response $response): Response
     {
-        $id = (int)$request->getAttribute('id');
-        if (!Material::staticExists($id)) {
-            throw new HttpNotFoundException($request);
+        $id = (int) $request->getAttribute('id');
+        $material = Material::findOrFail($id);
+
+        $postData = (array) $request->getParsedBody();
+        if (empty($postData)) {
+            throw new HttpBadRequestException($request, "No data was provided.");
         }
 
-        $postData = (array)$request->getParsedBody();
-        $result = $this->_saveMaterial($id, $postData);
-        return $response->withJson($result, SUCCESS_OK);
+        $material = $this->_saveMaterial($id, $postData);
+
+        $materialData = $this->_getSafeMaterialSerializedData($material);
+        return $response->withJson($materialData, StatusCode::STATUS_OK);
     }
 
     public function handleUploadDocuments(Request $request, Response $response): Response
     {
-        $id = (int)$request->getAttribute('id');
-        if (!Material::staticExists($id)) {
-            throw new HttpNotFoundException($request);
-        }
+        $id = (int) $request->getAttribute('id');
+        $material = Material::findOrFail($id);
 
         $uploadedFiles = $request->getUploadedFiles();
         $destDirectory = Document::getFilePath($id);
@@ -339,7 +370,7 @@ class MaterialController extends BaseController
             }
 
             $fileType = $file->getClientMediaType();
-            if (!in_array($fileType, Config::getSettings('authorizedFileTypes'))) {
+            if (!in_array($fileType, Config::getSettings('authorizedFileTypes'), true)) {
                 $errors[$file->getClientFilename()] = $this->i18n->translate('file-type-not-allowed');
                 continue;
             }
@@ -378,34 +409,40 @@ class MaterialController extends BaseController
             throw new \Exception(implode("\n", $errors));
         }
 
-        return $response->withJson($files, SUCCESS_OK);
+        return $response->withJson($files, StatusCode::STATUS_OK);
+    }
+
+    public function restore(Request $request, Response $response): Response
+    {
+        $id = (int) $request->getAttribute('id');
+        $material = $this->getModelClass()::staticRestore($id);
+
+        $materialData = $this->_getSafeMaterialSerializedData($material);
+        return $response->withJson($materialData, StatusCode::STATUS_OK);
     }
 
     // ------------------------------------------------------
-    // —
-    // —    Internal Methods
-    // —
+    // -
+    // -    Internal Methods
+    // -
     // ------------------------------------------------------
 
-    protected function _saveMaterial(?int $id, $postData): array
+    protected function _saveMaterial(?int $id, array $postData): Material
     {
-        if (!is_array($postData) || empty($postData)) {
-            throw new \InvalidArgumentException(
-                "Missing request data to process validation",
-                ERROR_VALIDATION
-            );
+        if (empty($postData)) {
+            throw new \InvalidArgumentException("No data was provided.");
         }
 
         if (array_key_exists('stock_quantity', $postData)) {
             $stockQuantity = $postData['stock_quantity'];
-            if ($stockQuantity !== null && (int)$stockQuantity < 0) {
+            if ($stockQuantity !== null && (int) $stockQuantity < 0) {
                 $postData['stock_quantity'] = 0;
             }
         }
 
         if (array_key_exists('out_of_order_quantity', $postData)) {
-            $stockQuantity = (int)($postData['stock_quantity'] ?? 0);
-            $outOfOrderQuantity = (int)$postData['out_of_order_quantity'];
+            $stockQuantity = (int) ($postData['stock_quantity'] ?? 0);
+            $outOfOrderQuantity = (int) $postData['out_of_order_quantity'];
             if ($outOfOrderQuantity > $stockQuantity) {
                 $outOfOrderQuantity = $stockQuantity;
                 $postData['out_of_order_quantity'] = $outOfOrderQuantity;
@@ -415,22 +452,96 @@ class MaterialController extends BaseController
             }
         }
 
-        $result = Material::staticEdit($id, $postData);
+        return dbTransaction(function () use ($id, $postData) {
+            $material = null;
+            $hasFailed = false;
+            $validationErrors = [];
 
-        if (isset($postData['attributes'])) {
-            $attributes = [];
-            foreach ($postData['attributes'] as $attribute) {
-                if (empty($attribute['value'])) {
-                    continue;
+            try {
+                /** @var Material $material */
+                $material = Material::staticEdit($id, $postData);
+            } catch (ValidationException $e) {
+                $validationErrors = $e->getValidationErrors();
+                $hasFailed = true;
+            }
+
+            if (array_key_exists('tags', $postData) && is_array($postData['tags'])) {
+                $tags = [];
+                foreach ($postData['tags'] as $tagId) {
+                    if (empty($tagId)) {
+                        continue;
+                    }
+
+                    $relatedTag = is_numeric($tagId) ? Tag::find($tagId) : null;
+                    if ($relatedTag === null) {
+                        $hasFailed = true;
+                        $validationErrors['tags'] = [$this->i18n->translate('field-contains-invalid-values')];
+                        break;
+                    }
+
+                    $tags[] = $relatedTag->id;
                 }
 
-                $attributes[$attribute['id']] = [
-                    'value' => (string)$attribute['value']
-                ];
+                if (!$hasFailed) {
+                    $material->tags()->sync($tags);
+                }
             }
-            $result->Attributes()->sync($attributes);
-        }
 
-        return Material::find($result->id)->toArray();
+            if (
+                Auth::is(Group::ADMIN) &&
+                array_key_exists('approvers', $postData) &&
+                is_array($postData['approvers'])
+            ) {
+                $approvers = [];
+                foreach ($postData['approvers'] as $approverId) {
+                    if (empty($approverId)) {
+                        continue;
+                    }
+
+                    $relatedUser = is_numeric($approverId) ? User::find($approverId) : null;
+                    if ($relatedUser === null || $relatedUser?->group !== Group::MEMBER) {
+                        $hasFailed = true;
+                        $validationErrors['approvers'] = [$this->i18n->translate('field-contains-invalid-values')];
+                        break;
+                    }
+
+                    $approvers[] = $relatedUser->id;
+                }
+
+                if (!$hasFailed) {
+                    $material->approvers()->sync($approvers);
+                }
+            }
+
+            if (array_key_exists('attributes', $postData) && is_array($postData['attributes'])) {
+                $attributes = [];
+                foreach ($postData['attributes'] as $attribute) {
+                    if (empty($attribute['value'])) {
+                        continue;
+                    }
+
+                    $attributes[$attribute['id']] = [
+                        'value' => (string) $attribute['value'],
+                    ];
+                }
+
+                if (!$hasFailed) {
+                    $material->attributes()->sync($attributes);
+                }
+            }
+
+            if ($hasFailed) {
+                throw new ValidationException($validationErrors);
+            }
+
+            return $material->refresh();
+        });
+    }
+
+    protected function _getSafeMaterialSerializedData(Material $material): array
+    {
+        $materialData = $material->serialize(Material::SERIALIZE_DETAILS);
+
+        return $materialData;
     }
 }

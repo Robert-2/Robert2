@@ -17,17 +17,13 @@ const defaultConfig = {
         symbol: '€',
         name: 'Euro',
         iso: 'EUR',
-        symbol_intl: '€',
-        decimal_digits: 2,
-        rounding: 0,
     },
     auth: {
         cookie: 'Authorization',
         timeout: 12, // - En heures (ou `null` pour un cookie de session).
     },
+    companyName: null,
     defaultPaginationLimit: 100,
-    beneficiaryTagName: 'Bénéficiaire',
-    technicianTagName: 'Technicien',
     billingMode: 'partial',
     maxFileUploadSize: 25 * 1024 * 1024,
 

@@ -90,19 +90,6 @@
             />
         </section>
         <section class="form__field">
-            <h3 class="form__field-title">Parc de matériel</h3>
-            <p class="form__field-description">
-                Le nom du parc de matériel <em>principal</em> qui sera créé. Il vous sera
-                bien sûr possible de le modifier et d'en créer d'autres une fois l'application installée.
-            </p>
-            <input
-                type="text"
-                name="defaultParkName"
-                placeholder="default"
-                value="Interne"
-            />
-        </section>
-        <section class="form__field">
             <h3 class="form__field-title">
                 Nombre d'éléments par page
             </h3>
@@ -117,30 +104,6 @@
                     value="{{config['maxItemsPerPage']}}"
                 />
                 <label for="maxItemsPerPage">éléments</label>
-            </div>
-        </section>
-        <section class="form__field">
-            <h3 class="form__field-title">Tags par défaut</h3>
-            <p class="form__field-description">
-                Le nom des tags qui seront utilisés pour identifier le type de personne.
-            </p>
-            <div class="form__input">
-                <label for="defaultTagBenef" style="width: 120px;">Bénéficiaires&nbsp;:</label>
-                <input
-                    type="text"
-                    name="defaultTags[beneficiary]"
-                    id="defaultTagBenef"
-                    value="{{config['defaultTags']['beneficiary']}}"
-                />
-            </div>
-            <div class="form__input" style="margin-top: .5rem;">
-                <label for="defaultTagTech" style="width: 120px;">Techniciens&nbsp;:</label>
-                <input
-                    type="text"
-                    name="defaultTags[technician]"
-                    id="defaultTagTech"
-                    value="{{config['defaultTags']['technician']}}"
-                />
             </div>
         </section>
         <section class="form__submit">

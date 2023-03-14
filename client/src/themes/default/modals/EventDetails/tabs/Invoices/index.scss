@@ -1,0 +1,88 @@
+@use '~@/themes/default/style/globals';
+
+.EventDetailsInvoices {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: globals.$content-padding-small-vertical 0 0;
+
+    &__not-billable {
+        padding: 30px 0;
+        color: globals.$text-danger-color;
+        text-align: center;
+
+        &__title {
+            margin: 0;
+        }
+
+        &__text {
+            margin: 10px 0 0;
+            font-style: italic;
+        }
+    }
+
+    &__no-invoice,
+    &__regenerate {
+        color: globals.$text-light-color;
+        font-style: italic;
+        text-align: center;
+    }
+
+    &__no-invoice {
+        max-width: 580px;
+        margin: auto;
+        padding: 20px 0 30px;
+        font-size: 1.15rem;
+
+        &__text {
+            margin: 0 0 15px;
+        }
+    }
+
+    &__regenerate {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: globals.$content-padding-large-vertical;
+
+        &__text {
+            margin: 0;
+        }
+
+        &__link {
+            margin-top: 5px;
+        }
+    }
+
+    &__previous-invoices {
+        margin-top: globals.$content-padding-large-vertical;
+
+        &__title {
+            margin-top: 0;
+            text-align: center;
+        }
+
+        &__list {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+
+            &__item {
+                width: 100%;
+                list-style: none;
+
+                & + & {
+                    margin-top: globals.$content-padding-large-horizontal;
+                }
+            }
+        }
+    }
+
+    &__warning-no-estimate {
+        margin: 0 0 globals.$content-padding-large-vertical;
+        color: globals.$text-warning-color;
+        font-size: 1.1rem;
+        text-align: center;
+    }
+}

@@ -1,13 +1,12 @@
 import requester from '@/globals/requester';
 
 import type { Country } from '@/stores/api/countries';
-import type { PaginatedData, PaginationParams } from './@types';
+import type { PaginatedData, ListingParams } from './@types';
 
 //
 // - Types
 //
 
-/* eslint-disable @typescript-eslint/naming-convention */
 export type Company = {
     id: number,
     legal_name: string | null,
@@ -18,9 +17,6 @@ export type Company = {
     country_id: Country['id'] | null,
     country: Country | null,
     note: string | null,
-    created_at: string,
-    updated_at: string,
-    deleted_at: string | null,
 };
 
 export type CompanyEdit = {
@@ -32,9 +28,8 @@ export type CompanyEdit = {
     country_id: Country['id'] | null,
     note: string | null,
 };
-/* eslint-enable @typescript-eslint/naming-convention */
 
-type GetAllParams = PaginationParams & { deleted?: boolean };
+type GetAllParams = ListingParams & { deleted?: boolean };
 
 //
 // - Fonctions

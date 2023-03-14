@@ -1,0 +1,10 @@
+.tooltip {
+    z-index: 999;
+
+    .tooltip-inner {
+        padding: 0.5rem 0.78rem;
+        border-radius: 3px;
+        background: $bg-color-tooltip;
+        color: $text-soft-color;
+    }
+}

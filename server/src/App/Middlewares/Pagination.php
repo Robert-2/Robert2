@@ -5,7 +5,7 @@ namespace Robert2\API\Middlewares;
 
 use Illuminate\Pagination\Paginator;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
-use Slim\Http\ServerRequest as Request;
+use Robert2\API\Http\Request;
 
 class Pagination
 {

@@ -1,3 +1,13 @@
+export type SearchParams = {
+    search?: string,
+    searchBy?: string,
+};
+
+export type SortableParams = {
+    orderBy?: string,
+    ascending?: 0 | 1,
+};
+
 export type PaginatedData<T> = {
     data: T,
     pagination: {
@@ -13,11 +23,12 @@ export type PaginatedData<T> = {
 export type PaginationParams = {
     page: number,
     limit?: number,
-    orderBy?: string,
-    ascending?: 0 | 1,
-    search?: string,
-    byColumn?: 0 | 1,
 };
+
+export type ListingParams =
+    & SearchParams
+    & SortableParams
+    & PaginationParams;
 
 export type FormErrorDetail = Record<string, string[]>;
 

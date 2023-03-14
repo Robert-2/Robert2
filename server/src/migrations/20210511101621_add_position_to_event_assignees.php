@@ -1,7 +1,9 @@
 <?php
+declare(strict_types=1);
+
 use Phinx\Migration\AbstractMigration;
 
-class AddPositionToEventAssignees extends AbstractMigration
+final class AddPositionToEventAssignees extends AbstractMigration
 {
     public function up()
     {

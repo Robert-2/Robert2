@@ -1,7 +1,9 @@
 <?php
+declare(strict_types=1);
+
 use Phinx\Migration\AbstractMigration;
 
-class ChangeMaterialCategoryConstraint extends AbstractMigration
+final class ChangeMaterialCategoryConstraint extends AbstractMigration
 {
     public function up()
     {
@@ -11,7 +13,7 @@ class ChangeMaterialCategoryConstraint extends AbstractMigration
             ->addForeignKey('category_id', 'categories', 'id', [
                 'delete' => 'RESTRICT',
                 'update' => 'NO_ACTION',
-                'constraint' => 'fk_materials_category'
+                'constraint' => 'fk_materials_category',
             ])
             ->save();
 
@@ -34,7 +36,7 @@ class ChangeMaterialCategoryConstraint extends AbstractMigration
             ->addForeignKey('category_id', 'categories', 'id', [
                 'delete' => 'CASCADE',
                 'update' => 'NO_ACTION',
-                'constraint' => 'fk_materials_category'
+                'constraint' => 'fk_materials_category',
             ])
             ->save();
 

@@ -3,43 +3,196 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Brick\Math\BigDecimal as Decimal;
+use Carbon\Carbon;
+use Carbon\CarbonImmutable;
+use Illuminate\Database\Eloquent\Collection;
+use Respect\Validation\Validator as V;
 use Robert2\API\Config\Config;
-use Robert2\API\Models\Traits\WithPdf;
+use Robert2\API\Contracts\Serializable;
+use Robert2\API\Models\Casts\AsDecimal;
+use Robert2\API\Models\Traits\Pdfable;
+use Robert2\API\Models\Traits\Serializer;
+use Robert2\API\Models\Traits\SoftDeletable;
 use Robert2\API\Services\I18n;
-use Robert2\API\Validation\Validator as V;
-use Robert2\Lib\Domain\EventData;
+use Robert2\Install\Install;
+use Robert2\Support\Arr;
+use Robert2\Support\Collections\MaterialsCollection;
+use Robert2\Support\Str;
 
-class Estimate extends BaseModel
+/**
+ * Devis.
+ *
+ * @property-read ?int $id
+ * @property Carbon $date
+ * @property-read ?string $url
+ * @property string $booking_type
+ * @property int $booking_id
+ * @property-read Event $booking
+ * @property string|null $booking_title
+ * @property-read int $booking_duration
+ * @property Carbon $booking_start_date
+ * @property Carbon $booking_end_date
+ * @property-read string|null $booking_location
+ * @property int $beneficiary_id
+ * @property-read Beneficiary $beneficiary
+ * @property Decimal $degressive_rate
+ * @property Decimal $discount_rate
+ * @property Decimal $vat_rate
+ * @property Decimal $daily_total_without_discount
+ * @property Decimal $daily_total_discountable
+ * @property Decimal $daily_total_discount
+ * @property Decimal $daily_total_without_taxes
+ * @property Decimal $daily_total_taxes
+ * @property Decimal $daily_total_with_taxes
+ * @property Decimal $total_without_taxes
+ * @property Decimal $total_taxes
+ * @property Decimal $total_with_taxes
+ * @property Decimal $total_replacement
+ * @property string $currency
+ * @property-read ?string $currency_name
+ * @property int|null $author_id
+ * @property-read User|null $author
+ * @property-read Carbon $created_at
+ * @property-read Carbon|null $updated_at
+ * @property-read Carbon|null $deleted_at
+ *
+ * @property-read Collection|EstimateMaterial[] $materials
+ */
+final class Estimate extends BaseModel implements Serializable
 {
-    use SoftDeletes;
-    use WithPdf;
+    use Pdfable;
+    use Serializer;
+    use SoftDeletable;
 
-    protected $orderField = 'date';
-    protected $orderDirection = 'desc';
-
-    protected $allowedSearchFields = ['due_amount', 'date'];
-    protected $searchField = 'date';
+    protected const PDF_TEMPLATE = 'estimate-default';
 
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
 
-        $this->pdfTemplate = 'estimate-default';
-
         $this->validation = [
-            'date' => V::notEmpty()->date(),
-            'event_id' => V::notEmpty()->numeric(),
-            'beneficiary_id' => V::notEmpty()->numeric(),
-            'materials' => V::notEmpty(),
-            'degressive_rate' => V::notEmpty()->floatVal()->between(0.0, 99999.99, true),
-            'discount_rate' => V::optional(V::floatVal()->between(0.0, 99.9999, true)),
-            'vat_rate' => V::optional(V::floatVal()->between(0.0, 99.99, true)),
-            'due_amount' => V::notEmpty()->floatVal()->between(0.0, 999999.99, true),
-            'replacement_amount' => V::floatVal()->between(0.0, 999999.99, true),
-            'currency' => V::notEmpty()->length(3),
-            'user_id' => V::optional(V::numeric()),
+            'date' => V::notEmpty()->dateTime(),
+            'booking_type' => V::notEmpty()->anyOf(
+                V::equals(Event::TYPE),
+            ),
+            'booking_id' => V::custom([$this, 'checkBooking']),
+            'booking_title' => V::optional(V::length(2, 191)),
+            'booking_start_date' => V::dateTime(),
+            'booking_end_date' => V::custom([$this, 'checkBookingEndDate']),
+            'beneficiary_id' => V::custom([$this, 'checkBeneficiary']),
+            'degressive_rate' => V::custom([$this, 'checkDegressiveRate']),
+            'discount_rate' => V::custom([$this, 'checkDiscountRate']),
+            'vat_rate' => V::custom([$this, 'checkVatRate']),
+            'daily_total_without_discount' => V::custom([$this, 'checkAmount']),
+            'daily_total_discountable' => V::custom([$this, 'checkAmount']),
+            'daily_total_discount' => V::custom([$this, 'checkAmount']),
+            'daily_total_without_taxes' => V::custom([$this, 'checkAmount']),
+            'daily_total_taxes' => V::custom([$this, 'checkAmount']),
+            'daily_total_with_taxes' => V::custom([$this, 'checkAmount']),
+            'total_without_taxes' => V::custom([$this, 'checkAmount']),
+            'total_taxes' => V::custom([$this, 'checkAmount']),
+            'total_with_taxes' => V::custom([$this, 'checkAmount']),
+            'total_replacement' => V::custom([$this, 'checkAmount']),
+            'currency' => V::notEmpty()->allOf(V::uppercase(), V::length(3, 3)),
+            'author_id' => V::custom([$this, 'checkAuthor']),
         ];
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Validation
+    // -
+    // ------------------------------------------------------
+
+    public function checkBooking($value)
+    {
+        V::notEmpty()->numericVal()->check($value);
+
+        return match ($this->booking_type) {
+            Event::TYPE => Event::staticExists($value),
+            default => false, // - Type inconnu.
+        };
+    }
+
+    public function checkBookingEndDate($value)
+    {
+        $dateChecker = V::notEmpty()->dateTime();
+        if (!$dateChecker->validate($value)) {
+            return 'invalid-date';
+        }
+
+        if (!$dateChecker->validate($this->getAttributeFromArray('booking_start_date'))) {
+            return true;
+        }
+
+        $startDate = new Carbon($this->getAttributeFromArray('booking_start_date'));
+        $endDate = new Carbon($this->getAttributeFromArray('booking_end_date'));
+
+        return $startDate <= $endDate ?: 'end-date-must-be-later';
+    }
+
+    public function checkBeneficiary($value)
+    {
+        V::notEmpty()->numericVal()->check($value);
+        return Beneficiary::staticExists($value);
+    }
+
+    public function checkDegressiveRate($value)
+    {
+        V::floatVal()->check($value);
+        $value = Decimal::of($value);
+
+        return (
+            $value->isGreaterThanOrEqualTo(0) &&
+            $value->isLessThan(100_000) &&
+            $value->getScale() <= 2
+        );
+    }
+
+    public function checkDiscountRate($value)
+    {
+        V::floatVal()->check($value);
+        $value = Decimal::of($value);
+
+        return (
+            $value->isGreaterThanOrEqualTo(0) &&
+            $value->isLessThan(100) &&
+            $value->getScale() <= 4
+        );
+    }
+
+    public function checkVatRate($value)
+    {
+        V::floatVal()->check($value);
+        $value = Decimal::of($value);
+
+        return (
+            $value->isGreaterThanOrEqualTo(0) &&
+            $value->isLessThan(100) &&
+            $value->getScale() <= 2
+        );
+    }
+
+    public function checkAmount($value)
+    {
+        V::floatVal()->check($value);
+        $value = Decimal::of($value);
+
+        return (
+            $value->isGreaterThanOrEqualTo(0) &&
+            $value->isLessThan(1_000_000_000_000) &&
+            $value->getScale() <= 2
+        );
+    }
+
+    public function checkAuthor($value)
+    {
+        V::optional(V::numericVal())->check($value);
+
+        return $value !== null
+            ? User::staticExists($value)
+            : true;
     }
 
     // ------------------------------------------------------
@@ -48,22 +201,25 @@ class Estimate extends BaseModel
     // -
     // ------------------------------------------------------
 
-    public function Event()
+    public function booking()
     {
-        return $this->belongsTo(Event::class)
-            ->select(['events.id', 'title', 'location', 'start_date', 'end_date']);
+        return $this->morphTo('booking');
     }
 
-    public function Beneficiary()
+    public function materials()
     {
-        return $this->belongsTo(Person::class)
-            ->select(['persons.id', 'first_name', 'last_name', 'street', 'postal_code', 'locality']);
+        return $this->hasMany(EstimateMaterial::class, 'estimate_id')
+            ->orderBy('id');
     }
 
-    public function User()
+    public function beneficiary()
     {
-        return $this->belongsTo(User::class)
-            ->select(['users.id', 'pseudo', 'email', 'group_id']);
+        return $this->belongsTo(Beneficiary::class);
+    }
+
+    public function author()
+    {
+        return $this->belongsTo(User::class, 'author_id');
     }
 
     // ------------------------------------------------------
@@ -72,19 +228,166 @@ class Estimate extends BaseModel
     // -
     // ------------------------------------------------------
 
-    protected $casts = [
-        'date' => 'string',
-        'event_id' => 'integer',
-        'beneficiary_id' => 'integer',
-        'materials' => 'array',
-        'degressive_rate' => 'float',
-        'discount_rate' => 'float',
-        'vat_rate' => 'float',
-        'due_amount' => 'float',
-        'replacement_amount' => 'float',
-        'currency' => 'string',
-        'user_id' => 'integer',
+    protected $appends = [
+        'url',
     ];
+
+    protected $casts = [
+        'date' => 'immutable_datetime',
+        'booking_type' => 'string',
+        'booking_id' => 'integer',
+        'booking_title' => 'string',
+        'booking_start_date' => 'immutable_datetime',
+        'booking_end_date' => 'immutable_datetime',
+        'beneficiary_id' => 'integer',
+        'degressive_rate' => AsDecimal::class,
+        'discount_rate' => AsDecimal::class,
+        'vat_rate' => AsDecimal::class,
+        'daily_total_without_discount' => AsDecimal::class,
+        'daily_total_discountable' => AsDecimal::class,
+        'daily_total_discount' => AsDecimal::class,
+        'daily_total_without_taxes' => AsDecimal::class,
+        'daily_total_taxes' => AsDecimal::class,
+        'daily_total_with_taxes' => AsDecimal::class,
+        'total_without_taxes' => AsDecimal::class,
+        'total_taxes' => AsDecimal::class,
+        'total_with_taxes' => AsDecimal::class,
+        'total_replacement' => AsDecimal::class,
+        'currency' => 'string',
+        'author_id' => 'integer',
+    ];
+
+    public function getUrlAttribute(): ?string
+    {
+        if (!$this->exists) {
+            return null;
+        }
+
+        $baseUrl = rtrim(Config::getSettings('apiUrl'), '/');
+        return sprintf('%s/estimates/%s/pdf', $baseUrl, $this->id);
+    }
+
+    public function getBookingDurationAttribute(): int
+    {
+        $startDate = $this->booking_start_date;
+        $endDate = $this->booking_end_date;
+
+        $diff = $startDate->diff($endDate);
+        return (int) $diff->format('%a') + 1;
+    }
+
+    public function getBookingLocationAttribute(): ?string
+    {
+        return $this->booking instanceof Event
+            ? $this->booking->location
+            : null;
+    }
+
+    public function getCurrencyNameAttribute(): ?string
+    {
+        // FIXME: Migrer les devises dans un modèle sans table...
+        $allCurrencies = Install::getAllCurrencies();
+        if (!array_key_exists($this->currency, $allCurrencies)) {
+            return null;
+        }
+        return $allCurrencies[$this->currency]['name'];
+    }
+
+    public function getMaterialsAttribute(): Collection
+    {
+        return $this->getRelationValue('materials');
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    PDF Related
+    // -
+    // ------------------------------------------------------
+
+    protected function getPdfName(I18n $i18n): string
+    {
+        $company = Config::getSettings('companyData');
+        return Str::slug(implode('-', [
+            $i18n->translate('Estimate'),
+            $company['name'],
+            $this->date->format('Ymd-Hi'),
+            $this->beneficiary->full_name,
+        ]));
+    }
+
+    protected function getPdfData(): array
+    {
+        $categoriesTotals = [];
+        $categories = Category::get()->pluck('name', 'id')->all();
+        foreach ($this->materials as $material) {
+            $isHiddenIfZero = $material->is_hidden_on_bill;
+            if ($isHiddenIfZero && $material->total_price->isZero()) {
+                continue;
+            }
+
+            $categoryId = $material->material?->category_id ?? 0;
+            if (!array_key_exists($categoryId, $categoriesTotals)) {
+                $name = $categoryId ? ($categories[$categoryId] ?? null) : null;
+                $categoriesTotals[$categoryId] = [
+                    'id' => $categoryId,
+                    'name' => $name,
+                    'quantity' => 0,
+                    'subTotal' => Decimal::zero(),
+                ];
+            }
+
+            $categoriesTotals[$categoryId]['quantity'] += $material->quantity;
+            $categoriesTotals[$categoryId]['subTotal'] = (
+                $categoriesTotals[$categoryId]['subTotal']
+                    ->plus($material->total_price)
+            );
+        }
+        $categoriesTotals = (new Collection($categoriesTotals))
+            ->sort(function ($a, $b) {
+                if ($a['name'] === null) {
+                    return 1;
+                }
+                if ($b['name'] === null) {
+                    return -1;
+                }
+                return strcasecmp($a['name'], $b['name']);
+            })
+            ->values()
+            ->all();
+
+        return [
+            'date' => $this->date,
+            'company' => Config::getSettings('companyData'),
+            'beneficiary' => $this->beneficiary,
+            'currency' => $this->currency,
+            'currencyName' => $this->currency_name,
+            'booking' => [
+                'title' => $this->booking_title,
+                'duration' => $this->booking_duration,
+                'start_date' => $this->booking_start_date,
+                'end_date' => $this->booking_end_date,
+                'location' => $this->booking_location,
+            ],
+            'hasVat' => !$this->vat_rate->isZero(),
+            'hasDiscount' => !$this->discount_rate->isZero(),
+            'degressiveRate' => $this->degressive_rate,
+            'discountRate' => $this->discount_rate->dividedBy(100, 6),
+            'vatRate' => $this->vat_rate->dividedBy(100, 4),
+            'dailyTotalWithoutDiscount' => $this->daily_total_without_discount,
+            'dailyTotalDiscountable' => $this->daily_total_discountable,
+            'dailyTotalDiscount' => $this->daily_total_discount,
+            'dailyTotalWithoutTaxes' => $this->daily_total_without_taxes,
+            'dailyTotalTaxes' => $this->daily_total_taxes,
+            'dailyTotalWithTaxes' => $this->daily_total_with_taxes,
+            'totalWithoutTaxes' => $this->total_without_taxes,
+            'totalWithTaxes' => $this->total_with_taxes,
+            'categoriesSubTotals' => $categoriesTotals,
+            'materials' => (
+                (new MaterialsCollection($this->materials))
+                    ->bySubCategories()
+            ),
+        ];
+    }
 
     // ------------------------------------------------------
     // -
@@ -94,92 +397,134 @@ class Estimate extends BaseModel
 
     protected $fillable = [
         'date',
-        'event_id',
-        'beneficiary_id',
-        'materials',
+        'booking_title',
+        'booking_start_date',
+        'booking_end_date',
         'degressive_rate',
         'discount_rate',
         'vat_rate',
-        'due_amount',
-        'replacement_amount',
+        'daily_total_without_discount',
+        'daily_total_discountable',
+        'daily_total_discount',
+        'daily_total_without_taxes',
+        'daily_total_taxes',
+        'daily_total_with_taxes',
+        'total_without_taxes',
+        'total_taxes',
+        'total_with_taxes',
+        'total_replacement',
         'currency',
-        'user_id',
     ];
 
-    public static function createFromEvent(int $eventId, int $userId, float $discountRate = 0.0): Estimate
+    // ------------------------------------------------------
+    // -
+    // -    "Repository" methods
+    // -
+    // ------------------------------------------------------
+
+    public static function createFromBooking(Event $booking, User $creator): Estimate
     {
-        $estimateEvent = (new Event)
-            ->with('Beneficiaries')
-            ->with('Materials')
-            ->findOrFail($eventId);
-
-        $date = new \DateTime();
-        $eventData = $estimateEvent->toArray();
-
-        if (!$eventData['is_billable']) {
-            throw new \InvalidArgumentException("Event is not billable.");
+        if (!$booking->is_billable) {
+            throw new \InvalidArgumentException("Booking is not billable.");
         }
 
-        $EventData = new EventData($date, $eventData, 'estimate', $userId);
-        $EventData->setDiscountRate($discountRate);
+        $beneficiary = $booking instanceof Event
+            ? $booking->beneficiaries->first()
+            : $booking->borrower;
 
-        $newEstimateData = $EventData->toModelArray();
+        if ($beneficiary === null) {
+            throw new \InvalidArgumentException(
+                "A beneficiary must be defined in the booking to be able to generate an estimate."
+            );
+        }
 
-        $newEstimate = new Estimate($newEstimateData);
-        $newEstimate->save();
+        /** @var Collection|EventMaterial[] $materials */
+        $materials = $booking instanceof Event
+            ? $booking->materials->pluck('pivot')
+            : $booking->materials;
 
-        return $newEstimate;
+        if ($materials->isEmpty()) {
+            throw new \InvalidArgumentException(
+                "The booking must contain at least one material for an estimate to be generated."
+            );
+        }
+
+        return dbTransaction(function () use ($booking, $beneficiary, $materials, $creator) {
+            $estimate = new static([
+                'date' => CarbonImmutable::now(),
+
+                'booking_title' => $booking instanceof Event ? $booking->title : null,
+                'booking_start_date' => $booking->getStartDate(),
+                'booking_end_date' => $booking->getEndDate(),
+
+                'degressive_rate' => $booking->degressive_rate,
+                'discount_rate' => $booking->discount_rate,
+                'vat_rate' => $booking->vat_rate,
+
+                // - Remise.
+                'daily_total_without_discount' => $booking->daily_total_without_discount,
+                'daily_total_discountable' => $booking->daily_total_discountable,
+                'daily_total_discount' => $booking->daily_total_discount,
+                'daily_total_without_taxes' => $booking->daily_total_without_taxes,
+
+                // - Taxes.
+                'daily_total_taxes' => $booking->daily_total_taxes,
+                'daily_total_with_taxes' => $booking->daily_total_with_taxes,
+
+                // - Totaux.
+                'total_without_taxes' => $booking->total_without_taxes,
+                'total_taxes' => $booking->total_taxes,
+                'total_with_taxes' => $booking->total_with_taxes,
+
+                'total_replacement' => $booking->total_replacement,
+                'currency' => $booking->currency,
+            ]);
+            $estimate->booking()->associate($booking);
+            $estimate->beneficiary()->associate($beneficiary);
+            $estimate->author()->associate($creator);
+
+            if (!$estimate->save()) {
+                return false;
+            }
+
+            // - Attache le matériel au devis.
+            foreach ($materials as $bookingMaterial) {
+                $material = $bookingMaterial->material;
+                $estimateMaterial = new EstimateMaterial([
+                    'material_id' => $bookingMaterial->material_id,
+                    'name' => $material->name,
+                    'reference' => $material->reference,
+                    'quantity' => $bookingMaterial->quantity,
+                    'unit_price' => $bookingMaterial->unit_price,
+                    'total_price' => $bookingMaterial->total_price,
+                    'replacement_price' => $bookingMaterial->unit_replacement_price,
+                    'is_hidden_on_bill' => $material->is_hidden_on_bill,
+                    'is_discountable' => $bookingMaterial->is_discountable,
+                ]);
+                $estimate->materials()->save($estimateMaterial);
+            }
+
+            return $estimate->refresh();
+        });
     }
 
-    public function getPdfName(int $id): string
+    // ------------------------------------------------------
+    // -
+    // -    Serialization
+    // -
+    // ------------------------------------------------------
+
+    public function serialize(): array
     {
-        $estimate = $this->withTrashed()->findOrFail($id);
-        $company = Config::getSettings('companyData');
-        $date = new \DateTime($estimate->date);
-
-        $i18n = new I18n(Config::getSettings('defaultLang'));
-        $fileName = sprintf(
-            '%s-%s-%s-%s.pdf',
-            $i18n->translate('Estimate'),
-            slugify($company['name']),
-            $date->format('Ymd-Hi'),
-            slugify($estimate->Beneficiary->full_name)
-        );
-        if (Config::getEnv() === 'test') {
-            $fileName = sprintf('TEST-%s', $fileName);
-        }
-
-        return $fileName;
-    }
-
-    public function getPdfContent(int $id): string
-    {
-        $estimate = static::findOrFail($id);
-        $date = new \DateTime($estimate->date);
-
-        $eventData = (new Event)
-            ->with('Beneficiaries')
-            ->with('Materials')
-            ->find($estimate->event_id)
-            ->toArray();
-
-        $categories = (new Category())->getAll()->get()->toArray();
-        $parks = (new Park())->getAll()->get()->toArray();
-
-        $EventData = new EventData($date, $eventData, 'estimate', $estimate->user_id);
-        $EventData->setDiscountRate($estimate->discount_rate)
-            ->setCategories($categories)
-            ->setParks($parks);
-
-        $estimatePdf = $this->_getPdfAsString($EventData->toPdfTemplateArray());
-        if (!$estimatePdf) {
-            $lastError = error_get_last();
-            throw new \RuntimeException(sprintf(
-                "Unable to create PDF file. Reason: %s",
-                $lastError['message']
-            ));
-        }
-
-        return $estimatePdf;
+        $data = $this->attributesForSerialization();
+        return Arr::only($data, [
+            'id',
+            'date',
+            'url',
+            'discount_rate',
+            'total_without_taxes',
+            'total_with_taxes',
+            'currency',
+        ]);
     }
 }

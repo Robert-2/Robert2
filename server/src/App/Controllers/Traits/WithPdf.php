@@ -3,34 +3,28 @@ declare(strict_types=1);
 
 namespace Robert2\API\Controllers\Traits;
 
-use Robert2\API\Controllers\Traits\WithModel;
-use Slim\Exception\HttpNotFoundException;
+use Robert2\API\Http\Request;
+use Robert2\Support\Pdf;
 use Slim\Http\Response;
-use Slim\Http\ServerRequest as Request;
 
 trait WithPdf
 {
     use WithModel;
-    use FileResponse;
 
     public function getOnePdf(Request $request, Response $response): Response
     {
-        $id = (int)$request->getAttribute('id');
-        $model = $this->getModelClass()::find($id);
-        if (!$model) {
-            throw new HttpNotFoundException($request);
+        $id = (int) $request->getAttribute('id');
+        $model = $this->getModelClass()::findOrFail($id);
+
+        if (!method_exists($model, 'toPdf')) {
+            throw new \LogicException("Model used for PDF must implement `toPdf()` method.");
         }
 
-        if (!method_exists($model, 'getPdfName')) {
-            throw new \RuntimeException("Model used for PDF must implement getPdfName() method.");
+        $pdf = $model->toPdf($this->container->get('i18n'));
+        if (!($pdf instanceof Pdf)) {
+            throw new \LogicException("Model's `toPdf()` method should return an instance of `Pdf`.");
         }
-        $fileName = $model->getPdfName($id);
 
-        if (!method_exists($model, 'getPdfContent')) {
-            throw new \RuntimeException("Model used for PDF must implement getPdfContent() method.");
-        }
-        $fileContent = $model->getPdfContent($id);
-
-        return $this->_responseWithFile($response, $fileName, $fileContent);
+        return $pdf->asResponse($response);
     }
 }

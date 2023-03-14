@@ -1,12 +1,12 @@
-var hiddenFieldset = document.getElementsByClassName('form__fieldset--hidden')[0];
-var showFieldset = document.getElementById('showFieldset');
+const $hiddenFieldset = document.querySelector('.form__fieldset--hidden');
+const $showFieldset = document.querySelector('#show-fieldset');
 
 function showHiddenFieldset() {
-    hiddenFieldset.style.display = 'block';
-    showFieldset.style.display = 'none';
+    $hiddenFieldset.style.display = 'block';
+    $showFieldset.style.display = 'none';
 };
 
 function hideHiddenFieldset() {
-    hiddenFieldset.style.display = 'none';
-    showFieldset.style.display = 'inline-block';
+    $hiddenFieldset.style.display = 'none';
+    $showFieldset.style.display = 'inline-block';
 };

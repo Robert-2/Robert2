@@ -3,15 +3,50 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
-use Illuminate\Database\Eloquent\Builder;
+use Adbar\Dot as DotArray;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Robert2\API\Errors\ValidationException;
-use Robert2\API\Validation\Validator as V;
+use Robert2\API\Contracts\Serializable;
+use Robert2\API\Errors\Exception\ValidationException;
+use Robert2\API\Models\Enums\Group;
+use Robert2\API\Models\Traits\Serializer;
+use Respect\Validation\Validator as V;
+use Robert2\API\Models\Traits\SoftDeletable;
+use Robert2\Support\Arr;
 
-class User extends BaseModel
+/**
+ * Utilisateur de l'application.
+ *
+ * @property-read ?int $id
+ * @property string $pseudo
+ * @property-read string $first_name
+ * @property-read string $last_name
+ * @property-read string $full_name
+ * @property string $email
+ * @property-read string|null $phone
+ * @property string $group
+ * @property string $password
+ * @property string $language
+ * @property-read Carbon $created_at
+ * @property-read Carbon|null $updated_at
+ * @property-read Carbon|null $deleted_at
+ *
+ * @property-read Person $person
+ * @property-read Beneficiary $beneficiary
+ * @property-read Technician $technician
+ * @property-read Collection|Event[] $events
+ */
+final class User extends BaseModel implements Serializable
 {
-    use SoftDeletes;
+    use Serializer;
+    use SoftDeletable;
+
+    // - Types de sérialisation.
+    public const SERIALIZE_DEFAULT = 'default';
+    public const SERIALIZE_DETAILS = 'details';
+
+    // - Champs spécifiques aux settings utilisateur
+    public const SETTINGS_ATTRIBUTES = ['language'];
 
     protected $orderField = 'pseudo';
 
@@ -23,14 +58,19 @@ class User extends BaseModel
         parent::__construct($attributes);
 
         $this->validation = [
-            'pseudo' => V::callback([$this, 'checkPseudo']),
-            'email' => V::callback([$this, 'checkEmail']),
-            'group_id' => V::notEmpty()->oneOf(
-                V::equals('admin'),
-                V::equals('member'),
-                V::equals('visitor')
+            'pseudo' => V::custom([$this, 'checkPseudo']),
+            'email' => V::custom([$this, 'checkEmail']),
+            'group' => V::notEmpty()->anyOf(
+                V::equals(Group::ADMIN),
+                V::equals(Group::MEMBER),
+                V::equals(Group::VISITOR),
+                V::equals(Group::EXTERNAL),
             ),
             'password' => V::notEmpty()->length(4, 191),
+            'language' => V::optional(V::anyOf(
+                V::equals('en'),
+                V::equals('fr')
+            )),
         ];
     }
 
@@ -78,27 +118,18 @@ class User extends BaseModel
         return true;
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Relations
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Relations
+    // -
+    // ------------------------------------------------------
 
-    protected $appends = [
-        'person',
-    ];
-
-    public function Person()
+    public function person()
     {
         return $this->hasOne(Person::class);
     }
 
-    public function Settings()
-    {
-        return $this->hasOne(UserSetting::class);
-    }
-
-    public function Events()
+    public function events()
     {
         $selectFields = [
             'events.id',
@@ -113,56 +144,110 @@ class User extends BaseModel
             ->orderBy('start_date');
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Mutators
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Mutators
+    // -
+    // ------------------------------------------------------
+
+    protected $appends = [
+        'first_name',
+        'last_name',
+        'full_name',
+        'phone',
+    ];
+
+    protected $hidden = [
+        'cas_identifier',
+        'password',
+    ];
 
     protected $casts = [
         'pseudo' => 'string',
         'email' => 'string',
-        'group_id' => 'string',
+        'group' => 'string',
         'password' => 'string',
+        'language' => 'string',
+        'notifications_enabled' => 'boolean',
     ];
 
-    public function getPersonAttribute()
+    public function getFirstNameAttribute(): ?string
     {
-        $person = $this->Person()->first();
-        return $person ? $person->toArray() : null;
+        if (!$this->person) {
+            return null;
+        }
+        return $this->person->first_name;
     }
 
-    public function getSettingsAttribute()
+    public function getLastNameAttribute(): ?string
     {
-        $settings = $this->Settings()->first();
-        return $settings ? $settings->toArray() : null;
+        if (!$this->person) {
+            return null;
+        }
+        return $this->person->last_name;
     }
 
-    public function getEventsAttribute()
+    public function getFullNameAttribute(): ?string
     {
-        $events = $this->Events()->get();
-        return $events ? $events->toArray() : null;
+        if (!$this->person) {
+            return null;
+        }
+        return $this->person->full_name;
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Getters
-    // —
-    // ——————————————————————————————————————————————————————
-
-    protected $hidden = ['password'];
-
-    public function getAll(bool $softDeleted = false): Builder
+    public function getPhoneAttribute(): ?string
     {
-        $fields = array_merge(['id', 'pseudo', 'email', 'group_id'], $this->dates);
-        return parent::getAll($softDeleted)->select($fields);
+        if (!$this->person) {
+            return null;
+        }
+        return $this->person->phone;
     }
+
+    public function getBeneficiaryAttribute(): ?Beneficiary
+    {
+        if (!$this->person) {
+            return null;
+        }
+        return $this->person->beneficiary;
+    }
+
+    public function getTechnicianAttribute(): ?Technician
+    {
+        if (!$this->person) {
+            return null;
+        }
+        return $this->person->technician;
+    }
+
+    public function getSettingsAttribute(): array
+    {
+        return Arr::only($this->toArray(), self::SETTINGS_ATTRIBUTES);
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Setters
+    // -
+    // ------------------------------------------------------
+
+    protected $fillable = [
+        'pseudo',
+        'email',
+        'group',
+        'password',
+        'language',
+    ];
+
+    // ------------------------------------------------------
+    // -
+    // -    "Repository" methods
+    // -
+    // ------------------------------------------------------
 
     public static function fromLogin(string $identifier, string $password): User
     {
         $user = static::where('email', $identifier)
             ->orWhere('pseudo', $identifier)
-            ->with('settings')
             ->firstOrFail();
 
         if (!password_verify($password, $user->password)) {
@@ -172,24 +257,11 @@ class User extends BaseModel
         return $user;
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Setters
-    // —
-    // ——————————————————————————————————————————————————————
-
-    protected $fillable = [
-        'pseudo',
-        'email',
-        'group_id',
-        'password',
-    ];
-
     public static function staticEdit($id = null, array $data = []): BaseModel
     {
         if ($id && !static::staticExists($id)) {
             throw (new ModelNotFoundException)
-                ->setModel(get_class(), $id);
+                ->setModel(self::class, $id);
         }
 
         if (isset($data['password']) && !empty($data['password'])) {
@@ -198,11 +270,17 @@ class User extends BaseModel
             unset($data['password']);
         }
 
-        $personData = !empty($data['person']) && is_array($data['person']) ? $data['person'] : [];
+        if (!$id && !isset($data['language'])) {
+            $data['language'] = container('settings')['defaultLang'];
+        }
+
+        $personData = $data['person'] ?? [];
         unset($data['person']);
 
         return dbTransaction(function () use ($id, $data, $personData) {
+            $user = null;
             $userId = $id;
+            $hasFailed = false;
             $validationErrors = [];
 
             try {
@@ -210,31 +288,82 @@ class User extends BaseModel
                 $userId = $user->id;
             } catch (ValidationException $e) {
                 $validationErrors = $e->getValidationErrors();
+                $hasFailed = true;
             }
 
             try {
                 Person::updateOrCreate(['user_id' => $userId], $personData);
             } catch (ValidationException $e) {
+                $hasFailed = true;
                 $validationErrors = array_merge($validationErrors, [
                     'person' => $e->getValidationErrors(),
                 ]);
             }
 
-            if (!empty($validationErrors)) {
-                throw (new ValidationException())
-                    ->setValidationErrors($validationErrors);
+            if ($hasFailed) {
+                throw new ValidationException($validationErrors);
             }
 
-            if (!$id) {
-                $settings = container('settings');
-                $defaultSettings = [
-                    'language' => strtoupper($settings['defaultLang']),
-                    'auth_token_validity_duration' => $settings['sessionExpireHours']
-                ];
-                UserSetting::updateOrCreate(['user_id' => $userId], $defaultSettings);
-            }
-
-            return $user;
+            return $user->refresh();
         });
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Serialization
+    // -
+    // ------------------------------------------------------
+
+    public function serialize(string $format = self::SERIALIZE_DEFAULT): array
+    {
+        $user = clone $this;
+
+        $data = new DotArray($user->attributesForSerialization());
+
+        $data->delete([
+            'created_at',
+            'updated_at',
+            'deleted_at',
+        ]);
+
+        return $data->all();
+    }
+
+    public static function serializeValidation(array $data): array
+    {
+        $data = new DotArray($data);
+
+        foreach (['first_name', 'last_name', 'phone'] as $field) {
+            $originalPath = sprintf('person.%s', $field);
+            if ($data->has($originalPath) && !$data->has($field)) {
+                $data->set($field, $data->get($originalPath));
+            }
+            $data->delete($originalPath);
+        }
+
+        if ($data->isEmpty('person')) {
+            $data->delete('person');
+        }
+
+        return $data->all();
+    }
+
+    public static function unserialize(array $data): array
+    {
+        $data = new DotArray($data);
+
+        // - On supprime l'éventuel sous-object `person` dans le payload, non attendu sous cette forme.
+        //   (les données de la personne liée sont fusionnées avec les données de l'user)
+        $data->delete('person');
+
+        foreach (['first_name', 'last_name', 'phone'] as $field) {
+            $originalPath = sprintf('person.%s', $field);
+            if ($data->has($field)) {
+                $data->set($originalPath, $data->get($field));
+                $data->delete($field);
+            }
+        }
+
+        return $data->all();
     }
 }

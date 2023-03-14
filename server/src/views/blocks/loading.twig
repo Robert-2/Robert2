@@ -1,59 +1,60 @@
 <style>
     {% if env is same as('development') -%}
-    html {
-        padding: 0;
-    }
+    html,
     body {
+        padding: 0;
         margin: 0;
-        background-color: #242424;
-        color: #e3e3e3;
     }
     {% endif %}
 
     .app-loading {
         display: flex;
         flex-direction: column;
+        align-items: center;
         justify-content: center;
         height: 100vh;
-        text-align: center;
-        font-size: 1.2rem;
-    }
-    .app-loading__logo {
-        margin: 0;
-        padding: 30px 0;
-    }
-    .app-loading__logo__svg {
-        height: 200px;
-    }
-    .app-loading__details {
-        margin: 0 0 168px 0;
-        padding: 10px 0;
-        background-color: #1f1f1f;
-    }
-    .app-loading__details__spinner {
-        height: 35px;
         color: #8a8a8a;
-        -webkit-animation: app-loading--spin 2s linear infinite;
-        -moz-animation: app-loading--spin 2s linear infinite;
-        animation: app-loading--spin 2s linear infinite;
+        font-size: 1.5rem;
+        animation: 500ms linear 2s forwards app-loading--visibility;
+        visibility: hidden;
     }
-    @-moz-keyframes app-loading--spin {
-        100% { -moz-transform: rotate(360deg); }
+    .app-loading__spinner {
+        width: 65px;
+        height: 65px;
+        animation: 1.4s linear infinite app-loading--spin;
     }
-    @-webkit-keyframes app-loading--spin {
-        100% { -webkit-transform: rotate(360deg); }
+    .app-loading__spinner__path {
+        stroke: currentColor;
+        stroke-dasharray: 187;
+        stroke-dashoffset: 0;
+        transform-origin: center;
+        animation:  1.4s ease-in-out infinite app-loading--dash;
+    }
+    @keyframes app-loading--visibility {
+        from { opacity: 0; }
+        to {
+            visibility: visible;
+            opacity: 1;
+        }
     }
     @keyframes app-loading--spin {
-        100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); }
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(270deg); }
+    }
+    @keyframes app-loading--dash {
+        0% { stroke-dashoffset: 187; }
+        50% {
+            stroke-dashoffset: 46.75;
+            transform: rotate(135deg);
+        }
+        100% {
+            stroke-dashoffset: 187;
+            transform: rotate(450deg);
+        }
     }
 </style>
 <div class="app-loading">
-    <div class="app-loading__logo">
-        {{ include('components/logo.svg.twig', { class: 'app-loading__logo__svg' }) }}
-    </div>
-    <p class="app-loading__details">
-        <svg class="app-loading__details__spinner" viewBox="0 0 512 512" aria-hidden="true">
-            <path fill="currentColor" d="M288 39.056v16.659c0 10.804 7.281 20.159 17.686 23.066C383.204 100.434 440 171.518 440 256c0 101.689-82.295 184-184 184-101.689 0-184-82.295-184-184 0-84.47 56.786-155.564 134.312-177.219C216.719 75.874 224 66.517 224 55.712V39.064c0-15.709-14.834-27.153-30.046-23.234C86.603 43.482 7.394 141.206 8.003 257.332c.72 137.052 111.477 246.956 248.531 246.667C393.255 503.711 504 392.788 504 256c0-115.633-79.14-212.779-186.211-240.236C302.678 11.889 288 23.456 288 39.056z" />
-        </svg>
-    </p>
+    <svg class="app-loading__spinner" viewBox="0 0 66 66" aria-hidden="true">
+        <circle class="app-loading__spinner__path" fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33" r="30"></circle>
+    </svg>
 </div>

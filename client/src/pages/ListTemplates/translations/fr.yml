@@ -1,8 +1,0 @@
-title: Modèles de liste de matériel
-help: Les modèles de liste de matériel servent à la création des événements, lors du choix du matériel.
-
-action-add: Nouveau modèle de liste
-
-confirm-delete: "Mettre ce modèle de liste à la corbeille\_?"
-confirm-permanently-delete: "Voulez-vous vraiment supprimer définitivement ce modèle de liste\_?"
-confirm-restore: "Voulez-vous vraiment restaurer ce modèle de liste\_?"

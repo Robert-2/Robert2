@@ -4,39 +4,35 @@ declare(strict_types=1);
 namespace Robert2\API\Controllers;
 
 use DI\Container;
-use Robert2\API\Controllers\Traits\WithModel;
+use Fig\Http\Message\StatusCodeInterface as StatusCode;
+use Robert2\API\Http\Request;
+use Robert2\API\Models\Enums\Group;
 use Robert2\API\Models\Setting;
 use Robert2\API\Services\Auth;
+use Slim\Exception\HttpBadRequestException;
 use Slim\Http\Response;
-use Slim\Http\ServerRequest as Request;
 use Slim\Interfaces\RouteParserInterface;
 
 class SettingController extends BaseController
 {
-    use WithModel;
-
-    /** @var array */
-    private $globalSettings;
-
     private RouteParserInterface $routeParser;
 
     public function __construct(Container $container, RouteParserInterface $routeParser)
     {
         parent::__construct($container);
 
-        $this->globalSettings = $container->get('settings');
         $this->routeParser = $routeParser;
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Getters
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Getters
+    // -
+    // ------------------------------------------------------
 
     public function getAll(Request $request, Response $response): Response
     {
-        $isAdmin = Auth::is('admin');
+        $isAdmin = Auth::is(Group::ADMIN);
         $settings = Setting::getList($isAdmin);
 
         // - Ajout de l'URL public du calendrier, si activé.
@@ -47,29 +43,26 @@ class SettingController extends BaseController
                 $settings['calendar']['public']['url'] = $this
                     ->routeParser
                     ->fullUrlFor($request->getUri(), 'public-calendar', [
-                        'uuid' => $publicCalendar['uuid']
+                        'uuid' => $publicCalendar['uuid'],
                     ]);
             }
         }
         unset($settings['calendar']['public']['uuid']);
 
-        return $response->withJson($settings);
+        return $response->withJson($settings, StatusCode::STATUS_OK);
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Setters
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Setters
+    // -
+    // ------------------------------------------------------
 
     public function update(Request $request, Response $response): Response
     {
-        $postData = (array)$request->getParsedBody();
+        $postData = (array) $request->getParsedBody();
         if (empty($postData)) {
-            throw new \InvalidArgumentException(
-                "Missing request data to process validation",
-                ERROR_VALIDATION
-            );
+            throw new HttpBadRequestException($request, "No data was provided.");
         }
 
         Setting::staticEdit(null, $postData);
@@ -81,7 +74,7 @@ class SettingController extends BaseController
     {
         $key = $request->getAttribute('key');
 
-        // - La partie client manipule l'URL formattée du calendrier public
+        // - La partie client manipule l'URL formatée du calendrier public
         //   => On permet donc le reset via cette "clé".
         if ($key === 'calendar.public.url') {
             $key = 'calendar.public.uuid';

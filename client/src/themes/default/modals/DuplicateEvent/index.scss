@@ -1,0 +1,97 @@
+@use '~@/themes/default/style/globals';
+
+.DuplicateEvent {
+    &__header {
+        display: flex;
+        align-items: center;
+        padding: 0.7rem 1rem;
+        background-color: globals.$bg-color-main-header;
+        gap: 10px;
+
+        &__title {
+            flex: 1;
+            overflow: hidden;
+            margin: 0;
+            font-size: 1.3rem;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        &__close-button {
+            flex: 0 0 auto;
+        }
+    }
+
+    &__body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: globals.$content-padding-large-vertical globals.$content-padding-small-vertical;
+    }
+
+    &__footer {
+        display: flex;
+        justify-content: center;
+        padding: 1.5rem  globals.$content-padding-large-vertical;
+        background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    //
+    // - Content
+    //
+
+    &__help {
+        margin-top: 0;
+    }
+
+    &__dates {
+        width: 300px;
+    }
+
+    &__datepicker {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &__input {
+            width: 100%;
+            max-width: 300px;
+            font-size: 1.1rem;
+        }
+    }
+
+    &__infos {
+        min-width: 300px;
+        margin-top: globals.$content-padding-small-vertical;
+
+        &__no-beneficiary {
+            color: globals.$text-danger-color;
+
+            &__icon {
+                width: 1.5rem;
+                margin-right: 0.5rem;
+                text-align: center;
+            }
+        }
+
+        .LocationText,
+        .EventBeneficiaries,
+        .EventTechnicians {
+            margin-top: globals.$content-padding-small-vertical;
+            font-size: 1rem;
+        }
+
+        &__duration,
+        &__items-count,
+        .EventBeneficiaries,
+        .EventTechnicians {
+            margin-top: globals.$content-padding-small-vertical;
+
+            .fas {
+                width: 1.5rem;
+                margin-right: 0.5rem;
+                text-align: center;
+            }
+        }
+    }
+}

@@ -1,12 +1,16 @@
 <?php
+declare(strict_types=1);
+
 namespace Robert2\Tests;
+
+use Fig\Http\Message\StatusCodeInterface as StatusCode;
 
 final class SettingsTest extends ApiTestCase
 {
     public function testGetAll()
     {
         $this->client->get('/api/settings');
-        $this->assertStatusCode(SUCCESS_OK);
+        $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData([
             'eventSummary' => [
                 'customText' => [
@@ -35,9 +39,7 @@ final class SettingsTest extends ApiTestCase
             'inexistant_settings' => 'some-value',
             'eventSummary.customText.title' => null,
         ]);
-        $this->assertStatusCode(ERROR_VALIDATION);
-        $this->assertValidationErrorMessage();
-        $this->assertErrorDetails([
+        $this->assertApiValidationError([
             'inexistant_settings' => ["This setting does not exists."],
         ]);
     }
@@ -50,18 +52,16 @@ final class SettingsTest extends ApiTestCase
             'eventSummary.customText.title' => str_repeat('A', 192),
             'calendar.public.uuid' => 'not-valid',
         ]);
-        $this->assertStatusCode(ERROR_VALIDATION);
-        $this->assertValidationErrorMessage();
-        $this->assertErrorDetails([
+        $this->assertApiValidationError([
             'calendar.event.showBorrower' => [
                 'Must be a boolean value',
             ],
             'eventSummary.materialDisplayMode' => [
                 'One of the following rules must be verified',
-                'Must be equal to "categories"',
-                'Must be equal to "sub-categories"',
-                'Must be equal to "parks"',
-                'Must be equal to "flat"',
+                'Must equal "categories"',
+                'Must equal "sub-categories"',
+                'Must equal "parks"',
+                'Must equal "flat"',
             ],
             'eventSummary.customText.title' => [
                 '191 max. characters',
@@ -93,7 +93,7 @@ final class SettingsTest extends ApiTestCase
                 ],
             ],
         ]);
-        $this->assertStatusCode(SUCCESS_OK);
+        $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData([
             'eventSummary' => [
                 'customText' => [
@@ -122,7 +122,7 @@ final class SettingsTest extends ApiTestCase
             'eventSummary.customText.content' => null,
             'eventSummary.showLegalNumbers' => false,
         ]);
-        $this->assertStatusCode(SUCCESS_OK);
+        $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData([
             'eventSummary' => [
                 'customText' => [
@@ -148,12 +148,12 @@ final class SettingsTest extends ApiTestCase
     {
         // - Par défaut, le mode d'affichage du matériel est `sub-categories`.
         $this->client->delete('/api/settings/eventSummary.materialDisplayMode');
-        $this->assertStatusCode(SUCCESS_OK);
+        $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseHasKeyEquals('eventSummary.materialDisplayMode', 'sub-categories');
 
         // - Par défaut, l'UUID de calendrier est un UUID aléatoire.
         $this->client->delete('/api/settings/calendar.public.url');
-        $this->assertStatusCode(SUCCESS_OK);
+        $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseHasKeyNotEquals(
             'calendar.public.url',
             '/calendar/public/dfe7cd82-52b9-4c9b-aaed-033df210f23b.ics'
@@ -161,7 +161,7 @@ final class SettingsTest extends ApiTestCase
 
         // - Par défaut, le calendrier public est désactivé.
         $this->client->delete('/api/settings/calendar.public.enabled');
-        $this->assertStatusCode(SUCCESS_OK);
+        $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseHasKeyEquals('calendar.public.enabled', false);
     }
 }

@@ -4,52 +4,57 @@ declare(strict_types=1);
 namespace Robert2\API\Models;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\QueryException;
-use Robert2\API\Config\Config;
-use Robert2\API\Services\I18n;
-use Robert2\API\Errors\ValidationException;
-use Robert2\API\Models\Traits\Taggable;
-use Robert2\API\Validation\Validator as V;
+use Illuminate\Support\Str;
+use Robert2\API\Contracts\Serializable;
+use Robert2\API\Models\Traits\Serializer;
+use Respect\Validation\Validator as V;
 
-class Person extends BaseModel
+/**
+ * Une personne.
+ *
+ * @property-read ?int $id
+ * @property int|null $user_id
+ * @property-read User|null $user
+ * @property string $first_name
+ * @property string $last_name
+ * @property-read string $full_name
+ * @property string|null $email
+ * @property string|null $phone
+ * @property string|null $street
+ * @property string|null $postal_code
+ * @property string|null $locality
+ * @property int|null $country_id
+ * @property-read Country|null $country
+ * @property-read string|null $full_address
+ * @property-read Carbon $created_at
+ * @property-read Carbon|null $updated_at
+ *
+ * @property-read Beneficiary $beneficiary
+ * @property-read Technician $technician
+ */
+final class Person extends BaseModel implements Serializable
 {
-    use SoftDeletes;
-    use Taggable;
+    use Serializer;
 
     protected $table = 'persons';
 
-    protected $orderField = 'last_name';
-
-    protected $allowedSearchFields = [
-        'first_name',
-        'last_name',
-        'full_name',
-        'reference',
-        'name_reference_or_company',
-        'nickname',
-        'email',
-    ];
-    protected $searchField = 'name_reference_or_company';
+    protected $allowedSearchFields = ['full_name', 'email'];
+    protected $searchField = 'full_name';
 
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
 
         $this->validation = [
-            'user_id' => V::optional(V::numeric()),
-            'first_name' => V::notEmpty()->alpha(static::EXTRA_CHARS)->length(2, 96),
-            'last_name' => V::notEmpty()->alpha(static::EXTRA_CHARS)->length(2, 96),
-            'reference' => V::callback([$this, 'checkReference']),
-            'email' => V::callback([$this, 'checkEmail']),
+            'user_id' => V::optional(V::numericVal()),
+            'first_name' => V::notEmpty()->alnum(static::EXTRA_CHARS)->length(2, 35),
+            'last_name' => V::notEmpty()->alnum(static::EXTRA_CHARS)->length(2, 35),
+            'email' => V::custom([$this, 'checkEmail']),
             'phone' => V::optional(V::phone()),
             'street' => V::optional(V::length(null, 191)),
             'postal_code' => V::optional(V::length(null, 10)),
             'locality' => V::optional(V::length(null, 191)),
-            'country_id' => V::optional(V::numeric()),
-            'company_id' => V::optional(V::numeric()),
+            'country_id' => V::optional(V::numericVal()),
         ];
     }
 
@@ -58,27 +63,6 @@ class Person extends BaseModel
     // -    Validation
     // -
     // ------------------------------------------------------
-
-    public function checkReference($value)
-    {
-        V::optional(V::length(null, 191))
-            ->check($value);
-
-        if (!$value) {
-            return true;
-        }
-
-        $query = static::where('reference', $value);
-        if ($this->exists) {
-            $query->where('id', '!=', $this->id);
-        }
-
-        if ($query->withTrashed()->exists()) {
-            return 'reference-already-in-use';
-        }
-
-        return true;
-    }
 
     public function checkEmail($value)
     {
@@ -94,71 +78,59 @@ class Person extends BaseModel
             $query->where('id', '!=', $this->id);
         }
 
-        if ($query->withTrashed()->exists()) {
-            return 'email-already-in-use';
-        }
-
-        return true;
+        return $query->exists()
+            ? 'email-already-in-use'
+            : true;
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Relations
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Relations
+    // -
+    // ------------------------------------------------------
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function beneficiary()
+    {
+        return $this->hasOne(Beneficiary::class);
+    }
+
+    public function technician()
+    {
+        return $this->hasOne(Technician::class);
+    }
+
+    public function country()
+    {
+        return $this->belongsTo(Country::class);
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Mutators
+    // -
+    // ------------------------------------------------------
 
     protected $appends = [
         'full_name',
         'full_address',
         'country',
-        'company',
     ];
-
-    public function User()
-    {
-        return $this->belongsTo(User::class)
-            ->select(['id', 'pseudo', 'email', 'group_id']);
-    }
-
-    public function Country()
-    {
-        return $this->belongsTo(Country::class)
-            ->select(['id', 'name', 'code']);
-    }
-
-    public function Company()
-    {
-        return $this->belongsTo(Company::class);
-    }
-
-    public function Events()
-    {
-        return $this->hasMany(EventTechnician::class, 'technician_id')
-            ->with('Event')
-            ->has('Event')
-            ->orderBy('start_time');
-    }
-
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Mutators
-    // —
-    // ——————————————————————————————————————————————————————
 
     protected $casts = [
         'user_id' => 'integer',
         'first_name' => 'string',
         'last_name' => 'string',
-        'reference' => 'string',
-        'nickname' => 'string',
         'email' => 'string',
         'phone' => 'string',
         'street' => 'string',
         'postal_code' => 'string',
         'locality' => 'string',
         'country_id' => 'integer',
-        'company_id' => 'integer',
-        'note' => 'string',
     ];
 
     public function getFullNameAttribute()
@@ -166,156 +138,64 @@ class Person extends BaseModel
         return "{$this->first_name} {$this->last_name}";
     }
 
-    public function getFullAddressAttribute()
-    {
-        if (empty($this->street) && empty($this->postal_code) && empty($this->locality)) {
-            return null;
-        }
-        if (empty($this->postal_code) && empty($this->locality)) {
-            return $this->street;
-        }
-        return "{$this->street}\n{$this->postal_code} {$this->locality}";
-    }
-
-    public function getUserAttribute()
-    {
-        $user = $this->User()->first();
-        return $user ? $user->toArray() : null;
-    }
-
     public function getCountryAttribute()
     {
-        $country = $this->Country()->first();
-        return $country ? $country->toArray() : null;
+        return $this->getRelationValue('country');
     }
 
-    public function getCompanyAttribute()
+    public function getFullAddressAttribute()
     {
-        $company = $this->Company()->first();
-        return $company ? $company->toArray() : null;
+        $addressParts = [];
+
+        $addressParts[] = trim($this->street ?? '');
+        $addressParts[] = implode(' ', array_filter([
+            trim($this->postal_code ?? ''),
+            trim($this->locality ?? ''),
+        ]));
+
+        $addressParts = array_filter($addressParts);
+        return !empty($addressParts) ? implode("\n", $addressParts) : null;
     }
 
-    public function getTagsAttribute()
-    {
-        $tags = $this->Tags()->get();
-        return Tag::format($tags);
-    }
-
-    public function getEventsAttribute()
-    {
-        return $this->Events()->get()->each->setAppends(['event']);
-    }
-
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Getters
-    // —
-    // ——————————————————————————————————————————————————————
-
-    protected function _getOrderBy(?Builder $builder = null): Builder
-    {
-        $order = $this->orderField ?: 'id';
-        if ($order === 'company') {
-            $order = 'companies.legal_name';
-        }
-        $direction = $this->orderDirection ?: 'asc';
-
-        if ($builder) {
-            $builder = $builder->orderBy($order, $direction);
-        } else {
-            $builder = static::orderBy($order, $direction);
-        }
-
-        if ($order === 'companies.legal_name') {
-            $builder = $builder->leftJoin('companies', 'persons.company_id', '=', 'companies.id')
-                // - Hack pour éviter l'écrasement de l'ID de `Person` par celui de `Company` (voir #342)
-                ->select('companies.*', 'persons.*');
-        }
-
-        return $builder;
-    }
-
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Setters
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Setters
+    // -
+    // ------------------------------------------------------
 
     protected $fillable = [
         'user_id',
         'first_name',
         'last_name',
-        'reference',
-        'nickname',
         'email',
         'phone',
         'street',
         'postal_code',
         'locality',
         'country_id',
-        'company_id',
-        'note',
     ];
 
-    public function edit($id = null, array $data = []): BaseModel
+    // ------------------------------------------------------
+    // -
+    // -    Search / Order related
+    // -
+    // ------------------------------------------------------
+
+    protected function _getOrderBy(?Builder $builder = null): Builder
     {
-        if ($id && !static::staticExists($id)) {
-            throw (new ModelNotFoundException)
-                ->setModel(get_class($this), $id);
+        $builder = $builder ?? static::query();
+
+        $direction = $this->orderDirection ?: 'asc';
+        $order = $this->orderField ?: 'full_name';
+
+        if ($order !== 'full_name') {
+            return $builder->orderBy($order, $direction);
         }
 
-        if (!empty($data['phone'])) {
-            $data['phone'] = normalizePhone($data['phone']);
-        }
-
-        try {
-            $person = static::updateOrCreate(compact('id'), $data);
-
-            if (!empty($data['tags'])) {
-                $this->setTags($person->id, $data['tags']);
-            }
-        } catch (QueryException $e) {
-            if (!isDuplicateException($e)) {
-                throw (new ValidationException)
-                    ->setPDOValidationException($e);
-            }
-
-            if (preg_match('/(persons\.)?reference/', $e->getMessage())) {
-                $i18n = new I18n(Config::getSettings('defaultLang'));
-                throw (new ValidationException)
-                    ->setValidationErrors([
-                        'reference' => [$i18n->translate('reference-already-in-use')]
-                    ]);
-            }
-
-            if ($id) {
-                $person = static::where('id', $id)->first();
-            } elseif (array_key_exists('email', $data)) {
-                $person = static::where('email', $data['email'])->first();
-            } else {
-                throw (new ValidationException)
-                    ->setPDOValidationException($e);
-            }
-
-            $this->_setOtherTag($person);
-        }
-
-        return $person;
-    }
-
-    protected function _setOtherTag(Model $person): void
-    {
-        $defaultTags = array_values(Config::getSettings('defaultTags'));
-        $existingTags = array_map(function ($tag) {
-            return $tag['name'];
-        }, $person->tags);
-
-        $diff = array_values(array_diff($defaultTags, $existingTags));
-        if (empty($diff) || empty($diff[0])) {
-            return;
-        }
-
-        $this->addTag($person->id, $diff[0]);
+        /** @var Builder $builder */
+        return $builder
+            ->orderBy('last_name', $direction)
+            ->orderBy('first_name', $direction);
     }
 
     protected function _setSearchConditions(Builder $builder): Builder
@@ -323,37 +203,50 @@ class Person extends BaseModel
         if (!$this->searchField || !$this->searchTerm) {
             return $builder;
         }
-
         $term = sprintf('%%%s%%', addcslashes($this->searchTerm, '%_'));
 
         if ($this->searchField === 'full_name') {
-            $group = function (Builder $query) use ($term) {
+            return $builder->where(function (Builder $query) use ($term) {
                 $query
-                    ->orWhere('first_name', 'like', $term)
-                    ->orWhere('last_name', 'like', $term);
-            };
-            return $builder->where($group);
+                    ->orWhere('last_name', 'LIKE', $term)
+                    ->orWhere('first_name', 'LIKE', $term)
+                    ->orWhereRaw('CONCAT(last_name, \' \', first_name) LIKE ?', [$term])
+                    ->orWhereRaw('CONCAT(first_name, \' \', last_name) LIKE ?', [$term]);
+            });
         }
 
-        if ($this->searchField === 'name_reference_or_company') {
-            $group = function (Builder $query) use ($term) {
-                $subgroup = function (Builder $query) use ($term) {
-                    $query
-                        ->orWhere('first_name', 'like', $term)
-                        ->orWhere('last_name', 'like', $term)
-                        ->orWhere('nickname', 'like', $term)
-                        ->orWhere('reference', 'like', $term);
-                };
+        return $builder->where($this->searchField, 'LIKE', $term);
+    }
 
-                $query
-                    ->where($subgroup)
-                    ->orWhereHas('company', function (Builder $subQuery) use ($term) {
-                        $subQuery->where('companies.legal_name', 'like', $term);
-                    });
-            };
-            return $builder->where($group);
+    // ------------------------------------------------------
+    // -
+    // -    Serialization
+    // -
+    // ------------------------------------------------------
+
+    public function serialize(): array
+    {
+        $data = $this->attributesForSerialization();
+
+        unset(
+            $data['created_at'],
+            $data['updated_at'],
+        );
+
+        return $data;
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    "Repository" methods
+    // -
+    // ------------------------------------------------------
+
+    public static function staticEdit($id = null, array $data = []): BaseModel
+    {
+        if (!empty($data['phone'])) {
+            $data['phone'] = Str::remove(' ', $data['phone']);
         }
-
-        return $builder->where($this->searchField, 'like', $term);
+        return parent::staticEdit($id, $data);
     }
 }

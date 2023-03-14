@@ -3,10 +3,30 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
-use Robert2\API\Validation\Validator as V;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Robert2\Support\Arr;
+use Robert2\API\Contracts\Serializable;
 use Robert2\API\Models\Traits\Serializer;
+use Respect\Validation\Validator as V;
 
-class Attribute extends BaseModel
+/**
+ * Attribut de matériel personnalisé.
+ *
+ * @property-read ?int $id
+ * @property string $name
+ * @property string $type
+ * @property string|null $unit
+ * @property int|null $max_length
+ * @property-read Carbon $created_at
+ * @property-read ?Carbon $updated_at
+ * @property-read ?Carbon $deleted_at
+ *
+ * @property-read Collection|Category[] $categories
+ * @property-read Collection|Material[] $materials
+ */
+final class Attribute extends BaseModel implements Serializable
 {
     use Serializer {
         serialize as baseSerialize;
@@ -20,15 +40,15 @@ class Attribute extends BaseModel
 
         $this->validation = [
             'name' => V::notEmpty()->alnum(static::EXTRA_CHARS)->length(2, 64),
-            'type' => V::notEmpty()->oneOf(
-                v::equals('string'),
-                v::equals('integer'),
-                v::equals('float'),
-                v::equals('boolean'),
-                v::equals('date')
+            'type' => V::notEmpty()->anyOf(
+                V::equals('string'),
+                V::equals('integer'),
+                V::equals('float'),
+                V::equals('boolean'),
+                V::equals('date')
             ),
-            'unit' => V::callback([$this, 'checkUnit']),
-            'max_length' => V::callback([$this, 'checkMaxLength']),
+            'unit' => V::custom([$this, 'checkUnit']),
+            'max_length' => V::custom([$this, 'checkMaxLength']),
         ];
     }
 
@@ -51,35 +71,34 @@ class Attribute extends BaseModel
         if ($this->type !== 'string') {
             return V::nullType();
         }
-        return V::optional(V::numeric());
+        return V::optional(V::numericVal());
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Relations
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Relations
+    // -
+    // ------------------------------------------------------
 
-    public function Materials()
+    public function materials()
     {
         return $this->belongsToMany(Material::class, 'material_attributes')
-            ->using(MaterialAttributesPivot::class)
+            ->using(MaterialAttribute::class)
             ->withPivot('value')
-            ->select(['materials.id', 'name']);
+            ->orderByPivot('id');
     }
 
-    public function Categories()
+    public function categories()
     {
         return $this->belongsToMany(Category::class, 'attribute_categories')
-            ->orderBy('name')
-            ->select(['categories.id', 'name']);
+            ->orderBy('name');
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Mutators
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Mutators
+    // -
+    // ------------------------------------------------------
 
     protected $casts = [
         'name' => 'string',
@@ -88,28 +107,22 @@ class Attribute extends BaseModel
         'max_length' => 'integer',
     ];
 
-    public function getMaterialsAttribute()
-    {
-        $materials = $this->Materials()->get();
-        return $materials ? $materials->toArray() : null;
-    }
-
     public function getCategoriesAttribute()
     {
-        return $this->Categories()->get();
+        return $this->getRelationValue('categories');
     }
 
     // ------------------------------------------------------
     // -
-    // -    Serialize
+    // -    Serialization
     // -
     // ------------------------------------------------------
 
-    protected $serializedNames = [
+    protected static $serializedNames = [
         'max_length' => 'maxLength',
     ];
 
-    protected function serialize(): array
+    public function serialize(): array
     {
         $data = $this->baseSerialize();
 
@@ -136,11 +149,11 @@ class Attribute extends BaseModel
         return $data;
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Setters
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Setters
+    // -
+    // ------------------------------------------------------
 
     protected $fillable = [
         'name',
@@ -149,18 +162,34 @@ class Attribute extends BaseModel
         'max_length',
     ];
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    "Repository" methods
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    "Repository" methods
+    // -
+    // ------------------------------------------------------
 
-    public function remove($id, array $options = []): ?BaseModel
+    public static function staticEdit($id = null, array $data = []): BaseModel
     {
-        $attribute = static::findOrFail($id);
-        if (!$attribute->delete()) {
-            throw new \RuntimeException(sprintf("Unable to delete the attribute %d.", $id));
+        $isCreate = $id === null;
+        if (!$isCreate) {
+            if (!static::staticExists($id)) {
+                throw (new ModelNotFoundException)
+                    ->setModel(self::class, $id);
+            }
+
+            // - À l'edition on ne permet pas les changements autre que le nom.
+            //   (Vu qu'il peut y avoir déjà des valeurs un peu partout pour cet attribut)
+            $data = Arr::only($data, ['name']);
         }
-        return null;
+
+        return dbTransaction(function () use ($id, $isCreate, $data) {
+            $attribute = static::updateOrCreate(compact('id'), $data);
+
+            if ($isCreate && isset($data['categories'])) {
+                $attribute->categories()->sync($data['categories']);
+            }
+
+            return $attribute->refresh();
+        });
     }
 }

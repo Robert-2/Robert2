@@ -1,12 +1,11 @@
 import requester from '@/globals/requester';
 
-import type { PaginatedData, PaginationParams } from '@/stores/api/@types';
+import type { PaginatedData, ListingParams } from '@/stores/api/@types';
 
 //
 // - Types
 //
 
-/* eslint-disable @typescript-eslint/naming-convention */
 export type Park = {
     id: number,
     name: string,
@@ -18,9 +17,6 @@ export type Park = {
     locality: string | null,
     country_id: number | null,
     note: string | null,
-    created_at: string,
-    updated_at: string,
-    deleted_at: string | null,
 };
 
 export type ParkEdit = {
@@ -32,7 +28,10 @@ export type ParkEdit = {
     opening_hours: string | null,
     note: string | null,
 };
-/* eslint-enable @typescript-eslint/naming-convention */
+
+export type ParkDetails = Park & {
+    has_ongoing_booking: boolean,
+};
 
 export type ParkSummary = {
     id: Park['id'],
@@ -44,7 +43,7 @@ export type ParkTotalAmountResult = {
     totalAmount: number,
 };
 
-type GetAllParams = PaginationParams & { deleted?: boolean };
+type GetAllParams = ListingParams & { deleted?: boolean };
 
 //
 // - Fonctions
@@ -58,7 +57,7 @@ const list = async (): Promise<ParkSummary[]> => (
     (await requester.get('/parks/list')).data
 );
 
-const one = async (id: Park['id']): Promise<Park> => (
+const one = async (id: Park['id']): Promise<ParkDetails> => (
     (await requester.get(`/parks/${id}`)).data
 );
 
@@ -67,17 +66,17 @@ const totalAmount = async (id: Park['id']): Promise<ParkTotalAmountResult['total
     return data.totalAmount;
 };
 
-const create = async (data: ParkEdit): Promise<Park> => (
+const create = async (data: ParkEdit): Promise<ParkDetails> => (
     (await requester.post('/parks', data)).data
 );
 
-const update = async (id: Park['id'], data: ParkEdit): Promise<Park> => (
+const update = async (id: Park['id'], data: ParkEdit): Promise<ParkDetails> => (
     (await requester.put(`/parks/${id}`, data)).data
 );
 
-const restore = async (id: Park['id']): Promise<void> => {
-    await requester.put(`/parks/restore/${id}`);
-};
+const restore = async (id: Park['id']): Promise<ParkDetails> => (
+    (await requester.put(`/parks/restore/${id}`)).data
+);
 
 const remove = async (id: Park['id']): Promise<void> => {
     await requester.delete(`/parks/${id}`);

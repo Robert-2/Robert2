@@ -1,0 +1,22 @@
+@use '~@/themes/default/style/globals';
+
+.SearchEventResultItem {
+    display: flex;
+    align-items: center;
+    padding: globals.$content-padding-small-horizontal;
+    padding-left: 1rem;
+    gap: globals.$content-padding-small-horizontal;
+
+    &__title,
+    &__dates {
+        flex: 1;
+    }
+
+    &__select {
+        flex: 0 0 auto;
+    }
+
+    &:hover {
+        background: globals.$bg-color-dropdown-menu-item-hover;
+    }
+}

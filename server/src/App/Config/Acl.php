@@ -3,9 +3,11 @@ declare(strict_types=1);
 
 namespace Robert2\API\Config;
 
+use Robert2\API\Models\Enums\Group;
+
 class Acl
 {
-    const PUBLIC_ROUTES = [
+    public const PUBLIC_ROUTES = [
         '/install',
         '/login',
 
@@ -18,111 +20,224 @@ class Acl
         '/api/session' => ['POST'],
     ];
 
-    const DENY_LIST = [
-        'admin'  => [],
-        'member' => [
-            'Bill' => [
-                'delete',
+    public const ALLOW_LIST = [
+        Group::ADMIN => '*',
+        Group::MEMBER => [
+            'Auth' => [
+                'getSelf',
+                'logout',
             ],
             'Attribute' => [
-                'create',
+                'getAll',
+                'update',
+                'delete',
             ],
             'User' => [
+                'getOne',
+                'getSettings',
+                'update',
+                'updateSettings',
+            ],
+            'Tag' => [
                 'getAll',
-                'create',
-                'delete',
-                'restore',
             ],
-            'Setting' => [
-                'update',
-                'reset',
-            ],
-        ],
-        'visitor' => [
             'Category' => [
-                'create',
-                'update',
-                'delete',
-                'restore',
+                'getAll',
             ],
-            'SubCategory' => [
+            'Person' => [
+                'getAll',
+            ],
+            'Technician' => [
+                'getAll',
+                'getEvents',
+                'getAllWhileEvent',
+                'getOne',
                 'create',
                 'update',
-                'delete',
                 'restore',
+                'delete',
+            ],
+            'Beneficiary' => [
+                'getAll',
+                'getOne',
+                'create',
+                'update',
+                'restore',
+                'delete',
+            ],
+            'Country' => [
+                'getAll',
+                'getOne',
             ],
             'Company' => [
+                'getAll',
+                'getOne',
                 'create',
                 'update',
-                'delete',
                 'restore',
+                'delete',
+            ],
+            'Park' => [
+                'getAll',
+                'getList',
+                'getOne',
+                'getOneTotalAmount',
+                'getOneMaterials',
+            ],
+            'Material' => [
+                'getAll',
+                'getOne',
+                'getTags',
+                'getAllDocuments',
+                'getBookings',
+                'getAllWhileEvent',
+                'create',
+                'handleUploadDocuments',
+                'update',
+                'restore',
+                'delete',
+                'getPicture',
+                'getAllPdf',
             ],
             'Event' => [
+                'getAll',
+                'getOne',
+                'getMissingMaterials',
                 'create',
                 'duplicate',
                 'update',
-                'delete',
                 'restore',
-                'updateMaterialReturn',
-                'updateMaterialTerminate',
+                'updateReturnInventory',
+                'finishReturnInventory',
+                'delete',
+                'getOnePdf',
+                'createInvoice',
+                'createEstimate',
+                'archive',
+                'unarchive',
             ],
             'EventTechnician' => [
-                'create',
-                'update',
-                'delete',
-            ],
-            'Estimate' => [
-                'create',
-                'delete',
-            ],
-            'Bill' => [
                 'getOne',
                 'create',
-                'delete',
-            ],
-            'Attribute' => [
-                'create',
                 'update',
                 'delete',
             ],
-            'Material' => [
-                'create',
-                'update',
-                'delete',
-                'restore',
-                'handleUploadDocuments',
+            'Invoice' => [
+                'getOnePdf',
             ],
-            'Park' => [
-                'create',
-                'update',
+            'Estimate' => [
+                'getOnePdf',
                 'delete',
-                'restore',
-            ],
-            'Person' => [
-                'create',
-                'update',
-                'delete',
-                'restore',
-            ],
-            'Tag' => [
-                'create',
-                'update',
-                'delete',
-                'restore',
-            ],
-            'User' => [
-                'getAll',
-                'create',
-                'delete',
-                'restore',
             ],
             'Setting' => [
-                'update',
-                'reset',
+                'getAll',
+            ],
+            'Booking' => [
+                'getAll',
             ],
             'Document' => [
                 'delete',
-            ]
+                'getOne',
+            ],
+            'Calendar' => [
+                'public',
+            ],
+            'Entry' => [
+                'external',
+                'default',
+            ],
+            'api-catch-not-found',
+        ],
+        Group::VISITOR => [
+            'Auth' => [
+                'getSelf',
+                'logout',
+            ],
+            'Attribute' => [
+                'getAll',
+            ],
+            'User' => [
+                'getOne',
+                'getSettings',
+                'update',
+                'updateSettings',
+            ],
+            'Tag' => [
+                'getAll',
+            ],
+            'Category' => [
+                'getAll',
+            ],
+            'Person' => [
+                'getAll',
+            ],
+            'Technician' => [
+                'getAll',
+                'getEvents',
+                'getAllWhileEvent',
+                'getOne',
+            ],
+            'Beneficiary' => [
+                'getAll',
+                'getOne',
+            ],
+            'Country' => [
+                'getAll',
+                'getOne',
+            ],
+            'Company' => [
+                'getAll',
+                'getOne',
+            ],
+            'Park' => [
+                'getAll',
+                'getList',
+                'getOne',
+                'getOneTotalAmount',
+                'getOneMaterials',
+            ],
+            'Material' => [
+                'getAll',
+                'getOne',
+                'getTags',
+                'getAllDocuments',
+                'getBookings',
+                'getAllWhileEvent',
+                'getPicture',
+                'getAllPdf',
+            ],
+            'Event' => [
+                'getAll',
+                'getOne',
+                'getMissingMaterials',
+                'getOnePdf',
+            ],
+            'EventTechnician' => [
+                'getOne',
+            ],
+            'Invoice' => [
+                'getOnePdf',
+            ],
+            'Estimate' => [
+                'getOnePdf',
+            ],
+            'Setting' => [
+                'getAll',
+            ],
+            'Booking' => [
+                'getAll',
+            ],
+            'Document' => [
+                'getOne',
+            ],
+            'Calendar' => [
+                'public',
+            ],
+            'Entry' => [
+                'external',
+                'default',
+            ],
+            'api-catch-not-found',
         ],
     ];
 }

@@ -1,0 +1,97 @@
+@use '~@/themes/default/style/globals';
+@use 'sass:math';
+
+.Page--technicians {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+
+    .Technicians {
+        flex: 1;
+    }
+}
+
+.Technicians {
+    display: flex;
+    flex-direction: column;
+
+    &__filters {
+        position: absolute;
+        z-index: 1;
+        left: globals.$table-search-input;
+        right: calc(#{globals.$content-padding-large-vertical} + 45px + #{globals.$content-padding-small-vertical});
+        flex: none;
+        display: flex;
+        flex-wrap: nowrap;
+        align-items: center;
+        margin-left: math.div(globals.$content-padding-small-vertical, 2);
+
+        &__period {
+            width: 220px;
+        }
+
+        &__clear-button {
+            margin-left: globals.$content-padding-small-horizontal;
+        }
+    }
+
+    &__table {
+        flex: 1;
+    }
+
+    &__link {
+        padding: 10px 0;
+
+        // "important", pour surcharger la définition globale du <a>
+        // stylelint-disable-next-line declaration-no-important
+        color: globals.$text-base-color !important;
+
+        &:hover {
+            // "important", pour surcharger la définition globale du <a>
+            // stylelint-disable-next-line declaration-no-important
+            color: globals.$link-hover-color !important;
+        }
+    }
+
+    &__nickname,
+    &__email,
+    &__address,
+    &__note {
+        display: none;
+    }
+
+    &__address {
+        white-space: pre-line;
+    }
+
+    &__note {
+        max-width: 200px;
+        white-space: pre-line;
+    }
+
+    &__actions {
+        width: 1%;
+        text-align: right;
+        white-space: nowrap;
+    }
+
+    @media (min-width: globals.$screen-mobile) {
+        &__email {
+            display: table-cell;
+        }
+    }
+
+    @media (min-width: globals.$screen-tablet) {
+        &__nickname {
+            display: table-cell;
+        }
+    }
+
+    @media (min-width: globals.$screen-desktop) {
+        &__address,
+        &__note {
+            display: table-cell;
+        }
+    }
+}

@@ -1,0 +1,44 @@
+@use '~@/themes/default/style/globals';
+
+.EventStep3Modal {
+    &__header {
+        display: flex;
+        align-items: center;
+        padding: 0.7rem 1rem;
+        background-color: globals.$bg-color-main-header;
+        gap: 10px;
+
+        &__title {
+            flex: 1;
+            overflow: hidden;
+            margin: 0;
+            font-size: 1.3rem;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        &__close-button {
+            flex: 0 0 auto;
+        }
+    }
+
+    &__body {
+        padding: globals.$content-padding-large-vertical globals.$content-padding-small-vertical;
+    }
+
+    &__footer {
+        display: flex;
+        justify-content: center;
+        padding: 1.5rem globals.$content-padding-small-vertical;
+        background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    //
+    // - Content
+    //
+
+    &__form {
+        max-width: 360px;
+        margin: 0 auto;
+    }
+}

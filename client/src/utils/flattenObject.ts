@@ -31,7 +31,7 @@ const stringifyPathSegments = (pathSegments: PathSegment[]): string => (
  *
  * @return Un objet d'un seul niveau, avec les clés contenant les informations de profondeur.
  */
-// TODO: Ajouter un typage plus strict (si nécessaire, à voir si ça vaut le coup vu la charge sur le compileur).
+// TODO: Ajouter un typage plus strict (si nécessaire, à voir si ça vaut le coup vu la charge sur le compilateur).
 // @see https://stackoverflow.com/questions/58434389/typescript-deep-keyof-of-a-nested-object
 const flattenObject = (object: Record<string, unknown>): Record<string, any> => {
     const deepKeysIterator = function* (

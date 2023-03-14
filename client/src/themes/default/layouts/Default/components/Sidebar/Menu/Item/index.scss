@@ -1,0 +1,80 @@
+@use '~@/themes/default/style/globals';
+
+.DefaultLayoutSidebarMenuItem {
+    $block: &;
+
+    position: relative;
+    flex: 0 0 auto;
+    width: 100%;
+    font-size: globals.$sidebar-font-size;
+
+    &__link {
+        display: block;
+        padding: globals.$content-padding-small-vertical globals.$content-padding-small-horizontal;
+        text-align: center;
+        transition: all 300ms;
+
+        // - Permet de surcharger le style de base des liens.
+        // stylelint-disable-next-line declaration-no-important, order/properties-order
+        color: inherit !important;
+
+        &:hover {
+            background-color: globals.$bg-color-side-menu-item-hover;
+
+            // - Permet de surcharger le style de base des liens.
+            // stylelint-disable-next-line declaration-no-important
+            color: globals.$link-hover-color !important;
+        }
+    }
+
+    &__icon {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-size: globals.$sidebar-icon-size;
+    }
+
+    &__title {
+        display: block;
+    }
+
+    &__counter {
+        position: absolute;
+        top: 5px;
+        right: 35px;
+        align-items: center;
+        justify-content: center;
+        margin-left: 5px;
+        padding: 3px 6px;
+        border-radius: 10px;
+        background-color: globals.$bg-color-button-danger;
+        color: globals.$text-base-color;
+        font-size: 11px;
+        font-weight: 600;
+        line-height: 1;
+    }
+
+    &--active {
+        #{$block}__link {
+            background-color: globals.$bg-color-side-menu-item-active;
+
+            // - Permet de surcharger le style de base des liens.
+            // stylelint-disable-next-line declaration-no-important
+            color: globals.$link-active-color !important;
+
+            &:hover {
+                background-color: globals.$bg-color-side-menu-item-active;
+            }
+        }
+    }
+
+    @media (min-width: globals.$screen-mobile) and (max-width: globals.$screen-desktop) {
+        &__title {
+            display: none;
+        }
+
+        &__counter {
+            top: 3px;
+            right: 5px;
+        }
+    }
+}

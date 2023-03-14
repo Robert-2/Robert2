@@ -1,14 +1,19 @@
 <?php
+declare(strict_types=1);
+
 use Phinx\Migration\AbstractMigration;
 
-class AddDateTypeToAttributes extends AbstractMigration
+final class AddDateTypeToAttributes extends AbstractMigration
 {
     public function up()
     {
         $table = $this->table('attributes');
-        $table->changeColumn('type', 'enum', [
-            'values' => ['string', 'integer', 'float', 'boolean', 'date']
-        ])->update();
+        $table
+            ->changeColumn('type', 'enum', [
+                'values' => ['string', 'integer', 'float', 'boolean', 'date'],
+                'null' => false,
+            ])
+            ->update();
     }
 
     public function down()
@@ -26,8 +31,11 @@ class AddDateTypeToAttributes extends AbstractMigration
         $this->execute("DELETE FROM `attributes` WHERE `type` = 'date'");
 
         $table = $this->table('attributes');
-        $table->changeColumn('type', 'enum', [
-            'values' => ['string', 'integer', 'float', 'boolean']
-        ])->update();
+        $table
+            ->changeColumn('type', 'enum', [
+                'values' => ['string', 'integer', 'float', 'boolean'],
+                'null' => false,
+            ])
+            ->update();
     }
 }

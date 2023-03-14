@@ -2,6 +2,7 @@
 <?php
 declare(strict_types=1);
 
+use Robert2\API\Config\Config;
 use Robert2\API\Console\App;
 use Symfony\Component\Console\Input\ArgvInput;
 
@@ -15,14 +16,18 @@ require  __DIR__ . '/../vendors/autoload.php';
 require  __DIR__ . '/../src/App/Config/constants.php';
 require  __DIR__ . '/../src/App/Config/functions.php';
 
-// - Chargement de l'environnement
-$dotenv = Dotenv\Dotenv::createImmutable(ROOT_FOLDER);
-$dotenv->safeLoad();
-
 $input = new ArgvInput();
 if (null !== $env = $input->getParameterOption(['--env', '-e'], null, true)) {
     putenv('APP_ENV=' . $_SERVER['APP_ENV'] = $_ENV['APP_ENV'] = $env);
 }
+
+// - Chargement de l'environnement
+$envFiles = ['.env'];
+if (Config::getEnv(true) === 'test') {
+    $envFiles[] = '.env.test';
+}
+$dotenv = Dotenv\Dotenv::createImmutable(ROOT_FOLDER, $envFiles, false);
+$dotenv->safeLoad();
 
 // - Let's go !
 (new App)->run($input);

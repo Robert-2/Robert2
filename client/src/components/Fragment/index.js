@@ -1,7 +1,8 @@
 import './index.scss';
+import { defineComponent } from '@vue/composition-api';
 
 // @vue/component
-export default {
+const Fragment = defineComponent({
     name: 'Fragment',
     render() {
         const children = this.$slots.default;
@@ -12,4 +13,6 @@ export default {
             </div>
         );
     },
-};
+});
+
+export default Fragment;

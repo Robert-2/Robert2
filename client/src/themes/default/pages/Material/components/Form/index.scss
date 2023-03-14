@@ -1,0 +1,51 @@
+@use '~@/themes/default/style/globals';
+
+.MaterialEditForm {
+    $block: &;
+
+    &__category {
+        display: flex;
+        margin: globals.$content-padding-small-vertical 0;
+
+        #{$block}__main-category,
+        #{$block}__sub-category {
+            flex: 1;
+            margin: 0;
+        }
+
+        &--with-sub-category {
+            #{$block}__main-category,
+            #{$block}__sub-category {
+                width: 50%;
+            }
+
+            #{$block}__main-category {
+                margin-right: 5px;
+            }
+
+            #{$block}__sub-category {
+                margin-left: 5px;
+            }
+        }
+    }
+
+    &__quantities {
+        display: flex;
+        margin-top: globals.$content-padding-small-vertical;
+
+        #{$block}__stock-quantity,
+        #{$block}__out-of-order-quantity {
+            flex: 1;
+            width: 50%;
+            margin: 0;
+        }
+
+        #{$block}__stock-quantity {
+            margin-right: 5px;
+        }
+
+        #{$block}__out-of-order-quantity {
+            margin-left: 5px;
+        }
+    }
+}

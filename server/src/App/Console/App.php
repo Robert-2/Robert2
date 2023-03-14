@@ -25,7 +25,7 @@ class App extends BaseApplication
     {
         $this->container = Kernel::boot()->getContainer();
 
-        parent::__construct('Robert2', Config::getVersion());
+        parent::__construct('Loxya', Config::getVersion());
 
         /* phpcs:disable Generic.Files.LineLength.TooLong */
         $inputDefinition = $this->getDefinition();
@@ -96,7 +96,7 @@ class App extends BaseApplication
     /**
      * {@inheritdoc}
      */
-    public function all(string $namespace = null)
+    public function all(?string $namespace = null)
     {
         $this->registerCommands();
 

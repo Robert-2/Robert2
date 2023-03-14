@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 use Robert2\API\App;
 
 require __DIR__ . '/../../vendors/autoload.php';

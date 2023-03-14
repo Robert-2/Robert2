@@ -3,9 +3,11 @@ declare(strict_types=1);
 
 namespace Robert2\API\Controllers;
 
-use Robert2\API\Controllers\Traits\WithCrud;
+use Robert2\API\Controllers\Traits\Crud;
 
 class SubCategoryController extends BaseController
 {
-    use WithCrud;
+    use Crud\Create;
+    use Crud\Update;
+    use Crud\HardDelete;
 }

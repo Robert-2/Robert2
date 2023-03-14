@@ -1,0 +1,11 @@
+@use '~@/themes/default/style/globals';
+
+.Page--technician-view {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    .TechnicianView {
+        flex: 1;
+    }
+}

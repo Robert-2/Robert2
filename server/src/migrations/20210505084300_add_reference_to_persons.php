@@ -1,7 +1,9 @@
 <?php
+declare(strict_types=1);
+
 use Phinx\Migration\AbstractMigration;
 
-class AddReferenceToPersons extends AbstractMigration
+final class AddReferenceToPersons extends AbstractMigration
 {
     public function up()
     {

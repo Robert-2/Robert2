@@ -1,7 +1,7 @@
 const getEventDiscountRate = (event, defaultValue = 0) => {
-    const [lastBill] = event.bills ?? [];
-    if (lastBill) {
-        return lastBill.discount_rate;
+    const [lastInvoice] = event.invoices ?? [];
+    if (lastInvoice) {
+        return lastInvoice.discount_rate;
     }
 
     const [lastEstimate] = event.estimates ?? [];

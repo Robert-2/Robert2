@@ -3,19 +3,17 @@ declare(strict_types=1);
 
 namespace Robert2\API\Controllers;
 
-use Robert2\API\Config\Config;
+use Fig\Http\Message\StatusCodeInterface as StatusCode;
+use Robert2\API\Controllers\Traits\WithCrud;
+use Robert2\API\Http\Request;
 use Robert2\API\Models\Event;
-use Robert2\API\Models\Person;
+use Robert2\API\Models\Technician;
+use Robert2\Support\Arr;
 use Slim\Http\Response;
-use Slim\Http\ServerRequest as Request;
 
 class TechnicianController extends BaseController
 {
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Getters
-    // —
-    // ——————————————————————————————————————————————————————
+    use WithCrud;
 
     public function getAll(Request $request, Response $response): Response
     {
@@ -23,73 +21,86 @@ class TechnicianController extends BaseController
         $searchField = $request->getQueryParam('searchBy', null);
         $orderBy = $request->getQueryParam('orderBy', null);
         $limit = $request->getQueryParam('limit', null);
-        $ascending = (bool)$request->getQueryParam('ascending', true);
-        $withDeleted = (bool)$request->getQueryParam('deleted', false);
-        $startDate = $request->getQueryParam('startDate', null);
-        $endDate = $request->getQueryParam('endDate', null);
+        $ascending = (bool) $request->getQueryParam('ascending', true);
+        $withDeleted = (bool) $request->getQueryParam('deleted', false);
 
-        $technicianTag = $this->container->get('settings')['defaultTags']['technician'];
+        // - Disponibilité dans une période donnée.
+        $availabilityPeriod = Arr::mapKeys(
+            function ($key) use ($request) {
+                $rawDate = $request->getQueryParam(sprintf('%sDate', $key));
+                if (!$rawDate) {
+                    return null;
+                }
 
-        $builder = (new Person())
+                $date = \DateTime::createFromFormat('Y-m-d', $rawDate);
+                if (!$date) {
+                    return null;
+                }
+
+                $date = $key === 'end'
+                    ? $date->setTime(23, 59, 59)
+                    : $date->setTime(0, 0, 0);
+
+                return $date->format('Y-m-d H:i:s');
+            },
+            array_fill_keys(['start', 'end'], null),
+        );
+
+        $builder = (new Technician())
             ->setOrderBy($orderBy, $ascending)
             ->setSearch($searchTerm, $searchField)
-            ->getAllFilteredOrTagged([], [$technicianTag], $withDeleted);
+            ->getAll($withDeleted);
 
-        if (!empty($startDate) && !empty($endDate)) {
-            $builder = $builder->whereDoesntHave('events', function ($query) use ($startDate, $endDate) {
-                $query->where([
-                    ['start_time', '>=', $startDate],
-                    ['end_time', '<=', $endDate],
-                ]);
-            });
+        if ($availabilityPeriod['start'] && $availabilityPeriod['end']) {
+            $builder = $builder->whereDoesntHave(
+                'assignments',
+                function ($query) use ($availabilityPeriod) {
+                    $query->where([
+                        ['end_time', '>', $availabilityPeriod['start']],
+                        ['start_time', '<', $availabilityPeriod['end']],
+                    ]);
+                }
+            );
         }
 
-        $paginated = $this->paginate($request, $builder, $limit ? (int)$limit : null);
-        return $response->withJson($paginated);
+        $paginated = $this->paginate($request, $builder, is_numeric($limit) ? (int) $limit : null);
+        return $response->withJson($paginated, StatusCode::STATUS_OK);
     }
 
     public function getAllWhileEvent(Request $request, Response $response): Response
     {
-        $eventId = (int)$request->getAttribute('eventId');
+        $eventId = (int) $request->getAttribute('eventId');
         $event = Event::findOrFail($eventId);
 
-        $technicianTag = Config::getSettings('defaultTags')['technician'];
-
-        /** @var Person[] */
-        $technicians = (new Person)
+        $technicians = (new Technician)
             ->getAll()
-            ->whereHas('tags', function ($query) use ($technicianTag) {
-                $query->where('name', $technicianTag);
+            ->get()
+            ->map(function ($technician) use ($event) {
+                $events = $technician->assignments()
+                    ->whereHas('event', function ($query) use ($event) {
+                        $query
+                            ->where('id', '!=', $event->id)
+                            ->where([
+                                ['end_date', '>', $event->start_date],
+                                ['start_date', '<', $event->end_date],
+                            ]);
+                    })
+                    ->get()
+                    ->map(fn($event) => $event->serialize())
+                    ->all();
+
+                return array_replace($technician->serialize(), compact('events'));
             })
-            ->get();
+            ->all();
 
-        $results = [];
-        foreach ($technicians as $technician) {
-            $events = $technician->Events()
-                ->whereHas('event', function ($query) use ($event) {
-                    $query
-                        ->where('id', '!=', $event->id)
-                        ->where([
-                            ['end_date', '>=', $event->start_date],
-                            ['start_date', '<=', $event->end_date],
-                        ]);
-                })
-                ->get();
-
-            $results[] = array_replace($technician->toArray(), [
-                'events' => $events->toArray(),
-            ]);
-        }
-
-        return $response->withJson($results);
+        return $response->withJson($technicians, StatusCode::STATUS_OK);
     }
 
     public function getEvents(Request $request, Response $response): Response
     {
         $id = $request->getAttribute('id');
-
-        $technician = Person::findOrFail($id);
-
-        return $response->withJson($technician->events, SUCCESS_OK);
+        $technician = Technician::findOrFail($id);
+        $assignments = $technician->assignments->each->setAppends(['event']);
+        return $response->withJson($assignments, StatusCode::STATUS_OK);
     }
 }

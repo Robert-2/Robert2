@@ -1,0 +1,20 @@
+[
+    {
+        "id": 1,
+        "person_id": 2,
+        "nickname": "Riri",
+        "note": null,
+        "created_at": "2022-01-01 00:00:00",
+        "updated_at": "2022-01-01 00:00:00",
+        "deleted_at": null
+    },
+    {
+        "id": 2,
+        "person_id": 4,
+        "nickname": null,
+        "note": null,
+        "created_at": "2022-01-01 00:01:00",
+        "updated_at": "2022-01-01 00:01:00",
+        "deleted_at": null
+    }
+]

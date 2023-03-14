@@ -1,7 +1,9 @@
 <?php
+declare(strict_types=1);
+
 use Phinx\Migration\AbstractMigration;
 
-class AddReferenceToMaterialUnits extends AbstractMigration
+final class AddReferenceToMaterialUnits extends AbstractMigration
 {
     public function up()
     {
@@ -14,7 +16,7 @@ class AddReferenceToMaterialUnits extends AbstractMigration
             ->addColumn('serial_number', 'string', [
                 'length' => 64,
                 'null' => true,
-                'after' => 'reference'
+                'after' => 'reference',
             ])
             ->save();
     }

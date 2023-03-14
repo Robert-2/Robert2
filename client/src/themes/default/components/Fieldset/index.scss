@@ -1,0 +1,35 @@
+@use '~@/themes/default/style/globals';
+
+.Fieldset {
+    $block: &;
+
+    &__title {
+        margin: 0 0 15px;
+        font-size: 1.3rem;
+    }
+
+    &__help {
+        color: globals.$text-light-color;
+
+        @include globals.icon('info-circle') {
+            margin-right: 0.3rem;
+        }
+    }
+
+    & + & {
+        margin-top: 40px;
+    }
+
+    //
+    // - Responsive
+    //
+
+    @media screen and (min-width: globals.$screen-tablet) {
+        &:not(&--in-vertical-form) {
+            #{$block}__title {
+                margin-left: globals.$form-label-width;
+                font-size: 1.1rem;
+            }
+        }
+    }
+}

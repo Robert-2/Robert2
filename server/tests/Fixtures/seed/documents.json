@@ -4,13 +4,19 @@
         "material_id": 1,
         "name": "User-manual.pdf",
         "type": "application/pdf",
-        "size": 54681233
+        "size": 54681233,
+        "created_at": "2021-02-12 13:23:02",
+        "updated_at": "2021-02-12 13:24:02",
+        "deleted_at": null
     },
     {
         "id": 2,
         "material_id": 1,
         "name": "warranty.pdf",
         "type": "application/pdf",
-        "size": 124068
+        "size": 124068,
+        "created_at": "2021-02-12 13:25:02",
+        "updated_at": "2021-02-12 13:26:02",
+        "deleted_at": null
     }
 ]

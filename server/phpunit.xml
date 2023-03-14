@@ -1,13 +1,19 @@
 <?xml version="1.0"?>
 <phpunit
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    bootstrap="tests/bootstrap.php"
     xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
+    bootstrap="tests/bootstrap.php"
+    convertErrorsToExceptions="true"
+    convertNoticesToExceptions="true"
+    convertWarningsToExceptions="true"
+    convertDeprecationsToExceptions="true"
+    cacheResultFile="./src/var/cache/.phpunit.result.cache"
 >
     <php>
         <ini name="display_errors" value="1" />
         <ini name="display_startup_errors" value="1" />
         <ini name="error_reporting" value="-1" />
+        <ini name="memory_limit" value="2G" />
         <server name="APP_ENV" value="test" force="true" />
     </php>
 
@@ -23,6 +29,9 @@
         </testsuite>
         <testsuite name="api">
             <directory>tests/endpoints</directory>
+        </testsuite>
+        <testsuite name="events">
+            <directory>tests/events</directory>
         </testsuite>
     </testsuites>
 

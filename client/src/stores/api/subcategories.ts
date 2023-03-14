@@ -6,13 +6,11 @@ import type { Category } from '@/stores/api/categories';
 // - Types
 //
 
-/* eslint-disable @typescript-eslint/naming-convention */
 export type Subcategory = {
     id: number,
     name: string,
     category_id: Category['id'],
 };
-/* eslint-enable @typescript-eslint/naming-convention */
 
 export type SubcategoryEdit = {
     name: string,

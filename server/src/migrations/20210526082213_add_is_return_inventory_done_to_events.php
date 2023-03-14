@@ -1,7 +1,9 @@
 <?php
+declare(strict_types=1);
+
 use Phinx\Migration\AbstractMigration;
 
-class AddIsReturnInventoryDoneToEvents extends AbstractMigration
+final class AddIsReturnInventoryDoneToEvents extends AbstractMigration
 {
     public function up()
     {

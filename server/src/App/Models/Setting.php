@@ -4,11 +4,17 @@ declare(strict_types=1);
 namespace Robert2\API\Models;
 
 use Adbar\Dot as DotArray;
-use Robert2\API\Validation\Validator as V;
-use Robert2\API\Errors\ValidationException;
+use Respect\Validation\Validator as V;
+use Robert2\API\Errors\Exception\ValidationException;
 use Illuminate\Support\Str;
 
-class Setting extends BaseModel
+/**
+ * Configuration de l'application.
+ *
+ * @property string $key
+ * @property mixed $value
+ */
+final class Setting extends BaseModel
 {
     protected $primaryKey = 'key';
 
@@ -20,8 +26,8 @@ class Setting extends BaseModel
         parent::__construct($attributes);
 
         $this->validation = [
-            'key' => V::callback([$this, 'checkKey']),
-            'value' => V::callback([$this, 'checkValue']),
+            'key' => V::custom([$this, 'checkKey']),
+            'value' => V::custom([$this, 'checkValue']),
         ];
     }
 
@@ -35,7 +41,7 @@ class Setting extends BaseModel
 
             'eventSummary.materialDisplayMode' => [
                 'type' => 'string',
-                'validation' => V::notEmpty()->oneOf(
+                'validation' => V::notEmpty()->anyOf(
                     V::equals('categories'),
                     V::equals('sub-categories'),
                     V::equals('parks'),
@@ -105,7 +111,7 @@ class Setting extends BaseModel
         if (empty($keyName)) {
             return false;
         }
-        return in_array($keyName, array_keys(static::manifest()));
+        return in_array($keyName, array_keys(static::manifest()), true);
     }
 
     public function checkValue()
@@ -117,11 +123,11 @@ class Setting extends BaseModel
         return $manifest[$this->key]['validation'] ?? true;
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Getters
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Getters
+    // -
+    // ------------------------------------------------------
 
     protected $casts = [
         'key' => 'string',
@@ -144,11 +150,14 @@ class Setting extends BaseModel
             case 'boolean':
                 return in_array($value, ['1', 'true', true], true);
 
+            case 'integer':
+                return (int) $value;
+
             case 'string':
                 return $value;
 
             default:
-                throw new \LogicException(sprintf("Type de données non pris en charge : %s", $type));
+                throw new \LogicException(sprintf("Unsupported data type: %s", $type));
         }
     }
 
@@ -162,67 +171,72 @@ class Setting extends BaseModel
         return static::allTraversable()->get($path);
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Setters
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Setters
+    // -
+    // ------------------------------------------------------
 
     protected $fillable = ['value'];
-
-    public static function staticEdit($id = null, array $data = []): BaseModel
-    {
-        if (empty($data)) {
-            throw new \InvalidArgumentException("No setting to update", ERROR_VALIDATION);
-        }
-
-        $errors = [];
-        foreach ((new DotArray($data))->flatten() as $key => $value) {
-            try {
-                $model = static::find($key);
-                if (empty($model)) {
-                    $errors[$key] = ["This setting does not exists."];
-                    continue;
-                }
-
-                $value = is_string($value) ? trim($value) : $value;
-                $model->value = $value === '' ? null : $value;
-                $model->save();
-            } catch (ValidationException $error) {
-                $errors[$key] = $error->getValidationErrors()['value'];
-            }
-        }
-
-        if (count($errors) > 0) {
-            $exception = new ValidationException();
-            $exception->setValidationErrors($errors);
-            throw $exception;
-        }
-
-        return new static;
-    }
 
     public function reset()
     {
         $manifest = static::manifest();
         if (!array_key_exists($this->key, $manifest)) {
             throw new \LogicException(
-                sprintf('La configuration de la clé `%s` est manquante dans le manifeste.', $this->key)
+                sprintf("The configuration of the key `%s` is missing in the manifest.", $this->key)
             );
         }
 
         $this->value = $manifest[$this->key]['default'];
         $this->save();
+        $this->refresh();
     }
 
-    public function remove($id, array $options = []): ?BaseModel
+    // ------------------------------------------------------
+    // -
+    // -    "Repository" methods
+    // -
+    // ------------------------------------------------------
+
+    public static function staticEdit($id = null, array $data = []): BaseModel
     {
-        throw new \InvalidArgumentException("Settings cannot be deleted.");
+        $errors = [];
+
+        if (!empty($data)) {
+            foreach ((new DotArray($data))->flatten() as $key => $value) {
+                try {
+                    $model = static::find($key);
+                    if (empty($model)) {
+                        $errors[$key] = ["This setting does not exists."];
+                        continue;
+                    }
+
+                    $value = is_string($value) ? trim($value) : $value;
+                    $model->value = $value === '' ? null : $value;
+                    $model->save();
+                } catch (ValidationException $error) {
+                    $errors[$key] = $error->getValidationErrors()['value'];
+                }
+            }
+        }
+
+        if (count($errors) > 0) {
+            throw new ValidationException($errors);
+        }
+
+        return new static;
     }
 
-    public function unremove($id): BaseModel
+    // ------------------------------------------------------
+    // -
+    // -    Overwritten methods
+    // -
+    // ------------------------------------------------------
+
+    public function delete()
     {
-        throw new \InvalidArgumentException("Settings cannot be restored.");
+        throw new \LogicException('Settings cannot be deleted.');
     }
 
     // ------------------------------------------------------

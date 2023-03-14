@@ -4,123 +4,11 @@ declare(strict_types=1);
 namespace Robert2\Tests;
 
 use Robert2\API\Models\Attribute;
-use Robert2\API\Errors\ValidationException;
+use Robert2\API\Errors\Exception\ValidationException;
 use PHPUnit\Framework\Constraint\Exception as ExceptionConstraint;
 
-final class AttributeTest extends ModelTestCase
+final class AttributeTest extends TestCase
 {
-    public function setup(): void
-    {
-        parent::setUp();
-
-        $this->model = new Attribute();
-    }
-
-    public function testTableName(): void
-    {
-        $this->assertEquals('attributes', $this->model->getTable());
-    }
-
-    public function testGetAll(): void
-    {
-        $result = $this->model->getAll()->get()->toArray();
-        $this->assertCount(5, $result);
-        $this->assertEquals([
-            [
-                'id' => 1,
-                'name' => "Poids",
-                'type' => "float",
-                'unit' => "kg",
-                'max_length' => null,
-                'created_at' => null,
-                'updated_at' => null,
-                'deleted_at' => null,
-            ],
-            [
-                'id' => 2,
-                'name' => "Couleur",
-                'type' => "string",
-                'unit' => null,
-                'max_length' => null,
-                'created_at' => null,
-                'updated_at' => null,
-                'deleted_at' => null,
-            ],
-            [
-                'id' => 3,
-                'name' => "Puissance",
-                'type' => "integer",
-                'unit' => "W",
-                'max_length' => null,
-                'created_at' => null,
-                'updated_at' => null,
-                'deleted_at' => null,
-            ],
-            [
-                'id' => 4,
-                'name' => "Conforme",
-                'type' => "boolean",
-                'unit' => null,
-                'max_length' => null,
-                'created_at' => null,
-                'updated_at' => null,
-                'deleted_at' => null,
-            ],
-            [
-                'id' => 5,
-                'name' => "Date d'achat",
-                'type' => "date",
-                'unit' => null,
-                'max_length' => null,
-                'created_at' => null,
-                'updated_at' => null,
-                'deleted_at' => null,
-            ],
-        ], $result);
-    }
-
-    public function testGetMaterials(): void
-    {
-        $Event = Attribute::find(4);
-        $results = $Event->materials;
-        $expected = [
-            [
-                'id' => 4,
-                'name' => 'Showtec SDS-6',
-                'tags' => [],
-                'attributes' => [
-                    [
-                        'id' => 4,
-                        'name' => 'Conforme',
-                        'type' => 'boolean',
-                        'unit' => null,
-                        'value' => true,
-                    ],
-                    [
-                        'id' => 3,
-                        'name' => 'Puissance',
-                        'type' => 'integer',
-                        'unit' => 'W',
-                        'value' => 60,
-                    ],
-                    [
-                        'id' => 1,
-                        'name' => 'Poids',
-                        'type' => 'float',
-                        'unit' => 'kg',
-                        'value' => 3.15,
-                    ],
-                ],
-                'pivot' => [
-                    'attribute_id' => 4,
-                    'material_id' => 4,
-                    'value' => 'true',
-                ],
-            ],
-        ];
-        $this->assertEquals($expected, $results);
-    }
-
     public function testValidation(): void
     {
         $testValidation = function (array $testData, array $expectedErrors) {
@@ -146,8 +34,8 @@ final class AttributeTest extends ModelTestCase
             'max_length' => 100,
         ];
         $testValidation($testData, [
-            'unit' => ['Must be null'],
-            'max_length' => ['Must be null'],
+            'unit' => ['Doit être non défini'],
+            'max_length' => ['Doit être non défini'],
         ]);
 
         // - Si `max_length` | `unit` à `null` pour les attributs autres (cf. commentaire au dessus) => Pas d'erreur.
@@ -162,7 +50,7 @@ final class AttributeTest extends ModelTestCase
             'max_length' => 'NOT_A_NUMBER',
         ];
         $testValidation($testData, [
-            'max_length' => ['This field must contain only numbers'],
+            'max_length' => ['Ce champ ne peut contenir que des nombres'],
         ]);
 
         // - Test `max_length`: Si valide pour les attributs de type `string` => Pas d'erreur.
@@ -178,7 +66,7 @@ final class AttributeTest extends ModelTestCase
         foreach (['float', 'integer'] as $type) {
             $testData = array_replace($baseTestData, compact('type'));
             $testValidation($testData, [
-                'unit' => ['1 min. characters, 8 max. characters'],
+                'unit' => ['1 caractères min., 8 caractères max.'],
             ]);
         }
 
@@ -192,7 +80,7 @@ final class AttributeTest extends ModelTestCase
     public function testEdit(): void
     {
         // - Crée une caractéristique spéciale
-        $result = $this->model->edit(null, ['name' => 'Testing', 'type' => 'date']);
+        $result = Attribute::new(['name' => 'Testing', 'type' => 'date']);
         $expected = [
             'id' => 6,
             'name' => 'Testing',
@@ -204,27 +92,16 @@ final class AttributeTest extends ModelTestCase
         $this->assertEquals($expected, $result->toArray());
 
         // - Modifie une caractéristique spéciale
-        $result = $this->model->edit(1, [
+        $result = Attribute::staticEdit(1, [
             'name' => 'Masse',
             'type' => 'integer',
             'unit' => 'g',
         ]);
-        $expected = [
-            'id' => 1,
-            'name' => 'Masse',
-            'type' => 'integer',
-            'unit' => 'g',
-            'max_length' => null,
-        ];
-        unset($result->created_at, $result->updated_at, $result->deleted_at);
-        $this->assertEquals($expected, $result->toArray());
-    }
+        $this->assertEquals('Masse', $result->name);
 
-    public function testRemove(): void
-    {
-        // - Supprime une caractéristique spéciale
-        $this->model->remove(3);
-        // - Vérifie qu'elle a bien été supprimée
-        $this->assertEmpty(Attribute::find(3));
+        // - Seul ne nom doit pouvoir être changées après coup, pas les autres champs.
+        //   (des valeurs existent peut-être déjà pour cet attribut pour ces contraintes)
+        $this->assertNotEquals('integer', $result->type);
+        $this->assertNotEquals('g', $result->unit);
     }
 }

@@ -3,23 +3,22 @@ declare(strict_types=1);
 
 namespace Robert2\API\Console\Command\Migrations;
 
-use Robert2\API\Config\Config;
 use Phinx\Console\Command\Rollback as CoreRollbackCommand;
+use Robert2\API\Config\Config;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[AsCommand(name: 'migrations:rollback', aliases: ['rollback'])]
 class RollbackCommand extends CoreRollbackCommand
 {
     use ConfigurationTrait;
 
-    protected static $defaultName = 'migrations:rollback';
-
-    protected function configure()
+    protected function configure(): void
     {
         /* phpcs:disable Generic.Files.LineLength.TooLong */
         $this
-            ->setAliases(['rollback'])
             ->setDescription("Rollback la dernière migration (ou jusqu'à une migration spécifique).")
             ->setHelp(implode(PHP_EOL, [
                 "La commande <info>migrations:rollback</info> rollback (= annule) la dernière migration (ou jusqu'à une migration spécifique)",
@@ -28,7 +27,7 @@ class RollbackCommand extends CoreRollbackCommand
                 "<info>bin/console migrations:rollback --target 20211024185412</info>",
                 "<info>bin/console migrations:rollback --date 20211024</info>",
                 "<info>bin/console migrations:rollback --date 20211024 --fake</info>",
-                "<info>bin/console migrations:rollback --dry-run</info>"
+                "<info>bin/console migrations:rollback --dry-run</info>",
             ]))
             ->addOption('target', 't', InputOption::VALUE_REQUIRED, "Le numéro de migration jusqu'à laquelle revenir.")
             ->addOption('date', 'd', InputOption::VALUE_REQUIRED, "Le date jusqu'à laquelle vous souhaitez revenir.")
@@ -37,7 +36,7 @@ class RollbackCommand extends CoreRollbackCommand
         /* phpcs:enable Generic.Files.LineLength.TooLong */
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         // - Phinx utilise `environment` plutôt que `env`, donc on ajoute l'alias artificiellement.
         $this->addOption('environment', null, InputOption::VALUE_REQUIRED, '', Config::getEnv());

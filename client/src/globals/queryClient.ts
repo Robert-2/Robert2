@@ -1,12 +1,13 @@
+import HttpCode from 'status-code-enum';
 import { QueryClient } from 'vue-query';
-import { isApiErrorCode } from '@/utils/errors';
+import { isRequestErrorStatusCode } from '@/utils/errors';
 
 const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
             staleTime: 10 * 60000, // - 10 minutes
             retry: (failureCount: number, error: unknown) => {
-                if (isApiErrorCode(error, 404)) {
+                if (isRequestErrorStatusCode(error, HttpCode.ClientErrorNotFound)) {
                     return false;
                 }
                 return failureCount < 2;

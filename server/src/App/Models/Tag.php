@@ -3,21 +3,27 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\QueryException;
-use Robert2\API\Config\Config;
-use Robert2\API\Errors\ValidationException;
+use Robert2\API\Contracts\Serializable;
 use Robert2\API\Models\Traits\Serializer;
-use Robert2\API\Validation\Validator as V;
+use Respect\Validation\Validator as V;
+use Robert2\API\Models\Traits\SoftDeletable;
 
-class Tag extends BaseModel
+/**
+ * Tag.
+ *
+ * @property-read ?int $id
+ * @property string $name
+ * @property-read Carbon $created_at
+ * @property-read Carbon|null $updated_at
+ * @property-read Carbon|null $deleted_at
+ *
+ * @property-read Collection|Material[] $materials
+ */
+final class Tag extends BaseModel implements Serializable
 {
-    use SoftDeletes;
-    use Serializer {
-        serialize as baseSerialize;
-    }
+    use SoftDeletable;
+    use Serializer;
 
     protected $searchField = 'name';
 
@@ -26,7 +32,7 @@ class Tag extends BaseModel
         parent::__construct($attributes);
 
         $this->validation = [
-            'name' => V::callback([$this, 'checkName']),
+            'name' => V::custom([$this, 'checkName']),
         ];
     }
 
@@ -54,146 +60,52 @@ class Tag extends BaseModel
         return true;
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Relations
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Relations
+    // -
+    // ------------------------------------------------------
 
-    public function Persons()
+    public function materials()
     {
-        return $this->morphedByMany(Person::class, 'taggable');
+        return $this->morphedByMany(Material::class, 'taggable')
+            ->orderBy('id');
     }
 
-    public function Materials()
-    {
-        return $this->morphedByMany(Material::class, 'taggable');
-    }
+    // ------------------------------------------------------
+    // -
+    // -    Mutators
+    // -
+    // ------------------------------------------------------
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Mutators
-    // —
-    // ——————————————————————————————————————————————————————
+    protected $casts = [
+        'name' => 'string',
+    ];
 
-    protected $casts = ['name' => 'string'];
-
-    public function getPersonsAttribute()
-    {
-        $persons = $this->Persons()->get();
-        return $persons ? $persons->toArray() : null;
-    }
-
-    public function getMaterialsAttribute()
-    {
-        $materials = $this->Materials()->get();
-        return $materials ? $materials->toArray() : null;
-    }
-
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Scopes
-    // —
-    // ——————————————————————————————————————————————————————
-
-    public function scopeWithoutProtected(Builder $query): Builder
-    {
-        $protectedTags = array_values(Config::getSettings('defaultTags'));
-
-        return $query->whereNotIn('name', $protectedTags);
-    }
-
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Getters
-    // —
-    // ——————————————————————————————————————————————————————
-
-    public function getIdsByNames(array $names): array
-    {
-        $tags = static::whereIn('name', $names)->get();
-        $ids = [];
-        foreach ($tags as $tag) {
-            $ids[] = $tag->id;
-        }
-        return $ids;
-    }
-
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Setters
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Setters
+    // -
+    // ------------------------------------------------------
 
     protected $fillable = ['name'];
 
-    public function bulkAdd(array $tagNames = []): array
-    {
-        $tags = array_map(
-            function ($tagName) {
-                $existingTag = static::where('name', $tagName)->first();
-                if ($existingTag) {
-                    return $existingTag;
-                }
-
-                $tag = new static(['name' => trim($tagName)]);
-                return tap($tag, function ($instance) {
-                    $instance->validate();
-                });
-            },
-            $tagNames
-        );
-
-        $this->getConnection()->transaction(function () use ($tags) {
-            try {
-                foreach ($tags as $tag) {
-                    if (!$tag->exists || $tag->isDirty()) {
-                        $tag->save();
-                    }
-                }
-            } catch (QueryException $e) {
-                throw (new ValidationException)
-                    ->setPDOValidationException($e);
-            }
-        });
-
-        return $tags;
-    }
-
     // ------------------------------------------------------
     // -
-    // -    Serialize
+    // -    Serialization
     // -
     // ------------------------------------------------------
 
-    protected function serialize(): array
+    public function serialize(): array
     {
-        $data = $this->baseSerialize();
+        $data = $this->attributesForSerialization();
 
         unset(
-            $data['createdAt'],
-            $data['updatedAt'],
-            $data['deletedAt'],
+            $data['created_at'],
+            $data['updated_at'],
+            $data['deleted_at'],
         );
 
         return $data;
-    }
-
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Utility Methods
-    // —
-    // ——————————————————————————————————————————————————————
-
-    public static function format(Collection $Tags): array
-    {
-        $tags = [];
-        foreach ($Tags as $Tag) {
-            $tags[] = [
-                'id'   => $Tag->id,
-                'name' => $Tag->name,
-            ];
-        }
-        return $tags;
     }
 }

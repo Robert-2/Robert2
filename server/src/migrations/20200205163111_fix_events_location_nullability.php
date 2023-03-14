@@ -1,9 +1,10 @@
 <?php
+declare(strict_types=1);
+
 use Phinx\Migration\AbstractMigration;
+use Robert2\API\Config\Config;
 
-use Robert2\API\Config as Config;
-
-class FixEventsLocationNullability extends AbstractMigration
+final class FixEventsLocationNullability extends AbstractMigration
 {
     public function up()
     {
@@ -12,7 +13,7 @@ class FixEventsLocationNullability extends AbstractMigration
             ->changeColumn('location', 'string', ['null' => true, 'length' => 64])
             ->update();
 
-        $prefix = Config\Config::getSettings('db')['prefix'];
+        $prefix = Config::getSettings('db')['prefix'];
         $this->execute(sprintf(
             "UPDATE `%sevents` SET `location` = NULL WHERE `location` = ''",
             $prefix
@@ -21,7 +22,7 @@ class FixEventsLocationNullability extends AbstractMigration
 
     public function down()
     {
-        $prefix = Config\Config::getSettings('db')['prefix'];
+        $prefix = Config::getSettings('db')['prefix'];
         $this->execute(sprintf(
             "UPDATE `%sevents` SET `location` = '' WHERE `location` IS NULL",
             $prefix
@@ -29,7 +30,10 @@ class FixEventsLocationNullability extends AbstractMigration
 
         $table = $this->table('events');
         $table
-            ->changeColumn('location', 'string', ['length' => 64])
+            ->changeColumn('location', 'string', [
+                'length' => 64,
+                'null' => false,
+            ])
             ->update();
     }
 }

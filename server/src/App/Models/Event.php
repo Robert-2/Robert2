@@ -3,52 +3,128 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
+use Adbar\Dot as DotArray;
+use Brick\Math\BigDecimal as Decimal;
+use Brick\Math\RoundingMode;
+use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\QueryException;
+use Illuminate\Support\Collection as CoreCollection;
+use Respect\Validation\Validator as V;
 use Robert2\API\Config\Config;
-use Robert2\API\Errors\ValidationException;
+use Robert2\API\Contracts\PeriodInterface;
+use Robert2\API\Contracts\Serializable;
+use Robert2\API\Errors\Exception\ValidationException;
 use Robert2\API\Models\Traits\Cache;
+use Robert2\API\Models\Traits\Pdfable;
 use Robert2\API\Models\Traits\Serializer;
-use Robert2\API\Models\Traits\WithPdf;
-use Robert2\API\Validation\Validator as V;
-use Robert2\Lib\Domain\EventData;
+use Robert2\API\Models\Traits\SoftDeletable;
+use Robert2\API\Models\Traits\TransientAttributes;
+use Robert2\API\Services\I18n;
+use Robert2\Support\Collections\MaterialsCollection;
+use Robert2\Support\Str;
 use Symfony\Contracts\Cache\ItemInterface as CacheItemInterface;
 
 /**
- * Modèle Event.
+ * Événement.
  *
- * @method static Builder inPeriod(Builder $query, string|DateTime $start, string|DateTime|null $end)
+ * @property-read ?int $id
+ * @property int|null $user_id
+ * @property-read User|null $user
+ * @property string $title
+ * @property string|null $reference
+ * @property string|null $description
+ * @property string|null $location
+ * @property string $start_date
+ * @property string $end_date
+ * @property-read int $duration
+ * @property-read Decimal|null $degressive_rate
+ * @property Decimal|null $discount_rate
+ * @property-read Decimal|null $vat_rate
+ * @property-read Decimal|null $daily_total_without_discount
+ * @property-read Decimal|null $daily_total_discountable
+ * @property-read Decimal|null $daily_total_discount
+ * @property-read Decimal|null $daily_total_without_taxes
+ * @property-read Decimal|null $daily_total_taxes
+ * @property-read Decimal|null $daily_total_with_taxes
+ * @property-read Decimal|null $total_without_taxes
+ * @property-read Decimal|null $total_taxes
+ * @property-read Decimal|null $total_with_taxes
+ * @property-read Decimal $total_replacement
+ * @property-read string $currency
+ * @property bool $is_confirmed
+ * @property bool $is_archived
+ * @property bool $is_billable
+ * @property bool $is_return_inventory_done
+ * @property-read bool|null $has_missing_materials
+ * @property-read bool|null $has_not_returned_materials
+ * @property-read int[] $parks
+ * @property-read Carbon $created_at
+ * @property-read Carbon|null $updated_at
+ * @property-read Carbon|null $deleted_at
+ *
+ * @property-read Collection|EventTechnician[] $technicians
+ * @property-read Collection|Beneficiary[] $beneficiaries
+ * @property-read Collection|Material[] $materials
+ * @property-read Collection|Estimate[] $estimates
+ * @property-read Collection|Invoice[] $invoices
+ *
+ * @method static Builder|static inPeriod(PeriodInterface $period)
+ * @method static Builder|static inPeriod(string|Carbon $start, string|Carbon|null $end)
+ * @method static Builder|static inPeriod(string|Carbon|PeriodInterface $start, string|Carbon|null $end = null)
+ * @method static Builder|static search(string $term)
+ * @method static Builder|static notReturned(Carbon|PeriodInterface $dateOrPeriod)
  */
-class Event extends BaseModel
+final class Event extends BaseModel implements Serializable, PeriodInterface
 {
     use Serializer;
-    use SoftDeletes;
-    use WithPdf;
+    use SoftDeletable;
+    use Pdfable;
     use Cache;
+    use TransientAttributes;
 
-    public $__cachedConcurrentEvents = null;
+    /** L'identifiant unique de type de booking. */
+    public const TYPE = 'event';
+
+    // - Types de sérialisation.
+    public const SERIALIZE_DEFAULT = 'default';
+    public const SERIALIZE_BOOKING = 'booking';
+    public const SERIALIZE_DETAILS = 'details';
+
+    /**
+     * Cette variable peut être utilisée pour mettre en cache les bookables
+     * qui se déroulent en même temps que celui de l'instance courante.
+     *
+     * @var Collection|(Event)[]
+     */
+    public ?CoreCollection $__cachedConcurrentBookables = null;
+
+    protected const PDF_TEMPLATE = 'event-summary-default';
 
     protected $orderField = 'start_date';
 
     protected $allowedSearchFields = ['title', 'start_date', 'end_date', 'location'];
     protected $searchField = 'title';
 
+    protected $attributes = [
+        'is_archived' => false,
+        'is_return_inventory_done' => false,
+    ];
+
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
 
-        $this->pdfTemplate = 'event-summary-default';
-
         $this->validation = [
-            'user_id' => V::optional(V::numeric()),
+            'user_id' => V::optional(V::numericVal()),
             'title' => V::notEmpty()->length(2, 191),
-            'reference' => V::callback([$this, 'checkReference']),
-            'start_date' => V::notEmpty()->date(),
-            'end_date' => V::callback([$this, 'checkEndDate']),
+            'reference' => V::custom([$this, 'checkReference']),
+            'start_date' => V::notEmpty()->dateTime(),
+            'end_date' => V::custom([$this, 'checkEndDate']),
             'is_confirmed' => V::notOptional()->boolType(),
-            'is_archived' => V::callback([$this, 'checkIsArchived']),
+            'is_archived' => V::custom([$this, 'checkIsArchived']),
             'is_billable' => V::optional(V::boolType()),
             'is_return_inventory_done' => V::optional(V::boolType()),
         ];
@@ -62,10 +138,9 @@ class Event extends BaseModel
 
     public function checkReference($value)
     {
-        V::oneOf(
-            V::nullType(),
-            V::alnum('.,-/_ ')->length(1, 64)
-        )->check($value);
+        V::create()
+            ->nullable(V::alnum('.,-/_ ')->length(1, 64))
+            ->check($value);
 
         if (!$value) {
             return true;
@@ -85,23 +160,25 @@ class Event extends BaseModel
 
     public function checkEndDate($value)
     {
-        $dateChecker = V::notEmpty()->date();
+        $dateChecker = V::notEmpty()->dateTime();
         if (!$dateChecker->validate($value)) {
-            return false;
+            return 'invalid-date';
         }
 
         if (!$dateChecker->validate($this->start_date)) {
             return true;
         }
 
-        $startDate = new \DateTime($this->start_date);
-        $endDate = new \DateTime($this->end_date);
+        $startDate = new Carbon($this->start_date);
+        $endDate = new Carbon($this->end_date);
 
         return $startDate < $endDate ?: 'end-date-must-be-later';
     }
 
     public function checkIsArchived($value)
     {
+        V::boolType()->check($value);
+
         if (!$value) {
             return true;
         }
@@ -111,98 +188,73 @@ class Event extends BaseModel
             return false;
         }
 
-        $dateChecker = V::notEmpty()->date();
-        if (!$dateChecker->validate($this->end_date)) {
+        $dateChecker = V::notEmpty()->dateTime();
+        if (!$dateChecker->validate($this->getAttributeFromArray('end_date'))) {
             return false;
         }
 
-        $now = new \DateTime();
-        $endDate = new \DateTime($this->end_date);
-        $isPastAndInventoryDone = $endDate < $now && (bool)$this->is_return_inventory_done;
+        $isPastAndInventoryDone = (
+            (new Carbon($this->getAttributeFromArray('end_date'))) < Carbon::now()
+            && $this->is_return_inventory_done
+        );
 
         return $isPastAndInventoryDone ?: 'event-cannot-be-archived';
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Relations
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Relations
+    // -
+    // ------------------------------------------------------
 
-    public function User()
+    // TODO: Renommer ça en `author` (et la clé dans la table aussi (`author_id`))
+    public function user()
     {
-        return $this->belongsTo(User::class)
-            ->select(['users.id', 'pseudo', 'email', 'group_id']);
+        return $this->belongsTo(User::class);
     }
 
-    public function Technicians()
+    public function technicians()
     {
         return $this->hasMany(EventTechnician::class, 'event_id')
             ->orderBy('start_time');
     }
 
-    public function Beneficiaries()
+    public function beneficiaries()
     {
-        return $this->belongsToMany(Person::class, 'event_beneficiaries')
-            ->select([
-                'persons.id',
-                'first_name',
-                'last_name',
-                'reference',
-                'email',
-                'phone',
-                'company_id',
-                'street',
-                'postal_code',
-                'locality',
-            ])
-            ->orderBy('last_name');
+        return $this->belongsToMany(Beneficiary::class, 'event_beneficiaries')
+            ->orderByPivot('id');
     }
 
-    public function Materials()
+    public function materials()
     {
-        $fields = [
-            'materials.id',
-            'name',
-            'description',
-            'reference',
-            'is_unitary',
-            'park_id',
-            'category_id',
-            'sub_category_id',
-            'rental_price',
-            'stock_quantity',
-            'out_of_order_quantity',
-            'replacement_price',
-            'is_hidden_on_bill',
-            'is_discountable',
-        ];
-
         return $this->belongsToMany(Material::class, 'event_materials')
             ->using(EventMaterial::class)
-            ->withPivot('id', 'quantity', 'quantity_returned', 'quantity_broken')
-            ->select($fields);
+            ->withPivot(
+                'id',
+                'quantity',
+                'quantity_returned',
+                'quantity_returned_broken'
+            )
+            ->orderByPivot('id');
     }
 
-    public function Bills()
+    public function invoices()
     {
-        return $this->hasMany(Bill::class)
-            ->select(['bills.id', 'number', 'date', 'discount_rate', 'due_amount'])
+        return $this->morphMany(Invoice::class, 'booking')
             ->orderBy('date', 'desc');
     }
 
-    public function Estimates()
+    public function estimates()
     {
-        return $this->hasMany(Estimate::class)
-            ->select(['estimates.id', 'date', 'discount_rate', 'due_amount'])
+        return $this->morphMany(Estimate::class, 'booking')
             ->orderBy('date', 'desc');
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Mutators
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Mutators
+    // -
+    // ------------------------------------------------------
 
     protected $casts = [
         'user_id' => 'integer',
@@ -218,34 +270,227 @@ class Event extends BaseModel
         'is_return_inventory_done' => 'boolean',
     ];
 
-    public function getUserAttribute()
+    public function getBeneficiariesAttribute()
     {
-        $user = $this->User()->first();
-        return $user ? $user->toArray() : null;
+        return $this->getRelationValue('beneficiaries')
+            ->sortBy('last_name')
+            ->values();
     }
 
     public function getTechniciansAttribute()
     {
-        $technicians = $this->Technicians()->get();
-        return $technicians ? $technicians->toArray() : null;
+        return $this->getRelationValue('technicians');
     }
 
-    public function getBeneficiariesAttribute()
+    public function getUserAttribute()
     {
-        $beneficiaries = $this->Beneficiaries()->get();
-        return $beneficiaries ? $beneficiaries->toArray() : null;
+        return $this->getRelationValue('user');
     }
 
     public function getMaterialsAttribute()
     {
-        $materials = $this->Materials()->get();
-        return $materials ? $materials->toArray() : null;
+        return $this->getRelationValue('materials');
     }
 
-    public function getBillsAttribute()
+    public function getEstimatesAttribute()
     {
-        $bills = $this->Bills()->get();
-        return $bills ? $bills->toArray() : null;
+        return $this->getRelationValue('estimates');
+    }
+
+    public function getInvoicesAttribute()
+    {
+        return $this->getRelationValue('invoices');
+    }
+
+    public function getDurationAttribute(): int
+    {
+        $startDate = $this->getStartDate();
+        $endDate = $this->getEndDate();
+        if (!$startDate || !$endDate || $endDate < $startDate) {
+            throw new \RuntimeException('Wrong reservation dates.');
+        }
+
+        $diff = $startDate->diff($endDate);
+        return (int) $diff->format('%a') + 1;
+    }
+
+    public function getDegressiveRateAttribute(): ?Decimal
+    {
+        if (!$this->is_billable) {
+            return null;
+        }
+
+        $result = null;
+        $jsFunction = Config::getSettings('degressiveRateFunction');
+        if (!empty($jsFunction) && str_contains($jsFunction, 'daysCount')) {
+            $function = preg_replace('/daysCount/', (string) $this->duration, $jsFunction);
+            eval(sprintf('$result = %s;', $function)); // phpcs:ignore Squiz.PHP.Eval
+        }
+
+        return Decimal::of($result && is_numeric($result) ? $result : $this->duration)
+            ->toScale(2, RoundingMode::UNNECESSARY);
+    }
+
+    public function getDiscountRateAttribute(): ?Decimal
+    {
+        if (!$this->is_billable) {
+            return null;
+        }
+        return $this->getTransientAttribute('discount_rate', Decimal::zero());
+    }
+
+    public function getVatRateAttribute(): ?Decimal
+    {
+        if (!$this->is_billable) {
+            return null;
+        }
+
+        return Decimal::of(Config::getSettings('companyData')['vatRate'])
+            ->toScale(2, RoundingMode::UNNECESSARY);
+    }
+
+    //
+    // - Daily totals.
+    //
+
+    public function getDailyTotalWithoutDiscountAttribute(): ?Decimal
+    {
+        if (!$this->is_billable) {
+            return null;
+        }
+
+        return $this->materials->pluck('pivot')
+            ->reduce(
+                fn (Decimal $currentTotal, EventMaterial $material) => (
+                    $currentTotal->plus($material->total_price)
+                ),
+                Decimal::zero()
+            )
+            ->toScale(2, RoundingMode::UNNECESSARY);
+    }
+
+    public function getDailyTotalDiscountableAttribute(): ?Decimal
+    {
+        if (!$this->is_billable) {
+            return null;
+        }
+
+        return $this->materials->pluck('pivot')
+            ->reduce(
+                fn (Decimal $currentTotal, EventMaterial $material) => (
+                    $material->is_discountable
+                        ? $currentTotal->plus($material->total_price)
+                        : $currentTotal
+                ),
+                Decimal::zero()
+            )
+            ->toScale(2, RoundingMode::UNNECESSARY);
+    }
+
+    public function getDailyTotalDiscountAttribute(): ?Decimal
+    {
+        if (!$this->is_billable) {
+            return null;
+        }
+
+        return $this->daily_total_discountable
+            ->multipliedBy($this->discount_rate->dividedBy(100, 6))
+            // @see https://www.ibm.com/docs/en/order-management-sw/9.2.1?topic=rounding-price
+            // @see https://wiki.dolibarr.org/index.php?title=VAT_setup,_calculation_and_rounding_rules
+            ->toScale(2, RoundingMode::HALF_UP);
+    }
+
+    public function getDailyTotalWithoutTaxesAttribute(): ?Decimal
+    {
+        if (!$this->is_billable) {
+            return null;
+        }
+
+        return $this->daily_total_without_discount
+            ->minus($this->daily_total_discount)
+            ->toScale(2, RoundingMode::UNNECESSARY);
+    }
+
+    public function getDailyTotalTaxesAttribute(): ?Decimal
+    {
+        if (!$this->is_billable) {
+            return null;
+        }
+
+        return $this->daily_total_without_taxes
+            ->multipliedBy($this->vat_rate->dividedBy(100, 4))
+            // @see https://www.ibm.com/docs/en/order-management-sw/9.2.1?topic=rounding-price
+            // @see https://wiki.dolibarr.org/index.php?title=VAT_setup,_calculation_and_rounding_rules
+            ->toScale(2, RoundingMode::HALF_UP);
+    }
+
+    public function getDailyTotalWithTaxesAttribute(): ?Decimal
+    {
+        if (!$this->is_billable) {
+            return null;
+        }
+
+        return $this->daily_total_without_taxes
+            ->plus($this->daily_total_taxes)
+            ->toScale(2, RoundingMode::UNNECESSARY);
+    }
+
+    //
+    // - Totals.
+    //
+
+    public function getTotalWithoutTaxesAttribute(): ?Decimal
+    {
+        if (!$this->is_billable) {
+            return null;
+        }
+
+        return $this->daily_total_without_taxes
+            ->multipliedBy($this->degressive_rate)
+            // @see https://www.ibm.com/docs/en/order-management-sw/9.2.1?topic=rounding-price
+            // @see https://wiki.dolibarr.org/index.php?title=VAT_setup,_calculation_and_rounding_rules
+            ->toScale(2, RoundingMode::HALF_UP);
+    }
+
+    public function getTotalTaxesAttribute(): ?Decimal
+    {
+        if (!$this->is_billable) {
+            return null;
+        }
+
+        return $this->total_without_taxes
+            ->multipliedBy($this->vat_rate->dividedBy(100, 4))
+            // @see https://www.ibm.com/docs/en/order-management-sw/9.2.1?topic=rounding-price
+            // @see https://wiki.dolibarr.org/index.php?title=VAT_setup,_calculation_and_rounding_rules
+            ->toScale(2, RoundingMode::HALF_UP);
+    }
+
+    public function getTotalWithTaxesAttribute(): ?Decimal
+    {
+        if (!$this->is_billable) {
+            return null;
+        }
+
+        return $this->total_without_taxes
+            ->plus($this->total_taxes)
+            ->toScale(2, RoundingMode::UNNECESSARY);
+    }
+
+    public function getTotalReplacementAttribute(): ?Decimal
+    {
+        return $this->materials->pluck('pivot')
+            ->reduce(
+                fn (Decimal $currentTotal, EventMaterial $material) => (
+                    $currentTotal->plus($material->total_replacement_price)
+                ),
+                Decimal::zero()
+            )
+            ->toScale(2, RoundingMode::UNNECESSARY);
+    }
+
+    public function getCurrencyAttribute(): string
+    {
+        return Config::getSettings('currency')['iso'];
     }
 
     public function getHasMissingMaterialsAttribute()
@@ -254,10 +499,9 @@ class Event extends BaseModel
             return null;
         }
 
-        $today = (new \DateTime())->setTime(0, 0, 0);
-        $eventEndDate = new \DateTime($this->end_date);
-
-        if ($eventEndDate < $today) {
+        // - Si l'événement est passé, la disponibilité du matériel n'est pas calculée.
+        $endDate = $this->getEndDate();
+        if ($endDate < Carbon::today()) {
             return null;
         }
 
@@ -267,7 +511,7 @@ class Event extends BaseModel
                 if ($cacheItem) {
                     $cacheItem->expiresAfter(new \DateInterval('P1D'));
                 }
-                return !empty($this->missingMaterials());
+                return $this->missingMaterials()->isNotEmpty();
             }
         );
     }
@@ -278,10 +522,8 @@ class Event extends BaseModel
             return null;
         }
 
-        $today = (new \DateTime())->setTime(0, 0, 0);
-        $eventEndDate = new \DateTime($this->end_date);
-
-        if ($eventEndDate >= $today || !$this->is_return_inventory_done) {
+        $endDate = $this->getEndDate();
+        if ($endDate >= Carbon::today() || !$this->is_return_inventory_done) {
             return null;
         }
 
@@ -292,12 +534,12 @@ class Event extends BaseModel
                     $cacheItem->expiresAfter(new \DateInterval('P1D'));
                 }
 
-                if (empty($this->materials)) {
+                if ($this->materials->isEmpty()) {
                     return false;
                 }
 
                 foreach ($this->materials as $material) {
-                    $missing = $material['pivot']['quantity'] - $material['pivot']['quantity_returned'];
+                    $missing = $material->pivot->quantity - $material->pivot->quantity_returned;
                     if ($missing > 0) {
                         return true;
                     }
@@ -308,120 +550,41 @@ class Event extends BaseModel
         );
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Getters
-    // —
-    // ——————————————————————————————————————————————————————
-
-    public function getAll(bool $withDeleted = false): Builder
+    public function getParksAttribute()
     {
-        $builder = static::inPeriod('first day of this year', 'last day of this year');
-
-        if ($withDeleted) {
-            $builder = $builder->onlyTrashed();
-        }
-
-        return $builder;
-    }
-
-    public function missingMaterials(): ?array
-    {
-        if (empty($this->materials)) {
-            return null;
-        }
-
-        $eventMaterials = Material::recalcQuantitiesForPeriod(
-            $this->materials,
-            $this->start_date,
-            $this->end_date,
-            $this->exists ? $this->id : null,
-            $this->__cachedConcurrentEvents
+        $parkIds = $this->materials->reduce(
+            function (array $parkIds, Material $material) {
+                $parkIds[] = $material->park_id;
+                return $parkIds;
+            },
+            [],
         );
-
-        $missingMaterials = [];
-        foreach ($eventMaterials as $material) {
-            $material['missing_quantity'] = $material['pivot']['quantity'] - $material['remaining_quantity'];
-            $material['missing_quantity'] = min($material['missing_quantity'], $material['pivot']['quantity']);
-            if ($material['missing_quantity'] > 0) {
-                $missingMaterials[] = $material;
-            }
-        }
-
-        return !empty($missingMaterials)
-            ? array_values($missingMaterials)
-            : null;
+        return array_values(array_unique($parkIds));
     }
 
-    public static function getParks(array $materials): array
+    // ------------------------------------------------------
+    // -
+    // -    Getters
+    // -
+    // ------------------------------------------------------
+
+    public function getStartDate(): Carbon
     {
-        $materialParks = array_map(function ($material) {
-            return $material['park_id'];
-        }, $materials);
-
-        return array_values(array_unique($materialParks));
+        return (new Carbon($this->start_date))
+            ->setTime(0, 0, 0, 0);
     }
 
-    public function getPdfContent(int $id): string
+    public function getEndDate(): Carbon
     {
-        $event = $this
-            ->with('Technicians')
-            ->with('Beneficiaries')
-            ->with('Materials')
-            ->findOrFail($id)
-            ->toArray();
-
-        $date = new \DateTime();
-
-        $categories = (new Category())->getAll()->get()->toArray();
-        $parks = (new Park())->getAll()->get()->toArray();
-
-        $EventData = new EventData($date, $event, 'summary', $event['user_id']);
-        $EventData->setCategories($categories)->setParks($parks);
-
-        $materialDisplayMode = Setting::getWithKey('eventSummary.materialDisplayMode');
-        if ($materialDisplayMode === 'categories') {
-            $materialList = $EventData->getMaterialByCategories(true);
-        } elseif ($materialDisplayMode === 'sub-categories') {
-            $materialList = $EventData->getMaterialBySubCategories(true);
-        } elseif ($materialDisplayMode === 'parks' && count($parks) > 1) {
-            $materialList = $EventData->getMaterialByParks(true);
-        } else {
-            $materialList = $EventData->getMaterialsFlat(true);
-        }
-
-        $data = [
-            'event' => $event,
-            'date' => $date,
-            'locale' => Config::getSettings('defaultLang'),
-            'company' => Config::getSettings('companyData'),
-            'currency' => Config::getSettings('currency')['iso'],
-            'currencyName' => Config::getSettings('currency')['name'],
-            'materialList' => $materialList,
-            'materialDisplayMode' => $materialDisplayMode,
-            'replacementAmount' => $EventData->getReplacementAmount(),
-            'technicians' => $EventData->getTechnicians(),
-            'customText' => Setting::getWithKey('eventSummary.customText'),
-            'showLegalNumbers' => Setting::getWithKey('eventSummary.showLegalNumbers'),
-        ];
-
-        $eventPdf = $this->_getPdfAsString($data);
-        if (!$eventPdf) {
-            $lastError = error_get_last();
-            throw new \RuntimeException(sprintf(
-                "Unable to create PDF file. Reason: %s",
-                $lastError['message']
-            ));
-        }
-
-        return $eventPdf;
+        return (new Carbon($this->end_date))
+            ->setTime(23, 59, 59, 59);
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Setters
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Setters
+    // -
+    // ------------------------------------------------------
 
     protected $fillable = [
         'user_id',
@@ -443,65 +606,42 @@ class Event extends BaseModel
         $this->attributes['reference'] = $value;
     }
 
-    public static function staticEdit($id = null, array $data = []): BaseModel
+    public function setDiscountRateAttribute(Decimal $value)
     {
-        if ($id && !static::staticExists($id)) {
-            throw (new ModelNotFoundException)
-                ->setModel(get_class(), $id);
+        if (!$this->is_billable) {
+            throw new \LogicException("Unable to set a discount rate on a non-billable event.");
         }
+        $this->setTransientAttribute('discount_rate', $value);
+    }
 
-        try {
-            $event = static::firstOrNew(compact('id'));
+    // ------------------------------------------------------
+    // -
+    // -    Entity methods
+    // -
+    // ------------------------------------------------------
 
-            $originalStartDate = $event->getOriginal('start_date');
-            $originalEndDate = $event->getOriginal('end_date');
+    public function missingMaterials(): Collection
+    {
+        $materials = Material::allWithAvailabilities($this->materials, $this, true);
+        return $materials
+            ->map(function ($material) {
+                $availableQuantity = $material->available_quantity;
 
-            $event->fill($data)->save();
+                $missingQuantity = $material->pivot->quantity - $availableQuantity;
+                $missingQuantity = min($missingQuantity, $material->pivot->quantity);
+                $material->pivot->quantity_missing = $missingQuantity;
 
-            if (isset($data['beneficiaries'])) {
-                if (!is_array($data['beneficiaries'])) {
-                    throw new \InvalidArgumentException("Key 'beneficiaries' must be an array.");
-                }
-                $event->syncBeneficiaries($data['beneficiaries']);
-            }
-
-            $technicians = null;
-            if (isset($data['technicians'])) {
-                if (!is_array($data['technicians'])) {
-                    throw new \InvalidArgumentException("Key 'technicians' must be an array.");
-                }
-                $technicians = $data['technicians'];
-            } elseif (!empty($originalStartDate) && (
-                $originalStartDate !== $event->start_date ||
-                $originalEndDate !== $event->end_date
-            )) {
-                $technicians = EventTechnician::getForNewDates(
-                    $event->technicians,
-                    new \DateTime($originalStartDate),
-                    ['start_date' => $event->start_date, 'end_date' => $event->end_date]
-                );
-            }
-            if ($technicians) {
-                $event->syncTechnicians($technicians);
-            }
-
-            if (isset($data['materials'])) {
-                if (!is_array($data['materials'])) {
-                    throw new \InvalidArgumentException("Key 'materials' must be an array.");
-                }
-                $event->syncMaterials($data['materials']);
-            }
-        } catch (QueryException $e) {
-            throw (new ValidationException)
-                ->setPDOValidationException($e);
-        }
-
-        return $event->refresh();
+                return $material;
+            })
+            ->filter(fn($material) => $material->pivot->quantity_missing > 0)
+            ->sortBy('name')
+            ->values();
     }
 
     public function syncBeneficiaries(array $beneficiariesIds)
     {
-        $this->Beneficiaries()->sync($beneficiariesIds);
+        $this->beneficiaries()->sync($beneficiariesIds);
+        $this->refresh();
     }
 
     public function syncTechnicians(array $techniciansData)
@@ -524,69 +664,75 @@ class Event extends BaseModel
         }
 
         if (!empty($errors)) {
-            throw (new ValidationException())
-                ->setValidationErrors($errors);
+            throw new ValidationException($errors);
         }
 
+        // FIXME: Transaction.
         EventTechnician::flushForEvent($this->id);
-        $this->Technicians()->saveMany($technicians);
+        $this->technicians()->saveMany($technicians);
+        $this->refresh();
     }
 
     public function syncMaterials(array $materialsData)
     {
         $materials = [];
-        foreach ($materialsData as $material) {
-            if ((int)$material['quantity'] <= 0) {
+        foreach ($materialsData as $materialData) {
+            if ((int) $materialData['quantity'] <= 0) {
                 continue;
             }
 
-            $materials[$material['id']] = [
-                'quantity' => $material['quantity']
-            ];
+            try {
+                $material = Material::findOrFail($materialData['id']);
+                $materials[$materialData['id']] = [
+                    'quantity' => $materialData['quantity'],
+                ];
+            } catch (ModelNotFoundException $e) {
+                throw new \InvalidArgumentException(
+                    "One or more materials added to the event do not exist."
+                );
+            }
         }
 
-        $this->Materials()->sync($materials);
+        $this->materials()->sync($materials);
+        $this->refresh();
     }
 
-    public static function duplicate(int $originalId, array $newEventData): BaseModel
+    public function duplicate(array $newEventData, ?User $author = null)
     {
-        $originalEvent = static::findOrFail($originalId);
-
         $newEvent = new self([
-            'user_id' => $newEventData['user_id'] ?? null,
-            'title' => $originalEvent->title,
-            'description' => $originalEvent->description,
+            'user_id' => $author?->id,
+            'title' => $this->title,
+            'description' => $this->description,
             'start_date' => $newEventData['start_date'] ?? null,
             'end_date' => $newEventData['end_date'] ?? null,
             'is_confirmed' => false,
             'is_archived' => false,
-            'location' => $originalEvent->location,
-            'is_billable' => $originalEvent->is_billable,
+            'location' => $this->location,
+            'is_billable' => $this->is_billable,
             'is_return_inventory_done' => false,
         ]);
         $newEvent->validate();
 
-        $beneficiaries = array_column($originalEvent->beneficiaries, 'id');
-
+        $beneficiaries = $this->beneficiaries->pluck('id')->all();
         $technicians = EventTechnician::getForNewDates(
-            $originalEvent->technicians,
-            new \DateTime($originalEvent->start_date),
+            $this->technicians,
+            new \DateTime($this->start_date),
             $newEventData
         );
 
-        $materials = array_map(function ($material) {
-            return [
-                'id' => $material['id'],
-                'quantity' => $material['pivot']['quantity'],
-            ];
-        }, $originalEvent->materials);
+        $materials = $this->materials
+            ->map(fn($material) => [
+                'id' => $material->id,
+                'quantity' => $material->pivot->quantity,
+            ])
+            ->all();
 
         $newEvent->save();
         $newEvent->syncBeneficiaries($beneficiaries);
         $newEvent->syncTechnicians($technicians);
         $newEvent->syncMaterials($materials);
 
-        return $newEvent;
+        return $newEvent->refresh();
     }
 
     // ------------------------------------------------------
@@ -596,31 +742,301 @@ class Event extends BaseModel
     // ------------------------------------------------------
 
     /**
-     * @param Builder              $query
-     * @param string|DateTime      $start
-     * @param null|string|DateTime $end (optional)
+     * @param Builder $query
+     * @param string|Carbon|PeriodInterface $start
+     * @param null|string|Carbon $end (optional)
      *
      * @return Builder
      */
     public function scopeInPeriod(Builder $query, $start, $end = null): Builder
     {
+        if ($start instanceof PeriodInterface) {
+            $end = $start->getEndDate();
+            $start = $start->getStartDate();
+        }
+
         // - Si pas de date de fin: Période d'une journée.
         $end = $end ?? $start;
 
-        if (!$start instanceof \DateTime) {
-            $start = new \DateTime($start);
+        if (!$start instanceof Carbon) {
+            $start = new Carbon($start);
         }
-        if (!$end instanceof \DateTime) {
-            $end = new \DateTime($end);
+        if (!$end instanceof Carbon) {
+            $end = new Carbon($end);
         }
 
         return $query
             ->orderBy('start_date', 'asc')
-            ->where(function (Builder $query) use ($start, $end) {
-                $query->where([
-                    ['end_date', '>=', $start->format('Y-m-d 00:00:00')],
-                    ['start_date', '<=', $end->format('Y-m-d 23:59:59')],
-                ]);
+            ->where([
+                ['end_date', '>=', $start->format('Y-m-d 00:00:00')],
+                ['start_date', '<=', $end->format('Y-m-d 23:59:59')],
+            ]);
+    }
+
+    public function scopeSearch(Builder $query, string $term): Builder
+    {
+        $trimmedTerm = trim($term);
+        if (strlen($trimmedTerm) < 2) {
+            throw new \InvalidArgumentException("The term must contain more than two characters.");
+        }
+
+        $safeTerm = sprintf('%%%s%%', addcslashes($trimmedTerm, '%_'));
+        return $query->where('title', 'LIKE', $safeTerm);
+    }
+
+    /**
+     * @param Builder $query
+     * @param Carbon|PeriodInterface $dateOrPeriod
+     *
+     * @return Builder
+     */
+    public function scopeNotReturned(Builder $query, Carbon|PeriodInterface $dateOrPeriod): Builder
+    {
+        $endDate = $dateOrPeriod;
+        $minDate = null;
+        if ($dateOrPeriod instanceof PeriodInterface) {
+            $endDate = $dateOrPeriod->getEndDate();
+            $minDate = $dateOrPeriod->getStartDate();
+        }
+
+        $query = $query->where('is_return_inventory_done', false)
+            ->where('is_archived', false)
+            ->whereHas('materials', function (Builder $query) {
+                $query->whereColumn('quantity', '>', 'quantity_returned');
             });
+
+        if ($minDate) {
+            $query = $query->whereDate('end_date', '<=', $endDate)
+                ->whereDate('end_date', '>', $minDate);
+        } else {
+            $query = $query->whereDate('end_date', '=', $endDate);
+        }
+
+        return $query;
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    PDF Related
+    // -
+    // ------------------------------------------------------
+
+    protected function getPdfName(I18n $i18n): string
+    {
+        $company = Config::getSettings('companyData');
+        return Str::slug(implode('-', [
+            $i18n->translate('release-sheet'),
+            $company['name'],
+            $this->title ?: $this->id,
+        ]));
+    }
+
+    protected function getPdfData(): array
+    {
+        $displayMode = Setting::getWithKey('eventSummary.materialDisplayMode');
+        $materials = new MaterialsCollection($this->materials);
+        switch ($displayMode) {
+            case 'categories':
+                $materials = $materials->byCategories();
+                break;
+            case 'sub-categories':
+                $materials = $materials->bySubCategories();
+                break;
+            case 'parks':
+                $materials = $materials->byParks();
+                break;
+            default:
+                break;
+        }
+
+        $technicians = [];
+        foreach ($this->technicians as $eventTechnician) {
+            $technician = $eventTechnician->technician;
+
+            if (!array_key_exists($technician->id, $technicians)) {
+                $technicians[$technician->id] = [
+                    'id' => $technician->id,
+                    'name' => $technician->full_name,
+                    'phone' => $technician->phone,
+                    'periods' => [],
+                ];
+            }
+
+            $startTime = Carbon::createFromFormat('Y-m-d H:i:s', $eventTechnician->start_time, 'UTC');
+            $endTime = Carbon::createFromFormat('Y-m-d H:i:s', $eventTechnician->end_time, 'UTC');
+
+            $technicians[$technician->id]['periods'][] = [
+                'from' => $startTime,
+                'to' => $endTime,
+                'position' => $eventTechnician->position,
+            ];
+        }
+
+        $rawData = (clone $this)
+            ->append(['materials', 'beneficiaries', 'technicians'])
+            ->toArray();
+
+        return [
+            'date' => CarbonImmutable::now(),
+            'event' => $rawData,
+            'beneficiaries' => $this->beneficiaries,
+            'company' => Config::getSettings('companyData'),
+            'currency' => Config::getSettings('currency')['iso'],
+            'currencyName' => Config::getSettings('currency')['name'],
+            'sortedMaterials' => $materials,
+            'materialDisplayMode' => $displayMode,
+            'replacementAmount' => $this->total_replacement,
+            'technicians' => array_values($technicians),
+            'customText' => Setting::getWithKey('eventSummary.customText'),
+            'showLegalNumbers' => Setting::getWithKey('eventSummary.showLegalNumbers'),
+        ];
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    "Repository" methods
+    // -
+    // ------------------------------------------------------
+
+    // TODO => Static.
+    public function getAll(bool $withDeleted = false): Builder
+    {
+        $builder = static::inPeriod(
+            'first day of January this year',
+            'last day of December this year',
+        );
+
+        if ($withDeleted) {
+            $builder = $builder->onlyTrashed();
+        }
+
+        return $builder;
+    }
+
+    public static function staticEdit($id = null, array $data = []): BaseModel
+    {
+        if ($id && !static::staticExists($id)) {
+            throw (new ModelNotFoundException)
+                ->setModel(self::class, $id);
+        }
+
+        $event = static::firstOrNew(compact('id'));
+
+        $originalStartDate = $event->getOriginal('start_date');
+        $originalEndDate = $event->getOriginal('end_date');
+
+        $event->fill($data)->save();
+
+        if (isset($data['beneficiaries'])) {
+            if (!is_array($data['beneficiaries'])) {
+                throw new \InvalidArgumentException("Key 'beneficiaries' must be an array.");
+            }
+            $event->syncBeneficiaries($data['beneficiaries']);
+        }
+
+        $technicians = null;
+        if (isset($data['technicians'])) {
+            if (!is_array($data['technicians'])) {
+                throw new \InvalidArgumentException("Key 'technicians' must be an array.");
+            }
+            $technicians = $data['technicians'];
+        } elseif (
+            !empty($originalStartDate) &&
+            (
+                $originalStartDate !== $event->start_date ||
+                $originalEndDate !== $event->end_date
+            )
+        ) {
+            $technicians = EventTechnician::getForNewDates(
+                $event->technicians,
+                new \DateTime($originalStartDate),
+                ['start_date' => $event->start_date, 'end_date' => $event->end_date]
+            );
+        }
+        if ($technicians) {
+            $event->syncTechnicians($technicians);
+        }
+
+        if (isset($data['materials'])) {
+            if (!is_array($data['materials'])) {
+                throw new \InvalidArgumentException("Key 'materials' must be an array.");
+            }
+            $event->syncMaterials($data['materials']);
+        }
+
+        return $event->refresh();
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Serialization
+    // -
+    // ------------------------------------------------------
+
+    public function serialize(string $format = self::SERIALIZE_DEFAULT): array
+    {
+        /** @var Event $event */
+        $event = tap(clone $this, function (Event $event) use ($format) {
+            if ($format === self::SERIALIZE_BOOKING) {
+                $event->append([
+                    'technicians',
+                    'beneficiaries',
+                    'has_missing_materials',
+                    'has_not_returned_materials',
+                    'parks',
+                ]);
+            }
+
+            if ($format === self::SERIALIZE_DETAILS) {
+                $event->append([
+                    'user',
+                    'beneficiaries',
+                    'technicians',
+                    'duration',
+                    'total_replacement',
+                    'currency',
+                    'materials',
+                    'parks',
+                    'has_missing_materials',
+                    'has_not_returned_materials',
+                ]);
+
+                if ($event->is_billable) {
+                    $event->append([
+                        'degressive_rate',
+                        'vat_rate',
+                        'discount_rate',
+                        'daily_total_without_discount',
+                        'daily_total_discountable',
+                        'daily_total_discount',
+                        'daily_total_without_taxes',
+                        'daily_total_taxes',
+                        'daily_total_with_taxes',
+                        'total_without_taxes',
+                        'total_taxes',
+                        'total_with_taxes',
+                        'estimates',
+                        'invoices',
+                    ]);
+                }
+            }
+        });
+
+        $data = new DotArray($event->attributesForSerialization());
+
+        // - On ajoute manuellement le matériel car on veut les données du pivot avec.
+        if ($event->hasAppended('materials')) {
+            $data['materials'] = $event->materials
+                ->map(fn($material) => (
+                    array_merge($material->serialize(), [
+                        'pivot' => $material->pivot->attributesToArray(),
+                    ])
+                ))
+                ->all();
+        }
+
+        return $data
+            ->delete(['deleted_at'])
+            ->all();
     }
 }

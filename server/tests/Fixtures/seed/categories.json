@@ -1,18 +1,26 @@
 [
     {
-        "id"   : 1,
-        "name" : "sound"
+        "id": 1,
+        "name": "Son",
+        "created_at": "2021-01-01 10:30:00",
+        "updated_at": "2021-01-01 10:30:00"
     },
     {
-        "id"   : 2,
-        "name" : "light"
+        "id": 2,
+        "name": "Lumière",
+        "created_at": "2021-02-12 11:01:15",
+        "updated_at": "2021-02-12 11:02:12"
     },
     {
-        "id"   : 3,
-        "name" : "transport"
+        "id": 3,
+        "name": "Transport",
+        "created_at": "2021-02-12 11:03:02",
+        "updated_at": "2021-02-12 11:03:45"
     },
     {
-        "id"   : 4,
-        "name" : "Décors"
+        "id": 4,
+        "name": "Décors",
+        "created_at": "2021-02-12 11:30:12",
+        "updated_at": "2021-02-12 11:30:12"
     }
 ]

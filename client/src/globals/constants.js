@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-const APP_NAME = 'Robert2';
+const APP_NAME = 'Loxya (Robert2)';
 
 const DATE_DB_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 const DEBOUNCE_WAIT = 500; // - in milliseconds

@@ -5,7 +5,7 @@ const getRuntimeVm = () => {
     const instance = getCurrentInstance();
 
     const vm = instance?.proxy || instance;
-    invariant(vm, 'Impossible de récuperer l\'instance racine.');
+    invariant(vm, 'Impossible de récupérer l\'instance racine.');
 
     return vm;
 };

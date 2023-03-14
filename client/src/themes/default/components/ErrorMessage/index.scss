@@ -1,0 +1,11 @@
+@use '~@/themes/default/style/globals';
+
+.ErrorMessage {
+    color: globals.$text-danger-color;
+    font-weight: 600;
+    text-align: center;
+
+    &__icon {
+        margin-right: 0.5rem;
+    }
+}

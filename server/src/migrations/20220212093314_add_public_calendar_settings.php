@@ -2,8 +2,8 @@
 declare(strict_types=1);
 
 use Phinx\Migration\AbstractMigration;
-use Robert2\API\Config\Config as Config;
-use Illuminate\Support\Str;
+use Robert2\API\Config\Config;
+use Robert2\Support\Str;
 
 final class AddPublicCalendarSettings extends AbstractMigration
 {
@@ -16,7 +16,7 @@ final class AddPublicCalendarSettings extends AbstractMigration
             ],
             [
                 'key' => 'calendar.public.uuid',
-                'value' => Str::uuid(),
+                'value' => (string) Str::uuid(),
             ],
         ];
         $this->table('settings')->insert($data)->save();

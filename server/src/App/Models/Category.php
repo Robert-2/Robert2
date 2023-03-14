@@ -3,20 +3,36 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
-use Illuminate\Database\QueryException;
-use Robert2\API\Validation\Validator as V;
-use Robert2\API\Errors\ValidationException;
+use Illuminate\Database\Eloquent\Collection;
+use Robert2\API\Contracts\Serializable;
+use Respect\Validation\Validator as V;
+use Robert2\API\Models\Traits\Serializer;
 
-class Category extends BaseModel
+/**
+ * Catégorie de matériel.
+ *
+ * @property-read ?int $id
+ * @property string $name
+ * @property-read bool $has_sub_categories
+ * @property-read Carbon $created_at
+ * @property-read Carbon|null $updated_at
+ *
+ * @property-read Collection|SubCategory[] $subCategories
+ * @property-read Collection|SubCategory[] $sub_categories
+ * @property-read Collection|Material[] $materials
+ * @property-read Collection|Attribute[] $attributes
+ * @property-read Collection|User[] $approvers
+ */
+final class Category extends BaseModel implements Serializable
 {
-    protected $searchField = 'name';
+    use Serializer;
 
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
 
         $this->validation = [
-            'name' => V::callback([$this, 'checkName']),
+            'name' => V::custom([$this, 'checkName']),
         ];
     }
 
@@ -44,97 +60,70 @@ class Category extends BaseModel
         return true;
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Relations
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Relations
+    // -
+    // ------------------------------------------------------
 
-    protected $appends = [
-        'sub_categories'
-    ];
-
-    public function SubCategories()
+    public function subCategories()
     {
         return $this->hasMany(SubCategory::class)
-            ->select(['id', 'name', 'category_id'])
             ->orderBy('name');
     }
 
-    public function Materials()
+    public function materials()
     {
-        return $this->hasMany(Material::class)->select([
-            'id',
-            'name',
-            'description',
-            'reference',
-            'park_id',
-            'rental_price',
-            'stock_quantity',
-            'out_of_order_quantity',
-            'replacement_price',
-        ]);
+        return $this->hasMany(Material::class)
+            ->orderBy('id');
     }
 
-    public function Attributes()
+    public function attributes()
     {
         return $this->belongsToMany(Attribute::class, 'attribute_categories')
-            ->using(AttributeCategoriesPivot::class)
-            ->select(['attributes.id', 'attributes.name', 'attributes.type', 'attributes.unit']);
+            ->select([
+                'attributes.id',
+                'attributes.name',
+                'attributes.type',
+                'attributes.unit',
+            ]);
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Mutators
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Mutators
+    // -
+    // ------------------------------------------------------
 
-    protected $casts = ['name' => 'string'];
+    protected $casts = [
+        'name' => 'string',
+    ];
 
     public function getSubCategoriesAttribute()
     {
-        return $this->SubCategories()->get()->toArray();
+        return $this->getRelationValue('subCategories');
     }
 
-    public function getMaterialsAttribute()
+    public function getHasSubCategoriesAttribute(): bool
     {
-        return $this->Materials()->get()->toArray();
+        return $this->subCategories->isNotEmpty();
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Getters
-    // —
-    // ——————————————————————————————————————————————————————
-
-    public function getIdsByNames(array $names): array
-    {
-        $categories = static::whereIn('name', $names)->get();
-        $ids = [];
-        foreach ($categories as $category) {
-            $ids[] = $category->id;
-        }
-        return $ids;
-    }
-
-    public static function hasSubCategories(int $id): bool
-    {
-        $category = static::find($id);
-        if (!$category) {
-            return false;
-        }
-        return count($category['sub_categories']) > 0;
-    }
-
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Setters
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Setters
+    // -
+    // ------------------------------------------------------
 
     protected $fillable = ['name'];
 
-    public function bulkAdd(array $categoriesNames = []): array
+    // ------------------------------------------------------
+    // -
+    // -    "Repository" methods
+    // -
+    // ------------------------------------------------------
+
+    public static function bulkAdd(array $categoriesNames = []): array
     {
         $categories = array_map(
             function ($categoryName) {
@@ -152,25 +141,31 @@ class Category extends BaseModel
         );
 
         return dbTransaction(function () use ($categories) {
-            try {
-                foreach ($categories as $category) {
-                    if (!$category->exists || $category->isDirty()) {
-                        $category->save();
-                    }
+            foreach ($categories as $category) {
+                if (!$category->exists || $category->isDirty()) {
+                    $category->save();
+                    $category->refresh();
                 }
-            } catch (QueryException $e) {
-                throw (new ValidationException)
-                    ->setPDOValidationException($e);
             }
-
             return $categories;
         });
     }
 
-    public function remove($id, array $options = []): ?BaseModel
+    // ------------------------------------------------------
+    // -
+    // -    Serialization
+    // -
+    // ------------------------------------------------------
+
+    public function serialize(): array
     {
-        $category = static::findOrFail($id);
-        $category->delete();
-        return null;
+        $data = $this->attributesForSerialization();
+
+        unset(
+            $data['created_at'],
+            $data['updated_at'],
+        );
+
+        return $data;
     }
 }

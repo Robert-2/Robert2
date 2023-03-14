@@ -1,0 +1,34 @@
+@use './variables' as *;
+@use '~@/themes/default/style/globals';
+
+.Link {
+    //
+    // - Custom properties
+    //
+
+    --color: var(--Link--color, #{$color});
+    --hover-color: var(--Link--hover-color, #{$hover-color});
+
+    //
+    // - Règles
+    //
+
+    @extend %reset-button;
+    @extend %reset-link;
+
+    color: var(--color);
+    touch-action: auto;
+    cursor: pointer;
+
+    &:hover {
+        color: var(--hover-color);
+    }
+
+    //
+    // - Icône
+    //
+
+    &__icon + &__content {
+        margin-left: $icon-margin;
+    }
+}

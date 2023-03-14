@@ -1,0 +1,30 @@
+edit: Modify event
+archive: Archive event
+unarchive: Unarchive event
+
+#
+# - Tabs
+#
+
+infos:
+    beneficiary-phone: "Phone:"
+    beneficiary-email: "Email:"
+
+materials:
+    problems-on-returned-materials: Problems on returned materials
+    all-material-returned: All materials were returned for this event.
+    view-return-inventory: View the return inventory in details
+
+    not-returned-material-count:
+        - "{returned} returned on {out}! Missing {missing}."
+        - "{returned} returned on {out}! Missing {missing}."
+
+    broken-material-count:
+        - "{broken} returned broken!"
+        - "{broken} returned broken!"
+
+estimates:
+    create-new-help: You can create another estimate, if the event has changed, or if you want another discount rate.
+
+invoice:
+    regenerate-help: You can regenerate the invoice to change discount, or if the event has been modified.

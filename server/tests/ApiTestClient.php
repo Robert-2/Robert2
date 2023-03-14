@@ -5,7 +5,8 @@ namespace Robert2\Tests;
 
 use Psr\Http\Message\StreamInterface as Body;
 use Robert2\API\App;
-use Slim\Http\ServerRequest;
+use Robert2\API\Http\Request;
+use Slim\Http\Response;
 use Slim\Psr7\Factory\ServerRequestFactory;
 
 /**
@@ -21,14 +22,11 @@ use Slim\Psr7\Factory\ServerRequestFactory;
  */
 class ApiTestClient
 {
-    /** @var App */
-    public $app;
+    public App $app;
 
-    /** @var ServerRequest */
-    public $request;
+    public Request $request;
 
-    /** @var \Slim\Http\Response; */
-    public $response;
+    public Response $response;
 
     public function __construct(App $app)
     {
@@ -54,7 +52,7 @@ class ApiTestClient
     {
         // - Request
         $method = strtoupper($method);
-        $request = new ServerRequest((new ServerRequestFactory())->createServerRequest($method, $uri));
+        $request = new Request((new ServerRequestFactory())->createServerRequest($method, $uri));
         if ($data !== null) {
             if ($method === 'GET') {
                 $request = $request->withQueryParams($data);

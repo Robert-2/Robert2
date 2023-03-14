@@ -1,46 +1,79 @@
-import config from '@/globals/config';
 import requester from '@/globals/requester';
 
-import type { Person, PersonEdit } from './persons';
-import type { PaginatedData, PaginationParams } from './@types';
+import type { Company } from '@/stores/api/companies';
+import type { Country } from '@/stores/api/countries';
+import type { User } from '@/stores/api/users';
+import type { PaginatedData, ListingParams } from './@types';
 
 //
 // - Types
 //
 
-export type Beneficiary = Omit<Person, 'nickname'>;
-export type BeneficiaryEdit = Omit<PersonEdit, 'nickname'>;
+export type Beneficiary = {
+    id: number,
+    first_name: string,
+    full_name: string,
+    last_name: string,
+    reference: string | null,
+    email: string | null,
+    phone: string | null,
+    company_id: number | null,
+    company: Company | null,
+    street: string | null,
+    postal_code: string | null,
+    locality: string | null,
+    country_id: number | null,
+    country: Country | null,
+    note: string | null,
+    user_id: number | null,
+};
 
-type GetAllParams = PaginationParams & { deleted?: boolean };
+export type BeneficiaryDetails = Beneficiary & {
+    user: User | null,
+};
+
+export type BeneficiaryEdit = {
+    first_name: string,
+    last_name: string,
+    reference: string | null,
+    email: string | null,
+    phone: string | null,
+    company_id: number | null,
+    street: string | null,
+    postal_code: string | null,
+    locality: string | null,
+    country_id: number | null,
+    note: string | null,
+};
+
+type GetAllParams = ListingParams & { deleted?: boolean };
 
 //
 // - Fonctions
 //
 
-const all = async (params: GetAllParams): Promise<PaginatedData<Beneficiary[]>> => {
-    const _params = { ...params, tags: [config.beneficiaryTagName] };
-    return (await requester.get('/persons', { params: _params })).data;
-};
-
-const one = async (id: Beneficiary['id']): Promise<Beneficiary> => (
-    (await requester.get(`/persons/${id}`)).data
+const all = async (params: GetAllParams): Promise<PaginatedData<Beneficiary[]>> => (
+    (await requester.get('/beneficiaries', { params })).data
 );
 
-const create = async (data: BeneficiaryEdit): Promise<Beneficiary> => {
-    const _data = { ...data, tags: [config.beneficiaryTagName] };
-    return (await requester.post('/persons', _data)).data;
-};
-
-const update = async (id: Beneficiary['id'], data: BeneficiaryEdit): Promise<Beneficiary> => (
-    (await requester.put(`/persons/${id}`, data)).data
+const one = async (id: Beneficiary['id']): Promise<BeneficiaryDetails> => (
+    (await requester.get(`/beneficiaries/${id}`)).data
 );
 
-const restore = async (id: Beneficiary['id']): Promise<void> => {
-    await requester.put(`/persons/restore/${id}`);
-};
+const create = async (data: BeneficiaryEdit): Promise<BeneficiaryDetails> => (
+    (await requester.post('/beneficiaries', data)).data
+);
+
+const update = async (id: Beneficiary['id'], data: BeneficiaryEdit): Promise<BeneficiaryDetails> => (
+    (await requester.put(`/beneficiaries/${id}`, data)).data
+);
+
+const restore = async (id: Beneficiary['id']): Promise<BeneficiaryDetails> => (
+    (await requester.put(`/beneficiaries/restore/${id}`)).data
+);
 
 const remove = async (id: Beneficiary['id']): Promise<void> => {
-    await requester.delete(`/persons/${id}`);
+    await requester.delete(`/beneficiaries/${id}`);
 };
 
 export default { all, one, create, update, restore, remove };

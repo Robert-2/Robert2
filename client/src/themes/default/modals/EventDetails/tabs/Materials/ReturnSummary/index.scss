@@ -1,0 +1,25 @@
+@use '~@/themes/default/style/globals';
+@use 'sass:color';
+
+.EventDetailsReturnSummary {
+    margin-bottom: globals.$content-padding-large-horizontal;
+    padding-bottom: globals.$content-padding-large-vertical;
+    border-bottom: 1px solid globals.$divider-color;
+    text-align: center;
+
+    &__title {
+        color: globals.$text-danger-color;
+        font-size: 1.3rem;
+    }
+
+    &__all-ok {
+        margin-bottom: globals.$content-padding-large-horizontal;
+        color: globals.$text-success-color;
+        font-size: 1.1rem;
+    }
+
+    &__list {
+        padding: 0;
+        text-align: left;
+    }
+}

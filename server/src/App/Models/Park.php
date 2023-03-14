@@ -3,12 +3,41 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Robert2\API\Validation\Validator as V;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Robert2\API\Contracts\Serializable;
+use Robert2\API\Models\Traits\Serializer;
+use Respect\Validation\Validator as V;
+use Robert2\API\Models\Traits\SoftDeletable;
 
-class Park extends BaseModel
+/**
+ * Parc de matériel.
+ *
+ * @property-read ?int $id
+ * @property string $name
+ * @property string|null $street
+ * @property string|null $postal_code
+ * @property string|null $locality
+ * @property int|null $country_id
+ * @property-read Country|null $country
+ * @property string|null $opening_hours
+ * @property string|null $note
+ * @property-read int $total_items
+ * @property-read int $total_stock_quantity
+ * @property-read float $total_amount
+ * @property-read bool $has_ongoing_booking
+ * @property-read Collection|Material[] $materials
+ * @property-read Carbon $created_at
+ * @property-read Carbon $updated_at
+ * @property-read Carbon|null $deleted_at
+ *
+ * @method static Builder|static forUser(int $userId)
+ */
+final class Park extends BaseModel implements Serializable
 {
-    use SoftDeletes;
+    use Serializer;
+    use SoftDeletable;
 
     protected $orderField = 'name';
     protected $searchField = 'name';
@@ -18,13 +47,11 @@ class Park extends BaseModel
         parent::__construct($attributes);
 
         $this->validation = [
-            'name' => V::callback([$this, 'checkName']),
-            'person_id' => V::optional(V::numeric()),
-            'company_id' => V::optional(V::numeric()),
+            'name' => V::custom([$this, 'checkName']),
             'street' => V::optional(V::length(null, 191)),
             'postal_code' => V::optional(V::length(null, 10)),
             'locality' => V::optional(V::length(null, 191)),
-            'country_id' => V::optional(V::numeric()),
+            'country_id' => V::optional(V::numericVal()),
             'opening_hours' => V::optional(V::length(null, 255)),
         ];
     }
@@ -53,47 +80,35 @@ class Park extends BaseModel
         return true;
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Relations
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Relations
+    // -
+    // ------------------------------------------------------
+
+    public function materials()
+    {
+        return $this->hasMany(Material::class)
+            ->orderBy('id');
+    }
+
+    public function country()
+    {
+        return $this->belongsTo(Country::class);
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Mutators
+    // -
+    // ------------------------------------------------------
 
     protected $appends = [
         'total_items',
         'total_stock_quantity',
     ];
 
-    public function Materials()
-    {
-        return $this->hasMany(Material::class);
-    }
-
-    public function Person()
-    {
-        return $this->belongsTo(Person::class);
-    }
-
-    public function Company()
-    {
-        return $this->belongsTo(Company::class);
-    }
-
-    public function Country()
-    {
-        return $this->belongsTo(Country::class)
-            ->select(['id', 'name', 'code']);
-    }
-
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Mutators
-    // —
-    // ——————————————————————————————————————————————————————
-
     protected $casts = [
-        'person_id' => 'integer',
-        'company_id' => 'integer',
         'name' => 'string',
         'street' => 'string',
         'postal_code' => 'string',
@@ -103,24 +118,22 @@ class Park extends BaseModel
         'note' => 'string',
     ];
 
-    public function getMaterialsAttribute()
-    {
-        $materials = $this->Materials()->get();
-        return $materials ? $materials->toArray() : null;
-    }
-
     public function getTotalItemsAttribute()
     {
-        return $this->Materials()->count();
+        $total = $this->materials()->count();
+
+        return $total;
     }
 
     public function getTotalStockQuantityAttribute()
     {
-        $materials = $this->Materials()->get(['stock_quantity']);
         $total = 0;
+
+        $materials = $this->materials()->get(['stock_quantity']);
         foreach ($materials as $material) {
-            $total += (int)$material->stock_quantity;
+            $total += (int) $material->stock_quantity;
         }
+
         return $total;
     }
 
@@ -128,45 +141,27 @@ class Park extends BaseModel
     {
         $total = 0;
 
-        $materials = Material::getParkAll($this->id);
+        $materials = Material::getParkAll($this->id)->toArray();
         foreach ($materials as $material) {
-            $total += ($material['replacement_price'] * (int)$material['stock_quantity']);
+            $total += ($material['replacement_price'] * (int) $material['stock_quantity']);
         }
 
         return $total;
     }
 
-    public function getPersonAttribute()
-    {
-        $user = $this->Person()->first();
-        return $user ? $user->toArray() : null;
-    }
-
-    public function getCompanyAttribute()
-    {
-        $company = $this->Company()->first();
-        return $company ? $company->toArray() : null;
-    }
-
-    public function getCountryAttribute()
-    {
-        $country = $this->Country()->first();
-        return $country ? $country->toArray() : null;
-    }
-
-    public function getHasOngoingEventAttribute()
+    public function getHasOngoingBookingAttribute()
     {
         if (!$this->exists || !$this->id) {
             return false;
         }
 
         $ongoingEvents = Event::inPeriod('today')
-            ->with('Materials')
+            ->with('materials')
             ->get();
 
         foreach ($ongoingEvents as $ongoingEvent) {
             foreach ($ongoingEvent->materials as $material) {
-                if ($material['park_id'] === $this->id) {
+                if ($material->park_id === $this->id) {
                     return true;
                 }
             }
@@ -175,11 +170,11 @@ class Park extends BaseModel
         return false;
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Setters
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Setters
+    // -
+    // ------------------------------------------------------
 
     protected $fillable = [
         'name',
@@ -195,10 +190,29 @@ class Park extends BaseModel
     {
         if ($this->total_items > 0) {
             throw new \LogicException(
-                sprintf("Le parc #%d contient du matériel et ne peut donc pas être supprimé.", $this->id)
+                sprintf("The park #%d contains material and therefore cannot be deleted.", $this->id)
             );
         }
 
         return parent::delete();
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Serialization
+    // -
+    // ------------------------------------------------------
+
+    public function serialize(): array
+    {
+        $data = $this->attributesForSerialization();
+
+        unset(
+            $data['created_at'],
+            $data['updated_at'],
+            $data['deleted_at'],
+        );
+
+        return $data;
     }
 }

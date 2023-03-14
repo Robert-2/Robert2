@@ -3,11 +3,27 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
-use Illuminate\Database\Eloquent\Builder;
-use Robert2\API\Validation\Validator as V;
+use Illuminate\Database\Eloquent\Collection;
+use Robert2\API\Contracts\Serializable;
+use Robert2\API\Models\Traits\Serializer;
+use Respect\Validation\Validator as V;
 
-class EventTechnician extends BaseModel
+/**
+ * Technicien mandaté sur un événement.
+ *
+ * @property-read ?int $id
+ * @property-read int $event_id
+ * @property-read Event $event
+ * @property-read int $technician_id
+ * @property-read Technician $technician
+ * @property string $start_time
+ * @property string $end_time
+ * @property string|null $position
+ */
+final class EventTechnician extends BaseModel implements Serializable
 {
+    use Serializer;
+
     public $timestamps = false;
 
     protected $withoutAlreadyBusyChecks = false;
@@ -17,21 +33,27 @@ class EventTechnician extends BaseModel
         parent::__construct($attributes);
 
         $this->validation = [
-            'start_time' => V::callback([$this, 'checkDates']),
-            'end_time' => V::callback([$this, 'checkDates']),
+            'start_time' => V::custom([$this, 'checkDates']),
+            'end_time' => V::custom([$this, 'checkDates']),
             'position' => V::optional(V::length(2, 191)),
         ];
     }
 
+    // ------------------------------------------------------
+    // -
+    // -    Validation
+    // -
+    // ------------------------------------------------------
+
     public function checkDates()
     {
-        $dateChecker = V::notEmpty()->date();
+        $dateChecker = V::notEmpty()->dateTime();
         if (!$dateChecker->validate($this->start_time)) {
-            return false;
+            return 'invalid-date';
         }
 
         if (!$dateChecker->validate($this->end_time)) {
-            return false;
+            return 'invalid-date';
         }
 
         $start = new \DateTime($this->start_time);
@@ -51,9 +73,9 @@ class EventTechnician extends BaseModel
         }
 
         $precision = [0, 15, 30, 45];
-        $startMinutes = (int)$start->format('i');
-        $endMinutes = (int)$end->format('i');
-        if (!in_array($startMinutes, $precision) || !in_array($endMinutes, $precision)) {
+        $startMinutes = (int) $start->format('i');
+        $endMinutes = (int) $end->format('i');
+        if (!in_array($startMinutes, $precision, true) || !in_array($endMinutes, $precision, true)) {
             return 'date-precision-must-be-quarter';
         }
 
@@ -67,9 +89,7 @@ class EventTechnician extends BaseModel
                 ['end_time', '>=', $this->start_time],
                 ['start_time', '<=', $this->end_time],
             ])
-            ->whereHas('event', function (Builder $query) {
-                $query->where('deleted_at', null);
-            })
+            ->whereRelation('event', 'deleted_at', null)
             ->exists();
         if ($technicianHasOtherEvents) {
             return 'technician-already-busy-for-this-period';
@@ -78,33 +98,32 @@ class EventTechnician extends BaseModel
         return true;
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Relations
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Relations
+    // -
+    // ------------------------------------------------------
 
-    protected $appends = [
-        'technician',
-    ];
-
-    public function Event()
+    public function event()
     {
         return $this->belongsTo(Event::class, 'event_id');
     }
 
-    public function Technician()
+    public function technician()
     {
-        return $this->belongsTo(Person::class, 'technician_id')
-            ->select(['id', 'first_name', 'last_name', 'nickname', 'phone'])
+        return $this->belongsTo(Technician::class, 'technician_id')
             ->withTrashed();
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Mutators
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Mutators
+    // -
+    // ------------------------------------------------------
+
+    protected $appends = [
+        'technician',
+    ];
 
     protected $casts = [
         'event_id' => 'integer',
@@ -114,35 +133,76 @@ class EventTechnician extends BaseModel
         'position' => 'string',
     ];
 
-    public function getEventAttribute()
-    {
-        return $this->Event()->first();
-    }
-
     public function getTechnicianAttribute()
     {
-        return $this->Technician()->first();
+        return $this->getRelationValue('technician');
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Getters
-    // —
-    // ——————————————————————————————————————————————————————
-
-    public static function getForNewDates(array $eventTechnicians, \DateTime $prevStartDate, array $newEventData): array
+    public function getEventAttribute()
     {
+        return $this->getRelationValue('event');
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Setters
+    // -
+    // ------------------------------------------------------
+
+    protected $fillable = [
+        'event_id',
+        'technician_id',
+        'start_time',
+        'end_time',
+        'position',
+    ];
+
+    public function setPositionAttribute($value)
+    {
+        $value = is_string($value) ? trim($value) : $value;
+        $this->attributes['position'] = $value;
+    }
+
+    /**
+     * Permet d'ignorer la validation qui vérifie le chevauchement avec les dates des autres assignations.
+     * Utile quand on est certain que les autres assignations vont être supprimées avant le save
+     * (voir static::flushForEvent). À chaîner avec un ->validate().
+     */
+    public function withoutAlreadyBusyChecks(): self
+    {
+        $this->withoutAlreadyBusyChecks = true;
+        return $this;
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    "Repository" methods
+    // -
+    // ------------------------------------------------------
+
+    /**
+     * @param Collection|EventTechnician[] $eventTechnicians
+     * @param \DateTime $prevStartDate
+     * @param array $newEventData
+     *
+     * @return array
+     */
+    public static function getForNewDates(
+        Collection $eventTechnicians,
+        \DateTime $prevStartDate,
+        array $newEventData
+    ): array {
         $newStartDate = new \DateTime($newEventData['start_date']);
         $newEndDate = new \DateTime($newEventData['end_date']);
         $offsetInterval = $prevStartDate->diff($newStartDate);
 
         $technicians = [];
-        foreach ($eventTechnicians as $technician) {
+        foreach ($eventTechnicians as $eventTechnician) {
             $technicianStartTime = roundDate(
-                (new \DateTime($technician['start_time']))->add($offsetInterval)
+                (new \DateTime($eventTechnician->start_time))->add($offsetInterval)
             );
             $technicianEndTime = roundDate(
-                (new \DateTime($technician['end_time']))->add($offsetInterval)
+                (new \DateTime($eventTechnician->end_time))->add($offsetInterval)
             );
 
             if ($technicianStartTime > $newEndDate) {
@@ -159,50 +219,18 @@ class EventTechnician extends BaseModel
             }
 
             $technicians[] = [
-                'id' => $technician['technician_id'],
+                'id' => $eventTechnician->technician_id,
                 'start_time' => $technicianStartTime->format('Y-m-d H:i:s'),
                 'end_time' => $technicianEndTime->format('Y-m-d H:i:s'),
-                'position' => $technician['position'],
+                'position' => $eventTechnician->position,
             ];
         }
 
         return $technicians;
     }
 
-
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Setters
-    // —
-    // ——————————————————————————————————————————————————————
-
-    protected $fillable = [
-        'event_id',
-        'technician_id',
-        'start_time',
-        'end_time',
-        'position',
-    ];
-
-    public function setPositionAttribute($value)
-    {
-        $value = is_string($value) ? trim($value) : $value;
-        $this->attributes['position'] = $value;
-    }
-
     public static function flushForEvent(int $eventId)
     {
         static::where('event_id', $eventId)->delete();
-    }
-
-    /**
-     * Permet d'ignorer la validation qui vérifie le chevauchement avec les dates des autres assignations.
-     * Utile quand on est certain que les autres assignations vont être supprimées avant le save
-     * (voir static::flushForEvent). À chaîner avec un ->validate().
-     */
-    public function withoutAlreadyBusyChecks(): self
-    {
-        $this->withoutAlreadyBusyChecks = true;
-        return $this;
     }
 }

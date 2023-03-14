@@ -3,45 +3,145 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models\Traits;
 
-use Illuminate\Support\Str;
+use Adbar\Dot as DotArray;
+use Brick\Math\BigDecimal as Decimal;
+use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Support\Collection;
+use Robert2\API\Contracts\Serializable;
 
+/**
+ * @property array<string, string> $serializedNames
+ */
 trait Serializer
 {
-    protected function serialize(): array
+    public function serialize(): array
     {
-        $data = $this->toArray();
+        $data = $this->attributesForSerialization();
 
-        if (property_exists($this, 'serializedNames')) {
-            foreach ($this->serializedNames as $originalName => $alias) {
-                $data[$alias] = $data[$originalName] ?? null;
-                unset($data[$originalName]);
-            }
+        if (!property_exists(static::class, 'serializedNames')) {
             return $data;
         }
 
-        $camelCaseData = [];
-        foreach ($data as $key => $value) {
-            $camelCaseData[Str::camel($key)] = $value;
+        $data = new DotArray($data);
+
+        // @phpstan-ignore-next-line
+        foreach (static::$serializedNames as $originalPath => $aliasPath) {
+            if ($aliasPath !== null) {
+                $data->set($aliasPath, $data->get($originalPath, null));
+            }
+            $data->delete($originalPath);
         }
 
-        return $camelCaseData;
+        return $data->all();
     }
 
-    protected function unserialize(array $data): array
+    // ------------------------------------------------------
+    // -
+    // -    Utils methods
+    // -
+    // ------------------------------------------------------
+
+    public static function serializeValidation(array $data): array
     {
-        if (!property_exists($this, 'serializedNames')) {
+        if (!property_exists(static::class, 'serializedNames')) {
             return $data;
         }
 
-        foreach ($this->serializedNames as $originalName => $alias) {
-            if (array_key_exists($alias, $data)) {
-                if (!array_key_exists($originalName, $data)) {
-                    $data[$originalName] = $data[$alias];
-                }
-                unset($data[$alias]);
+        $data = new DotArray($data);
+
+        // @phpstan-ignore-next-line
+        foreach (static::$serializedNames as $originalPath => $aliasPath) {
+            if ($data->has($originalPath) && !$data->has($aliasPath)) {
+                $data->set($aliasPath, $data->get($originalPath));
             }
+            $data->delete($originalPath);
         }
 
-        return $data;
+        return $data->all();
+    }
+
+    public static function unserialize(array $data): array
+    {
+        if (!property_exists(static::class, 'serializedNames')) {
+            return $data;
+        }
+
+        $data = new DotArray($data);
+
+        // @phpstan-ignore-next-line
+        foreach (static::$serializedNames as $originalPath => $aliasPath) {
+            if ($data->has($aliasPath) && !$data->has($originalPath)) {
+                $data->set($originalPath, $data->get($aliasPath));
+            }
+            $data->delete($aliasPath);
+        }
+
+        return $data->all();
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Internal methods
+    // -
+    // ------------------------------------------------------
+
+    protected function attributesForSerialization()
+    {
+        $attributes = $this->getArrayableAttributes();
+        $attributes = $this->addDateAttributesToArray($attributes);
+
+        // - Mutateurs
+        $mutatedAttributes = $this->getMutatedAttributes();
+        foreach ($mutatedAttributes as $key) {
+            if (!array_key_exists($key, $attributes)) {
+                continue;
+            }
+            $attributes[$key] = $this->mutateAttributeForSerialization($key, $attributes[$key]);
+        }
+
+        // - Casts
+        $attributes = $this->addCastAttributesToArray($attributes, $mutatedAttributes);
+
+        // - Appends
+        foreach ($this->getArrayableAppends() as $key) {
+            $attributes[$key] = $this->mutateAttributeForSerialization($key, null);
+        }
+
+        return $attributes;
+    }
+
+    protected function mutateAttributeForSerialization($key, $value)
+    {
+        $value = $this->isClassCastable($key)
+            ? $this->getClassCastableAttributeValue($key, $value)
+            : $this->mutateAttribute($key, $value);
+
+        $serialize = function ($value) {
+            if ($value instanceof Serializable) {
+                return $value->serialize();
+            }
+
+            if ($value instanceof Decimal) {
+                return (string) $value;
+            }
+
+            if ($value instanceof \DateTimeInterface) {
+                return $this->serializeDate($value);
+            }
+
+            if ($value instanceof Arrayable) {
+                return $value->toArray();
+            }
+
+            return $value;
+        };
+
+        if ($value instanceof Collection) {
+            return $value
+                ->map(fn($value) => $serialize($value))
+                ->all();
+        }
+
+        return $serialize($value);
     }
 }

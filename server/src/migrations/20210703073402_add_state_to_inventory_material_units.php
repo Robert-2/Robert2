@@ -1,9 +1,10 @@
 <?php
+declare(strict_types=1);
+
 use Phinx\Migration\AbstractMigration;
+use Robert2\API\Config\Config;
 
-use Robert2\API\Config as Config;
-
-class AddStateToInventoryMaterialUnits extends AbstractMigration
+final class AddStateToInventoryMaterialUnits extends AbstractMigration
 {
     public function up()
     {
@@ -33,7 +34,7 @@ class AddStateToInventoryMaterialUnits extends AbstractMigration
             ])
             ->save();
 
-        $prefix = Config\Config::getSettings('db')['prefix'];
+        $prefix = Config::getSettings('db')['prefix'];
 
         $units = $this->fetchAll(sprintf(
             'SELECT imu.`id`, mu.`state`
@@ -56,7 +57,7 @@ class AddStateToInventoryMaterialUnits extends AbstractMigration
             ->save();
 
         $inventoryMaterialUnitsTable
-            ->changeColumn('state_current', 'string', ['length' => 64])
+            ->changeColumn('state_current', 'string', ['length' => 64, 'null' => false])
             ->addForeignKey('state_current', 'material_unit_states', 'id', [
                 'delete' => 'RESTRICT',
                 'update' => 'NO_ACTION',

@@ -1,0 +1,14 @@
+@use '~@/themes/default/style/globals';
+
+.ParksItemsCount {
+    color: globals.$text-light-color;
+
+    &__link {
+        margin-right: 5px;
+    }
+
+    &--empty {
+        color: globals.$text-light-color;
+        font-style: italic;
+    }
+}

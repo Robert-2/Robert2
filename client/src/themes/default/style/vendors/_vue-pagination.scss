@@ -1,0 +1,45 @@
+.VuePagination {
+    &__pagination {
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+    }
+
+    &__pagination-item {
+        flex: 0 0 auto;
+        list-style: none;
+
+        .page-link {
+            padding: 0.35rem 0.65rem;
+            background: $bg-color-side-nav;
+            cursor: pointer;
+
+            &:hover {
+                background: $bg-color-side-menu-item-hover;
+            }
+
+            &[disabled] {
+                background: $bg-color-side-nav;
+                color: $text-muted-color;
+                cursor: default;
+            }
+
+            &.active {
+                background: $bg-color-input-normal;
+                color: $text-soft-color;
+
+                &:hover {
+                    background: $bg-color-side-menu-item-hover;
+                }
+            }
+        }
+    }
+
+    &__count {
+        align-items: center;
+        justify-content: center;
+        color: $text-muted-color;
+    }
+}

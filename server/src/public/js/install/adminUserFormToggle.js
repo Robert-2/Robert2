@@ -1,12 +1,12 @@
-var adminFormSkip = document.getElementById('adminFormSkip');
-var adminFormData = document.getElementById('adminFormData');
+const $adminFormSkip = document.querySelector('#admin-form-skip');
+const $adminFormData = document.querySelector('#admin-form-data');
 
 function showAdminFormData() {
-    adminFormSkip.style.display = 'none';
-    adminFormData.style.display = 'block';
+    $adminFormSkip.style.display = 'none';
+    $adminFormData.style.display = 'block';
 };
 
 function hideAdminFormData() {
-    adminFormSkip.style.display = 'block';
-    adminFormData.style.display = 'none';
+    $adminFormSkip.style.display = 'block';
+    $adminFormData.style.display = 'none';
 };

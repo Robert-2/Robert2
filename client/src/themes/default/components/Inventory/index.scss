@@ -1,0 +1,40 @@
+@use '~@/themes/default/style/globals';
+
+.Inventory {
+    &__section {
+        &__header {
+            display: flex;
+            align-items: flex-end;
+        }
+
+        &__title {
+            flex: 1;
+        }
+
+        &__columns {
+            flex: 0 0 260px;
+            display: flex;
+            margin-left: auto;
+        }
+
+        &__quantity-title {
+            flex: 1;
+            margin-left: globals.$content-padding-large-vertical;
+            font-size: 1rem;
+            text-align: center;
+        }
+
+        & + & {
+            margin-top: globals.$content-padding-large-vertical;
+        }
+    }
+
+    &__list {
+        padding: 0 0 0 globals.$content-padding-small-horizontal;
+        border-left: 3px solid globals.$list-left-border-color;
+    }
+
+    .InventoryItem {
+        margin-bottom: globals.$content-padding-small-horizontal;
+    }
+}

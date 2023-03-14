@@ -105,11 +105,8 @@ query=(
     'del(.autoload."psr-4"."Robert2\\Fixtures\\")'
     'del(.scripts."create-migration")'
     'del(.scripts."lint")'
+    'del(.scripts."lint:fix")'
     'del(.scripts."test")'
-    'del(.scripts."testapi")'
-    'del(.scripts."testmodels")'
-    'del(.scripts."testlibs")'
-    'del(.scripts."testother")'
 )
 query=$(IFS='|' ; echo "${query[*]}")
 jq $query composer.json > tmp.composer.json

@@ -1,12 +1,17 @@
 [
     {
-        "id"        : 1,
-        "event_id"  : 1,
-        "person_id" : 3
+        "id": 1,
+        "event_id": 1,
+        "beneficiary_id": 1
     },
     {
-        "id"        : 2,
-        "event_id"  : 2,
-        "person_id" : 3
+        "id": 2,
+        "event_id": 2,
+        "beneficiary_id": 3
+    },
+    {
+        "id": 3,
+        "event_id": 5,
+        "beneficiary_id": 1
     }
 ]

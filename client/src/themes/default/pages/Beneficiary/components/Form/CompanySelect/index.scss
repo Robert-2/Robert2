@@ -1,0 +1,22 @@
+@use '~@/themes/default/style/globals';
+
+.CompanySelect {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: globals.$content-padding-small-vertical;
+
+    &__select {
+        flex: 1;
+    }
+
+    &__edit-button {
+        margin-left: 10px;
+    }
+
+    .ErrorMessage {
+        width: 100%;
+        text-align: right;
+    }
+}

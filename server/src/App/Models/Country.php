@@ -3,12 +3,25 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Robert2\API\Validation\Validator as V;
+use Robert2\API\Contracts\Serializable;
+use Robert2\API\Models\Traits\Serializer;
+use Respect\Validation\Validator as V;
+use Robert2\API\Models\Traits\SoftDeletable;
 
-class Country extends BaseModel
+/**
+ * Pays.
+ *
+ * @property-read ?int $id
+ * @property string $name
+ * @property string $code
+ * @property-read Carbon $created_at
+ * @property-read Carbon|null $updated_at
+ * @property-read Carbon|null $deleted_at
+ */
+final class Country extends BaseModel implements Serializable
 {
-    use SoftDeletes;
+    use Serializer;
+    use SoftDeletable;
 
     protected $allowedSearchFields = ['name', 'code'];
     protected $searchField = 'name';
@@ -18,8 +31,8 @@ class Country extends BaseModel
         parent::__construct($attributes);
 
         $this->validation = [
-            'name' => V::callback([$this, 'checkName']),
-            'code' => V::callback([$this, 'checkCode']),
+            'name' => V::custom([$this, 'checkName']),
+            'code' => V::custom([$this, 'checkCode']),
         ];
     }
 
@@ -67,22 +80,41 @@ class Country extends BaseModel
         return true;
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Mutators
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Mutators
+    // -
+    // ------------------------------------------------------
 
     protected $casts = [
         'name' => 'string',
         'code' => 'string',
     ];
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Setters
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Setters
+    // -
+    // ------------------------------------------------------
 
     protected $fillable = ['name', 'code'];
+
+    // ------------------------------------------------------
+    // -
+    // -    Serialization
+    // -
+    // ------------------------------------------------------
+
+    public function serialize(): array
+    {
+        $data = $this->attributesForSerialization();
+
+        unset(
+            $data['created_at'],
+            $data['updated_at'],
+            $data['deleted_at'],
+        );
+
+        return $data;
+    }
 }

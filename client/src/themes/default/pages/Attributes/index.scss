@@ -1,0 +1,70 @@
+@use '~@/themes/default/style/globals';
+
+.Page--attributes {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+
+    .Attributes {
+        flex: 1;
+    }
+}
+
+.Attributes {
+    &__table {
+        width: 100%;
+        min-width: 800px;
+        margin: 0;
+        background-color: globals.$bg-color-table-td;
+        color: globals.$text-base-color;
+        border-collapse: collapse;
+
+        &__header {
+            background-color: globals.$bg-color-table-th;
+            color: globals.$text-soft-color;
+            font-weight: 600;
+            text-align: left;
+        }
+
+        &__col {
+            padding: 0.8rem 0.5rem;
+            border-bottom: 1px solid globals.$bg-color-body;
+
+            &--name {
+                width: 300px;
+            }
+
+            &--type {
+                width: 150px;
+            }
+
+            &--unit,
+            &--max-length {
+                width: 120px;
+                text-align: center;
+            }
+
+            &--max-length {
+                display: none;
+
+                @media (min-width: globals.$screen-big-desktop) {
+                    display: table-cell;
+                }
+            }
+
+            &--actions {
+                width: 1%;
+                white-space: nowrap;
+            }
+        }
+    }
+
+    &__no-data {
+        margin: 0;
+        padding: 1.5rem 0.5rem;
+        background-color: globals.$bg-color-table-td;
+        font-style: italic;
+        text-align: center;
+    }
+}

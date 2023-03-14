@@ -3,36 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}{% endblock %}</title>
+    <link href="/fonts/Roboto/index.css" rel="stylesheet">
     <style type="text/css">
         html {
             margin: 9mm 8mm;
-            font-family: -apple-system, 'Segoe UI', Roboto, Ubuntu, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';;
-            font-size: 10pt;
+            font-family: Roboto;
+            font-weight: 400;
+            font-size: 9pt;
         }
         body {
             margin: 0;
         }
         h1 {
-            font-size: 14pt;
+            font-size: 1.5rem;
             margin: 0 0 3mm 0;
         }
         h2 {
-            font-size: 12pt;
+            font-size: 1.25rem;
             margin: 0 0 3mm 0;
         }
         h3 {
-            font-size: 11pt;
+            font-size: 1.125rem;
             margin: 0 0 3mm 0;
         }
         h4 {
-            font-size: 10pt;
+            font-size: 1rem;
             margin: 0 0 3mm 0;
         }
         p {
+            font-size: 1rem;
             margin: 0 0 3mm 0;
         }
         small {
-            font-size: 10pt;
+            font-size: 0.85rem;
         }
         ul, ol {
             margin: 2mm 0 3mm 0;
@@ -76,20 +79,20 @@
             page-break-after: avoid;
         }
         .listing-table > thead > tr > th {
-            font-size: 8.5pt;
+            font-size: 0.8rem;
             border-bottom: 1pt solid #888;
             vertical-align: middle;
         }
         .listing-table > tbody > tr > td {
             padding: 2mm;
-            font-size: 7.5pt;
+            font-size: 0.7rem;
             border: none;
             border-bottom: 1pt solid #ccc;
             vertical-align: middle;
         }
         .listing-table > tbody > tr > td.section-title {
             padding: 4mm 2mm 2mm;
-            font-size: 8.5pt;
+            font-size: 0.8rem;
             color: #888;
         }
         .listing-table > tbody > tr > td:first-child {
@@ -110,10 +113,9 @@
         .right { text-align: right; }
         .sizeTitle { font-size: 16pt; }
         .sizeSubtitle { font-size: 14pt; }
-        .size12 { font-size: 12pt; }
-        .size10 { font-size: 10pt; }
-        .size8 { font-size: 8pt; }
-        .size7 { font-size: 7pt; }
+        .size12 { font-size: 1rem; }
+        .size10 { font-size: 0.9rem; }
+        .size8 { font-size: 0.85rem; }
         .vspace2 { margin: 0; padding: 2mm 0; }
         .vspace5 { margin: 0; padding: 5mm 0; }
         .vspace10 { margin: 0; padding: 10mm 0; }
@@ -126,8 +128,8 @@
             background-color: #eee;
             border-radius: 3pt;
         }
-        .strong { font-weight: bold; }
-        .normal { font-weight: normal; }
+        .strong { font-weight: 700; }
+        .normal { font-weight: 400; }
         .light { color: #333; }
         .lighter { color: #666; }
         .lightest { color: #aaa; }

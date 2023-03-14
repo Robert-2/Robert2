@@ -37,7 +37,7 @@ requester.interceptors.request.use(
 
         // - Traitement spécial des objets littéraux contenant des fichiers.
         //   => On utilise un envoi via `multipart/form-data` et on met les données
-        //      supplémentaires éventuelles dans une clée spéciale `@data`)
+        //      supplémentaires éventuelles dans une clé spéciale `@data`)
         const hasFiles = (
             isPlainObject(request.data) &&
             Object.values(request.data).some((value) => (

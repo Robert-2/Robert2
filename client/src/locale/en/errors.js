@@ -1,12 +1,12 @@
 export default {
     errors: {
-        'generic': "Error: {message}",
         'unexpected-while-saving': "An unexpected error occurred while saving, please try again.",
         'unexpected-while-deleting': "An unexpected error occurred while deleting, please try again.",
         'unexpected-while-restoring': "An unexpected error occurred while restoring, please try again.",
         'unexpected-while-uploading': "An unexpected error occurred while sending your files, please try again.",
         'unexpected-while-calculating': "An unexpected error occurred while calculating, please try again.",
-        'api-unreachable': "Sorry, but Robert2 API is unreachable... Please check your access to network.",
+        'unexpected-while-fetching': "An unexpected error occurred while retrieving the data.",
+        'api-unreachable': "Sorry, but the API is unreachable... Please check your access to network.",
         'record-not-found': "This record does not exist.",
         'page-not-found': "The requested page does not exist.",
         'unknown': "Unknown error.",

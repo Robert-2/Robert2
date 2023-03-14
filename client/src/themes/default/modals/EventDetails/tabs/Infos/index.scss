@@ -1,0 +1,66 @@
+@use '~@/themes/default/style/globals';
+
+.EventDetailsInfos {
+    display: flex;
+    flex-direction: column;
+
+    &__summary {
+        display: flex;
+        flex-wrap: wrap;
+        margin-bottom: 15px;
+        font-size: 1.1rem;
+        gap: globals.$content-padding-small-horizontal;
+
+        &__beneficiary,
+        &__location,
+        &__technicians,
+        &__creator {
+            flex: 1 0 auto;
+            max-width: 100%;
+        }
+
+        &__creator {
+            &__icon {
+                margin-right: 0.3rem;
+            }
+        }
+    }
+
+    &__no-beneficiary {
+        color: globals.$text-danger-color;
+        font-size: 1.2rem;
+        text-align: center;
+    }
+
+    &__beneficiary-details {
+        margin: 0 0 15px;
+    }
+
+    &__description,
+    &__confirmation {
+        margin-bottom: globals.$content-padding-large-vertical;
+        font-size: 1.2rem;
+
+        &__icon {
+            width: 1.5rem;
+            margin-right: 0.5rem;
+            text-align: center;
+        }
+    }
+
+    &__description {
+        margin-top: 0;
+        color: globals.$text-soft-color;
+        line-height: 1.5;
+        white-space: pre-wrap;
+    }
+
+    &__confirmation {
+        color: globals.$text-warning-color;
+        text-align: center;
+
+        &--confirmed {
+            color: globals.$text-success-color;
+        }
+    }
+}

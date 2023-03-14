@@ -1,0 +1,30 @@
+edit: Modifier l'événement
+archive: Archiver l'événement
+unarchive: Désarchiver l'événement
+
+#
+# - Tabs
+#
+
+infos:
+    beneficiary-phone: "Tél\_:"
+    beneficiary-email: "E-mail\_:"
+
+materials:
+    problems-on-returned-materials: Problèmes sur le matériel retourné
+    all-material-returned: Tout le matériel a bien été retourné pour cet événement.
+    view-return-inventory: Voir l'inventaire de retour en détail
+
+    not-returned-material-count:
+        - "{returned} retourné sur {out}\_! Il en manque {missing}."
+        - "{returned} retournés sur {out}\_! Il en manque {missing}."
+
+    broken-material-count:
+        - "{broken} revenu en panne\_!"
+        - "{broken} revenus en panne\_!"
+
+estimates:
+    create-new-help: Vous pouvez créer un autre devis si l'événement a été modifié, ou si vous voulez une remise différente.
+
+invoice:
+    regenerate-help: Vous pouvez re-générer la facture pour en changer la remise, ou si l'événement a été modifié.

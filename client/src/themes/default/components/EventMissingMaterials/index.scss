@@ -1,0 +1,48 @@
+@use '~@/themes/default/style/globals';
+
+.EventMissingMaterials {
+    color: globals.$text-base-color;
+
+    &__title {
+        margin: 0 0 1rem;
+        font-size: 1.2rem;
+
+        .fas {
+            width: 1.5rem;
+            margin-right: 0.5rem;
+            text-align: center;
+        }
+    }
+
+    &__help {
+        color: globals.$text-soft-color;
+    }
+
+    &__error {
+        margin: 0 0 1.5rem;
+        color: globals.$text-danger-color;
+        font-style: italic;
+    }
+
+    &__list {
+        margin: 0 0 1.5rem;
+        padding: 0;
+    }
+
+    &__item {
+        display: flex;
+        padding: 0.7rem 0;
+        border-bottom: 1px dashed globals.$list-left-border-color;
+        color: globals.$text-danger-color;
+        list-style: none;
+
+        &__name {
+            flex: 1;
+        }
+
+        &__quantity {
+            flex: 0 0 14.5rem;
+            margin: 0 0 0 0.8rem;
+        }
+    }
+}

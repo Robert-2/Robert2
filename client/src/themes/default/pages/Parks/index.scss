@@ -1,0 +1,76 @@
+@use '~@/themes/default/style/globals';
+
+.Page--parks {
+    display: flex;
+    flex-direction: column;
+
+    .Parks {
+        flex: 1;
+    }
+}
+
+.Parks {
+    display: flex;
+    flex-direction: column;
+
+    &__table {
+        flex: 1;
+    }
+
+    &__address,
+    &__opening-hours,
+    &__note,
+    &__total-amount,
+    &__events {
+        display: none;
+    }
+
+    &__address {
+        white-space: pre-line;
+    }
+
+    &__total-amount {
+        width: 105px;
+
+        // - Pour surcharger la définition de VueTables th
+        // stylelint-disable-next-line declaration-no-important
+        text-align: center !important;
+    }
+
+    &__note {
+        max-width: 200px;
+        white-space: pre-line;
+    }
+
+    &__events {
+        // - Pour surcharger la définition de VueTables th
+        // stylelint-disable-next-line declaration-no-important
+        text-align: center !important;
+    }
+
+    &__actions {
+        width: 1%;
+        text-align: right;
+        white-space: nowrap;
+    }
+
+    @media (min-width: globals.$screen-mobile) {
+        &__address {
+            display: table-cell;
+        }
+    }
+
+    @media (min-width: globals.$screen-tablet) {
+        &__opening-hours,
+        &__total-amount {
+            display: table-cell;
+        }
+    }
+
+    @media (min-width: globals.$screen-desktop) {
+        &__note,
+        &__events {
+            display: table-cell;
+        }
+    }
+}

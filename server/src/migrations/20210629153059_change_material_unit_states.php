@@ -1,7 +1,9 @@
 <?php
+declare(strict_types=1);
+
 use Phinx\Migration\AbstractMigration;
 
-class ChangeMaterialUnitStates extends AbstractMigration
+final class ChangeMaterialUnitStates extends AbstractMigration
 {
     public function up()
     {
@@ -15,8 +17,8 @@ class ChangeMaterialUnitStates extends AbstractMigration
 
         $unitStatesTable = $this->table('material_unit_states', ['id' => false, 'primary_key' => 'id']);
         $unitStatesTable
-            ->addColumn('id', 'string', ['length' => 64])
-            ->addColumn('order', 'integer', ['signed' => false])
+            ->addColumn('id', 'string', ['length' => 64, 'null' => false])
+            ->addColumn('order', 'integer', ['signed' => true, 'null' => false])
             ->create();
 
         $states = [
@@ -31,6 +33,7 @@ class ChangeMaterialUnitStates extends AbstractMigration
         $materialUnitsTable
             ->addColumn('state', 'string', [
                 'default' => 'state-of-use',
+                'null' => false,
                 'length' => 64,
                 'after' => 'is_lost',
             ])
@@ -53,20 +56,21 @@ class ChangeMaterialUnitStates extends AbstractMigration
 
         $this->table('material_unit_states')->drop()->save();
 
-        $unitStatesTable = $this->table('material_unit_states');
+        $unitStatesTable = $this->table('material_unit_states', ['signed' => true]);
         $unitStatesTable
-            ->addColumn('name', 'string', ['length' => 64])
+            ->addColumn('name', 'string', ['length' => 64, 'null' => false])
             ->addColumn('created_at', 'datetime', ['null' => true])
             ->addColumn('updated_at', 'datetime', ['null' => true])
             ->addColumn('deleted_at', 'datetime', ['null' => true])
             ->addIndex(['name'], [
                 'unique' => true,
-                'name' => 'name_UNIQUE'
+                'name' => 'name_UNIQUE',
             ])
             ->create();
 
         $materialUnitsTable
             ->addColumn('material_unit_state_id', 'integer', [
+                'signed' => true,
                 'null' => true,
                 'after' => 'is_lost',
             ])

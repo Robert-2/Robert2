@@ -22,7 +22,7 @@ Une fois entré dans l'application, vous pouvez l'utiliser !
 
 ### Calendrier
 
-Clair, pratique et réactif : Visualisation des événements sur une frise temporelle, pour tout voir en un coup d'oeil.
+Clair, pratique et réactif : Visualisation des événements sur une frise temporelle, pour tout voir en un coup d'œil.
 
 ### Parcs de matériel
 

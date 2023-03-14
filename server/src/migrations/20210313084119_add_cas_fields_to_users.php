@@ -1,7 +1,9 @@
 <?php
+declare(strict_types=1);
+
 use Phinx\Migration\AbstractMigration;
 
-class AddCasFieldsToUsers extends AbstractMigration
+final class AddCasFieldsToUsers extends AbstractMigration
 {
     public function up()
     {
@@ -9,11 +11,11 @@ class AddCasFieldsToUsers extends AbstractMigration
         $table
             ->addColumn('cas_identifier', 'string', [
                 'after' => 'password',
-                'null' => true
+                'null' => true,
             ])
             ->addIndex('cas_identifier', [
                 'unique' => true,
-                'name' => 'user_cas_identifier_UNIQUE'
+                'name' => 'user_cas_identifier_UNIQUE',
             ])
             ->save();
     }

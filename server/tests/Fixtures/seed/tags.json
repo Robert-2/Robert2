@@ -1,14 +1,16 @@
 [
     {
-        "id"   : 1,
-        "name" : "Technician"
+        "id": 1,
+        "name": "Premium",
+        "created_at": "2021-02-10 00:15:00",
+        "updated_at": "2021-02-10 00:16:00",
+        "deleted_at": null
     },
     {
-        "id"   : 2,
-        "name" : "Beneficiary"
-    },
-    {
-        "id"   : 3,
-        "name" : "pro"
+        "id": 2,
+        "name": "Vintage",
+        "created_at": "2021-02-10 00:17:00",
+        "updated_at": "2021-02-10 00:17:00",
+        "deleted_at": null
     }
 ]

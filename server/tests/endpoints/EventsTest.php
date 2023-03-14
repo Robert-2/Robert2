@@ -1,827 +1,464 @@
 <?php
+declare(strict_types=1);
+
 namespace Robert2\Tests;
+
+use Fig\Http\Message\StatusCodeInterface as StatusCode;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
+use Robert2\API\Models\Event;
 
 final class EventsTest extends ApiTestCase
 {
-    public function testGetEvents()
+    public static function data(int $id)
     {
-        $this->client->get('/api/events?start=2018-12-01&end=2018-12-31');
-        $this->assertStatusCode(SUCCESS_OK);
-        $this->assertResponseData([
-            'data' => [
-                [
-                    'id' => 3,
-                    'user_id' => 1,
-                    'title' => "Avant-premier événement",
-                    'description' => null,
-                    'reference' => null,
-                    'start_date' => "2018-12-15 00:00:00",
-                    'end_date' => "2018-12-16 23:59:59",
-                    'is_confirmed' => false,
-                    'is_archived' => true,
-                    'location' => "Brousse",
-                    'is_billable' => false,
-                    'is_return_inventory_done' => true,
-                    'has_missing_materials' => null,
-                    'has_not_returned_materials' => null,
-                    'parks' => [1],
-                    'beneficiaries' => [],
-                    'technicians' => [],
-                    'materials' => [
-                        [
-                            'id' => 5,
-                            'name' => 'Câble XLR 10m',
-                            'reference' => 'XLR10',
-                            'description' => 'Câble audio XLR 10 mètres, mâle-femelle',
-                            'is_unitary' => false,
-                            'park_id' => 1,
-                            'category_id' => 1,
-                            'sub_category_id' => null,
-                            'rental_price' => 0.5,
-                            'stock_quantity' => 40,
-                            'out_of_order_quantity' => 8,
-                            'replacement_price' => 9.5,
-                            'is_hidden_on_bill' => true,
-                            'is_discountable' => true,
-                            'attributes' => [],
-                            'tags' => [],
-                            'pivot' => [
-                                'id' => 8,
-                                'event_id' => 3,
-                                'material_id' => 5,
-                                'quantity' => 12,
-                                'quantity_returned' => 0,
-                                'quantity_broken' => 0,
-                            ],
-                        ],
-                        [
-                            'id' => 3,
-                            'name' => 'PAR64 LED',
-                            'reference' => 'PAR64LED',
-                            'description' => 'Projecteur PAR64 à LED, avec son set de gélatines',
-                            'is_unitary' => false,
-                            'park_id' => 1,
-                            'category_id' => 2,
-                            'sub_category_id' => 3,
-                            'rental_price' => 3.5,
-                            'stock_quantity' => 34,
-                            'out_of_order_quantity' => 4,
-                            'replacement_price' => 89,
-                            'is_hidden_on_bill' => false,
-                            'is_discountable' => true,
-                            'attributes' => [
-                                [
-                                    'id' => 3,
-                                    'name' => 'Puissance',
-                                    'type' => 'integer',
-                                    'unit' => 'W',
-                                    'value' => 150,
-                                ],
-                                [
-                                    'id' => 1,
-                                    'name' => 'Poids',
-                                    'type' => 'float',
-                                    'unit' => 'kg',
-                                    'value' => 0.85,
-                                ],
-                            ],
-                            'tags' => [
-                                ['id' => 3, 'name' => 'pro'],
-                            ],
-                            'pivot' => [
-                                'id' => 6,
-                                'event_id' => 3,
-                                'material_id' => 3,
-                                'quantity' => 10,
-                                'quantity_returned' => 0,
-                                'quantity_broken' => 0,
-                            ],
-                        ],
-                        [
-                            'id' => 2,
-                            'name' => 'Processeur DBX PA2',
-                            'description' => 'Système de diffusion numérique',
-                            'reference' => 'DBXPA2',
-                            'is_unitary' => false,
-                            'park_id' => 1,
-                            'rental_price' => 25.5,
-                            'stock_quantity' => 2,
-                            'out_of_order_quantity' => null,
-                            'replacement_price' => 349.9,
-                            'is_hidden_on_bill' => false,
-                            'is_discountable' => true,
-                            'category_id' => 1,
-                            'sub_category_id' => 2,
-                            'tags' => [
-                                ['id' => 3, 'name' => 'pro'],
-                            ],
-                            'attributes' => [
-                                [
-                                    'id' => 3,
-                                    'name' => 'Puissance',
-                                    'type' => 'integer',
-                                    'unit' => 'W',
-                                    'value' => 35,
-                                ],
-                                [
-                                    'id' => 1,
-                                    'name' => 'Poids',
-                                    'type' => 'float',
-                                    'unit' => 'kg',
-                                    'value' => 2.2,
-                                ],
-                            ],
-                            'pivot' => [
-                                'id' => 7,
-                                'event_id' => 3,
-                                'material_id' => 2,
-                                'quantity' => 1,
-                                'quantity_returned' => 0,
-                                'quantity_broken' => 0,
-                            ],
-                        ],
+        $events = new Collection([
+            [
+                'id' => 1,
+                'reference' => null,
+                'title' => "Premier événement",
+                'description' => null,
+                'location' => "Gap",
+                'start_date' => "2018-12-17 00:00:00",
+                'end_date' => "2018-12-18 23:59:59",
+                'duration' => 2,
+                'degressive_rate' => '1.75',
+                'discount_rate' => '0',
+                'vat_rate' => '20.00',
+                'currency' => 'EUR',
+                'daily_total_without_discount' => '341.45',
+                'daily_total_discountable' => '41.45',
+                'daily_total_discount' => '0.00',
+                'daily_total_without_taxes' => '341.45',
+                'daily_total_taxes' => '68.29',
+                'daily_total_with_taxes' => '409.74',
+                'total_without_taxes' => '597.54',
+                'total_taxes' => '119.51',
+                'total_with_taxes' => '717.05',
+                'total_replacement' => '19808.90',
+                'is_confirmed' => false,
+                'is_archived' => false,
+                'is_billable' => true,
+                'is_return_inventory_done' => true,
+                'has_missing_materials' => null,
+                'has_not_returned_materials' => false,
+                'parks' => [1],
+                'technicians' => [
+                    [
+                        'id' => 1,
+                        'event_id' => 1,
+                        'technician_id' => 1,
+                        'start_time' => '2018-12-17 09:00:00',
+                        'end_time' => '2018-12-18 22:00:00',
+                        'position' => 'Régisseur',
+                        'technician' => TechniciansTest::data(1),
                     ],
-                    'created_at' => null,
-                    'updated_at' => null,
-                    'deleted_at' => null,
+                    [
+                        'id' => 2,
+                        'event_id' => 1,
+                        'technician_id' => 2,
+                        'start_time' => '2018-12-18 14:00:00',
+                        'end_time' => '2018-12-18 18:00:00',
+                        'position' => 'Technicien plateau',
+                        'technician' => TechniciansTest::data(2),
+                    ],
                 ],
-                [
-                    'id' => 1,
-                    'user_id' => 1,
-                    'title' => "Premier événement",
-                    'description' => null,
-                    'reference' => null,
-                    'start_date' => "2018-12-17 00:00:00",
-                    'end_date' => "2018-12-18 23:59:59",
-                    'is_confirmed' => false,
-                    'is_archived' => false,
-                    'location' => "Gap",
-                    'is_billable' => true,
-                    'is_return_inventory_done' => true,
-                    'has_missing_materials' => null,
-                    'has_not_returned_materials' => false,
-                    'parks' => [1],
-                    'beneficiaries' => [
-                        [
+                'beneficiaries' => [
+                    BeneficiariesTest::data(1),
+                ],
+                'materials' => [
+                    array_merge(MaterialsTest::data(1), [
+                        'pivot' => [
+                            'id' => 1,
+                            'event_id' => 1,
+                            'material_id' => 1,
+                            'quantity' => 1,
+                            'quantity_returned' => 1,
+                            'quantity_returned_broken' => 0,
+                        ],
+                    ]),
+                    array_merge(MaterialsTest::data(2), [
+                        'pivot' => [
+                            'id' => 2,
+                            'event_id' => 1,
+                            'material_id' => 2,
+                            'quantity' => 1,
+                            'quantity_returned' => 1,
+                            'quantity_returned_broken' => 0,
+                        ],
+                    ]),
+                    array_merge(MaterialsTest::data(4), [
+                        'pivot' => [
                             'id' => 3,
-                            'first_name' => 'Client',
-                            'last_name' => 'Benef',
-                            'full_name' => 'Client Benef',
-                            'country' => null,
-                            'company' => null,
-                            'reference' => null,
-                            'phone' => '+33123456789',
-                            'email' => 'client@beneficiaires.com',
-                            'company_id' => null,
-                            'street' => '156 bis, avenue des tests poussés',
-                            'postal_code' => '88080',
-                            'locality' => 'Wazzaville',
-                            'full_address' => "156 bis, avenue des tests poussés\n88080 Wazzaville",
-                            'pivot' => [
-                                'event_id' => 1,
-                                'person_id' => 3,
-                            ],
-                        ],
-                    ],
-                    'technicians' => [
-                        [
-                            'id' => 1,
                             'event_id' => 1,
-                            'technician_id' => 1,
-                            'start_time' => '2018-12-17 09:00:00',
-                            'end_time' => '2018-12-18 22:00:00',
-                            'position' => 'Régisseur',
-                            'technician' => [
-                                'id' => 1,
-                                'first_name' => 'Jean',
-                                'last_name' => 'Fountain',
-                                'full_name' => 'Jean Fountain',
-                                'nickname' => null,
-                                'phone' => null,
-                                'country' => null,
-                                'full_address' => null,
-                                'company' => null,
-                            ],
+                            'material_id' => 4,
+                            'quantity' => 1,
+                            'quantity_returned' => 1,
+                            'quantity_returned_broken' => 1,
                         ],
-                        [
-                            'id' => 2,
-                            'event_id' => 1,
-                            'technician_id' => 2,
-                            'start_time' => '2018-12-18 14:00:00',
-                            'end_time' => '2018-12-18 18:00:00',
-                            'position' => 'Technicien plateau',
-                            'technician' => [
-                                'id' => 2,
-                                'first_name' => 'Roger',
-                                'last_name' => 'Rabbit',
-                                'full_name' => 'Roger Rabbit',
-                                'nickname' => 'Riri',
-                                'phone' => null,
-                                'country' => null,
-                                'full_address' => null,
-                                'company' => null,
-                            ],
-                        ],
-                    ],
-                    'materials' => [
-                        [
-                            'id' => 1,
-                            'name' => 'Console Yamaha CL3',
-                            'description' => 'Console numérique 64 entrées / 8 sorties + Master + Sub',
-                            'reference' => 'CL3',
-                            'is_unitary' => false,
-                            'park_id' => 1,
-                            'rental_price' => 300,
-                            'stock_quantity' => 5,
-                            'out_of_order_quantity' => 1,
-                            'replacement_price' => 19400,
-                            'is_hidden_on_bill' => false,
-                            'is_discountable' => false,
-                            'category_id' => 1,
-                            'sub_category_id' => 1,
-                            'tags' => [
-                                ['id' => 3, 'name' => 'pro'],
-                            ],
-                            'attributes' => [
-                                [
-                                    'id' => 3,
-                                    'name' => 'Puissance',
-                                    'type' => 'integer',
-                                    'unit' => 'W',
-                                    'value' => 850,
-                                ],
-                                [
-                                    'id' => 2,
-                                    'name' => 'Couleur',
-                                    'type' => 'string',
-                                    'unit' => null,
-                                    'value' => 'Grise',
-                                ],
-                                [
-                                    'id' => 1,
-                                    'name' => 'Poids',
-                                    'type' => 'float',
-                                    'unit' => 'kg',
-                                    'value' => 36.5,
-                                ],
-                            ],
-                            'pivot' => [
-                                'id' => 1,
-                                'event_id' => 1,
-                                'material_id' => 1,
-                                'quantity' => 1,
-                                'quantity_returned' => 1,
-                                'quantity_broken' => 0,
-                            ],
-                        ],
-                        [
-                            'id' => 2,
-                            'name' => 'Processeur DBX PA2',
-                            'description' => 'Système de diffusion numérique',
-                            'reference' => 'DBXPA2',
-                            'is_unitary' => false,
-                            'park_id' => 1,
-                            'rental_price' => 25.5,
-                            'stock_quantity' => 2,
-                            'out_of_order_quantity' => null,
-                            'replacement_price' => 349.9,
-                            'is_hidden_on_bill' => false,
-                            'is_discountable' => true,
-                            'category_id' => 1,
-                            'sub_category_id' => 2,
-                            'tags' => [
-                                ['id' => 3, 'name' => 'pro'],
-                            ],
-                            'attributes' => [
-                                [
-                                    'id' => 3,
-                                    'name' => 'Puissance',
-                                    'type' => 'integer',
-                                    'unit' => 'W',
-                                    'value' => 35,
-                                ],
-                                [
-                                    'id' => 1,
-                                    'name' => 'Poids',
-                                    'type' => 'float',
-                                    'unit' => 'kg',
-                                    'value' => 2.2,
-                                ],
-                            ],
-                            'pivot' => [
-                                'id' => 2,
-                                'event_id' => 1,
-                                'material_id' => 2,
-                                'quantity' => 1,
-                                'quantity_returned' => 1,
-                                'quantity_broken' => 0,
-                            ],
-                        ],
-                        [
+                    ]),
+                ],
+                'invoices' => [
+                    InvoicesTest::data(1),
+                ],
+                'estimates' => [
+                    EstimatesTest::data(1),
+                ],
+                'user_id' => 1,
+                'user' => UsersTest::data(1),
+                'created_at' => '2018-12-01 12:50:45',
+                'updated_at' => '2018-12-05 08:31:21',
+            ],
+            [
+                'id' => 2,
+                'reference' => null,
+                'title' => 'Second événement',
+                'description' => null,
+                'location' => 'Lyon',
+                'start_date' => '2018-12-18 00:00:00',
+                'end_date' => '2018-12-19 23:59:59',
+                'duration' => 2,
+                'degressive_rate' => '1.75',
+                'discount_rate' => '0',
+                'vat_rate' => '20.00',
+                'currency' => 'EUR',
+                'daily_total_without_discount' => '951.00',
+                'daily_total_discountable' => '51.00',
+                'daily_total_discount' => '0.00',
+                'daily_total_without_taxes' => '951.00',
+                'daily_total_taxes' => '190.20',
+                'daily_total_with_taxes' => '1141.20',
+                'total_without_taxes' => '1664.25',
+                'total_taxes' => '332.85',
+                'total_with_taxes' => '1997.10',
+                'total_replacement' => '58899.80',
+                'is_archived' => false,
+                'is_billable' => true,
+                'is_confirmed' => false,
+                'has_missing_materials' => null,
+                'has_not_returned_materials' => true,
+                'is_return_inventory_done' => true,
+                'parks' => [1],
+                'materials' => [
+                    array_merge(MaterialsTest::data(1), [
+                        'pivot' => [
                             'id' => 4,
-                            'name' => 'Showtec SDS-6',
-                            'description' => "Console DMX (jeu d'orgue) Showtec 6 canaux",
-                            'reference' => 'SDS-6-01',
-                            'is_unitary' => false,
-                            'park_id' => 1,
-                            'rental_price' => 15.95,
-                            'stock_quantity' => 2,
-                            'out_of_order_quantity' => null,
-                            'replacement_price' => 59,
-                            'is_hidden_on_bill' => false,
-                            'is_discountable' => true,
-                            'category_id' => 2,
-                            'sub_category_id' => 4,
-                            'tags' => [],
-                            'attributes' => [
-                                [
-                                    'id' => 4,
-                                    'name' => 'Conforme',
-                                    'type' => 'boolean',
-                                    'unit' => null,
-                                    'value' => true,
-                                ],
-                                [
-                                    'id' => 3,
-                                    'name' => 'Puissance',
-                                    'type' => 'integer',
-                                    'unit' => 'W',
-                                    'value' => 60,
-                                ],
-                                [
-                                    'id' => 1,
-                                    'name' => 'Poids',
-                                    'type' => 'float',
-                                    'unit' => 'kg',
-                                    'value' => 3.15,
-                                ],
-                            ],
-                            'pivot' => [
-                                'id' => 3,
-                                'event_id' => 1,
-                                'material_id' => 4,
-                                'quantity' => 1,
-                                'quantity_returned' => 1,
-                                'quantity_broken' => 1,
-                            ],
+                            'event_id' => 2,
+                            'material_id' => 1,
+                            'quantity' => 3,
+                            'quantity_returned' => 2,
+                            'quantity_returned_broken' => 0,
                         ],
-                    ],
-                    'created_at' => null,
-                    'updated_at' => null,
-                    'deleted_at' => null,
+                    ]),
+                    array_merge(MaterialsTest::data(2), [
+                        'pivot' => [
+                            'id' => 5,
+                            'event_id' => 2,
+                            'material_id' => 2,
+                            'quantity' => 2,
+                            'quantity_returned' => 2,
+                            'quantity_returned_broken' => 0,
+                        ],
+                    ]),
                 ],
-                [
-                    'id' => 2,
-                    'user_id' => 1,
-                    'title' => "Second événement",
-                    'description' => null,
-                    'reference' => null,
-                    'start_date' => "2018-12-18 00:00:00",
-                    'end_date' => "2018-12-19 23:59:59",
-                    'is_confirmed' => false,
-                    'is_archived' => false,
-                    'location' => "Lyon",
-                    'is_billable' => true,
-                    'is_return_inventory_done' => true,
-                    'has_missing_materials' => null,
-                    'has_not_returned_materials' => true,
-                    'parks' => [1],
-                    'beneficiaries' => [
-                        [
-                            'id' => 3,
-                            'first_name' => 'Client',
-                            'last_name' => 'Benef',
-                            'full_name' => 'Client Benef',
-                            'country' => null,
-                            'company' => null,
-                            'reference' => null,
-                            'phone' => '+33123456789',
-                            'email' => 'client@beneficiaires.com',
-                            'company_id' => null,
-                            'street' => '156 bis, avenue des tests poussés',
-                            'postal_code' => '88080',
-                            'locality' => 'Wazzaville',
-                            'full_address' => "156 bis, avenue des tests poussés\n88080 Wazzaville",
-                            'pivot' => [
-                                'event_id' => 2,
-                                'person_id' => 3,
-                            ],
-                        ],
-                    ],
-                    'technicians' => [],
-                    'materials' => [
-                        [
-                            'id' => 1,
-                            'name' => 'Console Yamaha CL3',
-                            'description' => 'Console numérique 64 entrées / 8 sorties + Master + Sub',
-                            'reference' => 'CL3',
-                            'is_unitary' => false,
-                            'park_id' => 1,
-                            'rental_price' => 300,
-                            'stock_quantity' => 5,
-                            'out_of_order_quantity' => 1,
-                            'replacement_price' => 19400,
-                            'is_hidden_on_bill' => false,
-                            'is_discountable' => false,
-                            'category_id' => 1,
-                            'sub_category_id' => 1,
-                            'tags' => [
-                                ['id' => 3, 'name' => 'pro'],
-                            ],
-                            'attributes' => [
-                                [
-                                    'id' => 3,
-                                    'name' => 'Puissance',
-                                    'type' => 'integer',
-                                    'unit' => 'W',
-                                    'value' => 850,
-                                ],
-                                [
-                                    'id' => 2,
-                                    'name' => 'Couleur',
-                                    'type' => 'string',
-                                    'unit' => null,
-                                    'value' => 'Grise',
-                                ],
-                                [
-                                    'id' => 1,
-                                    'name' => 'Poids',
-                                    'type' => 'float',
-                                    'unit' => 'kg',
-                                    'value' => 36.5,
-                                ],
-                            ],
-                            'pivot' => [
-                                'id' => 4,
-                                'event_id' => 2,
-                                'material_id' => 1,
-                                'quantity' => 3,
-                                'quantity_returned' => 2,
-                                'quantity_broken' => 0,
-                            ],
-                        ],
-                        [
-                            'id' => 2,
-                            'name' => 'Processeur DBX PA2',
-                            'description' => 'Système de diffusion numérique',
-                            'reference' => 'DBXPA2',
-                            'is_unitary' => false,
-                            'park_id' => 1,
-                            'rental_price' => 25.5,
-                            'stock_quantity' => 2,
-                            'out_of_order_quantity' => null,
-                            'replacement_price' => 349.9,
-                            'is_hidden_on_bill' => false,
-                            'is_discountable' => true,
-                            'category_id' => 1,
-                            'sub_category_id' => 2,
-                            'tags' => [
-                                ['id' => 3, 'name' => 'pro'],
-                            ],
-                            'attributes' => [
-                                [
-                                    'id' => 3,
-                                    'name' => 'Puissance',
-                                    'type' => 'integer',
-                                    'unit' => 'W',
-                                    'value' => 35,
-                                ],
-                                [
-                                    'id' => 1,
-                                    'name' => 'Poids',
-                                    'type' => 'float',
-                                    'unit' => 'kg',
-                                    'value' => 2.2,
-                                ],
-                            ],
-                            'pivot' => [
-                                'id' => 5,
-                                'event_id' => 2,
-                                'material_id' => 2,
-                                'quantity' => 2,
-                                'quantity_returned' => 2,
-                                'quantity_broken' => 0,
-                            ],
-                        ],
-                    ],
-                    'created_at' => null,
-                    'updated_at' => null,
-                    'deleted_at' => null,
+                'beneficiaries' => [
+                    BeneficiariesTest::data(3),
                 ],
-            ]
+                'technicians' => [],
+                'estimates' => [],
+                'invoices' => [],
+                'user_id' => 1,
+                'user' => UsersTest::data(1),
+                'created_at' => '2018-12-16 12:50:45',
+                'updated_at' => null,
+            ],
+            [
+                'id' => 3,
+                'reference' => null,
+                'title' => 'Avant-premier événement',
+                'description' => null,
+                'location' => 'Brousse',
+                'start_date' => '2018-12-15 00:00:00',
+                'end_date' => '2018-12-16 23:59:59',
+                'duration' => 2,
+                'currency' => 'EUR',
+                'total_replacement' => '1353.90',
+                'has_missing_materials' => null,
+                'has_not_returned_materials' => null,
+                'is_archived' => true,
+                'is_billable' => false,
+                'is_confirmed' => false,
+                'is_return_inventory_done' => true,
+                'parks' => [1],
+                'materials' => [
+                    array_merge(MaterialsTest::data(3), [
+                        'pivot' => [
+                            'id' => 6,
+                            'event_id' => 3,
+                            'material_id' => 3,
+                            'quantity' => 10,
+                            'quantity_returned' => 0,
+                            'quantity_returned_broken' => 0,
+                        ],
+                    ]),
+                    array_merge(MaterialsTest::data(2), [
+                        'pivot' => [
+                            'id' => 7,
+                            'event_id' => 3,
+                            'material_id' => 2,
+                            'quantity' => 1,
+                            'quantity_returned' => 0,
+                            'quantity_returned_broken' => 0,
+                        ],
+                    ]),
+                    array_merge(MaterialsTest::data(5), [
+                        'pivot' => [
+                            'id' => 8,
+                            'event_id' => 3,
+                            'material_id' => 5,
+                            'quantity' => 12,
+                            'quantity_returned' => 0,
+                            'quantity_returned_broken' => 0,
+                        ],
+                    ]),
+                ],
+                'beneficiaries' => [],
+                'technicians' => [],
+                'user_id' => 1,
+                'user' => UsersTest::data(1),
+                'created_at' => '2018-12-14 12:20:00',
+                'updated_at' => '2018-12-14 12:30:00',
+            ],
+            [
+                'id' => 4,
+                'reference' => null,
+                'title' => 'Concert X',
+                'description' => null,
+                'location' => 'Moon',
+                'start_date' => '2019-03-01 00:00:00',
+                'end_date' => '2019-04-10 23:59:59',
+                'duration' => 41,
+                'currency' => 'EUR',
+                'total_replacement' => '116238.00',
+                'is_archived' => false,
+                'is_billable' => false,
+                'is_confirmed' => false,
+                'is_return_inventory_done' => false,
+                'has_missing_materials' => null,
+                'has_not_returned_materials' => null,
+                'parks' => [1, 2],
+                'materials' => [
+                    array_merge(MaterialsTest::data(1), [
+                        'pivot' => [
+                            'id' => 9,
+                            'event_id' => 4,
+                            'material_id' => 1,
+                            'quantity' => 1,
+                            'quantity_returned' => 0,
+                            'quantity_returned_broken' => 0,
+                        ],
+                    ]),
+                    array_merge(MaterialsTest::data(6), [
+                        'pivot' => [
+                            'id' => 10,
+                            'event_id' => 4,
+                            'material_id' => 6,
+                            'quantity' => 2,
+                            'quantity_returned' => 1,
+                            'quantity_returned_broken' => 0,
+                        ],
+                    ]),
+                    array_merge(MaterialsTest::data(7), [
+                        'pivot' => [
+                            'id' => 11,
+                            'event_id' => 4,
+                            'material_id' => 7,
+                            'quantity' => 3,
+                            'quantity_returned' => 0,
+                            'quantity_returned_broken' => 0,
+                        ],
+                    ]),
+                ],
+                'beneficiaries' => [],
+                'technicians' => [],
+                'user_id' => 1,
+                'user' => UsersTest::data(1),
+                'created_at' => '2019-01-01 20:12:00',
+                'updated_at' => null,
+            ],
+            [
+                'id' => 5,
+                'reference' => null,
+                'title' => "Kermesse de l'école des trois cailloux",
+                'description' => null,
+                'location' => 'Saint-Jean-la-Forêt',
+                'start_date' => '2020-01-01 00:00:00',
+                'end_date' => '2020-01-01 23:59:59',
+                'duration' => 1,
+                'currency' => 'EUR',
+                'total_replacement' => '17000.00',
+                'is_archived' => false,
+                'is_billable' => false,
+                'is_confirmed' => false,
+                'is_return_inventory_done' => false,
+                'has_missing_materials' => null,
+                'has_not_returned_materials' => null,
+                'parks' => [1],
+                'materials' => [
+                    array_merge(MaterialsTest::data(8), [
+                        'pivot' => [
+                            'id' => 12,
+                            'event_id' => 5,
+                            'material_id' => 8,
+                            'quantity' => 2,
+                            'quantity_returned' => 0,
+                            'quantity_returned_broken' => 0,
+                        ],
+                    ]),
+                ],
+                'beneficiaries' => [
+                    BeneficiariesTest::data(1),
+                ],
+                'technicians' => [],
+                'user_id' => 1,
+                'user' => UsersTest::data(1),
+                'created_at' => '2019-12-25 14:59:40',
+                'updated_at' => null,
+            ],
+            [
+                'id' => 6,
+                'reference' => null,
+                'title' => 'Un événement sans inspiration',
+                'description' => null,
+                'location' => 'La Clusaz',
+                'start_date' => '2019-03-15 00:00:00',
+                'end_date' => '2019-04-01 23:59:59',
+                'duration' => 18,
+                'currency' => 'EUR',
+                'total_replacement' => '0.00',
+                'is_archived' => false,
+                'is_billable' => false,
+                'is_confirmed' => false,
+                'is_return_inventory_done' => false,
+                'has_missing_materials' => null,
+                'has_not_returned_materials' => null,
+                'parks' => [],
+                'materials' => [],
+                'beneficiaries' => [],
+                'technicians' => [],
+                'user_id' => 1,
+                'user' => UsersTest::data(1),
+                'created_at' => '2019-02-01 12:00:00',
+                'updated_at' => '2019-02-01 12:05:00',
+            ],
+            [
+                'id' => 7,
+                'reference' => null,
+                'title' => 'Premier événement',
+                'description' => null,
+                'location' => 'Gap',
+                'start_date' => '2021-07-01 00:00:00',
+                'end_date' => '2021-07-03 23:59:59',
+                'duration' => 3,
+                'degressive_rate' => '2.50',
+                'discount_rate' => '0',
+                'vat_rate' => '20.00',
+                'currency' => 'EUR',
+                'daily_total_without_discount' => '341.45',
+                'daily_total_discountable' => '41.45',
+                'daily_total_discount' => '0.00',
+                'daily_total_without_taxes' => '341.45',
+                'daily_total_taxes' => '68.29',
+                'daily_total_with_taxes' => '409.74',
+                'total_without_taxes' => '853.63',
+                'total_taxes' => '170.73',
+                'total_with_taxes' => '1024.36',
+                'total_replacement' => '19808.90',
+                'is_archived' => false,
+                'is_billable' => true,
+                'is_confirmed' => false,
+                'is_return_inventory_done' => false,
+                'has_missing_materials' => false,
+                'has_not_returned_materials' => null,
+                'parks' => [1],
+                'materials' => [
+                    array_merge(MaterialsTest::data(1), [
+                        'pivot' => [
+                            'id' => 13,
+                            'event_id' => 7,
+                            'material_id' => 1,
+                            'quantity' => 1,
+                            'quantity_returned' => 0,
+                            'quantity_returned_broken' => 0,
+                        ],
+                    ]),
+                    array_merge(MaterialsTest::data(2), [
+                        'pivot' => [
+                            'id' => 14,
+                            'event_id' => 7,
+                            'material_id' => 2,
+                            'quantity' => 1,
+                            'quantity_returned' => 0,
+                            'quantity_returned_broken' => 0,
+                        ],
+                    ]),
+                    array_merge(MaterialsTest::data(4), [
+                        'pivot' => [
+                            'id' => 15,
+                            'event_id' => 7,
+                            'material_id' => 4,
+                            'quantity' => 1,
+                            'quantity_returned' => 0,
+                            'quantity_returned_broken' => 0,
+                        ],
+                    ]),
+                ],
+                'beneficiaries' => [
+                    BeneficiariesTest::data(1),
+                ],
+                'technicians' => [
+                    [
+                        'id' => 3,
+                        'event_id' => 7,
+                        'technician_id' => 1,
+                        'start_time' => '2021-07-01 09:00:00',
+                        'end_time' => '2021-07-02 22:00:00',
+                        'position' => 'Régisseur',
+                        'technician' => TechniciansTest::data(1),
+                    ],
+                    [
+                        'id' => 4,
+                        'event_id' => 7,
+                        'technician_id' => 2,
+                        'start_time' => '2021-07-02 14:00:00',
+                        'end_time' => '2021-07-02 18:00:00',
+                        'position' => 'Technicien plateau',
+                        'technician' => TechniciansTest::data(2),
+                    ],
+                ],
+                'estimates' => [],
+                'invoices' => [],
+                'user_id' => 1,
+                'user' => UsersTest::data(1),
+                'created_at' => '2021-06-22 12:11:02',
+                'updated_at' => '2021-06-22 12:11:02',
+            ],
         ]);
 
-        $this->client->get('/api/events?start=2018-12-01&end=2018-12-31&deleted=1');
-        $this->assertStatusCode(SUCCESS_OK);
-        $this->assertResponseData(['data' => []]);
-    }
-
-    public function testGetEventsTooMuch()
-    {
-        $this->client->get('/api/events?start=2018-01-01&end=2018-12-31');
-        $this->assertStatusCode(416);
-        $this->assertErrorMessage("The retrieval period for events may not exceed 3.5 months.");
+        return static::_dataFactory($id, $events->all());
     }
 
     public function testGetEventNotFound()
     {
         $this->client->get('/api/events/999');
-        $this->assertNotFound();
+        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
     public function testGetOneEvent()
     {
         $this->client->get('/api/events/1');
-        $this->assertStatusCode(SUCCESS_OK);
-        $this->assertResponseData([
-            'id' => 1,
-            'user_id' => 1,
-            'title' => "Premier événement",
-            'description' => null,
-            'reference' => null,
-            'start_date' => "2018-12-17 00:00:00",
-            'end_date' => "2018-12-18 23:59:59",
-            'is_confirmed' => false,
-            'is_archived' => false,
-            'location' => "Gap",
-            'is_billable' => true,
-            'is_return_inventory_done' => true,
-            'has_missing_materials' => null,
-            'has_not_returned_materials' => false,
-            'created_at' => null,
-            'updated_at' => null,
-            'deleted_at' => null,
-            'user' => [
-                'id' => 1,
-                'pseudo' => 'test1',
-                'email' => 'tester@robertmanager.net',
-                'group_id' => 'admin',
-                'person' => [
-                    'id' => 1,
-                    'user_id' => 1,
-                    'first_name' => 'Jean',
-                    'last_name' => 'Fountain',
-                    'full_name' => 'Jean Fountain',
-                    'reference' => '0001',
-                    'nickname' => null,
-                    'email' => 'tester@robertmanager.net',
-                    'phone' => null,
-                    'street' => '1, somewhere av.',
-                    'postal_code' => '1234',
-                    'locality' => 'Megacity',
-                    'country_id' => 1,
-                    'full_address' => "1, somewhere av.\n1234 Megacity",
-                    'company_id' => 1,
-                    'note' => null,
-                    'created_at' => null,
-                    'updated_at' => null,
-                    'deleted_at' => null,
-                    'company' => [
-                        'id' => 1,
-                        'legal_name' => 'Testing, Inc',
-                        'street' => '1, company st.',
-                        'postal_code' => '1234',
-                        'locality' => 'Megacity',
-                        'country_id' => 1,
-                        'full_address' => "1, company st.\n1234 Megacity",
-                        'phone' => '+4123456789',
-                        'note' => 'Just for tests',
-                        'created_at' => null,
-                        'updated_at' => null,
-                        'deleted_at' => null,
-                        'country' => [
-                            'id' => 1,
-                            'name' => 'France',
-                            'code' => 'FR',
-                        ],
-                    ],
-                    'country' => [
-                        'id' => 1,
-                        'code' => 'FR',
-                        'name' => 'France',
-                    ]
-                ],
-            ],
-            'technicians' => [
-                [
-                    'id' => 1,
-                    'event_id' => 1,
-                    'technician_id' => 1,
-                    'start_time' => '2018-12-17 09:00:00',
-                    'end_time' => '2018-12-18 22:00:00',
-                    'position' => 'Régisseur',
-                    'technician' => [
-                        'id' => 1,
-                        'first_name' => 'Jean',
-                        'last_name' => 'Fountain',
-                        'nickname' => null,
-                        'full_name' => 'Jean Fountain',
-                        'phone' => null,
-                        'company' => null,
-                        'full_address' => null,
-                        'country' => null,
-                    ],
-                ],
-                [
-                    'id' => 2,
-                    'event_id' => 1,
-                    'technician_id' => 2,
-                    'start_time' => '2018-12-18 14:00:00',
-                    'end_time' => '2018-12-18 18:00:00',
-                    'position' => 'Technicien plateau',
-                    'technician' => [
-                        'id' => 2,
-                        'first_name' => 'Roger',
-                        'last_name' => 'Rabbit',
-                        'nickname' => 'Riri',
-                        'full_name' => 'Roger Rabbit',
-                        'phone' => null,
-                        'company' => null,
-                        'full_address' => null,
-                        'country' => null,
-                    ],
-                ],
-            ],
-            'beneficiaries' => [
-                [
-                    'id' => 3,
-                    'first_name' => 'Client',
-                    'last_name' => 'Benef',
-                    'full_name' => 'Client Benef',
-                    'reference' => null,
-                    'phone' => '+33123456789',
-                    'email' => 'client@beneficiaires.com',
-                    'street' => '156 bis, avenue des tests poussés',
-                    'postal_code' => '88080',
-                    'locality' => 'Wazzaville',
-                    'full_address' => "156 bis, avenue des tests poussés\n88080 Wazzaville",
-                    'company_id' => null,
-                    'company' => null,
-                    'country' => null,
-                    'pivot' => ['event_id' => '1', 'person_id' => '3'],
-                ],
-            ],
-            'materials' => [
-                [
-                    'id' => 4,
-                    'name' => 'Showtec SDS-6',
-                    'description' => "Console DMX (jeu d'orgue) Showtec 6 canaux",
-                    'reference' => 'SDS-6-01',
-                    'is_unitary' => false,
-                    'park_id' => 1,
-                    'rental_price' => 15.95,
-                    'stock_quantity' => 2,
-                    'out_of_order_quantity' => null,
-                    'replacement_price' => 59,
-                    'is_hidden_on_bill' => false,
-                    'is_discountable' => true,
-                    'category_id' => 2,
-                    'sub_category_id' => 4,
-                    'tags' => [],
-                    'attributes' => [
-                        [
-                            'id' => 4,
-                            'name' => 'Conforme',
-                            'type' => 'boolean',
-                            'unit' => null,
-                            'value' => true,
-                        ],
-                        [
-                            'id' => 3,
-                            'name' => 'Puissance',
-                            'type' => 'integer',
-                            'unit' => 'W',
-                            'value' => 60,
-                        ],
-                        [
-                            'id' => 1,
-                            'name' => 'Poids',
-                            'type' => 'float',
-                            'unit' => 'kg',
-                            'value' => 3.15,
-                        ],
-                    ],
-                    'pivot' => [
-                        'id' => 3,
-                        'event_id' => 1,
-                        'material_id' => 4,
-                        'quantity' => 1,
-                        'quantity_returned' => 1,
-                        'quantity_broken' => 1,
-                    ],
-                ],
-                [
-                    'id' => 2,
-                    'name' => 'Processeur DBX PA2',
-                    'description' => 'Système de diffusion numérique',
-                    'reference' => 'DBXPA2',
-                    'is_unitary' => false,
-                    'park_id' => 1,
-                    'rental_price' => 25.5,
-                    'stock_quantity' => 2,
-                    'out_of_order_quantity' => null,
-                    'replacement_price' => 349.9,
-                    'is_hidden_on_bill' => false,
-                    'is_discountable' => true,
-                    'category_id' => 1,
-                    'sub_category_id' => 2,
-                    'tags' => [
-                        ['id' => 3, 'name' => 'pro'],
-                    ],
-                    'attributes' => [
-                        [
-                            'id' => 3,
-                            'name' => 'Puissance',
-                            'type' => 'integer',
-                            'unit' => 'W',
-                            'value' => 35,
-                        ],
-                        [
-                            'id' => 1,
-                            'name' => 'Poids',
-                            'type' => 'float',
-                            'unit' => 'kg',
-                            'value' => 2.2,
-                        ],
-                    ],
-                    'pivot' => [
-                        'id' => 2,
-                        'event_id' => 1,
-                        'material_id' => 2,
-                        'quantity' => 1,
-                        'quantity_returned' => 1,
-                        'quantity_broken' => 0,
-                    ],
-                ],
-                [
-                    'id' => 1,
-                    'name' => 'Console Yamaha CL3',
-                    'description' => 'Console numérique 64 entrées / 8 sorties + Master + Sub',
-                    'reference' => 'CL3',
-                    'is_unitary' => false,
-                    'park_id' => 1,
-                    'rental_price' => 300,
-                    'stock_quantity' => 5,
-                    'out_of_order_quantity' => 1,
-                    'replacement_price' => 19400,
-                    'is_hidden_on_bill' => false,
-                    'is_discountable' => false,
-                    'category_id' => 1,
-                    'sub_category_id' => 1,
-                    'tags' => [
-                        ['id' => 3, 'name' => 'pro'],
-                    ],
-                    'attributes' => [
-                        [
-                            'id' => 3,
-                            'name' => 'Puissance',
-                            'type' => 'integer',
-                            'unit' => 'W',
-                            'value' => 850,
-                        ],
-                        [
-                            'id' => 2,
-                            'name' => 'Couleur',
-                            'type' => 'string',
-                            'unit' => null,
-                            'value' => 'Grise',
-                        ],
-                        [
-                            'id' => 1,
-                            'name' => 'Poids',
-                            'type' => 'float',
-                            'unit' => 'kg',
-                            'value' => 36.5,
-                        ],
-                    ],
-                    'pivot' => [
-                        'id' => 1,
-                        'event_id' => 1,
-                        'material_id' => 1,
-                        'quantity' => 1,
-                        'quantity_returned' => 1,
-                        'quantity_broken' => 0,
-                    ],
-                ],
-            ],
-            'bills' => [
-                [
-                    'id' => 1,
-                    'number' => '2020-00001',
-                    'date' => '2020-01-30 14:00:00',
-                    'discount_rate' => 50.0,
-                    'due_amount' => 325.5,
-                ],
-            ],
-            'estimates' => [
-                [
-                    'id' => 1,
-                    'date' => '2021-01-30 14:00:00',
-                    'discount_rate' => 50.0,
-                    'due_amount' => 325.5,
-                ],
-            ],
-        ]);
+        $this->assertStatusCode(StatusCode::STATUS_OK);
+        $this->assertResponseData(self::data(1));
     }
 
     public function testCreateEvent()
@@ -837,7 +474,7 @@ final class EventsTest extends ApiTestCase
             'location' => 'Avignon',
         ];
         $this->client->post('/api/events', $data);
-        $this->assertStatusCode(SUCCESS_CREATED);
+        $this->assertStatusCode(StatusCode::STATUS_CREATED);
         $response = $this->_getResponseAsArray();
         $this->assertEquals(7, $response['id']);
         $this->assertEquals(1, $response['user_id']);
@@ -872,7 +509,7 @@ final class EventsTest extends ApiTestCase
             ],
         ]);
         $this->client->post('/api/events', $dataWithChildren);
-        $this->assertStatusCode(SUCCESS_CREATED);
+        $this->assertStatusCode(StatusCode::STATUS_CREATED);
         $response = $this->_getResponseAsArray();
         $this->assertEquals(8, $response['id']);
         $this->assertEquals(2, $response['user_id']);
@@ -882,315 +519,37 @@ final class EventsTest extends ApiTestCase
         $this->assertNull($response['technicians'][0]['position']);
         $this->assertEquals('Régie générale', $response['technicians'][1]['position']);
         $this->assertCount(3, $response['materials']);
-        $this->assertEquals(2, $response['materials'][0]['pivot']['quantity']);
+
+        $expectedData = [
+            ['id' => 1, 'quantity' => 1],
+            ['id' => 2, 'quantity' => 1],
+            ['id' => 4, 'quantity' => 2],
+        ];
+        foreach ($expectedData as $index => $expected) {
+            $this->assertArrayHasKey($index, $response['materials']);
+            $resultMaterial = $response['materials'][$index];
+
+            $this->assertEquals($expected['id'], $resultMaterial['id']);
+            $this->assertEquals($expected['quantity'], $resultMaterial['pivot']['quantity']);
+        }
     }
 
     public function testUpdateEventNoData()
     {
         $this->client->put('/api/events/1', []);
-        $this->assertStatusCode(ERROR_VALIDATION);
-        $this->assertErrorMessage("Missing request data to process validation");
+        $this->assertStatusCode(StatusCode::STATUS_BAD_REQUEST);
+        $this->assertApiErrorMessage("No data was provided.");
     }
 
     public function testUpdateEventNotFound()
     {
         $this->client->put('/api/events/999', ['name' => '__inexistant__']);
-        $this->assertNotFound();
+        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
     public function testUpdateEvent()
     {
-        // - Données attendues pour les tests qui suivent
-        $expected = [
-            'id' => 1,
-            'user_id' => 1,
-            'user' => [
-                'id' => 1,
-                'pseudo' => 'test1',
-                'email' => 'tester@robertmanager.net',
-                'group_id' => 'admin',
-                'person' => [
-                    'id' => 1,
-                    'user_id' => 1,
-                    'first_name' => 'Jean',
-                    'last_name' => 'Fountain',
-                    'reference' => '0001',
-                    'nickname' => '',
-                    'email' => 'tester@robertmanager.net',
-                    'phone' => '',
-                    'street' => '1, somewhere av.',
-                    'postal_code' => '1234',
-                    'locality' => 'Megacity',
-                    'country_id' => 1,
-                    'full_address' => "1, somewhere av.\n1234 Megacity",
-                    'company_id' => 1,
-                    'note' => null,
-                    'created_at' => null,
-                    'updated_at' => null,
-                    'deleted_at' => null,
-                    'full_name' => 'Jean Fountain',
-                    'company' => [
-                        'id' => 1,
-                        'legal_name' => 'Testing, Inc',
-                        'street' => '1, company st.',
-                        'postal_code' => '1234',
-                        'locality' => 'Megacity',
-                        'country_id' => 1,
-                        'full_address' => "1, company st.\n1234 Megacity",
-                        'phone' => '+4123456789',
-                        'note' => 'Just for tests',
-                        'created_at' => null,
-                        'updated_at' => null,
-                        'deleted_at' => null,
-                        'country' => [
-                            'id' => 1,
-                            'name' => 'France',
-                            'code' => 'FR',
-                        ],
-                    ],
-                    'country' => [
-                        'id' => 1,
-                        'name' => 'France',
-                        'code' => 'FR',
-                    ],
-                ],
-            ],
-            'title' => "Premier événement modifié",
-            'description' => null,
-            'reference' => null,
-            'start_date' => '2018-12-17 00:00:00',
-            'end_date' => '2018-12-18 23:59:59',
-            'is_confirmed' => true,
-            'is_archived' => false,
-            'location' => 'Gap et Briançon',
-            'is_billable' => false,
-            'is_return_inventory_done' => true,
-            'technicians' => [
-                [
-                    'id' => 1,
-                    'event_id' => 1,
-                    'technician_id' => 1,
-                    'start_time' => '2018-12-17 09:00:00',
-                    'end_time' => '2018-12-18 22:00:00',
-                    'position' => 'Régisseur',
-                    'technician' => [
-                        'id' => 1,
-                        'first_name' => 'Jean',
-                        'last_name' => 'Fountain',
-                        'nickname' => null,
-                        'full_name' => 'Jean Fountain',
-                        'phone' => null,
-                        'company' => null,
-                        'full_address' => null,
-                        'country' => null,
-                    ],
-                ],
-                [
-                    'id' => 2,
-                    'event_id' => 1,
-                    'technician_id' => 2,
-                    'start_time' => '2018-12-18 14:00:00',
-                    'end_time' => '2018-12-18 18:00:00',
-                    'position' => 'Technicien plateau',
-                    'technician' => [
-                        'id' => 2,
-                        'first_name' => 'Roger',
-                        'last_name' => 'Rabbit',
-                        'nickname' => 'Riri',
-                        'full_name' => 'Roger Rabbit',
-                        'phone' => null,
-                        'company' => null,
-                        'full_address' => null,
-                        'country' => null,
-                    ],
-                ],
-            ],
-            'beneficiaries' => [
-                [
-                    'id' => 3,
-                    'first_name' => 'Client',
-                    'last_name' => 'Benef',
-                    'full_name' => 'Client Benef',
-                    'reference' => null,
-                    'phone' => '+33123456789',
-                    'email' => 'client@beneficiaires.com',
-                    'street' => '156 bis, avenue des tests poussés',
-                    'postal_code' => '88080',
-                    'locality' => 'Wazzaville',
-                    'full_address' => "156 bis, avenue des tests poussés\n88080 Wazzaville",
-                    'company_id' => null,
-                    'company' => null,
-                    'country' => null,
-                    'pivot' => [
-                        'event_id' => '1',
-                        'person_id' => '3',
-                    ],
-                ],
-            ],
-            'materials' => [
-                [
-                    'id' => 4,
-                    'name' => 'Showtec SDS-6',
-                    'description' => 'Console DMX (jeu d\'orgue) Showtec 6 canaux',
-                    'reference' => 'SDS-6-01',
-                    'is_unitary' => false,
-                    'park_id' => 1,
-                    'category_id' => 2,
-                    'sub_category_id' => 4,
-                    'rental_price' => 15.95,
-                    'stock_quantity' => 2,
-                    'out_of_order_quantity' => null,
-                    'replacement_price' => 59,
-                    'is_hidden_on_bill' => false,
-                    'is_discountable' => true,
-                    'tags' => [],
-                    'attributes' => [
-                        [
-                            'id' => 4,
-                            'name' => 'Conforme',
-                            'type' => 'boolean',
-                            'unit' => null,
-                            'value' => true,
-                        ],
-                        [
-                            'id' => 3,
-                            'name' => 'Puissance',
-                            'type' => 'integer',
-                            'unit' => 'W',
-                            'value' => 60,
-                        ],
-                        [
-                            'id' => 1,
-                            'name' => 'Poids',
-                            'type' => 'float',
-                            'unit' => 'kg',
-                            'value' => 3.15,
-                        ],
-                    ],
-                    'pivot' => [
-                        'id' => 3,
-                        'event_id' => 1,
-                        'material_id' => 4,
-                        'quantity' => 1,
-                        'quantity_returned' => 1,
-                        'quantity_broken' => 1,
-                    ],
-                ],
-                [
-                    'id' => 2,
-                    'name' => 'Processeur DBX PA2',
-                    'description' => 'Système de diffusion numérique',
-                    'reference' => 'DBXPA2',
-                    'is_unitary' => false,
-                    'park_id' => 1,
-                    'category_id' => 1,
-                    'sub_category_id' => 2,
-                    'rental_price' => 25.5,
-                    'stock_quantity' => 2,
-                    'out_of_order_quantity' => null,
-                    'replacement_price' => 349.9,
-                    'is_hidden_on_bill' => false,
-                    'is_discountable' => true,
-                    'tags' => [
-                        ['id' => 3, 'name' => 'pro'],
-                    ],
-                    'attributes' => [
-                        [
-                            'id' => 3,
-                            'name' => 'Puissance',
-                            'type' => 'integer',
-                            'unit' => 'W',
-                            'value' => 35,
-                        ],
-                        [
-                            'id' => 1,
-                            'name' => 'Poids',
-                            'type' => 'float',
-                            'unit' => 'kg',
-                            'value' => 2.2,
-                        ],
-                    ],
-                    'pivot' => [
-                        'id' => 2,
-                        'event_id' => 1,
-                        'material_id' => 2,
-                        'quantity' => 1,
-                        'quantity_returned' => 1,
-                        'quantity_broken' => 0,
-                    ],
-                ],
-                [
-                    'id' => 1,
-                    'name' => 'Console Yamaha CL3',
-                    'description' => 'Console numérique 64 entrées / 8 sorties + Master + Sub',
-                    'reference' => 'CL3',
-                    'is_unitary' => false,
-                    'park_id' => 1,
-                    'category_id' => 1,
-                    'sub_category_id' => 1,
-                    'rental_price' => 300,
-                    'stock_quantity' => 5,
-                    'out_of_order_quantity' => 1,
-                    'replacement_price' => 19400,
-                    'is_hidden_on_bill' => false,
-                    'is_discountable' => false,
-                    'tags' => [
-                        ['id' => 3, 'name' => 'pro'],
-                    ],
-                    'attributes' => [
-                        [
-                            'id' => 3,
-                            'name' => 'Puissance',
-                            'type' => 'integer',
-                            'unit' => 'W',
-                            'value' => 850,
-                        ],
-                        [
-                            'id' => 2,
-                            'name' => 'Couleur',
-                            'type' => 'string',
-                            'unit' => null,
-                            'value' => 'Grise',
-                        ],
-                        [
-                            'id' => 1,
-                            'name' => 'Poids',
-                            'type' => 'float',
-                            'unit' => 'kg',
-                            'value' => 36.5,
-                        ],
-                    ],
-                    'pivot' => [
-                        'id' => 1,
-                        'event_id' => 1,
-                        'material_id' => 1,
-                        'quantity' => 1,
-                        'quantity_returned' => 1,
-                        'quantity_broken' => 0,
-                    ],
-                ],
-            ],
-            'bills' => [
-                [
-                    'id' => 1,
-                    'number' => '2020-00001',
-                    'date' => '2020-01-30 14:00:00',
-                    'discount_rate' => 50.0,
-                    'due_amount' => 325.5,
-                ],
-            ],
-            'estimates' => [
-                [
-                    'id' => 1,
-                    'date' => '2021-01-30 14:00:00',
-                    'discount_rate' => 50.0,
-                    'due_amount' => 325.5,
-                ],
-            ],
-            'created_at' => null,
-            'updated_at' => 'fakedTestContent',
-            'deleted_at' => null,
-        ];
+        Carbon::setTestNow(Carbon::create(2022, 10, 22, 18, 42, 36));
 
         // - Test avec des données simples
         $data = [
@@ -1203,11 +562,12 @@ final class EventsTest extends ApiTestCase
             'is_confirmed' => true,
             'is_archived' => false,
             'location' => 'Gap et Briançon',
-            'is_billable' => false,
         ];
         $this->client->put('/api/events/1', $data);
-        $this->assertStatusCode(SUCCESS_OK);
-        $this->assertResponseData($expected, ['updated_at']);
+        $this->assertStatusCode(StatusCode::STATUS_OK);
+        $this->assertResponseData(array_replace(self::data(1), $data, [
+            'updated_at' => '2022-10-22 18:42:36',
+        ]));
 
         // - Test avec des données qui contiennent les sous-entités (hasMany)
         $dataWithChildren = array_merge($data, [
@@ -1233,299 +593,506 @@ final class EventsTest extends ApiTestCase
             ],
         ]);
         $this->client->put('/api/events/1', $dataWithChildren);
-        $this->assertStatusCode(SUCCESS_OK);
-        $response = $this->_getResponseAsArray();
-        $this->assertEquals(2, $response['beneficiaries'][0]['id']);
-        $this->assertEquals('Showtec SDS-6', $response['materials'][0]['name']);
-        $this->assertEquals(3, $response['materials'][0]['pivot']['quantity']);
-        $this->assertEquals('Jean Fountain', $response['technicians'][0]['technician']['full_name']);
-        $this->assertEquals('2018-12-17 10:30:00', $response['technicians'][0]['start_time']);
-        $this->assertEquals('2018-12-18 23:30:00', $response['technicians'][0]['end_time']);
-        $this->assertEquals('Régisseur général', $response['technicians'][0]['position']);
-        $this->assertEquals('Roger Rabbit', $response['technicians'][1]['technician']['full_name']);
-        $this->assertEquals('2018-12-18 13:30:00', $response['technicians'][1]['start_time']);
-        $this->assertEquals('2018-12-18 23:30:00', $response['technicians'][1]['end_time']);
-        $this->assertEquals('Technicien polyvalent', $response['technicians'][1]['position']);
+        $this->assertStatusCode(StatusCode::STATUS_OK);
+        $this->assertResponseData(array_replace(self::data(1), $data, [
+            'daily_total_without_discount' => '749.85',
+            'daily_total_discountable' => '149.85',
+            'daily_total_without_taxes' => '749.85',
+            'daily_total_taxes' => '149.97',
+            'daily_total_with_taxes' => '899.82',
+            'total_replacement' => '40376.60',
+            'total_without_taxes' => '1312.24',
+            'total_taxes' => '262.45',
+            'total_with_taxes' => '1574.69',
+            'has_not_returned_materials' => true,
+            'materials' => [
+                array_merge(MaterialsTest::data(1), [
+                    'pivot' => [
+                        'id' => 1,
+                        'event_id' => 1,
+                        'material_id' => 1,
+                        'quantity' => 2,
+                        'quantity_returned' => 1,
+                        'quantity_returned_broken' => 0,
+                    ],
+                ]),
+                array_merge(MaterialsTest::data(2), [
+                    'pivot' => [
+                        'id' => 2,
+                        'event_id' => 1,
+                        'material_id' => 2,
+                        'quantity' => 4,
+                        'quantity_returned' => 1,
+                        'quantity_returned_broken' => 0,
+                    ],
+                ]),
+                array_merge(MaterialsTest::data(4), [
+                    'pivot' => [
+                        'id' => 3,
+                        'event_id' => 1,
+                        'material_id' => 4,
+                        'quantity' => 3,
+                        'quantity_returned' => 1,
+                        'quantity_returned_broken' => 1,
+                    ],
+                ]),
+            ],
+            'beneficiaries' => [
+                BeneficiariesTest::data(2),
+            ],
+            'technicians' => [
+                [
+                    'id' => 3,
+                    'event_id' => 1,
+                    'technician_id' => 1,
+                    'start_time' => '2018-12-17 10:30:00',
+                    'end_time' => '2018-12-18 23:30:00',
+                    'position' => 'Régisseur général',
+                    'technician' => TechniciansTest::data(1),
+                ],
+                [
+                    'id' => 4,
+                    'event_id' => 1,
+                    'technician_id' => 2,
+                    'start_time' => '2018-12-18 13:30:00',
+                    'end_time' => '2018-12-18 23:30:00',
+                    'position' => 'Technicien polyvalent',
+                    'technician' => TechniciansTest::data(2),
+                ],
+            ],
+            'updated_at' => '2022-10-22 18:42:36',
+        ]));
     }
 
     public function testDuplicateEventNotFound()
     {
         $this->client->post('/api/events/999/duplicate', []);
-        $this->assertNotFound();
+        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
     public function testDuplicateEventBadData()
     {
-        $data = ['user_id' => 1];
-        $this->client->post('/api/events/1/duplicate', $data);
-        $this->assertStatusCode(ERROR_VALIDATION);
-        $this->assertValidationErrorMessage();
-        $response = $this->_getResponseAsArray();
-        $expected = [
-            'start_date' => [
-                "This field is mandatory",
-                "This date is not valid",
-            ],
-            'end_date' => [
-                "This field is not valid",
-            ],
-        ];
-        $this->assertEquals($expected, $response['error']['details']);
+        $this->client->post('/api/events/1/duplicate', [
+            'start_date' => 'invalid-date',
+        ]);
+        $this->assertApiValidationError([
+            'start_date' => ['This date is not valid'],
+            'end_date' => ['This date is not valid'],
+        ]);
     }
 
     public function testDuplicateEvent()
     {
+        Carbon::setTestNow(Carbon::create(2021, 06, 22, 12, 11, 02));
+
         // - Duplication de l'événement n°1
-        $data = [
-            'user_id' => 1,
+        $this->client->post('/api/events/1/duplicate', [
             'start_date' => '2021-07-01 00:00:00',
             'end_date' => '2021-07-03 23:59:59',
-        ];
-        $this->client->post('/api/events/1/duplicate', $data);
-        $this->assertStatusCode(SUCCESS_CREATED);
-        $response = $this->_getResponseAsArray();
-        $this->assertEquals(7, $response['id']);
-        $this->assertEquals("Premier événement", $response['title']);
-        $this->assertEquals('2021-07-01 00:00:00', $response['start_date']);
-        $this->assertEquals('2021-07-03 23:59:59', $response['end_date']);
-        $this->assertCount(1, $response['beneficiaries']);
-        $this->assertCount(2, $response['technicians']);
-        $this->assertEquals('2021-07-01 09:00:00', $response['technicians'][0]['start_time']);
-        $this->assertEquals('2021-07-02 22:00:00', $response['technicians'][0]['end_time']);
-        $this->assertEquals('Régisseur', $response['technicians'][0]['position']);
-        $this->assertEquals('2021-07-02 14:00:00', $response['technicians'][1]['start_time']);
-        $this->assertEquals('2021-07-02 18:00:00', $response['technicians'][1]['end_time']);
-        $this->assertEquals('Technicien plateau', $response['technicians'][1]['position']);
-        $this->assertCount(3, $response['materials']);
-        $this->assertEquals(1, $response['materials'][0]['pivot']['quantity']);
-        $this->assertEquals(1, $response['materials'][1]['pivot']['quantity']);
-        $this->assertEquals(1, $response['materials'][2]['pivot']['quantity']);
-        $this->assertFalse($response['is_confirmed']);
-        $this->assertFalse($response['is_archived']);
-        $this->assertFalse($response['is_return_inventory_done']);
-        $this->assertTrue($response['is_billable']);
+        ]);
+        $this->assertStatusCode(StatusCode::STATUS_CREATED);
+        $this->assertResponseData(array_replace(self::data(1), [
+            'id' => 7,
+            'start_date' => '2021-07-01 00:00:00',
+            'end_date' => '2021-07-03 23:59:59',
+            'duration' => 3,
+            'degressive_rate' => '2.50',
+            'total_taxes' => '170.73',
+            'total_with_taxes' => '1024.36',
+            'total_without_taxes' => '853.63',
+            'is_return_inventory_done' => false,
+            'has_missing_materials' => false,
+            'has_not_returned_materials' => null,
+            'materials' => array_replace_recursive(
+                self::data(1)['materials'],
+                [
+                    [
+                        'pivot' => [
+                            'id' => 13,
+                            'event_id' => 7,
+                            'quantity_returned' => 0,
+                            'quantity_returned_broken' => 0,
+                        ],
+                    ],
+                    [
+                        'pivot' => [
+                            'id' => 14,
+                            'event_id' => 7,
+                            'quantity_returned' => 0,
+                            'quantity_returned_broken' => 0,
+                        ],
+                    ],
+                    [
+                        'pivot' => [
+                            'id' => 15,
+                            'event_id' => 7,
+                            'quantity_returned' => 0,
+                            'quantity_returned_broken' => 0,
+                        ],
+                    ],
+                ],
+            ),
+            'technicians' => array_replace_recursive(
+                self::data(1)['technicians'],
+                [
+                    [
+                        'id' => 3,
+                        'event_id' => 7,
+                        'start_time' => '2021-07-01 09:00:00',
+                        'end_time' => '2021-07-02 22:00:00',
+                    ],
+                    [
+                        'id' => 4,
+                        'event_id' => 7,
+                        'start_time' => '2021-07-02 14:00:00',
+                        'end_time' => '2021-07-02 18:00:00',
+                    ],
+                ],
+            ),
+            'invoices' => [],
+            'estimates' => [],
+            'created_at' => '2021-06-22 12:11:02',
+            'updated_at' => '2021-06-22 12:11:02',
+        ]));
 
         // - Duplication de l'événement n°3
-        $data = [
-            'user_id' => 1,
+        $this->client->post('/api/events/3/duplicate', [
             'start_date' => '2021-07-04 00:00:00',
             'end_date' => '2021-07-04 23:59:59',
-        ];
-        $this->client->post('/api/events/3/duplicate', $data);
-        $this->assertStatusCode(SUCCESS_CREATED);
-        $response = $this->_getResponseAsArray();
-        $this->assertEquals(8, $response['id']);
-        $this->assertEquals("Avant-premier événement", $response['title']);
-        $this->assertEquals('2021-07-04 00:00:00', $response['start_date']);
-        $this->assertEquals('2021-07-04 23:59:59', $response['end_date']);
-        $this->assertFalse($response['is_archived']);
-        $this->assertFalse($response['is_return_inventory_done']);
-        $this->assertFalse($response['is_billable']);
+        ]);
+        $this->assertStatusCode(StatusCode::STATUS_CREATED);
+        $this->assertResponseData(array_replace(self::data(3), [
+            'id' => 8,
+            'start_date' => '2021-07-04 00:00:00',
+            'end_date' => '2021-07-04 23:59:59',
+            'duration' => 1,
+            'is_archived' => false,
+            'has_missing_materials' => false,
+            'is_return_inventory_done' => false,
+            'materials' => array_replace_recursive(
+                self::data(3)['materials'],
+                [
+                    [
+                        'pivot' => [
+                            'id' => 16,
+                            'event_id' => 8,
+                            'quantity_returned' => 0,
+                            'quantity_returned_broken' => 0,
+                        ],
+                    ],
+                    [
+                        'pivot' => [
+                            'id' => 17,
+                            'event_id' => 8,
+                            'quantity_returned' => 0,
+                            'quantity_returned_broken' => 0,
+                        ],
+                    ],
+                    [
+                        'pivot' => [
+                            'id' => 18,
+                            'event_id' => 8,
+                            'quantity_returned' => 0,
+                            'quantity_returned_broken' => 0,
+                        ],
+                    ],
+                ],
+            ),
+            'created_at' => '2021-06-22 12:11:02',
+            'updated_at' => '2021-06-22 12:11:02',
+        ]));
+
+        // - Duplication de l'événement n°4 (avec unités)
+        $this->client->post('/api/events/4/duplicate', [
+            'start_date' => '2021-07-04 00:00:00',
+            'end_date' => '2021-07-04 23:59:59',
+        ]);
+        $this->assertStatusCode(StatusCode::STATUS_CREATED);
+        $this->assertResponseData(array_replace(self::data(4), [
+            'id' => 9,
+            'start_date' => '2021-07-04 00:00:00',
+            'end_date' => '2021-07-04 23:59:59',
+            'duration' => 1,
+            'has_missing_materials' => true,
+            'materials' => array_replace_recursive(
+                self::data(4)['materials'],
+                [
+                    [
+                        'pivot' => [
+                            'id' => 19,
+                            'event_id' => 9,
+                            'quantity_returned' => 0,
+                            'quantity_returned_broken' => 0,
+                        ],
+                    ],
+                    [
+                        'pivot' => [
+                            'id' => 20,
+                            'event_id' => 9,
+                            'quantity_returned' => 0,
+                            'quantity_returned_broken' => 0,
+                        ],
+                    ],
+                    [
+                        'pivot' => [
+                            'id' => 21,
+                            'event_id' => 9,
+                            'quantity_returned' => 0,
+                            'quantity_returned_broken' => 0,
+                        ],
+                    ],
+                ],
+            ),
+            'created_at' => '2021-06-22 12:11:02',
+            'updated_at' => '2021-06-22 12:11:02',
+        ]));
     }
 
-    public function testUpdateMaterialReturnNotFound()
+    public function testUpdateReturnInventoryNotFound()
     {
-        $this->client->put('/api/events/999/return');
-        $this->assertNotFound();
+        $this->client->put('/api/events/999/inventory');
+        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
-    public function testUpdateMaterialReturn()
+    public function testUpdateReturnInventory()
     {
         $data = [
             ['id' => 1, 'actual' => 2, 'broken' => 0],
             ['id' => 2, 'actual' => 2, 'broken' => 1],
         ];
-        $this->client->put('/api/events/2/return', $data);
-        $this->assertStatusCode(SUCCESS_OK);
+        $this->client->put('/api/events/2/inventory', $data);
+        $this->assertStatusCode(StatusCode::STATUS_OK);
         $response = $this->_getResponseAsArray();
 
-        $expectedFirst = [
-            'event_id' => 2,
-            'material_id' => 2,
-            'id' => 5,
-            'quantity' => 2,
-            'quantity_returned' => 2,
-            'quantity_broken' => 1,
+        $expectedMaterialData = [
+            [
+                'id' => 4,
+                'event_id' => 2,
+                'material_id' => 1,
+                'quantity' => 3,
+                'quantity_returned' => 2,
+                'quantity_returned_broken' => 0,
+            ],
+            [
+                'id' => 5,
+                'event_id' => 2,
+                'material_id' => 2,
+                'quantity' => 2,
+                'quantity_returned' => 2,
+                'quantity_returned_broken' => 1,
+            ],
         ];
-        $this->assertEquals($expectedFirst, $response['materials'][0]['pivot']);
+        foreach ($expectedMaterialData as $index => $expected) {
+            $this->assertArrayHasKey($index, $response['materials']);
+            $material = $response['materials'][$index];
 
-        $expectedSecond = [
-            'event_id' => 2,
-            'material_id' => 1,
-            'id' => 4,
-            'quantity' => 3,
-            'quantity_returned' => 2,
-            'quantity_broken' => 0,
-        ];
-        $this->assertEquals($expectedSecond, $response['materials'][1]['pivot']);
+            $this->assertEquals($expected, $material['pivot']);
+        }
     }
 
-    public function testUpdateMaterialReturnBadData()
+    public function testUpdateReturnInventoryBadData()
     {
         $data = [
             ['id' => 1, 'actual' => 2, 'broken' => 3],
             ['id' => 2, 'actual' => 3, 'broken' => 0],
         ];
-        $this->client->put('/api/events/2/return', $data);
-        $this->assertStatusCode(ERROR_VALIDATION);
-        $this->assertValidationErrorMessage();
-        $response = $this->_getResponseAsArray();
-        $expected = [
+        $this->client->put('/api/events/2/inventory', $data);
+        $this->assertApiValidationError([
             ['id' => 1, 'message' => "Broken quantity cannot be greater than returned quantity."],
             ['id' => 2, 'message' => "Returned quantity cannot be greater than output quantity."],
-        ];
-        $this->assertEquals($expected, $response['error']['details']);
+        ]);
     }
 
-    public function testUpdateMaterialTerminate()
+    public function testFinishReturnInventory()
     {
-        $data = [
+        Carbon::setTestNow(Carbon::create(2023, 2, 1, 10, 00, 00));
+
+        $this->client->put('/api/events/2/inventory/finish', [
             ['id' => 1, 'actual' => 3, 'broken' => 0],
             ['id' => 2, 'actual' => 2, 'broken' => 1],
-        ];
-        $this->client->put('/api/events/2/terminate', $data);
-        $this->assertStatusCode(SUCCESS_OK);
-        $response = $this->_getResponseAsArray();
+        ]);
+        $this->assertStatusCode(StatusCode::STATUS_OK);
+        $this->assertResponseData(array_replace_recursive(self::data(2), [
+            'is_confirmed' => true,
+            'has_not_returned_materials' => false,
+            'materials' => [
+                [
+                    'pivot' => [
+                        'quantity_returned' => 3,
+                    ],
+                ],
+                [
+                    'out_of_order_quantity' => 1,
+                    'updated_at' => '2023-02-01 10:00:00',
+                    'pivot' => [
+                        'quantity_returned_broken' => 1,
+                    ],
+                ],
+            ],
+            'updated_at' => '2023-02-01 10:00:00',
+        ]));
+    }
 
-        $this->assertTrue($response['is_confirmed']);
-        $this->assertTrue($response['is_return_inventory_done']);
+    public function testArchiveEvent()
+    {
+        // - Archivage de l'événement #1
+        //   possible, car inventaire de retour terminé
+        $this->client->put('/api/events/1/archive');
+        $this->assertStatusCode(StatusCode::STATUS_OK);
+        $this->assertResponseHasKeyEquals('is_archived', true);
 
-        $expectedFirst = [
-            'event_id' => 2,
-            'material_id' => 2,
-            'id' => 5,
-            'quantity' => 2,
-            'quantity_returned' => 2,
-            'quantity_broken' => 1,
-        ];
-        $this->assertEquals($expectedFirst, $response['materials'][0]['pivot']);
-        $this->assertEquals(1, $response['materials'][0]['out_of_order_quantity']);
+        // - Archivage de l'événement #4
+        //   impossible car inventaire de retour pas encore fait
+        $this->client->put('/api/events/4/archive');
+        $this->assertApiValidationError([
+            'is_archived' => [
+                "An event cannot be archived if its return inventory is not done!",
+            ],
+        ]);
+    }
 
-        $expectedSecond = [
-            'event_id' => 2,
-            'material_id' => 1,
-            'id' => 4,
-            'quantity' => 3,
-            'quantity_returned' => 3,
-            'quantity_broken' => 0,
-        ];
-        $this->assertEquals($expectedSecond, $response['materials'][1]['pivot']);
-        $this->assertEquals(1, $response['materials'][1]['out_of_order_quantity']);
+    public function testUnarchiveEvent()
+    {
+        // - Désarchivage de l'événement #3
+        $this->client->put('/api/events/3/unarchive');
+        $this->assertStatusCode(StatusCode::STATUS_OK);
+        $this->assertResponseHasKeyEquals('is_archived', false);
     }
 
     public function testDeleteAndDestroyEvent()
     {
-        // - First call : sets `deleted_at` not null
-        $this->client->delete('/api/events/1');
-        $this->assertStatusCode(SUCCESS_OK);
-        $response = $this->_getResponseAsArray();
-        $this->assertNotEmpty($response['deleted_at']);
+        // - Suppression (soft delete) de l'événement #4
+        //   possible car pas d'inventaire de retour ni confirmé
+        $this->client->delete('/api/events/4');
+        $this->assertStatusCode(StatusCode::STATUS_NO_CONTENT);
+        $event = Event::withTrashed()->find(4);
+        $this->assertNotNull($event);
+        $this->assertNotEmpty($event->deleted_at);
 
-        // - Second call : actually DESTROY record from DB
+        // - Suppression définitive de l'événement #4
+        $this->client->delete('/api/events/4');
+        $this->assertStatusCode(StatusCode::STATUS_NO_CONTENT);
+        $this->assertNull(Event::withTrashed()->find(4));
+    }
+
+    public function testDeleteEventFail()
+    {
+        // - On ne peut pas supprimer l'événement #1
+        //   car son inventaire de retour est terminé
         $this->client->delete('/api/events/1');
-        $this->assertStatusCode(SUCCESS_OK);
-        $this->assertResponseData(['destroyed' => true]);
+        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
+
+        // - Confirmation de l'événement #4 au préalable
+        $event = Event::find(4);
+        $event->is_confirmed = true;
+        $event->save();
+
+        // - On ne peut plus supprimer l'événement #4 car il est confirmé
+        $this->client->delete('/api/events/4');
+        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
     public function testRestoreEventNotFound()
     {
         $this->client->put('/api/events/restore/999');
-        $this->assertNotFound();
+        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
     public function testRestoreEvent()
     {
-        // - First, delete event #1
-        $this->client->delete('/api/events/1');
-        $this->assertStatusCode(SUCCESS_OK);
+        // - Suppression de l'événement #4 au préalable
+        $this->client->delete('/api/events/4');
+        $this->assertStatusCode(StatusCode::STATUS_NO_CONTENT);
 
-        // - Then, restore event #1
-        $this->client->put('/api/events/restore/1');
-        $this->assertStatusCode(SUCCESS_OK);
-        $response = $this->_getResponseAsArray();
-        $this->assertEmpty($response['deletedAt']);
+        // - Puis restauration de l'événement #4
+        $this->client->put('/api/events/restore/4');
+        $this->assertStatusCode(StatusCode::STATUS_OK);
+        $this->assertNotNull(Event::find(4));
     }
 
     public function testGetMissingMaterials()
     {
         // - Get missing materials for event #3 (no missing materials)
         $this->client->get('/api/events/3/missing-materials');
-        $this->assertStatusCode(SUCCESS_OK);
+        $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData([]);
 
         // - Get missing materials for event #1
         $this->client->get('/api/events/1/missing-materials');
-        $this->assertStatusCode(SUCCESS_OK);
+        $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData([
-            [
-                'id' => 2,
-                'name' => 'Processeur DBX PA2',
-                'description' => 'Système de diffusion numérique',
-                'reference' => 'DBXPA2',
-                'is_unitary' => false,
-                'park_id' => 1,
-                'category_id' => 1,
-                'sub_category_id' => 2,
-                'rental_price' => 25.5,
-                'stock_quantity' => 2,
-                'remaining_quantity' => 0,
-                'missing_quantity' => 1,
-                'out_of_order_quantity' => null,
-                'replacement_price' => 349.9,
-                'is_hidden_on_bill' => false,
-                'is_discountable' => true,
-                'tags' => [
-                    ['id' => 3, 'name' => 'pro'],
-                ],
-                'attributes' => [
-                    [
-                        'id' => 3,
-                        'name' => 'Puissance',
-                        'type' => 'integer',
-                        'unit' => 'W',
-                        'value' => 35,
-                    ],
-                    [
-                        'id' => 1,
-                        'name' => 'Poids',
-                        'type' => 'float',
-                        'unit' => 'kg',
-                        'value' => 2.2,
-                    ],
-                ],
+            array_replace(MaterialsTest::data(2), [
                 'pivot' => [
                     'id' => 2,
                     'event_id' => 1,
                     'material_id' => 2,
                     'quantity' => 1,
                     'quantity_returned' => 1,
-                    'quantity_broken' => 0,
+                    'quantity_returned_broken' => 0,
+                    'quantity_missing' => 1,
                 ],
-            ],
+            ]),
+        ]);
+
+        // - Get missing materials for event #4
+        $this->client->get('/api/events/4/missing-materials');
+        $this->assertStatusCode(StatusCode::STATUS_OK);
+        $this->assertResponseData([
+            array_replace(MaterialsTest::data(6), [
+                'pivot' => [
+                    'id' => 10,
+                    'event_id' => 4,
+                    'material_id' => 6,
+                    'quantity' => 2,
+                    'quantity_returned' => 1,
+                    'quantity_returned_broken' => 0,
+                    'quantity_missing' => 2,
+                ],
+            ]),
+            array_replace(MaterialsTest::data(7), [
+                'pivot' => [
+                    'id' => 11,
+                    'event_id' => 4,
+                    'material_id' => 7,
+                    'quantity' => 3,
+                    'quantity_returned' => 0,
+                    'quantity_returned_broken' => 0,
+                    'quantity_missing' => 2,
+                ],
+            ]),
         ]);
 
         // - Event not found
         $this->client->get('/api/events/999/missing-materials');
-        $this->assertNotFound();
+        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
     public function testDownloadPdf()
     {
+        Carbon::setTestNow(Carbon::create(2022, 9, 23, 12, 0, 0));
+
         // - Event does not exists
         $this->client->get('/events/999/pdf');
-        $this->assertStatusCode(404);
+        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
 
         // - Download event n°1 PDF file
         $responseStream = $this->client->get('/events/1/pdf');
-        $this->assertStatusCode(200);
+        $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertTrue($responseStream->isReadable());
+        $this->assertMatchesHtmlSnapshot($responseStream->getContents());
+
+        // - Download event n°2 PDF file
+        $responseStream = $this->client->get('/events/2/pdf');
+        $this->assertStatusCode(StatusCode::STATUS_OK);
+        $this->assertTrue($responseStream->isReadable());
+        $this->assertMatchesHtmlSnapshot($responseStream->getContents());
     }
 
     public function testSearch()
     {
         // - Retourne la liste des événement qui ont le terme "premier" dans le titre
         $this->client->get('/api/events?search=premier');
-        $this->assertStatusCode(SUCCESS_OK);
+        $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData([
             'count' => 2,
             'data' => [
@@ -1533,22 +1100,22 @@ final class EventsTest extends ApiTestCase
                     'id' => 1,
                     'title' => 'Premier événement',
                     'location' => 'Gap',
-                    'startDate' => '2018-12-17 00:00:00',
-                    'endDate' => '2018-12-18 23:59:59',
+                    'start_date' => '2018-12-17 00:00:00',
+                    'end_date' => '2018-12-18 23:59:59',
                 ],
                 [
                     'id' => 3,
                     'title' => 'Avant-premier événement',
                     'location' => 'Brousse',
-                    'startDate' => '2018-12-15 00:00:00',
-                    'endDate' => '2018-12-16 23:59:59',
+                    'start_date' => '2018-12-15 00:00:00',
+                    'end_date' => '2018-12-16 23:59:59',
                 ],
             ],
         ]);
 
         // - Pareil, mais en excluant l'événement n°3
         $this->client->get('/api/events?search=premier&exclude=3');
-        $this->assertStatusCode(SUCCESS_OK);
+        $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData([
             'count' => 1,
             'data' => [
@@ -1556,10 +1123,80 @@ final class EventsTest extends ApiTestCase
                     'id' => 1,
                     'title' => 'Premier événement',
                     'location' => 'Gap',
-                    'startDate' => '2018-12-17 00:00:00',
-                    'endDate' => '2018-12-18 23:59:59',
+                    'start_date' => '2018-12-17 00:00:00',
+                    'end_date' => '2018-12-18 23:59:59',
                 ],
             ],
+        ]);
+    }
+
+    public function testCreateInvoice()
+    {
+        Carbon::setTestNow(Carbon::create(2022, 10, 22, 18, 42, 36));
+
+        $this->client->post('/api/events/2/invoices');
+        $this->assertStatusCode(StatusCode::STATUS_CREATED);
+        $this->assertResponseData([
+            'id' => 2,
+            'number' => '2022-00001',
+            'date' => '2022-10-22 18:42:36',
+            'url' => 'http://loxya.test/invoices/2/pdf',
+            'discount_rate' => '0.0000',
+            'total_without_taxes' => '1664.25',
+            'total_with_taxes' => '1997.10',
+            'currency' => 'EUR',
+        ]);
+    }
+
+    public function testCreateInvoiceWithDiscount()
+    {
+        Carbon::setTestNow(Carbon::create(2020, 10, 22, 18, 42, 36));
+
+        $this->client->post('/api/events/2/invoices', ['discountRate' => 50.0]);
+        $this->assertStatusCode(StatusCode::STATUS_CREATED);
+        $this->assertResponseData([
+            'id' => 2,
+            'number' => '2020-00002',
+            'date' => '2020-10-22 18:42:36',
+            'url' => 'http://loxya.test/invoices/2/pdf',
+            'discount_rate' => '50.0000',
+            'total_without_taxes' => '1619.63',
+            'total_with_taxes' => '1943.56',
+            'currency' => 'EUR',
+        ]);
+    }
+
+    public function testCreateEstimate()
+    {
+        Carbon::setTestNow(Carbon::create(2022, 10, 22, 18, 42, 36));
+
+        $this->client->post('/api/events/2/estimates');
+        $this->assertStatusCode(StatusCode::STATUS_CREATED);
+        $this->assertResponseData([
+            'id' => 2,
+            'date' => '2022-10-22 18:42:36',
+            'url' => 'http://loxya.test/estimates/2/pdf',
+            'discount_rate' => '0.0000',
+            'total_without_taxes' => '1664.25',
+            'total_with_taxes' => '1997.10',
+            'currency' => 'EUR',
+        ]);
+    }
+
+    public function testCreateEstimateWithDiscount()
+    {
+        Carbon::setTestNow(Carbon::create(2022, 10, 22, 18, 42, 36));
+
+        $this->client->post('/api/events/2/estimates', ['discountRate' => 50.0]);
+        $this->assertStatusCode(StatusCode::STATUS_CREATED);
+        $this->assertResponseData([
+            'id' => 2,
+            'date' => '2022-10-22 18:42:36',
+            'url' => 'http://loxya.test/estimates/2/pdf',
+            'discount_rate' => '50.0000',
+            'total_without_taxes' => '1619.63',
+            'total_with_taxes' => '1943.56',
+            'currency' => 'EUR',
         ]);
     }
 }

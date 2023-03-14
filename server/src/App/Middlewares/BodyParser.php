@@ -4,11 +4,10 @@ declare(strict_types=1);
 namespace Robert2\API\Middlewares;
 
 use Adbar\Dot as DotArray;
-use Notihnio\MultipartFormDataParser\MultipartFormDataParser;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Robert2\Lib\Filesystem\UploadedFile;
+use Robert2\Support\Filesystem\UploadedFile;
 use Slim\Middleware\BodyParsingMiddleware as BodyParsingMiddlewareCore;
 
 class BodyParser extends BodyParsingMiddlewareCore
@@ -24,10 +23,10 @@ class BodyParser extends BodyParsingMiddlewareCore
         $mediaType = $this->getMediaType($request);
         if ($mediaType === 'multipart/form-data') {
             // - Ajout le parsing aussi pour les méthodes PUT, PATCH, DELETE.
-            $parsedRequest = MultipartFormDataParser::parse($request);
-            $request = $request->withParsedBody($parsedRequest->params);
+            $parsedRequest = static::parseRequest($request);
+            $request = $request->withParsedBody($parsedRequest['params']);
             $request = $request->withUploadedFiles(
-                static::normalizeUploadedFiles($parsedRequest->files)
+                static::normalizeUploadedFiles($parsedRequest['files'])
             );
 
             // - Gestion des envois hybrides avec données sous forme de JSON et fichiers uploadés.
@@ -71,7 +70,7 @@ class BodyParser extends BodyParsingMiddlewareCore
                 continue;
             }
 
-            $normalized[$key] = !isset($value['tmp_name'])
+            $normalized[$key] = !array_key_exists('tmp_name', $value)
                 ? static::normalizeUploadedFiles($value)
                 : new UploadedFile(
                     $value['tmp_name'],
@@ -82,5 +81,143 @@ class BodyParser extends BodyParsingMiddlewareCore
                 );
         }
         return $normalized;
+    }
+
+    public static function parseRequest(ServerRequestInterface $request): array
+    {
+        $data = array_fill_keys(['params', 'files'], []);
+        $method = $request->getMethod();
+
+        if ($method === 'GET') {
+            return $data;
+        }
+
+        if ($method === 'POST') {
+            $data['files'] = $_FILES;
+            $data['params'] = $_POST;
+            return $data;
+        }
+
+        // - Get raw input data.
+        $contentType = $request->getHeader('Content-Type')[0] ?? null;
+        if (!preg_match('/boundary=(.*)$/is', $contentType, $matches)) {
+            return $data;
+        }
+
+        $rawRequestData = file_get_contents('php://input');
+        $bodyParts = preg_split('/\\R?-+' . preg_quote($matches[1], '/') . '/s', $rawRequestData);
+        array_pop($bodyParts);
+
+        foreach ($bodyParts as $bodyPart) {
+            if (empty($bodyPart)) {
+                continue;
+            }
+            [$headers, $value] = preg_split('/\\R\\R/', $bodyPart, 2);
+            $headers = static::parseHeaders($headers);
+            if (!isset($headers['content-disposition']['name'])) {
+                continue;
+            }
+            if (isset($headers['content-disposition']['filename'])) {
+                $file = [
+                    'name' => $headers['content-disposition']['filename'],
+                    'type' => $headers['content-type'] ?? 'application/octet-stream',
+                    'size' => mb_strlen($value, '8bit'),
+                    'error' => UPLOAD_ERR_OK,
+                    'tmp_name' => null,
+                ];
+
+                if ($file['size'] > self::toBytes(ini_get('upload_max_filesize'))) {
+                    $file['error'] = UPLOAD_ERR_INI_SIZE;
+                } else {
+                    $tmpResource = tmpfile();
+                    if ($tmpResource === false) {
+                        $file['error'] = UPLOAD_ERR_CANT_WRITE;
+                    } else {
+                        $tmpResourceMetaData = stream_get_meta_data($tmpResource);
+                        $tmpFileName = $tmpResourceMetaData['uri'];
+                        if (empty($tmpFileName)) {
+                            $file['error'] = UPLOAD_ERR_CANT_WRITE;
+                            @fclose($tmpResource);
+                        } else {
+                            fwrite($tmpResource, $value);
+                            $file['tmp_name'] = $tmpFileName;
+                            $file['tmp_resource'] = $tmpResource;
+                        }
+                    }
+                }
+                $file['size'] = self::toFormattedBytes($file['size']);
+
+                $_FILES[$headers['content-disposition']['name']] = $file;
+                $data['files'][$headers['content-disposition']['name']] = $file;
+            } else {
+                $data['params'][$headers['content-disposition']['name']] = $value;
+            }
+        }
+
+        return $data;
+    }
+
+    private static function parseHeaders(string $headerContent): array
+    {
+        $headers = [];
+        $headerParts = preg_split('/\\R/s', $headerContent, -1, PREG_SPLIT_NO_EMPTY);
+        foreach ($headerParts as $headerPart) {
+            if (!str_contains($headerPart, ':')) {
+                continue;
+            }
+            [$headerName, $headerValue] = explode(':', $headerPart, 2);
+            $headerName = strtolower(trim($headerName));
+            $headerValue = trim($headerValue);
+            if (!str_contains($headerValue, ';')) {
+                $headers[$headerName] = $headerValue;
+            } else {
+                $headers[$headerName] = [];
+                foreach (explode(';', $headerValue) as $part) {
+                    $part = trim($part);
+                    if (!str_contains($part, '=')) {
+                        $headers[$headerName][] = $part;
+                    } else {
+                        [$name, $value] = explode('=', $part, 2);
+                        $name = strtolower(trim($name));
+                        $value = trim(trim($value), '"');
+                        $headers[$headerName][$name] = $value;
+                    }
+                }
+            }
+        }
+        return $headers;
+    }
+
+    private static function toFormattedBytes(int $bytes): string
+    {
+        $precision = 2;
+        $base = log($bytes, 1024);
+        $suffixes = ['', 'K', 'M', 'G', 'T'];
+
+        return round(1024 ** ($base - floor($base)), $precision) . $suffixes[floor($base)];
+    }
+
+    private static function toBytes(string $formattedBytes): ?int
+    {
+        $units = ['B', 'K', 'M', 'G', 'T', 'P'];
+        $unitsExtended = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
+
+        $number = (int) preg_replace("/[^0-9]+/", "", $formattedBytes);
+        $suffix = preg_replace("/[^a-zA-Z]+/", "", $formattedBytes);
+
+        //B or no suffix
+        if (is_numeric($suffix[0])) {
+            return preg_replace('/[^\d]/', '', $formattedBytes);
+        }
+
+        $exponent = array_flip($units)[$suffix] ?? null;
+        if ($exponent === null) {
+            $exponent = array_flip($unitsExtended)[$suffix] ?? null;
+        }
+
+        if ($exponent === null) {
+            return null;
+        }
+        return $number * (1024 ** $exponent);
     }
 }

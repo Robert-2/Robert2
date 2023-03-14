@@ -1,0 +1,19 @@
+@use '~@/themes/default/style/globals';
+
+.InterfaceUserSettings {
+    display: flex;
+    flex-direction: column;
+
+    &__loading {
+        margin-top: globals.$content-padding-small-vertical;
+    }
+
+    &__language {
+        --input-width: 180px;
+    }
+
+    &__actions {
+        margin-top: globals.$content-padding-large-vertical;
+        text-align: center;
+    }
+}

@@ -1,7 +1,9 @@
 <?php
+declare(strict_types=1);
+
 use Phinx\Migration\AbstractMigration;
 
-class FixEventUserConstraint extends AbstractMigration
+final class FixEventUserConstraint extends AbstractMigration
 {
     public function up()
     {
@@ -10,7 +12,7 @@ class FixEventUserConstraint extends AbstractMigration
         $table->dropForeignKey('user_id')->save();
 
         $table
-            ->changeColumn('user_id', 'integer', ['null' => true])
+            ->changeColumn('user_id', 'integer', ['signed' => true, 'null' => true])
             ->addForeignKey('user_id', 'users', 'id', [
                 'delete' => 'SET_NULL',
                 'update' => 'NO_ACTION',
@@ -26,7 +28,7 @@ class FixEventUserConstraint extends AbstractMigration
         $table->dropForeignKey('user_id')->save();
 
         $table
-            ->changeColumn('user_id', 'integer', ['null' => false])
+            ->changeColumn('user_id', 'integer', ['signed' => true, 'null' => false])
             ->addForeignKey('user_id', 'users', 'id', [
                 'delete' => 'RESTRICT',
                 'update' => 'NO_ACTION',

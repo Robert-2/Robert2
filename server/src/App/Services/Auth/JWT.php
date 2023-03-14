@@ -4,10 +4,11 @@ declare(strict_types=1);
 namespace Robert2\API\Services\Auth;
 
 use Firebase\JWT\JWT as JWTCore;
+use Firebase\JWT\Key as JWTKey;
+use Illuminate\Support\Str;
 use Robert2\API\Config\Config;
-use Robert2\API\Services\Auth;
+use Robert2\API\Http\Request;
 use Robert2\API\Models\User;
-use Slim\Http\ServerRequest as Request;
 
 final class JWT implements AuthenticatorInterface
 {
@@ -34,10 +35,9 @@ final class JWT implements AuthenticatorInterface
         return User::find($decoded['user']->id);
     }
 
-    public function logout(): bool
+    public function logout(bool $full = true): bool
     {
-        $cookieName = $this->settings['auth']['cookie'];
-        return setcookie($cookieName, '', time() - 42000, '/');
+        return static::clearRegisteredToken();
     }
 
     // ------------------------------------------------------
@@ -50,14 +50,14 @@ final class JWT implements AuthenticatorInterface
     {
         // - Tente de récupérer le token dans les headers HTTP.
         $headerName = $this->settings['httpAuthHeader'];
-        $header = $request->getHeaderLine(sprintf('HTTP_%s', strtoupper(\snakeCase($headerName))));
+        $header = $request->getHeaderLine(sprintf('HTTP_%s', strtoupper(Str::snake($headerName))));
         if (!empty($header)) {
             if (preg_match('/Bearer\s+(.*)$/i', $header, $matches)) {
                 return $matches[1];
             }
         }
 
-        if (!Auth::isApiRequest($request)) {
+        if (!$request->isApi()) {
             // - Sinon tente de récupérer le token dans les cookies.
             $cookieName = $this->settings['auth']['cookie'];
             $cookieParams = $request->getCookieParams();
@@ -75,11 +75,8 @@ final class JWT implements AuthenticatorInterface
     private function decodeToken(string $token): array
     {
         try {
-            $decoded = JWTCore::decode(
-                $token,
-                $this->settings['JWTSecret'],
-                ['HS256', 'HS512', 'HS384']
-            );
+            $key = new JWTKey($this->settings['JWTSecret'], 'HS256');
+            $decoded = JWTCore::decode($token, $key);
             return (array) $decoded;
         } catch (\Exception $exception) {
             throw $exception;
@@ -94,17 +91,17 @@ final class JWT implements AuthenticatorInterface
 
     public static function generateToken(User $user): string
     {
-        $duration = static::getTokenDuration($user) ?: 12;
+        $duration = Config::getSettings()['sessionExpireHours'];
         $expires = new \DateTime(sprintf('now +%d hours', $duration));
 
         $payload = [
-            'iat'  => (new \DateTime())->getTimeStamp(),
-            'exp'  => $expires->getTimeStamp(),
-            'user' => $user->toArray()
+            'iat' => (new \DateTime())->getTimeStamp(),
+            'exp' => $expires->getTimeStamp(),
+            'user' => $user->toArray(),
         ];
 
         $secret = Config::getSettings('JWTSecret');
-        return JWTCore::encode($payload, $secret, "HS256");
+        return JWTCore::encode($payload, $secret, 'HS256');
     }
 
     public static function registerToken(User $user, $forceSessionOnly = false): string
@@ -114,7 +111,7 @@ final class JWT implements AuthenticatorInterface
 
         $expireTime = 0;
         if (!$forceSessionOnly) {
-            $expireHours = static::getTokenDuration($user);
+            $expireHours = Config::getSettings()['sessionExpireHours'];
             if ($expireHours && $expireHours !== 0) {
                 $expireTime = time() + $expireHours * 60 * 60;
             }
@@ -130,11 +127,9 @@ final class JWT implements AuthenticatorInterface
         return $token;
     }
 
-    protected static function getTokenDuration(User $user)
+    public static function clearRegisteredToken(): bool
     {
-        $settings = Config::getSettings();
-
-        $defaultTokenDuration = $settings['sessionExpireHours'];
-        return $user->settings['auth_token_validity_duration'] ?: $defaultTokenDuration;
+        $cookieName = Config::getSettings()['auth']['cookie'];
+        return setcookie($cookieName, '', time() - 42000, '/');
     }
 }

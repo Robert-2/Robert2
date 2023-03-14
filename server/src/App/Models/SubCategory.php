@@ -3,10 +3,27 @@ declare(strict_types=1);
 
 namespace Robert2\API\Models;
 
-use Robert2\API\Validation\Validator as V;
+use Illuminate\Database\Eloquent\Collection;
+use Robert2\API\Contracts\Serializable;
+use Robert2\API\Models\Traits\Serializer;
+use Respect\Validation\Validator as V;
 
-class SubCategory extends BaseModel
+/**
+ * Sous-catégorie de matériel.
+ *
+ * @property-read ?int $id
+ * @property string $name
+ * @property int $category_id
+ * @property-read Category $category
+ * @property-read Carbon $created_at
+ * @property-read Carbon|null $updated_at
+ *
+ * @property-read Collection|Material[] $materials
+ */
+final class SubCategory extends BaseModel implements Serializable
 {
+    use Serializer;
+
     protected $searchField = 'name';
 
     public function __construct(array $attributes = [])
@@ -14,8 +31,8 @@ class SubCategory extends BaseModel
         parent::__construct($attributes);
 
         $this->validation = [
-            'name' => V::callback([$this, 'checkName']),
-            'category_id' => V::notEmpty()->numeric(),
+            'name' => V::custom([$this, 'checkName']),
+            'category_id' => V::notEmpty()->numericVal(),
         ];
     }
 
@@ -38,6 +55,7 @@ class SubCategory extends BaseModel
         $query = static::newQuery()
             ->where('name', $value)
             ->where('category_id', $this->category_id);
+
         if ($this->exists) {
             $query->where('id', '!=', $this->id);
         }
@@ -49,19 +67,18 @@ class SubCategory extends BaseModel
         return true;
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Relations
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Relations
+    // -
+    // ------------------------------------------------------
 
-    public function Category()
+    public function category()
     {
-        return $this->belongsTo(Category::class)
-            ->select(['id', 'name']);
+        return $this->belongsTo(Category::class);
     }
 
-    public function Materials()
+    public function materials()
     {
         $fields = [
             'id',
@@ -75,45 +92,48 @@ class SubCategory extends BaseModel
             'replacement_price',
         ];
 
-        return $this->hasMany(Material::class)->select($fields);
+        return $this->hasMany(Material::class)
+            ->select($fields)
+            ->orderBy('id');
     }
 
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Mutators
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Mutators
+    // -
+    // ------------------------------------------------------
 
     protected $casts = [
-        'name'        => 'string',
+        'name' => 'string',
         'category_id' => 'integer',
     ];
 
-    public function getCategoryAttribute()
-    {
-        return $this->Category()->get()->toArray();
-    }
-
-    public function getMaterialsAttribute()
-    {
-        return $this->Materials()->get()->toArray();
-    }
-
-    // ——————————————————————————————————————————————————————
-    // —
-    // —    Setters
-    // —
-    // ——————————————————————————————————————————————————————
+    // ------------------------------------------------------
+    // -
+    // -    Setters
+    // -
+    // ------------------------------------------------------
 
     protected $fillable = [
         'name',
-        'category_id'
+        'category_id',
     ];
 
-    public function remove($id, array $options = []): ?BaseModel
+    // ------------------------------------------------------
+    // -
+    // -    Serialization
+    // -
+    // ------------------------------------------------------
+
+    public function serialize(): array
     {
-        $subCategory = static::findOrFail($id);
-        $subCategory->delete();
-        return null;
+        $data = $this->attributesForSerialization();
+
+        unset(
+            $data['created_at'],
+            $data['updated_at'],
+        );
+
+        return $data;
     }
 }

@@ -5,7 +5,7 @@
     </p>
     {% if stepData['existingAdmins'] is not empty %}
     <p>
-        Il existe déjà <strong>{{ stepData['existingAdmins']|length }} utilisateurs admin</strong>
+        Il existe déjà <strong>{{ stepData['existingAdmins']|length }} administrateurs</strong>
         dans votre base de données&nbsp;:
     </p>
     <ul>
@@ -13,7 +13,7 @@
         <li><strong>{{ adminUser['pseudo'] }}</strong> ({{ adminUser['email'] }})</li>
         {% endfor %}
     </ul>
-    <form method="POST" class="install__admin-form" {% if error %}style="display: none;"{% endif %} id="adminFormSkip">
+    <form method="POST" class="install__admin-form" {% if error %}style="display: none;"{% endif %} id="admin-form-skip">
         <p>
             Voulez-vous créer un nouvel utilisateur admin, afin de pouvoir accéder à l'application
             avec celui-ci&nbsp;?
@@ -37,12 +37,38 @@
         l'application, il aura tous les droits.
     </p>
     {% endif %}
-    <div {% if stepData['existingAdmins'] and not error %}style="display: none;"{% endif %} id="adminFormData">
-        <p>
-            Choisissez un pseudo et un mot de passe, et donnez une adresse e-mail
-            ainsi que le nom et prénom de cet utilisateur.
-        </p>
+    <div {% if stepData['existingAdmins'] and not error %}style="display: none;"{% endif %} id="admin-form-data">
         <form method="POST" class="form">
+            <div class="install__admin-name">
+                <div class="form__field install__admin-name__first-name">
+                    <h3 class="form__field-title">Prénom</h3>
+                    <input
+                        type="text"
+                        name="user[person][first_name]"
+                        id="userFirstName"
+                        value="{{stepData['user']['person']['first_name']}}"
+                    />
+                    {% if validationErrors['person']['first_name'] %}
+                    <div class="form__field-error">
+                        {{validationErrors['person']['first_name'][0]}}
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="form__field install__admin-name__last-name">
+                    <h3 class="form__field-title">Nom</h3>
+                    <input
+                        type="text"
+                        name="user[person][last_name]"
+                        id="userLastName"
+                        value="{{stepData['user']['person']['last_name']}}"
+                    />
+                    {% if validationErrors['person']['last_name'] %}
+                    <div class="form__field-error">
+                        {{validationErrors['person']['last_name'][0]}}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
             <div class="form__field">
                 <h3 class="form__field-title">Pseudo</h3>
                 <p class="form__field-description">
@@ -52,7 +78,7 @@
                 <input
                     type="text"
                     name="user[pseudo]"
-                    style="width: 200px;"
+                    style="width: 300px;"
                     value="{{stepData['user']['pseudo']}}"
                 />
                 {% if validationErrors['pseudo'] %}
@@ -67,7 +93,7 @@
                 <input
                     type="password"
                     name="user[password]"
-                    style="width: 200px;"
+                    style="width: 300px;"
                     value="{{stepData['user']['password']}}"
                 />
                 {% if validationErrors['password'] %}
@@ -89,38 +115,6 @@
                 />
                 {% if validationErrors['email'] %}
                 <div class="form__field-error">{{validationErrors['email'][0]}}</div>
-                {% endif %}
-            </div>
-            <div class="form__field">
-                <h3 class="form__field-title">Nom et prénom</h3>
-                <p class="form__field-description">
-                    Le nom et prénom de cet utilisateur admin (facultatif).
-                </p>
-                <div class="install__admin-names">
-                    <label for="userFirstName">Prénom&nbsp;:</label>
-                    <input
-                        type="text"
-                        name="user[person][first_name]"
-                        id="userFirstName"
-                        value="{{stepData['user']['person']['first_name']}}"
-                    />
-                    <label for="userLastName">Nom&nbsp;:</label>
-                    <input
-                        type="text"
-                        name="user[person][last_name]"
-                        id="userLastName"
-                        value="{{stepData['user']['person']['last_name']}}"
-                    />
-                </div>
-                {% if validationErrors['person']['last_name'] %}
-                <div class="form__field-error">
-                    {{validationErrors['person']['last_name'][0]}}
-                </div>
-                {% endif %}
-                {% if validationErrors['person']['first_name'] %}
-                <div class="form__field-error">
-                    {{validationErrors['person']['first_name'][0]}}
-                </div>
                 {% endif %}
             </div>
             <div class="form__submit form__submit--horizontal">

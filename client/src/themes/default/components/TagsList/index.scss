@@ -1,0 +1,22 @@
+@use '~@/themes/default/style/globals';
+
+.TagsList {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    gap: 0.35rem;
+
+    &__item {
+        margin: 0;
+        padding: 0.3rem 1rem;
+        border-radius: 15px;
+        background: globals.$bg-color-emphasis;
+
+        @include globals.icon('tag') {
+            margin-right: 0.3rem;
+        }
+    }
+}

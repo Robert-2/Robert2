@@ -1,0 +1,51 @@
+@use '~@/themes/default/style/globals';
+
+.EventMiniSummary {
+    $block: &;
+
+    position: relative;
+    padding: 1rem 0.8rem;
+    border: 1px solid globals.$text-muted-color;
+    border-radius: 8px;
+    color: globals.$text-soft-color;
+    text-align: center;
+
+    &__not-saved {
+        position: absolute;
+        color: globals.$text-warning-color;
+    }
+
+    &__title {
+        @include globals.line-clamp(4);
+
+        font-size: 1.1rem;
+        font-weight: 800;
+        word-break: break-word;
+    }
+
+    &__detail,
+    &__total {
+        margin-top: 0.8rem;
+        line-height: 1.4rem;
+        text-transform: capitalize;
+    }
+
+    &__total {
+        color: globals.$text-base-color;
+        font-size: 1.4rem;
+    }
+
+    &__status-icon {
+        margin-right: 5px;
+    }
+
+    &--not-saved {
+        border-color: globals.$text-warning-color;
+    }
+
+    &--confirmed {
+        #{$block}__status-icon {
+            color: globals.$text-success-color;
+        }
+    }
+}

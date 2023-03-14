@@ -1,0 +1,35 @@
+@use '~@/themes/default/style/globals';
+
+.EventDetailsEstimate {
+    $block: &;
+
+    display: flex;
+    align-items: center;
+    gap: globals.$content-padding-small-vertical;
+
+    &__icon {
+        flex: 0 0 auto;
+        font-size: 1.5rem;
+    }
+
+    &__text {
+        flex: 1;
+        font-size: 1rem;
+        line-height: 1.3;
+    }
+
+    &__actions {
+        flex: 0 0 auto;
+    }
+
+    //
+    // - States
+    //
+
+    &--outdated {
+        #{$block}__icon,
+        #{$block}__text {
+            color: globals.$text-light-color;
+        }
+    }
+}

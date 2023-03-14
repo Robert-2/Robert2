@@ -1,0 +1,63 @@
+@use '~@/themes/default/style/globals';
+
+.AssignTags {
+    &__header {
+        display: flex;
+        align-items: center;
+        padding: 0.7rem 1rem;
+        background-color: globals.$bg-color-main-header;
+        gap: 10px;
+
+        &__title {
+            flex: 1;
+            overflow: hidden;
+            margin: 0;
+            font-size: 1.3rem;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+
+            @include globals.icon('tags') {
+                margin-right: 0.6rem;
+            }
+        }
+
+        &__close-button {
+            flex: 0 0 auto;
+        }
+    }
+
+    &__body {
+        padding: globals.$content-padding-large-vertical globals.$content-padding-small-vertical;
+    }
+
+    &__footer {
+        display: flex;
+        justify-content: center;
+        padding: 1.5rem globals.$content-padding-small-vertical;
+        background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    //
+    // - Contenu
+    //
+
+    &__help {
+        margin-top: 0;
+        color: globals.$text-light-color;
+    }
+
+    &__form {
+        display: flex;
+        align-items: stretch;
+        gap: 1rem;
+
+        &__select {
+            flex: 1;
+        }
+
+        &__remove-all {
+            flex: 0 0 auto;
+            width: 40px;
+        }
+    }
+}

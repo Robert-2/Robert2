@@ -1,0 +1,33 @@
+@use '~@/themes/default/style/globals';
+
+.EventDetails {
+    position: relative;
+    min-width: 850px;
+
+    &__close {
+        padding: 10px;
+        text-align: right;
+    }
+
+    &__loading {
+        flex: 1;
+    }
+
+    &__content {
+        display: flex;
+        flex-direction: column;
+        max-height: 100vh;
+        min-height: 250px;
+        padding: 20px;
+    }
+
+    &__no-material {
+        color: globals.$text-danger-color;
+        font-size: 1.2rem;
+        text-align: center;
+
+        &__icon {
+            margin-right: 5px;
+        }
+    }
+}

@@ -3,11 +3,15 @@ declare(strict_types=1);
 
 namespace Robert2\API\Middlewares;
 
-use Robert2\API\Config;
-use Robert2\API\Services\Auth;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
+use Robert2\API\Config;
+use Robert2\API\Http\Request;
+use Robert2\API\Models\User;
+use Robert2\API\Services\Auth;
+use Slim\Exception\HttpForbiddenException;
 use Slim\Exception\HttpUnauthorizedException;
-use Slim\Http\ServerRequest as Request;
+use Slim\Interfaces\RouteInterface;
+use Slim\Routing\RouteContext;
 
 class Acl
 {
@@ -17,72 +21,57 @@ class Acl
             return $handler->handle($request);
         }
 
-        $currentRoute = $this->_getCurrentRoute($request);
-        if (!preg_match('/^\/?api\//', $currentRoute)) {
-            return $handler->handle($request);
-        }
-
-        $groupId = Auth::isAuthenticated() ? Auth::user()->group_id : 'visitor';
-        $method = strtolower($request->getMethod());
-        $deniedRoutes = $this->_getDeniedRoutes($groupId, $method);
-        if (empty($deniedRoutes)) {
-            return $handler->handle($request);
-        }
-
-        $currentRoute = preg_replace('/^\/api/', '', $currentRoute) . '[/]';
-        if (in_array($currentRoute, $deniedRoutes)) {
-            throw new HttpUnauthorizedException($request);
+        if (!Auth::isAuthenticated()) {
+            if (!$request->match(Config\Acl::PUBLIC_ROUTES)) {
+                throw new HttpUnauthorizedException($request);
+            }
+        } else {
+            $route = RouteContext::fromRequest($request)->getRoute();
+            if (!$route || !static::isRouteAllowed(Auth::user(), $route)) {
+                throw new HttpForbiddenException($request);
+            }
         }
 
         return $handler->handle($request);
     }
 
-    protected function _getCurrentRoute(Request $request): string
+    public static function isRouteAllowed(User $user, RouteInterface $route): bool
     {
-        $currentRoute = $request->getUri()->getPath();
-        $currentRoute = preg_replace('/[0-9]+/', '{id:[0-9]+}', $currentRoute);
-        $currentRoute = preg_replace('/\/$/', '', $currentRoute);
-        return $currentRoute;
-    }
-
-    protected function _getGroupDeny(string $groupId)
-    {
-        $denyList = Config\Acl::DENY_LIST;
-        if (!isset($denyList[$groupId])) {
-            throw new \OutOfBoundsException("The group '$groupId' is unknown.");
-        }
-        return $denyList[$groupId];
-    }
-
-    protected function _getDeniedRoutes(string $groupId, string $method): array
-    {
-        $groupDeny = $this->_getGroupDeny($groupId);
-        if (empty($groupDeny)) {
-            return [];
+        $allowList = Config\Acl::ALLOW_LIST[$user->group] ?? [];
+        if (empty($allowList) || $allowList === '*') {
+            return $allowList === '*';
         }
 
-        $routesByMethod = include CONFIG_FOLDER . DS . 'routes.php';
-        if (!array_key_exists($method, $routesByMethod)) {
-            return [];
-        }
+        $fqn = $route->getCallable();
 
-        $deniedRoutes = [];
-        foreach ($routesByMethod[$method] as $route => $destination) {
-            $destination = explode(':', $destination);
-            $controller  = preg_replace('/Controller$/', '', $destination[0]);
-
-            if (!array_key_exists($controller, $groupDeny)) {
-                continue;
+        // - Si le callable n'est pas un FQN (= `[controller]:[action]`), on cherche à utiliser le nom
+        //   pour la route dans les ACLs, toutes les routes doivent avoir soit un FQN, soit un nom,
+        //   sinon elles ne peuvent pas être autorisées.
+        if (!is_string($fqn)) {
+            $name = $route->getName();
+            if (empty($name)) {
+                throw new \LogicException(
+                    "All routes must either contain a callable in text form (= FQN) or contain a name.\n" .
+                    "Otherwise, these routes will always be blocked by the ACL."
+                );
             }
-
-            $actionsDenied = $groupDeny[$controller];
-            $action        = $destination[1];
-
-            if (in_array($action, $actionsDenied)) {
-                $deniedRoutes[] = $route;
-            }
+            return in_array($name, $allowList, true);
         }
 
-        return $deniedRoutes;
+        // - Sinon si le FQN est bien au format `[controller]:[action]`, on parse les composantes
+        //   de celui-ci est on essai de trouver une valeur correspondante dans le tableau des ACLs.
+        $callablePattern = '!^([^\:]+)Controller\:([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)$!';
+        if (!preg_match($callablePattern, $fqn, $matches)) {
+            throw new \LogicException(
+                "Unable to retrieve the Controller + Action from the route FQN.\n" .
+                "Make sure you define the routes with the format `[Name]Controller:action`."
+            );
+        }
+        [$controller, $action] = [class_basename($matches[1]), $matches[2] ?? '__invoke'];
+
+        return (
+            array_key_exists($controller, $allowList) &&
+            in_array($action, $allowList[$controller], true)
+        );
     }
 }

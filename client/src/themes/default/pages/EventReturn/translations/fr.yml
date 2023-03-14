@@ -1,0 +1,23 @@
+title: "Inventaire de retour de l'événement «\_{name}\_»"
+title-simple: Inventaire de retour de l'événement
+
+not-started-yet-alert: >-
+    Cet événement n'a pas encore commencé, il n'est donc pas possible
+    de faire son inventaire de retour pour le moment.
+
+not-finished-yet-alert: >-
+    Cet événement n'est pas encore terminé, vous pouvez commencer son inventaire
+    de retour, mais pas le terminer.
+
+all-material-returned: "Félicitations\_! Tout le matériel a bien été retourné pour cet événement."
+some-material-is-missing: "Du matériel n'est pas revenu de cet événement\_!"
+some-material-came-back-broken: Du matériel est revenu en panne.
+
+confirm-terminate-title: "Voulez-vous vraiment terminer cet inventaire de retour\_?"
+confirm-terminate-text: Veuillez noter qu'il ne sera plus possible de le modifier.
+confirm-terminate-text-with-broken:
+    "Ceci aura pour effet de mettre à jour toutes les quantités «\_en panne\_» du
+    matériel concerné, et il ne sera plus possible de modifier cet inventaire."
+
+saved: Inventaire sauvegardé
+inventory-done: Inventaire terminé

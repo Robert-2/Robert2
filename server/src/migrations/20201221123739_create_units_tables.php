@@ -1,25 +1,28 @@
 <?php
+declare(strict_types=1);
+
 use Phinx\Migration\AbstractMigration;
 
-class CreateUnitsTables extends AbstractMigration
+final class CreateUnitsTables extends AbstractMigration
 {
     public function up()
     {
         $table = $this->table('materials');
         $table
-            ->changeColumn('park_id', 'integer', ['null' => true])
+            ->changeColumn('park_id', 'integer', ['signed' => true, 'null' => true])
             ->changeColumn('stock_quantity', 'integer', ['length' => 5, 'null' => true])
             ->addColumn('is_unitary', 'boolean', [
                 'default' => false,
                 'after' => 'reference',
+                'null' => false,
             ])
             ->save();
 
-        $table = $this->table('material_units');
+        $table = $this->table('material_units', ['signed' => true]);
         $table
-            ->addColumn('material_id', 'integer')
-            ->addColumn('serial_number', 'string', ['length' => 64])
-            ->addColumn('is_broken', 'boolean', ['default' => false])
+            ->addColumn('material_id', 'integer', ['signed' => true, 'null' => false])
+            ->addColumn('serial_number', 'string', ['length' => 64, 'null' => false])
+            ->addColumn('is_broken', 'boolean', ['default' => false, 'null' => false])
             ->addColumn('created_at', 'datetime', ['null' => true])
             ->addColumn('updated_at', 'datetime', ['null' => true])
             ->addIndex(['material_id', 'serial_number'], ['unique' => true])
@@ -30,10 +33,10 @@ class CreateUnitsTables extends AbstractMigration
             ])
             ->create();
 
-        $table = $this->table('event_material_units');
+        $table = $this->table('event_material_units', ['signed' => true]);
         $table
-            ->addColumn('event_material_id', 'integer')
-            ->addColumn('material_unit_id', 'integer')
+            ->addColumn('event_material_id', 'integer', ['signed' => true, 'null' => false])
+            ->addColumn('material_unit_id', 'integer', ['signed' => true, 'null' => false])
             ->addIndex(['event_material_id'])
             ->addIndex(['material_unit_id'])
             ->addIndex(['event_material_id', 'material_unit_id'], ['unique' => true])
@@ -62,8 +65,8 @@ class CreateUnitsTables extends AbstractMigration
 
         $table = $this->table('materials');
         $table
-            ->changeColumn('park_id', 'integer')
-            ->changeColumn('stock_quantity', 'integer', ['length' => 5])
+            ->changeColumn('park_id', 'integer', ['signed' => true, 'null' => false])
+            ->changeColumn('stock_quantity', 'integer', ['length' => 5, 'null' => false])
             ->removeColumn('is_unitary')
             ->save();
 

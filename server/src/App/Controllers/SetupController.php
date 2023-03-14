@@ -5,14 +5,15 @@ namespace Robert2\API\Controllers;
 
 use DI\Container;
 use Robert2\API\Config\Config;
-use Robert2\API\Errors\ValidationException;
+use Robert2\API\Errors\Exception\ValidationException;
+use Robert2\API\Http\Request;
 use Robert2\API\Models\Category;
+use Robert2\API\Models\Enums\Group;
 use Robert2\API\Models\User;
 use Robert2\API\Services\I18n;
 use Robert2\API\Services\View;
 use Robert2\Install\Install;
 use Slim\Http\Response;
-use Slim\Http\ServerRequest as Request;
 
 class SetupController extends BaseController
 {
@@ -36,25 +37,42 @@ class SetupController extends BaseController
 
     public function index(Request $request, Response $response)
     {
-        $installProgress = Install::getInstallProgress();
-        $currentStep = $installProgress['step'];
+        $currentStep = Install::getStep();
+        if ($currentStep === 'end') {
+            return $response->withRedirect('/login');
+        }
+
         $stepData = [];
         $error = false;
         $validationErrors = null;
 
-        $lang = $this->i18n->getCurrentLocale();
+        $lang = $this->i18n->getLanguage();
         $allCurrencies = Install::getAllCurrencies();
 
-        if ($request->isGet() && $currentStep === 'welcome') {
-            return $this->view->render(
-                $response,
-                'install.twig',
-                $this->_getCheckRequirementsData() + ['lang' => $lang]
-            );
+        if ($request->isGet()) {
+            if ($currentStep === 'welcome') {
+                return $this->view->render(
+                    $response,
+                    'install.twig',
+                    $this->_getCheckRequirementsData() + ['lang' => $lang]
+                );
+            }
+
+            if ($currentStep === 'company') {
+                $stepData = $this->settings['companyData'];
+            }
         }
 
         if ($request->isPost()) {
             $installData = $request->getParsedBody();
+
+            $stepSkipped = (
+                array_key_exists('skipped', $installData)
+                && $installData['skipped'] === 'yes'
+            );
+            if ($stepSkipped) {
+                $installData['skipped'] = true;
+            }
 
             if ($currentStep === 'settings') {
                 $installData['currency'] = $allCurrencies[$installData['currency']];
@@ -65,13 +83,8 @@ class SetupController extends BaseController
                 ksort($installData);
             }
 
-            $stepSkipped = array_key_exists('skipped', $installData) && $installData['skipped'] === 'yes';
-            if ($stepSkipped) {
-                $installData['skipped'] = true;
-            }
-
             try {
-                $installProgress = Install::setInstallProgress($currentStep, $installData);
+                Install::setInstallProgress($currentStep, $installData);
 
                 if ($currentStep === 'company') {
                     $this->_validateCompanyData($installData);
@@ -79,35 +92,35 @@ class SetupController extends BaseController
 
                 if ($currentStep === 'database') {
                     $settings = Install::getSettingsFromInstallData();
-                    Config::saveCustomConfig($settings, true);
+                    Config::saveCustomConfig($settings);
                     Config::getPDO(); // - Try to connect to DB
                 }
 
                 if ($currentStep === 'dbStructure') {
-                    Install::createMissingTables();
-                    Install::insertInitialDataIntoDB();
+                    Install::migrateDatabase();
                 }
 
                 if ($currentStep === 'adminUser') {
-                    if ($stepSkipped && !User::where('group_id', 'admin')->exists()) {
+                    if ($stepSkipped && !User::where('group', Group::ADMIN)->exists()) {
                         throw new \InvalidArgumentException(
-                            "At least one user must exists. Please create an admin user."
+                            "At least one user must exists. Please create an administrator."
                         );
                     }
 
                     if (!$stepSkipped) {
-                        $installData['user']['group_id'] = 'admin';
-                        User::staticEdit(null, $installData['user']);
+                        $installData['user']['group'] = Group::ADMIN;
+                        User::new($installData['user']);
                     }
                 }
 
                 if ($currentStep === 'categories') {
                     $categories = explode(',', $installData['categories']);
-                    $Category = new Category();
-                    $Category->bulkAdd(array_unique($categories));
+                    Category::bulkAdd(array_unique($categories));
                 }
+
+                return $response->withRedirect('/install');
             } catch (\Exception $e) {
-                $installProgress = Install::setInstallProgress($currentStep);
+                Install::setInstallProgress($currentStep);
 
                 $stepData = $installData;
                 $error = $e->getMessage();
@@ -122,38 +135,38 @@ class SetupController extends BaseController
             }
         }
 
-        if ($installProgress['step'] === 'coreSettings' && empty($stepData['JWTSecret'])) {
-            $stepData['JWTSecret'] = md5(uniqid('Robert2', true));
+        if ($currentStep === 'coreSettings' && empty($stepData['JWTSecret'])) {
+            $stepData['JWTSecret'] = md5(uniqid('Loxya', true));
         }
 
-        if ($installProgress['step'] === 'settings') {
+        if ($currentStep === 'settings') {
             $stepData['currencies'] = $allCurrencies;
         }
 
-        if ($installProgress['step'] === 'dbStructure') {
+        if ($currentStep === 'dbStructure') {
             try {
                 $stepData = [
                     'migrationStatus' => Install::getMigrationsStatus(),
-                    'canProcess' => true
+                    'canProcess' => true,
                 ];
             } catch (\Exception $e) {
                 $stepData = [
                     'migrationStatus' => [],
                     'errorCode' => $e->getCode(),
                     'error' => $e->getMessage(),
-                    'canProcess' => false
+                    'canProcess' => false,
                 ];
             }
         }
 
-        if ($installProgress['step'] === 'adminUser') {
-            $stepData['existingAdmins'] = User::where('group_id', 'admin')->get()->toArray();
+        if ($currentStep === 'adminUser') {
+            $stepData['existingAdmins'] = User::where('group', Group::ADMIN)->get()->toArray();
         }
 
         return $this->view->render($response, 'install.twig', [
             'lang' => $lang,
-            'step' => $installProgress['step'],
-            'stepNumber' => array_search($installProgress['step'], Install::INSTALL_STEPS),
+            'step' => $currentStep,
+            'stepNumber' => array_search($currentStep, Install::INSTALL_STEPS),
             'error' => $error,
             'validationErrors' => $validationErrors,
             'stepData' => $stepData,
@@ -171,9 +184,7 @@ class SetupController extends BaseController
         Install::setInstallProgress($prevStep, ['skipped' => true]);
         Install::setInstallProgress($endStep, []);
 
-        return $response
-            ->withHeader('Location', '/login')
-            ->withStatus(302);
+        return $response->withRedirect('/login');
     }
 
     // ------------------------------------------------------
@@ -185,14 +196,14 @@ class SetupController extends BaseController
     private function _getCheckRequirementsData(): array
     {
         $phpVersion = PHP_VERSION;
-        if (strpos(PHP_VERSION, '+')) {
+        if (str_contains(PHP_VERSION, '+')) {
             $phpVersion = substr(PHP_VERSION, 0, strpos(PHP_VERSION, '+'));
         }
 
-        $phpversionOK = version_compare(PHP_VERSION, '7.4.0') >= 0;
+        $phpversionOK = version_compare(PHP_VERSION, '8.0.0') >= 0;
         $loadedExtensions = get_loaded_extensions();
-        $neededExstensions = Install::REQUIRED_EXTENSIONS;
-        $missingExtensions = array_diff($neededExstensions, $loadedExtensions);
+        $neededExtensions = Install::REQUIRED_EXTENSIONS;
+        $missingExtensions = array_diff($neededExtensions, $loadedExtensions);
 
         return [
             'step' => 'welcome',
@@ -206,9 +217,9 @@ class SetupController extends BaseController
     private function _validateCompanyData($companyData): void
     {
         $errors = [];
-        foreach (['name', 'street', 'zipCode', 'locality'] as $mandatoryfield) {
-            if (empty($companyData[$mandatoryfield])) {
-                $errors[$mandatoryfield] = "Missing value";
+        foreach (['name', 'street', 'zipCode', 'locality'] as $mandatoryField) {
+            if (empty($companyData[$mandatoryField])) {
+                $errors[$mandatoryField] = "Missing value";
                 continue;
             }
         }
@@ -217,7 +228,6 @@ class SetupController extends BaseController
             return;
         }
 
-        throw (new ValidationException)
-            ->setValidationErrors($errors);
+        throw new ValidationException($errors);
     }
 }
