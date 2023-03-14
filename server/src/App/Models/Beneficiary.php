@@ -7,6 +7,7 @@ use Adbar\Dot as DotArray;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Robert2\API\Config\Config;
 use Robert2\API\Contracts\Serializable;
 use Robert2\API\Errors\Exception\ValidationException;
 use Robert2\API\Models\Traits\Serializer;
@@ -418,6 +419,7 @@ final class Beneficiary extends BaseModel implements Serializable
         if ($beneficiary->can_make_reservation === true && !$beneficiary->person?->user) {
             $user = (new User)->fill(array_merge($userData, [
                 'group' => Group::EXTERNAL,
+                'language' => Config::getSettings('defaultLang'),
                 'password' => !empty($userData['password'])
                     ? password_hash($userData['password'], PASSWORD_DEFAULT)
                     : null,
