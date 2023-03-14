@@ -13,7 +13,11 @@ final class TagsTest extends ApiTestCase
         return static::_dataFactory($id, [
             [
                 'id' => 1,
-                'name' => 'pro',
+                'name' => 'Premium',
+            ],
+            [
+                'id' => 2,
+                'name' => 'Vintage',
             ],
         ]);
     }
@@ -24,6 +28,7 @@ final class TagsTest extends ApiTestCase
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData([
             self::data(1),
+            self::data(2),
         ]);
 
         $this->client->get('/api/tags?deleted=1');
@@ -48,7 +53,7 @@ final class TagsTest extends ApiTestCase
 
     public function testCreateTagDuplicate()
     {
-        $this->client->post('/api/tags', ['name' => 'pro']);
+        $this->client->post('/api/tags', ['name' => 'Premium']);
         $this->assertApiValidationError();
     }
 
@@ -57,7 +62,7 @@ final class TagsTest extends ApiTestCase
         $this->client->post('/api/tags', ['name' => 'New tag']);
         $this->assertStatusCode(StatusCode::STATUS_CREATED);
         $this->assertResponseData([
-            'id' => 2,
+            'id' => 3,
             'name' => 'New tag',
         ]);
     }

@@ -16,7 +16,10 @@
         "is_discountable": false,
         "is_reservable": true,
         "picture": "IMG-20210511-0001.jpg",
-        "note": null
+        "note": null,
+        "created_at": "2021-02-12 23:00:00",
+        "updated_at": "2021-02-12 23:00:00",
+        "deleted_at": null
     },
     {
         "id": 2,
@@ -35,7 +38,10 @@
         "is_discountable": true,
         "is_reservable": false,
         "picture": null,
-        "note": null
+        "note": null,
+        "created_at": "2021-02-12 23:01:00",
+        "updated_at": "2021-02-12 23:02:00",
+        "deleted_at": null
     },
     {
         "id": 3,
@@ -54,7 +60,10 @@
         "is_discountable": true,
         "is_reservable": true,
         "picture": null,
-        "note": "Soyez délicats avec ces projos !"
+        "note": "Soyez délicats avec ces projos !",
+        "created_at": "2021-02-12 23:02:00",
+        "updated_at": "2021-02-12 23:02:00",
+        "deleted_at": null
     },
     {
         "id": 4,
@@ -73,7 +82,10 @@
         "is_discountable": true,
         "is_reservable": true,
         "picture": null,
-        "note": null
+        "note": null,
+        "created_at": "2021-02-12 23:03:00",
+        "updated_at": "2021-02-12 23:03:00",
+        "deleted_at": null
     },
     {
         "id": 5,
@@ -92,7 +104,10 @@
         "is_discountable": true,
         "is_reservable": true,
         "picture": null,
-        "note": null
+        "note": null,
+        "created_at": "2021-02-12 23:14:00",
+        "updated_at": "2021-02-12 23:14:00",
+        "deleted_at": null
     },
     {
         "id": 6,
@@ -111,7 +126,10 @@
         "is_discountable": false,
         "is_reservable": true,
         "picture": null,
-        "note": null
+        "note": null,
+        "created_at": "2021-02-12 23:15:00",
+        "updated_at": "2021-02-12 23:15:00",
+        "deleted_at": null
     },
     {
         "id": 7,
@@ -130,7 +148,10 @@
         "is_discountable": false,
         "is_reservable": true,
         "picture": null,
-        "note": null
+        "note": null,
+        "created_at": "2021-02-12 23:16:00",
+        "updated_at": "2021-02-12 23:16:00",
+        "deleted_at": null
     },
     {
         "id": 8,
@@ -149,6 +170,9 @@
         "is_discountable": true,
         "is_reservable": true,
         "picture": null,
-        "note": null
+        "note": null,
+        "created_at": "2021-02-12 23:18:00",
+        "updated_at": "2021-02-12 23:18:00",
+        "deleted_at": null
     }
 ]

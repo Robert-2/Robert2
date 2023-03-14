@@ -1,12 +1,12 @@
 <div class="page__content">
-    <h2>Bienvenue !</h2>
+    <h2>Bienvenue&nbsp;!</h2>
     <p>
-        Voici l'assistant d'installation de l'API de Robert2, version <strong>{{version()}}</strong>.
+        Voici l'assistant d'installation de Loxya / Robert2, version <strong>{{version()}}</strong>.<br />
+        Il va vous guider, en 5 petites étapes, pour installer et configurer votre application.
     </p>
     <p>
-        Il va vous guider, en 5 petites étapes, pour installer et configurer votre Robert2.
-        À la toute fin de cet assistant, vous serez en mesure d'utiliser Robert2 !<br />
-        Mais avant, vérifions si votre serveur dispose du minimum requis pour que Robert2 fonctionne.
+        À la toute fin de cet assistant, vous serez en mesure d'utiliser Loxya / Robert2&nbsp;!<br />
+        Mais avant, vérifions si votre serveur dispose du minimum requis pour que tout fonctionne correctement.
     </p>
     <div class="install__check">
         Loxya / Robert2 est compatible avec la version de PHP <strong>8.0.0</strong> et plus.
@@ -16,7 +16,7 @@
             {% else %}
             <div class="install__check-error">
                 Vous devez installer une version plus récente de PHP pour pouvoir utiliser Robert2.<br />
-                Version actuelle utilisée : <strong>{{phpVersion}}</strong>.
+                Version actuelle utilisée&nbsp;: <strong>{{phpVersion}}</strong>.
             </div>
             {% endif %}
         </div>
@@ -25,9 +25,9 @@
         Quelques extensions PHP doivent aussi être installées sur le serveur.
         <div class="install__check-result">
             {% for extension in missingExtensions %}
-            <li class="install__check-error">L'extension '{{extension}}' est manquante</li>
+            <li class="install__check-error">L'extension &laquo;&nbsp;{{extension}}&nbsp;&raquo; est manquante.</li>
             {% else %}
-            <span class="install__check-success">Toutes les extensions requises sont présentes !</span>
+            <span class="install__check-success">Toutes les extensions requises sont présentes&nbsp;!</span>
             {% endfor %}
         </div>
     </div>
@@ -38,15 +38,15 @@
     </p>
     <form method="POST" class="form">
         <div class="form__submit">
-            <button role="submit">C'est parti !</button>
+            <button role="submit">C'est parti&nbsp;!</button>
         </div>
     </form>
     {% else %}
     <p>
-        Malheureusement, <strong class="install__check-error">vous ne pouvez pas
-        installer Robert2</strong> sur ce serveur car il ne dispose pas de la
+        Malheureusement, en l'état, <strong class="install__check-error">vous ne pouvez pas
+        installer Loxya / Robert2</strong> sur ce serveur car il ne dispose pas de la
         configuration minimale requise. Après avoir corrigé les points soulignés
-        plus haut, revenez ici et réessayez !
+        plus haut, revenez ici et réessayez&nbsp;!
     </p>
     {% endif %}
 </div>

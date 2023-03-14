@@ -170,34 +170,25 @@ const CategoriesItem = {
                         />
                         <Dropdown variant="actions">
                             <template slot="items">
-                                <li class="CategoriesItem__category__dropdown-action">
-                                    <Button
-                                        to={{ name: 'materials', query: { category: id } }}
-                                        icon="list"
-                                        class="CategoriesItem__category__dropdown-action__button"
-                                    >
-                                        {__('page.categories.display-materials-list')}
-                                    </Button>
-                                </li>
-                                <li class="CategoriesItem__category__dropdown-action">
-                                    <Button
-                                        type="primary"
-                                        icon="edit"
-                                        onClick={() => { handleEditCategory(name); }}
-                                        class="CategoriesItem__category__dropdown-action__button"
-                                    >
-                                        {__('page.categories.modify')}
-                                    </Button>
-                                </li>
-                                <li class="CategoriesItem__category__dropdown-action">
-                                    <Button
-                                        type="delete"
-                                        onClick={() => { handleRemoveCategory(); }}
-                                        class="CategoriesItem__category__dropdown-action__button"
-                                    >
-                                        {__('page.categories.delete')}
-                                    </Button>
-                                </li>
+                                <Button
+                                    icon="list"
+                                    to={{ name: 'materials', query: { category: id } }}
+                                >
+                                    {__('page.categories.display-materials-list')}
+                                </Button>
+                                <Button
+                                    icon="edit"
+                                    type="primary"
+                                    onClick={() => { handleEditCategory(name); }}
+                                >
+                                    {__('page.categories.modify')}
+                                </Button>
+                                <Button
+                                    type="delete"
+                                    onClick={() => { handleRemoveCategory(); }}
+                                >
+                                    {__('page.categories.delete')}
+                                </Button>
                             </template>
                         </Dropdown>
                     </div>
@@ -211,39 +202,30 @@ const CategoriesItem = {
                             <div class="CategoriesItem__subcategory__actions">
                                 <Dropdown variant="actions">
                                     <template slot="items">
-                                        <li class="CategoriesItem__subcategory__dropdown-action">
-                                            <Button
-                                                to={{
-                                                    name: 'materials',
-                                                    query: { category: id, subCategory: subCategoryId },
-                                                }}
-                                                icon="list"
-                                                class="CategoriesItem__category__dropdown-action__button"
-                                            >
-                                                {__('page.categories.display-materials-list')}
-                                            </Button>
-                                        </li>
-                                        <li class="CategoriesItem__subcategory__dropdown-action">
-                                            <Button
-                                                type="primary"
-                                                icon="edit"
-                                                onClick={() => {
-                                                    handleEditSubcategory(subCategoryId, subCategoryName);
-                                                }}
-                                                class="CategoriesItem__category__dropdown-action__button"
-                                            >
-                                                {__('page.categories.modify-subcategory')}
-                                            </Button>
-                                        </li>
-                                        <li class="CategoriesItem__subcategory__dropdown-action">
-                                            <Button
-                                                type="delete"
-                                                onClick={() => { handleRemoveSubcategory(subCategoryId); }}
-                                                class="CategoriesItem__category__dropdown-action__button"
-                                            >
-                                                {__('page.categories.delete-subcategory')}
-                                            </Button>
-                                        </li>
+                                        <Button
+                                            to={{
+                                                name: 'materials',
+                                                query: { category: id, subCategory: subCategoryId },
+                                            }}
+                                            icon="list"
+                                        >
+                                            {__('page.categories.display-materials-list')}
+                                        </Button>
+                                        <Button
+                                            type="primary"
+                                            icon="edit"
+                                            onClick={() => {
+                                                handleEditSubcategory(subCategoryId, subCategoryName);
+                                            }}
+                                        >
+                                            {__('page.categories.modify-subcategory')}
+                                        </Button>
+                                        <Button
+                                            type="delete"
+                                            onClick={() => { handleRemoveSubcategory(subCategoryId); }}
+                                        >
+                                            {__('page.categories.delete-subcategory')}
+                                        </Button>
                                     </template>
                                 </Dropdown>
                             </div>

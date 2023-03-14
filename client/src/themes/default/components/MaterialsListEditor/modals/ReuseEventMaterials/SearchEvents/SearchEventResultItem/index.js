@@ -2,6 +2,7 @@ import './index.scss';
 import moment from 'moment';
 import { toRefs, computed } from '@vue/composition-api';
 import useI18n from '@/hooks/useI18n';
+import Button from '@/themes/default/components/Button';
 
 // @vue/component
 const SearchEventResultItem = (props, { emit }) => {
@@ -27,9 +28,13 @@ const SearchEventResultItem = (props, { emit }) => {
                     { from: start.value.format('L'), to: end.value.format('L') },
                 )}
             </span>
-            <button type="button" class="SearchEventResultItem__select info" onClick={handleSelect}>
+            <Button
+                type="primary"
+                class="SearchEventResultItem__select"
+                onClick={handleSelect}
+            >
                 {__('choose')}
-            </button>
+            </Button>
         </li>
     );
 };

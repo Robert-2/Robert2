@@ -19,6 +19,7 @@ use Robert2\API\Models\Enums\Group;
 use Robert2\API\Models\Event;
 use Robert2\API\Models\Material;
 use Robert2\API\Models\Park;
+use Robert2\API\Models\Tag;
 use Robert2\API\Models\User;
 use Robert2\API\Services\Auth;
 use Robert2\API\Services\I18n;
@@ -230,7 +231,7 @@ class MaterialController extends BaseController
                     ->with('beneficiaries')
                     ->with('technicians')
                     ->with(['materials' => function ($q) {
-                        $q->orderBy('name', 'asc');
+                        $q->reorder('name', 'asc');
                     }])
                     ->get()
             );
@@ -464,25 +465,47 @@ class MaterialController extends BaseController
                 $hasFailed = true;
             }
 
+            if (array_key_exists('tags', $postData) && is_array($postData['tags'])) {
+                $tags = [];
+                foreach ($postData['tags'] as $tagId) {
+                    if (empty($tagId)) {
+                        continue;
+                    }
+
+                    $relatedTag = is_numeric($tagId) ? Tag::find($tagId) : null;
+                    if ($relatedTag === null) {
+                        $hasFailed = true;
+                        $validationErrors['tags'] = [$this->i18n->translate('field-contains-invalid-values')];
+                        break;
+                    }
+
+                    $tags[] = $relatedTag->id;
+                }
+
+                if (!$hasFailed) {
+                    $material->tags()->sync($tags);
+                }
+            }
+
             if (
                 Auth::is(Group::ADMIN) &&
                 array_key_exists('approvers', $postData) &&
                 is_array($postData['approvers'])
             ) {
                 $approvers = [];
-                foreach ($postData['approvers'] as $approver) {
-                    if (empty($approver)) {
+                foreach ($postData['approvers'] as $approverId) {
+                    if (empty($approverId)) {
                         continue;
                     }
 
-                    $relatedUser = is_numeric($approver) ? User::find($approver) : null;
+                    $relatedUser = is_numeric($approverId) ? User::find($approverId) : null;
                     if ($relatedUser === null || $relatedUser?->group !== Group::MEMBER) {
                         $hasFailed = true;
                         $validationErrors['approvers'] = [$this->i18n->translate('field-contains-invalid-values')];
                         break;
                     }
 
-                    $approvers[] = $approver;
+                    $approvers[] = $relatedUser->id;
                 }
 
                 if (!$hasFailed) {

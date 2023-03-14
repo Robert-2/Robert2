@@ -13,7 +13,7 @@ export default {
             <ul class="TagsList">
                 {tags.map(({ id, name }) => (
                     <li key={id} class="TagsList__item">
-                        <i class="fas fa-tag" /> {name}
+                        {name}
                     </li>
                 ))}
             </ul>

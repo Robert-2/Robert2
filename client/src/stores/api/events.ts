@@ -119,6 +119,11 @@ type EventReturnInventoryMaterial = {
 
 type EventReturnInventory = EventReturnInventoryMaterial[];
 
+type EventDuplicatePayload = {
+    start_date: string,
+    end_date: string,
+};
+
 //
 // - Normalizer
 //
@@ -213,6 +218,10 @@ const update = async (id: Event['id'], params: any): Promise<EventDetails> => (
     normalize((await requester.put(`/events/${id}`, params)).data)
 );
 
+const duplicate = async (id: Event['id'], data: EventDuplicatePayload): Promise<EventDetails> => (
+    normalize((await requester.post(`/events/${id}/duplicate`, data)).data)
+);
+
 const remove = async (id: Event['id']): Promise<void> => {
     await requester.delete(`/events/${id}`);
 };
@@ -229,6 +238,7 @@ export default {
     createInvoice,
     createEstimate,
     create,
+    duplicate,
     update,
     remove,
 };

@@ -14,7 +14,7 @@ jobs:
             - uses: actions/setup-node@v2
               with: { node-version: '16' }
             - run: yarn install --non-interactive --pure-lockfile
-            - run: yarn lint:js --max-warnings 6 --color
+            - run: yarn lint:js --max-warnings 0 --color
 
     client-linting-scss:
         name     : "Client: Linting (SCSS)"

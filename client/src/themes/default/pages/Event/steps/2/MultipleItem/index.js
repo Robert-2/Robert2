@@ -3,6 +3,7 @@ import VueSelect from 'vue-select';
 import { debounce } from 'debounce';
 import formatOptions from '@/utils/formatOptions';
 import { DEBOUNCE_WAIT } from '@/globals/constants';
+import Button from '@/themes/default/components/Button';
 
 // - Longueur minimale du texte lors d'une recherche.
 const MIN_SEARCH_CHARACTERS = 2;
@@ -11,12 +12,11 @@ const MIN_SEARCH_CHARACTERS = 2;
 export default {
     name: 'MultipleItem',
     props: {
-        fetchEntity: String,
-        label: String,
-        field: String,
-        selectedItems: Array,
-        createItemPath: String,
-        getItemLabel: Function,
+        fetchEntity: { type: String, required: true },
+        label: { type: String, required: true },
+        createItemPath: { type: String, required: true },
+        getItemLabel: { type: Function, required: true },
+        selectedItems: { type: Array, default: () => [] },
     },
     data() {
         const { $t: __ } = this;
@@ -67,9 +67,7 @@ export default {
                 .finally(() => { loading(false); });
         },
 
-        startAddItem(e) {
-            e.preventDefault();
-
+        startAddItem() {
             this.askNewItem = true;
         },
 
@@ -143,7 +141,7 @@ export default {
                         </div>
                         <button
                             type="button"
-                            class="MultipleItem__item-action-btn danger"
+                            class="MultipleItem__item-action-btn button danger"
                             title={__('remove-item', { item: label })}
                             onClick={(e) => {
                                 e.preventDefault();
@@ -194,7 +192,7 @@ export default {
                         />
                         <button
                             type="button"
-                            class="MultipleItem__item-action-btn warning"
+                            class="MultipleItem__item-action-btn button warning"
                             title={__('cancel-add-item', { item: label })}
                             onClick={cancelNewItem}
                         >
@@ -204,10 +202,9 @@ export default {
                 )}
                 <div class="MultipleItem__actions">
                     {!askNewItem && (
-                        <button type="button" class="success" onClick={startAddItem}>
-                            <i class="fas fa-plus" />&nbsp;
+                        <Button type="add" onClick={startAddItem}>
                             {__('add-item', { item: label })}
-                        </button>
+                        </Button>
                     )}
                 </div>
             </div>

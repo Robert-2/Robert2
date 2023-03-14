@@ -1,33 +1,47 @@
+@use 'sass:color';
 @use '~@/themes/default/style/globals';
 
 .SearchEvents {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
     &__search {
+        $border-radius: 4px;
+
         display: flex;
         justify-content: center;
-        margin-bottom: globals.$content-padding-large-vertical;
 
         &__input {
             width: 300px;
-            border-top-right-radius: 0;
-            border-bottom-right-radius: 0;
+            border-radius: $border-radius 0 0 $border-radius;
         }
 
         &__button {
-            border-top-left-radius: 0;
-            border-bottom-left-radius: 0;
+            @extend %reset-button;
+
+            display: inline-block;
+            padding: 0.55rem 1.08rem;
+            border-radius: 0 $border-radius $border-radius 0;
+            background-color: globals.$bg-color-button-info;
+            color: #e0e0e0;
+            font-size: 1rem;
+            line-height: 1.25;
+            text-decoration: none;
+            transition: all 300ms;
+
+            &:hover,
+            &:focus {
+                background-color: color.adjust(globals.$bg-color-button-info, $lightness: 5%);
+            }
+
+            &:active {
+                background-color: color.adjust(globals.$bg-color-button-info, $lightness: -5%);
+            }
         }
     }
 
-    .Loading {
-        margin-bottom: globals.$content-padding-small-vertical;
+    &__response {
+        margin-top: globals.$content-padding-large-vertical;
     }
 
     &__results {
-        width: 100%;
         padding-top: globals.$content-padding-small-vertical;
         border-top: 1px solid globals.$divider-color;
 

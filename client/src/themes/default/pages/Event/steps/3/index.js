@@ -336,7 +336,7 @@ export default {
                         <p class="EventStep3__no-technician__message">
                             {__('page.event-edit.no-technician-pass-this-step')}
                         </p>
-                        <button type="button" class="success" onClick={handleNextClick}>
+                        <button type="button" class="button success" onClick={handleNextClick}>
                             {__('page.event-edit.continue')} <i class="fas fa-arrow-right" />
                         </button>
                     </div>
@@ -371,12 +371,12 @@ export default {
                     {renderContent()}
                 </div>
                 <section class="EventStep3__footer">
-                    <button type="button" class="info" onClick={handleBackToCalendarClick}>
+                    <button type="button" class="button info" onClick={handleBackToCalendarClick}>
                         <i class="fas fa-arrow-left" />{' '}
                         {__('page.event-edit.save-and-back-to-calendar')}
                     </button>
                     {!isLoading && techniciansCount > 0 && (
-                        <button type="button" class="success" onClick={handleNextClick}>
+                        <button type="button" class="button success" onClick={handleNextClick}>
                             {__('page.event-edit.save-and-continue')}{' '}
                             <i class="fas fa-arrow-right" />
                         </button>

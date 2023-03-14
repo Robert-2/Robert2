@@ -48,7 +48,7 @@
         display: flex;
         flex-wrap: nowrap;
         align-items: center;
-        padding: 0 2px;
+        padding: 0 8px 0 2px;
 
         #{$block}__selected {
             display: inline-flex;
@@ -62,18 +62,21 @@
         }
 
         #{$block}__deselect {
+            margin-right: -6px;
             padding: 0.3rem 0.4rem;
             background: none;
+            color: $text-light-color;
+            text-shadow: none;
 
             svg {
-                fill: $text-light-color;
+                fill: currentColor;
             }
 
             &:hover {
-                background-color: $bg-color-button-default;
+                color: $text-soft-color;
 
                 svg {
-                    fill: $text-soft-color;
+                    fill: currentColor;
                 }
             }
         }
@@ -96,7 +99,7 @@
         padding: 0;
 
         #{$block}__clear {
-            margin: 0 0.6rem 0 0;
+            margin: 0 0.3rem 0 0;
             padding: 0.6rem;
 
             // - Important, pour surcharger la règle `.button:not(.Button)`

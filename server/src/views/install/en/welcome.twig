@@ -1,11 +1,11 @@
 <div class="page__content">
     <h2>Welcome !</h2>
     <p>
-        This is the Robert2 API installation wizard, version <strong>{{version()}}</strong>.
+        This is the Loxya / Robert2 installation wizard, version <strong>{{version()}}</strong>.
     </p>
     <p>
-        It will guide you, in 5 short steps, to set the configuration of your Robert2.
-        At the very end of the wizard, you'll be able to use Robert2!<br />
+        It will guide you, in 5 short steps, to set the configuration of your application.
+        At the very end of the wizard, you'll be able to use Loxya / Robert2!<br />
         But first, let's check if the minimal requirements are met on your server.
     </p>
     <div class="install__check">
@@ -25,7 +25,7 @@
         There are some PHP extensions that must be installed on the server.
         <div class="install__check-result">
             {% for extension in missingExtensions %}
-            <li class="install__check-error">Extension '{{extension}}' is missing</li>
+            <li class="install__check-error">Extension "{{extension}}" is missing.</li>
             {% else %}
             <span class="install__check-success">All needed extensions installed!</span>
             {% endfor %}

@@ -2,6 +2,8 @@ import './index.scss';
 import { ref, computed } from '@vue/composition-api';
 import useI18n from '@/hooks/useI18n';
 import useRouter from '@/hooks/useRouter';
+import Icon from '@/themes/default/components/Icon';
+import Button from '@/themes/default/components/Button';
 import Loading from '@/themes/default/components/Loading';
 import ErrorMessage from '@/themes/default/components/ErrorMessage/index';
 import MaterialsSorted from '@/themes/default/components/MaterialsSorted';
@@ -71,16 +73,16 @@ const ReuseEventMaterials = (props, { emit }) => {
                     <p class="ReuseEventMaterials__selected__description">{selected.value.description}</p>
                     <MaterialsSorted data={selected.value.materials} />
                     <p class="ReuseEventMaterials__selected__warning">
-                        <i class="fas fa-exclamation-triangle" />
+                        <Icon name="exclamation-triangle" />{' '}
                         {__('reuse-list-from-event-warning')}
                     </p>
                 </div>
             );
         };
 
-        const mainClassNames = {
-            'ReuseEventMaterials__main': true,
-            'ReuseEventMaterials__main--has-selected': selected.value !== null,
+        const bodyClassNames = {
+            'ReuseEventMaterials__body': true,
+            'ReuseEventMaterials__body--has-selected': selected.value !== null,
         };
 
         return (
@@ -89,11 +91,13 @@ const ReuseEventMaterials = (props, { emit }) => {
                     <h2 class="ReuseEventMaterials__header__title">
                         {__('choose-event-to-reuse-materials-list')}
                     </h2>
-                    <button type="button" class="ReuseEventMaterials__header__btn-close" onClick={handleClose}>
-                        <i class="fas fa-times" />
-                    </button>
+                    <Button
+                        type="close"
+                        class="ListTemplateUsage__header__close-button"
+                        onClick={handleClose}
+                    />
                 </div>
-                <div class={mainClassNames}>
+                <div class={bodyClassNames}>
                     <SearchEvents
                         exclude={excludeEvent.value}
                         onSelect={handleSelectEvent}
@@ -102,12 +106,12 @@ const ReuseEventMaterials = (props, { emit }) => {
                 </div>
                 {selected.value !== null && (
                     <div class="ReuseEventMaterials__footer">
-                        <button type="button" onClick={handleSubmit} class="success">
-                            <i class="fas fa-check" /> {__('use-these-materials')}
-                        </button>
-                        <button type="button" onClick={handleClearSelection}>
-                            <i class="fas fa-random" /> {__('choose-another-one')}
-                        </button>
+                        <Button type="primary" icon="check" onClick={handleSubmit}>
+                            {__('use-these-materials')}
+                        </Button>
+                        <Button icon="random" onClick={handleClearSelection}>
+                            {__('choose-another-one')}
+                        </Button>
                     </div>
                 )}
             </div>

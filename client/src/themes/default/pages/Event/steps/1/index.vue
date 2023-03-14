@@ -67,11 +67,11 @@
             </div>
         </Fieldset>
         <section class="Form__actions">
-            <button class="EventStep1__save-btn info" type="submit">
+            <button type="submit" class="EventStep1__save-btn button info">
                 <i class="fas fa-arrow-left" />
                 {{ $t('page.event-edit.save-and-back-to-calendar') }}
             </button>
-            <button class="EventStep1__save-btn success" @click="saveAndNext">
+            <button type="button" class="EventStep1__save-btn button success" @click="saveAndNext">
                 {{ $t('page.event-edit.save-and-continue') }}
                 <i class="fas fa-arrow-right" />
             </button>

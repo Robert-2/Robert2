@@ -2,46 +2,66 @@
     {
         "id": 1,
         "pseudo": "test1",
-        "group": "admin",
         "email": "tester@robertmanager.net",
+        "group": "admin",
         "password": "$2y$10$o7Zu3VKby5bUzGk7uzSQqeUuXo5MSg7RpXQS3U3C541hjmzHeVY0O",
+        "cas_identifier": null,
         "language": "en",
-        "notifications_enabled": true
+        "notifications_enabled": true,
+        "created_at": "2021-02-10 12:10:00",
+        "updated_at": "2021-02-10 12:10:00",
+        "deleted_at": null
     },
     {
         "id": 2,
         "pseudo": "test2",
-        "group": "member",
         "email": "tester2@robertmanager.net",
+        "group": "member",
         "password": "$2y$10$o7Zu3VKby5bUzGk7uzSQqeUuXo5MSg7RpXQS3U3C541hjmzHeVY0O",
+        "cas_identifier": null,
         "language": "fr",
-        "notifications_enabled": true
+        "notifications_enabled": true,
+        "created_at": "2021-02-10 12:11:00",
+        "updated_at": "2021-02-10 12:11:00",
+        "deleted_at": null
     },
     {
         "id": 3,
         "pseudo": "nobody",
-        "group": "member",
         "email": "nobody@robertmanager.net",
+        "group": "member",
         "password": "$2y$10$o7Zu3VKby5bUzGk7uzSQqeUuXo5MSg7RpXQS3U3C541hjmzHeVY0O",
+        "cas_identifier": null,
         "language": "fr",
-        "notifications_enabled": true
+        "notifications_enabled": true,
+        "created_at": "2021-02-10 12:12:00",
+        "updated_at": "2021-02-10 12:13:00",
+        "deleted_at": null
     },
     {
         "id": 4,
         "pseudo": "TheVisitor",
-        "group": "visitor",
         "email": "visitor@robertmanager.net",
+        "group": "visitor",
         "password": "$2y$10$o7Zu3VKby5bUzGk7uzSQqeUuXo5MSg7RpXQS3U3C541hjmzHeVY0O",
+        "cas_identifier": null,
         "language": "fr",
-        "notifications_enabled": false
+        "notifications_enabled": false,
+        "created_at": "2021-02-10 12:14:00",
+        "updated_at": "2021-02-10 12:14:00",
+        "deleted_at": null
     },
     {
         "id": 5,
         "pseudo": "caroline",
-        "group": "external",
         "email": "external@robertmanager.net",
+        "group": "external",
         "password": "$2y$10$o7Zu3VKby5bUzGk7uzSQqeUuXo5MSg7RpXQS3U3C541hjmzHeVY0O",
+        "cas_identifier": null,
         "language": "en",
-        "notifications_enabled": true
+        "notifications_enabled": true,
+        "created_at": "2021-02-10 12:15:00",
+        "updated_at": "2021-02-10 12:15:00",
+        "deleted_at": null
     }
 ]

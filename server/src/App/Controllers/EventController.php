@@ -6,7 +6,6 @@ namespace Robert2\API\Controllers;
 use Brick\Math\BigDecimal as Decimal;
 use DI\Container;
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Robert2\API\Controllers\Traits\WithCrud;
 use Robert2\API\Controllers\Traits\WithPdf;
 use Robert2\API\Errors\Exception\ValidationException;
@@ -96,23 +95,18 @@ class EventController extends BaseController
 
     public function duplicate(Request $request, Response $response): Response
     {
-        $originalId = (int) $request->getAttribute('id');
-        if (!Event::staticExists($originalId)) {
-            throw new HttpNotFoundException($request);
-        }
+        $id = (int) $request->getAttribute('id');
+        $originalEvent = Event::findOrFail($id);
 
         $postData = (array) $request->getParsedBody();
         if (empty($postData)) {
             throw new HttpBadRequestException($request, "No data was provided.");
         }
 
-        try {
-            $newEvent = Event::duplicate($originalId, $postData);
-        } catch (ModelNotFoundException $e) {
-            throw new HttpNotFoundException($request);
-        }
+        $newEvent = $originalEvent->duplicate($postData, Auth::user());
 
-        return $response->withJson(static::_formatOne($newEvent), StatusCode::STATUS_CREATED);
+        $data = $newEvent->serialize(Event::SERIALIZE_DETAILS);
+        return $response->withJson($data, StatusCode::STATUS_CREATED);
     }
 
     public function updateReturnInventory(Request $request, Response $response): Response

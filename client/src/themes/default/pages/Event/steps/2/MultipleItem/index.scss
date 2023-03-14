@@ -39,11 +39,6 @@
     &__actions {
         margin-left: globals.$form-label-width;
         padding: 1rem 0;
-
-        // stylelint-disable-next-line selector-max-type
-        button {
-            padding: 5px 10px;
-        }
     }
 
     //

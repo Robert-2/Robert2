@@ -4,7 +4,7 @@ import Fragment from '@/components/Fragment';
 import Icon from '@/themes/default/components/Icon';
 import useI18n from '@/hooks/useI18n';
 
-const TYPES = ['default', 'success', 'warning', 'danger', 'primary', 'secondary'];
+const TYPES = ['default', 'success', 'warning', 'danger', 'primary', 'secondary', 'transparent'];
 
 // NOTE: L'idée ici n'est pas d'ajouter tous les types possibles mais uniquement ceux
 // qui se retrouvent à de multiples endroits (pour éviter d'avoir des soucis de cohérence)
@@ -33,6 +33,10 @@ const PREDEFINED_TYPES = {
         icon: 'trash-restore',
         tooltip: __('action-restore'),
     }),
+    close: {
+        type: 'transparent',
+        icon: 'times',
+    },
 };
 
 // @vue/component
@@ -43,6 +47,7 @@ const Button = (props, { slots, emit }) => {
         icon,
         disabled,
         type,
+        size,
         to,
         external,
         loading,
@@ -111,7 +116,9 @@ const Button = (props, { slots, emit }) => {
 
     const _className = computed(() => [
         'Button',
-        `Button--${_type.value}`, {
+        `Button--${_type.value}`,
+        `Button--${size.value}`,
+        {
             'Button--disabled': disabled.value || loading.value,
             'Button--loading': loading.value,
             'Button--with-icon': !!_icon.value,
@@ -203,6 +210,13 @@ Button.props = {
         default: undefined,
     },
     icon: { type: String, default: undefined },
+    size: {
+        default: 'normal',
+        validator: (value) => (
+            typeof value === 'string' &&
+            ['normal', 'large'].includes(value)
+        ),
+    },
     loading: { type: Boolean, default: false },
     disabled: { type: Boolean, default: false },
     external: { type: Boolean, default: false },

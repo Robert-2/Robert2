@@ -135,6 +135,7 @@ final class CompaniesTest extends ApiTestCase
             'postal_code' => '75000',
             'locality' => 'Paris',
             'country_id' => 1,
+            'phone' => '+00336 25 25 21 25',
         ];
         $this->client->post('/api/companies', $data);
         $this->assertStatusCode(StatusCode::STATUS_CREATED);
@@ -146,36 +147,9 @@ final class CompaniesTest extends ApiTestCase
             'locality' => 'Paris',
             'country_id' => 1,
             'full_address' => "Somewhere street, 123\n75000 Paris",
-            'phone' => null,
-            'note' => null,
-            'country' => CountriesTest::data(1),
-        ]);
-    }
-
-    public function testCreateCompanyWithTagAndPhone()
-    {
-        $data = [
-            'legal_name' => 'test company',
-            'street' => 'Somewhere street, 123',
-            'postal_code' => '75000',
-            'locality' => 'Paris',
-            'country_id' => 2,
-            'phone' => '+00336 25 25 21 25',
-            'tags' => ['Bénéficiaire'],
-        ];
-        $this->client->post('/api/companies', $data);
-        $this->assertStatusCode(StatusCode::STATUS_CREATED);
-        $this->assertResponseData([
-            'id' => 3,
-            'legal_name' => 'test company',
-            'street' => 'Somewhere street, 123',
-            'postal_code' => '75000',
-            'locality' => 'Paris',
-            'country_id' => 2,
-            'full_address' => "Somewhere street, 123\n75000 Paris",
             'phone' => '+0033625252125',
             'note' => null,
-            'country' => CountriesTest::data(2),
+            'country' => CountriesTest::data(1),
         ]);
     }
 

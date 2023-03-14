@@ -68,7 +68,8 @@ final class Tag extends BaseModel implements Serializable
 
     public function materials()
     {
-        return $this->morphedByMany(Material::class, 'taggable');
+        return $this->morphedByMany(Material::class, 'taggable')
+            ->orderBy('id');
     }
 
     // ------------------------------------------------------
@@ -106,39 +107,5 @@ final class Tag extends BaseModel implements Serializable
         );
 
         return $data;
-    }
-
-    // ------------------------------------------------------
-    // -
-    // -    "Repository" methods
-    // -
-    // ------------------------------------------------------
-
-    public static function bulkAdd(array $tagNames = []): array
-    {
-        $tags = array_map(
-            function ($tagName) {
-                $existingTag = static::where('name', $tagName)->first();
-                if ($existingTag) {
-                    return $existingTag;
-                }
-
-                $tag = new static(['name' => trim($tagName)]);
-                return tap($tag, function ($instance) {
-                    $instance->validate();
-                });
-            },
-            $tagNames
-        );
-
-        return dbTransaction(function () use ($tags) {
-            foreach ($tags as $tag) {
-                if (!$tag->exists || $tag->isDirty()) {
-                    $tag->save();
-                    $tag->refresh();
-                }
-            }
-            return $tags;
-        });
     }
 }

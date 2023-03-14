@@ -1,6 +1,16 @@
 [
     {
         "id": 1,
-        "name": "pro"
+        "name": "Premium",
+        "created_at": "2021-02-10 00:15:00",
+        "updated_at": "2021-02-10 00:16:00",
+        "deleted_at": null
+    },
+    {
+        "id": 2,
+        "name": "Vintage",
+        "created_at": "2021-02-10 00:17:00",
+        "updated_at": "2021-02-10 00:17:00",
+        "deleted_at": null
     }
 ]

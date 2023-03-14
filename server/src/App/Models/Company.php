@@ -83,7 +83,8 @@ final class Company extends BaseModel implements Serializable
 
     public function beneficiaries()
     {
-        return $this->hasMany(Beneficiary::class);
+        return $this->hasMany(Beneficiary::class)
+            ->orderBy('id');
     }
 
     public function country()

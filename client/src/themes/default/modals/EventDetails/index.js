@@ -199,8 +199,8 @@ const EventDetails = {
                 <div class="EventDetails">
                     <div class="EventDetails__close">
                         <Button
+                            type="close"
                             class="EventDetails__close__button"
-                            icon="times"
                             onClick={handleClose}
                         />
                     </div>

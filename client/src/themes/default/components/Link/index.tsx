@@ -72,8 +72,8 @@ const Link = defineComponent({
         },
     },
     methods: {
-        handleClick() {
-            this.$emit('click');
+        handleClick(event: MouseEvent) {
+            this.$emit('click', event);
         },
     },
     render() {
@@ -81,7 +81,7 @@ const Link = defineComponent({
         const children = this.$slots.default;
 
         const className = ['Link', {
-            'Button--with-icon': !!icon,
+            'Link--with-icon': !!icon,
         }];
 
         const content = (

@@ -6,31 +6,39 @@
         align-items: center;
         padding: 0.7rem 1rem;
         background-color: globals.$bg-color-main-header;
+        gap: 10px;
 
         &__title {
             flex: 1;
-            margin: 0 0 0.4rem;
-            color: globals.$text-base-color;
-            font-size: 1.4rem;
-            font-weight: 800;
+            overflow: hidden;
+            margin: 0;
+            font-size: 1.3rem;
+            white-space: nowrap;
+            text-overflow: ellipsis;
         }
 
-        .close {
+        &__close-button {
             flex: 0 0 auto;
-            border: none;
-            background: none;
         }
     }
+
+    &__body {
+        padding: globals.$content-padding-large-vertical globals.$content-padding-small-vertical;
+    }
+
+    &__footer {
+        display: flex;
+        justify-content: center;
+        padding: 1.5rem globals.$content-padding-small-vertical;
+        background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    //
+    // - Content
+    //
 
     &__form {
         max-width: 360px;
         margin: 0 auto;
-        padding: globals.$content-padding-large-vertical 0;
-    }
-
-    &__actions {
-        display: flex;
-        justify-content: space-between;
-        margin-top: 25px;
     }
 }

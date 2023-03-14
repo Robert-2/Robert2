@@ -43,7 +43,7 @@ class BookingController extends BaseController
                     ->with('beneficiaries')
                     ->with('technicians')
                     ->with(['materials' => function ($q) {
-                        $q->orderBy('name', 'asc');
+                        $q->reorder('name', 'asc');
                     }])
                     ->get()
             );

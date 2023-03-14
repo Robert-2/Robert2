@@ -226,9 +226,10 @@ final class Material extends BaseModel implements Serializable
     public function attributes()
     {
         return $this->belongsToMany(Attribute::class, 'material_attributes')
+            ->select(['attributes.id', 'attributes.name', 'attributes.type', 'attributes.unit'])
             ->using(MaterialAttribute::class)
             ->withPivot('value')
-            ->select(['attributes.id', 'attributes.name', 'attributes.type', 'attributes.unit']);
+            ->orderByPivot('id');
     }
 
     public function events()
@@ -253,8 +254,8 @@ final class Material extends BaseModel implements Serializable
     public function documents()
     {
         return $this->hasMany(Document::class)
-            ->orderBy('name', 'asc')
-            ->select(['id', 'name', 'type', 'size']);
+            ->select(['id', 'name', 'type', 'size'])
+            ->orderBy('name', 'asc');
     }
 
     // ------------------------------------------------------

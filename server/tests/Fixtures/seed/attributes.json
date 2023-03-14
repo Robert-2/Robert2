@@ -4,34 +4,49 @@
         "name": "Poids",
         "type": "float",
         "unit": "kg",
-        "max_length": null
+        "max_length": null,
+        "created_at": "2021-02-12 12:00:00",
+        "updated_at": "2021-02-12 12:00:00",
+        "deleted_at": null
     },
     {
         "id": 2,
         "name": "Couleur",
         "type": "string",
         "unit": null,
-        "max_length": null
+        "max_length": null,
+        "created_at": "2021-02-12 12:01:15",
+        "updated_at": "2021-02-12 12:01:15",
+        "deleted_at": null
     },
     {
         "id": 3,
         "name": "Puissance",
         "type": "integer",
         "unit": "W",
-        "max_length": null
+        "max_length": null,
+        "created_at": "2021-02-12 12:03:02",
+        "updated_at": "2021-02-12 12:04:00",
+        "deleted_at": null
     },
     {
         "id": 4,
         "name": "Conforme",
         "type": "boolean",
         "unit": null,
-        "max_length": null
+        "max_length": null,
+        "created_at": "2021-02-12 12:30:12",
+        "updated_at": "2021-02-12 12:30:12",
+        "deleted_at": null
     },
     {
         "id": 5,
         "name": "Date d'achat",
         "type": "date",
         "unit": null,
-        "max_length": null
+        "max_length": null,
+        "created_at": "2021-02-12 12:35:46",
+        "updated_at": "2021-02-12 14:00:00",
+        "deleted_at": null
     }
 ]

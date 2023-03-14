@@ -84,7 +84,8 @@ final class Attribute extends BaseModel implements Serializable
     {
         return $this->belongsToMany(Material::class, 'material_attributes')
             ->using(MaterialAttribute::class)
-            ->withPivot('value');
+            ->withPivot('value')
+            ->orderByPivot('id');
     }
 
     public function categories()

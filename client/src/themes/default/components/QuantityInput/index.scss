@@ -1,3 +1,4 @@
+@use 'sass:color';
 @use '~@/themes/default/style/globals';
 
 .QuantityInput {
@@ -6,32 +7,96 @@
     height: 28px;
 
     &__button {
+        $sub-block: &;
+
         flex: 0 0 auto;
+        display: inline-block;
         padding: 6px 8px;
-        border-radius: 0;
+        border: none;
+        font-size: 1rem;
+        line-height: 1.25;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 300ms;
 
-        &:disabled {
-            background-color: globals.$bg-color-input-normal;
-            color: globals.$text-light-color;
-            opacity: 1;
+        &:hover,
+        &:focus {
+            outline: 0;
         }
 
-        &:first-child {
-            border-radius: 2px 0 0 2px;
+        &--disabled {
+            &,
+            &:hover,
+            &:active,
+            &:focus {
+                cursor: not-allowed;
+                opacity: 0.3;
+            }
         }
 
-        &:last-child {
-            border-radius: 0 2px 2px 0;
+        &--decrement {
+            border-radius: 3px 0 0 3px;
+            background-color: #616161;
+            color: #e0e0e0;
+
+            &:hover,
+            &:focus {
+                background-color: color.adjust(#616161, $lightness: 8%);
+                color: #fff;
+            }
+
+            &:active {
+                background-color: color.adjust(#616161, $lightness: -8%);
+                color: #fff;
+            }
+
+            &#{$sub-block}--disabled {
+                &,
+                &:hover,
+                &:focus,
+                &:active {
+                    background-color: globals.$bg-color-input-normal;
+                    color: globals.$text-light-color;
+                }
+            }
+        }
+
+        &--increment {
+            border-radius: 0 3px 3px 0;
+            background-color: globals.$bg-color-button-info;
+            color: #fff;
+
+            &:hover,
+            &:focus {
+                background-color: color.adjust(globals.$bg-color-button-info, $lightness: 8%);
+                color: #fff;
+            }
+
+            &:active {
+                background-color: color.adjust(globals.$bg-color-button-info, $lightness: -8%);
+                color: #fff;
+            }
+
+            &#{$sub-block}--disabled {
+                &,
+                &:hover,
+                &:focus,
+                &:active {
+                    background-color: color.adjust(globals.$bg-color-button-info, $lightness: 8%);
+                    color: #fff;
+                }
+            }
         }
     }
 
     &__input {
         flex: 0 0 auto;
-        width: 3rem;
+        width: 49px;
         min-height: auto;
         margin: 0;
         padding: 5px 8px;
         border-radius: 0;
+        text-align: center;
         appearance: textfield;
 
         &::-webkit-outer-spin-button,

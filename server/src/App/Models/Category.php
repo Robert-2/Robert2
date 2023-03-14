@@ -74,7 +74,8 @@ final class Category extends BaseModel implements Serializable
 
     public function materials()
     {
-        return $this->hasMany(Material::class);
+        return $this->hasMany(Material::class)
+            ->orderBy('id');
     }
 
     public function attributes()

@@ -92,7 +92,9 @@ final class SubCategory extends BaseModel implements Serializable
             'replacement_price',
         ];
 
-        return $this->hasMany(Material::class)->select($fields);
+        return $this->hasMany(Material::class)
+            ->select($fields)
+            ->orderBy('id');
     }
 
     // ------------------------------------------------------

@@ -39,6 +39,12 @@ final class EventTechnician extends BaseModel implements Serializable
         ];
     }
 
+    // ------------------------------------------------------
+    // -
+    // -    Validation
+    // -
+    // ------------------------------------------------------
+
     public function checkDates()
     {
         $dateChecker = V::notEmpty()->dateTime();

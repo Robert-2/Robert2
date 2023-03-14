@@ -4,6 +4,8 @@
     display: flex;
     align-items: center;
     padding: globals.$content-padding-small-horizontal;
+    padding-left: 1rem;
+    gap: globals.$content-padding-small-horizontal;
 
     &__title,
     &__dates {

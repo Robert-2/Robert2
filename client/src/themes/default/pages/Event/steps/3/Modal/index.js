@@ -2,7 +2,8 @@ import './index.scss';
 import moment from 'moment';
 import { TECHNICIAN_EVENT_MIN_DURATION, DATE_DB_FORMAT } from '@/globals/constants';
 import { confirm } from '@/utils/alert';
-import { getValidationErrors } from '@/utils/errors';
+import { ApiErrorCode } from '@/stores/api/@codes';
+import Button from '@/themes/default/components/Button';
 import FormField from '@/themes/default/components/FormField';
 import ErrorMessage from '@/themes/default/components/ErrorMessage';
 
@@ -114,7 +115,8 @@ export default {
         // ------------------------------------------------------
 
         handleSubmit(e) {
-            e.preventDefault();
+            e?.preventDefault();
+
             this.save();
         },
 
@@ -167,11 +169,9 @@ export default {
             if (this.isSaving || this.isDeleting) {
                 return;
             }
-
-            this.error = null;
             this.isSaving = true;
 
-            const { position, eventId, technician } = this;
+            const { $t: __, position, eventId, technician } = this;
             const [startDate, endDate] = this.dates;
 
             const postData = {
@@ -192,11 +192,20 @@ export default {
 
             try {
                 await request(url, postData);
+
+                this.error = null;
+                this.validationErrors = null;
+
                 this.$emit('close');
             } catch (error) {
                 this.error = error;
-                this.validationErrors = getValidationErrors(error);
-            } finally {
+
+                const { code, details } = error.response?.data?.error || { code: ApiErrorCode.UNKNOWN, details: {} };
+                if (code === ApiErrorCode.VALIDATION_FAILED) {
+                    this.validationErrors = { ...details };
+                } else {
+                    this.$toasted.error(__('errors.unexpected-while-saving'));
+                }
                 this.isSaving = false;
             }
         },
@@ -250,12 +259,14 @@ export default {
         return (
             <div class="EventStep3Modal">
                 <header class="EventStep3Modal__header">
-                    <h1 class="EventStep3Modal__header__title">
+                    <h2 class="EventStep3Modal__header__title">
                         {__('page.event-edit.assign-technician', { name })}
-                    </h1>
-                    <button type="button" class="close" onClick={handleClose}>
-                        <i class="fas fa-times" />
-                    </button>
+                    </h2>
+                    <Button
+                        type="close"
+                        class="AssignTags__header__close-button"
+                        onClick={handleClose}
+                    />
                 </header>
                 <div class="EventStep3Modal__body">
                     <form class="Form EventStep3Modal__form" onSubmit={handleSubmit}>
@@ -273,19 +284,17 @@ export default {
                             errors={validationErrors?.position}
                         />
                         {error && <ErrorMessage error={error} />}
-                        <div class="EventStep3Modal__actions">
-                            <button type="submit" class="success" disabled={isSaving}>
-                                {isSaving ? <i class="fas fa-circle-notch fa-spin" /> : <i class="fas fa-check" />}{' '}
-                                {isSaving ? __('saving') : saveButtonText}
-                            </button>
-                            {!isNew && (
-                                <button type="button" class="danger EventStep3Modal__delete" onClick={handleDelete}>
-                                    {isDeleting ? <i class="fas fa-circle-notch fa-spin" /> : <i class="fas fa-trash" />}{' '}
-                                    {isDeleting ? __('deleting') : __('page.event-edit.remove-assignment')}
-                                </button>
-                            )}
-                        </div>
                     </form>
+                </div>
+                <div class="EventStep3Modal__footer">
+                    <Button type="primary" onClick={handleSubmit} loading={isSaving}>
+                        {isSaving ? __('saving') : saveButtonText}
+                    </Button>
+                    {!isNew && (
+                        <Button type="delete" onClick={handleDelete} loading={isDeleting}>
+                            {isDeleting ? __('deleting') : __('page.event-edit.remove-assignment')}
+                        </Button>
+                    )}
                 </div>
             </div>
         );

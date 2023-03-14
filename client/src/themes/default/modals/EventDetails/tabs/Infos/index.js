@@ -19,6 +19,10 @@ const EventDetailsInfos = {
             return this.event.beneficiaries?.length > 0;
         },
 
+        hasTechnicians() {
+            return this.event.technicians?.length > 0;
+        },
+
         hasMaterials() {
             return this.event.materials.length > 0;
         },
@@ -37,7 +41,7 @@ const EventDetailsInfos = {
         }
     },
     render() {
-        const { $t: __, event, hasBeneficiary, hasMaterials, isPast } = this;
+        const { $t: __, event, hasBeneficiary, hasTechnicians, hasMaterials, isPast } = this;
         const {
             location,
             beneficiaries,
@@ -49,25 +53,27 @@ const EventDetailsInfos = {
 
         return (
             <div class="EventDetailsInfos">
-                <div class="EventDetailsInfos__people-location">
+                <div class="EventDetailsInfos__summary">
                     {hasBeneficiary && (
-                        <p class="EventDetailsInfos__people-location__beneficiary">
+                        <span class="EventDetailsInfos__summary__beneficiary">
                             <EventBeneficiaries beneficiaries={beneficiaries} />
-                        </p>
+                        </span>
                     )}
                     {location && (
-                        <p class="EventDetailsInfos__people-location__location">
+                        <span class="EventDetailsInfos__summary__location">
                             <LocationText location={location} />
-                        </p>
+                        </span>
                     )}
-                    <p class="EventDetailsInfos__people-location__technicians">
-                        <EventTechnicians eventTechnicians={technicians} />
-                    </p>
+                    {hasTechnicians && (
+                        <span class="EventDetailsInfos__summary__technicians">
+                            <EventTechnicians eventTechnicians={technicians} />
+                        </span>
+                    )}
                     {!!user && (
-                        <p class="EventDetailsInfos__people-location__creator">
-                            <Icon name="user" class="EventDetailsInfos__people-location__creator__icon" />
+                        <span class="EventDetailsInfos__summary__creator">
+                            <Icon name="user" class="EventDetailsInfos__summary__creator__icon" />
                             {__('created-by')} {user.full_name}
-                        </p>
+                        </span>
                     )}
                 </div>
                 {!hasBeneficiary && (

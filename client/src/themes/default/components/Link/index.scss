@@ -2,15 +2,26 @@
 @use '~@/themes/default/style/globals';
 
 .Link {
+    //
+    // - Custom properties
+    //
+
+    --color: var(--Link--color, #{$color});
+    --hover-color: var(--Link--hover-color, #{$hover-color});
+
+    //
+    // - Règles
+    //
+
     @extend %reset-button;
     @extend %reset-link;
 
-    color: $color;
+    color: var(--color);
     touch-action: auto;
     cursor: pointer;
 
     &:hover {
-        color: $hover-color;
+        color: var(--hover-color);
     }
 
     //

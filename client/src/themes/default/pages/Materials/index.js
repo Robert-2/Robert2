@@ -382,10 +382,11 @@ export default {
             }
 
             showModal(this.$modal, AssignTags, {
-                id,
                 name,
-                entity: 'materials',
                 initialTags: tags,
+                persister: (newTags) => (
+                    apiMaterials.update(id, { tags: newTags })
+                ),
                 onClose: () => {
                     this.$refs.table.refresh();
                 },

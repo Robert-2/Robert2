@@ -98,7 +98,7 @@ export default {
                         </div>
                         <div class="EventStep5__confirmation__actions">
                             {!isConfirmed && (
-                                <button type="button" class="success" onClick={handleConfirm}>
+                                <button type="button" class="button success" onClick={handleConfirm}>
                                     <i
                                         class={['fas', {
                                             'fa-circle-notch fa-spin': isConfirming,
@@ -109,7 +109,7 @@ export default {
                                 </button>
                             )}
                             {isConfirmed && (
-                                <button type="button" class="warning" onClick={handleUnconfirm}>
+                                <button type="button" class="button warning" onClick={handleUnconfirm}>
                                     <i
                                         class={['fas', {
                                             'fa-circle-notch fa-spin': isConfirming,

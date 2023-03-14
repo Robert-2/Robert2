@@ -9,7 +9,9 @@
         "street": "1, somewhere av.",
         "postal_code": "1234",
         "locality": "Megacity",
-        "country_id": 1
+        "country_id": 1,
+        "created_at": "2021-02-13 23:00:00",
+        "updated_at": "2021-02-13 23:00:00"
     },
     {
         "id": 2,
@@ -21,7 +23,9 @@
         "street": null,
         "postal_code": null,
         "locality": null,
-        "country_id": null
+        "country_id": null,
+        "created_at": "2021-02-13 23:01:00",
+        "updated_at": "2021-02-13 23:02:00"
     },
     {
         "id": 3,
@@ -33,7 +37,9 @@
         "street": "156 bis, avenue des tests poussés",
         "postal_code": "88080",
         "locality": "Wazzaville",
-        "country_id": null
+        "country_id": null,
+        "created_at": "2021-02-13 23:02:00",
+        "updated_at": "2021-02-13 23:02:00"
     },
     {
         "id": 4,
@@ -45,7 +51,9 @@
         "street": null,
         "postal_code": null,
         "locality": null,
-        "country_id": 2
+        "country_id": 2,
+        "created_at": "2021-02-13 23:03:00",
+        "updated_at": "2021-02-13 23:03:00"
     },
     {
         "id": 5,
@@ -57,7 +65,9 @@
         "street": null,
         "postal_code": null,
         "locality": null,
-        "country_id": null
+        "country_id": null,
+        "created_at": "2021-02-13 23:14:00",
+        "updated_at": "2021-02-13 23:14:00"
     },
     {
         "id": 6,
@@ -69,7 +79,9 @@
         "street": "30 avenue du chateau",
         "postal_code": "75000",
         "locality": "Paris",
-        "country_id": 1
+        "country_id": 1,
+        "created_at": "2021-02-13 23:15:00",
+        "updated_at": "2021-02-13 23:15:00"
     },
     {
         "id": 7,
@@ -81,6 +93,8 @@
         "street": null,
         "postal_code": null,
         "locality": null,
-        "country_id": null
+        "country_id": null,
+        "created_at": "2021-02-13 23:16:00",
+        "updated_at": "2021-02-13 23:16:00"
     }
 ]

@@ -8,13 +8,12 @@ const DefaultLayoutSidebarMenu = defineComponent({
     name: 'DefaultLayoutSidebarMenu',
     computed: {
         links() {
-            const isAdmin = this.$store.getters['auth/is'](Group.ADMIN);
-            const isMember = this.$store.getters['auth/is'](Group.MEMBER);
-
             const links = [
                 { ident: 'calendar', url: '/', icon: 'calendar-alt', exact: true },
             ];
 
+            const isAdmin = this.$store.getters['auth/is'](Group.ADMIN);
+            const isMember = this.$store.getters['auth/is'](Group.MEMBER);
             if (isAdmin || isMember) {
                 links.push(
                     { ident: 'materials', url: '/materials', icon: 'box' },

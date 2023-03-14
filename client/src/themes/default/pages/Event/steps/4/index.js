@@ -13,7 +13,6 @@ import MaterialsListEditor, {
 // @vue/component
 export default {
     name: 'EventStep4',
-    components: { MaterialsListEditor },
     props: {
         event: { type: Object, required: true },
     },
@@ -98,11 +97,11 @@ export default {
                     onChange={handleChange}
                 />
                 <section class="Form__actions">
-                    <button class="info" type="submit">
+                    <button type="submit" class="button info">
                         <i class="fas fa-arrow-left" />&nbsp;
                         {__('page.event-edit.save-and-back-to-calendar')}
                     </button>
-                    <button type="button" class="success" onClick={saveAndNext}>
+                    <button type="button" class="button success" onClick={saveAndNext}>
                         {__('page.event-edit.save-and-continue')}&nbsp;
                         <i class="fas fa-arrow-right" />
                     </button>

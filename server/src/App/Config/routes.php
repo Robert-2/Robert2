@@ -112,7 +112,7 @@ return [
         '/parks/restore/{id:[0-9]+}[/]' => 'ParkController:restore',
 
         '/materials/{id:[0-9]+}[/]' => 'MaterialController:update',
-        '/materials/restore/{id:[0-9]+}[/]' => 'MaterialController:restore',
+        '/materials/{id:[0-9]+}/restore[/]' => 'MaterialController:restore',
 
         '/attributes/{id:[0-9]+}[/]' => 'AttributeController:update',
 

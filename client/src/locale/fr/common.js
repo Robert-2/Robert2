@@ -299,6 +299,8 @@ export default {
     'add-tags': "Ajouter des tags",
     'remove-all-tags': "Enlever tous les tags",
     'remaining-count': "reste {count}",
+    'stock-count': '{count} disponible en stock',
+    'surplus-count': ["{count} en excédent / cassé", "{count} en excédent / cassés"],
     'return-inventory': "Inventaire de retour",
     'grouped-by': "Voir groupé par\u00a0:",
     'not-grouped': "Non groupé",
@@ -320,7 +322,7 @@ export default {
     'use-this-template': "Utiliser ce modèle de liste",
     'no-list-template-available': "Aucun modèle de liste disponible\u00a0!",
     'create-list-template': "Créer un modèle de liste de matériel",
-    'create-list-template-from-event': "Créer un modèle de liste avec le matériel de cet événement",
+    'create-list-template-from-event': "Créer un modèle de liste avec cet événement",
     'list-template-created': "Le modèle de liste de matériel nommé «\u00a0{name}\u00a0» a bien été créé",
     'create-company': "Ajouter une nouvelle société",
 

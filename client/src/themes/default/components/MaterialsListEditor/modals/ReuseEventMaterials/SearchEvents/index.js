@@ -1,9 +1,9 @@
 import './index.scss';
 import debounce from 'debounce';
 import { ref, toRefs } from '@vue/composition-api';
-import { getErrorMessage } from '@/utils/errors';
 import useI18n from '@/hooks/useI18n';
 import apiEvents from '@/stores/api/events';
+import Icon from '@/themes/default/components/Icon';
 import SearchEventResultItem from './SearchEventResultItem';
 
 // type Props = {
@@ -40,9 +40,9 @@ const SearchEvents = (props, { root, emit }) => {
             totalCount.value = count;
             results.value = data;
             isFetched.value = true;
-        } catch (err) {
+        } catch {
             isFetched.value = false;
-            root.$toasted.error(getErrorMessage(err, __));
+            root.$toasted.error(__('errors.unknown'));
         } finally {
             isLoading.value = false;
         }
@@ -101,7 +101,7 @@ const SearchEvents = (props, { root, emit }) => {
             <div class="SearchEvents">
                 <div class="SearchEvents__search">
                     <input
-                        type="search"
+                        type="text"
                         v-model={searchTerm.value}
                         placeholder={__('type-to-search-event')}
                         class="SearchEvents__search__input"
@@ -109,16 +109,22 @@ const SearchEvents = (props, { root, emit }) => {
                     />
                     <button
                         type="button"
-                        class="SearchEvents__search__button info"
+                        class="SearchEvents__search__button"
                         onClick={handleSearch}
                         disabled={isLoading.value}
                     >
-                        {isLoading.value
-                            ? (<i class="fas fa-circle-notch fa-spin" />)
-                            : (<i class="fas fa-search" />)}
+                        {(
+                            isLoading.value
+                                ? <Icon name="spinner" spin />
+                                : <Icon name="search" />
+                        )}
                     </button>
                 </div>
-                {isFetched.value && renderResults()}
+                {isFetched.value && (
+                    <div class="SearchEvents__response">
+                        {renderResults()}
+                    </div>
+                )}
             </div>
         );
     };

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Robert2\Tests;
 
+use Illuminate\Support\Carbon;
 use Robert2\API\Errors\Exception\ValidationException;
 use Robert2\API\Models\Event;
 use Robert2\API\Models\Material;
@@ -75,10 +76,10 @@ final class MaterialTest extends TestCase
     public function testGetAllFilteredOrTagged(): void
     {
         // - Récupération du matériel associées au tag "pro"
-        $result = (new Material)->getAllFilteredOrTagged([], ['pro'])->get();
+        $result = (new Material)->getAllFilteredOrTagged([], ['Premium'])->get();
         $this->assertCount(3, $result);
 
-        $result = (new Material)->getAllFilteredOrTagged(['category_id' => 1], ['pro'])->get();
+        $result = (new Material)->getAllFilteredOrTagged(['category_id' => 1], ['Premium'])->get();
         $this->assertCount(2, $result);
     }
 
@@ -140,19 +141,6 @@ final class MaterialTest extends TestCase
         (new Material)->setSearch('Console', 'rental_price');
     }
 
-    public function testSetTags(): void
-    {
-        // - Empty tags
-        foreach ([null, []] as $emptyValue) {
-            $material = Material::find(1)->setTags($emptyValue);
-            $this->assertTrue($material->tags->isEmpty());
-        }
-
-        // - Set tags : one existing, and two new tags
-        $material = Material::find(1)->setTags(['Technician', 'yipee', 'new tag']);
-        $this->assertEquals([2, 3, 4], $material->tags->pluck('id')->all());
-    }
-
     public function testCreateMaterialWithoutData(): void
     {
         $this->expectException(ValidationException::class);
@@ -180,17 +168,8 @@ final class MaterialTest extends TestCase
 
     public function testCreateMaterial(): void
     {
-        // - Test d'ajout de matériel, avec tags
-        $result = Material::new([
-            'name' => 'Analog Mixing Console Yamaha RM800',
-            'reference' => 'RM800',
-            'park_id' => 1,
-            'category_id' => 1,
-            'rental_price' => '100.0',
-            'replacement_price' => '100.6',
-            'stock_quantity' => 1,
-            'tags' => ['old matos', 'vintage'],
-        ]);
+        Carbon::setTestNow(Carbon::create(2019, 02, 24, 23, 59, 00));
+
         $expected = [
             'id' => 9,
             'name' => 'Analog Mixing Console Yamaha RM800',
@@ -209,16 +188,21 @@ final class MaterialTest extends TestCase
             'is_reservable' => true,
             'picture' => null,
             'note' => null,
+            'tags' => [],
+            'attributes' => [],
+            'created_at' => '2019-02-24 23:59:00',
+            'updated_at' => '2019-02-24 23:59:00',
+            'deleted_at' => null,
         ];
-
-        $arrayResult = $result->setAppends([])->attributesToArray();
-        unset(
-            $arrayResult['created_at'],
-            $arrayResult['updated_at'],
-            $arrayResult['deleted_at']
-        );
-
-        $this->assertEquals($expected, $arrayResult);
-        $this->assertEquals([2, 3], $result->tags->pluck('id')->all());
+        $material = Material::new([
+            'name' => 'Analog Mixing Console Yamaha RM800',
+            'reference' => 'RM800',
+            'park_id' => 1,
+            'category_id' => 1,
+            'rental_price' => '100.0',
+            'replacement_price' => '100.6',
+            'stock_quantity' => 1,
+        ]);
+        $this->assertEquals($expected, $material->attributesToArray());
     }
 }

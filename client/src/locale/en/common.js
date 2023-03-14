@@ -300,6 +300,8 @@ export default {
     'add-tags': "Add tags",
     'remove-all-tags': "Remove all tags",
     'remaining-count': "{count} remaining",
+    'stock-count': "{count} available in stock",
+    'surplus-count': "{count} in surplus / broken",
     'return-inventory': "Return inventory",
     'grouped-by': "Display grouped by:",
     'not-grouped': "Not grouped",
@@ -321,7 +323,7 @@ export default {
     'use-this-template': "Use this list template",
     'no-list-template-available': "No list template available!",
     'create-list-template': "Create a material list template",
-    'create-list-template-from-event': "Create a list template with this event's materials",
+    'create-list-template-from-event': "Create a list template with this event",
     'list-template-created': "Le modèle de liste de matériel nommé «\u00a0{name}\u00a0» a bien été créé",
     'create-company': "Add a new company",
 

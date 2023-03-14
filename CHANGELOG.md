@@ -20,6 +20,8 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Améliore le système de traduction, et formate des dates correctement pour la langue anglaise (#378).
 - Dans la fenêtre des événements, les totaux affichent plus de détails (montants H.T. et T.T.C., et remise éventuelle).
 - Dans la fenêtre des événements, les coordonnées du bénéficiaire principal sont affichées dans l'onglet "informations".
+- Corrige le calcul du nombre d'articles en stock pour les parcs (#224).
+- Dans la liste du matériel d'un événement, améliore l'affichage des quantités utilisées (#179).
 
 ## 0.19.3 (2022-10-28)
 

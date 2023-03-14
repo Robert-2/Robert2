@@ -7,7 +7,10 @@
         "locality": "Secretville",
         "country_id": 1,
         "opening_hours": "Du lundi au vendredi, de 09:00 à 19:00.",
-        "note": null
+        "note": null,
+        "created_at": "2021-02-11 12:12:15",
+        "updated_at": "2021-02-11 12:12:15",
+        "deleted_at": null
     },
     {
         "id": 2,
@@ -17,6 +20,9 @@
         "locality": null,
         "country_id": null,
         "opening_hours": null,
-        "note": "Les bidouilles de fond de tiroir"
+        "note": "Les bidouilles de fond de tiroir",
+        "created_at": "2021-02-11 12:16:05",
+        "updated_at": "2021-02-11 12:18:46",
+        "deleted_at": null
     }
 ]

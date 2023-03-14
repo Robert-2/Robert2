@@ -1,6 +1,5 @@
 export default {
     errors: {
-        'generic': "Erreur\u00a0: {message}",
         'unexpected-while-saving': "Une erreur inattendue s'est produite lors de l'enregistrement, veuillez ré-essayer.",
         'unexpected-while-deleting': "Une erreur inattendue s'est produite lors de la suppression, veuillez ré-essayer.",
         'unexpected-while-restoring': "Une erreur inattendue s'est produite lors de la restauration, veuillez ré-essayer.",

@@ -73,8 +73,8 @@ export default {
                     onDuplicated={(newEvent) => { this.$emit('duplicated', newEvent); }}
                 />
                 <Button
-                    class="EventDetailsHeader__close"
-                    icon="times"
+                    type="close"
+                    class="EventDetailsHeader__close-button"
                     onClick={handleClose}
                 />
             </header>

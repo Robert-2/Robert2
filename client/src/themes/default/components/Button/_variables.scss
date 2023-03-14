@@ -23,24 +23,40 @@ $border-width: 2px !default;
 $border-radius: 4px !default;
 
 //
+// - Tailles
+//
+
+/// Padding vertical des boutons en version "large".
+/// @type Number
+$large-padding-y: 0.75rem;
+
+/// Padding horizontal des boutons en version "large".
+/// @type Number
+$large-padding-x: 1.5rem;
+
+/// Taille de la police des boutons en version "large".
+/// @type Number
+$large-font-size: 1.2rem;
+
+//
 // - Default variant
 //
 
 // stylelint-disable-next-line value-list-max-empty-lines
 $default-variant: (
     color: globals.$color-base-button,
-    background: globals.$bg-color-button-default,
-    border-color: globals.$bg-color-button-default,
+    background: rgba(255, 255, 255, 0.06),
+    border-color: transparent,
 
     // - Focused
     focused-color: globals.$color-hover-button,
-    focused-background: color.adjust(globals.$bg-color-button-default, $lightness: 8%),
-    focused-border-color: color.adjust(globals.$bg-color-button-default, $lightness: 8%),
+    focused-background: rgba(255, 255, 255, 0.15),
+    focused-border-color: transparent,
 
     // - Active
     active-color: color.adjust(globals.$color-base-button, $lightness: -8%),
-    active-background: color.adjust(globals.$bg-color-button-default, $lightness: -8%),
-    active-border-color: color.adjust(globals.$bg-color-button-default, $lightness: -8%),
+    active-background: rgba(255, 255, 255, 0.03),
+    active-border-color: transparent,
 ) !default;
 
 //
@@ -83,6 +99,27 @@ $secondary-variant: (
     active-color: map.get($primary-variant, active-color),
     active-background: map.get($primary-variant, active-background),
     active-border-color: map.get($primary-variant, active-border-color),
+) !default;
+
+//
+// - Transparent variant
+//
+
+// stylelint-disable-next-line value-list-max-empty-lines
+$transparent-variant: (
+    color: globals.$color-base-button,
+    background: transparent,
+    border-color: transparent,
+
+    // - Focused
+    focused-color: globals.$color-hover-button,
+    focused-background: rgba(255, 255, 255, 0.06),
+    focused-border-color: transparent,
+
+    // - Active
+    active-color: globals.$color-hover-button,
+    active-background: transparent,
+    active-border-color: transparent,
 ) !default;
 
 //

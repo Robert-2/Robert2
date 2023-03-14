@@ -52,7 +52,7 @@ export default {
                 <header class="MonthCalendar__header">
                     <button
                         type="button"
-                        class="info"
+                        class="button info"
                         v-tooltip={__('previous-month')}
                         onClick={handlePrevMonthClick}
                     >
@@ -61,7 +61,7 @@ export default {
                     <span class="MonthCalendar__header__current-month">{currentMonth}</span>
                     <button
                         type="button"
-                        class="info"
+                        class="button info"
                         v-tooltip={__('next-month')}
                         onClick={handleNextMonthClick}
                     >

@@ -123,7 +123,7 @@ const update = async (id: Material['id'], data: MaterialEdit, onProgress?: Progr
 );
 
 const restore = async (id: Material['id']): Promise<MaterialDetails> => (
-    (await requester.put(`/materials/restore/${id}`)).data
+    (await requester.put(`/materials/${id}/restore`)).data
 );
 
 const remove = async (id: Material['id']): Promise<void> => {

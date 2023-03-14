@@ -1,5 +1,6 @@
 import './index.scss';
 import { defineComponent } from '@vue/composition-api';
+import Icon from '@/themes/default/components/Icon';
 
 // @vue/component
 export default defineComponent({
@@ -73,11 +74,15 @@ export default defineComponent({
                 <button
                     type="button"
                     role="button"
-                    class="QuantityInput__button"
+                    class={[
+                        'QuantityInput__button',
+                        'QuantityInput__button--decrement',
+                        { 'QuantityInput__button--disabled': value <= min },
+                    ]}
                     disabled={value <= min}
                     onClick={handleDecrement}
                 >
-                    <i class="fas fa-minus" />
+                    <Icon name="minus" />
                 </button>
                 <input
                     type="number"
@@ -94,14 +99,15 @@ export default defineComponent({
                 <button
                     type="button"
                     role="button"
-                    class={{
-                        QuantityInput__button: true,
-                        info: max == null || value < max,
-                    }}
+                    class={[
+                        'QuantityInput__button',
+                        'QuantityInput__button--increment',
+                        { 'QuantityInput__button--disabled': max != null && value >= max },
+                    ]}
                     disabled={max != null && value >= max}
                     onClick={handleIncrement}
                 >
-                    <i class="fas fa-plus" />
+                    <Icon name="plus" />
                 </button>
             </div>
         );

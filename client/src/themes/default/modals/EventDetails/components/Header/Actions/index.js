@@ -226,9 +226,9 @@ const EventDetailsHeaderActions = (props, { root, emit }) => {
                                 </Button>
                             )}
                             <Button
+                                icon="copy"
                                 type="primary"
                                 class={{ ...getItemClassnames() }}
-                                icon="copy"
                                 onClick={askDuplicate}
                             >
                                 {__('duplicate-event')}

@@ -1,9 +1,11 @@
 import './index.scss';
 import moment from 'moment';
+import apiEvents from '@/stores/api/events';
 import { DATE_DB_FORMAT } from '@/globals/constants';
 import FormField from '@/themes/default/components/FormField';
 import LocationText from '@/themes/default/components/LocationText';
-import Icon from '@/themes/default/components/Icon/index';
+import Icon from '@/themes/default/components/Icon';
+import Button from '@/themes/default/components/Button';
 import EventBeneficiaries from '@/themes/default/components/EventBeneficiaries';
 import EventTechnicians from '@/themes/default/components/EventTechnicians';
 import getEventMaterialItemsCount from '@/utils/getEventMaterialItemsCount';
@@ -31,7 +33,6 @@ export default {
                 disabled: { from: null, to: new Date() },
                 range: true,
             },
-            error: null,
             validationErrors: null,
             isSaving: false,
         };
@@ -54,7 +55,27 @@ export default {
         },
     },
     methods: {
-        async handleSubmit() {
+        // ------------------------------------------------------
+        // -
+        // -    Handlers
+        // -
+        // ------------------------------------------------------
+
+        handleSave() {
+            this.save();
+        },
+
+        handleClose() {
+            this.$emit('close');
+        },
+
+        // ------------------------------------------------------
+        // -
+        // -    Internal methods
+        // -
+        // ------------------------------------------------------
+
+        async save() {
             if (this.isSaving) {
                 return;
             }
@@ -69,20 +90,15 @@ export default {
             }
 
             this.isSaving = true;
-            this.error = false;
-            this.validationErrors = false;
-
-            const { id: userId } = this.$store.state.auth.user;
-
-            const newEventData = {
-                user_id: userId,
-                start_date: moment(startDate).startOf('day').format(DATE_DB_FORMAT),
-                end_date: moment(endDate).endOf('day').format(DATE_DB_FORMAT),
-            };
+            const { event: { id } } = this;
 
             try {
-                const url = `events/${this.event.id}/duplicate`;
-                const { data } = await this.$http.post(url, newEventData);
+                const { data } = await apiEvents.duplicate(id, {
+                    start_date: moment(startDate).startOf('day').format(DATE_DB_FORMAT),
+                    end_date: moment(endDate).endOf('day').format(DATE_DB_FORMAT),
+                });
+
+                this.validationErrors = null;
 
                 const { onDuplicated } = this.$props;
                 if (onDuplicated) {
@@ -91,35 +107,29 @@ export default {
 
                 this.$emit('close');
             } catch (error) {
-                this.error = error;
-
                 const { code, details } = error.response?.data?.error || { code: ApiErrorCode.UNKNOWN, details: {} };
                 if (code === ApiErrorCode.VALIDATION_FAILED) {
                     this.validationErrors = { ...details };
+                } else {
+                    this.$toasted.error(__('errors.unexpected-while-saving'));
                 }
-            } finally {
                 this.isSaving = false;
             }
         },
-
-        handleClose() {
-            this.$emit('close');
-        },
     },
     render() {
+        const { title, location, beneficiaries, technicians } = this.event;
         const {
             $t: __,
             duration,
             itemsCount,
             hasBeneficiary,
-            error,
+            isSaving,
             validationErrors,
             datepickerOptions,
-            handleSubmit,
+            handleSave,
             handleClose,
         } = this;
-
-        const { title, location, beneficiaries, technicians } = this.event;
 
         return (
             <div class="DuplicateEvent">
@@ -127,13 +137,15 @@ export default {
                     <h2 class="DuplicateEvent__header__title">
                         {__('duplicate-the-event', { title })}
                     </h2>
-                    <button type="button" class="DuplicateEvent__header__btn-close" onClick={handleClose}>
-                        <i class="fas fa-times" />
-                    </button>
+                    <Button
+                        type="close"
+                        class="DuplicateEvent__header__close-button"
+                        onClick={handleClose}
+                    />
                 </div>
-                <div class="DuplicateEvent__main">
-                    <h4 class="DuplicateEvent__main__help">{__('dates-of-duplicated-event')}</h4>
-                    <div class="DuplicateEvent__main__dates">
+                <div class="DuplicateEvent__body">
+                    <h4 class="DuplicateEvent__help">{__('dates-of-duplicated-event')}</h4>
+                    <div class="DuplicateEvent__dates">
                         <FormField
                             v-model={this.dates}
                             type="date"
@@ -143,15 +155,15 @@ export default {
                             required
                         />
                     </div>
-                    <div class="DuplicateEvent__main__infos">
-                        <div class="DuplicateEvent__main__infos__duration">
-                            <i class="fas fa-clock" />{' '}
+                    <div class="DuplicateEvent__infos">
+                        <div class="DuplicateEvent__infos__duration">
+                            <Icon name="clock" />{' '}
                             {duration ? __('duration-days', { duration }, duration) : `${__('duration')} ?`}
                         </div>
                         {location && <LocationText location={location} />}
                         {!hasBeneficiary && (
-                            <p class="DuplicateEvent__main__infos__no-beneficiary">
-                                <Icon name="address-book" class="DuplicateEvent__main__infos__no-beneficiary__icon" />
+                            <p class="DuplicateEvent__infos__no-beneficiary">
+                                <Icon name="address-book" class="DuplicateEvent__infos__no-beneficiary__icon" />
                                 {__('@event.warning-no-beneficiary')}
                             </p>
                         )}
@@ -159,25 +171,19 @@ export default {
                             <EventBeneficiaries beneficiaries={beneficiaries} />
                         )}
                         <EventTechnicians eventTechnicians={technicians} />
-                        <div class="DuplicateEvent__main__infos__items-count">
-                            <i class="fas fa-box" />{' '}
+                        <div class="DuplicateEvent__infos__items-count">
+                            <Icon name="box" />{' '}
                             {__('items-count', { count: itemsCount }, itemsCount)}
                         </div>
                     </div>
-                    {error && (
-                        <p class="DuplicateEvent__main__error">
-                            <i class="fas fa-exclamation-triangle" /> {error.message}
-                        </p>
-                    )}
                 </div>
-                <hr class="DuplicateEvent__separator" />
                 <div class="DuplicateEvent__footer">
-                    <button type="button" onClick={handleSubmit} class="success">
-                        <i class="fas fa-check" /> {__('duplicate-event')}
-                    </button>
-                    <button type="button" onClick={handleClose}>
-                        <i class="fas fa-times" /> {__('close')}
-                    </button>
+                    <Button type="primary" onClick={handleSave} loading={isSaving}>
+                        {__('duplicate-event')}
+                    </Button>
+                    <Button onClick={handleClose}>
+                        {__('cancel')}
+                    </Button>
                 </div>
             </div>
         );

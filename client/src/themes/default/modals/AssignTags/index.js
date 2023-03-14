@@ -1,56 +1,131 @@
 import './index.scss';
-import VueSelect from 'vue-select';
-import Header from './components/Header';
+import Select from '@/themes/default/components/Select';
+import Button from '@/themes/default/components/Button';
 
 // @vue/component
 export default {
     name: 'AssignTags',
-    components: { Header, VueSelect },
     modal: {
         width: 600,
         draggable: true,
         clickToClose: false,
     },
     props: {
-        'entity': { type: String, required: true },
-        'id': { type: [String, Number], required: true },
-        'name': { type: String, required: true },
-        'initialTags': { type: Array, default: () => [] },
+        name: { type: String, required: true },
+        initialTags: { type: Array, default: () => [] },
+        persister: { type: Function, required: true },
     },
     data() {
-        const { $t: __ } = this;
-
         return {
-            isLoading: false,
-            title: __('modal.assign-tags.entity-name-tags', { entityName: this.name || '' }),
-            tags: this.initialTags.map(({ id, name }) => ({ label: name, value: id })),
-            error: null,
+            tags: this.initialTags.map(({ id }) => id),
+            isSaving: false,
         };
     },
+    computed: {
+        title() {
+            const { $t: __ } = this;
+
+            return __('modal.assign-tags.entity-name-tags', {
+                entityName: this.name || '',
+            });
+        },
+
+        tagsOptions() {
+            return this.$store.getters['tags/options'];
+        },
+    },
     methods: {
+        // ------------------------------------------------------
+        // -
+        // -    Handlers
+        // -
+        // ------------------------------------------------------
+
+        handleSave() {
+            this.save();
+        },
+
+        handleClose() {
+            this.$emit('close');
+        },
+
+        handleRemoveAll() {
+            this.tags = [];
+        },
+
+        // ------------------------------------------------------
+        // -
+        // -    Internal methods
+        // -
+        // ------------------------------------------------------
+
         async save() {
-            this.isLoading = true;
-            const tags = this.tags.map((item) => item.label);
+            if (this.isSaving) {
+                return;
+            }
+
+            const { $t: __, tags } = this;
+            this.isSaving = true;
 
             try {
-                await this.$http.put(`${this.entity}/${this.id}`, { tags });
+                await this.persister(tags);
 
                 this.$emit('saved');
                 this.$emit('close');
-            } catch (error) {
-                if (!error.response) {
-                    this.error = error;
-                    return;
-                }
-                const { message } = error.response.data.error;
-                this.error = message;
-            } finally {
-                this.isLoading = false;
+            } catch {
+                this.$toasted.error(__('errors.unexpected-while-saving'));
+                this.isSaving = false;
             }
         },
+    },
+    render() {
+        const {
+            $t: __,
+            title,
+            tagsOptions,
+            isSaving,
+            handleSave,
+            handleClose,
+            handleRemoveAll,
+        } = this;
 
-        removeAll() {
-            this.tags = [];
-        },
+        return (
+            <div class="AssignTags">
+                <header class="AssignTags__header">
+                    <h2 class="AssignTags__header__title">{title}</h2>
+                    <Button
+                        type="close"
+                        class="AssignTags__header__close-button"
+                        onClick={handleClose}
+                    />
+                </header>
+                <div class="AssignTags__body">
+                    <p class="AssignTags__help">{__('modal.assign-tags.choose-tags-below')}</p>
+                    <div class="AssignTags__form">
+                        <Select
+                            v-model={this.tags}
+                            options={tagsOptions}
+                            class="AssignTags__form__select"
+                            multiple
+                        />
+                        <Button
+                            type="danger"
+                            icon="backspace"
+                            tooltip={__('remove-all-tags')}
+                            class="AssignTags__form__remove-all"
+                            onClick={handleRemoveAll}
+                        />
+                    </div>
+                </div>
+                <div class="AssignTags__footer">
+                    <Button type="primary" onClick={handleSave} loading={isSaving}>
+                        {isSaving ? __('saving') : __('save')}
+                    </Button>
+                    <Button onClick={handleClose}>
+                        {__('cancel')}
+                    </Button>
+                </div>
+            </div>
+        );
     },
 };

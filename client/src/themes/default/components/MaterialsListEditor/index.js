@@ -17,6 +17,8 @@ import apiMaterials from '@/stores/api/materials';
 import ErrorMessage from '@/themes/default/components/ErrorMessage';
 import MaterialsFilters from '@/themes/default/components/MaterialsFilters';
 import SwitchToggle from '@/themes/default/components/SwitchToggle';
+import Button from '@/themes/default/components/Button';
+import Icon from '@/themes/default/components/Icon';
 import Dropdown from '@/themes/default/components/Dropdown';
 import MaterialsStore from './_store';
 import ReuseEventMaterials from './modals/ReuseEventMaterials';
@@ -27,7 +29,7 @@ import {
     materialsHasChanged,
 } from './_utils';
 
-const noPaginationLimit = 100000;
+const NO_PAGINATION_LIMIT = 100_000;
 
 // @vue/component
 const MaterialsListEditor = (props, { root, emit }) => {
@@ -56,7 +58,7 @@ const MaterialsListEditor = (props, { root, emit }) => {
         'qty',
         'reference',
         'name',
-        'available_quantity',
+        'availability',
         'price',
         'quantity',
         'amount',
@@ -88,7 +90,7 @@ const MaterialsListEditor = (props, { root, emit }) => {
     const setSelectedOnly = (onlySelected) => {
         dataTableRef.value?.setCustomFilters({ ...getFilters(), onlySelected });
         dataTableRef.value?.setLimit(
-            onlySelected ? noPaginationLimit : config.defaultPaginationLimit,
+            onlySelected ? NO_PAGINATION_LIMIT : config.defaultPaginationLimit,
         );
         showSelectedOnly.value = onlySelected;
     };
@@ -119,15 +121,16 @@ const MaterialsListEditor = (props, { root, emit }) => {
     const tableOptions = ref({
         columnsDropdown: false,
         preserveState: false,
+        showChildRowToggler: false,
         orderBy: { column: 'reference', ascending: true },
-        perPage: hasMaterials.value ? noPaginationLimit : config.defaultPaginationLimit,
+        perPage: hasMaterials.value ? NO_PAGINATION_LIMIT : config.defaultPaginationLimit,
         sortable: ['reference', 'name'],
         columnsClasses: {
             'child-toggler': 'MaterialsListEditor__child-toggler ',
             'qty': 'MaterialsListEditor__qty ',
             'reference': 'MaterialsListEditor__ref ',
             'name': 'MaterialsListEditor__name ',
-            'available_quantity': 'MaterialsListEditor__remaining ',
+            'availability': 'MaterialsListEditor__availability ',
             'price': 'MaterialsListEditor__price ',
             'quantity': 'MaterialsListEditor__quantity ',
             'amount': 'MaterialsListEditor__amount ',
@@ -204,9 +207,15 @@ const MaterialsListEditor = (props, { root, emit }) => {
         dataTableRef.value?.setCustomFilters(newFilters);
     };
 
-    const getAvailableQuantity = (material) => (
-        (material.available_quantity || 0) - getQuantity(material)
-    );
+    const getAvailability = (material) => {
+        const quantityUsed = getQuantity(material);
+
+        const availableQuantity = (material.available_quantity || 0) - quantityUsed;
+        return {
+            stock: Math.max(availableQuantity, 0),
+            surplus: Math.abs(Math.min(0, availableQuantity)),
+        };
+    };
 
     onMounted(() => {
         MaterialsStore.commit('init', selected.value);
@@ -253,9 +262,13 @@ const MaterialsListEditor = (props, { root, emit }) => {
                             {__('add-materials-from')}
                         </template>
                         <template slot="items">
-                            <button type="button" class="Dropdown__item info" onClick={handleShowReuseEventModal}>
+                            <Button
+                                type="add"
+                                class="Dropdown__item"
+                                onClick={handleShowReuseEventModal}
+                            >
                                 {__('another-event')}
-                            </button>
+                            </Button>
                         </template>
                     </Dropdown>
                 </div>
@@ -277,20 +290,24 @@ const MaterialsListEditor = (props, { root, emit }) => {
                         'qty': ({ row }) => (
                             <span>{getQuantity(row) > 0 ? `${getQuantity(row)}\u00a0×` : ''}</span>
                         ),
-                        'available_quantity': ({ row }) => (
-                            <span
-                                class={{
-                                    'MaterialsListEditor__remaining': true,
-                                    'MaterialsListEditor__remaining--zero': getAvailableQuantity(row) === 0,
-                                    'MaterialsListEditor__remaining--empty': getAvailableQuantity(row) < 0,
-                                }}
-                            >
-                                {__('remaining-count', { count: getAvailableQuantity(row) })}
-                            </span>
-                        ),
+                        'availability': ({ row: material }) => {
+                            const availability = getAvailability(material, true);
+                            return (
+                                <Fragment>
+                                    <span class="MaterialsListEditor__availability__stock">
+                                        {__('stock-count', { count: availability.stock }, availability.stock)}
+                                    </span>
+                                    {availability.surplus > 0 && (
+                                        <span class="MaterialsListEditor__availability__surplus">
+                                            ({__('surplus-count', { count: availability.surplus }, availability.surplus)})
+                                        </span>
+                                    )}
+                                </Fragment>
+                            );
+                        },
                         'price': ({ row }) => (
                             <Fragment>
-                                {formatAmount(row.rental_price ?? 0)} <i class="fas fa-times" />
+                                {formatAmount(row.rental_price ?? 0)} <Icon name="times" />
                             </Fragment>
                         ),
                         'quantity': ({ row }) => (
@@ -306,38 +323,30 @@ const MaterialsListEditor = (props, { root, emit }) => {
                             </span>
                         ),
                         'actions': ({ row }) => (
-                            getQuantity(row) > 0 ? (
-                                <button
-                                    type="button"
-                                    role="button"
-                                    class="warning"
-                                    onClick={() => { setQuantity(row, 0); }}
-                                >
-                                    <i class="fas fa-backspace" />
-                                </button>
-                            ) : null
+                            getQuantity(row) > 0
+                                ? (
+                                    <Button
+                                        type="danger"
+                                        icon="backspace"
+                                        onClick={() => { setQuantity(row, 0); }}
+                                    />
+                                )
+                                : null
                         ),
                     }}
                 />
                 {(!isLoading.value && hasMaterials.value) && (
                     <div class="MaterialsListEditor__add-more">
-                        <button
-                            type="button"
-                            role="button"
+                        <Button
+                            icon={showSelectedOnly.value ? 'chevron-down' : 'chevron-up'}
                             onClick={() => { setSelectedOnly(!showSelectedOnly.value); }}
                         >
-                            {showSelectedOnly.value ? (
-                                <Fragment>
-                                    <i class="fas fa-plus" />{' '}
-                                    {__('display-all-materials-to-add-some')}
-                                </Fragment>
-                            ) : (
-                                <Fragment>
-                                    <i class="fas fa-eye" />{' '}
-                                    {__('display-only-selected-materials')}
-                                </Fragment>
+                            {(
+                                showSelectedOnly.value
+                                    ? __('display-all-materials-to-add-some')
+                                    : __('display-only-selected-materials')
                             )}
-                        </button>
+                        </Button>
                     </div>
                 )}
             </div>

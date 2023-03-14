@@ -221,7 +221,8 @@ final class Event extends BaseModel implements Serializable, PeriodInterface
 
     public function beneficiaries()
     {
-        return $this->belongsToMany(Beneficiary::class, 'event_beneficiaries');
+        return $this->belongsToMany(Beneficiary::class, 'event_beneficiaries')
+            ->orderByPivot('id');
     }
 
     public function materials()
@@ -233,7 +234,8 @@ final class Event extends BaseModel implements Serializable, PeriodInterface
                 'quantity',
                 'quantity_returned',
                 'quantity_returned_broken'
-            );
+            )
+            ->orderByPivot('id');
     }
 
     public function invoices()
@@ -681,7 +683,6 @@ final class Event extends BaseModel implements Serializable, PeriodInterface
 
             try {
                 $material = Material::findOrFail($materialData['id']);
-
                 $materials[$materialData['id']] = [
                     'quantity' => $materialData['quantity'],
                 ];
@@ -694,6 +695,44 @@ final class Event extends BaseModel implements Serializable, PeriodInterface
 
         $this->materials()->sync($materials);
         $this->refresh();
+    }
+
+    public function duplicate(array $newEventData, ?User $author = null)
+    {
+        $newEvent = new self([
+            'user_id' => $author?->id,
+            'title' => $this->title,
+            'description' => $this->description,
+            'start_date' => $newEventData['start_date'] ?? null,
+            'end_date' => $newEventData['end_date'] ?? null,
+            'is_confirmed' => false,
+            'is_archived' => false,
+            'location' => $this->location,
+            'is_billable' => $this->is_billable,
+            'is_return_inventory_done' => false,
+        ]);
+        $newEvent->validate();
+
+        $beneficiaries = $this->beneficiaries->pluck('id')->all();
+        $technicians = EventTechnician::getForNewDates(
+            $this->technicians,
+            new \DateTime($this->start_date),
+            $newEventData
+        );
+
+        $materials = $this->materials
+            ->map(fn($material) => [
+                'id' => $material->id,
+                'quantity' => $material->pivot->quantity,
+            ])
+            ->all();
+
+        $newEvent->save();
+        $newEvent->syncBeneficiaries($beneficiaries);
+        $newEvent->syncTechnicians($technicians);
+        $newEvent->syncMaterials($materials);
+
+        return $newEvent->refresh();
     }
 
     // ------------------------------------------------------
@@ -926,47 +965,6 @@ final class Event extends BaseModel implements Serializable, PeriodInterface
         }
 
         return $event->refresh();
-    }
-
-    // TODO => Entity method.
-    public static function duplicate(int $originalId, array $newEventData): BaseModel
-    {
-        $originalEvent = static::findOrFail($originalId);
-
-        $newEvent = new self([
-            'user_id' => $newEventData['user_id'] ?? null,
-            'title' => $originalEvent->title,
-            'description' => $originalEvent->description,
-            'start_date' => $newEventData['start_date'] ?? null,
-            'end_date' => $newEventData['end_date'] ?? null,
-            'is_confirmed' => false,
-            'is_archived' => false,
-            'location' => $originalEvent->location,
-            'is_billable' => $originalEvent->is_billable,
-            'is_return_inventory_done' => false,
-        ]);
-        $newEvent->validate();
-
-        $beneficiaries = $originalEvent->beneficiaries->pluck('id')->all();
-        $technicians = EventTechnician::getForNewDates(
-            $originalEvent->technicians,
-            new \DateTime($originalEvent->start_date),
-            $newEventData
-        );
-
-        $materials = $originalEvent->materials
-            ->map(fn($material) => [
-                'id' => $material->id,
-                'quantity' => $material->pivot->quantity,
-            ])
-            ->all();
-
-        $newEvent->save();
-        $newEvent->syncBeneficiaries($beneficiaries);
-        $newEvent->syncTechnicians($technicians);
-        $newEvent->syncMaterials($materials);
-
-        return $newEvent->refresh();
     }
 
     // ------------------------------------------------------

@@ -2,16 +2,25 @@
     {
         "id": 1,
         "name": "France",
-        "code": "FR"
+        "code": "FR",
+        "created_at": "2021-02-12 13:20:02",
+        "updated_at": "2021-02-12 13:20:02",
+        "deleted_at": null
     },
     {
         "id": 2,
         "name": "Suisse",
-        "code": "CH"
+        "code": "CH",
+        "created_at": "2021-02-12 13:21:02",
+        "updated_at": "2021-02-12 13:21:02",
+        "deleted_at": null
     },
     {
         "id": 3,
         "name": "Belgique",
-        "code": "BE"
+        "code": "BE",
+        "created_at": "2021-02-12 13:22:02",
+        "updated_at": "2021-02-12 13:22:02",
+        "deleted_at": null
     }
 ]

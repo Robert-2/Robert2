@@ -3,6 +3,7 @@ import Decimal from 'decimal.js';
 import config from '@/globals/config';
 import Fragment from '@/components/Fragment';
 import FormField from '@/themes/default/components/FormField';
+import Button from '@/themes/default/components/Button';
 
 // @vue/component
 export default {
@@ -151,13 +152,12 @@ export default {
                     </div>
                 )}
                 <div class="BillingForm__save">
-                    <button class="success" type="submit" disabled={loading}>
-                        <i class={['fas', loading ? 'fa-circle-notch fa-spin' : 'fa-plus']} />{' '}
+                    <Button htmlType="submit" type="primary" loading={loading}>
                         {saveLabel}
-                    </button>
-                    <button onClick={handleCancel} type="button" disabled={loading}>
+                    </Button>
+                    <Button onClick={handleCancel} disabled={loading}>
                         {__('cancel')}
-                    </button>
+                    </Button>
                 </div>
             </form>
         );

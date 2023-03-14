@@ -4,22 +4,25 @@
     &__header {
         display: flex;
         align-items: center;
-        padding: globals.$content-padding-small-horizontal globals.$content-padding-large-vertical;
+        padding: 0.7rem 1rem;
         background-color: globals.$bg-color-main-header;
+        gap: 10px;
 
         &__title {
             flex: 1;
-            font-size: 1.4rem;
+            overflow: hidden;
+            margin: 0;
+            font-size: 1.3rem;
+            white-space: nowrap;
+            text-overflow: ellipsis;
         }
 
-        &__btn-close {
+        &__close-button {
             flex: 0 0 auto;
-            border: none;
-            background: none;
         }
     }
 
-    &__main {
+    &__body {
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -32,6 +35,17 @@
             }
         }
     }
+
+    &__footer {
+        display: flex;
+        justify-content: center;
+        padding: 1.5rem globals.$content-padding-small-vertical;
+        background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    //
+    // - Contenu
+    //
 
     .SearchEvents {
         overflow-y: auto;
@@ -61,11 +75,5 @@
                 margin-right: globals.$content-padding-small-horizontal;
             }
         }
-    }
-
-    &__footer {
-        padding: globals.$content-padding-large-vertical;
-        border-top: 1px solid globals.$divider-color;
-        text-align: center;
     }
 }

@@ -4,9 +4,12 @@
     display: flex;
     flex-direction: column;
 
-    &__people-location {
+    &__summary {
         display: flex;
         flex-wrap: wrap;
+        margin-bottom: 15px;
+        font-size: 1.1rem;
+        gap: globals.$content-padding-small-horizontal;
 
         &__beneficiary,
         &__location,
@@ -14,8 +17,6 @@
         &__creator {
             flex: 1 0 auto;
             max-width: 100%;
-            margin: 0 globals.$content-padding-small-horizontal 15px 0;
-            font-size: 1.1rem;
         }
 
         &__creator {
@@ -56,6 +57,7 @@
 
     &__confirmation {
         color: globals.$text-warning-color;
+        text-align: center;
 
         &--confirmed {
             color: globals.$text-success-color;

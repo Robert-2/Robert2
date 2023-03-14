@@ -58,8 +58,8 @@ final class MaterialsTest extends ApiTestCase
                 'tags' => [
                     TagsTest::data(1),
                 ],
-                'created_at' => null,
-                'updated_at' => null,
+                'created_at' => '2021-02-12 23:00:00',
+                'updated_at' => '2021-02-12 23:00:00',
                 'deleted_at' => null,
             ],
             [
@@ -99,8 +99,8 @@ final class MaterialsTest extends ApiTestCase
                 'tags' => [
                     TagsTest::data(1),
                 ],
-                'created_at' => null,
-                'updated_at' => null,
+                'created_at' => '2021-02-12 23:01:00',
+                'updated_at' => '2021-02-12 23:02:00',
                 'deleted_at' => null,
             ],
             [
@@ -140,8 +140,8 @@ final class MaterialsTest extends ApiTestCase
                 'tags' => [
                     TagsTest::data(1),
                 ],
-                'created_at' => null,
-                'updated_at' => null,
+                'created_at' => '2021-02-12 23:02:00',
+                'updated_at' => '2021-02-12 23:02:00',
                 'deleted_at' => null,
             ],
             [
@@ -186,8 +186,8 @@ final class MaterialsTest extends ApiTestCase
                     ],
                 ],
                 'tags' => [],
-                'created_at' => null,
-                'updated_at' => null,
+                'created_at' => '2021-02-12 23:03:00',
+                'updated_at' => '2021-02-12 23:03:00',
                 'deleted_at' => null,
             ],
             [
@@ -210,8 +210,8 @@ final class MaterialsTest extends ApiTestCase
                 'note' => null,
                 'attributes' => [],
                 'tags' => [],
-                'created_at' => null,
-                'updated_at' => null,
+                'created_at' => '2021-02-12 23:14:00',
+                'updated_at' => '2021-02-12 23:14:00',
                 'deleted_at' => null,
             ],
             [
@@ -232,9 +232,6 @@ final class MaterialsTest extends ApiTestCase
                 'is_reservable' => true,
                 'picture' => null,
                 'note' => null,
-                'created_at' => null,
-                'updated_at' => null,
-                'deleted_at' => null,
                 'tags' => [],
                 'attributes' => [
                     [
@@ -245,6 +242,9 @@ final class MaterialsTest extends ApiTestCase
                         'value' => '2021-01-28',
                     ],
                 ],
+                'created_at' => '2021-02-12 23:15:00',
+                'updated_at' => '2021-02-12 23:15:00',
+                'deleted_at' => null,
             ],
             [
                 'id' => 7,
@@ -264,11 +264,11 @@ final class MaterialsTest extends ApiTestCase
                 'is_reservable' => true,
                 'picture' => null,
                 'note' => null,
-                'created_at' => null,
-                'updated_at' => null,
-                'deleted_at' => null,
                 'tags' => [],
                 'attributes' => [],
+                'created_at' => '2021-02-12 23:16:00',
+                'updated_at' => '2021-02-12 23:16:00',
+                'deleted_at' => null,
             ],
             [
                 'id' => 8,
@@ -288,11 +288,11 @@ final class MaterialsTest extends ApiTestCase
                 'is_reservable' => true,
                 'picture' => null,
                 'note' => null,
-                'created_at' => null,
-                'updated_at' => null,
-                'deleted_at' => null,
                 'tags' => [],
                 'attributes' => [],
+                'created_at' => '2021-02-12 23:18:00',
+                'updated_at' => '2021-02-12 23:18:00',
+                'deleted_at' => null,
             ],
         ]);
 
@@ -456,7 +456,7 @@ final class MaterialsTest extends ApiTestCase
         ]);
     }
 
-    public function testGetMaterialsByTagsNotFound()
+    public function testGetAllByTagsNotFound()
     {
         $this->client->get('/api/materials?tags[0]=notFound');
         $this->assertStatusCode(StatusCode::STATUS_OK);
@@ -470,28 +470,28 @@ final class MaterialsTest extends ApiTestCase
         ]);
     }
 
-    public function testGetMaterialsByTags()
+    public function testGetAllByTags()
     {
-        $this->client->get('/api/materials?tags[0]=pro');
+        $this->client->get('/api/materials?tags[0]=Premium');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponsePaginatedData(3);
     }
 
-    public function testGetMaterialsByPark()
+    public function testGetAllByPark()
     {
         $this->client->get('/api/materials?park=1');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponsePaginatedData(6);
     }
 
-    public function testGetMaterialsByCategoryAndSubCategory()
+    public function testGetAllByCategoryAndSubCategory()
     {
         $this->client->get('/api/materials?category=1&subCategory=1');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponsePaginatedData(2);
     }
 
-    public function testGetMaterialsWithDateForQuantities()
+    public function testGetAllWithDateForQuantities()
     {
         // - Récupère le matériel avec les quantités qu'il reste pour un jour
         // - pendant lequel se déroulent les événements n°1 et n°2
@@ -579,7 +579,7 @@ final class MaterialsTest extends ApiTestCase
             'rental_price' => 100.0,
             'replacement_price' => 357.0,
             'stock_quantity' => 1,
-            'tags' => ['old matos', 'vintage'],
+            'tags' => [2, 1],
         ]);
         $this->assertStatusCode(StatusCode::STATUS_CREATED);
         $this->assertResponseData([
@@ -602,8 +602,8 @@ final class MaterialsTest extends ApiTestCase
             'note' => null,
             'attributes' => [],
             'tags' => [
-                ['id' => 2, 'name' => 'old matos'],
-                ['id' => 3, 'name' => 'vintage'],
+                TagsTest::data(1),
+                TagsTest::data(2),
             ],
             'created_at' => '2022-10-22 18:42:36',
             'updated_at' => '2022-10-22 18:42:36',
@@ -611,7 +611,7 @@ final class MaterialsTest extends ApiTestCase
         ]);
     }
 
-    public function testCreateMaterialWithAttributes()
+    public function testCreateWithAttributes()
     {
         Carbon::setTestNow(Carbon::create(2022, 10, 22, 18, 42, 36));
 
@@ -679,7 +679,7 @@ final class MaterialsTest extends ApiTestCase
         ]);
     }
 
-    public function testUpdateMaterial()
+    public function testUpdate()
     {
         // - Update material #1
         $data = [
@@ -708,7 +708,7 @@ final class MaterialsTest extends ApiTestCase
         $this->assertEquals(5, $response['out_of_order_quantity']);
     }
 
-    public function testDeleteAndDestroyMaterial()
+    public function testDeleteAndDestroy()
     {
         // - First call: soft delete.
         $this->client->delete('/api/materials/5');
@@ -723,20 +723,20 @@ final class MaterialsTest extends ApiTestCase
         $this->assertNull(Material::withTrashed()->find(5));
     }
 
-    public function testRestoreMaterialNotFound()
+    public function testRestoreInexistent()
     {
-        $this->client->put('/api/materials/restore/999');
+        $this->client->put('/api/materials/999/restore');
         $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
-    public function testRestoreMaterial()
+    public function testRestore()
     {
         // - First, delete material #3
         $this->client->delete('/api/materials/3');
         $this->assertStatusCode(StatusCode::STATUS_NO_CONTENT);
 
         // - Then, restore material #3
-        $this->client->put('/api/materials/restore/3');
+        $this->client->put('/api/materials/3/restore');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertNotNull(Material::find(2));
     }

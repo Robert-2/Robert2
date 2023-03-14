@@ -4,9 +4,10 @@ declare(strict_types=1);
 namespace Robert2\Tests;
 
 use Illuminate\Support\Carbon;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Robert2\API\Errors\Exception\ValidationException;
 use Robert2\API\Models\Event;
+use Robert2\API\Models\Technician;
+use Robert2\API\Models\User;
 use Robert2\API\Services\I18n;
 use Robert2\Support\Pdf;
 use Robert2\Support\Period;
@@ -391,10 +392,10 @@ final class EventTest extends TestCase
         $this->assertEquals(5, count($event->materials));
 
         $expectedData = [
-            ['id' => 1, 'quantity' => 8],
-            ['id' => 2, 'quantity' => 3],
             ['id' => 3, 'quantity' => 20],
+            ['id' => 2, 'quantity' => 3],
             ['id' => 5, 'quantity' => 14],
+            ['id' => 1, 'quantity' => 8],
             ['id' => 6, 'quantity' => 1],
         ];
         foreach ($expectedData as $index => $expected) {
@@ -540,30 +541,25 @@ final class EventTest extends TestCase
         }
     }
 
-    public function testDuplicateNotFound()
-    {
-        $this->expectException(ModelNotFoundException::class);
-        Event::duplicate(999, []);
-    }
-
     public function testDuplicateBadData()
     {
-        $newEventData = ['user_id' => 1];
         $this->expectException(ValidationException::class);
-        Event::duplicate(1, $newEventData);
+        Event::findOrFail(1)->duplicate(['start_date' => 'invalid-date']);
     }
 
     public function testDuplicate()
     {
-        $newEventData = [
+        Carbon::setTestNow(Carbon::create(2021, 07, 23, 12, 31, 24));
+
+        // - Test simple.
+        $newEvent = Event::findOrFail(1)->duplicate([
             'user_id' => 1,
             'start_date' => '2021-08-01 00:00:00',
             'end_date' => '2021-08-02 23:59:59',
-        ];
-        $newEvent = Event::duplicate(1, $newEventData);
+        ]);
         $expected = [
             'id' => 7,
-            'user_id' => 1,
+            'user_id' => null,
             'reference' => null,
             'title' => 'Premier événement',
             'description' => null,
@@ -574,50 +570,127 @@ final class EventTest extends TestCase
             'location' => 'Gap',
             'is_billable' => true,
             'is_return_inventory_done' => false,
+            'technicians' => [
+                [
+                    'id' => 3,
+                    'event_id' => 7,
+                    'technician_id' => 1,
+                    'start_time' => '2021-08-01 09:00:00',
+                    'end_time' => '2021-08-02 22:00:00',
+                    'position' => 'Régisseur',
+                    'technician' => Technician::find(1)->toArray(),
+                ],
+                [
+                    'id' => 4,
+                    'event_id' => 7,
+                    'technician_id' => 2,
+                    'start_time' => '2021-08-02 14:00:00',
+                    'end_time' => '2021-08-02 18:00:00',
+                    'position' => 'Technicien plateau',
+                    'technician' => Technician::find(2)->toArray(),
+                ],
+            ],
+            'created_at' => '2021-07-23 12:31:24',
+            'updated_at' => '2021-07-23 12:31:24',
+            'deleted_at' => null,
         ];
-
-        $newEventData = $newEvent->setAppends([])->attributesToArray();
-        unset(
-            $newEventData['created_at'],
-            $newEventData['updated_at'],
-            $newEventData['deleted_at']
-        );
-
-        $this->assertEquals($expected, $newEventData);
+        $this->assertEquals($expected, (
+            $newEvent
+                ->append(['technicians'])
+                ->attributesToArray()
+        ));
         $this->assertCount(1, $newEvent->beneficiaries);
-        $this->assertCount(2, $newEvent->technicians);
         $this->assertCount(3, $newEvent->materials);
-    }
 
-    public function testDuplicateLonger()
-    {
-        $newEventData = [
+        // - Test avec un événement dupliqué plus long que l'original.
+        $newEvent = Event::findOrFail(1)->duplicate(
+            [
+                'start_date' => '2021-08-01 00:00:00',
+                'end_date' => '2021-08-03 23:59:59', // - Un jour de plus que l'original.
+            ],
+            User::findOrFail(1),
+        );
+        $expected = [
+            'id' => 8,
             'user_id' => 1,
+            'reference' => null,
+            'title' => 'Premier événement',
+            'description' => null,
             'start_date' => '2021-08-01 00:00:00',
-            'end_date' => '2021-08-03 23:59:59', // - Un jour de plus que l'original
+            'end_date' => '2021-08-03 23:59:59',
+            'is_confirmed' => false,
+            'is_archived' => false,
+            'location' => 'Gap',
+            'is_billable' => true,
+            'is_return_inventory_done' => false,
+            'technicians' => [
+                [
+                    'id' => 5,
+                    'event_id' => 8,
+                    'technician_id' => 1,
+                    'start_time' => '2021-08-01 09:00:00',
+                    'end_time' => '2021-08-02 22:00:00',
+                    'position' => 'Régisseur',
+                    'technician' => Technician::find(1)->toArray(),
+                ],
+                [
+                    'id' => 6,
+                    'event_id' => 8,
+                    'technician_id' => 2,
+                    'start_time' => '2021-08-02 14:00:00',
+                    'end_time' => '2021-08-02 18:00:00',
+                    'position' => 'Technicien plateau',
+                    'technician' => Technician::find(2)->toArray(),
+                ],
+            ],
+            'created_at' => '2021-07-23 12:31:24',
+            'updated_at' => '2021-07-23 12:31:24',
+            'deleted_at' => null,
         ];
-        $newEvent = Event::duplicate(1, $newEventData);
-        $this->assertCount(2, $newEvent->technicians);
-        $this->assertEquals('Roger Rabbit', $newEvent->technicians[0]['technician']['full_name']);
-        $this->assertEquals('2021-08-01 09:00:00', $newEvent->technicians[0]['start_time']);
-        $this->assertEquals('2021-08-02 22:00:00', $newEvent->technicians[0]['end_time']);
-        $this->assertEquals('Jean Technicien', $newEvent->technicians[1]['technician']['full_name']);
-        $this->assertEquals('2021-08-02 14:00:00', $newEvent->technicians[1]['start_time']);
-        $this->assertEquals('2021-08-02 18:00:00', $newEvent->technicians[1]['end_time']);
-    }
+        $this->assertEquals($expected, (
+            $newEvent
+                ->append(['technicians'])
+                ->attributesToArray()
+        ));
 
-    public function testDuplicateHalfTime()
-    {
-        $newEventData = [
-            'user_id' => 1,
+        // - Test avec un événement dupliqué plus court que l'original.
+        $newEvent = Event::findOrFail(1)->duplicate([
             'start_date' => '2021-08-01 00:00:00',
             'end_date' => '2021-08-01 23:59:59', // - Un jour de moins que l'original
+        ]);
+        $expected = [
+            'id' => 9,
+            'user_id' => null,
+            'reference' => null,
+            'title' => 'Premier événement',
+            'description' => null,
+            'start_date' => '2021-08-01 00:00:00',
+            'end_date' => '2021-08-01 23:59:59',
+            'is_confirmed' => false,
+            'is_archived' => false,
+            'location' => 'Gap',
+            'is_billable' => true,
+            'is_return_inventory_done' => false,
+            'technicians' => [
+                [
+                    'id' => 7,
+                    'event_id' => 9,
+                    'technician_id' => 1,
+                    'start_time' => '2021-08-01 09:00:00',
+                    'end_time' => '2021-08-01 23:45:00',
+                    'position' => 'Régisseur',
+                    'technician' => Technician::find(1)->toArray(),
+                ],
+            ],
+            'created_at' => '2021-07-23 12:31:24',
+            'updated_at' => '2021-07-23 12:31:24',
+            'deleted_at' => null,
         ];
-        $newEvent = Event::duplicate(1, $newEventData);
-        $this->assertCount(1, $newEvent->technicians);
-        $this->assertEquals('Roger Rabbit', $newEvent->technicians[0]['technician']['full_name']);
-        $this->assertEquals('2021-08-01 09:00:00', $newEvent->technicians[0]['start_time']);
-        $this->assertEquals('2021-08-01 23:45:00', $newEvent->technicians[0]['end_time']);
+        $this->assertEquals($expected, (
+            $newEvent
+                ->append(['technicians'])
+                ->attributesToArray()
+        ));
     }
 
     public function testChangeDatesLonger()

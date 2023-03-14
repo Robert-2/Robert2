@@ -6,12 +6,17 @@
     align-items: center;
     margin: 0;
     padding: 0;
+    list-style: none;
+    gap: 0.35rem;
 
     &__item {
-        margin: 0 0.35rem 0.35rem 0;
-        padding: 0.3rem 0.5rem;
-        border-radius: 10px;
+        margin: 0;
+        padding: 0.3rem 1rem;
+        border-radius: 15px;
         background: globals.$bg-color-emphasis;
-        list-style: none;
+
+        @include globals.icon('tag') {
+            margin-right: 0.3rem;
+        }
     }
 }

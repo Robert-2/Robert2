@@ -91,25 +91,7 @@
     /* stylelint-enable selector-max-type, selector-max-compound-selectors */
 
     &__child-toggler {
-        width: 85px;
-        /* stylelint-disable-next-line declaration-no-important */
-        padding: 0 0.45rem 0 0 !important;
-
-        &__button {
-            box-sizing: content-box;
-            width: 1rem;
-            padding: 2px 1rem;
-            border: 0;
-            background: rgba(255, 255, 255, 0.1);
-            color: inherit;
-            font-size: 1.5rem;
-            text-align: center;
-
-            &:focus,
-            &:hover {
-                background: rgba(255, 255, 255, 0.1);
-            }
-        }
+        width: 50px;
     }
 
     &__qty {
@@ -127,15 +109,18 @@
         color: globals.$text-light-color !important;
     }
 
-    &__remaining {
-        min-width: 4.5rem;
+    &__availability {
+        min-width: 205px;
 
-        &--zero {
-            color: globals.$text-warning-color;
+        &__stock {
+            display: block;
         }
 
-        &--empty {
-            color: globals.$text-danger-color;
+        &__surplus {
+            display: block;
+            margin-top: 3px;
+            color: globals.$text-warning-color;
+            font-style: italic;
         }
     }
 
@@ -173,11 +158,6 @@
     &__actions {
         width: 45px;
         min-width: 45px;
-
-        // stylelint-disable-next-line selector-max-type
-        button {
-            padding: 6px 8px;
-        }
     }
 
     &__add-more {

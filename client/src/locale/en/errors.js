@@ -1,6 +1,5 @@
 export default {
     errors: {
-        'generic': "Error: {message}",
         'unexpected-while-saving': "An unexpected error occurred while saving, please try again.",
         'unexpected-while-deleting': "An unexpected error occurred while deleting, please try again.",
         'unexpected-while-restoring': "An unexpected error occurred while restoring, please try again.",

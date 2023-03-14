@@ -202,7 +202,6 @@ export default defineComponent({
                     highlight={!disableSubCategories && filters.subCategory !== ''}
                 />
                 <Select
-                    name="test"
                     class="MaterialsFilters__item MaterialsFilters__item--tags"
                     v-model={filters.tags}
                     placeholder={__('tags')}
