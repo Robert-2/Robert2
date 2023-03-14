@@ -6,22 +6,55 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 
 ## 0.20.0 (UNRELEASED)
 
-- __[CHANGEMENT CRITIQUE]__ Loxya (Robert2) requiert maintenant au minimum PHP 8.0 pour fonctionner (#375).
-- Ajoute le support PHP 8.1 (#328).
+### Variante open-source
+
+- __[CHANGEMENT CRITIQUE]__ Loxya (Robert2) requiert maintenant au minimum PHP 8.0 pour fonctionner (OSS #375).
+- Ajoute le support PHP 8.1 (OSS #328).
 - Change le nom de l'application en "Loxya (Robert2)" partout.
-- Corrige la copie via le bouton "Copier" dans le champ d'URL du calendrier public (#369).
-- Ajoute l'extension `iconv` dans la liste des extensions requises lors de l'installation (#371).
+- Corrige divers problèmes de sécurité liés aux comptes utilisateurs.
+- Corrige la traduction anglaise du mot "facture" ("bill" → "invoice") partout (OSS #377).
+- Améliore le système de traduction, et formate des dates correctement pour la langue anglaise (OSS #378).
+- Corrige la copie via le bouton "Copier" dans le champ d'URL du calendrier public (OSS #369).
+- Ajoute l'extension `iconv` dans la liste des extensions requises lors de l'installation (OSS #371).
 - Corrige le filtre sur les périodes de disponibilités dans le listing des techniciens qui ne prenait pas 
   correctement en compte les événements dont la date de début était antérieure à la date de début du filtre 
   (+ idem pour les dates de fin).
-- Corrige divers problèmes de sécurité liés aux comptes utilisateurs.
-- Corrige, sur la page de calendrier sur mobile, l'affichage de la fenêtre de détails des événements lors du double-click (#359).
-- Corrige la traduction anglaise du mot "facture" ("bill" -> "invoice") partout (#377).
-- Améliore le système de traduction, et formate des dates correctement pour la langue anglaise (#378).
+- Corrige, sur la page de calendrier sur mobile, l'affichage de la fenêtre de détails des événements
+  lors du double-click (OSS #359).
 - Dans la fenêtre des événements, les totaux affichent plus de détails (montants H.T. et T.T.C., et remise éventuelle).
 - Dans la fenêtre des événements, les coordonnées du bénéficiaire principal sont affichées dans l'onglet "informations".
-- Corrige le calcul du nombre d'articles en stock pour les parcs (#224).
-- Dans la liste du matériel d'un événement, améliore l'affichage des quantités utilisées (#179).
+- Dans la liste du matériel d'un événement, améliore l'affichage des quantités utilisées.
+
+### Variante Premium
+
+> Tous les changements de la variante open-source, plus les changements suivants :
+
+- __[CHANGEMENT CRITIQUE]__ Dorénavant, si aucun groupe n'a pu être récupéré lors de la connexion CAS, l'utilisateur ne 
+  sera plus assigné au groupe "Visiteur" mais sera __déconnecté__. Pour rétablir le fonctionnement précédent, assignez la
+  valeur `visitor` à la nouvelle option `auth.CAS.defaultGroup`.
+- Corrige l'authentification CAS : le nom et le prénom des utilisateurs CAS sont maintenant obligatoires.
+- Il est maintenant possible de paramétrer le groupe assigné par défaut lorsqu'aucun groupe n'a 
+  pu être récupéré lors de la connexion CAS (via l'option de configuration `auth.CAS.defaultGroup`). 
+  Il est aussi possible d'empêcher la connexion lorsqu'aucun groupe n'a pu être récupéré (Premium #38).
+- Une nouvelle option de configuration CAS `auth.CAS.beneficiaryGroups` permet d'associer la présence de certains 
+  groupes parmi les groupes CAS retournés avec la création d'un profil bénéficiaire pour l'utilisateur. Ceci ne
+  remplace pas le mapping du groupe vers un groupe Robert 2 / Loxya qu'il faudra quand même configurer.  
+  Par exemple, supposons que vous ayez un groupe CAS `Student` pour lequel vous souhaitez autorisé les réservations 
+  publiques (qui nécessitent donc un profil bénéficiaire). Vous pourrez configurer l'option `auth.CAS.beneficiaryGroups`
+  à `["Student"]` et l'option `auth.CAS.groupsMapping` à `{ "Student": "external" }`.  
+  Ceci aura pour effet d'autoriser la connexion de vos élèves en leur assignant un profil bénéficiaire et en autorisant
+  seulement l'accès à la partie réservation publique de l'application (et pas le panel d'administration).  
+  Si par contre, vous souhaitez leur donner accès au panel, vous pouvez tout à fait modifier `auth.CAS.groupsMapping` 
+  en spécifiant par exemple `{ "Student": "visitor" }`.
+- Les étiquettes passent maintenant du format 50x25mm à 50x24mm (Premium #197).
+- Les unités cassées sont maintenant considérées comme manquantes dans les événements.
+- Ajoute la possibilité de lier un utilisateur à un bénéficiaire depuis le formulaire d'édition bénéficiaire (Premium #182).
+- Ajoute les "réservations en ligne" : permettre aux bénéficiaires de faire eux-même des demandes de réservation du
+  matériel, grâce à leur compte personnel, dans une partie "externe" (Premium #182).
+- Ajoute le choix des utilisateurs du groupe "membre" pouvant approuver le matériel dans les demandes de réservation (Premium #182).
+- Un nouveau paramètre utilisateur a été ajouté : la possibilité de désactiver les notifications par e-mail (Premium #254).
+- Corrige le calcul du nombre d'articles en stock pour les parcs (Premium #224).
+- Dans la liste du matériel d'un événement, il est maintenant possible de scanner les unités cassées avec la scanette (Premium #178).
 
 ## 0.19.3 (2022-10-28)
 
