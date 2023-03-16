@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9bd9ecd72ed8864fbed42e842ab36e9e",
+    "content-hash": "84ce029dd6edc4ebbc143956fbcbac4e",
     "packages": [
         {
             "name": "adbario/php-dot-notation",
@@ -4304,16 +4304,16 @@
         },
         {
             "name": "robmorgan/phinx",
-            "version": "0.13.1",
+            "version": "0.13.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/cakephp/phinx.git",
-                "reference": "eccde746d7afa08f0df880f68dcbc475d001de7f"
+                "reference": "18e06e4a2b18947663438afd2f467e17c62e867d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cakephp/phinx/zipball/eccde746d7afa08f0df880f68dcbc475d001de7f",
-                "reference": "eccde746d7afa08f0df880f68dcbc475d001de7f",
+                "url": "https://api.github.com/repos/cakephp/phinx/zipball/18e06e4a2b18947663438afd2f467e17c62e867d",
+                "reference": "18e06e4a2b18947663438afd2f467e17c62e867d",
                 "shasum": ""
             },
             "require": {
@@ -4384,9 +4384,9 @@
             ],
             "support": {
                 "issues": "https://github.com/cakephp/phinx/issues",
-                "source": "https://github.com/cakephp/phinx/tree/0.13.1"
+                "source": "https://github.com/cakephp/phinx/tree/0.13.4"
             },
-            "time": "2022-10-09T23:43:15+00:00"
+            "time": "2023-01-07T00:42:55+00:00"
         },
         {
             "name": "sabberworm/php-css-parser",
