@@ -345,7 +345,7 @@ final class Event extends BaseModel implements Serializable, PeriodInterface
             return null;
         }
 
-        return Decimal::of(Config::getSettings('companyData')['vatRate'])
+        return Decimal::of(Config::getSettings('companyData')['vatRate'] ?: 0)
             ->toScale(2, RoundingMode::UNNECESSARY);
     }
 
