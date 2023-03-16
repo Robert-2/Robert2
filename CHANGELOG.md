@@ -4,7 +4,7 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 0.20.1 (UNRELEASED)
+## 0.20.1 (2023-03-16)
 
 - Corrige un problème qui empêchait de lancer la mise à jour de la base de données sur certaines installations.
 
