@@ -5,6 +5,7 @@ namespace Robert2\API\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection as CoreCollection;
 use Psr\Http\Message\UploadedFileInterface;
 use Respect\Validation\Validator as V;
 use Robert2\API\Config\Config;
@@ -644,37 +645,44 @@ final class Material extends BaseModel implements Serializable
                     );
             }
 
+            /** @var Collection $otherBorrowings */
             $otherBorrowings = $otherBorrowings
                 ->sortBy(fn(PeriodInterface $otherBorrowing) => $otherBorrowing->getStartDate())
                 ->values();
         }
 
-        return $materials->map(function ($material) use ($otherBorrowings) {
-            $material = clone $material;
-            $periods = [];
-            foreach ($otherBorrowings as $otherBorrowing) {
-                $currentPeriodIndex = array_key_last($periods);
-                $currentPeriod = $currentPeriodIndex !== null
-                    ? $periods[$currentPeriodIndex]
-                    : null;
-
-                if ($currentPeriod === null || !$currentPeriod['period']->overlaps($otherBorrowing)) {
-                    $periods[] = [
-                        'period' => new Period($otherBorrowing),
-                        'borrowings' => new Collection([$otherBorrowing]),
-                    ];
-                    continue;
+        // - Groupe les bookings concurrents par périodes pour pouvoir
+        //   ensuite récupérer les périodes de sortie des matériels.
+        $otherBorrowingsByPeriods = $otherBorrowings
+            ->reduce(
+                fn ($dates, $otherBorrowing) => $dates->push(
+                    $otherBorrowing->getStartDate()->format('Y-m-d H:i:s'),
+                    $otherBorrowing->getEndDate()->format('Y-m-d H:i:s'),
+                ),
+                new CoreCollection(),
+            )
+            ->unique()
+            ->sort(function ($a, $b) {
+                if ($a === $b) {
+                    return 0;
                 }
+                return strtotime($a) < strtotime($b) ? -1 : 1;
+            })
+            ->values()
+            ->sliding(2)
+            ->mapSpread(function ($startDate, $endDate) use ($otherBorrowings) {
+                $period = new Period($startDate, $endDate);
+                return $otherBorrowings->filter(fn ($otherBorrowing) => (
+                    $otherBorrowing->getStartDate() < $period->getEndDate() &&
+                    $otherBorrowing->getEndDate() > $period->getStartDate()
+                ));
+            });
 
-                array_splice($periods, $currentPeriodIndex, 1, [[
-                    'period' => $currentPeriod['period']->merge($otherBorrowing),
-                    'borrowings' => $currentPeriod['borrowings']->push($otherBorrowing),
-                ]]);
-            }
-
+        return $materials->map(function ($material) use ($otherBorrowingsByPeriods) {
+            $material = clone $material;
             $quantityPerPeriod = [0];
-            foreach ($periods as $period) {
-                $quantityPerPeriod[] = $period['borrowings']->sum(
+            foreach ($otherBorrowingsByPeriods as $otherBorrowingsPeriod) {
+                $quantityPerPeriod[] = $otherBorrowingsPeriod->sum(
                     function ($otherBorrowing) use ($material): int {
                         $_materials = $otherBorrowing instanceof Event
                             ? $otherBorrowing->materials->keyBy('id')->all()
