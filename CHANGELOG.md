@@ -4,7 +4,7 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 0.20.2 (UNRELEASED)
+## 0.20.2 (2023-03-17)
 
 - Spécifie que la version de PHP requise doit être 64 bits.
 - Ajoute une migration qui met le champ `is_billable` de tous les événements à `false` quand la facturation
