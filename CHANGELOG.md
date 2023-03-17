@@ -4,13 +4,20 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.20.2 (UNRELEASED)
+
+- Spécifie que la version de PHP requise doit être 64 bits.
+- Ajoute une migration qui met le champ `is_billable` de tous les événements à `false` quand la facturation
+  est désactivée dans la configuration globale.
+- Corrige un problème (introduit dans la version 0.20.0) dans le calcul des disponibilités 
+  du matériel pour le matériel non unitaire qui avait tendance à sous-évaluer les quantités 
+  restantes en stock. 
+
 ## 0.20.1 (2023-03-16)
 
 - Corrige un problème qui empêchait de lancer la mise à jour de la base de données sur certaines installations.
 
 ## 0.20.0 (2023-03-14)
-
-### Variante open-source
 
 - __[CHANGEMENT CRITIQUE]__ Loxya (Robert2) requiert maintenant au minimum PHP 8.0 pour fonctionner (OSS #375).
 - Ajoute le support PHP 8.1 (OSS #328).
@@ -29,9 +36,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Dans la fenêtre des événements, les coordonnées du bénéficiaire principal sont affichées dans l'onglet "informations".
 - Dans la liste du matériel d'un événement, améliore l'affichage des quantités utilisées.
 
-### Variante Premium
-
-> Tous les changements de la variante open-source, plus les changements suivants :
+### Changements spécifiques à la variante Premium
 
 - __[CHANGEMENT CRITIQUE]__ Dorénavant, si aucun groupe n'a pu être récupéré lors de la connexion CAS, l'utilisateur ne 
   sera plus assigné au groupe "Visiteur" mais sera __déconnecté__. Pour rétablir le fonctionnement précédent, assignez la

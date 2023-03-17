@@ -222,44 +222,68 @@ composer lint
 │   ├── dist                     # - Contient les sources compilées de la partie client.
 │   ├── node_modules             # - Dépendances de la partie client.
 │   ├── src
-│   │   ├── components           # - Components Vue réutilisables.
-│   │   ├── config               # - Fichiers de configuration de la partie client (constantes, configuration globale, etc.).
+│   │   ├── components           # - Components Vue réutilisables partout (dans tous les thèmes).
+│   │   ├── globals              # - Fichiers de configuration de la partie client (constantes, configuration globale, etc.).
+│   │   ├── hooks                # - Hooks utilisables dans les composants créés avec le composition-API de Vue.
 │   │   ├── locale               # - Fichiers de traduction de la partie client dans les différentes langues supportées.
-│   │   ├── pages                # - Chaque sous-dossier représente une page de l'application.
 │   │   ├── stores               # - Contient les différents stores (Vuex) globaux de l'application.
-│   │   ├── style                # - Contient le style global de l'application (reset, fonts, style de base, variables globales, etc.).
 │   │   ├── themes               # - Contient les différents thèmes de Robert2.
-│   │   │   └── default
+│   │   │   ├── default          # - Thème par défaut (partie admin)
+|   │   │   |   ├── components   # - Dossier des composants partagés dans ce thème.
+│   │   │   │   ├── globals      # - Fichiers de configuration de ce thème.
+│   │   │   │   ├── layout       # - Composants du layout du thème.
+│   │   │   │   ├── locale       # - Dossier des traductions spécifiques au thème.
+│   │   │   │   ├── modals       # - Chaque sous-dossier représente une fenêtre modale de ce thème.
+|   │   │   |   ├── pages        # - Chaque sous-dossier représente une page de ce thème.
+│   │   │   │   ├── stores       # - Contient les différents Stores globaux (Vuex) du thème.
+|   │   │   |   └── style        # - Contient le style global du thème (reset, fonts, styles de base, variables globales, etc.).
+|   │   │   |   └── index.js     # - Point d'entrée du thème.
+|   │   │   |   └── index.scss   # - Point d'entrée du style du thème.
+│   │   │   ├── external         # - Thème de la partie "externe" (réservations en ligne)
+|   │   │   |   ├── components   # - Dossier des composants partagés dans ce thème.
+│   │   │   │   ├── globals      # - Fichiers de configuration de ce thème.
+│   │   │   │   ├── layout       # - Composants du layout du thème.
+│   │   │   │   ├── locale       # - Dossier des traductions spécifiques au thème.
+│   │   │   │   ├── modals       # - Chaque sous-dossier représente une fenêtre modale de ce thème.
+|   │   │   |   ├── pages        # - Chaque sous-dossier représente une page de ce thème.
+│   │   │   │   ├── stores       # - Contient les différents Stores globaux (Vuex) du thème.
+|   │   │   |   └── style        # - Contient le style global du thème (reset, fonts, styles de base, variables globales, etc.).
+|   │   │   |   └── index.js     # - Point d'entrée du thème.
+|   │   │   |   └── index.scss   # - Point d'entrée du style du thème.
 │   │   └── utils                # - Fonctions JS utilitaires
 │   └── tests                    # - Contient les tests unitaires (Jest) de la partie client.
 │
 └── server
+    ├── bin                      # - Fichiers exécutables (voir dossier `src/App/Console`)
     ├── data                     # - Fichiers associés aux données (matériel, etc.)
     ├── src
     │   ├── App                  # - Modèles, controller, configurations et autres fichiers du cœur de l'application.
     │   │   ├── Config           # - Configuration, ACLs et constantes et fonctions globales.
+    │   │   ├── Console          # - Commandes exécutables en CLI (migrations, notifications...).
+    │   │   ├── Contracts        # - Interfaces PHP.
     │   │   ├── Controllers      # - Contrôleurs de l'application (contenant principalement les endpoints d'API)
     │   │   ├── Errors           # - Gestion des erreurs et classes d'exceptions customs.
-    │   │   ├── I18n
-    │   │   │   └── locales      # - Fichiers de traduction de la partie serveur dans les différentes langues supportées.
-    │   │   ├── Lib              # - Classes métiers et autres classes d'abstraction (PDF, etc.).
+    │   │   ├── Http             # - Classes spécifiques au contexte HTTP
     │   │   ├── Middlewares      # - Middlewares Slim (ACL, JWT Auth, pagination, etc.).
     │   │   ├── Models           # - Modèles (Eloquent) de l'application.
+    │   │   ├── Observers        # - Classes pour déclencher des side-effects suite à un changement dans les models.
     │   │   ├── Services         # - Contient les services, comme le système d'authentification.
-    │   │   ├── Validation       # - Contient les utilitaires liés à la validation des données.
-    │   │   └── ApiRouter.php    # - Fichier contenant les routes back-end de l'application (mise en relation chemin <=> action de contrôleur).
-    │   ├── database
-    │   │   └── migrations       # - Fichiers de migration de la base de données (générés via `composer create-migration [MigrationName]`)
+    │   │   ├── Support          # - Contient les classes utilitaires.
+    │   │   └── App.php          # - Classe principale l'application Slim.
+    │   │   └── Kernel.php       # - Point de départ de l'application.
     │   ├── install              # - Classes et utilitaires liés à l'assistant d'installation de Robert2.
+    │   ├── locales              # - Fichiers de traduction de la partie serveur dans les différentes langues supportées.
+    │   ├── migrations           # - Fichiers de migration de la base de données (générés via `composer create-migration [MigrationName]`)
     │   ├── public
     │   │   ├── css/, js/, img/  # - Dossiers contenant des fichiers d'asset utilisés spécifiquement dans les vues de la partie serveur.
+    │   │   ├── fonts/           # - Fichiers de polices de caractère et leur définitions, utilisées dans les PDF générés côté serveur.
+    │   │   ├── icons/           # - Images d'icônes et favicon de l'application.
     │   │   ├── webclient        # - Lien symbolique vers les sources compilées de la partie `/client` de Robert2.
     │   │   └── index.php        # - Point d'entrée de l'application (tous les `.htaccess` redirigent vers ce fichier).
     │   ├── var
     │   │   ├── cache            # - Fichiers de cache (contenu à supprimer en cas de modification du code qui semble sans effet)
     │   │   ├── logs             # - Fichiers de log de l'application.
     │   │   └── tmp              # - Fichiers temporaires.
-    │   ├── vendor               # - Dépendances (composer) de la partie serveur.
     │   └── views                # - Dossier contenant les vues Twig de l'application.
     │   │   ├── blocks           # - Les blocks communs, comme le loading, etc.
     │   │   ├── install          # - Toutes les pages de l'assistant d'installation
@@ -267,6 +291,7 @@ composer lint
     │   │   ├── webclient.twig   # - Point d'entrée de l'application Robert2 (front-end)
     │   │   └── install.twig     # - Point d'entrée de l'assistant d'installation
     ├── tests
+    │   ├── commands             # - Tests unitaires (PHPUnit) des commandes (voir ).
     │   ├── endpoints            # - Tests unitaires (PHPUnit) des controllers.
     │   ├── Fixtures
     │   │   ├── files            # - Fichiers associés aux données (voir server/data) à utiliser pour les fixtures.
@@ -275,4 +300,5 @@ composer lint
     │   ├── libs                 # - Tests unitaires (PHPUnit) des libs.
     │   ├── models               # - Tests unitaires (PHPUnit) des modèles.
     │   └── other                # - Tests unitaires (PHPUnit) des fonctions utilitaires et autres classes.
+    ├── vendors                  # - Dépendances (composer) de la partie serveur.
 ```
