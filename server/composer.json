@@ -32,7 +32,7 @@
         }
     ],
     "require": {
-        "php": "~8.0.2",
+        "php-64bit": "~8.0.2",
         "adbario/php-dot-notation": "3.2.0",
         "brick/math": "0.10.2",
         "cocur/slugify": "v4.2.0",
