@@ -2,6 +2,7 @@ import '@robert2/vis-timeline/index.scss';
 import './index.scss';
 import moment from 'moment';
 import { Timeline as TimelineCore, DataSet, DataView } from '@robert2/vis-timeline';
+import { getLocale } from '@/globals/lang';
 import dateRoundMinutes from '@/utils/dateRoundMinutes';
 import Loading from '@/themes/default/components/Loading';
 import { mountVisData } from './_utils';
@@ -48,7 +49,14 @@ export default {
                         },
                     },
                 },
-                locale: this.$store.state.i18n.locale,
+                locale: getLocale(),
+                locales: {
+                    [getLocale()]: {
+                        current: __('current'),
+                        time: __('time'),
+                        deleteSelected: __('deleted-selected'),
+                    },
+                },
                 minHeight: '100%',
                 orientation: 'top',
                 groupHeightMode: 'fixed',

@@ -1,14 +1,14 @@
 import './index.scss';
 import Vue from 'vue';
-import moment from 'moment';
 import vuexI18n from 'vuex-i18n';
-import vueCompositionApî from '@vue/composition-api';
+import vueCompositionApi from '@vue/composition-api';
 import VueJsModal from 'vue-js-modal/dist/index.nocss';
 import { VTooltip } from 'v-tooltip';
 import { ClientTable, ServerTable } from 'vue-tables-2';
 import Toasted from 'vue-toasted';
-
 import config from '@/globals/config';
+import { getDefaultLang, getLang } from '@/globals/lang';
+import initMoment from '@/globals/init/moment';
 import requester from '@/globals/requester';
 import store from '@/themes/default/globals/store';
 import router from '@/themes/default/globals/router';
@@ -19,7 +19,7 @@ import App from './components/App';
 Vue.config.productionTip = false;
 
 // - Vue Composition API
-Vue.use(vueCompositionApî);
+Vue.use(vueCompositionApi);
 
 // - HTTP (Ajax) lib
 Vue.prototype.$http = requester;
@@ -50,18 +50,16 @@ Object.keys(translations).forEach((lang) => {
     Vue.i18n.add(lang, translations[lang]);
 });
 
-let currentLocale = config.defaultLang;
+const defaultLang = getDefaultLang();
+const currentLang = getLang();
+Vue.i18n.fallback(defaultLang);
+Vue.i18n.set((
+    Vue.i18n.localeExists(currentLang)
+        ? currentLang
+        : defaultLang
+));
 
-Vue.i18n.set(currentLocale);
-
-const savedLocale = localStorage.getItem('userLocale');
-if (savedLocale && Vue.i18n.localeExists(savedLocale)) {
-    Vue.i18n.set(savedLocale);
-    currentLocale = savedLocale;
-}
-Vue.i18n.fallback(currentLocale);
-
-moment.locale(currentLocale);
+initMoment();
 
 // - Tables (order, pagination)
 const tablesConfig = {
@@ -72,7 +70,7 @@ const tablesConfig = {
         down: 'fa-sort-down',
         is: 'fa-sort',
     },
-    texts: vueTableTranslations[currentLocale],
+    texts: vueTableTranslations[currentLang],
     requestKeys: { query: 'search' },
     perPage: config.defaultPaginationLimit,
     perPageValues: [config.defaultPaginationLimit],
