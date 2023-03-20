@@ -4,7 +4,7 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 0.20.3 (UNRELEASED)
+## 0.20.3 (2023-03-20)
 
 - Les unités de matériel sont maintenant triées par références (Premium #271).
 - Utilise maintenant des dates au format britannique ([Jour]/[Mois]/[Année]) plutôt 
