@@ -284,6 +284,9 @@ export default {
         '{duration} jours',
     ],
     'price-per-day': "{price}\u00a0/\u00a0jour",
+    'current': "actuel",
+    'time': "heure",
+    'delete-selected': "Effacer la selection",
 
     "daily-total": "Total\u00a0/\u00a0jour\u00a0:",
     "daily-total-discountable": "Total remisable\u00a0/\u00a0jour\u00a0:",
