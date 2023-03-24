@@ -45,12 +45,12 @@ class EntryController extends BaseController
     // -
     // ------------------------------------------------------
 
-    protected function getServerConfig(): string
+    protected function getServerConfig(): array
     {
         $rawConfig = $this->settings;
         $baseUrl = rtrim($rawConfig['apiUrl'], '/');
 
-        $config = [
+        return [
             'baseUrl' => $baseUrl,
             'api' => [
                 'url' => $baseUrl . '/api',
@@ -67,17 +67,6 @@ class EntryController extends BaseController
             'currency' => $rawConfig['currency'],
             'billingMode' => $rawConfig['billingMode'],
             'maxFileUploadSize' => $rawConfig['maxFileUploadSize'],
-            'degressiveRate' => sprintf(
-                'function (daysCount) { return %s; }',
-                $rawConfig['degressiveRateFunction']
-            ),
         ];
-
-        // TODO: Passer la formule `$rawConfig['degressiveRateFunction']` directement au js
-        //       sans la wrappée dans une fonction et utiliser le filtre twig
-        //       `| json_encode(constant('Robert2\\API\\Config\\Config::JSON_OPTIONS'))`
-        $jsonConfig = json_encode($config, Config::JSON_OPTIONS);
-        $jsonConfig = preg_replace('/"degressiveRate": "/', '"degressiveRate": ', $jsonConfig);
-        return preg_replace('/}"/', '}', $jsonConfig);
     }
 }
