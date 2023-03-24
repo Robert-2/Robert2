@@ -4,6 +4,13 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.20.4 (2023-03-24)
+
+- Les utilisateurs du groupe "visiteur" ne voient plus l'entrée de menu "Demandes de réservation",
+  car ils n'y ont pas accès.
+- Quand la liste du matériel est filtrée par parc, le calcul de la quantité en panne du matériel unitaire
+  prend maintenant en compte ce filtre (Premium #169).
+
 ## 0.20.3 (2023-03-20)
 
 - Les unités de matériel sont maintenant triées par références (Premium #271).
