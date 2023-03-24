@@ -22,7 +22,9 @@
     </div>
     <script type="text/javascript">
         //<![CDATA[
-        var __SERVER_CONFIG__ = {{ serverConfig|raw }};
+        var __SERVER_CONFIG__ = {{
+            serverConfig|json_encode(constant('Robert2\\API\\Config\\Config::JSON_OPTIONS'))|raw
+        }};
         //]]>
     </script>
     <script src="{{ client_asset('/js/chunk-vendors.js') }}"></script>
