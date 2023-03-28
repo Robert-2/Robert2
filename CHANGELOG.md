@@ -4,7 +4,7 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 0.20.5 (UNRELEASED)
+## 0.20.5 (2023-03-28)
 
 - Corrige un problème d'accès aux événements du calendrier pour les utilisateurs ne faisant pas
   partie du groupe "administrateurs".
