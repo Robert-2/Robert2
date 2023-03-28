@@ -8,10 +8,8 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Robert2\API\Contracts\PeriodInterface;
 use Robert2\API\Http\Request;
-use Robert2\API\Models\Enums\Group;
 use Robert2\API\Models\Event;
 use Robert2\API\Models\Park;
-use Robert2\API\Services\Auth;
 use Robert2\Support\Period;
 use Slim\Exception\HttpException;
 use Slim\Http\Response;
@@ -78,9 +76,6 @@ class BookingController extends BaseController
         }
 
         $useMultipleParks = Park::count() > 1;
-        $restrictedParks = !Auth::is(Group::ADMIN)
-            ? Auth::user()->restricted_parks
-            : [];
 
         $data = $bookings
             ->map(fn($booking) => array_merge(
@@ -89,7 +84,7 @@ class BookingController extends BaseController
                     'entity' => $booking::TYPE,
                     'parks' => (
                         $useMultipleParks
-                            ? array_diff($booking->parks, $restrictedParks)
+                            ? $booking->parks
                             : null
                     ),
                 ]

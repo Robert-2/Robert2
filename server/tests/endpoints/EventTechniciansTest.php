@@ -4,12 +4,15 @@ declare(strict_types=1);
 namespace Robert2\Tests;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
+use Illuminate\Support\Collection;
+use Robert2\API\Models\EventTechnician;
+use Robert2\Support\Arr;
 
 final class EventTechniciansTest extends ApiTestCase
 {
-    public static function data(int $id)
+    public static function data(int $id, string $format = EventTechnician::SERIALIZE_DEFAULT)
     {
-        return static::_dataFactory($id, [
+        $eventTechnicians = new Collection([
             [
                 'id' => 1,
                 'event_id' => 1,
@@ -18,6 +21,22 @@ final class EventTechniciansTest extends ApiTestCase
                 'end_time' => '2018-12-18 22:00:00',
                 'position' => 'Régisseur',
                 'technician' => TechniciansTest::data(1),
+                'event' => [
+                    'id' => 1,
+                    'title' => 'Premier événement',
+                    'start_date' => '2018-12-17 00:00:00',
+                    'end_date' => '2018-12-18 23:59:59',
+                    'description' => null,
+                    'location' => 'Gap',
+                    'reference' => null,
+                    'user_id' => 1,
+                    'is_archived' => false,
+                    'is_billable' => true,
+                    'is_confirmed' => false,
+                    'is_return_inventory_done' => true,
+                    'created_at' => '2018-12-01 12:50:45',
+                    'updated_at' => '2018-12-05 08:31:21',
+                ],
             ],
             [
                 'id' => 2,
@@ -27,8 +46,34 @@ final class EventTechniciansTest extends ApiTestCase
                 'end_time' => '2018-12-18 18:00:00',
                 'position' => 'Technicien plateau',
                 'technician' => TechniciansTest::data(2),
+                'event' => [
+                    'id' => 1,
+                    'title' => 'Premier événement',
+                    'start_date' => '2018-12-17 00:00:00',
+                    'end_date' => '2018-12-18 23:59:59',
+                    'description' => null,
+                    'location' => 'Gap',
+                    'reference' => null,
+                    'user_id' => 1,
+                    'is_archived' => false,
+                    'is_billable' => true,
+                    'is_confirmed' => false,
+                    'is_return_inventory_done' => true,
+                    'created_at' => '2018-12-01 12:50:45',
+                    'updated_at' => '2018-12-05 08:31:21',
+                ],
             ],
         ]);
+
+        $eventTechnicians = match ($format) {
+            EventTechnician::SERIALIZE_DEFAULT => $eventTechnicians->map(fn($event) => (
+                Arr::except($event, ['event'])
+            )),
+            EventTechnician::SERIALIZE_DETAILS => $eventTechnicians,
+            default => throw new \InvalidArgumentException(sprintf("Unknown format \"%s\"", $format)),
+        };
+
+        return static::_dataFactory($id, $eventTechnicians->all());
     }
 
     public function testGetOneEventTechnician()
