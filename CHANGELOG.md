@@ -4,6 +4,11 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.20.5 (UNRELEASED)
+
+- Corrige un problème d'accès aux événements du calendrier pour les utilisateurs ne faisant pas
+  partie du groupe "administrateurs".
+
 ## 0.20.4 (2023-03-24)
 
 - Les utilisateurs du groupe "visiteur" ne voient plus l'entrée de menu "Demandes de réservation",
