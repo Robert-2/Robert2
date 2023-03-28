@@ -7,6 +7,7 @@ use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Robert2\API\Controllers\Traits\WithCrud;
 use Robert2\API\Http\Request;
 use Robert2\API\Models\Event;
+use Robert2\API\Models\EventTechnician;
 use Robert2\API\Models\Technician;
 use Robert2\Support\Arr;
 use Slim\Http\Response;
@@ -86,7 +87,9 @@ class TechnicianController extends BaseController
                             ]);
                     })
                     ->get()
-                    ->map(fn($event) => $event->serialize())
+                    ->map(fn($eventTechnician) => (
+                        $eventTechnician->serialize(EventTechnician::SERIALIZE_DETAILS)
+                    ))
                     ->all();
 
                 return array_replace($technician->serialize(), compact('events'));

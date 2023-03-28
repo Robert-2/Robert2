@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Robert2\Tests;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
+use Robert2\API\Models\EventTechnician;
 use Robert2\API\Models\Technician;
 
 final class TechniciansTest extends ApiTestCase
@@ -117,10 +118,10 @@ final class TechniciansTest extends ApiTestCase
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData([
             array_merge(self::data(1), ['events' => [
-                EventTechniciansTest::data(1),
+                EventTechniciansTest::data(1, EventTechnician::SERIALIZE_DETAILS),
             ]]),
             array_merge(self::data(2), ['events' => [
-                EventTechniciansTest::data(2),
+                EventTechniciansTest::data(2, EventTechnician::SERIALIZE_DETAILS),
             ]]),
         ]);
 

@@ -82,10 +82,7 @@ export default {
 
             const otherSlots = this.technicians.map((technician) => (
                 (technician?.events ?? []).map((eventTechnician) => {
-                    const { id, start, end, title } = formatEventTechnician({
-                        ...eventTechnician,
-                        event,
-                    });
+                    const { id, start, end, title } = formatEventTechnician(eventTechnician);
 
                     return {
                         id,
