@@ -24,6 +24,10 @@ final class EventTechnician extends BaseModel implements Serializable
 {
     use Serializer;
 
+    // - Types de sérialisation.
+    public const SERIALIZE_DEFAULT = 'default';
+    public const SERIALIZE_DETAILS = 'details';
+
     public $timestamps = false;
 
     protected $withoutAlreadyBusyChecks = false;
@@ -232,5 +236,22 @@ final class EventTechnician extends BaseModel implements Serializable
     public static function flushForEvent(int $eventId)
     {
         static::where('event_id', $eventId)->delete();
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Serialization
+    // -
+    // ------------------------------------------------------
+
+    public function serialize(string $format = self::SERIALIZE_DEFAULT): array
+    {
+        $eventTechnician = tap(clone $this, function (EventTechnician $eventTechnician) use ($format) {
+            if ($format === self::SERIALIZE_DETAILS) {
+                $eventTechnician->append('event');
+            }
+        });
+
+        return $eventTechnician->attributesForSerialization();
     }
 }

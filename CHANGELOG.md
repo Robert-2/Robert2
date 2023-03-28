@@ -8,6 +8,8 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 
 - Corrige un problème d'accès aux événements du calendrier pour les utilisateurs ne faisant pas
   partie du groupe "administrateurs".
+- Lors de l'assignation des techniciens à un événement, les indisponibilités des techniciens affichent
+  maintenant le bon titre des événements sur lesquels ils sont déjà assignés.
 
 ## 0.20.4 (2023-03-24)
 
