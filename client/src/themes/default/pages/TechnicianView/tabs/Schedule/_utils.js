@@ -14,5 +14,11 @@ export const formatTechnicianEvent = (technicianEvent) => {
         classes.push('cv-item--not-confirmed');
     }
 
-    return { id, eventId, startDate: start, endDate: end, title, classes };
+    // - Si la date de fin est minuit du jour suivant, on la met à la seconde précédente
+    //   pour éviter que le slot apparaisse dans le jour suivant sur le calendrier.
+    const endDate = end.format('HH:mm:ss') === '00:00:00'
+        ? end.clone().subtract(1, 'seconds')
+        : end;
+
+    return { id, eventId, startDate: start, endDate, title, classes };
 };

@@ -60,19 +60,26 @@ final class EventTechnician extends BaseModel implements Serializable
             return 'invalid-date';
         }
 
-        $start = new \DateTime($this->start_time);
-        $end = new \DateTime($this->end_time);
+        $utcTimezone = new \DateTimeZone('UTC');
+        $start = new \DateTimeImmutable($this->start_time, $utcTimezone);
+        $end = new \DateTimeImmutable($this->end_time, $utcTimezone);
 
         if ($start > $end) {
             return 'end-date-must-be-later';
         }
 
-        $eventStart = new \DateTime($this->event->start_date);
-        $eventEnd = new \DateTime($this->event->end_date);
+        // - Les horaires des techniciens étant en UTC, on passe les dates de
+        //   l'événement (qui sont en local time) en UTC aussi pour les comparer.
+        $eventStart = (new \DateTimeImmutable($this->event->start_date))->setTimezone($utcTimezone);
+        $eventEnd = (new \DateTimeImmutable($this->event->end_date))->setTimezone($utcTimezone);
         if ($start < $eventStart || $end < $eventStart) {
             return 'technician-assignation-before-event';
         }
-        if ($start > $eventEnd || $end > $eventEnd) {
+
+        // - On ajoute 1 seconde à la fin de l'événement car le technicien peut être
+        //   assigné jusqu'à minuit pile (alors que l'événement se termine à 23:59:59)
+        $normalizedEventEnd = $eventEnd->add(new \DateInterval('PT1S'));
+        if ($start > $eventEnd || $end > $normalizedEventEnd) {
             return 'technician-assignation-after-event';
         }
 
@@ -90,8 +97,8 @@ final class EventTechnician extends BaseModel implements Serializable
         $technicianHasOtherEvents = static::where('id', '!=', $this->id)
             ->where('technician_id', $this->technician_id)
             ->where([
-                ['end_time', '>=', $this->start_time],
-                ['start_time', '<=', $this->end_time],
+                ['end_time', '>', $this->start_time],
+                ['start_time', '<', $this->end_time],
             ])
             ->whereRelation('event', 'deleted_at', null)
             ->exists();
@@ -196,30 +203,36 @@ final class EventTechnician extends BaseModel implements Serializable
         \DateTime $prevStartDate,
         array $newEventData
     ): array {
-        $newStartDate = new \DateTime($newEventData['start_date']);
-        $newEndDate = new \DateTime($newEventData['end_date']);
-        $offsetInterval = $prevStartDate->diff($newStartDate);
+        $offsetInterval = $prevStartDate->diff(new \DateTime($newEventData['start_date']));
+
+        // - Les horaires des techniciens étant en UTC, on passe les dates de
+        //   l'événement (qui sont en local time) en UTC aussi pour les comparer.
+        $utcTimezone = new \DateTimeZone('UTC');
+        $eventStart = (new \DateTimeImmutable($newEventData['start_date']))->setTimezone($utcTimezone);
+        $eventEnd = (new \DateTimeImmutable($newEventData['end_date']))->setTimezone($utcTimezone);
 
         $technicians = [];
         foreach ($eventTechnicians as $eventTechnician) {
             $technicianStartTime = roundDate(
-                (new \DateTime($eventTechnician->start_time))->add($offsetInterval)
+                (new \DateTime($eventTechnician->start_time, $utcTimezone))->add($offsetInterval)
             );
             $technicianEndTime = roundDate(
-                (new \DateTime($eventTechnician->end_time))->add($offsetInterval)
+                (new \DateTime($eventTechnician->end_time, $utcTimezone))->add($offsetInterval)
             );
 
-            if ($technicianStartTime > $newEndDate) {
+            if ($technicianStartTime > $eventEnd) {
                 continue;
             }
-            if ($technicianEndTime < $newStartDate) {
+            if ($technicianEndTime < $eventStart) {
                 continue;
             }
-            if ($technicianStartTime < $newStartDate) {
-                $technicianStartTime = $newStartDate;
+            if ($technicianStartTime < $eventStart) {
+                $technicianStartTime = $eventStart;
             }
-            if ($technicianEndTime >= $newEndDate) {
-                $technicianEndTime = clone($newEndDate)->setTime(23, 45, 0);
+            if ($technicianEndTime >= $eventEnd) {
+                // - On ajoute 1 seconde à la fin de l'événement car le technicien doit
+                //   être assigné à minuit pile et non à 23:59:59 comme l'événement.
+                $technicianEndTime = clone($eventEnd)->add(new \DateInterval('PT1S'));
             }
 
             $technicians[] = [
