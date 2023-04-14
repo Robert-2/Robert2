@@ -677,7 +677,7 @@ final class EventTest extends TestCase
                     'event_id' => 9,
                     'technician_id' => 1,
                     'start_time' => '2021-08-01 09:00:00',
-                    'end_time' => '2021-08-01 23:45:00',
+                    'end_time' => '2021-08-02 00:00:00',
                     'position' => 'Régisseur',
                     'technician' => Technician::find(1)->toArray(),
                 ],
@@ -715,7 +715,7 @@ final class EventTest extends TestCase
         $this->assertCount(1, $event->technicians);
         $this->assertEquals('Roger Rabbit', $event->technicians[0]['technician']['full_name']);
         $this->assertEquals('2018-12-17 09:00:00', $event->technicians[0]['start_time']);
-        $this->assertEquals('2018-12-17 23:45:00', $event->technicians[0]['end_time']);
+        $this->assertEquals('2018-12-18 00:00:00', $event->technicians[0]['end_time']);
     }
 
     public function testGetAllNotReturned(): void

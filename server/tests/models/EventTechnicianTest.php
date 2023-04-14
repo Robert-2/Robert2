@@ -259,7 +259,7 @@ final class EventTechnicianTest extends TestCase
             [
                 'id' => 1,
                 'start_time' => '2019-01-17 09:00:00',
-                'end_time' => '2019-01-17 23:45:00',
+                'end_time' => '2019-01-18 00:00:00',
                 'position' => 'Régisseur',
             ],
         ];
