@@ -4,6 +4,16 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.20.6 (2023-04-14)
+
+- Pour les réservations en ligne, le comportement du délai minimum avant réservation a été revu
+  pour permettre la création d'une réservation pour le jour même.
+- Dans la réservation en ligne, l'ajout au panier d'un matériel faisant partie d'un parc
+  restreint n'est plus possible même via l'API (Premium #163).
+- Il est maintenant possible d'assigner un technicien dès minuit du premier jour de l'événement,
+  et jusqu'à minuit du dernier jour. On peut également assigner le même technicien sur
+  des créneaux horaires qui se suivent (premium #288).
+
 ## 0.20.5 (2023-03-28)
 
 - Corrige un problème d'accès aux événements du calendrier pour les utilisateurs ne faisant pas
