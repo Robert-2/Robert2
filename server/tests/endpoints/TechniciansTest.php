@@ -4,8 +4,10 @@ declare(strict_types=1);
 namespace Robert2\Tests;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
+use Illuminate\Support\Carbon;
 use Robert2\API\Models\EventTechnician;
 use Robert2\API\Models\Technician;
+use Robert2\Support\Filesystem\UploadedFile;
 
 final class TechniciansTest extends ApiTestCase
 {
@@ -151,22 +153,7 @@ final class TechniciansTest extends ApiTestCase
                 'start_time' => '2018-12-17 09:00:00',
                 'end_time' => '2018-12-18 22:00:00',
                 'position' => 'Régisseur',
-                'event' => [
-                    'id' => 1,
-                    'user_id' => 1,
-                    'title' => 'Premier événement',
-                    'description' => null,
-                    'reference' => null,
-                    'start_date' => '2018-12-17 00:00:00',
-                    'end_date' => '2018-12-18 23:59:59',
-                    'is_confirmed' => false,
-                    'is_archived' => false,
-                    'location' => 'Gap',
-                    'is_billable' => true,
-                    'is_return_inventory_done' => true,
-                    'created_at' => '2018-12-01 12:50:45',
-                    'updated_at' => '2018-12-05 08:31:21',
-                ],
+                'event' => EventsTest::data(1),
             ],
         ]);
 
@@ -180,22 +167,7 @@ final class TechniciansTest extends ApiTestCase
                 'start_time' => '2018-12-18 14:00:00',
                 'end_time' => '2018-12-18 18:00:00',
                 'position' => 'Technicien plateau',
-                'event' => [
-                    'id' => 1,
-                    'user_id' => 1,
-                    'title' => 'Premier événement',
-                    'description' => null,
-                    'reference' => null,
-                    'start_date' => '2018-12-17 00:00:00',
-                    'end_date' => '2018-12-18 23:59:59',
-                    'is_confirmed' => false,
-                    'is_archived' => false,
-                    'location' => 'Gap',
-                    'is_billable' => true,
-                    'is_return_inventory_done' => true,
-                    'created_at' => '2018-12-01 12:50:45',
-                    'updated_at' => '2018-12-05 08:31:21',
-                ],
+                'event' => EventsTest::data(1),
             ],
         ]);
     }
@@ -345,5 +317,148 @@ final class TechniciansTest extends ApiTestCase
         $this->client->put('/api/technicians/restore/2');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertNotNull(Technician::find(2));
+    }
+
+    public function testAttachDocument()
+    {
+        Carbon::setTestNow(Carbon::create(2022, 10, 22, 18, 42, 36));
+
+        $createUploadedFile = function (string $from) {
+            $tmpFile = tmpfile();
+            fwrite($tmpFile, file_get_contents($from));
+            return $tmpFile;
+        };
+
+        // - Événement inexistant.
+        $this->client->post('/api/technicians/999/documents');
+        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
+
+        // - Test sans fichiers (payload vide)
+        $this->client->post('/api/technicians/2/documents', null, []);
+        $this->assertStatusCode(StatusCode::STATUS_BAD_REQUEST);
+        $this->assertApiErrorMessage("Invalid number of files sent: a single file is expected.");
+
+        // - Test avec des fichiers sans problèmes.
+        $validUploads = [
+            [
+                'id' => 1,
+                'file' => new UploadedFile(
+                    $createUploadedFile(TESTS_FILES_FOLDER . DS . 'file.pdf'),
+                    13269,
+                    UPLOAD_ERR_OK,
+                    "Intervention 8/05/2022.pdf",
+                    'application/pdf',
+                ),
+                'expected' => [
+                    'id' => 7,
+                    'name' => "Intervention 8/05/2022.pdf",
+                    'type' => 'application/pdf',
+                    'size' => 13269,
+                    'url' => 'http://loxya.test/documents/7',
+                    'created_at' => '2022-10-22 18:42:36',
+                ],
+            ],
+            [
+                'id' => 2,
+                'file' => new UploadedFile(
+                    $createUploadedFile(TESTS_FILES_FOLDER . DS . 'file.pdf'),
+                    13269,
+                    UPLOAD_ERR_OK,
+                    'Contrat saison hiver 2022.pdf',
+                    'application/pdf',
+                ),
+                'expected' => [
+                    'id' => 8,
+                    'name' => 'Contrat saison hiver 2022.pdf',
+                    'type' => 'application/pdf',
+                    'size' => 13269,
+                    'url' => 'http://loxya.test/documents/8',
+                    'created_at' => '2022-10-22 18:42:36',
+                ],
+            ],
+            [
+                'id' => 2,
+                'file' => new UploadedFile(
+                    $createUploadedFile(TESTS_FILES_FOLDER . DS . 'file.csv'),
+                    54,
+                    UPLOAD_ERR_OK,
+                    'planning.csv',
+                    'text/csv',
+                ),
+                'expected' => [
+                    'id' => 9,
+                    'name' => 'planning.csv',
+                    'type' => 'text/csv',
+                    'size' => 54,
+                    'url' => 'http://loxya.test/documents/9',
+                    'created_at' => '2022-10-22 18:42:36',
+                ],
+            ],
+        ];
+        foreach ($validUploads as $validUpload) {
+            $url = sprintf('/api/technicians/%d/documents', $validUpload['id']);
+            $this->client->post($url, null, $validUpload['file']);
+            $this->assertStatusCode(StatusCode::STATUS_CREATED);
+            $this->assertResponseData($validUpload['expected']);
+        }
+        $this->assertSame([7], Technician::findOrFail(1)->documents->pluck('id')->all());
+        $this->assertSame([8, 6, 9], Technician::findOrFail(2)->documents->pluck('id')->all());
+
+        // - Test avec des fichiers avec erreurs.
+        $invalidUploads = [
+            [
+                'file' => new UploadedFile(
+                    $createUploadedFile(TESTS_FILES_FOLDER . DS . 'file.pdf'),
+                    262144000,
+                    UPLOAD_ERR_OK,
+                    'Un fichier bien trop volumineux.pdf',
+                    'application/pdf',
+                ),
+                'expected' => ['This file exceeds maximum size allowed.'],
+            ],
+            [
+                'file' => new UploadedFile(
+                    $createUploadedFile(TESTS_FILES_FOLDER . DS . 'file.csv'),
+                    54,
+                    UPLOAD_ERR_CANT_WRITE,
+                    'échec-upload.csv',
+                    'text/csv',
+                ),
+                'expected' => ['File upload failed.'],
+            ],
+            [
+                'file' => new UploadedFile(
+                    tmpfile(),
+                    121540,
+                    UPLOAD_ERR_OK,
+                    'app.dmg',
+                    'application/octet-stream',
+                ),
+                'expected' => ['This file type is not allowed.'],
+            ],
+        ];
+        foreach ($invalidUploads as $invalidUpload) {
+            $this->client->post('/api/technicians/2/documents', null, $invalidUpload['file']);
+            $this->assertApiValidationError(['file' => $invalidUpload['expected']]);
+        }
+    }
+
+    public function testGetDocuments()
+    {
+        // - Technicien inexistant.
+        $this->client->get('/api/technicians/999/documents');
+        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
+
+        // - Documents du technicien #2.
+        $this->client->get('/api/technicians/2/documents');
+        $this->assertStatusCode(StatusCode::STATUS_OK);
+        $this->assertResponseData([
+            DocumentsTest::data(6),
+        ]);
+
+        // - Documents du technicien #1.
+        $this->client->get('/api/technicians/1/documents');
+        $this->assertStatusCode(StatusCode::STATUS_OK);
+        $this->assertResponseData([]);
     }
 }

@@ -7,9 +7,9 @@ use Carbon\CarbonImmutable;
 use DI\Container;
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Illuminate\Support\Collection;
+use Psr\Http\Message\UploadedFileInterface;
 use Robert2\API\Config\Config;
 use Robert2\API\Contracts\PeriodInterface;
-use Robert2\API\Controllers\Traits\FileResponse;
 use Robert2\API\Controllers\Traits\Taggable;
 use Robert2\API\Controllers\Traits\WithCrud;
 use Robert2\API\Errors\Exception\ValidationException;
@@ -34,7 +34,7 @@ use Slim\HttpCache\CacheProvider as HttpCacheProvider;
 
 class MaterialController extends BaseController
 {
-    use WithCrud, FileResponse, Taggable {
+    use WithCrud, Taggable {
         Taggable::getAll insteadof WithCrud;
     }
 
@@ -133,17 +133,13 @@ class MaterialController extends BaseController
     public function getAllWhileEvent(Request $request, Response $response): Response
     {
         $eventId = (int) $request->getAttribute('eventId');
-
-        $currentEvent = Event::find($eventId);
-        if (!$currentEvent) {
-            throw new HttpNotFoundException($request);
-        }
-
+        $currentEvent = Event::findOrFail($eventId);
         $materials = (new Material)
             ->setOrderBy('reference', true)
             ->getAll()
             ->get();
 
+        // FIXME: Prendre en compte les parcs restreints (cf. #163).
         $materials = Material::allWithAvailabilities($materials, $currentEvent);
         $materials = $materials->map(function ($material) {
             $material->append('available_quantity');
@@ -192,7 +188,7 @@ class MaterialController extends BaseController
 
         $date = CarbonImmutable::now();
         $company = Config::getSettings('companyData');
-        $fileName = Str::slug(implode('-', [
+        $fileName = Str::slugify(implode('-', [
             $this->i18n->translate('materials-list'),
             $parkOnlyName ?: $company['name'],
             $date->format('Y-m-d'),
@@ -209,7 +205,7 @@ class MaterialController extends BaseController
         return $pdf->asResponse($response);
     }
 
-    public function getAllDocuments(Request $request, Response $response): Response
+    public function getDocuments(Request $request, Response $response): Response
     {
         $id = (int) $request->getAttribute('id');
         $material = Material::findOrFail($id);
@@ -269,9 +265,9 @@ class MaterialController extends BaseController
 
         $data = $bookings
             ->map(fn($booking) => array_merge(
-                $booking->serialize($booking::SERIALIZE_BOOKING),
+                $booking->serialize($booking::SERIALIZE_BOOKING_SUMMARY),
                 [
-                    'entity' => Str::slug(class_basename($booking)),
+                    'entity' => $booking::TYPE,
                     'pivot' => [
                         'quantity' => $booking->pivot->quantity,
                     ],
@@ -282,6 +278,8 @@ class MaterialController extends BaseController
                     ),
                 ]
             ))
+            ->sortByDesc('start_date')
+            ->values()
             ->all();
 
         return $response->withJson($data, StatusCode::STATUS_OK);
@@ -339,77 +337,23 @@ class MaterialController extends BaseController
         return $response->withJson($materialData, StatusCode::STATUS_OK);
     }
 
-    public function handleUploadDocuments(Request $request, Response $response): Response
+    public function attachDocument(Request $request, Response $response): Response
     {
         $id = (int) $request->getAttribute('id');
         $material = Material::findOrFail($id);
 
+        /** @var UploadedFileInterface[] $uploadedFiles */
         $uploadedFiles = $request->getUploadedFiles();
-        $destDirectory = Document::getFilePath($id);
-
-        if (count($uploadedFiles) === 0) {
-            throw new \Exception($this->i18n->translate('no-uploaded-files'));
+        if (count($uploadedFiles) !== 1) {
+            throw new HttpBadRequestException($request, "Invalid number of files sent: a single file is expected.");
         }
 
-        $files = [];
-        $errors = [];
-        foreach ($uploadedFiles as $file) {
-            $error = $file->getError();
-            if ($error !== UPLOAD_ERR_OK) {
-                $errors[$file->getClientFilename()] = $this->i18n->translate(
-                    'upload-failed-error-code',
-                    [$error],
-                );
-                continue;
-            }
+        $file = array_values($uploadedFiles)[0];
+        $document = new Document(compact('file'));
+        $document->author()->associate(Auth::user());
+        $material->documents()->save($document);
 
-            $fileSize = $file->getSize();
-            if ($fileSize > Config::getSettings('maxFileUploadSize')) {
-                $errors[$file->getClientFilename()] = $this->i18n->translate('file-exceeds-max-size');
-                continue;
-            }
-
-            $fileType = $file->getClientMediaType();
-            if (!in_array($fileType, Config::getSettings('authorizedFileTypes'), true)) {
-                $errors[$file->getClientFilename()] = $this->i18n->translate('file-type-not-allowed');
-                continue;
-            }
-
-            $filename = moveUploadedFile($destDirectory, $file);
-            if (!$filename) {
-                $errors[$file->getClientFilename()] = $this->i18n->translate('saving-uploaded-file-failed');
-                continue;
-            }
-
-            $files[] = [
-                'material_id' => $id,
-                'name' => $filename,
-                'type' => $fileType,
-                'size' => $file->getSize(),
-            ];
-        }
-
-        foreach ($files as $document) {
-            try {
-                Document::updateOrCreate(
-                    ['material_id' => $id, 'name' => $document['name']],
-                    $document
-                );
-            } catch (\Exception $e) {
-                $filePath = Document::getFilePath($id, $document['name']);
-                unlink($filePath);
-                $errors[$document['name']] = $this->i18n->translate(
-                    'document-cannot-be-saved-in-db',
-                    [$e->getMessage()],
-                );
-            }
-        }
-
-        if (count($errors) > 0) {
-            throw new \Exception(implode("\n", $errors));
-        }
-
-        return $response->withJson($files, StatusCode::STATUS_OK);
+        return $response->withJson($document, StatusCode::STATUS_CREATED);
     }
 
     public function restore(Request $request, Response $response): Response

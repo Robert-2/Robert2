@@ -1,23 +1,69 @@
 import './index.scss';
+import clsx from 'clsx';
 import moment from 'moment';
+import styleObjectToString from 'style-object-to-css-string';
 import { CalendarView } from 'vue-simple-calendar';
+import Color from '@/utils/color';
 
 // @vue/component
 export default {
     name: 'MonthCalendar',
     props: {
-        events: { type: Array, required: true },
-        showDate: { type: Date, default: () => new Date() },
+        items: {
+            type: Array,
+            default: () => [],
+        },
         withTotal: { type: Boolean },
     },
     data() {
         return {
-            currentDate: this.showDate,
+            currentDate: new Date(),
         };
     },
     computed: {
         currentMonth() {
             return moment(this.currentDate).format('MMMM YYYY');
+        },
+
+        formattedItems() {
+            return (this.items ?? []).map((rawItem) => {
+                const {
+                    startDate: rawStartDate,
+                    endDate: rawEndDate,
+                    style: rawStyle = {},
+                    color: rawColor = null,
+                    className: rawClassName = [],
+                    ...item
+                } = rawItem;
+
+                const startDate = moment(rawStartDate);
+                const endDate = moment(rawEndDate);
+                const style = typeof rawStyle === 'object' ? { ...rawStyle } : {};
+                const className = clsx(rawClassName).split(' ');
+
+                if (rawColor !== null && rawColor !== undefined) {
+                    const color = new Color(rawColor);
+
+                    if (!('--month-calendar-item-color' in style)) {
+                        style['--month-calendar-item-color'] = color.toHexString();
+                    }
+
+                    const colorType = color.isDark() ? 'dark' : 'light';
+                    className.push(
+                        `MonthCalendar__item--with-custom-color`,
+                        `MonthCalendar__item--with-${colorType}-color`,
+                    );
+                }
+
+                className.unshift('MonthCalendar__item');
+                return {
+                    ...item,
+                    startDate: startDate.format('YYYY-MM-DD HH:mm:ss'),
+                    endDate: endDate.format('YYYY-MM-DD HH:mm:ss'),
+                    style: styleObjectToString(style),
+                    classes: className,
+                };
+            });
         },
     },
     methods: {
@@ -38,9 +84,9 @@ export default {
     render() {
         const {
             $t: __,
-            events,
             currentDate,
             currentMonth,
+            formattedItems,
             handlePrevMonthClick,
             handleNextMonthClick,
             handleClickItem,
@@ -69,7 +115,7 @@ export default {
                     </button>
                     {withTotal && (
                         <h4 class="MonthCalendar__header__total">
-                            {__('events-count-total', { count: events.length }, events.length)}
+                            {__('events-count-total', { count: formattedItems.length }, formattedItems.length)}
                         </h4>
                     )}
                 </header>
@@ -77,7 +123,7 @@ export default {
                     class="MonthCalendar__body"
                     showDate={currentDate}
                     startingDayOfWeek={1}
-                    items={events}
+                    items={formattedItems}
                     itemContentHeight="53px"
                     itemBorderHeight="0px"
                     // Note: Le camelCase (`onClickItem`) ne fonctionne pas.

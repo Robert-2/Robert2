@@ -1,0 +1,79 @@
+@use '~@/themes/default/style/globals';
+@use 'sass:color';
+
+.FileManagerUpload {
+    $block: &;
+
+    position: relative;
+    padding: 15px 20px;
+    border-radius: 10px;
+    background: globals.$bg-color-emphasis;
+    color: globals.$text-base-color;
+
+    &__data {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+
+        &__icon {
+            font-size: 1.8rem;
+        }
+
+        &__main {
+            flex: 1;
+            overflow: hidden;
+            width: 100%;
+        }
+    }
+
+    &__name {
+        display: flex;
+        width: 100%;
+        margin: 0;
+
+        &__base {
+            display: block;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+    }
+
+    &__infos {
+        margin-top: 5px;
+        color: color.adjust(globals.$text-base-color, $lightness: -20%);
+        gap: 15px;
+
+        &__info + &__info::before {
+            content: '•';
+            margin: 0 10px;
+            color: color.adjust(globals.$text-base-color, $lightness: -20%);
+        }
+    }
+
+    &__progress {
+        margin-top: 10px;
+    }
+
+    &__button-cancel {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+    }
+
+    //
+    // - States
+    //
+
+    &--error {
+        background: rgba(globals.$text-danger-color, 0.25);
+
+        #{$block}__infos__info--status {
+            color: globals.$text-danger-color;
+        }
+    }
+
+    &--cancellable {
+        padding-right: 65px;
+    }
+}

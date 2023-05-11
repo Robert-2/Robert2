@@ -11,6 +11,7 @@ import Materials from './Materials';
 import Material from './Material';
 import MaterialView from './MaterialView';
 import Attributes from './Attributes';
+import Attribute from './Attribute';
 import Tags from './Tags';
 import Technicians from './Technicians';
 import Technician from './Technician';
@@ -223,6 +224,24 @@ export default [
         name: 'attributes',
         path: '/attributes',
         component: Attributes,
+        meta: {
+            requiresAuth: true,
+            requiresGroups: [Group.ADMIN],
+        },
+    },
+    {
+        name: 'add-attribute',
+        path: '/attributes/new',
+        component: Attribute,
+        meta: {
+            requiresAuth: true,
+            requiresGroups: [Group.ADMIN],
+        },
+    },
+    {
+        name: 'edit-attribute',
+        path: '/attributes/:id(\\d+)',
+        component: Attribute,
         meta: {
             requiresAuth: true,
             requiresGroups: [Group.ADMIN],

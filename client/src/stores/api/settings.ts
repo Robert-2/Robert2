@@ -6,6 +6,11 @@ import requester from '@/globals/requester';
 
 export type MaterialDisplayMode = 'categories' | 'sub-categories' | 'parks' | 'flat';
 
+export enum ReturnInventoryMode {
+    START_EMPTY = 'start-empty',
+    START_FULL = 'start-full',
+}
+
 export type Settings = {
     eventSummary: {
         customText: {
@@ -20,6 +25,9 @@ export type Settings = {
             showLocation: boolean,
             showBorrower: boolean,
         },
+    },
+    returnInventory: {
+        mode: ReturnInventoryMode,
     },
 };
 

@@ -1,3 +1,3 @@
-import type { MaterialWithPivot } from '@/stores/api/events';
+import type { EventMaterial } from '@/stores/api/events';
 
-export type BookingMaterial = MaterialWithPivot;
+export type BookingMaterial = EventMaterial;

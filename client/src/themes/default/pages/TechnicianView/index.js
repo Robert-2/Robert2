@@ -1,14 +1,22 @@
 import './index.scss';
 import axios from 'axios';
 import HttpCode from 'status-code-enum';
+import apiTechnicians from '@/stores/api/technicians';
+import { confirm } from '@/utils/alert';
 import { Tabs, Tab } from '@/themes/default/components/Tabs';
 import CriticalError, { ERROR } from '@/themes/default/components/CriticalError';
 import Loading from '@/themes/default/components/Loading';
 import Page from '@/themes/default/components/Page';
 import Button from '@/themes/default/components/Button';
-import apiTechnicians from '@/stores/api/technicians';
-import TechnicianInfos from './tabs/Infos';
-import TechnicianSchedule from './tabs/Schedule';
+import Infos from './tabs/Infos';
+import Schedule from './tabs/Schedule';
+import Documents from './tabs/Documents';
+
+const TABS = [
+    'infos',
+    'schedule',
+    'documents',
+];
 
 // @vue/component
 export default {
@@ -52,7 +60,7 @@ export default {
     created() {
         const { hash } = this.$route;
         if (hash && this.tabsIndexes.includes(hash)) {
-            this.selectedTabIndex = this.tabsIndexes.findIndex((tab) => tab === hash);
+            this.selectedTabIndex = this.tabsIndexes.indexOf(hash);
         }
     },
     mounted() {
@@ -65,7 +73,31 @@ export default {
         // -
         // ------------------------------------------------------
 
-        handleSelectTab(index) {
+        async handleTabChange(event) {
+            if (event.prevIndex !== TABS.indexOf('documents')) {
+                return;
+            }
+
+            const { documentsRef } = this.$refs;
+            if (!documentsRef?.isUploading()) {
+                return;
+            }
+
+            event.preventDefault();
+
+            const { $t: __ } = this;
+            const isConfirmed = await confirm({
+                text: __('confirm-cancel-upload-change-tab'),
+                type: 'danger',
+            });
+            if (!isConfirmed) {
+                return;
+            }
+
+            event.executeDefault();
+        },
+
+        handleTabChanged(index) {
             this.selectedTabIndex = index;
             this.$router.replace(this.tabsIndexes[index]);
         },
@@ -108,7 +140,8 @@ export default {
             criticalError,
             technician,
             selectedTabIndex,
-            handleSelectTab,
+            handleTabChange,
+            handleTabChanged,
         } = this;
 
         if (criticalError || !isFetched) {
@@ -124,14 +157,18 @@ export default {
                 <div class="TechnicianView">
                     <Tabs
                         defaultIndex={selectedTabIndex}
-                        onSelect={handleSelectTab}
+                        onChange={handleTabChange}
+                        onChanged={handleTabChanged}
                         actions={tabsActions}
                     >
                         <Tab title={__('informations')} icon="info-circle">
-                            <TechnicianInfos technician={technician} />
+                            <Infos technician={technician} />
                         </Tab>
                         <Tab title={__('schedule')} icon="calendar-alt">
-                            <TechnicianSchedule technician={technician} />
+                            <Schedule technician={technician} />
+                        </Tab>
+                        <Tab title={__('documents')} icon="file-pdf">
+                            <Documents ref="documentsRef" technician={technician} />
                         </Tab>
                     </Tabs>
                 </div>

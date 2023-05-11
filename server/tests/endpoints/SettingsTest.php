@@ -30,6 +30,9 @@ final class SettingsTest extends ApiTestCase
                     'url' => '/calendar/public/dfe7cd82-52b9-4c9b-aaed-033df210f23b.ics',
                 ],
             ],
+            'returnInventory' => [
+                'mode' => 'start-empty',
+            ],
         ]);
     }
 
@@ -92,6 +95,9 @@ final class SettingsTest extends ApiTestCase
                     'enabled' => false,
                 ],
             ],
+            'returnInventory' => [
+                'mode' => 'start-full',
+            ],
         ]);
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData([
@@ -111,6 +117,9 @@ final class SettingsTest extends ApiTestCase
                 'public' => [
                     'enabled' => false,
                 ],
+            ],
+            'returnInventory' => [
+                'mode' => 'start-full',
             ],
         ]);
 
@@ -140,6 +149,9 @@ final class SettingsTest extends ApiTestCase
                 'public' => [
                     'enabled' => false,
                 ],
+            ],
+            'returnInventory' => [
+                'mode' => 'start-full',
             ],
         ]);
     }

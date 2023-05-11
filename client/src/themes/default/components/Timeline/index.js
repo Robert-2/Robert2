@@ -1,7 +1,12 @@
-import '@robert2/vis-timeline/index.scss';
+/* eslint-disable import/order */
+import '@loxya/vis-timeline/index.scss';
 import './index.scss';
+/* eslint-enable import/order */
+
 import moment from 'moment';
-import { Timeline as TimelineCore, DataSet, DataView } from '@robert2/vis-timeline';
+import styleObjectToString from 'style-object-to-css-string';
+import { Timeline as TimelineCore, DataSet, DataView } from '@loxya/vis-timeline';
+import Color from '@/utils/color';
 import { getLocale } from '@/globals/lang';
 import dateRoundMinutes from '@/utils/dateRoundMinutes';
 import Loading from '@/themes/default/components/Loading';
@@ -12,7 +17,7 @@ export default {
     name: 'Timeline',
     props: {
         items: {
-            type: [Array, DataSet, DataView],
+            type: Array,
             default: () => [],
         },
         groups: {
@@ -82,7 +87,7 @@ export default {
                     overrideItems: false,
                 },
                 moment: (date) => moment(date),
-                ...(this.options || {}),
+                ...this.options,
                 onMoving: (item, callback) => {
                     const { minutesGrid } = this.$props;
                     if (!minutesGrid) {
@@ -101,6 +106,43 @@ export default {
                 },
             };
         },
+
+        formattedItems() {
+            return (this.items ?? []).map((rawItem) => {
+                const {
+                    style: rawStyle = {},
+                    color: rawColor = null,
+                    className: rawClassName = [],
+                    ...item
+                } = rawItem;
+
+                const style = typeof rawStyle === 'object' ? { ...rawStyle } : {};
+                const className = typeof rawClassName === 'string'
+                    ? rawClassName.trim().replaceAll('  ', ' ').split(' ')
+                    : rawClassName;
+
+                if (rawColor !== null && rawColor !== undefined) {
+                    const color = new Color(rawColor);
+
+                    if (!('--timeline-item-color' in style)) {
+                        style['--timeline-item-color'] = color.toHexString();
+                    }
+
+                    const colorType = color.isDark() ? 'dark' : 'light';
+                    className.push(
+                        `Timeline__item--with-custom-color`,
+                        `Timeline__item--with-${colorType}-color`,
+                    );
+                }
+
+                className.unshift('Timeline__item');
+                return {
+                    ...item,
+                    style: styleObjectToString(style),
+                    className: className.join(' '),
+                };
+            });
+        },
     },
     watch: {
         fullOptions: {
@@ -115,7 +157,7 @@ export default {
         this.timeline = null;
     },
     mounted() {
-        this.data = mountVisData(this, 'items', 'data');
+        this.data = mountVisData(this, 'formattedItems', 'data');
         this.groupData = mountVisData(this, 'groups', 'groupData');
 
         this.timeline = new TimelineCore(

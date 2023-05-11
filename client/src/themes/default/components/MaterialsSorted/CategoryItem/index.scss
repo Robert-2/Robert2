@@ -13,58 +13,24 @@
         padding: 0;
     }
 
-    &__material,
     &__subtotal {
         display: flex;
+        padding: 0.5rem 0 0;
+        font-size: 1.1rem;
         list-style: none;
 
         &__name {
             flex: 1;
-        }
-
-        &__price {
-            flex: 0 0 auto;
-            margin-left: 0.8rem;
-            color: globals.$text-light-color;
-            text-align: right;
-        }
-    }
-
-    &__material {
-        padding: 0.7rem 0;
-        border-bottom: 1px dashed globals.$list-left-border-color;
-
-        &__quantity {
-            flex: 0 0 3rem;
-            margin: 0 0.8rem;
-
-            &__icon {
-                margin-right: 3px;
-                color: globals.$text-light-color;
-                font-size: 0.8rem;
-            }
-        }
-
-        &__total {
-            flex: 0 0 5rem;
-            margin-left: 0.8rem;
-            text-align: right;
-        }
-    }
-
-    &__subtotal {
-        padding: 0.5rem 0 0;
-        font-size: 1.1rem;
-
-        &__name {
             color: globals.$text-light-color;
             text-align: right;
         }
 
         &__price {
             flex: 0 0 auto;
+            margin-left: 0.8rem;
             color: globals.$text-base-color;
             font-weight: 600;
+            text-align: right;
         }
     }
 }

@@ -21,6 +21,7 @@ final class AttributesTest extends ApiTestCase
                     CategoriesTest::data(2),
                     CategoriesTest::data(1),
                 ],
+                'isTotalisable' => true,
             ],
             [
                 'id' => 2,
@@ -35,8 +36,10 @@ final class AttributesTest extends ApiTestCase
                 'type' => "integer",
                 'unit' => "W",
                 'categories' => [
+                    CategoriesTest::data(2),
                     CategoriesTest::data(1),
                 ],
+                'isTotalisable' => true,
             ],
             [
                 'id' => 4,
@@ -75,6 +78,13 @@ final class AttributesTest extends ApiTestCase
         ]);
     }
 
+    public function testGetOne()
+    {
+        $this->client->get('/api/attributes/1');
+        $this->assertStatusCode(StatusCode::STATUS_OK);
+        $this->assertResponseData(self::data(1, true));
+    }
+
     public function testGetAllForCategory()
     {
         // - Récupère les caractéristiques spéciales qui n'ont
@@ -96,6 +106,7 @@ final class AttributesTest extends ApiTestCase
             self::data(2, true),
             self::data(5, true),
             self::data(1, true),
+            self::data(3, true),
         ]);
     }
 
@@ -111,13 +122,14 @@ final class AttributesTest extends ApiTestCase
         ]);
     }
 
-    public function testCreateAttribute()
+    public function testCreate()
     {
         $this->client->post('/api/attributes', [
             'name' => 'Speed',
             'type' => 'float',
             'unit' => 'km/h',
             'categories' => [2, 3],
+            'isTotalisable' => false,
         ]);
         $this->assertStatusCode(StatusCode::STATUS_CREATED);
         $this->assertResponseData([
@@ -129,21 +141,29 @@ final class AttributesTest extends ApiTestCase
                 CategoriesTest::data(2),
                 CategoriesTest::data(3),
             ],
+            'isTotalisable' => false,
         ]);
     }
 
-    public function testUpdateAttribute()
+    public function testUpdate()
     {
         $this->client->put('/api/attributes/1', [
             'name' => 'Masse',
             'type' => 'integer',
             'unit' => 'g',
+            'categories' => [3, 4],
+            'isTotalisable' => false,
         ]);
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData(
             array_replace(self::data(1, true), [
-                // - Uniquement le nom a été modifié.
                 'name' => 'Masse',
+                'unit' => 'g',
+                'categories' => [
+                    CategoriesTest::data(4),
+                    CategoriesTest::data(3),
+                ],
+                'isTotalisable' => false,
             ])
         );
     }

@@ -1,0 +1,104 @@
+@use '../../../variables' as *;
+@use '~@/themes/default/style/globals';
+@use 'sass:color';
+
+.FileManagerDropZone {
+    $block: &;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 40px 20px;
+    border-radius: $drop-zone-border-radius;
+    background-color: $drop-zone-background-color;
+    color: $drop-zone-color;
+    text-align: center;
+    transition: background-color 300ms ease;
+    cursor: pointer;
+    user-select: none;
+
+    /* stylelint-disable declaration-colon-newline-after, indentation */
+    @if ($drop-zone-border-width > 0) {
+        background-image: url(
+            'data:image/svg+xml,' +
+            '<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">' +
+                '<rect ' +
+                    'width="100%" ' +
+                    'height="100%" ' +
+                    'fill="none" ' +
+                    'rx="#{$drop-zone-border-radius}" ' +
+                    'ry="#{$drop-zone-border-radius}" ' +
+                    'stroke="#{globals.color-encode($drop-zone-border-color)}" ' +
+                    'stroke-width="#{$drop-zone-border-width}" ' +
+                    'stroke-dasharray="6%2c 14" ' +
+                    'stroke-dashoffset="0" ' +
+                    'stroke-linecap="square" ' +
+                '/>' +
+            '</svg>'
+        );
+    }
+    /* stylelint-enable declaration-colon-newline-after, indentation */
+
+    &__icon {
+        margin-bottom: 20px;
+        color: $drop-zone-icon-color;
+        font-size: 38px;
+    }
+
+    &__instruction {
+        margin: 0;
+        font-size: 1.2rem;
+
+        &__sub-line {
+            color: color.adjust($drop-zone-color, $lightness: -10%);
+            font-size: 1rem;
+            font-style: italic;
+        }
+    }
+
+    &__choose-files {
+        margin: 20px 0 0;
+    }
+
+    &__file-input {
+        display: none;
+    }
+
+    //
+    // - States
+    //
+
+    &:active,
+    &--dragging {
+        background-color: $drop-zone-active-background-color;
+        color: $drop-zone-active-color;
+
+        #{$block}__icon {
+            color: $drop-zone-active-icon-color;
+        }
+
+        #{$block}__instruction__sub-line {
+            color: color.adjust($drop-zone-active-color, $lightness: -10%);
+        }
+    }
+
+    &--dragging {
+        animation-name: FileManagerDropZone--gradient;
+        animation-duration: 2000ms;
+        animation-timing-function: linear;
+        animation-iteration-count: infinite;
+    }
+}
+
+@keyframes FileManagerDropZone--gradient {
+    0%,
+    100% {
+        background: $drop-zone-background-color;
+    }
+
+    50% {
+        background: $drop-zone-active-background-color;
+    }
+}

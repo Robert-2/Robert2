@@ -9,7 +9,10 @@ not-finished-yet-alert: >-
     This event is not yet finished, you can start its inventory,
     but you cannot terminate it.
 
-all-material-returned: Congratulations! All materials were returned for this event.
+not-saved-yet: Please note that this return inventory has not yet been saved!
+all-material-returned:
+    "Congratulations! All materials were returned for this event.\n
+    You can now click on \"Terminate inventory\" button."
 some-material-is-missing: Some materials did not return from this event!
 some-material-came-back-broken: Some materials came back broken.
 

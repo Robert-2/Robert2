@@ -1,4 +1,4 @@
-declare module 'vue-tables-2' {
+declare module 'vue-tables-2-premium' {
     import type { VNode } from 'vue';
     import type { PaginationParams } from '@/stores/api/@types';
 

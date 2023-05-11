@@ -1,7 +1,7 @@
 import moment from 'moment';
 import { BookingEntity } from '@/stores/api/bookings';
 
-import type { Booking } from '@/stores/api/bookings';
+import type { BookingSummary } from '@/stores/api/bookings';
 
 /**
  * Permet de récupérer l'icône représentant l'état d'un booking.
@@ -11,7 +11,7 @@ import type { Booking } from '@/stores/api/bookings';
  *
  * @returns - Le code de l'icône représentant l'état du booking.
  */
-const getBookingIcon = (booking: Booking, now: number = Date.now()): string => {
+const getBookingIcon = (booking: BookingSummary, now: number = Date.now()): string => {
     const isPast = moment(booking.end_date).isBefore(now, 'day');
     const {
         is_archived: isArchived,

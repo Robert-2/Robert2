@@ -1,23 +1,24 @@
 title: Caractéristiques spéciales du matériel
-help: |-
-    Ici vous pouvez ajouter les champs qui permettent de décrire votre matériel selon vos propres critères.
-    Une fois créée, une caractéristique spéciale ne pourra plus être modifiée (sauf son nom).
+help: Les caractéristiques spéciales permettent de décrire votre matériel selon vos propres critères.
 
-go-back-to-material: Retourner au matériel
 name: Nom de la caractéristique
 type: Type de donnée
 unit: Unité
 max-length: Taille max.
-type-string: Texte
-type-integer: Nombre entier
-type-float: Nombre décimal
-type-boolean: Booléen (Oui / Non)
-type-date: Date
+is-totalisable: "Totalisable\_?"
+
 no-limit: Sans limite
 add-attributes: Ajouter des caractéristiques
 no-attribute-yet: Aucune caractéristique spéciale pour le moment.
 add-btn: Ajouter une caractéristique
 limited-to-categories: Limitée aux catégories
+all-categories-not-limited: Toutes catégories (non limité)
+
+type-string: Texte
+type-integer: Nombre entier
+type-float: Nombre décimal
+type-boolean: Booléen (Oui / Non)
+type-date: Date
 
 confirm-permanently-delete:
     '1': "Voulez-vous vraiment supprimer définitivement cette caractéristique spéciale\_?\n\n                ATTENTION\_: Toutes les données relatives à cette caractéristique spéciale seront supprimées DÉFINITIVEMENT\_!!"

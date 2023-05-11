@@ -10,6 +10,7 @@ export default {
         event: { type: Object, required: true },
         hasStarted: Boolean,
     },
+    emits: ['displayGroupChange'],
     data() {
         return {
             displayGroup: DisplayGroup.CATEGORIES,

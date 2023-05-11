@@ -1,6 +1,6 @@
 import './index.scss';
 import VueSelect from 'vue-select';
-import { debounce } from 'debounce';
+import debounce from 'lodash/debounce';
 import { DEBOUNCE_WAIT } from '@/globals/constants';
 import formatOptions from '@/utils/formatOptions';
 import Button from '@/themes/default/components/Button';
@@ -30,8 +30,8 @@ export default {
     created() {
         this.debouncedSearch = debounce(this.search.bind(this), DEBOUNCE_WAIT);
     },
-    beforeUnmount() {
-        this.debouncedSearch.clear();
+    beforeDestroy() {
+        this.debouncedSearch.cancel();
     },
     methods: {
         async search(loading, search) {

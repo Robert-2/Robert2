@@ -245,6 +245,9 @@ return [
     "total-replacement-amount"
     => "Total replacement amount: %s",
 
+    "material-attributes-totals"
+    => "Totals of material attributes",
+
     "output"
     => "Output",
 

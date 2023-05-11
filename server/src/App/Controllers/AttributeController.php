@@ -40,7 +40,7 @@ class AttributeController extends BaseController
 
     // ------------------------------------------------------
     // -
-    // -    Internal methods
+    // -    Méthodes internes
     // -
     // ------------------------------------------------------
 

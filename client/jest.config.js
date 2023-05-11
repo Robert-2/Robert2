@@ -1,23 +1,30 @@
+'use strict';
+
 module.exports = {
-    moduleFileExtensions: ['js', 'jsx', 'ts', 'tsx', 'json', 'vue'],
-    transform: {
-        '^.+\\.vue$': 'vue-jest',
-        '.+\\.(css|scss|svg|png|jpg|ttf|woff|woff2)$': 'jest-transform-stub',
-        '^.+\\.(j|t)sx?$': 'babel-jest',
-    },
-    transformIgnorePatterns: ['<rootDir>/node_modules/'],
+    rootDir: __dirname,
+    collectCoverageFrom: ['src/**/*.{js,ts,tsx}', '!src/**/*.d.ts'],
+    coverageDirectory: '<rootDir>/tests/coverage',
+    coverageReporters: ['lcov', 'html', 'text-summary'],
+    testMatch: [
+        '<rootDir>/tests/specs/**/*.{js,ts,tsx}',
+        '<rootDir>/src/**/__tests__/**/*.{js,ts,tsx}',
+        '<rootDir>/src/**/?(*.)spec.{js,ts,tsx}',
+    ],
+    testEnvironment: 'jsdom',
+    testPathIgnorePatterns: ['/node_modules/'],
+    transformIgnorePatterns: ['[/\\\\]node_modules[/\\\\].+\\.(js|cts|mjs|ts|cts|mts|tsx)$'],
+    moduleFileExtensions: ['js', 'mjs', 'cjs', 'ts', 'tsx', 'mts', 'cts', 'json'],
     moduleNameMapper: {
         '^@/(.*)$': '<rootDir>/src/$1',
         '^@fixtures/(.*)$': '<rootDir>/tests/fixtures/$1',
     },
-    snapshotSerializers: ['jest-serializer-vue'],
-    testMatch: [
-        '**/tests/unit/**/*.spec.(js|jsx|ts|tsx)',
-        '**/__tests__/*.(js|jsx|ts|tsx)',
-    ],
-    testURL: 'http://localhost/',
+    transform: {
+        '^.+\\.(js|mjs|cjs|jsx|ts|mts|cts|tsx)$': 'babel-jest',
+        '^(?!.*\\.(js|mjs|cjs|ts|mts|cts|tsx|json)$)': 'jest-transform-stub',
+    },
     watchPlugins: [
         'jest-watch-typeahead/filename',
         'jest-watch-typeahead/testname',
     ],
+    resetMocks: true,
 };

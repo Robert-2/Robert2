@@ -22,7 +22,7 @@ export default {
     },
     computed: {
         isEmpty() {
-            return this.value == null;
+            return [undefined, null].includes(this.value);
         },
 
         isUploading() {

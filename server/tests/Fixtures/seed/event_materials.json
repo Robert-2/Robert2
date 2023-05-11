@@ -92,7 +92,7 @@
         "event_id": 5,
         "material_id": 8,
         "quantity": 2,
-        "quantity_returned": 0,
-        "quantity_returned_broken": 0
+        "quantity_returned": null,
+        "quantity_returned_broken": null
     }
 ]

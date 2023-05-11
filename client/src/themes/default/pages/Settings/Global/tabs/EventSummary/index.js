@@ -19,10 +19,10 @@ const EventSummaryGlobalSettings = (props, { root }) => {
     const values = reactive(
         (() => {
             const _values = cloneDeep(root.$store.state.settings.eventSummary);
-            if (_values.customText?.title == null) {
+            if ([undefined, null].includes(_values.customText?.title)) {
                 _values.customText.title = '';
             }
-            if (_values.customText?.content == null) {
+            if ([undefined, null].includes(_values.customText?.content)) {
                 _values.customText.content = '';
             }
             return _values;

@@ -9,7 +9,10 @@ not-finished-yet-alert: >-
     Cet événement n'est pas encore terminé, vous pouvez commencer son inventaire
     de retour, mais pas le terminer.
 
-all-material-returned: "Félicitations\_! Tout le matériel a bien été retourné pour cet événement."
+not-saved-yet: "Attention, cet inventaire de retour n'a pas encore été sauvegardé\_!"
+all-material-returned:
+    "Félicitations\_! Tout le matériel a bien été retourné pour cet événement.\n
+    Vous pouvez maintenant cliquer sur le bouton \"Terminer l'inventaire\"."
 some-material-is-missing: "Du matériel n'est pas revenu de cet événement\_!"
 some-material-came-back-broken: Du matériel est revenu en panne.
 

@@ -80,7 +80,7 @@ class CleanupCommand extends Command
 
     // ------------------------------------------------------
     // -
-    // -    Internal methods
+    // -    Méthodes internes
     // -
     // ------------------------------------------------------
 

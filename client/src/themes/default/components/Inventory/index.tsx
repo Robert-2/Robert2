@@ -59,7 +59,7 @@ type Props = {
     displayGroup?: DisplayGroup,
 
     /** Permet de "verrouiller" l'inventaire (= Lecture seule). */
-    locked?: boolean,
+    locked?: boolean | string[],
 
     /**
      * Permet d'activer ou non le mode "strict".

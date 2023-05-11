@@ -1,0 +1,49 @@
+@use '~@/themes/default/style/globals';
+
+.MaterialsCategoryItemMaterial {
+    display: flex;
+    padding: 0.7rem 0;
+    border-bottom: 1px dashed globals.$list-left-border-color;
+    list-style: none;
+
+    &__name {
+        flex: 1;
+
+        &__label {
+            margin-bottom: 3px;
+        }
+
+        &__unit {
+            margin-right: 3px;
+            color: globals.$text-light-color;
+
+            &:not(:last-child)::after {
+                content: ',';
+            }
+        }
+    }
+
+    &__quantity {
+        flex: 0 0 3rem;
+        margin: 0 0.8rem;
+
+        &__icon {
+            margin-right: 3px;
+            color: globals.$text-light-color;
+            font-size: 0.8rem;
+        }
+    }
+
+    &__total {
+        flex: 0 0 5rem;
+        margin-left: 0.8rem;
+        text-align: right;
+    }
+
+    &__price {
+        flex: 0 0 auto;
+        margin-left: 0.8rem;
+        color: globals.$text-light-color;
+        text-align: right;
+    }
+}

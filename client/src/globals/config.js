@@ -26,6 +26,7 @@ const defaultConfig = {
     defaultPaginationLimit: 100,
     billingMode: 'partial',
     maxFileUploadSize: 25 * 1024 * 1024,
+    colorSwatches: null,
 };
 
 const globalConfig = window.__SERVER_CONFIG__ || defaultConfig;

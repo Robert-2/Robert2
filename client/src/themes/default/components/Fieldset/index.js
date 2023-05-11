@@ -1,7 +1,8 @@
 import './index.scss';
+import { defineComponent } from '@vue/composition-api';
 
 // @vue/component
-export default {
+const Fieldset = defineComponent({
     name: 'Fieldset',
     inject: {
         verticalForm: { default: false },
@@ -28,4 +29,6 @@ export default {
             </section>
         );
     },
-};
+});
+
+export default Fieldset;

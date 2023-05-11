@@ -32,9 +32,9 @@
 ///
 /// @link https://fontawesome.com/v5/search?m=free Pour la liste des noms pris en charge.
 ///
-/// @param {String} $icon-name Le nom "textuel" d'une icône
-/// @return {String} Le code de l'icône s'il a été trouvé, le nom textuel tel quel si non.
+/// @param {String} $icon-name Le nom "textuel" d'une icône.
 ///
+/// @return {String} Le code de l'icône s'il a été trouvé, le nom textuel tel quel si non.
 @function icon-code($icon-name) {
     @if map-has-key(globals.$icons-list, $icon-name) {
         @return map-get(globals.$icons-list, $icon-name);
@@ -47,8 +47,8 @@
 /// @example scss icon-weight('solid'); // => 900
 ///
 /// @param {String} $variant La variante à utiliser ("solid", "regular" ou "light")
-/// @return {Number} La graisse résultante, sinon la graisse par défaut (400)
 ///
+/// @return {Number} La graisse résultante, sinon la graisse par défaut (400)
 @function icon-weight($variant) {
     $variant-map: (
         solid: 900,
@@ -71,6 +71,7 @@
 /// @param {String} $icon Le nom textuel de l'icône à ajouter. (e.g. `plus`)
 /// @param  {String} $variant La variante a utiliser ("solid" (default), "regular" ou "light")
 /// @param {Boolean} $after [false] Si `true` l'icône sera ajouté après, sinon avant.
+///
 /// @content D'éventuelles autres propriétés à ajouter au pseudo-élément.
 /// @output Le pseudo-élément choisi avec l'icône demandée prête à être affichée.
 @mixin icon($icon, $variant: 'solid', $after: false) {

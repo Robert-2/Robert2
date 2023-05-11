@@ -14,10 +14,10 @@ use Slim\Handlers\ErrorHandler as CoreErrorHandler;
 
 class ErrorHandler extends CoreErrorHandler
 {
-    protected $defaultErrorRendererContentType = 'application/json';
+    protected string $defaultErrorRendererContentType = 'application/json';
     protected $defaultErrorRenderer = JsonErrorRenderer::class;
 
-    protected $errorRenderers = [
+    protected array $errorRenderers = [
         'application/json' => JsonErrorRenderer::class,
         'text/html' => HtmlErrorRenderer::class,
     ];

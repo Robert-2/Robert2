@@ -1,0 +1,23 @@
+@use '~@/themes/default/style/globals';
+
+.MaterialsQuantities {
+    $block: &;
+
+    text-align: center;
+
+    &__stock {
+        font-weight: 600;
+    }
+
+    &--used {
+        #{$block}__available {
+            color: globals.$text-warning-color;
+        }
+    }
+
+    &--exhausted {
+        #{$block}__available {
+            color: globals.$text-danger-color;
+        }
+    }
+}

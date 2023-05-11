@@ -151,7 +151,7 @@ class App
         $this->app->get('/estimates/{id:[0-9]+}/pdf[/]', $getActionFqn('EstimateController:getOnePdf'));
         $this->app->get('/invoices/{id:[0-9]+}/pdf[/]', $getActionFqn('InvoiceController:getOnePdf'));
         $this->app->get('/events/{id:[0-9]+}/pdf[/]', $getActionFqn('EventController:getOnePdf'));
-        $this->app->get('/documents/{id:[0-9]+}/download[/]', $getActionFqn('DocumentController:getOne'));
+        $this->app->get('/documents/{id:[0-9]+}', $getActionFqn('DocumentController:getFile'));
         $this->app->get('/materials/{id:[0-9]+}/picture[/]', $getActionFqn('MaterialController:getPicture'));
         $this->app->get('/materials/pdf[/]', $getActionFqn('MaterialController:getAllPdf'));
 

@@ -1,4 +1,6 @@
-const fs = require('fs');
+'use strict';
+
+const fs = require('node:fs');
 
 const THEMES_PATH = './src/themes';
 const DEV_CLIENT_URL = new URL('http://0.0.0.0:8081');

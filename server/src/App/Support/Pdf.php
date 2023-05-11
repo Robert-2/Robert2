@@ -21,7 +21,7 @@ final class Pdf
 
     public function __construct(string $name, string $html)
     {
-        $name = Str::slug(preg_replace('/\.pdf$/i', '', $name));
+        $name = Str::slugify(preg_replace('/\.pdf$/i', '', $name));
         $this->name = sprintf('%s.pdf', $name);
 
         $this->html = $html;

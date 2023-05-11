@@ -1,14 +1,15 @@
 import './index.scss';
 import { defineComponent } from '@vue/composition-api';
-import type { PropType } from '@vue/composition-api';
-import type { EventDetails } from '@/stores/api/events';
 import formatAmount from '@/utils/formatAmount';
 import getEventMaterialItemsCount from '@/utils/getEventMaterialItemsCount';
 import Fragment from '@/components/Fragment';
 
+import type { PropType } from '@vue/composition-api';
+import type { Event } from '@/stores/api/events';
+
 type Props = {
     /** L'événement dont on veut afficher les totaux. */
-    event: EventDetails,
+    event: Event,
 };
 
 // @vue/component
@@ -21,11 +22,11 @@ const EventTotals = defineComponent({
         },
     },
     computed: {
-        itemsCount() {
+        itemsCount(): number {
             return getEventMaterialItemsCount(this.event.materials);
         },
 
-        useTaxes() {
+        useTaxes(): boolean {
             const { is_billable: isBillable } = this.event;
             if (!isBillable) {
                 return false;
@@ -35,7 +36,7 @@ const EventTotals = defineComponent({
             return vatRate.toNumber() > 0;
         },
 
-        hasDiscount() {
+        hasDiscount(): boolean {
             const { is_billable: isBillable } = this.event;
             if (!isBillable) {
                 return false;
@@ -45,7 +46,7 @@ const EventTotals = defineComponent({
             return discountRate.toNumber() > 0;
         },
 
-        discountableDifferentFromTotal() {
+        discountableDifferentFromTotal(): boolean {
             const { is_billable: isBillable } = this.event;
             if (!isBillable) {
                 return false;

@@ -44,7 +44,7 @@ use Robert2\Support\Str;
  * @property bool $is_discountable
  * @property bool $is_reservable
  * @property string|null $note
- * @property-read mixed[]|null $attributes
+ * @property-read Collection $attributes
  * @property-read Carbon $created_at
  * @property-read Carbon|null $updated_at
  * @property-read Carbon|null $deleted_at
@@ -61,6 +61,9 @@ final class Material extends BaseModel implements Serializable
     use SoftDeletable;
     use Taggable;
     use TransientAttributes;
+
+    /** L'identifiant unique du modèle. */
+    public const TYPE = 'material';
 
     // - Types de sérialisation.
     public const SERIALIZE_DEFAULT = 'default';
@@ -145,7 +148,7 @@ final class Material extends BaseModel implements Serializable
         }
 
         if (is_string($picture)) {
-            V::length(5, 191)->check($picture);
+            V::length(5, 227)->check($picture);
             return true;
         }
 
@@ -227,7 +230,6 @@ final class Material extends BaseModel implements Serializable
     public function attributes()
     {
         return $this->belongsToMany(Attribute::class, 'material_attributes')
-            ->select(['attributes.id', 'attributes.name', 'attributes.type', 'attributes.unit'])
             ->using(MaterialAttribute::class)
             ->withPivot('value')
             ->orderByPivot('id');
@@ -235,27 +237,15 @@ final class Material extends BaseModel implements Serializable
 
     public function events()
     {
-        $selectFields = [
-            'events.id',
-            'title',
-            'start_date',
-            'end_date',
-            'location',
-            'is_confirmed',
-            'is_archived',
-            'is_return_inventory_done',
-        ];
         return $this->belongsToMany(Event::class, 'event_materials')
             ->using(EventMaterial::class)
             ->withPivot('id', 'quantity')
-            ->select($selectFields)
             ->orderBy('start_date', 'desc');
     }
 
     public function documents()
     {
-        return $this->hasMany(Document::class)
-            ->select(['id', 'name', 'type', 'size'])
+        return $this->morphMany(Document::class, 'entity')
             ->orderBy('name', 'asc');
     }
 
@@ -317,29 +307,19 @@ final class Material extends BaseModel implements Serializable
     {
         $attributes = $this->attributes()->get();
         if (!$attributes) {
-            return null;
+            return new Collection();
         }
 
-        return array_map(
-            function ($attribute) {
-                $type = $attribute['type'];
-                $value = $attribute['pivot']['value'];
-                if ($type === 'integer') {
-                    $value = (int) $value;
-                }
-                if ($type === 'float') {
-                    $value = (float) $value;
-                }
-                if ($type === 'boolean') {
-                    $value = $value === 'true' || $value === '1';
-                }
-                $attribute['value'] = $value;
-
-                unset($attribute['pivot']);
-                return $attribute;
-            },
-            $attributes->toArray()
-        );
+        return $attributes
+            ->filter(fn ($attribute) => (
+                $attribute->categories->isEmpty()
+                || $attribute->categories->contains('id', $this->category->id)
+            ))
+            ->map(function ($attribute) {
+                $attribute->value = $attribute->pivot->value;
+                return $attribute->append(['value']);
+            })
+            ->values();
     }
 
     public function getPictureAttribute($value)
@@ -364,7 +344,7 @@ final class Material extends BaseModel implements Serializable
             return null;
         }
 
-        // - Dans le cas d'un fichier tout juste uploadé + avant le save.
+        // - Dans le cas d'un fichier tout juste uploadé...
         if ($picture instanceof UploadedFileInterface) {
             throw new \LogicException("Impossible de récupérer le chemin de l'image avant de l'avoir persisté.");
         }
@@ -446,7 +426,7 @@ final class Material extends BaseModel implements Serializable
             if (!@file_exists(static::PICTURE_BASEPATH . DS . $newPicture)) {
                 throw new \Exception(
                     "Une erreur est survenue lors de l'upload de l'image: " .
-                    "La chaîne passée de correspond pas à un fichier existant dans le dossier de destination."
+                    "La chaîne passée ne correspond pas à un fichier existant dans le dossier de destination."
                 );
             }
         }
@@ -557,7 +537,7 @@ final class Material extends BaseModel implements Serializable
 
     // ------------------------------------------------------
     // -
-    // -    "Repository" methods
+    // -    Méthodes de "repository"
     // -
     // ------------------------------------------------------
 
@@ -598,7 +578,7 @@ final class Material extends BaseModel implements Serializable
 
     // ------------------------------------------------------
     // -
-    // -    Utils methods
+    // -    Méthodes utilitaires
     // -
     // ------------------------------------------------------
 

@@ -12,9 +12,3 @@ parameters:
 
     bootstrapFiles:
         - ./src/App/Config/constants.php
-
-    ignoreErrors:
-        -
-            # @see https://github.com/phpstan/phpstan/issues/1267
-            message: '#Call to an undefined static method static\([a-zA-Z0-9\\_]+\)::_formatOne\(\)#'
-            path: ./src/App/Controllers/Traits/Crud/*

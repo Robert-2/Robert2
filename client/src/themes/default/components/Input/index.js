@@ -1,9 +1,10 @@
 import './index.scss';
+import { defineComponent } from '@vue/composition-api';
 
 export const TYPES = ['text', 'email', 'tel', 'password', 'number'];
 
 // @vue/component
-export default {
+const Input = defineComponent({
     name: 'Input',
     inject: {
         'input.invalid': { default: { value: false } },
@@ -78,6 +79,10 @@ export default {
             this.focused = false;
         },
 
+        handleKeyup(e) {
+            this.$emit('keyup', e);
+        },
+
         // ------------------------------------------------------
         // -
         // -    Public API
@@ -106,6 +111,7 @@ export default {
             handleBlur,
             handleInput,
             handleChange,
+            handleKeyup,
         } = this;
 
         const className = ['Input', {
@@ -133,10 +139,13 @@ export default {
                         onChange={handleChange}
                         onFocus={handleFocus}
                         onBlur={handleBlur}
+                        onKeyup={handleKeyup}
                     />
                 </div>
                 {addon && <div class="Input__addon">{addon}</div>}
             </div>
         );
     },
-};
+});
+
+export default Input;

@@ -100,7 +100,7 @@ Cette commande vous permet de lancer un serveur de développement front-end, ave
 qui servira les sources JS, CSS et les assets, à l'adresse `http://localhost:8081/`.  
 
 Pour travailler, créez un fichier `.env` dans le dossier `server/` qui contient la variable `APP_ENV=development`,
-puis ouvrez l'application sur son serveur back-end (par ex. `http://robert2.local`).
+puis ouvrez l'application sur son serveur back-end (par ex. `http://loxya.test`).
 
 #### `yarn build`
 
@@ -109,11 +109,11 @@ _(Pensez à exécuter cette commande et à commiter le résultat dans votre PR l
 
 ## URL de l'API en développement
 
-En développement, l'hôte par défaut utilisé par la partie client pour communiquer avec l'API est `http://robert2.local`.  
+En développement, l'hôte par défaut utilisé par la partie client pour communiquer avec l'API est `http://loxya.test/`.  
 
 Si vous souhaitez modifier ceci, vous pouvez créer un fichier `.env.development.local` à la racine du dossier
 client et surcharger la variable d'environnement `VUE_APP_API_URL` avec votre propre URL d'API (par
-exemple `http://localhost/robert2`).
+exemple `http://localhost/loxya`).
 
 ## Migration de la base de données
 

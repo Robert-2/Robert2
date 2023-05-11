@@ -1,0 +1,57 @@
+@use 'sass:color';
+@use 'sass:string';
+
+//
+// - Functions
+//
+
+/// Permet d'encoder une couleur.
+///
+/// @example scss color-encode(#ffffff); // => '%23ffffff'
+///
+/// @param {String|Color} $color La couleur à encoder.
+///
+/// @return {String} La couleur, encodée.
+///
+@function color-encode($color) {
+    @if type-of($color) == 'color' and str-index(#{$color}, '#') == 1 {
+        $hex: string.slice(color.ie-hex-str($color), 4);
+        $string: string.unquote('#{$hex}');
+        @return '%23' + $string;
+    }
+    @return $string;
+}
+
+//
+// - Mixins
+//
+
+/// Helper permettant de générer un damier.
+///
+/// @param {Color} $color1 L'une des deux couleurs du damier.
+/// @param {Color} $color2 L'une des deux couleurs du damier.
+///
+/// @output Un damier qui utiliser les deux couleurs fournies.
+@mixin checkerboard($color1: #aaa, $color2: #fff) {
+    background-position: 0 0, 4px 4px;
+    background-size: 8px 8px;
+
+    // stylelint-disable-next-line order/properties-order
+    background-image:
+        repeating-linear-gradient(
+            45deg,
+            $color1 25%,
+            transparent 25%,
+            transparent 75%,
+            $color1 75%,
+            $color1
+        ),
+        repeating-linear-gradient(
+            45deg,
+            $color1 25%,
+            $color2 25%,
+            $color2 75%,
+            $color1 75%,
+            $color1
+        );
+}

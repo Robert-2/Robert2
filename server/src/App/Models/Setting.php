@@ -97,6 +97,20 @@ final class Setting extends BaseModel
                 'sensitive' => true,
                 'default' => (string) Str::uuid(),
             ],
+
+            //
+            // - Inventaires de retour
+            //
+
+            'returnInventory.mode' => [
+                'type' => 'string',
+                'validation' => V::notEmpty()->anyOf(
+                    V::equals('start-empty'),
+                    V::equals('start-full'),
+                ),
+                'sensitive' => false,
+                'default' => 'start-empty',
+            ],
         ];
     }
 
@@ -195,7 +209,7 @@ final class Setting extends BaseModel
 
     // ------------------------------------------------------
     // -
-    // -    "Repository" methods
+    // -    Méthodes de "repository"
     // -
     // ------------------------------------------------------
 

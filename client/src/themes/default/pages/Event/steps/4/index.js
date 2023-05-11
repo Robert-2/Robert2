@@ -1,12 +1,11 @@
 import './index.scss';
-import { debounce } from 'debounce';
-import queryClient from '@/globals/queryClient';
+import debounce from 'lodash/debounce';
 import { DEBOUNCE_WAIT } from '@/globals/constants';
 import { ApiErrorCode } from '@/stores/api/@codes';
-import apiEvents from '@/stores/api/events';
+import apiBookings, { BookingEntity } from '@/stores/api/bookings';
 import eventStore from '../../EventStore';
 import MaterialsListEditor, {
-    getMaterialsQuantities,
+    getEventMaterialsQuantities,
     materialsHasChanged,
 } from '@/themes/default/components/MaterialsListEditor';
 
@@ -18,20 +17,30 @@ export default {
     },
     data() {
         return {
-            materials: getMaterialsQuantities(this.event.materials),
+            materials: getEventMaterialsQuantities(this.event.materials),
         };
     },
     created() {
         this.debouncedSave = debounce(this.save.bind(this), DEBOUNCE_WAIT);
     },
-    beforeUnmount() {
-        this.debouncedSave.clear();
+    beforeDestroy() {
+        this.debouncedSave.cancel();
     },
     methods: {
-        handleChange(newList) {
-            this.materials = newList;
+        // ------------------------------------------------------
+        // -
+        // -    Handlers
+        // -
+        // ------------------------------------------------------
 
-            const savedList = getMaterialsQuantities(this.event.materials);
+        handleChange(newList) {
+            const { event } = this;
+            if (!event) {
+                return;
+            }
+
+            this.materials = newList;
+            const savedList = getEventMaterialsQuantities(event.materials);
             const hasDifference = materialsHasChanged(savedList, newList);
             eventStore.commit('setIsSaved', !hasDifference);
 
@@ -40,69 +49,86 @@ export default {
             }
         },
 
-        saveAndBack(e) {
+        handleSubmit(e) {
             e.preventDefault();
-            this.save({ gotoStep: false });
+
+            this.saveAndGoToStep(5);
         },
 
-        saveAndNext(e) {
+        handlePrevClick(e) {
             e.preventDefault();
-            this.save({ gotoStep: 5 });
+
+            this.saveAndGoToStep(3);
         },
 
-        displayError(error) {
-            this.$emit('error', error);
+        handleNextClick(e) {
+            e.preventDefault();
 
-            const { code, details } = error.response?.data?.error || { code: ApiErrorCode.UNKNOWN, details: {} };
-            if (code === ApiErrorCode.VALIDATION_FAILED) {
-                this.errors = { ...details };
-            }
+            this.saveAndGoToStep(5);
         },
 
-        async save({ gotoStep } = { gotoStep: 4 }) {
+        // ------------------------------------------------------
+        // -
+        // -    Méthodes internes
+        // -
+        // ------------------------------------------------------
+
+        async saveAndGoToStep(nextStep) {
+            await this.save();
+
+            this.$emit('gotoStep', nextStep);
+        },
+
+        async save() {
             this.$emit('loading');
 
             const { id } = this.event;
             const materials = this.materials.filter(({ quantity }) => quantity > 0);
 
             try {
-                const data = await apiEvents.update(id, { materials });
-                queryClient.invalidateQueries('materials-while-event');
-                if (!gotoStep) {
-                    this.$router.push('/');
-                    return;
-                }
+                const data = await apiBookings.updateMaterials(id, {
+                    entity: BookingEntity.EVENT,
+                    materials,
+                });
                 eventStore.commit('setIsSaved', true);
                 this.$emit('updateEvent', data);
-                this.$emit('gotoStep', gotoStep);
             } catch (error) {
-                this.displayError(error);
+                this.$emit('error', error);
+
+                const { code, details } = error.response?.data?.error || { code: ApiErrorCode.UNKNOWN, details: {} };
+                if (code === ApiErrorCode.VALIDATION_FAILED) {
+                    this.errors = { ...details };
+                }
+            } finally {
+                this.$emit('stopLoading');
             }
         },
     },
     render() {
         const {
             $t: __,
+            materials,
             event,
             handleChange,
-            saveAndBack,
-            saveAndNext,
+            handleSubmit,
+            handlePrevClick,
+            handleNextClick,
         } = this;
 
         return (
-            <form class="Form EventStep4" onSubmit={saveAndBack}>
+            <form class="EventStep4" onSubmit={handleSubmit}>
                 <MaterialsListEditor
-                    selected={event.materials}
-                    event={event}
+                    selected={materials}
+                    booking={{ entity: BookingEntity.EVENT, ...event }}
                     onChange={handleChange}
                 />
-                <section class="Form__actions">
-                    <button type="submit" class="button info">
+                <section class="EventStep4__actions">
+                    <button type="submit" class="button info" onClick={handlePrevClick}>
                         <i class="fas fa-arrow-left" />&nbsp;
-                        {__('page.event-edit.save-and-back-to-calendar')}
+                        {__('page.event-edit.save-and-go-to-prev-step')}
                     </button>
-                    <button type="button" class="button success" onClick={saveAndNext}>
-                        {__('page.event-edit.save-and-continue')}&nbsp;
+                    <button type="submit" class="button success" onClick={handleNextClick}>
+                        {__('page.event-edit.save-and-go-to-next-step')}&nbsp;
                         <i class="fas fa-arrow-right" />
                     </button>
                 </section>

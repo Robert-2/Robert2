@@ -1,4 +1,6 @@
 import './index.scss';
+import HttpCode from 'status-code-enum';
+import { isRequestErrorStatusCode } from '@/utils/errors';
 import Fragment from '@/components/Fragment';
 import Page from '@/themes/default/components/Page';
 import CriticalError from '@/themes/default/components/CriticalError';
@@ -213,7 +215,6 @@ export default {
         handleShowTrashed() {
             this.shouldDisplayTrashed = !this.shouldDisplayTrashed;
             this.$refs.table.setPage(1);
-            this.$refs.table.refresh();
         },
 
         // ------------------------------------------------------
@@ -233,7 +234,14 @@ export default {
                 const data = await apiUsers.all(params);
                 this.isTrashDisplayed = this.shouldDisplayTrashed;
                 return data;
-            } catch {
+            } catch (error) {
+                if (isRequestErrorStatusCode(error, HttpCode.ClientErrorRangeNotSatisfiable)) {
+                    this.$refs.table.setPage(1);
+                    return undefined;
+                }
+
+                // eslint-disable-next-line no-console
+                console.error(`Error ocurred while retrieving users:`, error);
                 this.hasCriticalError = true;
             } finally {
                 this.isLoading = false;

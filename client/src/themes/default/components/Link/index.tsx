@@ -96,7 +96,6 @@ const Link = defineComponent({
                 const isOutside = typeof to === 'string' && to.includes('://');
 
                 return (
-                    // eslint-disable-next-line react/jsx-no-target-blank
                     <a
                         href={to}
                         class={className}

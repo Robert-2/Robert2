@@ -90,7 +90,7 @@ class MaterialsCollection extends Collection
 
     // ------------------------------------------------------
     // -
-    // -     Internal methods
+    // -     Méthodes internes
     // -
     // ------------------------------------------------------
 

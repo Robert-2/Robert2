@@ -1211,6 +1211,9 @@ return [
     "user-email-already-in-use"
     => "This email is already in use",
 
+    "invalid-hexadecimal-color"
+    => "Invalid color code (should be an hexadecimal code)",
+
     //
     // - Upload messages
     //
@@ -1221,9 +1224,6 @@ return [
     "upload-failed"
     => "File upload failed.",
 
-    "upload-failed-error-code"
-    => "File upload failed. Error code: %d",
-
     "file-exceeds-max-size"
     => "This file exceeds maximum size allowed.",
 
@@ -1233,6 +1233,6 @@ return [
     "saving-uploaded-file-failed"
     => "Saving the uploaded file failed.",
 
-    "document-cannot-be-saved-in-db"
-    => "Document could not be saved in database. Reason: %s",
+    "document-save-failed"
+    => "An unknown error occurred while saving the document.",
 ];

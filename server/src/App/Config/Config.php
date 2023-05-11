@@ -35,7 +35,7 @@ class Config
         'degressiveRateFunction' => 'daysCount',
         'proxy' => [
             'enabled' => false,
-            'host' => 'proxy.robert2.test',
+            'host' => 'proxy.loxya.test',
             'port' => 3128,
         ],
         'auth' => [
@@ -101,6 +101,7 @@ class Config
             'image/png',
             'image/webp',
             'text/plain',
+            'text/csv',
             'application/vnd.oasis.opendocument.spreadsheet',
             'application/vnd.ms-excel',
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -113,6 +114,9 @@ class Config
             'image/png',
             'image/webp',
         ],
+        // - Couleurs personnalisées à utiliser dans le colorpicker de l'application.
+        //   (à la place des propositions par défaut, doit être un tableau avec des codes hexadécimaux ou `null`)
+        'colorSwatches' => null,
     ];
 
     public const JSON_OPTIONS = JSON_PRETTY_PRINT |

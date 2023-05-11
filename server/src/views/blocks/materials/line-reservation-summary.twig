@@ -2,7 +2,7 @@
     <td>{{ material.material.reference }}</td>
     <td>
         {{ material.material.name }}
-        {% if not withoutPark and material.material.park_id is not null %}
+        {% if not withoutPark and material.material.park.name is not empty %}
             <em class="lighter">({{ material.material.park.name }})</em>
         {% endif %}
         {% if material.material.attributes is not empty %}

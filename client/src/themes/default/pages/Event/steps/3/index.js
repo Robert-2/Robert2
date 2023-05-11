@@ -92,7 +92,7 @@ export default {
                         group: technician.id,
                         editable: false,
                         type: 'background',
-                        // - Pas de `title`, car la tooltip fonctionne pas pour le type 'background'...
+                        // - Pas de `title`, car la tooltip ne fonctionne pas pour le type 'background'...
                     };
                 })
             ));
@@ -198,14 +198,6 @@ export default {
             });
         },
 
-        handleBackToCalendarClick() {
-            this.$router.push('/');
-        },
-
-        handleNextClick() {
-            this.$emit('gotoStep', 4);
-        },
-
         async handleItemMoved(item, callback) {
             const data = {
                 start_time: moment(dateRoundMinutes(item.start)).utc().format(DATE_DB_FORMAT),
@@ -259,9 +251,17 @@ export default {
             this.updateEvent();
         },
 
+        handlePrevClick() {
+            this.$emit('gotoStep', 2);
+        },
+
+        handleNextClick() {
+            this.$emit('gotoStep', 4);
+        },
+
         // ------------------------------------------------------
         // -
-        // -    Methods
+        // -    Méthodes internes
         // -
         // ------------------------------------------------------
 
@@ -316,7 +316,7 @@ export default {
             timelineOptions,
             handleNextClick,
             handleDoubleClick,
-            handleBackToCalendarClick,
+            handlePrevClick,
             handleItemMoved,
             handleItemRemove,
             handleItemUpdated,
@@ -368,13 +368,13 @@ export default {
                     {renderContent()}
                 </div>
                 <section class="EventStep3__footer">
-                    <button type="button" class="button info" onClick={handleBackToCalendarClick}>
-                        <i class="fas fa-arrow-left" />{' '}
-                        {__('page.event-edit.save-and-back-to-calendar')}
+                    <button type="button" class="button info" onClick={handlePrevClick}>
+                        <i class="fas fa-arrow-left" />&nbsp;
+                        {__('page.event-edit.save-and-go-to-prev-step')}
                     </button>
                     {!isLoading && techniciansCount > 0 && (
                         <button type="button" class="button success" onClick={handleNextClick}>
-                            {__('page.event-edit.save-and-continue')}{' '}
+                            {__('page.event-edit.save-and-go-to-next-step')}&nbsp;
                             <i class="fas fa-arrow-right" />
                         </button>
                     )}

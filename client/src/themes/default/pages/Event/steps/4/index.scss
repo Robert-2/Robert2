@@ -1,9 +1,10 @@
 @use '~@/themes/default/style/globals';
 
 .EventStep4 {
+    min-width: 800px;
     padding-bottom: 3rem;
 
-    .Form__actions {
+    &__actions {
         position: fixed;
         left: 193px;
         bottom: 0;
@@ -11,20 +12,21 @@
         margin: 0;
         padding: 1rem 0 1.5rem;
         background: globals.$bg-color-body;
+        text-align: left;
     }
-}
 
-@media (min-width: globals.$screen-mobile) {
-    .EventStep4 {
-        .Form__actions {
+    //
+    // - Responsive
+    //
+
+    @media (min-width: globals.$screen-mobile) {
+        &__actions {
             left: 256px;
         }
     }
-}
 
-@media (min-width: globals.$screen-desktop) {
-    .EventStep4 {
-        .Form__actions {
+    @media (min-width: globals.$screen-desktop) {
+        &__actions {
             left: 376px;
         }
     }

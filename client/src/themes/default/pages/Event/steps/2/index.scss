@@ -1,5 +1,10 @@
 .EventStep2 {
+    max-width: 800px;
+    min-width: 250px;
+    margin: 0 auto;
+
     &__title {
+        margin-top: 0;
         font-size: 1.5rem;
         font-weight: 200;
     }
@@ -13,7 +18,9 @@
         }
     }
 
-    &__footer {
+    &__actions {
+        display: flex;
+        justify-content: space-between;
         padding: 1rem 0 0.5rem;
     }
 }

@@ -1,5 +1,10 @@
 /* stylelint-disable selector-max-type, selector-max-id, selector-max-universal */
 
+// NOTE: Ces variables peuvent être aussi utilisées dans le JS.
+:root {
+    --calendar-event-default-color: #{$calendar-event-normal-color};
+}
+
 * {
     box-sizing: border-box;
 }

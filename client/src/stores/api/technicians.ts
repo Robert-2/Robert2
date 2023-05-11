@@ -1,7 +1,9 @@
 import requester from '@/globals/requester';
 
+import type { AxiosRequestConfig as RequestConfig } from 'axios';
 import type { PaginatedData, ListingParams } from '@/stores/api/@types';
 import type { Country } from '@/stores/api/countries';
+import type { Document } from '@/stores/api/documents';
 import type { Event } from './events';
 
 //
@@ -73,6 +75,15 @@ const remove = async (id: Technician['id']): Promise<void> => {
     await requester.delete(`/technicians/${id}`);
 };
 
+const documents = async (id: Technician['id']): Promise<Document[]> => (
+    (await requester.get(`/technicians/${id}/documents`)).data
+);
+
+const attachDocument = async (id: Technician['id'], file: File, options: RequestConfig = {}): Promise<Document> => {
+    const formData = new FormData(); formData.append('file', file);
+    return (await requester.post(`/technicians/${id}/documents`, formData, options)).data;
+};
+
 export default {
     all,
     allWhileEvent,
@@ -81,4 +92,6 @@ export default {
     update,
     remove,
     restore,
+    documents,
+    attachDocument,
 };

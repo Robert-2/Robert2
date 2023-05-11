@@ -1,5 +1,5 @@
 {
-    "name": "@robert2/vis-timeline",
+    "name": "@loxya/vis-timeline",
     "version": "0.0.0",
     "main": "./index.js",
     "dependencies": {

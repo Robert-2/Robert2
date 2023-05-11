@@ -3,8 +3,8 @@ import EventDetails from '@/themes/default/modals/EventDetails';
 import MonthCalendar from '@/themes/default/components/MonthCalendar';
 import ErrorMessage from '@/themes/default/components/ErrorMessage';
 import Loading from '@/themes/default/components/Loading';
+import formatEventTechnician from '@/utils/formatEventTechnician';
 import showModal from '@/utils/showModal';
-import { formatTechnicianEvent } from './_utils';
 
 // @vue/component
 export default {
@@ -23,7 +23,30 @@ export default {
     },
     computed: {
         events() {
-            return this.technicianEvents.map(formatTechnicianEvent);
+            return this.technicianEvents.map((technicianEvent) => {
+                const { id, eventId, title, start, end } = formatEventTechnician(technicianEvent);
+                const { color, is_confirmed: isConfirmed } = technicianEvent.event;
+                const isPast = end.isBefore(new Date(), 'day');
+
+                // - Si la date de fin est minuit du jour suivant, on la met à la seconde précédente
+                //   pour éviter que le slot apparaisse dans le jour suivant sur le calendrier.
+                const endDate = end.format('HH:mm:ss') === '00:00:00'
+                    ? end.clone().subtract(1, 'seconds')
+                    : end;
+
+                return {
+                    id,
+                    title,
+                    color,
+                    eventId,
+                    startDate: start,
+                    endDate,
+                    className: ['TechnicianViewSchedule__item', {
+                        'TechnicianViewSchedule__item--past': isPast,
+                        'TechnicianViewSchedule__item--not-confirmed': !isConfirmed,
+                    }],
+                };
+            });
         },
     },
     mounted() {
@@ -86,7 +109,13 @@ export default {
                 return <ErrorMessage error={error} />;
             }
 
-            return <MonthCalendar events={events} withTotal onClickItem={handleClickItem} />;
+            return (
+                <MonthCalendar
+                    items={events}
+                    onClickItem={handleClickItem}
+                    withTotal
+                />
+            );
         };
 
         return <div class="TechnicianViewSchedule">{render()}</div>;

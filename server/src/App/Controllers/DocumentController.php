@@ -3,28 +3,54 @@ declare(strict_types=1);
 
 namespace Robert2\API\Controllers;
 
+use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Robert2\API\Controllers\Traits\Crud;
-use Robert2\API\Controllers\Traits\FileResponse;
 use Robert2\API\Http\Request;
 use Robert2\API\Models\Document;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
+use Slim\Psr7\Stream;
 
 class DocumentController extends BaseController
 {
     use Crud\HardDelete;
-    use FileResponse;
 
-    public function getOne(Request $request, Response $response): Response
+    public function getFile(Request $request, Response $response): Response
     {
         $id = (int) $request->getAttribute('id');
         $document = Document::findOrFail($id);
 
-        $fileContent = file_get_contents($document->file_path);
+        $fileName = $document->name;
+        $fileContent = file_get_contents($document->path);
         if (!$fileContent) {
             throw new HttpNotFoundException($request, "The file of the document cannot be found.");
         }
 
-        return $this->_responseWithFile($response, $document->name, $fileContent);
+        try {
+            $streamHandle = fopen('php://memory', 'r+');
+            fwrite($streamHandle, $fileContent);
+            rewind($streamHandle);
+            $fileStream = new Stream($streamHandle);
+
+            return $response
+                ->withHeader('Content-Type', 'application/force-download')
+                ->withHeader('Content-Type', 'application/octet-stream')
+                ->withHeader('Content-Type', 'application/download')
+                ->withHeader('Content-Description', 'File Transfer')
+                ->withHeader('Content-Transfer-Encoding', 'binary')
+                ->withHeader('Content-Disposition', sprintf('attachment; filename="%s"', $fileName))
+                ->withHeader('Expires', '0')
+                ->withHeader('Cache-Control', 'must-revalidate, post-check=0, pre-check=0')
+                ->withHeader('Pragma', 'public')
+                ->withHeader('Content-Length', $fileStream->getSize())
+                ->withStatus(StatusCode::STATUS_OK)
+                ->withBody($fileStream);
+        } catch (\Exception $e) {
+            throw new \RuntimeException(sprintf(
+                "Cannot send the file \"%s\". Details: %s",
+                $fileName,
+                $e->getMessage()
+            ));
+        }
     }
 }

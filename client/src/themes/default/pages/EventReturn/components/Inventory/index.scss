@@ -2,6 +2,7 @@
 
 .EventReturnInventory {
     &__missing,
+    &__not-saved,
     &__all-returned,
     &__has-broken {
         margin-bottom: globals.$content-padding-large-horizontal;
@@ -9,13 +10,19 @@
         text-align: center;
     }
 
+    &__not-saved,
     &__all-returned,
     &__has-broken {
         margin-top: globals.$content-padding-large-vertical;
     }
 
+    &__not-saved {
+        color: globals.$text-warning-color;
+    }
+
     &__all-returned {
         color: globals.$text-success-color;
+        white-space: pre-line;
     }
 
     &__missing {

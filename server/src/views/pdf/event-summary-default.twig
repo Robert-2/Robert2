@@ -16,9 +16,7 @@
             <h1 class="box center spaceBottom5">
                 {{ translate('release-sheet') }}
             </h1>
-            <h2 class="">
-                {{ translate('event', [event['title']]) }}
-            </h2>
+            <h2>{{ event['title'] }}</h2>
             <h3>
                 {{ translate(
                     'from-to-dates',
@@ -112,8 +110,8 @@
     </p>
 {% endif %}
 
-<h2 class="vspace2">{{ translate('materials') }}</h2>
-<table class="size9 listing-table">
+<h2>{{ translate('materials') }}</h2>
+<table class="listing-table">
     <thead>
         <tr>
             <th>{{ translate('ref') }}</th>
@@ -174,8 +172,22 @@
     </tbody>
 </table>
 
+{% if totalisableAttributes is not empty %}
+<h2>{{ translate('material-attributes-totals') }}</h2>
+<table class="half spaceBottom5 size8">
+    <tbody>
+        {% for attribute in totalisableAttributes %}
+        <tr>
+            <td>{{ attribute.name }}</td>
+            <td>{{ attribute.value|format_number(locale=locale) }}&nbsp;{{ attribute.unit }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
 {% if customText and customText['content'] is not empty %}
-<div style="padding: 3mm 0; margin-bottom: 5mm;">
+<div class="vspace2 spaceBottom5">
     {% if customText['title'] is not empty %}
     <h2>{{ customText['title'] }}</h2>
     {% endif %}

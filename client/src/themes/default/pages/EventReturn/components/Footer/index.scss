@@ -16,11 +16,8 @@
     }
 
     &__warning {
+        margin-top: globals.$content-padding-large-horizontal;
         color: globals.$text-warning-color;
         font-size: 1.1rem;
-
-        > .Icon {
-            margin-right: 0.5rem;
-        }
     }
 }

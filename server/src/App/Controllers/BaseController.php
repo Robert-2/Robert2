@@ -6,6 +6,7 @@ namespace Robert2\API\Controllers;
 use DI\Container;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Robert2\API\Errors\Exception\RangeNotSatisfiableException;
 use Robert2\API\Http\Request;
 
 abstract class BaseController
@@ -38,6 +39,13 @@ abstract class BaseController
         $result = $paginated
             ->withPath($basePath)
             ->appends($params);
+
+        if ($result->currentPage() > $result->lastPage()) {
+            throw new RangeNotSatisfiableException(
+                $request,
+                "Current page number cannot be greater than total pages.",
+            );
+        }
 
         return [
             'pagination' => [

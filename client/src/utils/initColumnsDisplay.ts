@@ -13,7 +13,7 @@ const initFromStorage = (tableName: string, columns: ColumnsDisplay): ColumnsDis
     let tableState;
     try {
         tableState = JSON.parse(storedTableState);
-    } catch (error) {
+    } catch {
         localStorage.removeItem(`${STORAGE_KEY_PREFIX}${tableName}`);
         return columns;
     }

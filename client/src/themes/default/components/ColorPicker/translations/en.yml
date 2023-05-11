@@ -1,0 +1,11 @@
+close-picker: Close color picker
+clear-color: Clear the selected color
+marker: "Saturation: {saturation}. Brightness: {brightness}."
+hue-slider: Hue slider
+alpha-slider: Opacity slider
+color-swatch: "Color swatch \"{color}\""
+
+color-formats-short-name:
+    hex: Hex
+    rgb: RGB
+    hsl: HSL

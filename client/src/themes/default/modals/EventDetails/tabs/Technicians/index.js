@@ -57,12 +57,14 @@ export default {
         const { events, groups, timelineOptions } = this;
 
         return (
-            <Timeline
-                class="EventDetailsTechnicians"
-                items={events}
-                groups={groups}
-                options={timelineOptions}
-            />
+            <div class="EventDetailsTechnicians">
+                <Timeline
+                    class="EventDetailsTechnicians__timeline"
+                    items={events}
+                    groups={groups}
+                    options={timelineOptions}
+                />
+            </div>
         );
     },
 };
