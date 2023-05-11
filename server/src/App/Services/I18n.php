@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace Robert2\API\Services;
 
-use DElfimov\Translate\Loader\LoaderInterface;
 use Robert2\API\Config\Config;
 use Robert2\API\Services\I18n\Loader;
+use Robert2\API\Services\I18n\LoaderInterface;
 
 /**
  * I18n class.
@@ -177,7 +177,7 @@ final class I18n
 
     // ------------------------------------------------------
     // -
-    // -    Internal methods
+    // -    Méthodes internes
     // -
     // ------------------------------------------------------
 

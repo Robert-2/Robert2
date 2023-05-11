@@ -48,7 +48,7 @@ final class Logger
 
     // ------------------------------------------------------
     // -
-    // -    Public methods
+    // -    Méthodes publiques
     // -
     // ------------------------------------------------------
 
@@ -67,7 +67,7 @@ final class Logger
         }
 
         // - Handler
-        $path = LOGS_FOLDER . DS . Str::slug($name) . '.log';
+        $path = LOGS_FOLDER . DS . Str::slugify($name) . '.log';
         $handler = new Handler\RotatingFileHandler(
             $path,
             $this->settings['max_files'],

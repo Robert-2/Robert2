@@ -57,14 +57,10 @@
     &__loading {
         position: absolute;
         top: 0.5rem;
-        right: 0;
         display: flex;
         align-items: center;
         justify-content: center;
-
-        .fas {
-            margin-right: 0.3rem;
-        }
+        width: 100%;
     }
 
     /* stylelint-disable selector-max-type, selector-max-compound-selectors */
@@ -107,21 +103,6 @@
     &__name {
         // stylelint-disable-next-line declaration-no-important
         color: globals.$text-light-color !important;
-    }
-
-    &__availability {
-        min-width: 205px;
-
-        &__stock {
-            display: block;
-        }
-
-        &__surplus {
-            display: block;
-            margin-top: 3px;
-            color: globals.$text-warning-color;
-            font-style: italic;
-        }
     }
 
     &__price {

@@ -37,7 +37,7 @@ class Acl
 
     public static function isRouteAllowed(User $user, RouteInterface $route): bool
     {
-        $allowList = Config\Acl::ALLOW_LIST[$user->group] ?? [];
+        $allowList = Config\Acl::ALLOW_LIST[$user->group] ?? null;
         if (empty($allowList) || $allowList === '*') {
             return $allowList === '*';
         }

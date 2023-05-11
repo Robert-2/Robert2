@@ -62,7 +62,7 @@ class CategoryController extends BaseController
 
     // ------------------------------------------------------
     // -
-    // -    Internal methods
+    // -    Méthodes internes
     // -
     // ------------------------------------------------------
 

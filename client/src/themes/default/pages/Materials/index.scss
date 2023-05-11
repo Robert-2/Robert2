@@ -1,5 +1,6 @@
 @use '~@/themes/default/style/globals';
 @use 'sass:math';
+@use 'sass:color';
 
 .Page--materials {
     display: flex;
@@ -13,6 +14,8 @@
 }
 
 .Materials {
+    $block: &;
+
     display: flex;
     flex-direction: column;
 
@@ -41,17 +44,6 @@
         }
     }
 
-    &__ref,
-    &__park,
-    &__category,
-    &__description,
-    &__rental-price,
-    &__replacement-price,
-    &__quantity-broken,
-    &__tags {
-        display: none;
-    }
-
     &__link {
         padding: 10px 0;
 
@@ -66,39 +58,56 @@
         }
     }
 
-    &__category {
-        white-space: nowrap;
-    }
+    &__row {
+        cursor: pointer;
 
-    &__not-categorized {
-        color: globals.$text-light-color;
-        font-style: italic;
-    }
-
-    &__rental-price,
-    &__replacement-price {
-        // stylelint-disable-next-line declaration-no-important
-        text-align: right !important;
-    }
-
-    &__quantity,
-    &__quantity-broken {
-        // stylelint-disable-next-line declaration-no-important
-        text-align: center !important;
-    }
-
-    &__quantity {
-        &--remaining {
-            // stylelint-disable-next-line declaration-no-important
-            color: globals.$text-warning-color !important;
-            font-weight: 800;
+        &:hover > #{$block}__cell {
+            background-color: color.adjust(globals.$bg-color-table-td, $lightness: 5%);
         }
     }
 
-    // stylelint-disable-next-line selector-max-type
-    &__quantity-broken:not(th) {
-        // stylelint-disable-next-line declaration-no-important
-        color: globals.$text-danger-color !important;
+    &__cell {
+        &--ref,
+        &--park,
+        &--category,
+        &--description,
+        &--rental-price,
+        &--replacement-price,
+        &--quantity-broken,
+        &--tags {
+            display: none;
+        }
+
+        &--category {
+            white-space: nowrap;
+        }
+
+        &--not-categorized {
+            color: globals.$text-light-color;
+            font-style: italic;
+        }
+
+        &--rental-price,
+        &--replacement-price {
+            text-align: right;
+        }
+
+        &--quantity,
+        &--quantity-broken {
+            // Important, pour éviter l'overwrite du TH de vue-tables
+            /* stylelint-disable-next-line declaration-no-important */
+            text-align: center !important;
+        }
+
+        &--actions {
+            width: 1%;
+            text-align: right;
+            white-space: nowrap;
+        }
+    }
+
+    &__quantity-broken {
+        color: globals.$text-danger-color;
         font-weight: 800;
     }
 
@@ -121,36 +130,36 @@
         font-size: 0.85rem;
     }
 
-    &__actions {
-        width: 1%;
-        text-align: right;
-        white-space: nowrap;
-    }
-
     //
     // - Responsive
     //
 
     @media (min-width: globals.$screen-tablet) {
-        &__ref,
-        &__rental-price,
-        &__replacement-price,
-        &__category {
-            display: table-cell;
+        &__cell {
+            &--ref,
+            &--rental-price,
+            &--replacement-price,
+            &--category {
+                display: table-cell;
+            }
         }
     }
 
     @media (min-width: globals.$screen-desktop) {
-        &__quantity-broken,
-        &__tags {
-            display: table-cell;
+        &__cell {
+            &--quantity-broken,
+            &--tags {
+                display: table-cell;
+            }
         }
     }
 
     @media (min-width: globals.$screen-big-desktop) {
-        &__park,
-        &__description {
-            display: table-cell;
+        &__cell {
+            &--park,
+            &--description {
+                display: table-cell;
+            }
         }
 
         &__filters {

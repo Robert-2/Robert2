@@ -7,7 +7,7 @@ export default new Vuex.Store({
     mutations: {
         init(state, materials) {
             const reducer = (acc, material) => {
-                const { quantity } = material.pivot;
+                const { quantity } = material;
                 return { ...acc, [material.id]: { quantity } };
             };
             state.materials = materials.reduce(reducer, {});

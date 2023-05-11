@@ -3,8 +3,9 @@ title-simple: Modifier l'événement
 title: "Modifier l'événement «\_{title}\_»"
 help-edit: ''
 back-to-calendar: Retour au calendrier
-save-and-back-to-calendar: Sauvegarder et retour au calendrier
-save-and-continue: Sauvegarder et continuer
+save-and-go-to-prev-step: Sauvegarder et retour à l'étape précédente
+save-and-go-to-next-step: Sauvegarder et continuer
+go-to-prev-step: Retour à l'étape précédente
 continue: Continuer
 step: Étape
 event-informations: Informations

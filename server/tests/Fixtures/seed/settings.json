@@ -30,5 +30,9 @@
     {
         "key": "calendar.public.uuid",
         "value": "dfe7cd82-52b9-4c9b-aaed-033df210f23b"
+    },
+    {
+        "key": "returnInventory.mode",
+        "value": "start-empty"
     }
 ]

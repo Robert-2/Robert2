@@ -1,6 +1,6 @@
-/* eslint-disable */
+'use strict';
 
-import { Timeline } from 'vis-timeline';
-import { DataSet, DataView } from 'vis-data';
+const { Timeline } = require('vis-timeline');
+const { DataSet, DataView } = require('vis-data');
 
-export { Timeline, DataSet, DataView };
+module.exports = { Timeline, DataSet, DataView };

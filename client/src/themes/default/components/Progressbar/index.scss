@@ -4,8 +4,8 @@
     position: relative;
     width: 100%;
     height: 20px;
-    border-radius: globals.$input-border-radius;
-    background: globals.$bg-color-tooltip;
+    border-radius: 10px;
+    background: #141414;
 
     &__progress {
         position: absolute;
@@ -13,8 +13,17 @@
         left: 0;
         bottom: 0;
         overflow: hidden;
-        border-radius: globals.$input-border-radius;
+        border-radius: 10px;
         background: globals.$bg-color-button-info;
         text-align: center;
+        transition: width 200ms linear;
+    }
+
+    //
+    // - Variantes
+    //
+
+    &--minimalist {
+        height: 7px;
     }
 }

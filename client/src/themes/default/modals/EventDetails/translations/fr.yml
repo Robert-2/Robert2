@@ -28,3 +28,7 @@ estimates:
 
 invoice:
     regenerate-help: Vous pouvez re-générer la facture pour en changer la remise, ou si l'événement a été modifié.
+
+documents:
+    confirm-permanently-delete: "Voulez-vous vraiment supprimer définitivement ce document\_?"
+    deleted: Document supprimé.

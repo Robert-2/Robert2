@@ -26,7 +26,6 @@ class Install
     ];
 
     public const REQUIRED_EXTENSIONS = [
-        'apcu',
         'bcmath',
         'dom',
         'fileinfo',
@@ -126,7 +125,7 @@ class Install
 
     // ------------------------------------------------------
     // -
-    // -    Internal methods
+    // -    Méthodes internes
     // -
     // ------------------------------------------------------
 

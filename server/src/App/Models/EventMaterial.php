@@ -22,8 +22,8 @@ use Robert2\API\Models\Traits\TransientAttributes;
  * @property-read Decimal|null $total_price
  * @property-read Decimal $unit_replacement_price
  * @property-read Decimal $total_replacement_price
- * @property int $quantity_returned
- * @property int $quantity_returned_broken
+ * @property int|null $quantity_returned
+ * @property int|null $quantity_returned_broken
  */
 final class EventMaterial extends BasePivot
 {

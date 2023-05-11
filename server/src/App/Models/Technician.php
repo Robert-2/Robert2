@@ -39,11 +39,15 @@ use Robert2\API\Models\Traits\SoftDeletable;
  * @property-read Carbon|null $deleted_at
  *
  * @property-read Collection|EventTechnician[] $assignments
+ * @property-read Collection|Document[] $documents
  */
 final class Technician extends BaseModel implements Serializable
 {
     use Serializer;
     use SoftDeletable;
+
+    /** L'identifiant unique du modèle. */
+    public const TYPE = 'technician';
 
     protected $table = 'technicians';
 
@@ -84,6 +88,12 @@ final class Technician extends BaseModel implements Serializable
             ->with('event')
             ->has('event')
             ->orderBy('start_time');
+    }
+
+    public function documents()
+    {
+        return $this->morphMany(Document::class, 'entity')
+            ->orderBy('name', 'asc');
     }
 
     // ------------------------------------------------------
@@ -345,7 +355,7 @@ final class Technician extends BaseModel implements Serializable
 
     // ------------------------------------------------------
     // -
-    // -    "Repository" methods
+    // -    Méthodes de "repository"
     // -
     // ------------------------------------------------------
 

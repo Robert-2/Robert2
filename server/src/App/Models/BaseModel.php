@@ -124,7 +124,7 @@ abstract class BaseModel extends Model
 
     // ------------------------------------------------------
     // -
-    // -    "Repository" methods
+    // -    Méthodes de "repository"
     // -
     // ------------------------------------------------------
 
@@ -162,18 +162,16 @@ abstract class BaseModel extends Model
 
     public function fill(array $attributes)
     {
+        // TODO: Devrait être fait dans les setters des modèles ...
         $data = array_map(
-            fn($value) => $value === '' ? null : $value,
+            function ($value) {
+                $value = is_string($value) ? trim($value) : $value;
+                return $value === '' ? null : $value;
+            },
             $attributes,
         );
 
-        $trimmedData = [];
-        foreach ($data as $field => $value) {
-            $isString = array_key_exists($field, $this->casts) && $this->casts[$field] === 'string';
-            $trimmedData[$field] = $isString && $value && is_string($value) ? trim($value) : $value;
-        }
-
-        return parent::fill($trimmedData);
+        return parent::fill($data);
     }
 
     public function save(array $options = [])

@@ -6,6 +6,7 @@ return [
         '/session[/]' => 'AuthController:getSelf',
 
         '/attributes[/]' => 'AttributeController:getAll',
+        '/attributes/{id:[0-9]+}[/]' => 'AttributeController:getOne',
 
         '/users[/]' => 'UserController:getAll',
         '/users/{id:(?:[0-9]+|self)}[/]' => 'UserController:getOne',
@@ -19,6 +20,7 @@ return [
 
         '/technicians[/]' => 'TechnicianController:getAll',
         '/technicians/{id:[0-9]+}/events[/]' => 'TechnicianController:getEvents',
+        '/technicians/{id:[0-9]+}/documents[/]' => 'TechnicianController:getDocuments',
         '/technicians/while-event/{eventId:[0-9]+}[/]' => 'TechnicianController:getAllWhileEvent',
         '/technicians/{id:[0-9]+}[/]' => 'TechnicianController:getOne',
 
@@ -40,13 +42,14 @@ return [
         '/materials[/]' => 'MaterialController:getAll',
         '/materials/{id:[0-9]+}[/]' => 'MaterialController:getOne',
         '/materials/{id:[0-9]+}/tags[/]' => 'MaterialController:getTags',
-        '/materials/{id:[0-9]+}/documents[/]' => 'MaterialController:getAllDocuments',
+        '/materials/{id:[0-9]+}/documents[/]' => 'MaterialController:getDocuments',
         '/materials/{id:[0-9]+}/bookings[/]' => 'MaterialController:getBookings',
         '/materials/while-event/{eventId:[0-9]+}[/]' => 'MaterialController:getAllWhileEvent',
 
         '/events[/]' => 'EventController:getAll',
         '/events/{id:[0-9]+}[/]' => 'EventController:getOne',
         '/events/{id:[0-9]+}/missing-materials[/]' => 'EventController:getMissingMaterials',
+        '/events/{id:[0-9]+}/documents[/]' => 'EventController:getDocuments',
 
         '/event-technicians/{id:[0-9]+}[/]' => 'EventTechnicianController:getOne',
 
@@ -66,6 +69,7 @@ return [
         '/tags[/]' => 'TagController:create',
 
         '/technicians[/]' => 'TechnicianController:create',
+        '/technicians/{id:[0-9]+}/documents[/]' => 'TechnicianController:attachDocument',
 
         '/beneficiaries[/]' => 'BeneficiaryController:create',
 
@@ -74,7 +78,7 @@ return [
         '/parks[/]' => 'ParkController:create',
 
         '/materials[/]' => 'MaterialController:create',
-        '/materials/{id:[0-9]+}/documents[/]' => 'MaterialController:handleUploadDocuments',
+        '/materials/{id:[0-9]+}/documents[/]' => 'MaterialController:attachDocument',
 
         '/attributes[/]' => 'AttributeController:create',
 
@@ -82,6 +86,7 @@ return [
         '/events/{id:[0-9]+}/duplicate[/]' => 'EventController:duplicate',
         '/events/{id:[0-9]+}/invoices[/]' => 'EventController:createInvoice',
         '/events/{id:[0-9]+}/estimates[/]' => 'EventController:createEstimate',
+        '/events/{id:[0-9]+}/documents[/]' => 'EventController:attachDocument',
 
         '/event-technicians[/]' => 'EventTechnicianController:create',
     ],
@@ -126,6 +131,8 @@ return [
         '/event-technicians/{id:[0-9]+}[/]' => 'EventTechnicianController:update',
 
         '/settings[/]' => 'SettingController:update',
+
+        '/bookings/{id:[0-9]+}/materials[/]' => 'BookingController:updateMaterials',
     ],
     'delete' => [
         '/users/{id:[0-9]+}[/]' => 'UserController:delete',

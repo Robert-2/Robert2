@@ -36,7 +36,7 @@ export default defineComponent({
                 value = this.min;
             }
 
-            if (this.max != null && value > this.limit) {
+            if (![undefined, null].includes(this.max) && value > this.limit) {
                 value = this.max;
             }
 
@@ -53,7 +53,7 @@ export default defineComponent({
 
         handleIncrement() {
             const value = this.value + 1;
-            if (this.max != null && value > this.max) {
+            if (![undefined, null].includes(this.max) && value > this.max) {
                 return;
             }
             this.$emit('change', value);
@@ -102,9 +102,9 @@ export default defineComponent({
                     class={[
                         'QuantityInput__button',
                         'QuantityInput__button--increment',
-                        { 'QuantityInput__button--disabled': max != null && value >= max },
+                        { 'QuantityInput__button--disabled': ![undefined, null].includes(max) && value >= max },
                     ]}
-                    disabled={max != null && value >= max}
+                    disabled={![undefined, null].includes(max) && value >= max}
                     onClick={handleIncrement}
                 >
                     <Icon name="plus" />

@@ -23,6 +23,112 @@ $group-item-max-height: 65px !default;
         flex: 1;
     }
 
+    &__item {
+        $sub-block: &;
+        $border-radius: 10px;
+
+        margin: 0;
+        padding: 1.2rem 1.1rem;
+        border: none;
+        font-size: 1rem;
+
+        &.vis-range {
+            border: none;
+            border-radius: $border-radius;
+            background-color: globals.$calendar-event-normal-color;
+            color: globals.$calendar-event-normal-text-color;
+            box-shadow: 1px 2px 3px rgba(#000, 0.5);
+
+            &.vis-selected {
+                filter: brightness(110%);
+            }
+        }
+
+        &.vis-background {
+            padding: 0.5rem 0.8rem;
+            background-color: rgba(31, 31, 31, 0.6);
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        &:not(.vis-readonly):not(.vis-background) {
+            cursor: pointer;
+
+            .vis-drag-left {
+                left: 0;
+                border-radius: $border-radius 0 0 $border-radius;
+            }
+
+            .vis-drag-right {
+                right: 0;
+                border-radius: 0 $border-radius $border-radius 0;
+            }
+        }
+
+        &.vis-readonly {
+            .vis-drag-center {
+                cursor: no-drop;
+            }
+        }
+
+        &--with-custom-color {
+            &.vis-range {
+                background-color: var(--timeline-item-color);
+
+                &#{$sub-block}--with-dark-color {
+                    color: globals.$calendar-event-text-color-light;
+                }
+
+                &#{$sub-block}--with-light-color {
+                    color: globals.$calendar-event-text-color-dark;
+                }
+            }
+        }
+
+        .vis-item-overflow {
+            display: flex;
+            align-items: center;
+        }
+
+        .vis-item-content {
+            overflow: hidden;
+            padding: 0;
+            text-overflow: ellipsis;
+        }
+
+        // stylelint-disable-next-line selector-class-pattern
+        .vis-onUpdateTime-tooltip {
+            border-radius: 3px;
+            background-color: globals.$bg-color-tooltip;
+            line-height: 1.5;
+            white-space: pre-wrap;
+        }
+
+        .vis-delete {
+            right: -32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 100%;
+            border-radius: 3px;
+
+            &::after {
+                content: '\f1f8';
+                color: globals.$text-danger-color;
+                // stylelint-disable-next-line font-family-no-missing-generic-family-keyword
+                font-family: 'Font Awesome 5 Free';
+                font-size: 1.7rem;
+                font-weight: 900;
+            }
+
+            &:hover {
+                &::after {
+                    color: #fff;
+                }
+            }
+        }
+    }
+
     .vis-timeline {
         border: none;
         background-color: globals.$calendar-main-background-color;
@@ -65,10 +171,6 @@ $group-item-max-height: 65px !default;
             &.vis-today {
                 background-color: globals.$calendar-current-date-background-color;
             }
-
-            &.vis-sunday {
-                background: rgba(#fff, 0.1);
-            }
         }
 
         .vis-current-time {
@@ -79,102 +181,6 @@ $group-item-max-height: 65px !default;
 
         .vis-label {
             color: globals.$text-base-color;
-        }
-    }
-
-    .vis-item {
-        $border-radius: 10px;
-
-        margin: 0;
-        padding: 1.2rem 1.1rem;
-        border: none;
-        font-size: 1rem;
-
-        &.vis-range {
-            border-radius: $border-radius;
-            background-color: globals.$calendar-event-normal-color;
-            color: globals.$calendar-event-text-color;
-            box-shadow: 1px 2px 3px rgba(#000, 0.5);
-
-            &.vis-selected {
-                background-color: color.adjust(globals.$calendar-event-normal-color, $lightness: 10%);
-            }
-        }
-
-        &.vis-background {
-            padding: 0.5rem 0.8rem;
-            background-color: rgba(31, 31, 31, 0.6);
-            color: rgba(255, 255, 255, 0.5);
-        }
-
-        .vis-item-overflow {
-            display: flex;
-            align-items: center;
-        }
-
-        .vis-item-content {
-            overflow: hidden;
-            padding: 0;
-            text-overflow: ellipsis;
-        }
-
-        // stylelint-disable-next-line selector-class-pattern
-        .vis-onUpdateTime-tooltip {
-            border-radius: 3px;
-            background-color: globals.$bg-color-tooltip;
-            line-height: 1.5;
-            white-space: pre-wrap;
-        }
-
-        &:not(.vis-readonly):not(.vis-background) {
-            cursor: pointer;
-
-            .vis-drag-left,
-            .vis-drag-right {
-                width: 32px;
-                background: rgba(#000, 0.1);
-            }
-
-            .vis-drag-left {
-                left: 0;
-                border-radius: $border-radius 0 0 $border-radius;
-            }
-
-            .vis-drag-right {
-                right: 0;
-                border-radius: 0 $border-radius $border-radius 0;
-            }
-        }
-
-        &.vis-readonly {
-            .vis-drag-center {
-                cursor: no-drop;
-            }
-        }
-
-        .vis-delete {
-            right: -32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 32px;
-            height: 100%;
-            border-radius: 3px;
-
-            &::after {
-                content: '\f1f8';
-                color: globals.$text-danger-color;
-                // stylelint-disable-next-line font-family-no-missing-generic-family-keyword
-                font-family: 'Font Awesome 5 Free';
-                font-size: 1.7rem;
-                font-weight: 900;
-            }
-
-            &:hover {
-                &::after {
-                    color: #fff;
-                }
-            }
         }
     }
 

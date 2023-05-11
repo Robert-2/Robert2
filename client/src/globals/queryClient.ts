@@ -5,7 +5,7 @@ import { isRequestErrorStatusCode } from '@/utils/errors';
 const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
-            staleTime: 10 * 60000, // - 10 minutes
+            staleTime: 10 * 60_000, // - 10 minutes
             retry: (failureCount: number, error: unknown) => {
                 if (isRequestErrorStatusCode(error, HttpCode.ClientErrorNotFound)) {
                     return false;

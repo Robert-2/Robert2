@@ -20,7 +20,7 @@ export default defineComponent({
             );
         }
     },
-    beforeUnmount() {
+    beforeDestroy() {
         if (this.shownTimer) {
             clearTimeout(this.shownTimer);
         }

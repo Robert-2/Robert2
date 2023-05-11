@@ -1,10 +1,7 @@
 import './index.scss';
-import Fragment from '@/components/Fragment';
 import { confirm } from '@/utils/alert';
 import apiAttributes from '@/stores/api/attributes';
-import Input from '@/themes/default/components/Input';
 import Button from '@/themes/default/components/Button';
-import { ApiErrorCode } from '@/stores/api/@codes';
 
 // @vue/component
 export default {
@@ -14,7 +11,6 @@ export default {
     },
     data() {
         return {
-            isSaving: false,
             isEditing: false,
             isDeleting: false,
             isDeleted: false,
@@ -26,13 +22,31 @@ export default {
         formattedMaxLength() {
             const { $t: __, attribute } = this;
 
-            if (attribute.maxLength != null) {
+            if (![undefined, null].includes(attribute.maxLength)) {
                 return attribute.maxLength;
             }
 
             return attribute.type === 'string'
                 ? __('page.attributes.no-limit')
                 : '';
+        },
+
+        formattedTotalisable() {
+            const { $t: __, attribute } = this;
+
+            if (!['integer', 'float'].includes(attribute.type)) {
+                return null;
+            }
+
+            return attribute.isTotalisable ? __('yes') : __('no');
+        },
+
+        formattedCategories() {
+            const { $t: __, attribute: { categories } } = this;
+
+            return categories.length > 0
+                ? categories.map(({ name: _name }) => _name).join(', ')
+                : __('page.attributes.all-categories-not-limited');
         },
     },
     methods: {
@@ -42,67 +56,7 @@ export default {
         // -
         // ------------------------------------------------------
 
-        handleSave(e) {
-            e.preventDefault();
-
-            this.save();
-        },
-
-        handleDelete() {
-            this.delete();
-        },
-
-        handleStartEditing() {
-            this.newName = this.attribute.name;
-            this.isEditing = true;
-        },
-
-        handleCancelEditing() {
-            if (this.isSaving) {
-                return;
-            }
-
-            this.isEditing = false;
-            this.newName = null;
-            this.validationErrors = null;
-        },
-
-        // ------------------------------------------------------
-        // -
-        // -    Internal methods
-        // -
-        // ------------------------------------------------------
-
-        async save() {
-            if (this.isDeleting || this.isDeleted || this.isSaving) {
-                return;
-            }
-
-            const { $t: __, attribute: { id } } = this;
-
-            this.isSaving = true;
-            this.validationErrors = null;
-
-            try {
-                const attribute = await apiAttributes.update(id, { name: this.newName });
-
-                this.newName = null;
-                this.isEditing = false;
-
-                this.$emit('updated', attribute);
-            } catch (error) {
-                const { code, details } = error.response?.data?.error || { code: ApiErrorCode.UNKNOWN, details: {} };
-                if (code === ApiErrorCode.VALIDATION_FAILED) {
-                    this.validationErrors = { ...details };
-                } else {
-                    this.$toasted.error(__('errors.unexpected-while-saving'));
-                }
-            } finally {
-                this.isSaving = false;
-            }
-        },
-
-        async delete() {
+        async handleDelete() {
             if (this.isDeleting || this.isDeleted) {
                 return;
             }
@@ -139,91 +93,37 @@ export default {
         const {
             $t: __,
             isDeleted,
-            isSaving,
-            isEditing,
-            isDeleting,
-            handleSave,
-            handleDelete,
-            handleStartEditing,
-            handleCancelEditing,
-            validationErrors,
-            formattedMaxLength,
             attribute: {
+                id,
                 name,
                 type,
                 unit,
                 categories,
             },
+            formattedTotalisable,
+            formattedMaxLength,
+            formattedCategories,
+            handleDelete,
+            isDeleting,
         } = this;
 
-        if (isDeleted || isDeleting) {
+        if (isDeleted) {
             return null;
         }
-
-        const renderName = () => {
-            if (isEditing) {
-                return (
-                    <form class="AttributesItem__name-edit" onSubmit={handleSave}>
-                        <div class="AttributesItem__name-edit__form">
-                            <Input
-                                class="AttributesItem__name-edit__form__input"
-                                disabled={isSaving}
-                                v-model={this.newName}
-                            />
-                            <div class="AttributesItem__name-edit__form__actions">
-                                <Button
-                                    icon="ban"
-                                    disabled={isSaving}
-                                    onClick={handleCancelEditing}
-                                />
-                                <Button
-                                    icon="check"
-                                    type="primary"
-                                    loading={isSaving}
-                                    htmlType="submit"
-                                />
-                            </div>
-                        </div>
-                        {validationErrors?.name?.[0] && (
-                            <p class="AttributesItem__name-edit__error">
-                                {validationErrors.name[0]}
-                            </p>
-                        )}
-                    </form>
-                );
-            }
-
-            return (
-                <div class="AttributesItem__name">
-                    <span class="AttributesItem__name__text">{name}</span>
-                    {!isDeleting && (
-                        <Button
-                            icon="pen"
-                            type="success"
-                            class="AttributesItem__name__edit-button"
-                            onClick={handleStartEditing}
-                        />
-                    )}
-                </div>
-            );
-        };
-
-        const renderCategories = () => (
-            categories.length > 0
-                ? categories.map(({ name: _name }) => _name).join(', ')
-                : <Fragment>{__('all-categories')} ({__('not-limited')})</Fragment>
-        );
 
         return (
             <tr class="AttributesItem">
                 <td class="AttributesItem__cell AttributesItem__cell--name">
-                    {renderName()}
+                    {name}
                 </td>
                 <td class="AttributesItem__cell AttributesItem__cell--type">
                     {__(`page.attributes.type-${type}`)}
                 </td>
                 <td class="AttributesItem__cell AttributesItem__cell--unit">
                     {unit}
+                </td>
+                <td class="AttributesItem__cell AttributesItem__cell--is-totalisable">
+                    {formattedTotalisable}
                 </td>
                 <td class="AttributesItem__cell AttributesItem__cell--max-length">
                     {formattedMaxLength}
@@ -233,20 +133,18 @@ export default {
                         'AttributesItem__cell--empty': categories.length === 0,
                     }]}
                 >
-                    {renderCategories()}
+                    {formattedCategories}
                 </td>
                 <td class="AttributesItem__cell AttributesItem__cell--actions">
-                    {!isEditing && (
-                        <Button
-                            icon="trash"
-                            type="danger"
-                            onClick={handleDelete}
-                            class={[
-                                'AttributesItem__delete-button',
-                                { 'AttributesItem__delete-button--visible': isDeleting },
-                            ]}
-                        />
-                    )}
+                    <Button
+                        type="edit"
+                        to={{ name: 'edit-attribute', params: { id } }}
+                    />
+                    <Button
+                        type="trash"
+                        onClick={handleDelete}
+                        loading={isDeleting}
+                    />
                 </td>
             </tr>
         );

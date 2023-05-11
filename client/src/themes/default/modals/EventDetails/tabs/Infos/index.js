@@ -2,6 +2,7 @@ import './index.scss';
 import moment from 'moment';
 import { defineComponent } from '@vue/composition-api';
 import Icon from '@/themes/default/components/Icon';
+import Button from '@/themes/default/components/Button';
 import EventTechnicians from '@/themes/default/components/EventTechnicians';
 import EventTotals from '@/themes/default/components/EventTotals';
 import LocationText from '@/themes/default/components/LocationText';
@@ -35,7 +36,7 @@ const EventDetailsInfos = {
         // - Actualise le timestamp courant toutes les minutes.
         this.nowTimer = setInterval(() => { this.now = Date.now(); }, 60_000);
     },
-    beforeUnmount() {
+    beforeDestroy() {
         if (this.nowTimer) {
             clearInterval(this.nowTimer);
         }
@@ -91,6 +92,23 @@ const EventDetailsInfos = {
                         <Icon name="clipboard" class="EventDetailsInfos__description__icon" />
                         {description}
                     </p>
+                )}
+                {!hasMaterials && (
+                    <div class="EventDetailsInfos__no-material">
+                        <p>
+                            <Icon name="exclamation-triangle" class="EventDetailsInfos__no-material__icon" />
+                            {__('@event.warning-no-material')}
+                        </p>
+                        {!isPast && (
+                            <Button
+                                type="primary"
+                                to={{ name: 'edit-event', params: { id: event.id } }}
+                            >
+                                <Icon name="edit" class="EventDetailsInfos__no-material__icon" />
+                                {__('modal.event-details.edit')}
+                            </Button>
+                        )}
+                    </div>
                 )}
                 {hasMaterials && !isPast && (
                     <div

@@ -10,6 +10,7 @@ use Robert2\API\Controllers\Traits\WithCrud;
 use Robert2\API\Controllers\Traits\WithPdf;
 use Robert2\API\Errors\Exception\ValidationException;
 use Robert2\API\Http\Request;
+use Robert2\API\Models\Document;
 use Robert2\API\Models\Estimate;
 use Robert2\API\Models\Event;
 use Robert2\API\Models\Invoice;
@@ -52,13 +53,14 @@ class EventController extends BaseController
             ->when($exclude !== null, fn ($builder) => (
                 $builder->where('id', '<>', $exclude)
             ))
-            ->select(['id', 'title', 'start_date', 'end_date', 'location'])
             ->orderBy('start_date', 'desc')
             ->whereHas('materials');
 
         return $response->withJson([
             'count' => $query->count(),
-            'data' => $query->limit(10)->get(),
+            'data' => $query->limit(10)->get()->map(fn (Event $event) => (
+                $event->serialize(Event::SERIALIZE_SUMMARY)
+            )),
         ]);
     }
 
@@ -76,6 +78,14 @@ class EventController extends BaseController
             ));
 
         return $response->withJson($missingMaterials, StatusCode::STATUS_OK);
+    }
+
+    public function getDocuments(Request $request, Response $response): Response
+    {
+        $id = (int) $request->getAttribute('id');
+        $event = Event::findOrFail($id);
+
+        return $response->withJson($event->documents, StatusCode::STATUS_OK);
     }
 
     public function create(Request $request, Response $response): Response
@@ -172,6 +182,25 @@ class EventController extends BaseController
 
         $invoice = Invoice::createFromBooking($event, Auth::user());
         return $response->withJson($invoice, StatusCode::STATUS_CREATED);
+    }
+
+    public function attachDocument(Request $request, Response $response): Response
+    {
+        $id = (int) $request->getAttribute('id');
+        $event = Event::findOrFail($id);
+
+        /** @var UploadedFileInterface[] $uploadedFiles */
+        $uploadedFiles = $request->getUploadedFiles();
+        if (count($uploadedFiles) !== 1) {
+            throw new HttpBadRequestException($request, "Invalid number of files sent: a single file is expected.");
+        }
+
+        $file = array_values($uploadedFiles)[0];
+        $document = new Document(compact('file'));
+        $document->author()->associate(Auth::user());
+        $event->documents()->save($document);
+
+        return $response->withJson($document, StatusCode::STATUS_CREATED);
     }
 
     public function archive(Request $request, Response $response): Response

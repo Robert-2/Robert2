@@ -3,6 +3,10 @@
 .EventStep5 {
     $spacing: 1.5rem;
 
+    max-width: 1000px;
+    min-width: 500px;
+    margin: 0 auto;
+
     .EventStep5Overview {
         margin-bottom: $spacing;
     }
@@ -35,5 +39,10 @@
                 color: globals.$text-success-color;
             }
         }
+    }
+
+    &__actions {
+        display: flex;
+        justify-content: space-between;
     }
 }

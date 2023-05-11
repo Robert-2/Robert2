@@ -5,8 +5,8 @@ namespace Robert2\API\Models;
 
 use Illuminate\Database\Eloquent\Collection;
 use Robert2\API\Contracts\Serializable;
-use Respect\Validation\Validator as V;
 use Robert2\API\Models\Traits\Serializer;
+use Respect\Validation\Validator as V;
 
 /**
  * Catégorie de matériel.
@@ -119,7 +119,7 @@ final class Category extends BaseModel implements Serializable
 
     // ------------------------------------------------------
     // -
-    // -    "Repository" methods
+    // -    Méthodes de "repository"
     // -
     // ------------------------------------------------------
 

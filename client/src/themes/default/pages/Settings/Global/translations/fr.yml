@@ -64,3 +64,13 @@ calendar:
 
     public-calendar-url-reset-success:
         "Le lien du calendrier public a bien été re-généré\_! Le nouveau lien est disponible ci-dessus."
+
+return-inventory:
+    title: Inventaires de retour
+    help: Ici vous pouvez paramétrer le comportement des inventaires de retour.
+    saved: Les paramètres des inventaires de retour ont bien été sauvegardés.
+
+    mode: Comportement des inventaires de retour
+    modes:
+        start-empty: Les quantités restituées doivent être définies manuellement.
+        start-full: Les quantités restituées sont pré-remplies avec les quantités attendues.

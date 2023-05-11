@@ -1,4 +1,5 @@
 import './index.scss';
+import { defineComponent } from '@vue/composition-api';
 import moment from 'moment';
 import Button from '@/themes/default/components/Button';
 import Datepicker from '@/themes/default/components/Datepicker';
@@ -8,11 +9,18 @@ import Loading from '@/themes/default/components/Loading';
 import { Group } from '@/stores/api/groups';
 
 // @vue/component
-export default {
+const CalendarHeader = defineComponent({
     name: 'CalendarHeader',
     props: {
         isLoading: Boolean,
     },
+    emits: [
+        'refresh',
+        'setCenterDate',
+        'setCenterDate',
+        'filterByPark',
+        'filterMissingMaterials',
+    ],
     data() {
         return {
             centerDate: null,
@@ -35,7 +43,7 @@ export default {
             return this.$store.getters['auth/is']([Group.ADMIN, Group.MEMBER]);
         },
     },
-    mounted() {
+    created() {
         this.$store.dispatch('parks/fetch');
     },
     methods: {
@@ -139,7 +147,7 @@ export default {
                     {isLoading && <Loading horizontal />}
                 </div>
                 <div class="CalendarHeader__filters">
-                    {parksOptions.length > 1 && (
+                    {(parksOptions.length > 1 || !!filters.park) && (
                         <div class="CalendarHeader__filter">
                             <Select
                                 value={filters.park}
@@ -147,7 +155,7 @@ export default {
                                 onChange={handleFilterParkChange}
                                 options={parksOptions}
                                 placeholder={__('page.calendar.display-all-parks')}
-                                highlight={!!filters.park}
+                                highlight={!!filters.park && parksOptions.length > 1}
                             />
                         </div>
                     )}
@@ -175,4 +183,6 @@ export default {
             </div>
         );
     },
-};
+});
+
+export default CalendarHeader;

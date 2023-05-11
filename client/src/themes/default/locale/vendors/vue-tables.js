@@ -2,15 +2,16 @@ const fr = {
     'count': "Enregistrements {from} à {to} sur {count}|{count} enregistrements|Un enregistrement",
     'first': "Première",
     'last': "Dernière",
-    'filter': "Filtre\u00a0:",
+    'filter': "Filtre\u00A0:",
     'filterPlaceholder': "Rechercher un nom...",
-    'limit': "Enregistrements\u00a0:",
-    'page': "Page\u00a0:",
+    'limit': "Enregistrements\u00A0:",
+    'page': "Page\u00A0:",
     'noResults': "Aucun enregistrement trouvé.",
     'filterBy': "Filtrer par {column}",
     'loading': "Chargement...",
     'defaultOption': "Sélection {column}",
     'columns': "Col.",
+    'loadingError': "Une erreur inattendue s'est produite lors de la récupération des données.",
 };
 
 const en = {
@@ -26,6 +27,7 @@ const en = {
     'loading': "Loading...",
     'defaultOption': "Select {column}",
     'columns': "Col.",
+    'loadingError': "An unexpected error occurred while retrieving the data.",
 };
 
 export default { fr, en };

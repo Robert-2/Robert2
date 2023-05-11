@@ -29,7 +29,7 @@ const EventMissingMaterials = {
             const { eventId } = this;
             try {
                 this.missingMaterials = await apiEvents.missingMaterials(eventId);
-            } catch (err) {
+            } catch {
                 this.hasFetchError = true;
             }
         },

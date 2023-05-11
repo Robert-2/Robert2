@@ -1,8 +1,11 @@
-import { getMaterialsQuantities, materialsHasChanged } from '../_utils';
+import {
+    getEventMaterialsQuantities,
+    materialsHasChanged,
+} from '../_utils';
 
 describe('MaterialsListEditor', () => {
-    describe('Utils / getMaterialsQuantities()', () => {
-        it('should return an object containing the quantities related to a material', () => {
+    describe('Utils / getEventMaterialsQuantities()', () => {
+        it('should return an object containing the quantities related to an event material', () => {
             const materials = [
                 { id: 1, pivot: { quantity: 2 } },
                 { id: 2, pivot: { quantity: 6 } },
@@ -11,7 +14,7 @@ describe('MaterialsListEditor', () => {
                 { id: 5 },
                 { id: 6 },
             ];
-            expect(getMaterialsQuantities(materials)).toEqual([
+            expect(getEventMaterialsQuantities(materials)).toEqual([
                 { id: 1, quantity: 2 },
                 { id: 2, quantity: 6 },
                 { id: 3, quantity: 0 },

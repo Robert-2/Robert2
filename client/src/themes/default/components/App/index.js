@@ -1,15 +1,12 @@
 import invariant from 'invariant';
 import HttpCode from 'status-code-enum';
-import { useQueryProvider } from 'vue-query';
 import { computed, watch } from '@vue/composition-api';
-import queryClient from '@/globals/queryClient';
 import useRouter from '@/hooks/useRouter';
 import layouts from '@/themes/default/layouts';
 import { isRequestErrorStatusCode } from '@/utils/errors';
 
 // @vue/component
 const App = (props, { root }) => {
-    useQueryProvider(queryClient);
     const { route } = useRouter();
     const layout = computed(() => {
         const routeMeta = route.value?.meta;
@@ -31,7 +28,7 @@ const App = (props, { root }) => {
     watch(route, () => { root.$modal.hideAll(); });
 
     return () => {
-        invariant(layout.value in layouts, `Le layout "${layout}" n'existe pas.`);
+        invariant(layout.value in layouts, `Le layout "${layout.value}" n'existe pas.`);
         const Layout = layouts[layout.value];
 
         return (

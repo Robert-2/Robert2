@@ -391,7 +391,7 @@ final class Beneficiary extends BaseModel implements Serializable
 
     // ------------------------------------------------------
     // -
-    // -    "Repository" methods
+    // -    Méthodes de "repository"
     // -
     // ------------------------------------------------------
 

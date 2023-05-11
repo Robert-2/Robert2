@@ -9,7 +9,7 @@ const setSessionCookie = (token) => {
     const cookieConfig = {};
     if (timeout) {
         const timeoutMs = timeout * 60 * 60 * 1000;
-        const timeoutDate = new Date(new Date().getTime() + timeoutMs);
+        const timeoutDate = new Date(Date.now() + timeoutMs);
         cookieConfig.expires = timeoutDate;
     }
 

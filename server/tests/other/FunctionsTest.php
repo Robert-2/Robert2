@@ -4,39 +4,12 @@ declare(strict_types=1);
 namespace Robert2\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Robert2\Support\Filesystem\UploadedFile;
 
 final class FunctionsTest extends TestCase
 {
     public function testGetExecutionTime(): void
     {
         $this->assertNotEmpty(getExecutionTime());
-    }
-
-    public function testMoveUploadedFile(): void
-    {
-        $sourceFile = TESTS_FILES_FOLDER . DS . 'file.pdf';
-
-        $file = new UploadedFile(
-            $sourceFile,
-            13269,
-            UPLOAD_ERR_OK,
-            'Uploaded File for Tests.pdf',
-            'application/pdf',
-        );
-
-        // - Déplace le fichier de test d'upload dans le dossier de destination.
-        $filename = moveUploadedFile(TMP_FOLDER, $file);
-        $destinationFile = TMP_FOLDER . DS . $filename;
-        $exists = file_exists($destinationFile);
-
-        // - Remet le fichier dans son dossier d'origine.
-        if ($exists) {
-            @rename($destinationFile, $sourceFile);
-        }
-
-        $this->assertEquals('Uploaded-File-for-Tests.pdf', $filename);
-        $this->assertTrue($exists);
     }
 
     public function testRoundDate(): void

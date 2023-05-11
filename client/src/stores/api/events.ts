@@ -1,35 +1,62 @@
-import Decimal from 'decimal.js';
 import requester from '@/globals/requester';
+import Decimal from 'decimal.js';
 import { normalize as normalizeEstimate } from '@/stores/api/estimates';
 import { normalize as normalizeInvoice } from '@/stores/api/invoices';
 
+import type { AxiosRequestConfig as RequestConfig } from 'axios';
 import type { WithCount } from '@/stores/api/@types';
 import type { Beneficiary } from '@/stores/api/beneficiaries';
 import type { Technician } from '@/stores/api/technicians';
 import type { Material } from '@/stores/api/materials';
 import type { RawEstimate, Estimate } from '@/stores/api/estimates';
 import type { RawInvoice, Invoice } from '@/stores/api/invoices';
+import type { Document } from '@/stores/api/documents';
 import type { User } from '@/stores/api/users';
 
 //
 // - Types
 //
 
-export type Event = (
+export type EventMaterial = (
+    & Material
     & {
+        pivot: {
+            id: number,
+            event_id: Event['id'],
+            material_id: Material['id'],
+            quantity: number,
+            quantity_missing: number,
+            quantity_returned: number,
+            quantity_returned_broken: number,
+        },
+    }
+);
+
+export type RawEvent<
+    DecimalType extends string | Decimal = string,
+    IsBillable extends boolean = boolean,
+> = (
+    {
         id: number,
         title: string,
         reference: string | null,
         description: string | null,
         start_date: string,
         end_date: string,
+        duration: number, // - En jours.
+        color: string | null,
         location: string | null,
+        total_replacement: DecimalType,
+        currency: string,
         beneficiaries: Beneficiary[],
         technicians: Technician[],
+        materials: EventMaterial[],
         is_confirmed: boolean,
-        is_billable: boolean,
+        is_return_inventory_started: boolean,
         is_return_inventory_done: boolean,
         user_id: User['id'] | null,
+        user: User | null,
+        note: string | null,
         created_at: string,
         updated_at: string,
     }
@@ -45,32 +72,6 @@ export type Event = (
             has_not_returned_materials: boolean | null,
         }
     )
-);
-
-export type MaterialWithPivot = Material & {
-    pivot: {
-        id: number,
-        event_id: Event['id'],
-        material_id: Material['id'],
-        quantity: number,
-        quantity_missing: number,
-        quantity_returned: number,
-        quantity_returned_broken: number,
-    },
-};
-
-export type RawEventDetails<
-    DecimalType extends string | Decimal = string,
-    IsBillable extends boolean = boolean,
-> = (
-    Event
-    & {
-        duration: number,
-        materials: MaterialWithPivot[],
-        total_replacement: DecimalType,
-        currency: string,
-        user: User | null,
-    }
     & (
         IsBillable extends true
             ? {
@@ -96,7 +97,9 @@ export type RawEventDetails<
     )
 );
 
-export type EventDetails<IsBillable extends boolean = boolean> = RawEventDetails<Decimal, IsBillable>;
+export type Event<
+    IsBillable extends boolean = boolean,
+> = RawEvent<Decimal, IsBillable>;
 
 export type EventSummary = Pick<Event, (
     | 'id'
@@ -128,7 +131,7 @@ type EventDuplicatePayload = {
 // - Normalizer
 //
 
-const normalize = (rawEvent: RawEventDetails): EventDetails => {
+export const normalize = (rawEvent: RawEvent): Event => {
     if (!rawEvent.is_billable) {
         return {
             ...rawEvent,
@@ -136,7 +139,11 @@ const normalize = (rawEvent: RawEventDetails): EventDetails => {
         };
     }
 
-    const { estimates: rawEstimates, invoices: rawInvoices, ...event } = rawEvent;
+    const {
+        estimates: rawEstimates,
+        invoices: rawInvoices,
+        ...event
+    } = rawEvent;
 
     const invoices = rawInvoices !== undefined
         ? rawInvoices.map(normalizeInvoice)
@@ -163,7 +170,7 @@ const normalize = (rawEvent: RawEventDetails): EventDetails => {
         total_taxes: new Decimal(event.total_taxes),
         total_with_taxes: new Decimal(event.total_with_taxes),
         total_replacement: new Decimal(event.total_replacement),
-    } as EventDetails;
+    } as Event;
 };
 
 //
@@ -174,31 +181,31 @@ const all = async (params: SearchParams): Promise<WithCount<EventSummary[]>> => 
     (await requester.get('/events', { params })).data
 );
 
-const one = async (id: Event['id']): Promise<EventDetails> => (
+const one = async (id: Event['id']): Promise<Event> => (
     normalize((await requester.get(`/events/${id}`)).data)
 );
 
-const missingMaterials = async (id: Event['id']): Promise<MaterialWithPivot[]> => (
+const missingMaterials = async (id: Event['id']): Promise<EventMaterial[]> => (
     (await requester.get(`/events/${id}/missing-materials`)).data
 );
 
-const setConfirmed = async (id: Event['id'], isConfirmed: boolean): Promise<EventDetails> => (
+const setConfirmed = async (id: Event['id'], isConfirmed: boolean): Promise<Event> => (
     normalize((await requester.put(`/events/${id}`, { is_confirmed: isConfirmed })).data)
 );
 
-const archive = async (id: Event['id']): Promise<EventDetails> => (
+const archive = async (id: Event['id']): Promise<Event> => (
     normalize((await requester.put(`/events/${id}/archive`)).data)
 );
 
-const unarchive = async (id: Event['id']): Promise<EventDetails> => (
+const unarchive = async (id: Event['id']): Promise<Event> => (
     normalize((await requester.put(`/events/${id}/unarchive`)).data)
 );
 
-const updateReturnInventory = async (id: Event['id'], inventory: EventReturnInventory): Promise<EventDetails> => (
+const updateReturnInventory = async (id: Event['id'], inventory: EventReturnInventory): Promise<Event> => (
     normalize((await requester.put(`/events/${id}/inventory`, inventory)).data)
 );
 
-const finishReturnInventory = async (id: Event['id'], inventory: EventReturnInventory): Promise<EventDetails> => (
+const finishReturnInventory = async (id: Event['id'], inventory: EventReturnInventory): Promise<Event> => (
     normalize((await requester.put(`/events/${id}/inventory/finish`, inventory)).data)
 );
 
@@ -210,20 +217,29 @@ const createEstimate = async (id: Event['id'], discountRate: number = 0): Promis
     normalizeEstimate((await requester.post(`/events/${id}/estimates`, { discountRate })).data)
 );
 
-const create = async (params: any): Promise<EventDetails> => (
+const create = async (params: any): Promise<Event> => (
     normalize((await requester.post(`/events`, params)).data)
 );
 
-const update = async (id: Event['id'], params: any): Promise<EventDetails> => (
+const update = async (id: Event['id'], params: any): Promise<Event> => (
     normalize((await requester.put(`/events/${id}`, params)).data)
 );
 
-const duplicate = async (id: Event['id'], data: EventDuplicatePayload): Promise<EventDetails> => (
+const duplicate = async (id: Event['id'], data: EventDuplicatePayload): Promise<Event> => (
     normalize((await requester.post(`/events/${id}/duplicate`, data)).data)
 );
 
 const remove = async (id: Event['id']): Promise<void> => {
     await requester.delete(`/events/${id}`);
+};
+
+const documents = async (id: Event['id']): Promise<Document[]> => (
+    (await requester.get(`/events/${id}/documents`)).data
+);
+
+const attachDocument = async (id: Event['id'], file: File, options: RequestConfig = {}): Promise<Document> => {
+    const formData = new FormData(); formData.append('file', file);
+    return (await requester.post(`/events/${id}/documents`, formData, options)).data;
 };
 
 export default {
@@ -241,4 +257,6 @@ export default {
     duplicate,
     update,
     remove,
+    documents,
+    attachDocument,
 };

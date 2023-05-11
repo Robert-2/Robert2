@@ -163,7 +163,7 @@ class UserController extends BaseController
 
     // ------------------------------------------------------
     // -
-    // -    Internal methods
+    // -    Méthodes internes
     // -
     // ------------------------------------------------------
 

@@ -9,6 +9,8 @@ export type Document = {
     name: string,
     type: string,
     size: number,
+    url: string,
+    created_at: string,
 };
 
 //

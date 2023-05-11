@@ -240,7 +240,7 @@ final class User extends BaseModel implements Serializable
 
     // ------------------------------------------------------
     // -
-    // -    "Repository" methods
+    // -    Méthodes de "repository"
     // -
     // ------------------------------------------------------
 

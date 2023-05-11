@@ -1,21 +1,19 @@
 import './index.scss';
+import { defineComponent } from '@vue/composition-api';
 import apiAttributes from '@/stores/api/attributes';
 import Page from '@/themes/default/components/Page';
 import CriticalError from '@/themes/default/components/CriticalError';
 import Loading from '@/themes/default/components/Loading';
 import Button from '@/themes/default/components/Button';
 import Item from './components/Item';
-import AddItem from './components/AddItem';
 
 // @vue/component
-export default {
+const Attributes = defineComponent({
     name: 'Attributes',
     data() {
         return {
             attributes: [],
-            isAdding: false,
             isFetched: false,
-            isLoading: false,
             hasCriticalError: false,
         };
     },
@@ -29,31 +27,6 @@ export default {
         // -
         // ------------------------------------------------------
 
-        handleAddItem() {
-            if (this.isAdding) {
-                return;
-            }
-
-            this.isAdding = true;
-            this.$nextTick(() => this.$refs.addItem.focus());
-        },
-
-        handleItemAdded(attribute) {
-            this.isAdding = false;
-            this.attributes.push(attribute);
-        },
-
-        handleItemUpdated(attribute) {
-            const index = this.attributes.findIndex(
-                ({ id }) => id === attribute.id,
-            );
-            if (index === -1) {
-                this.fetchData();
-                return;
-            }
-            this.$set(this.attributes, index, attribute);
-        },
-
         handleItemDeleted(attribute) {
             const index = this.attributes.findIndex(
                 ({ id }) => id === attribute.id,
@@ -65,26 +38,19 @@ export default {
             this.attributes.splice(index, 1);
         },
 
-        handleCancelAdding() {
-            this.isAdding = false;
-        },
-
         // ------------------------------------------------------
         // -
-        // -    Internal methods
+        // -    Méthodes internes
         // -
         // ------------------------------------------------------
 
         async fetchData() {
-            this.isLoading = true;
-
             try {
                 this.attributes = await apiAttributes.all();
-                this.isFetched = true;
             } catch {
                 this.hasCriticalError = true;
             } finally {
-                this.isLoading = false;
+                this.isFetched = true;
             }
         },
     },
@@ -95,12 +61,7 @@ export default {
             hasCriticalError,
             isAdding,
             isFetched,
-            isLoading,
-            handleAddItem,
-            handleItemAdded,
-            handleItemUpdated,
             handleItemDeleted,
-            handleCancelAdding,
         } = this;
 
         if (hasCriticalError || !isFetched) {
@@ -117,7 +78,7 @@ export default {
             <Button
                 type="add"
                 disabled={isAdding}
-                onClick={handleAddItem}
+                to={{ name: 'add-attribute' }}
             >
                 {__('page.attributes.add-btn')}
             </Button>,
@@ -128,7 +89,6 @@ export default {
                 name="attributes"
                 title={__('page.attributes.title')}
                 help={__('page.attributes.help')}
-                isLoading={isLoading}
                 actions={headerActions}
             >
                 <div class="Attributes">
@@ -144,6 +104,9 @@ export default {
                                 <th class="Attributes__table__col Attributes__table__col--unit">
                                     {__('page.attributes.unit')}
                                 </th>
+                                <th class="Attributes__table__col Attributes__table__col--is-totalisable">
+                                    {__('page.attributes.is-totalisable')}
+                                </th>
                                 <th class="Attributes__table__col Attributes__table__col--max-length">
                                     {__('page.attributes.max-length')}
                                 </th>
@@ -158,7 +121,6 @@ export default {
                                 <Item
                                     key={attribute.id}
                                     attribute={attribute}
-                                    onUpdated={handleItemUpdated}
                                     onDeleted={handleItemDeleted}
                                 />
                             ))}
@@ -169,15 +131,10 @@ export default {
                             {__('page.attributes.no-attribute-yet')}
                         </p>
                     )}
-                    {isAdding && (
-                        <AddItem
-                            ref="addItem"
-                            onFinished={handleItemAdded}
-                            onCancelled={handleCancelAdding}
-                        />
-                    )}
                 </div>
             </Page>
         );
     },
-};
+});
+
+export default Attributes;

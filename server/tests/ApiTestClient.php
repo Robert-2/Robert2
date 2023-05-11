@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Robert2\Tests;
 
 use Psr\Http\Message\StreamInterface as Body;
+use Psr\Http\Message\UploadedFileInterface;
 use Robert2\API\App;
 use Robert2\API\Http\Request;
 use Slim\Http\Response;
@@ -12,13 +13,13 @@ use Slim\Psr7\Factory\ServerRequestFactory;
 /**
  * ApiTestClient.
  *
- * @method Body get(string $uri, array $query = null)
- * @method Body post(string $uri, array $data = null)
- * @method Body patch(string $uri, array $data = null)
- * @method Body put(string $uri, array $data = null)
- * @method Body delete(string $uri, array $data = null)
- * @method Body head(string $uri, array $data = null)
- * @method Body options(string $uri, array $data = null)
+ * @method Body get(string $uri, ?array $query)
+ * @method Body post(string $uri, ?array $data, array|UploadedFileInterface|null $files)
+ * @method Body patch(string $uri, ?array $data, ?array $files)
+ * @method Body put(string $uri, ?array $data, ?array $files)
+ * @method Body delete(string $uri, ?array $data)
+ * @method Body head(string $uri, ?array $data)
+ * @method Body options(string $uri, ?array $data)
  */
 class ApiTestClient
 {
@@ -44,22 +45,26 @@ class ApiTestClient
 
     // ------------------------------------------------------
     // -
-    // -    Internal methods
+    // -    Méthodes internes
     // -
     // ------------------------------------------------------
 
-    protected function request(string $method, string $uri, ?array $data = null): Body
+    protected function request(string $method, string $uri, ?array $data = null, mixed $files = null): Body
     {
         // - Request
         $method = strtoupper($method);
         $request = new Request((new ServerRequestFactory())->createServerRequest($method, $uri));
-        if ($data !== null) {
+        if (!empty($data)) {
             if ($method === 'GET') {
                 $request = $request->withQueryParams($data);
             } else {
                 $request = $request->withParsedBody($data);
                 $request = $request->withHeader('Content-Type', 'application/json');
             }
+        }
+        if ($files !== null && in_array($method, ['POST', 'PUT', 'PATCH'], true)) {
+            $files = !is_array($files) ? [$files] : $files;
+            $request = $request->withUploadedFiles($files);
         }
         $this->request = $request;
 

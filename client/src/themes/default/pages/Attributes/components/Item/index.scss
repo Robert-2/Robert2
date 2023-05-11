@@ -4,7 +4,6 @@
     $block: &;
 
     &__cell {
-        height: 60px;
         padding: 0.8rem 0.5rem;
         border-bottom: 1px solid globals.$bg-color-body;
 
@@ -21,7 +20,8 @@
             font-weight: 700;
         }
 
-        &--unit {
+        &--unit,
+        &--is-totalisable {
             text-align: center;
         }
 
@@ -32,6 +32,11 @@
             @media (min-width: globals.$screen-big-desktop) {
                 display: table-cell;
             }
+        }
+
+        &--actions {
+            width: 1%;
+            white-space: nowrap;
         }
     }
 

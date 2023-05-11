@@ -1,0 +1,51 @@
+@use '~@/themes/default/style/globals';
+@use 'sass:color';
+
+.FileManagerDocument {
+    display: flex;
+    align-items: center;
+    margin: 0 0 10px;
+    padding: globals.$content-padding-small-vertical;
+    border-radius: globals.$input-border-radius;
+    background: globals.$bg-color-emphasis;
+    color: globals.$text-base-color;
+    list-style: none;
+    gap: 10px;
+
+    &__link {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+        color: globals.$text-base-color;
+        gap: 10px;
+    }
+
+    &__name {
+        display: flex;
+        overflow: hidden;
+        width: 100%;
+        margin: 0;
+        white-space: nowrap;
+
+        &__base {
+            display: block;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+    }
+
+    &__icon {
+        font-size: 1.8rem;
+    }
+
+    &__size {
+        flex: 0 0 auto;
+        color: globals.$text-light-color;
+    }
+
+    &__actions {
+        flex: 0 0 auto;
+    }
+}

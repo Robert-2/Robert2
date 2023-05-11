@@ -20,12 +20,12 @@ export default defineComponent({
                 return 'error';
             }
 
-            return this.message.type ? this.message.type : 'info';
+            return this.message.type || 'info';
         },
 
         messageText() {
             const { $t: __, message } = this;
-            return __(message.text ? message.text : message);
+            return __(message.text || message);
         },
     },
     render() {

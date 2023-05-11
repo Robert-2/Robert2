@@ -2,11 +2,11 @@ import moment from 'moment';
 import { BookingEntity } from '@/stores/api/bookings';
 
 import type { I18nTranslate } from 'vuex-i18n';
-import type { Booking } from '@/stores/api/bookings';
+import type { BookingSummary } from '@/stores/api/bookings';
 
 type Status = { icon: string, label: string };
 
-const getTimelineBookingStatuses = (booking: Booking, __: I18nTranslate, now: number = Date.now()): Status[] => {
+const getTimelineBookingStatuses = (booking: BookingSummary, __: I18nTranslate, now: number = Date.now()): Status[] => {
     const {
         start_date: startDate,
         end_date: endDate,

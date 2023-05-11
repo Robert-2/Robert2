@@ -7,3 +7,7 @@ title: "Technicien «\_{name}\_»"
 
 infos:
     modify-associated-user: Modifier l'utilisateur associé
+
+documents:
+    confirm-permanently-delete: "Voulez-vous vraiment supprimer définitivement ce document\_?"
+    deleted: Document supprimé.

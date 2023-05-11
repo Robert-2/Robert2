@@ -36,7 +36,7 @@ final class MaterialTest extends TestCase
         $expectedErrors = [
             'name' => ["2 caractères min., 191 caractères max."],
             'reference' => ["Ce champ contient des caractères non autorisés"],
-            'picture' => ["5 caractères min., 191 caractères max."],
+            'picture' => ["5 caractères min., 227 caractères max."],
             'rental_price' => ["Doit être supérieur ou égal à 0"],
             'stock_quantity' => ["Doit être inférieur ou égal à 100000"],
             'out_of_order_quantity' => ["Doit être inférieur ou égal à 100000"],

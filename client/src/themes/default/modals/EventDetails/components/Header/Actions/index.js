@@ -76,7 +76,7 @@ const EventDetailsHeaderActions = (props, { root, emit }) => {
         try {
             const data = await apiEvents.setConfirmed(id, !isConfirmed);
             emit('saved', data);
-        } catch (error) {
+        } catch {
             root.$toasted.error(__('errors.unexpected-while-saving'));
         } finally {
             isConfirming.value = false;
@@ -135,7 +135,7 @@ const EventDetailsHeaderActions = (props, { root, emit }) => {
         try {
             await apiEvents.remove(id);
             emit('deleted', id);
-        } catch (error) {
+        } catch {
             root.$toasted.error(__('errors.unexpected-while-deleting'));
         } finally {
             isDeleting.value = false;

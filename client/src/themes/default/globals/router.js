@@ -14,7 +14,7 @@ router.beforeEach((to, from, next) => {
     const requiresAuth = to.matched.reduce(
         (currentState, { meta }) => {
             // - Non indiqué explicitement => Route publique.
-            if (meta.requiresAuth == null) {
+            if ([undefined, null].includes(meta.requiresAuth)) {
                 return currentState;
             }
 

@@ -3,6 +3,7 @@
 .EventStep3 {
     display: flex;
     flex-direction: column;
+    min-width: 800px;
 
     &__header {
         flex: 0;

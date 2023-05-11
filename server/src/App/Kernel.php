@@ -117,15 +117,17 @@ final class Kernel
         Model::preventAccessingMissingAttributes();
 
         // - Morphs
-        // TODO: `Relation::enforceMorphMap()` quand les tags seront migrés.
-        Relation::morphMap([
+        Relation::enforceMorphMap([
             Models\Event::TYPE => Models\Event::class,
+            Models\Material::TYPE => Models\Material::class,
+            Models\Technician::TYPE => Models\Technician::class,
         ]);
 
         // - Observers
         Models\Event::observe(Observers\EventObserver::class);
         Models\EventMaterial::observe(Observers\EventMaterialObserver::class);
         Models\Material::observe(Observers\MaterialObserver::class);
+        Models\AttributeCategory::observe(Observers\AttributeCategoryObserver::class);
         Models\Park::observe(Observers\ParkObserver::class);
     }
 }

@@ -9,7 +9,7 @@ const stringifyPathSegments = (pathSegments: PathSegment[]): string => (
                 return `${result}[${segment}]`;
             }
 
-            segment = segment.replace(/[\\.[]/g, '\\$&');
+            segment = segment.replaceAll(/[\\.[]/g, '\\$&');
             return result + (index === 0 ? segment : `.${segment}`);
         },
         '',
@@ -29,7 +29,7 @@ const stringifyPathSegments = (pathSegments: PathSegment[]): string => (
  *
  * @param object - L'object à mettre à plat.
  *
- * @return Un objet d'un seul niveau, avec les clés contenant les informations de profondeur.
+ * @returns Un objet d'un seul niveau, avec les clés contenant les informations de profondeur.
  */
 // TODO: Ajouter un typage plus strict (si nécessaire, à voir si ça vaut le coup vu la charge sur le compilateur).
 // @see https://stackoverflow.com/questions/58434389/typescript-deep-keyof-of-a-nested-object
@@ -54,7 +54,7 @@ const flattenObject = (object: Record<string, unknown>): Record<string, any> => 
             yield* deepKeysIterator(value, [...currentPath, key]);
         }
     };
-    return Object.fromEntries([...deepKeysIterator(object)]);
+    return Object.fromEntries(deepKeysIterator(object));
 };
 
 export default flattenObject;

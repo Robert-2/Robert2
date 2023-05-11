@@ -1214,6 +1214,9 @@ return [
     "user-email-already-in-use"
     => "Cet e-mail est déjà utilisé",
 
+    "invalid-hexadecimal-color"
+    => "Code de couleur invalide (doit être un code hexadécimal)",
+
     //
     // - Upload messages
     //
@@ -1224,9 +1227,6 @@ return [
     "upload-failed"
     => "L'envoi du fichier a échoué.",
 
-    "upload-failed-error-code"
-    => "L'envoi du fichier a échoué. Code d'erreur : %d",
-
     "file-exceeds-max-size"
     => "Ce fichier dépasse la taille maximum autorisée.",
 
@@ -1236,6 +1236,6 @@ return [
     "saving-uploaded-file-failed"
     => "La sauvegarde du fichier envoyé a échoué.",
 
-    "document-cannot-be-saved-in-db"
-    => "Le document n'a pas pu être sauvegardé dans la base de données. Raison : %s",
+    "document-save-failed"
+    => "Une erreur est survenue lors de la sauvegarde du document.",
 ];

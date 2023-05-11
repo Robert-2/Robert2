@@ -3,7 +3,6 @@ import moment from 'moment';
 import HttpCode from 'status-code-enum';
 import { Group } from '@/stores/api/groups';
 import { DATE_DB_FORMAT } from '@/globals/constants';
-import queryClient from '@/globals/queryClient';
 import apiBookings, { BookingEntity } from '@/stores/api/bookings';
 import apiEvents from '@/stores/api/events';
 import EventDetails from '@/themes/default/modals/EventDetails';
@@ -109,7 +108,7 @@ export default {
         // - Actualise le timestamp courant toutes les minutes.
         this.nowTimer = setInterval(() => { this.now = Date.now(); }, 60_000);
     },
-    beforeUnmount() {
+    beforeDestroy() {
         if (this.nowTimer) {
             clearInterval(this.nowTimer);
         }
@@ -184,8 +183,8 @@ export default {
 
             const {
                 isTeamMember,
-                handleUpdateBooking,
-                handleDuplicateBooking,
+                handleUpdatedBooking,
+                handleDuplicatedBooking,
             } = this;
 
             // - Si c'est un double-clic sur une partie vide (= sans booking) du calendrier...
@@ -232,11 +231,11 @@ export default {
                 case BookingEntity.EVENT:
                     _showModal(EventDetails, {
                         id: booking.id,
-                        onUpdateEvent(event) {
-                            handleUpdateBooking({ entity: BookingEntity.EVENT, ...event });
+                        onUpdated(event) {
+                            handleUpdatedBooking({ entity: BookingEntity.EVENT, ...event });
                         },
-                        onDuplicateEvent(event) {
-                            handleDuplicateBooking({ entity: BookingEntity.EVENT, ...event });
+                        onDuplicateEvent(newEvent) {
+                            handleDuplicatedBooking({ entity: BookingEntity.EVENT, ...newEvent });
                         },
                     });
                     break;
@@ -278,7 +277,6 @@ export default {
                 callback(item);
 
                 this.$toasted.success(__('page.calendar.event-saved'));
-                queryClient.invalidateQueries('materials-while-event');
                 this.fetchData();
             } catch {
                 this.$toasted.error(__('errors.unexpected-while-saving'));
@@ -290,9 +288,7 @@ export default {
             }
         },
 
-        handleUpdateBooking(booking) {
-            queryClient.invalidateQueries('materials-while-event');
-
+        handleUpdatedBooking(booking) {
             const originalBookingIndex = this.bookings.findIndex(
                 ({ entity, id }) => entity === booking.entity && id === booking.id,
             );
@@ -303,7 +299,7 @@ export default {
             this.$set(this.bookings, originalBookingIndex, booking);
         },
 
-        handleDuplicateBooking(booking) {
+        handleDuplicatedBooking(booking) {
             const date = moment(booking.start_date).toDate();
             this.$refs.timelineRef.moveTo(date);
         },

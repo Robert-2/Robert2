@@ -3,18 +3,38 @@ declare(strict_types=1);
 
 namespace Robert2\API\Controllers;
 
+use DI\Container;
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Robert2\API\Controllers\Traits\WithCrud;
 use Robert2\API\Http\Request;
+use Robert2\API\Models\Document;
 use Robert2\API\Models\Event;
 use Robert2\API\Models\EventTechnician;
 use Robert2\API\Models\Technician;
+use Robert2\API\Services\Auth;
+use Robert2\API\Services\I18n;
 use Robert2\Support\Arr;
+use Slim\Exception\HttpBadRequestException;
 use Slim\Http\Response;
 
 class TechnicianController extends BaseController
 {
     use WithCrud;
+
+    private I18n $i18n;
+
+    public function __construct(Container $container, I18n $i18n)
+    {
+        parent::__construct($container);
+
+        $this->i18n = $i18n;
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Actions
+    // -
+    // ------------------------------------------------------
 
     public function getAll(Request $request, Response $response): Response
     {
@@ -105,5 +125,32 @@ class TechnicianController extends BaseController
         $technician = Technician::findOrFail($id);
         $assignments = $technician->assignments->each->setAppends(['event']);
         return $response->withJson($assignments, StatusCode::STATUS_OK);
+    }
+
+    public function getDocuments(Request $request, Response $response): Response
+    {
+        $id = (int) $request->getAttribute('id');
+        $technician = Technician::findOrFail($id);
+
+        return $response->withJson($technician->documents, StatusCode::STATUS_OK);
+    }
+
+    public function attachDocument(Request $request, Response $response): Response
+    {
+        $id = (int) $request->getAttribute('id');
+        $technician = Technician::findOrFail($id);
+
+        /** @var UploadedFileInterface[] $uploadedFiles */
+        $uploadedFiles = $request->getUploadedFiles();
+        if (count($uploadedFiles) !== 1) {
+            throw new HttpBadRequestException($request, "Invalid number of files sent: a single file is expected.");
+        }
+
+        $file = array_values($uploadedFiles)[0];
+        $document = new Document(compact('file'));
+        $document->author()->associate(Auth::user());
+        $technician->documents()->save($document);
+
+        return $response->withJson($document, StatusCode::STATUS_CREATED);
     }
 }

@@ -33,7 +33,14 @@ const formatEventTechnician = (eventTechnician) => {
     const content = position ? `${datesString} : ${position}` : datesString;
     title = `${title}\n${content}`;
 
-    return { id, eventId, start, end, content, title };
+    return {
+        id,
+        eventId,
+        start,
+        end,
+        title,
+        content,
+    };
 };
 
 export default formatEventTechnician;

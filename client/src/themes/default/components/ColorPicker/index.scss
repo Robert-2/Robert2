@@ -1,0 +1,182 @@
+@use '~@/themes/default/style/globals';
+
+.ColorPicker {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    width: 200px;
+    border-radius: 10px;
+    background-color: #fff;
+    direction: ltr;
+    box-shadow:
+        0 0 5px rgba(0, 0, 0, 0.05),
+        0 5px 20px rgba(0, 0, 0, 0.1);
+    user-select: none;
+
+    &__body {
+        width: 100%;
+        padding: 15px 16px;
+    }
+
+    //
+    // - Transparence / Teinte.
+    //
+
+    &__hue,
+    &__alpha {
+        position: relative;
+        height: 8px;
+        margin: 0 4px;
+        border-radius: 4px;
+
+        &__slider {
+            position: absolute;
+            top: -4px;
+            left: -8px;
+            width: calc(100% + 16px);
+            height: 16px;
+            margin: 0;
+            padding: 0;
+            border: none;
+            border-radius: 0;
+            background-color: transparent;
+            color: inherit;
+            line-height: 1;
+            opacity: 0;
+            cursor: pointer;
+            appearance: none;
+
+            &::-webkit-slider-runnable-track {
+                width: 100%;
+                height: 8px;
+            }
+
+            &::-webkit-slider-thumb {
+                width: 8px;
+                height: 8px;
+                appearance: none;
+            }
+
+            &::-moz-range-track {
+                width: 100%;
+                height: 8px;
+                border: 0;
+            }
+
+            &::-moz-range-thumb {
+                width: 8px;
+                height: 8px;
+                border: 0;
+            }
+        }
+
+        &__marker {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 16px;
+            height: 16px;
+            margin-left: -8px;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            background-color: hsl(var(--ColorPicker--hue), 100%, 50%);
+            transform: translateY(-50%);
+            box-shadow: 0 0 1px #888;
+            pointer-events: none;
+
+            &:focus,
+            &:focus-visible {
+                outline: none;
+            }
+        }
+    }
+
+    &__hue {
+        // stylelint-disable-next-line declaration-colon-newline-after
+        background-image: linear-gradient(
+            to right,
+            #f00 0%,
+            #ff0 16.66%,
+            #0f0 33.33%,
+            #0ff 50%,
+            #00f 66.66%,
+            #f0f 83.33%,
+            #f00 100%
+        );
+    }
+
+    &__alpha {
+        @include globals.checkerboard;
+
+        &__marker {
+            @include globals.checkerboard;
+
+            &::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                border-radius: 50%;
+                background-color: var(--ColorPicker--color);
+            }
+        }
+
+        &__current-color {
+            display: block;
+            width: 100%;
+            height: 100%;
+            border-radius: inherit;
+            background-image: linear-gradient(90deg, rgba(0, 0, 0, 0), var(--ColorPicker--opaque-color));
+        }
+    }
+
+    &__hue + &__alpha {
+        margin-top: 10px;
+    }
+
+    //
+    // - Échantillons
+    //
+
+    &__swatches {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 15px;
+
+        &__color {
+            position: relative;
+            overflow: hidden;
+            width: 20px;
+            height: 20px;
+            margin: 0 4px 6px;
+            padding: 0;
+            border: 0;
+            border-radius: 50%;
+            background-image:
+                repeating-linear-gradient(45deg, #aaa 25%, transparent 25%, transparent 75%, #aaa 75%, #aaa),
+                repeating-linear-gradient(45deg, #aaa 25%, #fff 25%, #fff 75%, #aaa 75%, #aaa);
+            background-position: 0 0, 4px 4px;
+            background-size: 8px 8px;
+            color: var(--ColorPicker__swatches__color--color);
+            text-indent: -1000px;
+            white-space: nowrap;
+            cursor: pointer;
+
+            &::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                display: block;
+                width: 100%;
+                height: 100%;
+                border-radius: inherit;
+                background-color: currentColor;
+                box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+            }
+        }
+    }
+}

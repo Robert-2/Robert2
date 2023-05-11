@@ -31,6 +31,9 @@ final class SettingTest extends TestCase
                     'uuid' => 'dfe7cd82-52b9-4c9b-aaed-033df210f23b',
                 ],
             ],
+            'returnInventory' => [
+                'mode' => 'start-empty',
+            ],
         ];
         $this->assertEquals($expected, $result);
 
@@ -53,6 +56,9 @@ final class SettingTest extends TestCase
                 'public' => [
                     'enabled' => true,
                 ],
+            ],
+            'returnInventory' => [
+                'mode' => 'start-empty',
             ],
         ];
         $this->assertEquals($expected, $result);
@@ -93,6 +99,10 @@ final class SettingTest extends TestCase
             [
                 'key' => 'eventSummary.showLegalNumbers',
                 'value' => true,
+            ],
+            [
+                'key' => 'returnInventory.mode',
+                'value' => 'start-empty',
             ],
         ];
         $this->assertEquals($expected, $result);
@@ -166,6 +176,9 @@ final class SettingTest extends TestCase
                     'uuid' => 'dfe7cd82-52b9-4c9b-aaed-033df210f23b',
                 ],
             ],
+            'returnInventory' => [
+                'mode' => 'start-empty',
+            ],
         ];
         $this->assertEquals($expected, Setting::getList());
     }
@@ -183,6 +196,10 @@ final class SettingTest extends TestCase
         // - Par défaut, l'UUID de calendrier est un UUID aléatoire.
         Setting::find('calendar.public.uuid')->reset();
         $this->assertNotEquals('dfe7cd82-52b9-4c9b-aaed-033df210f23b', Setting::getWithKey('calendar.public.uuid'));
+
+        // - Par défaut, le mode des inventaires de retour est 'start-empty'.
+        Setting::find('returnInventory.mode')->reset();
+        $this->assertEquals('start-empty', Setting::getWithKey('returnInventory.mode'));
     }
 
     public function testRemove(): void

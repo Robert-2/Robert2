@@ -6,8 +6,10 @@ namespace Robert2\Tests;
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Robert2\API\Models\Event;
 use Robert2\API\Models\Material;
 use Robert2\Support\Arr;
+use Robert2\Support\Filesystem\UploadedFile;
 
 final class MaterialsTest extends ApiTestCase
 {
@@ -39,13 +41,14 @@ final class MaterialsTest extends ApiTestCase
                         'type' => 'float',
                         'unit' => 'kg',
                         'value' => 36.5,
+                        'isTotalisable' => true,
                     ],
                     [
                         'id' => 2,
                         'name' => 'Couleur',
                         'type' => 'string',
-                        'unit' => null,
                         'value' => 'Grise',
+                        'maxLength' => null,
                     ],
                     [
                         'id' => 3,
@@ -53,6 +56,7 @@ final class MaterialsTest extends ApiTestCase
                         'type' => 'integer',
                         'unit' => 'W',
                         'value' => 850,
+                        'isTotalisable' => true,
                     ],
                 ],
                 'tags' => [
@@ -87,6 +91,7 @@ final class MaterialsTest extends ApiTestCase
                         'type' => 'float',
                         'unit' => 'kg',
                         'value' => 2.2,
+                        'isTotalisable' => true,
                     ],
                     [
                         'id' => 3,
@@ -94,6 +99,7 @@ final class MaterialsTest extends ApiTestCase
                         'type' => 'integer',
                         'unit' => 'W',
                         'value' => 35,
+                        'isTotalisable' => true,
                     ],
                 ],
                 'tags' => [
@@ -128,6 +134,7 @@ final class MaterialsTest extends ApiTestCase
                         'type' => 'float',
                         'unit' => 'kg',
                         'value' => 0.85,
+                        'isTotalisable' => true,
                     ],
                     [
                         'id' => 3,
@@ -135,6 +142,7 @@ final class MaterialsTest extends ApiTestCase
                         'type' => 'integer',
                         'unit' => 'W',
                         'value' => 150,
+                        'isTotalisable' => true,
                     ],
                 ],
                 'tags' => [
@@ -169,6 +177,7 @@ final class MaterialsTest extends ApiTestCase
                         'type' => 'float',
                         'unit' => 'kg',
                         'value' => 3.15,
+                        'isTotalisable' => true,
                     ],
                     [
                         'id' => 3,
@@ -176,12 +185,12 @@ final class MaterialsTest extends ApiTestCase
                         'type' => 'integer',
                         'unit' => 'W',
                         'value' => 60,
+                        'isTotalisable' => true,
                     ],
                     [
                         'id' => 4,
                         'name' => 'Conforme',
                         'type' => 'boolean',
-                        'unit' => null,
                         'value' => true,
                     ],
                 ],
@@ -238,7 +247,6 @@ final class MaterialsTest extends ApiTestCase
                         'id' => 5,
                         'name' => "Date d'achat",
                         'type' => 'date',
-                        'unit' => null,
                         'value' => '2021-01-28',
                     ],
                 ],
@@ -656,6 +664,7 @@ final class MaterialsTest extends ApiTestCase
                     'type' => 'float',
                     'unit' => 'kg',
                     'value' => 12.5,
+                    'isTotalisable' => true,
                 ],
                 [
                     'id' => 3,
@@ -663,12 +672,12 @@ final class MaterialsTest extends ApiTestCase
                     'type' => 'integer',
                     'unit' => 'W',
                     'value' => 60,
+                    'isTotalisable' => true,
                 ],
                 [
                     'id' => 4,
                     'name' => 'Conforme',
                     'type' => 'boolean',
-                    'unit' => null,
                     'value' => true,
                 ],
             ],
@@ -741,27 +750,145 @@ final class MaterialsTest extends ApiTestCase
         $this->assertNotNull(Material::find(2));
     }
 
-    public function testGetAllDocuments()
+    public function testAttachDocument()
     {
-        // - Get all documents of material #1
+        Carbon::setTestNow(Carbon::create(2022, 10, 22, 18, 42, 36));
+
+        $createUploadedFile = function (string $from) {
+            $tmpFile = tmpfile();
+            fwrite($tmpFile, file_get_contents($from));
+            return $tmpFile;
+        };
+
+        // - Matériel inexistant.
+        $this->client->post('/api/materials/999/documents');
+        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
+
+        // - Test sans fichier (payload vide)
+        $this->client->post('/api/materials/6/documents');
+        $this->assertStatusCode(StatusCode::STATUS_BAD_REQUEST);
+        $this->assertApiErrorMessage("Invalid number of files sent: a single file is expected.");
+
+        // - Test avec des fichiers sans problèmes.
+        $validUploads = [
+            [
+                'id' => 6,
+                'file' => new UploadedFile(
+                    $createUploadedFile(TESTS_FILES_FOLDER . DS . 'file.pdf'),
+                    13269,
+                    UPLOAD_ERR_OK,
+                    "Facture d'achat.pdf",
+                    'application/pdf',
+                ),
+                'expected' => [
+                    'id' => 7,
+                    'name' => "Facture d'achat.pdf",
+                    'type' => 'application/pdf',
+                    'size' => 13269,
+                    'url' => 'http://loxya.test/documents/7',
+                    'created_at' => '2022-10-22 18:42:36',
+                ],
+            ],
+            [
+                'id' => 4,
+                'file' => new UploadedFile(
+                    $createUploadedFile(TESTS_FILES_FOLDER . DS . 'file.pdf'),
+                    13269,
+                    UPLOAD_ERR_OK,
+                    'Garantie (expire fin 2023).pdf',
+                    'application/pdf',
+                ),
+                'expected' => [
+                    'id' => 8,
+                    'name' => 'Garantie (expire fin 2023).pdf',
+                    'type' => 'application/pdf',
+                    'size' => 13269,
+                    'url' => 'http://loxya.test/documents/8',
+                    'created_at' => '2022-10-22 18:42:36',
+                ],
+            ],
+            [
+                'id' => 4,
+                'file' => new UploadedFile(
+                    $createUploadedFile(TESTS_FILES_FOLDER . DS . 'file.pdf'),
+                    156325,
+                    UPLOAD_ERR_OK,
+                    'Notice.pdf',
+                    'application/pdf',
+                ),
+                'expected' => [
+                    'id' => 9,
+                    'name' => 'Notice.pdf',
+                    'type' => 'application/pdf',
+                    'size' => 156325,
+                    'url' => 'http://loxya.test/documents/9',
+                    'created_at' => '2022-10-22 18:42:36',
+                ],
+            ],
+        ];
+        foreach ($validUploads as $validUpload) {
+            $url = sprintf('/api/materials/%d/documents', $validUpload['id']);
+            $this->client->post($url, null, $validUpload['file']);
+            $this->assertStatusCode(StatusCode::STATUS_CREATED);
+            $this->assertResponseData($validUpload['expected']);
+        }
+        $this->assertSame([7], Material::findOrFail(6)->documents->pluck('id')->all());
+        $this->assertSame([8, 9], Material::findOrFail(4)->documents->pluck('id')->all());
+
+        // - Test avec des fichiers avec erreurs.
+        $invalidUploads = [
+            [
+                'file' => new UploadedFile(
+                    $createUploadedFile(TESTS_FILES_FOLDER . DS . 'file.pdf'),
+                    262144000,
+                    UPLOAD_ERR_OK,
+                    'Un fichier bien trop volumineux.pdf',
+                    'application/pdf',
+                ),
+                'expected' => ['This file exceeds maximum size allowed.'],
+            ],
+            [
+                'file' => new UploadedFile(
+                    $createUploadedFile(TESTS_FILES_FOLDER . DS . 'file.csv'),
+                    54,
+                    UPLOAD_ERR_CANT_WRITE,
+                    'échec-upload.csv',
+                    'text/csv',
+                ),
+                'expected' => ['File upload failed.'],
+            ],
+            [
+                'file' => new UploadedFile(
+                    tmpfile(),
+                    121540,
+                    UPLOAD_ERR_OK,
+                    'app.dmg',
+                    'application/octet-stream',
+                ),
+                'expected' => ['This file type is not allowed.'],
+            ],
+        ];
+        foreach ($invalidUploads as $invalidUpload) {
+            $this->client->post('/api/materials/6/documents', null, $invalidUpload['file']);
+            $this->assertApiValidationError(['file' => $invalidUpload['expected']]);
+        }
+    }
+
+    public function testGetDocuments()
+    {
+        // - Matériel inexistant.
+        $this->client->get('/api/materials/999/documents');
+        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
+
+        // - Documents du matériel #1.
         $this->client->get('/api/materials/1/documents');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData([
-            [
-                'id' => 1,
-                'name' => 'User-manual.pdf',
-                'type' => 'application/pdf',
-                'size' => 54681233,
-            ],
-            [
-                'id' => 2,
-                'name' => 'warranty.pdf',
-                'type' => 'application/pdf',
-                'size' => 124068,
-            ],
+            DocumentsTest::data(1),
+            DocumentsTest::data(2),
         ]);
 
-        // - Get all documents of material #2
+        // - Documents du matériel #2
         $this->client->get('/api/materials/2/documents');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData([]);
@@ -772,86 +899,27 @@ final class MaterialsTest extends ApiTestCase
         $this->client->get('/api/materials/1/bookings');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData([
-            [
-                'id' => 4,
-                'entity' => 'event',
-                'title' => 'Concert X',
-                'start_date' => '2019-03-01 00:00:00',
-                'end_date' => '2019-04-10 23:59:59',
-                'location' => 'Moon',
-                'is_confirmed' => false,
-                'is_archived' => false,
-                'is_return_inventory_done' => false,
-                'has_missing_materials' => null,
-                'has_not_returned_materials' => null,
-                'parks' => [1, 2],
-                'pivot' => [
-                    'quantity' => 1,
+            array_replace(
+                EventsTest::data(4, Event::SERIALIZE_BOOKING_SUMMARY),
+                [
+                    'entity' => 'event',
+                    'pivot' => ['quantity' => 1],
                 ],
-                'beneficiaries' => [],
-                'technicians' => [],
-            ],
-            [
-                'id' => 2,
-                'entity' => 'event',
-                'title' => 'Second événement',
-                'start_date' => '2018-12-18 00:00:00',
-                'end_date' => '2018-12-19 23:59:59',
-                'location' => 'Lyon',
-                'is_confirmed' => false,
-                'is_archived' => false,
-                'is_return_inventory_done' => true,
-                'has_missing_materials' => null,
-                'has_not_returned_materials' => true,
-                'parks' => [1],
-                'pivot' => [
-                    'quantity' => 3,
+            ),
+            array_replace(
+                EventsTest::data(2, Event::SERIALIZE_BOOKING_SUMMARY),
+                [
+                    'entity' => 'event',
+                    'pivot' => ['quantity' => 3],
                 ],
-                'beneficiaries' => [
-                    BeneficiariesTest::data(3),
+            ),
+            array_replace(
+                EventsTest::data(1, Event::SERIALIZE_BOOKING_SUMMARY),
+                [
+                    'entity' => 'event',
+                    'pivot' => ['quantity' => 1],
                 ],
-                'technicians' => [],
-            ],
-            [
-                'id' => 1,
-                'entity' => 'event',
-                'title' => 'Premier événement',
-                'start_date' => '2018-12-17 00:00:00',
-                'end_date' => '2018-12-18 23:59:59',
-                'location' => 'Gap',
-                'is_confirmed' => false,
-                'is_archived' => false,
-                'is_return_inventory_done' => true,
-                'has_missing_materials' => null,
-                'has_not_returned_materials' => false,
-                'parks' => [1],
-                'pivot' => [
-                    'quantity' => 1,
-                ],
-                'beneficiaries' => [
-                    BeneficiariesTest::data(1),
-                ],
-                'technicians' => [
-                    [
-                        'id' => 1,
-                        'event_id' => 1,
-                        'technician_id' => 1,
-                        'start_time' => '2018-12-17 09:00:00',
-                        'end_time' => '2018-12-18 22:00:00',
-                        'position' => 'Régisseur',
-                        'technician' => TechniciansTest::data(1),
-                    ],
-                    [
-                        'id' => 2,
-                        'event_id' => 1,
-                        'technician_id' => 2,
-                        'start_time' => '2018-12-18 14:00:00',
-                        'end_time' => '2018-12-18 18:00:00',
-                        'position' => 'Technicien plateau',
-                        'technician' => TechniciansTest::data(2),
-                    ],
-                ],
-            ],
+            ),
         ]);
     }
 

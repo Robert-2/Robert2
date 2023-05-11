@@ -1,8 +1,10 @@
 import './index.scss';
+import { defineComponent } from '@vue/composition-api';
 import axios from 'axios';
 import moment from 'moment';
 import HttpCode from 'status-code-enum';
 import { ApiErrorCode } from '@/stores/api/@codes';
+import { ReturnInventoryMode } from '@/stores/api/settings';
 import Fragment from '@/components/Fragment';
 import Loading from '@/themes/default/components/Loading';
 import CriticalError, { ERROR } from '@/themes/default/components/CriticalError';
@@ -15,7 +17,7 @@ import NotStarted from './components/NotStarted';
 import Inventory, { DisplayGroup } from './components/Inventory';
 
 // @vue/component
-export default {
+const EventReturn = defineComponent({
     name: 'EventReturn',
     data() {
         return {
@@ -32,6 +34,10 @@ export default {
         };
     },
     computed: {
+        mode() {
+            return this.$store.state.settings.returnInventory.mode;
+        },
+
         pageTitle() {
             const { $t: __, isFetched, event } = this;
 
@@ -69,7 +75,7 @@ export default {
         // - Actualise le timestamp courant toutes les minutes.
         this.nowTimer = setInterval(() => { this.now = Date.now(); }, 60_000);
     },
-    beforeUnmount() {
+    beforeDestroy() {
         if (this.nowTimer) {
             clearInterval(this.nowTimer);
         }
@@ -129,8 +135,6 @@ export default {
                 this.isFetched = true;
             } catch (error) {
                 if (!axios.isAxiosError(error)) {
-                    // eslint-disable-next-line no-console
-                    console.error(`Error ocurred while retrieving event #${this.id} data`, error);
                     this.criticalError = ERROR.UNKNOWN;
                 } else {
                     const { status = HttpCode.ServerErrorInternal } = error.response ?? {};
@@ -176,11 +180,20 @@ export default {
 
         setEvent(event) {
             this.event = event;
+
+            const { is_return_inventory_started: isReturnInventoryStarted } = event;
+
+            const getActualQuantity = (eventMaterial) => (
+                (!isReturnInventoryStarted && this.mode === ReturnInventoryMode.START_FULL)
+                    ? eventMaterial.quantity
+                    : eventMaterial.quantity_returned ?? 0
+            );
+
             this.inventory = event.materials.map(
                 ({ id, pivot }) => ({
                     id,
-                    actual: pivot.quantity_returned || 0,
-                    broken: pivot.quantity_returned_broken || 0,
+                    actual: getActualQuantity(pivot),
+                    broken: pivot.quantity_returned_broken ?? 0,
                 }),
             );
         },
@@ -230,7 +243,7 @@ export default {
                         <Fragment>
                             <Inventory
                                 inventory={inventory}
-                                materials={event.materials}
+                                event={event}
                                 displayGroup={displayGroup}
                                 errors={validationErrors}
                                 isLocked={isDone}
@@ -249,4 +262,6 @@ export default {
             </Page>
         );
     },
-};
+});
+
+export default EventReturn;

@@ -5,10 +5,12 @@ namespace Robert2\Tests;
 
 use Illuminate\Support\Carbon;
 use Robert2\API\Errors\Exception\ValidationException;
+use Robert2\API\Models\Attribute;
 use Robert2\API\Models\Event;
 use Robert2\API\Models\Technician;
 use Robert2\API\Models\User;
 use Robert2\API\Services\I18n;
+use Robert2\Support\Arr;
 use Robert2\Support\Pdf;
 use Robert2\Support\Period;
 
@@ -28,12 +30,14 @@ final class EventTest extends TestCase
                 'reference' => null,
                 'start_date' => '2020-01-01 00:00:00',
                 'end_date' => '2020-01-01 23:59:59',
+                'color' => null,
                 'is_confirmed' => false,
                 'is_archived' => false,
                 'location' => "Saint-Jean-la-Forêt",
                 'is_billable' => false,
                 'is_return_inventory_done' => false,
                 'created_at' => '2019-12-25 14:59:40',
+                'note' => null,
                 'updated_at' => null,
                 'deleted_at' => null,
             ],
@@ -55,11 +59,13 @@ final class EventTest extends TestCase
                 'reference' => null,
                 'start_date' => "2018-12-15 00:00:00",
                 'end_date' => "2018-12-16 23:59:59",
+                'color' => null,
                 'is_confirmed' => false,
                 'is_archived' => true,
                 'location' => "Brousse",
                 'is_billable' => false,
                 'is_return_inventory_done' => true,
+                'note' => null,
                 'created_at' => '2018-12-14 12:20:00',
                 'updated_at' => '2018-12-14 12:30:00',
                 'deleted_at' => null,
@@ -72,11 +78,13 @@ final class EventTest extends TestCase
                 'reference' => null,
                 'start_date' => "2018-12-17 00:00:00",
                 'end_date' => "2018-12-18 23:59:59",
+                'color' => null,
                 'is_confirmed' => false,
                 'is_archived' => false,
                 'location' => "Gap",
                 'is_billable' => true,
                 'is_return_inventory_done' => true,
+                'note' => null,
                 'created_at' => '2018-12-01 12:50:45',
                 'updated_at' => '2018-12-05 08:31:21',
                 'deleted_at' => null,
@@ -89,11 +97,13 @@ final class EventTest extends TestCase
                 'reference' => null,
                 'start_date' => "2018-12-18 00:00:00",
                 'end_date' => "2018-12-19 23:59:59",
+                'color' => '#ffba49',
                 'is_confirmed' => false,
                 'is_archived' => false,
                 'location' => "Lyon",
                 'is_billable' => true,
                 'is_return_inventory_done' => true,
+                'note' => "Il faudra envoyer le matériel sur Lyon avant l'avant-veille.",
                 'created_at' => '2018-12-16 12:50:45',
                 'updated_at' => null,
                 'deleted_at' => null,
@@ -325,6 +335,34 @@ final class EventTest extends TestCase
         $this->expectException(ValidationException::class);
         $testData = array_merge($data, ['reference' => 'forb1dden-ch@rs']);
         (new Event($testData))->validate();
+    }
+
+    public function testValidation(): void
+    {
+        $generateEvent = function (array $data = []): Event {
+            $data = Arr::defaults($data, [
+                'user_id' => 1,
+                'title' => "Les vieilles charrues",
+                'start_date' => '2020-03-01 00:00:00',
+                'end_date' => '2020-03-03 23:59:59',
+                'is_confirmed' => false,
+            ]);
+            return new Event($data);
+        };
+
+        // - Avec des données valides.
+        $this->assertTrue($generateEvent()->isValid());
+        $this->assertTrue(Event::findOrFail(1)->isValid());
+
+        // - Avec des erreurs de base...
+        $event = $generateEvent([
+            'color' => 'not-a-color',
+        ]);
+        $expectedErrors = [
+            'color' => ["Code de couleur invalide (doit être un code hexadécimal)"],
+        ];
+        $this->assertFalse($event->isValid());
+        $this->assertSame($expectedErrors, $event->validationErrors());
     }
 
     public function testToPdf()
@@ -565,6 +603,7 @@ final class EventTest extends TestCase
             'description' => null,
             'start_date' => '2021-08-01 00:00:00',
             'end_date' => '2021-08-02 23:59:59',
+            'color' => null,
             'is_confirmed' => false,
             'is_archived' => false,
             'location' => 'Gap',
@@ -590,6 +629,7 @@ final class EventTest extends TestCase
                     'technician' => Technician::find(2)->toArray(),
                 ],
             ],
+            'note' => null,
             'created_at' => '2021-07-23 12:31:24',
             'updated_at' => '2021-07-23 12:31:24',
             'deleted_at' => null,
@@ -618,6 +658,7 @@ final class EventTest extends TestCase
             'description' => null,
             'start_date' => '2021-08-01 00:00:00',
             'end_date' => '2021-08-03 23:59:59',
+            'color' => null,
             'is_confirmed' => false,
             'is_archived' => false,
             'location' => 'Gap',
@@ -643,6 +684,7 @@ final class EventTest extends TestCase
                     'technician' => Technician::find(2)->toArray(),
                 ],
             ],
+            'note' => null,
             'created_at' => '2021-07-23 12:31:24',
             'updated_at' => '2021-07-23 12:31:24',
             'deleted_at' => null,
@@ -666,6 +708,7 @@ final class EventTest extends TestCase
             'description' => null,
             'start_date' => '2021-08-01 00:00:00',
             'end_date' => '2021-08-01 23:59:59',
+            'color' => null,
             'is_confirmed' => false,
             'is_archived' => false,
             'location' => 'Gap',
@@ -682,6 +725,7 @@ final class EventTest extends TestCase
                     'technician' => Technician::find(1)->toArray(),
                 ],
             ],
+            'note' => null,
             'created_at' => '2021-07-23 12:31:24',
             'updated_at' => '2021-07-23 12:31:24',
             'deleted_at' => null,
@@ -730,23 +774,62 @@ final class EventTest extends TestCase
 
         // - Test à une date qui correspond à la date de fin d'un événement non archivé,
         //   dont l'inventaire n'est pas terminé (#4).
-        $results = Event::notReturned(new Carbon('2019-04-10'))->get()->toArray();
-        $this->assertCount(1, $results);
-        $this->assertEquals(4, $results[0]['id']);
-        $this->assertEquals('Concert X', $results[0]['title']);
-        $this->assertEquals('2019-04-10 23:59:59', $results[0]['end_date']);
+        $results = Event::notReturned(new Carbon('2019-04-10'))->get()->pluck('id')->all();
+        $this->assertEquals([4], $results);
 
-        // - Test pour une période qui contient un événement non-archivé,
-        //   dont l'inventaire n'est pas terminé (#4).
+        // - Test pour une période qui contient deux événements non-archivés,
+        //   dont l'inventaire n'est pas terminé (#4 et #5).
         $period = new Period(
             new Carbon('2018-01-01'),
             new Carbon('2020-01-15')
         );
-        $results = Event::notReturned($period)->get()->toArray();
-        $this->assertCount(2, $results);
-        $this->assertEquals(4, $results[0]['id']);
-        $this->assertEquals('Concert X', $results[0]['title']);
-        $this->assertEquals(5, $results[1]['id']);
-        $this->assertEquals('Kermesse de l\'école des trois cailloux', $results[1]['title']);
+        $results = Event::notReturned($period)->get()->pluck('id')->all();
+        $this->assertEquals([4, 5], $results);
+    }
+
+    public function testTotalisableAttributes(): void
+    {
+        $getTestValues = fn (Attribute $attribute) => (
+            array_intersect_key(
+                $attribute->append('value')->toArray(),
+                array_flip(['id', 'name', 'value', 'unit']),
+            )
+        );
+
+        // Totaux des attributs numériques pour l'événement #1
+        $result = Event::findOrFail(1)->totalisableAttributes;
+        $expected = [
+            1 => [
+                'id' => 1,
+                'name' => 'Poids',
+                'value' => 41.85,
+                'unit' => 'kg',
+            ],
+            3 => [
+                'id' => 3,
+                'name' => 'Puissance',
+                'value' => 945,
+                'unit' => 'W',
+            ],
+        ];
+        $this->assertEquals($expected, array_map($getTestValues, $result));
+
+        // Totaux des attributs numériques pour l'événement #2
+        $result = Event::findOrFail(2)->totalisableAttributes;
+        $expected = [
+            1 => [
+                'id' => 1,
+                'name' => 'Poids',
+                'value' => 113.9,
+                'unit' => 'kg',
+            ],
+            3 => [
+                'id' => 3,
+                'name' => 'Puissance',
+                'value' => 2620,
+                'unit' => 'W',
+            ],
+        ];
+        $this->assertEquals($expected, array_map($getTestValues, $result));
     }
 }

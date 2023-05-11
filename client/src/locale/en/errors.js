@@ -3,7 +3,6 @@ export default {
         'unexpected-while-saving': "An unexpected error occurred while saving, please try again.",
         'unexpected-while-deleting': "An unexpected error occurred while deleting, please try again.",
         'unexpected-while-restoring': "An unexpected error occurred while restoring, please try again.",
-        'unexpected-while-uploading': "An unexpected error occurred while sending your files, please try again.",
         'unexpected-while-calculating': "An unexpected error occurred while calculating, please try again.",
         'unexpected-while-fetching': "An unexpected error occurred while retrieving the data.",
         'api-unreachable': "Sorry, but the API is unreachable... Please check your access to network.",
@@ -28,9 +27,15 @@ export default {
             "If the problem persists, please contact an administrator.",
         ].join('\n'),
 
-        'file-type-not-allowed': "Type '{type}' not supported.",
+        //
+        // - Erreurs liées à un fichier.
+        //
+
+        'file-upload-failed': "An unexpected error occurred while sending the file.",
+        'file-type-not-allowed': "This file type is not supported.",
         'file-size-exceeded': "File too large. Maximum {max}.",
         'file-already-exists': "This file already exists in the list.",
         'file-not-a-valid-image': "The file is not part of the accepted image types.",
+        'file-unknown-error': "Unknown error occurred with the file.",
     },
 };

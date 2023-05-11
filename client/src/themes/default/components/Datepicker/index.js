@@ -24,7 +24,7 @@ export default defineComponent({
             default: undefined,
             validator(value) {
                 const isValidDateString = (_date) => (
-                    _date == null ||
+                    [undefined, null].includes(_date) ||
                     (typeof _date === 'string' && moment(_date).isValid())
                 );
 

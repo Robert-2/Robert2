@@ -2,13 +2,16 @@ import './index.scss';
 import Vue from 'vue';
 import vuexI18n from 'vuex-i18n';
 import vueCompositionApi from '@vue/composition-api';
+import { VueQueryPlugin as vueQueryPlugin } from 'vue-query';
 import VueJsModal from 'vue-js-modal/dist/index.nocss';
 import { VTooltip } from 'v-tooltip';
-import { ClientTable, ServerTable } from 'vue-tables-2';
+import { ClientTable, ServerTable } from 'vue-tables-2-premium';
 import Toasted from 'vue-toasted';
+import Portal from 'portal-vue';
 import config from '@/globals/config';
 import { getDefaultLang, getLang } from '@/globals/lang';
 import initMoment from '@/globals/init/moment';
+import queryClient from '@/globals/queryClient';
 import requester from '@/globals/requester';
 import store from '@/themes/default/globals/store';
 import router from '@/themes/default/globals/router';
@@ -18,10 +21,13 @@ import App from './components/App';
 
 Vue.config.productionTip = false;
 
-// - Vue Composition API
+// - Vue Composition API.
 Vue.use(vueCompositionApi);
 
-// - HTTP (Ajax) lib
+// - Vue query.
+Vue.use(vueQueryPlugin, { queryClient });
+
+// - HTTP (Ajax) lib.
 Vue.prototype.$http = requester;
 
 // - Modal
@@ -106,6 +112,9 @@ Vue.use(Toasted, {
         },
     },
 });
+
+// - Portails
+Vue.use(Portal);
 
 const boot = async () => {
     await store.dispatch('auth/fetch');

@@ -28,7 +28,7 @@ export default {
         // - Actualise le timestamp courant toutes les minutes.
         this.nowTimer = setInterval(() => { this.now = Date.now(); }, 60_000);
     },
-    beforeUnmount() {
+    beforeDestroy() {
         if (this.nowTimer) {
             clearInterval(this.nowTimer);
         }
