@@ -46,7 +46,6 @@
         .cv-day,
         .cv-header-day,
         .cv-header-days,
-        .cv-item,
         .cv-week,
         .cv-weeks {
             border-color: globals.$text-muted-color;
@@ -67,8 +66,12 @@
                 }
             }
         }
+    }
 
-        .cv-item {
+    &__item {
+        $sub-block: &;
+
+        &.cv-item {
             height: 48px;
             margin-top: 5px;
             margin-left: 5px;
@@ -79,19 +82,6 @@
             color: globals.$text-base-color;
             line-height: 1.5;
             white-space: pre-wrap;
-
-            &--not-confirmed {
-                background-color:
-                    rgba(
-                        globals.$calendar-event-normal-color,
-                        globals.$calendar-event-not-confirmed-opacity
-                    );
-            }
-
-            &--past {
-                border-radius: 5px;
-                background-color: globals.$calendar-event-past-color;
-            }
 
             @for $i from 1 through 7 {
                 &.span#{$i} {
@@ -107,6 +97,20 @@
             &.toBeContinued {
                 border-end-end-radius: 0;
                 border-start-end-radius: 0;
+            }
+        }
+
+        &--with-custom-color {
+            &.cv-item {
+                background-color: var(--month-calendar-item-color);
+
+                &#{$sub-block}--with-dark-color {
+                    color: globals.$calendar-event-text-color-light;
+                }
+
+                &#{$sub-block}--with-light-color {
+                    color: globals.$calendar-event-text-color-dark;
+                }
             }
         }
     }

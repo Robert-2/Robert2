@@ -22,6 +22,36 @@ export default {
         EventStore.commit('setIsSaved', true);
     },
     methods: {
+        // ------------------------------------------------------
+        // -
+        // -    Handlers
+        // -
+        // ------------------------------------------------------
+
+        handleSubmit(e) {
+            e.preventDefault();
+
+            this.saveAndGoToStep(3);
+        },
+
+        handlePrevClick(e) {
+            e.preventDefault();
+
+            this.saveAndGoToStep(1);
+        },
+
+        handleNextClick(e) {
+            e.preventDefault();
+
+            this.saveAndGoToStep(3);
+        },
+
+        // ------------------------------------------------------
+        // -
+        // -    Méthodes internes
+        // -
+        // ------------------------------------------------------
+
         updateItems(ids) {
             this.beneficiariesIds = ids;
 
@@ -47,26 +77,7 @@ export default {
             return label;
         },
 
-        saveAndBack(e) {
-            e.preventDefault();
-            this.save({ gotoStep: false });
-        },
-
-        saveAndNext(e) {
-            e.preventDefault();
-            this.save({ gotoStep: 3 });
-        },
-
-        displayError(error) {
-            this.$emit('error', error);
-
-            const { code, details } = error.response?.data?.error || { code: ApiErrorCode.UNKNOWN, details: {} };
-            if (code === ApiErrorCode.VALIDATION_FAILED) {
-                this.errors = { ...details };
-            }
-        },
-
-        async save(options) {
+        async saveAndGoToStep(nextStep) {
             this.$emit('loading');
 
             const { id } = this.event;
@@ -74,18 +85,16 @@ export default {
 
             try {
                 const data = await apiEvents.update(id, postData);
-
-                const { gotoStep } = options;
-                if (!gotoStep) {
-                    this.$router.push('/');
-                    return;
-                }
-
                 EventStore.commit('setIsSaved', true);
                 this.$emit('updateEvent', data);
-                this.$emit('gotoStep', gotoStep);
+                this.$emit('gotoStep', nextStep);
             } catch (error) {
-                this.displayError(error);
+                this.$emit('error', error);
+
+                const { code, details } = error.response?.data?.error || { code: ApiErrorCode.UNKNOWN, details: {} };
+                if (code === ApiErrorCode.VALIDATION_FAILED) {
+                    this.errors = { ...details };
+                }
             } finally {
                 this.$emit('stopLoading');
             }
@@ -95,17 +104,25 @@ export default {
         const {
             $t: __,
             event,
-            saveAndNext,
-            saveAndBack,
             showBillingHelp,
             updateItems,
             getItemLabel,
+
+            handleSubmit,
+            handlePrevClick,
+            handleNextClick,
         } = this;
 
         return (
-            <form class="Form EventStep2" method="POST" onSubmit={saveAndBack}>
+            <form class="EventStep2" method="POST" onSubmit={handleSubmit}>
                 <header class="EventStep2__header">
                     <h1 class="EventStep2__title">{__('page.event-edit.event-beneficiaries')}</h1>
+                    {showBillingHelp && (
+                        <p class="EventStep2__help">
+                            <i class="fas fa-info-circle" />&nbsp;
+                            {__('page.event-edit.beneficiary-billing-help')}
+                        </p>
+                    )}
                 </header>
                 <MultipleItem
                     label={__('beneficiary')}
@@ -115,19 +132,13 @@ export default {
                     getItemLabel={getItemLabel}
                     onItemsUpdated={updateItems}
                 />
-                {showBillingHelp && (
-                    <p class="EventStep2__help">
-                        <i class="fas fa-info-circle" />&nbsp;
-                        {__('page.event-edit.beneficiary-billing-help')}
-                    </p>
-                )}
-                <section class="EventStep2__footer">
-                    <button type="submit" class="button info">
+                <section class="EventStep2__actions">
+                    <button type="submit" class="button info" onClick={handlePrevClick}>
                         <i class="fas fa-arrow-left" />&nbsp;
-                        {__('page.event-edit.save-and-back-to-calendar')}
+                        {__('page.event-edit.save-and-go-to-prev-step')}
                     </button>
-                    <button type="button" class="button success" onClick={saveAndNext}>
-                        {__('page.event-edit.save-and-continue')}&nbsp;
+                    <button type="submit" class="button success" onClick={handleNextClick}>
+                        {__('page.event-edit.save-and-go-to-next-step')}&nbsp;
                         <i class="fas fa-arrow-right" />
                     </button>
                 </section>

@@ -3,8 +3,9 @@ title-simple: Modify event
 title: 'Modify event "{title}"'
 help-edit: ''
 back-to-calendar: Back to calendar
-save-and-back-to-calendar: Save and back to calendar
-save-and-continue: Save and continue
+save-and-go-to-prev-step: Save and back to previous step
+save-and-go-to-next-step: Save and continue
+go-to-prev-step: Back to previous step
 continue: Continue
 step: Step
 event-informations: Informations

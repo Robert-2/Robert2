@@ -63,7 +63,7 @@ const InterfaceUserSettings = defineComponent({
 
         // ------------------------------------------------------
         // -
-        // -    Internal methods
+        // -    Méthodes internes
         // -
         // ------------------------------------------------------
 
@@ -91,7 +91,8 @@ const InterfaceUserSettings = defineComponent({
 
                 localStorage.setItem('userLocale', this.settings.language);
                 this.$store.commit('auth/setLocale', this.settings.language);
-                // @ts-ignore En attendant un typage correct de ce module.
+
+                // @ts-expect-error En attendant un typage correct de ce module.
                 Vue.i18n.set(this.settings.language);
             } catch (error) {
                 if (!axios.isAxiosError(error)) {
@@ -100,7 +101,6 @@ const InterfaceUserSettings = defineComponent({
                     const { code = ApiErrorCode.UNKNOWN, details = {} } = error.response?.data?.error ?? {};
                     if (code === ApiErrorCode.VALIDATION_FAILED) {
                         this.validationErrors = { ...details };
-                        this.$refs.page.scrollToTop();
                     } else {
                         this.$toasted.error(__('errors.unexpected-while-saving'));
                     }

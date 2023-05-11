@@ -68,7 +68,7 @@ class ParkController extends BaseController
 
     // ------------------------------------------------------
     // -
-    // -    Internal methods
+    // -    Méthodes internes
     // -
     // ------------------------------------------------------
 

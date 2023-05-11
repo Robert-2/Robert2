@@ -1,0 +1,16 @@
+.Page--attribute-edit {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+
+    .AttributeEditPage {
+        flex: 1;
+        align-self: center;
+    }
+}
+
+.AttributeEditPage {
+    width: 600px;
+    max-width: 100%;
+}

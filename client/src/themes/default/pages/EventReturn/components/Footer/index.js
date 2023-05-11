@@ -1,6 +1,6 @@
 import './index.scss';
 import Fragment from '@/components/Fragment';
-import Icon from '@/themes/default/components/Icon';
+import IconMessage from '@/themes/default/components/IconMessage';
 import Button from '@/themes/default/components/Button';
 
 // @vue/component
@@ -11,6 +11,7 @@ export default {
         isSaving: Boolean,
         hasEnded: Boolean,
     },
+    emits: ['save', 'terminate'],
     methods: {
         // ------------------------------------------------------
         // -
@@ -68,10 +69,12 @@ export default {
                             </Button>
                         )}
                         {!hasEnded && (
-                            <p class="EventReturnFooter__warning">
-                                <Icon name="exclamation-triangle" />
-                                {__('page.event-return.not-finished-yet-alert')}
-                            </p>
+                            <div class="EventReturnFooter__warning">
+                                <IconMessage
+                                    name="exclamation-triangle"
+                                    message={__('page.event-return.not-finished-yet-alert')}
+                                />
+                            </div>
                         )}
                     </Fragment>
                 )}

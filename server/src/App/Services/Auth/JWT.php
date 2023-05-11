@@ -42,7 +42,7 @@ final class JWT implements AuthenticatorInterface
 
     // ------------------------------------------------------
     // -
-    // -    Internal methods
+    // -    Méthodes internes
     // -
     // ------------------------------------------------------
 
@@ -85,7 +85,7 @@ final class JWT implements AuthenticatorInterface
 
     // ------------------------------------------------------
     // -
-    // -    Public static methods
+    // -    Méthodes publiques statiques
     // -
     // ------------------------------------------------------
 

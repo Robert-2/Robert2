@@ -1,0 +1,81 @@
+@use '~@/themes/default/style/globals';
+@use 'sass:color';
+
+.InputColor {
+    $block: &;
+
+    &__field {
+        flex: 1;
+        width: 100%;
+        height: globals.$input-min-height;
+        max-width: var(--input-width, 100%);
+        padding: 4px;
+        border: globals.$input-border-size solid globals.$bg-color-input-normal;
+        border-radius: globals.$input-border-radius;
+        background-color: globals.$bg-color-input-normal;
+        cursor: pointer;
+
+        &__preview {
+            width: 100%;
+            height: 100%;
+            border-radius: 2px;
+            background-color: var(--InputColor--value, var(--InputColor--placeholder, transparent));
+        }
+    }
+
+    &__picker {
+        position: absolute;
+        z-index: 100;
+        top: 0;
+        left: 0;
+    }
+
+    //
+    // - Vide
+    //
+
+    &--empty {
+        #{$block}__field__preview {
+            $empty-bar-color: #9c272d;
+            $empty-color-accent: color.scale(globals.$bg-color-input-normal, $lightness: -40%);
+
+            @include globals.checkerboard($empty-color-accent, transparent);
+
+            &::before {
+                content: '';
+                display: block;
+                width: 100%;
+                height: 100%;
+                background:
+                    linear-gradient(
+                        to top right,
+                        transparent 0%,
+                        transparent calc(50% - 2px),
+                        $empty-bar-color 50%,
+                        transparent calc(50% + 2px),
+                        transparent 100%
+                    );
+            }
+        }
+    }
+
+    //
+    // - Désactivé
+    //
+
+    &--disabled {
+        #{$block}__field {
+            cursor: not-allowed;
+        }
+    }
+
+    //
+    // - Invalide
+    //
+
+    &--invalid {
+        #{$block}__field {
+            border-color: globals.$input-error-border-color;
+        }
+    }
+}

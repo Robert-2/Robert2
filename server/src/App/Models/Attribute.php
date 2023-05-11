@@ -6,10 +6,10 @@ namespace Robert2\API\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Robert2\Support\Arr;
 use Robert2\API\Contracts\Serializable;
 use Robert2\API\Models\Traits\Serializer;
 use Respect\Validation\Validator as V;
+use Robert2\API\Models\Traits\TransientAttributes;
 
 /**
  * Attribut de matériel personnalisé.
@@ -19,6 +19,7 @@ use Respect\Validation\Validator as V;
  * @property string $type
  * @property string|null $unit
  * @property int|null $max_length
+ * @property-read int|float|bool|string|null $value
  * @property-read Carbon $created_at
  * @property-read ?Carbon $updated_at
  * @property-read ?Carbon $deleted_at
@@ -31,6 +32,7 @@ final class Attribute extends BaseModel implements Serializable
     use Serializer {
         serialize as baseSerialize;
     }
+    use TransientAttributes;
 
     protected $orderField = 'id';
 
@@ -40,15 +42,10 @@ final class Attribute extends BaseModel implements Serializable
 
         $this->validation = [
             'name' => V::notEmpty()->alnum(static::EXTRA_CHARS)->length(2, 64),
-            'type' => V::notEmpty()->anyOf(
-                V::equals('string'),
-                V::equals('integer'),
-                V::equals('float'),
-                V::equals('boolean'),
-                V::equals('date')
-            ),
+            'type' => V::custom([$this, 'checkType']),
             'unit' => V::custom([$this, 'checkUnit']),
             'max_length' => V::custom([$this, 'checkMaxLength']),
+            'is_totalisable' => V::custom([$this, 'checkIsTotalisable']),
         ];
     }
 
@@ -57,6 +54,21 @@ final class Attribute extends BaseModel implements Serializable
     // -    Validation
     // -
     // ------------------------------------------------------
+
+    public function checkType()
+    {
+        if ($this->exists && !$this->isDirty('type')) {
+            return true;
+        }
+
+        return V::notEmpty()->anyOf(
+            V::equals('string'),
+            V::equals('integer'),
+            V::equals('float'),
+            V::equals('boolean'),
+            V::equals('date')
+        );
+    }
 
     public function checkUnit()
     {
@@ -72,6 +84,14 @@ final class Attribute extends BaseModel implements Serializable
             return V::nullType();
         }
         return V::optional(V::numericVal());
+    }
+
+    public function checkIsTotalisable()
+    {
+        if (!in_array($this->type, ['integer', 'float'], true)) {
+            return V::nullType();
+        }
+        return V::optional(V::boolType());
     }
 
     // ------------------------------------------------------
@@ -91,6 +111,7 @@ final class Attribute extends BaseModel implements Serializable
     public function categories()
     {
         return $this->belongsToMany(Category::class, 'attribute_categories')
+            ->using(AttributeCategory::class)
             ->orderBy('name');
     }
 
@@ -105,11 +126,34 @@ final class Attribute extends BaseModel implements Serializable
         'type' => 'string',
         'unit' => 'string',
         'max_length' => 'integer',
+        'is_totalisable' => 'boolean',
     ];
 
     public function getCategoriesAttribute()
     {
         return $this->getRelationValue('categories');
+    }
+
+    public function getValueAttribute()
+    {
+        $value = $this->getTransientAttribute('value');
+        if ($value === null) {
+            return $value;
+        }
+
+        if ($this->type === 'integer') {
+            return (int) $value;
+        }
+
+        if ($this->type === 'float') {
+            return (float) $value;
+        }
+
+        if ($this->type === 'boolean') {
+            return $value === 'true' || $value === '1';
+        }
+
+        return $value;
     }
 
     // ------------------------------------------------------
@@ -120,6 +164,7 @@ final class Attribute extends BaseModel implements Serializable
 
     protected static $serializedNames = [
         'max_length' => 'maxLength',
+        'is_totalisable' => 'isTotalisable',
     ];
 
     public function serialize(): array
@@ -133,11 +178,11 @@ final class Attribute extends BaseModel implements Serializable
                 break;
 
             case 'string':
-                unset($data['unit']);
+                unset($data['unit'], $data['isTotalisable']);
                 break;
 
             default:
-                unset($data['maxLength'], $data['unit']);
+                unset($data['unit'], $data['isTotalisable'], $data['maxLength']);
         }
 
         unset(
@@ -160,11 +205,17 @@ final class Attribute extends BaseModel implements Serializable
         'type',
         'unit',
         'max_length',
+        'is_totalisable',
     ];
+
+    public function setValueAttribute(string $value)
+    {
+        $this->setTransientAttribute('value', $value);
+    }
 
     // ------------------------------------------------------
     // -
-    // -    "Repository" methods
+    // -    Méthodes de "repository"
     // -
     // ------------------------------------------------------
 
@@ -177,16 +228,24 @@ final class Attribute extends BaseModel implements Serializable
                     ->setModel(self::class, $id);
             }
 
-            // - À l'edition on ne permet pas les changements autre que le nom.
-            //   (Vu qu'il peut y avoir déjà des valeurs un peu partout pour cet attribut)
-            $data = Arr::only($data, ['name']);
+            // - À l'édition on ne permet pas le changement de type
+            unset($data['type']);
         }
 
-        return dbTransaction(function () use ($id, $isCreate, $data) {
+        return dbTransaction(function () use ($id, $data) {
             $attribute = static::updateOrCreate(compact('id'), $data);
 
-            if ($isCreate && isset($data['categories'])) {
-                $attribute->categories()->sync($data['categories']);
+            if (isset($data['categories'])) {
+                // Si on enlève toutes les catégories (= pas de limite par catégorie),
+                // on veut conserver les valeurs existantes des caractéristiques du matériel,
+                // donc on ne déclenche pas les events du model `AttributeCategory`.
+                if (empty($data['categories'])) {
+                    static::withoutEvents(function () use ($attribute, $data) {
+                        $attribute->categories()->sync($data['categories']);
+                    });
+                } else {
+                    $attribute->categories()->sync($data['categories']);
+                }
             }
 
             return $attribute->refresh();

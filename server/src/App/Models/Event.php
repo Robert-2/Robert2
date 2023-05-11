@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection as CoreCollection;
 use Respect\Validation\Validator as V;
 use Robert2\API\Config\Config;
+use Robert2\API\Contracts\Bookable;
 use Robert2\API\Contracts\PeriodInterface;
 use Robert2\API\Contracts\Serializable;
 use Robert2\API\Errors\Exception\ValidationException;
@@ -39,6 +40,7 @@ use Symfony\Contracts\Cache\ItemInterface as CacheItemInterface;
  * @property string|null $location
  * @property string $start_date
  * @property string $end_date
+ * @property string|null $color
  * @property-read int $duration
  * @property-read Decimal|null $degressive_rate
  * @property Decimal|null $discount_rate
@@ -57,10 +59,13 @@ use Symfony\Contracts\Cache\ItemInterface as CacheItemInterface;
  * @property bool $is_confirmed
  * @property bool $is_archived
  * @property bool $is_billable
+ * @property bool $is_return_inventory_started
  * @property bool $is_return_inventory_done
  * @property-read bool|null $has_missing_materials
  * @property-read bool|null $has_not_returned_materials
  * @property-read int[] $parks
+ * @property string|null $note
+ * @property-read array $totalisableAttributes
  * @property-read Carbon $created_at
  * @property-read Carbon|null $updated_at
  * @property-read Carbon|null $deleted_at
@@ -70,6 +75,7 @@ use Symfony\Contracts\Cache\ItemInterface as CacheItemInterface;
  * @property-read Collection|Material[] $materials
  * @property-read Collection|Estimate[] $estimates
  * @property-read Collection|Invoice[] $invoices
+ * @property-read Collection|Document[] $documents
  *
  * @method static Builder|static inPeriod(PeriodInterface $period)
  * @method static Builder|static inPeriod(string|Carbon $start, string|Carbon|null $end)
@@ -77,7 +83,7 @@ use Symfony\Contracts\Cache\ItemInterface as CacheItemInterface;
  * @method static Builder|static search(string $term)
  * @method static Builder|static notReturned(Carbon|PeriodInterface $dateOrPeriod)
  */
-final class Event extends BaseModel implements Serializable, PeriodInterface
+final class Event extends BaseModel implements Serializable, PeriodInterface, Bookable
 {
     use Serializer;
     use SoftDeletable;
@@ -85,12 +91,14 @@ final class Event extends BaseModel implements Serializable, PeriodInterface
     use Cache;
     use TransientAttributes;
 
-    /** L'identifiant unique de type de booking. */
+    /** L'identifiant unique du modèle. */
     public const TYPE = 'event';
 
     // - Types de sérialisation.
     public const SERIALIZE_DEFAULT = 'default';
-    public const SERIALIZE_BOOKING = 'booking';
+    public const SERIALIZE_SUMMARY = 'summary';
+    public const SERIALIZE_BOOKING_DEFAULT = 'booking-default';
+    public const SERIALIZE_BOOKING_SUMMARY = 'booking-summary';
     public const SERIALIZE_DETAILS = 'details';
 
     /**
@@ -109,8 +117,10 @@ final class Event extends BaseModel implements Serializable, PeriodInterface
     protected $searchField = 'title';
 
     protected $attributes = [
+        'color' => null,
         'is_archived' => false,
         'is_return_inventory_done' => false,
+        'note' => null,
     ];
 
     public function __construct(array $attributes = [])
@@ -123,6 +133,7 @@ final class Event extends BaseModel implements Serializable, PeriodInterface
             'reference' => V::custom([$this, 'checkReference']),
             'start_date' => V::notEmpty()->dateTime(),
             'end_date' => V::custom([$this, 'checkEndDate']),
+            'color' => V::optional(V::custom([$this, 'checkColor'])),
             'is_confirmed' => V::notOptional()->boolType(),
             'is_archived' => V::custom([$this, 'checkIsArchived']),
             'is_billable' => V::optional(V::boolType()),
@@ -173,6 +184,12 @@ final class Event extends BaseModel implements Serializable, PeriodInterface
         $endDate = new Carbon($this->end_date);
 
         return $startDate < $endDate ?: 'end-date-must-be-later';
+    }
+
+    public function checkColor($value)
+    {
+        $colorChecker = V::regex('/^#?[0-9a-f]{6}$/i');
+        return $colorChecker->validate($value) ?: 'invalid-hexadecimal-color';
     }
 
     public function checkIsArchived($value)
@@ -250,6 +267,12 @@ final class Event extends BaseModel implements Serializable, PeriodInterface
             ->orderBy('date', 'desc');
     }
 
+    public function documents()
+    {
+        return $this->morphMany(Document::class, 'entity')
+            ->orderBy('name', 'asc');
+    }
+
     // ------------------------------------------------------
     // -
     // -    Mutators
@@ -263,11 +286,13 @@ final class Event extends BaseModel implements Serializable, PeriodInterface
         'description' => 'string',
         'start_date' => 'string',
         'end_date' => 'string',
+        'color' => 'string',
         'is_confirmed' => 'boolean',
         'is_archived' => 'boolean',
         'location' => 'string',
         'is_billable' => 'boolean',
         'is_return_inventory_done' => 'boolean',
+        'note' => 'string',
     ];
 
     public function getBeneficiariesAttribute()
@@ -516,6 +541,25 @@ final class Event extends BaseModel implements Serializable, PeriodInterface
         );
     }
 
+    public function getIsReturnInventoryStartedAttribute(): bool
+    {
+        // - Si l'inventaire de retour est terminé, c'est qu'il a forcément commencé.
+        if ($this->is_return_inventory_done) {
+            return true;
+        }
+
+        // - Si l'événement n'a pas encore commencé, l'inventaire de retour ne peut
+        //   pas avoir commencé non plus.
+        $startDate = $this->getStartDate();
+        if ($startDate >= Carbon::tomorrow()) {
+            return false;
+        }
+
+        // - S'il existe au moins une quantité retournée non nulle,
+        //   c'est que l'inventaire de retour a été sauvegardé au moins une fois.
+        return $this->materials->whereNotNull('pivot.quantity_returned')->isNotEmpty();
+    }
+
     public function getHasNotReturnedMaterialsAttribute()
     {
         if (!$this->exists || $this->is_archived) {
@@ -562,6 +606,33 @@ final class Event extends BaseModel implements Serializable, PeriodInterface
         return array_values(array_unique($parkIds));
     }
 
+    public function getTotalisableAttributesAttribute(): array
+    {
+        return $this->materials->reduce(
+            function ($totals, $material) {
+                $quantity = $material->pivot->quantity;
+
+                foreach ($material->attributes as $attribute) {
+                    if (!$attribute->is_totalisable) {
+                        continue;
+                    }
+
+                    $currentTotal = $quantity * $attribute->value;
+
+                    if (!array_key_exists($attribute->id, $totals)) {
+                        $totals[$attribute->id] = $attribute->fresh();
+                    }
+
+                    $previousTotal = $totals[$attribute->id]->value ?? 0;
+                    $totals[$attribute->id]->value = $previousTotal + $currentTotal;
+                }
+
+                return $totals;
+            },
+            [],
+        );
+    }
+
     // ------------------------------------------------------
     // -
     // -    Getters
@@ -593,17 +664,25 @@ final class Event extends BaseModel implements Serializable, PeriodInterface
         'description',
         'start_date',
         'end_date',
+        'color',
         'is_confirmed',
         'is_archived',
         'location',
         'is_billable',
         'is_return_inventory_done',
+        'note',
     ];
 
     public function setReferenceAttribute($value)
     {
         $value = is_string($value) ? trim($value) : $value;
         $this->attributes['reference'] = $value;
+    }
+
+    public function setNoteAttribute($value)
+    {
+        $value = is_string($value) ? trim($value) : $value;
+        $this->attributes['note'] = $value === '' ? null : $value;
     }
 
     public function setDiscountRateAttribute(Decimal $value)
@@ -616,7 +695,7 @@ final class Event extends BaseModel implements Serializable, PeriodInterface
 
     // ------------------------------------------------------
     // -
-    // -    Entity methods
+    // -    Méthodes liées à une "entity"
     // -
     // ------------------------------------------------------
 
@@ -673,7 +752,10 @@ final class Event extends BaseModel implements Serializable, PeriodInterface
         $this->refresh();
     }
 
-    public function syncMaterials(array $materialsData)
+    /**
+     * @inheritdoc
+     */
+    public function syncMaterials(array $materialsData): void
     {
         $materials = [];
         foreach ($materialsData as $materialData) {
@@ -705,11 +787,13 @@ final class Event extends BaseModel implements Serializable, PeriodInterface
             'description' => $this->description,
             'start_date' => $newEventData['start_date'] ?? null,
             'end_date' => $newEventData['end_date'] ?? null,
+            'color' => $this->color,
             'is_confirmed' => false,
             'is_archived' => false,
             'location' => $this->location,
             'is_billable' => $this->is_billable,
             'is_return_inventory_done' => false,
+            'note' => $this->note,
         ]);
         $newEvent->validate();
 
@@ -742,11 +826,7 @@ final class Event extends BaseModel implements Serializable, PeriodInterface
     // ------------------------------------------------------
 
     /**
-     * @param Builder $query
-     * @param string|Carbon|PeriodInterface $start
-     * @param null|string|Carbon $end (optional)
-     *
-     * @return Builder
+     * @inheritdoc
      */
     public function scopeInPeriod(Builder $query, $start, $end = null): Builder
     {
@@ -801,8 +881,8 @@ final class Event extends BaseModel implements Serializable, PeriodInterface
 
         $query = $query->where('is_return_inventory_done', false)
             ->where('is_archived', false)
-            ->whereHas('materials', function (Builder $query) {
-                $query->whereColumn('quantity', '>', 'quantity_returned');
+            ->whereHas('materials', function (Builder $subQuery) {
+                $subQuery->whereRaw('`quantity` > COALESCE(`quantity_returned`, 0)');
             });
 
         if ($minDate) {
@@ -824,7 +904,7 @@ final class Event extends BaseModel implements Serializable, PeriodInterface
     protected function getPdfName(I18n $i18n): string
     {
         $company = Config::getSettings('companyData');
-        return Str::slug(implode('-', [
+        return Str::slugify(implode('-', [
             $i18n->translate('release-sheet'),
             $company['name'],
             $this->title ?: $this->id,
@@ -882,11 +962,11 @@ final class Event extends BaseModel implements Serializable, PeriodInterface
             'beneficiaries' => $this->beneficiaries,
             'company' => Config::getSettings('companyData'),
             'currency' => Config::getSettings('currency')['iso'],
-            'currencyName' => Config::getSettings('currency')['name'],
             'sortedMaterials' => $materials,
             'materialDisplayMode' => $displayMode,
             'replacementAmount' => $this->total_replacement,
             'technicians' => array_values($technicians),
+            'totalisableAttributes' => $this->totalisableAttributes,
             'customText' => Setting::getWithKey('eventSummary.customText'),
             'showLegalNumbers' => Setting::getWithKey('eventSummary.showLegalNumbers'),
         ];
@@ -894,7 +974,7 @@ final class Event extends BaseModel implements Serializable, PeriodInterface
 
     // ------------------------------------------------------
     // -
-    // -    "Repository" methods
+    // -    Méthodes de "repository"
     // -
     // ------------------------------------------------------
 
@@ -977,7 +1057,7 @@ final class Event extends BaseModel implements Serializable, PeriodInterface
     {
         /** @var Event $event */
         $event = tap(clone $this, function (Event $event) use ($format) {
-            if ($format === self::SERIALIZE_BOOKING) {
+            if ($format === self::SERIALIZE_BOOKING_SUMMARY) {
                 $event->append([
                     'technicians',
                     'beneficiaries',
@@ -987,7 +1067,7 @@ final class Event extends BaseModel implements Serializable, PeriodInterface
                 ]);
             }
 
-            if ($format === self::SERIALIZE_DETAILS) {
+            if (in_array($format, [self::SERIALIZE_DETAILS, self::SERIALIZE_BOOKING_DEFAULT], true)) {
                 $event->append([
                     'user',
                     'beneficiaries',
@@ -996,8 +1076,8 @@ final class Event extends BaseModel implements Serializable, PeriodInterface
                     'total_replacement',
                     'currency',
                     'materials',
-                    'parks',
                     'has_missing_materials',
+                    'is_return_inventory_started',
                     'has_not_returned_materials',
                 ]);
 
@@ -1023,6 +1103,26 @@ final class Event extends BaseModel implements Serializable, PeriodInterface
         });
 
         $data = new DotArray($event->attributesForSerialization());
+
+        if ($format === self::SERIALIZE_BOOKING_SUMMARY) {
+            $data->delete(['note']);
+        }
+
+        if ($format === self::SERIALIZE_SUMMARY) {
+            $data->delete([
+                'reference',
+                'description',
+                'color',
+                'is_confirmed',
+                'is_billable',
+                'is_archived',
+                'is_return_inventory_done',
+                'user_id',
+                'note',
+                'created_at',
+                'updated_at',
+            ]);
+        }
 
         // - On ajoute manuellement le matériel car on veut les données du pivot avec.
         if ($event->hasAppended('materials')) {

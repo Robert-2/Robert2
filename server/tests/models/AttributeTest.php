@@ -26,20 +26,24 @@ final class AttributeTest extends TestCase
 
         // - Test `max_length`: Doit être à `null` si attribut autre que type `string`.
         // - Test `unit`: Doit être à `null` si attribut autre que type `float` ou `integer`.
+        // - Test `is_totalisable`: Doit être à `null` si attribut autre que type `float` ou `integer`.
         $testData = [
             'id' => 6,
             'name' => 'Testing',
             'type' => 'date',
             'unit' => 'kg',
             'max_length' => 100,
+            'is_totalisable' => false,
         ];
         $testValidation($testData, [
             'unit' => ['Doit être non défini'],
             'max_length' => ['Doit être non défini'],
+            'is_totalisable' => ['Doit être non défini'],
         ]);
 
-        // - Si `max_length` | `unit` à `null` pour les attributs autres (cf. commentaire au dessus) => Pas d'erreur.
-        $testData = array_replace($testData, array_fill_keys(['unit', 'max_length'], null));
+        // - Si `max_length`, `unit` et `is_totalisable` sont à `null` pour les
+        //   attributs autres (cf. commentaire au dessus) => Pas d'erreur.
+        $testData = array_replace($testData, array_fill_keys(['unit', 'max_length', 'is_totalisable'], null));
         (new Attribute($testData))->validate();
 
         // - Test `max_length`: Vérification "normale" si attribut de type `string`.
@@ -62,6 +66,7 @@ final class AttributeTest extends TestCase
             'id' => 6,
             'name' => 'Testing',
             'unit' => 'TROP_LOOOOOOOOOOOOOONG',
+            'is_totalisable' => true,
         ];
         foreach (['float', 'integer'] as $type) {
             $testData = array_replace($baseTestData, compact('type'));
@@ -73,6 +78,26 @@ final class AttributeTest extends TestCase
         // - Test `unit`: si valide pour les attributs de type `float` ou `integer` => Pas d'erreur.
         foreach (['float', 'integer'] as $type) {
             $testData = array_replace($baseTestData, compact('type'), ['unit' => 'kg']);
+            (new Attribute($testData))->validate();
+        }
+
+        // - Test `is_totalisable`: Vérification "normale" si attribut de type `float` ou `integer`.
+        $baseTestData = [
+            'id' => 6,
+            'name' => 'Testing',
+            'unit' => 'cm',
+            'is_totalisable' => 'not-a-boolean',
+        ];
+        foreach (['float', 'integer'] as $type) {
+            $testData = array_replace($baseTestData, compact('type'));
+            $testValidation($testData, [
+                'is_totalisable' => ['Doit être un booléen'],
+            ]);
+        }
+
+        // - Test `is_totalisable`: si valide pour les attributs de type `float` ou `integer` => Pas d'erreur.
+        foreach (['float', 'integer'] as $type) {
+            $testData = array_replace($baseTestData, compact('type'), ['is_totalisable' => true]);
             (new Attribute($testData))->validate();
         }
     }
@@ -87,6 +112,7 @@ final class AttributeTest extends TestCase
             'type' => 'date',
             'unit' => null,
             'max_length' => null,
+            'is_totalisable' => false,
         ];
         unset($result->created_at, $result->updated_at, $result->deleted_at);
         $this->assertEquals($expected, $result->toArray());
@@ -96,12 +122,15 @@ final class AttributeTest extends TestCase
             'name' => 'Masse',
             'type' => 'integer',
             'unit' => 'g',
+            'categories' => [3, 4],
+            'is_totalisable' => false,
         ]);
-        $this->assertEquals('Masse', $result->name);
-
-        // - Seul ne nom doit pouvoir être changées après coup, pas les autres champs.
-        //   (des valeurs existent peut-être déjà pour cet attribut pour ces contraintes)
+        // - Le type ne doit pas avoir changé
         $this->assertNotEquals('integer', $result->type);
-        $this->assertNotEquals('g', $result->unit);
+        // - Mais tout le reste doit avoir été mis à jour
+        $this->assertEquals('Masse', $result->name);
+        $this->assertEquals('g', $result->unit);
+        $this->assertFalse($result->is_totalisable);
+        $this->assertEquals([4, 3], $result->categories->map(fn ($category) => $category->id)->toArray());
     }
 }

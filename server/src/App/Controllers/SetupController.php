@@ -189,7 +189,7 @@ class SetupController extends BaseController
 
     // ------------------------------------------------------
     // -
-    // -    Internal methods
+    // -    Méthodes internes
     // -
     // ------------------------------------------------------
 

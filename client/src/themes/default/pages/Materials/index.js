@@ -1,6 +1,8 @@
 import './index.scss';
+import moment from 'moment';
+import HttpCode from 'status-code-enum';
+import { isRequestErrorStatusCode } from '@/utils/errors';
 import config from '@/globals/config';
-import queryClient from '@/globals/queryClient';
 import { confirm } from '@/utils/alert';
 import initColumnsDisplay from '@/utils/initColumnsDisplay';
 import isValidInteger from '@/utils/isValidInteger';
@@ -19,6 +21,7 @@ import MaterialsFilters from '@/themes/default/components/MaterialsFilters';
 import TagsList from '@/themes/default/components/TagsList';
 import Datepicker from '@/themes/default/components/Datepicker';
 import { Group } from '@/stores/api/groups';
+import Quantities from './components/Quantities';
 
 // @vue/component
 export default {
@@ -49,6 +52,7 @@ export default {
             isLoading: false,
             shouldDisplayTrashed: false,
             isTrashDisplayed: false,
+            today: moment().format('YYYY-MM-DD'),
             periodForQuantities: null,
 
             //
@@ -75,37 +79,22 @@ export default {
                     tags: true,
                 }),
                 headings: {},
-                columnsClasses: {},
+                columnsClasses: {
+                    reference: 'Materials__cell Materials__cell--ref ',
+                    name: 'Materials__cell Materials__cell--name ',
+                    park: 'Materials__cell Materials__cell--park ',
+                    category: 'Materials__cell Materials__cell--category ',
+                    description: 'Materials__cell Materials__cell--description ',
+                    rental_price: 'Materials__cell Materials__cell--rental-price ',
+                    replacement_price: 'Materials__cell Materials__cell--replacement-price ',
+                    stock_quantity: 'Materials__cell Materials__cell--quantity ',
+                    out_of_order_quantity: 'Materials__cell Materials__cell--quantity-broken ',
+                    tags: 'Materials__cell Materials__cell--tags ',
+                    actions: 'Materials__cell Materials__cell--actions ',
+                },
+                rowClassCallback: () => 'Materials__row',
                 requestFunction: this.fetch.bind(this),
                 templates: {
-                    reference: (h, { id, reference }) => {
-                        if (this.isTrashDisplayed) {
-                            return reference;
-                        }
-
-                        return (
-                            <router-link
-                                to={{ name: 'view-material', params: { id } }}
-                                class="Materials__link"
-                            >
-                                {reference}
-                            </router-link>
-                        );
-                    },
-                    name: (h, { id, name }) => {
-                        if (this.isTrashDisplayed) {
-                            return name;
-                        }
-
-                        return (
-                            <router-link
-                                to={{ name: 'view-material', params: { id } }}
-                                class="Materials__link"
-                            >
-                                {name}
-                            </router-link>
-                        );
-                    },
                     park: (h, { park_id: parkId }) => {
                         const parkName = this.$store.getters['parks/parkName'](parkId) || '--';
 
@@ -152,15 +141,23 @@ export default {
                         formatAmount(material.replacement_price ?? 0)
                     ),
                     stock_quantity: (h, material) => {
-                        if (this.periodForQuantities !== null) {
-                            return material.available_quantity;
-                        }
-
-                        return material.stock_quantity;
+                        const filters = this.getFilters();
+                        return (
+                            <Quantities
+                                material={material}
+                                parkFilter={filters.park}
+                            />
+                        );
                     },
-                    out_of_order_quantity: (h, material) => (
-                        material.out_of_order_quantity || ''
-                    ),
+                    out_of_order_quantity: (h, material) => {
+                        const {
+                            out_of_order_quantity: quantityBroken,
+                        } = material;
+
+                        return quantityBroken > 0
+                            ? <span class="Materials__quantity-broken">{quantityBroken}</span>
+                            : null;
+                    },
                     tags: (h, material) => {
                         const { $t: __, isTrashDisplayed, handleSetTags } = this;
 
@@ -168,7 +165,7 @@ export default {
                             <div
                                 class="Materials__tags-list"
                                 role="button"
-                                onClick={() => { handleSetTags(material); }}
+                                onClick={handleSetTags(material)}
                             >
                                 <TagsList tags={material.tags} />
                                 {(material.tags.length === 0 && !isTrashDisplayed) && (
@@ -182,8 +179,8 @@ export default {
                     actions: (h, { id }) => {
                         const {
                             isTrashDisplayed,
-                            handleRestoreItem,
-                            handleDeleteItem,
+                            handleRestoreItemClick,
+                            handleDeleteItemClick,
                         } = this;
 
                         if (isTrashDisplayed) {
@@ -191,11 +188,11 @@ export default {
                                 <div>
                                     <Button
                                         type="restore"
-                                        onClick={() => { handleRestoreItem(id); }}
+                                        onClick={(e) => { handleRestoreItemClick(e, id); }}
                                     />
                                     <Button
                                         type="delete"
-                                        onClick={() => { handleDeleteItem(id); }}
+                                        onClick={(e) => { handleDeleteItemClick(e, id); }}
                                     />
                                 </div>
                             );
@@ -213,7 +210,7 @@ export default {
                                 />
                                 <Button
                                     type="trash"
-                                    onClick={() => { handleDeleteItem(id); }}
+                                    onClick={(e) => { handleDeleteItemClick(e, id); }}
                                 />
                             </div>
                         );
@@ -231,11 +228,13 @@ export default {
             return getItemClassnames();
         },
 
-        isSingleDayPeriodForQuantities() {
-            if (!this.periodForQuantities) {
-                return false;
+        datesForQuantities() {
+            if (this.periodForQuantities === null) {
+                const { today } = this;
+                return [today, today];
             }
-            return isSameDate(this.periodForQuantities[0], this.periodForQuantities[1]);
+
+            return this.periodForQuantities;
         },
 
         dataTableOptions() {
@@ -248,12 +247,12 @@ export default {
                 category: __('category'),
                 rental_price: __('rent-price'),
                 replacement_price: __('repl-price'),
-                stock_quantity: __('stock-qty'),
+                stock_quantity: __('page.materials.available-qty-total-qty'),
                 out_of_order_quantity: __('out-of-order-qty'),
                 tags: __('tags'),
                 actions: '',
             };
-            let sortable = [
+            const sortable = [
                 'reference',
                 'name',
                 'description',
@@ -262,37 +261,12 @@ export default {
                 'stock_quantity',
                 'out_of_order_quantity',
             ];
-            const columnsClasses = {
-                reference: 'Materials__ref ',
-                name: 'Materials__name ',
-                park: 'Materials__park ',
-                category: 'Materials__category ',
-                description: 'Materials__description ',
-                rental_price: 'Materials__rental-price ',
-                replacement_price: 'Materials__replacement-price ',
-                stock_quantity: 'Materials__quantity ',
-                out_of_order_quantity: 'Materials__quantity-broken ',
-                tags: 'Materials__tags ',
-                actions: 'Materials__actions ',
-            };
 
-            if (this.periodForQuantities) {
-                headings.stock_quantity = __('remaining-qty');
-                columnsClasses.stock_quantity = 'Materials__quantity Materials__quantity--remaining ';
-                sortable = sortable.filter(
-                    (sortColumn) => sortColumn !== 'stock_quantity',
-                );
-            } else {
-                headings.stock_quantity = __('stock-qty');
-                columnsClasses.stock_quantity = 'Materials__quantity ';
-            }
-
-            return { ...this.options, headings, sortable, columnsClasses };
+            return { ...this.options, headings, sortable };
         },
     },
     watch: {
         periodForQuantities() {
-            queryClient.invalidateQueries('materials-while-event');
             this.$refs.table.refresh();
         },
     },
@@ -300,6 +274,16 @@ export default {
         this.$store.dispatch('categories/fetch');
         this.$store.dispatch('parks/fetch');
         this.$store.dispatch('tags/fetch');
+
+        // - Actualise la date courante toutes les 10 minutes.
+        this.todayTimer = setInterval(() => {
+            this.today = moment().format('YYYY-MM-DD');
+        }, 600_000);
+    },
+    beforeDestroy() {
+        if (this.todayTimer) {
+            clearInterval(this.todayTimer);
+        }
     },
     methods: {
         // ------------------------------------------------------
@@ -310,16 +294,19 @@ export default {
 
         handleChangeFilters() {
             this.$refs.table.setPage(1);
-            this.$refs.table.refresh();
         },
 
-        handleRemoveDateForQuantities() {
-            this.periodForQuantities = null;
-            queryClient.invalidateQueries('materials-while-event');
-            this.$refs.table.refresh();
+        handleChangePeriodForQuantities([start, end]) {
+            this.periodForQuantities = [start, end];
         },
 
-        async handleDeleteItem(id) {
+        handleRowClick({ row }) {
+            const { id } = row;
+            this.$router.push({ name: 'view-material', params: { id } });
+        },
+
+        async handleDeleteItemClick(e, id) {
+            e.stopPropagation();
             const { $t: __ } = this;
             const isSoft = !this.isTrashDisplayed;
 
@@ -342,16 +329,16 @@ export default {
             try {
                 await apiMaterials.remove(id);
                 this.$toasted.success(__('page.materials.deleted'));
-                queryClient.invalidateQueries('materials-while-event');
                 this.$refs.table.refresh();
-            } catch (error) {
+            } catch {
                 this.$toasted.error(__('errors.unexpected-while-deleting'));
             } finally {
                 this.isLoading = false;
             }
         },
 
-        async handleRestoreItem(id) {
+        async handleRestoreItemClick(e, id) {
+            e.stopPropagation();
             const { $t: __ } = this;
 
             const isConfirmed = await confirm({
@@ -367,9 +354,8 @@ export default {
             try {
                 await apiMaterials.restore(id);
                 this.$toasted.success(__('page.materials.restored'));
-                queryClient.invalidateQueries('materials-while-event');
                 this.$refs.table.refresh();
-            } catch (error) {
+            } catch {
                 this.$toasted.error(__('errors.unexpected-while-restoring'));
             } finally {
                 this.isLoading = false;
@@ -377,27 +363,30 @@ export default {
         },
 
         handleSetTags({ id, name, tags }) {
-            if (this.isTrashDisplayed) {
-                return;
-            }
+            return (e) => {
+                e.stopPropagation();
 
-            showModal(this.$modal, AssignTags, {
-                name,
-                initialTags: tags,
-                persister: (newTags) => (
-                    apiMaterials.update(id, { tags: newTags })
-                ),
-                onClose: () => {
-                    this.$refs.table.refresh();
-                },
-            });
+                if (this.isTrashDisplayed) {
+                    return;
+                }
+
+                showModal(this.$modal, AssignTags, {
+                    name,
+                    initialTags: tags,
+                    persister: (newTags) => (
+                        apiMaterials.update(id, { tags: newTags })
+                    ),
+                    onClose: () => {
+                        this.$refs.table.refresh();
+                    },
+                });
+            };
         },
 
         handleShowTrashed() {
             this.shouldDisplayTrashed = !this.shouldDisplayTrashed;
             this.isTrashDisplayed = !this.isTrashDisplayed;
             this.$refs.table.setPage(1);
-            this.$refs.table.refresh();
         },
 
         // ------------------------------------------------------
@@ -417,8 +406,16 @@ export default {
                     ...filters,
                     deleted: this.shouldDisplayTrashed,
                 });
+
                 return { data };
-            } catch {
+            } catch (error) {
+                if (isRequestErrorStatusCode(error, HttpCode.ClientErrorRangeNotSatisfiable)) {
+                    this.$refs.table.setPage(1);
+                    return undefined;
+                }
+
+                // eslint-disable-next-line no-console
+                console.error(`Error ocurred while retrieving materials:`, error);
                 this.hasCriticalError = true;
             } finally {
                 this.isLoading = false;
@@ -447,15 +444,13 @@ export default {
                 params.tags = JSON.parse(query.tags);
             }
 
-            if (this.periodForQuantities) {
-                const [start, end] = this.periodForQuantities || [null, null];
+            const [start, end] = this.datesForQuantities;
 
-                if (this.isSingleDayPeriodForQuantities) {
-                    params.dateForQuantities = start;
-                } else {
-                    params['dateForQuantities[start]'] = start;
-                    params['dateForQuantities[end]'] = end;
-                }
+            if (isSameDate(start, end)) {
+                params.dateForQuantities = start;
+            } else {
+                params['dateForQuantities[start]'] = start;
+                params['dateForQuantities[end]'] = end;
             }
 
             return params;
@@ -473,10 +468,10 @@ export default {
             dropdownItemClass,
             handleShowTrashed,
             isTrashDisplayed,
-            periodForQuantities,
-            isSingleDayPeriodForQuantities,
-            handleRemoveDateForQuantities,
+            datesForQuantities,
+            handleChangePeriodForQuantities,
             handleChangeFilters,
+            handleRowClick,
         } = this;
 
         if (hasCriticalError) {
@@ -537,21 +532,15 @@ export default {
                         <div class="Materials__quantities-date">
                             <Datepicker
                                 type="date"
-                                v-model={this.periodForQuantities}
+                                value={datesForQuantities}
+                                onChange={handleChangePeriodForQuantities}
                                 class="Materials__quantities-date__input"
-                                placeholder={__('page.materials.display-quantities-at-date')}
                                 range
+                                v-tooltip={{
+                                    placement: 'top',
+                                    content: __('page.materials.date-to-display-available-quantities'),
+                                }}
                             />
-                            {!!periodForQuantities && (
-                                <Button
-                                    type="danger"
-                                    class="Materials__quantities-date__clear-button"
-                                    onClick={handleRemoveDateForQuantities}
-                                    icon="backspace"
-                                >
-                                    {isSingleDayPeriodForQuantities ? __('reset-date') : __('reset-period')}
-                                </Button>
-                            )}
                         </div>
                     </div>
                     <v-server-table
@@ -559,6 +548,7 @@ export default {
                         name={$options.name}
                         columns={columns}
                         options={dataTableOptions}
+                        onRow-click={handleRowClick}
                     />
                     <div class="content__footer">
                         <Button

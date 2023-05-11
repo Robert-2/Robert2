@@ -1,4 +1,4 @@
-/* stylelint-disable scss/no-global-function-names */
+/* stylelint-disable scss/no-global-function-names, declaration-no-important */
 
 .timeline-event {
     .fas,
@@ -20,33 +20,28 @@
     }
 
     &--past {
-        // stylelint-disable-next-line declaration-no-important
         background-color: $calendar-event-past-color !important;
+        color: $calendar-event-past-text-color !important;
 
         &.vis-selected {
-            // stylelint-disable-next-line declaration-no-important
             background-color: adjust-color($calendar-event-past-color, $lightness: 10%) !important;
         }
     }
 
     &--no-return-inventory {
-        // stylelint-disable-next-line declaration-no-important
         background-color: $calendar-event-no-return-inventory-color !important;
+        color: $calendar-event-no-return-inventory-text-color !important;
 
         &.vis-selected {
-            // stylelint-disable-next-line declaration-no-important
             background-color: adjust-color($calendar-event-no-return-inventory-color, $lightness: 10%) !important;
         }
     }
 
     &--archived {
-        /* stylelint-disable declaration-no-important */
         background-color: $calendar-event-archived-color !important;
         color: $calendar-event-archived-text-color !important;
-        /* stylelint-enable declaration-no-important */
 
         &.vis-selected {
-            // stylelint-disable-next-line declaration-no-important
             background-color: adjust-color($calendar-event-archived-color, $lightness: 5%) !important;
         }
     }
@@ -64,7 +59,7 @@
                 transparent
             );
         background-size: 40px 40px;
-        animation: timeline-event--background-animation 3000ms linear infinite;
+        animation: timeline-event--background-animation 2500ms linear infinite;
     }
 }
 

@@ -20,6 +20,7 @@ const materials: Material[] = [
         rental_price: 10,
         replacement_price: 350,
         is_discountable: true,
+        is_unitary: false,
     },
     {
         id: 32,
@@ -40,6 +41,7 @@ const materials: Material[] = [
         rental_price: 10,
         replacement_price: 125,
         is_discountable: true,
+        is_unitary: false,
     },
     {
         id: 33,
@@ -60,6 +62,7 @@ const materials: Material[] = [
         rental_price: 5,
         replacement_price: 150,
         is_discountable: true,
+        is_unitary: false,
     },
     {
         id: 34,
@@ -80,6 +83,7 @@ const materials: Material[] = [
         rental_price: 15,
         replacement_price: 200,
         is_discountable: false,
+        is_unitary: false,
     },
     {
         id: 35,
@@ -100,6 +104,7 @@ const materials: Material[] = [
         rental_price: 45,
         replacement_price: 650,
         is_discountable: true,
+        is_unitary: false,
     },
 ];
 

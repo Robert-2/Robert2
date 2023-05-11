@@ -5,7 +5,7 @@ import getMaterialUnitPrice from './getMaterialUnitPrice';
 import type { BookingMaterial } from './_types';
 import type { Category } from '@/stores/api/categories';
 
-type MaterialsSection = {
+export type MaterialsSection = {
     id: Category['id'] | null,
     name: Category['name'] | null,
     materials: BookingMaterial[],

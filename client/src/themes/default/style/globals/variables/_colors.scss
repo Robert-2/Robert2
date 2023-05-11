@@ -78,17 +78,33 @@ $input-error-border-color: #ad0101;
 // -----------------------------------------
 
 $calendar-main-background-color: #363636;
-$calendar-current-date-background-color: #5b382a;
+$calendar-current-date-background-color: rgba(91, 56, 42, 0.5);
 
 $calendar-cells-border-color: #545454;
 $calendar-time-cursor-color: #bb481b;
 
-$calendar-event-text-color: #fff;
+//
+// - Items.
+//
+
+$calendar-event-text-color-light: #fff;
+$calendar-event-text-color-dark: #000;
+
+// - Archivé.
+$calendar-event-archived-color: #2b2b2b;
 $calendar-event-archived-text-color: #a3a3a3;
 
-$calendar-event-normal-color: #b13f13;
+// - Passés.
 $calendar-event-past-color: #565656;
-$calendar-event-no-return-inventory-color: #65260e;
-$calendar-event-archived-color: #2b2b2b;
+$calendar-event-past-text-color: $calendar-event-text-color-light;
 
+// - Inventaire de retour non effectué.
+$calendar-event-no-return-inventory-color: #65260e;
+$calendar-event-no-return-inventory-text-color: $calendar-event-text-color-light;
+
+// - "Normal".
+$calendar-event-normal-color: #b13f13;
+$calendar-event-normal-text-color: $calendar-event-text-color-light;
+
+// - Non confirmé.
 $calendar-event-not-confirmed-opacity: 0.58;

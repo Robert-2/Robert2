@@ -9,12 +9,5 @@ infos:
     click-to-open-image: Cliquez pour ouvrir l'image en grand dans un nouvel onglet.
 
 documents:
-    no-document: Aucun document pour le moment.
-    click-to-open: Cliquez pour ouvrir / télécharger le fichier
-    drag-and-drop-files-here: Glissez-déposez des fichiers ici ↓ pour les ajouter.
-    max-size: 'Taille maximum {size}'
-    choose-files: Ou cliquez ici pour choisir des fichiers à ajouter
-    send-files: ['Envoyer le fichier', 'Envoyer {count} fichiers']
     confirm-permanently-delete: "Voulez-vous vraiment supprimer définitivement ce document\_?"
-    saved: Documents sauvegardés.
     deleted: Document supprimé.

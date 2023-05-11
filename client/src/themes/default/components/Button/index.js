@@ -54,11 +54,11 @@ const Button = (props, { slots, emit }) => {
         tooltip,
     } = toRefs(props);
 
-    const handleClick = () => {
+    const handleClick = (e) => {
         if (disabled.value) {
             return;
         }
-        emit('click');
+        emit('click', e);
     };
 
     const getPredefinedValue = (key) => {
@@ -100,11 +100,11 @@ const Button = (props, { slots, emit }) => {
 
     const _tooltip = computed(() => {
         const predefinedValue = getPredefinedValue('tooltip');
-        if (predefinedValue == null || typeof tooltip.value === 'string') {
+        if ([undefined, null].includes(predefinedValue) || typeof tooltip.value === 'string') {
             return tooltip.value;
         }
 
-        if (tooltip.value == null) {
+        if ([undefined, null].includes(tooltip.value)) {
             return predefinedValue;
         }
 
@@ -140,7 +140,6 @@ const Button = (props, { slots, emit }) => {
                 const isOutside = typeof to.value === 'string' && to.value.includes('://');
 
                 return (
-                    // eslint-disable-next-line react/jsx-no-target-blank
                     <a
                         href={to.value}
                         v-tooltip={_tooltip.value}

@@ -1,7 +1,8 @@
 import './index.scss';
+import { defineComponent } from '@vue/composition-api';
 
 // @vue/component
-export default {
+const Textarea = defineComponent({
     name: 'Textarea',
     inject: {
         'input.invalid': { default: { value: false } },
@@ -80,4 +81,6 @@ export default {
             />
         );
     },
-};
+});
+
+export default Textarea;

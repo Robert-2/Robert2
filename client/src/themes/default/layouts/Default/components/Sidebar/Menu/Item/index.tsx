@@ -21,7 +21,7 @@ type Props = {
     /**
      * Si la valeur vaut `true`, le router considèrera
      * l'URL comme exacte lors du check du lien actif.
-     * */
+     */
     exact?: boolean,
 };
 

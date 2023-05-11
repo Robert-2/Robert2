@@ -24,7 +24,7 @@ class JsonErrorRenderer implements ErrorRendererInterface
 
     // ------------------------------------------------------
     // -
-    // -    Internal methods
+    // -    Méthodes internes
     // -
     // ------------------------------------------------------
 

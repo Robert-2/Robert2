@@ -6,7 +6,7 @@ import type { Ref } from '@vue/composition-api';
  * Permet de récupérer le timestamp courant (équivalent à `Date.now()`).
  * Ce timestamp sera mis à jour toutes les minutes.
  *
- * @return Le timestamp courant (voir `Date.now()`).
+ * @returns Le timestamp courant (voir `Date.now()`).
  */
 const useNow = (): Ref<number> => {
     const now = ref(Date.now());

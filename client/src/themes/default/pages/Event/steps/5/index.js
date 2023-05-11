@@ -37,6 +37,10 @@ export default {
             this.$emit('updateEvent', newEvent);
         },
 
+        handlePrevClick() {
+            this.$emit('gotoStep', 4);
+        },
+
         // ------------------------------------------------------
         // -
         // -    Internal
@@ -66,6 +70,7 @@ export default {
             handleConfirm,
             handleUnconfirm,
             handleUpdateEvent,
+            handlePrevClick,
         } = this;
 
         const { is_confirmed: isConfirmed, materials, beneficiaries } = event;
@@ -122,16 +127,22 @@ export default {
                         </div>
                     </section>
                 )}
-                <section>
-                    <router-link to="/" exact class="button info EventStep5__back-btn">
-                        <i class="fas fa-arrow-left" /> {__('page.event-edit.back-to-calendar')}
-                    </router-link>
-                    {materials.length > 0 && beneficiaries.length > 0 && (
-                        // eslint-disable-next-line react/jsx-no-target-blank
-                        <a href={eventSummaryPdfUrl} target="_blank" class="button outline">
-                            <i class="fas fa-print" />&nbsp;{__('print-summary')}
-                        </a>
-                    )}
+                <section class="EventStep5__actions">
+                    <button type="submit" class="button info" onClick={handlePrevClick}>
+                        <i class="fas fa-arrow-left" />&nbsp;
+                        {__('page.event-edit.go-to-prev-step')}
+                    </button>
+                    <div>
+                        {materials.length > 0 && beneficiaries.length > 0 && (
+                            // eslint-disable-next-line react/jsx-no-target-blank
+                            <a href={eventSummaryPdfUrl} target="_blank" class="button outline">
+                                <i class="fas fa-print" />&nbsp;{__('print-summary')}
+                            </a>
+                        )}
+                        <router-link to="/" exact class="button success">
+                            {__('page.event-edit.back-to-calendar')}
+                        </router-link>
+                    </div>
                 </section>
             </div>
         );

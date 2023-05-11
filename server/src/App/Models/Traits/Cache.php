@@ -13,7 +13,7 @@ trait Cache
 {
     public static function getModelCacheKey(): string
     {
-        $model = Str::slug(class_basename(static::class));
+        $model = Str::slugify(class_basename(static::class));
         return sprintf('model.%s', $model);
     }
 

@@ -15,6 +15,7 @@ const formatTimelineEvent = (event, __, now = Date.now(), options = {}) => {
     const isPast = endDate.isBefore(now, 'day');
     const {
         title,
+        color,
         location,
         is_confirmed: isConfirmed,
         is_return_inventory_done: isReturnInventoryDone,
@@ -118,7 +119,8 @@ const formatTimelineEvent = (event, __, now = Date.now(), options = {}) => {
         title: tooltip,
         content: summary,
         booking: event,
-        className: getTimelineBookingClassNames(event).join(' '),
+        color,
+        className: getTimelineBookingClassNames(event),
         editable: {
             updateTime: !isConfirmed || (isPast && !isConfirmed && !isReturnInventoryDone),
             remove: false,

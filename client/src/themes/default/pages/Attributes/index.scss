@@ -40,7 +40,8 @@
             }
 
             &--unit,
-            &--max-length {
+            &--max-length,
+            &--is-totalisable {
                 width: 120px;
                 text-align: center;
             }
@@ -51,11 +52,6 @@
                 @media (min-width: globals.$screen-big-desktop) {
                     display: table-cell;
                 }
-            }
-
-            &--actions {
-                width: 1%;
-                white-space: nowrap;
             }
         }
     }

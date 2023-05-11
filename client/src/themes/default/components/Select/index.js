@@ -100,7 +100,7 @@ export default {
                     );
 
                     return Array.isArray(value)
-                        ? value.find((item) => isMatching(item)) !== undefined
+                        ? value.some((item) => isMatching(item))
                         : isMatching(value);
                 });
             }

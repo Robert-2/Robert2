@@ -1,12 +1,15 @@
+@use '~@/themes/default/style/globals';
+
 .EventStep1 {
-    &__save-btn {
-        margin-bottom: 1rem;
-    }
+    max-width: 800px;
+    min-width: 250px;
+    margin: 0 auto;
 
     &__dates {
         display: flex;
-        align-items: center;
+        align-items: flex-end;
         margin-top: 1rem;
+        gap: 10px;
 
         &__fields {
             flex: 1;
@@ -14,26 +17,43 @@
 
         &__duration {
             flex: 0 0 150px;
-            text-align: center;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: 39px;
         }
-    }
-
-    &__location,
-    &__description {
-        --input-width: 500px;
     }
 
     &__is-billable {
         display: flex;
         align-items: center;
         margin-top: 1rem;
+        gap: 10px;
 
-        .FormField {
+        &__input {
             flex: 1;
         }
+    }
 
-        &__help {
-            flex: 1;
+    &__color {
+        --input-width: 160px;
+    }
+
+    &__actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        padding: globals.$content-padding-large-vertical 0;
+        gap: 10px;
+    }
+
+    //
+    // - Responsive
+    //
+
+    @media (min-width: globals.$screen-tablet) {
+        &__actions {
+            padding-left: globals.$form-label-width;
         }
     }
 }

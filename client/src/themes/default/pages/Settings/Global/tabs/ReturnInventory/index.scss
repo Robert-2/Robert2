@@ -1,0 +1,46 @@
+@use '~@/themes/default/style/globals';
+
+.ReturnInventoryGlobalSettings {
+    &__mode {
+        margin: globals.$content-padding-small-vertical 0 globals.$content-padding-large-vertical;
+
+        &__input {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+
+            &__radio {
+                width: 18px;
+                height: 18px;
+                margin-right: 5px;
+                cursor: pointer;
+            }
+
+            &__label {
+                cursor: pointer;
+            }
+        }
+    }
+
+    &__actions {
+        margin-top: globals.$content-padding-large-vertical;
+        text-align: center;
+    }
+
+    //
+    // - Responsive
+    //
+
+    @media (min-width: globals.$screen-tablet) {
+        &__mode {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            &__field {
+                --label-width: 140px;
+                width: 100%;
+            }
+        }
+    }
+}

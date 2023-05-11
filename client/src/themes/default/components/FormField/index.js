@@ -7,10 +7,13 @@ import SwitchToggle from '@/themes/default/components/SwitchToggle';
 import Input, { TYPES as INPUT_TYPES } from '@/themes/default/components/Input';
 import Textarea from '@/themes/default/components/Textarea';
 import InputCopy from '@/themes/default/components/InputCopy';
+import InputColor from '@/themes/default/components/InputColor';
+import Color from '@/utils/color';
 
 const TYPES = [
     ...DATEPICKER_TYPES,
     ...INPUT_TYPES,
+    'color',
     'copy',
     'static',
     'select',
@@ -42,9 +45,12 @@ export default defineComponent({
         disabled: { type: [Boolean, String], default: false },
         help: { type: String, default: undefined },
         errors: { type: Array, default: null },
-        placeholder: { type: [String, Boolean], default: undefined },
+        placeholder: {
+            type: [String, Boolean, Object],
+            default: undefined,
+        },
         value: {
-            type: [String, Number, Date, Array, Boolean],
+            type: [String, Number, Date, Array, Boolean, Color],
             default: undefined,
         },
         rows: { type: Number, default: undefined },
@@ -226,6 +232,18 @@ export default defineComponent({
                                 invalid={invalid}
                                 disabled={disabled}
                                 placeholder={_placeholder}
+                                onInput={handleInput}
+                                onChange={handleChange}
+                            />
+                        )}
+                        {type === 'color' && (
+                            <InputColor
+                                class="FormField__input"
+                                name={name}
+                                disabled={!!disabled}
+                                invalid={invalid}
+                                value={value}
+                                placeholder={placeholder}
                                 onInput={handleInput}
                                 onChange={handleChange}
                             />

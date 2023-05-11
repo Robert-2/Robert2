@@ -13,6 +13,7 @@
             }) }}
         </td>
         <td class="half">
+            {% set currencyName = currency|currency_name(locale)|capitalize -%}
             <h2 class="box center">{{ translate('invoice-title', [currencyName, number]) }}</h2>
             <table class="layout-table">
                 <tr>

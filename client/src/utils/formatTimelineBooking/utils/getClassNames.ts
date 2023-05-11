@@ -1,9 +1,9 @@
 import moment from 'moment';
 import { BookingEntity } from '@/stores/api/bookings';
 
-import type { Booking } from '@/stores/api/bookings';
+import type { BookingSummary } from '@/stores/api/bookings';
 
-const getTimelineBookingClassNames = (booking: Booking, now: number = Date.now()): string[] => {
+const getTimelineBookingClassNames = (booking: BookingSummary, now: number = Date.now()): string[] => {
     const {
         start_date: startDate,
         end_date: endDate,

@@ -5,8 +5,9 @@
     flex-wrap: wrap;
     height: 100%;
 
-    &__panel {
+    &__sidebar {
         position: fixed;
+        display: none;
         width: 160px;
         padding: 7px 0;
         text-align: right;
@@ -30,43 +31,37 @@
         }
     }
 
+    &__body {
+        flex: 1;
+        overflow: auto;
+        padding-top: 10px;
+    }
+
     .EventMiniSummary {
         width: 100%;
         margin-top: 1rem;
     }
 
-    .EventStep1,
-    .EventStep2,
-    .EventStep3,
-    .EventStep4,
-    .EventStep5 {
-        width: 100%;
-        max-width: 600px;
-        min-width: 250px;
-        margin-left: 180px;
+    //
+    // - Responsive
+    //
+
+    @media (min-width: globals.$screen-tablet) {
+        &__sidebar {
+            display: block;
+        }
+
+        &__body {
+            margin-left: 180px;
+        }
     }
 
-    .EventStep3,
-    .EventStep4 {
-        max-width: none;
-    }
-
-    .EventStep5 {
-        max-width: 900px;
-    }
-}
-
-@media (min-width: globals.$screen-desktop) {
-    .Event {
-        &__panel {
+    @media (min-width: globals.$screen-desktop) {
+        &__sidebar {
             width: 200px;
         }
 
-        .EventStep1,
-        .EventStep2,
-        .EventStep3,
-        .EventStep4,
-        .EventStep5 {
+        &__body {
             margin-left: 220px;
         }
     }

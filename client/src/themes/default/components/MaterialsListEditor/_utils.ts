@@ -1,6 +1,6 @@
 import isValidInteger from '@/utils/isValidInteger';
 
-import type { Material } from '@/stores/api/materials';
+import type { Event, EventMaterial } from '@/stores/api/events';
 
 //
 // - Types
@@ -21,15 +21,8 @@ export type MaterialsFiltersType = {
     tags?: string[],
 };
 
-export type MaterialWithPivot = Material & {
-    pivot: {
-        id: number,
-        quantity: number,
-    },
-};
-
 //
-// - Filters
+// - Filtres
 //
 
 export const normalizeFilters = (rawFilters: RawFilters, extended: boolean = true): MaterialsFiltersType => {
@@ -55,7 +48,7 @@ export const normalizeFilters = (rawFilters: RawFilters, extended: boolean = tru
 
     ['park', 'subCategory'].forEach((key: string) => {
         if (key in rawFilters && isValidInteger(rawFilters[key])) {
-            // @ts-ignore - Ici, on sait que `key` est un nombre.
+            // @ts-expect-error - Ici, on sait que `key` est un nombre.
             filters[key] = parseInt(rawFilters[key] as string, 10);
         }
     });
@@ -64,11 +57,11 @@ export const normalizeFilters = (rawFilters: RawFilters, extended: boolean = tru
 };
 
 //
-// - Quantities
+// - Quantités
 //
 
-export const getMaterialsQuantities = (materials: MaterialWithPivot[]): MaterialQuantity[] => (
-    materials.map(({ id, pivot }: MaterialWithPivot) => {
+export const getEventMaterialsQuantities = (materials: Event['materials']): MaterialQuantity[] => (
+    materials.map(({ id, pivot }: EventMaterial) => {
         const data = { id, quantity: pivot?.quantity || 0 };
         return data;
     })

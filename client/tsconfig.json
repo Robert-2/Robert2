@@ -3,36 +3,32 @@
         "baseUrl": ".",
         "outDir": "./dist",
         "allowJs": true,
+        // "allowArbitraryExtensions": true,
+        "allowImportingTsExtensions": false,
         "allowSyntheticDefaultImports": true,
         "esModuleInterop": true,
         "exactOptionalPropertyTypes": true,
         "forceConsistentCasingInFileNames": true,
-        "importsNotUsedAsValues": "error",
         "jsx": "preserve",
         "lib": ["esnext", "dom", "dom.iterable"],
         "module": "esnext",
         "moduleDetection": "auto",
-        "moduleResolution": "node",
+        "moduleResolution": "bundler",
         "moduleSuffixes": [""],
         "noFallthroughCasesInSwitch": true,
         "noImplicitReturns": true,
         // "noUncheckedIndexedAccess": true,
-        "preserveValueImports": true,
         "resolveJsonModule": true,
         "skipLibCheck": true,
         "sourceMap": true,
         "strict": true,
         "target": "ESNext",
         "useDefineForClassFields": true,
+        "verbatimModuleSyntax": true,
         "paths": {
             "@/*": ["./src/*"],
             "@fixtures/*": ["./tests/fixtures/*"]
         }
     },
-    "include": [
-        "src/**/*.ts",
-        "src/**/*.tsx",
-        "tests/**/*.ts",
-        "tests/**/*.tsx"
-    ]
+    "include": ["./src", "./tests"]
 }

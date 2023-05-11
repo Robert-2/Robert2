@@ -15,7 +15,6 @@ use Robert2\API\Models\Traits\Pdfable;
 use Robert2\API\Models\Traits\Serializer;
 use Robert2\API\Models\Traits\SoftDeletable;
 use Robert2\API\Services\I18n;
-use Robert2\Install\Install;
 use Robert2\Support\Arr;
 use Robert2\Support\Collections\MaterialsCollection;
 use Robert2\Support\Str;
@@ -51,7 +50,6 @@ use Robert2\Support\Str;
  * @property Decimal $total_with_taxes
  * @property Decimal $total_replacement
  * @property string $currency
- * @property-read ?string $currency_name
  * @property int|null $author_id
  * @property-read User|null $author
  * @property-read Carbon $created_at
@@ -304,16 +302,6 @@ final class Invoice extends BaseModel implements Serializable
             : null;
     }
 
-    public function getCurrencyNameAttribute(): ?string
-    {
-        // FIXME: Migrer les devises dans un modèle sans table...
-        $allCurrencies = Install::getAllCurrencies();
-        if (!array_key_exists($this->currency, $allCurrencies)) {
-            return null;
-        }
-        return $allCurrencies[$this->currency]['name'];
-    }
-
     public function getMaterialsAttribute(): Collection
     {
         return $this->getRelationValue('materials');
@@ -328,7 +316,7 @@ final class Invoice extends BaseModel implements Serializable
     protected function getPdfName(I18n $i18n): string
     {
         $company = Config::getSettings('companyData');
-        return Str::slug(implode('-', [
+        return Str::slugify(implode('-', [
             $i18n->translate('Invoice'),
             $company['name'],
             $this->number,
@@ -382,7 +370,6 @@ final class Invoice extends BaseModel implements Serializable
             'company' => Config::getSettings('companyData'),
             'beneficiary' => $this->beneficiary,
             'currency' => $this->currency,
-            'currencyName' => $this->currency_name,
             'booking' => [
                 'title' => $this->booking_title,
                 'duration' => $this->booking_duration,
@@ -441,7 +428,7 @@ final class Invoice extends BaseModel implements Serializable
 
     // ------------------------------------------------------
     // -
-    // -    "Repository" methods
+    // -    Méthodes de "repository"
     // -
     // ------------------------------------------------------
 

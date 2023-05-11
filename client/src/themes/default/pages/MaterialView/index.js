@@ -2,14 +2,22 @@ import './index.scss';
 import axios from 'axios';
 import HttpCode from 'status-code-enum';
 import { defineComponent } from '@vue/composition-api';
+import apiMaterials from '@/stores/api/materials';
+import { confirm } from '@/utils/alert';
 import Page from '@/themes/default/components/Page';
 import CriticalError, { ERROR } from '@/themes/default/components/CriticalError';
 import Loading from '@/themes/default/components/Loading';
 import { Tabs, Tab } from '@/themes/default/components/Tabs';
 import Button from '@/themes/default/components/Button';
-import apiMaterials from '@/stores/api/materials';
 import Infos from './tabs/Infos';
 import Documents from './tabs/Documents';
+
+const TABS = [
+    'infos',
+    'units',
+    'documents',
+    'availabilities',
+];
 
 // @vue/component
 const MaterialView = {
@@ -73,21 +81,45 @@ const MaterialView = {
         // -
         // ------------------------------------------------------
 
-        handleSelectTab(index) {
+        async handleTabChange(event) {
+            if (event.prevIndex !== TABS.indexOf('documents')) {
+                return;
+            }
+
+            const { documentsRef } = this.$refs;
+            if (!documentsRef?.isUploading()) {
+                return;
+            }
+
+            event.preventDefault();
+
+            const { $t: __ } = this;
+            const isConfirmed = await confirm({
+                text: __('confirm-cancel-upload-change-tab'),
+                type: 'danger',
+            });
+            if (!isConfirmed) {
+                return;
+            }
+
+            event.executeDefault();
+        },
+
+        handleTabChanged(index) {
             this.selectedTabIndex = index;
             this.$router.replace(this.tabsIndexes[index]);
         },
 
         // ------------------------------------------------------
         // -
-        // -    Internal methods
+        // -    Méthodes internes
         // -
         // ------------------------------------------------------
 
         selectTabFromRouting() {
             const { hash } = this.$route;
             if (hash && this.tabsIndexes.includes(hash)) {
-                this.selectedTabIndex = this.tabsIndexes.findIndex((tab) => tab === hash);
+                this.selectedTabIndex = this.tabsIndexes.indexOf(hash);
             }
         },
 
@@ -123,7 +155,8 @@ const MaterialView = {
             isFetched,
             criticalError,
             material,
-            handleSelectTab,
+            handleTabChange,
+            handleTabChanged,
             selectedTabIndex,
         } = this;
 
@@ -140,14 +173,15 @@ const MaterialView = {
                 <div class="MaterialView">
                     <Tabs
                         defaultIndex={selectedTabIndex}
-                        onSelect={handleSelectTab}
+                        onChange={handleTabChange}
+                        onChanged={handleTabChanged}
                         actions={tabsActions}
                     >
                         <Tab title={__('informations')} icon="info-circle">
                             <Infos material={material} />
                         </Tab>
                         <Tab title={__('documents')} icon="file-pdf">
-                            <Documents material={material} />
+                            <Documents ref="documentsRef" material={material} />
                         </Tab>
                     </Tabs>
                 </div>

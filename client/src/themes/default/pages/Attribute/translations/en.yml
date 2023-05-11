@@ -1,0 +1,27 @@
+title: Modify attribute "{name}"
+title-simple: Modify attribute
+title-create: New attribute
+
+name: Name of the attribute
+type: Attribute type
+type-not-modifiable: The data type cannot be changed.
+unit: displayed unit
+max-length: Maximum text length
+is-totalisable: "Is totalisable\_?"
+totalisable-help: Allows the attribute to be used in the totals under the material list of release sheets.
+limit-to-categories: "Limit attribute to categories:"
+limit-to-categories-help: If no category is selected, there will be no limitation.
+
+type-string: Text
+type-integer: Integer number
+type-float: Decimal number
+type-boolean: Boolean (Yes/No)
+type-date: Date
+
+confirm-update-categories: >-
+    Some categories have been removed. If you save these changes, the values of
+    this attribute for the material in these categories will be removed. Do you
+    really want to continue?
+yes-update: Yes, update the attribute
+
+saved: Attribute saved.

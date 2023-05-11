@@ -28,3 +28,7 @@ estimates:
 
 invoice:
     regenerate-help: You can regenerate the invoice to change discount, or if the event has been modified.
+
+documents:
+    confirm-permanently-delete: Do you really want to permanently delete this document?
+    deleted: Document deleted.

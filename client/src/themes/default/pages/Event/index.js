@@ -203,6 +203,7 @@ const EventPage = defineComponent({
                             event={event}
                             onError={handleError}
                             onUpdateEvent={handleUpdateEvent}
+                            onGotoStep={handleOpenStep}
                         />
                     );
                 default:
@@ -211,13 +212,9 @@ const EventPage = defineComponent({
         };
 
         return (
-            <Page
-                ref="page"
-                name="event-edit"
-                title={pageTitle}
-            >
+            <Page ref="page" name="event-edit" title={pageTitle}>
                 <div class="Event">
-                    <div class="Event__panel">
+                    <div class="Event__sidebar">
                         <Breadcrumb
                             event={event}
                             steps={steps}
@@ -225,11 +222,13 @@ const EventPage = defineComponent({
                             onOpenStep={handleOpenStep}
                         />
                         <MiniSummary />
-                        <div class="Event__panel__help">
+                        <div class="Event__sidebar__help">
                             <Help message={help} error={error} isLoading={isLoading} />
                         </div>
                     </div>
-                    {renderStep()}
+                    <div class="Event__body">
+                        {renderStep()}
+                    </div>
                 </div>
             </Page>
         );

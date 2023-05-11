@@ -4,7 +4,6 @@ declare(strict_types=1);
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Monolog\Logger;
-use Psr\Http\Message\UploadedFileInterface;
 use Robert2\API\Kernel;
 use Respect\Validation\Validator as V;
 use Robert2\Support\Period;
@@ -70,33 +69,6 @@ function getExecutionTime(?float $start = null): string
     $elapsedTime = microtime(true) - $start;
 
     return number_format($elapsedTime, 3) . "s";
-}
-
-/**
- * Déplace un fichier uploadé dans le dossier des data en sécurisant son nom
- *
- * @param string                $directory    Dossier dans lequel placer le fichier (sera créé si inexistant)
- * @param UploadedFileInterface $uploadedFile Le fichier à placer
- *
- * @return string Le nom du fichier résultant.
- */
-function moveUploadedFile($directory, UploadedFileInterface $uploadedFile)
-{
-    $name = $uploadedFile->getClientFilename();
-
-    $slugify = new Cocur\Slugify\Slugify([
-        'regexp' => '/([^A-Za-z0-9\.]|-)+/',
-        'lowercase' => false,
-    ]);
-    $nameSecure = $slugify->slugify($name);
-
-    if (!is_dir($directory)) {
-        mkdir($directory, 0777, true);
-    }
-
-    $uploadedFile->moveTo($directory . DS . $nameSecure);
-
-    return $nameSecure;
 }
 
 /**

@@ -6,157 +6,129 @@ import { DATE_DB_FORMAT } from '@/globals/constants';
 import apiEvents from '@/stores/api/events';
 import FormField from '@/themes/default/components/FormField';
 import Fieldset from '@/themes/default/components/Fieldset';
-import EventStore from '../../EventStore';
 import { ApiErrorCode } from '@/stores/api/@codes';
+import getCSSProperty from '@/utils/getCSSProperty';
+import EventStore from '../../EventStore';
+
+const DEFAULT_VALUES = Object.freeze({
+    title: '',
+    start_date: null,
+    end_date: null,
+    location: '',
+    description: '',
+    color: null,
+    is_billable: config.billingMode !== 'none',
+    is_confirmed: false,
+});
 
 // @vue/component
 export default {
     name: 'EventStep1',
-    components: { FormField, Fieldset },
+    provide: {
+        verticalForm: true,
+    },
     props: {
         event: { type: Object, required: true },
     },
     data() {
         return {
-            datepickerOptions: {
-                disabled: { from: null, to: null },
-                range: true,
+            data: {
+                ...DEFAULT_VALUES,
+                ...pick(this.event ?? {}, Object.keys(DEFAULT_VALUES)),
             },
-            dates: null,
-            duration: 0,
-            showIsBillable: config.billingMode === 'partial',
-            eventData: {
-                title: '',
-                start_date: '',
-                end_date: '',
-                location: '',
-                description: '',
-                is_billable: config.billingMode !== 'none',
-                is_confirmed: false,
-            },
-            errors: {
-                title: null,
-                start_date: null,
-                end_date: null,
-                location: null,
-                description: null,
-            },
+            errors: null,
         };
     },
     computed: {
         isNew() {
             return this.event.id === null;
         },
+
+        allowBillingToggling() {
+            return config.billingMode === 'partial';
+        },
+
+        dates() {
+            const { data } = this;
+            return [data.start_date, data.end_date];
+        },
+
+        duration() {
+            const [startDate, endDate] = this.dates;
+            if (!startDate || !endDate) {
+                return 0;
+            }
+            return moment(endDate).diff(startDate, 'days') + 1;
+        },
+
+        defaultColor() {
+            return getCSSProperty('calendar-event-default-color');
+        },
+
+        datepickerOptions: () => ({
+            range: true,
+            disabled: { from: null, to: null },
+        }),
     },
     watch: {
         event() {
-            this.initValuesFromEvent();
-            this.initDatesFromEvent();
-            this.calcDuration();
+            this.setValuesFromEvent();
             this.checkIsSavedEvent();
         },
     },
-    mounted() {
-        this.initValuesFromEvent();
-        this.initDatesFromEvent();
-        this.calcDuration();
-    },
     methods: {
-        initValuesFromEvent() {
+        // ------------------------------------------------------
+        // -
+        // -    Handlers
+        // -
+        // ------------------------------------------------------
+
+        handleBasicChange() {
+            this.checkIsSavedEvent();
+        },
+
+        handleDatesChange([startDate, endDate]) {
+            this.data.start_date = startDate;
+            this.data.end_date = endDate;
+            this.checkIsSavedEvent();
+        },
+
+        handleSubmit(e) {
+            e.preventDefault();
+
+            this.save();
+        },
+
+        // ------------------------------------------------------
+        // -
+        // -    Méthodes internes
+        // -
+        // ------------------------------------------------------
+
+        setValuesFromEvent() {
             if (!this.event) {
                 return;
             }
 
-            this.eventData = {
-                title: this.event.title || '',
-                start_date: this.event.start_date || '',
-                end_date: this.event.end_date || '',
-                location: this.event.location || '',
-                description: this.event.description || '',
-                is_billable: this.event.is_billable,
-                is_confirmed: this.event.is_confirmed,
+            this.data = {
+                ...DEFAULT_VALUES,
+                ...this.data,
+                ...pick(this.event ?? {}, Object.keys(DEFAULT_VALUES)),
             };
         },
 
-        initDatesFromEvent() {
-            if (this.dates) {
-                return;
-            }
-
-            const {
-                start_date: startDate = null,
-                end_date: endDate = null,
-            } = this.event;
-
-            if (!startDate || !endDate) {
-                return;
-            }
-
-            this.dates = [startDate, endDate];
-        },
-
-        setEventDates() {
-            const [startDate, endDate] = this.dates;
-
-            this.eventData.start_date = startDate;
-            this.eventData.end_date = endDate;
-
-            this.checkIsSavedEvent();
-            this.calcDuration();
-        },
-
-        calcDuration() {
-            if (!this.dates) {
-                return;
-            }
-
-            const [startDate, endDate] = this.dates;
-            if (startDate && endDate) {
-                this.duration = moment(endDate).diff(startDate, 'days') + 1;
-            }
-        },
-
         checkIsSavedEvent() {
-            EventStore.dispatch('checkIsSaved', { ...this.event || {}, ...this.eventData });
+            EventStore.dispatch('checkIsSaved', { ...this.event, ...this.data });
         },
 
-        saveAndBack(e) {
-            e.preventDefault();
-            this.save({ gotoStep: false });
-        },
-
-        saveAndNext(e) {
-            e.preventDefault();
-            this.save({ gotoStep: 2 });
-        },
-
-        displayError(error) {
-            this.$emit('error', error);
-
-            const { code, details } = error.response?.data?.error || { code: ApiErrorCode.UNKNOWN, details: {} };
-            if (code === ApiErrorCode.VALIDATION_FAILED) {
-                this.errors = { ...details };
-            }
-        },
-
-        async save(options) {
+        async save() {
             this.$emit('loading');
             const { isNew } = this;
 
-            const saveData = pick(this.eventData, [
-                'title',
-                'start_date',
-                'end_date',
-                'location',
-                'description',
-                'is_billable',
-                'is_confirmed',
-            ]);
-
             const postData = {
-                ...saveData,
-                start_date: moment(this.eventData.start_date).startOf('day').format(DATE_DB_FORMAT),
-                end_date: moment(this.eventData.end_date).endOf('day').format(DATE_DB_FORMAT),
+                ...this.data,
+                start_date: moment(this.data.start_date).startOf('day').format(DATE_DB_FORMAT),
+                end_date: moment(this.data.end_date).endOf('day').format(DATE_DB_FORMAT),
             };
 
             const doRequest = () => (
@@ -167,21 +139,115 @@ export default {
 
             try {
                 const data = await doRequest();
-
-                const { gotoStep } = options;
-                if (!gotoStep) {
-                    this.$router.push('/');
-                    return;
-                }
-
                 EventStore.commit('setIsSaved', true);
                 this.$emit('updateEvent', data);
-                this.$emit('gotoStep', gotoStep);
+                this.$emit('gotoStep', 2);
             } catch (error) {
-                this.displayError(error);
+                this.$emit('error', error);
+
+                const { code, details } = error.response?.data?.error || { code: ApiErrorCode.UNKNOWN, details: {} };
+                if (code === ApiErrorCode.VALIDATION_FAILED) {
+                    this.errors = { ...details };
+                }
             } finally {
                 this.$emit('stopLoading');
             }
         },
+    },
+    render() {
+        const {
+            $t: __,
+            duration,
+            dates,
+            data,
+            errors,
+            defaultColor,
+            datepickerOptions,
+            allowBillingToggling,
+            handleBasicChange,
+            handleDatesChange,
+            handleSubmit,
+        } = this;
+
+        return (
+            <form class="EventStep1" method="POST" onSubmit={handleSubmit}>
+                <Fieldset>
+                    <FormField
+                        label="title"
+                        v-model={data.title}
+                        onInput={handleBasicChange}
+                        errors={errors?.title}
+                        required
+                    />
+                    <div class="EventStep1__dates">
+                        <div class="EventStep1__dates__fields">
+                            <FormField
+                                label="dates"
+                                type="date"
+                                value={dates}
+                                datepickerOptions={datepickerOptions}
+                                errors={errors?.start_date || errors?.end_date}
+                                onChange={handleDatesChange}
+                                required
+                            />
+                        </div>
+                        <div class="EventStep1__dates__duration">
+                            {duration > 0 && __('duration-days', { duration }, duration)}
+                        </div>
+                    </div>
+                </Fieldset>
+                <Fieldset title={__('event-details')}>
+                    <FormField
+                        label="location"
+                        v-model={data.location}
+                        class="EventStep1__location"
+                        onInput={handleBasicChange}
+                        errors={errors?.location}
+                    />
+                    <FormField
+                        label="description"
+                        type="textarea"
+                        v-model={data.description}
+                        class="EventStep1__description"
+                        onInput={handleBasicChange}
+                        errors={errors?.description}
+                    />
+                    {allowBillingToggling && (
+                        <div class="EventStep1__is-billable">
+                            <FormField
+                                label="is-billable"
+                                type="switch"
+                                v-model={data.is_billable}
+                                class="EventStep1__is-billable__input"
+                                onChange={handleBasicChange}
+                                errors={errors?.is_billable}
+                            />
+                            <div class="EventStep1__is-billable__help">
+                                <i class="fas fa-arrow-right" />&nbsp;
+                                {data.is_billable && __(`is-billable-help`)}
+                                {!data.is_billable && __(`is-not-billable-help`)}
+                            </div>
+                        </div>
+                    )}
+                </Fieldset>
+                <Fieldset title={__('customization')}>
+                    <FormField
+                        label="color-on-calendar"
+                        type="color"
+                        v-model={data.color}
+                        class="EventStep1__color"
+                        placeholder={defaultColor}
+                        onChange={handleBasicChange}
+                        errors={errors?.color}
+                    />
+                </Fieldset>
+                <section class="EventStep1__actions">
+                    <button type="submit" class="button success">
+                        {__('page.event-edit.save-and-go-to-next-step')}&nbsp;
+                        <i class="fas fa-arrow-right" />
+                    </button>
+                </section>
+            </form>
+        );
     },
 };

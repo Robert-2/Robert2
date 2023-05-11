@@ -6,6 +6,7 @@ namespace Robert2\Support\Filesystem;
 use GuzzleHttp\Psr7\LazyOpenStream;
 use GuzzleHttp\Psr7\UploadedFile as CoreUploadedFile;
 use GuzzleHttp\Psr7\Utils as FileUtils;
+use Robert2\API\Config\Config;
 
 class UploadedFile extends CoreUploadedFile
 {
@@ -59,6 +60,11 @@ class UploadedFile extends CoreUploadedFile
             throw new \InvalidArgumentException(
                 "Invalid path provided for move operation; must be a non-empty string"
             );
+        }
+
+        if (Config::getEnv(true) === 'test') {
+            $this->moved = true;
+            return;
         }
 
         if ($this->file) {

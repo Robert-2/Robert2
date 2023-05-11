@@ -45,7 +45,7 @@ class TestCase extends CoreTestCase
 
     // ------------------------------------------------------
     // -
-    // -    Internal Methods
+    // -    Méthodes internes
     // -
     // ------------------------------------------------------
 

@@ -1,7 +1,7 @@
-import type { MaterialWithPivot } from '@/stores/api/events';
+import type { EventMaterial } from '@/stores/api/events';
 import materials from './materials';
 
-const eventMaterials: MaterialWithPivot[] = [
+const eventMaterials: EventMaterial[] = [
     {
         ...materials[0],
         pivot: {

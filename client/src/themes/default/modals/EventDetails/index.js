@@ -1,11 +1,11 @@
 import './index.scss';
 import moment from 'moment';
 import { defineComponent } from '@vue/composition-api';
+import { confirm } from '@/utils/alert';
 import { Tabs, Tab } from '@/themes/default/components/Tabs';
 import apiEvents from '@/stores/api/events';
 import CriticalError from '@/themes/default/components/CriticalError';
 import Loading from '@/themes/default/components/Loading';
-import Icon from '@/themes/default/components/Icon';
 import Button from '@/themes/default/components/Button';
 import Header from './components/Header';
 import Infos from './tabs/Infos';
@@ -13,6 +13,8 @@ import Technicians from './tabs/Technicians';
 import Materials from './tabs/Materials';
 import Estimates from './tabs/Estimates';
 import Invoices from './tabs/Invoices';
+import Documents from './tabs/Documents';
+import Note from './tabs/Note';
 
 const TABS = [
     'infos',
@@ -20,6 +22,8 @@ const TABS = [
     'materials',
     'estimates',
     'invoices',
+    'documents',
+    'note',
 ];
 
 // @vue/component
@@ -42,7 +46,7 @@ const EventDetails = {
     }),
     computed: {
         openedTabIndex() {
-            const index = TABS.findIndex((tabName) => tabName === this.openedTab);
+            const index = TABS.indexOf(this.openedTab);
             return index < 0 ? 0 : index;
         },
 
@@ -104,7 +108,7 @@ const EventDetails = {
         // - Actualise le timestamp courant toutes les minutes.
         this.nowTimer = setInterval(() => { this.now = Date.now(); }, 60_000);
     },
-    beforeUnmount() {
+    beforeDestroy() {
         if (this.nowTimer) {
             clearInterval(this.nowTimer);
         }
@@ -115,6 +119,52 @@ const EventDetails = {
         // -    Handlers
         // -
         // ------------------------------------------------------
+
+        async handleTabChange(event) {
+            if (event.prevIndex !== TABS.indexOf('documents')) {
+                return;
+            }
+
+            const { documentsRef } = this.$refs;
+            if (!documentsRef?.isUploading()) {
+                return;
+            }
+
+            event.preventDefault();
+
+            const { $t: __ } = this;
+            const isConfirmed = await confirm({
+                text: __('confirm-cancel-upload-change-tab'),
+                type: 'danger',
+            });
+            if (!isConfirmed) {
+                return;
+            }
+
+            event.executeDefault();
+        },
+
+        handleUpdated(event) {
+            this.event = event;
+
+            const { onUpdated } = this.$props;
+            if (onUpdated) {
+                onUpdated(event);
+            }
+        },
+
+        handleDuplicated(newEvent) {
+            const { onDuplicated } = this.$props;
+            if (onDuplicated) {
+                onDuplicated(newEvent);
+            }
+
+            this.handleClose();
+        },
+
+        handleDeleted() {
+            this.$emit('close');
+        },
 
         handleInvoiceCreated(newInvoice) {
             if (!this.event || !this.event.is_billable) {
@@ -137,30 +187,13 @@ const EventDetails = {
             this.event.estimates = newEstimatesList;
         },
 
-        handleUpdateEvent(newEvent) {
-            this.event = newEvent;
-
-            const { onUpdateEvent } = this.$props;
-            if (onUpdateEvent) {
-                onUpdateEvent(newEvent);
-            }
-        },
-
-        handleDuplicateEvent(newEvent) {
-            const { onDuplicateEvent } = this.$props;
-            if (onDuplicateEvent) {
-                onDuplicateEvent(newEvent);
-            }
-            this.handleClose();
-        },
-
         handleClose() {
             this.$emit('close');
         },
 
         // ------------------------------------------------------
         // -
-        // -    Internal methods
+        // -    Méthodes internes
         // -
         // ------------------------------------------------------
 
@@ -185,12 +218,13 @@ const EventDetails = {
             hasEventTechnicians,
             hasMaterials,
             hasMaterialsProblems,
-            isEventPast,
+            handleUpdated,
+            handleTabChange,
+            handleDuplicated,
+            handleDeleted,
             handleEstimateCreated,
             handleEstimateDeleted,
             handleInvoiceCreated,
-            handleUpdateEvent,
-            handleDuplicateEvent,
             handleClose,
         } = this;
 
@@ -216,12 +250,15 @@ const EventDetails = {
                 <Header
                     event={event}
                     onClose={handleClose}
-                    onSaved={handleUpdateEvent}
-                    onDeleted={handleClose}
-                    onDuplicated={handleDuplicateEvent}
+                    onSaved={handleUpdated}
+                    onDeleted={handleDeleted}
+                    onDuplicated={handleDuplicated}
                 />
                 <div class="EventDetails__content">
-                    <Tabs defaultIndex={openedTabIndex}>
+                    <Tabs
+                        defaultIndex={openedTabIndex}
+                        onChange={handleTabChange}
+                    >
                         <Tab title={__('informations')} icon="info-circle">
                             <Infos event={event} />
                         </Tab>
@@ -257,24 +294,13 @@ const EventDetails = {
                                 />
                             </Tab>
                         )}
+                        <Tab title={__('documents')} icon="file-pdf">
+                            <Documents ref="documentsRef" event={event} />
+                        </Tab>
+                        <Tab title={__('notes')} icon="clipboard:regular">
+                            <Note event={event} onUpdated={handleUpdated} />
+                        </Tab>
                     </Tabs>
-                    {!hasMaterials && (
-                        <div class="EventDetails__no-material">
-                            <p>
-                                <Icon name="exclamation-triangle" class="EventDetails__no-material__icon" />
-                                {__('@event.warning-no-material')}
-                            </p>
-                            {!isEventPast && (
-                                <Button
-                                    type="primary"
-                                    to={{ name: 'edit-event', params: { id: event.id } }}
-                                >
-                                    <Icon name="edit" class="EventDetails__no-material__icon" />
-                                    {__('modal.event-details.edit')}
-                                </Button>
-                            )}
-                        </div>
-                    )}
                 </div>
             </div>
         );

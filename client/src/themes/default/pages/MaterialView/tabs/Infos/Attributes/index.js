@@ -28,7 +28,7 @@ export default {
                             {name}
                         </dt>
                         <dd class="MaterialViewInfosAttributes__attribute__value">
-                            {!['boolean', 'date'].includes(type) && [value, unit].join('\u00a0')}
+                            {!['boolean', 'date'].includes(type) && [value, unit].join('\u00A0')}
                             {type === 'date' && formatDate(value)}
                             {type === 'boolean' && (value ? __('yes') : __('no'))}
                         </dd>

@@ -19,6 +19,8 @@ const LAYOUT_MAP = {
 
 const decodeKeyEvent = (event, inputLayout) => {
     const keyCode = (event.which || event.keyCode).toString();
+
+    // eslint-disable-next-line unicorn/prefer-code-point
     const decoded = String.fromCharCode(keyCode);
 
     // - Cas particuliers

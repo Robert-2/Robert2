@@ -1,22 +1,68 @@
 [
     {
         "id": 1,
-        "material_id": 1,
+        "entity_type": "material",
+        "entity_id": 1,
         "name": "User-manual.pdf",
         "type": "application/pdf",
-        "size": 54681233,
-        "created_at": "2021-02-12 13:23:02",
-        "updated_at": "2021-02-12 13:24:02",
-        "deleted_at": null
+        "size": 24681233,
+        "file": "User-manual.pdf",
+        "author_id": null,
+        "created_at": "2021-02-12 13:23:02"
     },
     {
         "id": 2,
-        "material_id": 1,
+        "entity_type": "material",
+        "entity_id": 1,
         "name": "warranty.pdf",
         "type": "application/pdf",
         "size": 124068,
-        "created_at": "2021-02-12 13:25:02",
-        "updated_at": "2021-02-12 13:26:02",
-        "deleted_at": null
+        "file": "3c1ab2d8-f3cf-4de4-9a3d-371ff35afbb6.pdf",
+        "author_id": 1,
+        "created_at": "2021-02-12 13:25:02"
+    },
+    {
+        "id": 3,
+        "entity_type": "event",
+        "entity_id": 2,
+        "name": "plan-de-salle.xls",
+        "type": "application/vnd.ms-excel",
+        "size": 49802,
+        "file": "04350a8c-d14b-4ab1-a4d2-e1efc248ffcb.xls",
+        "author_id": 3,
+        "created_at": "2023-05-01 15:15:20"
+    },
+    {
+        "id": 4,
+        "entity_type": "reservation",
+        "entity_id": 1,
+        "name": "Carte de l'étudiant.png",
+        "type": "image/x-png",
+        "size": 9397,
+        "file": "90fa8870-3e5f-4327-9329-4dd041eebbe1.png",
+        "author_id": 2,
+        "created_at": "2023-05-02 17:32:05"
+    },
+    {
+        "id": 5,
+        "entity_type": "reservation",
+        "entity_id": 1,
+        "name": "bon_de_sortie.doc",
+        "type": "application/msword",
+        "size": 10014149,
+        "file": "d697b2db-e1e6-4484-a27d-5635beaf55d6.doc",
+        "author_id": 2,
+        "created_at": "2023-05-01 15:15:20"
+    },
+    {
+        "id": 6,
+        "entity_type": "technician",
+        "entity_id": 2,
+        "name": "emploi-du-temps.xls",
+        "type": "application/vnd.ms-excel",
+        "size": 70001,
+        "file": "bed8c87e-104b-4174-bb05-b169243b1fb4.xls",
+        "author_id": 3,
+        "created_at": "2023-05-01 15:15:20"
     }
 ]

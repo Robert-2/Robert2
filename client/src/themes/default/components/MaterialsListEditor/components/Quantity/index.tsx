@@ -1,48 +1,82 @@
-import debounce from 'debounce';
-import { toRefs, ref, watch } from '@vue/composition-api';
+import { defineComponent } from '@vue/composition-api';
+import debounce from 'lodash/debounce';
+import { DEBOUNCE_WAIT } from '@/globals/constants';
 import QuantityInput from '@/themes/default/components/QuantityInput';
 
-import type { Component, SetupContext } from '@vue/composition-api';
-import type { Material } from '@/stores/api/materials';
+import type { PropType } from '@vue/composition-api';
+import type { MaterialWithAvailabilities } from '@/stores/api/materials';
 
 type Props = {
-    material: Material,
+    /** Le matériel dont on veut définir les quantités. */
+    material: MaterialWithAvailabilities,
+
+    /** La quantité initiale à appliquer. */
     initialQuantity: number,
 };
 
-type Events = {
-    onChange(material: Material, newQuantity: number): void,
+type Data = {
+    quantity: number,
 };
 
 // @vue/component
-const MaterialsListEditorQuantity: Component<Props & Events> = (props: Props, { emit }: SetupContext) => {
-    const { material, initialQuantity } = toRefs(props as Required<Props>);
+const MaterialsListEditorQuantity = defineComponent({
+    name: 'MaterialsListEditorQuantity',
+    props: {
+        material: {
+            type: Object as PropType<Required<Props['material']>>,
+            required: true,
+        },
+        initialQuantity: {
+            type: Number as PropType<Required<Props['initialQuantity']>>,
+            required: true,
+        },
+    },
+    data(): Data {
+        return {
+            quantity: this.initialQuantity,
+        };
+    },
+    watch: {
+        initialQuantity(newValue: number) {
+            this.quantity = newValue;
+        },
+    },
+    created() {
+        this.updateQuantityDebounced = debounce(this.updateQuantity.bind(this), DEBOUNCE_WAIT);
+    },
+    beforeUnmount() {
+        this.updateQuantityDebounced.cancel();
+    },
+    methods: {
+        // ------------------------------------------------------
+        // -
+        // -    Handlers
+        // -
+        // ------------------------------------------------------
 
-    const quantity = ref<number>(initialQuantity.value);
+        handleChange(value: string) {
+            this.quantity = parseInt(value, 10) || 0;
+            this.updateQuantityDebounced();
+        },
 
-    const updateQuantityDebounced = debounce(() => {
-        emit('change', material.value, quantity.value);
-    }, 400);
+        // ------------------------------------------------------
+        // -
+        // -    Méthodes internes
+        // -
+        // ------------------------------------------------------
 
-    const handleChange = (value: string): void => {
-        quantity.value = parseInt(value, 10) || 0;
-        updateQuantityDebounced();
-    };
+        updateQuantity() {
+            const { material, quantity } = this;
+            this.$emit('change', material, quantity);
+        },
+    },
+    render() {
+        const { quantity, handleChange } = this;
 
-    watch(initialQuantity, (newValue: number) => {
-        quantity.value = newValue;
-    });
-
-    return () => (
-        <QuantityInput value={quantity.value} onChange={handleChange} />
-    );
-};
-
-MaterialsListEditorQuantity.props = {
-    material: { type: Object, required: true },
-    initialQuantity: { type: Number, default: 0 },
-};
-
-MaterialsListEditorQuantity.emits = ['change'];
+        return (
+            <QuantityInput value={quantity} onChange={handleChange} />
+        );
+    },
+});
 
 export default MaterialsListEditorQuantity;

@@ -1,9 +1,13 @@
-/* eslint-disable strict */
-
 'use strict';
 
 module.exports = {
     extends: '@pulsanova/vue',
+
+    // - Globals
+    globals: {
+        require: 'readonly',
+        process: 'readonly',
+    },
 
     // - Parseur
     parserOptions: {
@@ -33,7 +37,7 @@ module.exports = {
             },
         },
         {
-            files: ['**/tests/**/*', '**/__tests__/*'],
+            files: ['**/tests/**/*', '**/__tests__/*', '**/*.spec.*'],
             env: { jest: true },
             settings: {
                 'import/resolver': {
@@ -57,6 +61,17 @@ module.exports = {
             rules: {
                 'import/order': ['off'],
             },
+        },
+        {
+            files: [
+                '**/jest.config.js',
+                '**/babel.config.js',
+                '**/eslint.config.js',
+                '**/postcss.config.js',
+                '**/vue.config.js',
+                '**/.eslintrc.js',
+            ],
+            extends: '@pulsanova/node',
         },
         // - Autorise le `snake_case` dans les types d'API vu que pour le moment
         //   celle-ci accepte et retourne uniquement sous ce format.

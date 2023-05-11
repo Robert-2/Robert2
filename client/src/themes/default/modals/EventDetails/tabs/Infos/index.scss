@@ -26,10 +26,15 @@
         }
     }
 
-    &__no-beneficiary {
+    &__no-beneficiary,
+    &__no-material {
         color: globals.$text-danger-color;
         font-size: 1.2rem;
         text-align: center;
+
+        &__icon {
+            margin-right: 0.5rem;
+        }
     }
 
     &__beneficiary-details {
@@ -61,6 +66,16 @@
 
         &--confirmed {
             color: globals.$text-success-color;
+        }
+    }
+
+    &__no-material {
+        color: globals.$text-danger-color;
+        font-size: 1.2rem;
+        text-align: center;
+
+        &__icon {
+            margin-right: 5px;
         }
     }
 }

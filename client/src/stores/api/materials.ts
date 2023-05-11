@@ -1,9 +1,9 @@
 import requester from '@/globals/requester';
 
-import type { ProgressCallback } from 'axios';
+import type { ProgressCallback, AxiosRequestConfig as RequestConfig } from 'axios';
 import type { PaginatedData, ListingParams } from '@/stores/api/@types';
 import type { Event } from '@/stores/api/events';
-import type { Booking } from '@/stores/api/bookings';
+import type { BookingSummary } from '@/stores/api/bookings';
 import type { Category } from '@/stores/api/categories';
 import type { Subcategory } from '@/stores/api/subcategories';
 import type { Park } from '@/stores/api/parks';
@@ -47,6 +47,7 @@ export type Material = (
         attributes: MaterialAttribute[],
         created_at: string,
         updated_at: string,
+        is_unitary: false,
         park_id: Park['id'],
     }
 );
@@ -57,7 +58,7 @@ export type MaterialWithAvailabilities = Material & {
     available_quantity?: number,
 };
 
-export type BookingWithPivot = Booking & {
+export type BookingWithPivot = BookingSummary & {
     pivot: {
         quantity: number,
     },
@@ -98,7 +99,6 @@ type GetAllRaw = GetAllParams & { paginated: false };
 // - Fonctions
 //
 
-/* eslint-disable func-style */
 async function all(params: GetAllRaw): Promise<MaterialWithAvailabilities[]>;
 async function all(params: GetAllPaginated): Promise<PaginatedData<MaterialWithAvailabilities[]>>;
 async function all(params: GetAllPaginated | GetAllRaw): Promise<unknown> {
@@ -138,13 +138,9 @@ const documents = async (id: Material['id']): Promise<Document[]> => (
     (await requester.get(`/materials/${id}/documents`)).data
 );
 
-const attachDocuments = async (id: Material['id'], files: File[], onProgress?: ProgressCallback): Promise<void> => {
-    const formData = new FormData();
-    files.forEach((file: File, index: number) => {
-        formData.append(`file-${index}`, file);
-    });
-
-    await requester.post(`/materials/${id}/documents`, formData, { onProgress });
+const attachDocument = async (id: Material['id'], file: File, options: RequestConfig = {}): Promise<Document> => {
+    const formData = new FormData(); formData.append('file', file);
+    return (await requester.post(`/materials/${id}/documents`, formData, options)).data;
 };
 
 export default {
@@ -157,5 +153,5 @@ export default {
     remove,
     bookings,
     documents,
-    attachDocuments,
+    attachDocument,
 };

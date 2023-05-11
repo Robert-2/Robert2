@@ -12,6 +12,7 @@ export default {
     'material-edit': require('@/themes/default/pages/Material/translations/fr.yml'),
     'material-view': require('@/themes/default/pages/MaterialView/translations/fr.yml'),
     'attributes': require('@/themes/default/pages/Attributes/translations/fr.yml'),
+    'attribute-edit': require('@/themes/default/pages/Attribute/translations/fr.yml'),
     'categories': require('@/themes/default/pages/Categories/translations/fr.yml'),
     'technicians': require('@/themes/default/pages/Technicians/translations/fr.yml'),
     'technician': require('@/themes/default/pages/Technician/translations/fr.yml'),

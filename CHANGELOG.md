@@ -4,6 +4,36 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.21.0 (2023-05-11)
+
+- Dans la liste du matériel, le champ "Afficher les quantités restantes à date" est pré-rempli avec
+  la date courante, et la quantité disponible est affichée à côté de la quantité totale en stock,
+  pour faciliter la comparaison.
+- Corrige le comportement de la pagination des listings quand on essaye de charger une plage de données
+  qui n'existe pas ou plus (Premium #229).
+- Les caractéristiques spéciales peuvent être totalisées en bas de la liste du matériel
+  de la fiche de sortie des événements et réservations (Premium #266). Un nouveau champ "Totalisable"
+  permet de contrôler si la caractéristique doit être utilisée ou non dans les totaux.
+- Tous les champs des caractéristiques spéciales du matériel peuvent être modifiés, à l'exception du
+  champ "type", qui ne peut pas changer.
+- Ajout de la possibilité de personnaliser les échantillons de couleurs proposés dans le sélecteur de 
+  couleur via la clé `colorSwatches` dans configuration JSON du projet (`settings.json`).
+- Il est maintenant possible de rattacher des documents aux techniciens, aux réservations et aux 
+  événements (Premium #264, #298).
+- L'URL de la partie "réservation en ligne" (/external) peut être copiée directement depuis la page des
+  paramètres de la réservation en ligne.
+- Un nouvel onglet dans les paramètres du logiciel permet de contrôler le comportement des inventaires
+  de retour : soit l'inventaire est vide au départ, et doit être rempli manuellement (comportement par
+  défaut), soit les quantités retournées sont pré-remplies, et il faut décocher ce qui n'est pas revenu.
+- Ajoute la possibilité de modifier la liste du matériel des réservations approuvées ou en attente,
+  tant que la facturation n'est pas activée (Premium #287).
+- Les unités de matériel qui sont utilisées dans les événements ou les réservations sont à nouveau
+  affichées dans l'onglet "Périodes de réservation" de la fiche matériel (Premium #284).
+- Les références des unités utilisées dans un événement ou une réservation sont affichées dans
+  l'onglet "materiel" de la fenêtre de l'événement ou réservation (Premium #284).
+- Quand l'utilisateur connecté a des parcs restreints et qu'il n'a accès qu'à un seul parc de matériel,
+  le filtre par parc du calendrier est pré-rempli avec ce parc (Premium #163).
+
 ## 0.20.6 (2023-04-14)
 
 - Pour les réservations en ligne, le comportement du délai minimum avant réservation a été revu

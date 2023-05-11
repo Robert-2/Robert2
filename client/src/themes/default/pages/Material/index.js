@@ -2,7 +2,6 @@ import './index.scss';
 import axios from 'axios';
 import HttpCode from 'status-code-enum';
 import { ApiErrorCode } from '@/stores/api/@codes';
-import queryClient from '@/globals/queryClient';
 import apiMaterials from '@/stores/api/materials';
 import FormField from '@/themes/default/components/FormField';
 import InputImage from '@/themes/default/components/InputImage';
@@ -155,7 +154,6 @@ export default {
                 }
 
                 this.validationErrors = null;
-                queryClient.invalidateQueries('materials-while-event');
 
                 // - Redirection...
                 this.$toasted.success(__('page.material-edit.saved'));

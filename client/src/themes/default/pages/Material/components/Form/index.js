@@ -188,7 +188,7 @@ const MaterialEditForm = {
                 // - Supprime les données d'attributs obsolètes dans les données du formulaire.
                 Object.keys(this.data.attributes).forEach((id) => {
                     const stillExists = this.extraAttributes
-                        .find((attr) => attr.id === parseInt(id, 10)) !== undefined;
+                        .some((attr) => attr.id === parseInt(id, 10));
 
                     if (!stillExists) {
                         this.$delete(this.data.attributes, id);
@@ -200,7 +200,7 @@ const MaterialEditForm = {
             }
         },
 
-        getAttributeType(attributeType) {
+        getAttributeInputType(attributeType) {
             switch (attributeType) {
                 case 'integer':
                 case 'float':
@@ -211,6 +211,17 @@ const MaterialEditForm = {
                     return 'date';
                 default:
                     return 'text';
+            }
+        },
+
+        getAttributeInputStep(attributeType) {
+            switch (attributeType) {
+                case 'integer':
+                    return 1;
+                case 'float':
+                    return 0.001;
+                default:
+                    return undefined;
             }
         },
     },
@@ -233,7 +244,8 @@ const MaterialEditForm = {
             handleCategoryChange,
             handleUpdateRentalPrice,
             handleAttributeChange,
-            getAttributeType,
+            getAttributeInputType,
+            getAttributeInputStep,
         } = this;
 
         if (criticalError !== null) {
@@ -368,7 +380,8 @@ const MaterialEditForm = {
                         <FormField
                             key={id}
                             label={name}
-                            type={getAttributeType(type)}
+                            type={getAttributeInputType(type)}
+                            step={getAttributeInputStep(type)}
                             addon={unit}
                             value={data.attributes[id] ?? null}
                             onInput={(value) => {

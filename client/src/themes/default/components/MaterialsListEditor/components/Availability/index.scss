@@ -1,0 +1,20 @@
+@use '~@/themes/default/style/globals';
+
+.MaterialsListEditorAvailability {
+    min-width: 205px;
+
+    &__stock {
+        display: block;
+    }
+
+    &__surplus {
+        display: block;
+        margin-top: 3px;
+        color: globals.$text-warning-color;
+        font-style: italic;
+    }
+
+    &--warning {
+        color: globals.$text-warning-color;
+    }
+}

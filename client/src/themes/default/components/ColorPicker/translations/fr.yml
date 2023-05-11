@@ -1,0 +1,11 @@
+close-picker: Fermer le sélecteur de couleur
+clear-color: Effacer la couleur sélectionnée
+marker: "Saturation: {saturation}. Luminosité: {brightness}."
+hue-slider: Curseur de teinte
+alpha-slider: Curseur d'opacité
+color-swatch: "Échantillon de couleur \"{color}\""
+
+color-formats-short-name:
+    hex: Hex
+    rgb: RGB
+    hsl: HSL

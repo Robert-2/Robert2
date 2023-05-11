@@ -1,6 +1,8 @@
 declare module 'vue' {
     import type { VueConstructor as VueConstructorCore } from 'vue';
 
+    export type { VNode } from 'vue';
+
     export interface VueConstructor extends VueConstructorCore {
         $store: any;
         $router: any;

@@ -59,7 +59,6 @@ const create = async (data: UserEdit): Promise<UserDetails> => (
     (await requester.post('/users', data)).data
 );
 
-/* eslint-disable func-style */
 async function update(id: 'self', data: UserEditSelf): Promise<UserDetails>;
 async function update(id: User['id'], data: UserEdit): Promise<UserDetails>;
 async function update(id: User['id'] | 'self', data: UserEdit | UserEditSelf): Promise<UserDetails> {
