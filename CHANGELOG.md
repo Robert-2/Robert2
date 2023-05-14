@@ -8,6 +8,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 
 - Corrige les inventaires de retour qui n'affichaient plus la liste du matériel.
 - Corrige la prise en charge de la configuration des fichiers autorisés à l'upload côté Front (Premium #313).
+- Corrige le comportement des onglets dans les fiches matériel et technicien.
 
 ## 0.21.0 (2023-05-11)
 

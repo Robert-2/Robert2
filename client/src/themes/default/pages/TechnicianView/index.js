@@ -28,7 +28,7 @@ export default {
             isFetched: false,
             criticalError: null,
             technician: null,
-            tabsIndexes: ['#infos', '#schedule'],
+            tabsIndexes: ['#infos', '#schedule', '#documents'],
             selectedTabIndex: 0,
         };
     },
