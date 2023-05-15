@@ -68,6 +68,8 @@ class EntryController extends BaseController
             'billingMode' => $rawConfig['billingMode'],
             'maxFileUploadSize' => $rawConfig['maxFileUploadSize'],
             'colorSwatches' => $rawConfig['colorSwatches'],
+            'authorizedFileTypes' => $rawConfig['authorizedFileTypes'],
+            'authorizedImageTypes' => $rawConfig['authorizedImageTypes'],
         ];
     }
 }

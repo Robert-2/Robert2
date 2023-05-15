@@ -27,6 +27,30 @@ const defaultConfig = {
     billingMode: 'partial',
     maxFileUploadSize: 25 * 1024 * 1024,
     colorSwatches: null,
+    authorizedFileTypes: [
+        'application/pdf',
+        'application/zip',
+        'application/x-rar-compressed',
+        'application/gzip',
+        'image/jpeg',
+        'image/png',
+        'image/webp',
+        'image/svg+xml',
+        'text/plain',
+        'text/csv',
+        'text/xml',
+        'application/vnd.oasis.opendocument.spreadsheet',
+        'application/vnd.ms-excel',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'application/vnd.oasis.opendocument.text',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    ],
+    authorizedImageTypes: [
+        'image/jpeg',
+        'image/png',
+        'image/webp',
+    ],
 };
 
 const globalConfig = window.__SERVER_CONFIG__ || defaultConfig;

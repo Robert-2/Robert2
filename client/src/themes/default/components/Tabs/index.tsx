@@ -67,7 +67,7 @@ const Tabs = defineComponent({
 
                 hasChanged = true;
                 this.selectedIndex = index;
-                this.$emit('selected', index);
+                this.$emit('changed', index);
             };
 
             let defaultPrevented = false;
