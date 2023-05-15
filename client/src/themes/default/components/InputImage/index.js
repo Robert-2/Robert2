@@ -1,5 +1,5 @@
 import './index.scss';
-import { ALLOWED_IMAGE_TYPES } from '@/globals/constants';
+import { defineComponent } from '@vue/composition-api';
 import config from '@/globals/config';
 import formatBytes from '@/utils/formatBytes';
 import Button from '@/themes/default/components/Button';
@@ -8,7 +8,7 @@ import Progressbar from '@/themes/default/components/Progressbar';
 import emptyImageSrc from './assets/empty-image.png';
 
 // @vue/component
-export default {
+const InputImage = defineComponent({
     name: 'InputImage',
     props: {
         value: {
@@ -71,7 +71,7 @@ export default {
             const { type, size } = file;
             const { $t: __ } = this;
 
-            if (!ALLOWED_IMAGE_TYPES.includes(type)) {
+            if (!config.authorizedImageTypes.includes(type)) {
                 this.$toasted.error(__('errors.file-not-a-valid-image'));
                 return;
             }
@@ -145,4 +145,6 @@ export default {
             </div>
         );
     },
-};
+});
+
+export default InputImage;

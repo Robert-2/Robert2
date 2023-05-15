@@ -1,4 +1,3 @@
-import { AUTHORIZED_FILE_TYPES } from '@/globals/constants';
 import config from '@/globals/config';
 
 export enum FileError {
@@ -13,7 +12,7 @@ export enum FileError {
 }
 
 export const getFileError = (file: File): FileError | null => {
-    if (!AUTHORIZED_FILE_TYPES.includes(file.type)) {
+    if (!config.authorizedFileTypes.includes(file.type)) {
         return FileError.TYPE_NOT_ALLOWED;
     }
 

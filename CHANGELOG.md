@@ -4,6 +4,12 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.21.1 (2023-05-15)
+
+- Corrige les inventaires de retour qui n'affichaient plus la liste du matériel.
+- Corrige la prise en charge de la configuration des fichiers autorisés à l'upload côté Front (Premium #313).
+- Corrige le comportement des onglets dans les fiches matériel et technicien.
+
 ## 0.21.0 (2023-05-11)
 
 - Dans la liste du matériel, le champ "Afficher les quantités restantes à date" est pré-rempli avec
