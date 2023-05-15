@@ -97,11 +97,14 @@ class Config
             'application/pdf',
             'application/zip',
             'application/x-rar-compressed',
+            'application/gzip',
             'image/jpeg',
             'image/png',
             'image/webp',
+            'image/svg+xml',
             'text/plain',
             'text/csv',
+            'text/xml',
             'application/vnd.oasis.opendocument.spreadsheet',
             'application/vnd.ms-excel',
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -113,6 +116,7 @@ class Config
             'image/jpeg',
             'image/png',
             'image/webp',
+            'image/svg+xml',
         ],
         // - Couleurs personnalisées à utiliser dans le colorpicker de l'application.
         //   (à la place des propositions par défaut, doit être un tableau avec des codes hexadécimaux ou `null`)

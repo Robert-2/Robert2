@@ -1,6 +1,5 @@
 import './index.scss';
 import { defineComponent } from '@vue/composition-api';
-import { AUTHORIZED_FILE_TYPES } from '@/globals/constants';
 import config from '@/globals/config';
 import formatBytes from '@/utils/formatBytes';
 import Button from '@/themes/default/components/Button';
@@ -143,7 +142,7 @@ const FileManagerDropZone = defineComponent({
                     multiple
                     type="file"
                     ref="inputFileRef"
-                    accept={AUTHORIZED_FILE_TYPES.join(',')}
+                    accept={config.authorizedFileTypes.join(',')}
                     class="FileManagerDropZone__file-input"
                     onChange={handleAddFiles}
                 />
