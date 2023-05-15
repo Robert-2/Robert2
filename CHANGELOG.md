@@ -4,6 +4,10 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.21.1 (UNRELEASED)
+
+- Corrige les inventaires de retour qui n'affichaient plus la liste du matériel.
+
 ## 0.21.0 (2023-05-11)
 
 - Dans la liste du matériel, le champ "Afficher les quantités restantes à date" est pré-rempli avec

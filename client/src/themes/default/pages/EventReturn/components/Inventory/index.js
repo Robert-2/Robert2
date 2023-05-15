@@ -29,7 +29,7 @@ const EventReturnInventory = defineComponent({
         },
 
         awaitedMaterials() {
-            return this.materials.map(({ pivot, ...material }) => ({
+            return this.event.materials.map(({ pivot, ...material }) => ({
                 ...material,
                 awaited_quantity: pivot.quantity,
             }));
