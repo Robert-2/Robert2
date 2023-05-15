@@ -119,7 +119,7 @@ class BookingController extends BaseController
             Event::TYPE => Event::query()
                 ->where(function ($query) {
                     $query
-                        ->where('end_date', '>=', Carbon::tomorrow())
+                        ->where('end_date', '>=', Carbon::today())
                         ->orWhere(function ($query) {
                             $query
                                 ->where('end_date', '<=', Carbon::today())

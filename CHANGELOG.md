@@ -4,6 +4,11 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.21.2 (2023-05-15)
+
+- Corrige l'édition des modèles de liste (Premium).
+- Corrige la modification du matériel des événements qui se terminent le jour courant.
+
 ## 0.21.1 (2023-05-15)
 
 - Corrige les inventaires de retour qui n'affichaient plus la liste du matériel.
