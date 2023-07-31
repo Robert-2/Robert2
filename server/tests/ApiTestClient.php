@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\Tests;
+namespace Loxya\Tests;
 
 use Psr\Http\Message\StreamInterface as Body;
 use Psr\Http\Message\UploadedFileInterface;
-use Robert2\API\App;
-use Robert2\API\Http\Request;
+use Loxya\App;
+use Loxya\Http\Request;
 use Slim\Http\Response;
 use Slim\Psr7\Factory\ServerRequestFactory;
 

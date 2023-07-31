@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Errors\Renderer;
+namespace Loxya\Errors\Renderer;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Robert2\API\Errors\Enums\ApiErrorCode;
-use Robert2\API\Errors\Exception\ApiException;
-use Robert2\API\Errors\Exception\ValidationException;
+use Loxya\Errors\Enums\ApiErrorCode;
+use Loxya\Errors\Exception\ApiException;
+use Loxya\Errors\Exception\ValidationException;
 use Slim\Exception\HttpException;
 use Slim\Exception\HttpMethodNotAllowedException;
 use Slim\Interfaces\ErrorRendererInterface;

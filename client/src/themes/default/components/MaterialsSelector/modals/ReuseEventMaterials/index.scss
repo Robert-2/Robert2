@@ -1,0 +1,79 @@
+@use '~@/themes/default/style/globals';
+
+.ReuseEventMaterials {
+    &__header {
+        display: flex;
+        align-items: center;
+        padding: 0.7rem 1rem;
+        background-color: globals.$bg-color-main-header;
+        gap: globals.$spacing-medium;
+
+        &__title {
+            flex: 1;
+            overflow: hidden;
+            margin: 0;
+            font-size: 1.3rem;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        &__close-button {
+            flex: 0 0 auto;
+        }
+    }
+
+    &__body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: globals.$spacing-large globals.$spacing-medium;
+
+        &--has-selected {
+            .SearchEvents {
+                display: none;
+            }
+        }
+    }
+
+    &__footer {
+        display: flex;
+        justify-content: center;
+        padding: 1.5rem globals.$spacing-medium;
+        background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    //
+    // - Contenu
+    //
+
+    .SearchEvents {
+        overflow-y: auto;
+        width: 100%;
+        max-height: 550px;
+    }
+
+    &__selected {
+        padding: 0 globals.$spacing-medium;
+
+        &__description {
+            margin-bottom: globals.$spacing-large;
+        }
+
+        .MaterialsSorted__categories {
+            overflow-y: auto;
+            min-width: 650px;
+            max-height: 500px;
+        }
+
+        &__warning {
+            margin-top: globals.$spacing-large;
+            color: globals.$text-warning-color;
+            font-size: 1.2rem;
+
+            .fas {
+                margin-right: globals.$spacing-small;
+            }
+        }
+    }
+}

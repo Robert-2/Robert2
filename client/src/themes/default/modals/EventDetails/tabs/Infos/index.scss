@@ -7,21 +7,44 @@
     &__summary {
         display: flex;
         flex-wrap: wrap;
-        margin-bottom: 15px;
+        justify-content: space-between;
+        margin-bottom: 10px;
         font-size: 1.1rem;
-        gap: globals.$content-padding-small-horizontal;
+        gap: globals.$spacing-small;
 
-        &__beneficiary,
+        &__beneficiaries,
         &__location,
-        &__technicians,
-        &__creator {
-            flex: 1 0 auto;
+        &__people {
+            flex: 0 0 auto;
             max-width: 100%;
+            margin-bottom: 10px;
         }
 
-        &__creator {
-            &__icon {
-                margin-right: 0.3rem;
+        &__beneficiaries {
+            &__list {
+                margin-bottom: 10px;
+            }
+        }
+
+        &__people {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        &__author {
+            margin: 0;
+
+            @include globals.icon('user') {
+                width: 20px;
+            }
+        }
+
+        &__preparer {
+            margin: 0;
+
+            @include globals.icon('dolly') {
+                width: 25px;
             }
         }
     }
@@ -32,25 +55,15 @@
         font-size: 1.2rem;
         text-align: center;
 
-        &__icon {
-            margin-right: 0.5rem;
+        @include globals.icon('exclamation-triangle') {
+            width: 30px;
         }
-    }
-
-    &__beneficiary-details {
-        margin: 0 0 15px;
     }
 
     &__description,
     &__confirmation {
-        margin-bottom: globals.$content-padding-large-vertical;
+        margin-bottom: globals.$spacing-large;
         font-size: 1.2rem;
-
-        &__icon {
-            width: 1.5rem;
-            margin-right: 0.5rem;
-            text-align: center;
-        }
     }
 
     &__description {
@@ -58,24 +71,26 @@
         color: globals.$text-soft-color;
         line-height: 1.5;
         white-space: pre-wrap;
+
+        @include globals.icon('clipboard') {
+            width: 30px;
+        }
     }
 
     &__confirmation {
         color: globals.$text-warning-color;
         text-align: center;
 
+        @include globals.icon('hourglass-half') {
+            width: 30px;
+        }
+
         &--confirmed {
             color: globals.$text-success-color;
-        }
-    }
 
-    &__no-material {
-        color: globals.$text-danger-color;
-        font-size: 1.2rem;
-        text-align: center;
-
-        &__icon {
-            margin-right: 5px;
+            @include globals.icon('check') {
+                width: 30px;
+            }
         }
     }
 }

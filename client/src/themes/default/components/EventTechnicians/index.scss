@@ -7,9 +7,25 @@
         color: globals.$text-danger-color;
     }
 
-    &__icon {
-        width: 1.5rem;
-        margin-right: 0.5rem;
-        text-align: center;
+    &__list {
+        &__label {
+            margin-right: globals.$spacing-thin;
+
+            &__icon {
+                width: 1.5rem;
+                margin-right: globals.$spacing-thin;
+                text-align: center;
+            }
+        }
+
+        &__item + &__item {
+            padding-left: globals.$spacing-thin;
+
+            &::before {
+                content: '|';
+                margin-right: globals.$spacing-thin;
+                color: globals.$text-base-color;
+            }
+        }
     }
 }

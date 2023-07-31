@@ -42,7 +42,7 @@
         height: 100%;
 
         &__message {
-            margin-bottom: globals.$content-padding-large-vertical;
+            margin-bottom: globals.$spacing-large;
             font-size: 1.2rem;
             line-height: 1.5;
             text-align: center;
@@ -52,6 +52,6 @@
 
     &__footer {
         flex: 0;
-        padding: globals.$content-padding-large-vertical 0;
+        padding: globals.$spacing-large 0;
     }
 }

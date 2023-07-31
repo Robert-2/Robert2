@@ -1,17 +1,17 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Models;
+namespace Loxya\Models;
 
 use Adbar\Dot as DotArray;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Robert2\API\Contracts\Serializable;
-use Robert2\API\Errors\Exception\ValidationException;
-use Robert2\API\Models\Traits\Serializer;
+use Loxya\Contracts\Serializable;
+use Loxya\Errors\Exception\ValidationException;
+use Loxya\Models\Traits\Serializer;
 use Respect\Validation\Validator as V;
-use Robert2\API\Models\Traits\SoftDeletable;
+use Loxya\Models\Traits\SoftDeletable;
 
 /**
  * Technicien.
@@ -51,24 +51,31 @@ final class Technician extends BaseModel implements Serializable
 
     protected $table = 'technicians';
 
-    protected $allowedSearchFields = [
-        'everywhere',
-        'full_name',
-        'nickname',
-        'email',
-    ];
-    protected $searchField = 'everywhere';
+    protected $orderField = 'full_name';
 
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
 
         $this->validation = [
-            // Note: Le champ `person_id` est requis mais peuplé après coup par la relation
-            //       d'ou le `optional` pour ne valider que si il est directement spécifié.
-            'person_id' => V::optional(V::numericVal()),
+            'person_id' => V::custom([$this, 'checkPersonId']),
             'nickname' => V::optional(V::length(null, 30)),
         ];
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Validation
+    // -
+    // ------------------------------------------------------
+
+    public function checkPersonId($value)
+    {
+        // - L'identifiant de la personne n'est pas encore défini, on skip.
+        if (!$this->exists && $value === null) {
+            return true;
+        }
+        return Person::staticExists($value);
     }
 
     // ------------------------------------------------------
@@ -119,6 +126,7 @@ final class Technician extends BaseModel implements Serializable
 
     protected $casts = [
         'nickname' => 'string',
+        'is_preparer' => 'boolean',
         'person_id' => 'integer',
         'note' => 'string',
     ];
@@ -280,77 +288,52 @@ final class Technician extends BaseModel implements Serializable
 
     // ------------------------------------------------------
     // -
-    // -    Search / Order related
+    // -    Query Scopes
     // -
     // ------------------------------------------------------
 
-    protected function _getOrderBy(?Builder $builder = null): Builder
+    public function scopeSearch(Builder $query, string $term): Builder
     {
-        $builder = $builder ?? static::query();
-
-        $order = $this->orderField;
-        $direction = $this->orderDirection ?: 'asc';
-
-        if (!in_array($order, ['full_name', 'email', 'nickname'], true)) {
-            $order = 'full_name';
+        $term = trim($term);
+        if (strlen($term) < 2) {
+            throw new \InvalidArgumentException("The term must contain more than two characters.");
         }
 
-        if (!in_array($order, ['full_name', 'email'], true)) {
-            return $builder->orderBy($order, $direction);
+        $term = sprintf('%%%s%%', addcslashes($term, '%_'));
+        return $query->where(function (Builder $query) use ($term) {
+            $query
+                ->where(function (Builder $subQuery) use ($term) {
+                    $subQuery->where('nickname', 'LIKE', $term);
+                })
+                ->orWhereHas('person', function (Builder $subQuery) use ($term) {
+                    $subQuery
+                        ->where('first_name', 'LIKE', $term)
+                        ->orWhere('last_name', 'LIKE', $term)
+                        ->orWhereRaw('CONCAT(last_name, \' \', first_name) LIKE ?', [$term])
+                        ->orWhereRaw('CONCAT(first_name, \' \', last_name) LIKE ?', [$term])
+                        ->orWhere('email', 'LIKE', $term);
+                });
+        });
+    }
+
+    public function scopeCustomOrderBy(Builder $query, string $column, string $direction = 'asc'): Builder
+    {
+        if (!in_array($column, ['full_name', 'email', 'nickname'], true)) {
+            throw new \InvalidArgumentException("Invalid order field.");
         }
 
-        if ($order === 'full_name') {
+        if (!in_array($column, ['full_name', 'email'], true)) {
+            return $query->orderBy($column, $direction);
+        }
+
+        if ($column === 'full_name') {
             $subQuery = Person::selectRaw('CONCAT(last_name, \' \', first_name) as full_name');
         } else {
             $subQuery = Person::select('email');
         }
-
         $subQuery = $subQuery->whereColumn('id', 'technicians.person_id');
 
-        /** @var Builder $builder */
-        return $builder->orderBy($subQuery, $direction);
-    }
-
-    protected function _setSearchConditions(Builder $builder): Builder
-    {
-        if (!$this->searchField || !$this->searchTerm) {
-            return $builder;
-        }
-        $term = sprintf('%%%s%%', addcslashes($this->searchTerm, '%_'));
-
-        if ($this->searchField === 'full_name') {
-            return $builder->whereHas('person', function (Builder $query) use ($term) {
-                $query
-                    ->where('first_name', 'LIKE', $term)
-                    ->orWhere('last_name', 'LIKE', $term)
-                    ->orWhereRaw('CONCAT(last_name, \' \', first_name) LIKE ?', [$term])
-                    ->orWhereRaw('CONCAT(first_name, \' \', last_name) LIKE ?', [$term]);
-            });
-        }
-
-        if ($this->searchField === 'email') {
-            return $builder->whereRelation('person', 'email', 'LIKE', $term);
-        }
-
-        if ($this->searchField === 'everywhere') {
-            $group = function (Builder $query) use ($term) {
-                $query
-                    ->where(function (Builder $subQuery) use ($term) {
-                        $subQuery->where('nickname', 'LIKE', $term);
-                    })
-                    ->orWhereHas('person', function (Builder $subQuery) use ($term) {
-                        $subQuery
-                            ->where('first_name', 'LIKE', $term)
-                            ->orWhere('last_name', 'LIKE', $term)
-                            ->orWhereRaw('CONCAT(last_name, \' \', first_name) LIKE ?', [$term])
-                            ->orWhereRaw('CONCAT(first_name, \' \', last_name) LIKE ?', [$term])
-                            ->orWhere('email', 'LIKE', $term);
-                    });
-            };
-            return $builder->where($group);
-        }
-
-        return $builder->where($this->searchField, 'LIKE', $term);
+        return $query->orderBy($subQuery, $direction);
     }
 
     // ------------------------------------------------------

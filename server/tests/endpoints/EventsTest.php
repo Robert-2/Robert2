@@ -1,18 +1,18 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\Tests;
+namespace Loxya\Tests;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
-use Robert2\API\Models\Event;
-use Robert2\Support\Arr;
-use Robert2\Support\Filesystem\UploadedFile;
+use Loxya\Models\Event;
+use Loxya\Support\Arr;
+use Loxya\Support\Filesystem\UploadedFile;
 
 final class EventsTest extends ApiTestCase
 {
-    public static function data(int $id, string $format = Event::SERIALIZE_DEFAULT)
+    public static function data(?int $id, string $format = Event::SERIALIZE_DEFAULT)
     {
         $events = new Collection([
             [
@@ -46,6 +46,7 @@ final class EventsTest extends ApiTestCase
                 'is_return_inventory_done' => true,
                 'has_missing_materials' => null,
                 'has_not_returned_materials' => false,
+                'categories' => [1, 2],
                 'parks' => [1],
                 'technicians' => [
                     [
@@ -73,9 +74,6 @@ final class EventsTest extends ApiTestCase
                 'materials' => [
                     array_merge(MaterialsTest::data(1), [
                         'pivot' => [
-                            'id' => 1,
-                            'event_id' => 1,
-                            'material_id' => 1,
                             'quantity' => 1,
                             'quantity_returned' => 1,
                             'quantity_returned_broken' => 0,
@@ -83,9 +81,6 @@ final class EventsTest extends ApiTestCase
                     ]),
                     array_merge(MaterialsTest::data(2), [
                         'pivot' => [
-                            'id' => 2,
-                            'event_id' => 1,
-                            'material_id' => 2,
                             'quantity' => 1,
                             'quantity_returned' => 1,
                             'quantity_returned_broken' => 0,
@@ -93,9 +88,6 @@ final class EventsTest extends ApiTestCase
                     ]),
                     array_merge(MaterialsTest::data(4), [
                         'pivot' => [
-                            'id' => 3,
-                            'event_id' => 1,
-                            'material_id' => 4,
                             'quantity' => 1,
                             'quantity_returned' => 1,
                             'quantity_returned_broken' => 1,
@@ -108,9 +100,8 @@ final class EventsTest extends ApiTestCase
                 'estimates' => [
                     EstimatesTest::data(1),
                 ],
-                'user_id' => 1,
-                'user' => UsersTest::data(1),
                 'note' => null,
+                'author' => UsersTest::data(1),
                 'created_at' => '2018-12-01 12:50:45',
                 'updated_at' => '2018-12-05 08:31:21',
             ],
@@ -145,13 +136,11 @@ final class EventsTest extends ApiTestCase
                 'has_not_returned_materials' => true,
                 'is_return_inventory_started' => true,
                 'is_return_inventory_done' => true,
+                'categories' => [1],
                 'parks' => [1],
                 'materials' => [
                     array_merge(MaterialsTest::data(1), [
                         'pivot' => [
-                            'id' => 4,
-                            'event_id' => 2,
-                            'material_id' => 1,
                             'quantity' => 3,
                             'quantity_returned' => 2,
                             'quantity_returned_broken' => 0,
@@ -159,9 +148,6 @@ final class EventsTest extends ApiTestCase
                     ]),
                     array_merge(MaterialsTest::data(2), [
                         'pivot' => [
-                            'id' => 5,
-                            'event_id' => 2,
-                            'material_id' => 2,
                             'quantity' => 2,
                             'quantity_returned' => 2,
                             'quantity_returned_broken' => 0,
@@ -174,9 +160,8 @@ final class EventsTest extends ApiTestCase
                 'technicians' => [],
                 'estimates' => [],
                 'invoices' => [],
-                'user_id' => 1,
-                'user' => UsersTest::data(1),
                 'note' => "Il faudra envoyer le matériel sur Lyon avant l'avant-veille.",
+                'author' => UsersTest::data(1),
                 'created_at' => '2018-12-16 12:50:45',
                 'updated_at' => null,
             ],
@@ -199,13 +184,11 @@ final class EventsTest extends ApiTestCase
                 'is_confirmed' => false,
                 'is_return_inventory_started' => true,
                 'is_return_inventory_done' => true,
+                'categories' => [1, 2],
                 'parks' => [1],
                 'materials' => [
                     array_merge(MaterialsTest::data(3), [
                         'pivot' => [
-                            'id' => 6,
-                            'event_id' => 3,
-                            'material_id' => 3,
                             'quantity' => 10,
                             'quantity_returned' => 0,
                             'quantity_returned_broken' => 0,
@@ -213,9 +196,6 @@ final class EventsTest extends ApiTestCase
                     ]),
                     array_merge(MaterialsTest::data(2), [
                         'pivot' => [
-                            'id' => 7,
-                            'event_id' => 3,
-                            'material_id' => 2,
                             'quantity' => 1,
                             'quantity_returned' => 0,
                             'quantity_returned_broken' => 0,
@@ -223,9 +203,6 @@ final class EventsTest extends ApiTestCase
                     ]),
                     array_merge(MaterialsTest::data(5), [
                         'pivot' => [
-                            'id' => 8,
-                            'event_id' => 3,
-                            'material_id' => 5,
                             'quantity' => 12,
                             'quantity_returned' => 0,
                             'quantity_returned_broken' => 0,
@@ -234,8 +211,7 @@ final class EventsTest extends ApiTestCase
                 ],
                 'beneficiaries' => [],
                 'technicians' => [],
-                'user_id' => 1,
-                'user' => UsersTest::data(1),
+                'author' => UsersTest::data(1),
                 'note' => null,
                 'created_at' => '2018-12-14 12:20:00',
                 'updated_at' => '2018-12-14 12:30:00',
@@ -259,13 +235,11 @@ final class EventsTest extends ApiTestCase
                 'is_return_inventory_done' => false,
                 'has_missing_materials' => null,
                 'has_not_returned_materials' => null,
+                'categories' => [1, 3],
                 'parks' => [1, 2],
                 'materials' => [
                     array_merge(MaterialsTest::data(1), [
                         'pivot' => [
-                            'id' => 9,
-                            'event_id' => 4,
-                            'material_id' => 1,
                             'quantity' => 1,
                             'quantity_returned' => 0,
                             'quantity_returned_broken' => 0,
@@ -273,9 +247,6 @@ final class EventsTest extends ApiTestCase
                     ]),
                     array_merge(MaterialsTest::data(6), [
                         'pivot' => [
-                            'id' => 10,
-                            'event_id' => 4,
-                            'material_id' => 6,
                             'quantity' => 2,
                             'quantity_returned' => 1,
                             'quantity_returned_broken' => 0,
@@ -283,9 +254,6 @@ final class EventsTest extends ApiTestCase
                     ]),
                     array_merge(MaterialsTest::data(7), [
                         'pivot' => [
-                            'id' => 11,
-                            'event_id' => 4,
-                            'material_id' => 7,
                             'quantity' => 3,
                             'quantity_returned' => 0,
                             'quantity_returned_broken' => 0,
@@ -294,9 +262,8 @@ final class EventsTest extends ApiTestCase
                 ],
                 'beneficiaries' => [],
                 'technicians' => [],
-                'user_id' => 1,
-                'user' => UsersTest::data(1),
                 'note' => "Penser à contacter Cap Canaveral fin janvier pour booker le pas de tir.",
+                'author' => UsersTest::data(1),
                 'created_at' => '2019-01-01 20:12:00',
                 'updated_at' => null,
             ],
@@ -319,13 +286,11 @@ final class EventsTest extends ApiTestCase
                 'is_return_inventory_done' => false,
                 'has_missing_materials' => null,
                 'has_not_returned_materials' => null,
+                'categories' => [4],
                 'parks' => [1],
                 'materials' => [
                     array_merge(MaterialsTest::data(8), [
                         'pivot' => [
-                            'id' => 12,
-                            'event_id' => 5,
-                            'material_id' => 8,
                             'quantity' => 2,
                             'quantity_returned' => null,
                             'quantity_returned_broken' => null,
@@ -336,9 +301,8 @@ final class EventsTest extends ApiTestCase
                     BeneficiariesTest::data(1),
                 ],
                 'technicians' => [],
-                'user_id' => 1,
-                'user' => UsersTest::data(1),
                 'note' => null,
+                'author' => UsersTest::data(1),
                 'created_at' => '2019-12-25 14:59:40',
                 'updated_at' => null,
             ],
@@ -361,21 +325,103 @@ final class EventsTest extends ApiTestCase
                 'is_return_inventory_done' => false,
                 'has_missing_materials' => null,
                 'has_not_returned_materials' => null,
+                'categories' => [],
                 'parks' => [],
                 'materials' => [],
                 'beneficiaries' => [],
                 'technicians' => [],
-                'user_id' => 1,
-                'user' => UsersTest::data(1),
                 'note' => null,
+                'author' => UsersTest::data(1),
                 'created_at' => '2019-02-01 12:00:00',
                 'updated_at' => '2019-02-01 12:05:00',
+            ],
+            [
+                'id' => 7,
+                'reference' => null,
+                'title' => 'Médiévales de Machin-le-chateau 2023',
+                'description' => null,
+                'location' => 'Machin-le-chateau',
+                'start_date' => '2023-05-25 00:00:00',
+                'end_date' => '2023-05-28 23:59:59',
+                'color' => null,
+                'duration' => 4,
+                'degressive_rate' => '3.25',
+                'discount_rate' => '0',
+                'vat_rate' => '20.00',
+                'currency' => 'EUR',
+                'daily_total_without_discount' => '1031.88',
+                'daily_total_discountable' => '31.90',
+                'daily_total_discount' => '0.00',
+                'daily_total_without_taxes' => '1031.88',
+                'daily_total_taxes' => '206.38',
+                'daily_total_with_taxes' => '1238.26',
+                'total_without_taxes' => '3353.61',
+                'total_taxes' => '670.72',
+                'total_with_taxes' => '4024.33',
+                'total_replacement' => '71756.00',
+                'is_archived' => false,
+                'is_billable' => true,
+                'is_confirmed' => true,
+                'is_return_inventory_started' => true,
+                'is_return_inventory_done' => false,
+                'has_missing_materials' => null,
+                'has_not_returned_materials' => null,
+                'categories' => [1, 2, 3],
+                'parks' => [1, 2],
+                'materials' => [
+                    array_merge(MaterialsTest::data(1), [
+                        'pivot' => [
+                            'quantity' => 2,
+                            'quantity_returned' => 1,
+                            'quantity_returned_broken' => 0,
+                        ],
+                    ]),
+                    array_merge(MaterialsTest::data(6), [
+                        'pivot' => [
+                            'quantity' => 2,
+                            'quantity_returned' => 2,
+                            'quantity_returned_broken' => 1,
+                        ],
+                    ]),
+                    array_merge(MaterialsTest::data(7), [
+                        'pivot' => [
+                            'quantity' => 1,
+                            'quantity_returned' => null,
+                            'quantity_returned_broken' => null,
+                        ],
+                    ]),
+                    array_merge(MaterialsTest::data(4), [
+                        'pivot' => [
+                            'quantity' => 2,
+                            'quantity_returned' => 1,
+                            'quantity_returned_broken' => 1,
+                        ],
+                    ]),
+                ],
+                'beneficiaries' => [],
+                'technicians' => [
+                    [
+                        'id' => 3,
+                        'event_id' => 7,
+                        'technician_id' => 2,
+                        'start_time' => '2023-05-25 00:00:00',
+                        'end_time' => '2023-05-28 23:59:59',
+                        'position' => 'Ingénieur du son',
+                        'technician' => TechniciansTest::data(2),
+                    ],
+                ],
+                'invoices' => [],
+                'estimates' => [],
+                'note' => null,
+                'author' => UsersTest::data(1),
+                'created_at' => '2022-05-29 18:00:00',
+                'updated_at' => '2022-05-29 18:05:00',
             ],
         ]);
 
         $events = match ($format) {
-            Event::SERIALIZE_DEFAULT => $events->map(fn($reservation) => (
-                Arr::only($reservation, [
+            Event::SERIALIZE_DEFAULT => $events->map(fn($event) => (
+                Arr::only($event, [
                     'id',
                     'title',
                     'reference',
@@ -388,17 +434,16 @@ final class EventsTest extends ApiTestCase
                     'is_billable',
                     'is_archived',
                     'is_return_inventory_done',
-                    'user_id',
                     'note',
                     'created_at',
                     'updated_at',
                 ])
             )),
-            Event::SERIALIZE_DETAILS => $events->map(fn($reservation) => (
-                Arr::except($reservation, ['parks'])
+            Event::SERIALIZE_DETAILS => $events->map(fn($event) => (
+                Arr::except($event, ['parks', 'categories'])
             )),
-            Event::SERIALIZE_SUMMARY => $events->map(fn($reservation) => (
-                Arr::only($reservation, [
+            Event::SERIALIZE_SUMMARY => $events->map(fn($event) => (
+                Arr::only($event, [
                     'id',
                     'title',
                     'start_date',
@@ -406,17 +451,18 @@ final class EventsTest extends ApiTestCase
                     'location',
                 ])
             )),
-            Event::SERIALIZE_BOOKING_DEFAULT => $events->map(fn($reservation) => (
-                Arr::except($reservation, ['parks'])
+            Event::SERIALIZE_BOOKING_DEFAULT => $events->map(fn($event) => (
+                Arr::except($event, ['parks', 'categories'])
             )),
-            Event::SERIALIZE_BOOKING_SUMMARY => $events->map(fn($reservation) => (
-                Arr::only($reservation, [
+            Event::SERIALIZE_BOOKING_SUMMARY => $events->map(fn($event) => (
+                Arr::only($event, [
                     'id',
                     'title',
                     'reference',
                     'description',
                     'start_date',
                     'end_date',
+                    'duration',
                     'color',
                     'location',
                     'beneficiaries',
@@ -427,8 +473,8 @@ final class EventsTest extends ApiTestCase
                     'is_return_inventory_done',
                     'has_missing_materials',
                     'has_not_returned_materials',
-                    'user_id',
                     'parks',
+                    'categories',
                     'created_at',
                     'updated_at',
                 ])
@@ -447,13 +493,18 @@ final class EventsTest extends ApiTestCase
 
     public function testGetOneEvent()
     {
-        $this->client->get('/api/events/1');
-        $this->assertStatusCode(StatusCode::STATUS_OK);
-        $this->assertResponseData(self::data(1, Event::SERIALIZE_DETAILS));
+        $ids = array_column(static::data(null), 'id');
+        foreach ($ids as $id) {
+            $this->client->get(sprintf('/api/events/%d', $id));
+            $this->assertStatusCode(StatusCode::STATUS_OK);
+            $this->assertResponseData(self::data($id, Event::SERIALIZE_DETAILS));
+        }
     }
 
     public function testCreateEvent()
     {
+        Carbon::setTestNow(Carbon::create(2023, 05, 20, 17, 20, 11));
+
         // - Test avec des données simples
         $data = [
             'title' => "Un nouvel événement",
@@ -464,20 +515,54 @@ final class EventsTest extends ApiTestCase
             'is_archived' => false,
             'location' => 'Avignon',
         ];
+        $expected = [
+            'id' => 8,
+            'reference' => null,
+            'title' => "Un nouvel événement",
+            'description' => null,
+            'location' => "Avignon",
+            'start_date' => '2019-09-01 00:00:00',
+            'end_date' => '2019-09-03 23:59:59',
+            'color' => null,
+            'duration' => 3,
+            'degressive_rate' => '2.50',
+            'discount_rate' => '0',
+            'vat_rate' => '20.00',
+            'currency' => 'EUR',
+            'daily_total_without_discount' => '0.00',
+            'daily_total_discountable' => '0.00',
+            'daily_total_discount' => '0.00',
+            'daily_total_without_taxes' => '0.00',
+            'daily_total_taxes' => '0.00',
+            'daily_total_with_taxes' => '0.00',
+            'total_without_taxes' => '0.00',
+            'total_taxes' => '0.00',
+            'total_with_taxes' => '0.00',
+            'total_replacement' => '0.00',
+            'is_confirmed' => true,
+            'is_archived' => false,
+            'is_billable' => true,
+            'is_return_inventory_started' => false,
+            'is_return_inventory_done' => false,
+            'has_missing_materials' => null,
+            'has_not_returned_materials' => null,
+            'technicians' => [],
+            'beneficiaries' => [],
+            'materials' => [],
+            'invoices' => [],
+            'estimates' => [],
+            'note' => null,
+            'author' => UsersTest::data(1),
+            'created_at' => '2023-05-20 17:20:11',
+            'updated_at' => '2023-05-20 17:20:11',
+        ];
         $this->client->post('/api/events', $data);
         $this->assertStatusCode(StatusCode::STATUS_CREATED);
-        $response = $this->_getResponseAsArray();
-        $this->assertEquals(7, $response['id']);
-        $this->assertEquals(1, $response['user_id']);
-        $this->assertEquals("Un nouvel événement", $response['title']);
-        $this->assertEmpty($response['beneficiaries']);
-        $this->assertEmpty($response['technicians']);
-        $this->assertEmpty($response['materials']);
+        $this->assertResponseData($expected);
 
-        // - Test avec des données qui contiennent les sous-entités (hasMany)
-        $dataWithChildren = array_merge($data, [
+        // - Test avec des données qui contiennent les sous-entités.
+        $this->client->post('/api/events', array_merge($data, [
             'title' => "Encore un événement",
-            'user_id' => 2,
             'beneficiaries' => [3],
             'technicians' => [
                 [
@@ -498,31 +583,68 @@ final class EventsTest extends ApiTestCase
                 ['id' => 2, 'quantity' => 1],
                 ['id' => 4, 'quantity' => 2],
             ],
-        ]);
-        $this->client->post('/api/events', $dataWithChildren);
+        ]));
         $this->assertStatusCode(StatusCode::STATUS_CREATED);
-        $response = $this->_getResponseAsArray();
-        $this->assertEquals(8, $response['id']);
-        $this->assertEquals(2, $response['user_id']);
-        $this->assertEquals("Encore un événement", $response['title']);
-        $this->assertCount(1, $response['beneficiaries']);
-        $this->assertCount(2, $response['technicians']);
-        $this->assertNull($response['technicians'][0]['position']);
-        $this->assertEquals('Régie générale', $response['technicians'][1]['position']);
-        $this->assertCount(3, $response['materials']);
-
-        $expectedData = [
-            ['id' => 1, 'quantity' => 1],
-            ['id' => 2, 'quantity' => 1],
-            ['id' => 4, 'quantity' => 2],
-        ];
-        foreach ($expectedData as $index => $expected) {
-            $this->assertArrayHasKey($index, $response['materials']);
-            $resultMaterial = $response['materials'][$index];
-
-            $this->assertEquals($expected['id'], $resultMaterial['id']);
-            $this->assertEquals($expected['quantity'], $resultMaterial['pivot']['quantity']);
-        }
+        $this->assertResponseData(array_replace($expected, [
+            'id' => 9,
+            'title' => "Encore un événement",
+            'daily_total_without_taxes' => '357.40',
+            'daily_total_discountable' => '57.40',
+            'daily_total_discount' => '0.00',
+            'daily_total_without_discount' => '357.40',
+            'daily_total_taxes' => '71.48',
+            'daily_total_with_taxes' => '428.88',
+            'total_without_taxes' => '893.50',
+            'total_taxes' => '178.70',
+            'total_with_taxes' => '1072.20',
+            'total_replacement' => '19867.90',
+            'beneficiaries' => [
+                BeneficiariesTest::data(3),
+            ],
+            'technicians' => [
+                [
+                    'id' => 5,
+                    'event_id' => 9,
+                    'technician_id' => 2,
+                    'start_time' => '2019-09-01 08:00:00',
+                    'end_time' => '2019-09-03 22:00:00',
+                    'position' => null,
+                    'technician' => TechniciansTest::data(2),
+                ],
+                [
+                    'id' => 4,
+                    'event_id' => 9,
+                    'technician_id' => 1,
+                    'start_time' => '2019-09-01 10:00:00',
+                    'end_time' => '2019-09-03 20:00:00',
+                    'position' => 'Régie générale',
+                    'technician' => TechniciansTest::data(1),
+                ],
+            ],
+            'materials' => [
+                array_merge(MaterialsTest::data(1), [
+                    'pivot' => [
+                        'quantity' => 1,
+                        'quantity_returned' => null,
+                        'quantity_returned_broken' => null,
+                    ],
+                ]),
+                array_merge(MaterialsTest::data(2), [
+                    'pivot' => [
+                        'quantity' => 1,
+                        'quantity_returned' => null,
+                        'quantity_returned_broken' => null,
+                    ],
+                ]),
+                array_merge(MaterialsTest::data(4), [
+                    'pivot' => [
+                        'quantity' => 2,
+                        'quantity_returned' => null,
+                        'quantity_returned_broken' => null,
+                    ],
+                ]),
+            ],
+        ]));
     }
 
     public function testUpdateEventNoData()
@@ -545,7 +667,6 @@ final class EventsTest extends ApiTestCase
         // - Test avec des données simples
         $data = [
             'id' => 1,
-            'user_id' => 1,
             'title' => "Premier événement modifié",
             'description' => null,
             'start_date' => '2018-12-17 00:00:00',
@@ -604,9 +725,6 @@ final class EventsTest extends ApiTestCase
                 'materials' => [
                     array_merge(MaterialsTest::data(1), [
                         'pivot' => [
-                            'id' => 1,
-                            'event_id' => 1,
-                            'material_id' => 1,
                             'quantity' => 2,
                             'quantity_returned' => 1,
                             'quantity_returned_broken' => 0,
@@ -614,9 +732,6 @@ final class EventsTest extends ApiTestCase
                     ]),
                     array_merge(MaterialsTest::data(2), [
                         'pivot' => [
-                            'id' => 2,
-                            'event_id' => 1,
-                            'material_id' => 2,
                             'quantity' => 4,
                             'quantity_returned' => 1,
                             'quantity_returned_broken' => 0,
@@ -624,9 +739,6 @@ final class EventsTest extends ApiTestCase
                     ]),
                     array_merge(MaterialsTest::data(4), [
                         'pivot' => [
-                            'id' => 3,
-                            'event_id' => 1,
-                            'material_id' => 4,
                             'quantity' => 3,
                             'quantity_returned' => 1,
                             'quantity_returned_broken' => 1,
@@ -638,7 +750,7 @@ final class EventsTest extends ApiTestCase
                 ],
                 'technicians' => [
                     [
-                        'id' => 3,
+                        'id' => 4,
                         'event_id' => 1,
                         'technician_id' => 1,
                         'start_time' => '2018-12-17 10:30:00',
@@ -647,7 +759,7 @@ final class EventsTest extends ApiTestCase
                         'technician' => TechniciansTest::data(1),
                     ],
                     [
-                        'id' => 4,
+                        'id' => 5,
                         'event_id' => 1,
                         'technician_id' => 2,
                         'start_time' => '2018-12-18 13:30:00',
@@ -691,7 +803,7 @@ final class EventsTest extends ApiTestCase
         $this->assertResponseData(array_replace(
             self::data(1, Event::SERIALIZE_DETAILS),
             [
-                'id' => 7,
+                'id' => 8,
                 'start_date' => '2021-07-01 00:00:00',
                 'end_date' => '2021-07-03 23:59:59',
                 'duration' => 3,
@@ -708,24 +820,18 @@ final class EventsTest extends ApiTestCase
                     [
                         [
                             'pivot' => [
-                                'id' => 13,
-                                'event_id' => 7,
                                 'quantity_returned' => null,
                                 'quantity_returned_broken' => null,
                             ],
                         ],
                         [
                             'pivot' => [
-                                'id' => 14,
-                                'event_id' => 7,
                                 'quantity_returned' => null,
                                 'quantity_returned_broken' => null,
                             ],
                         ],
                         [
                             'pivot' => [
-                                'id' => 15,
-                                'event_id' => 7,
                                 'quantity_returned' => null,
                                 'quantity_returned_broken' => null,
                             ],
@@ -736,14 +842,14 @@ final class EventsTest extends ApiTestCase
                     self::data(1, Event::SERIALIZE_DETAILS)['technicians'],
                     [
                         [
-                            'id' => 3,
-                            'event_id' => 7,
+                            'id' => 4,
+                            'event_id' => 8,
                             'start_time' => '2021-07-01 09:00:00',
                             'end_time' => '2021-07-02 22:00:00',
                         ],
                         [
-                            'id' => 4,
-                            'event_id' => 7,
+                            'id' => 5,
+                            'event_id' => 8,
                             'start_time' => '2021-07-02 14:00:00',
                             'end_time' => '2021-07-02 18:00:00',
                         ],
@@ -765,7 +871,7 @@ final class EventsTest extends ApiTestCase
         $this->assertResponseData(array_replace(
             self::data(3, Event::SERIALIZE_DETAILS),
             [
-                'id' => 8,
+                'id' => 9,
                 'start_date' => '2021-07-04 00:00:00',
                 'end_date' => '2021-07-04 23:59:59',
                 'duration' => 1,
@@ -778,24 +884,18 @@ final class EventsTest extends ApiTestCase
                     [
                         [
                             'pivot' => [
-                                'id' => 16,
-                                'event_id' => 8,
                                 'quantity_returned' => null,
                                 'quantity_returned_broken' => null,
                             ],
                         ],
                         [
                             'pivot' => [
-                                'id' => 17,
-                                'event_id' => 8,
                                 'quantity_returned' => null,
                                 'quantity_returned_broken' => null,
                             ],
                         ],
                         [
                             'pivot' => [
-                                'id' => 18,
-                                'event_id' => 8,
                                 'quantity_returned' => null,
                                 'quantity_returned_broken' => null,
                             ],
@@ -816,7 +916,7 @@ final class EventsTest extends ApiTestCase
         $this->assertResponseData(array_replace(
             self::data(4, Event::SERIALIZE_DETAILS),
             [
-                'id' => 9,
+                'id' => 10,
                 'start_date' => '2021-07-04 00:00:00',
                 'end_date' => '2021-07-04 23:59:59',
                 'color' => '#ef5b5b',
@@ -828,24 +928,18 @@ final class EventsTest extends ApiTestCase
                     [
                         [
                             'pivot' => [
-                                'id' => 19,
-                                'event_id' => 9,
                                 'quantity_returned' => null,
                                 'quantity_returned_broken' => null,
                             ],
                         ],
                         [
                             'pivot' => [
-                                'id' => 20,
-                                'event_id' => 9,
                                 'quantity_returned' => null,
                                 'quantity_returned_broken' => null,
                             ],
                         ],
                         [
                             'pivot' => [
-                                'id' => 21,
-                                'event_id' => 9,
                                 'quantity_returned' => null,
                                 'quantity_returned_broken' => null,
                             ],
@@ -861,64 +955,143 @@ final class EventsTest extends ApiTestCase
 
     public function testUpdateReturnInventoryNotFound()
     {
-        $this->client->put('/api/events/999/inventory');
+        $this->client->put('/api/events/999/return');
         $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
     public function testUpdateReturnInventory()
     {
-        $data = [
-            ['id' => 1, 'actual' => 2, 'broken' => 0],
-            ['id' => 2, 'actual' => 2, 'broken' => 1],
-        ];
-        $this->client->put('/api/events/2/inventory', $data);
-        $this->assertStatusCode(StatusCode::STATUS_OK);
-        $response = $this->_getResponseAsArray();
+        Carbon::setTestNow(Carbon::create(2023, 2, 1, 10, 00, 00));
 
-        $expectedMaterialData = [
-            [
-                'id' => 4,
-                'event_id' => 2,
-                'material_id' => 1,
-                'quantity' => 3,
-                'quantity_returned' => 2,
-                'quantity_returned_broken' => 0,
+        $validInventories = [
+            2 => [
+                ['id' => 1, 'actual' => 2, 'broken' => 0],
+                ['id' => 2, 'actual' => 2, 'broken' => 1],
             ],
-            [
-                'id' => 5,
-                'event_id' => 2,
-                'material_id' => 2,
-                'quantity' => 2,
-                'quantity_returned' => 2,
-                'quantity_returned_broken' => 1,
+            7 => [
+                [
+                    'id' => 1,
+                    'actual' => 2,
+                    'broken' => 2,
+                ],
+                [
+                    'id' => 6,
+                    'actual' => 1,
+                    'broken' => 0,
+                ],
+                [
+                    'id' => 7,
+                    'actual' => 1,
+                    'broken' => 1,
+                ],
+                [
+                    'id' => 4,
+                    'actual' => 0,
+                    'broken' => 0,
+                ],
             ],
         ];
-        foreach ($expectedMaterialData as $index => $expected) {
-            $this->assertArrayHasKey($index, $response['materials']);
-            $material = $response['materials'][$index];
 
-            $this->assertEquals($expected, $material['pivot']);
+        // - Avec un événement dont l'inventaire de retour est déjà terminé.
+        $this->client->put('/api/events/2/return', $validInventories[2]);
+        $this->assertStatusCode(StatusCode::STATUS_CONFLICT);
+        $this->assertApiErrorMessage("This event's return inventory is already done.");
+
+        // - On repasse l'inventaire de retour en non terminé.
+        $event = Event::findOrFail(2);
+        $event->is_return_inventory_done = false;
+        $event->save();
+
+        $initialData = array_replace(
+            self::data(2, Event::SERIALIZE_DETAILS),
+            [
+                'has_not_returned_materials' => null,
+                'is_return_inventory_done' => false,
+                'updated_at' => '2023-02-01 10:00:00',
+            ]
+        );
+
+        // - Avec un payload vide.
+        $this->client->put('/api/events/2/return', []);
+        $this->assertStatusCode(StatusCode::STATUS_BAD_REQUEST);
+        $this->assertApiErrorMessage("No data was provided.");
+
+        // - Avec un payload invalide.
+        foreach ([[['foo' => 'bar']], [1], [true]] as $invalidInventory) {
+            $this->client->put('/api/events/2/return', $invalidInventory);
+            $this->assertStatusCode(StatusCode::STATUS_BAD_REQUEST);
+            $this->assertApiErrorMessage("Invalid data format.");
         }
-    }
 
-    public function testUpdateReturnInventoryBadData()
-    {
-        $data = [
+        // - Avec des données invalides (1)...
+        $this->client->put('/api/events/2/return', [
             ['id' => 1, 'actual' => 2, 'broken' => 3],
             ['id' => 2, 'actual' => 3, 'broken' => 0],
-        ];
-        $this->client->put('/api/events/2/inventory', $data);
+        ]);
         $this->assertApiValidationError([
             ['id' => 1, 'message' => "Broken quantity cannot be greater than returned quantity."],
             ['id' => 2, 'message' => "Returned quantity cannot be greater than output quantity."],
         ]);
+
+        // - Avec des données invalides (2)...
+        $this->client->put('/api/events/2/return', [
+            ['id' => 1, 'actual' => 2, 'broken' => 0],
+        ]);
+        $this->assertApiValidationError([
+            ['id' => 2, 'message' => "Please specify the returned quantity."],
+        ]);
+
+        Carbon::setTestNow(Carbon::create(2023, 6, 2, 12, 30, 00));
+
+        // - Avec des données valides simples...
+        $this->client->put('/api/events/2/return', $validInventories[2]);
+        $this->assertStatusCode(StatusCode::STATUS_OK);
+        $this->assertResponseData(array_replace_recursive(
+            $initialData,
+            [
+                'materials' => [
+                    [
+                        'pivot' => [
+                            'quantity' => 3,
+                            'quantity_returned' => 2,
+                            'quantity_returned_broken' => 0,
+                        ],
+                    ],
+                    [
+                        'pivot' => [
+                            'quantity' => 2,
+                            'quantity_returned' => 2,
+                            'quantity_returned_broken' => 1,
+                        ],
+                    ],
+                ],
+            ]
+        ));
     }
 
     public function testFinishReturnInventory()
     {
         Carbon::setTestNow(Carbon::create(2023, 2, 1, 10, 00, 00));
 
-        $this->client->put('/api/events/2/inventory/finish', [
+        // - Avec un événement dont l'inventaire de retour est déjà terminé.
+        $this->client->put('/api/events/2/return/finish');
+        $this->assertStatusCode(StatusCode::STATUS_CONFLICT);
+        $this->assertApiErrorMessage("This event's return inventory is already done.");
+
+        // - On repasse l'inventaire de retour en non terminé.
+        $event = Event::findOrFail(2);
+        $event->is_return_inventory_done = false;
+        $event->save();
+
+        // - Avec un payload invalide.
+        foreach ([[['foo' => 'bar']], [1], [true]] as $invalidInventory) {
+            $this->client->put('/api/events/2/return/finish', $invalidInventory);
+            $this->assertStatusCode(StatusCode::STATUS_BAD_REQUEST);
+            $this->assertApiErrorMessage("Invalid data format.");
+        }
+
+        // - Test avec du matériel non-unitaire.
+        $this->client->put('/api/events/2/return/finish', [
             ['id' => 1, 'actual' => 3, 'broken' => 0],
             ['id' => 2, 'actual' => 2, 'broken' => 1],
         ]);
@@ -1052,17 +1225,6 @@ final class EventsTest extends ApiTestCase
         $this->client->get('/api/events/4/missing-materials');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData([
-            array_replace(MaterialsTest::data(6), [
-                'pivot' => [
-                    'id' => 10,
-                    'event_id' => 4,
-                    'material_id' => 6,
-                    'quantity' => 2,
-                    'quantity_returned' => 1,
-                    'quantity_returned_broken' => 0,
-                    'quantity_missing' => 2,
-                ],
-            ]),
             array_replace(MaterialsTest::data(7), [
                 'pivot' => [
                     'id' => 11,
@@ -1071,7 +1233,7 @@ final class EventsTest extends ApiTestCase
                     'quantity' => 3,
                     'quantity_returned' => 0,
                     'quantity_returned_broken' => 0,
-                    'quantity_missing' => 2,
+                    'quantity_missing' => 1,
                 ],
             ]),
         ]);
@@ -1085,18 +1247,30 @@ final class EventsTest extends ApiTestCase
     {
         Carbon::setTestNow(Carbon::create(2022, 9, 23, 12, 0, 0));
 
-        // - Event does not exists
+        // - Événement inexistant
         $this->client->get('/events/999/pdf');
         $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
 
-        // - Download event n°1 PDF file
+        // - Téléchargement du fichier PDF de l'événement n°1
         $responseStream = $this->client->get('/events/1/pdf');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertTrue($responseStream->isReadable());
         $this->assertMatchesHtmlSnapshot($responseStream->getContents());
 
-        // - Download event n°2 PDF file
+        // - Téléchargement du fichier PDF de l'événement n°2
         $responseStream = $this->client->get('/events/2/pdf');
+        $this->assertStatusCode(StatusCode::STATUS_OK);
+        $this->assertTrue($responseStream->isReadable());
+        $this->assertMatchesHtmlSnapshot($responseStream->getContents());
+
+        // - Téléchargement du fichier PDF de l'événement n°7 (classé par listes)
+        $responseStream = $this->client->get('/events/7/pdf');
+        $this->assertStatusCode(StatusCode::STATUS_OK);
+        $this->assertTrue($responseStream->isReadable());
+        $this->assertMatchesHtmlSnapshot($responseStream->getContents());
+
+        // - Téléchargement du fichier PDF de l'événement n°7 (classé par parcs)
+        $responseStream = $this->client->get('/events/7/pdf?sortedBy=parks');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertTrue($responseStream->isReadable());
         $this->assertMatchesHtmlSnapshot($responseStream->getContents());

@@ -1,4 +1,5 @@
 import invariant from 'invariant';
+import stringCompare from '@/utils/stringCompare';
 import getMaterialQuantity from './getMaterialQuantity';
 import getMaterialUnitPrice from './getMaterialUnitPrice';
 
@@ -10,13 +11,6 @@ export type MaterialsSection = {
     name: Category['name'] | null,
     materials: BookingMaterial[],
 };
-
-const compareString = (a: string, b: string): number => (
-    a.localeCompare(b, undefined, {
-        ignorePunctuation: true,
-        sensitivity: 'base',
-    })
-);
 
 const groupByCategories = (
     materials: BookingMaterial[],
@@ -51,7 +45,7 @@ const groupByCategories = (
     const result = Array.from(sections.values());
 
     result.sort((a: MaterialsSection, b: MaterialsSection) => (
-        compareString(a.name ?? '', b.name ?? '')
+        stringCompare(a.name ?? '', b.name ?? '')
     ));
     result.forEach((section: MaterialsSection) => {
         section.materials.sort((a: BookingMaterial, b: BookingMaterial) => {
@@ -66,7 +60,7 @@ const groupByCategories = (
                 return subtotalA > subtotalB ? -1 : 1;
             }
 
-            return compareString(a.name, b.name);
+            return stringCompare(a.name, b.name);
         });
     });
 

@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\Tests;
+namespace Loxya\Tests;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Illuminate\Support\Collection;
-use Robert2\Support\Arr;
+use Loxya\Support\Arr;
 
 final class CategoriesTest extends ApiTestCase
 {

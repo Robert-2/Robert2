@@ -1,18 +1,18 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\Tests;
+namespace Loxya\Tests;
 
 use Illuminate\Support\Carbon;
-use Robert2\API\Errors\Exception\ValidationException;
-use Robert2\API\Models\Attribute;
-use Robert2\API\Models\Event;
-use Robert2\API\Models\Technician;
-use Robert2\API\Models\User;
-use Robert2\API\Services\I18n;
-use Robert2\Support\Arr;
-use Robert2\Support\Pdf;
-use Robert2\Support\Period;
+use Loxya\Errors\Exception\ValidationException;
+use Loxya\Models\Attribute;
+use Loxya\Models\Event;
+use Loxya\Models\Technician;
+use Loxya\Models\User;
+use Loxya\Services\I18n;
+use Loxya\Support\Arr;
+use Loxya\Support\Pdf;
+use Loxya\Support\Period;
 
 final class EventTest extends TestCase
 {
@@ -24,7 +24,6 @@ final class EventTest extends TestCase
         $expected = [
             [
                 'id' => 5,
-                'user_id' => 1,
                 'title' => "Kermesse de l'école des trois cailloux",
                 'description' => null,
                 'reference' => null,
@@ -38,6 +37,8 @@ final class EventTest extends TestCase
                 'is_return_inventory_done' => false,
                 'created_at' => '2019-12-25 14:59:40',
                 'note' => null,
+                'author_id' => 1,
+                'preparer_id' => null,
                 'updated_at' => null,
                 'deleted_at' => null,
             ],
@@ -53,7 +54,6 @@ final class EventTest extends TestCase
         $expected = [
             [
                 'id' => 3,
-                'user_id' => 1,
                 'title' => "Avant-premier événement",
                 'description' => null,
                 'reference' => null,
@@ -66,13 +66,14 @@ final class EventTest extends TestCase
                 'is_billable' => false,
                 'is_return_inventory_done' => true,
                 'note' => null,
+                'author_id' => 1,
+                'preparer_id' => null,
                 'created_at' => '2018-12-14 12:20:00',
                 'updated_at' => '2018-12-14 12:30:00',
                 'deleted_at' => null,
             ],
             [
                 'id' => 1,
-                'user_id' => 1,
                 'title' => "Premier événement",
                 'description' => null,
                 'reference' => null,
@@ -85,13 +86,14 @@ final class EventTest extends TestCase
                 'is_billable' => true,
                 'is_return_inventory_done' => true,
                 'note' => null,
+                'author_id' => 1,
+                'preparer_id' => null,
                 'created_at' => '2018-12-01 12:50:45',
                 'updated_at' => '2018-12-05 08:31:21',
                 'deleted_at' => null,
             ],
             [
                 'id' => 2,
-                'user_id' => 1,
                 'title' => "Second événement",
                 'description' => null,
                 'reference' => null,
@@ -104,6 +106,8 @@ final class EventTest extends TestCase
                 'is_billable' => true,
                 'is_return_inventory_done' => true,
                 'note' => "Il faudra envoyer le matériel sur Lyon avant l'avant-veille.",
+                'author_id' => 1,
+                'preparer_id' => null,
                 'created_at' => '2018-12-16 12:50:45',
                 'updated_at' => null,
                 'deleted_at' => null,
@@ -156,17 +160,13 @@ final class EventTest extends TestCase
 
         // - Get missing materials of event #4
         $result = Event::find(4)->missingMaterials();
-        $this->assertCount(2, $result);
-        $this->assertEquals('XR18', $result->get(0)['reference']);
-        $this->assertEquals(2, $result->get(0)['pivot']['quantity_missing']);
-        $this->assertEquals('Transporter', $result->get(1)['reference']);
-        $this->assertEquals(2, $result->get(1)['pivot']['quantity_missing']);
+        $this->assertCount(1, $result);
+        $this->assertEquals('Transporter', $result->get(0)['reference']);
+        $this->assertEquals(1, $result->get(0)['pivot']['quantity_missing']);
 
         // - Get missing materials of event #5
         $result = Event::find(5)->missingMaterials();
-        $this->assertCount(1, $result);
-        $this->assertEquals('Decor-Forest', $result->get(0)['reference']);
-        $this->assertEquals(1, $result->get(0)['pivot']['quantity_missing']);
+        $this->assertCount(0, $result);
     }
 
     public function testHasMissingMaterials(): void
@@ -230,7 +230,7 @@ final class EventTest extends TestCase
     public function testGetParksAttribute(): void
     {
         // - Events qui ont du matériel dans un seul parc
-        foreach ([1, 2, 3] as $eventId) {
+        foreach ([1, 2, 3, 5] as $eventId) {
             $event = Event::find($eventId);
             $this->assertEquals([1], $event->parks);
         }
@@ -247,10 +247,10 @@ final class EventTest extends TestCase
     public function testValidateEventDates(): void
     {
         $data = [
-            'user_id' => 1,
             'title' => "Test dates validation",
             'start_date' => '2020-03-01 00:00:00',
             'is_confirmed' => false,
+            'author_id' => 1,
         ];
 
         // - Validation pass: dates are OK
@@ -272,11 +272,11 @@ final class EventTest extends TestCase
     public function testValidateIsArchived(): void
     {
         $dataClose = [
-            'user_id' => 1,
             'title' => "Test is_archived validation",
             'start_date' => '2020-03-01 00:00:00',
             'end_date' => '2020-03-03 23:59:59',
             'is_confirmed' => false,
+            'author_id' => 1,
         ];
 
         // - Validation pass: event has a return inventory
@@ -307,12 +307,12 @@ final class EventTest extends TestCase
         // - Validation fails: event is not past
         $this->expectException(ValidationException::class);
         $currentEvent = [
-            'user_id' => 1,
             'title' => "Test is_archive validation failure",
             'start_date' => '2120-03-01 00:00:00',
             'end_date' => '2120-03-03 23:59:59',
             'is_confirmed' => true,
             'is_archived' => true,
+            'author_id' => 1,
         ];
         (new Event($currentEvent))->validate();
     }
@@ -320,11 +320,11 @@ final class EventTest extends TestCase
     public function testValidateReference(): void
     {
         $data = [
-            'user_id' => 1,
             'title' => "Test dates validation",
             'start_date' => '2020-03-01 00:00:00',
             'end_date' => '2020-03-03 23:59:59',
             'is_confirmed' => false,
+            'author_id' => 1,
         ];
 
         foreach (['REF1', null] as $testValue) {
@@ -341,11 +341,11 @@ final class EventTest extends TestCase
     {
         $generateEvent = function (array $data = []): Event {
             $data = Arr::defaults($data, [
-                'user_id' => 1,
                 'title' => "Les vieilles charrues",
                 'start_date' => '2020-03-01 00:00:00',
                 'end_date' => '2020-03-03 23:59:59',
                 'is_confirmed' => false,
+                'author_id' => 1,
             ]);
             return new Event($data);
         };
@@ -591,13 +591,12 @@ final class EventTest extends TestCase
 
         // - Test simple.
         $newEvent = Event::findOrFail(1)->duplicate([
-            'user_id' => 1,
             'start_date' => '2021-08-01 00:00:00',
             'end_date' => '2021-08-02 23:59:59',
+            'author_id' => 1,
         ]);
         $expected = [
-            'id' => 7,
-            'user_id' => null,
+            'id' => 8,
             'reference' => null,
             'title' => 'Premier événement',
             'description' => null,
@@ -611,8 +610,8 @@ final class EventTest extends TestCase
             'is_return_inventory_done' => false,
             'technicians' => [
                 [
-                    'id' => 3,
-                    'event_id' => 7,
+                    'id' => 4,
+                    'event_id' => 8,
                     'technician_id' => 1,
                     'start_time' => '2021-08-01 09:00:00',
                     'end_time' => '2021-08-02 22:00:00',
@@ -620,8 +619,8 @@ final class EventTest extends TestCase
                     'technician' => Technician::find(1)->toArray(),
                 ],
                 [
-                    'id' => 4,
-                    'event_id' => 7,
+                    'id' => 5,
+                    'event_id' => 8,
                     'technician_id' => 2,
                     'start_time' => '2021-08-02 14:00:00',
                     'end_time' => '2021-08-02 18:00:00',
@@ -630,6 +629,8 @@ final class EventTest extends TestCase
                 ],
             ],
             'note' => null,
+            'author_id' => null,
+            'preparer_id' => null,
             'created_at' => '2021-07-23 12:31:24',
             'updated_at' => '2021-07-23 12:31:24',
             'deleted_at' => null,
@@ -651,8 +652,7 @@ final class EventTest extends TestCase
             User::findOrFail(1),
         );
         $expected = [
-            'id' => 8,
-            'user_id' => 1,
+            'id' => 9,
             'reference' => null,
             'title' => 'Premier événement',
             'description' => null,
@@ -666,8 +666,8 @@ final class EventTest extends TestCase
             'is_return_inventory_done' => false,
             'technicians' => [
                 [
-                    'id' => 5,
-                    'event_id' => 8,
+                    'id' => 6,
+                    'event_id' => 9,
                     'technician_id' => 1,
                     'start_time' => '2021-08-01 09:00:00',
                     'end_time' => '2021-08-02 22:00:00',
@@ -675,8 +675,8 @@ final class EventTest extends TestCase
                     'technician' => Technician::find(1)->toArray(),
                 ],
                 [
-                    'id' => 6,
-                    'event_id' => 8,
+                    'id' => 7,
+                    'event_id' => 9,
                     'technician_id' => 2,
                     'start_time' => '2021-08-02 14:00:00',
                     'end_time' => '2021-08-02 18:00:00',
@@ -685,6 +685,8 @@ final class EventTest extends TestCase
                 ],
             ],
             'note' => null,
+            'author_id' => 1,
+            'preparer_id' => null,
             'created_at' => '2021-07-23 12:31:24',
             'updated_at' => '2021-07-23 12:31:24',
             'deleted_at' => null,
@@ -701,8 +703,7 @@ final class EventTest extends TestCase
             'end_date' => '2021-08-01 23:59:59', // - Un jour de moins que l'original
         ]);
         $expected = [
-            'id' => 9,
-            'user_id' => null,
+            'id' => 10,
             'reference' => null,
             'title' => 'Premier événement',
             'description' => null,
@@ -716,8 +717,8 @@ final class EventTest extends TestCase
             'is_return_inventory_done' => false,
             'technicians' => [
                 [
-                    'id' => 7,
-                    'event_id' => 9,
+                    'id' => 8,
+                    'event_id' => 10,
                     'technician_id' => 1,
                     'start_time' => '2021-08-01 09:00:00',
                     'end_time' => '2021-08-02 00:00:00',
@@ -726,6 +727,8 @@ final class EventTest extends TestCase
                 ],
             ],
             'note' => null,
+            'author_id' => null,
+            'preparer_id' => null,
             'created_at' => '2021-07-23 12:31:24',
             'updated_at' => '2021-07-23 12:31:24',
             'deleted_at' => null,
@@ -797,7 +800,7 @@ final class EventTest extends TestCase
         );
 
         // Totaux des attributs numériques pour l'événement #1
-        $result = Event::findOrFail(1)->totalisableAttributes;
+        $result = Event::findOrFail(1)->totalisable_attributes;
         $expected = [
             1 => [
                 'id' => 1,
@@ -815,7 +818,7 @@ final class EventTest extends TestCase
         $this->assertEquals($expected, array_map($getTestValues, $result));
 
         // Totaux des attributs numériques pour l'événement #2
-        $result = Event::findOrFail(2)->totalisableAttributes;
+        $result = Event::findOrFail(2)->totalisable_attributes;
         $expected = [
             1 => [
                 'id' => 1,

@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\Tests;
+namespace Loxya\Tests;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Illuminate\Support\Collection;
-use Robert2\API\Models\Enums\Group;
-use Robert2\API\Models\User;
+use Loxya\Models\Enums\Group;
+use Loxya\Models\User;
 
 final class UsersTest extends ApiTestCase
 {

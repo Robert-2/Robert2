@@ -11,11 +11,11 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-bottom: globals.$content-padding-small-vertical;
+        margin-bottom: globals.$spacing-medium;
 
         &__current-month {
             min-width: 110px;
-            margin: 0 globals.$content-padding-large-horizontal;
+            margin: 0 globals.$spacing-medium;
             color: globals.$text-base-color;
             text-align: center;
             text-transform: capitalize;

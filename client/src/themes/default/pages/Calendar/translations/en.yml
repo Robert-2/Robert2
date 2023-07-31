@@ -10,6 +10,7 @@ event-saved: The event was saved.
 loading-event: Loading event...
 center-on-today: Center on today
 display-all-parks: All parks
+display-all-categories: All categories
 event-with-missing-material-only: Events with missing material only?
 help-add-event: Create a new event
 help-center-view-on-today: Center calendar on today

@@ -2,7 +2,7 @@
 
 .ReturnInventoryGlobalSettings {
     &__mode {
-        margin: globals.$content-padding-small-vertical 0 globals.$content-padding-large-vertical;
+        margin: globals.$spacing-medium 0 globals.$spacing-large;
 
         &__input {
             display: flex;
@@ -23,7 +23,7 @@
     }
 
     &__actions {
-        margin-top: globals.$content-padding-large-vertical;
+        margin-top: globals.$spacing-large;
         text-align: center;
     }
 

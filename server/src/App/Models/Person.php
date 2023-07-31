@@ -1,12 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Models;
+namespace Loxya\Models;
 
+use Adbar\Dot as DotArray;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
-use Robert2\API\Contracts\Serializable;
-use Robert2\API\Models\Traits\Serializer;
+use Loxya\Contracts\Serializable;
+use Loxya\Models\Traits\Serializer;
 use Respect\Validation\Validator as V;
 
 /**
@@ -38,15 +39,14 @@ final class Person extends BaseModel implements Serializable
 
     protected $table = 'persons';
 
-    protected $allowedSearchFields = ['full_name', 'email'];
-    protected $searchField = 'full_name';
+    protected $orderField = 'full_name';
 
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
 
         $this->validation = [
-            'user_id' => V::optional(V::numericVal()),
+            'user_id' => V::custom([$this, 'checkUserId']),
             'first_name' => V::notEmpty()->alnum(static::EXTRA_CHARS)->length(2, 35),
             'last_name' => V::notEmpty()->alnum(static::EXTRA_CHARS)->length(2, 35),
             'email' => V::custom([$this, 'checkEmail']),
@@ -54,7 +54,7 @@ final class Person extends BaseModel implements Serializable
             'street' => V::optional(V::length(null, 191)),
             'postal_code' => V::optional(V::length(null, 10)),
             'locality' => V::optional(V::length(null, 191)),
-            'country_id' => V::optional(V::numericVal()),
+            'country_id' => V::custom([$this, 'checkCountryId']),
         ];
     }
 
@@ -63,6 +63,15 @@ final class Person extends BaseModel implements Serializable
     // -    Validation
     // -
     // ------------------------------------------------------
+
+    public function checkUserId($value)
+    {
+        V::optional(V::numericVal())->check($value);
+
+        return $value !== null
+            ? User::staticExists($value)
+            : true;
+    }
 
     public function checkEmail($value)
     {
@@ -80,6 +89,15 @@ final class Person extends BaseModel implements Serializable
 
         return $query->exists()
             ? 'email-already-in-use'
+            : true;
+    }
+
+    public function checkCountryId($value)
+    {
+        V::optional(V::numericVal())->check($value);
+
+        return $value !== null
+            ? Country::staticExists($value)
             : true;
     }
 
@@ -175,47 +193,44 @@ final class Person extends BaseModel implements Serializable
         'country_id',
     ];
 
-    // ------------------------------------------------------
-    // -
-    // -    Search / Order related
-    // -
-    // ------------------------------------------------------
-
-    protected function _getOrderBy(?Builder $builder = null): Builder
+    public function setPhoneAttribute($value)
     {
-        $builder = $builder ?? static::query();
-
-        $direction = $this->orderDirection ?: 'asc';
-        $order = $this->orderField ?: 'full_name';
-
-        if ($order !== 'full_name') {
-            return $builder->orderBy($order, $direction);
-        }
-
-        /** @var Builder $builder */
-        return $builder
-            ->orderBy('last_name', $direction)
-            ->orderBy('first_name', $direction);
+        $value = !empty($value) ? Str::remove(' ', $value) : $value;
+        $this->attributes['phone'] = $value === '' ? null : $value;
     }
 
-    protected function _setSearchConditions(Builder $builder): Builder
+    // ------------------------------------------------------
+    // -
+    // -    Query Scopes
+    // -
+    // ------------------------------------------------------
+
+    public function scopeSearch(Builder $query, string $term): Builder
     {
-        if (!$this->searchField || !$this->searchTerm) {
-            return $builder;
-        }
-        $term = sprintf('%%%s%%', addcslashes($this->searchTerm, '%_'));
-
-        if ($this->searchField === 'full_name') {
-            return $builder->where(function (Builder $query) use ($term) {
-                $query
-                    ->orWhere('last_name', 'LIKE', $term)
-                    ->orWhere('first_name', 'LIKE', $term)
-                    ->orWhereRaw('CONCAT(last_name, \' \', first_name) LIKE ?', [$term])
-                    ->orWhereRaw('CONCAT(first_name, \' \', last_name) LIKE ?', [$term]);
-            });
+        $term = trim($term);
+        if (strlen($term) < 2) {
+            throw new \InvalidArgumentException("The term must contain more than two characters.");
         }
 
-        return $builder->where($this->searchField, 'LIKE', $term);
+        $term = sprintf('%%%s%%', addcslashes($term, '%_'));
+        return $query->where(function (Builder $query) use ($term) {
+            $query
+                ->orWhere('last_name', 'LIKE', $term)
+                ->orWhere('first_name', 'LIKE', $term)
+                ->orWhereRaw('CONCAT(last_name, \' \', first_name) LIKE ?', [$term])
+                ->orWhereRaw('CONCAT(first_name, \' \', last_name) LIKE ?', [$term]);
+        });
+    }
+
+    public function scopeCustomOrderBy(Builder $query, string $column, string $direction = 'asc'): Builder
+    {
+        if ($column !== 'full_name') {
+            return parent::scopeCustomOrderBy($query, $column, $direction);
+        }
+
+        return $query
+            ->orderBy('last_name', $direction)
+            ->orderBy('first_name', $direction);
     }
 
     // ------------------------------------------------------
@@ -226,27 +241,8 @@ final class Person extends BaseModel implements Serializable
 
     public function serialize(): array
     {
-        $data = $this->attributesForSerialization();
-
-        unset(
-            $data['created_at'],
-            $data['updated_at'],
-        );
-
-        return $data;
-    }
-
-    // ------------------------------------------------------
-    // -
-    // -    Méthodes de "repository"
-    // -
-    // ------------------------------------------------------
-
-    public static function staticEdit($id = null, array $data = []): BaseModel
-    {
-        if (!empty($data['phone'])) {
-            $data['phone'] = Str::remove(' ', $data['phone']);
-        }
-        return parent::staticEdit($id, $data);
+        return (new DotArray($this->attributesForSerialization()))
+            ->delete(['created_at', 'updated_at'])
+            ->all();
     }
 }

@@ -95,8 +95,8 @@ const MaterialView = {
 
             const { $t: __ } = this;
             const isConfirmed = await confirm({
-                text: __('confirm-cancel-upload-change-tab'),
                 type: 'danger',
+                text: __('confirm-cancel-upload-change-tab'),
             });
             if (!isConfirmed) {
                 return;

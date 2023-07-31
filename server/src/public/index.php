@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-use Robert2\API\App;
+use Loxya\App;
 
 require __DIR__ . '/../../vendors/autoload.php';
 require __DIR__ . '/../App/Config/constants.php';

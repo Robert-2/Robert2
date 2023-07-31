@@ -5,7 +5,7 @@
     &__not-saved,
     &__all-returned,
     &__has-broken {
-        margin-bottom: globals.$content-padding-large-horizontal;
+        margin-bottom: globals.$spacing-medium;
         font-size: 1.2rem;
         text-align: center;
     }
@@ -13,7 +13,7 @@
     &__not-saved,
     &__all-returned,
     &__has-broken {
-        margin-top: globals.$content-padding-large-vertical;
+        margin-top: globals.$spacing-large;
     }
 
     &__not-saved {

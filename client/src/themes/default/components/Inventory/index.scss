@@ -19,22 +19,22 @@
 
         &__quantity-title {
             flex: 1;
-            margin-left: globals.$content-padding-large-vertical;
+            margin-left: globals.$spacing-large;
             font-size: 1rem;
             text-align: center;
         }
 
         & + & {
-            margin-top: globals.$content-padding-large-vertical;
+            margin-top: globals.$spacing-large;
         }
     }
 
     &__list {
-        padding: 0 0 0 globals.$content-padding-small-horizontal;
+        padding: 0 0 0 globals.$spacing-small;
         border-left: 3px solid globals.$list-left-border-color;
     }
 
     .InventoryItem {
-        margin-bottom: globals.$content-padding-small-horizontal;
+        margin-bottom: globals.$spacing-small;
     }
 }

@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Http;
+namespace Loxya\Http;
 
-use Robert2\API\Http\Enums\AppContext;
+use Loxya\Http\Enums\AppContext;
 use Slim\Http\ServerRequest as CoreRequest;
 
 class Request extends CoreRequest
@@ -11,7 +11,7 @@ class Request extends CoreRequest
     /**
      * Retourne le contexte de la requête.
      *
-     * @return string - Le contexte ({@see \Robert2\API\Http\Enums\AppContext})
+     * @return string - Le contexte ({@see \Loxya\Http\Enums\AppContext})
      */
     public function getContext(): string
     {

@@ -46,7 +46,7 @@ const EventDetailsEstimate = defineComponent({
 
             const { $t: __, estimate: { id } } = this;
             const isConfirmed = await confirm({
-                type: 'warning',
+                type: 'danger',
                 text: __('confirm-delete-estimate'),
                 confirmButtonText: __('yes-delete'),
             });

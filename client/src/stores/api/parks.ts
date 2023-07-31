@@ -30,6 +30,7 @@ export type ParkEdit = {
 };
 
 export type ParkDetails = Park & {
+    has_ongoing_inventory: boolean,
     has_ongoing_booking: boolean,
 };
 

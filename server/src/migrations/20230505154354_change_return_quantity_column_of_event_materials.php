@@ -4,7 +4,7 @@ declare(strict_types=1);
 use Cake\Database\Expression\QueryExpression;
 use Illuminate\Support\Carbon;
 use Phinx\Migration\AbstractMigration;
-use Robert2\API\Config\Config;
+use Loxya\Config\Config;
 
 final class ChangeReturnQuantityColumnOfEventMaterials extends AbstractMigration
 {

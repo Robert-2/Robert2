@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Observers;
+namespace Loxya\Observers;
 
 use Illuminate\Database\Eloquent\Builder;
-use Robert2\API\Models\Event;
-use Robert2\API\Models\EventMaterial;
+use Loxya\Models\Event;
+use Loxya\Models\EventMaterial;
 
 final class EventMaterialObserver
 {
@@ -67,7 +67,7 @@ final class EventMaterialObserver
         // -- Événements ...
         //
 
-        /** @var \Robert2\API\Models\Event[] $events */
+        /** @var \Loxya\Models\Event[] $events */
         $events = $material->events()
             ->where($event->qualifyColumn('id'), '<>', $event->id)
             ->where(function (Builder $query) use ($event) {

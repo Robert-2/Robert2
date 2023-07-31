@@ -5,6 +5,14 @@ import Color from '@/utils/color';
 
 import type { PropType } from '@vue/composition-api';
 import type { HexColorString, HsvaColorObject } from '@/utils/color';
+import type { DebouncedMethod } from 'lodash';
+
+type InstanceProperties = {
+    debouncedMoveMarker: (
+        | DebouncedMethod<typeof ColorPickerGradient, 'moveMarker'>
+        | undefined
+    ),
+};
 
 type Props = {
     /** Couleur actuelle. */
@@ -19,6 +27,9 @@ const ColorPickerGradient = defineComponent({
             required: true,
         },
     },
+    setup: (): InstanceProperties => ({
+        debouncedMoveMarker: undefined,
+    }),
     computed: {
         hue(): number {
             return this.color.getHue();
@@ -42,7 +53,7 @@ const ColorPickerGradient = defineComponent({
         this.handleTouchEnd = this.handleTouchEnd.bind(this);
     },
     beforeDestroy() {
-        this.debouncedMoveMarker.cancel();
+        this.debouncedMoveMarker?.cancel();
 
         document.removeEventListener('mousemove', this.handleMouseMove);
         document.removeEventListener('mouseup', this.handleMouseUp);
@@ -70,7 +81,7 @@ const ColorPickerGradient = defineComponent({
             event.preventDefault();
             event.stopPropagation();
 
-            this.debouncedMoveMarker(event.pageX, event.pageY);
+            this.debouncedMoveMarker!(event.pageX, event.pageY);
         },
 
         handleMouseUp() {
@@ -91,7 +102,7 @@ const ColorPickerGradient = defineComponent({
             event.stopPropagation();
 
             const { pageX, pageY } = event.changedTouches[0];
-            this.debouncedMoveMarker(pageX, pageY);
+            this.debouncedMoveMarker!(pageX, pageY);
         },
 
         handleTouchEnd() {
@@ -125,7 +136,7 @@ const ColorPickerGradient = defineComponent({
             });
 
             this.$emit('change', newColor);
-            this.$refs.markerRef.focus();
+            (this.$refs.marker as HTMLDivElement | undefined)?.focus();
         },
     },
     render() {
@@ -152,7 +163,7 @@ const ColorPickerGradient = defineComponent({
                 }}
             >
                 <div
-                    ref="markerRef"
+                    ref="marker"
                     class="ColorPickerGradient__marker"
                     onMousedown={handleMouseDown}
                     onTouchstart={handleTouchStart}

@@ -5,9 +5,6 @@ const eventMaterials: EventMaterial[] = [
     {
         ...materials[0],
         pivot: {
-            id: 1,
-            event_id: 1,
-            material_id: materials[0].id,
             quantity: 1,
             quantity_missing: 0,
             quantity_returned: 0,
@@ -17,9 +14,6 @@ const eventMaterials: EventMaterial[] = [
     {
         ...materials[1],
         pivot: {
-            id: 2,
-            event_id: 1,
-            material_id: materials[1].id,
             quantity: 2,
             quantity_missing: 0,
             quantity_returned: 0,
@@ -29,9 +23,6 @@ const eventMaterials: EventMaterial[] = [
     {
         ...materials[2],
         pivot: {
-            id: 3,
-            event_id: 1,
-            material_id: materials[2].id,
             quantity: 1,
             quantity_missing: 0,
             quantity_returned: 0,
@@ -41,9 +32,6 @@ const eventMaterials: EventMaterial[] = [
     {
         ...materials[3],
         pivot: {
-            id: 4,
-            event_id: 1,
-            material_id: materials[3].id,
             quantity: 3,
             quantity_missing: 0,
             quantity_returned: 0,
@@ -53,9 +41,6 @@ const eventMaterials: EventMaterial[] = [
     {
         ...materials[4],
         pivot: {
-            id: 5,
-            event_id: 1,
-            material_id: materials[4].id,
             quantity: 3,
             quantity_missing: 0,
             quantity_returned: 0,

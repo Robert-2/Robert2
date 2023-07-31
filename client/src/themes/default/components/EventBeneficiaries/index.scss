@@ -5,11 +5,11 @@
 
     &__icon {
         width: 1.5rem;
-        margin-right: 0.3rem;
+        margin-right: globals.$spacing-thin;
         text-align: center;
     }
 
     &__list {
-        margin-left: 5px;
+        margin-left: globals.$spacing-thin;
     }
 }

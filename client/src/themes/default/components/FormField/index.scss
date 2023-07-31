@@ -59,7 +59,7 @@
     }
 
     & + & {
-        margin-top: globals.$content-padding-small-vertical;
+        margin-top: globals.$spacing-medium;
     }
 
     //
@@ -114,7 +114,7 @@
             //   au dessus du switch mais on augmente la marge haute dans le
             //   cas ou le champ est précédé par un autre champ.
             #{$block} + &#{$block}--vertical {
-                margin-top: globals.$content-padding-small-vertical * 1.5;
+                margin-top: globals.$spacing-medium * 1.5;
             }
         }
 

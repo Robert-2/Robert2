@@ -5,7 +5,7 @@
     flex-direction: column;
 
     &__loading {
-        margin-top: globals.$content-padding-small-vertical;
+        margin-top: globals.$spacing-medium;
     }
 
     &__language {
@@ -13,7 +13,7 @@
     }
 
     &__actions {
-        margin-top: globals.$content-padding-large-vertical;
+        margin-top: globals.$spacing-large;
         text-align: center;
     }
 }

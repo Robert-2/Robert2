@@ -13,6 +13,9 @@ not-saved-yet: "Attention, cet inventaire de retour n'a pas encore été sauvega
 all-material-returned:
     "Félicitations\_! Tout le matériel a bien été retourné pour cet événement.\n
     Vous pouvez maintenant cliquer sur le bouton \"Terminer l'inventaire\"."
+all-material-returned-draft:
+    "Félicitations\_! Tout le matériel a été marqué comme retourné pour cet événement.\n
+    Vous pourrez marquer l'inventaire comme terminé lorsque l'événement aura pris fin."
 some-material-is-missing: "Du matériel n'est pas revenu de cet événement\_!"
 some-material-came-back-broken: Du matériel est revenu en panne.
 

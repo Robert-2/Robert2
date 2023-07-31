@@ -30,7 +30,10 @@ const EventDetailsMaterials = {
                     <EventMissingMaterials eventId={id} />
                 )}
                 <div class="EventDetailsMaterials__list">
-                    <MaterialsSorted data={materials} withRentalPrices={showBilling} />
+                    <MaterialsSorted
+                        data={materials}
+                        withRentalPrices={showBilling}
+                    />
                 </div>
                 <div class="EventDetailsMaterials__totals">
                     <EventTotals event={event} />

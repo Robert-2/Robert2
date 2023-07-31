@@ -2,7 +2,13 @@
 
 module.exports = {
     rootDir: __dirname,
-    collectCoverageFrom: ['src/**/*.{js,ts,tsx}', '!src/**/*.d.ts'],
+    collectCoverageFrom: [
+        'src/**/*.{js,ts}',
+        '!src/**/{layouts,components,modals,pages}/**/index.js',
+        '!src/**/themes/*/index.js',
+        '!src/**/{globals,locale}/**/*',
+        '!src/**/*.d.ts',
+    ],
     coverageDirectory: '<rootDir>/tests/coverage',
     coverageReporters: ['lcov', 'html', 'text-summary'],
     testMatch: [

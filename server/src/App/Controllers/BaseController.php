@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Controllers;
+namespace Loxya\Controllers;
 
 use DI\Container;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Robert2\API\Errors\Exception\RangeNotSatisfiableException;
-use Robert2\API\Http\Request;
+use Loxya\Errors\Exception\HttpRangeNotSatisfiableException;
+use Loxya\Http\Request;
 
 abstract class BaseController
 {
@@ -41,7 +41,7 @@ abstract class BaseController
             ->appends($params);
 
         if ($result->currentPage() > $result->lastPage()) {
-            throw new RangeNotSatisfiableException(
+            throw new HttpRangeNotSatisfiableException(
                 $request,
                 "Current page number cannot be greater than total pages.",
             );

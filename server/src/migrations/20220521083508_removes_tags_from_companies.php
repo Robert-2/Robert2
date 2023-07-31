@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-use Robert2\API\Config\Config;
+use Loxya\Config\Config;
 use Phinx\Migration\AbstractMigration;
 
 final class RemovesTagsFromCompanies extends AbstractMigration
@@ -12,7 +12,7 @@ final class RemovesTagsFromCompanies extends AbstractMigration
         $builder = $this->getQueryBuilder();
         $builder
             ->delete(sprintf('%staggables', $prefix))
-            ->where(['taggable_type' => 'Robert2\API\Models\Company'])
+            ->where(['taggable_type' => 'Loxya\Models\Company'])
             ->execute();
     }
 
@@ -52,7 +52,7 @@ final class RemovesTagsFromCompanies extends AbstractMigration
         foreach ($companies as $company) {
             $builder->values([
                 'tag_id' => $beneficiaryTag['id'],
-                'taggable_type' => 'Robert2\API\Models\Company',
+                'taggable_type' => 'Loxya\Models\Company',
                 'taggable_id' => $company['id'],
             ]);
         }

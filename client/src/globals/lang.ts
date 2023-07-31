@@ -17,9 +17,13 @@ export const getDefaultLang = (): string => config.defaultLang;
  *
  * @returns - La langue actuelle.
  */
-export const getLang = (): string => (
-    localStorage.getItem('userLocale') ?? getDefaultLang()
-);
+export const getLang = (): string => {
+    const userLang = localStorage.getItem('userLocale');
+    if (userLang && Object.keys(LOCALES_MAP).includes(userLang)) {
+        return userLang;
+    }
+    return getDefaultLang();
+};
 
 /**
  * Permet de récupérer la locale actuelle.

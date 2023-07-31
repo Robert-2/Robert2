@@ -10,6 +10,7 @@ event-saved: L'événement a bien été sauvegardé.
 loading-event: Chargement de l'événement...
 center-on-today: Centrer sur aujourd’hui
 display-all-parks: Tous les parcs
+display-all-categories: Toutes catégories
 event-with-missing-material-only: "Événements en manque de matériel uniquement\_?"
 help-add-event: Créer un nouvel événement
 help-center-view-on-today: Centrer le calendrier sur aujourd’hui

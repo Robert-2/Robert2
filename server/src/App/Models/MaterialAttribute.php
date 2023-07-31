@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Models;
+namespace Loxya\Models;
 
 /**
  * Valeur d'un attribut personnalisé pour un matériel.

@@ -2,12 +2,11 @@ import './index.scss';
 import { defineComponent } from '@vue/composition-api';
 
 import type { PropType } from '@vue/composition-api';
-import type { MaterialWithAvailabilities } from '@/stores/api/materials';
-import type { Park } from '@/stores/api/parks';
+import type { MaterialWithAvailabilities as Material } from '@/stores/api/materials';
 
 type Props = {
-    material: MaterialWithAvailabilities,
-    parkFilter?: Park['id'] | null,
+    /** Le matériel pour lequel on veut afficher les quantités. */
+    material: Material,
 };
 
 // @vue/component
@@ -17,10 +16,6 @@ const MaterialsQuantities = defineComponent({
         material: {
             type: Object as PropType<Required<Props>['material']>,
             required: true,
-        },
-        parkFilter: {
-            type: Number as PropType<Required<Props>['parkFilter']>,
-            default: null,
         },
     },
     computed: {

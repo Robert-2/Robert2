@@ -1,19 +1,18 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Services;
+namespace Loxya\Services;
 
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler;
 use Psr\Log\LoggerTrait;
-use Robert2\Support\Str;
+use Loxya\Support\Str;
 
 final class Logger
 {
     use LoggerTrait;
 
-    /** @var \Monolog\Logger */
-    private $globalLogger;
+    private \Monolog\Logger $globalLogger;
 
     private $settings = [
         'timezone' => null,
@@ -26,7 +25,7 @@ final class Logger
      *
      * @param array $settings La configuration du logger.
      */
-    public function __construct($settings = [])
+    public function __construct(array $settings = [])
     {
         $this->settings = array_replace($this->settings, $settings);
 
@@ -56,8 +55,10 @@ final class Logger
      * Permet de créer un logger.
      *
      * @param string $name Le nom (unique) du logger.
+     *
+     * @return \Monolog\Logger Une instance du logger tout juste créé.
      */
-    public function createLogger(string $name)
+    public function createLogger(string $name): \Monolog\Logger
     {
         $logger = new \Monolog\Logger($name);
 

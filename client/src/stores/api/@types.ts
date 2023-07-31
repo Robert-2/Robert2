@@ -1,8 +1,3 @@
-export type SearchParams = {
-    search?: string,
-    searchBy?: string,
-};
-
 export type SortableParams = {
     orderBy?: string,
     ascending?: 0 | 1,
@@ -25,10 +20,11 @@ export type PaginationParams = {
     limit?: number,
 };
 
-export type ListingParams =
-    & SearchParams
+export type ListingParams = (
+    & { search?: string }
     & SortableParams
-    & PaginationParams;
+    & PaginationParams
+);
 
 export type FormErrorDetail = Record<string, string[]>;
 

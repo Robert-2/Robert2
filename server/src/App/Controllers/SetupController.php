@@ -1,30 +1,27 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Controllers;
+namespace Loxya\Controllers;
 
 use DI\Container;
-use Robert2\API\Config\Config;
-use Robert2\API\Errors\Exception\ValidationException;
-use Robert2\API\Http\Request;
-use Robert2\API\Models\Category;
-use Robert2\API\Models\Enums\Group;
-use Robert2\API\Models\User;
-use Robert2\API\Services\I18n;
-use Robert2\API\Services\View;
-use Robert2\Install\Install;
+use Loxya\Config\Config;
+use Loxya\Errors\Exception\ValidationException;
+use Loxya\Http\Request;
+use Loxya\Models\Category;
+use Loxya\Models\Enums\Group;
+use Loxya\Models\User;
+use Loxya\Services\I18n;
+use Loxya\Services\View;
+use Loxya\Install\Install;
 use Slim\Http\Response;
 
 class SetupController extends BaseController
 {
-    /** @var View */
-    private $view;
+    private View $view;
 
-    /** @var I18n */
-    private $i18n;
+    private I18n $i18n;
 
-    /** @var array */
-    private $settings;
+    private array $settings;
 
     public function __construct(Container $container, View $view, I18n $i18n)
     {

@@ -155,6 +155,11 @@ const FileManagerUploadArea = defineComponent({
         // -
         // ------------------------------------------------------
 
+        /**
+         * Indique si au moins un fichier est en cours d'upload ou non.
+         *
+         * @returns `true` si un fichier est en cours d'upload, `false` sinon.
+         */
         isUploading(): boolean {
             return this.uploads.some(
                 ({ isFinished }: Upload) => !isFinished,

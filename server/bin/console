@@ -2,8 +2,8 @@
 <?php
 declare(strict_types=1);
 
-use Robert2\API\Config\Config;
-use Robert2\API\Console\App;
+use Loxya\Config\Config;
+use Loxya\Console\App;
 use Symfony\Component\Console\Input\ArgvInput;
 
 if (!in_array(PHP_SAPI, ['cli', 'phpdbg', 'embed'], true)) {

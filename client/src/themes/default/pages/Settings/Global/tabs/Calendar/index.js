@@ -61,10 +61,10 @@ const CalendarGlobalSettings = (props, { root }) => {
 
     const handleRegenerateCalendarUrl = async () => {
         const isConfirmed = await confirm({
+            type: 'danger',
             title: __('warning'),
             text: __('page.settings.calendar.public-calendar-url-reset-warning'),
             confirmButtonText: __('yes-regenerate-link'),
-            type: 'warning',
         });
         if (!isConfirmed) {
             return;

@@ -5,7 +5,7 @@
 
     &__category {
         display: flex;
-        margin: globals.$content-padding-small-vertical 0;
+        margin: globals.$spacing-medium 0;
 
         #{$block}__main-category,
         #{$block}__sub-category {
@@ -29,9 +29,20 @@
         }
     }
 
+    &__park {
+        display: flex;
+        margin-top: globals.$spacing-medium;
+        gap: 10px;
+
+        #{$block}__park-selector {
+            flex: 1;
+            margin-top: 0;
+        }
+    }
+
     &__quantities {
         display: flex;
-        margin-top: globals.$content-padding-small-vertical;
+        margin-top: globals.$spacing-medium;
 
         #{$block}__stock-quantity,
         #{$block}__out-of-order-quantity {

@@ -1,27 +1,18 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\Tests;
+namespace Loxya\Tests;
 
-use Robert2\API\Models\Company;
+use Loxya\Models\Company;
 
 final class CompanyTest extends TestCase
 {
-    public function testSetSearch(): void
+    public function testSearch(): void
     {
-        // - Empty search
-        $results = (new Company)->setSearch()->getAll()->get();
-        $this->assertCount(2, $results);
-
         // - Search a company legal name
-        $results = (new Company)->setSearch('testin')->getAll()->get();
+        $results = Company::search('testin')->get();
         $this->assertCount(1, $results);
         $this->assertEquals(['Testing, Inc'], $results->pluck('legal_name')->all());
-
-        // - Search with not allowed field
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage("Search field \"postal_code\" not allowed.");
-        (new Company)->setSearch('1234', 'postal_code');
     }
 
     public function testCreateCompanyNormalizePhone(): void

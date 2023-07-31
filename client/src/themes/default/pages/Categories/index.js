@@ -50,9 +50,9 @@ const Categories = {
         async handleDeleteCategory(id) {
             const { $t: __ } = this;
             const isConfirmed = await confirm({
-                text: __(`page.categories.confirm-permanently-delete`),
-                confirmButtonText: __(`yes-permanently-delete`),
                 type: 'danger',
+                text: __('page.categories.confirm-permanently-delete'),
+                confirmButtonText: __(`yes-permanently-delete`),
             });
             if (!isConfirmed) {
                 return;
@@ -179,9 +179,9 @@ const Categories = {
             return (
                 <Page name="categories" title={__('page.categories.title')}>
                     <EmptyMessage
-                        message={__('page.categories.no-category')}
+                        message={__('page.categories.no-category-yet')}
                         action={{
-                            label: __('page.categories.create-a-category'),
+                            label: __('page.categories.create-a-first-category'),
                             onClick: handleClickNewCategory,
                         }}
                     />

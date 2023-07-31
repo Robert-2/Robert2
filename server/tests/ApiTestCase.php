@@ -1,14 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\Tests;
+namespace Loxya\Tests;
 
 use Adbar\Dot as DotArray;
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
-use Robert2\API\App;
-use Robert2\API\Errors\Enums\ApiErrorCode;
-use Robert2\API\Kernel;
-use Robert2\API\Services\Auth;
+use Loxya\App;
+use Loxya\Errors\Enums\ApiErrorCode;
+use Loxya\Kernel;
+use Loxya\Services\Auth;
 
 class ApiTestCase extends TestCase
 {
@@ -52,7 +52,11 @@ class ApiTestCase extends TestCase
             $response = $this->_getResponseAsArray();
             $message = sprintf(
                 "%s, in %s\n",
-                $response['error']['message'] ?? 'Unknown error',
+                (
+                    $response['error']['debug']['message']
+                        ?? $response['error']['message']
+                        ?? 'Unknown error'
+                ),
                 $response['error']['debug']['file'] ?? 'Unknown'
             );
             throw new \Exception($message, (int) $response['error']['code']);

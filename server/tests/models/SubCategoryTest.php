@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\Tests;
+namespace Loxya\Tests;
 
-use Robert2\API\Errors\Exception\ValidationException;
-use Robert2\API\Models\SubCategory;
+use Loxya\Errors\Exception\ValidationException;
+use Loxya\Models\SubCategory;
 
 final class SubCategoryTest extends TestCase
 {

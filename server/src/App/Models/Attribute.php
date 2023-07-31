@@ -1,15 +1,15 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Models;
+namespace Loxya\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Robert2\API\Contracts\Serializable;
-use Robert2\API\Models\Traits\Serializer;
+use Loxya\Contracts\Serializable;
+use Loxya\Models\Traits\Serializer;
 use Respect\Validation\Validator as V;
-use Robert2\API\Models\Traits\TransientAttributes;
+use Loxya\Models\Traits\TransientAttributes;
 
 /**
  * Attribut de matériel personnalisé.
@@ -22,17 +22,16 @@ use Robert2\API\Models\Traits\TransientAttributes;
  * @property-read int|float|bool|string|null $value
  * @property-read Carbon $created_at
  * @property-read ?Carbon $updated_at
- * @property-read ?Carbon $deleted_at
  *
  * @property-read Collection|Category[] $categories
  * @property-read Collection|Material[] $materials
  */
 final class Attribute extends BaseModel implements Serializable
 {
+    use TransientAttributes;
     use Serializer {
         serialize as baseSerialize;
     }
-    use TransientAttributes;
 
     protected $orderField = 'id';
 
@@ -188,7 +187,6 @@ final class Attribute extends BaseModel implements Serializable
         unset(
             $data['created_at'],
             $data['updated_at'],
-            $data['deleted_at'],
         );
 
         return $data;

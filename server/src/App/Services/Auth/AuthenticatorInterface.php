@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Services\Auth;
+namespace Loxya\Services\Auth;
 
-use Robert2\API\Http\Request;
-use Robert2\API\Models\User;
+use Loxya\Http\Request;
+use Loxya\Models\User;
 
 interface AuthenticatorInterface
 {

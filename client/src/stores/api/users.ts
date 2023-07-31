@@ -9,6 +9,7 @@ import type { Group } from '@/stores/api/groups';
 
 type UserSettings = {
     language: string,
+    notifications_enabled: boolean,
 };
 
 export type User = UserSettings & {

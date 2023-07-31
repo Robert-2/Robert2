@@ -1,18 +1,18 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Models;
+namespace Loxya\Models;
 
 use Adbar\Dot as DotArray;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Robert2\API\Contracts\Serializable;
-use Robert2\API\Errors\Exception\ValidationException;
-use Robert2\API\Models\Enums\Group;
-use Robert2\API\Models\Traits\Serializer;
+use Loxya\Contracts\Serializable;
+use Loxya\Errors\Exception\ValidationException;
+use Loxya\Models\Enums\Group;
+use Loxya\Models\Traits\Serializer;
 use Respect\Validation\Validator as V;
-use Robert2\API\Models\Traits\SoftDeletable;
-use Robert2\Support\Arr;
+use Loxya\Models\Traits\SoftDeletable;
+use Loxya\Support\Arr;
 
 /**
  * Utilisateur de l'application.
@@ -48,10 +48,8 @@ final class User extends BaseModel implements Serializable
     // - Champs spécifiques aux settings utilisateur
     public const SETTINGS_ATTRIBUTES = ['language'];
 
+    protected $searchField = ['pseudo', 'email'];
     protected $orderField = 'pseudo';
-
-    protected $allowedSearchFields = ['pseudo', 'email'];
-    protected $searchField = 'pseudo';
 
     public function __construct(array $attributes = [])
     {
@@ -318,15 +316,9 @@ final class User extends BaseModel implements Serializable
     {
         $user = clone $this;
 
-        $data = new DotArray($user->attributesForSerialization());
-
-        $data->delete([
-            'created_at',
-            'updated_at',
-            'deleted_at',
-        ]);
-
-        return $data->all();
+        return (new DotArray($user->attributesForSerialization()))
+            ->delete(['created_at', 'updated_at', 'deleted_at'])
+            ->all();
     }
 
     public static function serializeValidation(array $data): array

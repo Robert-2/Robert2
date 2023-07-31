@@ -1,23 +1,22 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Models;
+namespace Loxya\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Collection as CoreCollection;
 use Psr\Http\Message\UploadedFileInterface;
 use Respect\Validation\Validator as V;
-use Robert2\API\Config\Config;
-use Robert2\API\Contracts\PeriodInterface;
-use Robert2\API\Contracts\Serializable;
-use Robert2\API\Models\Traits\Serializer;
-use Robert2\API\Models\Traits\SoftDeletable;
-use Robert2\API\Models\Traits\Taggable;
-use Robert2\API\Models\Traits\TransientAttributes;
-use Robert2\Support\Arr;
-use Robert2\Support\Period;
-use Robert2\Support\Str;
+use Loxya\Config\Config;
+use Loxya\Contracts\PeriodInterface;
+use Loxya\Contracts\Serializable;
+use Loxya\Models\Traits\Serializer;
+use Loxya\Models\Traits\SoftDeletable;
+use Loxya\Models\Traits\TransientAttributes;
+use Loxya\Support\Arr;
+use Loxya\Support\Period;
+use Loxya\Support\Str;
 
 /**
  * Matériel.
@@ -28,7 +27,6 @@ use Robert2\Support\Str;
  * @property-read string|null picture_real_path
  * @property string|null $description
  * @property string $reference
- * @property bool $is_unitary
  * @property int|null $park_id
  * @property-read Park|null $park
  * @property int|null $category_id
@@ -59,7 +57,6 @@ final class Material extends BaseModel implements Serializable
 {
     use Serializer;
     use SoftDeletable;
-    use Taggable;
     use TransientAttributes;
 
     /** L'identifiant unique du modèle. */
@@ -80,7 +77,6 @@ final class Material extends BaseModel implements Serializable
         'name' => null,
         'description' => null,
         'reference' => null,
-        'is_unitary' => false,
         'park_id' => null,
         'category_id' => null,
         'sub_category_id' => null,
@@ -104,8 +100,8 @@ final class Material extends BaseModel implements Serializable
             'reference' => V::custom([$this, 'checkReference']),
             'picture' => V::custom([$this, 'checkPicture']),
             'park_id' => V::custom([$this, 'checkParkId']),
-            'category_id' => V::optional(V::numericVal()),
-            'sub_category_id' => V::optional(V::numericVal()),
+            'category_id' => V::custom([$this, 'checkCategoryId']),
+            'sub_category_id' => V::custom([$this, 'checkSubCategoryId']),
             'rental_price' => V::custom([$this, 'checkRentalPrice']),
             'stock_quantity' => V::custom([$this, 'checkStockQuantity']),
             'out_of_order_quantity' => V::custom([$this, 'checkOutOfOrderQuantity']),
@@ -182,9 +178,36 @@ final class Material extends BaseModel implements Serializable
         return true;
     }
 
-    public function checkParkId()
+    public function checkParkId($value)
     {
-        return V::notEmpty()->numericVal();
+        V::notEmpty()->numericVal()->check($value);
+
+        $park = Park::find($value);
+        if (!$park) {
+            return false;
+        }
+
+        return !$this->exists || $this->isDirty('park_id')
+            ? !$park->trashed()
+            : true;
+    }
+
+    public function checkCategoryId($value)
+    {
+        V::optional(V::numericVal())->check($value);
+
+        return $value !== null
+            ? Category::staticExists($value)
+            : true;
+    }
+
+    public function checkSubCategoryId($value)
+    {
+        V::optional(V::numericVal())->check($value);
+
+        return $value !== null
+            ? SubCategory::staticExists($value)
+            : true;
     }
 
     public function checkStockQuantity()
@@ -247,6 +270,11 @@ final class Material extends BaseModel implements Serializable
     {
         return $this->morphMany(Document::class, 'entity')
             ->orderBy('name', 'asc');
+    }
+
+    public function tags()
+    {
+        return $this->morphToMany(Tag::class, 'taggable');
     }
 
     // ------------------------------------------------------
@@ -526,15 +554,6 @@ final class Material extends BaseModel implements Serializable
         return static::allWithAvailabilities(new Collection([$this]), $period, $strict)->get(0);
     }
 
-    public function getAllFiltered(array $conditions, bool $withDeleted = false): Builder
-    {
-        $parkId = array_key_exists('park_id', $conditions) ? $conditions['park_id'] : null;
-        unset($conditions['park_id']);
-
-        $builder = parent::getAllFiltered($conditions, $withDeleted);
-        return $parkId ? $builder->inPark($parkId) : $builder;
-    }
-
     // ------------------------------------------------------
     // -
     // -    Méthodes de "repository"
@@ -607,6 +626,8 @@ final class Material extends BaseModel implements Serializable
             return new Collection([]);
         }
 
+        // - NOTE : Ne pas prefetch le materiel des bookables via `->with()`,
+        //   car cela peut surcharger la mémoire rapidement.
         $otherBorrowings = new Collection();
         if ($period !== null) {
             $otherBorrowings = $period->__cachedConcurrentBookables ?? null;
@@ -621,7 +642,7 @@ final class Material extends BaseModel implements Serializable
                                     $query->where('id', '!=', $period->id);
                                 },
                             )
-                            ->with('Materials')->get()
+                            ->get()
                     );
             }
 
@@ -658,28 +679,49 @@ final class Material extends BaseModel implements Serializable
                 ));
             });
 
-        return $materials->map(function ($material) use ($otherBorrowingsByPeriods) {
-            $material = clone $material;
-            $quantityPerPeriod = [0];
-            foreach ($otherBorrowingsByPeriods as $otherBorrowingsPeriod) {
-                $quantityPerPeriod[] = $otherBorrowingsPeriod->sum(
-                    function ($otherBorrowing) use ($material): int {
-                        $_materials = $otherBorrowing instanceof Event
-                            ? $otherBorrowing->materials->keyBy('id')->all()
-                            : $otherBorrowing->materials->keyBy('material_id')->all();
+        // - Optimisation: Plus utilisé après et potentiellement volumineux.
+        unset($otherBorrowings);
 
-                        if (!array_key_exists($material->id, $_materials)) {
-                            return 0;
-                        }
+        // - Récupération des quantités utilisées pour chaque
+        //   matériel pendant la période pour utilisation ultérieure.
+        $materialsUsage = new CoreCollection([]);
+        foreach ($otherBorrowingsByPeriods as $periodIndex => $otherBorrowingsPeriod) {
+            foreach ($otherBorrowingsPeriod as $otherBorrowing) {
+                $borrowingMaterials = $otherBorrowing instanceof Event
+                    ? $otherBorrowing->materials->keyBy('id')->all()
+                    : $otherBorrowing->materials->keyBy('material_id')->all();
 
-                        $_material = $_materials[$material->id];
-                        return $otherBorrowing instanceof Event
-                            ? $_material->pivot->quantity
-                            : $_material->quantity;
+                foreach ($borrowingMaterials as $materialId => $borrowingMaterial) {
+                    $quantity = (
+                        $otherBorrowing instanceof Event
+                            ? $borrowingMaterial->pivot->quantity
+                            : $borrowingMaterial->quantity
+                    );
+
+                    // - Si le matériel était déjà présent dans une autre période.
+                    $existingUsage = $materialsUsage->get($materialId);
+                    $quantities = $existingUsage['quantities'] ?? [];
+                    if ($existingUsage !== null) {
+                        $quantity += $quantities[$periodIndex] ?? 0;
                     }
-                );
+
+                    $materialsUsage->put($materialId, [
+                        'quantities' => array_replace($quantities, [$periodIndex => $quantity]),
+                    ]);
+                }
             }
-            $usedCount = max($quantityPerPeriod);
+        }
+
+        // - Optimisation: Plus utilisé après et potentiellement volumineux.
+        unset($otherBorrowingsByPeriods);
+
+        return $materials->map(function ($material) use ($materialsUsage) {
+            $material = clone $material;
+            $materialUsage = $materialsUsage->get($material->id, [
+                'quantities' => [0],
+            ]);
+
+            $usedCount = max($materialUsage['quantities']);
 
             $availableQuantity = (int) $material->stock_quantity - (int) $material->out_of_order_quantity;
             $availableQuantity = max($availableQuantity - $usedCount, 0);

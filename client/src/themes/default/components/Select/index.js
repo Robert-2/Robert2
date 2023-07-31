@@ -1,10 +1,11 @@
 import './index.scss';
+import { defineComponent } from '@vue/composition-api';
 import VueSelect from 'vue-select';
 import Fragment from '@/components/Fragment';
 import icons from './icons';
 
 // @vue/component
-export default {
+const Select = defineComponent({
     name: 'Select',
     inject: {
         'input.invalid': { default: { value: false } },
@@ -218,4 +219,6 @@ export default {
             </div>
         );
     },
-};
+});
+
+export default Select;

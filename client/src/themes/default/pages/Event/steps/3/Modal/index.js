@@ -217,9 +217,9 @@ export default {
 
             const { $t: __ } = this;
             const isConfirmed = await confirm({
+                type: 'danger',
                 text: __('page.event-edit.technician-item.confirm-permanently-delete'),
                 confirmButtonText: __('yes-permanently-delete'),
-                type: 'danger',
             });
             if (!isConfirmed) {
                 return;

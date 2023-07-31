@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 define('TESTS_FOLDER', dirname(__FILE__));
 
-define('TESTS_FIXTURES_FOLDER', TESTS_FOLDER . DS . 'Fixtures');
+define('TESTS_FIXTURES_FOLDER', TESTS_FOLDER . DS . 'fixtures');
 
 define('TESTS_FILES_FOLDER', TESTS_FIXTURES_FOLDER . DS . 'files');
 

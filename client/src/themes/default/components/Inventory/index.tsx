@@ -4,6 +4,7 @@ import { defineComponent } from '@vue/composition-api';
 import { groupByCategories /* groupByParks */ } from './_utils';
 import Item from './Item';
 
+import type { PropType } from '@vue/composition-api';
 import type { AwaitedMaterial, AwaitedMaterialGroup } from './_utils';
 
 export type { AwaitedMaterial };
@@ -80,15 +81,31 @@ type Props = {
 };
 
 // @vue/component
-const Inventory = defineComponent<Required<Props>>({
+const Inventory = defineComponent({
     name: 'Inventory',
     props: {
-        materials: { type: Array, required: true },
-        inventory: { type: Array, required: true },
-        errors: { type: Array, default: () => [] },
-        locked: { type: [Boolean, Array], default: false },
-        strict: { type: Boolean, default: false },
+        materials: {
+            type: Array as PropType<Props['materials']>,
+            required: true,
+        },
+        inventory: {
+            type: Array as PropType<Props['inventory']>,
+            required: true,
+        },
+        errors: {
+            type: Array as PropType<Required<Props>['errors']>,
+            default: () => [],
+        },
+        locked: {
+            type: [Boolean, Array] as PropType<Required<Props>['locked']>,
+            default: false,
+        },
+        strict: {
+            type: Boolean as PropType<Required<Props>['strict']>,
+            default: false,
+        },
         displayGroup: {
+            type: String as PropType<Required<Props>['displayGroup']>,
             default: DisplayGroup.CATEGORIES,
             validator: (displayGroup: unknown): boolean => (
                 typeof displayGroup === 'string' &&

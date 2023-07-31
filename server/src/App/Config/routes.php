@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+use Loxya\Controllers\BookingController;
+
 return [
     'get' => [
         '/session[/]' => 'AuthController:getSelf',
@@ -88,6 +90,11 @@ return [
         '/events/{id:[0-9]+}/estimates[/]' => 'EventController:createEstimate',
         '/events/{id:[0-9]+}/documents[/]' => 'EventController:attachDocument',
 
+        sprintf(
+            '/bookings/{entity:(?:%s)}/{id:[0-9]+}/lists[/]',
+            implode('|', array_keys(BookingController::BOOKING_TYPES))
+        ) => 'BookingController:createList',
+
         '/event-technicians[/]' => 'EventTechnicianController:create',
     ],
     'put' => [
@@ -123,8 +130,8 @@ return [
 
         '/events/{id:[0-9]+}[/]' => 'EventController:update',
         '/events/restore/{id:[0-9]+}[/]' => 'EventController:restore',
-        '/events/{id:[0-9]+}/inventory[/]' => 'EventController:updateReturnInventory',
-        '/events/{id:[0-9]+}/inventory/finish[/]' => 'EventController:finishReturnInventory',
+        '/events/{id:[0-9]+}/return[/]' => 'EventController:updateReturnInventory',
+        '/events/{id:[0-9]+}/return/finish[/]' => 'EventController:finishReturnInventory',
         '/events/{id:[0-9]+}/archive[/]' => 'EventController:archive',
         '/events/{id:[0-9]+}/unarchive[/]' => 'EventController:unarchive',
 
@@ -132,7 +139,10 @@ return [
 
         '/settings[/]' => 'SettingController:update',
 
-        '/bookings/{id:[0-9]+}/materials[/]' => 'BookingController:updateMaterials',
+        sprintf(
+            '/bookings/{entity:(?:%s)}/{id:[0-9]+}/materials[/]',
+            implode('|', array_keys(BookingController::BOOKING_TYPES))
+        ) => 'BookingController:updateMaterials',
     ],
     'delete' => [
         '/users/{id:[0-9]+}[/]' => 'UserController:delete',

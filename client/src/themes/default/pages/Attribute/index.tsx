@@ -12,6 +12,7 @@ import CriticalError from '@/themes/default/components/CriticalError';
 import Loading from '@/themes/default/components/Loading';
 import Form from './components/Form';
 
+import type { ComponentRef } from 'vue';
 import type { AttributeDetails, AttributeEdit } from '@/stores/api/attributes';
 import type { Category } from '@/stores/api/categories';
 
@@ -114,10 +115,9 @@ const AttributeEditPage = defineComponent({
 
             if (!isNew && hasCategories && (hasRemovedCategories || hasAddedCategories)) {
                 const isConfirmed = await confirm({
-                    title: __('please-confirm'),
+                    type: 'danger',
                     text: __('page.attribute-edit.confirm-update-categories'),
                     confirmButtonText: __('page.attribute-edit.yes-update'),
-                    type: 'warning',
                 });
 
                 if (!isConfirmed) {
@@ -145,7 +145,7 @@ const AttributeEditPage = defineComponent({
                     const { code, details } = error.response?.data?.error ?? defaultError;
                     if (code === ApiErrorCode.VALIDATION_FAILED) {
                         this.validationErrors = { ...details };
-                        this.$refs.page.scrollToTop();
+                        (this.$refs.page as ComponentRef<typeof Page>)?.scrollToTop();
                         return;
                     }
                 }

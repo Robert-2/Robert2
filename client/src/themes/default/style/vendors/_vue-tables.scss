@@ -112,7 +112,7 @@
     &__columns-dropdown-wrapper {
         position: relative;
         display: none;
-        margin-left: math.div($content-padding-small-vertical, 2);
+        margin-left: $spacing-small;
         text-align: right;
 
         .dropdown-toggle {

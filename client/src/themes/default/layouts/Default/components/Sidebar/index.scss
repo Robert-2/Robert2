@@ -12,7 +12,7 @@
     transition: left 300ms cubic-bezier(0, 0.72, 0.43, 1);
 
     &__logo {
-        padding: globals.$content-padding-small-horizontal 0;
+        padding: globals.$spacing-small 0;
         text-align: center;
 
         // stylelint-disable-next-line selector-max-type

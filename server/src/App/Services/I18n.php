@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Services;
+namespace Loxya\Services;
 
-use Robert2\API\Config\Config;
-use Robert2\API\Services\I18n\Loader;
-use Robert2\API\Services\I18n\LoaderInterface;
+use Loxya\Config\Config;
+use Loxya\Services\I18n\Loader;
+use Loxya\Services\I18n\LoaderInterface;
 
 /**
  * I18n class.

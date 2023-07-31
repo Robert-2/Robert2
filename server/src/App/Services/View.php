@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Services;
+namespace Loxya\Services;
 
 use Brick\Math\BigDecimal as Decimal;
 use Psr\Http\Message\ResponseInterface as Response;
-use Robert2\API\Config\Config;
+use Loxya\Config\Config;
 use Slim\Views\Twig;
 use Twig\Extension\DebugExtension;
 use Twig\Extra\Html\HtmlExtension;

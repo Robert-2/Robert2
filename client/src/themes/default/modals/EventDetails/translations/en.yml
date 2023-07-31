@@ -1,6 +1,8 @@
 edit: Modify event
 archive: Archive event
 unarchive: Unarchive event
+release-sheet-by-lists: Release sheet (materials sorted by parameters)
+release-sheet-by-parks: Release sheet (material sorted by parks)
 
 #
 # - Tabs

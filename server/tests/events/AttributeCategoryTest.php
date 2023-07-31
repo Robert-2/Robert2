@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\Tests\Events;
+namespace Loxya\Tests\Events;
 
-use Robert2\API\Models\Attribute;
-use Robert2\API\Models\Material;
-use Robert2\Tests\TestCase;
+use Loxya\Models\Attribute;
+use Loxya\Models\Material;
+use Loxya\Tests\TestCase;
 
 final class AttributeCategoryTest extends TestCase
 {

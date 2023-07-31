@@ -8,6 +8,7 @@ import CriticalError, { ERROR } from '@/themes/default/components/CriticalError'
 import Loading from '@/themes/default/components/Loading';
 import Form from './components/Form';
 import apiBeneficiaries from '@/stores/api/beneficiaries';
+import safeJsonParse from '@/utils/safeJsonParse';
 
 const WIP_STORAGE_KEY = 'WIP-newBeneficiary';
 
@@ -84,13 +85,9 @@ export default {
             if (this.isNew) {
                 const stashedData = localStorage.getItem(WIP_STORAGE_KEY);
                 if (stashedData) {
-                    try {
-                        // TODO: Ne devrait pas être mis là mais dans le data de <Form>...
-                        //       (overwrite de `DEFAULT_VALUES`)
-                        this.beneficiary = JSON.parse(stashedData);
-                    } catch {
-                        // - On ne fait rien en cas d'erreur de parsing des données en cache.
-                    }
+                    // TODO: Ne devrait pas être mis là mais dans le data de <Form>...
+                    //       (overwrite de `DEFAULT_VALUES`)
+                    this.beneficiary = safeJsonParse(stashedData) ?? null;
                 }
                 this.isFetched = true;
                 return;

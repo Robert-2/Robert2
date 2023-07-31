@@ -3,14 +3,17 @@
 {% block head %}
     {% if env is not same as('development') -%}
     <link href="{{ client_asset('/css/chunk-vendors.css') }}" rel="preload" as="style">
+    <link href="{{ client_asset('/css/chunk-common.css') }}" rel="preload" as="style">
     <link href="{{ client_asset('/css/default.css') }}" rel="preload" as="style">
     {% endif -%}
 
     <link href="{{ client_asset('/js/chunk-vendors.js') }}" rel="preload" as="script">
+    <link href="{{ client_asset('/js/chunk-common.js') }}" rel="preload" as="script">
     <link href="{{ client_asset('/js/default.js') }}" rel="preload" as="script">
 
     {% if env is not same as('development') -%}
     <link href="{{ client_asset('/css/chunk-vendors.css') }}" rel="stylesheet">
+    <link href="{{ client_asset('/css/chunk-common.css') }}" rel="stylesheet">
     <link href="{{ client_asset('/css/default.css') }}" rel="stylesheet">
     {% endif -%}
 {% endblock %}
@@ -23,10 +26,11 @@
     <script type="text/javascript">
         //<![CDATA[
         var __SERVER_CONFIG__ = {{
-            serverConfig|json_encode(constant('Robert2\\API\\Config\\Config::JSON_OPTIONS'))|raw
+            serverConfig|json_encode(constant('Loxya\\Config\\Config::JSON_OPTIONS'))|raw
         }};
         //]]>
     </script>
     <script src="{{ client_asset('/js/chunk-vendors.js') }}"></script>
+    <script src="{{ client_asset('/js/chunk-common.js') }}"></script>
     <script src="{{ client_asset('/js/default.js') }}"></script>
 {% endblock %}

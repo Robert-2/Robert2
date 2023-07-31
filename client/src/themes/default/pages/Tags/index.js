@@ -6,6 +6,7 @@ import EmptyMessage from '@/themes/default/components/EmptyMessage';
 import Button from '@/themes/default/components/Button';
 import Icon from '@/themes/default/components/Icon';
 import { confirm, prompt } from '@/utils/alert';
+import stringCompare from '@/utils/stringCompare';
 import apiTags from '@/stores/api/tags';
 import { ApiErrorCode } from '@/stores/api/@codes';
 
@@ -32,7 +33,7 @@ export default {
 
             const sortedTags = [...tags]
                 .sort(({ name: name1 }, { name: name2 }) => (
-                    name1.localeCompare(name2)
+                    stringCompare(name1, name2)
                 ));
 
             return sortedTags;
@@ -102,12 +103,12 @@ export default {
             const isSoft = !isTrashDisplayed;
 
             const isConfirmed = await confirm({
-                type: isSoft ? 'warning' : 'danger',
+                type: 'danger',
                 text: isSoft
                     ? __('page.tags.confirm-delete')
                     : __('page.tags.confirm-permanently-delete'),
                 confirmButtonText: isSoft
-                    ? __('yes-delete')
+                    ? __('yes-trash')
                     : __('yes-permanently-delete'),
             });
             if (!isConfirmed) {
@@ -135,7 +136,6 @@ export default {
 
             const { $t: __ } = this;
             const isConfirmed = await confirm({
-                type: 'restore',
                 text: __('page.tags.confirm-restore'),
                 confirmButtonText: __('yes-restore'),
             });
@@ -277,17 +277,18 @@ export default {
                         <EmptyMessage
                             message={(
                                 isTrashDisplayed
-                                    ? __('page.tags.no-item-in-trash')
-                                    : __('page.tags.no-item')
+                                    ? __('page.tags.no-tag-in-trash')
+                                    : __('page.tags.no-tag-yet')
                             )}
                             action={(
                                 isTrashDisplayed
                                     ? {
+                                        type: 'primary',
                                         label: __('display-not-deleted-items'),
                                         onClick: handleToggleTrashed,
                                     }
                                     : {
-                                        label: __('page.tags.action-add'),
+                                        label: __('page.tags.create-first-tag'),
                                         onClick: handleCreate,
                                     }
                             )}

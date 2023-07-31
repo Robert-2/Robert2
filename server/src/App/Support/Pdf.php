@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\Support;
+namespace Loxya\Support;
 
 use Dompdf\Dompdf;
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
-use Robert2\API\Config\Config;
-use Robert2\API\Services\I18n;
-use Robert2\API\Services\View;
+use Loxya\Config\Config;
+use Loxya\Services\I18n;
+use Loxya\Services\View;
 use Slim\Http\Response;
 use Slim\Psr7\Stream;
 
@@ -94,6 +94,10 @@ final class Pdf
 
     public function asResponse(Response $response): Response
     {
+        if (env('DEBUG_PDF') === true && Config::getEnv() !== 'test') {
+            return $this->asResponseHtml($response);
+        }
+
         $content = $this->getContent();
         if (Config::getEnv() === 'test') {
             $content = $this->getRawContent();

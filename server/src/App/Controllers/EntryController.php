@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Controllers;
+namespace Loxya\Controllers;
 
 use DI\Container;
-use Robert2\API\Config\Config;
-use Robert2\API\Http\Request;
-use Robert2\API\Services\Auth;
-use Robert2\API\Services\View;
+use Loxya\Config\Config;
+use Loxya\Http\Request;
+use Loxya\Services\Auth;
+use Loxya\Services\View;
 use Slim\Http\Response;
 
 class EntryController extends BaseController

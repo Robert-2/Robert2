@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\Tests;
+namespace Loxya\Tests;
 
 use Illuminate\Support\Carbon;
 use Adbar\Dot as DotArray;
-use Robert2\API\Config\Config;
-use Robert2\Fixtures\RobertFixtures;
+use Loxya\Config\Config;
+use Loxya\Tests\Fixtures\Fixtures;
 use PHPUnit\Framework\TestCase as CoreTestCase;
 use Spatie\Snapshots\MatchesSnapshots;
 
@@ -21,7 +21,7 @@ class TestCase extends CoreTestCase
         static::setCustomConfig();
 
         try {
-            RobertFixtures::resetDataWithDump();
+            Fixtures::resetDataWithDump();
         } catch (\Exception $e) {
             $this->fail(sprintf("Unable to reset fixtures: %s", $e->getMessage()));
         }

@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Observers;
+namespace Loxya\Observers;
 
-use Robert2\API\Models\Attribute;
-use Robert2\API\Models\AttributeCategory;
-use Robert2\API\Models\Material;
+use Loxya\Models\Attribute;
+use Loxya\Models\AttributeCategory;
+use Loxya\Models\Material;
 
 final class AttributeCategoryObserver
 {

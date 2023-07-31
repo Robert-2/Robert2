@@ -7,6 +7,7 @@ import FileManager from '@/themes/default/components/FileManager';
 import Loading from '@/themes/default/components/Loading';
 import { confirm } from '@/utils/alert';
 
+import type { ComponentRef } from 'vue';
 import type { ProgressCallback } from 'axios';
 import type { PropType } from '@vue/composition-api';
 import type { Document } from '@/stores/api/documents';
@@ -86,8 +87,9 @@ const TechnicianViewDocuments = defineComponent({
         // ------------------------------------------------------
 
         isUploading(): boolean {
-            const { fileManagerRef } = this.$refs;
-            return !!fileManagerRef?.isUploading();
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+            const $fileManager = this.$refs.fileManager as ComponentRef<typeof FileManager>;
+            return !!$fileManager?.isUploading();
         },
 
         // ------------------------------------------------------
@@ -131,7 +133,7 @@ const TechnicianViewDocuments = defineComponent({
         return (
             <div class="TechnicianViewDocuments">
                 <FileManager
-                    ref="fileManagerRef"
+                    ref="fileManager"
                     class="TechnicianViewDocuments__manager"
                     documents={documents}
                     persister={persistDocument}

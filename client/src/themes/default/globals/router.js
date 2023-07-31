@@ -1,6 +1,5 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import { APP_NAME } from '@/globals/constants';
 import routes from '@/themes/default/pages';
 import store from './store';
 
@@ -35,15 +34,6 @@ router.beforeEach((to, from, next) => {
         null,
     );
 
-    const { title, requiresGroups } = to.matched[0].meta;
-
-    if (title) {
-        const translatedName = Vue.i18n.translate(title, { pageSubTitle: '' });
-        document.title = `${translatedName} − ${APP_NAME}`;
-    } else {
-        document.title = APP_NAME;
-    }
-
     const isLogged = store.getters['auth/isLogged'];
     if (requiresAuth && !isLogged) {
         next('/login');
@@ -63,6 +53,7 @@ router.beforeEach((to, from, next) => {
         return;
     }
 
+    const { requiresGroups } = to.matched[0].meta;
     if (requiresGroups && requiresGroups.length) {
         if (!isLogged) {
             next('/login');
@@ -83,15 +74,6 @@ router.beforeEach((to, from, next) => {
     }
 
     next();
-});
-
-router.afterEach(({ name, matched }) => {
-    if (name === 'login') {
-        return;
-    }
-
-    const { title } = matched[0].meta;
-    store.commit('setPageTitle', title ?? '');
 });
 
 export default router;

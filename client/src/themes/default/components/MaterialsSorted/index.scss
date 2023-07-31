@@ -1,9 +1,7 @@
 @use '~@/themes/default/style/globals';
 
 .MaterialsSorted {
-    margin-bottom: 1rem;
-
-    &__category + &__category {
-        margin-top: 20px;
-    }
+    display: flex;
+    flex-direction: column;
+    gap: globals.$spacing-medium;
 }

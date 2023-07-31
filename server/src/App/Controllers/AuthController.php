@@ -1,16 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Controllers;
+namespace Loxya\Controllers;
 
 use DI\Container;
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Robert2\API\Config\Config;
-use Robert2\API\Http\Enums\AppContext;
-use Robert2\API\Http\Request;
-use Robert2\API\Models\User;
-use Robert2\API\Services\Auth;
+use Loxya\Config\Config;
+use Loxya\Http\Enums\AppContext;
+use Loxya\Http\Request;
+use Loxya\Models\User;
+use Loxya\Services\Auth;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpUnauthorizedException;
 use Slim\Http\Response;

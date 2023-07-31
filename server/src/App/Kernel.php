@@ -1,8 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API;
+namespace Loxya;
 
+use DI\Container;
 use DI\ContainerBuilder;
 use Illuminate\Container\Container as IlluminateContainer;
 use Illuminate\Database\Capsule\Manager as Database;
@@ -10,15 +11,14 @@ use Illuminate\Database\DatabaseTransactionsManager;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Events\Dispatcher as EventDispatcher;
-use Psr\Container\ContainerInterface;
 use Respect\Validation\Factory as ValidatorFactory;
-use Robert2\API\Config\Config;
+use Loxya\Config\Config;
 
 final class Kernel
 {
     private static $instance;
 
-    protected $container;
+    protected Container $container;
 
     public static function boot()
     {
@@ -54,7 +54,7 @@ final class Kernel
         $this->initializeDatabase();
     }
 
-    public function getContainer(): ContainerInterface
+    public function getContainer(): Container
     {
         if (!$this->container) {
             throw new \LogicException("Impossible de récupérer le conteneur à partir d'un kernel non initialisé.");

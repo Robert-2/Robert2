@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Models;
+namespace Loxya\Models;
 
 use Illuminate\Database\Eloquent\Collection;
-use Robert2\API\Contracts\Serializable;
-use Robert2\API\Models\Traits\Serializer;
+use Loxya\Contracts\Serializable;
+use Loxya\Models\Traits\Serializer;
 use Respect\Validation\Validator as V;
 
 /**
@@ -37,6 +37,8 @@ final class EventTechnician extends BaseModel implements Serializable
         parent::__construct($attributes);
 
         $this->validation = [
+            'event_id' => V::custom([$this, 'checkEventId']),
+            'technician_id' => V::custom([$this, 'checkTechnicianId']),
             'start_time' => V::custom([$this, 'checkDates']),
             'end_time' => V::custom([$this, 'checkDates']),
             'position' => V::optional(V::length(2, 191)),
@@ -48,6 +50,29 @@ final class EventTechnician extends BaseModel implements Serializable
     // -    Validation
     // -
     // ------------------------------------------------------
+
+    public function checkEventId($value)
+    {
+        // - L'identifiant de l’événement n'est pas encore défini, on skip.
+        if (!$this->exists && $value === null) {
+            return true;
+        }
+        return Event::staticExists($value);
+    }
+
+    public function checkTechnicianId($value)
+    {
+        V::notEmpty()->numericVal()->check($value);
+
+        $technician = Technician::find($value);
+        if (!$technician) {
+            return false;
+        }
+
+        return !$this->exists || $this->isDirty('technician_id')
+            ? !$technician->trashed()
+            : true;
+    }
 
     public function checkDates()
     {
@@ -117,7 +142,8 @@ final class EventTechnician extends BaseModel implements Serializable
 
     public function event()
     {
-        return $this->belongsTo(Event::class, 'event_id');
+        return $this->belongsTo(Event::class, 'event_id')
+            ->withTrashed();
     }
 
     public function technician()

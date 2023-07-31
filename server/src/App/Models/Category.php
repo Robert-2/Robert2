@@ -1,11 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Models;
+namespace Loxya\Models;
 
+use Adbar\Dot as DotArray;
 use Illuminate\Database\Eloquent\Collection;
-use Robert2\API\Contracts\Serializable;
-use Robert2\API\Models\Traits\Serializer;
+use Loxya\Contracts\Serializable;
+use Loxya\Models\Traits\Serializer;
 use Respect\Validation\Validator as V;
 
 /**
@@ -53,11 +54,7 @@ final class Category extends BaseModel implements Serializable
             $query->where('id', '!=', $this->id);
         }
 
-        if ($query->exists()) {
-            return 'category-name-already-in-use';
-        }
-
-        return true;
+        return !$query->exists() ?: 'category-name-already-in-use';
     }
 
     // ------------------------------------------------------
@@ -159,13 +156,8 @@ final class Category extends BaseModel implements Serializable
 
     public function serialize(): array
     {
-        $data = $this->attributesForSerialization();
-
-        unset(
-            $data['created_at'],
-            $data['updated_at'],
-        );
-
-        return $data;
+        return (new DotArray($this->attributesForSerialization()))
+            ->delete(['created_at', 'updated_at'])
+            ->all();
     }
 }

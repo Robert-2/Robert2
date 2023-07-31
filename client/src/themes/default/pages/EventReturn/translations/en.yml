@@ -13,6 +13,9 @@ not-saved-yet: Please note that this return inventory has not yet been saved!
 all-material-returned:
     "Congratulations! All materials were returned for this event.\n
     You can now click on \"Terminate inventory\" button."
+all-material-returned-draft:
+    "Congratulations! All materials marked as returned for this event.\n
+    You will be able to mark the inventory as finished when the event has ended."
 some-material-is-missing: Some materials did not return from this event!
 some-material-came-back-broken: Some materials came back broken.
 

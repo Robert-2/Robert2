@@ -45,7 +45,7 @@ $size: 1.7rem;
         margin-left: 0.5rem;
 
         &__disabled-reason {
-            margin-left: globals.$content-padding-small-horizontal;
+            margin-left: globals.$spacing-small;
             font-style: italic;
         }
     }

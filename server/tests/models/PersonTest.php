@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\Tests;
+namespace Loxya\Tests;
 
-use Robert2\API\Models\Person;
+use Loxya\Models\Person;
 
 final class PersonTest extends TestCase
 {
@@ -29,24 +29,24 @@ final class PersonTest extends TestCase
         $this->assertSame($expectedErrors, $person->validationErrors());
     }
 
-    public function testSetSearch(): void
+    public function testSearch(): void
     {
-        $result = (new Person)->setSearch('Jean')->getAll()->get();
+        $result = Person::search('Jean')->get();
         $this->assertEquals(2, $result->count());
         $this->assertEquals(
             ['Jean Fountain', 'Jean Technicien'],
             $result->pluck('full_name')->all()
         );
 
-        $result = (new Person)->setSearch('Fount')->getAll()->get();
+        $result = Person::search('Fount')->get();
         $this->assertEquals(1, $result->count());
         $this->assertEquals(['Jean Fountain'], $result->pluck('full_name')->all());
 
-        $result = (new Person)->setSearch('Jean F')->getAll()->get();
+        $result = Person::search('Jean F')->get();
         $this->assertEquals(1, $result->count());
         $this->assertEquals(['Jean Fountain'], $result->pluck('full_name')->all());
 
-        $result = (new Person)->setSearch('Technicien Jean')->getAll()->get();
+        $result = Person::search('Technicien Jean')->get();
         $this->assertEquals(1, $result->count());
         $this->assertEquals(['Jean Technicien'], $result->pluck('full_name')->all());
     }

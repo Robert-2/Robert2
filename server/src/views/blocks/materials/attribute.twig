@@ -1,7 +1,15 @@
 {# À cause de la mauvaise prise en charge du `white-space: nowrap` par DomPDF,
-tout est défini sur une seule ligne, pour que les espaces ne soient pas wrappés
+les espaces invisibles doivent être supprimés pour éviter qu'ils soient wrappés
 n'importe comment après le label et avant la valeur, mais qu'il puissent être
 wrappés dans la valeur elle-même si c'est un texte un peu long. #}
 <span class="lighter">
-    {{ attribute['name'] }}&nbsp;:&nbsp;{% if attribute['type'] == 'boolean' %}{{ attribute['value'] == '1' ? translate("yes") : translate("no") }}.{% elseif attribute['type'] == 'date' %}{{ attribute['value']|format_date('short', locale=locale) }}.{% else %}{{ attribute['value'] }}{% endif %}{% if attribute['unit'] is not empty %}&nbsp;{{ attribute['unit'] }}.{% endif %}
+    {{- attribute['name'] }}&nbsp;:&nbsp;
+    {%- if attribute['type'] == 'boolean' -%}
+    {{- attribute['value'] == '1' ? translate("yes") : translate("no") -}}.
+    {%- elseif attribute['type'] == 'date' -%}
+    {{- attribute['value']|format_date('short', locale=locale) -}}.
+    {%- else -%}
+    {{- attribute['value'] -}}
+    {%- endif -%}
+    {%- if attribute['unit'] is not empty %}&nbsp;{{ attribute['unit'] }}.{% endif -%}
 </span>

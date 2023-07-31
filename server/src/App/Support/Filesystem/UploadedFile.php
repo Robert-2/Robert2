@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\Support\Filesystem;
+namespace Loxya\Support\Filesystem;
 
 use GuzzleHttp\Psr7\LazyOpenStream;
 use GuzzleHttp\Psr7\UploadedFile as CoreUploadedFile;
 use GuzzleHttp\Psr7\Utils as FileUtils;
-use Robert2\API\Config\Config;
+use Loxya\Config\Config;
 
 class UploadedFile extends CoreUploadedFile
 {

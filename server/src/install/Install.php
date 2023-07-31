@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\Install;
+namespace Loxya\Install;
 
-use Robert2\API\Config\Config;
-use Robert2\API\Console\App as CliApp;
+use Loxya\Config\Config;
+use Loxya\Console\App as CliApp;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\StreamOutput;
 
@@ -27,6 +27,7 @@ class Install
 
     public const REQUIRED_EXTENSIONS = [
         'bcmath',
+        'curl',
         'dom',
         'fileinfo',
         'gettext',

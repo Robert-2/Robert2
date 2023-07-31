@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Controllers;
+namespace Loxya\Controllers;
 
-use Robert2\API\Controllers\Traits\WithPdf;
+use Loxya\Controllers\Traits\WithPdf;
 
 class InvoiceController extends BaseController
 {
