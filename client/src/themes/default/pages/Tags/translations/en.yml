@@ -3,8 +3,9 @@ help: |-
     Tags help you quickly search for materials in lists.
     Hover over a tag to rename or delete it.
 
-no-item: There is no tag yet.
-no-item-in-trash: No tag in trash bin.
+no-tag-yet: There is no tag yet.
+create-first-tag: Create a first tag
+no-tag-in-trash: No tag in trash bin.
 
 action-add: New tag
 create: Create tag

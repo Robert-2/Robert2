@@ -1,16 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Models;
+namespace Loxya\Models;
 
 use Adbar\Dot as DotArray;
 use Monolog\Logger;
 use Psr\Http\Message\UploadedFileInterface;
-use Robert2\API\Config\Config;
-use Robert2\API\Contracts\Serializable;
-use Robert2\API\Models\Traits\Serializer;
+use Loxya\Config\Config;
+use Loxya\Contracts\Serializable;
+use Loxya\Models\Traits\Serializer;
 use Respect\Validation\Validator as V;
-use Robert2\Support\Str;
+use Loxya\Support\Str;
 
 /**
  * Document attaché à un matériel, un événement,
@@ -59,12 +59,12 @@ final class Document extends BaseModel implements Serializable
                 V::equals(Event::TYPE),
                 V::equals(Technician::TYPE),
             ),
-            'entity_id' => V::custom([$this, 'checkEntity']),
+            'entity_id' => V::custom([$this, 'checkEntityId']),
             'name' => V::custom([$this, 'checkName']),
             'type' => V::custom([$this, 'checkType']),
             'size' => V::custom([$this, 'checkSize']),
             'file' => V::custom([$this, 'checkFile']),
-            'author_id' => V::custom([$this, 'checkAuthor']),
+            'author_id' => V::custom([$this, 'checkAuthorId']),
         ];
     }
 
@@ -125,7 +125,7 @@ final class Document extends BaseModel implements Serializable
         return true;
     }
 
-    public function checkEntity($value)
+    public function checkEntityId($value)
     {
         V::notEmpty()->numericVal()->check($value);
 
@@ -137,12 +137,21 @@ final class Document extends BaseModel implements Serializable
         };
     }
 
-    public function checkAuthor($value)
+    public function checkAuthorId($value)
     {
         V::optional(V::numericVal())->check($value);
 
-        return $value !== null
-            ? User::staticExists($value)
+        if ($value === null) {
+            return true;
+        }
+
+        $author = User::find($value);
+        if (!$author) {
+            return false;
+        }
+
+        return !$this->exists || $this->isDirty('author_id')
+            ? !$author->trashed()
             : true;
     }
 
@@ -159,7 +168,8 @@ final class Document extends BaseModel implements Serializable
 
     public function author()
     {
-        return $this->belongsTo(User::class, 'author_id');
+        return $this->belongsTo(User::class, 'author_id')
+            ->withTrashed();
     }
 
     // ------------------------------------------------------

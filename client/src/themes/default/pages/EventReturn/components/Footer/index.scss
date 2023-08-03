@@ -1,22 +1,18 @@
 @use '~@/themes/default/style/globals';
 
 .EventReturnFooter {
-    padding: globals.$content-padding-large-horizontal 0;
+    padding: globals.$spacing-medium 0;
     background-color: globals.$bg-color-body;
     text-align: center;
 
     &__done {
         display: inline-block;
-        padding: globals.$content-padding-large-horizontal globals.$content-padding-large-vertical;
+        padding: globals.$spacing-medium globals.$spacing-large;
         color: globals.$text-success-color;
     }
 
-    &__action {
-        margin-left: globals.$content-padding-small-vertical;
-    }
-
     &__warning {
-        margin-top: globals.$content-padding-large-horizontal;
+        margin-top: globals.$spacing-medium;
         color: globals.$text-warning-color;
         font-size: 1.1rem;
     }

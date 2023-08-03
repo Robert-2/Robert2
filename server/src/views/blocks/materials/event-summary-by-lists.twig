@@ -1,0 +1,63 @@
+{% for listMaterials in materialsSorted %}
+<h2>{{ translate('materials') }}</h2>
+<table class="listing-table">
+    <thead>
+        <tr>
+            <th>{{ translate('ref') }}</th>
+            <th>{{ translate('designation') }}</th>
+            <th>{{ translate('qty') }}</th>
+            <th>{{ translate('replacement-value') }}</th>
+            <th>{{ translate('total-replacement-value') }}</th>
+            <th>{{ translate('qty-returned') }}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% if materialDisplayMode == 'categories' %}
+            {%- for category, materials in listMaterials -%}
+                <tr>
+                    <td class="section-title" colspan="6">
+                        {{- category|replace({ '__other': translate('not-categorized') }) -}}
+                    </td>
+                </tr>
+                {% for material in materials %}
+                    {{- include('blocks/materials/line-event-summary.twig', { material: material }) -}}
+                {% endfor %}
+            {%- endfor -%}
+        {%- elseif materialDisplayMode == 'sub-categories' -%}
+            {%- for subCategory, materials in listMaterials -%}
+                <tr>
+                    <td class="section-title" colspan="6">
+                        {%- if subCategory == '--' -%}
+                            {{- translate('not-categorized') -}}
+                        {%- else -%}
+                            {{- subCategory|replace({ '__other': translate('other-materials') }) -}}
+                        {%- endif -%}
+                    </td>
+                </tr>
+                {% for material in materials %}
+                    {{- include('blocks/materials/line-event-summary.twig', { material: material }) -}}
+                {% endfor %}
+            {%- endfor -%}
+        {%- elseif materialDisplayMode == 'parks' -%}
+            {%- for park, materials in listMaterials -%}
+                <tr>
+                    <td class="section-title" colspan="6">
+                        {%- if park is not empty -%}
+                            {{- park -}}
+                        {%- else -%}
+                            ({{ translate('unknown-park') }})
+                        {%- endif -%}
+                    </td>
+                </tr>
+                {% for material in materials %}
+                    {{- include('blocks/materials/line-event-summary.twig', { material: material, withoutPark: true }) -}}
+                {% endfor %}
+            {%- endfor -%}
+        {%- else -%}
+            {% for material in listMaterials %}
+                {{- include('blocks/materials/line-event-summary.twig', { material: material }) -}}
+            {% endfor %}
+        {%- endif %}
+    </tbody>
+</table>
+{% endfor %}

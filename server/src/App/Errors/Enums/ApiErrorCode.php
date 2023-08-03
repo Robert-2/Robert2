@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Errors\Enums;
+namespace Loxya\Errors\Enums;
 
 /**
  * Codes d'erreur retournés par l'API.
@@ -24,4 +24,7 @@ class ApiErrorCode
 
     /** Une erreur ou plusieurs erreurs de validation ce sont produites. */
     public const VALIDATION_FAILED = 400;
+
+    /** Le payload fourni dans la requête ne doit pas être vide. */
+    public const EMPTY_PAYLOAD = 401;
 }

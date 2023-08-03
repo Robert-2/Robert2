@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Models;
+namespace Loxya\Models;
 
 /**
  * Catégorie pour laquelle une caractéristique de matériel est limitée.

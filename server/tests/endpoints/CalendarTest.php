@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\Tests;
+namespace Loxya\Tests;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Illuminate\Support\Carbon;
-use Robert2\API\Models\Setting;
+use Loxya\Models\Setting;
 
 final class CalendarTest extends ApiTestCase
 {

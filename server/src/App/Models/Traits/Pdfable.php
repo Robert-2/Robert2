@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Models\Traits;
+namespace Loxya\Models\Traits;
 
-use Robert2\API\Services\I18n;
-use Robert2\Support\Pdf;
+use Loxya\Services\I18n;
+use Loxya\Support\Pdf;
 
 trait Pdfable
 {

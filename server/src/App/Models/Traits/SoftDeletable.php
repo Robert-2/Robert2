@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Models\Traits;
+namespace Loxya\Models\Traits;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Robert2\API\Models\BaseModel;
+use Loxya\Models\BaseModel;
 
 trait SoftDeletable
 {

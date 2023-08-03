@@ -3,6 +3,7 @@ import { defineComponent } from '@vue/composition-api';
 import Document from './components/Document';
 import UploadArea from './components/UploadArea';
 
+import type { ComponentRef } from 'vue';
 import type { ProgressCallback } from 'axios';
 import type { PropType } from '@vue/composition-api';
 import type { Document as DocumentType } from '@/stores/api/documents';
@@ -76,9 +77,15 @@ const FileManager = defineComponent({
         // -
         // ------------------------------------------------------
 
+        /**
+         * Indique si au moins un fichier est en cours d'upload ou non.
+         *
+         * @returns `true` si un fichier est en cours d'upload, `false` sinon.
+         */
         isUploading(): boolean {
-            const { uploadAreaRef } = this.$refs;
-            return uploadAreaRef.isUploading();
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+            const $uploadAreaRef = this.$refs.uploadArea as ComponentRef<typeof UploadArea>;
+            return !!$uploadAreaRef?.isUploading();
         },
 
         // ------------------------------------------------------
@@ -128,7 +135,7 @@ const FileManager = defineComponent({
                 </section>
                 <section class="FileManager__upload-area">
                     <UploadArea
-                        ref="uploadAreaRef"
+                        ref="uploadArea"
                         persister={persister}
                         onUpload={handleDocumentUploaded}
                     />

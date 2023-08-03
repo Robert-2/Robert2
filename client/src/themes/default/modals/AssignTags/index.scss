@@ -6,7 +6,7 @@
         align-items: center;
         padding: 0.7rem 1rem;
         background-color: globals.$bg-color-main-header;
-        gap: 10px;
+        gap: globals.$spacing-medium;
 
         &__title {
             flex: 1;
@@ -27,13 +27,13 @@
     }
 
     &__body {
-        padding: globals.$content-padding-large-vertical globals.$content-padding-small-vertical;
+        padding: globals.$spacing-large globals.$spacing-medium;
     }
 
     &__footer {
         display: flex;
         justify-content: center;
-        padding: 1.5rem globals.$content-padding-small-vertical;
+        padding: 1.5rem globals.$spacing-medium;
         background-color: rgba(0, 0, 0, 0.1);
     }
 

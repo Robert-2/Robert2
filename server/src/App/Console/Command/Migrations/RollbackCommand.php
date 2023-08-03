@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Console\Command\Migrations;
+namespace Loxya\Console\Command\Migrations;
 
 use Phinx\Console\Command\Rollback as CoreRollbackCommand;
-use Robert2\API\Config\Config;
+use Loxya\Config\Config;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;

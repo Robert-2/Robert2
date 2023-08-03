@@ -7,6 +7,7 @@ title-simple: Details of material
 
 infos:
     click-to-open-image: Click to open image in a new tab.
+    park-name: "Park \"{name}\""
 
 documents:
     confirm-permanently-delete: Do you really want to permanently delete this document?

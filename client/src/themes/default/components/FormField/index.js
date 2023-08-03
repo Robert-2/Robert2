@@ -91,6 +91,18 @@ export default defineComponent({
 
         // ------------------------------------------------------
         // -
+        // -    Méthodes utilisables sur l'instance du composant
+        // -
+        // ------------------------------------------------------
+
+        focus() {
+            if (this.$refs.inputRef) {
+                this.$refs.inputRef.focus();
+            }
+        },
+
+        // ------------------------------------------------------
+        // -
         // -    Méthodes internes
         // -
         // ------------------------------------------------------
@@ -193,6 +205,7 @@ export default defineComponent({
                                 addon={addon}
                                 onInput={handleInput}
                                 onChange={handleChange}
+                                ref="inputRef"
                             />
                         )}
                         {type === 'select' && (

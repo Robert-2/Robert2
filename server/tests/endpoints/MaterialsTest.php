@@ -1,15 +1,15 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\Tests;
+namespace Loxya\Tests;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
-use Robert2\API\Models\Event;
-use Robert2\API\Models\Material;
-use Robert2\Support\Arr;
-use Robert2\Support\Filesystem\UploadedFile;
+use Loxya\Models\Event;
+use Loxya\Models\Material;
+use Loxya\Support\Arr;
+use Loxya\Support\Filesystem\UploadedFile;
 
 final class MaterialsTest extends ApiTestCase
 {
@@ -23,6 +23,7 @@ final class MaterialsTest extends ApiTestCase
                 'description' => 'Console numérique 64 entrées / 8 sorties + Master + Sub',
                 'is_unitary' => false,
                 'park_id' => 1,
+                'park_location_id' => null,
                 'category_id' => 1,
                 'sub_category_id' => 1,
                 'rental_price' => 300,
@@ -73,11 +74,12 @@ final class MaterialsTest extends ApiTestCase
                 'description' => 'Système de diffusion numérique',
                 'is_unitary' => false,
                 'park_id' => 1,
+                'park_location_id' => null,
                 'category_id' => 1,
                 'sub_category_id' => 2,
                 'rental_price' => 25.5,
                 'stock_quantity' => 2,
-                'out_of_order_quantity' => null,
+                'out_of_order_quantity' => 0,
                 'replacement_price' => 349.9,
                 'is_hidden_on_bill' => false,
                 'is_discountable' => true,
@@ -116,6 +118,7 @@ final class MaterialsTest extends ApiTestCase
                 'description' => 'Projecteur PAR64 à LED, avec son set de gélatines',
                 'is_unitary' => false,
                 'park_id' => 1,
+                'park_location_id' => null,
                 'category_id' => 2,
                 'sub_category_id' => 3,
                 'rental_price' => 3.5,
@@ -159,11 +162,12 @@ final class MaterialsTest extends ApiTestCase
                 'description' => "Console DMX (jeu d'orgue) Showtec 6 canaux",
                 'is_unitary' => false,
                 'park_id' => 1,
+                'park_location_id' => null,
                 'category_id' => 2,
                 'sub_category_id' => 4,
                 'rental_price' => 15.95,
                 'stock_quantity' => 2,
-                'out_of_order_quantity' => null,
+                'out_of_order_quantity' => 0,
                 'replacement_price' => 59,
                 'is_hidden_on_bill' => false,
                 'is_discountable' => true,
@@ -206,6 +210,7 @@ final class MaterialsTest extends ApiTestCase
                 'description' => 'Câble audio XLR 10 mètres, mâle-femelle',
                 'is_unitary' => false,
                 'park_id' => 1,
+                'park_location_id' => null,
                 'category_id' => 1,
                 'sub_category_id' => null,
                 'rental_price' => 0.5,
@@ -230,11 +235,12 @@ final class MaterialsTest extends ApiTestCase
                 'reference' => 'XR18',
                 'is_unitary' => false,
                 'park_id' => 1,
+                'park_location_id' => null,
                 'category_id' => 1,
                 'sub_category_id' => 1,
                 'rental_price' => 49.99,
-                'stock_quantity' => 0,
-                'out_of_order_quantity' => 0,
+                'stock_quantity' => 3,
+                'out_of_order_quantity' => 1,
                 'replacement_price' => 419,
                 'is_hidden_on_bill' => false,
                 'is_discountable' => false,
@@ -261,10 +267,11 @@ final class MaterialsTest extends ApiTestCase
                 'reference' => 'Transporter',
                 'is_unitary' => false,
                 'park_id' => 2,
+                'park_location_id' => null,
                 'category_id' => 3,
                 'sub_category_id' => null,
                 'rental_price' => 300,
-                'stock_quantity' => 1,
+                'stock_quantity' => 2,
                 'out_of_order_quantity' => 0,
                 'replacement_price' => 32000,
                 'is_hidden_on_bill' => false,
@@ -284,11 +291,12 @@ final class MaterialsTest extends ApiTestCase
                 'description' => 'Forêt mystique, typique des récits fantastiques.',
                 'reference' => 'Decor-Forest',
                 'is_unitary' => false,
-                'park_id' => 2,
+                'park_id' => 1,
+                'park_location_id' => null,
                 'category_id' => 4,
                 'sub_category_id' => null,
                 'rental_price' => 1500,
-                'stock_quantity' => 1,
+                'stock_quantity' => 2,
                 'out_of_order_quantity' => 0,
                 'replacement_price' => 8500,
                 'is_hidden_on_bill' => false,
@@ -328,7 +336,7 @@ final class MaterialsTest extends ApiTestCase
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponsePaginatedData(8, [
             array_replace_recursive(self::data(6), [
-                'available_quantity' => 0,
+                'available_quantity' => 2,
             ]),
             array_replace_recursive(self::data(5), [
                 'available_quantity' => 32,
@@ -337,7 +345,7 @@ final class MaterialsTest extends ApiTestCase
                 'available_quantity' => 4,
             ]),
             array_replace_recursive(self::data(8), [
-                'available_quantity' => 1,
+                'available_quantity' => 2,
             ]),
             array_replace_recursive(self::data(3), [
                 'available_quantity' => 30,
@@ -349,7 +357,7 @@ final class MaterialsTest extends ApiTestCase
                 'available_quantity' => 2,
             ]),
             array_replace_recursive(self::data(7), [
-                'available_quantity' => 1,
+                'available_quantity' => 2,
             ]),
         ]);
 
@@ -377,8 +385,8 @@ final class MaterialsTest extends ApiTestCase
         $results = $this->_getResponseAsArray();
         $this->assertCount(8, $results);
         $this->assertEquals('Behringer X Air XR18', $results[0]['name']);
-        $this->assertEquals(0, $results[0]['stock_quantity']);
-        $this->assertEquals(0, $results[0]['available_quantity']);
+        $this->assertEquals(3, $results[0]['stock_quantity']);
+        $this->assertEquals(2, $results[0]['available_quantity']);
 
         $this->client->get('/api/materials?deleted=1');
         $this->assertStatusCode(StatusCode::STATUS_OK);
@@ -392,16 +400,6 @@ final class MaterialsTest extends ApiTestCase
         $this->assertResponsePaginatedData(1);
         $results = $this->_getResponseAsArray();
         $this->assertEquals('CL3', $results['data'][0]['reference']);
-    }
-
-    public function testGetAllSearchByReference()
-    {
-        $this->client->get('/api/materials?search=PA&searchBy=reference');
-        $this->assertStatusCode(StatusCode::STATUS_OK);
-        $this->assertResponsePaginatedData(2);
-        $results = $this->_getResponseAsArray();
-        $this->assertEquals('PAR64LED', $results['data'][0]['reference']);
-        $this->assertEquals('DBXPA2', $results['data'][1]['reference']);
     }
 
     public function testGetMaterialNotFound()
@@ -422,7 +420,7 @@ final class MaterialsTest extends ApiTestCase
                 'available_quantity' => 0,
             ]),
             array_replace_recursive(self::data(8), [
-                'available_quantity' => 1,
+                'available_quantity' => 2,
             ]),
             array_replace_recursive(self::data(3), [
                 'available_quantity' => 30,
@@ -431,13 +429,13 @@ final class MaterialsTest extends ApiTestCase
                 'available_quantity' => 2,
             ]),
             array_replace_recursive(self::data(7), [
-                'available_quantity' => 1,
+                'available_quantity' => 2,
             ]),
             array_replace_recursive(self::data(5), [
                 'available_quantity' => 32,
             ]),
             array_replace_recursive(self::data(6), [
-                'available_quantity' => 0,
+                'available_quantity' => 2,
             ]),
         ]);
     }
@@ -480,7 +478,7 @@ final class MaterialsTest extends ApiTestCase
 
     public function testGetAllByTags()
     {
-        $this->client->get('/api/materials?tags[0]=Premium');
+        $this->client->get('/api/materials?tags[0]=1');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponsePaginatedData(3);
     }
@@ -489,7 +487,7 @@ final class MaterialsTest extends ApiTestCase
     {
         $this->client->get('/api/materials?park=1');
         $this->assertStatusCode(StatusCode::STATUS_OK);
-        $this->assertResponsePaginatedData(6);
+        $this->assertResponsePaginatedData(7);
     }
 
     public function testGetAllByCategoryAndSubCategory()
@@ -508,7 +506,7 @@ final class MaterialsTest extends ApiTestCase
         $response = $this->_getResponseAsArray();
         $this->assertCount(8, $response['data']);
 
-        foreach ([0, 32, 0, 1, 30, 0, 1, 1] as $index => $expected) {
+        foreach ([2, 32, 0, 2, 30, 0, 1, 2] as $index => $expected) {
             $this->assertArrayHasKey('available_quantity', $response['data'][$index]);
             $this->assertEquals($expected, $response['data'][$index]['available_quantity']);
         }
@@ -520,7 +518,7 @@ final class MaterialsTest extends ApiTestCase
         $response = $this->_getResponseAsArray();
         $this->assertCount(8, $response['data']);
 
-        foreach ([0, 20, 0, 1, 20, 0, 1, 1] as $index => $expected) {
+        foreach ([2, 20, 0, 2, 20, 0, 1, 2] as $index => $expected) {
             $this->assertArrayHasKey('available_quantity', $response['data'][$index]);
             $this->assertEquals($expected, $response['data'][$index]['available_quantity']);
         }
@@ -531,7 +529,7 @@ final class MaterialsTest extends ApiTestCase
         $response = $this->_getResponseAsArray();
         $this->assertCount(8, $response['data']);
 
-        foreach ([0, 40, 5, 1, 34, 2, 2, 1] as $index => $expected) {
+        foreach ([3, 40, 5, 2, 34, 2, 2, 2] as $index => $expected) {
             $this->assertNotContains('available_quantity', $response['data'][$index]);
             $this->assertEquals($expected, $response['data'][$index]['stock_quantity']);
         }
@@ -596,6 +594,7 @@ final class MaterialsTest extends ApiTestCase
             'reference' => 'RM800',
             'is_unitary' => false,
             'park_id' => 1,
+            'park_location_id' => null,
             'category_id' => 1,
             'sub_category_id' => 1,
             'rental_price' => 100,
@@ -645,6 +644,7 @@ final class MaterialsTest extends ApiTestCase
             'reference' => '01V96-v2',
             'is_unitary' => false,
             'park_id' => 1,
+            'park_location_id' => null,
             'category_id' => 1,
             'sub_category_id' => 1,
             'rental_price' => 180,
@@ -690,6 +690,8 @@ final class MaterialsTest extends ApiTestCase
 
     public function testUpdate()
     {
+        Carbon::setTestNow(Carbon::create(2023, 5, 26, 16, 0, 0));
+
         // - Update material #1
         $data = [
             'reference' => 'CL3-v2',
@@ -697,24 +699,41 @@ final class MaterialsTest extends ApiTestCase
         ];
         $this->client->put('/api/materials/1', $data);
         $this->assertStatusCode(StatusCode::STATUS_OK);
-        $response = $this->_getResponseAsArray();
-        $this->assertEquals('CL3-v2', $response['reference']);
-        $this->assertEquals(6, $response['stock_quantity']);
+        $this->assertResponseData(array_replace_recursive(
+            self::data(1, Material::SERIALIZE_DETAILS),
+            [
+                'reference' => 'CL3-v2',
+                'stock_quantity' => 6,
+                'updated_at' => '2023-05-26 16:00:00',
+            ]
+        ));
 
         // - Test with a negative value for stock quantity
         $data = ['stock_quantity' => -2];
         $this->client->put('/api/materials/1', $data);
         $this->assertStatusCode(StatusCode::STATUS_OK);
-        $response = $this->_getResponseAsArray();
-        $this->assertEquals(0, $response['stock_quantity']);
+        $this->assertResponseData(array_replace_recursive(
+            self::data(1, Material::SERIALIZE_DETAILS),
+            [
+                'reference' => 'CL3-v2',
+                'stock_quantity' => 0,
+                'updated_at' => '2023-05-26 16:00:00',
+            ]
+        ));
 
         // - Test with an out-of-order quantity higher than stock quantity
         $data = ['stock_quantity' => 5, 'out_of_order_quantity' => 20];
         $this->client->put('/api/materials/1', $data);
         $this->assertStatusCode(StatusCode::STATUS_OK);
-        $response = $this->_getResponseAsArray();
-        $this->assertEquals(5, $response['stock_quantity']);
-        $this->assertEquals(5, $response['out_of_order_quantity']);
+        $this->assertResponseData(array_replace_recursive(
+            self::data(1, Material::SERIALIZE_DETAILS),
+            [
+                'reference' => 'CL3-v2',
+                'stock_quantity' => 5,
+                'out_of_order_quantity' => 5,
+                'updated_at' => '2023-05-26 16:00:00',
+            ]
+        ));
     }
 
     public function testDeleteAndDestroy()
@@ -899,6 +918,13 @@ final class MaterialsTest extends ApiTestCase
         $this->client->get('/api/materials/1/bookings');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData([
+            array_replace(
+                EventsTest::data(7, Event::SERIALIZE_BOOKING_SUMMARY),
+                [
+                    'entity' => 'event',
+                    'pivot' => ['quantity' => 2],
+                ],
+            ),
             array_replace(
                 EventsTest::data(4, Event::SERIALIZE_BOOKING_SUMMARY),
                 [

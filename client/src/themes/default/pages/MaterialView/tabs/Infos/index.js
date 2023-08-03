@@ -42,6 +42,18 @@ const MaterialViewInfos = {
             return subCategoryNameGetter(subCategoryId);
         },
 
+        hasMultipleParks() {
+            return this.$store.state.parks.list.length > 1;
+        },
+
+        parkName() {
+            const { is_unitary: isUnitary, park_id: parkId } = this.material;
+            if (isUnitary) {
+                return '';
+            }
+            return this.$store.getters['parks/parkName'](parkId);
+        },
+
         rentalPrice() {
             const { rental_price: rentalPrice } = this.material;
             return rentalPrice ? formatAmount(rentalPrice) : null;
@@ -71,7 +83,7 @@ const MaterialViewInfos = {
         },
     },
     mounted() {
-        this.$store.commit('setPageSubTitle', this.material.name);
+        this.$store.dispatch('parks/fetch');
     },
     render() {
         const {
@@ -84,6 +96,8 @@ const MaterialViewInfos = {
             hasPricingData,
             rentalPrice,
             replacementPrice,
+            hasMultipleParks,
+            parkName,
             createDate,
             updateDate,
             material,
@@ -186,6 +200,11 @@ const MaterialViewInfos = {
                         <p>{__('category')}: <strong>{categoryName}</strong></p>
                         {!!subCategoryName && (
                             <p>{__('sub-category')}: <strong>{subCategoryName}</strong></p>
+                        )}
+                    </div>
+                    <div class="MaterialViewInfos__park">
+                        {hasMultipleParks && (
+                            <p>{__('page.material-view.infos.park-name', { name: parkName })}</p>
                         )}
                     </div>
                     {(tags && tags.length > 0) && <TagsList tags={tags} />}

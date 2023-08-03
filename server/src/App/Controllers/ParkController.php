@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Controllers;
+namespace Loxya\Controllers;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
-use Robert2\API\Controllers\Traits\WithCrud;
-use Robert2\API\Http\Request;
-use Robert2\API\Models\Material;
-use Robert2\API\Models\Park;
+use Loxya\Controllers\Traits\WithCrud;
+use Loxya\Http\Request;
+use Loxya\Models\Material;
+use Loxya\Models\Park;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
 
@@ -18,17 +18,16 @@ class ParkController extends BaseController
     public function getAll(Request $request, Response $response): Response
     {
         $paginated = (bool) $request->getQueryParam('paginated', true);
-        $searchTerm = $request->getQueryParam('search', null);
-        $searchField = $request->getQueryParam('searchBy', null);
+        $search = $request->getQueryParam('search', null);
         $orderBy = $request->getQueryParam('orderBy', null);
         $limit = $request->getQueryParam('limit', null);
         $ascending = (bool) $request->getQueryParam('ascending', true);
-        $withDeleted = (bool) $request->getQueryParam('deleted', false);
+        $onlyDeleted = (bool) $request->getQueryParam('deleted', false);
 
         $query = $this->getModel()
             ->setOrderBy($orderBy, $ascending)
-            ->setSearch($searchTerm, $searchField)
-            ->getAll($withDeleted);
+            ->setSearch($search)
+            ->getAll($onlyDeleted);
 
         if ($paginated) {
             $results = $this->paginate($request, $query, is_numeric($limit) ? (int) $limit : null);

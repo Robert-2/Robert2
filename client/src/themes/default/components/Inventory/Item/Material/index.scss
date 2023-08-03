@@ -1,26 +1,25 @@
 @use '~@/themes/default/style/globals';
 
 .InventoryItemMaterial {
+    $block: &;
+
     display: flex;
     align-items: center;
     width: 100%;
-    padding: 0;
+    min-height: 43px;
+    padding: globals.$spacing-small globals.$spacing-medium;
     border-radius: globals.$input-border-radius;
     background: rgba(#fff, 0.05);
     color: globals.$text-base-color;
-
-    &__reference,
-    &__name,
-    &__awaited-quantity {
-        padding: 0 globals.$content-padding-large-horizontal;
-    }
+    gap: globals.$spacing-medium;
 
     &__reference {
-        flex: 0 0 200px;
+        flex: 1;
     }
 
     &__name {
         flex: 1;
+        display: none;
         color: globals.$text-soft-color;
     }
 
@@ -30,11 +29,10 @@
     }
 
     &__awaited-quantity {
-        flex: 0 0 auto;
-        display: inline-flex;
-        justify-content: center;
+        flex: 0 0 180px;
+        display: flex;
+        justify-content: flex-end;
         color: globals.$text-soft-color;
-        text-align: right;
 
         &__count {
             margin-left: 0.3rem;
@@ -49,15 +47,10 @@
         text-align: center;
     }
 
-    &__quantity-broken {
-        margin-left: globals.$content-padding-large-vertical;
-    }
-
     &--read-only {
-        .InventoryItemMaterial__actual-quantity,
-        .InventoryItemMaterial__quantity-broken {
-            flex: 0 0 95px;
-            padding: globals.$content-padding-small-horizontal 0;
+        #{$block}__actual-quantity,
+        #{$block}__quantity-broken {
+            flex: 0 0 104px;
             color: globals.$text-light-color;
             font-size: 1.1rem;
         }
@@ -66,7 +59,7 @@
     &--complete {
         background: rgba(globals.$text-success-color, 0.25);
 
-        .InventoryItemMaterial__actual-quantity {
+        #{$block}__actual-quantity {
             color: globals.$text-base-color;
             font-weight: 600;
         }
@@ -75,12 +68,12 @@
     &--warning {
         background: rgba(globals.$text-warning-color, 0.25);
 
-        .InventoryItemMaterial__actual-quantity {
+        #{$block}__actual-quantity {
             color: globals.$text-warning-color;
             font-weight: 600;
         }
 
-        .InventoryItemMaterial__quantity-broken {
+        #{$block}__quantity-broken {
             color: globals.$text-danger-color;
             font-weight: 600;
         }
@@ -89,9 +82,19 @@
     &--error {
         background: rgba(globals.$text-danger-color, 0.25);
 
-        .InventoryItemMaterial__actual-quantity {
+        #{$block}__actual-quantity {
             color: globals.$text-danger-color;
             font-weight: 600;
+        }
+    }
+
+    @media (min-width: globals.$screen-tablet) {
+        &__reference {
+            flex: 0 0 200px;
+        }
+
+        &__name {
+            display: block;
         }
     }
 }

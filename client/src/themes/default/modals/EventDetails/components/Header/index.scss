@@ -37,7 +37,7 @@
         }
 
         &__in-progress {
-            margin-left: globals.$content-padding-small-horizontal;
+            margin-left: globals.$spacing-small;
             color: globals.$text-success-color;
             font-size: 1.1rem;
         }

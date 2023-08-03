@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Controllers;
+namespace Loxya\Controllers;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
-use Robert2\API\Controllers\Traits\WithCrud;
-use Robert2\API\Http\Request;
-use Robert2\API\Models\Tag;
+use Loxya\Controllers\Traits\WithCrud;
+use Loxya\Http\Request;
+use Loxya\Models\Tag;
 use Slim\Http\Response;
 
 class TagController extends BaseController

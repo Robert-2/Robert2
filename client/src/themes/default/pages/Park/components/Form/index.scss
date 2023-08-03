@@ -5,7 +5,7 @@
 
     &__locality {
         display: flex;
-        margin: globals.$content-padding-small-vertical 0;
+        margin: globals.$spacing-medium 0;
 
         #{$block}__postal-code {
             flex: unset;

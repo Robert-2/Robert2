@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\Tests;
+namespace Loxya\Tests;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
-use Robert2\API\Http\Enums\AppContext;
-use Robert2\API\Models\User;
+use Loxya\Http\Enums\AppContext;
+use Loxya\Models\User;
 
 final class SessionTest extends ApiTestCase
 {

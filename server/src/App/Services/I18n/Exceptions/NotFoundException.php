@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Services\I18n\Exceptions;
+namespace Loxya\Services\I18n\Exceptions;
 
 use Psr\Container\NotFoundExceptionInterface;
 

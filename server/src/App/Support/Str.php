@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\Support;
+namespace Loxya\Support;
 
 use Cocur\Slugify\Slugify;
 use Illuminate\Support\Str as StrCore;

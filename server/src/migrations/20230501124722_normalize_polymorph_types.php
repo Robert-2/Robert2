@@ -2,8 +2,7 @@
 declare(strict_types=1);
 
 use Phinx\Migration\AbstractMigration;
-use Robert2\API\Config\Config;
-use Robert2\API\Models\Material;
+use Loxya\Config\Config;
 
 final class NormalizePolymorphTypes extends AbstractMigration
 {
@@ -13,7 +12,7 @@ final class NormalizePolymorphTypes extends AbstractMigration
         $this->getQueryBuilder()
             ->update(sprintf('%staggables', $prefix))
             ->set(['taggable_type' => 'material'])
-            ->where(['taggable_type' => Material::class])
+            ->where(['taggable_type' => 'Robert2\\API\\Models\\Material'])
             ->execute();
     }
 
@@ -22,7 +21,7 @@ final class NormalizePolymorphTypes extends AbstractMigration
         $prefix = Config::getSettings('db')['prefix'];
         $this->getQueryBuilder()
             ->update(sprintf('%staggables', $prefix))
-            ->set(['taggable_type' => Material::class])
+            ->set(['taggable_type' => 'Robert2\\API\\Models\\Material'])
             ->where(['taggable_type' => 'material'])
             ->execute();
     }

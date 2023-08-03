@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\Tests;
+namespace Loxya\Tests;
 
-use Robert2\API\Services\I18n;
+use Loxya\Services\I18n;
 
 final class I18nTest extends TestCase
 {

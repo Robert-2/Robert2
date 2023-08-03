@@ -21,9 +21,6 @@ export type EventMaterial = (
     & Material
     & {
         pivot: {
-            id: number,
-            event_id: Event['id'],
-            material_id: Material['id'],
             quantity: number,
             quantity_missing: number,
             quantity_returned: number,
@@ -54,9 +51,8 @@ export type RawEvent<
         is_confirmed: boolean,
         is_return_inventory_started: boolean,
         is_return_inventory_done: boolean,
-        user_id: User['id'] | null,
-        user: User | null,
         note: string | null,
+        author: User | null,
         created_at: string,
         updated_at: string,
     }
@@ -202,11 +198,11 @@ const unarchive = async (id: Event['id']): Promise<Event> => (
 );
 
 const updateReturnInventory = async (id: Event['id'], inventory: EventReturnInventory): Promise<Event> => (
-    normalize((await requester.put(`/events/${id}/inventory`, inventory)).data)
+    normalize((await requester.put(`/events/${id}/return`, inventory)).data)
 );
 
 const finishReturnInventory = async (id: Event['id'], inventory: EventReturnInventory): Promise<Event> => (
-    normalize((await requester.put(`/events/${id}/inventory/finish`, inventory)).data)
+    normalize((await requester.put(`/events/${id}/return/finish`, inventory)).data)
 );
 
 const createInvoice = async (id: Event['id'], discountRate: number = 0): Promise<Invoice> => (

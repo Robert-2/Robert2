@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Controllers;
+namespace Loxya\Controllers;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
-use Robert2\API\Controllers\Traits\Crud;
-use Robert2\API\Http\Request;
-use Robert2\API\Models\Document;
+use Loxya\Controllers\Traits\Crud;
+use Loxya\Http\Request;
+use Loxya\Models\Document;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
 use Slim\Psr7\Stream;

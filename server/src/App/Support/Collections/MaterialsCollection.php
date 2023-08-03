@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\Support\Collections;
+namespace Loxya\Support\Collections;
 
 use Illuminate\Support\Collection;
-use Robert2\API\Models\EstimateMaterial;
-use Robert2\API\Models\EventMaterial;
-use Robert2\API\Models\InvoiceMaterial;
-use Robert2\API\Models\Material;
+use Loxya\Models\EstimateMaterial;
+use Loxya\Models\EventMaterial;
+use Loxya\Models\InvoiceMaterial;
+use Loxya\Models\Material;
 
 class MaterialsCollection extends Collection
 {
@@ -76,10 +76,10 @@ class MaterialsCollection extends Collection
                 ? $entity->material
                 : $entity;
 
-            $parkName = $material?->park?->name;
+            $parkName = $material?->park?->name ?? '?';
 
             if (!$byParks->has($parkName)) {
-                $byParks->put($parkName, new Collection);
+                $byParks->put($parkName, new MaterialsCollection);
             }
 
             $byParks->get($parkName)->push($entity);

@@ -1,0 +1,21 @@
+@use '~@/themes/default/style/globals';
+
+/// Padding vertical des boutons.
+/// @type Number
+$padding-y: 0.396rem !default;
+
+/// Padding horizontal des boutons.
+/// @type Number
+$padding-x: 0.626rem !default;
+
+/// Marge entre l'icône et le texte des boutons (si icône présente)
+/// @type Number
+$icon-margin: globals.$spacing-thin !default;
+
+/// Largeur de la bordure des boutons.
+/// @type Number
+$border-width: 2px !default;
+
+/// Border radius des boutons.
+/// @type Number
+$border-radius: 4px !default;

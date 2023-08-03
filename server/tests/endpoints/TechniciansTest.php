@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\Tests;
+namespace Loxya\Tests;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Illuminate\Support\Carbon;
-use Robert2\API\Models\EventTechnician;
-use Robert2\API\Models\Technician;
-use Robert2\Support\Filesystem\UploadedFile;
+use Loxya\Models\EventTechnician;
+use Loxya\Models\Technician;
+use Loxya\Support\Filesystem\UploadedFile;
 
 final class TechniciansTest extends ApiTestCase
 {
@@ -21,6 +21,7 @@ final class TechniciansTest extends ApiTestCase
                 'last_name' => 'Rabbit',
                 'full_name' => 'Roger Rabbit',
                 'nickname' => 'Riri',
+                'is_preparer' => false,
                 'email' => 'tester2@robertmanager.net',
                 'phone' => null,
                 'street' => null,
@@ -38,6 +39,7 @@ final class TechniciansTest extends ApiTestCase
                 'last_name' => 'Technicien',
                 'full_name' => 'Jean Technicien',
                 'nickname' => null,
+                'is_preparer' => false,
                 'email' => 'client@technicien.com',
                 'phone' => '+33645698520',
                 'street' => null,
@@ -169,6 +171,15 @@ final class TechniciansTest extends ApiTestCase
                 'position' => 'Technicien plateau',
                 'event' => EventsTest::data(1),
             ],
+            [
+                'id' => 3,
+                'event_id' => 7,
+                'technician_id' => 2,
+                'start_time' => '2023-05-25 00:00:00',
+                'end_time' => '2023-05-28 23:59:59',
+                'position' => 'Ingénieur du son',
+                'event' => EventsTest::data(7),
+            ],
         ]);
     }
 
@@ -248,6 +259,7 @@ final class TechniciansTest extends ApiTestCase
             'first_name' => 'José',
             'last_name' => 'Gatillon',
             'nickname' => 'Gégé',
+            'is_preparer' => false,
             'email' => 'test@other-tech.net',
             'full_name' => 'José Gatillon',
             'phone' => null,

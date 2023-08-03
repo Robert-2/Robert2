@@ -134,8 +134,8 @@ const EventDetails = {
 
             const { $t: __ } = this;
             const isConfirmed = await confirm({
-                text: __('confirm-cancel-upload-change-tab'),
                 type: 'danger',
+                text: __('confirm-cancel-upload-change-tab'),
             });
             if (!isConfirmed) {
                 return;
@@ -230,7 +230,7 @@ const EventDetails = {
 
         if (hasCriticalError || !isFetched) {
             return (
-                <div class="EventDetails">
+                <div class="EventDetails EventDetails--not-ready">
                     <div class="EventDetails__close">
                         <Button
                             type="close"

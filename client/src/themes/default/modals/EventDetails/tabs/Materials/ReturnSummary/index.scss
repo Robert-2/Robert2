@@ -2,8 +2,8 @@
 @use 'sass:color';
 
 .EventDetailsReturnSummary {
-    margin-bottom: globals.$content-padding-large-horizontal;
-    padding-bottom: globals.$content-padding-large-vertical;
+    margin-bottom: globals.$spacing-medium;
+    padding-bottom: globals.$spacing-large;
     border-bottom: 1px solid globals.$divider-color;
     text-align: center;
 
@@ -13,7 +13,7 @@
     }
 
     &__all-ok {
-        margin-bottom: globals.$content-padding-large-horizontal;
+        margin-bottom: globals.$spacing-medium;
         color: globals.$text-success-color;
         font-size: 1.1rem;
     }

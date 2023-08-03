@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Controllers;
+namespace Loxya\Controllers;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
-use Robert2\API\Controllers\Traits\Crud;
-use Robert2\API\Http\Request;
-use Robert2\API\Models\Country;
+use Loxya\Controllers\Traits\Crud;
+use Loxya\Http\Request;
+use Loxya\Models\Country;
 use Slim\Http\Response;
 
 class CountryController extends BaseController
@@ -15,11 +15,7 @@ class CountryController extends BaseController
 
     public function getAll(Request $request, Response $response): Response
     {
-        $countries = (new Country())
-            ->setOrderBy('id', true)
-            ->getAll()
-            ->get();
-
+        $countries = Country::orderBy('id', 'asc')->get();
         return $response->withJson($countries, StatusCode::STATUS_OK);
     }
 }

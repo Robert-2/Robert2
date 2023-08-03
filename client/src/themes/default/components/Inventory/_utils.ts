@@ -1,3 +1,5 @@
+import stringCompare from '@/utils/stringCompare';
+
 import type { Material } from '@/stores/api/materials';
 import type { Category } from '@/stores/api/categories';
 import type { ParkSummary as Park } from '@/stores/api/parks';
@@ -14,13 +16,6 @@ export type AwaitedMaterialGroup<G extends Category | Park = Category | Park> = 
         | { id: null, name: null }
     )
     & { materials: AwaitedMaterial[] }
-);
-
-const compareString = (a: string, b: string): number => (
-    a.localeCompare(b, undefined, {
-        ignorePunctuation: true,
-        sensitivity: 'base',
-    })
 );
 
 export const groupByCategories = (
@@ -56,11 +51,11 @@ export const groupByCategories = (
     const result = Array.from(sections.values());
 
     result.sort((a: AwaitedMaterialGroup<Category>, b: AwaitedMaterialGroup<Category>) => (
-        compareString(a.name ?? '', b.name ?? '')
+        stringCompare(a.name ?? '', b.name ?? '')
     ));
     result.forEach((section: AwaitedMaterialGroup<Category>) => {
         section.materials.sort((a: AwaitedMaterial, b: AwaitedMaterial) => (
-            compareString(a.name, b.name)
+            stringCompare(a.name, b.name)
         ));
     });
 
@@ -98,12 +93,12 @@ export const groupByCategories = (
 //     const result = Array.from(sections.values());
 
 //     result.sort((a, b) => (
-//         compareString(a.name ?? '', b.name ?? '')
+//         stringCompare(a.name ?? '', b.name ?? '')
 //     ));
 
 //     result.forEach((section) => {
 //         section.materials.sort((a, b) => (
-//             compareString(a.name, b.name)
+//             stringCompare(a.name, b.name)
 //         ));
 //     });
 

@@ -2,24 +2,29 @@
 
 .MaterialsCategoryItemMaterial {
     display: flex;
+    align-items: center;
     padding: 0.7rem 0;
     border-bottom: 1px dashed globals.$list-left-border-color;
     list-style: none;
 
-    &__name {
+    &__label {
         flex: 1;
 
-        &__label {
+        &__name {
+            overflow: hidden;
+            max-width: 590px;
             margin-bottom: 3px;
+            white-space: nowrap;
+            text-overflow: ellipsis;
         }
 
-        &__unit {
-            margin-right: 3px;
+        &__ref {
+            display: inline-block;
+            overflow: hidden;
+            max-width: 220px;
             color: globals.$text-light-color;
-
-            &:not(:last-child)::after {
-                content: ',';
-            }
+            white-space: nowrap;
+            text-overflow: ellipsis;
         }
     }
 

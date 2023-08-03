@@ -27,6 +27,7 @@ const EventReturn = defineComponent({
             isLoading: false,
             isFetched: false,
             isSaving: false,
+            isSaved: false,
             displayGroup: DisplayGroup.CATEGORIES,
             criticalError: null,
             validationErrors: null,
@@ -54,7 +55,7 @@ const EventReturn = defineComponent({
             return startDate.isSameOrBefore(this.now, 'day');
         },
 
-        hasEnded() {
+        canTerminate() {
             if (!this.event) {
                 return false;
             }
@@ -93,6 +94,7 @@ const EventReturn = defineComponent({
                 return;
             }
             this.$set(this.inventory, index, { id, ...quantities });
+            this.isSaved = false;
         },
 
         handleChangeDisplayGroup(group) {
@@ -106,6 +108,10 @@ const EventReturn = defineComponent({
         async handleTerminate() {
             const { $t: __ } = this;
 
+            if (!this.canTerminate) {
+                return;
+            }
+
             const hasBroken = this.inventory.some(({ broken }) => broken > 0);
             const isConfirmed = await confirm({
                 title: __('page.event-return.confirm-terminate-title'),
@@ -113,7 +119,6 @@ const EventReturn = defineComponent({
                 text: hasBroken
                     ? __('page.event-return.confirm-terminate-text-with-broken')
                     : __('page.event-return.confirm-terminate-text'),
-
             });
             if (!isConfirmed) {
                 return;
@@ -133,6 +138,7 @@ const EventReturn = defineComponent({
                 const event = await apiEvents.one(this.id);
                 this.setEvent(event);
                 this.isFetched = true;
+                this.isSaved = event.is_return_inventory_started;
             } catch (error) {
                 if (!axios.isAxiosError(error)) {
                     this.criticalError = ERROR.UNKNOWN;
@@ -159,8 +165,9 @@ const EventReturn = defineComponent({
             );
 
             try {
-                const _event = await doRequest();
-                this.setEvent(_event);
+                const event = await doRequest();
+                this.setEvent(event);
+                this.isSaved = true;
 
                 this.validationErrors = null;
                 this.$toasted.success(__('page.event-return.saved'));
@@ -208,7 +215,7 @@ const EventReturn = defineComponent({
             validationErrors,
             hasStarted,
             isSaving,
-            hasEnded,
+            canTerminate,
             isDone,
             displayGroup,
             handleChangeDisplayGroup,
@@ -247,14 +254,15 @@ const EventReturn = defineComponent({
                                 displayGroup={displayGroup}
                                 errors={validationErrors}
                                 isLocked={isDone}
+                                canTerminate={canTerminate}
                                 onChange={handleChangeInventory}
                             />
                             <Footer
                                 isDone={isDone}
                                 isSaving={isSaving}
-                                hasEnded={hasEnded}
                                 onSave={handleSave}
                                 onTerminate={handleTerminate}
+                                canTerminate={canTerminate}
                             />
                         </Fragment>
                     )}

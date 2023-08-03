@@ -1,7 +1,6 @@
 import './index.scss';
 import moment from 'moment';
 import { defineComponent } from '@vue/composition-api';
-import Icon from '@/themes/default/components/Icon';
 import Button from '@/themes/default/components/Button';
 import EventTechnicians from '@/themes/default/components/EventTechnicians';
 import EventTotals from '@/themes/default/components/EventTotals';
@@ -10,7 +9,7 @@ import MainBeneficiary from './components/MainBeneficiary';
 import EventBeneficiaries from '@/themes/default/components/EventBeneficiaries';
 
 // @vue/component
-const EventDetailsInfos = {
+const EventDetailsInfos = defineComponent({
     name: 'EventDetailsInfos',
     props: {
         event: { type: Object, required: true },
@@ -47,7 +46,7 @@ const EventDetailsInfos = {
             location,
             beneficiaries,
             technicians,
-            user,
+            author,
             description,
             is_confirmed: isConfirmed,
         } = event;
@@ -56,57 +55,55 @@ const EventDetailsInfos = {
             <div class="EventDetailsInfos">
                 <div class="EventDetailsInfos__summary">
                     {hasBeneficiary && (
-                        <span class="EventDetailsInfos__summary__beneficiary">
-                            <EventBeneficiaries beneficiaries={beneficiaries} />
-                        </span>
+                        <div class="EventDetailsInfos__summary__beneficiaries">
+                            <EventBeneficiaries
+                                beneficiaries={beneficiaries}
+                                class="EventDetailsInfos__summary__beneficiaries__list"
+                            />
+                            <MainBeneficiary beneficiary={beneficiaries[0]} />
+                        </div>
                     )}
-                    {location && (
-                        <span class="EventDetailsInfos__summary__location">
+                    {!hasBeneficiary && (
+                        <div class="EventDetailsInfos__no-beneficiary">
+                            {__('@event.warning-no-beneficiary')}
+                        </div>
+                    )}
+                    {!!location && (
+                        <div class="EventDetailsInfos__summary__location">
                             <LocationText location={location} />
-                        </span>
+                        </div>
                     )}
-                    {hasTechnicians && (
-                        <span class="EventDetailsInfos__summary__technicians">
-                            <EventTechnicians eventTechnicians={technicians} />
-                        </span>
-                    )}
-                    {!!user && (
-                        <span class="EventDetailsInfos__summary__creator">
-                            <Icon name="user" class="EventDetailsInfos__summary__creator__icon" />
-                            {__('created-by')} {user.full_name}
-                        </span>
+                    {!!(author || hasTechnicians) && (
+                        <div class="EventDetailsInfos__summary__people">
+                            {!!author && (
+                                <p class="EventDetailsInfos__summary__author">
+                                    {__('created-by')} {author.full_name}
+                                </p>
+                            )}
+                            {hasTechnicians && (
+                                <EventTechnicians eventTechnicians={technicians} />
+                            )}
+                        </div>
                     )}
                 </div>
-                {!hasBeneficiary && (
-                    <p class="EventDetailsInfos__no-beneficiary">
-                        {__('@event.warning-no-beneficiary')}
-                    </p>
-                )}
-                {hasBeneficiary && (
-                    <p class="EventDetailsInfos__beneficiary-details">
-                        <MainBeneficiary beneficiary={beneficiaries[0]} />
-                    </p>
-                )}
                 {description && (
                     <p class="EventDetailsInfos__description">
-                        <Icon name="clipboard" class="EventDetailsInfos__description__icon" />
                         {description}
                     </p>
                 )}
                 {!hasMaterials && (
                     <div class="EventDetailsInfos__no-material">
-                        <p>
-                            <Icon name="exclamation-triangle" class="EventDetailsInfos__no-material__icon" />
-                            {__('@event.warning-no-material')}
-                        </p>
+                        {__('@event.warning-no-material')}
                         {!isPast && (
-                            <Button
-                                type="primary"
-                                to={{ name: 'edit-event', params: { id: event.id } }}
-                            >
-                                <Icon name="edit" class="EventDetailsInfos__no-material__icon" />
-                                {__('modal.event-details.edit')}
-                            </Button>
+                            <p>
+                                <Button
+                                    type="primary"
+                                    to={{ name: 'edit-event', params: { id: event.id } }}
+                                    icon="edit"
+                                >
+                                    {__('modal.event-details.edit')}
+                                </Button>
+                            </p>
                         )}
                     </div>
                 )}
@@ -117,10 +114,6 @@ const EventDetailsInfos = {
                             { 'EventDetailsInfos__confirmation--confirmed': isConfirmed },
                         ]}
                     >
-                        <Icon
-                            name={isConfirmed ? 'check' : 'hourglass-half'}
-                            class="EventDetailsInfos__confirmation__icon"
-                        />
                         {isConfirmed ? __('@event.event-confirmed-help') : __('@event.event-not-confirmed-help')}
                     </div>
                 )}
@@ -128,6 +121,6 @@ const EventDetailsInfos = {
             </div>
         );
     },
-};
+});
 
-export default defineComponent(EventDetailsInfos);
+export default EventDetailsInfos;

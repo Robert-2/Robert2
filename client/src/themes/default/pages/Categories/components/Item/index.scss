@@ -5,7 +5,7 @@
 
     max-width: 550px;
     margin: 5px;
-    padding: globals.$content-padding-large-vertical;
+    padding: globals.$spacing-large;
     border-radius: 10px;
     background: globals.$bg-color-emphasis;
     list-style: none;
@@ -28,6 +28,11 @@
 
         &__actions {
             display: flex;
+            gap: globals.$spacing-small;
+
+            > .Button + .Button {
+                margin: 0;
+            }
         }
 
         &__dropdown-action {
@@ -64,6 +69,6 @@
     }
 
     @media (min-width: globals.$screen-desktop) {
-        margin: globals.$content-padding-small-vertical;
+        margin: globals.$spacing-medium;
     }
 }

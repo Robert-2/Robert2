@@ -1,183 +1,263 @@
 import './index.scss';
+import { defineComponent } from '@vue/composition-api';
 import moment from 'moment';
-import { toRefs, computed, ref } from '@vue/composition-api';
 import axios from 'axios';
 import config from '@/globals/config';
 import { confirm } from '@/utils/alert';
 import showModal from '@/utils/showModal';
-import useI18n from '@/hooks/useI18n';
-import useNow from '@/hooks/useNow';
 import { ApiErrorCode } from '@/stores/api/@codes';
 import apiEvents from '@/stores/api/events';
 import DuplicateEvent from '@/themes/default/modals/DuplicateEvent';
-import Dropdown, { getItemClassnames } from '@/themes/default/components/Dropdown';
+import Dropdown from '@/themes/default/components/Dropdown';
+import ButtonDropdown from '@/themes/default/components/ButtonDropdown';
 import Button from '@/themes/default/components/Button';
 import { Group } from '@/stores/api/groups';
 
 // @vue/component
-const EventDetailsHeaderActions = (props, { root, emit }) => {
-    const { event } = toRefs(props);
-    const __ = useI18n();
-    const now = useNow();
+const EventDetailsHeaderActions = defineComponent({
+    name: 'EventDetailsHeaderActions',
+    props: {
+        event: { type: Object, required: true },
+    },
+    emits: ['saved', 'deleted', 'duplicated'],
+    data() {
+        return {
+            now: Date.now(),
+            isConfirming: false,
+            isArchiving: false,
+            isDeleting: false,
+        };
+    },
+    computed: {
+        startDate() {
+            return moment(this.event.start_date);
+        },
 
-    const isConfirming = ref(false);
-    const isArchiving = ref(false);
-    const isDeleting = ref(false);
+        endDate() {
+            return moment(this.event.end_date);
+        },
 
-    const startDate = computed(() => moment(event.value.start_date));
-    const endDate = computed(() => moment(event.value.end_date));
-    const hasMaterials = computed(() => event.value.materials.length > 0);
-    const isConfirmable = computed(() => event.value.materials.length === 0);
-    const hasStarted = computed(() => startDate.value.isSameOrBefore(now.value));
-    const isEventPast = computed(() => endDate.value.isBefore(now.value, 'day'));
+        hasMaterials() {
+            return this.event.materials.length > 0;
+        },
 
-    const isPrintable = computed(() => (
-        event.value.materials &&
-        hasMaterials.value &&
-        event.value.beneficiaries &&
-        event.value.beneficiaries.length > 0
-    ));
+        isConfirmable() {
+            return this.event.materials.length === 0;
+        },
 
-    const isTeamMember = computed(() => (
-        root.$store.getters['auth/is']([Group.MEMBER, Group.ADMIN])
-    ));
+        hasStarted() {
+            return this.startDate.isSameOrBefore(this.now);
+        },
 
-    const isEditable = computed(() => {
-        const {
-            is_confirmed: isConfirmed,
-            is_return_inventory_done: isInventoryDone,
-        } = event.value;
+        isEventPast() {
+            return this.endDate.isBefore(this.now, 'day');
+        },
 
-        return !isEventPast.value || !(isInventoryDone || isConfirmed);
-    });
+        isPrintable() {
+            const { event, hasMaterials } = this;
+            return (
+                event.materials &&
+                hasMaterials &&
+                event.beneficiaries &&
+                event.beneficiaries.length > 0
+            );
+        },
 
-    const isRemovable = computed(() => {
-        const {
-            is_confirmed: isConfirmed,
-            is_return_inventory_done: isInventoryDone,
-        } = event.value;
+        isTeamMember() {
+            return this.$store.getters['auth/is']([Group.MEMBER, Group.ADMIN]);
+        },
 
-        return !(isConfirmed || isInventoryDone);
-    });
+        isEditable() {
+            const {
+                is_confirmed: isConfirmed,
+                is_return_inventory_done: isInventoryDone,
+            } = this.event;
 
-    const eventSummaryPdfUrl = computed(() => {
-        const { id } = event.value || { id: null };
-        return `${config.baseUrl}/events/${id}/pdf`;
-    });
+            return !this.isEventPast || !(isInventoryDone || isConfirmed);
+        },
 
-    const handleToggleConfirm = async () => {
-        if (!isTeamMember.value || isConfirming.value) {
-            return;
+        isRemovable() {
+            const {
+                is_confirmed: isConfirmed,
+                is_return_inventory_done: isInventoryDone,
+            } = this.event;
+
+            return !(isConfirmed || isInventoryDone);
+        },
+
+        eventSummaryPdfUrl() {
+            const { id } = this.event ?? { id: null };
+            return `${config.baseUrl}/events/${id}/pdf`;
+        },
+    },
+    mounted() {
+        // - Actualise le timestamp courant toutes les minutes.
+        this.nowTimer = setInterval(() => { this.now = Date.now(); }, 60_000);
+    },
+    beforeUnmount() {
+        if (this.nowTimer) {
+            clearInterval(this.nowTimer);
         }
-        isConfirming.value = true;
+    },
+    methods: {
+        // ------------------------------------------------------
+        // -
+        // -    Handlers
+        // -
+        // ------------------------------------------------------
 
-        const { id, is_confirmed: isConfirmed } = event.value;
-
-        try {
-            const data = await apiEvents.setConfirmed(id, !isConfirmed);
-            emit('saved', data);
-        } catch {
-            root.$toasted.error(__('errors.unexpected-while-saving'));
-        } finally {
-            isConfirming.value = false;
-        }
-    };
-
-    const handleToggleArchived = async () => {
-        if (!isTeamMember.value || isArchiving.value) {
-            return;
-        }
-        isArchiving.value = true;
-
-        const { id, is_archived: isArchived } = event.value;
-
-        try {
-            const data = isArchived
-                ? await apiEvents.unarchive(id)
-                : await apiEvents.archive(id);
-
-            emit('saved', data);
-        } catch (error) {
-            const defaultMessage = __('errors.unexpected-while-saving');
-            if (!axios.isAxiosError(error)) {
-                root.$toasted.error(defaultMessage);
-            } else {
-                const { code = ApiErrorCode.UNKNOWN, details = {} } = error.response?.data?.error ?? {};
-                if (code === ApiErrorCode.VALIDATION_FAILED) {
-                    root.$toasted.error(details.is_archived ?? defaultMessage);
-                } else {
-                    root.$toasted.error(defaultMessage);
-                }
+        async handleToggleConfirm() {
+            const { $t: __, isTeamMember, isConfirming } = this;
+            if (!isTeamMember || isConfirming) {
+                return;
             }
-        } finally {
-            isArchiving.value = false;
-        }
-    };
+            this.isConfirming = true;
 
-    const handleDelete = async () => {
-        if (!isTeamMember.value || !isRemovable.value || isDeleting.value) {
-            return;
-        }
+            const { id, is_confirmed: isConfirmed } = this.event;
 
-        const isConfirmed = await confirm({
-            title: __('please-confirm'),
-            text: __('@event.confirm-delete'),
-            confirmButtonText: __('yes-delete'),
-            type: 'danger',
-        });
-        if (!isConfirmed) {
-            return;
-        }
-        isDeleting.value = true;
+            try {
+                const data = await apiEvents.setConfirmed(id, !isConfirmed);
+                this.$emit('saved', data);
+            } catch {
+                this.$toasted.error(__('errors.unexpected-while-saving'));
+            } finally {
+                this.isConfirming = false;
+            }
+        },
 
-        const { id } = event.value;
+        async handleToggleArchived() {
+            const { $t: __, isTeamMember, isArchiving } = this;
+            if (!isTeamMember || isArchiving) {
+                return;
+            }
+            this.isArchiving = true;
 
-        try {
-            await apiEvents.remove(id);
-            emit('deleted', id);
-        } catch {
-            root.$toasted.error(__('errors.unexpected-while-deleting'));
-        } finally {
-            isDeleting.value = false;
-        }
-    };
+            const { id, is_archived: isArchived } = this.event;
 
-    const handleDuplicated = (newEvent) => {
-        emit('duplicated', newEvent);
-    };
+            try {
+                const data = isArchived
+                    ? await apiEvents.unarchive(id)
+                    : await apiEvents.archive(id);
 
-    const askDuplicate = () => {
-        if (!isTeamMember.value) {
-            return;
-        }
+                this.$emit('saved', data);
+            } catch (error) {
+                const defaultMessage = __('errors.unexpected-while-saving');
+                if (!axios.isAxiosError(error)) {
+                    this.$toasted.error(defaultMessage);
+                } else {
+                    const { code = ApiErrorCode.UNKNOWN, details = {} } = error.response?.data?.error ?? {};
+                    if (code === ApiErrorCode.VALIDATION_FAILED) {
+                        this.$toasted.error(details.is_archived ?? defaultMessage);
+                    } else {
+                        this.$toasted.error(defaultMessage);
+                    }
+                }
+            } finally {
+                this.isArchiving = false;
+            }
+        },
 
-        showModal(root.$modal, DuplicateEvent, {
-            event: event.value,
-            onDuplicated: handleDuplicated,
-        });
-    };
+        async handleDelete() {
+            const { $t: __, isTeamMember, isRemovable, isDeleting } = this;
+            if (!isTeamMember || !isRemovable || isDeleting) {
+                return;
+            }
 
-    return () => {
+            const isConfirmed = await confirm({
+                type: 'danger',
+                text: __('@event.confirm-delete'),
+                confirmButtonText: __('yes-delete'),
+            });
+            if (!isConfirmed) {
+                return;
+            }
+            this.isDeleting = true;
+
+            const { id } = this.event;
+
+            try {
+                await apiEvents.remove(id);
+                this.$emit('deleted', id);
+            } catch {
+                this.$toasted.error(__('errors.unexpected-while-deleting'));
+            } finally {
+                this.isDeleting = false;
+            }
+        },
+
+        handleDuplicated(newEvent) {
+            this.$emit('duplicated', newEvent);
+        },
+
+        askDuplicate() {
+            const { isTeamMember, event, handleDuplicated } = this;
+            if (!isTeamMember) {
+                return;
+            }
+
+            showModal(this.$modal, DuplicateEvent, {
+                event,
+                onDuplicated: handleDuplicated,
+            });
+        },
+    },
+    render() {
+        const {
+            $t: __,
+            event,
+            isPrintable,
+            eventSummaryPdfUrl,
+            isEditable,
+            isTeamMember,
+            isEventPast,
+            hasStarted,
+            isConfirmable,
+            isConfirming,
+            handleToggleConfirm,
+            isArchiving,
+            handleToggleArchived,
+            askDuplicate,
+            isRemovable,
+            isDeleting,
+            handleDelete,
+        } = this;
+
         const {
             id,
             is_confirmed: isConfirmed,
             is_return_inventory_done: isReturnInventoryDone,
             is_archived: isArchived,
-        } = event.value;
+        } = event;
 
         return (
             <div class="EventDetailsHeaderActions">
-                {isPrintable.value && (
-                    <Button
+                {isPrintable && (
+                    <ButtonDropdown
                         icon="print"
+                        label={__('print')}
                         type="secondary"
-                        to={eventSummaryPdfUrl.value}
+                        to={eventSummaryPdfUrl}
                         external
-                    >
-                        {__('print')}
-                    </Button>
+                        class="EventDetailsHeaderActions__print"
+                        actions={[
+                            {
+                                label: __('modal.event-details.release-sheet-by-lists'),
+                                type: 'secondary',
+                                icon: 'print',
+                                target: `${eventSummaryPdfUrl}?sortedBy=lists`,
+                                external: true,
+                            },
+                            {
+                                label: __('modal.event-details.release-sheet-by-parks'),
+                                type: 'secondary',
+                                icon: 'print',
+                                target: `${eventSummaryPdfUrl}?sortedBy=parks`,
+                                external: true,
+                            },
+                        ]}
+                    />
                 )}
-                {isEditable.value && isTeamMember.value && (
+                {isEditable && isTeamMember && (
                     <Button
                         type="primary"
                         icon="edit"
@@ -186,7 +266,7 @@ const EventDetailsHeaderActions = (props, { root, emit }) => {
                         {__('action-edit')}
                     </Button>
                 )}
-                {(isEventPast.value || hasStarted.value) && !isArchived && isTeamMember.value && (
+                {(isEventPast || hasStarted) && !isArchived && isTeamMember && (
                     <Button
                         type="primary"
                         icon="tasks"
@@ -195,66 +275,54 @@ const EventDetailsHeaderActions = (props, { root, emit }) => {
                         {__('return-inventory')}
                     </Button>
                 )}
-                {isTeamMember.value && (
-                    <Dropdown variant="actions">
-                        <template slot="items">
-                            {!isEventPast.value && (
-                                <Button
-                                    type={isConfirmed ? 'warning' : 'success'}
-                                    icon={isConfirmed ? 'hourglass-half' : 'check'}
-                                    class={{ ...getItemClassnames() }}
-                                    disabled={isConfirmable.value}
-                                    loading={isConfirming.value}
-                                    onClick={handleToggleConfirm}
-                                >
-                                    {isConfirmed ? __('unconfirm-event') : __('confirm-event')}
-                                </Button>
-                            )}
-                            {isEventPast.value && isReturnInventoryDone && (
-                                <Button
-                                    type={isArchived ? 'default' : 'primary'}
-                                    icon="archive"
-                                    class={{ ...getItemClassnames() }}
-                                    loading={isArchiving.value}
-                                    onClick={handleToggleArchived}
-                                >
-                                    {
-                                        isArchived
-                                            ? __('modal.event-details.unarchive')
-                                            : __('modal.event-details.archive')
-                                    }
-                                </Button>
-                            )}
+                {isTeamMember && (
+                    <Dropdown>
+                        {!isEventPast && (
                             <Button
-                                icon="copy"
-                                type="primary"
-                                class={{ ...getItemClassnames() }}
-                                onClick={askDuplicate}
+                                type={isConfirmed ? 'warning' : 'success'}
+                                icon={isConfirmed ? 'hourglass-half' : 'check'}
+                                disabled={isConfirmable}
+                                loading={isConfirming}
+                                onClick={handleToggleConfirm}
                             >
-                                {__('duplicate-event')}
+                                {isConfirmed ? __('unconfirm-event') : __('confirm-event')}
                             </Button>
-                            {isRemovable.value && (
-                                <Button
-                                    type="delete"
-                                    class={{ ...getItemClassnames() }}
-                                    loading={isDeleting.value}
-                                    onClick={handleDelete}
-                                >
-                                    {__('delete-event')}
-                                </Button>
-                            )}
-                        </template>
+                        )}
+                        {isEventPast && isReturnInventoryDone && (
+                            <Button
+                                type={isArchived ? 'default' : 'primary'}
+                                icon="archive"
+                                loading={isArchiving}
+                                onClick={handleToggleArchived}
+                            >
+                                {
+                                    isArchived
+                                        ? __('modal.event-details.unarchive')
+                                        : __('modal.event-details.archive')
+                                }
+                            </Button>
+                        )}
+                        <Button
+                            icon="copy"
+                            type="primary"
+                            onClick={askDuplicate}
+                        >
+                            {__('duplicate-event')}
+                        </Button>
+                        {isRemovable && (
+                            <Button
+                                type="delete"
+                                loading={isDeleting}
+                                onClick={handleDelete}
+                            >
+                                {__('delete-event')}
+                            </Button>
+                        )}
                     </Dropdown>
                 )}
             </div>
         );
-    };
-};
-
-EventDetailsHeaderActions.props = {
-    event: { type: Object, required: true },
-};
-
-EventDetailsHeaderActions.emits = ['saved', 'deleted', 'duplicated'];
+    },
+});
 
 export default EventDetailsHeaderActions;

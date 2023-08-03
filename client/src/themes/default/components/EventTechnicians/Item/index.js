@@ -1,4 +1,3 @@
-import './index.scss';
 import { Group } from '@/stores/api/groups';
 
 // @vue/component
@@ -16,7 +15,7 @@ export default {
         const { $t: __, technician, isTeamMember } = this;
 
         return (
-            <div class="EventTechnicianItem">
+            <span class="EventTechnicianItem">
                 {!isTeamMember ? technician.full_name : (
                     <router-link
                         to={{ name: 'view-technician', params: { id: technician.id } }}
@@ -25,7 +24,7 @@ export default {
                         {technician.full_name}
                     </router-link>
                 )}
-            </div>
+            </span>
         );
     },
 };

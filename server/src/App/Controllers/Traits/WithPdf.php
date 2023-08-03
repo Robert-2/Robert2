@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Controllers\Traits;
+namespace Loxya\Controllers\Traits;
 
-use Robert2\API\Http\Request;
-use Robert2\Support\Pdf;
+use Loxya\Http\Request;
+use Loxya\Support\Pdf;
 use Slim\Http\Response;
 
 trait WithPdf

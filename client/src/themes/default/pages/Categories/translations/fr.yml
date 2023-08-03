@@ -1,8 +1,9 @@
 title: Catégories
 help: Gestion des catégories et sous-catégories de matériel.
 
-no-category: Aucune catégorie.
-create-a-category: Créer une catégorie
+no-category-yet: Il n'y a pas encore de catégorie.
+create-a-first-category: Créer une première catégorie
+
 add-a-subcategory: Ajouter une sous-catégorie
 display-materials-list: Voir la liste du matériel
 

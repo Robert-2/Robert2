@@ -17,7 +17,7 @@
     &__items-count,
     &__duration,
     &__total-replacement {
-        margin-bottom: globals.$content-padding-large-horizontal;
+        margin-bottom: globals.$spacing-medium;
         font-size: 1.2rem;
         font-weight: 600;
     }
@@ -28,7 +28,7 @@
         display: flex;
         align-items: center;
         justify-content: flex-start;
-        margin-bottom: globals.$content-padding-small-horizontal;
+        margin-bottom: globals.$spacing-small;
         font-size: 1.1rem;
 
         &__title {
@@ -42,7 +42,7 @@
         }
 
         &--grand-total {
-            margin-bottom: globals.$content-padding-large-horizontal;
+            margin-bottom: globals.$spacing-medium;
 
             #{$line}__title,
             #{$line}__price {

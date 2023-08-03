@@ -16,19 +16,13 @@
     @extend %reset-button;
     @extend %reset-link;
 
+    display: inline-flex;
     color: var(--color);
     touch-action: auto;
     cursor: pointer;
+    gap: $internal-spacing;
 
     &:hover {
         color: var(--hover-color);
-    }
-
-    //
-    // - Icône
-    //
-
-    &__icon + &__content {
-        margin-left: $icon-margin;
     }
 }

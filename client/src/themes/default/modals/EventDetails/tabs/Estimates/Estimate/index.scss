@@ -5,7 +5,7 @@
 
     display: flex;
     align-items: center;
-    gap: globals.$content-padding-small-vertical;
+    gap: globals.$spacing-medium;
 
     &__icon {
         flex: 0 0 auto;

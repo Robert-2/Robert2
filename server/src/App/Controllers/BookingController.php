@@ -1,17 +1,22 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Controllers;
+namespace Loxya\Controllers;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
-use Robert2\API\Contracts\PeriodInterface;
-use Robert2\API\Http\Request;
-use Robert2\API\Models\Event;
-use Robert2\API\Models\Park;
-use Robert2\Support\Period;
+use Loxya\Contracts\PeriodInterface;
+use Loxya\Errors\Enums\ApiErrorCode;
+use Loxya\Errors\Exception\ApiBadRequestException;
+use Loxya\Errors\Exception\HttpUnprocessableEntityException;
+use Loxya\Http\Request;
+use Loxya\Models\Event;
+use Loxya\Models\Park;
+use Loxya\Support\Period;
+use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpException;
+use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
 
 class BookingController extends BaseController
@@ -19,7 +24,7 @@ class BookingController extends BaseController
     public const MAX_GET_ALL_PERIOD = 3.5 * 30; // - En jours
 
     public const BOOKING_TYPES = [
-        Event::TYPE,
+        Event::TYPE => Event::class,
     ];
 
     public function getAll(Request $request, Response $response): Response
@@ -62,11 +67,12 @@ class BookingController extends BaseController
             )
         );
 
+        // - NOTE : Ne pas prefetch le materiel des bookables via `->with()`,
+        //   car cela peut surcharger la mémoire rapidement.
         $allConcurrentBookables = (new Collection())
             // - Événements.
             ->concat(
-                Event::inPeriod($period)
-                    ->with('materials')->get()
+                Event::inPeriod($period)->get()
             );
 
         foreach ($bookings as $booking) {
@@ -91,6 +97,7 @@ class BookingController extends BaseController
                             ? $booking->parks
                             : null
                     ),
+                    'categories' => $booking->categories,
                 ]
             ))
             ->all();
@@ -100,42 +107,36 @@ class BookingController extends BaseController
 
     public function updateMaterials(Request $request, Response $response): Response
     {
-        $data = (array) $request->getParsedBody();
-        if (!isset($data['entity'])) {
-            throw new \InvalidArgumentException("Missing entity name to identify booking.");
-        }
-
-        $entity = $data['entity'];
-        if (!in_array($entity, self::BOOKING_TYPES, true)) {
-            throw new \InvalidArgumentException("Booking type (entity) not recognized.");
-        }
-
-        if (!isset($data['materials']) || !is_array($data['materials'])) {
-            throw new \InvalidArgumentException("Missing materials to update reservation.");
-        }
-
-        $modelQuery = match ($entity) {
-            /** Événement */
-            Event::TYPE => Event::query()
-                ->where(function ($query) {
-                    $query
-                        ->where('end_date', '>=', Carbon::today())
-                        ->orWhere(function ($query) {
-                            $query
-                                ->where('end_date', '<=', Carbon::today())
-                                ->where('is_confirmed', false);
-                        });
-                }),
-        };
-
         $id = (int) $request->getAttribute('id');
-        $booking = $modelQuery->findOrFail($id);
+        $entity = $request->getAttribute('entity');
+        if (!array_key_exists($entity, self::BOOKING_TYPES)) {
+            throw new HttpNotFoundException($request, "Booking type (entity) not recognized.");
+        }
 
-        $booking->syncMaterials($data['materials']);
+        /** @var Event|Reservation $booking */
+        $booking = self::BOOKING_TYPES[$entity]::findOrFail($id);
 
-        return $response->withJson(
-            array_merge($booking->serialize($booking::SERIALIZE_BOOKING_DEFAULT), compact('entity')),
-            StatusCode::STATUS_OK,
+        if (!$booking->is_editable) {
+            throw new HttpUnprocessableEntityException($request, "This booking is no longer editable.");
+        }
+
+        $rawMaterials = $request->getParsedBody();
+        if (!is_array($rawMaterials)) {
+            throw new HttpBadRequestException($request, "Missing materials to update reservation.");
+        }
+
+        try {
+            $booking->syncMaterials($rawMaterials);
+        } catch (\LengthException $e) {
+            throw new ApiBadRequestException(ApiErrorCode::EMPTY_PAYLOAD, $e->getMessage());
+        } catch (\InvalidArgumentException $e) {
+            throw new HttpBadRequestException($request, $e->getMessage());
+        }
+
+        $data = array_replace(
+            $booking->serialize($booking::SERIALIZE_BOOKING_DEFAULT),
+            compact('entity'),
         );
+        return $response->withJson($data, StatusCode::STATUS_OK);
     }
 }

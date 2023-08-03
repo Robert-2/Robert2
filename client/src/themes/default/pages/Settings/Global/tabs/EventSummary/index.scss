@@ -2,7 +2,7 @@
 
 .EventSummaryGlobalSettings {
     &__section {
-        margin-top: globals.$content-padding-large-vertical;
+        margin-top: globals.$spacing-large;
 
         .FormField {
             --label-width: 200px;
@@ -10,7 +10,7 @@
     }
 
     &__actions {
-        margin-top: globals.$content-padding-large-vertical;
+        margin-top: globals.$spacing-large;
         text-align: center;
     }
 }

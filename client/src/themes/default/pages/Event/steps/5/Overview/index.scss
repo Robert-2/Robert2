@@ -46,7 +46,7 @@ $spacing: 1.5rem;
     }
 
     &__technician-periods {
-        margin-bottom: globals.$content-padding-small-vertical;
+        margin-bottom: globals.$spacing-medium;
         padding: 0;
 
         &__item {
@@ -162,7 +162,7 @@ $spacing: 1.5rem;
         padding-bottom: $spacing;
 
         .Help {
-            margin-bottom: globals.$content-padding-small-vertical;
+            margin-bottom: globals.$spacing-medium;
         }
     }
 

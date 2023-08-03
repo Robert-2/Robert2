@@ -1,0 +1,48 @@
+@use 'sass:color';
+@use '~@/themes/default/style/globals';
+
+.SearchEvents {
+    &__search {
+        $border-radius: 4px;
+
+        display: flex;
+        justify-content: center;
+
+        &__input {
+            width: 300px;
+            border-radius: $border-radius 0 0 $border-radius;
+        }
+
+        &__button {
+            padding: 0.55rem 1.08rem;
+            border-radius: 0 $border-radius $border-radius 0;
+        }
+    }
+
+    &__response {
+        margin-top: globals.$spacing-large;
+    }
+
+    &__results {
+        padding-top: globals.$spacing-medium;
+        border-top: 1px solid globals.$divider-color;
+
+        &__list {
+            margin: 0;
+            padding: 0;
+        }
+
+        &__count {
+            color: globals.$text-light-color;
+            font-style: italic;
+            text-align: center;
+        }
+    }
+
+    &__no-result {
+        color: globals.$text-light-color;
+        font-size: 1.1rem;
+        font-style: italic;
+        text-align: center;
+    }
+}

@@ -25,10 +25,25 @@ $table-search-input: 206px;
 // -
 // -----------------------------------------
 
-$content-padding-small-horizontal: 0.5rem;
-$content-padding-small-vertical: 1rem;
-$content-padding-large-horizontal: 1rem;
-$content-padding-large-vertical: 2rem;
+/// Très petit espace pour les éléments d'interface.
+/// (Équivalent à un espace de ~3.5px)
+/// @type Number
+$spacing-thin: 0.27rem;
+
+/// Petit espace pour les éléments d'interface.
+/// (Équivalent à un espace de ~7.5px)
+/// @type Number
+$spacing-small: 0.568rem;
+
+/// Espace moyen pour les éléments d'interface.
+/// (Équivalent à un espace de ~15px)
+/// @type Number
+$spacing-medium: 1.154rem;
+
+/// Grand espace pour les éléments d'interface.
+/// (Équivalent à un espace de ~25px)
+/// @type Number
+$spacing-large: 1.923rem;
 
 // -----------------------------------------
 // -

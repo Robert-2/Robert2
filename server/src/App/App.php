@@ -1,13 +1,15 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API;
+namespace Loxya;
 
+use DI\Container;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
-use Robert2\API\Config\Config;
-use Robert2\API\Errors\ErrorHandler;
-use Robert2\API\Http\Request as Request;
+use Loxya\Config\Config;
+use Loxya\Errors\ErrorHandler;
+use Loxya\Http\Request as Request;
+use Slim\App as CoreApp;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Factory\AppFactory;
 use Slim\Factory\ServerRequestCreatorFactory;
@@ -23,8 +25,9 @@ use Slim\Routing\RouteCollectorProxy;
  */
 class App
 {
-    private $container;
-    private $app;
+    private Container $container;
+
+    private CoreApp $app;
 
     public function __construct()
     {
@@ -111,9 +114,7 @@ class App
         // -- Routes: Api
         //
 
-        $getActionFqn = function ($action) {
-            return sprintf('Robert2\\API\\Controllers\\%s', $action);
-        };
+        $getActionFqn = fn($action) => sprintf('Loxya\\Controllers\\%s', $action);
 
         $this->app->group('/api', function (RouteCollectorProxy $group) use ($isCORSEnabled, $getActionFqn) {
             // - Autorise les requêtes de type OPTIONS sur les routes d'API.

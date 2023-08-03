@@ -1,8 +1,8 @@
 {
     "private": true,
     "scripts": {
-        "start": "vue-cli-service serve",
-        "build": "vue-cli-service build",
+        "start": "NODE_OPTIONS=--openssl-legacy-provider vue-cli-service serve",
+        "build": "NODE_OPTIONS=--openssl-legacy-provider vue-cli-service build",
         "test": "npx cross-env TZ=UTC jest",
         "check-types": "tsc",
         "lint:js": "eslint './**/*.{js,vue,ts,tsx}' --report-unused-disable-directives",
@@ -22,6 +22,7 @@
         "js-cookie": "3.0.4",
         "lodash": "^4.17.21",
         "moment": "2.29.4",
+        "p-defer": "3.0.0",
         "p-queue": "6.6.2",
         "portal-vue": "2.1.7",
         "status-code-enum": "~1.0.0",

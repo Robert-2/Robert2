@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Models\Traits;
+namespace Loxya\Models\Traits;
 
 trait TransientAttributes
 {

@@ -1,4 +1,5 @@
 import './index.scss';
+import { defineComponent } from '@vue/composition-api';
 import moment from 'moment';
 import pick from 'lodash/pick';
 import config from '@/globals/config';
@@ -22,7 +23,7 @@ const DEFAULT_VALUES = Object.freeze({
 });
 
 // @vue/component
-export default {
+const EventStep1 = defineComponent({
     name: 'EventStep1',
     provide: {
         verticalForm: true,
@@ -30,6 +31,7 @@ export default {
     props: {
         event: { type: Object, required: true },
     },
+    emits: ['loading', 'updateEvent', 'gotoStep', 'error', 'stopLoading'],
     data() {
         return {
             data: {
@@ -50,11 +52,16 @@ export default {
 
         dates() {
             const { data } = this;
+
+            if (!data.start_date || !data.end_date) {
+                return null;
+            }
+
             return [data.start_date, data.end_date];
         },
 
         duration() {
-            const [startDate, endDate] = this.dates;
+            const [startDate, endDate] = this.dates ?? [null, null];
             if (!startDate || !endDate) {
                 return 0;
             }
@@ -250,4 +257,6 @@ export default {
             </form>
         );
     },
-};
+});
+
+export default EventStep1;

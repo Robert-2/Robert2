@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Controllers\Traits\Crud;
+namespace Loxya\Controllers\Traits\Crud;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
-use Robert2\API\Controllers\Traits\WithModel;
-use Robert2\API\Http\Request;
+use Loxya\Controllers\Traits\WithModel;
+use Loxya\Http\Request;
 use Slim\Http\Response;
 
 trait SoftDelete

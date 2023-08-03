@@ -2,38 +2,17 @@
 @use 'sass:color';
 
 .DefaultLayoutHeaderMenu {
-    .Dropdown__button {
-        background-color: globals.$bg-color-main-header;
-        text-transform: capitalize;
-
-        &:hover {
-            background-color: color.adjust(globals.$bg-color-main-header, $lightness: 8%);
-        }
-    }
-
-    &__item,
-    &__dropdown-item {
+    &__button {
         display: flex;
         align-items: center;
         height: 100%;
+        padding: 0 globals.$spacing-medium;
         border: none;
         border-radius: 0;
         background-color: globals.$bg-color-main-header;
 
         &:hover {
             background-color: color.adjust(globals.$bg-color-main-header, $lightness: 8%);
-        }
-    }
-
-    &__item {
-        padding: 0 globals.$content-padding-small-vertical;
-    }
-
-    &__dropdown-item {
-        padding: globals.$content-padding-large-horizontal globals.$content-padding-small-vertical;
-
-        & + & {
-            margin-left: 0;
         }
     }
 }

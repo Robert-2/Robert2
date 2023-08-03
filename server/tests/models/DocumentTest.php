@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\Tests;
+namespace Loxya\Tests;
 
-use Robert2\API\Models\Document;
+use Loxya\Models\Document;
 
 final class DocumentTest extends TestCase
 {

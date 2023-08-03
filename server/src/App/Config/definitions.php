@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Container\ContainerInterface;
-use Robert2\API\Console\Command;
-use Robert2\API\Services;
+use Loxya\Console\Command;
+use Loxya\Services;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\Cache\Adapter\TagAwareAdapter;
 use Symfony\Contracts\Cache\CacheInterface;

@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Models;
+namespace Loxya\Models;
 
 use Brick\Math\BigDecimal as Decimal;
 use Respect\Validation\Validator as V;
-use Robert2\API\Models\Casts\AsDecimal;
+use Loxya\Models\Casts\AsDecimal;
 
 /**
  * Matériel dans un devis.
@@ -34,8 +34,8 @@ final class EstimateMaterial extends BaseModel
         parent::__construct($attributes);
 
         $this->validation = [
-            'estimate_id' => V::custom([$this, 'checkEstimate']),
-            'material_id' => V::custom([$this, 'checkMaterial']),
+            'estimate_id' => V::custom([$this, 'checkEstimateId']),
+            'material_id' => V::custom([$this, 'checkMaterialId']),
             'name' => V::notEmpty()->length(2, 191),
             'reference' => V::notEmpty()->length(2, 64),
             'quantity' => V::intVal()->min(1),
@@ -53,7 +53,7 @@ final class EstimateMaterial extends BaseModel
     // -
     // ------------------------------------------------------
 
-    public function checkEstimate($value)
+    public function checkEstimateId($value)
     {
         // - L'identifiant du devis n'est pas encore défini, on skip.
         if (!$this->exists && $value === null) {
@@ -62,12 +62,21 @@ final class EstimateMaterial extends BaseModel
         return Estimate::staticExists($value);
     }
 
-    public function checkMaterial($value)
+    public function checkMaterialId($value)
     {
         V::optional(V::numericVal())->check($value);
 
-        return $value !== null
-            ? Material::staticExists($value)
+        if ($value === null) {
+            return true;
+        }
+
+        $material = Material::find($value);
+        if (!$material) {
+            return false;
+        }
+
+        return !$this->exists || $this->isDirty('material_id')
+            ? !$material->trashed()
             : true;
     }
 
@@ -91,7 +100,8 @@ final class EstimateMaterial extends BaseModel
 
     public function estimate()
     {
-        return $this->belongsTo(Estimate::class);
+        return $this->belongsTo(Estimate::class)
+            ->withTrashed();
     }
 
     public function material()

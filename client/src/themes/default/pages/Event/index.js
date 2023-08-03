@@ -18,7 +18,6 @@ const EventPage = defineComponent({
     name: 'Event',
     data() {
         const { $t: __ } = this;
-        const currentUser = this.$store.state.auth.user;
 
         return {
             help: 'page.event-edit.help-edit',
@@ -61,7 +60,6 @@ const EventPage = defineComponent({
                 location: '',
                 description: '',
                 is_confirmed: false,
-                user_id: currentUser.id,
                 is_billable: config.billingMode !== 'none',
                 beneficiaries: [],
                 technicians: [],

@@ -1,18 +1,30 @@
 @use '~@/themes/default/style/globals';
 
 .EventStep4 {
-    min-width: 800px;
+    display: flex;
+    height: 100%;
     padding-bottom: 3rem;
+
+    .MaterialsSelector {
+        flex: 1;
+    }
 
     &__actions {
         position: fixed;
-        left: 193px;
+        left: 13px;
         bottom: 0;
-        right: 15px;
+        right: 13px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
         margin: 0;
-        padding: 1rem 0 1.5rem;
+        padding: 1rem 1rem 1.5rem;
         background: globals.$bg-color-body;
-        text-align: left;
+        gap: 5px;
+
+        .button + .button {
+            margin-left: 0;
+        }
     }
 
     //
@@ -21,7 +33,15 @@
 
     @media (min-width: globals.$screen-mobile) {
         &__actions {
+            left: 63px;
+        }
+    }
+
+    @media (min-width: globals.$screen-tablet) {
+        &__actions {
             left: 256px;
+            justify-content: normal;
+            text-align: left;
         }
     }
 

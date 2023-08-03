@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Observers;
+namespace Loxya\Observers;
 
-use Robert2\API\Models\Park;
+use Loxya\Models\Park;
 
 final class ParkObserver
 {

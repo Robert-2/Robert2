@@ -1,23 +1,23 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Models;
+namespace Loxya\Models;
 
 use Brick\Math\BigDecimal as Decimal;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Collection;
 use Respect\Validation\Validator as V;
-use Robert2\API\Config\Config;
-use Robert2\API\Contracts\Serializable;
-use Robert2\API\Models\Casts\AsDecimal;
-use Robert2\API\Models\Traits\Pdfable;
-use Robert2\API\Models\Traits\Serializer;
-use Robert2\API\Models\Traits\SoftDeletable;
-use Robert2\API\Services\I18n;
-use Robert2\Support\Arr;
-use Robert2\Support\Collections\MaterialsCollection;
-use Robert2\Support\Str;
+use Loxya\Config\Config;
+use Loxya\Contracts\Serializable;
+use Loxya\Models\Casts\AsDecimal;
+use Loxya\Models\Traits\Pdfable;
+use Loxya\Models\Traits\Serializer;
+use Loxya\Models\Traits\SoftDeletable;
+use Loxya\Services\I18n;
+use Loxya\Support\Arr;
+use Loxya\Support\Collections\MaterialsCollection;
+use Loxya\Support\Str;
 
 /**
  * Facture.
@@ -76,11 +76,11 @@ final class Invoice extends BaseModel implements Serializable
             'booking_type' => V::notEmpty()->anyOf(
                 V::equals(Event::TYPE),
             ),
-            'booking_id' => V::custom([$this, 'checkBooking']),
+            'booking_id' => V::custom([$this, 'checkBookingId']),
             'booking_title' => V::optional(V::length(2, 191)),
             'booking_start_date' => V::dateTime(),
             'booking_end_date' => V::custom([$this, 'checkBookingEndDate']),
-            'beneficiary_id' => V::custom([$this, 'checkBeneficiary']),
+            'beneficiary_id' => V::custom([$this, 'checkBeneficiaryId']),
             'degressive_rate' => V::custom([$this, 'checkDegressiveRate']),
             'discount_rate' => V::custom([$this, 'checkDiscountRate']),
             'vat_rate' => V::custom([$this, 'checkVatRate']),
@@ -95,7 +95,7 @@ final class Invoice extends BaseModel implements Serializable
             'total_with_taxes' => V::custom([$this, 'checkAmount']),
             'total_replacement' => V::custom([$this, 'checkAmount']),
             'currency' => V::notEmpty()->allOf(V::uppercase(), V::length(3, 3)),
-            'author_id' => V::custom([$this, 'checkAuthor']),
+            'author_id' => V::custom([$this, 'checkAuthorId']),
         ];
     }
 
@@ -105,7 +105,7 @@ final class Invoice extends BaseModel implements Serializable
     // -
     // ------------------------------------------------------
 
-    public function checkBooking($value)
+    public function checkBookingId($value)
     {
         V::notEmpty()->numericVal()->check($value);
 
@@ -150,10 +150,18 @@ final class Invoice extends BaseModel implements Serializable
         return true;
     }
 
-    public function checkBeneficiary($value)
+    public function checkBeneficiaryId($value)
     {
         V::notEmpty()->numericVal()->check($value);
-        return Beneficiary::staticExists($value);
+
+        $beneficiary = Beneficiary::find($value);
+        if (!$beneficiary) {
+            return false;
+        }
+
+        return !$this->exists || $this->isDirty('company_id')
+            ? !$beneficiary->trashed()
+            : true;
     }
 
     public function checkDegressiveRate($value)
@@ -204,12 +212,21 @@ final class Invoice extends BaseModel implements Serializable
         );
     }
 
-    public function checkAuthor($value)
+    public function checkAuthorId($value)
     {
         V::optional(V::numericVal())->check($value);
 
-        return $value !== null
-            ? User::staticExists($value)
+        if ($value === null) {
+            return true;
+        }
+
+        $author = User::find($value);
+        if (!$author) {
+            return false;
+        }
+
+        return !$this->exists || $this->isDirty('author_id')
+            ? !$author->trashed()
             : true;
     }
 
@@ -232,12 +249,14 @@ final class Invoice extends BaseModel implements Serializable
 
     public function beneficiary()
     {
-        return $this->belongsTo(Beneficiary::class);
+        return $this->belongsTo(Beneficiary::class)
+            ->withTrashed();
     }
 
     public function author()
     {
-        return $this->belongsTo(User::class, 'author_id');
+        return $this->belongsTo(User::class, 'author_id')
+            ->withTrashed();
     }
 
     // ------------------------------------------------------
@@ -525,6 +544,7 @@ final class Invoice extends BaseModel implements Serializable
 
         $invoices = static::selectRaw('number')
             ->whereRaw(sprintf('YEAR(date) = %s', $year))
+            ->withTrashed()
             ->get();
 
         $last = null;

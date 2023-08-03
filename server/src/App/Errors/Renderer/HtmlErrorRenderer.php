@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Errors\Renderer;
+namespace Loxya\Errors\Renderer;
 
 use Slim\Error\Renderers\HtmlErrorRenderer as CoreHtmlErrorRenderer;
 

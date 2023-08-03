@@ -9,7 +9,7 @@
         position: fixed;
         display: none;
         width: 160px;
-        padding: 7px 0;
+        padding: 0 0 7px;
         text-align: right;
 
         &__help {
@@ -34,7 +34,6 @@
     &__body {
         flex: 1;
         overflow: auto;
-        padding-top: 10px;
     }
 
     .EventMiniSummary {

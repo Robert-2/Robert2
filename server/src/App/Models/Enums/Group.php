@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Models\Enums;
+namespace Loxya\Models\Enums;
 
 /**
  * Groupes des utilisateurs de l'application.

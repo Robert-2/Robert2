@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Models\Traits;
+namespace Loxya\Models\Traits;
 
 use Adbar\Dot as DotArray;
 use Brick\Math\BigDecimal as Decimal;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Collection;
-use Robert2\API\Contracts\Serializable;
+use Loxya\Contracts\Serializable;
 
 /**
  * @property array<string, string> $serializedNames

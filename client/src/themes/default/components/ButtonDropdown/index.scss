@@ -1,0 +1,75 @@
+@use '~@/themes/default/components/Button/variables' as button;
+@use '~@/themes/default/style/globals';
+@use 'sass:color';
+
+.ButtonDropdown {
+    $block: &;
+
+    position: relative;
+    display: flex;
+
+    //
+    // - Bouton principal
+    //
+
+    &__main-button {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+
+    //
+    // - Bouton toggle
+    //
+
+    &__toggle {
+        // - Important, pour surcharger la définition de .Button + .Button
+        // stylelint-disable-next-line declaration-no-important
+        margin-left: -(button.$border-width) !important;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+
+    &__action-button {
+        width: 100%;
+    }
+
+    //
+    // - Menu
+    //
+
+    &__menu {
+        position: absolute;
+        z-index: 1;
+        top: 100%;
+        right: 0;
+        margin: 2px 0 0;
+        padding: 0;
+        background: globals.$bg-color-dropdown;
+        box-shadow: 0 4px 9px #1b1b1b;
+        transform-origin: 50% 0%;
+        transform: scaleY(0);
+        transition: transform 150ms ease-in-out;
+        white-space: nowrap;
+
+        &__item {
+            flex: 0 0 auto;
+            margin: 0;
+            white-space: nowrap;
+            list-style: none;
+
+            & + & {
+                margin-top: 2px;
+            }
+        }
+    }
+
+    //
+    // - Open
+    //
+
+    &--open {
+        #{$block}__menu {
+            transform: none;
+        }
+    }
+}

@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\Tests;
+namespace Loxya\Tests;
 
-use Robert2\API\Models\Attribute;
-use Robert2\API\Errors\Exception\ValidationException;
+use Loxya\Models\Attribute;
+use Loxya\Errors\Exception\ValidationException;
 use PHPUnit\Framework\Constraint\Exception as ExceptionConstraint;
 
 final class AttributeTest extends TestCase

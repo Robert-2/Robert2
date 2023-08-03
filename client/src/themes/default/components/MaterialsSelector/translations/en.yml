@@ -1,0 +1,27 @@
+error-occurred-while-import-lists-from-event: "An error occurred while importing the lists from the event."
+error-occurred-while-deleting-list: "An error occurred while deleting the list."
+
+add-materials-from:
+    an-event: Add materials from an event
+    dropdown:
+        title: Add materials from...
+        choices:
+            an-event: An event...
+
+#
+# - Filtres
+#
+
+filters:
+    search-placeholder: Search a material...
+    selected-materials-only: Selected materials only
+
+#
+# - Disponibilités dans les listes
+#
+
+list-availability:
+    stock-count:
+        - "{count} available in stock"
+        - "{count} available in stock"
+    surplus-count: "{count} in surplus / broken"

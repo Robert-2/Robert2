@@ -1,8 +1,6 @@
 @use '~@/themes/default/style/globals';
 
 .MaterialsCategoryItem {
-    padding: 0 5px;
-
     &__title {
         margin: 0 0 5px;
         font-size: 1.2rem;
@@ -16,7 +14,6 @@
     &__subtotal {
         display: flex;
         padding: 0.5rem 0 0;
-        font-size: 1.1rem;
         list-style: none;
 
         &__name {

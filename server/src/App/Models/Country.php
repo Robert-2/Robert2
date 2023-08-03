@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Models;
+namespace Loxya\Models;
 
-use Robert2\API\Contracts\Serializable;
-use Robert2\API\Models\Traits\Serializer;
+use Adbar\Dot as DotArray;
+use Loxya\Contracts\Serializable;
+use Loxya\Models\Traits\Serializer;
 use Respect\Validation\Validator as V;
-use Robert2\API\Models\Traits\SoftDeletable;
 
 /**
  * Pays.
@@ -16,14 +16,11 @@ use Robert2\API\Models\Traits\SoftDeletable;
  * @property string $code
  * @property-read Carbon $created_at
  * @property-read Carbon|null $updated_at
- * @property-read Carbon|null $deleted_at
  */
 final class Country extends BaseModel implements Serializable
 {
     use Serializer;
-    use SoftDeletable;
 
-    protected $allowedSearchFields = ['name', 'code'];
     protected $searchField = 'name';
 
     public function __construct(array $attributes = [])
@@ -54,11 +51,8 @@ final class Country extends BaseModel implements Serializable
             $query->where('id', '!=', $this->id);
         }
 
-        if ($query->withTrashed()->exists()) {
-            return 'country-name-already-in-use';
-        }
-
-        return true;
+        return !$query->withTrashed()->exists()
+            ?: 'country-name-already-in-use';
     }
 
     public function checkCode($value)
@@ -73,11 +67,9 @@ final class Country extends BaseModel implements Serializable
             $query->where('id', '!=', $this->id);
         }
 
-        if ($query->withTrashed()->exists()) {
-            return 'country-code-already-in-use';
-        }
-
-        return true;
+        return $query->withTrashed()->exists()
+            ? 'country-code-already-in-use'
+            : true;
     }
 
     // ------------------------------------------------------
@@ -107,14 +99,8 @@ final class Country extends BaseModel implements Serializable
 
     public function serialize(): array
     {
-        $data = $this->attributesForSerialization();
-
-        unset(
-            $data['created_at'],
-            $data['updated_at'],
-            $data['deleted_at'],
-        );
-
-        return $data;
+        return (new DotArray($this->attributesForSerialization()))
+            ->delete(['created_at', 'updated_at'])
+            ->all();
     }
 }

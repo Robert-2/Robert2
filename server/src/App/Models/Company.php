@@ -1,14 +1,15 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Models;
+namespace Loxya\Models;
 
+use Adbar\Dot as DotArray;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Str;
-use Robert2\API\Contracts\Serializable;
-use Robert2\API\Models\Traits\Serializer;
+use Loxya\Contracts\Serializable;
+use Loxya\Models\Traits\Serializer;
 use Respect\Validation\Validator as V;
-use Robert2\API\Models\Traits\SoftDeletable;
+use Loxya\Models\Traits\SoftDeletable;
 
 /**
  * Société.
@@ -46,7 +47,7 @@ final class Company extends BaseModel implements Serializable
             'street' => V::optional(V::length(null, 191)),
             'postal_code' => V::optional(V::length(null, 10)),
             'locality' => V::optional(V::length(null, 191)),
-            'country_id' => V::optional(V::numericVal()),
+            'country_id' => V::custom([$this, 'checkCountryId']),
             'phone' => V::optional(V::phone()),
         ];
     }
@@ -68,11 +69,17 @@ final class Company extends BaseModel implements Serializable
             $query->where('id', '!=', $this->id);
         }
 
-        if ($query->withTrashed()->exists()) {
-            return 'company-legal-name-already-in-use';
-        }
+        return !$query->withTrashed()->exists()
+            ?: 'company-legal-name-already-in-use';
+    }
 
-        return true;
+    public function checkCountryId($value)
+    {
+        V::optional(V::numericVal())->check($value);
+
+        return $value !== null
+            ? Country::staticExists($value)
+            : true;
     }
 
     // ------------------------------------------------------
@@ -148,12 +155,10 @@ final class Company extends BaseModel implements Serializable
         'note',
     ];
 
-    public static function staticEdit($id = null, array $data = []): BaseModel
+    public function setPhoneAttribute($value)
     {
-        if (!empty($data['phone'])) {
-            $data['phone'] = Str::remove(' ', $data['phone']);
-        }
-        return parent::staticEdit($id, $data);
+        $value = !empty($value) ? Str::remove(' ', $value) : $value;
+        $this->attributes['phone'] = $value === '' ? null : $value;
     }
 
     // ------------------------------------------------------
@@ -164,14 +169,8 @@ final class Company extends BaseModel implements Serializable
 
     public function serialize(): array
     {
-        $data = $this->attributesForSerialization();
-
-        unset(
-            $data['created_at'],
-            $data['updated_at'],
-            $data['deleted_at'],
-        );
-
-        return $data;
+        return (new DotArray($this->attributesForSerialization()))
+            ->delete(['created_at', 'updated_at', 'deleted_at'])
+            ->all();
     }
 }

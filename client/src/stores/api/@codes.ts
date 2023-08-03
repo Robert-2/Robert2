@@ -17,4 +17,7 @@ export enum ApiErrorCode {
 
     /** Une erreur ou plusieurs erreurs de validation ce sont produites. */
     VALIDATION_FAILED = 400,
+
+    /** Le payload fourni dans la requête ne doit pas être vide. */
+    EMPTY_PAYLOAD = 401,
 }

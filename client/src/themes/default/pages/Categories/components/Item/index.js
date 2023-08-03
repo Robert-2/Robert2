@@ -56,9 +56,9 @@ const CategoriesItem = {
             }
 
             const isConfirmed = await confirm({
+                type: 'danger',
                 text: __('page.categories.confirm-permanently-delete-subcategory'),
                 confirmButtonText: __('yes-permanently-delete'),
-                type: 'danger',
             });
             if (!isConfirmed) {
                 return;
@@ -168,28 +168,26 @@ const CategoriesItem = {
                             v-tooltip={__('page.categories.add-a-subcategory')}
                             icon="folder-plus"
                         />
-                        <Dropdown variant="actions">
-                            <template slot="items">
-                                <Button
-                                    icon="list"
-                                    to={{ name: 'materials', query: { category: id } }}
-                                >
-                                    {__('page.categories.display-materials-list')}
-                                </Button>
-                                <Button
-                                    icon="edit"
-                                    type="primary"
-                                    onClick={() => { handleEditCategory(name); }}
-                                >
-                                    {__('page.categories.modify')}
-                                </Button>
-                                <Button
-                                    type="delete"
-                                    onClick={() => { handleRemoveCategory(); }}
-                                >
-                                    {__('page.categories.delete')}
-                                </Button>
-                            </template>
+                        <Dropdown>
+                            <Button
+                                icon="list"
+                                to={{ name: 'materials', query: { category: id } }}
+                            >
+                                {__('page.categories.display-materials-list')}
+                            </Button>
+                            <Button
+                                icon="edit"
+                                type="primary"
+                                onClick={() => { handleEditCategory(name); }}
+                            >
+                                {__('page.categories.modify')}
+                            </Button>
+                            <Button
+                                type="delete"
+                                onClick={() => { handleRemoveCategory(); }}
+                            >
+                                {__('page.categories.delete')}
+                            </Button>
                         </Dropdown>
                     </div>
                 </div>
@@ -200,33 +198,31 @@ const CategoriesItem = {
                                 {subCategoryName}
                             </div>
                             <div class="CategoriesItem__subcategory__actions">
-                                <Dropdown variant="actions">
-                                    <template slot="items">
-                                        <Button
-                                            to={{
-                                                name: 'materials',
-                                                query: { category: id, subCategory: subCategoryId },
-                                            }}
-                                            icon="list"
-                                        >
-                                            {__('page.categories.display-materials-list')}
-                                        </Button>
-                                        <Button
-                                            type="primary"
-                                            icon="edit"
-                                            onClick={() => {
-                                                handleEditSubcategory(subCategoryId, subCategoryName);
-                                            }}
-                                        >
-                                            {__('page.categories.modify-subcategory')}
-                                        </Button>
-                                        <Button
-                                            type="delete"
-                                            onClick={() => { handleRemoveSubcategory(subCategoryId); }}
-                                        >
-                                            {__('page.categories.delete-subcategory')}
-                                        </Button>
-                                    </template>
+                                <Dropdown>
+                                    <Button
+                                        to={{
+                                            name: 'materials',
+                                            query: { category: id, subCategory: subCategoryId },
+                                        }}
+                                        icon="list"
+                                    >
+                                        {__('page.categories.display-materials-list')}
+                                    </Button>
+                                    <Button
+                                        type="primary"
+                                        icon="edit"
+                                        onClick={() => {
+                                            handleEditSubcategory(subCategoryId, subCategoryName);
+                                        }}
+                                    >
+                                        {__('page.categories.modify-subcategory')}
+                                    </Button>
+                                    <Button
+                                        type="delete"
+                                        onClick={() => { handleRemoveSubcategory(subCategoryId); }}
+                                    >
+                                        {__('page.categories.delete-subcategory')}
+                                    </Button>
                                 </Dropdown>
                             </div>
                         </li>

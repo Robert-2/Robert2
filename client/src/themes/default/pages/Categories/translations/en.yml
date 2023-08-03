@@ -1,8 +1,9 @@
 title: Categories
 help: Manage material's categories and sub-categories.
 
-no-category: No category.
-create-a-category: Create a category
+no-category-yet: There is no category yet.
+create-a-first-category: Create a first category
+
 add-a-subcategory: Add a sub-category
 display-materials-list: See the material of this category
 

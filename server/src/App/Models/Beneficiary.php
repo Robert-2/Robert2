@@ -1,19 +1,17 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Models;
+namespace Loxya\Models;
 
 use Adbar\Dot as DotArray;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Robert2\API\Config\Config;
-use Robert2\API\Contracts\Serializable;
-use Robert2\API\Errors\Exception\ValidationException;
-use Robert2\API\Models\Traits\Serializer;
+use Loxya\Contracts\Serializable;
+use Loxya\Errors\Exception\ValidationException;
+use Loxya\Models\Traits\Serializer;
 use Respect\Validation\Validator as V;
-use Robert2\API\Models\Enums\Group;
-use Robert2\API\Models\Traits\SoftDeletable;
+use Loxya\Models\Traits\SoftDeletable;
 
 /**
  * Bénéficiaire / emprunteur.
@@ -54,24 +52,16 @@ final class Beneficiary extends BaseModel implements Serializable
 
     protected $table = 'beneficiaries';
 
-    protected $allowedSearchFields = [
-        'everywhere',
-        'full_name',
-        'reference',
-        'email',
-    ];
-    protected $searchField = 'everywhere';
+    protected $orderField = 'full_name';
 
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
 
         $this->validation = [
-            // Note: Le champ `person_id` est requis mais peuplé après coup par la relation
-            //       d'ou le `optional` pour ne valider que si il est directement spécifié.
-            'person_id' => V::optional(V::numericVal()),
+            'person_id' => V::custom([$this, 'checkPersonId']),
             'reference' => V::custom([$this, 'checkReference']),
-            'company_id' => V::optional(V::numericVal()),
+            'company_id' => V::custom([$this, 'checkCompanyId']),
         ];
     }
 
@@ -80,6 +70,15 @@ final class Beneficiary extends BaseModel implements Serializable
     // -    Validation
     // -
     // ------------------------------------------------------
+
+    public function checkPersonId($value)
+    {
+        // - L'identifiant de la personne n'est pas encore défini, on skip.
+        if (!$this->exists && $value === null) {
+            return true;
+        }
+        return Person::staticExists($value);
+    }
 
     public function checkReference($value)
     {
@@ -100,6 +99,24 @@ final class Beneficiary extends BaseModel implements Serializable
         }
 
         return true;
+    }
+
+    public function checkCompanyId($value)
+    {
+        V::optional(V::numericVal())->check($value);
+
+        if ($value === null) {
+            return true;
+        }
+
+        $company = Company::find($value);
+        if (!$company) {
+            return false;
+        }
+
+        return !$this->exists || $this->isDirty('company_id')
+            ? !$company->trashed()
+            : true;
     }
 
     // ------------------------------------------------------
@@ -311,82 +328,61 @@ final class Beneficiary extends BaseModel implements Serializable
 
     // ------------------------------------------------------
     // -
-    // -    Search / Order related
+    // -    Query Scopes
     // -
     // ------------------------------------------------------
 
-    protected function _getOrderBy(?Builder $builder = null): Builder
+    public function scopeSearch(Builder $query, string $term): Builder
     {
-        $builder = $builder ?? static::query();
-
-        $order = $this->orderField;
-        $direction = $this->orderDirection ?: 'asc';
-
-        if (!in_array($order, ['full_name', 'reference', 'company', 'email'], true)) {
-            $order = 'full_name';
+        $term = trim($term);
+        if (strlen($term) < 2) {
+            throw new \InvalidArgumentException("The term must contain more than two characters.");
         }
 
-        if (!in_array($order, ['full_name', 'company', 'email'], true)) {
-            return $builder->orderBy($order, $direction);
-        }
-
-        if ($order === 'company') {
-            $subQuery = Company::select('legal_name')
-                ->whereColumn('id', 'beneficiaries.company_id');
-        } else {
-            if ($order === 'full_name') {
-                $subQuery = Person::selectRaw('CONCAT(last_name, \' \', first_name) as full_name');
-            } else {
-                $subQuery = Person::select('email');
-            }
-            $subQuery = $subQuery->whereColumn('id', 'beneficiaries.person_id');
-        }
-
-        /** @var Builder $builder */
-        return $builder->orderBy($subQuery, $direction);
+        $term = sprintf('%%%s%%', addcslashes($term, '%_'));
+        return $query->where(function (Builder $query) use ($term) {
+            $query
+                ->orWhere(function (Builder $subQuery) use ($term) {
+                    $subQuery->where('reference', 'LIKE', $term);
+                })
+                ->orWhereHas('person', function (Builder $subQuery) use ($term) {
+                    $subQuery
+                        ->where('first_name', 'LIKE', $term)
+                        ->orWhere('last_name', 'LIKE', $term)
+                        ->orWhereRaw('CONCAT(last_name, \' \', first_name) LIKE ?', [$term])
+                        ->orWhereRaw('CONCAT(first_name, \' \', last_name) LIKE ?', [$term])
+                        ->orWhere('email', 'LIKE', $term);
+                })
+                ->orWhereRelation('company', 'legal_name', 'LIKE', $term);
+        });
     }
 
-    protected function _setSearchConditions(Builder $builder): Builder
+    public function scopeCustomOrderBy(Builder $query, string $column, string $direction = 'asc'): Builder
     {
-        if (!$this->searchField || !$this->searchTerm) {
-            return $builder;
-        }
-        $term = sprintf('%%%s%%', addcslashes($this->searchTerm, '%_'));
-
-        if ($this->searchField === 'full_name') {
-            return $builder->whereHas('person', function (Builder $query) use ($term) {
-                $query
-                    ->where('first_name', 'LIKE', $term)
-                    ->orWhere('last_name', 'LIKE', $term)
-                    ->orWhereRaw('CONCAT(last_name, \' \', first_name) LIKE ?', [$term])
-                    ->orWhereRaw('CONCAT(first_name, \' \', last_name) LIKE ?', [$term]);
-            });
+        if (!in_array($column, ['full_name', 'reference', 'company', 'email'], true)) {
+            throw new \InvalidArgumentException("Invalid order field.");
         }
 
-        if ($this->searchField === 'email') {
-            return $builder->whereRelation('person', 'email', 'LIKE', $term);
+        if (!in_array($column, ['full_name', 'company', 'email'], true)) {
+            return $query->orderBy($column, $direction);
         }
 
-        if ($this->searchField === 'everywhere') {
-            $group = function (Builder $query) use ($term) {
-                $query
-                    ->orWhere(function (Builder $subQuery) use ($term) {
-                        $subQuery->where('reference', 'LIKE', $term);
-                    })
-                    ->orWhereHas('person', function (Builder $subQuery) use ($term) {
-                        $subQuery
-                            ->where('first_name', 'LIKE', $term)
-                            ->orWhere('last_name', 'LIKE', $term)
-                            ->orWhereRaw('CONCAT(last_name, \' \', first_name) LIKE ?', [$term])
-                            ->orWhereRaw('CONCAT(first_name, \' \', last_name) LIKE ?', [$term])
-                            ->orWhere('email', 'LIKE', $term);
-                    })
-                    ->orWhereRelation('company', 'legal_name', 'LIKE', $term);
-            };
-            return $builder->where($group);
-        }
+        $subQuery = match ($column) {
+            'company' => (
+                Company::select('legal_name')
+                    ->whereColumn('id', 'beneficiaries.company_id')
+            ),
+            'full_name' => (
+                Person::selectRaw('CONCAT(last_name, \' \', first_name) as full_name')
+                    ->whereColumn('id', 'beneficiaries.person_id')
+            ),
+            'email' => (
+                Person::select('email')
+                    ->whereColumn('id', 'beneficiaries.person_id')
+            ),
+        };
 
-        return $builder->where($this->searchField, 'LIKE', $term);
+        return $query->orderBy($subQuery, $direction);
     }
 
     // ------------------------------------------------------
@@ -415,33 +411,14 @@ final class Beneficiary extends BaseModel implements Serializable
         $beneficiary = static::firstOrNew(compact('id'))->fill($data);
         $person = Person::firstOrNew(['id' => $personId])->fill($personData);
 
-        $user = null;
-        if ($beneficiary->can_make_reservation === true && !$beneficiary->person?->user) {
-            $user = (new User)->fill(array_merge($userData, [
-                'group' => Group::EXTERNAL,
-                'language' => Config::getSettings('defaultLang'),
-                'password' => !empty($userData['password'])
-                    ? password_hash($userData['password'], PASSWORD_DEFAULT)
-                    : null,
-            ]));
-        }
-
-        if (!$beneficiary->isValid() || !$person->isValid() || ($user && !$user->isValid())) {
+        if (!$beneficiary->isValid() || !$person->isValid()) {
             throw new ValidationException(array_merge(
                 $beneficiary->validationErrors(),
                 ['person' => $person->validationErrors()],
-                ['user' => $user?->validationErrors() ?? null],
             ));
         }
 
-        return dbTransaction(function () use ($person, $user, $beneficiary) {
-            if ($user && !$user->exists) {
-                if (!$user->save()) {
-                    throw new \RuntimeException("Unable to create the beneficiary's related user.");
-                }
-                $person->user()->associate($user);
-            }
-
+        return dbTransaction(function () use ($person, $beneficiary) {
             if (!$person->save()) {
                 throw new \RuntimeException("Unable to save the beneficiary's related person.");
             }

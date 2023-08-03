@@ -1,19 +1,19 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Controllers;
+namespace Loxya\Controllers;
 
 use DI\Container;
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
-use Robert2\API\Controllers\Traits\WithCrud;
-use Robert2\API\Http\Request;
-use Robert2\API\Models\Document;
-use Robert2\API\Models\Event;
-use Robert2\API\Models\EventTechnician;
-use Robert2\API\Models\Technician;
-use Robert2\API\Services\Auth;
-use Robert2\API\Services\I18n;
-use Robert2\Support\Arr;
+use Loxya\Controllers\Traits\WithCrud;
+use Loxya\Http\Request;
+use Loxya\Models\Document;
+use Loxya\Models\Event;
+use Loxya\Models\EventTechnician;
+use Loxya\Models\Technician;
+use Loxya\Services\Auth;
+use Loxya\Services\I18n;
+use Loxya\Support\Arr;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Http\Response;
 
@@ -38,12 +38,11 @@ class TechnicianController extends BaseController
 
     public function getAll(Request $request, Response $response): Response
     {
-        $searchTerm = $request->getQueryParam('search', null);
-        $searchField = $request->getQueryParam('searchBy', null);
+        $search = $request->getQueryParam('search', null);
         $orderBy = $request->getQueryParam('orderBy', null);
         $limit = $request->getQueryParam('limit', null);
         $ascending = (bool) $request->getQueryParam('ascending', true);
-        $withDeleted = (bool) $request->getQueryParam('deleted', false);
+        $onlyDeleted = (bool) $request->getQueryParam('deleted', false);
 
         // - Disponibilité dans une période donnée.
         $availabilityPeriod = Arr::mapKeys(
@@ -69,8 +68,8 @@ class TechnicianController extends BaseController
 
         $builder = (new Technician())
             ->setOrderBy($orderBy, $ascending)
-            ->setSearch($searchTerm, $searchField)
-            ->getAll($withDeleted);
+            ->setSearch($search)
+            ->getAll($onlyDeleted);
 
         if ($availabilityPeriod['start'] && $availabilityPeriod['end']) {
             $builder = $builder->whereDoesntHave(
@@ -102,8 +101,8 @@ class TechnicianController extends BaseController
                         $query
                             ->where('id', '!=', $event->id)
                             ->where([
-                                ['end_date', '>', $event->start_date],
-                                ['start_date', '<', $event->end_date],
+                                ['end_date', '>=', $event->start_date],
+                                ['start_date', '<=', $event->end_date],
                             ]);
                     })
                     ->get()

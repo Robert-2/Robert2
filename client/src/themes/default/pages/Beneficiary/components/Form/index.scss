@@ -5,7 +5,7 @@
 
     &__name {
         display: flex;
-        margin-bottom: globals.$content-padding-small-vertical;
+        margin-bottom: globals.$spacing-medium;
 
         #{$block}__first-name,
         #{$block}__last-name {
@@ -25,7 +25,7 @@
 
     &__locality {
         display: flex;
-        margin: globals.$content-padding-small-vertical 0;
+        margin: globals.$spacing-medium 0;
 
         #{$block}__postal-code {
             flex: unset;

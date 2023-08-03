@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Controllers\Traits;
+namespace Loxya\Controllers\Traits;
 
-use Robert2\API\Models\BaseModel;
+use Loxya\Models\BaseModel;
 
 /**
  * WithModel.
@@ -33,7 +33,7 @@ trait WithModel
         // - Détection automatique du modèle.
         $controllerName = class_basename($this);
         $modelName = preg_replace('/Controller$/', '', $controllerName);
-        $modelFullName = sprintf('\\Robert2\\API\\Models\\%s', $modelName);
+        $modelFullName = sprintf('\\Loxya\\Models\\%s', $modelName);
         if (!class_exists($modelFullName, true) || !is_subclass_of($modelFullName, BaseModel::class)) {
             throw new \RuntimeException(
                 sprintf("Unable to retrieves the associated model class for controller `%s`.", $controllerName)

@@ -1,8 +1,42 @@
 import Vue from 'vue';
+import createDeferred from 'p-defer';
 import Sweetalert from 'sweetalert2/dist/sweetalert2';
+
+/**
+ * Wrap l'appel à SweetAlert en ne résolvant la promesse de retour que
+ * quand SweetAlert a vraiment terminé son processing et a disparu de l'interface.
+ *
+ * Sans ça, le résultat est renvoyé avant le `didDestroy` de SweetAlert et lors
+ * de celui-ci, SweetAlert change l'élément de la page qui a le focus (via un genre de `blur`)
+ * et provoque des soucis pour le reste de l'application (qui voit son focus "sauter" ailleurs après coup).
+ *
+ * @param {SweetAlertOptions} options - Les options passés à SweetAlert.
+ *
+ * @returns {Promise<SweetAlertResult>} Une promesse contenant le résultat retourné par SweetAlert.
+ */
+const wrapSweetAlert = (options) => (
+    new Promise((resolve) => {
+        const destroyDeferred = createDeferred();
+        const resultPromise = Sweetalert.fire({
+            ...options,
+            didDestroy() {
+                destroyDeferred.resolve();
+            },
+        });
+
+        Promise.all([resultPromise, destroyDeferred.promise]).then(
+            ([result]) => { resolve(result); },
+        );
+    })
+);
 
 export const confirm = async (options) => {
     const { translate: __ } = Vue.i18n;
+
+    if (typeof options === 'string') {
+        options = { text: options };
+    }
+
     const {
         type = 'info',
         title = __('please-confirm'),
@@ -10,7 +44,7 @@ export const confirm = async (options) => {
         text,
     } = options;
 
-    const { isConfirmed } = await Sweetalert.fire({
+    const { isConfirmed } = await wrapSweetAlert({
         icon: 'warning',
         title,
         text,
@@ -35,7 +69,7 @@ export const prompt = (title, options = {}) => {
         inputValue = '',
     } = options;
 
-    return Sweetalert.fire({
+    return wrapSweetAlert({
         title,
         input: inputType,
         inputPlaceholder: placeholder,

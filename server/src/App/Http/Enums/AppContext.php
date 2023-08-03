@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Http\Enums;
+namespace Loxya\Http\Enums;
 
 /**
  * Contextes de l'application (Où se trouve l'utilisateur ?).

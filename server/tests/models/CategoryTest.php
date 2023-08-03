@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\Tests;
+namespace Loxya\Tests;
 
-use Robert2\API\Models\Category;
+use Loxya\Models\Category;
 
 final class CategoryTest extends TestCase
 {

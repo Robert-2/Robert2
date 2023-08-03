@@ -1,15 +1,15 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\Support;
+namespace Loxya\Support;
 
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
-use Robert2\API\Contracts\PeriodInterface;
+use Loxya\Contracts\PeriodInterface;
 
 final class Period implements PeriodInterface
 {
-    private $rawPeriod;
+    private CarbonPeriod $rawPeriod;
 
     public function __construct($start, $end = null)
     {

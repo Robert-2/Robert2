@@ -8,8 +8,8 @@ require_once __DIR__ . '/constants.php';
 require_once __DIR__ . '/../src/App/Config/constants.php';
 require_once __DIR__ . '/../src/App/Config/functions.php';
 
-use Robert2\API\Kernel;
-use Robert2\Fixtures;
+use Loxya\Kernel;
+use Loxya\Tests\Fixtures;
 
 // - Chargement de l'environnement
 $dotenv = Dotenv\Dotenv::createImmutable(ROOT_FOLDER, ['.env', '.env.test'], false);
@@ -33,7 +33,7 @@ echo "\033[33m
 \033[0m";
 
 try {
-    Fixtures\RobertFixtures::resetTestDatabase();
+    Fixtures\Fixtures::resetTestDatabase();
 } catch (PDOException $e) {
     $echoError(
         "Oops ! PDO returned the following error: "

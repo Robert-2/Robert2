@@ -7,6 +7,7 @@ title: "Détails du matériel «\_{name}\_»"
 
 infos:
     click-to-open-image: Cliquez pour ouvrir l'image en grand dans un nouvel onglet.
+    park-name: "Parc «\_{name}\_»"
 
 documents:
     confirm-permanently-delete: "Voulez-vous vraiment supprimer définitivement ce document\_?"

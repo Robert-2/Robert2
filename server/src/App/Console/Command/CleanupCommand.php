@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Console\Command;
+namespace Loxya\Console\Command;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
-use Robert2\API\Models\Traits\Prunable;
+use Loxya\Models\Traits\Prunable;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -99,7 +99,7 @@ class CleanupCommand extends Command
                 $name = str_replace(['/', '.php'], ['\\', ''], $path);
                 return [
                     'name' => $name,
-                    'fqdn' => sprintf('\\Robert2\\API\\Models\\%s', $name),
+                    'fqdn' => sprintf('\\Loxya\\Models\\%s', $name),
                 ];
             })
             ->filter(function ($model) {
