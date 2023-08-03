@@ -4,7 +4,7 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 0.22.0 (UNRELEASED)
+## 0.22.0 (2023-08-03)
 
 - Ajoute la possibilité de choisir un emplacement de rangement pour chaque matériel
   au sein d'un parc, et affiche cette information dans les fiches de sorties et les
