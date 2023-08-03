@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\Tests;
+namespace Loxya\Tests;
 
-use Robert2\API\Services\I18n;
-use Robert2\Support\Pdf;
+use Loxya\Services\I18n;
+use Loxya\Support\Pdf;
 
 final class PdfTest extends TestCase
 {

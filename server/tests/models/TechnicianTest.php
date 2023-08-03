@@ -1,38 +1,38 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\Tests;
+namespace Loxya\Tests;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Robert2\API\Errors\Exception\ValidationException;
-use Robert2\API\Models\Technician;
+use Loxya\Errors\Exception\ValidationException;
+use Loxya\Models\Technician;
 
 final class TechnicianTest extends TestCase
 {
-    public function testSetSearch(): void
+    public function testSearch(): void
     {
         // - Prénom
-        $result = (new Technician)->setSearch('ro')->getAll()->get();
+        $result = Technician::search('ro')->get();
         $this->assertEquals(1, $result->count());
         $this->assertEquals(['Roger Rabbit'], $result->pluck('full_name')->all());
 
         // - Prénom nom
-        $result = (new Technician)->setSearch('jean tec')->getAll()->get();
+        $result = Technician::search('jean tec')->get();
         $this->assertEquals(1, $result->count());
         $this->assertEquals(['Jean Technicien'], $result->pluck('full_name')->all());
 
         // - Nom Prénom
-        $result = (new Technician)->setSearch('technicien jean')->getAll()->get();
+        $result = Technician::search('technicien jean')->get();
         $this->assertEquals(1, $result->count());
         $this->assertEquals(['Jean Technicien'], $result->pluck('full_name')->all());
 
         // - Email
-        $result = (new Technician)->setSearch('client@technicien.com')->getAll()->get();
+        $result = Technician::search('client@technicien.com')->get();
         $this->assertEquals(1, $result->count());
         $this->assertEquals(['Jean Technicien'], $result->pluck('full_name')->all());
 
         // - Nickname
-        $result = (new Technician)->setSearch('Riri')->getAll()->get();
+        $result = Technician::search('Riri')->get();
         $this->assertEquals(1, $result->count());
         $this->assertEquals(['Roger Rabbit'], $result->pluck('full_name')->all());
     }

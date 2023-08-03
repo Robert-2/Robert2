@@ -83,11 +83,10 @@
     },
     "autoload": {
         "psr-4": {
-            "Robert2\\API\\": "src/App",
-            "Robert2\\Support\\": "src/App/Support",
-            "Robert2\\Install\\": "src/install",
-            "Robert2\\Tests\\": "tests",
-            "Robert2\\Fixtures\\": "tests/Fixtures"
+            "Loxya\\": "src/App",
+            "Loxya\\Install\\": "src/install",
+            "Loxya\\Tests\\": "tests",
+            "Loxya\\Tests\\Fixtures\\": "tests/fixtures"
         }
     },
     "config": {

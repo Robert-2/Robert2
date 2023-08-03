@@ -4,6 +4,30 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.22.0 (UNRELEASED)
+
+- Ajoute la possibilité de choisir un emplacement de rangement pour chaque matériel
+  au sein d'un parc, et affiche cette information dans les fiches de sorties et les
+  inventaires de retour (Premium #294).
+- Dans les inventaires de retour des événements, un bouton permet d'envoyer une notification
+  par e-mail aux techniciens assignés à l'événement, tant que le matériel n'a pas été
+  complètement retourné, ou que l'inventaire n'est pas terminé (Premium #293).
+- Dans le calendrier, un nouveau filtre permet de filtrer les événements par catégorie
+  du matériel qu'il contient (Premium #297).
+- Affiche la durée des événements et réservations dans l'onglet "périodes de réservation"
+  de la fiche matériel (Premium #204).
+- Ajoute la notion de technicien "préparateur de commande" : à l'étape 1 de la modification
+  des événements, on peut choisir un préparateur de commande. Celui-ci sera ensuite notifié
+  automatiquement la veille du premier jour de l'événement, par un e-mail qui contient la
+  fiche de sortie en pièce jointe (Premium #295).
+- Corrige le calcul du prochain numéro de facture en prenant en compte le numéro des factures 
+  supprimées.
+- Améliore grandement les performances de calcul des disponibilités du matériel. Cela se traduit
+  par des temps de chargement divisés par 5 (donc un gain de 500% !) dans le calendrier, mais aussi
+  à l'étape 4 de l'édition d'événement, et dans l'onglet "périodes de réservation" du matériel (Premium #321).
+- Ajoute la possibilité de télécharger la fiche de sortie avec une page par parc de matériel (Premium #290).
+- Les événements peuvent maintenant avoir plusieurs sous-listes de matériel distinctes (Premium #289).
+
 ## 0.21.2 (2023-05-15)
 
 - Corrige l'édition des modèles de liste (Premium).

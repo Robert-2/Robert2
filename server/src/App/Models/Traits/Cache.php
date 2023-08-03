@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Models\Traits;
+namespace Loxya\Models\Traits;
 
 use LogicException;
-use Robert2\API\Config\Config;
-use Robert2\Support\Str;
+use Loxya\Config\Config;
+use Loxya\Support\Str;
 use Symfony\Contracts\Cache\ItemInterface as CacheItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
@@ -20,7 +20,7 @@ trait Cache
     public function getCacheKey(): string
     {
         if (!$this->id) {
-            throw new LogicException("Impossible de récupérer la clé de cache d'une entité sans identifiant.");
+            throw new LogicException("Unable to find the cache key of an entity without an identifier.");
         }
         return sprintf('%s.%d', static::getModelCacheKey(), $this->id);
     }
@@ -53,7 +53,7 @@ trait Cache
         return $cache->get(
             $cacheKey,
             function (CacheItemInterface $item) use ($callback, $entityCacheKey, $cacheKey) {
-                debug('Création de l\'entrée de cache de modèle `%s`.', $cacheKey);
+                debug('Creation of the `%s` model cache entry.', $cacheKey);
                 $item->tag([static::getModelCacheKey(), $entityCacheKey]);
                 return $callback($item);
             }
@@ -74,7 +74,7 @@ trait Cache
 
         // - Si pas de scope, on invalide toutes les entrées taguées avec ce modèle en particulier.
         if (empty($scopes)) {
-            debug('Invalidation de toutes les entrées de cache du modèle #%s.', $this->id);
+            debug('Invalidate all cache entries of the #%s model.', $this->id);
             return $cache->invalidateTags([$entityCacheKey]);
         }
 
@@ -84,7 +84,7 @@ trait Cache
             },
             is_array($scopes) ? $scopes : [$scopes],
         );
-        debug('Invalidation de(s) l\'entrée(s) de cache de modèle `%s`.', implode('`,`', $cacheKeys));
+        debug('Invalidate `%s` model cache entry(s).', implode('`,`', $cacheKeys));
 
         $success = true;
         foreach ($cacheKeys as $cacheKey) {

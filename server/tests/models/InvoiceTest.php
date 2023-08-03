@@ -1,15 +1,15 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\Tests;
+namespace Loxya\Tests;
 
 use Brick\Math\BigDecimal as Decimal;
 use Illuminate\Support\Carbon;
-use Robert2\API\Models\Event;
-use Robert2\API\Models\Invoice;
-use Robert2\API\Models\User;
-use Robert2\API\Services\I18n;
-use Robert2\Support\Pdf;
+use Loxya\Models\Event;
+use Loxya\Models\Invoice;
+use Loxya\Models\User;
+use Loxya\Services\I18n;
+use Loxya\Support\Pdf;
 
 final class InvoiceTest extends TestCase
 {

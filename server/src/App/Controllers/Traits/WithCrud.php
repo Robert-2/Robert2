@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Controllers\Traits;
+namespace Loxya\Controllers\Traits;
 
 trait WithCrud
 {

@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\Tests;
+namespace Loxya\Tests;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Illuminate\Support\Collection;
-use Robert2\API\Models\EventTechnician;
-use Robert2\Support\Arr;
+use Loxya\Models\EventTechnician;
+use Loxya\Support\Arr;
 
 final class EventTechniciansTest extends ApiTestCase
 {
@@ -65,7 +65,7 @@ final class EventTechniciansTest extends ApiTestCase
         $this->client->post('/api/event-technicians', $data);
         $this->assertStatusCode(StatusCode::STATUS_CREATED);
         $this->assertResponseData([
-            'id' => 3,
+            'id' => 4,
             'event_id' => 1,
             'technician_id' => 2,
             'start_time' => '2018-12-17 10:00:00',

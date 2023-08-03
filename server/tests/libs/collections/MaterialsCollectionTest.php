@@ -1,29 +1,27 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\Tests;
+namespace Loxya\Tests;
 
-use Robert2\API\Models\Event;
-use Robert2\API\Models\Material;
-use Robert2\Support\Collections\MaterialsCollection;
+use Loxya\Models\Event;
+use Loxya\Models\Material;
+use Loxya\Support\Collections\MaterialsCollection;
 
 final class MaterialsCollectionTest extends TestCase
 {
     public function testByCategoriesMaterials()
     {
-        $materials = (new Material())->getAll()->get();
-
-        $collection = new MaterialsCollection($materials);
+        $collection = new MaterialsCollection(Material::all());
         $result = $collection->byCategories();
 
         $expected = [
             'Décors' => ['Décor Thème Forêt'],
             'Lumière' => ['PAR64 LED', 'Showtec SDS-6'],
             'Son' => [
-                'Behringer X Air XR18',
-                'Câble XLR 10m',
                 'Console Yamaha CL3',
                 'Processeur DBX PA2',
+                'Câble XLR 10m',
+                'Behringer X Air XR18',
             ],
             'Transport' => ['Volkswagen Transporter'],
         ];
@@ -37,8 +35,7 @@ final class MaterialsCollectionTest extends TestCase
 
     public function testByCategoriesEventMaterials()
     {
-        $event = Event::findOrFail(1);
-        $materials = $event->materials;
+        $materials = Event::findOrFail(1)->materials;
 
         $collection = new MaterialsCollection($materials);
         $result = $collection->byCategories();
@@ -57,16 +54,14 @@ final class MaterialsCollectionTest extends TestCase
 
     public function testBySubCategoriesMaterials()
     {
-        $materials = (new Material())->getAll()->get();
-
-        $collection = new MaterialsCollection($materials);
+        $collection = new MaterialsCollection(Material::all());
         $result = $collection->bySubCategories();
 
         $expected = [
             'Décors - __other' => ['Décor Thème Forêt'],
             'Lumière - Gradateurs' => ['Showtec SDS-6'],
             'Lumière - Projecteurs' => ['PAR64 LED'],
-            'Son - Mixeurs' => ['Behringer X Air XR18', 'Console Yamaha CL3'],
+            'Son - Mixeurs' => ['Console Yamaha CL3', 'Behringer X Air XR18'],
             'Son - Processeurs' => ['Processeur DBX PA2'],
             'Son - __other' => ['Câble XLR 10m'],
             'Transport - __other' => ['Volkswagen Transporter'],
@@ -81,8 +76,7 @@ final class MaterialsCollectionTest extends TestCase
 
     public function testBySubCategoriesEventMaterials()
     {
-        $event = Event::findOrFail(1);
-        $materials = $event->materials;
+        $materials = Event::findOrFail(1)->materials;
 
         $collection = new MaterialsCollection($materials);
         $result = $collection->bySubCategories();
@@ -102,22 +96,20 @@ final class MaterialsCollectionTest extends TestCase
 
     public function testByParksMaterials()
     {
-        $materials = (new Material())->getAll()->get();
-
-        $collection = new MaterialsCollection($materials);
+        $collection = new MaterialsCollection(Material::all());
         $result = $collection->byParks();
 
         $expected = [
             'default' => [
-                'Behringer X Air XR18',
-                'Câble XLR 10m',
                 'Console Yamaha CL3',
-                'PAR64 LED',
                 'Processeur DBX PA2',
+                'PAR64 LED',
                 'Showtec SDS-6',
+                'Câble XLR 10m',
+                'Behringer X Air XR18',
+                'Décor Thème Forêt',
             ],
             'spare' => [
-                'Décor Thème Forêt',
                 'Volkswagen Transporter',
             ],
         ];
@@ -131,8 +123,7 @@ final class MaterialsCollectionTest extends TestCase
 
     public function testByParksEventMaterials()
     {
-        $event = Event::findOrFail(1);
-        $materials = $event->materials;
+        $materials = Event::findOrFail(1)->materials;
 
         $collection = new MaterialsCollection($materials);
         $result = $collection->byParks();

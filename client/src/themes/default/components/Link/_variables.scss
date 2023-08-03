@@ -4,9 +4,9 @@
 /// @type Color
 $color: globals.$link-base-color !default;
 
-/// Marge entre l'icône et le texte des liens (quand il y en a une, d'icône)
+/// Marge entre les éléments internes du lien (texte, icône(s)).
 /// @type Number
-$icon-margin: 0.385rem !default;
+$internal-spacing: 0.385rem !default;
 
 //
 // - Hover

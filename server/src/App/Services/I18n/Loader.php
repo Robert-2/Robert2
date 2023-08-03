@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Services\I18n;
+namespace Loxya\Services\I18n;
 
-use Robert2\API\Services\I18n\Exceptions\ContainerException;
-use Robert2\API\Services\I18n\Exceptions\NotFoundException;
+use Loxya\Services\I18n\Exceptions\ContainerException;
+use Loxya\Services\I18n\Exceptions\NotFoundException;
 
 class Loader implements LoaderInterface
 {

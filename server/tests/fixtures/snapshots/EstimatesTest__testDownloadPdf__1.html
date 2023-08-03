@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Estimate</title>
+    <link href="/fonts/Roboto/index.css" rel="stylesheet">
+    <style type="text/css">
+        html {
+            margin: 9mm 8mm;
+            font-family: Roboto;
+            font-weight: 400;
+            font-size: 9pt;
+        }
+        body {
+            margin: 0;
+        }
+        h1 {
+            font-size: 1.5rem;
+            margin: 0 0 3mm 0;
+        }
+        h2 {
+            font-size: 1.25rem;
+            margin: 0 0 3mm 0;
+        }
+        h3 {
+            font-size: 1.125rem;
+            margin: 0 0 3mm 0;
+        }
+        h4 {
+            font-size: 1rem;
+            margin: 0 0 3mm 0;
+        }
+        p {
+            font-size: 1rem;
+            margin: 0 0 3mm 0;
+        }
+        small {
+            font-size: 0.85rem;
+        }
+        ul, ol {
+            margin: 2mm 0 3mm 0;
+            padding: 0;
+        }
+        li {
+            list-style: none;
+            border-left: 2px solid #ccc;
+            padding-left: 1mm;
+        }
+        table {
+            width: 100%;
+            table-layout: auto;
+            margin: 0 0 3mm 0;
+            border-spacing: 0;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 1mm 2mm;
+            border-top: 1pt solid #888;
+            border-left: 1pt solid #888;
+            vertical-align: top;
+        }
+        th {
+            text-align: center;
+        }
+        th:last-child, td:last-child {
+            border-right: 1pt solid #888;
+        }
+        tr:last-child > td {
+            border-bottom: 1pt solid #888;
+        }
+        .layout-table > tbody > tr > td {
+            border: none;
+            padding: 0;
+        }
+        .listing-table {
+            margin-bottom: 8mm;
+        }
+        .listing-table > thead > tr {
+            page-break-after: avoid;
+        }
+        .listing-table > thead > tr > th {
+            font-size: 0.8rem;
+            border-bottom: 1pt solid #888;
+            vertical-align: middle;
+        }
+        .listing-table > tbody > tr > td {
+            padding: 2mm;
+            font-size: 0.7rem;
+            border: none;
+            border-bottom: 1pt solid #ccc;
+            vertical-align: middle;
+        }
+        .listing-table > tbody > tr > td.section-title {
+            padding: 4mm 2mm 2mm;
+            font-size: 0.8rem;
+            color: #888;
+        }
+        .listing-table > tbody > tr > td:first-child {
+            border-left: 1pt solid #888;
+        }
+        .listing-table > tbody > tr > td:last-child {
+            border-right: 1pt solid #888;
+        }
+        .inset {
+            padding: 5mm 3mm 8mm !important;
+            border: 1pt solid #999 !important;
+        }
+        .half { width: 50%; }
+        .third { width: 33.33%; }
+        .two-third { width: 66.66%; }
+        .left { text-align: left; }
+        .center { text-align: center; }
+        .right { text-align: right; }
+        .sizeTitle { font-size: 16pt; }
+        .sizeSubtitle { font-size: 14pt; }
+        .size12 { font-size: 1rem; }
+        .size10 { font-size: 0.9rem; }
+        .size8 { font-size: 0.85rem; }
+        .vspace2 { margin: 0; padding: 2mm 0; }
+        .vspace5 { margin: 0; padding: 5mm 0; }
+        .vspace10 { margin: 0; padding: 10mm 0; }
+        .spaceBottom2 { margin-bottom: 2mm; }
+        .spaceBottom5 { margin-bottom: 5mm; }
+        .indent5 { padding-left: 5mm; }
+        .indent10 { padding-left: 10mm; }
+        .box {
+            padding: 1mm;
+            background-color: #eee;
+            border-radius: 3pt;
+        }
+        .strong { font-weight: 700; }
+        .normal { font-weight: 400; }
+        .light { color: #333; }
+        .lighter { color: #666; }
+        .lightest { color: #aaa; }
+        .changePage { page-break-before: always; }
+
+            </style>
+</head>
+<body>
+    <table class="layout-table">
+    <tr>
+        <td class="half">
+            <p class="size12 strong">Testing corp.<br>5 rue des tests<br>05555 Testville<br>France</p>
+<p>SIRET: 543 210 080 20145<br>APE: 947A<br></p>
+<p>Phone: +33123456789<br>E-mail: jean@testing-corp.dev</p>
+<p>VAT number: FR11223344556600</p>
+        </td>
+        <td class="half">
+            <h2 class="box center">Estimate in Euro</h2>
+            <table class="layout-table">
+                <tr>
+                    <td class="size12">On 30/01/2021</td>
+                    <td class="size12 right">Page 1</td>
+                </tr>
+            </table>
+            <p>
+                Beneficiary
+            </p>
+            <h2 class="vspace10 indent5">
+                <strong>Testing, Inc</strong><br>Contact: Jean Fountain<br>1, company st.<br>
+1234 Megacity<br><small>(Ref. 0001)</small><br><small>Phone: +4123456789</small><br><small>E-mail: tester@robertmanager.net</small><br>
+            </h2>
+        </td>
+    </tr>
+</table>
+
+<div class="vspace5">
+    <p>Event: Premier &eacute;v&eacute;nement</p>
+    <p class="strong">
+                From Monday, 17 December 2018 to Tuesday, 18 December 2018,
+                        In Gap
+            </p>
+    <table>
+        <thead>
+            <tr>
+                <th class="left">Category</th>
+                <th>Quantity</th>
+                <th>Total excl. VAT&nbsp;/&nbsp;day</th>
+            </tr>
+        </thead>
+        <tbody>
+                        <tr>
+                <td>
+                                        Son
+                                    </td>
+                <td class="center">2 items</td>
+                <td class="right">
+                    &euro;325.50
+                </td>
+            </tr>
+                        <tr>
+                <td>
+                                        Not categorized
+                                    </td>
+                <td class="center">2 items</td>
+                <td class="right">
+                    &euro;5.50
+                </td>
+            </tr>
+                    </tbody>
+    </table>
+    <p class="size8 lighter">Note: you'll find the detail of materials in next pages.</p>
+</div>
+
+<div class="vspace5 size8">
+    <table>
+        <thead>
+            <tr>
+                <th>Daily price excl. VAT</th>
+                <th>Discount</th>
+                <th>Total&nbsp;/&nbsp;day</th>
+                <th>Degressive rate</th>
+                <th colspan="2">Totals</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="center">
+                <td rowspan="3" style="border-bottom: 1pt solid #888;">
+                    <div class="vspace2">
+                        &euro;331.00
+                    </div>
+                    <div class="vspace2 lighter">
+                        Discountable<br>
+                        &euro;31.00
+                    </div>
+                </td>
+                <td rowspan="3" style="border-bottom: 1pt solid #888;">
+                    <div class="vspace2">
+                                                50.0000%<br><br>
+                        - &euro;15.50
+                                            </div>
+                </td>
+                <td rowspan="3" style="border-bottom: 1pt solid #888;">
+                                        <div class="vspace2 right">
+                        Excl. VAT<br>
+                        &euro;315.50
+                    </div>
+                    <div class="vspace2 right lighter">
+                        V.A.T. (20.0%)<br>
+                        &euro;63.10
+                    </div>
+                                        <div class="vspace2 right">
+                        Incl. VAT<br>                        &euro;378.60
+                    </div>
+                </td>
+                <td rowspan="3" style="border-bottom: 1pt solid #888;">
+                    <div class="vspace2">
+                        &times;&nbsp;<strong>1.75</strong><br><br>
+                        <span class="lighter">
+                            (2 days)
+                        </span>
+                    </div>
+                </td>
+                                <td>
+                    <div class="vspace2 strong center">Total excl. VAT</div>
+                </td>
+                <td>
+                    <div class="vspace2 right">
+                        &euro;552.13
+                    </div>
+                </td>
+                                            </tr>
+                        <tr>
+                <td>
+                    <div class="vspace2 strong center">Total incl. VAT</div>
+                </td>
+                <td>
+                    <div class="vspace2 right">
+                        &euro;662.56
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="vspace2 strong size10 center">
+                        Amount due
+                    </div>
+                </td>
+                <td>
+                    <div class="vspace2 size10 strong right">
+                        &euro;662.56
+                    </div>
+                </td>
+            </tr>
+                    </tbody>
+    </table>
+
+    <p class="vspace5 size10">
+        Date of acceptance of the estimate:
+    </p>
+    <p class="size10">
+        Signature of the beneficiary, preceded by the mention &laquo; good for approval &raquo;:
+    </p>
+</div>
+
+<div class="changePage vspace5">
+    <table class="layout-table">
+        <tr>
+            <td class="half">
+                <p class="size12 strong">Testing corp.<br>5 rue des tests<br>05555 Testville<br>France</p>
+<p>Phone: +33123456789<br>E-mail: jean@testing-corp.dev</p>
+            </td>
+            <td class="half">
+                <h2 class="box center">Estimate details</h2>
+                <table class="layout-table">
+                    <tr>
+                        <td class="size12">On 30/01/2021</td>
+                        <td class="size12 right">Page 2</td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<table class="listing-table">
+    <thead>
+        <tr>
+            <th>Ref.</th>
+            <th>Designation</th>
+            <th>Qty</th>
+            <th>Unit Price (excl. VAT)</th>
+            <th>Repl. Val.</th>
+            <th>Total excl. VAT</th>
+        </tr>
+    </thead>
+    <tbody>
+                    <tr>
+                <td class="section-title" colspan="6">
+                                            Not categorized
+                                    </td>
+            </tr>
+                        <tr>
+                <td>XX1</td>
+                <td>Cable XX1</td>
+                <td class="center">2</td>
+                <td class="right">
+                    &euro;2.75
+                </td>
+                <td class="right">
+                    &euro;10.00
+                </td>
+                <td class="right">
+                    &euro;5.50
+                </td>
+            </tr>
+                                <tr>
+                <td class="section-title" colspan="6">
+                                            Son - Mixeurs
+                                    </td>
+            </tr>
+                        <tr>
+                <td>PM5D</td>
+                <td>Console Yamaha CL3</td>
+                <td class="center">1</td>
+                <td class="right">
+                    &euro;300.00
+                </td>
+                <td class="right">
+                    &euro;19,400.00
+                </td>
+                <td class="right">
+                    &euro;300.00
+                </td>
+            </tr>
+                                <tr>
+                <td class="section-title" colspan="6">
+                                            Son - Processeurs
+                                    </td>
+            </tr>
+                        <tr>
+                <td>DBXPA2</td>
+                <td>Processeur DBX PA2</td>
+                <td class="center">1</td>
+                <td class="right">
+                    &euro;25.50
+                </td>
+                <td class="right">
+                    &euro;349.90
+                </td>
+                <td class="right">
+                    &euro;25.50
+                </td>
+            </tr>
+                        </tbody>
+</table>
+</body>
+</html>

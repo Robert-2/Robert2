@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Models;
+namespace Loxya\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Respect\Validation\Exceptions\NestedValidationException;
-use Robert2\API\Errors\Exception\ValidationException;
+use Loxya\Errors\Exception\ValidationException;
 
 /**
  * @mixin \Illuminate\Database\Eloquent\Builder
@@ -21,6 +21,13 @@ use Robert2\API\Errors\Exception\ValidationException;
  * @method static updateOrCreate(array $attributes, array $values = [])
  *
  * @method static \Illuminate\Database\Eloquent\Builder|static query()
+ * @method static \Illuminate\Database\Eloquent\Builder|static select($columns = ['*'])
+ * @method static \Illuminate\Database\Eloquent\Builder|static selectRaw(string $expression, array $bindings = [])
+ * @method static \Illuminate\Database\Eloquent\Builder|static orderBy($column, string $direction = 'asc')
+ * @method static \Illuminate\Database\Eloquent\Builder|static where($column, $operator = null, $value = null, string $boolean = 'and')
+ * @method static \Illuminate\Database\Eloquent\Builder|static whereNotIn(string $column, $values, string $boolean = 'and')
+ * @method static \Illuminate\Database\Eloquent\Builder|static whereIn(string $column, $values, string $boolean = 'and', bool $not = false)
+ *
  * @method static static make(array $attributes = [])
  * @method static static create(array $attributes = [])
  * @method static static forceCreate(array $attributes)
@@ -34,6 +41,10 @@ use Robert2\API\Errors\Exception\ValidationException;
  * @method static static updateOrCreate(array $attributes, array $values = [])
  * @method static null|static find($id, $columns = ['*'])
  * @method static null|static first($columns = ['*'])
+ * @method static int count(string $columns = '*')
+ *
+ * @method static Builder|static search(string $term)
+ * @method static Builder|static customOrderBy(string $column, 'asc'|'desc' $direction)
  */
 abstract class BaseModel extends Model
 {
@@ -42,7 +53,6 @@ abstract class BaseModel extends Model
     protected $orderField;
     protected $orderDirection;
 
-    protected $allowedSearchFields = [];
     protected $searchField;
     protected $searchTerm;
 
@@ -66,23 +76,20 @@ abstract class BaseModel extends Model
 
     public function getAll(bool $withDeleted = false): Builder
     {
-        $builder = static::query();
+        $orderColumn = $this->orderField === null && empty($this->orders)
+            ? (in_array('name', $this->getTableColumns(), true) ? 'name' : 'id')
+            : $this->orderField;
 
-        if (!empty($this->searchTerm)) {
-            $builder = $this->_setSearchConditions($builder);
-        }
-
-        if ($withDeleted) {
-            $builder = $builder->onlyTrashed();
-        }
-
-        return $this->_getOrderBy($builder);
-    }
-
-    public function getAllFiltered(array $conditions, bool $withDeleted = false): Builder
-    {
-        $builder = $this->getAll($withDeleted);
-        return $builder->where($conditions);
+        return static::query()
+            ->when($withDeleted, fn (Builder $builder) => (
+                $builder->onlyTrashed()
+            ))
+            ->when($this->searchTerm !== null, fn (Builder $builder) => (
+                $builder->search($this->searchTerm)
+            ))
+            ->when($orderColumn !== null, fn (Builder $builder) => (
+                $builder->customOrderBy($orderColumn, $this->orderDirection ?: 'asc')
+            ));
     }
 
     // ------------------------------------------------------
@@ -100,25 +107,12 @@ abstract class BaseModel extends Model
         return $this;
     }
 
-    public function setSearch(?string $term = null, $fields = null): BaseModel
+    public function setSearch(?string $term = null): BaseModel
     {
-        if (empty($term)) {
-            return $this;
+        $term = $term !== null ? trim($term) : null;
+        if ($term !== null && strlen($term) >= 2) {
+            $this->searchTerm = $term;
         }
-
-        if ($fields) {
-            $fields = !is_array($fields) ? explode('|', $fields) : $fields;
-            foreach ($fields as $field) {
-                if (!in_array($field, $this->getAllowedSearchFields(), true)) {
-                    throw new \InvalidArgumentException(
-                        sprintf("Search field \"%s\" not allowed.", $field)
-                    );
-                }
-                $this->searchField = $field;
-            }
-        }
-
-        $this->searchTerm = trim($term);
         return $this;
     }
 
@@ -200,14 +194,6 @@ abstract class BaseModel extends Model
         return $this->columns;
     }
 
-    public function getAllowedSearchFields(): array
-    {
-        return array_unique(array_merge(
-            (array) $this->searchField,
-            (array) $this->allowedSearchFields
-        ));
-    }
-
     // ------------------------------------------------------
     // -
     // -    Validation related
@@ -263,44 +249,47 @@ abstract class BaseModel extends Model
 
     // ------------------------------------------------------
     // -
-    // -    Internal Methods
+    // -    Query Scopes
     // -
     // ------------------------------------------------------
 
-    protected function _getOrderBy(?Builder $builder = null): Builder
+    public function scopeSearch(Builder $query, string $term): Builder
     {
-        $direction = $this->orderDirection ?: 'asc';
-
-        $order = $this->orderField;
-        if (!$order) {
-            $order = in_array('name', $this->getTableColumns(), true) ? 'name' : 'id';
+        if (!property_exists($this, 'searchField')) {
+            throw new \LogicException(sprintf(
+                "Missing search field in model \"%s\".",
+                static::class
+            ));
         }
 
-        if ($builder) {
-            return $builder->orderBy($order, $direction);
+        $term = trim($term);
+        if (strlen($term) < 2) {
+            throw new \InvalidArgumentException("The term must contain more than two characters.");
         }
 
-        return static::orderBy($order, $direction);
-    }
-
-    protected function _setSearchConditions(Builder $builder): Builder
-    {
-        if (!$this->searchField || !$this->searchTerm) {
-            return $builder;
-        }
-        $term = sprintf('%%%s%%', addcslashes($this->searchTerm, '%_'));
-
-        if (is_array($this->searchField)) {
-            $group = function (Builder $query) use ($term) {
+        $term = sprintf('%%%s%%', addcslashes($term, '%_'));
+        return !is_array($this->searchField)
+            ? $query->where($this->searchField, 'LIKE', $term)
+            : $query->where(function (Builder $query) use ($term) {
                 foreach ($this->searchField as $field) {
                     $query->orWhere($field, 'LIKE', $term);
                 }
-            };
-            return $builder->where($group);
-        }
-
-        return $builder->where($this->searchField, 'LIKE', $term);
+            });
     }
+
+    public function scopeCustomOrderBy(Builder $query, string $column, string $direction = 'asc'): Builder
+    {
+        if (!in_array($column, $this->getTableColumns(), true)) {
+            throw new \InvalidArgumentException("Invalid order field.");
+        }
+        return $query->orderBy($column, $direction);
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Internal Methods
+    // -
+    // ------------------------------------------------------
 
     public function jsonSerialize(): mixed
     {

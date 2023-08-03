@@ -10,9 +10,9 @@ $padding-y: 0.396rem !default;
 /// @type Number
 $padding-x: 0.626rem !default;
 
-/// Marge entre l'icône et le texte des boutons (quand il y en a une, d'icône)
+/// Marge entre les éléments internes du bouton (texte, icône(s)).
 /// @type Number
-$icon-margin: 0.385rem !default;
+$internal-spacing: globals.$spacing-thin !default;
 
 /// Largeur de la bordure des boutons.
 /// @type Number
@@ -26,13 +26,25 @@ $border-radius: 4px !default;
 // - Tailles
 //
 
+/// Padding vertical des boutons en version "small".
+/// @type Number
+$small-padding-y: 0.3rem;
+
+/// Padding horizontal des boutons en version "small".
+/// @type Number
+$small-padding-x: 0.45rem;
+
+/// Taille de la police des boutons en version "small".
+/// @type Number
+$small-font-size: 0.95rem;
+
 /// Padding vertical des boutons en version "large".
 /// @type Number
-$large-padding-y: 0.75rem;
+$large-padding-y: 0.56rem;
 
 /// Padding horizontal des boutons en version "large".
 /// @type Number
-$large-padding-x: 1.5rem;
+$large-padding-x: 1.35rem;
 
 /// Taille de la police des boutons en version "large".
 /// @type Number

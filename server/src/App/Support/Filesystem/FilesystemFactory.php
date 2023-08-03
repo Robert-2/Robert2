@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\Support\Filesystem;
+namespace Loxya\Support\Filesystem;
 
 use Aws\S3\S3Client;
-use Robert2\Support\Arr;
+use Loxya\Support\Arr;
 use League\Flysystem\AwsS3V3\AwsS3V3Adapter as S3Adapter;
 use League\Flysystem\AwsS3V3\PortableVisibilityConverter as AwsS3PortableVisibilityConverter;
 use League\Flysystem\Filesystem as Flysystem;

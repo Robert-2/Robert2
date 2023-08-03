@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\Tests;
+namespace Loxya\Tests;
 
-use Robert2\API\Errors\Exception\ValidationException;
-use Robert2\API\Models\Event;
-use Robert2\API\Models\EventTechnician;
+use Loxya\Errors\Exception\ValidationException;
+use Loxya\Models\Event;
+use Loxya\Models\EventTechnician;
 
 final class EventTechnicianTest extends TestCase
 {

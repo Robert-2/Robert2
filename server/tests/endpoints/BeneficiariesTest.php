@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\Tests;
+namespace Loxya\Tests;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
-use Robert2\Support\Arr;
-use Robert2\API\Models\Beneficiary;
+use Loxya\Support\Arr;
+use Loxya\Models\Beneficiary;
 use Illuminate\Support\Collection;
 
 final class BeneficiariesTest extends ApiTestCase

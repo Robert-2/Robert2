@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Console\Command\Migrations;
+namespace Loxya\Console\Command\Migrations;
 
 use Phinx\Config\Config as PhinxConfig;
 use Phinx\Config\ConfigInterface;
-use Robert2\API\Config\Config;
+use Loxya\Config\Config;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;

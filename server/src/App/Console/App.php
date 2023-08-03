@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Console;
+namespace Loxya\Console;
 
-use Robert2\API\Config\Config;
-use Robert2\API\Kernel;
+use Loxya\Config\Config;
+use Loxya\Kernel;
 use Symfony\Component\Console\Application as BaseApplication;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\ListCommand;

@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Observers;
+namespace Loxya\Observers;
 
-use Robert2\API\Models\Event;
+use Loxya\Models\Event;
 
 final class EventObserver
 {
@@ -83,8 +83,8 @@ final class EventObserver
         //   (Doit être géré manuellement car tables polymorphes)
         //
 
-        $event->invoices()->delete();
-        $event->estimates()->delete();
+        $event->invoices->each->delete();
+        $event->estimates->each->delete();
     }
 
     // ------------------------------------------------------

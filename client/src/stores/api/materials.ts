@@ -1,7 +1,7 @@
 import requester from '@/globals/requester';
 
 import type { ProgressCallback, AxiosRequestConfig as RequestConfig } from 'axios';
-import type { PaginatedData, ListingParams } from '@/stores/api/@types';
+import type { PaginatedData, SortableParams, PaginationParams } from '@/stores/api/@types';
 import type { Event } from '@/stores/api/events';
 import type { BookingSummary } from '@/stores/api/bookings';
 import type { Category } from '@/stores/api/categories';
@@ -9,6 +9,9 @@ import type { Subcategory } from '@/stores/api/subcategories';
 import type { Park } from '@/stores/api/parks';
 import type { Tag } from '@/stores/api/tags';
 import type { Document } from '@/stores/api/documents';
+
+/** Représente le matériel non catégorisés. */
+export const UNCATEGORIZED = 'uncategorized';
 
 //
 // - Types
@@ -20,12 +23,6 @@ export type MaterialAttribute = {
     type: 'boolean' | 'string' | 'number' | 'date',
     unit: string | null,
     value: boolean | string | number | null,
-};
-
-export type UnitUsedBy = {
-    events: number,
-    reservations: number,
-    listTemplates: number,
 };
 
 export type Material = (
@@ -47,7 +44,6 @@ export type Material = (
         attributes: MaterialAttribute[],
         created_at: string,
         updated_at: string,
-        is_unitary: false,
         park_id: Park['id'],
     }
 );
@@ -88,12 +84,22 @@ export type MaterialEdit = {
     attributes?: MaterialEditAttribute[],
 };
 
-type GetAllParams = {
-    deleted?: boolean,
+type BaseFilters = {
+    search?: string,
+    category?: Category['id'],
+    subCategory?: Subcategory['id'],
 };
 
-type GetAllPaginated = GetAllParams & ListingParams & { paginated?: true };
-type GetAllRaw = GetAllParams & { paginated: false };
+export type Filters = Omit<BaseFilters, 'category'> & {
+    dateForQuantities?: string | { start: string, end: string },
+    category?: Category['id'] | typeof UNCATEGORIZED,
+    park?: Park['id'],
+    tags?: Array<Tag['id']>,
+};
+
+type GetAllBase = Filters & SortableParams & { deleted?: boolean };
+type GetAllPaginated = GetAllBase & PaginationParams & { paginated?: true };
+type GetAllRaw = GetAllBase & { paginated: false };
 
 //
 // - Fonctions
@@ -101,8 +107,21 @@ type GetAllRaw = GetAllParams & { paginated: false };
 
 async function all(params: GetAllRaw): Promise<MaterialWithAvailabilities[]>;
 async function all(params: GetAllPaginated): Promise<PaginatedData<MaterialWithAvailabilities[]>>;
-async function all(params: GetAllPaginated | GetAllRaw): Promise<unknown> {
-    return (await requester.get('/materials', { params })).data;
+async function all({ dateForQuantities, ...params }: GetAllPaginated | GetAllRaw): Promise<unknown> {
+    const rawParams: Record<string, unknown> = params;
+    if (dateForQuantities !== undefined) {
+        if (
+            typeof dateForQuantities === 'object' &&
+            'start' in dateForQuantities &&
+            'end' in dateForQuantities
+        ) {
+            rawParams['dateForQuantities[start]'] = dateForQuantities.start;
+            rawParams['dateForQuantities[end]'] = dateForQuantities.end;
+        } else {
+            rawParams.dateForQuantities = dateForQuantities;
+        }
+    }
+    return (await requester.get('/materials', { params: rawParams })).data;
 }
 /* eslint-enable func-style */
 
@@ -114,13 +133,15 @@ const one = async (id: Material['id']): Promise<MaterialDetails> => (
     (await requester.get(`/materials/${id}`)).data
 );
 
-const create = async (data: MaterialEdit, onProgress?: ProgressCallback): Promise<MaterialDetails> => (
-    (await requester.post('/materials', data, { onProgress })).data
-);
+const create = async (data: MaterialEdit, onProgress?: ProgressCallback): Promise<MaterialDetails> => {
+    const options = { ...(onProgress ? { onProgress } : {}) };
+    return (await requester.post('/materials', data, options)).data;
+};
 
-const update = async (id: Material['id'], data: MaterialEdit, onProgress?: ProgressCallback): Promise<MaterialDetails> => (
-    (await requester.put(`/materials/${id}`, data, { onProgress })).data
-);
+const update = async (id: Material['id'], data: Partial<MaterialEdit>, onProgress?: ProgressCallback): Promise<MaterialDetails> => {
+    const options = { ...(onProgress ? { onProgress } : {}) };
+    return (await requester.put(`/materials/${id}`, data, options)).data;
+};
 
 const restore = async (id: Material['id']): Promise<MaterialDetails> => (
     (await requester.put(`/materials/${id}/restore`)).data

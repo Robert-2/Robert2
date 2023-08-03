@@ -1,15 +1,16 @@
 import './index.scss';
+import { defineComponent } from '@vue/composition-api';
 import Fragment from '@/components/Fragment';
 import IconMessage from '@/themes/default/components/IconMessage';
 import Button from '@/themes/default/components/Button';
 
 // @vue/component
-export default {
+const EventReturnFooter = defineComponent({
     name: 'EventReturnFooter',
     props: {
-        isDone: Boolean,
-        isSaving: Boolean,
-        hasEnded: Boolean,
+        isDone: { type: Boolean, required: false },
+        isSaving: { type: Boolean, required: false },
+        canTerminate: { type: Boolean, required: true },
     },
     emits: ['save', 'terminate'],
     methods: {
@@ -32,7 +33,7 @@ export default {
             $t: __,
             isDone,
             isSaving,
-            hasEnded,
+            canTerminate,
             handleClickSave,
             handleClickTerminate,
         } = this;
@@ -56,7 +57,7 @@ export default {
                         >
                             {isSaving ? __('saving') : __('save-draft')}
                         </Button>
-                        {hasEnded && (
+                        {canTerminate && (
                             <Button
                                 class="EventReturnFooter__action"
                                 onClick={handleClickTerminate}
@@ -68,7 +69,7 @@ export default {
                                 {isSaving ? __('saving') : __('terminate-inventory')}
                             </Button>
                         )}
-                        {!hasEnded && (
+                        {!canTerminate && (
                             <div class="EventReturnFooter__warning">
                                 <IconMessage
                                     name="exclamation-triangle"
@@ -81,4 +82,6 @@ export default {
             </div>
         );
     },
-};
+});
+
+export default EventReturnFooter;

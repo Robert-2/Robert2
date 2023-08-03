@@ -41,8 +41,9 @@ type Props = {
     external?: boolean,
 };
 
-// @vue/component
+/** Une lien. */
 const Link = defineComponent({
+    name: 'Link',
     props: {
         to: {
             type: [String, Object] as PropType<Props['to']>,
@@ -80,10 +81,6 @@ const Link = defineComponent({
         const { normalizedIcon: icon, to, external, handleClick } = this;
         const children = this.$slots.default;
 
-        const className = ['Link', {
-            'Link--with-icon': !!icon,
-        }];
-
         const content = (
             <Fragment>
                 {icon && <Icon {...{ props: icon } as any} class="Link__icon" />}
@@ -98,7 +95,7 @@ const Link = defineComponent({
                 return (
                     <a
                         href={to}
-                        class={className}
+                        class="Link"
                         target={isOutside ? '_blank' : undefined}
                         rel={isOutside ? 'noreferrer noopener' : undefined}
                     >
@@ -110,11 +107,7 @@ const Link = defineComponent({
             return (
                 <router-link to={to} custom>
                     {({ href, navigate: handleNavigate }: any) => (
-                        <a
-                            href={href}
-                            onClick={handleNavigate}
-                            class={className}
-                        >
+                        <a href={href} onClick={handleNavigate} class="Link">
                             {content}
                         </a>
                     )}
@@ -123,7 +116,7 @@ const Link = defineComponent({
         }
 
         return (
-            <button type="button" class={className} onClick={handleClick}>
+            <button type="button" class="Link" onClick={handleClick}>
                 {content}
             </button>
         );

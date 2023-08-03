@@ -1,14 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Errors;
+namespace Loxya\Errors;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Robert2\API\Errors\Exception\ApiException;
-use Robert2\API\Errors\Exception\ValidationException;
-use Robert2\API\Errors\Renderer\HtmlErrorRenderer;
-use Robert2\API\Errors\Renderer\JsonErrorRenderer;
+use Loxya\Errors\Exception\ApiException;
+use Loxya\Errors\Exception\ValidationException;
+use Loxya\Errors\Renderer\HtmlErrorRenderer;
+use Loxya\Errors\Renderer\JsonErrorRenderer;
 use Slim\Exception\HttpException;
 use Slim\Handlers\ErrorHandler as CoreErrorHandler;
 

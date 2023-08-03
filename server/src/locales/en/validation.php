@@ -1135,12 +1135,6 @@ return [
     "invalid-unit-return-status"
     => "Some of the units status are not valid.",
 
-    "returned-quantity-not-valid"
-    => "Returned quantity not valid.",
-
-    "broken-quantity-not-valid"
-    => "Broken quantity not valid.",
-
     "effective-quantity-not-valid"
     => "Effective quantity not valid.",
 

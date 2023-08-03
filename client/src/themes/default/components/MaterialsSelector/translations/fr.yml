@@ -1,0 +1,29 @@
+error-occurred-while-import-lists-from-event: "Une erreur est survenue lors de l'import des listes depuis l'événement."
+error-occurred-while-deleting-list: "Une erreur est survenue lors de la suppression de la liste."
+
+add-materials-from:
+    an-event: Ajouter du matériel depuis un événement
+    dropdown:
+        title: Ajouter du matériel depuis...
+        choices:
+            an-event: Un événement...
+
+#
+# - Filtres
+#
+
+filters:
+    search-placeholder: Rechercher un matériel...
+    selected-materials-only: Matériel sélectionné uniquement
+
+#
+# - Disponibilités dans les listes
+#
+
+list-availability:
+    stock-count:
+        - "{count} disponible en stock"
+        - "{count} disponibles en stock"
+    surplus-count:
+        - "{count} en excédent / cassé"
+        - "{count} en excédent / cassés"

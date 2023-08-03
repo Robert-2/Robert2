@@ -4,7 +4,7 @@
     $block: &;
 
     &__section {
-        margin-top: globals.$content-padding-large-vertical;
+        margin-top: globals.$spacing-large;
 
         &__title {
             margin: 0;
@@ -22,7 +22,7 @@
 
     &__name {
         display: flex;
-        margin-bottom: globals.$content-padding-small-vertical;
+        margin-bottom: globals.$spacing-medium;
 
         #{$block}__first-name,
         #{$block}__last-name {
@@ -41,7 +41,7 @@
     }
 
     &__actions {
-        margin-top: globals.$content-padding-large-vertical;
+        margin-top: globals.$spacing-large;
         text-align: center;
     }
 }

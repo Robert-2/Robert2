@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Contracts;
+namespace Loxya\Contracts;
 
 use Carbon\Carbon;
 

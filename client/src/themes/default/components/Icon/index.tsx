@@ -1,6 +1,18 @@
-import { toRefs, computed } from '@vue/composition-api';
+import { defineComponent } from '@vue/composition-api';
 
-import type { Component } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
+
+const VARIANT_MAP = {
+    'regular': 'far',
+    'solid': 'fas',
+    'brands': 'fab',
+} as const;
+
+/** Représente le nom d'une variante d'icône. */
+export type Variant = keyof typeof VARIANT_MAP;
+
+/** Les différentes variantes disponibles pour les icônes. */
+export const VARIANTS = Object.keys(VARIANT_MAP) as unknown as Variant;
 
 export type Props = {
     /**
@@ -11,44 +23,42 @@ export type Props = {
     name: string,
 
     /** Quelle variante faut-il utiliser pour l'icône ? */
-    variant?: 'regular' | 'solid' | 'brands',
+    variant?: Variant,
 
     /** L'icône doit-elle tourner sur elle-même ? */
     spin?: boolean,
-
-    /** Des éventuelles classes supplémentaires qui seront ajoutées au component. */
-    class?: string,
 };
 
-const VARIANT_MAP = {
-    'regular': 'far',
-    'solid': 'fas',
-    'brands': 'fab',
-} as const;
-
-// @vue/component
-const Icon: Component<Props> = (props: Props) => {
-    const { name, variant, spin } = toRefs(props as Required<Props>);
-    const baseClass = computed(() => VARIANT_MAP[variant.value]);
-
-    return () => {
-        const className = ['Icon', baseClass.value, `fa-${name.value}`, {
-            'fa-spin': spin.value,
-        }];
-        return <i class={className} aria-hidden="true" />;
-    };
-};
-
-Icon.props = {
-    name: { type: String, required: true },
-    variant: {
-        default: 'solid',
-        validator: (value: unknown) => (
-            typeof value === 'string' &&
-            ['solid', 'regular', 'brands'].includes(value)
-        ),
+/** Une icône. */
+const Icon = defineComponent({
+    name: 'Icon',
+    props: {
+        name: {
+            type: String as PropType<Props['name']>,
+            required: true,
+        },
+        variant: {
+            type: String as PropType<Required<Props>['variant']>,
+            default: 'solid',
+            validator: (value: unknown) => (
+                typeof value === 'string' &&
+                VARIANTS.includes(value)
+            ),
+        },
+        spin: {
+            type: Boolean as PropType<Required<Props>['spin']>,
+            default: false,
+        },
     },
-    spin: { type: Boolean, default: false },
-};
+    render() {
+        const { name, variant, spin } = this;
+
+        const classNames = ['Icon', VARIANT_MAP[variant], `fa-${name}`, {
+            'fa-spin': spin,
+        }];
+
+        return <i class={classNames} aria-hidden="true" />;
+    },
+});
 
 export default Icon;

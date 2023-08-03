@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\Tests;
+namespace Loxya\Tests;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
-use Robert2\API\Models\Estimate;
+use Loxya\Models\Estimate;
 
 final class EstimatesTest extends ApiTestCase
 {

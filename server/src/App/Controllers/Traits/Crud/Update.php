@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Controllers\Traits\Crud;
+namespace Loxya\Controllers\Traits\Crud;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
-use Robert2\API\Controllers\Traits\WithModel;
-use Robert2\API\Errors\Exception\ValidationException;
-use Robert2\API\Http\Request;
+use Loxya\Controllers\Traits\WithModel;
+use Loxya\Errors\Exception\ValidationException;
+use Loxya\Http\Request;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Http\Response;
 

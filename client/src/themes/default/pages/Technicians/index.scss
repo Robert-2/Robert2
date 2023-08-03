@@ -20,19 +20,19 @@
         position: absolute;
         z-index: 1;
         left: globals.$table-search-input;
-        right: calc(#{globals.$content-padding-large-vertical} + 45px + #{globals.$content-padding-small-vertical});
+        right: calc(#{globals.$spacing-large} + 45px + #{globals.$spacing-medium});
         flex: none;
         display: flex;
         flex-wrap: nowrap;
         align-items: center;
-        margin-left: math.div(globals.$content-padding-small-vertical, 2);
+        margin-left: math.div(globals.$spacing-medium, 2);
 
         &__period {
             width: 220px;
         }
 
         &__clear-button {
-            margin-left: globals.$content-padding-small-horizontal;
+            margin-left: globals.$spacing-small;
         }
     }
 

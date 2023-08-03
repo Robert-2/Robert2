@@ -1,32 +1,31 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Controllers;
+namespace Loxya\Controllers;
 
 use Carbon\CarbonImmutable;
 use DI\Container;
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Illuminate\Support\Collection;
 use Psr\Http\Message\UploadedFileInterface;
-use Robert2\API\Config\Config;
-use Robert2\API\Contracts\PeriodInterface;
-use Robert2\API\Controllers\Traits\Taggable;
-use Robert2\API\Controllers\Traits\WithCrud;
-use Robert2\API\Errors\Exception\ValidationException;
-use Robert2\API\Http\Request;
-use Robert2\API\Models\Document;
-use Robert2\API\Models\Enums\Group;
-use Robert2\API\Models\Event;
-use Robert2\API\Models\Material;
-use Robert2\API\Models\Park;
-use Robert2\API\Models\Tag;
-use Robert2\API\Models\User;
-use Robert2\API\Services\Auth;
-use Robert2\API\Services\I18n;
-use Robert2\Support\Collections\MaterialsCollection;
-use Robert2\Support\Pdf;
-use Robert2\Support\Period;
-use Robert2\Support\Str;
+use Loxya\Config\Config;
+use Loxya\Contracts\PeriodInterface;
+use Loxya\Controllers\Traits\WithCrud;
+use Loxya\Errors\Exception\ValidationException;
+use Loxya\Http\Request;
+use Loxya\Models\Document;
+use Loxya\Models\Enums\Group;
+use Loxya\Models\Event;
+use Loxya\Models\Material;
+use Loxya\Models\Park;
+use Loxya\Models\Tag;
+use Loxya\Models\User;
+use Loxya\Services\Auth;
+use Loxya\Services\I18n;
+use Loxya\Support\Collections\MaterialsCollection;
+use Loxya\Support\Pdf;
+use Loxya\Support\Period;
+use Loxya\Support\Str;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
@@ -34,15 +33,11 @@ use Slim\HttpCache\CacheProvider as HttpCacheProvider;
 
 class MaterialController extends BaseController
 {
-    use WithCrud, Taggable {
-        Taggable::getAll insteadof WithCrud;
-    }
+    use WithCrud;
 
-    /** @var I18n */
-    private $i18n;
+    private I18n $i18n;
 
-    /** @var HttpCacheProvider */
-    private $httpCache;
+    private HttpCacheProvider $httpCache;
 
     public function __construct(Container $container, I18n $i18n, HttpCacheProvider $httpCache)
     {
@@ -67,48 +62,66 @@ class MaterialController extends BaseController
         return $response->withJson($materialData, StatusCode::STATUS_OK);
     }
 
+    public function getTags(Request $request, Response $response): Response
+    {
+        $id = (int) $request->getAttribute('id');
+        $material = Material::findOrFail($id);
+        return $response->withJson($material->tags, StatusCode::STATUS_OK);
+    }
+
     public function getAll(Request $request, Response $response): Response
     {
         $paginated = (bool) $request->getQueryParam('paginated', true);
         $limit = $request->getQueryParam('limit', null);
-        $searchTerm = $request->getQueryParam('search', null);
-        $searchField = $request->getQueryParam('searchBy', null);
-        $parkId = $request->getQueryParam('park', null);
-        $categoryId = $request->getQueryParam('category', null);
-        $subCategoryId = $request->getQueryParam('subCategory', null);
-        $dateForQuantities = $request->getQueryParam('dateForQuantities', null);
-        $withDeleted = (bool) $request->getQueryParam('deleted', false);
-        $tags = $request->getQueryParam('tags', []);
-
-        $options = [];
-        if (is_numeric($parkId)) {
-            $options['park_id'] = (int) $parkId;
-        }
-        if ($categoryId === 'uncategorized' || is_numeric($categoryId)) {
-            $options['category_id'] = $categoryId !== 'uncategorized'
-                ? (int) $categoryId
-                : null;
-        }
-        if (is_numeric($subCategoryId)) {
-            $options['sub_category_id'] = (int) $subCategoryId;
-        }
-
         $orderBy = $request->getQueryParam('orderBy', null);
         $ascending = (bool) $request->getQueryParam('ascending', true);
+        $search = $request->getQueryParam('search', null);
+        $dateForQuantities = $request->getQueryParam('dateForQuantities', null);
+        $onlyDeleted = (bool) $request->getQueryParam('deleted', false);
 
-        $model = (new Material)
+        $query = (new Material)
             ->setOrderBy($orderBy, $ascending)
-            ->setSearch($searchTerm, $searchField);
+            ->setSearch($search)
+            ->getAll($onlyDeleted);
 
-        if (empty($options) && empty($tags)) {
-            $model = $model->getAll($withDeleted);
-        } else {
-            $model = $model->getAllFilteredOrTagged($options, $tags, $withDeleted);
-        }
+        //
+        // - Filtres
+        //
+
+        $categoryId = $request->getQueryParam('category', null);
+        $subCategoryId = $request->getQueryParam('subCategory', null);
+        $parkId = $request->getQueryParam('park', null);
+        $tags = $request->getQueryParam('tags', []);
+
+        $query = $query
+            // - Catégorie.
+            ->when($categoryId === 'uncategorized' || is_numeric($categoryId), fn ($builder) => (
+                $builder->where('category_id', (
+                    $categoryId !== 'uncategorized' ? (int) $categoryId : null
+                ))
+            ))
+            // - Sous-catégorie.
+            ->when(is_numeric($subCategoryId), fn ($builder) => (
+                $builder->where('sub_category_id', (int) $subCategoryId)
+            ))
+            // - Parc.
+            ->when(is_numeric($parkId), fn ($builder) => (
+                $builder->inPark((int) $parkId)
+            ))
+            // - Tags.
+            ->when(!empty($tags) && is_array($tags), fn ($builder) => (
+                $builder->whereHas('tags', function ($query) use ($tags) {
+                    $query->whereIn('id', $tags);
+                })
+            ));
+
+        //
+        // - Requête + Résultat
+        //
 
         $results = $paginated
-            ? $this->paginate($request, $model, is_numeric($limit) ? (int) $limit : null)
-            : ['data' => $model->get()];
+            ? $this->paginate($request, $query, is_numeric($limit) ? (int) $limit : null)
+            : ['data' => $query->get()];
 
         // - Filtre des quantités pour une date ou une période donnée
         $periodForQuantities = null;
@@ -244,11 +257,12 @@ class MaterialController extends BaseController
             )
         );
 
+        // - NOTE : Ne pas prefetch le materiel des bookables via `->with()`,
+        //   car cela peut surcharger la mémoire rapidement.
         $allConcurrentBookables = (new Collection())
             // - Événements.
             ->concat(
-                Event::inPeriod($period)
-                    ->with('materials')->get()
+                Event::inPeriod($period)->get()
             );
 
         foreach ($bookings as $booking) {
@@ -276,6 +290,7 @@ class MaterialController extends BaseController
                             ? $booking->parks
                             : null
                     ),
+                    'categories' => $booking->categories,
                 ]
             ))
             ->sortByDesc('start_date')
@@ -293,6 +308,11 @@ class MaterialController extends BaseController
         $picturePath = $material->picture_real_path;
         if (!$picturePath) {
             throw new HttpNotFoundException($request, "Il n'y a pas d'image pour ce matériel.");
+        }
+
+        // - Le fichier source est introuvable ...
+        if (!file_exists($picturePath)) {
+            throw new HttpNotFoundException($request);
         }
 
         /** @var Response $response */

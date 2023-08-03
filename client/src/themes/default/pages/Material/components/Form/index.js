@@ -38,6 +38,7 @@ const MaterialEditForm = {
         isSaving: { type: Boolean, default: false },
         errors: { type: Object, default: () => ({}) },
     },
+    emits: ['submit', 'cancel'],
     data() {
         const data = {
             ...DEFAULT_VALUES,
@@ -306,14 +307,18 @@ const MaterialEditForm = {
                 </Fieldset>
                 <Fieldset title={__('stock-infos')}>
                     {showParksSelector && (
-                        <FormField
-                            label="park"
-                            type="select"
-                            options={parksOptions}
-                            v-model={data.park_id}
-                            errors={errors?.park_id}
-                            required
-                        />
+                        <div class="MaterialEditForm__park">
+                            <FormField
+                                label="park"
+                                type="select"
+                                class="MaterialEditForm__park-selector"
+                                options={parksOptions}
+                                v-model={data.park_id}
+                                errors={errors?.park_id}
+                                placeholder
+                                required
+                            />
+                        </div>
                     )}
                     <div class="MaterialEditForm__quantities">
                         <FormField

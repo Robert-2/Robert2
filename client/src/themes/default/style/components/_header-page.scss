@@ -5,7 +5,7 @@
     flex-wrap: wrap;
     align-items: center;
     justify-content: flex-start;
-    padding: $content-padding-small-horizontal $content-padding-small-vertical;
+    padding: $spacing-small $spacing-medium;
 
     &__help {
         flex: 1;
@@ -48,17 +48,15 @@
         display: flex;
         min-width: $form-min-width;
         padding: 0.55rem 0;
+        gap: $spacing-small;
 
-        // stylelint-disable-next-line selector-max-type
-        button + .Dropdown,
-        .Dropdown + button,
-        button + button {
-            margin: 0 0 0 $content-padding-small-vertical;
+        > .Button + .Button {
+            margin: 0;
         }
     }
 
     @media (min-width: $screen-mobile) {
-        padding: $content-padding-large-horizontal $content-padding-large-vertical;
+        padding: $spacing-medium $spacing-large;
     }
 
     @media (min-width: $screen-tablet) {

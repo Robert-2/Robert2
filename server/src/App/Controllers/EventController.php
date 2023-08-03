@@ -1,30 +1,27 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Controllers;
+namespace Loxya\Controllers;
 
 use Brick\Math\BigDecimal as Decimal;
 use DI\Container;
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
-use Robert2\API\Controllers\Traits\WithCrud;
-use Robert2\API\Controllers\Traits\WithPdf;
-use Robert2\API\Errors\Exception\ValidationException;
-use Robert2\API\Http\Request;
-use Robert2\API\Models\Document;
-use Robert2\API\Models\Estimate;
-use Robert2\API\Models\Event;
-use Robert2\API\Models\Invoice;
-use Robert2\API\Models\Material;
-use Robert2\API\Services\Auth;
-use Robert2\API\Services\I18n;
+use Loxya\Controllers\Traits\WithCrud;
+use Loxya\Errors\Exception\HttpConflictException;
+use Loxya\Errors\Exception\HttpUnprocessableEntityException;
+use Loxya\Http\Request;
+use Loxya\Models\Document;
+use Loxya\Models\Estimate;
+use Loxya\Models\Event;
+use Loxya\Models\Invoice;
+use Loxya\Services\Auth;
+use Loxya\Services\I18n;
 use Slim\Exception\HttpBadRequestException;
-use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
 
 class EventController extends BaseController
 {
     use WithCrud;
-    use WithPdf;
 
     private I18n $i18n;
 
@@ -73,7 +70,7 @@ class EventController extends BaseController
                 array_replace($material->serialize(), [
                     'pivot' => $material->pivot
                         ->append('quantity_missing')
-                        ->toArray(),
+                        ->serialize(),
                 ])
             ));
 
@@ -88,6 +85,17 @@ class EventController extends BaseController
         return $response->withJson($event->documents, StatusCode::STATUS_OK);
     }
 
+    public function getOnePdf(Request $request, Response $response): Response
+    {
+        $id = (int) $request->getAttribute('id');
+        $event = Event::findOrFail($id);
+
+        $sortedBy = $request->getQueryParam('sortedBy', 'lists');
+        $pdf = $event->toPdf($this->i18n, $sortedBy);
+
+        return $pdf->asResponse($response);
+    }
+
     public function create(Request $request, Response $response): Response
     {
         $postData = (array) $request->getParsedBody();
@@ -95,11 +103,10 @@ class EventController extends BaseController
             throw new HttpBadRequestException($request, "No data was provided.");
         }
 
-        if (!isset($postData['user_id'])) {
-            $postData['user_id'] = Auth::user()->id;
-        }
+        $event = Event::new(array_replace($postData, [
+            'author_id' => Auth::user()->id,
+        ]));
 
-        $event = Event::new($postData);
         return $response->withJson(static::_formatOne($event), StatusCode::STATUS_CREATED);
     }
 
@@ -122,37 +129,71 @@ class EventController extends BaseController
     public function updateReturnInventory(Request $request, Response $response): Response
     {
         $id = (int) $request->getAttribute('id');
-        if (!Event::staticExists($id)) {
-            throw new HttpNotFoundException($request);
+        $event = Event::findOrFail($id);
+
+        // - Si l'inventaire de retour est déjà terminé.
+        if ($event->is_return_inventory_done) {
+            throw new HttpConflictException($request, "This event's return inventory is already done.");
         }
 
-        $postData = (array) $request->getParsedBody();
-        $this->_saveReturnInventory($id, $postData);
+        // - Si l'inventaire de retour ne peut pas encore être commencé.
+        if (!$event->can_do_return_inventory) {
+            throw new HttpUnprocessableEntityException($request, "This event's return inventory cannot be done yet.");
+        }
 
-        $event = Event::findOrFail($id);
+        $rawInventory = $request->getParsedBody();
+        if (!is_array($rawInventory) && $rawInventory !== null) {
+            throw new HttpBadRequestException($request, "Invalid data format.");
+        }
+
+        if (empty($rawInventory)) {
+            throw new HttpBadRequestException($request, "No data was provided.");
+        }
+
+        try {
+            $event->updateReturnInventory($rawInventory);
+        } catch (\InvalidArgumentException $e) {
+            throw new HttpBadRequestException($request, "Invalid data format.");
+        }
+
         return $response->withJson(static::_formatOne($event), StatusCode::STATUS_OK);
     }
 
     public function finishReturnInventory(Request $request, Response $response): Response
     {
         $id = (int) $request->getAttribute('id');
-        if (!Event::staticExists($id)) {
-            throw new HttpNotFoundException($request);
+        $event = Event::findOrFail($id);
+
+        // - Si l'inventaire de retour est déjà terminé.
+        if ($event->is_return_inventory_done) {
+            throw new HttpConflictException($request, "This event's return inventory is already done.");
         }
 
-        $postData = (array) $request->getParsedBody();
-        dbTransaction(function () use ($id, $postData) {
-            $this->_saveReturnInventory($id, $postData);
+        // - Si l'inventaire de retour ne peut pas encore être commencé.
+        if (!$event->can_do_return_inventory) {
+            throw new HttpUnprocessableEntityException($request, "This event's return inventory cannot be done yet.");
+        }
 
-            Event::staticEdit($id, [
-                'is_confirmed' => true,
-                'is_return_inventory_done' => true,
-            ]);
+        $rawInventory = $request->getParsedBody();
+        if (!empty($rawInventory)) {
+            if (!is_array($rawInventory)) {
+                throw new HttpBadRequestException($request, "Invalid data format.");
+            }
 
-            $this->_setBrokenMaterialsQuantities($postData);
-        });
+            try {
+                $event->updateReturnInventory($rawInventory);
+            } catch (\InvalidArgumentException $e) {
+                throw new HttpBadRequestException($request, "Invalid data format.");
+            }
+        }
 
-        $event = Event::findOrFail($id);
+        if (!$event->can_finish_return_inventory) {
+            throw new HttpUnprocessableEntityException($request, (
+                "This event's return inventory cannot be marked as finished yet."
+            ));
+        }
+        $event->finishReturnInventory();
+
         return $response->withJson(static::_formatOne($event), StatusCode::STATUS_OK);
     }
 
@@ -251,94 +292,6 @@ class EventController extends BaseController
     // -    Internal Methods
     // -
     // ------------------------------------------------------
-
-    protected function _saveReturnInventory(int $id, array $data): void
-    {
-        $event = Event::find($id);
-        $eventMaterials = $event->materials
-            ->keyBy('id')
-            ->all();
-
-        $quantities = [];
-        $errors = [];
-        foreach ($data as $quantity) {
-            if (!array_key_exists('id', $quantity)) {
-                continue;
-            }
-
-            $materialId = $quantity['id'];
-            $addError = function ($message) use ($materialId, &$errors) {
-                $errors[] = [
-                    'id' => $materialId,
-                    'message' => $this->i18n->translate($message),
-                ];
-            };
-
-            if (!array_key_exists($materialId, $eventMaterials)) {
-                continue;
-            }
-            $material = $eventMaterials[$materialId];
-
-            if (!array_key_exists('actual', $quantity) || !is_integer($quantity['actual'])) {
-                $addError('returned-quantity-not-valid');
-                continue;
-            }
-            $actual = (int) $quantity['actual'];
-
-            if (!array_key_exists('broken', $quantity) || !is_integer($quantity['broken'])) {
-                $addError('broken-quantity-not-valid');
-                continue;
-            }
-            $broken = (int) $quantity['broken'];
-
-            if ($actual < 0 || $broken < 0) {
-                $addError('quantities-cannot-be-negative');
-                continue;
-            }
-
-            if ($actual > $material->pivot->quantity) {
-                $addError('returned-quantity-cannot-be-greater-than-output-quantity');
-                continue;
-            }
-
-            if ($broken > $actual) {
-                $addError('broken-quantity-cannot-be-greater-than-returned-quantity');
-                continue;
-            }
-
-            $quantities[$materialId] = [
-                'quantity_returned' => $actual,
-                'quantity_returned_broken' => $broken,
-            ];
-        }
-
-        if (!empty($errors)) {
-            throw new ValidationException($errors);
-        }
-
-        $event->materials()->sync($quantities);
-    }
-
-    protected function _setBrokenMaterialsQuantities(array $data): void
-    {
-        foreach ($data as $quantities) {
-            $broken = (int) $quantities['broken'];
-            if ($broken === 0) {
-                continue;
-            }
-
-            $material = Material::find($quantities['id']);
-            if (!$material) {
-                continue;
-            }
-
-            // FIXME: Cette façon de faire n'est pas safe car si le matériel sortie
-            //        - non unitaire - était du matériel externe, on le compte comme
-            //        cassé dans le stock réel...
-            $material->out_of_order_quantity += (int) $quantities['broken'];
-            $material->save();
-        }
-    }
 
     protected static function _formatOne(Event $event): array
     {

@@ -1,0 +1,34 @@
+@use '~@/themes/default/style/globals';
+@use 'sass:color';
+
+.DefaultLayoutHeaderDropdownItem {
+    @extend %reset-button;
+    @extend %reset-link;
+
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: globals.$spacing-medium;
+    color: globals.$color-base-button;
+    gap: 10px;
+    user-select: none;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 300ms;
+
+    &__icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 1.1em;
+        height: 1.1em;
+        font-size: 1.1em;
+        line-height: 1.35em;
+        text-align: center;
+        vertical-align: -0.05rem;
+    }
+
+    &:hover {
+        color: globals.$color-base-button;
+    }
+}

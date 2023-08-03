@@ -20,7 +20,7 @@
     max-width: 100%;
 
     &__side {
-        margin-bottom: globals.$content-padding-small-vertical;
+        margin-bottom: globals.$spacing-medium;
     }
 
     //
@@ -33,7 +33,7 @@
 
         &__body {
             width: 500px;
-            margin-right: globals.$content-padding-large-vertical;
+            margin-right: globals.$spacing-large;
             margin-bottom: globals.$form-fixed-actions-margin-bottom;
         }
 

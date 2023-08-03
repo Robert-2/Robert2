@@ -9,6 +9,7 @@ import Button from '@/themes/default/components/Button';
 
 import type { PropType } from '@vue/composition-api';
 import type { Event } from '@/stores/api/events';
+import type { DebouncedMethod } from 'lodash';
 
 /**
  * Nombre d'essai de sauvegarde au-delà duquel:
@@ -28,6 +29,13 @@ enum SaveMode {
     MANUAL = 'manual',
 }
 
+type InstanceProperties = {
+    throttledSave: (
+        | DebouncedMethod<typeof EventDetailsNote, 'save'>
+        | undefined
+    ),
+};
+
 type State = {
     value: string,
     isSaving: boolean,
@@ -45,6 +53,9 @@ const EventDetailsNote = defineComponent({
             required: true,
         },
     },
+    setup: (): InstanceProperties => ({
+        throttledSave: undefined,
+    }),
     data(): State {
         return {
             value: this.event.note ?? '',
@@ -63,7 +74,7 @@ const EventDetailsNote = defineComponent({
         this.throttledSave = throttle(this.save.bind(this), DEBOUNCE_WAIT, { leading: false });
     },
     beforeDestroy() {
-        this.throttledSave.flush();
+        this.throttledSave?.flush();
     },
     methods: {
         // ------------------------------------------------------
@@ -76,7 +87,7 @@ const EventDetailsNote = defineComponent({
             this.value = newValue;
 
             if (this.saveMode === SaveMode.AUTOMATIC) {
-                this.throttledSave();
+                this.throttledSave!();
             }
         },
 
@@ -87,7 +98,7 @@ const EventDetailsNote = defineComponent({
             this.value = newValue;
 
             if (this.saveMode === SaveMode.AUTOMATIC) {
-                this.throttledSave.cancel();
+                this.throttledSave!.cancel();
                 this.save();
             }
         },
@@ -95,7 +106,7 @@ const EventDetailsNote = defineComponent({
         handleSubmit(e: SubmitEvent) {
             e.preventDefault();
 
-            this.throttledSave.cancel();
+            this.throttledSave!.cancel();
             this.save();
         },
 

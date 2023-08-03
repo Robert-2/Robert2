@@ -188,7 +188,7 @@ $group-item-max-height: 65px !default;
         overflow: hidden;
         max-width: 50%;
         margin: 30px 0 0 15px;
-        padding: globals.$content-padding-small-horizontal globals.$content-padding-small-vertical;
+        padding: globals.$spacing-small globals.$spacing-medium;
         border: none;
         border-radius: 3px;
         background-color: globals.$bg-color-tooltip;

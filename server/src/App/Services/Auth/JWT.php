@@ -1,14 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Services\Auth;
+namespace Loxya\Services\Auth;
 
 use Firebase\JWT\JWT as JWTCore;
 use Firebase\JWT\Key as JWTKey;
 use Illuminate\Support\Str;
-use Robert2\API\Config\Config;
-use Robert2\API\Http\Request;
-use Robert2\API\Models\User;
+use Loxya\Config\Config;
+use Loxya\Http\Request;
+use Loxya\Models\User;
 
 final class JWT implements AuthenticatorInterface
 {

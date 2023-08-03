@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\Tests;
+namespace Loxya\Tests;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Illuminate\Support\Collection;
-use Robert2\Support\Arr;
+use Loxya\Support\Arr;
 
 final class ParksTest extends ApiTestCase
 {
@@ -21,8 +21,8 @@ final class ParksTest extends ApiTestCase
                 'country_id' => 1,
                 'opening_hours' => "Du lundi au vendredi, de 09:00 à 19:00.",
                 'note' => null,
-                'total_items' => 6,
-                'total_stock_quantity' => 83,
+                'total_items' => 7,
+                'total_stock_quantity' => 88,
                 'has_ongoing_booking' => false,
             ],
             [
@@ -34,7 +34,7 @@ final class ParksTest extends ApiTestCase
                 'country_id' => null,
                 'opening_hours' => null,
                 'note' => "Les bidouilles de fond de tiroir",
-                'total_items' => 2,
+                'total_items' => 1,
                 'total_stock_quantity' => 2,
                 'has_ongoing_booking' => false,
             ],
@@ -95,7 +95,6 @@ final class ParksTest extends ApiTestCase
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData([
             MaterialsTest::data(7),
-            MaterialsTest::data(8),
         ]);
     }
 
@@ -111,7 +110,7 @@ final class ParksTest extends ApiTestCase
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData([
             'id' => 1,
-            'totalAmount' => 101223.80,
+            'totalAmount' => 119480.80,
         ]);
     }
 

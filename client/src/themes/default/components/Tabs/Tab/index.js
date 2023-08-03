@@ -13,13 +13,8 @@ const Tab = defineComponent({
         counter: { type: Number, default: null },
     },
     render() {
-        const { default: children } = this.$slots;
-
-        return (
-            <Fragment>
-                {children}
-            </Fragment>
-        );
+        const children = this.$slots.default;
+        return <Fragment>{children}</Fragment>;
     },
 });
 

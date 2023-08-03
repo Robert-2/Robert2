@@ -4,7 +4,7 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    padding: globals.$content-padding-large-horizontal 0;
+    padding: globals.$spacing-medium 0;
 
     &__infos {
         flex: 1;
@@ -26,12 +26,12 @@
     }
 
     &__info + &__info {
-        margin-left: globals.$content-padding-large-vertical;
+        margin-left: globals.$spacing-large;
     }
 
     &__group-by {
         &__label {
-            padding: 0 globals.$content-padding-small-horizontal;
+            padding: 0 globals.$spacing-small;
         }
     }
 }

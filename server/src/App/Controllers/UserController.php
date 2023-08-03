@@ -1,16 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Controllers;
+namespace Loxya\Controllers;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
-use Robert2\Support\Arr;
-use Robert2\API\Controllers\Traits\WithCrud;
-use Robert2\API\Errors\Exception\ValidationException;
-use Robert2\API\Http\Request;
-use Robert2\API\Models\Enums\Group;
-use Robert2\API\Models\User;
-use Robert2\API\Services\Auth;
+use Loxya\Support\Arr;
+use Loxya\Controllers\Traits\WithCrud;
+use Loxya\Errors\Exception\ValidationException;
+use Loxya\Http\Request;
+use Loxya\Models\Enums\Group;
+use Loxya\Models\User;
+use Loxya\Services\Auth;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpForbiddenException;
 use Slim\Http\Response;
@@ -25,18 +25,17 @@ class UserController extends BaseController
     public function getAll(Request $request, Response $response): Response
     {
         $paginated = (bool) $request->getQueryParam('paginated', true);
-        $searchTerm = $request->getQueryParam('search', null);
-        $searchFields = $request->getQueryParam('searchBy', null);
+        $search = $request->getQueryParam('search', null);
         $orderBy = $request->getQueryParam('orderBy', null);
         $group = $request->getQueryParam('group', null);
         $limit = $request->getQueryParam('limit', null);
         $ascending = (bool) $request->getQueryParam('ascending', true);
-        $withDeleted = (bool) $request->getQueryParam('deleted', false);
+        $onlyDeleted = (bool) $request->getQueryParam('deleted', false);
 
         $query = (new User())
             ->setOrderBy($orderBy, $ascending)
-            ->setSearch($searchTerm, $searchFields)
-            ->getAll($withDeleted);
+            ->setSearch($search)
+            ->getAll($onlyDeleted);
 
         if (in_array($group, Group::all(), true)) {
             $query->where('group', '=', $group);

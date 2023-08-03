@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Middlewares;
+namespace Loxya\Middlewares;
 
 use Illuminate\Pagination\Paginator;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
-use Robert2\API\Http\Request;
+use Loxya\Http\Request;
 
 class Pagination
 {

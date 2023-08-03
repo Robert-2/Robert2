@@ -164,14 +164,12 @@ export default {
             const isSoft = !this.isTrashDisplayed;
 
             const isConfirmed = await confirm({
-                type: isSoft ? 'warning' : 'danger',
-
+                type: 'danger',
                 text: isSoft
                     ? __('page.users.confirm-delete')
                     : __('page.users.confirm-permanently-delete'),
-
                 confirmButtonText: isSoft
-                    ? __('yes-delete')
+                    ? __('yes-trash')
                     : __('yes-permanently-delete'),
             });
             if (!isConfirmed) {
@@ -193,7 +191,6 @@ export default {
             const { $t: __ } = this;
 
             const isConfirmed = await confirm({
-                type: 'restore',
                 text: __('page.users.confirm-restore'),
                 confirmButtonText: __('yes-restore'),
             });

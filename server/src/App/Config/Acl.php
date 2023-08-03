@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Config;
+namespace Loxya\Config;
 
-use Robert2\API\Models\Enums\Group;
+use Loxya\Models\Enums\Group;
 
 class Acl
 {

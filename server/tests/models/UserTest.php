@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\Tests;
+namespace Loxya\Tests;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Robert2\API\Errors\Exception\ValidationException;
-use Robert2\API\Models\Enums\Group;
-use Robert2\API\Models\User;
+use Loxya\Errors\Exception\ValidationException;
+use Loxya\Models\Enums\Group;
+use Loxya\Models\User;
 
 final class UserTest extends TestCase
 {

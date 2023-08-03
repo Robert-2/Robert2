@@ -4,12 +4,12 @@
     color: globals.$text-base-color;
 
     &__title {
-        margin: 0 0 1rem;
+        margin: 0 0 globals.$spacing-medium;
         font-size: 1.2rem;
 
         .fas {
             width: 1.5rem;
-            margin-right: 0.5rem;
+            margin-right: globals.$spacing-thin;
             text-align: center;
         }
     }
@@ -19,13 +19,13 @@
     }
 
     &__error {
-        margin: 0 0 1.5rem;
+        margin: 0 0 globals.$spacing-medium;
         color: globals.$text-danger-color;
         font-style: italic;
     }
 
     &__list {
-        margin: 0 0 1.5rem;
+        margin: 0 0 globals.$spacing-medium;
         padding: 0;
     }
 
@@ -35,6 +35,7 @@
         border-bottom: 1px dashed globals.$list-left-border-color;
         color: globals.$text-danger-color;
         list-style: none;
+        gap: globals.$spacing-small;
 
         &__name {
             flex: 1;
@@ -42,7 +43,6 @@
 
         &__quantity {
             flex: 0 0 14.5rem;
-            margin: 0 0 0 0.8rem;
         }
     }
 }

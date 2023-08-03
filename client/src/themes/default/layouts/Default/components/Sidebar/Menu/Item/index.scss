@@ -10,7 +10,7 @@
 
     &__link {
         display: block;
-        padding: globals.$content-padding-small-vertical globals.$content-padding-small-horizontal;
+        padding: globals.$spacing-medium globals.$spacing-small;
         text-align: center;
         transition: all 300ms;
 

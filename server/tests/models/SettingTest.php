@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\Tests;
+namespace Loxya\Tests;
 
-use Robert2\API\Models\Setting;
-use Robert2\API\Errors\Exception\ValidationException;
+use Loxya\Models\Setting;
+use Loxya\Errors\Exception\ValidationException;
 
 final class SettingTest extends TestCase
 {

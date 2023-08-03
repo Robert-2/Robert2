@@ -1,0 +1,106 @@
+@use '~@/themes/default/style/globals';
+
+.MaterialsSelectorList {
+    $block: &;
+
+    height: 100%;
+
+    /* stylelint-disable selector-max-type, selector-max-compound-selectors */
+    .VueTables {
+        .table-responsive {
+            margin-top: 0;
+        }
+
+        &__table {
+            > thead {
+                display: none;
+            }
+
+            .VueTables__row {
+                > td {
+                    border-bottom-color: globals.$list-left-border-color;
+                    background: none;
+                }
+
+                &:first-child > td {
+                    border-top: 1px solid globals.$list-left-border-color;
+                }
+
+                &:hover {
+                    background: rgba(#fff, 0.05);
+                }
+            }
+        }
+    }
+    /* stylelint-enable selector-max-type, selector-max-compound-selectors */
+
+    &__col {
+        &--child-toggler {
+            width: 50px;
+        }
+
+        &--quantity {
+            width: 65px;
+            // stylelint-disable-next-line declaration-no-important
+            color: globals.$text-light-color !important;
+            font-weight: 600;
+        }
+
+        &--availability {
+            width: 200px;
+            text-align: center;
+        }
+
+        &--price {
+            width: 120px;
+            text-align: right;
+            white-space: nowrap;
+
+            .Icon {
+                margin-left: 0.3rem;
+                color: globals.$text-light-color;
+            }
+        }
+
+        &--quantity-input {
+            width: 9rem;
+        }
+
+        &--amount {
+            width: 5rem;
+            min-width: 5rem;
+            text-align: right;
+        }
+
+        &--actions {
+            width: 1%;
+            text-align: right;
+            white-space: nowrap;
+        }
+    }
+
+    &__material-name {
+        display: block;
+        font-weight: 600;
+
+        &__reference {
+            display: block;
+            color: globals.$text-light-color;
+            font-weight: 400;
+        }
+    }
+
+    //
+    // - State
+    //
+
+    &--empty {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        #{$block}__table {
+            display: none;
+        }
+    }
+}

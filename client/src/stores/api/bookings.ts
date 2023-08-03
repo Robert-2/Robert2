@@ -5,6 +5,7 @@ import type { Moment } from 'moment';
 import type { Event, RawEvent } from '@/stores/api/events';
 import type { Park } from '@/stores/api/parks';
 import type { Material } from '@/stores/api/materials';
+import type { Category } from '@/stores/api/categories';
 
 //
 // - Constants
@@ -26,6 +27,7 @@ type EventBookingSummary = (
         | 'description'
         | 'start_date'
         | 'end_date'
+        | 'duration'
         | 'color'
         | 'location'
         | 'beneficiaries'
@@ -36,38 +38,29 @@ type EventBookingSummary = (
         | 'is_return_inventory_done'
         | 'has_missing_materials'
         | 'has_not_returned_materials'
-        | 'user_id'
         | 'created_at'
         | 'updated_at'
     )>
     & {
         entity: BookingEntity.EVENT,
         parks: Array<Park['id']>,
+        categories: Array<Category['id']>,
     }
 );
 
 export type BookingSummary = EventBookingSummary;
 
-type RawEventBooking = RawEvent & {
-    entity: BookingEntity.EVENT,
-};
+type RawBooking = (
+    | (RawEvent & { entity: BookingEntity.EVENT })
+);
 
-type RawBooking = RawEventBooking;
+export type Booking = (
+    | (Event & { entity: BookingEntity.EVENT })
+);
 
-export type EventBooking = Event & {
-    entity: BookingEntity.EVENT,
-};
-
-type Booking = EventBooking;
-
-export type BookingMaterialQuantity = {
+export type MaterialQuantity = {
     id: Material['id'],
     quantity: number,
-};
-
-type UpdateBookingMaterialsParams = {
-    entity: BookingEntity,
-    materials: BookingMaterialQuantity[],
 };
 
 //
@@ -76,13 +69,17 @@ type UpdateBookingMaterialsParams = {
 
 const normalize = (rawBooking: RawBooking): Booking => {
     const { entity, ...booking } = rawBooking;
-    if (entity === BookingEntity.EVENT) {
-        return {
-            entity: BookingEntity.EVENT,
-            ...normalizeEvent(booking as RawEvent),
-        };
+
+    switch (entity) {
+        case BookingEntity.EVENT:
+            return {
+                entity: BookingEntity.EVENT,
+                ...normalizeEvent(booking as RawEvent),
+            };
+
+        default:
+            throw new Error(`Entity '${entity}' not recognized.`);
     }
-    throw new Error(`Entity '${entity}' not recognized.`);
 };
 
 //
@@ -97,8 +94,11 @@ const all = async (start: Moment, end: Moment): Promise<BookingSummary[]> => {
     return (await requester.get('/bookings', { params })).data;
 };
 
-const updateMaterials = async (id: BookingSummary['id'], params: UpdateBookingMaterialsParams): Promise<Booking> => (
-    normalize((await requester.put(`/bookings/${id}/materials`, params)).data)
+const updateMaterials = async (entity: BookingEntity, id: BookingSummary['id'], materials: MaterialQuantity[]): Promise<Booking> => (
+    normalize((await requester.put(`/bookings/${entity}/${id}/materials`, materials)).data)
 );
 
-export default { all, updateMaterials };
+export default {
+    all,
+    updateMaterials,
+};

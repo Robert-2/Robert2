@@ -11,8 +11,9 @@ const EventReturnInventory = defineComponent({
     props: {
         event: { type: Object, required: true },
         inventory: { type: Array, required: true },
+        canTerminate: { type: Boolean, required: true },
         errors: { type: Array, default: null },
-        isLocked: Boolean,
+        isLocked: { type: Boolean, default: false },
         displayGroup: {
             default: DisplayGroup.CATEGORIES,
             required: true,
@@ -65,6 +66,7 @@ const EventReturnInventory = defineComponent({
             $t: __,
             inventory,
             awaitedMaterials,
+            canTerminate,
             isLocked,
             errors,
             hasStarted,
@@ -108,7 +110,8 @@ const EventReturnInventory = defineComponent({
                 )}
                 {(hasStarted && isAllReturned) && (
                     <div class="EventReturnInventory__all-returned">
-                        {__('page.event-return.all-material-returned')}
+                        {!canTerminate && __('page.event-return.all-material-returned-draft')}
+                        {canTerminate && __('page.event-return.all-material-returned')}
                     </div>
                 )}
             </div>

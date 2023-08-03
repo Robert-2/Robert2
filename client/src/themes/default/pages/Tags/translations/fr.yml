@@ -3,8 +3,9 @@ help: |-
     Les tags vous aident à rechercher rapidement du matériel dans les listes.
     Survolez un tag pour le renommer, ou le supprimer.
 
-no-item: Il n'y a aucun tag pour le moment.
-no-item-in-trash: Aucun tag dans la corbeille.
+no-tag-yet: Il n'y a aucun tag pour le moment.
+create-first-tag: Créer un premier tag
+no-tag-in-trash: Aucun tag dans la corbeille.
 
 action-add: Nouveau tag
 create: Créer le tag

@@ -10,7 +10,10 @@ import type { MaterialsSection } from '../utils/groupByCategories';
 import type { BookingMaterial } from '../utils/_types';
 
 type Props = {
+    /** La section contenant le nom de la catégorie, et la liste de son matériel. */
     data: MaterialsSection,
+
+    /** Doit-on afficher les montants de location ? */
     withRentalPrices: boolean,
 };
 

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\Support;
+namespace Loxya\Support;
 
 use Illuminate\Support\Arr as ArrCore;
 

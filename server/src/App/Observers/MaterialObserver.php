@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Observers;
+namespace Loxya\Observers;
 
-use Robert2\API\Models\Material;
+use Loxya\Models\Material;
 
 final class MaterialObserver
 {
@@ -28,7 +28,6 @@ final class MaterialObserver
         // -- Événements ...
         //
 
-        /** @var \Robert2\API\Models\Event $event */
         foreach ($material->events as $event) {
             $event->invalidateCache([
                 'has_missing_materials',
@@ -54,7 +53,6 @@ final class MaterialObserver
         // -- Événements ...
         //
 
-        /** @var Robert2\API\Models\Event $event */
         foreach ($material->events as $event) {
             $event->invalidateCache([
                 'has_missing_materials',
@@ -80,7 +78,6 @@ final class MaterialObserver
         // -- Événements ...
         //
 
-        /** @var \Robert2\API\Models\Event $event */
         foreach ($material->events as $event) {
             $event->invalidateCache('has_missing_materials');
         }

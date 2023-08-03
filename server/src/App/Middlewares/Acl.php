@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Middlewares;
+namespace Loxya\Middlewares;
 
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
-use Robert2\API\Config;
-use Robert2\API\Http\Request;
-use Robert2\API\Models\User;
-use Robert2\API\Services\Auth;
+use Loxya\Config;
+use Loxya\Http\Request;
+use Loxya\Models\User;
+use Loxya\Services\Auth;
 use Slim\Exception\HttpForbiddenException;
 use Slim\Exception\HttpUnauthorizedException;
 use Slim\Interfaces\RouteInterface;

@@ -1,5 +1,6 @@
 import './index.scss';
 import EventTechnicianItem from './Item';
+import Icon from '@/themes/default/components/Icon';
 
 // @vue/component
 export default {
@@ -24,17 +25,22 @@ export default {
             <div class="EventTechnicians">
                 {uniqueTechnicians.length === 0 && warningEmptyText && (
                     <div class="EventTechnicians__nobody">
-                        <i class="fas fa-exclamation-circle" /> {warningEmptyText}
+                        <Icon name="exclamation-circle" /> {warningEmptyText}
                     </div>
                 )}
                 {uniqueTechnicians.length > 0 && (
                     <div class="EventTechnicians__list">
-                        <span>
-                            <i class="fas fa-people-carry EventTechnicians__icon" /> {__('with')}
+                        <span class="EventTechnicians__list__label">
+                            <Icon name="people-carry" class="EventTechnicians__list__label__icon" />
+                            {__('with')}
                         </span>
-                        {uniqueTechnicians.map(({ id, technician }) => (
-                            <EventTechnicianItem key={id} technician={technician} />
-                        ))}
+                        <span class="EventTechnicians__list__items">
+                            {uniqueTechnicians.map(({ id, technician }) => (
+                                <span class="EventTechnicians__list__item">
+                                    <EventTechnicianItem key={id} technician={technician} />
+                                </span>
+                            ))}
+                        </span>
                     </div>
                 )}
             </div>

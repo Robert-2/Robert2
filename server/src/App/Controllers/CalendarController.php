@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Controllers;
+namespace Loxya\Controllers;
 
 use Carbon\Carbon;
 use Eluceo\iCal\Domain\Entity\Calendar as Calendar;
@@ -10,10 +10,10 @@ use Eluceo\iCal\Domain\Entity\TimeZone as CalendarTimeZone;
 use Eluceo\iCal\Domain\ValueObject as CalendarValue;
 use Eluceo\iCal\Presentation\Factory\CalendarFactory;
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
-use Robert2\API\Config\Config;
-use Robert2\API\Http\Request;
-use Robert2\API\Models\Event;
-use Robert2\API\Models\Setting;
+use Loxya\Config\Config;
+use Loxya\Http\Request;
+use Loxya\Models\Event;
+use Loxya\Models\Setting;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
 use Slim\Psr7\Factory\StreamFactory;

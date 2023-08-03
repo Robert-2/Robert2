@@ -1,14 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Controllers;
+namespace Loxya\Controllers;
 
 use DI\Container;
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
-use Robert2\API\Http\Request;
-use Robert2\API\Models\Enums\Group;
-use Robert2\API\Models\Setting;
-use Robert2\API\Services\Auth;
+use Loxya\Http\Request;
+use Loxya\Models\Enums\Group;
+use Loxya\Models\Setting;
+use Loxya\Services\Auth;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Http\Response;
 use Slim\Interfaces\RouteParserInterface;

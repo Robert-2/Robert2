@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Models;
+namespace Loxya\Models;
 
 use Adbar\Dot as DotArray;
 use Respect\Validation\Validator as V;
-use Robert2\API\Errors\Exception\ValidationException;
+use Loxya\Errors\Exception\ValidationException;
 use Illuminate\Support\Str;
 
 /**

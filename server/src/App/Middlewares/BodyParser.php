@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Middlewares;
+namespace Loxya\Middlewares;
 
 use Adbar\Dot as DotArray;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Robert2\Support\Filesystem\UploadedFile;
+use Loxya\Support\Filesystem\UploadedFile;
 use Slim\Middleware\BodyParsingMiddleware as BodyParsingMiddlewareCore;
 
 class BodyParser extends BodyParsingMiddlewareCore

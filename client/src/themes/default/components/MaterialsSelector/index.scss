@@ -1,0 +1,43 @@
+@use '~@/themes/default/style/globals';
+
+.MaterialsSelector {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+
+    &__header {
+        flex: 0 0 auto;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: globals.$spacing-medium;
+
+        &__filters {
+            flex: 1;
+        }
+
+        &__actions {
+            display: flex;
+            gap: globals.$spacing-small;
+
+            .Button + .Button {
+                margin-left: 0;
+            }
+        }
+    }
+
+    &__main {
+        flex: 1;
+        margin-top: globals.$spacing-large;
+    }
+
+    //
+    // - States.
+    //
+
+    &--not-ready {
+        align-items: center;
+        justify-content: center;
+        min-height: 300px;
+    }
+}

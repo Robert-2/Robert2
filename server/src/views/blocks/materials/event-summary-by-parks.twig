@@ -1,0 +1,20 @@
+{% for parkName, parkMaterials in materialsSorted %}
+<h2>{{ translate('materials-park-name', [parkName]) }}</h2>
+<table class="listing-table">
+    <thead>
+        <tr>
+            <th>{{ translate('ref') }}</th>
+            <th>{{ translate('designation') }}</th>
+            <th>{{ translate('qty') }}</th>
+            <th>{{ translate('replacement-value') }}</th>
+            <th>{{ translate('total-replacement-value') }}</th>
+            <th>{{ translate('qty-returned') }}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {%- for material in parkMaterials -%}
+            {{- include('blocks/materials/line-event-summary.twig', { material: material, withoutPark: true }) -}}
+        {%- endfor -%}
+    </tbody>
+</table>
+{%- endfor -%}

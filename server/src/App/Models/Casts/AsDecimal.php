@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Models\Casts;
+namespace Loxya\Models\Casts;
 
 use Brick\Math\BigDecimal as Decimal;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;

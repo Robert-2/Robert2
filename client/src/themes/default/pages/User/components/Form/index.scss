@@ -5,7 +5,7 @@
 
     &__name {
         display: flex;
-        margin-bottom: globals.$content-padding-small-vertical;
+        margin-bottom: globals.$spacing-medium;
 
         #{$block}__first-name,
         #{$block}__last-name {
@@ -24,6 +24,6 @@
     }
 
     &__restricted-parks {
-        margin-top: globals.$content-padding-small-horizontal;
+        margin-top: globals.$spacing-small;
     }
 }

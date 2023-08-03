@@ -8,7 +8,7 @@
         display: flex;
         justify-content: center;
         max-height: 350px;
-        margin: 0 0 globals.$content-padding-small-vertical;
+        margin: 0 0 globals.$spacing-medium;
 
         &__image {
             display: block;
@@ -32,7 +32,7 @@
     }
 
     .Progressbar {
-        margin-top: globals.$content-padding-large-horizontal;
+        margin-top: globals.$spacing-medium;
     }
 
     &--empty {

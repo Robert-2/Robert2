@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Errors\Exception;
+namespace Loxya\Errors\Exception;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 

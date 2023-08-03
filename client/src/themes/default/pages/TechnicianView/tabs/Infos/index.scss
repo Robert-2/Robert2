@@ -6,7 +6,7 @@
 
     &__name,
     &__reference {
-        margin-bottom: globals.$content-padding-large-vertical;
+        margin-bottom: globals.$spacing-large;
         color: globals.$text-base-color;
     }
 
@@ -29,7 +29,7 @@
     }
 
     &__section-title {
-        margin: globals.$content-padding-large-vertical 0 globals.$content-padding-small-horizontal;
+        margin: globals.$spacing-large 0 globals.$spacing-small;
 
         &--address {
             @include globals.icon('envelope') {

@@ -9,8 +9,6 @@ import ColorPicker from '@/themes/default/components/ColorPicker';
 import type { PropType } from '@vue/composition-api';
 import type { RawColor } from '@/utils/color';
 
-type Position = { x: number, y: number };
-
 type Props = {
     /**
      * Le nom du champ (attribut `[name]`).
@@ -52,6 +50,10 @@ type Props = {
 
     /** Le champ doit-il être marqué comme invalide ? */
     invalid?: boolean,
+};
+
+type InstanceProperties = {
+    cancelPickerPositionUpdater: (() => void) | undefined,
 };
 
 type Data = {
@@ -97,6 +99,9 @@ const InputColor = defineComponent({
         },
     },
     emits: ['input', 'change'],
+    setup: (): InstanceProperties => ({
+        cancelPickerPositionUpdater: undefined,
+    }),
     data: (): Data => ({
         currentColor: null,
         showPicker: false,
@@ -234,7 +239,7 @@ const InputColor = defineComponent({
                 return;
             }
 
-            this.pickerPosition = newPosition;
+            this.pickerPosition = { x: newPosition.x, y: newPosition.y };
         },
 
         cleanupPickerPositionUpdater() {

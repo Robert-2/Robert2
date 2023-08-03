@@ -4,9 +4,9 @@ declare(strict_types=1);
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Monolog\Logger;
-use Robert2\API\Kernel;
+use Loxya\Kernel;
 use Respect\Validation\Validator as V;
-use Robert2\Support\Period;
+use Loxya\Support\Period;
 
 /**
  * Retourne le conteneur courant ou le service lié à l'id dans le conteneur si fourni.

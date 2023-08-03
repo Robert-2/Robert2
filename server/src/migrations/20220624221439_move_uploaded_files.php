@@ -2,9 +2,9 @@
 declare(strict_types=1);
 
 use Phinx\Migration\AbstractMigration;
-use Robert2\API\Config\Config;
-use Robert2\Support\Filesystem\FilesystemFactory;
-use Robert2\Support\Str;
+use Loxya\Config\Config;
+use Loxya\Support\Filesystem\FilesystemFactory;
+use Loxya\Support\Str;
 
 final class MoveUploadedFiles extends AbstractMigration
 {

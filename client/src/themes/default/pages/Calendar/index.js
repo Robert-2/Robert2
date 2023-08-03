@@ -1,4 +1,5 @@
 import './index.scss';
+import { defineComponent } from '@vue/composition-api';
 import moment from 'moment';
 import HttpCode from 'status-code-enum';
 import { Group } from '@/stores/api/groups';
@@ -21,7 +22,7 @@ const FETCH_DELTA_DAYS = 3;
 const MAX_ZOOM_MONTH = 3;
 
 // @vue/component
-export default {
+const Calendar = defineComponent({
     name: 'Calendar',
     data() {
         const parkFilter = this.$route.query.park;
@@ -39,6 +40,7 @@ export default {
             isModalOpened: false,
             filters: {
                 parkId: parkFilter ? Number.parseInt(parkFilter, 10) : null,
+                categoryId: null,
                 missingMaterial: false,
             },
             now: Date.now(),
@@ -96,7 +98,21 @@ export default {
 
                 // - Si on a un filtrage sur un parc, on vérifie que le parc est présent
                 //   parmi les parcs de l'événement / réservation.
-                if (filters.parkId !== null && booking.parks !== null && !booking.parks.includes(filters.parkId)) {
+                if (
+                    filters.parkId !== null &&
+                    booking.parks !== null &&
+                    !booking.parks.includes(filters.parkId)
+                ) {
+                    return false;
+                }
+
+                // - Si on a un filtrage sur une catégorie, on vérifie que la catégorie est présente
+                //   parmi les catégories de l'événement / réservation.
+                if (
+                    filters.categoryId !== null &&
+                    booking.categories !== null &&
+                    !booking.categories.includes(filters.categoryId)
+                ) {
                     return false;
                 }
 
@@ -133,9 +149,11 @@ export default {
         },
 
         handleFilterByPark(parkId) {
-            this.filters.parkId = parkId !== ''
-                ? Number.parseInt(parkId, 10)
-                : null;
+            this.filters.parkId = parkId;
+        },
+
+        handleFilterByCategory(categoryId) {
+            this.filters.categoryId = categoryId;
         },
 
         handleRangeChanged(newPeriod) {
@@ -341,6 +359,7 @@ export default {
             handleItemDoubleClick,
             handleRangeChanged,
             handleFilterByPark,
+            handleFilterByCategory,
             handleSetCenterDate,
             handleFilterMissingMaterial,
             handleItemOver,
@@ -366,6 +385,7 @@ export default {
                         onSetCenterDate={handleSetCenterDate}
                         onFilterMissingMaterials={handleFilterMissingMaterial}
                         onFilterByPark={handleFilterByPark}
+                        onFilterByCategory={handleFilterByCategory}
                     />
                     <Timeline
                         ref="timelineRef"
@@ -386,4 +406,6 @@ export default {
             </Page>
         );
     },
-};
+});
+
+export default Calendar;

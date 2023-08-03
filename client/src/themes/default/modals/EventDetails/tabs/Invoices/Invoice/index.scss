@@ -6,13 +6,13 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: globals.$content-padding-small-vertical;
+    gap: globals.$spacing-medium;
 
     &__main {
         flex: 1;
         display: flex;
         align-items: center;
-        gap: globals.$content-padding-large-horizontal;
+        gap: globals.$spacing-medium;
     }
 
     &__icon {
@@ -36,7 +36,7 @@
 
     &--horizontal {
         flex-direction: row;
-        gap: globals.$content-padding-large-horizontal;
+        gap: globals.$spacing-medium;
 
         #{$block}__icon {
             font-size: 1.5rem;

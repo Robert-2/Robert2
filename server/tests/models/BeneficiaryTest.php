@@ -1,44 +1,44 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\Tests;
+namespace Loxya\Tests;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Carbon;
-use Robert2\API\Errors\Exception\ValidationException;
-use Robert2\API\Models\Beneficiary;
+use Loxya\Errors\Exception\ValidationException;
+use Loxya\Models\Beneficiary;
 
 final class BeneficiaryTest extends TestCase
 {
-    public function testSetSearch(): void
+    public function testSearch(): void
     {
         // - Prénom
-        $result = (new Beneficiary)->setSearch('cli')->getAll()->get();
+        $result = Beneficiary::search('cli')->get();
         $this->assertEquals(1, $result->count());
         $this->assertEquals(['Client Benef'], $result->pluck('full_name')->all());
 
         // - Prénom nom
-        $result = (new Beneficiary)->setSearch('client ben')->getAll()->get();
+        $result = Beneficiary::search('client ben')->get();
         $this->assertEquals(1, $result->count());
         $this->assertEquals(['Client Benef'], $result->pluck('full_name')->all());
 
         // - Nom Prénom
-        $result = (new Beneficiary)->setSearch('fountain jean')->getAll()->get();
+        $result = Beneficiary::search('fountain jean')->get();
         $this->assertEquals(1, $result->count());
         $this->assertEquals(['Jean Fountain'], $result->pluck('full_name')->all());
 
         // - Email
-        $result = (new Beneficiary)->setSearch('@robertmanager.net')->getAll()->get();
+        $result = Beneficiary::search('@robertmanager.net')->get();
         $this->assertEquals(2, $result->count());
         $this->assertEquals(['Jean Fountain', 'Roger Rabbit'], $result->pluck('full_name')->all());
 
         // - Référence
-        $result = (new Beneficiary)->setSearch('0001')->getAll()->get();
+        $result = Beneficiary::search('0001')->get();
         $this->assertEquals(1, $result->count());
         $this->assertEquals(['Jean Fountain'], $result->pluck('full_name')->all());
 
         // - Société
-        $result = (new Beneficiary)->setSearch('Testing')->getAll()->get();
+        $result = Beneficiary::search('Testing')->get();
         $this->assertEquals(1, $result->count());
         $this->assertEquals(['Jean Fountain'], $result->pluck('full_name')->all());
     }
@@ -185,7 +185,6 @@ final class BeneficiaryTest extends TestCase
                 'code' => 'CH',
                 'created_at' => '2021-02-12 13:21:02',
                 'updated_at' => '2021-02-12 13:21:02',
-                'deleted_at' => null,
             ],
             'country_id' => 2,
             'user_id' => null,
@@ -211,7 +210,6 @@ final class BeneficiaryTest extends TestCase
                     'code' => 'CH',
                     'created_at' => '2021-02-12 13:21:02',
                     'updated_at' => '2021-02-12 13:21:02',
-                    'deleted_at' => null,
                 ],
                 'user' => null,
             ],

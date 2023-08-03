@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\Tests\Events;
+namespace Loxya\Tests\Events;
 
-use Robert2\API\Models\Estimate;
-use Robert2\API\Models\Event;
-use Robert2\API\Models\Invoice;
-use Robert2\Tests\TestCase;
+use Loxya\Models\Estimate;
+use Loxya\Models\Event;
+use Loxya\Models\Invoice;
+use Loxya\Tests\TestCase;
 
 final class EventTest extends TestCase
 {

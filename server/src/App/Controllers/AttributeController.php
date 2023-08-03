@@ -1,13 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Controllers;
+namespace Loxya\Controllers;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
-use Illuminate\Database\Eloquent\Builder;
-use Robert2\API\Controllers\Traits\Crud;
-use Robert2\API\Http\Request;
-use Robert2\API\Models\Attribute;
+use Loxya\Controllers\Traits\Crud;
+use Loxya\Http\Request;
+use Loxya\Models\Attribute;
 use Slim\Http\Response;
 
 class AttributeController extends BaseController
@@ -19,7 +18,6 @@ class AttributeController extends BaseController
 
     public function getAll(Request $request, Response $response): Response
     {
-        /** @var Builder $attributes */
         $query = Attribute::orderBy('name', 'asc');
 
         $categoryId = $request->getQueryParam('category', null);

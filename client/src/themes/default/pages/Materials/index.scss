@@ -22,25 +22,23 @@
     &__filters {
         display: flex;
         flex-wrap: wrap;
+        margin-bottom: globals.$spacing-small;
+        gap: globals.$spacing-small;
 
         .MaterialsFilters {
             flex: 0 1 auto;
-            margin-right: globals.$content-padding-small-vertical;
-            margin-bottom: globals.$content-padding-large-horizontal;
-            margin-left: math.div(globals.$content-padding-small-vertical, 2);
         }
     }
 
     &__quantities-date {
         flex: 1 0 auto;
-        margin-bottom: globals.$content-padding-large-horizontal;
 
         &__input {
             width: 280px;
         }
 
         &__clear-button {
-            margin-left: globals.$content-padding-small-horizontal;
+            margin-left: globals.$spacing-small;
         }
     }
 
@@ -78,6 +76,10 @@
             display: none;
         }
 
+        &--tags {
+            max-width: 400px;
+        }
+
         &--category {
             white-space: nowrap;
         }
@@ -104,6 +106,10 @@
             text-align: right;
             white-space: nowrap;
         }
+    }
+
+    &__sub-category {
+        margin-top: 3px;
     }
 
     &__quantity-broken {
@@ -166,10 +172,11 @@
             position: absolute;
             z-index: 1;
             left: globals.$table-search-input;
-            right: calc(#{globals.$content-padding-large-vertical} + 45px + #{globals.$content-padding-small-vertical});
+            right: calc(#{globals.$spacing-large} + 45px + #{globals.$spacing-medium});
             flex-wrap: nowrap;
             align-items: center;
-            margin-left: math.div(globals.$content-padding-small-vertical, 2);
+            margin-bottom: 0;
+            margin-left: globals.$spacing-small;
 
             .MaterialsFilters {
                 flex-wrap: nowrap;

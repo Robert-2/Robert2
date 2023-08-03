@@ -236,6 +236,9 @@ return [
     "materials"
     => "Matériel",
 
+    "materials-park-name"
+    => "Matériel du parc « %s »",
+
     "other-materials"
     => "Autre matériel",
 

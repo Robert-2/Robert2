@@ -1,24 +1,23 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Services;
+namespace Loxya\Services;
 
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
-use Robert2\API\Config\Acl;
-use Robert2\API\Config\Config;
-use Robert2\API\Http\Request;
-use Robert2\API\Models\User;
-use Robert2\API\Services\Auth\AuthenticatorInterface;
+use Loxya\Config\Acl;
+use Loxya\Config\Config;
+use Loxya\Http\Request;
+use Loxya\Models\User;
+use Loxya\Services\Auth\AuthenticatorInterface;
 use Slim\Exception\HttpUnauthorizedException;
 use Slim\Psr7\Response;
 
 final class Auth
 {
     /** @var AuthenticatorInterface[] */
-    private $authenticators;
+    private array $authenticators;
 
-    /** @var User|null */
-    private static $user = null;
+    private static ?User $user = null;
 
     /**
      * Constructeur.

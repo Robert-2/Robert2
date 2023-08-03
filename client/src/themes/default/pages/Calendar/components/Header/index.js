@@ -19,6 +19,7 @@ const CalendarHeader = defineComponent({
         'setCenterDate',
         'setCenterDate',
         'filterByPark',
+        'filterByCategory',
         'filterMissingMaterials',
     ],
     data() {
@@ -26,6 +27,7 @@ const CalendarHeader = defineComponent({
             centerDate: null,
             filters: {
                 park: this.$route.query.park || '',
+                category: '',
                 hasMissingMaterials: false,
             },
         };
@@ -33,6 +35,10 @@ const CalendarHeader = defineComponent({
     computed: {
         parksOptions() {
             return this.$store.getters['parks/options'];
+        },
+
+        categoriesOptions() {
+            return this.$store.getters['categories/options'];
         },
 
         isToday() {
@@ -45,6 +51,7 @@ const CalendarHeader = defineComponent({
     },
     created() {
         this.$store.dispatch('parks/fetch');
+        this.$store.dispatch('categories/fetch');
     },
     methods: {
         // ------------------------------------------------------
@@ -67,9 +74,16 @@ const CalendarHeader = defineComponent({
             this.$emit('setCenterDate', now);
         },
 
-        handleFilterParkChange(parkId) {
-            this.filters.park = parkId;
+        handleFilterParkChange(park) {
+            this.filters.park = park;
+            const parkId = park !== '' ? Number.parseInt(park, 10) : null;
             this.$emit('filterByPark', parkId);
+        },
+
+        handleFilterCategoryChange(category) {
+            this.filters.category = category;
+            const categoryId = category !== '' ? Number.parseInt(category, 10) : null;
+            this.$emit('filterByCategory', categoryId);
         },
 
         handleFilterMissingMaterialChange(hasFilter) {
@@ -102,9 +116,11 @@ const CalendarHeader = defineComponent({
             isTeamMember,
             isLoading,
             parksOptions,
+            categoriesOptions,
             handleSetTodayDate,
             handleSetCenterDate,
             handleFilterParkChange,
+            handleFilterCategoryChange,
             handleFilterMissingMaterialChange,
             handleRefresh,
         } = this;
@@ -156,6 +172,18 @@ const CalendarHeader = defineComponent({
                                 options={parksOptions}
                                 placeholder={__('page.calendar.display-all-parks')}
                                 highlight={!!filters.park && parksOptions.length > 1}
+                            />
+                        </div>
+                    )}
+                    {categoriesOptions.length > 0 && (
+                        <div class="CalendarHeader__filter CalendarHeader__filter--categories">
+                            <Select
+                                value={filters.category}
+                                class="CalendarHeader__filter__select"
+                                onChange={handleFilterCategoryChange}
+                                options={categoriesOptions}
+                                placeholder={__('page.calendar.display-all-categories')}
+                                highlight={!!filters.park && categoriesOptions.length > 1}
                             />
                         </div>
                     )}

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\Support\Filesystem;
+namespace Loxya\Support\Filesystem;
 
 use League\Flysystem\DirectoryListing;
 use League\Flysystem\FilesystemOperator;
@@ -33,12 +33,8 @@ use League\Flysystem\StorageAttributes;
  */
 class Filesystem
 {
-    /**
-     * L'instance de Flysystem.
-     *
-     * @var FilesystemOperator
-     */
-    protected $driver;
+    /** L'instance de Flysystem. */
+    protected FilesystemOperator $driver;
 
     public function __construct(FilesystemOperator $driver)
     {

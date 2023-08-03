@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\API\Console\Command\Migrations;
+namespace Loxya\Console\Command\Migrations;
 
 use Phinx\Console\Command\Status as CoreStatusCommand;
 use Symfony\Component\Console\Attribute\AsCommand;

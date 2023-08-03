@@ -4,10 +4,10 @@ import { DEBOUNCE_WAIT } from '@/globals/constants';
 import { ApiErrorCode } from '@/stores/api/@codes';
 import apiBookings, { BookingEntity } from '@/stores/api/bookings';
 import eventStore from '../../EventStore';
-import MaterialsListEditor, {
+import MaterialsSelector, {
     getEventMaterialsQuantities,
     materialsHasChanged,
-} from '@/themes/default/components/MaterialsListEditor';
+} from '@/themes/default/components/MaterialsSelector';
 
 // @vue/component
 export default {
@@ -33,18 +33,13 @@ export default {
         // -
         // ------------------------------------------------------
 
-        handleChange(newList) {
-            const { event } = this;
-            if (!event) {
-                return;
-            }
+        handleChange(materials) {
+            this.materials = materials;
 
-            this.materials = newList;
-            const savedList = getEventMaterialsQuantities(event.materials);
-            const hasDifference = materialsHasChanged(savedList, newList);
-            eventStore.commit('setIsSaved', !hasDifference);
-
-            if (hasDifference) {
+            const savedMaterials = getEventMaterialsQuantities(this.event.materials);
+            const hasChanged = materialsHasChanged(savedMaterials, materials);
+            eventStore.commit('setIsSaved', !hasChanged);
+            if (hasChanged) {
                 this.debouncedSave();
             }
         },
@@ -86,10 +81,9 @@ export default {
             const materials = this.materials.filter(({ quantity }) => quantity > 0);
 
             try {
-                const data = await apiBookings.updateMaterials(id, {
-                    entity: BookingEntity.EVENT,
-                    materials,
-                });
+                // FIXME: Vraiment pas terrible (on fait passer un booking pour un event)...
+                //        => On devrait utiliser une fonction spécifique aux événements.
+                const data = await apiBookings.updateMaterials(BookingEntity.EVENT, id, materials);
                 eventStore.commit('setIsSaved', true);
                 this.$emit('updateEvent', data);
             } catch (error) {
@@ -117,8 +111,8 @@ export default {
 
         return (
             <form class="EventStep4" onSubmit={handleSubmit}>
-                <MaterialsListEditor
-                    selected={materials}
+                <MaterialsSelector
+                    defaultValues={materials}
                     booking={{ entity: BookingEntity.EVENT, ...event }}
                     onChange={handleChange}
                 />

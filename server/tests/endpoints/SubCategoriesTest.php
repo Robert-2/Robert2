@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Robert2\Tests;
+namespace Loxya\Tests;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 
@@ -37,10 +37,7 @@ final class SubCategoriesTest extends ApiTestCase
     {
         $this->client->post('/api/subcategories', ['name' => 'Fail SubCategory']);
         $this->assertApiValidationError([
-            'category_id' => [
-                "This field is mandatory",
-                "This field must contain only numbers",
-            ],
+            'category_id' => ["This field is mandatory"],
         ]);
     }
 

@@ -182,7 +182,9 @@ const InventoryItemMaterial = defineComponent({
             <div class={itemClasses}>
                 <div class="InventoryItemMaterial__reference">{reference}</div>
                 <div class="InventoryItemMaterial__name">{name}</div>
-                <div class="InventoryItemMaterial__error">{error?.message}</div>
+                {!!error && (
+                    <div class="InventoryItemMaterial__error">{error.message}</div>
+                )}
                 <div class="InventoryItemMaterial__awaited-quantity">
                     {__('awaited-qty-dots')}
                     <strong class="InventoryItemMaterial__awaited-quantity__count">
