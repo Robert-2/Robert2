@@ -4,6 +4,11 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.22.1 (2023-08-04)
+
+- L'utilisation d'un champ de tri non autorisé ne fait plus planter les pages de listing.
+- Corrige les boutons de modification et suppression des emplacements de parc (Premium).
+
 ## 0.22.0 (2023-08-03)
 
 - Ajoute la possibilité de choisir un emplacement de rangement pour chaque matériel
