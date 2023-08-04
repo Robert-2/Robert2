@@ -26,11 +26,15 @@ class UserController extends BaseController
     {
         $paginated = (bool) $request->getQueryParam('paginated', true);
         $search = $request->getQueryParam('search', null);
-        $orderBy = $request->getQueryParam('orderBy', null);
         $group = $request->getQueryParam('group', null);
         $limit = $request->getQueryParam('limit', null);
         $ascending = (bool) $request->getQueryParam('ascending', true);
         $onlyDeleted = (bool) $request->getQueryParam('deleted', false);
+
+        $orderBy = $request->getQueryParam('orderBy', null);
+        if (!in_array($orderBy, ['pseudo', 'email', 'group'], true)) {
+            $orderBy = null;
+        }
 
         $query = (new User())
             ->setOrderBy($orderBy, $ascending)

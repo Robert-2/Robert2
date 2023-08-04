@@ -19,13 +19,12 @@ class ParkController extends BaseController
     {
         $paginated = (bool) $request->getQueryParam('paginated', true);
         $search = $request->getQueryParam('search', null);
-        $orderBy = $request->getQueryParam('orderBy', null);
         $limit = $request->getQueryParam('limit', null);
         $ascending = (bool) $request->getQueryParam('ascending', true);
         $onlyDeleted = (bool) $request->getQueryParam('deleted', false);
 
-        $query = $this->getModel()
-            ->setOrderBy($orderBy, $ascending)
+        $query = (new Park)
+            ->setOrderBy(null, $ascending)
             ->setSearch($search)
             ->getAll($onlyDeleted);
 
