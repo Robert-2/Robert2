@@ -73,11 +73,16 @@ class MaterialController extends BaseController
     {
         $paginated = (bool) $request->getQueryParam('paginated', true);
         $limit = $request->getQueryParam('limit', null);
-        $orderBy = $request->getQueryParam('orderBy', null);
         $ascending = (bool) $request->getQueryParam('ascending', true);
         $search = $request->getQueryParam('search', null);
         $dateForQuantities = $request->getQueryParam('dateForQuantities', null);
         $onlyDeleted = (bool) $request->getQueryParam('deleted', false);
+
+        $orderBy = $request->getQueryParam('orderBy', null);
+        $allowedOrderFields = ['name', 'reference', 'rental_price', 'stock_quantity', 'out_of_order_quantity'];
+        if (!in_array($orderBy, $allowedOrderFields, true)) {
+            $orderBy = null;
+        }
 
         $query = (new Material)
             ->setOrderBy($orderBy, $ascending)

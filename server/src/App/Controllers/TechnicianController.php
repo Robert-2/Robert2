@@ -39,10 +39,14 @@ class TechnicianController extends BaseController
     public function getAll(Request $request, Response $response): Response
     {
         $search = $request->getQueryParam('search', null);
-        $orderBy = $request->getQueryParam('orderBy', null);
         $limit = $request->getQueryParam('limit', null);
         $ascending = (bool) $request->getQueryParam('ascending', true);
         $onlyDeleted = (bool) $request->getQueryParam('deleted', false);
+
+        $orderBy = $request->getQueryParam('orderBy', null);
+        if (!in_array($orderBy, ['full_name', 'email', 'nickname'], true)) {
+            $orderBy = null;
+        }
 
         // - Disponibilité dans une période donnée.
         $availabilityPeriod = Arr::mapKeys(
