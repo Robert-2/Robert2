@@ -247,6 +247,17 @@ final class BeneficiariesTest extends ApiTestCase
             'user' => null,
             'note' => null,
         ]);
+
+        // - Test avec une adresse e-mail existante.
+        $this->client->post('/api/beneficiaries', [
+            'first_name' => 'Tester',
+            'last_name' => 'Leblanc',
+            'can_make_reservation' => false,
+            'pseudo' => 'new-test',
+            'email' => 'tester@robertmanager.net',
+            'password' => '0123456',
+        ]);
+        $this->assertStatusCode(StatusCode::STATUS_CREATED);
     }
 
     public function testUpdateBadData()

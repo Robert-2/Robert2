@@ -58,4 +58,32 @@ final class PersonTest extends TestCase
         ]);
         $this->assertEquals('+0033625252125', $resultPerson->phone);
     }
+
+    public function testDeleteIfOrphan(): void
+    {
+        // - Test avec une personne liée à un bénéficiaire
+        $person = Person::find(1);
+        $person->deleteIfOrphan();
+        $this->assertNotEmpty(Person::find(1));
+
+        // - Test avec une personne liée à un technicien
+        $person = Person::find(4);
+        $person->deleteIfOrphan();
+        $this->assertNotEmpty(Person::find(4));
+
+        // - Test avec une personne liée à un utilisateur
+        $person = Person::find(4);
+        $person->deleteIfOrphan(false);
+        $this->assertNotEmpty(Person::find(4));
+
+        // - Test avec une personne "orpheline"
+        $person = Person::create([
+            'first_name' => "Marie",
+            'last_name' => "Testing",
+            'email' => "marie@testing.org",
+        ]);
+        $this->assertNotEmpty(Person::find(8));
+        $person->deleteIfOrphan();
+        $this->assertEmpty(Person::find(8));
+    }
 }

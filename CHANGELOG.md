@@ -4,6 +4,15 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.22.2 (2023-08-11)
+
+- Enlève le tri par liste dans les fiches de sorties classées par parc (Premium).
+- Supprime la contrainte d'unicité sur l'e-mail de la table `persons` (#394).
+- Ajoute des observers qui suppriment automatiquement les enregistrements "orphelins"
+  de la table `persons` (#394).
+- Corrige un problème d'affichage impactant les quantités dans le sélecteur de 
+  matériel lors de la suppression d'un matériel de la liste.
+
 ## 0.22.1 (2023-08-04)
 
 - L'utilisation d'un champ de tri non autorisé ne provoque plus de dysfonctionnement dans les pages de listing.
