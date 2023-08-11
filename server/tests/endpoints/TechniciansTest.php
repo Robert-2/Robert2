@@ -232,7 +232,6 @@ final class TechniciansTest extends ApiTestCase
             'phone' => 'notAphoneNumber',
         ]);
         $this->assertApiValidationError([
-            'email' => ['This email address is already in use'],
             'phone' => ['This telephone number is not valid'],
         ]);
     }

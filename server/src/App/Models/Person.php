@@ -49,7 +49,7 @@ final class Person extends BaseModel implements Serializable
             'user_id' => V::custom([$this, 'checkUserId']),
             'first_name' => V::notEmpty()->alnum(static::EXTRA_CHARS)->length(2, 35),
             'last_name' => V::notEmpty()->alnum(static::EXTRA_CHARS)->length(2, 35),
-            'email' => V::custom([$this, 'checkEmail']),
+            'email' => V::optional(V::email()->length(null, 191)),
             'phone' => V::optional(V::phone()),
             'street' => V::optional(V::length(null, 191)),
             'postal_code' => V::optional(V::length(null, 10)),
@@ -70,25 +70,6 @@ final class Person extends BaseModel implements Serializable
 
         return $value !== null
             ? User::staticExists($value)
-            : true;
-    }
-
-    public function checkEmail($value)
-    {
-        V::optional(V::email()->length(null, 191))
-            ->check($value);
-
-        if (!$value) {
-            return true;
-        }
-
-        $query = static::where('email', $value);
-        if ($this->exists) {
-            $query->where('id', '!=', $this->id);
-        }
-
-        return $query->exists()
-            ? 'email-already-in-use'
             : true;
     }
 
@@ -231,6 +212,35 @@ final class Person extends BaseModel implements Serializable
         return $query
             ->orderBy('last_name', $direction)
             ->orderBy('first_name', $direction);
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Custom Methods
+    // -
+    // ------------------------------------------------------
+
+    /**
+     * Supprime la personne si celle-ci est "orpheline", c'est à dire sans bénéficiaire,
+     * sans technicien ni utilisateur (sauf si $checkUser est passé à `false`).
+     *
+     * @param bool $checkUser Est-ce qu'on veut vérifier que la personne a un utilisateur lié ?
+     *                        Dans le cas de la suppression d'un utilisateur, passer ce paramètre
+     *                        à `false` pour pouvoir supprimer également son profil.
+     * @return void
+     */
+    public function deleteIfOrphan(bool $checkUser = true): void
+    {
+        $isOrphan = !$this->beneficiary && !$this->technician;
+        if ($checkUser) {
+            $isOrphan = $isOrphan && $this->user_id === null;
+        }
+
+        if (!$isOrphan) {
+            return;
+        }
+
+        $this->delete();
     }
 
     // ------------------------------------------------------
