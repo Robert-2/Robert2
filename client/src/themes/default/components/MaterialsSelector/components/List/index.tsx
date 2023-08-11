@@ -335,6 +335,9 @@ const MaterialsSelectorList = defineComponent({
                             ),
                             'availability': ({ row: material }: { row: Material }) => (
                                 <Availability
+                                    // NOTE: Problème dans `vue-tables-2` qui utilise des indexes dans les `key`
+                                    // @see https://github.com/matfish2/vue-tables-2/blob/master/templates/VtTableBody.vue#L9
+                                    key={`${material.id}--availability`}
                                     list={list}
                                     material={material}
                                 />
@@ -346,6 +349,9 @@ const MaterialsSelectorList = defineComponent({
                             ),
                             'quantity-input': ({ row: material }: { row: Material }) => (
                                 <Quantity
+                                    // NOTE: Problème dans `vue-tables-2` qui utilise des indexes dans les `key`
+                                    // @see https://github.com/matfish2/vue-tables-2/blob/master/templates/VtTableBody.vue#L9
+                                    key={`${material.id}--quantity`}
                                     material={material}
                                     quantity={getQuantity(material)}
                                     onChange={setQuantity}
