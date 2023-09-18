@@ -5,7 +5,7 @@ use Phinx\Migration\AbstractMigration;
 
 final class AddDateTypeToAttributes extends AbstractMigration
 {
-    public function up()
+    public function up(): void
     {
         $table = $this->table('attributes');
         $table
@@ -16,7 +16,7 @@ final class AddDateTypeToAttributes extends AbstractMigration
             ->update();
     }
 
-    public function down()
+    public function down(): void
     {
         // - Obligé de nettoyer "à la main" étant donné que `material_attributes` n'a pas de
         // contrainte "CASCADE" pour la suppression...

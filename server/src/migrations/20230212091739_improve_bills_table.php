@@ -8,7 +8,7 @@ final class ImproveBillsTable extends AbstractMigration
 {
     public function up(): void
     {
-        $prefix = Config::getSettings('db')['prefix'];
+        $prefix = Config::get('db.prefix');
 
         //
         // - Factures
@@ -84,7 +84,7 @@ final class ImproveBillsTable extends AbstractMigration
             $dailyTotalWithoutTaxes = $dailyTotalWithoutDiscount - $dailyTotalDiscount;
 
             // - Taxes.
-            $vatPercent = Config::getSettings('companyData')['vatRate'];
+            $vatPercent = Config::get('companyData.vatRate');
             $vatRate = ((float) $vatPercent) / 100;
             $dailyTotalTaxes = $dailyTotalWithoutTaxes * $vatRate;
             $dailyTotalWithTaxes = $dailyTotalWithoutTaxes + $dailyTotalTaxes;
@@ -435,7 +435,7 @@ final class ImproveBillsTable extends AbstractMigration
             $dailyTotalWithoutTaxes = $dailyTotalWithoutDiscount - $dailyTotalDiscount;
 
             // - Taxes.
-            $vatPercent = Config::getSettings('companyData')['vatRate'];
+            $vatPercent = Config::get('companyData.vatRate');
             $vatRate = ((float) $vatPercent) / 100;
             $dailyTotalTaxes = $dailyTotalWithoutTaxes * $vatRate;
             $dailyTotalWithTaxes = $dailyTotalWithoutTaxes + $dailyTotalTaxes;
@@ -713,7 +713,7 @@ final class ImproveBillsTable extends AbstractMigration
 
     public function down(): void
     {
-        $prefix = Config::getSettings('db')['prefix'];
+        $prefix = Config::get('db.prefix');
 
         $incompatibleInvoices = $this->fetchAll(
             sprintf("SELECT * FROM `%sinvoices` WHERE `booking_type` <> 'event'", $prefix)

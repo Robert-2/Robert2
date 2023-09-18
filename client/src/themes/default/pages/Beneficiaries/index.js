@@ -1,16 +1,16 @@
 import './index.scss';
+import { defineComponent } from '@vue/composition-api';
 import HttpCode from 'status-code-enum';
 import { isRequestErrorStatusCode } from '@/utils/errors';
 import Fragment from '@/components/Fragment';
-import Page from '@/themes/default/components/Page';
-import CriticalError from '@/themes/default/components/CriticalError';
-import Button from '@/themes/default/components/Button';
 import { confirm } from '@/utils/alert';
 import apiBeneficiaries from '@/stores/api/beneficiaries';
 import initColumnsDisplay from '@/utils/initColumnsDisplay';
+import Page from '@/themes/default/components/Page';
+import CriticalError from '@/themes/default/components/CriticalError';
+import Button from '@/themes/default/components/Button';
 
-// @vue/component
-export default {
+const Beneficiaries = defineComponent({
     name: 'Beneficiaries',
     data() {
         const { $t: __, $options } = this;
@@ -224,7 +224,7 @@ export default {
                 }
 
                 // eslint-disable-next-line no-console
-                console.error(`Error ocurred while retrieving beneficiaries:`, error);
+                console.error(`Error occurred while retrieving beneficiaries:`, error);
                 this.hasCriticalError = true;
             } finally {
                 this.isLoading = false;
@@ -239,9 +239,9 @@ export default {
             $options,
             columns,
             options,
-            isLoading,
-            isTrashDisplayed,
             hasCriticalError,
+            isTrashDisplayed,
+            isLoading,
             handleShowTrashed,
         } = this;
 
@@ -253,17 +253,19 @@ export default {
             );
         }
 
+        const pageActions = [
+            <Button type="add" icon="user-plus" to={{ name: 'add-beneficiary' }}>
+                {__('page.beneficiaries.action-add')}
+            </Button>,
+        ];
+
         return (
             <Page
                 name="beneficiaries"
                 title={__('page.beneficiaries.title')}
                 help={__('page.beneficiaries.help')}
                 isLoading={isLoading}
-                actions={[
-                    <Button type="add" icon="user-plus" to={{ name: 'add-beneficiary' }}>
-                        {__('page.beneficiaries.action-add')}
-                    </Button>,
-                ]}
+                actions={pageActions}
             >
                 <div class="Beneficiaries">
                     <v-server-table
@@ -286,4 +288,6 @@ export default {
             </Page>
         );
     },
-};
+});
+
+export default Beneficiaries;

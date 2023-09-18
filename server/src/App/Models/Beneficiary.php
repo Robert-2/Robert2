@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Loxya\Models;
 
 use Adbar\Dot as DotArray;
-use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Loxya\Contracts\Serializable;
@@ -37,9 +37,11 @@ use Loxya\Models\Traits\SoftDeletable;
  * @property-read string|null $full_address
  * @property bool $can_make_reservation
  * @property string|null $note
- * @property-read Carbon $created_at
- * @property-read Carbon|null $updated_at
- * @property-read Carbon|null $deleted_at
+ * @property-read CarbonImmutable $created_at
+ * @property-read CarbonImmutable|null $updated_at
+ * @property-read CarbonImmutable|null $deleted_at
+ *
+ * @property-read Cart|null $cart
  */
 final class Beneficiary extends BaseModel implements Serializable
 {
@@ -77,6 +79,16 @@ final class Beneficiary extends BaseModel implements Serializable
         if (!$this->exists && $value === null) {
             return true;
         }
+
+        $query = static::where('person_id', $value);
+        if ($this->exists) {
+            $query->where('id', '!=', $this->id);
+        }
+
+        if ($query->withTrashed()->exists()) {
+            return 'person-already-a-beneficiary';
+        }
+
         return Person::staticExists($value);
     }
 
@@ -163,6 +175,9 @@ final class Beneficiary extends BaseModel implements Serializable
         'company_id' => 'integer',
         'note' => 'string',
         'can_make_reservation' => 'boolean',
+        'created_at' => 'immutable_datetime',
+        'updated_at' => 'immutable_datetime',
+        'deleted_at' => 'immutable_datetime',
     ];
 
     public function getFirstNameAttribute(): string

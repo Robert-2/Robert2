@@ -10,6 +10,7 @@ use Loxya\Http\Request;
 use Loxya\Models\Enums\Group;
 use Loxya\Models\Beneficiary;
 use Loxya\Services\Auth;
+use Psr\Http\Message\ResponseInterface;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Http\Response;
 
@@ -17,7 +18,7 @@ class BeneficiaryController extends BaseController
 {
     use WithCrud;
 
-    public function getAll(Request $request, Response $response): Response
+    public function getAll(Request $request, Response $response): ResponseInterface
     {
         $paginated = (bool) $request->getQueryParam('paginated', true);
         $search = $request->getQueryParam('search', null);
@@ -44,7 +45,7 @@ class BeneficiaryController extends BaseController
         return $response->withJson($results, StatusCode::STATUS_OK);
     }
 
-    public function create(Request $request, Response $response): Response
+    public function create(Request $request, Response $response): ResponseInterface
     {
         $postData = (array) $request->getParsedBody();
         if (empty($postData)) {
@@ -73,7 +74,7 @@ class BeneficiaryController extends BaseController
         return $response->withJson($beneficiary, StatusCode::STATUS_CREATED);
     }
 
-    public function update(Request $request, Response $response): Response
+    public function update(Request $request, Response $response): ResponseInterface
     {
         $postData = (array) $request->getParsedBody();
         if (empty($postData)) {

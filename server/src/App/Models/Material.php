@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Loxya\Models;
 
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Collection as CoreCollection;
@@ -43,9 +44,9 @@ use Loxya\Support\Str;
  * @property bool $is_reservable
  * @property string|null $note
  * @property-read Collection $attributes
- * @property-read Carbon $created_at
- * @property-read Carbon|null $updated_at
- * @property-read Carbon|null $deleted_at
+ * @property-read CarbonImmutable $created_at
+ * @property-read CarbonImmutable|null $updated_at
+ * @property-read CarbonImmutable|null $deleted_at
  *
  * @property-read Collection|Event[] $events
  * @property-read Collection|Document[] $documents
@@ -165,13 +166,12 @@ final class Material extends BaseModel implements Serializable
             return 'upload-failed';
         }
 
-        $settings = container('settings');
-        if ($picture->getSize() > $settings['maxFileUploadSize']) {
+        if ($picture->getSize() > Config::get('maxFileUploadSize')) {
             return 'file-exceeds-max-size';
         }
 
         $pictureType = $picture->getClientMediaType();
-        if (!in_array($pictureType, $settings['authorizedImageTypes'], true)) {
+        if (!in_array($pictureType, Config::get('authorizedImageTypes'), true)) {
             return 'file-type-not-allowed';
         }
 
@@ -222,7 +222,7 @@ final class Material extends BaseModel implements Serializable
 
     public function checkRentalPrice()
     {
-        $billingMode = container('settings')['billingMode'];
+        $billingMode = Config::get('billingMode');
         if ($billingMode === 'none') {
             return V::nullType();
         }
@@ -304,6 +304,9 @@ final class Material extends BaseModel implements Serializable
         'is_discountable' => 'boolean',
         'is_reservable' => 'boolean',
         'note' => 'string',
+        'created_at' => 'immutable_datetime',
+        'updated_at' => 'immutable_datetime',
+        'deleted_at' => 'immutable_datetime',
     ];
 
     public function getStockQuantityAttribute($value)
@@ -361,8 +364,8 @@ final class Material extends BaseModel implements Serializable
             return null;
         }
 
-        $baseUrl = rtrim(Config::getSettings('apiUrl'), '/');
-        return sprintf('%s/materials/%s/picture', $baseUrl, $this->id);
+        return (string) Config::getBaseUri()
+            ->withPath(sprintf('/materials/%s/picture', $this->id));
     }
 
     public function getPictureRealPathAttribute()
@@ -412,7 +415,7 @@ final class Material extends BaseModel implements Serializable
         'note',
     ];
 
-    public function setAvailableQuantityAttribute(int $value)
+    public function setAvailableQuantityAttribute(int $value): void
     {
         $this->setTransientAttribute('available_quantity', $value);
     }
@@ -582,8 +585,6 @@ final class Material extends BaseModel implements Serializable
      *
      * @param Builder $query
      * @param int $parkId - Le parc concerné.
-     *
-     * @return Builder
      */
     public function scopeInPark(Builder $query, int $parkId): Builder
     {

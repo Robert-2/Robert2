@@ -242,7 +242,7 @@ final class EventMaterial extends BaseModel implements Serializable
         'quantity_returned_broken',
     ];
 
-    public function setQuantityMissingAttribute(int $value)
+    public function setQuantityMissingAttribute(int $value): void
     {
         $this->setTransientAttribute('quantity_missing', $value);
     }

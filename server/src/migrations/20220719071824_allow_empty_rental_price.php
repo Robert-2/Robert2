@@ -21,7 +21,7 @@ final class AllowEmptyRentalPrice extends AbstractMigration
 
     public function down(): void
     {
-        $prefix = Config::getSettings('db')['prefix'];
+        $prefix = Config::get('db.prefix');
         $builder = $this->getQueryBuilder();
         $builder
             ->update(sprintf('%smaterials', $prefix))

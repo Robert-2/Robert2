@@ -3,34 +3,24 @@ declare(strict_types=1);
 
 namespace Loxya\Controllers;
 
-use DI\Container;
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Loxya\Http\Request;
 use Loxya\Models\Enums\Group;
 use Loxya\Models\Setting;
 use Loxya\Services\Auth;
+use Psr\Http\Message\ResponseInterface;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Http\Response;
-use Slim\Interfaces\RouteParserInterface;
 
 class SettingController extends BaseController
 {
-    private RouteParserInterface $routeParser;
-
-    public function __construct(Container $container, RouteParserInterface $routeParser)
-    {
-        parent::__construct($container);
-
-        $this->routeParser = $routeParser;
-    }
-
     // ------------------------------------------------------
     // -
     // -    Getters
     // -
     // ------------------------------------------------------
 
-    public function getAll(Request $request, Response $response): Response
+    public function getAll(Request $request, Response $response): ResponseInterface
     {
         $isAdmin = Auth::is(Group::ADMIN);
         $settings = Setting::getList($isAdmin);
@@ -40,11 +30,11 @@ class SettingController extends BaseController
         if ($isAdmin && $publicCalendar['enabled']) {
             $settings['calendar']['public']['url'] = null;
             if (!empty($publicCalendar['uuid'])) {
-                $settings['calendar']['public']['url'] = $this
-                    ->routeParser
-                    ->fullUrlFor($request->getUri(), 'public-calendar', [
+                $settings['calendar']['public']['url'] = (
+                    urlFor('public-calendar', [
                         'uuid' => $publicCalendar['uuid'],
-                    ]);
+                    ])
+                );
             }
         }
         unset($settings['calendar']['public']['uuid']);
@@ -58,7 +48,7 @@ class SettingController extends BaseController
     // -
     // ------------------------------------------------------
 
-    public function update(Request $request, Response $response): Response
+    public function update(Request $request, Response $response): ResponseInterface
     {
         $postData = (array) $request->getParsedBody();
         if (empty($postData)) {
@@ -70,7 +60,7 @@ class SettingController extends BaseController
         return $this->getAll($request, $response);
     }
 
-    public function reset(Request $request, Response $response): Response
+    public function reset(Request $request, Response $response): ResponseInterface
     {
         $key = $request->getAttribute('key');
 

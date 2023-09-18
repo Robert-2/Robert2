@@ -5,7 +5,7 @@ use Phinx\Migration\AbstractMigration;
 
 final class CreateEstimates extends AbstractMigration
 {
-    public function up()
+    public function up(): void
     {
         $table = $this->table('estimates', ['signed' => true]);
         $table
@@ -44,7 +44,7 @@ final class CreateEstimates extends AbstractMigration
             ->create();
     }
 
-    public function down()
+    public function down(): void
     {
         $this->table('estimates')->drop()->save();
     }

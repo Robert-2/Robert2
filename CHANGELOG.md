@@ -4,6 +4,20 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.23.0 (UNRELEASED)
+
+- Mise à jour des dépendances du projet.
+- Ajoute la prise en charge complète de l'authentification SAML 2.0 (Premium).
+- La clé de configuration `apiUrl` a été renommée `baseUrl` dans le fichier de configuration.  
+  L'ancien nom est toujours pris en charge pour le moment pour une question de rétro-compatibilité. 
+  (il sera toutefois supprimé dans une future version, pensez à mettre à jour vos 
+  `settings.json` si vous ne disposez pas d'une offre SaaS)
+- Ajoute une commande permettant d'envoyer un e-mail de test via la console (Premium).
+- L'import de bénéficiaires en masse est maintenant possible depuis un fichier CSV (Premium #305).
+- Corrige l'affichage des disponibilités des techniciens à l'étape 3 de la modification d'événement (Premium #361).
+- Ajoute un endpoint `/healthcheck` (désactivé par défaut) pour vérifier l'état de l'instance,
+  et la date de dernière modification de son matériel, événements ou réservations (Premium #357).
+
 ## 0.22.2 (2023-08-11)
 
 - Enlève le tri par liste dans les fiches de sorties classées par parc (Premium).

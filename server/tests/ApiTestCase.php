@@ -12,11 +12,9 @@ use Loxya\Services\Auth;
 
 class ApiTestCase extends TestCase
 {
-    /** @var App */
-    protected $app;
+    protected App $app;
 
-    /** @var ApiTestClient */
-    protected $client;
+    protected ApiTestClient $client;
 
     protected function setUp(): void
     {

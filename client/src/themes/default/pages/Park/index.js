@@ -43,7 +43,7 @@ const ParkEditPage = (props, { root }) => {
         } catch (error) {
             if (!axios.isAxiosError(error)) {
                 // eslint-disable-next-line no-console
-                console.error(`Error ocurred while retrieving park #${id.value} data`, error);
+                console.error(`Error occurred while retrieving park #${id.value} data`, error);
                 criticalError.value = ERROR.UNKNOWN;
             } else {
                 const { status = HttpCode.ServerErrorInternal } = error.response ?? {};

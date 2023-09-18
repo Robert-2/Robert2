@@ -93,6 +93,7 @@ export default {
     'name': "Nom",
     'nickname': "Surnom",
     'company': "Société",
+    'person': "Personne",
     'legal-name': "Raison sociale",
     'contact-details': "Coordonnées",
     'other-infos': "Autres informations",
@@ -323,7 +324,10 @@ export default {
     'list-template-details': "Détails du modèle de liste «\u00A0{name}\u00A0»",
     'list-template-use-warning': "Attention, utiliser ce modèle de liste va ajouter le matériel à celui déjà sélectionné, et sauvegarder la liste du matériel tout de suite après\u00A0!",
     'use-this-template': "Utiliser ce modèle de liste",
-    'no-list-template-available': "Aucun modèle de liste disponible\u00A0!",
+    'no-list-template-available': (
+        "Aucun modèle de liste disponible pour le moment...\n" +
+        "Vous pouvez en créer depuis la page \"Matériel\" puis \"Modèles de liste\"."
+    ),
     'create-list-template': "Créer un modèle de liste de matériel",
     'create-list-template-from-event': "Créer un modèle de liste avec cet événement",
     'list-template-created': "Le modèle de liste de matériel nommé «\u00A0{name}\u00A0» a bien été créé",

@@ -9,7 +9,7 @@ use Loxya\Models\EventTechnician;
 
 final class EventTechnicianTest extends TestCase
 {
-    public function testValidation()
+    public function testValidation(): void
     {
         $data = [
             'event_id' => 4,
@@ -34,7 +34,7 @@ final class EventTechnicianTest extends TestCase
         $this->assertEquals($expectedErrors, $errors);
     }
 
-    public function testValidationDatesInverted()
+    public function testValidationDatesInverted(): void
     {
         $data = [
             'event_id' => 4,
@@ -57,7 +57,7 @@ final class EventTechnicianTest extends TestCase
         $this->assertEquals($expectedErrors, $errors);
     }
 
-    public function testValidationDatesOutsideEvent()
+    public function testValidationDatesOutsideEvent(): void
     {
         $data = [
             'event_id' => 4,
@@ -92,7 +92,7 @@ final class EventTechnicianTest extends TestCase
         $this->assertEquals($expectedErrors, $errors);
     }
 
-    public function testValidationDatesNotQuarter()
+    public function testValidationDatesNotQuarter(): void
     {
         // - Dates qui ne sont pas placées au quart d'heure près
         try {
@@ -113,7 +113,7 @@ final class EventTechnicianTest extends TestCase
         ], $errors);
     }
 
-    public function testValidationDatesAlreadyAssigned()
+    public function testValidationDatesAlreadyAssigned(): void
     {
         // - Dates qui chevauchent la fin d'une assignation existante
         try {
@@ -170,7 +170,7 @@ final class EventTechnicianTest extends TestCase
         ], $errors);
     }
 
-    public function testValidationDatesOk()
+    public function testValidationDatesOk(): void
     {
         // - Nouvelle assignation après une existante
         $errors = null;
@@ -203,7 +203,7 @@ final class EventTechnicianTest extends TestCase
         $this->assertNull($errors);
     }
 
-    public function testGetForNewDates()
+    public function testGetForNewDates(): void
     {
         $event = Event::findOrFail(1);
         $originalStartDate = new \DateTime($event->start_date);

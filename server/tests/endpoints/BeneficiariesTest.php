@@ -110,7 +110,7 @@ final class BeneficiariesTest extends ApiTestCase
         return static::_dataFactory($id, $beneficiaries->all());
     }
 
-    public function testGetAll()
+    public function testGetAll(): void
     {
         $this->client->get('/api/beneficiaries');
         $this->assertStatusCode(StatusCode::STATUS_OK);
@@ -122,7 +122,7 @@ final class BeneficiariesTest extends ApiTestCase
         ]);
     }
 
-    public function testGetAllWithSearch()
+    public function testGetAllWithSearch(): void
     {
         // - Prénom
         $this->client->get('/api/beneficiaries?search=cli');
@@ -168,27 +168,27 @@ final class BeneficiariesTest extends ApiTestCase
         ]);
     }
 
-    public function testGetOneNotFound()
+    public function testGetOneNotFound(): void
     {
         $this->client->get('/api/beneficiaries/999');
         $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
-    public function testGetOne()
+    public function testGetOne(): void
     {
         $this->client->get('/api/beneficiaries/1');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData(self::data(1, Beneficiary::SERIALIZE_DETAILS));
     }
 
-    public function testCreateWithoutData()
+    public function testCreateWithoutData(): void
     {
         $this->client->post('/api/beneficiaries');
         $this->assertStatusCode(StatusCode::STATUS_BAD_REQUEST);
         $this->assertApiErrorMessage("No data was provided.");
     }
 
-    public function testCreateBadData()
+    public function testCreateBadData(): void
     {
         $this->client->post('/api/beneficiaries', [
             'foo' => 'bar',
@@ -208,7 +208,7 @@ final class BeneficiariesTest extends ApiTestCase
         ]);
     }
 
-    public function testCreate()
+    public function testCreate(): void
     {
         $this->client->post('/api/beneficiaries', [
             'first_name' => 'José',
@@ -274,7 +274,7 @@ final class BeneficiariesTest extends ApiTestCase
         ]);
     }
 
-    public function testUpdate()
+    public function testUpdate(): void
     {
         $this->client->put('/api/beneficiaries/1', [
             'first_name' => 'José',
@@ -307,7 +307,7 @@ final class BeneficiariesTest extends ApiTestCase
         ));
     }
 
-    public function testDeleteAndDestroy()
+    public function testDeleteAndDestroy(): void
     {
         // - First call: soft delete.
         $this->client->delete('/api/beneficiaries/2');
@@ -322,13 +322,13 @@ final class BeneficiariesTest extends ApiTestCase
         $this->assertNull(Beneficiary::withTrashed()->find(2));
     }
 
-    public function testRestoreNotFound()
+    public function testRestoreNotFound(): void
     {
         $this->client->put('/api/beneficiaries/restore/999');
         $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
-    public function testRestore()
+    public function testRestore(): void
     {
         // - First, delete person #2
         $this->client->delete('/api/beneficiaries/2');

@@ -271,7 +271,7 @@ export default {
                 }
 
                 // eslint-disable-next-line no-console
-                console.error(`Error ocurred while retrieving technicians:`, error);
+                console.error(`Error occurred while retrieving technicians:`, error);
                 this.hasCriticalError = true;
             } finally {
                 this.isLoading = false;

@@ -33,7 +33,7 @@ final class SubCategoriesTest extends ApiTestCase
         ]);
     }
 
-    public function testCreateSubCategoryNoCategoryId()
+    public function testCreateSubCategoryNoCategoryId(): void
     {
         $this->client->post('/api/subcategories', ['name' => 'Fail SubCategory']);
         $this->assertApiValidationError([
@@ -41,7 +41,7 @@ final class SubCategoriesTest extends ApiTestCase
         ]);
     }
 
-    public function testCreateSubCategory()
+    public function testCreateSubCategory(): void
     {
         $this->client->post('/api/subcategories', [
             'name' => 'New SubCategory',
@@ -55,14 +55,14 @@ final class SubCategoriesTest extends ApiTestCase
         ]);
     }
 
-    public function testUpdateSubCategoryNoData()
+    public function testUpdateSubCategoryNoData(): void
     {
         $this->client->put('/api/subcategories/1', []);
         $this->assertStatusCode(StatusCode::STATUS_BAD_REQUEST);
         $this->assertApiErrorMessage("No data was provided.");
     }
 
-    public function testUpdateSubCategoryNotFound()
+    public function testUpdateSubCategoryNotFound(): void
     {
         $this->client->put('/api/subcategories/999', [
             'something' => '__inexistant__',
@@ -70,7 +70,7 @@ final class SubCategoriesTest extends ApiTestCase
         $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
-    public function testUpdateSubCategory()
+    public function testUpdateSubCategory(): void
     {
         $updatedData = [
             'name' => 'Mixers edited',
@@ -82,7 +82,7 @@ final class SubCategoriesTest extends ApiTestCase
         );
     }
 
-    public function testDeleteSubCategory()
+    public function testDeleteSubCategory(): void
     {
         $this->client->delete('/api/subcategories/3');
         $this->assertStatusCode(StatusCode::STATUS_NO_CONTENT);

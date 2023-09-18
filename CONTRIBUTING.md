@@ -275,10 +275,9 @@ composer lint
     │   ├── locales              # - Fichiers de traduction de la partie serveur dans les différentes langues supportées.
     │   ├── migrations           # - Fichiers de migration de la base de données (générés via `composer create-migration [MigrationName]`)
     │   ├── public
-    │   │   ├── css/, js/, img/  # - Dossiers contenant des fichiers d'asset utilisés spécifiquement dans les vues de la partie serveur.
-    │   │   ├── fonts/           # - Fichiers de polices de caractère et leur définitions, utilisées dans les PDF générés côté serveur.
     │   │   ├── icons/           # - Images d'icônes et favicon de l'application.
-    │   │   ├── webclient        # - Lien symbolique vers les sources compilées de la partie `/client` de Robert2.
+    │   │   ├── install/         # - Dossiers contenant des fichiers d'asset utilisés spécifiquement dans les vues du wizard d'installation.
+    │   │   ├── webclient/       # - Lien symbolique vers les sources compilées de la partie `/client` de Robert2.
     │   │   └── index.php        # - Point d'entrée de l'application (tous les `.htaccess` redirigent vers ce fichier).
     │   ├── var
     │   │   ├── cache            # - Fichiers de cache (contenu à supprimer en cas de modification du code qui semble sans effet)

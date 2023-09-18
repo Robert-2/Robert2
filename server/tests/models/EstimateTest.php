@@ -14,7 +14,7 @@ use Loxya\Support\Pdf;
 
 final class EstimateTest extends TestCase
 {
-    public function testValidation()
+    public function testValidation(): void
     {
         $estimate = new Estimate([
             'date' => '',
@@ -57,7 +57,7 @@ final class EstimateTest extends TestCase
         $this->assertEquals($expectedErrors, $errors);
     }
 
-    public function testCreateFromEvent()
+    public function testCreateFromEvent(): void
     {
         Carbon::setTestNow(Carbon::create(2022, 10, 22, 18, 42, 36));
 
@@ -132,7 +132,7 @@ final class EstimateTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    public function testToPdf()
+    public function testToPdf(): void
     {
         Carbon::setTestNow(Carbon::create(2022, 10, 22, 18, 42, 36));
 

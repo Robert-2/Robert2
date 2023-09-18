@@ -11,7 +11,7 @@ final class AttributeCategoryObserver
 {
     public $afterCommit = true;
 
-    public function created(AttributeCategory $attributeCategory)
+    public function created(AttributeCategory $attributeCategory): void
     {
         $attribute = Attribute::find($attributeCategory->attribute_id);
         $attributeCategoriesIds = $attribute->categories->pluck('id')->all();
@@ -43,7 +43,7 @@ final class AttributeCategoryObserver
         }
     }
 
-    public function deleted(AttributeCategory $attributeCategory)
+    public function deleted(AttributeCategory $attributeCategory): void
     {
         $categoryId = $attributeCategory->category_id;
         $attributeId = $attributeCategory->attribute_id;

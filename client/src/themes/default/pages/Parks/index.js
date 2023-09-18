@@ -229,7 +229,7 @@ export default {
                 }
 
                 // eslint-disable-next-line no-console
-                console.error(`Error ocurred while retrieving parks:`, error);
+                console.error(`Error occurred while retrieving parks:`, error);
             } finally {
                 this.isLoading = false;
             }

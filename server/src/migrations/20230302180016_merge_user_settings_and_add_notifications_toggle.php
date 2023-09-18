@@ -23,8 +23,8 @@ final class MergeUserSettingsAndAddNotificationsToggle extends AbstractMigration
             ])
             ->update();
 
-        $prefix = Config::getSettings('db')['prefix'];
-        $defaultLanguage = Config::getSettings('defaultLang');
+        $prefix = Config::get('db.prefix');
+        $defaultLanguage = Config::get('defaultLang');
         $users = $this->fetchAll(sprintf('SELECT * FROM `%susers`', $prefix));
 
         foreach (array_column($users, 'id') as $userId) {
@@ -70,8 +70,8 @@ final class MergeUserSettingsAndAddNotificationsToggle extends AbstractMigration
             ])
             ->create();
 
-        $prefix = Config::getSettings('db')['prefix'];
-        $defaultLanguage = Config::getSettings('defaultLang');
+        $prefix = Config::get('db.prefix');
+        $defaultLanguage = Config::get('defaultLang');
         $now = date('Y-m-d H:i:s');
         $users = $this->fetchAll(sprintf('SELECT * FROM `%susers`', $prefix));
 

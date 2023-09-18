@@ -30,7 +30,7 @@ final class ChangeReturnQuantityColumnOfEventMaterials extends AbstractMigration
             ])
             ->update();
 
-        $prefix = Config::getSettings('db')['prefix'];
+        $prefix = Config::get('db.prefix');
 
         $this->getQueryBuilder()
             ->update(sprintf('%sevent_materials', $prefix))
@@ -53,7 +53,7 @@ final class ChangeReturnQuantityColumnOfEventMaterials extends AbstractMigration
 
     public function down(): void
     {
-        $prefix = Config::getSettings('db')['prefix'];
+        $prefix = Config::get('db.prefix');
 
         $this->getQueryBuilder()
             ->update(sprintf('%sevent_materials', $prefix))

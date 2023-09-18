@@ -1,8 +1,4 @@
 no-document: Aucun document pour le moment.
-drag-and-drop-files-here: Glissez-déposez dans cette zone pour ajouter de nouveaux fichiers.
-max-size: "Taille maximum\_: {size}"
-choose-files: Ou cliquez ici pour choisir des fichiers à ajouter
-send-files: ['Envoyer le fichier', 'Envoyer {count} fichiers']
 
 upload-in-queue: "Dans la file d'attente..."
 upload-in-progress: "Envoi en cours...\_{progress}%"

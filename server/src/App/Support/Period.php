@@ -3,13 +3,13 @@ declare(strict_types=1);
 
 namespace Loxya\Support;
 
-use Carbon\Carbon;
-use Carbon\CarbonPeriod;
+use Carbon\CarbonImmutable;
+use Carbon\CarbonPeriodImmutable;
 use Loxya\Contracts\PeriodInterface;
 
 final class Period implements PeriodInterface
 {
-    private CarbonPeriod $rawPeriod;
+    private CarbonPeriodImmutable $rawPeriod;
 
     public function __construct($start, $end = null)
     {
@@ -22,15 +22,15 @@ final class Period implements PeriodInterface
             throw new \InvalidArgumentException('Missing end for the period.');
         }
 
-        $this->rawPeriod = new CarbonPeriod($start, $end);
+        $this->rawPeriod = new CarbonPeriodImmutable($start, $end);
     }
 
-    public function getStartDate(): Carbon
+    public function getStartDate(): CarbonImmutable
     {
         return $this->rawPeriod->getStartDate();
     }
 
-    public function getEndDate(): Carbon
+    public function getEndDate(): CarbonImmutable
     {
         return $this->rawPeriod->getEndDate();
     }

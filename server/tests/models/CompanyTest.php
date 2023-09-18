@@ -17,10 +17,25 @@ final class CompanyTest extends TestCase
 
     public function testCreateCompanyNormalizePhone(): void
     {
+        // - Test 1 : Sans préfixe.
         $resultCompany = Company::new([
             'legal_name' => 'Test Company',
-            'phone' => '+00336 25 25 21 25',
+            'phone' => '06 25 25 21 25',
         ]);
-        $this->assertEquals('+0033625252125', $resultCompany->phone);
+        $this->assertEquals('0625252125', $resultCompany->phone);
+
+        // - Test 2 : Avec préfixe `00`.
+        $resultCompany = Company::new([
+            'legal_name' => 'Test Company 2',
+            'phone' => '00336 25 25 21 25',
+        ]);
+        $this->assertEquals('0033625252125', $resultCompany->phone);
+
+        // - Test 3 : Avec préfixe `+`.
+        $resultCompany = Company::new([
+            'legal_name' => 'Test Company 3',
+            'phone' => '+336 25 25 21 25',
+        ]);
+        $this->assertEquals('+33625252125', $resultCompany->phone);
     }
 }

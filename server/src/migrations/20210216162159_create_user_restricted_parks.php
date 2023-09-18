@@ -5,7 +5,7 @@ use Phinx\Migration\AbstractMigration;
 
 final class CreateUserRestrictedParks extends AbstractMigration
 {
-    public function up()
+    public function up(): void
     {
         $table = $this->table('user_restricted_parks', ['signed' => true]);
         $table
@@ -30,7 +30,7 @@ final class CreateUserRestrictedParks extends AbstractMigration
             ->create();
     }
 
-    public function down()
+    public function down(): void
     {
         $this->table('user_restricted_parks')->drop()->save();
     }

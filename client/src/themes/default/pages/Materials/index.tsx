@@ -492,7 +492,7 @@ const Materials = defineComponent({
                 }
 
                 // eslint-disable-next-line no-console
-                console.error(`Error ocurred while retrieving materials:`, error);
+                console.error(`Error occurred while retrieving materials:`, error);
                 this.hasCriticalError = true;
             } finally {
                 this.isLoading = false;

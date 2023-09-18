@@ -5,7 +5,7 @@ use Phinx\Migration\AbstractMigration;
 
 final class CreateListTemplates extends AbstractMigration
 {
-    public function up()
+    public function up(): void
     {
         $table = $this->table('list_templates', ['signed' => true]);
         $table
@@ -59,7 +59,7 @@ final class CreateListTemplates extends AbstractMigration
             ->create();
     }
 
-    public function down()
+    public function down(): void
     {
         $this->table('list_template_material_units')->drop()->save();
         $this->table('list_template_materials')->drop()->save();

@@ -9,7 +9,7 @@ final class TechnicianObserver
 {
     public $afterCommit = true;
 
-    public function deleted(Technician $technician)
+    public function deleted(Technician $technician): void
     {
         //
         // - Suppression de la Person associée au technicien si elle n'est

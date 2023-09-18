@@ -5,7 +5,7 @@ use Phinx\Migration\AbstractMigration;
 
 final class AddParkIdInMaterialUnit extends AbstractMigration
 {
-    public function up()
+    public function up(): void
     {
         $material_units = $this->table('material_units');
         $material_units
@@ -22,7 +22,7 @@ final class AddParkIdInMaterialUnit extends AbstractMigration
             ->save();
     }
 
-    public function down()
+    public function down(): void
     {
         $material_units = $this->table('material_units');
         $material_units->dropForeignKey('park_id')->update();

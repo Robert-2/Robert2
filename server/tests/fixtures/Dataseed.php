@@ -45,7 +45,7 @@ final class Dataseed
         $this->dataseedQuery .= sprintf("%s;\n", trim($tableQuery, ','));
     }
 
-    public function getFinalQuery()
+    public function getFinalQuery(): string
     {
         $query  = "SET FOREIGN_KEY_CHECKS=0;\n\n";
         $query .= $this->dataseedQuery . "\n";
@@ -80,7 +80,7 @@ final class Dataseed
         return static::$cachedData[$table] = $seedData;
     }
 
-    private function _formatValue($value)
+    private function _formatValue($value): string
     {
         if ($value === null) {
             $value = "NULL";

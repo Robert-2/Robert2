@@ -7,7 +7,7 @@ use Fig\Http\Message\StatusCodeInterface as StatusCode;
 
 final class MainEntryPointTest extends ApiTestCase
 {
-    public function testMainEntryPoint()
+    public function testMainEntryPoint(): void
     {
         $response = (string) $this->client->get('/');
         $this->assertStatusCode(StatusCode::STATUS_OK);

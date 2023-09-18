@@ -4,7 +4,7 @@ import Queue from 'p-queue';
 import { defineComponent } from '@vue/composition-api';
 import { FileError, getFileError } from './_utils';
 import uniqueId from 'lodash/uniqueId';
-import DropZone from './DropZone';
+import DropZone from '@/themes/default/components/DropZone';
 import UploadItem from './Upload';
 
 import type { ProgressCallback } from 'axios';

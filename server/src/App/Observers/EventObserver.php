@@ -9,7 +9,7 @@ final class EventObserver
 {
     public $afterCommit = true;
 
-    public function created(Event $event)
+    public function created(Event $event): void
     {
         debug("[Event] Événement #%s ajouté.", $event->id);
 
@@ -33,21 +33,21 @@ final class EventObserver
         }
     }
 
-    public function updated(Event $event)
+    public function updated(Event $event): void
     {
         debug("[Event] Événement #%s modifié.", $event->id);
 
         $this->onUpdateSyncCache($event);
     }
 
-    public function restored(Event $event)
+    public function restored(Event $event): void
     {
         debug("[Event] Événement #%s restauré.", $event->id);
 
         $this->onRestoreSyncCache($event);
     }
 
-    public function deleting(Event $event)
+    public function deleting(Event $event): void
     {
         if ($event->isForceDeleting()) {
             debug("[Event] Événement #%s supprimé définitivement.", $event->id);
@@ -76,7 +76,7 @@ final class EventObserver
         }
     }
 
-    public function deleted(Event $event)
+    public function deleted(Event $event): void
     {
         //
         // - Supprime les factures et devis liés.

@@ -4,39 +4,69 @@ declare(strict_types=1);
 namespace Loxya\Controllers;
 
 use DI\Container;
+use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Loxya\Config\Config;
 use Loxya\Http\Request;
+use Loxya\Models\Event;
+use Loxya\Models\Material;
 use Loxya\Services\Auth;
+use Loxya\Services\I18n;
 use Loxya\Services\View;
+use Odan\Session\FlashInterface;
+use Psr\Http\Message\ResponseInterface;
+use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
 
 class EntryController extends BaseController
 {
+    private I18n $i18n;
+
     private View $view;
+
+    private FlashInterface $flash;
 
     private Auth $auth;
 
-    private array $settings;
-
-    public function __construct(Container $container, View $view, Auth $auth)
-    {
+    public function __construct(
+        Container $container,
+        I18n $i18n,
+        View $view,
+        FlashInterface $flash,
+        Auth $auth,
+    ) {
         parent::__construct($container);
 
         $this->view = $view;
+        $this->flash = $flash;
+        $this->i18n = $i18n;
         $this->auth = $auth;
-        $this->settings = $container->get('settings');
     }
 
-    public function default(Request $request, Response $response)
+    public function default(Request $request, Response $response): ResponseInterface
     {
         if (!Config::customConfigExists()) {
             return $response->withRedirect('/install', 302); // - 302 Redirect.
         }
 
-        $user = Auth::user();
+        return $this->view->render($response, 'entries/default.twig', [
+            'serverConfig' => $this->getServerConfig(),
+            'flashMessages' => $this->getFlashMessages(),
+        ]);
+    }
 
-        $serverConfig = $this->getServerConfig();
-        return $this->view->render($response, 'entries/default.twig', \compact('serverConfig'));
+    public function healthcheck(Request $request, Response $response): ResponseInterface
+    {
+        $enabled = Config::get('healthcheck', false);
+        if (!$enabled) {
+            throw new HttpNotFoundException($request, "Health check not enabled.");
+        }
+
+        $lastUpdate = max([
+            Material::orderBy('updated_at', 'DESC')->first()->updated_at,
+            Event::orderBy('updated_at', 'DESC')->first()->updated_at,
+        ]);
+
+        return $response->withJson(['last_update' => $lastUpdate->format('Y-m-d H:i:s')], StatusCode::STATUS_OK);
     }
 
     // ------------------------------------------------------
@@ -45,15 +75,18 @@ class EntryController extends BaseController
     // -
     // ------------------------------------------------------
 
-    protected function getServerConfig(): array
+    private function getServerConfig(): array
     {
-        $rawConfig = $this->settings;
-        $baseUrl = rtrim($rawConfig['apiUrl'], '/');
+        $rawConfig = Config::get();
+
+        // - Uris
+        $baseUri = Config::getBaseUri();
+        $apiUri = $baseUri->withPath('/api');
 
         return [
-            'baseUrl' => $baseUrl,
+            'baseUrl' => (string) $baseUri,
             'api' => [
-                'url' => $baseUrl . '/api',
+                'url' => (string) $apiUri,
                 'headers' => $rawConfig['apiHeaders'],
                 'version' => Config::getVersion(),
             ],
@@ -71,5 +104,18 @@ class EntryController extends BaseController
             'authorizedFileTypes' => $rawConfig['authorizedFileTypes'],
             'authorizedImageTypes' => $rawConfig['authorizedImageTypes'],
         ];
+    }
+
+    private function getFlashMessages(): array
+    {
+        $messages = [];
+        $rawMessageTypes = $this->flash->all();
+        foreach ($rawMessageTypes as $type => $rawMessages) {
+            foreach ($rawMessages as $rawMessage) {
+                $message = $this->i18n->translate(sprintf('flash.%s', $rawMessage));
+                $messages[] = compact('type', 'message');
+            }
+        }
+        return $messages;
     }
 }

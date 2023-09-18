@@ -7,6 +7,7 @@ use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Loxya\Controllers\Traits\WithModel;
 use Loxya\Errors\Exception\ValidationException;
 use Loxya\Http\Request;
+use Psr\Http\Message\ResponseInterface;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Http\Response;
 
@@ -14,7 +15,7 @@ trait Create
 {
     use WithModel;
 
-    public function create(Request $request, Response $response): Response
+    public function create(Request $request, Response $response): ResponseInterface
     {
         $postData = (array) $request->getParsedBody();
         if (empty($postData)) {

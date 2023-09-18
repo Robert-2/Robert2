@@ -5,18 +5,24 @@ namespace Loxya\Middlewares;
 
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Loxya\Config;
-use Loxya\Http\Request;
 use Loxya\Models\User;
 use Loxya\Services\Auth;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
 use Slim\Exception\HttpForbiddenException;
 use Slim\Exception\HttpUnauthorizedException;
 use Slim\Interfaces\RouteInterface;
 use Slim\Routing\RouteContext;
 
-class Acl
+final class Acl implements MiddlewareInterface
 {
-    public function __invoke(Request $request, RequestHandler $handler)
+    public function process(ServerRequestInterface $request, RequestHandler $handler): ResponseInterface
     {
+        if (!($request instanceof \Loxya\Http\Request)) {
+            throw new \InvalidArgumentException('Not a Loxya request.');
+        }
+
         if ($request->isOptions()) {
             return $handler->handle($request);
         }

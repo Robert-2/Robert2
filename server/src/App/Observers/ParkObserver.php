@@ -9,7 +9,7 @@ final class ParkObserver
 {
     public $afterCommit = true;
 
-    public function deleting(Park $park)
+    public function deleting(Park $park): void
     {
         $isSoftDeleting = !$park->isForceDeleting();
         if (!$isSoftDeleting) {

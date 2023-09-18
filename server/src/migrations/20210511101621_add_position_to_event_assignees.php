@@ -5,7 +5,7 @@ use Phinx\Migration\AbstractMigration;
 
 final class AddPositionToEventAssignees extends AbstractMigration
 {
-    public function up()
+    public function up(): void
     {
         $table = $this->table('event_assignees');
         $table
@@ -13,7 +13,7 @@ final class AddPositionToEventAssignees extends AbstractMigration
             ->save();
     }
 
-    public function down()
+    public function down(): void
     {
         $table = $this->table('event_assignees');
         $table

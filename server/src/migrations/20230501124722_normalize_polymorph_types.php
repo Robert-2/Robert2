@@ -8,7 +8,7 @@ final class NormalizePolymorphTypes extends AbstractMigration
 {
     public function up(): void
     {
-        $prefix = Config::getSettings('db')['prefix'];
+        $prefix = Config::get('db.prefix');
         $this->getQueryBuilder()
             ->update(sprintf('%staggables', $prefix))
             ->set(['taggable_type' => 'material'])
@@ -18,7 +18,7 @@ final class NormalizePolymorphTypes extends AbstractMigration
 
     public function down(): void
     {
-        $prefix = Config::getSettings('db')['prefix'];
+        $prefix = Config::get('db.prefix');
         $this->getQueryBuilder()
             ->update(sprintf('%staggables', $prefix))
             ->set(['taggable_type' => 'Robert2\\API\\Models\\Material'])

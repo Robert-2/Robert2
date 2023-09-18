@@ -11,17 +11,17 @@ final class EventMaterialObserver
 {
     public $afterCommit = true;
 
-    public function created(EventMaterial $eventMaterial)
+    public function created(EventMaterial $eventMaterial): void
     {
         $this->syncCache($eventMaterial);
     }
 
-    public function updated(EventMaterial $eventMaterial)
+    public function updated(EventMaterial $eventMaterial): void
     {
         $this->syncCache($eventMaterial);
     }
 
-    public function deleting(EventMaterial $eventMaterial)
+    public function deleting(EventMaterial $eventMaterial): void
     {
         $this->syncCache($eventMaterial);
     }

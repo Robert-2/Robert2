@@ -99,7 +99,7 @@ export default {
             } catch (error) {
                 if (!axios.isAxiosError(error)) {
                     // eslint-disable-next-line no-console
-                    console.error(`Error ocurred while retrieving beneficiary #${this.id} data`, error);
+                    console.error(`Error occurred while retrieving beneficiary #${this.id} data`, error);
                     this.criticalError = ERROR.UNKNOWN;
                 } else {
                     const { status = HttpCode.ServerErrorInternal } = error.response ?? {};

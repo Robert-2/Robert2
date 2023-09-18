@@ -20,7 +20,7 @@ final class Kernel
 
     protected Container $container;
 
-    public static function boot()
+    public static function boot(): static
     {
         if (!is_null(static::$instance)) {
             return static::$instance;
@@ -28,7 +28,7 @@ final class Kernel
         return static::$instance = new static;
     }
 
-    public static function get()
+    public static function get(): static
     {
         if (is_null(static::$instance)) {
             throw new \LogicException("Tentative de récupération du kernel avant le boot de celui-ci.");
@@ -36,7 +36,7 @@ final class Kernel
         return static::$instance;
     }
 
-    public static function reset()
+    public static function reset(): void
     {
         static::$instance = new static;
     }
@@ -70,18 +70,9 @@ final class Kernel
 
     protected function initializeContainer(): void
     {
-        $builder = new ContainerBuilder();
-
-        $builder->addDefinitions(CONFIG_FOLDER . DS . 'definitions.php');
-
-        $container = $builder->build();
-
-        //
-        // - Settings
-        //
-
-        $container->set('settings', Config::getSettings());
-        $this->container = $container;
+        $this->container = (new ContainerBuilder())
+            ->addDefinitions(CONFIG_FOLDER . DS . 'definitions.php')
+            ->build();
     }
 
     protected function initializeValidator(): void

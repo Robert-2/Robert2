@@ -6,16 +6,11 @@
     </p>
     <form method="POST" class="form">
         <section class="form__field">
-            <h3 class="form__field-title">API URL</h3>
+            <h3 class="form__field-title">Application URL</h3>
             <p class="form__field-description">
                 This is the base URL of the application, that you'll use everyday.
             </p>
-            <input
-                type="text"
-                name="apiUrl"
-                size="10"
-                value="{{config['apiUrl']}}"
-            />
+            <input type="text" name="baseUrl" size="10" value="{{config['baseUrl']}}" />
         </section>
         <p>
             <a onclick="showHiddenFieldset()" id="show-fieldset" class="form__fieldset-toggle">
@@ -102,32 +97,6 @@
             </section>
             <section class="form__field">
                 <h3 class="form__field-title">
-                    Use HTTPS
-                </h3>
-                <p class="form__field-description">
-                    Wether to use HTTPS protocol or not.
-                </p>
-                <div class="form__radio">
-                    <input
-                        type="radio"
-                        id="useHttpsYes"
-                        name="useHTTPS"
-                        value="1"
-                        {% if config['useHTTPS'] %} checked="checked" {% endif %}
-                    />
-                    <label for="useHttpsYes">Yes</label>
-                    <input
-                        type="radio"
-                        id="useHttpsNo"
-                        name="useHTTPS"
-                        value="0"
-                        {% if not config['useHTTPS'] %} checked {% endif %}
-                    />
-                    <label for="useHttpsNo">No</label>
-                </div>
-            </section>
-            <section class="form__field">
-                <h3 class="form__field-title">
                     Sessions duration
                 </h3>
                 <p class="form__field-description">
@@ -185,4 +154,4 @@
     </form>
 </div>
 
-<script src="js/install/fieldsetToggle.js"></script>
+<script src="{{ asset('/install/js/fieldsetToggle.js') }}"></script>

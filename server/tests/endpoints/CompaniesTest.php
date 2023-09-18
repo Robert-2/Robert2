@@ -38,7 +38,7 @@ final class CompaniesTest extends ApiTestCase
         ]);
     }
 
-    public function testGetCompanies()
+    public function testGetCompanies(): void
     {
         $this->client->get('/api/companies');
         $this->assertStatusCode(StatusCode::STATUS_OK);
@@ -52,13 +52,13 @@ final class CompaniesTest extends ApiTestCase
         $this->assertResponsePaginatedData(0);
     }
 
-    public function testGetCompanyNotFound()
+    public function testGetCompanyNotFound(): void
     {
         $this->client->get('/api/companies/999');
         $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
-    public function testGetCompany()
+    public function testGetCompany(): void
     {
         $this->client->get('/api/companies/1');
         $this->assertStatusCode(StatusCode::STATUS_OK);
@@ -76,7 +76,7 @@ final class CompaniesTest extends ApiTestCase
         ]);
     }
 
-    public function testGetCompanySearchByLegalName()
+    public function testGetCompanySearchByLegalName(): void
     {
         $this->client->get('/api/companies?search=testin');
         $this->assertStatusCode(StatusCode::STATUS_OK);
@@ -103,14 +103,14 @@ final class CompaniesTest extends ApiTestCase
         ]);
     }
 
-    public function testCreateCompanyWithoutData()
+    public function testCreateCompanyWithoutData(): void
     {
         $this->client->post('/api/companies');
         $this->assertStatusCode(StatusCode::STATUS_BAD_REQUEST);
         $this->assertApiErrorMessage("No data was provided.");
     }
 
-    public function testCreateCompanyBadData()
+    public function testCreateCompanyBadData(): void
     {
         $this->client->post('/api/companies', ['foo' => 'bar']);
         $this->assertApiValidationError([
@@ -118,7 +118,7 @@ final class CompaniesTest extends ApiTestCase
         ]);
     }
 
-    public function testCreateCompanyDuplicate()
+    public function testCreateCompanyDuplicate(): void
     {
         $this->client->post('/api/companies', [
             'id' => null,
@@ -127,7 +127,7 @@ final class CompaniesTest extends ApiTestCase
         $this->assertApiValidationError();
     }
 
-    public function testCreateCompany()
+    public function testCreateCompany(): void
     {
         $data = [
             'legal_name' => 'test company',
@@ -153,7 +153,7 @@ final class CompaniesTest extends ApiTestCase
         ]);
     }
 
-    public function testDeleteAndDestroyCompany()
+    public function testDeleteAndDestroyCompany(): void
     {
         // - First call: soft delete.
         $this->client->delete('/api/companies/2');
@@ -168,13 +168,13 @@ final class CompaniesTest extends ApiTestCase
         $this->assertNull(Company::withTrashed()->find(2));
     }
 
-    public function testRestoreCompanyNotFound()
+    public function testRestoreCompanyNotFound(): void
     {
         $this->client->put('/api/companies/restore/999');
         $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
-    public function testRestoreCompany()
+    public function testRestoreCompany(): void
     {
         // - First, delete company #2
         $this->client->delete('/api/companies/2');

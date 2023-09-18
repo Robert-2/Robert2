@@ -51,7 +51,7 @@ final class ParksTest extends ApiTestCase
         return static::_dataFactory($id, $attributes->all());
     }
 
-    public function testGetAll()
+    public function testGetAll(): void
     {
         $this->client->get('/api/parks');
         $this->assertStatusCode(StatusCode::STATUS_OK);
@@ -65,7 +65,7 @@ final class ParksTest extends ApiTestCase
         $this->assertResponsePaginatedData(0);
     }
 
-    public function testGetList()
+    public function testGetList(): void
     {
         $this->client->get('/api/parks/list');
         $this->assertStatusCode(StatusCode::STATUS_OK);
@@ -76,20 +76,20 @@ final class ParksTest extends ApiTestCase
         );
     }
 
-    public function testGetOneNotFound()
+    public function testGetOneNotFound(): void
     {
         $this->client->get('/api/parks/999');
         $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
-    public function testGetOne()
+    public function testGetOne(): void
     {
         $this->client->get('/api/parks/1');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData(self::data(1, true));
     }
 
-    public function testGetOneMaterials()
+    public function testGetOneMaterials(): void
     {
         $this->client->get('/api/parks/2/materials');
         $this->assertStatusCode(StatusCode::STATUS_OK);
@@ -98,13 +98,13 @@ final class ParksTest extends ApiTestCase
         ]);
     }
 
-    public function testGetOneTotalAmountNotFound()
+    public function testGetOneTotalAmountNotFound(): void
     {
         $this->client->get('/api/parks/999/total-amount');
         $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
-    public function testGetOneTotalAmount()
+    public function testGetOneTotalAmount(): void
     {
         $this->client->get('/api/parks/1/total-amount');
         $this->assertStatusCode(StatusCode::STATUS_OK);
@@ -114,7 +114,7 @@ final class ParksTest extends ApiTestCase
         ]);
     }
 
-    public function testCreate()
+    public function testCreate(): void
     {
         $this->client->post('/api/parks', [
             'name' => 'Un nouveau parc',
@@ -135,7 +135,7 @@ final class ParksTest extends ApiTestCase
         ]);
     }
 
-    public function testUpdate()
+    public function testUpdate(): void
     {
         $this->client->put('/api/parks/1', [
             'name' => 'Mon parc',

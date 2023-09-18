@@ -62,8 +62,6 @@ trait Cache
 
     /**
      * @param string|array|null $scopes
-     *
-     * @return bool
      */
     public function invalidateCache($scopes = null): bool
     {

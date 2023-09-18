@@ -5,7 +5,7 @@ use Phinx\Migration\AbstractMigration;
 
 final class CreateUnitsTables extends AbstractMigration
 {
-    public function up()
+    public function up(): void
     {
         $table = $this->table('materials');
         $table
@@ -53,7 +53,7 @@ final class CreateUnitsTables extends AbstractMigration
             ->create();
     }
 
-    public function down()
+    public function down(): void
     {
         $park = $this->fetchRow('SELECT id FROM parks ORDER BY id LIMIT 1');
         if ($park) {

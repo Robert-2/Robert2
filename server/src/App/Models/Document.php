@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Loxya\Models;
 
 use Adbar\Dot as DotArray;
+use Carbon\CarbonImmutable;
 use Monolog\Logger;
 use Psr\Http\Message\UploadedFileInterface;
 use Loxya\Config\Config;
@@ -29,7 +30,7 @@ use Loxya\Support\Str;
  * @property-read string $path
  * @property int|null $author_id
  * @property-read User|null $author
- * @property-read Carbon $created_at
+ * @property-read CarbonImmutable $created_at
  */
 final class Document extends BaseModel implements Serializable
 {
@@ -44,10 +45,6 @@ final class Document extends BaseModel implements Serializable
     public const UPDATED_AT = null;
 
     public $table = 'documents';
-
-    protected $dates = [
-        'created_at',
-    ];
 
     public function __construct(array $attributes = [])
     {
@@ -112,13 +109,12 @@ final class Document extends BaseModel implements Serializable
             return 'upload-failed';
         }
 
-        $settings = container('settings');
-        if ($file->getSize() > $settings['maxFileUploadSize']) {
+        if ($file->getSize() > Config::get('maxFileUploadSize')) {
             return 'file-exceeds-max-size';
         }
 
         $fileType = $file->getClientMediaType();
-        if (!in_array($fileType, $settings['authorizedFileTypes'], true)) {
+        if (!in_array($fileType, Config::get('authorizedFileTypes'), true)) {
             return 'file-type-not-allowed';
         }
 
@@ -193,6 +189,7 @@ final class Document extends BaseModel implements Serializable
         'type' => 'string',
         'size' => 'integer',
         'author_id' => 'integer',
+        'created_at' => 'immutable_datetime',
     ];
 
     public function getNameAttribute($value)
@@ -260,8 +257,8 @@ final class Document extends BaseModel implements Serializable
             return null;
         }
 
-        $baseUrl = rtrim(Config::getSettings('apiUrl'), '/');
-        return sprintf('%s/documents/%s', $baseUrl, $this->id);
+        return (string) Config::getBaseUri()
+            ->withPath(sprintf('/documents/%s', $this->id));
     }
 
     public function getBasePathAttribute(): string

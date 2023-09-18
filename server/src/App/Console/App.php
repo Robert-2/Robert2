@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Loxya\Console;
 
+use DI\Container;
 use Loxya\Config\Config;
 use Loxya\Kernel;
 use Symfony\Component\Console\Application as BaseApplication;
@@ -16,7 +17,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class App extends BaseApplication
 {
-    private $container;
+    private Container $container;
 
     private $commandsRegistered = false;
     private $registrationErrors = [];
@@ -34,9 +35,7 @@ class App extends BaseApplication
     }
 
     /**
-     * Runs the current application.
-     *
-     * @return int 0 if everything went fine, or an error code
+     * {@inheritdoc}
      */
     public function doRun(InputInterface $input, OutputInterface $output)
     {
@@ -113,7 +112,7 @@ class App extends BaseApplication
         return parent::add($command);
     }
 
-    protected function registerCommands()
+    protected function registerCommands(): void
     {
         if ($this->commandsRegistered) {
             return;
@@ -131,7 +130,7 @@ class App extends BaseApplication
         }
     }
 
-    private function renderRegistrationErrors(InputInterface $input, OutputInterface $output)
+    private function renderRegistrationErrors(InputInterface $input, OutputInterface $output): void
     {
         if ($output instanceof ConsoleOutputInterface) {
             $output = $output->getErrorOutput();

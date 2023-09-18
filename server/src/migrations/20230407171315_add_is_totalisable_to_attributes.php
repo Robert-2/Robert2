@@ -17,7 +17,7 @@ final class AddIsTotalisableToAttributes extends AbstractMigration
             ])
             ->update();
 
-        $prefix = Config::getSettings('db')['prefix'];
+        $prefix = Config::get('db.prefix');
 
         $this->getQueryBuilder()
             ->update(sprintf('%sattributes', $prefix))

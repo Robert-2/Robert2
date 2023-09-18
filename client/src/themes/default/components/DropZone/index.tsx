@@ -5,19 +5,53 @@ import formatBytes from '@/utils/formatBytes';
 import Button from '@/themes/default/components/Button';
 import Icon from '@/themes/default/components/Icon';
 
+import type { PropType } from '@vue/composition-api';
+
+type Props = {
+    /**
+     * Est-ce que la drop-zone doit prendre en charge plusieurs fichiers ?
+     *
+     * @default true
+     */
+    multiple?: boolean,
+
+    /**
+     * Le(s) type(s) MIME de fichiers acceptés. Si plusieurs, utiliser un array.
+     * Par défaut, il s'agit les types spécifiés dans la configuration globale.
+     */
+    accept?: string | string[],
+};
+
 type Data = {
     isDragging: boolean,
+    errors: string[],
 };
 
 // @vue/component
-const FileManagerDropZone = defineComponent({
-    name: 'FileManagerDropZone',
+const DropZone = defineComponent({
+    name: 'DropZone',
+    props: {
+        multiple: {
+            type: Boolean as PropType<Required<Props>['multiple']>,
+            default: true,
+        },
+        accept: {
+            type: [String, Array] as PropType<Required<Props>['accept']>,
+            default: () => config.authorizedFileTypes,
+        },
+    },
     emits: ['input', 'dragStart', 'dragStop'],
     data: (): Data => ({
         isDragging: false,
+        errors: [],
     }),
     computed: {
         maxSize: () => formatBytes(config.maxFileUploadSize),
+
+        acceptTypes() {
+            const { accept } = this;
+            return Array.isArray(accept) ? accept : [accept];
+        },
     },
     mounted() {
         // - Binding.
@@ -67,7 +101,8 @@ const FileManagerDropZone = defineComponent({
                 return;
             }
 
-            this.$emit('input', files);
+            const { multiple } = this;
+            this.$emit('input', multiple ? files : files[0]);
         },
 
         handleClickOpenFileBrowser(e: Event) {
@@ -87,7 +122,8 @@ const FileManagerDropZone = defineComponent({
                 return;
             }
 
-            this.$emit('input', files);
+            const { multiple } = this;
+            this.$emit('input', multiple ? files : files[0]);
         },
 
         // ------------------------------------------------------
@@ -98,7 +134,7 @@ const FileManagerDropZone = defineComponent({
 
         __(key: string, params?: Record<string, number | string>, count?: number): string {
             key = !key.startsWith('global.')
-                ? `components.FileManager.${key}`
+                ? `components.DropZone.${key}`
                 : key.replace(/^global\./, '');
 
             return this.$t(key, params, count);
@@ -109,12 +145,14 @@ const FileManagerDropZone = defineComponent({
             __,
             maxSize,
             isDragging,
-            handleAddFiles,
+            multiple,
+            acceptTypes,
             handleClickOpenFileBrowser,
+            handleAddFiles,
         } = this;
 
-        const className = ['FileManagerDropZone', {
-            'FileManagerDropZone--dragging': isDragging,
+        const className = ['DropZone', {
+            'DropZone--dragging': isDragging,
         }];
 
         return (
@@ -122,28 +160,28 @@ const FileManagerDropZone = defineComponent({
                 class={className}
                 onClick={handleClickOpenFileBrowser}
             >
-                <div class="FileManagerDropZone__content">
-                    <Icon name="cloud-upload-alt" class="FileManagerDropZone__icon" />
-                    <p class="FileManagerDropZone__instruction">
-                        {__('drag-and-drop-files-here')}<br />
-                        <span class="FileManagerDropZone__instruction__sub-line">
+                <div class="DropZone__content">
+                    <Icon name="cloud-upload-alt" class="DropZone__icon" />
+                    <p class="DropZone__instruction">
+                        {multiple ? __('drag-and-drop-files-here') : __('drag-and-drop-file-here')}<br />
+                        <span class="DropZone__instruction__sub-line">
                             {__('max-size', { size: maxSize })}
                         </span>
                     </p>
                     <Button
                         type="primary"
-                        class="FileManagerDropZone__choose-files"
+                        class="DropZone__choose-files"
                         onClick={handleClickOpenFileBrowser}
                     >
-                        {__('choose-files')}
+                        {multiple ? __('choose-files') : __('choose-file')}
                     </Button>
                 </div>
                 <input
-                    multiple
+                    multiple={multiple}
                     type="file"
                     ref="inputFileRef"
-                    accept={config.authorizedFileTypes.join(',')}
-                    class="FileManagerDropZone__file-input"
+                    accept={acceptTypes.join(',')}
+                    class="DropZone__file-input"
                     onChange={handleAddFiles}
                 />
             </div>
@@ -151,4 +189,4 @@ const FileManagerDropZone = defineComponent({
     },
 });
 
-export default FileManagerDropZone;
+export default DropZone;

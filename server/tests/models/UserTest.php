@@ -78,6 +78,7 @@ final class UserTest extends TestCase
         $this->assertEquals('testadd@testing.org', $result->email);
         $this->assertEquals(Group::MEMBER, $result->group);
         $this->assertNull($result->cas_identifier);
+        $this->assertNull($result->saml2_identifier);
         $this->assertEquals(8, $result->person->id);
         $this->assertEquals(6, $result->person->user_id);
         $this->assertEquals('Testing', $result->person->first_name);

@@ -238,7 +238,7 @@ export default {
                 }
 
                 // eslint-disable-next-line no-console
-                console.error(`Error ocurred while retrieving users:`, error);
+                console.error(`Error occurred while retrieving users:`, error);
                 this.hasCriticalError = true;
             } finally {
                 this.isLoading = false;

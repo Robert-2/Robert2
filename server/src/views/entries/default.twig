@@ -23,6 +23,15 @@
     <div id="app">
         {{ include('blocks/loading.twig') }}
     </div>
+    {% if flashMessages is not empty -%}
+    <script type="text/javascript">
+        //<![CDATA[
+        var __SERVER_MESSAGES__ = {{
+            flashMessages|json_encode(constant('Loxya\\Config\\Config::JSON_OPTIONS'))|raw
+        }};
+        //]]>
+    </script>
+    {% endif -%}
     <script type="text/javascript">
         //<![CDATA[
         var __SERVER_CONFIG__ = {{

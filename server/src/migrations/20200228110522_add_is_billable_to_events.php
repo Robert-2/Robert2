@@ -5,7 +5,7 @@ use Phinx\Migration\AbstractMigration;
 
 final class AddIsBillableToEvents extends AbstractMigration
 {
-    public function up()
+    public function up(): void
     {
         $events = $this->table('events');
         $events
@@ -17,7 +17,7 @@ final class AddIsBillableToEvents extends AbstractMigration
             ->update();
     }
 
-    public function down()
+    public function down(): void
     {
         $events = $this->table('events');
         $events

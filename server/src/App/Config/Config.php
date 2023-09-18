@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 namespace Loxya\Config;
 
+use Loxya\Support\Arr;
+use Loxya\Support\BaseUri;
 use Monolog\Logger;
-
-define('USE_SSL', isset($_SERVER['HTTPS']) ? (bool) $_SERVER['HTTPS'] : false);
-define('HOST_NAME', $_SERVER['HTTP_HOST'] ?? 'localhost');
+use Psr\Http\Message\UriInterface;
 
 class Config
 {
@@ -20,12 +20,18 @@ class Config
      * des options ci-dessous, ou mieux encore, utilisez l'assistant d'installation.
      */
     public const DEFAULT_SETTINGS = [
-        'apiUrl' => (USE_SSL ? 'https://' : 'http://') . HOST_NAME,
+        /**
+         * L'URL de base de l'application.
+         *
+         * Si `null`, l'URL de base sera déduite, ce qui n'est absolument
+         * pas sûr car cela ne prend pas en charge les installations dans
+         * des sous-dossiers.
+         */
+        'baseUrl' => null,
         'apiHeaders' => ['Accept' => 'application/json'],
         'enableCORS' => false,
         'displayErrorDetails' => false,
         'useRouterCache' => true,
-        'useHTTPS' => USE_SSL,
         'JWTSecret' => 'super_secret_key_you_should_not_commit',
         'httpAuthHeader' => 'Authorization',
         'sessionExpireHours' => 12,
@@ -33,6 +39,7 @@ class Config
         'defaultLang' => 'fr',
         'billingMode' => 'partial', // - Valeurs possibles : 'none', 'partial', 'all'.
         'degressiveRateFunction' => 'daysCount',
+        'healthcheck' => false,
         'proxy' => [
             'enabled' => false,
             'host' => 'proxy.loxya.test',
@@ -118,7 +125,7 @@ class Config
             'image/webp',
             'image/svg+xml',
         ],
-        // - Couleurs personnalisées à utiliser dans le colorpicker de l'application.
+        // - Couleurs personnalisées à utiliser dans le color-picker de l'application.
         //   (à la place des propositions par défaut, doit être un tableau avec des codes hexadécimaux ou `null`)
         'colorSwatches' => null,
     ];
@@ -128,11 +135,10 @@ class Config
         JSON_UNESCAPED_SLASHES;
 
     public const CUSTOM_SETTINGS = [
-        'apiUrl' => 'string',
+        'baseUrl' => 'string',
         'enableCORS' => 'bool',
         'displayErrorDetails' => 'bool',
         'useRouterCache' => 'bool',
-        'useHTTPS' => 'bool',
         'JWTSecret' => 'string',
         'httpAuthHeader' => 'string',
         'sessionExpireHours' => 'int',
@@ -155,24 +161,51 @@ class Config
      */
     private static $testConfig = null;
 
-    public static function getSettings(?string $setting = null)
+    /**
+     * Permet de vérifier si une clé de configuration est définie.
+     *
+     * @param string $key La clé de configuration dont on souhaite vérifier l'existence.
+     *                    Peut aussi contenir un chemin "dot-style" (e.g; `key.sub-key`)
+     *                    pour vérifier les clés "profondes".
+     *
+     * @return bool Retourne `true` si la clé de configuration est définie, `false` sinon.
+     */
+    public static function has(string $key): bool
     {
-        $settings = static::customConfigExists()
+        return Arr::has(self::get(), $key);
+    }
+
+    /**
+     * Permet de récupérer la configuration complète ou bien la valeur d'une clé de configuration.
+     *
+     * NOTE: Préférez utiliser le settings du conteneur global lorsque vous le pouvez.
+     *
+     * @param ?string $key     La clé de configuration dont on souhaite récupérer la valeur.
+     *                         Peut aussi contenir un chemin "dot-style" (e.g; `key.sub-key`)
+     *                         pour récupérer les clés "profondes".
+     * @param ?mixed  $default La valeur par défaut à retourner si la clé n'existe pas ou
+     *                         contient la valeur `null`. Par défaut: `null`.
+     *
+     * @return mixed Si un chemin / une clé a été fournie: La valeur de la clé si elle est
+     *               spécifier ou la valeur par défaut sinon. Si aucune clé n'a été fournie,
+     *               tout la configuration sera retournée.
+     */
+    public static function get(?string $key = null, $default = null): mixed
+    {
+        $config = static::customConfigExists()
             ? static::retrieveCustomConfig()
             : static::DEFAULT_SETTINGS;
 
-        if (empty($setting)) {
-            return $settings;
-        }
-
-        return $settings[$setting] ?? null;
+        return $key !== null
+            ? (Arr::get($config, $key) ?? $default)
+            : $config;
     }
 
     public static function getEnv(bool $envOnly = false)
     {
         $env = env('APP_ENV');
         if (!$envOnly && $env === null) {
-            $env = static::getSettings('env');
+            $env = static::get('env');
         }
         if (!in_array($env, ['development', 'production', 'test'], true)) {
             $env = 'production';
@@ -192,7 +225,7 @@ class Config
     {
         $options = array_merge(['noCharset' => false], $options);
 
-        $dbConfig = self::getSettings('db');
+        $dbConfig = self::get('db');
 
         // - Récupération des overwrites depuis les variables d'environnement.
         $envVars = [
@@ -263,6 +296,42 @@ class Config
             throw new \PDOException($message);
         }
         // @codeCoverageIgnoreEnd
+    }
+
+    /**
+     * Permet de récupérer l'URL de base de l'application.
+     *
+     * @return string L'URL de base de l'application.
+     */
+    public static function getBaseUrl(): string
+    {
+        $url = self::get('baseUrl');
+
+        // NOTE: Rétro-compatibilité, à supprimer à terme.
+        if ($url === null && self::has('apiUrl')) {
+            $url = self::get('apiUrl');
+        }
+
+        // - Dans le cas ou l'URL de base n'est pas définie, on tente
+        //   de déduire ça de l'hôte courant.
+        if ($url === null) {
+            $scheme = env('HTTPS', false) ? 'https://' : 'http://';
+            $host = env('HTTP_HOST') ?? 'localhost';
+            $url = $scheme . $host;
+        }
+
+        return rtrim($url, '/');
+    }
+
+    /**
+     * Permet de récupérer une instance de {@link UriInterface}
+     * représentant l'URI de base de l'application.
+     *
+     * @return UriInterface L'URI de base de l'application.
+     */
+    public static function getBaseUri(): UriInterface
+    {
+        return new BaseUri(self::getBaseUrl());
     }
 
     // ------------------------------------------------------

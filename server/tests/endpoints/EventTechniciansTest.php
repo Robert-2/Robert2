@@ -46,14 +46,14 @@ final class EventTechniciansTest extends ApiTestCase
         return static::_dataFactory($id, $eventTechnicians->all());
     }
 
-    public function testGetOneEventTechnician()
+    public function testGetOneEventTechnician(): void
     {
         $this->client->get('/api/event-technicians/1');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData(self::data(1));
     }
 
-    public function testCreateEventTechnician()
+    public function testCreateEventTechnician(): void
     {
         $data = [
             'event_id' => 1,
@@ -75,14 +75,14 @@ final class EventTechniciansTest extends ApiTestCase
         ]);
     }
 
-    public function testUpdateEventTechnicianNoData()
+    public function testUpdateEventTechnicianNoData(): void
     {
         $this->client->put('/api/event-technicians/1', []);
         $this->assertStatusCode(StatusCode::STATUS_BAD_REQUEST);
         $this->assertApiErrorMessage("No data was provided.");
     }
 
-    public function testUpdateEventTechnician()
+    public function testUpdateEventTechnician(): void
     {
         $data = [
             'start_time' => '2018-12-17 10:00:00',
@@ -98,7 +98,7 @@ final class EventTechniciansTest extends ApiTestCase
         ]));
     }
 
-    public function testDestroyEventTechnician()
+    public function testDestroyEventTechnician(): void
     {
         $this->client->delete('/api/event-technicians/2');
         $this->assertStatusCode(StatusCode::STATUS_NO_CONTENT);

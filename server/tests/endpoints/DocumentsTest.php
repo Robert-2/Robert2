@@ -62,7 +62,7 @@ final class DocumentsTest extends ApiTestCase
         ]);
     }
 
-    public function testGetDocumentFile()
+    public function testGetDocumentFile(): void
     {
         // - Document inexistant
         $this->client->get('/documents/999');
@@ -74,7 +74,7 @@ final class DocumentsTest extends ApiTestCase
         $this->assertTrue($responseStream->isReadable());
     }
 
-    public function testDelete()
+    public function testDelete(): void
     {
         // - Backup préalable à la suppression du document #1
         $filePath = Document::findOrFail(1)->path;

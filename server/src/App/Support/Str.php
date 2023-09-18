@@ -18,7 +18,7 @@ class Str extends StrCore
      *
      * @return string La chaîne "sluggifiée".
      */
-    public static function slugify($string, $separator = '-', $rulesets = 'default')
+    public static function slugify(string $string, string $separator = '-', string $rulesets = 'default'): string
     {
         return (new Slugify())->slugify($string, [
             'separator' => $separator,

@@ -10,7 +10,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Loxya\Support\Filesystem\UploadedFile;
 use Slim\Middleware\BodyParsingMiddleware as BodyParsingMiddlewareCore;
 
-class BodyParser extends BodyParsingMiddlewareCore
+final class BodyParser extends BodyParsingMiddlewareCore
 {
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {

@@ -7,6 +7,7 @@ use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Loxya\Controllers\Traits\Crud;
 use Loxya\Http\Request;
 use Loxya\Models\Document;
+use Psr\Http\Message\ResponseInterface;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
 use Slim\Psr7\Stream;
@@ -15,7 +16,7 @@ class DocumentController extends BaseController
 {
     use Crud\HardDelete;
 
-    public function getFile(Request $request, Response $response): Response
+    public function getFile(Request $request, Response $response): ResponseInterface
     {
         $id = (int) $request->getAttribute('id');
         $document = Document::findOrFail($id);

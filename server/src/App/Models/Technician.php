@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Loxya\Models;
 
 use Adbar\Dot as DotArray;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -34,9 +35,9 @@ use Loxya\Models\Traits\SoftDeletable;
  * @property-read Country|null $country
  * @property-read string|null $full_address
  * @property string|null $note
- * @property-read Carbon $created_at
- * @property-read Carbon|null $updated_at
- * @property-read Carbon|null $deleted_at
+ * @property-read CarbonImmutable $created_at
+ * @property-read CarbonImmutable|null $updated_at
+ * @property-read CarbonImmutable|null $deleted_at
  *
  * @property-read Collection|EventTechnician[] $assignments
  * @property-read Collection|Document[] $documents
@@ -129,6 +130,9 @@ final class Technician extends BaseModel implements Serializable
         'is_preparer' => 'boolean',
         'person_id' => 'integer',
         'note' => 'string',
+        'created_at' => 'immutable_datetime',
+        'updated_at' => 'immutable_datetime',
+        'deleted_at' => 'immutable_datetime',
     ];
 
     public function getFirstNameAttribute(): string

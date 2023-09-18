@@ -9,7 +9,7 @@ use Loxya\Models\Setting;
 
 final class CalendarTest extends ApiTestCase
 {
-    public function testPublic()
+    public function testPublic(): void
     {
         Carbon::setTestNow(Carbon::create(2019, 02, 01, 12, 00, 00));
 

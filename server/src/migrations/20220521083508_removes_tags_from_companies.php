@@ -8,7 +8,7 @@ final class RemovesTagsFromCompanies extends AbstractMigration
 {
     public function up(): void
     {
-        $prefix = Config::getSettings('db')['prefix'];
+        $prefix = Config::get('db.prefix');
         $builder = $this->getQueryBuilder();
         $builder
             ->delete(sprintf('%staggables', $prefix))
@@ -18,8 +18,8 @@ final class RemovesTagsFromCompanies extends AbstractMigration
 
     public function down(): void
     {
-        $prefix = Config::getSettings('db')['prefix'];
-        $defaultTags = Config::getSettings('defaultTags') ?? [];
+        $prefix = Config::get('db.prefix');
+        $defaultTags = Config::get('defaultTags', []);
 
         // - Récupère toutes les sociétés déjà en base.
         $builder = $this->getQueryBuilder();

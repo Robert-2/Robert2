@@ -2,11 +2,14 @@
 declare(strict_types=1);
 
 use Carbon\Carbon;
+use DI\Container;
 use Illuminate\Database\Eloquent\Builder;
+use Loxya\Config\Config;
 use Monolog\Logger;
 use Loxya\Kernel;
 use Respect\Validation\Validator as V;
 use Loxya\Support\Period;
+use Slim\Interfaces\RouteParserInterface;
 
 /**
  * Retourne le conteneur courant ou le service lié à l'id dans le conteneur si fourni.
@@ -17,8 +20,9 @@ use Loxya\Support\Period;
  *
  * @return mixed Le conteneur lui-même si aucun identifiant n'est passé, le service lié à l'id sinon.
  */
-function container(?string $id)
+function container(?string $id = null): mixed
 {
+    /** @var Container $container */
     $container = Kernel::get()->getContainer();
     return $id ? $container->get($id) : $container;
 }
@@ -35,7 +39,7 @@ function container(?string $id)
  *
  * @codeCoverageIgnore
  */
-function debug($message, ...$vars)
+function debug($message, ...$vars): void
 {
     $parts = [];
 
@@ -65,7 +69,7 @@ function debug($message, ...$vars)
  */
 function getExecutionTime(?float $start = null): string
 {
-    $start       = $start ?: (float) $_SERVER['REQUEST_TIME_FLOAT'];
+    $start = $start ?: (float) $_SERVER['REQUEST_TIME_FLOAT'];
     $elapsedTime = microtime(true) - $start;
 
     return number_format($elapsedTime, 3) . "s";
@@ -74,8 +78,8 @@ function getExecutionTime(?float $start = null): string
 /**
  * Arrondi un horaire (datetime) selon une précision en minutes donnée.
  *
- * @param DateTime  $originalDate   La date à arrondir
- * @param int       $precision      La précision à utiliser. Par défaut 15 minutes. Max 60 minutes.
+ * @param DateTime $originalDate La date à arrondir
+ * @param int      $precision    La précision à utiliser. Par défaut 15 minutes. Max 60 minutes.
  *
  * @return DateTime Un clone de la date originale arrondie.
  */
@@ -120,7 +124,7 @@ function roundDate(\DateTime $originalDate, int $precision = 15): DateTime
  *
  * @return mixed Le retour de la fonction de callback.
  */
-function dbTransaction(callable $callback)
+function dbTransaction(callable $callback): mixed
 {
     $dbConnection = container('database')->getConnection();
 
@@ -190,4 +194,35 @@ function getPeriodFromArray(array $array): ?Period
 function __(string $key): string
 {
     return container('i18n')->translate($key);
+}
+
+/**
+ * Retourne l'URL absolue d'une route nommée, en incluant le chemin de base.
+ *
+ * /!\ Attention: Cette fonction est uniquement utilisable dans un contexte
+ *                d'application avec router (et donc pas dans les applications
+ *                console !!)
+ *
+ * @param string                $routeName   Le nom de la route
+ * @param array<string, string> $data        Les arguments nommés de la route.
+ * @param array<string, string> $queryParams Paramètres de "query" éventuels.
+ *
+ * @return string L'URL absolue correspondante à la route.
+ *
+ * @throws RuntimeException  Si la route nommée n'existe pas.
+ * @throws LogicException Si nous ne sommes pas dans un context routé (cf. description).
+ * @throws InvalidArgumentException Si des données requises n'ont pas été fournies.
+ */
+function urlFor(string $routeName, array $data = [], array $queryParams = []): string
+{
+    /** @var Container $container */
+    $container = container();
+
+    if (!$container->has(RouteParserInterface::class)) {
+        throw new \LogicException("`urlFor()` cannot be called in non-routed contexts.");
+    }
+
+    /** @var RouteParserInterface $routeParser */
+    $routeParser = $container->get(RouteParserInterface::class);
+    return $routeParser->fullUrlFor(Config::getBaseUri(), $routeName, $data, $queryParams);
 }

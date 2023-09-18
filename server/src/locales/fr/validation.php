@@ -637,6 +637,12 @@ return [
     "{{name}} must not be a valid telephone number"
     => "Ne doit pas être un numéro de téléphone valide",
 
+    "{{name}} must be a valid telephone number for country {{countryName}}"
+    => "Ce numéro de téléphone n'est pas valide pour le pays spécifié",
+
+    "{{name}} must not be a valid telephone number for country {{countryName}}"
+    => "Ne doit pas être un numéro de téléphone valide pour le pays spécifié",
+
     "Must have keys {{keys}}"
     => "Doit posséder les clés {{keys}}",
 
@@ -1078,6 +1084,18 @@ return [
     "{{name}} must not be a leap year"
     => "Ne doit pas être une année bissextile",
 
+    "{{name}} must be a public domain suffix"
+    => "Doit être un suffixe du domaine public",
+
+    "{{name}} must not be a public domain suffix"
+    => "Ne doit pas être un suffixe du domaine public",
+
+    "{{name}} must be a Portuguese NIF"
+    => "Doit être un NIF portugais",
+
+    "{{name}} must not be a Portuguese NIF"
+    => "Ne doit pas être un NIF portugais",
+
     "Missing value"
     => "Valeur manquante",
 
@@ -1186,6 +1204,9 @@ return [
 
     "document-already-in-use-for-this-material"
     => "Un document avec le même nom existe déjà pour ce matériel",
+
+    "person-already-a-beneficiary"
+    => "Cette personne est déjà un bénéficiaire.",
 
     "reference-already-in-use"
     => "Cette référence est déjà utilisée",

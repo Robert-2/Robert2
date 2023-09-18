@@ -6,7 +6,7 @@ use Loxya\Config\Config;
 
 final class CreateGroupsOfUsers extends AbstractMigration
 {
-    public function up()
+    public function up(): void
     {
         $groups = $this->table('groups', ['id' => false, 'primary_key' => 'id']);
         $groups
@@ -27,7 +27,7 @@ final class CreateGroupsOfUsers extends AbstractMigration
             ->changeColumn('group_id', 'string', ['length' => 16, 'null' => false])
             ->save();
 
-        $prefix = Config::getSettings('db')['prefix'];
+        $prefix = Config::get('db.prefix');
 
         $this->execute(sprintf(
             "UPDATE `%susers` SET `group_id` = 'admin' WHERE `group_id` = '1'",
@@ -48,7 +48,7 @@ final class CreateGroupsOfUsers extends AbstractMigration
             ->save();
     }
 
-    public function down()
+    public function down(): void
     {
         $users = $this->table('users');
         $users
@@ -56,7 +56,7 @@ final class CreateGroupsOfUsers extends AbstractMigration
             ->removeIndex(['group_id'])
             ->save();
 
-        $prefix = Config::getSettings('db')['prefix'];
+        $prefix = Config::get('db.prefix');
 
         $this->execute(sprintf(
             "UPDATE `%susers` SET `group_id` = '1' WHERE `group_id` = 'admin'",

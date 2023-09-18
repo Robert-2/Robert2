@@ -27,7 +27,7 @@ class ApiException extends \RuntimeException
     /**
      * Retourne le code HTTP a utiliser.
      *
-     * @return int
+     * @return int Le code HTTP à utiliser.
      */
     public function getStatusCode(): int
     {

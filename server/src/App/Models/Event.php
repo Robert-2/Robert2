@@ -71,9 +71,9 @@ use Symfony\Contracts\Cache\ItemInterface as CacheItemInterface;
  * @property string|null $note
  * @property int|null $author_id
  * @property-read User|null $author
- * @property-read Carbon $created_at
- * @property-read Carbon|null $updated_at
- * @property-read Carbon|null $deleted_at
+ * @property-read CarbonImmutable $created_at
+ * @property-read CarbonImmutable|null $updated_at
+ * @property-read CarbonImmutable|null $deleted_at
  *
  * @property-read Collection|EventTechnician[] $technicians
  * @property-read Collection|Beneficiary[] $beneficiaries
@@ -309,6 +309,9 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
         'is_return_inventory_done' => 'boolean',
         'note' => 'string',
         'author_id' => 'integer',
+        'created_at' => 'immutable_datetime',
+        'updated_at' => 'immutable_datetime',
+        'deleted_at' => 'immutable_datetime',
     ];
 
     public function getBeneficiariesAttribute()
@@ -357,7 +360,7 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
         }
 
         $result = null;
-        $jsFunction = Config::getSettings('degressiveRateFunction');
+        $jsFunction = Config::get('degressiveRateFunction');
         if (!empty($jsFunction) && str_contains($jsFunction, 'daysCount')) {
             $function = preg_replace('/daysCount/', (string) $this->duration, $jsFunction);
             eval(sprintf('$result = %s;', $function)); // phpcs:ignore Squiz.PHP.Eval
@@ -381,7 +384,7 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
             return null;
         }
 
-        return Decimal::of(Config::getSettings('companyData')['vatRate'] ?: 0)
+        return Decimal::of(Config::get('companyData.vatRate') ?: 0)
             ->toScale(2, RoundingMode::UNNECESSARY);
     }
 
@@ -537,7 +540,7 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
 
     public function getCurrencyAttribute(): string
     {
-        return Config::getSettings('currency')['iso'];
+        return Config::get('currency.iso');
     }
 
     public function getHasMissingMaterialsAttribute()
@@ -694,16 +697,18 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
     // -
     // ------------------------------------------------------
 
-    public function getStartDate(): Carbon
+    public function getStartDate(): CarbonImmutable
     {
         return (new Carbon($this->start_date))
-            ->setTime(0, 0, 0, 0);
+            ->setTime(0, 0, 0, 0)
+            ->toImmutable();
     }
 
-    public function getEndDate(): Carbon
+    public function getEndDate(): CarbonImmutable
     {
         return (new Carbon($this->end_date))
-            ->setTime(23, 59, 59, 59);
+            ->setTime(23, 59, 59, 59)
+            ->toImmutable();
     }
 
     // ------------------------------------------------------
@@ -728,19 +733,19 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
         'author_id',
     ];
 
-    public function setReferenceAttribute($value)
+    public function setReferenceAttribute($value): void
     {
         $value = is_string($value) ? trim($value) : $value;
         $this->attributes['reference'] = $value;
     }
 
-    public function setNoteAttribute($value)
+    public function setNoteAttribute($value): void
     {
         $value = is_string($value) ? trim($value) : $value;
         $this->attributes['note'] = $value === '' ? null : $value;
     }
 
-    public function setDiscountRateAttribute(Decimal $value)
+    public function setDiscountRateAttribute(Decimal $value): void
     {
         if (!$this->is_billable) {
             throw new \LogicException("Unable to set a discount rate on a non-billable event.");
@@ -772,13 +777,13 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
             ->values();
     }
 
-    public function syncBeneficiaries(array $beneficiariesIds)
+    public function syncBeneficiaries(array $beneficiariesIds): static
     {
         $this->beneficiaries()->sync($beneficiariesIds);
-        $this->refresh();
+        return $this->refresh();
     }
 
-    public function syncTechnicians(array $techniciansData)
+    public function syncTechnicians(array $techniciansData): static
     {
         $errors = [];
         $technicians = [];
@@ -804,7 +809,7 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
         // FIXME: Transaction.
         EventTechnician::flushForEvent($this->id);
         $this->technicians()->saveMany($technicians);
-        $this->refresh();
+        return $this->refresh();
     }
 
     public function syncMaterials(array $materialsData): static
@@ -876,7 +881,7 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
             throw new \LogicException("This event's return inventory can't be done yet.");
         }
 
-        $schema = V::arrayType()->each(new Rule\KeySet(
+        $schema = V::arrayType()->each(new Rule\KeySetStrict(
             new Rule\Key('id'),
             new Rule\Key('actual', V::intVal()->min(0, true)),
             new Rule\Key('broken', V::intVal()->min(0, true)),
@@ -940,7 +945,7 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
         } catch (ValidationException $e) {
             // - Ls erreurs de validation sont censées être gérées pour chaque matériel dans le code au-dessus.
             //   On ne peut pas laisser passer des erreurs de validation non formatés.
-            throw new \LogicException("Unexpected validation errors ocurred while saving the return inventory.");
+            throw new \LogicException("Unexpected validation errors occurred while saving the return inventory.");
         } finally {
             $this->refresh();
         }
@@ -983,7 +988,7 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
         });
     }
 
-    public function duplicate(array $newEventData, ?User $author = null)
+    public function duplicate(array $newEventData, ?User $author = null): static
     {
         $newEvent = self::create([
             'title' => $this->title,
@@ -1069,8 +1074,6 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
     /**
      * @param Builder $query
      * @param Carbon|PeriodInterface $dateOrPeriod
-     *
-     * @return Builder
      */
     public function scopeNotReturned(Builder $query, Carbon|PeriodInterface $dateOrPeriod): Builder
     {
@@ -1113,7 +1116,7 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
             ));
         }
 
-        $company = Config::getSettings('companyData');
+        $company = Config::get('companyData');
 
         $pdfName = Str::slugify(implode('-', [
             $i18n->translate('release-sheet'),
@@ -1174,8 +1177,8 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
             'date' => CarbonImmutable::now(),
             'event' => $rawData,
             'beneficiaries' => $this->beneficiaries,
-            'company' => Config::getSettings('companyData'),
-            'currency' => Config::getSettings('currency')['iso'],
+            'company' => Config::get('companyData'),
+            'currency' => Config::get('currency.iso'),
             'sortedBy' => $sortedBy,
             'materialsSorted' => $materialsSorted,
             'materialDisplayMode' => $displayMode,

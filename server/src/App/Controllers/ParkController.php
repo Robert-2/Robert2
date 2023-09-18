@@ -8,6 +8,7 @@ use Loxya\Controllers\Traits\WithCrud;
 use Loxya\Http\Request;
 use Loxya\Models\Material;
 use Loxya\Models\Park;
+use Psr\Http\Message\ResponseInterface;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
 
@@ -15,7 +16,7 @@ class ParkController extends BaseController
 {
     use WithCrud;
 
-    public function getAll(Request $request, Response $response): Response
+    public function getAll(Request $request, Response $response): ResponseInterface
     {
         $paginated = (bool) $request->getQueryParam('paginated', true);
         $search = $request->getQueryParam('search', null);
@@ -37,7 +38,7 @@ class ParkController extends BaseController
         return $response->withJson($results, StatusCode::STATUS_OK);
     }
 
-    public function getList(Request $request, Response $response): Response
+    public function getList(Request $request, Response $response): ResponseInterface
     {
         $parks = Park::select(['id', 'name']);
         $results = $parks->get()->each->setAppends([])->toArray();
@@ -45,7 +46,7 @@ class ParkController extends BaseController
         return $response->withJson($results, StatusCode::STATUS_OK);
     }
 
-    public function getOneMaterials(Request $request, Response $response): Response
+    public function getOneMaterials(Request $request, Response $response): ResponseInterface
     {
         $id = (int) $request->getAttribute('id');
         if (!Park::staticExists($id)) {
@@ -56,7 +57,7 @@ class ParkController extends BaseController
         return $response->withJson($materials, StatusCode::STATUS_OK);
     }
 
-    public function getOneTotalAmount(Request $request, Response $response): Response
+    public function getOneTotalAmount(Request $request, Response $response): ResponseInterface
     {
         $id = (int) $request->getAttribute('id');
         $park = Park::withTrashed()->findOrFail($id)->append(['total_amount']);

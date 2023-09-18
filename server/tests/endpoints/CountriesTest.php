@@ -28,7 +28,7 @@ final class CountriesTest extends ApiTestCase
         ]);
     }
 
-    public function testGetCountries()
+    public function testGetCountries(): void
     {
         $this->client->get('/api/countries');
         $this->assertStatusCode(StatusCode::STATUS_OK);
@@ -39,13 +39,13 @@ final class CountriesTest extends ApiTestCase
         ]);
     }
 
-    public function testGetCountryNotFound()
+    public function testGetCountryNotFound(): void
     {
         $this->client->get('/api/countries/999');
         $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
-    public function testGetCountry()
+    public function testGetCountry(): void
     {
         $this->client->get('/api/countries/1');
         $this->assertStatusCode(StatusCode::STATUS_OK);

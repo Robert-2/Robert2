@@ -5,7 +5,7 @@ use Phinx\Migration\AbstractMigration;
 
 final class AddCasFieldsToUsers extends AbstractMigration
 {
-    public function up()
+    public function up(): void
     {
         $table = $this->table('users');
         $table
@@ -20,7 +20,7 @@ final class AddCasFieldsToUsers extends AbstractMigration
             ->save();
     }
 
-    public function down()
+    public function down(): void
     {
         $table = $this->table('users');
         $table

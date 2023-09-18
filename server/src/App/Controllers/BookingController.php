@@ -14,6 +14,7 @@ use Loxya\Http\Request;
 use Loxya\Models\Event;
 use Loxya\Models\Park;
 use Loxya\Support\Period;
+use Psr\Http\Message\ResponseInterface;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpException;
 use Slim\Exception\HttpNotFoundException;
@@ -27,7 +28,7 @@ class BookingController extends BaseController
         Event::TYPE => Event::class,
     ];
 
-    public function getAll(Request $request, Response $response): Response
+    public function getAll(Request $request, Response $response): ResponseInterface
     {
         $startDate = $request->getQueryParam('start', null);
         $endDate = $request->getQueryParam('end', null);
@@ -105,7 +106,7 @@ class BookingController extends BaseController
         return $response->withJson($data, StatusCode::STATUS_OK);
     }
 
-    public function updateMaterials(Request $request, Response $response): Response
+    public function updateMaterials(Request $request, Response $response): ResponseInterface
     {
         $id = (int) $request->getAttribute('id');
         $entity = $request->getAttribute('entity');

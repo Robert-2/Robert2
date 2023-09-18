@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Loxya\Http;
 
+use Loxya\Config\Config;
 use Loxya\Http\Enums\AppContext;
 use Slim\Http\ServerRequest as CoreRequest;
 
@@ -21,7 +22,7 @@ class Request extends CoreRequest
     /**
      * La requête est t'elle à destination de l'API ?
      *
-     * @return bool
+     * @return bool `true` si c'est une requête d'API, `false` sinon.
      */
     public function isApi(): bool
     {
@@ -33,7 +34,7 @@ class Request extends CoreRequest
      *
      * @param string $context - Le context à vérifier.
      *
-     * @return bool
+     * @return bool `true` si on est dans le contexte, `false` sinon.
      */
     public function isInContext(string $context): bool
     {
@@ -50,22 +51,22 @@ class Request extends CoreRequest
      *                              méthodes requises pour que l'URL soit considérée comme
      *                              correspondante.
      *
-     * @return bool
+     * @return bool `true` si la requête correspond, `false` sinon.
      */
     public function match(string | array $paths): bool
     {
-        $method = $this->getMethod();
-        $uri = str_replace('//', '/', sprintf('/%s', $this->getUri()->getPath()));
+        $requestMethod = $this->getMethod();
+        $requestPath = str_replace('//', '/', sprintf('/%s', $this->getUri()->getPath()));
 
         foreach ((array) $paths as $path => $methods) {
             if (is_numeric($path)) {
                 $path = $methods;
                 $methods = null;
             }
-            $path = rtrim($path, '/');
 
-            $isUriMatching = (bool) preg_match(sprintf('@^%s(?:/|$)@', preg_quote($path, '@')), $uri);
-            $isMethodMatching = $methods === null || in_array($method, (array) $methods, true);
+            $path = rtrim(Config::getBaseUri()->withPath($path)->getPath(), '/');
+            $isUriMatching = (bool) preg_match(sprintf('@^%s(?:/|$)@', preg_quote($path, '@')), $requestPath);
+            $isMethodMatching = $methods === null || in_array($requestMethod, (array) $methods, true);
 
             if ($isUriMatching && $isMethodMatching) {
                 return true;

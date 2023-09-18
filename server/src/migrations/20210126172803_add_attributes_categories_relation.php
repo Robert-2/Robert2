@@ -5,7 +5,7 @@ use Phinx\Migration\AbstractMigration;
 
 final class AddAttributesCategoriesRelation extends AbstractMigration
 {
-    public function up()
+    public function up(): void
     {
         $table = $this->table('attribute_categories', ['signed' => true]);
         $table
@@ -26,7 +26,7 @@ final class AddAttributesCategoriesRelation extends AbstractMigration
             ->create();
     }
 
-    public function down()
+    public function down(): void
     {
         $this->table('attribute_categories')->drop()->save();
     }

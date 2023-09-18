@@ -1,8 +1,8 @@
-@use '../../../variables' as *;
+@use './variables' as *;
 @use '~@/themes/default/style/globals';
 @use 'sass:color';
 
-.FileManagerDropZone {
+.DropZone {
     $block: &;
 
     display: flex;
@@ -40,6 +40,10 @@
         );
     }
     /* stylelint-enable declaration-colon-newline-after, indentation */
+
+    &__content {
+        width: 100%;
+    }
 
     &__icon {
         margin-bottom: 20px;

@@ -118,7 +118,7 @@ final class PersonsTest extends ApiTestCase
         ]);
     }
 
-    public function testGetAll()
+    public function testGetAll(): void
     {
         $this->client->get('/api/persons');
         $this->assertStatusCode(StatusCode::STATUS_OK);
@@ -133,7 +133,7 @@ final class PersonsTest extends ApiTestCase
         ]);
     }
 
-    public function testGetAllWithSearch()
+    public function testGetAllWithSearch(): void
     {
         $this->client->get('/api/persons?search=jea');
         $this->assertStatusCode(StatusCode::STATUS_OK);
@@ -155,7 +155,7 @@ final class PersonsTest extends ApiTestCase
         ]);
     }
 
-    public function testGetAllWithLimit()
+    public function testGetAllWithLimit(): void
     {
         $this->client->get('/api/persons?limit=2');
         $this->assertStatusCode(StatusCode::STATUS_OK);

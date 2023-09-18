@@ -5,7 +5,7 @@ use Phinx\Migration\AbstractMigration;
 
 final class CreateCategories extends AbstractMigration
 {
-    public function up()
+    public function up(): void
     {
         $table = $this->table('categories', ['signed' => true]);
         $table
@@ -39,7 +39,7 @@ final class CreateCategories extends AbstractMigration
             ->create();
     }
 
-    public function down()
+    public function down(): void
     {
         $this->table('sub_categories')->drop()->save();
         $this->table('categories')->drop()->save();

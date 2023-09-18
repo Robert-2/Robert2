@@ -9,7 +9,7 @@ use Loxya\Models\User;
 
 final class SessionTest extends ApiTestCase
 {
-    public function testGetSelf()
+    public function testGetSelf(): void
     {
         // - Test auth with e-mail address
         $this->client->get('/api/session');
@@ -20,7 +20,7 @@ final class SessionTest extends ApiTestCase
         ));
     }
 
-    public function testLoginBadData()
+    public function testLoginBadData(): void
     {
         // - Sans aucune données.
         $this->client->post('/api/session');
@@ -59,7 +59,7 @@ final class SessionTest extends ApiTestCase
         $this->assertApiErrorMessage("Wrong credentials provided.");
     }
 
-    public function testAuthOK()
+    public function testAuthOK(): void
     {
         // - Test d'authentification avec différents types d'identifiants.
         foreach (['tester@robertmanager.net', 'test1'] as $identifier) {

@@ -221,7 +221,7 @@ final class I18n
         }
 
         // - Sinon, si la langue par défaut de l'application est disponible, on l'utilise...
-        $defaultLanguage = Config::getSettings('defaultLang');
+        $defaultLanguage = Config::get('defaultLang');
         if (static::isLanguageAvailable($defaultLanguage)) {
             return $defaultLanguage;
         }

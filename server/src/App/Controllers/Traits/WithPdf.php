@@ -5,13 +5,14 @@ namespace Loxya\Controllers\Traits;
 
 use Loxya\Http\Request;
 use Loxya\Support\Pdf;
+use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Response;
 
 trait WithPdf
 {
     use WithModel;
 
-    public function getOnePdf(Request $request, Response $response): Response
+    public function getOnePdf(Request $request, Response $response): ResponseInterface
     {
         $id = (int) $request->getAttribute('id');
         $model = $this->getModelClass()::findOrFail($id);

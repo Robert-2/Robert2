@@ -49,15 +49,15 @@ class TestCase extends CoreTestCase
     // -
     // ------------------------------------------------------
 
-    protected static function setCustomConfig(array $customValues = [])
+    protected static function setCustomConfig(array $customValues = []): void
     {
         $config = new DotArray([
-            'apiUrl' => 'http://loxya.test',
+            'baseUrl' => 'http://loxya.test',
             'enableCORS' => true,
             'displayErrorDetails' => true,
             'useRouterCache' => false,
-            'useHTTPS' => false,
             'sessionExpireHours' => 12,
+            'healthcheck' => true,
             'JWTSecret' => 'jwt_secret_for_tests',
             'httpAuthHeader' => 'Authorization',
             'defaultLang' => 'fr',
@@ -99,7 +99,7 @@ class TestCase extends CoreTestCase
 
     public function assertSameCanonicalize($expected, $actual, string $message = ''): void
     {
-        $canonicalize = function (&$value) use (&$canonicalize) {
+        $canonicalize = function (&$value) use (&$canonicalize): void {
             if (is_array($value)) {
                 ksort($value);
                 foreach ($value as &$subValue) {
@@ -115,7 +115,7 @@ class TestCase extends CoreTestCase
 
     public function assertNotSameCanonicalize($expected, $actual, string $message = ''): void
     {
-        $canonicalize = function (&$value) use (&$canonicalize) {
+        $canonicalize = function (&$value) use (&$canonicalize): void {
             if (is_array($value)) {
                 ksort($value);
                 foreach ($value as &$subValue) {

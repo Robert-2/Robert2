@@ -6,23 +6,23 @@ use Loxya\Config\Config;
 
 final class FixEventsLocationNullability extends AbstractMigration
 {
-    public function up()
+    public function up(): void
     {
         $table = $this->table('events');
         $table
             ->changeColumn('location', 'string', ['null' => true, 'length' => 64])
             ->update();
 
-        $prefix = Config::getSettings('db')['prefix'];
+        $prefix = Config::get('db.prefix');
         $this->execute(sprintf(
             "UPDATE `%sevents` SET `location` = NULL WHERE `location` = ''",
             $prefix
         ));
     }
 
-    public function down()
+    public function down(): void
     {
-        $prefix = Config::getSettings('db')['prefix'];
+        $prefix = Config::get('db.prefix');
         $this->execute(sprintf(
             "UPDATE `%sevents` SET `location` = '' WHERE `location` IS NULL",
             $prefix

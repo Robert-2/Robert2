@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Loxya\Models;
 
 use Adbar\Dot as DotArray;
+use Carbon\CarbonImmutable;
 use Loxya\Contracts\Serializable;
 use Loxya\Models\Traits\Serializer;
 use Respect\Validation\Validator as V;
@@ -14,8 +15,8 @@ use Respect\Validation\Validator as V;
  * @property-read ?int $id
  * @property string $name
  * @property string $code
- * @property-read Carbon $created_at
- * @property-read Carbon|null $updated_at
+ * @property-read CarbonImmutable $created_at
+ * @property-read CarbonImmutable|null $updated_at
  */
 final class Country extends BaseModel implements Serializable
 {
@@ -81,6 +82,8 @@ final class Country extends BaseModel implements Serializable
     protected $casts = [
         'name' => 'string',
         'code' => 'string',
+        'created_at' => 'immutable_datetime',
+        'updated_at' => 'immutable_datetime',
     ];
 
     // ------------------------------------------------------

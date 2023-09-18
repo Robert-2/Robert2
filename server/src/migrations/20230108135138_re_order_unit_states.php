@@ -16,7 +16,7 @@ final class ReOrderUnitStates extends AbstractMigration
             'outdated' => 5,
         ];
 
-        $prefix = Config::getSettings('db')['prefix'];
+        $prefix = Config::get('db.prefix');
         foreach ($states as $id => $order) {
             $this->getQueryBuilder()
                 ->update(sprintf('%smaterial_unit_states', $prefix))
@@ -36,7 +36,7 @@ final class ReOrderUnitStates extends AbstractMigration
             'outdated' => 5,
         ];
 
-        $prefix = Config::getSettings('db')['prefix'];
+        $prefix = Config::get('db.prefix');
         foreach ($states as $id => $order) {
             $this->getQueryBuilder()
                 ->update(sprintf('%smaterial_unit_states', $prefix))

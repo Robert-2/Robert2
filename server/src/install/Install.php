@@ -38,6 +38,7 @@ class Install
         'pcre',
         'PDO',
         'pdo_mysql',
+        'openssl',
         'xml',
     ];
 
@@ -45,7 +46,6 @@ class Install
         'enableCORS' => 'boolean',
         'displayErrorDetails' => 'boolean',
         'useRouterCache' => 'boolean',
-        'useHTTPS' => 'boolean',
         'sessionExpireHours' => 'integer',
         'maxItemsPerPage' => 'integer',
         'vatRate' => 'float',

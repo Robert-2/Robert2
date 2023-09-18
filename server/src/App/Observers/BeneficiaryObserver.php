@@ -9,7 +9,7 @@ final class BeneficiaryObserver
 {
     public $afterCommit = true;
 
-    public function deleted(Beneficiary $beneficiary)
+    public function deleted(Beneficiary $beneficiary): void
     {
         //
         // - Suppression de la Person associée au bénéficiaire si elle n'est

@@ -5,7 +5,7 @@ use Phinx\Migration\AbstractMigration;
 
 final class CreateMaterials extends AbstractMigration
 {
-    public function up()
+    public function up(): void
     {
         $table = $this->table('materials', ['signed' => true]);
         $table
@@ -51,7 +51,7 @@ final class CreateMaterials extends AbstractMigration
             ->create();
     }
 
-    public function down()
+    public function down(): void
     {
         $this->table('materials')->drop()->save();
     }

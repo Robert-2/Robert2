@@ -23,15 +23,15 @@ use Loxya\Support\Str;
  * Devis.
  *
  * @property-read ?int $id
- * @property Carbon $date
+ * @property CarbonImmutable $date
  * @property-read ?string $url
  * @property string $booking_type
  * @property int $booking_id
  * @property-read Event $booking
  * @property string|null $booking_title
  * @property-read int $booking_duration
- * @property Carbon $booking_start_date
- * @property Carbon $booking_end_date
+ * @property CarbonImmutable $booking_start_date
+ * @property CarbonImmutable $booking_end_date
  * @property-read string|null $booking_location
  * @property int $beneficiary_id
  * @property-read Beneficiary $beneficiary
@@ -51,9 +51,9 @@ use Loxya\Support\Str;
  * @property string $currency
  * @property int|null $author_id
  * @property-read User|null $author
- * @property-read Carbon $created_at
- * @property-read Carbon|null $updated_at
- * @property-read Carbon|null $deleted_at
+ * @property-read CarbonImmutable $created_at
+ * @property-read CarbonImmutable|null $updated_at
+ * @property-read CarbonImmutable|null $deleted_at
  *
  * @property-read Collection|EstimateMaterial[] $materials
  */
@@ -272,6 +272,9 @@ final class Estimate extends BaseModel implements Serializable
         'total_replacement' => AsDecimal::class,
         'currency' => 'string',
         'author_id' => 'integer',
+        'created_at' => 'immutable_datetime',
+        'updated_at' => 'immutable_datetime',
+        'deleted_at' => 'immutable_datetime',
     ];
 
     public function getUrlAttribute(): ?string
@@ -280,8 +283,8 @@ final class Estimate extends BaseModel implements Serializable
             return null;
         }
 
-        $baseUrl = rtrim(Config::getSettings('apiUrl'), '/');
-        return sprintf('%s/estimates/%s/pdf', $baseUrl, $this->id);
+        return (string) Config::getBaseUri()
+            ->withPath(sprintf('/estimates/%s/pdf', $this->id));
     }
 
     public function getBookingDurationAttribute(): int
@@ -313,7 +316,7 @@ final class Estimate extends BaseModel implements Serializable
 
     protected function getPdfName(I18n $i18n): string
     {
-        $company = Config::getSettings('companyData');
+        $company = Config::get('companyData');
         return Str::slugify(implode('-', [
             $i18n->translate('Estimate'),
             $company['name'],
@@ -364,7 +367,7 @@ final class Estimate extends BaseModel implements Serializable
 
         return [
             'date' => $this->date,
-            'company' => Config::getSettings('companyData'),
+            'company' => Config::get('companyData'),
             'beneficiary' => $this->beneficiary,
             'currency' => $this->currency,
             'booking' => [

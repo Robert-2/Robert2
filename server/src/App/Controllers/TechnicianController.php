@@ -14,6 +14,7 @@ use Loxya\Models\Technician;
 use Loxya\Services\Auth;
 use Loxya\Services\I18n;
 use Loxya\Support\Arr;
+use Psr\Http\Message\ResponseInterface;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Http\Response;
 
@@ -36,7 +37,7 @@ class TechnicianController extends BaseController
     // -
     // ------------------------------------------------------
 
-    public function getAll(Request $request, Response $response): Response
+    public function getAll(Request $request, Response $response): ResponseInterface
     {
         $search = $request->getQueryParam('search', null);
         $limit = $request->getQueryParam('limit', null);
@@ -91,7 +92,7 @@ class TechnicianController extends BaseController
         return $response->withJson($paginated, StatusCode::STATUS_OK);
     }
 
-    public function getAllWhileEvent(Request $request, Response $response): Response
+    public function getAllWhileEvent(Request $request, Response $response): ResponseInterface
     {
         $eventId = (int) $request->getAttribute('eventId');
         $event = Event::findOrFail($eventId);
@@ -104,6 +105,7 @@ class TechnicianController extends BaseController
                     ->whereHas('event', function ($query) use ($event) {
                         $query
                             ->where('id', '!=', $event->id)
+                            ->where('deleted_at', null)
                             ->where([
                                 ['end_date', '>=', $event->start_date],
                                 ['start_date', '<=', $event->end_date],
@@ -122,7 +124,7 @@ class TechnicianController extends BaseController
         return $response->withJson($technicians, StatusCode::STATUS_OK);
     }
 
-    public function getEvents(Request $request, Response $response): Response
+    public function getEvents(Request $request, Response $response): ResponseInterface
     {
         $id = $request->getAttribute('id');
         $technician = Technician::findOrFail($id);
@@ -130,7 +132,7 @@ class TechnicianController extends BaseController
         return $response->withJson($assignments, StatusCode::STATUS_OK);
     }
 
-    public function getDocuments(Request $request, Response $response): Response
+    public function getDocuments(Request $request, Response $response): ResponseInterface
     {
         $id = (int) $request->getAttribute('id');
         $technician = Technician::findOrFail($id);
@@ -138,7 +140,7 @@ class TechnicianController extends BaseController
         return $response->withJson($technician->documents, StatusCode::STATUS_OK);
     }
 
-    public function attachDocument(Request $request, Response $response): Response
+    public function attachDocument(Request $request, Response $response): ResponseInterface
     {
         $id = (int) $request->getAttribute('id');
         $technician = Technician::findOrFail($id);

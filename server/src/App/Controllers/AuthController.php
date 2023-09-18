@@ -8,37 +8,42 @@ use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Loxya\Config\Config;
 use Loxya\Http\Enums\AppContext;
+use Loxya\Http\Enums\FlashType;
 use Loxya\Http\Request;
 use Loxya\Models\User;
 use Loxya\Services\Auth;
+use Psr\Http\Message\ResponseInterface;
+use Loxya\Services\Auth\Exceptions\AuthException;
+use Odan\Session\FlashInterface;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpUnauthorizedException;
 use Slim\Http\Response;
 
 class AuthController extends BaseController
 {
-    /** @var Auth */
-    protected $auth;
+    private FlashInterface $flash;
 
-    /** @var array */
-    private $settings;
+    private Auth $auth;
 
-    public function __construct(Container $container, Auth $auth)
-    {
+    public function __construct(
+        Container $container,
+        FlashInterface $flash,
+        Auth $auth,
+    ) {
         parent::__construct($container);
 
+        $this->flash = $flash;
         $this->auth = $auth;
-        $this->settings = $container->get('settings');
     }
 
-    public function getSelf(Request $request, Response $response): Response
+    public function getSelf(Request $request, Response $response): ResponseInterface
     {
         $user = Auth::user()->serialize(User::SERIALIZE_DETAILS);
 
         return $response->withJson($user, StatusCode::STATUS_OK);
     }
 
-    public function loginWithForm(Request $request, Response $response): Response
+    public function loginWithForm(Request $request, Response $response): ResponseInterface
     {
         $identifier = $request->getParsedBodyParam('identifier');
         $password = $request->getParsedBodyParam('password');
@@ -64,16 +69,17 @@ class AuthController extends BaseController
         return $response->withJson($result, StatusCode::STATUS_OK);
     }
 
-    public function logout(Request $request, Response $response)
+    public function logout(Request $request, Response $response): ResponseInterface
     {
-        $contextBasePath = '';
+        $redirectUrl = (string) Config::getBaseUri()
+            ->withPath('/login');
 
-        if (!$this->auth->logout()) {
-            // TODO: Passer un message d'erreur au client (lorsqu'on aura un moyen de le faire)
-            //       l'informant du fait qu'il n'a pas été complètement déconnecté.
-            return $response->withRedirect(sprintf('%s/', $contextBasePath));
+        try {
+            return $this->auth->logout($redirectUrl);
+        } catch (AuthException $e) {
+            $this->flash->add(FlashType::ERROR, 'logout-failed');
+            $redirectUrl = (string) Config::getBaseUri();
+            return $response->withRedirect($redirectUrl);
         }
-
-        return $response->withRedirect(sprintf('%s/login', $contextBasePath));
     }
 }

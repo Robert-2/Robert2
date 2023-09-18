@@ -194,7 +194,7 @@ final class EventTechnician extends BaseModel implements Serializable
         'position',
     ];
 
-    public function setPositionAttribute($value)
+    public function setPositionAttribute($value): void
     {
         $value = is_string($value) ? trim($value) : $value;
         $this->attributes['position'] = $value;
@@ -272,7 +272,7 @@ final class EventTechnician extends BaseModel implements Serializable
         return $technicians;
     }
 
-    public static function flushForEvent(int $eventId)
+    public static function flushForEvent(int $eventId): void
     {
         static::where('event_id', $eventId)->delete();
     }

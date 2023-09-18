@@ -7,7 +7,7 @@ use Loxya\Services\I18n;
 
 final class I18nTest extends TestCase
 {
-    public function testTranslate()
+    public function testTranslate(): void
     {
         $result = (new I18n('fr'))->translate("{{name}} must be iterable");
         $this->assertEquals("Doit être itérable", $result);
@@ -20,7 +20,7 @@ final class I18nTest extends TestCase
         $this->assertEquals("Must be iterable", $result);
     }
 
-    public function testTranslatePlural()
+    public function testTranslatePlural(): void
     {
         $result = (new I18n('fr'))->plural("items-count", 5);
         $this->assertEquals("5 articles", $result);
@@ -29,7 +29,7 @@ final class I18nTest extends TestCase
         $this->assertEquals("5 items", $result);
     }
 
-    public function testGetLanguage()
+    public function testGetLanguage(): void
     {
         $this->assertEquals('fr', (new I18n('fr'))->getLanguage());
         $this->assertEquals('en', (new I18n('en'))->getLanguage());
@@ -38,7 +38,7 @@ final class I18nTest extends TestCase
         $this->assertEquals('fr', (new I18n('fr_CH'))->getLanguage());
     }
 
-    public function testGetLocale()
+    public function testGetLocale(): void
     {
         $this->assertEquals('fr_FR', (new I18n('fr'))->getLocale());
         $this->assertEquals('en_GB', (new I18n('en'))->getLocale());

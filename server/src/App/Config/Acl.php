@@ -8,6 +8,7 @@ use Loxya\Models\Enums\Group;
 class Acl
 {
     public const PUBLIC_ROUTES = [
+        '/healthcheck',
         '/install',
         '/login',
 

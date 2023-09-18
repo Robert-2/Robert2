@@ -132,7 +132,7 @@ final class EventTest extends TestCase
         $this->assertEquals(3, $results[0]->id);
     }
 
-    public function testSearchScope()
+    public function testSearchScope(): void
     {
         // - Retourne les événement qui ont le terme "premier" dans le titre
         $this->assertEquals(
@@ -212,17 +212,17 @@ final class EventTest extends TestCase
         $this->assertSame(null, $result->hasNotReturnedMaterials);
     }
 
-    public function testDailyAmountWithoutDiscount()
+    public function testDailyAmountWithoutDiscount(): void
     {
         $this->assertEquals('341.45', (string) Event::find(1)->daily_total_without_discount);
     }
 
-    public function testDailyTotalDiscountable()
+    public function testDailyTotalDiscountable(): void
     {
         $this->assertEquals('41.45', (string) Event::find(1)->daily_total_discountable);
     }
 
-    public function testTotalReplacement()
+    public function testTotalReplacement(): void
     {
         $this->assertEquals('19808.90', (string) Event::find(1)->total_replacement);
     }
@@ -365,7 +365,7 @@ final class EventTest extends TestCase
         $this->assertSame($expectedErrors, $event->validationErrors());
     }
 
-    public function testToPdf()
+    public function testToPdf(): void
     {
         Carbon::setTestNow(Carbon::create(2022, 9, 23, 12, 0, 0));
 
@@ -380,7 +380,7 @@ final class EventTest extends TestCase
         $this->assertMatchesHtmlSnapshot($result->getRawContent());
     }
 
-    public function testStaticEdit()
+    public function testStaticEdit(): void
     {
         $data = [
             'title' => ' Test update ',
@@ -445,28 +445,28 @@ final class EventTest extends TestCase
         }
     }
 
-    public function testStaticEditBadBeneficiaries()
+    public function testStaticEditBadBeneficiaries(): void
     {
         $data = ['beneficiaries' => 'not_an_array'];
         $this->expectException(\InvalidArgumentException::class);
         Event::staticEdit(4, $data);
     }
 
-    public function testStaticEditBadTechnicians()
+    public function testStaticEditBadTechnicians(): void
     {
         $data = ['technicians' => 'not_an_array'];
         $this->expectException(\InvalidArgumentException::class);
         Event::staticEdit(4, $data);
     }
 
-    public function testStaticEditBadMaterials()
+    public function testStaticEditBadMaterials(): void
     {
         $data = ['materials' => 'not_an_array'];
         $this->expectException(\InvalidArgumentException::class);
         Event::staticEdit(4, $data);
     }
 
-    public function testSyncBeneficiaries()
+    public function testSyncBeneficiaries(): void
     {
         $beneficiaries = [2, 3];
         $event = Event::findOrFail(4);
@@ -476,7 +476,7 @@ final class EventTest extends TestCase
         $this->assertEquals('Roger Rabbit', $event->beneficiaries[1]['full_name']);
     }
 
-    public function testSyncTechnicians()
+    public function testSyncTechnicians(): void
     {
         $technicians = [
             [
@@ -515,7 +515,7 @@ final class EventTest extends TestCase
         $this->assertEquals('Roadie remballage', $event->technicians[2]['position']);
     }
 
-    public function testSyncTechniciansValidationErrors()
+    public function testSyncTechniciansValidationErrors(): void
     {
         $technicians = [
             [
@@ -553,7 +553,7 @@ final class EventTest extends TestCase
         $this->assertEquals($expectedErrors, $errors);
     }
 
-    public function testSyncMaterials()
+    public function testSyncMaterials(): void
     {
         $materials = [
             ['id' => 2, 'quantity' => 4],
@@ -579,13 +579,13 @@ final class EventTest extends TestCase
         }
     }
 
-    public function testDuplicateBadData()
+    public function testDuplicateBadData(): void
     {
         $this->expectException(ValidationException::class);
         Event::findOrFail(1)->duplicate(['start_date' => 'invalid-date']);
     }
 
-    public function testDuplicate()
+    public function testDuplicate(): void
     {
         Carbon::setTestNow(Carbon::create(2021, 07, 23, 12, 31, 24));
 
@@ -740,7 +740,7 @@ final class EventTest extends TestCase
         ));
     }
 
-    public function testChangeDatesLonger()
+    public function testChangeDatesLonger(): void
     {
         $event = Event::staticEdit(1, [
             'end_date' => '2018-12-19 23:59:59', // - Un jour de plus
@@ -754,7 +754,7 @@ final class EventTest extends TestCase
         $this->assertEquals('2018-12-18 18:00:00', $event->technicians[1]['end_time']);
     }
 
-    public function testChangeDatesHalfTime()
+    public function testChangeDatesHalfTime(): void
     {
         $event = Event::staticEdit(1, [
             'end_date' => '2018-12-17 23:59:59', // - Un jour de moins

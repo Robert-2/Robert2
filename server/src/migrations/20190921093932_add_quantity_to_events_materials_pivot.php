@@ -5,7 +5,7 @@ use Phinx\Migration\AbstractMigration;
 
 final class AddQuantityToEventsMaterialsPivot extends AbstractMigration
 {
-    public function up()
+    public function up(): void
     {
         $table = $this->table('event_materials');
         $table
@@ -19,7 +19,7 @@ final class AddQuantityToEventsMaterialsPivot extends AbstractMigration
             ->update();
     }
 
-    public function down()
+    public function down(): void
     {
         $this->table('event_materials')
             ->removeColumn('quantity')

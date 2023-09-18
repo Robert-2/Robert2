@@ -485,13 +485,13 @@ final class EventsTest extends ApiTestCase
         return static::_dataFactory($id, $events->all());
     }
 
-    public function testGetEventNotFound()
+    public function testGetEventNotFound(): void
     {
         $this->client->get('/api/events/999');
         $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
-    public function testGetOneEvent()
+    public function testGetOneEvent(): void
     {
         $ids = array_column(static::data(null), 'id');
         foreach ($ids as $id) {
@@ -501,7 +501,7 @@ final class EventsTest extends ApiTestCase
         }
     }
 
-    public function testCreateEvent()
+    public function testCreateEvent(): void
     {
         Carbon::setTestNow(Carbon::create(2023, 05, 20, 17, 20, 11));
 
@@ -647,20 +647,20 @@ final class EventsTest extends ApiTestCase
         ]));
     }
 
-    public function testUpdateEventNoData()
+    public function testUpdateEventNoData(): void
     {
         $this->client->put('/api/events/1', []);
         $this->assertStatusCode(StatusCode::STATUS_BAD_REQUEST);
         $this->assertApiErrorMessage("No data was provided.");
     }
 
-    public function testUpdateEventNotFound()
+    public function testUpdateEventNotFound(): void
     {
         $this->client->put('/api/events/999', ['name' => '__inexistant__']);
         $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
-    public function testUpdateEvent()
+    public function testUpdateEvent(): void
     {
         Carbon::setTestNow(Carbon::create(2022, 10, 22, 18, 42, 36));
 
@@ -773,13 +773,13 @@ final class EventsTest extends ApiTestCase
         ));
     }
 
-    public function testDuplicateEventNotFound()
+    public function testDuplicateEventNotFound(): void
     {
         $this->client->post('/api/events/999/duplicate', []);
         $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
-    public function testDuplicateEventBadData()
+    public function testDuplicateEventBadData(): void
     {
         $this->client->post('/api/events/1/duplicate', [
             'start_date' => 'invalid-date',
@@ -790,7 +790,7 @@ final class EventsTest extends ApiTestCase
         ]);
     }
 
-    public function testDuplicateEvent()
+    public function testDuplicateEvent(): void
     {
         Carbon::setTestNow(Carbon::create(2021, 06, 22, 12, 11, 02));
 
@@ -953,13 +953,13 @@ final class EventsTest extends ApiTestCase
         ));
     }
 
-    public function testUpdateReturnInventoryNotFound()
+    public function testUpdateReturnInventoryNotFound(): void
     {
         $this->client->put('/api/events/999/return');
         $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
-    public function testUpdateReturnInventory()
+    public function testUpdateReturnInventory(): void
     {
         Carbon::setTestNow(Carbon::create(2023, 2, 1, 10, 00, 00));
 
@@ -1069,7 +1069,7 @@ final class EventsTest extends ApiTestCase
         ));
     }
 
-    public function testFinishReturnInventory()
+    public function testFinishReturnInventory(): void
     {
         Carbon::setTestNow(Carbon::create(2023, 2, 1, 10, 00, 00));
 
@@ -1120,7 +1120,7 @@ final class EventsTest extends ApiTestCase
         ));
     }
 
-    public function testArchiveEvent()
+    public function testArchiveEvent(): void
     {
         // - Archivage de l'événement #1
         //   possible, car inventaire de retour terminé
@@ -1138,7 +1138,7 @@ final class EventsTest extends ApiTestCase
         ]);
     }
 
-    public function testUnarchiveEvent()
+    public function testUnarchiveEvent(): void
     {
         // - Désarchivage de l'événement #3
         $this->client->put('/api/events/3/unarchive');
@@ -1146,7 +1146,7 @@ final class EventsTest extends ApiTestCase
         $this->assertResponseHasKeyEquals('is_archived', false);
     }
 
-    public function testDeleteAndDestroyEvent()
+    public function testDeleteAndDestroyEvent(): void
     {
         // - Suppression (soft delete) de l'événement #4
         //   possible car pas d'inventaire de retour ni confirmé
@@ -1162,7 +1162,7 @@ final class EventsTest extends ApiTestCase
         $this->assertNull(Event::withTrashed()->find(4));
     }
 
-    public function testDeleteEventFail()
+    public function testDeleteEventFail(): void
     {
         // - On ne peut pas supprimer l'événement #1
         //   car son inventaire de retour est terminé
@@ -1179,13 +1179,13 @@ final class EventsTest extends ApiTestCase
         $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
-    public function testRestoreEventNotFound()
+    public function testRestoreEventNotFound(): void
     {
         $this->client->put('/api/events/restore/999');
         $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
-    public function testRestoreEvent()
+    public function testRestoreEvent(): void
     {
         // - Suppression de l'événement #4 au préalable
         $this->client->delete('/api/events/4');
@@ -1197,7 +1197,7 @@ final class EventsTest extends ApiTestCase
         $this->assertNotNull(Event::find(4));
     }
 
-    public function testGetMissingMaterials()
+    public function testGetMissingMaterials(): void
     {
         // - Get missing materials for event #3 (no missing materials)
         $this->client->get('/api/events/3/missing-materials');
@@ -1243,7 +1243,7 @@ final class EventsTest extends ApiTestCase
         $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
-    public function testDownloadPdf()
+    public function testDownloadPdf(): void
     {
         Carbon::setTestNow(Carbon::create(2022, 9, 23, 12, 0, 0));
 
@@ -1276,7 +1276,7 @@ final class EventsTest extends ApiTestCase
         $this->assertMatchesHtmlSnapshot($responseStream->getContents());
     }
 
-    public function testSearch()
+    public function testSearch(): void
     {
         // - Retourne la liste des événement qui ont le terme "premier" dans le titre
         $this->client->get('/api/events?search=premier');
@@ -1300,7 +1300,7 @@ final class EventsTest extends ApiTestCase
         ]);
     }
 
-    public function testCreateInvoice()
+    public function testCreateInvoice(): void
     {
         Carbon::setTestNow(Carbon::create(2022, 10, 22, 18, 42, 36));
 
@@ -1318,7 +1318,7 @@ final class EventsTest extends ApiTestCase
         ]);
     }
 
-    public function testCreateInvoiceWithDiscount()
+    public function testCreateInvoiceWithDiscount(): void
     {
         Carbon::setTestNow(Carbon::create(2020, 10, 22, 18, 42, 36));
 
@@ -1336,7 +1336,7 @@ final class EventsTest extends ApiTestCase
         ]);
     }
 
-    public function testCreateEstimate()
+    public function testCreateEstimate(): void
     {
         Carbon::setTestNow(Carbon::create(2022, 10, 22, 18, 42, 36));
 
@@ -1353,7 +1353,7 @@ final class EventsTest extends ApiTestCase
         ]);
     }
 
-    public function testCreateEstimateWithDiscount()
+    public function testCreateEstimateWithDiscount(): void
     {
         Carbon::setTestNow(Carbon::create(2022, 10, 22, 18, 42, 36));
 
@@ -1370,7 +1370,7 @@ final class EventsTest extends ApiTestCase
         ]);
     }
 
-    public function testAttachDocument()
+    public function testAttachDocument(): void
     {
         Carbon::setTestNow(Carbon::create(2022, 10, 22, 18, 42, 36));
 
@@ -1449,7 +1449,7 @@ final class EventsTest extends ApiTestCase
         }
     }
 
-    public function testGetDocuments()
+    public function testGetDocuments(): void
     {
         // - Événement inexistant.
         $this->client->get('/api/events/999/documents');

@@ -23,7 +23,7 @@ final class InvoicesTest extends ApiTestCase
         ]);
     }
 
-    public function testDownloadPdf()
+    public function testDownloadPdf(): void
     {
         // - Si la facture n'existe pas...
         $this->client->get('/invoices/999/pdf');

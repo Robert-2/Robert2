@@ -36,7 +36,7 @@ router.beforeEach((to, from, next) => {
 
     const isLogged = store.getters['auth/isLogged'];
     if (requiresAuth && !isLogged) {
-        next('/login');
+        next({ name: 'login' });
         return;
     }
 
@@ -56,7 +56,7 @@ router.beforeEach((to, from, next) => {
     const { requiresGroups } = to.matched[0].meta;
     if (requiresGroups && requiresGroups.length) {
         if (!isLogged) {
-            next('/login');
+            next({ name: 'login' });
             return;
         }
 
@@ -68,7 +68,7 @@ router.beforeEach((to, from, next) => {
 
     if (restrictAccess) {
         store.dispatch('auth/logout').then(() => {
-            next({ path: '/login', hash: '#restricted' });
+            next({ name: 'login', hash: '#restricted' });
         });
         return;
     }

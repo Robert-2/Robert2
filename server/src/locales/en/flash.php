@@ -1,0 +1,8 @@
+<?php
+declare(strict_types=1);
+
+return [
+    'cas-login-failed' => "CAS login failed, please try again.",
+    'saml2-login-failed' => "SAML 2.0 login failed, please try again.",
+    'logout-failed' => "An error occurred while logging out, please try again.",
+];

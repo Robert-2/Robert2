@@ -26,6 +26,7 @@ use Loxya\Support\Collections\MaterialsCollection;
 use Loxya\Support\Pdf;
 use Loxya\Support\Period;
 use Loxya\Support\Str;
+use Psr\Http\Message\ResponseInterface;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
@@ -53,7 +54,7 @@ class MaterialController extends BaseController
     // -
     // ------------------------------------------------------
 
-    public function getOne(Request $request, Response $response): Response
+    public function getOne(Request $request, Response $response): ResponseInterface
     {
         $id = (int) $request->getAttribute('id');
         $material = Material::findOrFail($id);
@@ -62,14 +63,14 @@ class MaterialController extends BaseController
         return $response->withJson($materialData, StatusCode::STATUS_OK);
     }
 
-    public function getTags(Request $request, Response $response): Response
+    public function getTags(Request $request, Response $response): ResponseInterface
     {
         $id = (int) $request->getAttribute('id');
         $material = Material::findOrFail($id);
         return $response->withJson($material->tags, StatusCode::STATUS_OK);
     }
 
-    public function getAll(Request $request, Response $response): Response
+    public function getAll(Request $request, Response $response): ResponseInterface
     {
         $paginated = (bool) $request->getQueryParam('paginated', true);
         $limit = $request->getQueryParam('limit', null);
@@ -148,7 +149,7 @@ class MaterialController extends BaseController
         return $response->withJson($results, StatusCode::STATUS_OK);
     }
 
-    public function getAllWhileEvent(Request $request, Response $response): Response
+    public function getAllWhileEvent(Request $request, Response $response): ResponseInterface
     {
         $eventId = (int) $request->getAttribute('eventId');
         $currentEvent = Event::findOrFail($eventId);
@@ -167,7 +168,7 @@ class MaterialController extends BaseController
         return $response->withJson($materials, StatusCode::STATUS_OK);
     }
 
-    public function getAllPdf(Request $request, Response $response): Response
+    public function getAllPdf(Request $request, Response $response): ResponseInterface
     {
         $onlyParkId = $request->getQueryParam('park', null);
 
@@ -205,7 +206,7 @@ class MaterialController extends BaseController
         }
 
         $date = CarbonImmutable::now();
-        $company = Config::getSettings('companyData');
+        $company = Config::get('companyData');
         $fileName = Str::slugify(implode('-', [
             $this->i18n->translate('materials-list'),
             $parkOnlyName ?: $company['name'],
@@ -216,14 +217,14 @@ class MaterialController extends BaseController
             'date' => $date,
             'company' => $company,
             'parkOnlyName' => $parkOnlyName,
-            'currency' => Config::getSettings('currency')['iso'],
+            'currency' => Config::get('currency.iso'),
             'parksMaterialsList' => $parksMaterials,
         ]);
 
         return $pdf->asResponse($response);
     }
 
-    public function getDocuments(Request $request, Response $response): Response
+    public function getDocuments(Request $request, Response $response): ResponseInterface
     {
         $id = (int) $request->getAttribute('id');
         $material = Material::findOrFail($id);
@@ -232,7 +233,7 @@ class MaterialController extends BaseController
     }
 
     // TODO: Limiter aux 3 derniers mois + Tous les futurs.
-    public function getBookings(Request $request, Response $response): Response
+    public function getBookings(Request $request, Response $response): ResponseInterface
     {
         $id = (int) $request->getAttribute('id');
         $material = Material::findOrFail($id);
@@ -305,7 +306,7 @@ class MaterialController extends BaseController
         return $response->withJson($data, StatusCode::STATUS_OK);
     }
 
-    public function getPicture(Request $request, Response $response): Response
+    public function getPicture(Request $request, Response $response): ResponseInterface
     {
         $id = (int) $request->getAttribute('id');
         $material = Material::findOrFail($id);
@@ -333,7 +334,7 @@ class MaterialController extends BaseController
     // -
     // ------------------------------------------------------
 
-    public function create(Request $request, Response $response): Response
+    public function create(Request $request, Response $response): ResponseInterface
     {
         $postData = (array) $request->getParsedBody();
         if (empty($postData)) {
@@ -346,7 +347,7 @@ class MaterialController extends BaseController
         return $response->withJson($materialData, StatusCode::STATUS_CREATED);
     }
 
-    public function update(Request $request, Response $response): Response
+    public function update(Request $request, Response $response): ResponseInterface
     {
         $id = (int) $request->getAttribute('id');
         $material = Material::findOrFail($id);
@@ -362,7 +363,7 @@ class MaterialController extends BaseController
         return $response->withJson($materialData, StatusCode::STATUS_OK);
     }
 
-    public function attachDocument(Request $request, Response $response): Response
+    public function attachDocument(Request $request, Response $response): ResponseInterface
     {
         $id = (int) $request->getAttribute('id');
         $material = Material::findOrFail($id);
@@ -381,7 +382,7 @@ class MaterialController extends BaseController
         return $response->withJson($document, StatusCode::STATUS_CREATED);
     }
 
-    public function restore(Request $request, Response $response): Response
+    public function restore(Request $request, Response $response): ResponseInterface
     {
         $id = (int) $request->getAttribute('id');
         $material = $this->getModelClass()::staticRestore($id);

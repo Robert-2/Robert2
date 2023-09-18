@@ -8,7 +8,7 @@ final class FixOutOfOrderQuantities extends AbstractMigration
 {
     public function up(): void
     {
-        $prefix = Config::getSettings('db')['prefix'];
+        $prefix = Config::get('db.prefix');
 
         $this->execute(sprintf(
             "UPDATE `%smaterials` SET `out_of_order_quantity` = NULL WHERE `is_unitary` = '1'",

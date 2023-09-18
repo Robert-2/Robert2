@@ -20,7 +20,7 @@ const DefaultLayoutHeaderMenu = defineComponent({
 
         async handleLogout() {
             await this.logout();
-            this.$router.replace({ path: '/login', hash: '#bye' });
+            this.$router.replace({ name: 'login', hash: '#bye' });
         },
     },
     render() {

@@ -93,6 +93,7 @@ export default {
     'name': "Name",
     'nickname': "Nickname",
     'company': "Company",
+    'person': "Person",
     'legal-name': "Legal name",
     'contact-details': "Contact details",
     'other-infos': "Other informations",
@@ -324,7 +325,10 @@ export default {
     'list-template-details': "Details of list template \"{name}\"",
     'list-template-use-warning': "Be careful, using this template will add its materials to the already selected, and will save the list right away!",
     'use-this-template': "Use this list template",
-    'no-list-template-available': "No list template available!",
+    'no-list-template-available': (
+        "No list template available yet...\n" +
+        "You can create them from the \"Materials\" page, then \"List templates\" button."
+    ),
     'create-list-template': "Create a material list template",
     'create-list-template-from-event': "Create a list template with this event",
     'list-template-created': "Le modèle de liste de matériel nommé «\u00A0{name}\u00A0» a bien été créé",

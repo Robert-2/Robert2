@@ -8,8 +8,8 @@ final class CreateGroupsProfile extends AbstractMigration
 {
     public function up(): void
     {
-        $prefix = Config::getSettings('db')['prefix'];
-        $defaultTags = Config::getSettings('defaultTags') ?? [];
+        $prefix = Config::get('db.prefix');
+        $defaultTags = Config::get('defaultTags', []);
 
         // - Tag "Bénéficiaire".
         $beneficiaryTag = $this->getQueryBuilder()
@@ -339,8 +339,8 @@ final class CreateGroupsProfile extends AbstractMigration
 
     public function down(): void
     {
-        $prefix = Config::getSettings('db')['prefix'];
-        $defaultTags = Config::getSettings('defaultTags') ?? [];
+        $prefix = Config::get('db.prefix');
+        $defaultTags = Config::get('defaultTags', []);
 
         //
         // - Tags

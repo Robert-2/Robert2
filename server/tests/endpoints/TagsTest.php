@@ -22,7 +22,7 @@ final class TagsTest extends ApiTestCase
         ]);
     }
 
-    public function testGetTags()
+    public function testGetTags(): void
     {
         $this->client->get('/api/tags');
         $this->assertStatusCode(StatusCode::STATUS_OK);
@@ -36,14 +36,14 @@ final class TagsTest extends ApiTestCase
         $this->assertResponseData([]);
     }
 
-    public function testCreateTagWithoutData()
+    public function testCreateTagWithoutData(): void
     {
         $this->client->post('/api/tags');
         $this->assertStatusCode(StatusCode::STATUS_BAD_REQUEST);
         $this->assertApiErrorMessage("No data was provided.");
     }
 
-    public function testCreateTagBadData()
+    public function testCreateTagBadData(): void
     {
         $this->client->post('/api/tags', ['foo' => 'bar']);
         $this->assertApiValidationError([
@@ -51,13 +51,13 @@ final class TagsTest extends ApiTestCase
         ]);
     }
 
-    public function testCreateTagDuplicate()
+    public function testCreateTagDuplicate(): void
     {
         $this->client->post('/api/tags', ['name' => 'Premium']);
         $this->assertApiValidationError();
     }
 
-    public function testCreateTag()
+    public function testCreateTag(): void
     {
         $this->client->post('/api/tags', ['name' => 'New tag']);
         $this->assertStatusCode(StatusCode::STATUS_CREATED);
@@ -67,7 +67,7 @@ final class TagsTest extends ApiTestCase
         ]);
     }
 
-    public function testDeleteAndDestroyTag()
+    public function testDeleteAndDestroyTag(): void
     {
         // - First call: soft delete.
         $this->client->delete('/api/tags/1');
@@ -82,13 +82,13 @@ final class TagsTest extends ApiTestCase
         $this->assertNull(Tag::withTrashed()->find(1));
     }
 
-    public function testRestoreTagNotFound()
+    public function testRestoreTagNotFound(): void
     {
         $this->client->put('/api/tags/restore/999');
         $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
-    public function testRestoreTag()
+    public function testRestoreTag(): void
     {
         // - First, delete tag #1
         $this->client->delete('/api/tags/1');

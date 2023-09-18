@@ -13,7 +13,7 @@ use Loxya\Support\Pdf;
 
 final class InvoiceTest extends TestCase
 {
-    public function testCreateFromEvent()
+    public function testCreateFromEvent(): void
     {
         Carbon::setTestNow(Carbon::create(2022, 10, 22, 18, 42, 36));
 
@@ -89,7 +89,7 @@ final class InvoiceTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    public function testToPdf()
+    public function testToPdf(): void
     {
         Carbon::setTestNow(Carbon::create(2022, 10, 22, 18, 42, 36));
 
@@ -106,7 +106,7 @@ final class InvoiceTest extends TestCase
         $this->assertMatchesHtmlSnapshot($result->getRawContent());
     }
 
-    public function testGetLastNumber()
+    public function testGetLastNumber(): void
     {
         $result = Invoice::getLastNumber(2099);
         $this->assertEquals(null, $result);
@@ -115,7 +115,7 @@ final class InvoiceTest extends TestCase
         $this->assertEquals('2020-00001', $result);
     }
 
-    public function testGetNextNumber()
+    public function testGetNextNumber(): void
     {
         $result = Invoice::getNextNumber(2099);
         $this->assertEquals('2099-00001', $result);

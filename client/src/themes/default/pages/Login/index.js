@@ -17,10 +17,12 @@ export default {
                 type = 'success';
                 text = __('page.login.bye');
                 break;
+
             case '#expired':
                 type = 'error';
                 text = __('page.login.error.expired-session');
                 break;
+
             case '#restricted':
                 type = 'error';
                 text = __('page.login.error.not-allowed');
@@ -72,7 +74,12 @@ export default {
         },
     },
     render() {
-        const { $t: __, message, credentials, handleSubmit } = this;
+        const {
+            $t: __,
+            message,
+            credentials,
+            handleSubmit,
+        } = this;
 
         return (
             <div class="Login">
@@ -82,7 +89,7 @@ export default {
                 </div>
                 <div class="Login__body">
                     <form class="Login__form" onSubmit={handleSubmit}>
-                        {/* => Input */}
+                        {/* TODO: => Input */}
                         <input
                             type="text"
                             v-model={credentials.identifier}

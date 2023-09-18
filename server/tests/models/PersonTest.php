@@ -53,10 +53,23 @@ final class PersonTest extends TestCase
 
     public function testEditNormalizePhone(): void
     {
+        // - Test 1 : Sans préfixe.
         $resultPerson = Person::staticEdit(1, [
-            'phone' => '+00336 25 25 21 25',
+            'phone' => '06 25 25 21 25',
         ]);
-        $this->assertEquals('+0033625252125', $resultPerson->phone);
+        $this->assertEquals('0625252125', $resultPerson->phone);
+
+        // - Test 2 : Avec préfixe `00`.
+        $resultPerson = Person::staticEdit(1, [
+            'phone' => '00336 25 25 21 25',
+        ]);
+        $this->assertEquals('0033625252125', $resultPerson->phone);
+
+        // - Test 2 : Avec préfixe `+`.
+        $resultPerson = Person::staticEdit(1, [
+            'phone' => '+336 25 25 21 25',
+        ]);
+        $this->assertEquals('+33625252125', $resultPerson->phone);
     }
 
     public function testDeleteIfOrphan(): void

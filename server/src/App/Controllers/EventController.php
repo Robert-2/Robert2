@@ -16,6 +16,7 @@ use Loxya\Models\Event;
 use Loxya\Models\Invoice;
 use Loxya\Services\Auth;
 use Loxya\Services\I18n;
+use Psr\Http\Message\ResponseInterface;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Http\Response;
 
@@ -38,7 +39,7 @@ class EventController extends BaseController
     // -
     // ------------------------------------------------------
 
-    public function getAll(Request $request, Response $response): Response
+    public function getAll(Request $request, Response $response): ResponseInterface
     {
         $search = $request->getQueryParam('search', null);
         $exclude = $request->getQueryParam('exclude', null);
@@ -61,7 +62,7 @@ class EventController extends BaseController
         ]);
     }
 
-    public function getMissingMaterials(Request $request, Response $response): Response
+    public function getMissingMaterials(Request $request, Response $response): ResponseInterface
     {
         $id = (int) $request->getAttribute('id');
 
@@ -77,7 +78,7 @@ class EventController extends BaseController
         return $response->withJson($missingMaterials, StatusCode::STATUS_OK);
     }
 
-    public function getDocuments(Request $request, Response $response): Response
+    public function getDocuments(Request $request, Response $response): ResponseInterface
     {
         $id = (int) $request->getAttribute('id');
         $event = Event::findOrFail($id);
@@ -85,7 +86,7 @@ class EventController extends BaseController
         return $response->withJson($event->documents, StatusCode::STATUS_OK);
     }
 
-    public function getOnePdf(Request $request, Response $response): Response
+    public function getOnePdf(Request $request, Response $response): ResponseInterface
     {
         $id = (int) $request->getAttribute('id');
         $event = Event::findOrFail($id);
@@ -96,7 +97,7 @@ class EventController extends BaseController
         return $pdf->asResponse($response);
     }
 
-    public function create(Request $request, Response $response): Response
+    public function create(Request $request, Response $response): ResponseInterface
     {
         $postData = (array) $request->getParsedBody();
         if (empty($postData)) {
@@ -110,7 +111,7 @@ class EventController extends BaseController
         return $response->withJson(static::_formatOne($event), StatusCode::STATUS_CREATED);
     }
 
-    public function duplicate(Request $request, Response $response): Response
+    public function duplicate(Request $request, Response $response): ResponseInterface
     {
         $id = (int) $request->getAttribute('id');
         $originalEvent = Event::findOrFail($id);
@@ -126,7 +127,7 @@ class EventController extends BaseController
         return $response->withJson($data, StatusCode::STATUS_CREATED);
     }
 
-    public function updateReturnInventory(Request $request, Response $response): Response
+    public function updateReturnInventory(Request $request, Response $response): ResponseInterface
     {
         $id = (int) $request->getAttribute('id');
         $event = Event::findOrFail($id);
@@ -159,7 +160,7 @@ class EventController extends BaseController
         return $response->withJson(static::_formatOne($event), StatusCode::STATUS_OK);
     }
 
-    public function finishReturnInventory(Request $request, Response $response): Response
+    public function finishReturnInventory(Request $request, Response $response): ResponseInterface
     {
         $id = (int) $request->getAttribute('id');
         $event = Event::findOrFail($id);
@@ -197,7 +198,7 @@ class EventController extends BaseController
         return $response->withJson(static::_formatOne($event), StatusCode::STATUS_OK);
     }
 
-    public function createEstimate(Request $request, Response $response): Response
+    public function createEstimate(Request $request, Response $response): ResponseInterface
     {
         $id = (int) $request->getAttribute('id');
         $event = Event::findOrFail($id);
@@ -211,7 +212,7 @@ class EventController extends BaseController
         return $response->withJson($estimate, StatusCode::STATUS_CREATED);
     }
 
-    public function createInvoice(Request $request, Response $response): Response
+    public function createInvoice(Request $request, Response $response): ResponseInterface
     {
         $id = (int) $request->getAttribute('id');
         $event = Event::findOrFail($id);
@@ -225,7 +226,7 @@ class EventController extends BaseController
         return $response->withJson($invoice, StatusCode::STATUS_CREATED);
     }
 
-    public function attachDocument(Request $request, Response $response): Response
+    public function attachDocument(Request $request, Response $response): ResponseInterface
     {
         $id = (int) $request->getAttribute('id');
         $event = Event::findOrFail($id);
@@ -244,7 +245,7 @@ class EventController extends BaseController
         return $response->withJson($document, StatusCode::STATUS_CREATED);
     }
 
-    public function archive(Request $request, Response $response): Response
+    public function archive(Request $request, Response $response): ResponseInterface
     {
         $id = (int) $request->getAttribute('id');
         $event = Event::findOrFail($id);
@@ -255,7 +256,7 @@ class EventController extends BaseController
         return $response->withJson(static::_formatOne($event), StatusCode::STATUS_OK);
     }
 
-    public function unarchive(Request $request, Response $response): Response
+    public function unarchive(Request $request, Response $response): ResponseInterface
     {
         $id = (int) $request->getAttribute('id');
         $event = Event::findOrFail($id);
@@ -266,12 +267,13 @@ class EventController extends BaseController
         return $response->withJson(static::_formatOne($event), StatusCode::STATUS_OK);
     }
 
-    public function delete(Request $request, Response $response): Response
+    public function delete(Request $request, Response $response): ResponseInterface
     {
         $id = (int) $request->getAttribute('id');
         $event = Event::withTrashed()
             ->orWhere(function ($query) {
-                $query->where('is_confirmed', false)
+                $query
+                    ->where('is_confirmed', false)
                     ->where('is_return_inventory_done', false);
             })
             ->findOrFail($id);

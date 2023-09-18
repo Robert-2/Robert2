@@ -5,7 +5,7 @@ use Phinx\Migration\AbstractMigration;
 
 final class AddPictureToMaterials extends AbstractMigration
 {
-    public function up()
+    public function up(): void
     {
         $table = $this->table('materials');
         $table
@@ -17,7 +17,7 @@ final class AddPictureToMaterials extends AbstractMigration
             ->save();
     }
 
-    public function down()
+    public function down(): void
     {
         $table = $this->table('materials');
         $table

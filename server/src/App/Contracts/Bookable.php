@@ -40,8 +40,6 @@ interface Bookable
      * @param Builder $query
      * @param string|Carbon|PeriodInterface $start
      * @param null|string|Carbon $end (optionnel)
-     *
-     * @return Builder
      */
     public function scopeInPeriod(Builder $query, $start, $end = null): Builder;
 }

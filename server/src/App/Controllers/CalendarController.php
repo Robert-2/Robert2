@@ -14,17 +14,18 @@ use Loxya\Config\Config;
 use Loxya\Http\Request;
 use Loxya\Models\Event;
 use Loxya\Models\Setting;
+use Psr\Http\Message\ResponseInterface;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
 use Slim\Psr7\Factory\StreamFactory;
 
 class CalendarController extends BaseController
 {
-    public function public(Request $request, Response $response): Response
+    public function public(Request $request, Response $response): ResponseInterface
     {
         $uuid = $request->getAttribute('uuid');
         $settings = Setting::getWithKey('calendar.public');
-        $apiUrl = trim(Config::getSettings('apiUrl'), '/');
+        $baseUri = Config::getBaseUri();
         if (!$settings['enabled'] || !$uuid || $uuid !== $settings['uuid']) {
             throw new HttpNotFoundException($request);
         }
@@ -53,7 +54,7 @@ class CalendarController extends BaseController
             }
 
             $calendarEventId = new CalendarValue\UniqueIdentifier(
-                md5(sprintf('%s/event/%d', $apiUrl, $event->id))
+                md5((string) $baseUri->withPath(sprintf('/event/%d', $event->id)))
             );
             $calendarEvent = (new CalendarEvent($calendarEventId))
                 ->setSummary($event->title)

@@ -5,7 +5,7 @@ use Phinx\Migration\AbstractMigration;
 
 final class AddIsReturnInventoryDoneToEvents extends AbstractMigration
 {
-    public function up()
+    public function up(): void
     {
         $table = $this->table('events');
         $table
@@ -17,7 +17,7 @@ final class AddIsReturnInventoryDoneToEvents extends AbstractMigration
             ->save();
     }
 
-    public function down()
+    public function down(): void
     {
         $table = $this->table('events');
         $table

@@ -44,6 +44,7 @@ trait ConfigurationTrait
         return true;
     }
 
+    // phpcs:ignore SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingNativeTypeHint
     public function setConfig(ConfigInterface $config)
     {
         throw new \Exception('Non implémenté.');

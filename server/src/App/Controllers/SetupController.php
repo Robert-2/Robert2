@@ -13,6 +13,7 @@ use Loxya\Models\User;
 use Loxya\Services\I18n;
 use Loxya\Services\View;
 use Loxya\Install\Install;
+use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Response;
 
 class SetupController extends BaseController
@@ -21,18 +22,15 @@ class SetupController extends BaseController
 
     private I18n $i18n;
 
-    private array $settings;
-
     public function __construct(Container $container, View $view, I18n $i18n)
     {
         parent::__construct($container);
 
         $this->view = $view;
         $this->i18n = $i18n;
-        $this->settings = $container->get('settings');
     }
 
-    public function index(Request $request, Response $response)
+    public function index(Request $request, Response $response): ResponseInterface
     {
         $currentStep = Install::getStep();
         if ($currentStep === 'end') {
@@ -56,7 +54,7 @@ class SetupController extends BaseController
             }
 
             if ($currentStep === 'company') {
-                $stepData = $this->settings['companyData'];
+                $stepData = Config::get('companyData');
             }
         }
 
@@ -160,6 +158,15 @@ class SetupController extends BaseController
             $stepData['existingAdmins'] = User::where('group', Group::ADMIN)->get()->toArray();
         }
 
+        // - Données de configuration existantes.
+        $config = Config::get();
+
+        // - Prise en charge de la rétro-compatibilité vu qu'anciennement
+        //   `baseUrl` était nommé `apiUrl`.
+        if (($config['baseUrl'] ?? null) === null) {
+            $config['baseUrl'] = $config['apiUrl'] ?? '';
+        }
+
         return $this->view->render($response, 'install.twig', [
             'lang' => $lang,
             'step' => $currentStep,
@@ -167,11 +174,11 @@ class SetupController extends BaseController
             'error' => $error,
             'validationErrors' => $validationErrors,
             'stepData' => $stepData,
-            'config' => $this->settings,
+            'config' => $config,
         ]);
     }
 
-    public function endInstall(Request $request, Response $response)
+    public function endInstall(Request $request, Response $response): ResponseInterface
     {
         $steps = Install::INSTALL_STEPS;
 

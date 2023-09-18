@@ -11,7 +11,7 @@ use Loxya\Support\Period;
 
 final class MaterialTest extends TestCase
 {
-    public function testValidation()
+    public function testValidation(): void
     {
         $data = [
             'name' => 'A',

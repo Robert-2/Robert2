@@ -3,9 +3,8 @@ declare(strict_types=1);
 
 namespace Loxya\Models;
 
-use Carbon\Carbon;
 use Adbar\Dot as DotArray;
-use Illuminate\Database\Eloquent\Builder;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Collection;
 use Loxya\Contracts\Serializable;
 use Loxya\Models\Traits\Serializer;
@@ -29,11 +28,9 @@ use Loxya\Models\Traits\SoftDeletable;
  * @property-read float $total_amount
  * @property-read bool $has_ongoing_booking
  * @property-read Collection|Material[] $materials
- * @property-read Carbon $created_at
- * @property-read Carbon $updated_at
- * @property-read Carbon|null $deleted_at
- *
- * @method static Builder|static forUser(int $userId)
+ * @property-read CarbonImmutable $created_at
+ * @property-read CarbonImmutable|null $updated_at
+ * @property-read CarbonImmutable|null $deleted_at
  */
 final class Park extends BaseModel implements Serializable
 {
@@ -123,6 +120,9 @@ final class Park extends BaseModel implements Serializable
         'country_id' => 'integer',
         'opening_hours' => 'string',
         'note' => 'string',
+        'created_at' => 'immutable_datetime',
+        'updated_at' => 'immutable_datetime',
+        'deleted_at' => 'immutable_datetime',
     ];
 
     public function getTotalItemsAttribute()

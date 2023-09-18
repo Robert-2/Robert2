@@ -11,7 +11,7 @@ final class AttributeTest extends TestCase
 {
     public function testValidation(): void
     {
-        $testValidation = function (array $testData, array $expectedErrors) {
+        $testValidation = function (array $testData, array $expectedErrors): void {
             $validationExConstraint = new ExceptionConstraint(ValidationException::class);
             try {
                 (new Attribute($testData))->validate();

@@ -1,10 +1,6 @@
 @use '~@/themes/default/style/globals';
 
-//
-// - Drop zone
-//
-
-$drop-zone-background-color: transparent !default; // globals.$bg-color-emphasis
+$drop-zone-background-color: transparent !default;
 $drop-zone-color: globals.$text-base-color !default;
 $drop-zone-border-radius: 10px !default;
 $drop-zone-border-width: 5px !default;

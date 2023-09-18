@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Loxya\Models;
 
 use Adbar\Dot as DotArray;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Collection;
 use Loxya\Contracts\Serializable;
 use Loxya\Models\Traits\Serializer;
@@ -15,8 +16,8 @@ use Respect\Validation\Validator as V;
  * @property-read ?int $id
  * @property string $name
  * @property-read bool $has_sub_categories
- * @property-read Carbon $created_at
- * @property-read Carbon|null $updated_at
+ * @property-read CarbonImmutable $created_at
+ * @property-read CarbonImmutable|null $updated_at
  *
  * @property-read Collection|SubCategory[] $subCategories
  * @property-read Collection|SubCategory[] $sub_categories
@@ -94,6 +95,8 @@ final class Category extends BaseModel implements Serializable
 
     protected $casts = [
         'name' => 'string',
+        'created_at' => 'immutable_datetime',
+        'updated_at' => 'immutable_datetime',
     ];
 
     public function getSubCategoriesAttribute()

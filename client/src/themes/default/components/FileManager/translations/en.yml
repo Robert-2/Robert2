@@ -1,8 +1,4 @@
 no-document: No document yet.
-drag-and-drop-files-here: Drag and drop in this area to add new files.
-max-size: 'Maximum size: {size}'
-choose-files: Or click here to choose files to add
-send-files: ['Send file', 'Send {count} files']
 
 upload-in-queue: "In queue..."
 upload-in-progress: "Upload in progress...\_{progress}%"

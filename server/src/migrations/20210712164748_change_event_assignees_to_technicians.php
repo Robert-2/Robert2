@@ -6,7 +6,7 @@ use Loxya\Config\Config;
 
 final class ChangeEventAssigneesToTechnicians extends AbstractMigration
 {
-    public function up()
+    public function up(): void
     {
         $table = $this->table('event_assignees');
         $table->removeIndex('person_id')->dropForeignKey('person_id')->save();
@@ -28,7 +28,7 @@ final class ChangeEventAssigneesToTechnicians extends AbstractMigration
             ])
             ->save();
 
-        $prefix = Config::getSettings('db')['prefix'];
+        $prefix = Config::get('db.prefix');
 
         $allEvents = $this->fetchAll(
             sprintf("SELECT `id`, `start_date`, `end_date` FROM `%sevents`", $prefix)
@@ -51,7 +51,7 @@ final class ChangeEventAssigneesToTechnicians extends AbstractMigration
         $table->rename('event_technicians')->update();
     }
 
-    public function down()
+    public function down(): void
     {
         $table = $this->table('event_technicians');
         $table
