@@ -101,15 +101,15 @@ final class TechniciansTest extends ApiTestCase
         ]);
     }
 
-    public function testGetAllInPeriod(): void
+    public function testGetAllWithAvailabilityPeriod(): void
     {
         // - Aucun technicien n'est disponible pendant ces dates
-        $this->client->get('/api/technicians?startDate=2018-12-15&endDate=2018-12-20');
+        $this->client->get('/api/technicians?availabilityPeriod[start]=2018-12-15&availabilityPeriod[end]=2018-12-20');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponsePaginatedData(0);
 
         // - Un technicien est disponible pendant ces dates
-        $this->client->get('/api/technicians?startDate=2018-12-17&endDate=2018-12-17');
+        $this->client->get('/api/technicians?availabilityPeriod[start]=2018-12-17&availabilityPeriod[end]=2018-12-17');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponsePaginatedData(1, [
             self::data(2),
@@ -213,14 +213,14 @@ final class TechniciansTest extends ApiTestCase
             'nickname' => 'ilestvraimeeeentrèslongcesurnom',
         ]);
         $this->assertApiValidationError([
-            'nickname' => ["30 max. characters"],
-            'first_name' => ['This field contains some unauthorized characters'],
+            'nickname' => ["30 max. characters."],
+            'first_name' => ['This field contains some unauthorized characters.'],
             'last_name' => [
-                "This field is mandatory",
-                "This field contains some unauthorized characters",
-                "2 min. characters, 35 max. characters",
+                "This field is mandatory.",
+                "This field contains some unauthorized characters.",
+                "2 min. characters, 35 max. characters.",
             ],
-            'email' => ["This email address is not valid"],
+            'email' => ["This email address is invalid."],
         ]);
 
         // - Test 2.
@@ -232,7 +232,7 @@ final class TechniciansTest extends ApiTestCase
             'phone' => 'notAphoneNumber',
         ]);
         $this->assertApiValidationError([
-            'phone' => ['This telephone number is not valid'],
+            'phone' => ['This phone number is invalid.'],
         ]);
     }
 

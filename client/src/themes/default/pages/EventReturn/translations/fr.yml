@@ -1,23 +1,49 @@
 title: "Inventaire de retour de l'événement «\_{name}\_»"
 title-simple: Inventaire de retour de l'événement
 
-not-started-yet-alert: >-
-    Cet événement n'a pas encore commencé, il n'est donc pas possible
-    de faire son inventaire de retour pour le moment.
+unavailabilities:
+    unknown: Cet inventaire de retour n'est pas disponible pour le moment.
+    archived: >-
+        L'inventaire de retour de cet événement n'est plus accessible car
+        l'événement est archivé.
+    event-not-started: >-
+        Cet événement n'a pas encore commencé, il n'est donc pas possible
+        de faire son inventaire de retour pour le moment.
+    no-materials: >-
+        L'inventaire de retour n'est pas disponible car l'événement ne
+        contient pas de matériel.
+    material-shortage:
+        "L'inventaire de retour ne peut pas être effectué car l'événement contient
+        du matériel en pénurie/excédent qui doit être solutionné manuellement.
+        \n\n
+        Veuillez modifier les quantités en excédent pour revenir à des
+        quantités qui peuvent être satisfaites avec le stock disponible avant de re-essayer."
 
-not-finished-yet-alert: >-
-    Cet événement n'est pas encore terminé, vous pouvez commencer son inventaire
-    de retour, mais pas le terminer.
+statuses:
+    done:
+        simple: Cet inventaire a été marqué comme terminé, il est maintenant en lecture seule.
+        with-author: Cet inventaire a été marqué comme terminé par {author}, il est maintenant en lecture seule.
+        with-date: Cet inventaire a été marqué comme terminé {relativeDate}, il est maintenant en lecture seule.
+        with-author-date: Cet inventaire a été marqué comme terminé par {author} {relativeDate}, il est maintenant en lecture seule.
 
-not-saved-yet: "Attention, cet inventaire de retour n'a pas encore été sauvegardé\_!"
-all-material-returned:
-    "Félicitations\_! Tout le matériel a bien été retourné pour cet événement.\n
-    Vous pouvez maintenant cliquer sur le bouton \"Terminer l'inventaire\"."
-all-material-returned-draft:
-    "Félicitations\_! Tout le matériel a été marqué comme retourné pour cet événement.\n
-    Vous pourrez marquer l'inventaire comme terminé lorsque l'événement aura pris fin."
-some-material-is-missing: "Du matériel n'est pas revenu de cet événement\_!"
-some-material-came-back-broken: Du matériel est revenu en panne.
+    all-material-returned: "Tout le matériel a bien été retourné pour cet événement."
+    some-material-is-missing: "Du matériel n'est pas revenu de cet événement\_!"
+    some-material-came-back-broken: "Du matériel est revenu en panne de cet événement\_!"
+
+alerts:
+    not-saved-yet: "Attention, cet inventaire de retour n'a pas encore été sauvegardé\_!"
+    not-finished-yet: >-
+        Cet événement n'est pas encore terminé, vous pouvez commencer son inventaire
+        de retour, mais pas le terminer.
+    all-material-returned:
+        "Félicitations\_! Tout le matériel a bien été retourné pour cet événement.\n
+        Vous pouvez maintenant cliquer sur le bouton \"Terminer l'inventaire\"."
+    all-material-returned-draft:
+        "Félicitations\_! Tout le matériel a été marqué comme retourné pour cet événement.\n
+        Vous pourrez marquer l'inventaire comme terminé lorsque l'événement aura pris fin."
+
+actions:
+    update-materials: Modifier le matériel de l'événement
 
 confirm-terminate-title: "Voulez-vous vraiment terminer cet inventaire de retour\_?"
 confirm-terminate-text: Veuillez noter qu'il ne sera plus possible de le modifier.
@@ -26,4 +52,3 @@ confirm-terminate-text-with-broken:
     matériel concerné, et il ne sera plus possible de modifier cet inventaire."
 
 saved: Inventaire sauvegardé
-inventory-done: Inventaire terminé

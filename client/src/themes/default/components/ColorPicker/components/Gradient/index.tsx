@@ -121,7 +121,7 @@ const ColorPickerGradient = defineComponent({
         // ------------------------------------------------------
 
         moveMarker(pageX: number, pageY: number) {
-            const containerPos = (this.$refs.containerRef as HTMLDivElement).getBoundingClientRect();
+            const containerPos = (this.$refs.container as HTMLDivElement).getBoundingClientRect();
             let x = pageX - (containerPos.left + window.pageXOffset);
             let y = pageY - (containerPos.top + window.pageYOffset);
 
@@ -151,7 +151,7 @@ const ColorPickerGradient = defineComponent({
 
         return (
             <div
-                ref="containerRef"
+                ref="container"
                 role="application"
                 class="ColorPickerGradient"
                 onClick={handleClick}

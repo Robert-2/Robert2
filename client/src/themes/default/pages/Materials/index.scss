@@ -56,11 +56,13 @@
         }
     }
 
-    &__row {
-        cursor: pointer;
+    &:not(&--trashed) {
+        #{$block}__row {
+            cursor: pointer;
 
-        &:hover > #{$block}__cell {
-            background-color: color.adjust(globals.$bg-color-table-td, $lightness: 5%);
+            &:hover > #{$block}__cell {
+                background-color: color.adjust(globals.$bg-color-table-td, $lightness: 5%);
+            }
         }
     }
 
@@ -91,13 +93,15 @@
 
         &--rental-price,
         &--replacement-price {
-            text-align: right;
+            // - Important pour surcharger la définition du <th> de `.VueTables`.
+            // stylelint-disable-next-line declaration-no-important
+            text-align: right !important;
         }
 
         &--quantity,
         &--quantity-broken {
-            // Important, pour éviter l'overwrite du TH de vue-tables
-            /* stylelint-disable-next-line declaration-no-important */
+            // - Important pour surcharger la définition du <th> de `.VueTables`.
+            // stylelint-disable-next-line declaration-no-important
             text-align: center !important;
         }
 
@@ -113,8 +117,10 @@
     }
 
     &__quantity-broken {
-        color: globals.$text-danger-color;
-        font-weight: 800;
+        &--exists {
+            color: globals.$text-danger-color;
+            font-weight: 800;
+        }
     }
 
     &__tags-list {

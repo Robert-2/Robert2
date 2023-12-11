@@ -119,8 +119,10 @@ const MaterialViewInfos = {
 
         return (
             <div class="MaterialViewInfos">
-                <section class="MaterialViewInfos__main">
-                    <h2>{reference}</h2>
+                <div class="MaterialViewInfos__main">
+                    <h2 class="MaterialViewInfos__reference">
+                        {__('ref-ref', { reference })}
+                    </h2>
                     <h3>
                         <router-link to={{ name: 'materials', query: queryCategory }}>
                             {categoryName}
@@ -136,7 +138,9 @@ const MaterialViewInfos = {
                         {' / '}
                         {name}
                     </h3>
-                    <p>{description}</p>
+                    <p class="MaterialViewInfos__description">
+                        {description}
+                    </p>
                     <h3>{__('quantities')}</h3>
                     <ul>
                         <li class="MaterialViewInfos__stock-quantity">
@@ -179,42 +183,59 @@ const MaterialViewInfos = {
                             <p class="MaterialViewInfos__notes">{note}</p>
                         </div>
                     )}
-                </section>
-                {!!picture && (
-                    <section class="MaterialViewInfos__picture">
-                        <a
-                            href={picture}
-                            target="blank"
-                            title={__('page.material-view.infos.click-to-open-image')}
-                        >
-                            <img
-                                src={picture}
-                                alt={name}
-                                class="MaterialViewInfos__picture__img"
-                            />
-                        </a>
-                    </section>
-                )}
-                <section class="MaterialViewInfos__extras">
-                    <div class="MaterialViewInfos__categories">
-                        <p>{__('category')}: <strong>{categoryName}</strong></p>
-                        {!!subCategoryName && (
-                            <p>{__('sub-category')}: <strong>{subCategoryName}</strong></p>
-                        )}
-                    </div>
-                    <div class="MaterialViewInfos__park">
-                        {hasMultipleParks && (
-                            <p>{__('page.material-view.infos.park-name', { name: parkName })}</p>
-                        )}
-                    </div>
-                    {(tags && tags.length > 0) && <TagsList tags={tags} />}
-                    {(!!createDate || !!updateDate) && (
-                        <div class="MaterialViewInfos__dates">
-                            {createDate && <p>{__('created-at')} {createDate}</p>}
-                            {updateDate && <p>{__('updated-at')} {updateDate}</p>}
-                        </div>
+                </div>
+                <div class="MaterialViewInfos__secondary">
+                    {!!picture && (
+                        <section class="MaterialViewInfos__picture">
+                            <a
+                                href={picture}
+                                target="blank"
+                                title={__('page.material-view.infos.click-to-open-image')}
+                                class="MaterialViewInfos__picture__link"
+                            >
+                                <img
+                                    src={picture}
+                                    alt={name}
+                                    class="MaterialViewInfos__picture__img"
+                                />
+                            </a>
+                        </section>
                     )}
-                </section>
+                    <section class="MaterialViewInfos__extras">
+                        <div class="MaterialViewInfos__extra MaterialViewInfos__extra--categories">
+                            <p class="MaterialViewInfos__extra__item">
+                                {__('category')}: <strong>{categoryName}</strong>
+                            </p>
+                            {!!subCategoryName && (
+                                <p class="MaterialViewInfos__extra__item">
+                                    {__('sub-category')}: <strong>{subCategoryName}</strong>
+                                </p>
+                            )}
+                        </div>
+                        <div class="MaterialViewInfos__extra MaterialViewInfos__extra--park">
+                            {hasMultipleParks && (
+                                <p class="MaterialViewInfos__extra__item">
+                                    {__('page.material-view.infos.park-name', { name: parkName })}
+                                </p>
+                            )}
+                        </div>
+                        {(tags && tags.length > 0) && <TagsList tags={tags} />}
+                        {(!!createDate || !!updateDate) && (
+                            <div class="MaterialViewInfos__extra MaterialViewInfos__extra--dates">
+                                {createDate && (
+                                    <p class="MaterialViewInfos__extra__item">
+                                        {__('created-at')} {createDate}
+                                    </p>
+                                )}
+                                {updateDate && (
+                                    <p class="MaterialViewInfos__extra__item">
+                                        {__('updated-at')} {updateDate}
+                                    </p>
+                                )}
+                            </div>
+                        )}
+                    </section>
+                </div>
             </div>
         );
     },

@@ -1,0 +1,12 @@
+title: "Modifier le matériel «\_{name}\_»"
+title-simple: Modifier le matériel
+title-create: Nouveau matériel
+
+help-name: Trouvez un nom assez court, et utilisez la description pour détailler, si besoin.
+help-picture: "La photo du matériel doit être au format JPG, PNG ou WebP, et ne doit pas dépasser 10\_Mo."
+
+allow-online-reservations: "Permettre la réservation en ligne\_?"
+
+currency-per-day: "{currency}\_/\_jour"
+fields-changes-depending-on-category: Les champs ci-dessous fluctuent en fonction de la catégorie sélectionnée.
+saved: Matériel sauvegardé.

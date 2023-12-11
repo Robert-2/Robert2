@@ -74,7 +74,7 @@ final class CategoriesTest extends ApiTestCase
             'name' => '',
         ]);
         $this->assertApiValidationError([
-            'name' => ['This field is mandatory'],
+            'name' => ['This field is mandatory.'],
         ]);
     }
 

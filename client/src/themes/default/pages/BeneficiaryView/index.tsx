@@ -1,0 +1,183 @@
+import './index.scss';
+import { defineComponent } from '@vue/composition-api';
+import axios from 'axios';
+import HttpCode from 'status-code-enum';
+import config from '@/globals/config';
+import apiBeneficiaries from '@/stores/api/beneficiaries';
+import Page from '@/themes/default/components/Page';
+import CriticalError, { ERROR } from '@/themes/default/components/CriticalError';
+import Loading from '@/themes/default/components/Loading';
+import { Tabs, Tab } from '@/themes/default/components/Tabs';
+import Button from '@/themes/default/components/Button';
+import Infos from './tabs/Infos';
+import Billing from './tabs/Billing';
+import Borrowings from './tabs/Borrowings';
+
+import type { BeneficiaryDetails } from '@/stores/api/beneficiaries';
+
+enum TabName {
+    INFO = '#infos',
+    BILLING = '#billing',
+    BORROWINGS = '#borrowings',
+}
+
+type Data = {
+    id: number,
+    beneficiary: BeneficiaryDetails | null,
+    isLoading: boolean,
+    isFetched: boolean,
+    selectedTabIndex: number,
+    criticalError: string | null,
+};
+
+/** Page de détails d'un bénéficiaire. */
+const BeneficiaryView = defineComponent({
+    name: 'BeneficiaryView',
+    data(): Data {
+        return {
+            id: parseInt(this.$route.params.id, 10),
+            beneficiary: null,
+            isLoading: false,
+            isFetched: false,
+            selectedTabIndex: 0,
+            criticalError: null,
+        };
+    },
+    computed: {
+        pageTitle(): string | undefined {
+            const { $t: __, isFetched, beneficiary } = this;
+
+            return isFetched && beneficiary
+                ? __('page.beneficiary-view.title', { name: beneficiary.full_name })
+                : __('page.beneficiary-view.title-simple');
+        },
+
+        withBilling(): boolean {
+            return config.billingMode !== 'none';
+        },
+
+        tabsIndexes(): string[] {
+            const allTabs = [TabName.INFO, TabName.BILLING, TabName.BORROWINGS];
+            if (!this.withBilling) {
+                return allTabs.filter((tab: string) => tab !== TabName.BILLING);
+            }
+            return allTabs;
+        },
+
+        tabsActions(): JSX.Element[] {
+            const { $t: __, id, tabsIndexes, selectedTabIndex } = this;
+
+            switch (tabsIndexes[selectedTabIndex]) {
+                case TabName.INFO:
+                    return [
+                        <Button type="edit" to={{ name: 'edit-beneficiary', params: { id } }}>
+                            {__('action-edit')}
+                        </Button>,
+                    ];
+                default:
+                    return [];
+            }
+        },
+    },
+    mounted() {
+        this.fetchData();
+    },
+    methods: {
+        // ------------------------------------------------------
+        // -
+        // -    Handlers
+        // -
+        // ------------------------------------------------------
+
+        handleTabChanged(index: number) {
+            this.selectedTabIndex = index;
+            this.$router.replace(this.tabsIndexes[index]);
+        },
+
+        // ------------------------------------------------------
+        // -
+        // -    Méthodes internes
+        // -
+        // ------------------------------------------------------
+
+        selectTabFromRouting() {
+            const { hash } = this.$route;
+            if (hash && this.tabsIndexes.includes(hash)) {
+                this.selectedTabIndex = this.tabsIndexes.indexOf(hash);
+            }
+        },
+
+        async fetchData() {
+            this.isLoading = true;
+            try {
+                const data = await apiBeneficiaries.one(this.id);
+                this.beneficiary = data;
+                this.selectTabFromRouting();
+                this.isFetched = true;
+            } catch (error) {
+                if (!axios.isAxiosError(error)) {
+                    // eslint-disable-next-line no-console
+                    console.error(`Error occurred while retrieving beneficiary #${this.id} data`, error);
+                    this.criticalError = ERROR.UNKNOWN;
+                } else {
+                    const { status = HttpCode.ServerErrorInternal } = error.response ?? {};
+                    this.criticalError = status === HttpCode.ClientErrorNotFound
+                        ? ERROR.NOT_FOUND
+                        : ERROR.UNKNOWN;
+                }
+            } finally {
+                this.isLoading = false;
+            }
+        },
+    },
+    render() {
+        const {
+            $t: __,
+            pageTitle,
+            withBilling,
+            tabsActions,
+            isLoading,
+            isFetched,
+            criticalError,
+            beneficiary,
+            handleTabChanged,
+            selectedTabIndex,
+        } = this;
+
+        if (criticalError || !isFetched) {
+            return (
+                <Page name="beneficiary-view" title={pageTitle}>
+                    {criticalError ? <CriticalError type={criticalError} /> : <Loading />}
+                </Page>
+            );
+        }
+
+        const { stats } = beneficiary!;
+
+        return (
+            <Page name="beneficiary-view" title={pageTitle} isLoading={isLoading}>
+                <div class="BeneficiaryView">
+                    <Tabs
+                        defaultIndex={selectedTabIndex}
+                        onChanged={handleTabChanged}
+                        actions={tabsActions}
+                    >
+                        <Tab title={__('informations')} icon="info-circle">
+                            <Infos beneficiary={beneficiary} />
+                        </Tab>
+                        {withBilling && (
+                            <Tab title={__('page.beneficiary-view.billing.title')} icon="file-invoice">
+                                <Billing beneficiary={beneficiary} />
+                            </Tab>
+                        )}
+                        <Tab title={__('page.beneficiary-view.borrowings.title', { count: stats.borrowings })} icon="history">
+                            <Borrowings beneficiary={beneficiary} />
+                        </Tab>
+                    </Tabs>
+                </div>
+            </Page>
+        );
+    },
+});
+
+export default BeneficiaryView;

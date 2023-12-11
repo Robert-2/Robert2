@@ -62,7 +62,7 @@ const MaterialsSelectorFilters = defineComponent({
     created() {
         this.handleSearchChangeDebounced = debounce(this.handleSearchChange.bind(this), DEBOUNCE_WAIT);
     },
-    beforeUnmount() {
+    beforeDestroy() {
         this.handleSearchChangeDebounced?.cancel();
     },
     methods: {

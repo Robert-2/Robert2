@@ -1,11 +1,10 @@
 import './index.scss';
 import { defineComponent } from '@vue/composition-api';
 import formatAmount from '@/utils/formatAmount';
-import getEventMaterialItemsCount from '@/utils/getEventMaterialItemsCount';
 import Fragment from '@/components/Fragment';
 
 import type { PropType } from '@vue/composition-api';
-import type { Event } from '@/stores/api/events';
+import type { Event, EventMaterial } from '@/stores/api/events';
 
 type Props = {
     /** L'événement dont on veut afficher les totaux. */
@@ -23,7 +22,14 @@ const EventTotals = defineComponent({
     },
     computed: {
         itemsCount(): number {
-            return getEventMaterialItemsCount(this.event.materials);
+            const { materials } = this.event;
+
+            return materials.reduce(
+                (total: number, material: EventMaterial) => (
+                    total + material.pivot.quantity
+                ),
+                0,
+            );
         },
 
         useTaxes(): boolean {
@@ -82,7 +88,7 @@ const EventTotals = defineComponent({
                     {__('total')} {__('items-count', { count: itemsCount }, itemsCount)}
                 </div>
                 <div class="EventTotals__duration">
-                    {__('duration-days', { duration }, duration)}
+                    {__('duration-days', { duration: duration.days }, duration.days)}
                 </div>
                 <div class="EventTotals__total-replacement">
                     {__('total-replacement')} {formatAmount(totalReplacement, currency)}
@@ -125,7 +131,7 @@ const EventTotals = defineComponent({
                     </div>
                     <div class="EventTotals__line">
                         <div class="EventTotals__line__title">
-                            {__('days-count', { duration }, duration)}, {__('ratio')}
+                            {__('days-count', { duration: duration.days }, duration.days)}, {__('ratio')}
                         </div>
                         <div class="EventTotals__line__price">
                             &times; {degressiveRate.toString()}

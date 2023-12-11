@@ -47,7 +47,7 @@ final class TagsTest extends ApiTestCase
     {
         $this->client->post('/api/tags', ['foo' => 'bar']);
         $this->assertApiValidationError([
-            'name' => ["This field is mandatory"],
+            'name' => ["This field is mandatory."],
         ]);
     }
 

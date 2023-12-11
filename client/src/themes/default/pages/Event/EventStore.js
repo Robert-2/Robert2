@@ -6,7 +6,7 @@ export default new Vuex.Store({
     state: {
         title: '',
         dates: { start: null, end: null },
-        duration: null,
+        duration: { days: null },
         location: null,
         description: null,
         materials: [],
@@ -20,7 +20,7 @@ export default new Vuex.Store({
         reset(state) {
             state.title = '';
             state.dates = { start: null, end: null };
-            state.duration = null;
+            state.duration = { days: null };
             state.location = null;
             state.description = null;
             state.materials = [];

@@ -85,13 +85,20 @@ export default {
             return this.technician?.full_name || null;
         },
 
-        datePickerOptions() {
-            const { start, end } = this.$props.eventDates;
+        disabledDateFactory() {
+            const { start, end } = this.eventDates;
 
-            return {
-                range: true,
-                disabled: { notBetween: [start, end] },
-            };
+            // - On ajuste la date de fin car les techniciens utilisent des heures pleines
+            //   tandis que les événements utilisent `23:59:59` comme fin de journée.
+            const normalizedEnd = moment(end).add(1, 'days').startOf('day');
+
+            return (date, granularity) => (
+                // - Si la date est avant le début de l'événement => Désactivée.
+                date.isBefore(start, granularity) ||
+
+                // - Si la date est après la fin de l'événement => Désactivée.
+                date.isAfter(normalizedEnd, granularity)
+            );
         },
 
         saveButtonText() {
@@ -146,12 +153,10 @@ export default {
                 const { data: eventTechnicianId } = this.$props;
                 const { data } = await this.$http.get(`event-technicians/${eventTechnicianId}`);
 
-                const startDate = moment.utc(data.start_time)
-                    .local()
+                const startDate = moment(data.start_time)
                     .format('YYYY-MM-DD HH:mm');
 
-                const endDate = moment.utc(data.end_time)
-                    .local()
+                const endDate = moment(data.end_time)
                     .format('YYYY-MM-DD HH:mm');
 
                 this.eventId = data.event_id;
@@ -177,8 +182,8 @@ export default {
             const postData = {
                 event_id: eventId,
                 technician_id: technician.id,
-                start_time: moment(startDate).utc().format(DATE_DB_FORMAT),
-                end_time: moment(endDate).utc().format(DATE_DB_FORMAT),
+                start_time: moment(startDate).format(DATE_DB_FORMAT),
+                end_time: moment(endDate).format(DATE_DB_FORMAT),
                 position,
             };
 
@@ -244,13 +249,13 @@ export default {
         const {
             $t: __,
             name,
-            isNew,
+            error,
             saveButtonText,
+            isNew,
             isSaving,
             isDeleting,
-            error,
             validationErrors,
-            datePickerOptions,
+            disabledDateFactory,
             handleSubmit,
             handleClose,
             handleDelete,
@@ -275,8 +280,9 @@ export default {
                             v-model={this.dates}
                             label={__('page.event-edit.period-assigned')}
                             placeholder={__('page.event-edit.start-end-dates-and-time')}
-                            datepickerOptions={datePickerOptions}
                             errors={validationErrors?.start_time || validationErrors?.end_time}
+                            disabledDate={disabledDateFactory}
+                            range
                         />
                         <FormField
                             v-model={this.position}

@@ -7,7 +7,7 @@
 /// Fourni le code de base pour utiliser la police icône.
 %icon-font {
     display: inline-block;
-    /* stylelint-disable-next-line font-family-no-missing-generic-family-keyword */
+    // stylelint-disable-next-line font-family-no-missing-generic-family-keyword
     font-family: 'Font Awesome 5 Free';
     font-style: normal;
     line-height: 1;
@@ -91,7 +91,7 @@
         @extend %icon-font;
 
         content: icon-code($icon);
-        /* stylelint-disable-next-line font-weight-notation */
+        // stylelint-disable-next-line font-weight-notation
         font-weight: icon-weight($variant);
         @content;
     }

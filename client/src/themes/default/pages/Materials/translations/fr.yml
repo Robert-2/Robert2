@@ -1,4 +1,5 @@
 title: Matériel
+title-trash: Matériel supprimé
 help: Vous pouvez choisir un parc, une catégorie ou des tags pour filtrer le matériel.
 
 action-add: Nouveau matériel
@@ -7,7 +8,6 @@ print-complete-list: Imprimer la liste complète du matériel
 date-to-display-available-quantities: Dates à utiliser pour afficher les quantités disponibles
 
 available-qty-total-qty: "Qté dispo.\_/\_Qté totale"
-available: ["{availableQuantity} dispo", "{availableQuantity} dispos"]
 
 confirm-delete: "Mettre ce matériel à la corbeille\_?"
 confirm-permanently-delete: "Voulez-vous vraiment supprimer définitivement ce matériel\_?"

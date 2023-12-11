@@ -1,40 +1,60 @@
 @use '~@/themes/default/style/globals';
 
 .Inventory {
+    $block: &;
+
+    display: flex;
+    flex-direction: column;
+    gap: globals.$spacing-large;
+
     &__section {
         &__header {
             display: flex;
             align-items: flex-end;
+            margin-right: globals.$spacing-small;
+            margin-bottom: globals.$spacing-small;
+            gap: globals.$spacing-medium;
         }
 
         &__title {
+            @include globals.line-clamp(2);
+
             flex: 1;
+            margin: 0;
+            font-size: 1.3rem;
         }
 
         &__columns {
-            flex: 0 0 260px;
             display: flex;
             margin-left: auto;
+            gap: globals.$spacing-medium;
+
+            &__item {
+                overflow: hidden;
+                width: 105px;
+                font-size: 1rem;
+                font-weight: 500;
+                text-align: center;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
         }
 
-        &__quantity-title {
-            flex: 1;
-            margin-left: globals.$spacing-large;
-            font-size: 1rem;
-            text-align: center;
-        }
-
-        & + & {
-            margin-top: globals.$spacing-large;
+        &__items {
+            display: flex;
+            flex-direction: column;
+            gap: globals.$spacing-small;
         }
     }
 
-    &__list {
-        padding: 0 0 0 globals.$spacing-small;
-        border-left: 3px solid globals.$list-left-border-color;
-    }
+    //
+    // - States
+    //
 
-    .InventoryItem {
-        margin-bottom: globals.$spacing-small;
+    &--editable {
+        #{$block}__section__columns {
+            // - Colonne d'action + Gap.
+            margin-right: calc(36px + #{globals.$spacing-medium});
+        }
     }
 }

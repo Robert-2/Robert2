@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Loxya\Contracts;
 
 use Illuminate\Database\Eloquent\Builder;
+use Loxya\Models\User;
 
 interface Bookable
 {
@@ -18,6 +19,24 @@ interface Bookable
     public function syncMaterials(array $materialsData): static;
 
     /**
+     * Permet de sauvegarder les données de l'inventaire de départ.
+     *
+     * @param array $inventoryData Les données de l'inventaire.
+     *
+     * @return static L'instance du bookable actualisée.
+     */
+    public function updateDepartureInventory(array $inventoryData): static;
+
+    /**
+     * Permet de terminer l'inventaire de départ.
+     *
+     * @param User $author L'auteur de l'inventaire de départ.
+     *
+     * @return static L'instance du bookable actualisée.
+     */
+    public function finishDepartureInventory(User $author): static;
+
+    /**
      * Permet de sauvegarder les données de l'inventaire de retour.
      *
      * @param array $inventoryData Les données de l'inventaire.
@@ -29,9 +48,11 @@ interface Bookable
     /**
      * Permet de terminer l'inventaire de retour.
      *
+     * @param User $author L'auteur de l'inventaire de retour.
+     *
      * @return static L'instance du bookable actualisée.
      */
-    public function finishReturnInventory(): static;
+    public function finishReturnInventory(User $author): static;
 
     /**
      * Permet de définir une période pendant laquelle on veut limiter

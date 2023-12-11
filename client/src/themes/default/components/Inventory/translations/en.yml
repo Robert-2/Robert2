@@ -1,0 +1,16 @@
+comment-label: "Comment:"
+departure-comment-label: "Departure comment:"
+
+#
+# - Fenêtres modales
+#
+
+modals:
+    #
+    # - Édition d'un commentaire de matériel / d'unité.
+    #
+
+    comment-edition:
+        modal-title:
+            material: "Comment: \"{name}\""
+        save-comment: Save comment"

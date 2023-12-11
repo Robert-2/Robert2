@@ -2,7 +2,6 @@ export default {
     'hello-name': "Bonjour {name}\u00A0!",
     'your-settings': "Vos paramètres",
     'logout-quit': "Quitter Loxya (Robert2)",
-
     'action-add': "Ajouter",
     'action-edit': "Modifier",
     'action-view': "Afficher en détail",
@@ -16,10 +15,8 @@ export default {
     'action-enable': "Activer",
     'action-disable': "Désactiver",
     'action-refresh': "Rafraîchir les données",
-
     'yes': "Oui",
     'no': "Non",
-
     'warning': "Attention\u00A0!",
     'loading': "Chargement en cours...",
     'please-confirm': "Veuillez confirmer...",
@@ -43,7 +40,6 @@ export default {
     'take-control': "Prendre la main",
     'update-in-progress': "Modification en cours",
     'regenerate-link': "Re-générer le lien",
-
     'please-choose': "Veuillez choisir...",
     'start-typing-to-search': "Commencez à écrire pour rechercher...",
     'type-at-least-count-chars-to-search': [
@@ -63,7 +59,8 @@ export default {
     'optional': "Optionnel",
     'n-persons': ["{count} personne", "{count} personnes"],
     'and-n-others': ["et {count} autre", "et {count} autres"],
-
+    'add-comment': "Ajouter un commentaire",
+    'modify-comment': "Modifier le commentaire",
     'save': "Sauvegarder",
     'manually-save': "Sauvegarder manuellement",
     'save-draft': "Sauvegarder le brouillon",
@@ -109,9 +106,7 @@ export default {
     'admin': "Administrateur",
     'member': "Membre",
     'visitor': "Visiteur",
-    'external': "Externe",
     'owner': "Propriétaire",
-    'owner-key': "Propriétaire\u00A0:",
     'opening-hours': "Horaires d'ouverture",
     'hours': "heures",
     'minutes': "minutes",
@@ -120,9 +115,9 @@ export default {
     'ref': "Réf.",
     'ref-ref': "Ref.\u00A0: {reference}",
     'reference': "Référence",
+    'number': "Numéro",
     'park': "Parc",
     'prices': "Tarifs",
-    'identification-type': "Type d'identification",
     'rental-price': "Tarif location",
     'replacement-price': "Prix de remplacement",
     'rent-price': "Tarif loc.",
@@ -130,6 +125,7 @@ export default {
     'value-per-day': '{value}\u00A0/\u00A0jour',
     'serial-number': "N° de série",
     'examples-list': "Exemples\u00A0: {list}, etc.",
+    'not-specified': "Non renseigné",
 
     'qty': "Qté",
     'stock-qty': "Qté stock",
@@ -170,6 +166,7 @@ export default {
 
     'event-details': "Détails de l'événement",
     'title': "Titre",
+    'date': "Date",
     'dates': "Dates",
     'start-end-dates': "Dates de début et fin",
     'start-date': "Date de début",
@@ -180,7 +177,6 @@ export default {
         "Durée {duration} jour",
         "Durée {duration} jours",
     ],
-    'please-choose-dates': "Veuillez choisir les dates",
     'confirmed': "Confirmé",
     'not-confirmed': "Non confirmé",
     'is-billable': "Est facturable\u00A0?",
@@ -192,8 +188,6 @@ export default {
     'unconfirm-event': "Remettre l'événement en attente",
     'delete-event': "Supprimer l'événement",
     'duplicate-event': "Dupliquer l'événement",
-    'duplicate-the-event': "Dupliquer l'événement «\u00A0{title}\u00A0»",
-    'dates-of-duplicated-event': "Dates du nouvel événement",
     'print': "Imprimer",
     'print-summary': "Imprimer ce récapitulatif",
     'open': "Ouvrir",
@@ -305,9 +299,11 @@ export default {
     'add-tags': "Ajouter des tags",
     'remove-all-tags': "Enlever tous les tags",
     'remaining-count': "reste {count}",
+    'departure-inventory': "Inventaire de départ",
     'return-inventory': "Inventaire de retour",
     'grouped-by': "Voir groupé par\u00A0:",
     'not-grouped': "Non groupé",
+    'start-on': "Débute le",
     'return-scheduled-on': "Retour prévu le",
     'back-to-calendar': "Retour au calendrier",
     'previous-month': "Mois précédent",
@@ -316,30 +312,16 @@ export default {
     'used-by': "Utilisé dans",
     'events-count': ['{count} événement', '{count} événements'],
     'reservations-count': ['{count} réservation', '{count} réservations'],
-    'list-templates-count': ['{count} modèle de liste', '{count} modèles de liste'],
 
-    'use-list-template': "Utiliser un modèle...",
-    'choose-list-template-to-use': "Choisir un modèle de liste à utiliser",
     'use': "Utiliser",
-    'list-template-details': "Détails du modèle de liste «\u00A0{name}\u00A0»",
-    'list-template-use-warning': "Attention, utiliser ce modèle de liste va ajouter le matériel à celui déjà sélectionné, et sauvegarder la liste du matériel tout de suite après\u00A0!",
     'use-this-template': "Utiliser ce modèle de liste",
-    'no-list-template-available': (
-        "Aucun modèle de liste disponible pour le moment...\n" +
-        "Vous pouvez en créer depuis la page \"Matériel\" puis \"Modèles de liste\"."
-    ),
-    'create-list-template': "Créer un modèle de liste de matériel",
-    'create-list-template-from-event': "Créer un modèle de liste avec cet événement",
-    'list-template-created': "Le modèle de liste de matériel nommé «\u00A0{name}\u00A0» a bien été créé",
+
     'create-company': "Ajouter une nouvelle société",
 
     'inventories': "Inventaires",
     'terminate-inventory': "Terminer l'inventaire",
-    'warning-terminate-inventory': "Attention, une fois cet inventaire terminé, il ne sera plus modifiable.",
     'inventory-validation-error': "Certaines quantités ne sont pas correctes. Veuillez vérifier à nouveau la liste.",
 
-    'list-templates': "Modèles de liste",
-    'materials-list-templates': "Modèles de liste de matériel",
     'reuse-list-from-event': "Ajouter du matériel depuis un autre événement...",
     'choose-event-to-reuse-materials-list': "Choisir un événement pour réutiliser sa liste de matériel",
     'type-to-search-event': "Entrez le nom d'un événement...",
@@ -358,6 +340,7 @@ export default {
     'events': "Événements",
     'user': "Utilisateur",
     'beneficiary': "Bénéficiaire",
+    'main-beneficiary': "Bénéficiaire principal",
     'borrower': "Emprunteur",
     'technicians': "Techniciens",
     'material': "Matériel",

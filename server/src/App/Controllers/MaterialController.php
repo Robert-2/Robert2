@@ -6,10 +6,8 @@ namespace Loxya\Controllers;
 use Carbon\CarbonImmutable;
 use DI\Container;
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
-use Illuminate\Support\Collection;
 use Psr\Http\Message\UploadedFileInterface;
 use Loxya\Config\Config;
-use Loxya\Contracts\PeriodInterface;
 use Loxya\Controllers\Traits\WithCrud;
 use Loxya\Errors\Exception\ValidationException;
 use Loxya\Http\Request;
@@ -23,6 +21,7 @@ use Loxya\Models\User;
 use Loxya\Services\Auth;
 use Loxya\Services\I18n;
 use Loxya\Support\Collections\MaterialsCollection;
+use Loxya\Support\Database\QueryAggregator;
 use Loxya\Support\Pdf;
 use Loxya\Support\Period;
 use Loxya\Support\Str;
@@ -76,7 +75,7 @@ class MaterialController extends BaseController
         $limit = $request->getQueryParam('limit', null);
         $ascending = (bool) $request->getQueryParam('ascending', true);
         $search = $request->getQueryParam('search', null);
-        $dateForQuantities = $request->getQueryParam('dateForQuantities', null);
+        $quantitiesPeriod = $request->getQueryParam('quantitiesPeriod', null);
         $onlyDeleted = (bool) $request->getQueryParam('deleted', false);
 
         $orderBy = $request->getQueryParam('orderBy', null);
@@ -85,19 +84,26 @@ class MaterialController extends BaseController
             $orderBy = null;
         }
 
-        $query = (new Material)
-            ->setOrderBy($orderBy, $ascending)
-            ->setSearch($search)
-            ->getAll($onlyDeleted);
-
-        //
         // - Filtres
-        //
-
         $categoryId = $request->getQueryParam('category', null);
         $subCategoryId = $request->getQueryParam('subCategory', null);
         $parkId = $request->getQueryParam('park', null);
         $tags = $request->getQueryParam('tags', []);
+
+        $isComplexeOrderBy = (
+            in_array($orderBy, ['stock_quantity', 'out_of_order_quantity'], true) &&
+            (is_numeric($parkId))
+        );
+
+        $model = (new Material)->setSearch($search);
+        if (!$isComplexeOrderBy) {
+            $model->setOrderBy($orderBy, $ascending);
+        }
+        $query = $model->getAll($onlyDeleted);
+
+        //
+        // - Filtres
+        //
 
         $query = $query
             // - Catégorie.
@@ -122,6 +128,27 @@ class MaterialController extends BaseController
             ));
 
         //
+        // - Tri complexe.
+        //
+
+        if ($isComplexeOrderBy) {
+            if ($orderBy === 'stock_quantity') {
+                $query
+                    ->reorder(
+                        $query->raw('IF(stock_quantity)'),
+                        $ascending ? 'asc' : 'desc',
+                    );
+            }
+            if ($orderBy === 'out_of_order_quantity') {
+                $query
+                    ->reorder(
+                        $query->raw('IF(out_of_order_quantity)'),
+                        $ascending ? 'asc' : 'desc',
+                    );
+            }
+        }
+
+        //
         // - Requête + Résultat
         //
 
@@ -131,12 +158,12 @@ class MaterialController extends BaseController
 
         // - Filtre des quantités pour une date ou une période donnée
         $periodForQuantities = null;
-        if ($dateForQuantities !== null) {
-            $dateForQuantities = !is_array($dateForQuantities)
-                ? [$dateForQuantities, $dateForQuantities]
-                : $dateForQuantities;
-
-            $periodForQuantities = getPeriodFromArray($dateForQuantities);
+        if ($quantitiesPeriod !== null && is_array($quantitiesPeriod)) {
+            try {
+                $periodForQuantities = Period::fromArray($quantitiesPeriod);
+            } catch (\Throwable $e) {
+                $periodForQuantities = null;
+            }
         }
 
         $results['data'] = Material::allWithAvailabilities($results['data'], $periodForQuantities);
@@ -179,7 +206,8 @@ class MaterialController extends BaseController
                 continue;
             }
 
-            $parkMaterials = $park->materials->values();
+            $parkMaterials = $park->materials
+                ->values();
 
             if ($parkMaterials->isEmpty()) {
                 continue;
@@ -232,78 +260,47 @@ class MaterialController extends BaseController
         return $response->withJson($material->documents, StatusCode::STATUS_OK);
     }
 
-    // TODO: Limiter aux 3 derniers mois + Tous les futurs.
     public function getBookings(Request $request, Response $response): ResponseInterface
     {
         $id = (int) $request->getAttribute('id');
         $material = Material::findOrFail($id);
+        $limit = $request->getQueryParam('limit', null);
 
-        /** @var Collection|(Event)[] $bookings */
-        $bookings = (new Collection())
+        $query = (new QueryAggregator())
             // - Événements.
-            ->concat(
+            ->add(Event::class, (
                 $material->events()
-                    ->with('beneficiaries')
-                    ->with('technicians')
+                    ->with(['beneficiaries', 'technicians'])
                     ->with(['materials' => function ($q) {
                         $q->reorder('name', 'asc');
                     }])
-                    ->get()
-            );
+            ))
+            ->orderBy('start_date', 'desc');
 
-        if ($bookings->isEmpty()) {
-            return $response->withJson([], StatusCode::STATUS_OK);
-        }
+        $results = $this->paginate($request, $query, is_numeric($limit) ? (int) $limit : 50);
 
-        $period = $bookings->reduce(
-            fn(?Period $currentPeriod, PeriodInterface $booking) => (
-                $currentPeriod === null
-                    ? new Period($booking)
-                    : $currentPeriod->merge($booking)
-            )
-        );
-
-        // - NOTE : Ne pas prefetch le materiel des bookables via `->with()`,
-        //   car cela peut surcharger la mémoire rapidement.
-        $allConcurrentBookables = (new Collection())
-            // - Événements.
-            ->concat(
-                Event::inPeriod($period)->get()
-            );
-
-        foreach ($bookings as $booking) {
-            $booking->__cachedConcurrentBookables = $allConcurrentBookables
-                ->filter(fn($otherBookable) => (
-                    !$booking->is($otherBookable) &&
-                    $booking->getStartDate() <= $otherBookable->getEndDate() &&
-                    $booking->getEndDate() >= $otherBookable->getStartDate()
-                ))
-                ->values();
-        }
+        // - Le prefetching a été supprimé car ça ajoutait une trop grosse utilisation de la mémoire,
+        //   et ralentissait beaucoup la requête.
 
         $useMultipleParks = Park::count() > 1;
 
-        $data = $bookings
-            ->map(fn($booking) => array_merge(
-                $booking->serialize($booking::SERIALIZE_BOOKING_SUMMARY),
-                [
-                    'entity' => $booking::TYPE,
-                    'pivot' => [
-                        'quantity' => $booking->pivot->quantity,
-                    ],
-                    'parks' => (
-                        $useMultipleParks
-                            ? $booking->parks
-                            : null
-                    ),
-                    'categories' => $booking->categories,
-                ]
-            ))
-            ->sortByDesc('start_date')
-            ->values()
-            ->all();
+        $results['data'] = $results['data']->map(fn($booking) => array_merge(
+            $booking->serialize($booking::SERIALIZE_BOOKING_SUMMARY),
+            [
+                'entity' => $booking::TYPE,
+                'pivot' => [
+                    'quantity' => $booking->pivot->quantity,
+                ],
+                'categories' => $booking->categories,
+                'parks' => (
+                    $useMultipleParks
+                        ? $booking->parks
+                        : null
+                ),
+            ]
+        ));
 
-        return $response->withJson($data, StatusCode::STATUS_OK);
+        return $response->withJson($results, StatusCode::STATUS_OK);
     }
 
     public function getPicture(Request $request, Response $response): ResponseInterface

@@ -2,32 +2,33 @@
 
 .MaterialViewInfos {
     display: flex;
-    flex-flow: row-reverse wrap;
+    flex-direction: row-reverse;
     justify-content: flex-end;
     padding-bottom: 6rem;
     color: globals.$text-base-color;
+    gap: globals.$spacing-large;
 
     &__main {
-        flex: 2;
-        min-width: 250px;
-        margin-right: 3rem;
-    }
-
-    &__picture {
-        flex: 0 0 auto;
-        max-width: 350px;
-        margin-right: 3rem;
-        padding: 1rem 0 0;
-
-        &__img {
-            width: 100%;
-        }
-    }
-
-    &__extras {
         flex: 1;
         min-width: 250px;
-        padding: 1rem 0 0;
+    }
+
+    &__secondary {
+        display: flex;
+        flex-direction: column;
+        gap: globals.$spacing-medium;
+    }
+
+    //
+    // - Composantes du matériel.
+    //
+
+    &__reference {
+        margin-top: 0;
+    }
+
+    &__description {
+        white-space: pre-line;
     }
 
     &__rental-price,
@@ -40,31 +41,83 @@
         color: globals.$text-danger-color;
     }
 
-    &__categories {
-        margin: 0 0 1.5rem;
-    }
+    &__picture {
+        max-width: 200px;
+        max-height: 260px;
 
-    &__dates {
-        margin-top: 1.5rem;
-        color: globals.$text-soft-color;
+        &__link {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        &__img {
+            display: block;
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
     }
 
     &__notes {
         white-space: pre-wrap;
     }
 
-    @media screen and (min-width: globals.$screen-tablet) {
+    &__extras {
+        flex: 1;
+        max-width: 300px;
+    }
+
+    &__extra {
+        &__item {
+            margin: 0;
+
+            & + & {
+                margin-top: globals.$spacing-small;
+            }
+        }
+
+        //
+        // - Types
+        //
+
+        &--categories {
+            margin-bottom: globals.$spacing-medium;
+        }
+
+        &--dates {
+            margin-top: globals.$spacing-medium;
+            color: globals.$text-soft-color;
+        }
+    }
+
+    //
+    // - Responsive
+    //
+
+    @media (min-width: globals.$screen-tablet) {
         flex-direction: row;
         justify-content: flex-start;
 
         &__picture {
-            max-width: 350px;
+            max-width: 260px;
+            max-height: 350px;
         }
     }
 
-    @media screen and (min-width: globals.$screen-big-desktop) {
+    @media (min-width: globals.$screen-big-desktop) {
+        &__secondary {
+            flex-direction: row;
+            gap: globals.$spacing-large;
+        }
+
         &__picture {
-            max-width: 400px;
+            max-width: 300px;
+            max-height: 390px;
+        }
+
+        &__extras {
+            min-width: 250px;
         }
     }
 }

@@ -4,6 +4,13 @@ unarchive: Désarchiver l'événement
 release-sheet-by-lists: Fiche de sortie (matériel classé selon paramètres)
 release-sheet-by-parks: Fiche de sortie (matériel classé par parcs)
 
+inventories-unavailable-help: >-
+    L'événement contient des quantités en excédent, les inventaires ne
+    peuvent pas être effectués tant que celles-ci n'auront pas été corrigées.
+inventory-unavailable-help: >-
+    L'événement contient des quantités en excédent, l'inventaire ne peut
+    pas être effectué tant que celles-ci n'auront pas été corrigées.
+
 #
 # - Tabs
 #

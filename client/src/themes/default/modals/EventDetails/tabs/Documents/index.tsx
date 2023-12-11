@@ -6,6 +6,7 @@ import FileManager, { FileManagerLayout } from '@/themes/default/components/File
 import Loading from '@/themes/default/components/Loading';
 import { confirm } from '@/utils/alert';
 
+import type { ComponentRef } from 'vue';
 import type { ProgressCallback } from 'axios';
 import type { PropType } from '@vue/composition-api';
 import type { Document } from '@/stores/api/documents';
@@ -16,7 +17,7 @@ type Props = {
     event: Event,
 };
 
-type State = {
+type Data = {
     isFetched: boolean,
     hasCriticalError: boolean,
     documents: Document[],
@@ -31,7 +32,7 @@ const EventDetailsDocuments = defineComponent({
             required: true,
         },
     },
-    data: (): State => ({
+    data: (): Data => ({
         hasCriticalError: false,
         isFetched: false,
         documents: [],
@@ -84,9 +85,14 @@ const EventDetailsDocuments = defineComponent({
         // -
         // ------------------------------------------------------
 
+        /**
+         * Indique si au moins un document est en cours d'upload ou non.
+         *
+         * @returns `true` si un document est en cours d'upload, `false` sinon.
+         */
         isUploading(): boolean {
-            const { fileManagerRef } = this.$refs;
-            return !!fileManagerRef?.isUploading();
+            const $fileManager = this.$refs.fileManager as ComponentRef<typeof FileManager>;
+            return !!$fileManager?.isUploading();
         },
 
         // ------------------------------------------------------
@@ -130,7 +136,7 @@ const EventDetailsDocuments = defineComponent({
         return (
             <div class="EventDetailsDocuments">
                 <FileManager
-                    ref="fileManagerRef"
+                    ref="fileManager"
                     class="EventDetailsDocuments__manager"
                     layout={FileManagerLayout.VERTICAL}
                     documents={documents}

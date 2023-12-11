@@ -18,7 +18,7 @@ $header-border-color-active: globals.$color-active-button !default;
 // - Tab
 //
 
-$border-radius: 4px 4px 0 0 !default;
+$border-radius: globals.$border-radius-normal globals.$border-radius-normal 0 0 !default;
 $icon-margin: 0.5rem !default;
 $text-color: globals.$text-soft-color !default;
 $text-color-active: globals.$text-base-color !default;

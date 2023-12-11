@@ -19,7 +19,7 @@
             font-weight: 800;
         }
 
-        &--active {
+        &--reachable {
             border-color: globals.$text-soft-color;
             color: globals.$text-soft-color;
             cursor: pointer;

@@ -3,6 +3,7 @@ import debounce from 'lodash/debounce';
 import { DEBOUNCE_WAIT } from '@/globals/constants';
 import QuantityInput from '@/themes/default/components/QuantityInput';
 
+import type { DebouncedMethod } from 'lodash';
 import type { PropType } from '@vue/composition-api';
 import type { MaterialWithAvailabilities as Material } from '@/stores/api/materials';
 
@@ -16,6 +17,13 @@ type Props = {
 
 type Data = {
     bouncedQuantity: number,
+};
+
+type InstanceProperties = {
+    updateQuantityDebounced: (
+        | DebouncedMethod<typeof MaterialsSelectorListQuantity, 'updateQuantity'>
+        | undefined
+    ),
 };
 
 // @vue/component
@@ -32,6 +40,9 @@ const MaterialsSelectorListQuantity = defineComponent({
         },
     },
     emits: ['change'],
+    setup: (): InstanceProperties => ({
+        updateQuantityDebounced: undefined,
+    }),
     data(): Data {
         return {
             bouncedQuantity: this.quantity,
@@ -45,8 +56,8 @@ const MaterialsSelectorListQuantity = defineComponent({
     created() {
         this.updateQuantityDebounced = debounce(this.updateQuantity.bind(this), DEBOUNCE_WAIT);
     },
-    beforeUnmount() {
-        this.updateQuantityDebounced.cancel();
+    beforeDestroy() {
+        this.updateQuantityDebounced?.cancel();
     },
     methods: {
         // ------------------------------------------------------
@@ -57,7 +68,7 @@ const MaterialsSelectorListQuantity = defineComponent({
 
         handleChange(value: string) {
             this.bouncedQuantity = parseInt(value, 10) || 0;
-            this.updateQuantityDebounced();
+            this.updateQuantityDebounced!();
         },
 
         // ------------------------------------------------------

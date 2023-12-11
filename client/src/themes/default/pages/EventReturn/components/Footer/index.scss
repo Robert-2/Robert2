@@ -5,15 +5,22 @@
     background-color: globals.$bg-color-body;
     text-align: center;
 
-    &__done {
-        display: inline-block;
-        padding: globals.$spacing-medium globals.$spacing-large;
-        color: globals.$text-success-color;
+    &__actions {
+        display: flex;
+        justify-content: center;
+        gap: globals.$spacing-medium;
+
+        .Button + .Button {
+            margin-left: 0;
+        }
     }
 
-    &__warning {
+    &__warnings {
+        display: flex;
+        flex-direction: column;
         margin-top: globals.$spacing-medium;
         color: globals.$text-warning-color;
         font-size: 1.1rem;
+        gap: globals.$spacing-small;
     }
 }

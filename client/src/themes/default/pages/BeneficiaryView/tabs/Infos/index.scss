@@ -1,0 +1,81 @@
+@use '~@/themes/default/style/globals';
+
+.BeneficiaryViewInfos {
+    color: globals.$text-base-color;
+
+    &__main,
+    &__company,
+    &__billing {
+        margin-bottom: globals.$spacing-medium;
+    }
+
+    &__name {
+        margin: globals.$spacing-small 0 globals.$spacing-medium;
+        font-size: 1.6rem;
+    }
+
+    &__main {
+        display: flex;
+        flex-direction: column;
+        gap: globals.$spacing-large;
+
+        &__contact,
+        &__extras {
+            flex: 1;
+        }
+
+        &__contact {
+            padding-right: globals.$spacing-large;
+        }
+    }
+
+    &__info {
+        display: flex;
+        align-items: baseline;
+        margin: 0;
+        padding: 5px 0;
+
+        &__label {
+            width: 150px;
+            font-weight: 600;
+        }
+
+        &__value {
+            flex: 1;
+            margin: 0;
+            line-height: 1.4;
+            white-space: pre-line;
+        }
+
+        &__empty {
+            color: globals.$text-light-color;
+            font-style: italic;
+        }
+    }
+
+    &__company {
+        &__name {
+            margin: 0;
+        }
+
+        &__address {
+            margin: 5px 0;
+        }
+    }
+
+    //
+    // - Responsive
+    //
+
+    @media screen and (min-width: globals.$screen-tablet) {
+        &__main {
+            flex-direction: row;
+            justify-content: flex-start;
+        }
+
+        &__company {
+            max-width: 50%;
+            padding-right: globals.$spacing-medium;
+        }
+    }
+}

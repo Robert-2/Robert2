@@ -89,8 +89,13 @@ const Input = defineComponent({
         // -
         // ------------------------------------------------------
 
+        /**
+         * Permet de donner le focus à l'input.
+         */
         focus() {
-            this.$refs.input.focus();
+            /** @type {HTMLInputElement | undefined} */
+            const $input = this.$refs.input;
+            $input?.focus();
         },
     },
     render() {

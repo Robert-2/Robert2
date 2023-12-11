@@ -1,0 +1,70 @@
+@use '~@/themes/default/style/globals';
+
+.GlobalSettingsSidebar {
+    @extend %reset-list;
+
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: globals.$spacing-small;
+    border-radius: globals.$border-radius-large;
+    background-color: globals.$bg-color-emphasis;
+    font-size: 1rem;
+    gap: globals.$spacing-thin;
+
+    &__item {
+        $sub-block: &;
+
+        &__link {
+            @extend %reset-link;
+
+            display: flex;
+            align-items: center;
+            height: 40px;
+            border-radius: globals.$border-radius-large * 0.8;
+            line-height: 40px;
+            gap: globals.$spacing-medium;
+            padding-inline: 16px;
+            transition: background 300ms, color 300ms;
+            cursor: pointer;
+
+            // - Permet de surcharger le style de base des liens.
+            // stylelint-disable-next-line declaration-no-important, order/properties-order
+            color: inherit !important;
+        }
+
+        &__icon {
+            line-height: inherit;
+        }
+
+        &__title {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        //
+        // - States
+        //
+
+        &--active {
+            color: #fff;
+
+            #{$sub-block}__link {
+                background-color: globals.$primary-color;
+            }
+        }
+
+        &:hover {
+            color: #fff;
+        }
+    }
+
+    //
+    // - Responsive
+    //
+
+    @media (min-width: globals.$screen-tablet) {
+        font-size: 1.1rem;
+    }
+}

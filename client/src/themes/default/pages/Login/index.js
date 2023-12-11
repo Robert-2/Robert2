@@ -1,9 +1,10 @@
 import './index.scss';
+import { defineComponent } from '@vue/composition-api';
 import HttpCode from 'status-code-enum';
 import Button from '@/themes/default/components/Button';
 
-// @vue/component
-export default {
+/** Page de connexion. */
+const Login = defineComponent({
     name: 'Login',
     data() {
         const { $t: __ } = this;
@@ -116,4 +117,6 @@ export default {
             </div>
         );
     },
-};
+});
+
+export default Login;

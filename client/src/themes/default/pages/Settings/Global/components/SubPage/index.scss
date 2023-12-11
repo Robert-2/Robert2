@@ -1,0 +1,25 @@
+@use '~@/themes/default/style/globals';
+
+.GlobalSettingsSubPage {
+    max-width: 1000px;
+    margin: 0 auto;
+
+    &__header {
+        margin-bottom: globals.$spacing-large;
+        padding-bottom: globals.$spacing-medium;
+        border-bottom: 1px solid globals.$divider-color;
+    }
+
+    &__title {
+        margin: 0;
+        font-size: 1.8rem;
+    }
+
+    &__sub-title {
+        color: globals.$text-light-color;
+    }
+
+    &__help {
+        margin-bottom: globals.$spacing-large;
+    }
+}

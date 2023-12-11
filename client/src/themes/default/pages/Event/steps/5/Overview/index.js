@@ -63,7 +63,7 @@ const EventStep5Overview = defineComponent({
                     <section class="EventStep5Overview__section">
                         <h2 class="EventStep5Overview__duration">
                             <Icon name="clock" />{' '}
-                            {__('duration')} {__('days-count', { duration }, duration)}
+                            {__('duration')} {__('days-count', { duration: duration.days }, duration.days)}
                         </h2>
                     </section>
                 </div>

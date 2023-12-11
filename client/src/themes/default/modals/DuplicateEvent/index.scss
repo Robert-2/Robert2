@@ -61,36 +61,27 @@
     }
 
     &__infos {
+        display: flex;
+        flex-direction: column;
         min-width: 300px;
         margin-top: globals.$spacing-medium;
+        gap: globals.$spacing-small;
 
-        &__no-beneficiary {
-            color: globals.$text-danger-color;
+        &__item {
+            margin: 0;
+
+            // - Permet de surcharger le style de `EventBeneficiaries` / `EventTechnicians`.
+            // stylelint-disable-next-line declaration-no-important
+            font-size: 1rem !important;
 
             &__icon {
                 width: 1.5rem;
                 margin-right: 0.5rem;
                 text-align: center;
             }
-        }
 
-        .LocationText,
-        .EventBeneficiaries,
-        .EventTechnicians {
-            margin-top: globals.$spacing-medium;
-            font-size: 1rem;
-        }
-
-        &__duration,
-        &__items-count,
-        .EventBeneficiaries,
-        .EventTechnicians {
-            margin-top: globals.$spacing-medium;
-
-            .fas {
-                width: 1.5rem;
-                margin-right: 0.5rem;
-                text-align: center;
+            &--empty {
+                color: globals.$text-danger-color;
             }
         }
     }

@@ -1,23 +1,49 @@
 title: 'Return Inventory of the event "{name}"'
 title-simple: Return Inventory of the event
 
-not-started-yet-alert:  >-
-    This event has not started yet, so it's not possible to do
-    its return inventory for the moment.
+unavailabilities:
+    unknown: This return inventory is currently unavailable.
+    archived: >-
+        The return inventory for this event is no longer accessible
+        because the event is archived.
+    event-not-started: >-
+        This event has not started yet, so it's not possible to do
+        its return inventory for the moment.
+    no-materials: >-
+        This event does not contain material, so the return inventory
+        is not available.
+    material-shortage:
+        "The return inventory cannot be completed because the event contains
+        material in shortage/surplus which must be resolved manually.
+        \n\n
+        Please change excess quantities back to quantities that can be
+        satisfied with available stock before trying again."
 
-not-finished-yet-alert: >-
-    This event is not yet finished, you can start its inventory,
-    but you cannot terminate it.
+statuses:
+    done:
+        simple: This inventory has been marked as completed, it is now read-only.
+        with-author: This inventory has been marked as completed by {author}, it is now read-only.
+        with-date: This inventory has been marked as completed {relativeDate}, it is now read-only.
+        with-author-date: This inventory has been marked as completed by {author} {relativeDate}, it is now read-only.
 
-not-saved-yet: Please note that this return inventory has not yet been saved!
-all-material-returned:
-    "Congratulations! All materials were returned for this event.\n
-    You can now click on \"Terminate inventory\" button."
-all-material-returned-draft:
-    "Congratulations! All materials marked as returned for this event.\n
-    You will be able to mark the inventory as finished when the event has ended."
-some-material-is-missing: Some materials did not return from this event!
-some-material-came-back-broken: Some materials came back broken.
+    all-material-returned: "All materials were returned for this event."
+    some-material-is-missing: Some materials did not return from this event!
+    some-material-came-back-broken: Some materials came back broken from this event!
+
+alerts:
+    not-saved-yet: Please note that this return inventory has not yet been saved!
+    not-finished-yet: >-
+        This event is not yet finished, you can start its inventory,
+        but you cannot terminate it.
+    all-material-returned:
+        "Congratulations! All materials were returned for this event.\n
+        You can now click on \"Terminate inventory\" button."
+    all-material-returned-draft:
+        "Congratulations! All materials marked as returned for this event.\n
+        You will be able to mark the inventory as finished when the event has ended."
+
+actions:
+    update-materials: Update event material
 
 confirm-terminate-title: Do you really want to terminate this return inventory?
 confirm-terminate-text: Please note that it will no longer be possible to modify it.
@@ -26,4 +52,3 @@ confirm-terminate-text-with-broken: >-
     materials, and it will no longer be possible to modify this inventory.
 
 saved: Inventory saved
-inventory-done: Inventory done

@@ -1,24 +1,34 @@
-declare module 'vue' {
-    import type { VueConstructor as VueConstructorCore } from 'vue';
+import 'vue';
 
-    export type { VNode } from 'vue';
+declare module 'vue' {
+    import type { ComponentOptions, VueConstructor } from 'vue';
+    import type { DefaultData, DefaultComputed, DefaultMethods } from 'vue/types/options';
 
     export type ComponentRef<T extends abstract new (...args: any) => any> = (
         | InstanceType<T>
         | undefined
     );
 
-    export interface VueConstructor extends VueConstructorCore {
-        $router: any;
-        $route: any;
-    }
+    export type RawComponent<Props, Methods = DefaultMethods<Vue>> = (
+        & ComponentOptions<Vue, DefaultData<Vue>, Methods, DefaultComputed, Props>
+        & VueConstructor
+    );
+
+    export type VNodeClass =
+        | string
+        | number
+        | null
+        | undefined
+        | boolean
+        | Record<string, boolean>
+        | VNodeClass[];
 }
 
 declare module 'vue/types/options' {
     import type {
+        VNode,
         CreateElement,
         RenderContext,
-        VNode,
         ComponentOptions as CoreComponentOptions,
     } from 'vue';
 

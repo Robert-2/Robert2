@@ -2,6 +2,7 @@ title-create: Nouvel événement
 title-simple: Modifier l'événement
 title: "Modifier l'événement «\_{title}\_»"
 help-edit: ''
+cannot-be-modified: Cet événement ne peut plus être modifié.
 back-to-calendar: Retour au calendrier
 save-and-go-to-prev-step: Sauvegarder et retour à l'étape précédente
 save-and-go-to-next-step: Sauvegarder et continuer

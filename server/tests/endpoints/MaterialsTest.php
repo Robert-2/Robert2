@@ -497,23 +497,11 @@ final class MaterialsTest extends ApiTestCase
         $this->assertResponsePaginatedData(2);
     }
 
-    public function testGetAllWithDateForQuantities(): void
+    public function testGetAllWithQuantitiesPeriod(): void
     {
-        // - Récupère le matériel avec les quantités qu'il reste pour un jour
-        // - pendant lequel se déroulent les événements n°1 et n°2
-        $this->client->get('/api/materials?dateForQuantities=2018-12-18');
-        $this->assertStatusCode(StatusCode::STATUS_OK);
-        $response = $this->_getResponseAsArray();
-        $this->assertCount(8, $response['data']);
-
-        foreach ([2, 32, 0, 2, 30, 0, 1, 2] as $index => $expected) {
-            $this->assertArrayHasKey('available_quantity', $response['data'][$index]);
-            $this->assertEquals($expected, $response['data'][$index]['available_quantity']);
-        }
-
         // - Récupère le matériel avec les quantités qu'il reste pour une période
         // - pendant laquelle se déroulent les événements n°1, n°2 et n°3
-        $this->client->get('/api/materials?dateForQuantities[start]=2018-12-16&dateForQuantities[end]=2018-12-19');
+        $this->client->get('/api/materials?quantitiesPeriod[start]=2018-12-16&quantitiesPeriod[end]=2018-12-19');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $response = $this->_getResponseAsArray();
         $this->assertCount(8, $response['data']);
@@ -524,7 +512,7 @@ final class MaterialsTest extends ApiTestCase
         }
 
         // - Test avec une période non valide (retourne les quantités en stock uniquement)
-        $this->client->get('/api/materials?dateForQuantities[end]=2018-12-18');
+        $this->client->get('/api/materials?quantitiesPeriod[end]=2018-12-18');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $response = $this->_getResponseAsArray();
         $this->assertCount(8, $response['data']);
@@ -554,7 +542,7 @@ final class MaterialsTest extends ApiTestCase
             'stock_quantity' => 1,
         ]);
         $this->assertApiValidationError([
-            'reference' => ['This field is mandatory'],
+            'reference' => ['This field is mandatory.'],
         ]);
     }
 
@@ -917,7 +905,7 @@ final class MaterialsTest extends ApiTestCase
     {
         $this->client->get('/api/materials/1/bookings');
         $this->assertStatusCode(StatusCode::STATUS_OK);
-        $this->assertResponseData([
+        $this->assertResponsePaginatedData(4, [
             array_replace(
                 EventsTest::data(7, Event::SERIALIZE_BOOKING_SUMMARY),
                 [
@@ -941,6 +929,19 @@ final class MaterialsTest extends ApiTestCase
             ),
             array_replace(
                 EventsTest::data(1, Event::SERIALIZE_BOOKING_SUMMARY),
+                [
+                    'entity' => 'event',
+                    'pivot' => ['quantity' => 1],
+                ],
+            ),
+        ]);
+
+        // - Avec une limite et un numéro de page.
+        $this->client->get('/api/materials/1/bookings?page=2&limit=1');
+        $this->assertStatusCode(StatusCode::STATUS_OK);
+        $this->assertResponsePaginatedData(4, [
+            array_replace(
+                EventsTest::data(4, Event::SERIALIZE_BOOKING_SUMMARY),
                 [
                     'entity' => 'event',
                     'pivot' => ['quantity' => 1],

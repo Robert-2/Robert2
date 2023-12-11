@@ -1,107 +1,72 @@
 import './index.scss';
-import moment from 'moment';
+import { defineComponent } from '@vue/composition-api';
 import HttpCode from 'status-code-enum';
+import isTruthy from '@/utils/isTruthy';
 import { isRequestErrorStatusCode } from '@/utils/errors';
 import Fragment from '@/components/Fragment';
 import Page from '@/themes/default/components/Page';
 import CriticalError from '@/themes/default/components/CriticalError';
+import { ServerTable } from '@/themes/default/components/Table';
 import Button from '@/themes/default/components/Button';
+import Dropdown from '@/themes/default/components/Dropdown';
 import Datepicker from '@/themes/default/components/Datepicker';
 import formatAddress from '@/utils/formatAddress';
 import { confirm } from '@/utils/alert';
 import apiTechnicians from '@/stores/api/technicians';
-import initColumnsDisplay from '@/utils/initColumnsDisplay';
 
-// @vue/component
-export default {
+/** Page de listing des techniciens. */
+const Technicians = defineComponent({
     name: 'Technicians',
-    data() {
-        const { $t: __, $options } = this;
+    data: () => ({
+        isLoading: false,
+        hasCriticalError: false,
+        shouldDisplayTrashed: false,
+        isTrashDisplayed: false,
+        periodForAvailabilities: null,
+    }),
+    computed: {
+        columns() {
+            const {
+                $t: __,
+                isTrashDisplayed,
+                handleDeleteItem,
+                handleRestoreItem,
+            } = this;
 
-        return {
-            hasCriticalError: false,
-            isLoading: false,
-            shouldDisplayTrashed: false,
-            isTrashDisplayed: false,
-            periodFilter: null,
-
-            //
-            // - Tableau
-            //
-
-            columns: [
-                'full_name',
-                'nickname',
-                'email',
-                'phone',
-                'address',
-                'note',
-                'actions',
-            ],
-            options: {
-                columnsDropdown: true,
-                preserveState: true,
-                saveState: true,
-                orderBy: { column: 'full_name', ascending: true },
-                sortable: ['full_name', 'nickname', 'email'],
-                columnsDisplay: initColumnsDisplay($options.name, {
-                    full_name: true,
-                    nickname: true,
-                    email: true,
-                    phone: true,
-                    address: true,
-                    note: false,
-                }),
-                headings: {
-                    full_name: `${__('first-name')} / ${__('last-name')}`,
-                    nickname: __('nickname'),
-                    email: __('email'),
-                    phone: __('phone'),
-                    address: __('address'),
-                    note: __('notes'),
-                    actions: '',
+            return [
+                {
+                    key: 'full_name',
+                    title: `${__('first-name')} / ${__('last-name')}`,
+                    class: 'Technicians__cell Technicians__cell--full-name',
+                    sortable: true,
                 },
-                columnsClasses: {
-                    nickname: 'Technicians__nickname ',
-                    email: 'Technicians__email ',
-                    address: 'Technicians__address ',
-                    note: 'Technicians__note ',
-                    actions: 'Technicians__actions ',
+                {
+                    key: 'nickname',
+                    title: __('nickname'),
+                    class: 'Technicians__cell Technicians__cell--nickname',
+                    sortable: true,
+                    hidden: true,
                 },
-                requestFunction: this.fetch.bind(this),
-                templates: {
-                    full_name: (h, { id, full_name: fullName }) => {
-                        if (this.isTrashDisplayed) {
-                            return fullName;
-                        }
-
-                        return (
-                            <router-link
-                                to={{ name: 'view-technician', params: { id } }}
-                                class="Technicians__link"
-                            >
-                                {fullName}
-                            </router-link>
-                        );
-                    },
-                    nickname: (h, { id, nickname }) => {
-                        if (this.isTrashDisplayed) {
-                            return nickname;
-                        }
-
-                        return (
-                            <router-link
-                                to={{ name: 'view-technician', params: { id } }}
-                                class="Technicians__link"
-                            >
-                                {nickname}
-                            </router-link>
-                        );
-                    },
-                    email: (h, { email }) => (
+                !isTrashDisplayed && {
+                    key: 'email',
+                    title: __('email'),
+                    class: 'Technicians__cell Technicians__cell--email',
+                    sortable: true,
+                    render: (h, { email }) => (
                         <a href={`mailto:${email}`}>{email}</a>
                     ),
-                    address: (h, technician) => (
+                },
+                !isTrashDisplayed && {
+                    key: 'phone',
+                    title: __('phone'),
+                    class: 'Technicians__cell Technicians__cell--phone',
+                },
+                !isTrashDisplayed && {
+                    key: 'address',
+                    title: __('address'),
+                    class: 'Technicians__cell Technicians__cell--address',
+                    hidden: true,
+                    render: (h, technician) => (
                         formatAddress(
                             technician.street,
                             technician.postal_code,
@@ -109,13 +74,18 @@ export default {
                             technician.country,
                         )
                     ),
-                    actions: (h, { id }) => {
-                        const {
-                            isTrashDisplayed,
-                            handleDeleteItem,
-                            handleRestoreItem,
-                        } = this;
-
+                },
+                !isTrashDisplayed && {
+                    key: 'note',
+                    title: __('notes'),
+                    class: 'Technicians__cell Technicians__cell--note',
+                    hidden: true,
+                },
+                {
+                    key: 'actions',
+                    title: '',
+                    class: 'Technicians__cell Technicians__cell--actions',
+                    render: (h, { id }) => {
                         if (isTrashDisplayed) {
                             return (
                                 <Fragment>
@@ -164,13 +134,17 @@ export default {
                         );
                     },
                 },
-            },
-        };
+            ].filter(isTruthy);
+        },
     },
     watch: {
-        periodFilter() {
+        periodForAvailabilities() {
             this.$refs.table.refresh();
         },
+    },
+    created() {
+        // - Binding.
+        this.fetch = this.fetch.bind(this);
     },
     methods: {
         // ------------------------------------------------------
@@ -179,8 +153,15 @@ export default {
         // -
         // ------------------------------------------------------
 
+        handleRowClick({ id }) {
+            this.$router.push({
+                name: 'view-technician',
+                params: { id },
+            });
+        },
+
         handleClearFilters() {
-            this.periodFilter = null;
+            this.periodForAvailabilities = null;
         },
 
         async handleDeleteItem(id) {
@@ -235,7 +216,7 @@ export default {
             }
         },
 
-        handleShowTrashed() {
+        handleToggleShowTrashed() {
             this.shouldDisplayTrashed = !this.shouldDisplayTrashed;
             this.$refs.table.setPage(1);
         },
@@ -251,10 +232,10 @@ export default {
 
             try {
                 const filters = {};
-                if (this.periodFilter) {
-                    const [start, end] = this.periodFilter;
-                    filters.startDate = moment(start).format();
-                    filters.endDate = moment(end).endOf('day').format();
+
+                if (this.periodForAvailabilities) {
+                    const [start, end] = this.periodForAvailabilities;
+                    filters.availabilityPeriod = { start, end };
                 }
 
                 const data = await apiTechnicians.all({
@@ -283,21 +264,48 @@ export default {
     render() {
         const {
             $t: __,
+            fetch,
             $options,
             columns,
-            options,
-            periodFilter,
-            handleClearFilters,
+            periodForAvailabilities,
             isLoading,
             isTrashDisplayed,
             hasCriticalError,
-            handleShowTrashed,
+            handleToggleShowTrashed,
+            handleClearFilters,
+            handleRowClick,
         } = this;
 
         if (hasCriticalError) {
             return (
                 <Page name="technicians" title={__('page.technicians.title')}>
                     <CriticalError />
+                </Page>
+            );
+        }
+
+        if (isTrashDisplayed) {
+            return (
+                <Page
+                    name="technicians"
+                    title={__('page.technicians.title-trash')}
+                    isLoading={isLoading}
+                    actions={[
+                        <Button onClick={handleToggleShowTrashed} icon="eye" type="primary">
+                            {__('display-not-deleted-items')}
+                        </Button>,
+                    ]}
+                >
+                    <div class="Technicians Technicians--trashed">
+                        <ServerTable
+                            ref="table"
+                            key="trash"
+                            class="Technicians__table"
+                            rowClass="Technicians__row"
+                            columns={columns}
+                            fetcher={fetch}
+                        />
+                    </div>
                 </Page>
             );
         }
@@ -312,17 +320,23 @@ export default {
                     <Button type="add" icon="user-plus" to={{ name: 'add-technician' }}>
                         {__('page.technicians.action-add')}
                     </Button>,
+                    <Dropdown>
+                        <Button icon="trash" onClick={handleToggleShowTrashed}>
+                            {__('open-trash-bin')}
+                        </Button>
+                    </Dropdown>,
                 ]}
             >
                 <div class="Technicians">
                     <div class="Technicians__filters">
                         <Datepicker
                             class="Technicians__filters__period"
-                            v-model={this.periodFilter}
+                            v-model={this.periodForAvailabilities}
                             placeholder={__('page.technicians.period-of-availability')}
+                            withSnippets
                             range
                         />
-                        {!!periodFilter && (
+                        {!!periodForAvailabilities && (
                             <Button
                                 type="primary"
                                 class="Technicians__filters__clear-button"
@@ -333,24 +347,20 @@ export default {
                             </Button>
                         )}
                     </div>
-                    <v-server-table
+                    <ServerTable
                         ref="table"
-                        class="Technicians__table"
+                        key="default"
                         name={$options.name}
+                        class="Technicians__table"
+                        rowClass="Technicians__row"
                         columns={columns}
-                        options={options}
+                        fetcher={fetch}
+                        onRowClick={handleRowClick}
                     />
-                    <div class="content__footer">
-                        <Button
-                            onClick={handleShowTrashed}
-                            icon={isTrashDisplayed ? 'eye' : 'trash'}
-                            type={isTrashDisplayed ? 'success' : 'danger'}
-                        >
-                            {isTrashDisplayed ? __('display-not-deleted-items') : __('open-trash-bin')}
-                        </Button>
-                    </div>
                 </div>
             </Page>
         );
     },
-};
+});
+
+export default Technicians;

@@ -1,9 +1,13 @@
 import './index.scss';
+import { defineComponent } from '@vue/composition-api';
 import HttpCode from 'status-code-enum';
+import isTruthy from '@/utils/isTruthy';
 import { isRequestErrorStatusCode } from '@/utils/errors';
 import Page from '@/themes/default/components/Page';
 import Fragment from '@/components/Fragment';
 import CriticalError from '@/themes/default/components/CriticalError';
+import { ServerTable } from '@/themes/default/components/Table';
+import Dropdown from '@/themes/default/components/Dropdown';
 import Button from '@/themes/default/components/Button';
 import formatAddress from '@/utils/formatAddress';
 import ItemsCount from './components/ItemsCount';
@@ -11,79 +15,72 @@ import TotalAmount from './components/TotalAmount';
 import apiParks from '@/stores/api/parks';
 import config from '@/globals/config';
 import { confirm } from '@/utils/alert';
-import initColumnsDisplay from '@/utils/initColumnsDisplay';
 
-// @vue/component
-export default {
+/** Page de listing des parcs de matériel. */
+const Parks = defineComponent({
     name: 'Parks',
-    data() {
-        const { $t: __, $options } = this;
+    data: () => ({
+        hasCriticalError: false,
+        isLoading: false,
+        shouldDisplayTrashed: false,
+        isTrashDisplayed: false,
+    }),
+    computed: {
+        columns() {
+            const {
+                $t: __,
+                isTrashDisplayed,
+                handleDeleteItem,
+                handleRestoreItem,
+            } = this;
 
-        return {
-            hasCriticalError: false,
-            isLoading: false,
-            shouldDisplayTrashed: false,
-            isTrashDisplayed: false,
-
-            //
-            // - Tableau
-            //
-
-            columns: [
-                'name',
-                'address',
-                'opening_hours',
-                'totalItems',
-                'note',
-                'totalAmount',
-                'events',
-                'actions',
-            ],
-            options: {
-                columnsDropdown: true,
-                preserveState: true,
-                saveState: true,
-                orderBy: { column: 'name', ascending: true },
-                sortable: ['name'],
-                columnsDisplay: initColumnsDisplay($options.name, {
-                    name: true,
-                    address: true,
-                    opening_hours: true,
-                    totalItems: true,
-                    note: false,
-                    totalAmount: true,
-                    events: true,
-                }),
-                headings: {
-                    name: __('name'),
-                    address: __('address'),
-                    opening_hours: __('opening-hours'),
-                    totalItems: __('page.parks.total-items'),
-                    note: __('notes'),
-                    totalAmount: __('total-value'),
-                    events: __('events'),
-                    actions: '',
+            return [
+                {
+                    key: 'name',
+                    title: __('name'),
+                    class: 'Parks__cell Parks__cell--name',
+                    sortable: true,
                 },
-                columnsClasses: {
-                    address: 'Parks__address ',
-                    opening_hours: 'Parks__opening-hours ',
-                    note: 'Parks__note ',
-                    totalAmount: 'Parks__total-amount ',
-                    events: 'Parks__events ',
-                    actions: 'Parks__actions ',
-                },
-                requestFunction: this.fetch.bind(this),
-                templates: {
-                    address: (h, park) => (
+                !isTrashDisplayed && {
+                    key: 'address',
+                    title: __('address'),
+                    class: 'Parks__cell Parks__cell--address',
+                    render: (h, park) => (
                         formatAddress(park.street, park.postal_code, park.locality)
                     ),
-                    totalItems: (h, park) => (
+                },
+                !isTrashDisplayed && {
+                    key: 'opening_hours',
+                    title: __('opening-hours'),
+                    class: 'Parks__cell Parks__cell--opening-hours',
+                },
+                !isTrashDisplayed && {
+                    key: 'totalItems',
+                    title: __('page.parks.total-items'),
+                    class: 'Parks__cell Parks__cell--total-items',
+                    render: (h, park) => (
                         <ItemsCount park={park} />
                     ),
-                    totalAmount: (h, park) => (
+                },
+                !isTrashDisplayed && {
+                    key: 'note',
+                    title: __('notes'),
+                    class: 'Parks__cell Parks__cell--note',
+                    hidden: true,
+                },
+                !isTrashDisplayed && {
+                    key: 'totalAmount',
+                    title: __('total-value'),
+                    class: 'Parks__cell Parks__cell--total-amount',
+                    render: (h, park) => (
                         <TotalAmount park={park} />
                     ),
-                    events: (h, { id, total_items: itemsCount }) => {
+                },
+                !isTrashDisplayed && {
+                    key: 'events',
+                    title: __('events'),
+                    class: 'Parks__cell Parks__cell--events',
+                    render: (h, { id, total_items: itemsCount }) => {
                         if (itemsCount === 0) {
                             return null;
                         }
@@ -94,13 +91,12 @@ export default {
                             </router-link>
                         );
                     },
-                    actions: (h, { id, total_items: itemsCount }) => {
-                        const {
-                            isTrashDisplayed,
-                            handleDeleteItem,
-                            handleRestoreItem,
-                        } = this;
-
+                },
+                {
+                    key: 'actions',
+                    title: '',
+                    class: 'Parks__cell Parks__cell--actions',
+                    render(h, { id, total_items: itemsCount }) {
                         if (isTrashDisplayed) {
                             return (
                                 <Fragment>
@@ -139,8 +135,12 @@ export default {
                         );
                     },
                 },
-            },
-        };
+            ].filter(isTruthy);
+        },
+    },
+    created() {
+        // - Binding.
+        this.fetch = this.fetch.bind(this);
     },
     methods: {
         // ------------------------------------------------------
@@ -201,7 +201,7 @@ export default {
             }
         },
 
-        handleShowTrashed() {
+        handleToggleShowTrashed() {
             this.shouldDisplayTrashed = !this.shouldDisplayTrashed;
             this.$refs.table.setPage(1);
         },
@@ -240,13 +240,13 @@ export default {
     render() {
         const {
             $t: __,
+            fetch,
             $options,
             columns,
-            options,
             isLoading,
             isTrashDisplayed,
             hasCriticalError,
-            handleShowTrashed,
+            handleToggleShowTrashed,
         } = this;
 
         if (hasCriticalError) {
@@ -257,37 +257,55 @@ export default {
             );
         }
 
+        // - Titre de la page.
+        const title = !isTrashDisplayed
+            ? __('page.parks.title')
+            : __('page.parks.title-trash');
+
+        // - Aide de page.
+        const help = !isTrashDisplayed
+            ? __('page.parks.help')
+            : undefined;
+
+        // - Actions de la page.
+        const actions = !isTrashDisplayed
+            ? [
+                <Button type="add" to={{ name: 'add-park' }}>
+                    {__('page.parks.action-add')}
+                </Button>,
+                <Dropdown>
+                    <Button icon="trash" onClick={handleToggleShowTrashed}>
+                        {__('open-trash-bin')}
+                    </Button>
+                </Dropdown>,
+            ]
+            : [
+                <Button onClick={handleToggleShowTrashed} icon="eye" type="primary">
+                    {__('display-not-deleted-items')}
+                </Button>,
+            ];
+
         return (
             <Page
                 name="parks"
-                title={__('page.parks.title')}
-                help={__('page.parks.help')}
+                title={title}
+                help={help}
                 isLoading={isLoading}
-                actions={[
-                    <Button type="add" to={{ name: 'add-park' }}>
-                        {__('page.parks.action-add')}
-                    </Button>,
-                ]}
+                actions={actions}
             >
                 <div class="Parks">
-                    <v-server-table
+                    <ServerTable
                         ref="table"
+                        key={!isTrashDisplayed ? 'default' : 'trash'}
+                        name={!isTrashDisplayed ? $options.name : undefined}
                         class="Parks__table"
-                        name={$options.name}
                         columns={columns}
-                        options={options}
+                        fetcher={fetch}
                     />
-                    <div class="content__footer">
-                        <Button
-                            onClick={handleShowTrashed}
-                            icon={isTrashDisplayed ? 'eye' : 'trash'}
-                            type={isTrashDisplayed ? 'success' : 'danger'}
-                        >
-                            {isTrashDisplayed ? __('display-not-deleted-items') : __('open-trash-bin')}
-                        </Button>
-                    </div>
                 </div>
             </Page>
         );
     },
-};
+});
+
+export default Parks;

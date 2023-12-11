@@ -25,7 +25,6 @@ $group-item-max-height: 65px !default;
 
     &__item {
         $sub-block: &;
-        $border-radius: 10px;
 
         margin: 0;
         padding: 1.2rem 1.1rem;
@@ -34,7 +33,7 @@ $group-item-max-height: 65px !default;
 
         &.vis-range {
             border: none;
-            border-radius: $border-radius;
+            border-radius: globals.$border-radius-large;
             background-color: globals.$calendar-event-normal-color;
             color: globals.$calendar-event-normal-text-color;
             box-shadow: 1px 2px 3px rgba(#000, 0.5);
@@ -55,12 +54,12 @@ $group-item-max-height: 65px !default;
 
             .vis-drag-left {
                 left: 0;
-                border-radius: $border-radius 0 0 $border-radius;
+                border-radius: globals.$border-radius-large 0 0 globals.$border-radius-large;
             }
 
             .vis-drag-right {
                 right: 0;
-                border-radius: 0 $border-radius $border-radius 0;
+                border-radius: 0 globals.$border-radius-large globals.$border-radius-large 0;
             }
         }
 
@@ -97,7 +96,7 @@ $group-item-max-height: 65px !default;
 
         // stylelint-disable-next-line selector-class-pattern
         .vis-onUpdateTime-tooltip {
-            border-radius: 3px;
+            border-radius: globals.$border-radius-normal;
             background-color: globals.$bg-color-tooltip;
             line-height: 1.5;
             white-space: pre-wrap;
@@ -110,7 +109,7 @@ $group-item-max-height: 65px !default;
             justify-content: center;
             width: 32px;
             height: 100%;
-            border-radius: 3px;
+            border-radius: globals.$border-radius-normal;
 
             &::after {
                 content: '\f1f8';
@@ -188,9 +187,9 @@ $group-item-max-height: 65px !default;
         overflow: hidden;
         max-width: 50%;
         margin: 30px 0 0 15px;
-        padding: globals.$spacing-small globals.$spacing-medium;
+        padding: globals.$spacing-medium;
         border: none;
-        border-radius: 3px;
+        border-radius: globals.$border-radius-normal;
         background-color: globals.$bg-color-tooltip;
         color: globals.$text-base-color;
         font-family: globals.$text-base-font-family;

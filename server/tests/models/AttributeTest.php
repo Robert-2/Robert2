@@ -4,24 +4,13 @@ declare(strict_types=1);
 namespace Loxya\Tests;
 
 use Loxya\Models\Attribute;
-use Loxya\Errors\Exception\ValidationException;
-use PHPUnit\Framework\Constraint\Exception as ExceptionConstraint;
 
 final class AttributeTest extends TestCase
 {
     public function testValidation(): void
     {
         $testValidation = function (array $testData, array $expectedErrors): void {
-            $validationExConstraint = new ExceptionConstraint(ValidationException::class);
-            try {
-                (new Attribute($testData))->validate();
-            } catch (\Throwable $exception) {
-                /** @var ValidationException $exception */
-                $this->assertThat($exception, $validationExConstraint);
-                $this->assertSame($expectedErrors, $exception->getValidationErrors());
-                return;
-            }
-            $this->assertThat(null, $validationExConstraint);
+            $this->assertSame($expectedErrors, (new Attribute($testData))->validationErrors());
         };
 
         // - Test `max_length`: Doit être à `null` si attribut autre que type `string`.
@@ -36,9 +25,9 @@ final class AttributeTest extends TestCase
             'is_totalisable' => false,
         ];
         $testValidation($testData, [
-            'unit' => ['Doit être non défini'],
-            'max_length' => ['Doit être non défini'],
-            'is_totalisable' => ['Doit être non défini'],
+            'unit' => ['Ce champ ne devrait pas être spécifié.'],
+            'max_length' => ['Ce champ ne devrait pas être spécifié.'],
+            'is_totalisable' => ['Ce champ ne devrait pas être spécifié.'],
         ]);
 
         // - Si `max_length`, `unit` et `is_totalisable` sont à `null` pour les
@@ -54,7 +43,7 @@ final class AttributeTest extends TestCase
             'max_length' => 'NOT_A_NUMBER',
         ];
         $testValidation($testData, [
-            'max_length' => ['Ce champ ne peut contenir que des nombres'],
+            'max_length' => ['Ce champ ne peut contenir que des nombres.'],
         ]);
 
         // - Test `max_length`: Si valide pour les attributs de type `string` => Pas d'erreur.
@@ -91,7 +80,7 @@ final class AttributeTest extends TestCase
         foreach (['float', 'integer'] as $type) {
             $testData = array_replace($baseTestData, compact('type'));
             $testValidation($testData, [
-                'is_totalisable' => ['Doit être un booléen'],
+                'is_totalisable' => ['Ce champ doit être un booléen.'],
             ]);
         }
 

@@ -1,0 +1,12 @@
+title: Modify material "{name}"
+title-simple: Modify material
+title-create: New material
+
+help-name: Give a short name, and use the description field to detail the material if needed.
+help-picture: "The material picture must be of type JPG, PNG or WebP, and cannot exceed 10\_MB."
+
+allow-online-reservations: Allow online booking?
+
+currency-per-day: "{currency}\_/\_day"
+fields-changes-depending-on-category: The fields below fluctuate depending on the selected category.
+saved: Material saved.

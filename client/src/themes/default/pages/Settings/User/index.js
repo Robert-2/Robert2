@@ -1,12 +1,13 @@
 import './index.scss';
+import { defineComponent } from '@vue/composition-api';
 import { Tabs, Tab } from '@/themes/default/components/Tabs';
 import Page from '@/themes/default/components/Page';
 import ProfileSettings from './tabs/Profile';
 import InterfaceSettings from './tabs/Interface';
 
-// @vue/component
-export default {
-    name: 'UserSettingsPage',
+/** Page des paramètres de l'utilisateur connecté. */
+const UserSettings = defineComponent({
+    name: 'UserSettings',
     render() {
         const { $t: __ } = this;
 
@@ -23,4 +24,6 @@ export default {
             </Page>
         );
     },
-};
+});
+
+export default UserSettings;

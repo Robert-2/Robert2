@@ -1,0 +1,79 @@
+title: 'Departure Inventory of the event "{name}"'
+title-simple: Departure Inventory of the event
+
+unavailabilities:
+    unknown: This departure inventory is currently unavailable.
+    archived: >-
+        The departure inventory for this event is no longer accessible
+        because the event is archived.
+    inventory-period-not-started-details:
+        "The departure inventory registration period has not yet begun for this event.
+        \n\n
+        You will be able to do this inventory from {date}\_at\_{time}."
+    inventory-period-not-started: >-
+        The departure inventory registration period has not yet begun for this event.
+        Departure inventory will be available 24 hours before the start of the event.
+    inventory-period-past:
+        "The registration period for the departure inventory is over, the inventory can no longer be carried out.
+        The equipment is assumed to have left as planned for the event.
+        \n\n
+        Departure inventories can be carried out up to 24 hours after the event start date
+        (or up to the end of the event if it lasts less than 24 hours)."
+    no-materials: >-
+        This event does not contain material, so the departure inventory
+        is not available.
+    material-shortage:
+        "The departure inventory cannot be completed because the event contains
+        material in shortage/surplus which must be resolved manually.
+        \n\n
+        Please change excess quantities back to quantities that can be
+        satisfied with available stock before trying again."
+
+status:
+    simple: This inventory has been marked as completed, it is now read-only.
+    with-author: This inventory has been marked as completed by {author}, it is now read-only.
+    with-date: This inventory has been marked as completed {relativeDate}, it is now read-only.
+    with-author-date: This inventory has been marked as completed by {author} {relativeDate}, it is now read-only.
+
+actions:
+    update-materials: Update event material
+
+confirm-terminate-title: Do you really want to terminate this departure inventory?
+confirm-terminate-text: Please note that it will no longer be possible to modify it.
+
+confirm-unsaved-edit-material-title: Unsaved changes
+confirm-unsaved-edit-material-text:
+    "You have unsaved changes to your inventory that will be lost if you continue.
+    \n\n
+    Are you sure you want to continue with the material modification,
+    without first saving?"
+
+unexpected-material-title: "Unexpected material!"
+unexpected-material-text:
+    "The material you just scanned is not part of the event.
+    \n\n
+    The purpose of the departure inventory is not to modify the event's material list
+    but only to ensure that everything leaves as planned (with comments, if needed)."
+unexpected-material-editable-text:
+    "The material you just scanned is not part of the event.
+    \n\n
+    The purpose of the departure inventory is not to modify the event's material list
+    but only to ensure that everything leaves as planned (with comments, if needed).
+    \n\n
+    You can modify the event using the button at the top of the page."
+
+incomplete-inventory-help:
+    Departure inventories can only be marked as completed when all expected
+    material has been marked as found.
+incomplete-inventory-editable-help:
+    "Departure inventories can only be marked as completed when all the
+    material has been marked as found.
+    \n\n
+    If any material is missing, the event material must be modified via the
+    button at the top of the page."
+
+complete-inventory-help:
+    "Congratulations! All the materials have been found for this event.\n
+    You can now click on \"Terminate inventory\" button."
+
+saved: Inventory saved

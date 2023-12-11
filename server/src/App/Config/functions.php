@@ -1,14 +1,11 @@
 <?php
 declare(strict_types=1);
 
-use Carbon\Carbon;
 use DI\Container;
 use Illuminate\Database\Eloquent\Builder;
 use Loxya\Config\Config;
 use Monolog\Logger;
 use Loxya\Kernel;
-use Respect\Validation\Validator as V;
-use Loxya\Support\Period;
 use Slim\Interfaces\RouteParserInterface;
 
 /**
@@ -61,59 +58,19 @@ function debug($message, ...$vars): void
 }
 
 /**
- * Get elapsed time since php script first launched, or a custom start microtime
+ * Récupère le temps écoulé depuis le lancement du script PHP,
+ * ou depuis un timestamp de départ personnalisé.
  *
- * @param float $start A custom start microtime.
+ * @param float $start Un timestamp de départ personnalisé.
  *
- * @return string The elapsed time, in seconds.
+ * @return string Le temps écoulé, en secondes.
  */
 function getExecutionTime(?float $start = null): string
 {
     $start = $start ?: (float) $_SERVER['REQUEST_TIME_FLOAT'];
     $elapsedTime = microtime(true) - $start;
 
-    return number_format($elapsedTime, 3) . "s";
-}
-
-/**
- * Arrondi un horaire (datetime) selon une précision en minutes donnée.
- *
- * @param DateTime $originalDate La date à arrondir
- * @param int      $precision    La précision à utiliser. Par défaut 15 minutes. Max 60 minutes.
- *
- * @return DateTime Un clone de la date originale arrondie.
- */
-function roundDate(\DateTime $originalDate, int $precision = 15): DateTime
-{
-    $date = clone($originalDate);
-    if ($precision > 60) {
-        return $date;
-    }
-
-    $steps = range(0, 60, $precision);
-
-    $minutes = (int) $originalDate->format('i');
-    if (in_array($minutes, $steps, true)) {
-        return $date;
-    }
-
-    $hours = (int) $originalDate->format('H');
-    $roundedMinutes = ((round($minutes / $precision)) * $precision) % 60;
-    $date->setTime($hours, $roundedMinutes);
-
-    $nextHourThreshold = 60 - ($precision / 2);
-    if ($minutes < $nextHourThreshold) {
-        return $date;
-    }
-
-    if ($hours === 23) {
-        $date->setTime(0, 0);
-        $date->add(new \DateInterval('P1D'));
-        return $date;
-    }
-
-    $date->setTime($hours + 1, 0);
-    return $date;
+    return number_format($elapsedTime, 3) . 's';
 }
 
 /**
@@ -138,47 +95,6 @@ function dbTransaction(callable $callback): mixed
     }
 
     return $result;
-}
-
-/**
- * Permet de récupérer une période depuis un tableau de dates.
- *
- * Si le tableau de contient pas ces clés ou que celles-ci ne sont pas valide, `null` sera retourné.
- *
- * @param array $array - Le tableau à convertir en période, deux formats sont acceptés:
- *                       - Soit `['start' => '[Date début]', 'end' => '[Date fin]']`.
- *                       - Soit `['[Date début]', '[Date fin]']`.
- *
- * @return Period|null - La période ou `null` si le tableau était invalide.
- */
-function getPeriodFromArray(array $array): ?Period
-{
-    if (!array_key_exists('start', $array) || !array_key_exists('end', $array)) {
-        $keys = array_keys($array);
-        if (count($array) !== 2 || !is_numeric($keys[0]) || !is_numeric($keys[1])) {
-            return null;
-        }
-        $array = array_combine(['start', 'end'], array_values($array));
-    }
-
-    $dateChecker = V::notEmpty()->dateTime();
-    foreach (['start', 'end'] as $type) {
-        if (!$dateChecker->validate($array[$type])) {
-            return null;
-        }
-    }
-
-    try {
-        $start = (new Carbon($array['start']))->setTime(0, 0);
-        $end = (new Carbon($array['end']))->setTime(23, 59, 59);
-        if ($end < $start) {
-            return null;
-        }
-
-        return new Period($start, $end);
-    } catch (\Throwable $e) {
-        return null;
-    }
 }
 
 /**

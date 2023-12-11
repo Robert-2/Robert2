@@ -1,9 +1,10 @@
 import './index.scss';
-import EventTechnicianItem from './Item';
+import { defineComponent } from '@vue/composition-api';
 import Icon from '@/themes/default/components/Icon';
+import Item from './Item';
 
 // @vue/component
-export default {
+const EventTechnicians = defineComponent({
     name: 'EventTechnicians',
     props: {
         eventTechnicians: { type: Array, required: true },
@@ -37,7 +38,7 @@ export default {
                         <span class="EventTechnicians__list__items">
                             {uniqueTechnicians.map(({ id, technician }) => (
                                 <span class="EventTechnicians__list__item">
-                                    <EventTechnicianItem key={id} technician={technician} />
+                                    <Item key={id} technician={technician} />
                                 </span>
                             ))}
                         </span>
@@ -46,4 +47,6 @@ export default {
             </div>
         );
     },
-};
+});
+
+export default EventTechnicians;

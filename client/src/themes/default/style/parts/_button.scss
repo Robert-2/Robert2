@@ -5,7 +5,7 @@
     display: inline-block;
     padding: 0.55rem 0.78rem;
     border: none;
-    border-radius: 2px;
+    border-radius: $border-radius-normal;
     background-color: $bg-color-button-default;
     color: $color-base-button;
     font-size: 1rem;

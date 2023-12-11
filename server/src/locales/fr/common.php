@@ -36,13 +36,13 @@ return [
     => "Page %d",
 
     "phone"
-    => "Tél. : %s",
+    => "Tél.\xc2\xa0: %s",
 
     "email"
-    => "E-mail : %s",
+    => "E-mail\xc2\xa0: %s",
 
     "vatNumber"
-    => "N° TVA Intracom. : %s",
+    => "N° TVA Intracom.\xc2\xa0: %s",
 
     "technicians"
     => "Techniciens",
@@ -54,7 +54,7 @@ return [
     => "Autres bénéficiaires",
 
     "event"
-    => "Événement : %s",
+    => "Événement\xc2\xa0: %s",
 
     "from-to-dates"
     => "Du %s au %s",
@@ -114,13 +114,13 @@ return [
     => ["%d article", "%d articles"],
 
     "invoice-note-detail-next-page"
-    => "Remarque : vous trouverez le détail du matériel aux pages suivantes.",
+    => "Remarque\xc2\xa0: vous trouverez le détail du matériel aux pages suivantes.",
 
     "daily-amount"
-    => "Tarif / jour",
+    => "Tarif\xc2\xa0/\xc2\xa0jour",
 
     "daily-amount-excl-tax"
-    => "Tarif H.T. / jour",
+    => "Tarif H.T.\xc2\xa0/\xc2\xa0jour",
 
     "number-of-days"
     => ["%d jour", "%d jours"],
@@ -159,10 +159,10 @@ return [
     => "P.U. H.T.",
 
     "daily-total"
-    => "Total / jour",
+    => "Total\xc2\xa0/\xc2\xa0jour",
 
     "daily-total-excl-tax"
-    => "Total H.T. / jour",
+    => "Total H.T.\xc2\xa0/\xc2\xa0jour",
 
     "total"
     => "Total",
@@ -177,10 +177,10 @@ return [
     => "Montant net à payer",
 
     "estimate-acceptance-date"
-    => "Date d'acceptation du devis :",
+    => "Date d'acceptation du devis\xc2\xa0:",
 
     "estimate-acceptance-signature"
-    => "Signature du bénéficiaire, précédée de la mention « bon pour accord » :",
+    => "Signature du bénéficiaire, précédée de la mention «\xc2\xa0bon pour accord\xc2\xa0»\xc2\xa0:",
 
     "invoice-details-title"
     => "Détails de la facture N° %s",
@@ -213,16 +213,16 @@ return [
     => "Liste du matériel",
 
     "title"
-    => "Titre : « %s »",
+    => "Titre\xc2\xa0: «\xc2\xa0%s\xc2\xa0»",
 
     "notes"
     => "Notes",
 
     "location"
-    => "Lieu : %s",
+    => "Lieu\xc2\xa0: %s",
 
     "contact"
-    => "Contact :",
+    => "Contact\xc2\xa0:",
 
     "beneficiary-reference"
     => "Réf. %s",
@@ -231,13 +231,13 @@ return [
     => "Cet événement est confirmé.",
 
     "description-notes"
-    => "Description / Notes",
+    => "Description\xc2\xa0/\xc2\xa0Notes",
 
     "materials"
     => "Matériel",
 
     "materials-park-name"
-    => "Matériel du parc « %s »",
+    => "Matériel du parc «\xc2\xa0%s\xc2\xa0»",
 
     "other-materials"
     => "Autre matériel",
@@ -246,7 +246,7 @@ return [
     => "Non catégorisé",
 
     "total-replacement-amount"
-    => "Montant total de remplacement : %s",
+    => "Montant total de remplacement\xc2\xa0:\xc2\xa0%s",
 
     "material-attributes-totals"
     => "Totaux des caractéristiques",
@@ -255,25 +255,25 @@ return [
     => "Sortie",
 
     "output-scheduled-for"
-    => "Prévue le : %s",
+    => "Prévue le\xc2\xa0: %s",
 
     "return"
     => "Retour",
 
     "return-scheduled-for-date"
-    => "Prévu le : %s",
+    => "Prévu le\xc2\xa0: %s",
 
     "effective-date"
-    => "Date effective :",
+    => "Date effective\xc2\xa0:",
 
     "signature"
-    => "Signature :",
+    => "Signature\xc2\xa0:",
 
     "label"
     => "Étiquette",
 
     "park-value"
-    => "Parc : %s",
+    => "Parc\xc2\xa0: %s",
 
     "enable-javascript-message"
     => "Veuillez activer JavaScript pour utiliser l'application.",
@@ -288,5 +288,5 @@ return [
     => "État",
 
     "borrower-note-dots"
-    => "Note de l'emprunteur :",
+    => "Note de l'emprunteur\xc2\xa0:",
 ];

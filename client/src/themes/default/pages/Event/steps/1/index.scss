@@ -5,13 +5,13 @@
     min-width: 250px;
     margin: 0 auto;
 
-    &__dates {
+    &__period {
         display: flex;
         align-items: flex-end;
         margin-top: 1rem;
         gap: 10px;
 
-        &__fields {
+        &__dates {
             flex: 1;
         }
 

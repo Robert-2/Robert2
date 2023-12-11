@@ -2,7 +2,8 @@ import './index.scss';
 import warning from 'warning';
 import { computed, defineComponent } from '@vue/composition-api';
 import Select from '@/themes/default/components/Select';
-import Datepicker, { TYPES as DATEPICKER_TYPES } from '@/themes/default/components/Datepicker';
+import Radio from '@/themes/default/components/Radio';
+import Datepicker, { Type as DatepickerType } from '@/themes/default/components/Datepicker';
 import SwitchToggle from '@/themes/default/components/SwitchToggle';
 import Input, { TYPES as INPUT_TYPES } from '@/themes/default/components/Input';
 import Textarea from '@/themes/default/components/Textarea';
@@ -11,12 +12,13 @@ import InputColor from '@/themes/default/components/InputColor';
 import Color from '@/utils/color';
 
 const TYPES = [
-    ...DATEPICKER_TYPES,
+    ...Object.values(DatepickerType),
     ...INPUT_TYPES,
     'color',
     'copy',
     'static',
     'select',
+    'radio',
     'textarea',
     'switch',
     'custom',
@@ -59,7 +61,14 @@ export default defineComponent({
         max: { type: Number, default: undefined },
         addon: { type: String, default: undefined },
         options: { type: Array, default: undefined },
-        datepickerOptions: { type: Object, default: undefined },
+
+        // - Props. spécifiques aux date picker.
+        range: { type: Boolean, default: false },
+        minDate: { type: [String, Object, Date, Number], default: undefined },
+        maxDate: { type: [String, Object, Date, Number], default: undefined },
+        disabledDate: { type: Function, default: undefined },
+        withFullDaysToggle: { type: Boolean, default: false },
+        withoutMinutes: { type: Boolean, default: false },
     },
     computed: {
         invalid() {
@@ -81,24 +90,35 @@ export default defineComponent({
         },
     },
     methods: {
-        handleChange(newValue) {
-            this.$emit('change', newValue);
+        // ------------------------------------------------------
+        // -
+        // -    Handlers
+        // -
+        // ------------------------------------------------------
+
+        handleChange(...newValue) {
+            this.$emit('change', ...newValue);
         },
 
-        handleInput(newValue) {
-            this.$emit('input', newValue);
+        handleInput(...newValue) {
+            this.$emit('input', ...newValue);
         },
 
         // ------------------------------------------------------
         // -
-        // -    Méthodes utilisables sur l'instance du composant
+        // -    API Publique
         // -
         // ------------------------------------------------------
 
+        /**
+         * Permet de donner le focus au champ de formulaire.
+         */
         focus() {
-            if (this.$refs.inputRef) {
-                this.$refs.inputRef.focus();
-            }
+            // FIXME: Devrait prendre en charge le focus de n'importe
+            //        quel champ, pas seulement `<Input />` / `<Textarea />`.
+            /** @type {import('vue').ComponentRef<typeof Input | typeof Textarea>} */
+            const $input = this.$refs.input;
+            $input?.focus();
         },
 
         // ------------------------------------------------------
@@ -124,10 +144,12 @@ export default defineComponent({
                 '`custom`, celle-ci ne sera pas utilisée.',
             );
 
-            // - Affiche un warning si des props. sont passés à <FormField> alors qu'on est dans un champ `custom`.
+            // - Affiche un warning si des props. sont passés à <FormField>
+            //   alors qu'on est dans un champ `custom`.
             const customUselessProps = [
                 'name', 'placeholder', 'value', 'rows', 'step',
-                'min', 'max', 'addon', 'options', 'datepickerOptions',
+                'min', 'max', 'addon', 'options', 'disabledDate',
+                'minDate', 'maxDate',
             ];
             customUselessProps.forEach((customUselessProp) => {
                 warning(
@@ -159,9 +181,14 @@ export default defineComponent({
             max,
             rows,
             help,
+            range,
+            minDate,
+            maxDate,
+            disabledDate,
+            withoutMinutes,
+            withFullDaysToggle,
             handleChange,
             handleInput,
-            datepickerOptions,
             errors,
         } = this;
 
@@ -191,6 +218,7 @@ export default defineComponent({
                     <div class="FormField__input-wrapper">
                         {INPUT_TYPES.includes(type) && (
                             <Input
+                                ref="input"
                                 class="FormField__input"
                                 type={type}
                                 step={step}
@@ -205,7 +233,6 @@ export default defineComponent({
                                 addon={addon}
                                 onInput={handleInput}
                                 onChange={handleChange}
-                                ref="inputRef"
                             />
                         )}
                         {type === 'select' && (
@@ -221,8 +248,21 @@ export default defineComponent({
                                 onChange={handleChange}
                             />
                         )}
+                        {type === 'radio' && (
+                            <Radio
+                                class="FormField__input"
+                                name={name}
+                                options={options}
+                                disabled={!!disabled}
+                                invalid={invalid}
+                                value={value}
+                                onInput={handleInput}
+                                onChange={handleChange}
+                            />
+                        )}
                         {type === 'textarea' && (
                             <Textarea
+                                ref="input"
                                 class="FormField__input"
                                 name={name}
                                 value={value}
@@ -234,17 +274,21 @@ export default defineComponent({
                                 onChange={handleChange}
                             />
                         )}
-                        {DATEPICKER_TYPES.includes(type) && (
+                        {Object.values(DatepickerType).includes(type) && (
                             <Datepicker
                                 class="FormField__input"
                                 name={name}
                                 type={type}
                                 value={value}
-                                disabledDates={datepickerOptions?.disabled}
-                                range={datepickerOptions?.range}
+                                range={range}
                                 invalid={invalid}
                                 disabled={disabled}
                                 placeholder={_placeholder}
+                                minDate={minDate}
+                                maxDate={maxDate}
+                                disabledDate={disabledDate}
+                                withFullDaysToggle={withFullDaysToggle}
+                                withoutMinutes={withoutMinutes}
                                 onInput={handleInput}
                                 onChange={handleChange}
                             />

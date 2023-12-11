@@ -21,7 +21,7 @@
     .timeline-event {
         margin: 3px;
         padding: 7px 10px;
-        border-radius: 5px;
+        border-radius: globals.$border-radius-normal;
         background-color: globals.$calendar-event-normal-color;
         color: globals.$calendar-event-normal-text-color;
         font-size: 0.9rem;

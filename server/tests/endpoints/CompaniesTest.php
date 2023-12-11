@@ -114,7 +114,7 @@ final class CompaniesTest extends ApiTestCase
     {
         $this->client->post('/api/companies', ['foo' => 'bar']);
         $this->assertApiValidationError([
-            'legal_name' => ["This field is mandatory"],
+            'legal_name' => ["This field is mandatory."],
         ]);
     }
 

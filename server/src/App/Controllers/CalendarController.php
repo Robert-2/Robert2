@@ -71,12 +71,10 @@ class CalendarController extends BaseController
                 $calendarEvent->setLocation(new CalendarValue\Location($event->location));
             }
 
-            if (!empty($event->updated_at) || !empty($event->created_at)) {
-                $eventLastTouch = !empty($event->updated_at)
-                    ? $event->updated_at
-                    : $event->created_at;
-                $calendarEvent->touch(new CalendarValue\Timestamp($eventLastTouch));
-            }
+            $eventLastTouch = !empty($event->updated_at)
+                ? $event->updated_at
+                : $event->created_at;
+            $calendarEvent->touch(new CalendarValue\Timestamp($eventLastTouch));
 
             $calendarEvents[] = $calendarEvent;
         }
@@ -87,8 +85,8 @@ class CalendarController extends BaseController
 
         $timeZone = CalendarTimeZone::createFromPhpDateTimeZone(
             new \DateTimeZone(@date_default_timezone_get()),
-            $calendarBoundaries['start'] ?? new Carbon('today 00:00:00'),
-            $calendarBoundaries['end'] ?? new Carbon('today 23:59:59'),
+            $calendarBoundaries['start'] ?? Carbon::today()->startOfDay(),
+            $calendarBoundaries['end'] ?? Carbon::today()->endOfDay(),
         );
 
         $calendar = (new Calendar($calendarEvents))

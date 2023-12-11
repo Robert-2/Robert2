@@ -1,0 +1,80 @@
+title: "Inventaire de départ de l'événement «\_{name}\_»"
+title-simple: Inventaire de départ de l'événement
+
+unavailabilities:
+    unknown: Cet inventaire de départ n'est pas disponible pour le moment.
+    archived: >-
+        L'inventaire de départ de cet événement n'est plus accessible car
+        l'événement est archivé.
+    inventory-period-not-started-details:
+        "La période d'enregistrement de l'inventaire de départ n'a pas encore commencée pour cet événement.
+        \n\n
+        Vous pourrez effectuer cet inventaire à partir du {date}\_à\_{time}."
+    inventory-period-not-started: >-
+        La période d'enregistrement de l'inventaire de départ n'a pas encore commencée pour cet événement.
+        L'inventaire de départ sera réalisable 24 heures avant le début de l'événement.
+    inventory-period-past:
+        "La période d'enregistrement de l'inventaire de départ est terminée, l'inventaire n'est plus réalisable.
+        Le matériel est réputé parti tel que prévu dans l'événement.
+        \n\n
+        Les inventaires de départ sont réalisables jusqu'à 24 heures après la date de début de l'événement
+        (ou jusqu'à la fin de celui-ci s'il dure moins de 24 heures)."
+    no-materials: >-
+        L'inventaire de départ n'est pas disponible car l'événement ne
+        contient pas de matériel.
+    material-shortage:
+        "L'inventaire de départ ne peut pas être effectué car l'événement contient
+        du matériel en pénurie/excédent qui doit être solutionné manuellement.
+        \n\n
+        Veuillez modifier les quantités en excédent pour revenir à des
+        quantités qui peuvent être satisfaites avec le stock disponible avant de re-essayer."
+
+status:
+    simple: Cet inventaire a été marqué comme terminé, il est maintenant en lecture seule.
+    with-author: Cet inventaire a été marqué comme terminé par {author}, il est maintenant en lecture seule.
+    with-date: Cet inventaire a été marqué comme terminé {relativeDate}, il est maintenant en lecture seule.
+    with-author-date: Cet inventaire a été marqué comme terminé par {author} {relativeDate}, il est maintenant en lecture seule.
+
+actions:
+    update-materials: Modifier le matériel de l'événement
+
+confirm-terminate-title: "Voulez-vous vraiment terminer cet inventaire de départ \_?"
+confirm-terminate-text: Veuillez noter qu'il ne sera plus possible de le modifier.
+
+confirm-unsaved-edit-material-title: Modifications non sauvegardées
+confirm-unsaved-edit-material-text:
+    "Vous avez des modifications non sauvegardées au niveau de votre inventaire
+    qui vont être perdues si vous continuez.
+    \n\n
+    Êtes-vous sûr de vouloir poursuivre vers la modification du matériel,
+    sans sauvegarder au préalable\_?"
+
+unexpected-material-title: "Matériel hors-événement\_!"
+unexpected-material-text:
+    "Le matériel que vous venez de scanner ne fait pas parti de l'événement.
+    \n\n
+    L'inventaire de départ n'a pas vocation à modifier la liste du matériel de l'événement
+    mais uniquement à s'assurer que tout part comme prévu (avec des éventuels commentaires)."
+unexpected-material-editable-text:
+    "Le matériel que vous venez de scanner ne fait pas parti de l'événement.
+    \n\n
+    L'inventaire de départ n'a pas vocation à modifier la liste du matériel de l'événement
+    mais uniquement à s'assurer que tout part comme prévu (avec des éventuels commentaires).
+    \n\n
+    Vous pouvez modifier l'événement en passant par le bouton en haut de page."
+
+incomplete-inventory-help:
+    Les inventaires de départ ne peuvent être marqués comme terminés que lorsque tout
+    le matériel prévu a été marqué comme trouvé.
+incomplete-inventory-editable-help:
+    "Les inventaires de départ ne peuvent être marqués comme terminés que lorsque tout
+    le matériel prévu a été marqué comme trouvé.
+    \n\n
+    Si du matériel s'avère absent, il faut modifier le matériel de l'événement via le
+    bouton en haut de page."
+
+complete-inventory-help:
+    "Félicitations\_! Tout le matériel a bien été trouvé pour cet événement.\n
+    Vous pouvez maintenant cliquer sur le bouton «\_Terminer l'inventaire\_»."
+
+saved: Inventaire sauvegardé

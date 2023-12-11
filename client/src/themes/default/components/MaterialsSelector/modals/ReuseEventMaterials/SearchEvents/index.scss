@@ -3,19 +3,17 @@
 
 .SearchEvents {
     &__search {
-        $border-radius: 4px;
-
         display: flex;
         justify-content: center;
 
         &__input {
             width: 300px;
-            border-radius: $border-radius 0 0 $border-radius;
+            border-radius: globals.$border-radius-normal 0 0 globals.$border-radius-normal;
         }
 
         &__button {
             padding: 0.55rem 1.08rem;
-            border-radius: 0 $border-radius $border-radius 0;
+            border-radius: 0 globals.$border-radius-normal globals.$border-radius-normal 0;
         }
     }
 

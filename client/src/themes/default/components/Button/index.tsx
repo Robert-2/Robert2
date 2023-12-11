@@ -8,7 +8,7 @@ import type { TooltipOptions } from 'v-tooltip';
 import type { PropType } from '@vue/composition-api';
 import type { Props as IconProps, Variant } from '@/themes/default/components/Icon';
 
-const TYPES = [
+export const TYPES = [
     'default', 'success', 'warning', 'danger',
     'primary', 'secondary', 'transparent',
 ] as const;
@@ -42,12 +42,13 @@ const PREDEFINED_TYPES = {
     },
 } as const;
 
-type PredefinedType = keyof typeof PREDEFINED_TYPES;
-type Type = (typeof TYPES)[number];
+export type PredefinedType = keyof typeof PREDEFINED_TYPES;
+export type Type = (typeof TYPES)[number];
 
 type IconName = string | `${string}:${Variant}`;
 type IconPosition = 'before' | 'after';
 type IconOptions = { name: IconName, position?: IconPosition };
+export type IconLoose = IconName | IconOptions;
 
 type Props = {
     /**
@@ -83,7 +84,7 @@ type Props = {
      * - `wrench:solid`
      * - `{ name: 'wrench:solid', position: 'after' }`
      */
-    icon?: IconName | IconOptions,
+    icon?: IconLoose,
 
     /**
      * Le type de `<button>` HTML à utiliser.
@@ -265,22 +266,6 @@ const Button = defineComponent({
                 ? { ...this.tooltip, 'content': this.tooltip.content }
                 : this.tooltip;
         },
-
-        // ------------------------------------------------------
-        // -
-        // -    API Publique
-        // -
-        // ------------------------------------------------------
-
-        /**
-         * Retourne la référence native à l'élément HTML rendu (`button` / `a`)
-         *
-         * @returns La "ref" de l'élément natif rendu ou `undefined` s'il
-         *          n'y a pas encore de rendu.
-         */
-        nativeRef(): HTMLElement | undefined {
-            return this.$refs.element ?? undefined;
-        },
     },
     methods: {
         // ------------------------------------------------------
@@ -340,7 +325,6 @@ const Button = defineComponent({
 
                 return (
                     <a
-                        ref="element"
                         href={to}
                         v-tooltip={tooltip}
                         class={classNames}
@@ -356,7 +340,6 @@ const Button = defineComponent({
                 <router-link to={to} custom>
                     {({ href, navigate: handleNavigate }: any) => (
                         <a
-                            ref="element"
                             href={href}
                             onClick={handleNavigate}
                             v-tooltip={tooltip}
@@ -371,12 +354,11 @@ const Button = defineComponent({
 
         return (
             <button
-                ref="element"
                 // eslint-disable-next-line react/button-has-type
                 type={htmlType}
                 class={classNames}
                 disabled={disabled || loading}
-                v-tooltip={!disabled ? tooltip : undefined}
+                v-tooltip={tooltip}
                 onClick={handleClick}
             >
                 {content}

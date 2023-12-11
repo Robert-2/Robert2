@@ -178,32 +178,32 @@ final class UsersTest extends ApiTestCase
         ]);
         $this->assertApiValidationError([
             'pseudo' => [
-                "This field is mandatory",
+                "This field is mandatory.",
             ],
             'email' => [
-                "This email address is not valid",
+                "This email address is invalid.",
             ],
             'group' => [
-                "This field is mandatory",
-                "One of the following rules must be verified",
-                'Must equal "admin"',
-                'Must equal "member"',
-                'Must equal "visitor"',
-                'Must equal "external"',
+                "This field is mandatory.",
+                "One of the following rules must be verified:",
+                'Must equal "admin".',
+                'Must equal "member".',
+                'Must equal "visitor".',
+                'Must equal "external".',
             ],
             'password' => [
-                "This field is mandatory",
-                "4 min. characters, 191 max. characters",
+                "This field is mandatory.",
+                "4 min. characters, 191 max. characters.",
             ],
             'first_name' => [
-                "This field is mandatory",
-                "This field contains some unauthorized characters",
-                "2 min. characters, 35 max. characters",
+                "This field is mandatory.",
+                "This field contains some unauthorized characters.",
+                "2 min. characters, 35 max. characters.",
             ],
             'last_name' => [
-                "This field is mandatory",
-                "This field contains some unauthorized characters",
-                "2 min. characters, 35 max. characters",
+                "This field is mandatory.",
+                "This field contains some unauthorized characters.",
+                "2 min. characters, 35 max. characters.",
             ],
         ]);
     }
@@ -219,8 +219,8 @@ final class UsersTest extends ApiTestCase
             'group' => Group::MEMBER,
         ]);
         $this->assertApiValidationError([
-            'pseudo' => ["This pseudo is already in use"],
-            'email' => ["This email is already in use"],
+            'pseudo' => ["This pseudo is already in use."],
+            'email' => ["This email is already in use."],
         ]);
     }
 

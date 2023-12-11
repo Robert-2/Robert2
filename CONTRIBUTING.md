@@ -229,29 +229,21 @@ composer lint
 │   │   ├── stores               # - Contient les différents stores (Vuex) globaux de l'application.
 │   │   ├── themes               # - Contient les différents thèmes de Robert2.
 │   │   │   ├── default          # - Thème par défaut (partie admin)
-|   │   │   |   ├── components   # - Dossier des composants partagés dans ce thème.
+│   │   │   │   ├── components   # - Dossier des composants partagés dans ce thème.
 │   │   │   │   ├── globals      # - Fichiers de configuration de ce thème.
-│   │   │   │   ├── layout       # - Composants du layout du thème.
+│   │   │   │   ├── layouts      # - Composants du layout du thème.
 │   │   │   │   ├── locale       # - Dossier des traductions spécifiques au thème.
 │   │   │   │   ├── modals       # - Chaque sous-dossier représente une fenêtre modale de ce thème.
-|   │   │   |   ├── pages        # - Chaque sous-dossier représente une page de ce thème.
+│   │   │   │   ├── pages        # - Chaque sous-dossier représente une page de ce thème.
 │   │   │   │   ├── stores       # - Contient les différents Stores globaux (Vuex) du thème.
-|   │   │   |   └── style        # - Contient le style global du thème (reset, fonts, styles de base, variables globales, etc.).
-|   │   │   |   └── index.js     # - Point d'entrée du thème.
-|   │   │   |   └── index.scss   # - Point d'entrée du style du thème.
-│   │   │   ├── external         # - Thème de la partie "externe" (réservations en ligne)
-|   │   │   |   ├── components   # - Dossier des composants partagés dans ce thème.
-│   │   │   │   ├── globals      # - Fichiers de configuration de ce thème.
-│   │   │   │   ├── layout       # - Composants du layout du thème.
-│   │   │   │   ├── locale       # - Dossier des traductions spécifiques au thème.
-│   │   │   │   ├── modals       # - Chaque sous-dossier représente une fenêtre modale de ce thème.
-|   │   │   |   ├── pages        # - Chaque sous-dossier représente une page de ce thème.
-│   │   │   │   ├── stores       # - Contient les différents Stores globaux (Vuex) du thème.
-|   │   │   |   └── style        # - Contient le style global du thème (reset, fonts, styles de base, variables globales, etc.).
-|   │   │   |   └── index.js     # - Point d'entrée du thème.
-|   │   │   |   └── index.scss   # - Point d'entrée du style du thème.
+│   │   │   │   ├── style        # - Contient le style global du thème (reset, fonts, styles de base, variables globales, etc.).
+│   │   │   │   ├── index.js     # - Point d'entrée du thème.
+│   │   │   │   └── index.scss   # - Point d'entrée du style du thème.
+│   │   │   └── external         # - Thème de la partie "externe" (réservations en ligne)
+│   │   │       └── (...)        # - (même fichiers que pour le thème `default`)
 │   │   └── utils                # - Fonctions JS utilitaires
-│   └── tests                    # - Contient les tests unitaires (Jest) de la partie client.
+│   ├── tests                    # - Contient les tests unitaires (Jest) de la partie client.
+│   └── vendors                  # - Autres dépendances du projet, développées ou patchées en interne.
 │
 └── server
     ├── bin                      # - Fichiers exécutables (voir dossier `src/App/Console`)
@@ -269,7 +261,7 @@ composer lint
     │   │   ├── Observers        # - Classes pour déclencher des side-effects suite à un changement dans les models.
     │   │   ├── Services         # - Contient les services, comme le système d'authentification.
     │   │   ├── Support          # - Contient les classes utilitaires.
-    │   │   └── App.php          # - Classe principale l'application Slim.
+    │   │   ├── App.php          # - Classe principale l'application Slim.
     │   │   └── Kernel.php       # - Point de départ de l'application.
     │   ├── install              # - Classes et utilitaires liés à l'assistant d'installation de Robert2.
     │   ├── locales              # - Fichiers de traduction de la partie serveur dans les différentes langues supportées.
@@ -285,19 +277,24 @@ composer lint
     │   │   └── tmp              # - Fichiers temporaires.
     │   └── views                # - Dossier contenant les vues Twig de l'application.
     │   │   ├── blocks           # - Les blocks communs, comme le loading, etc.
+    │   │   ├── components       # - Les "components" communs, comme le logo, etc.
+    │   │   ├── emails           # - Les vues des mails (notifications, réservations, etc.).
+    │   │   ├── entries          # - Les vues des points d'entrée de l'application (front-end).
+    │   │   ├── errors           # - Les vues des pages d'erreur.
     │   │   ├── install          # - Toutes les pages de l'assistant d'installation
     │   │   ├── pdf              # - Les vues des sorties PDF (factures, fiches d'événement, etc.)
-    │   │   ├── webclient.twig   # - Point d'entrée de l'application Robert2 (front-end)
+    │   │   ├── base.twig        # - Layout de base de toutes les pages.
     │   │   └── install.twig     # - Point d'entrée de l'assistant d'installation
     ├── tests
-    │   ├── commands             # - Tests unitaires (PHPUnit) des commandes (voir ).
+    │   ├── commands             # - Tests unitaires (PHPUnit) des commandes.
     │   ├── endpoints            # - Tests unitaires (PHPUnit) des controllers.
-    │   ├── Fixtures
+    │   ├── events               # - Tests unitaires (PHPUnit) des événements d'entités / observateurs.
+    │   ├── fixtures
     │   │   ├── files            # - Fichiers associés aux données (voir server/data) à utiliser pour les fixtures.
     │   │   ├── seed             # - Données utilisées pour les tables de la DB de test, au format JSON.
-    │   │   └── tmp              # - Dossier utilisé pour stocker la structure SQL (créée à la volée) de la DB de test, pour reset.
+    │   │   └── snapshots        # - "Snapshots" réalisés pendant les tests.
     │   ├── libs                 # - Tests unitaires (PHPUnit) des libs.
     │   ├── models               # - Tests unitaires (PHPUnit) des modèles.
     │   └── other                # - Tests unitaires (PHPUnit) des fonctions utilitaires et autres classes.
-    ├── vendors                  # - Dépendances (composer) de la partie serveur.
+    └── vendors                  # - Dépendances (composer) de la partie serveur.
 ```

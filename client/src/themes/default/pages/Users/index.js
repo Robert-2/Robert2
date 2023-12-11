@@ -1,113 +1,99 @@
 import './index.scss';
+import { defineComponent } from '@vue/composition-api';
 import HttpCode from 'status-code-enum';
+import isTruthy from '@/utils/isTruthy';
 import { isRequestErrorStatusCode } from '@/utils/errors';
 import Fragment from '@/components/Fragment';
 import Page from '@/themes/default/components/Page';
+import Dropdown from '@/themes/default/components/Dropdown';
 import CriticalError from '@/themes/default/components/CriticalError';
+import { ServerTable } from '@/themes/default/components/Table';
 import Icon from '@/themes/default/components/Icon';
 import Button from '@/themes/default/components/Button';
 import { confirm } from '@/utils/alert';
 import apiUsers from '@/stores/api/users';
 import { Group } from '@/stores/api/groups';
-import initColumnsDisplay from '@/utils/initColumnsDisplay';
 
-// @vue/component
-export default {
+/** Page de listing des utilisateurs. */
+const Users = defineComponent({
     name: 'Users',
-    data() {
-        const { $t: __, $options } = this;
+    data: () => ({
+        hasCriticalError: false,
+        isLoading: false,
+        shouldDisplayTrashed: false,
+        isTrashDisplayed: false,
+    }),
+    computed: {
+        currentUserId() {
+            return this.$store.state.auth.user.id;
+        },
 
-        return {
-            hasCriticalError: false,
-            isLoading: false,
-            shouldDisplayTrashed: false,
-            isTrashDisplayed: false,
+        columns() {
+            const {
+                $t: __,
+                currentUserId,
+                isTrashDisplayed,
+                handleDeleteItem,
+                handleRestoreItem,
+            } = this;
 
-            //
-            // - Tableau
-            //
-
-            columns: [
-                'pseudo',
-                'full_name',
-                'group',
-                'email',
-                'phone',
-                'actions',
-            ],
-            options: {
-                columnsDropdown: true,
-                preserveState: true,
-                saveState: true,
-                orderBy: { column: 'pseudo', ascending: true },
-                sortable: ['pseudo', 'group', 'email'],
-                columnsDisplay: initColumnsDisplay($options.name, {
-                    pseudo: true,
-                    full_name: true,
-                    group: true,
-                    email: true,
-                    phone: true,
-                }),
-                headings: {
-                    pseudo: __('pseudo'),
-                    full_name: __('name'),
-                    group: __('group'),
-                    email: __('email'),
-                    phone: __('phone'),
-                    actions: '',
-                },
-                columnsClasses: {
-                    pseudo: 'Users__pseudo ',
-                    full_name: 'Users__name ',
-                    group: 'Users__group ',
-                    email: 'Users__email ',
-                    phone: 'Users__phone ',
-                    actions: 'VueTables__actions Users__actions ',
-                },
-                requestFunction: this.getData.bind(this),
-                templates: {
-                    pseudo: (h, user) => {
-                        const isActiveUser = user.id === this.currentUserId;
+            return [
+                {
+                    key: 'full_name',
+                    title: `${__('first-name')} / ${__('last-name')}`,
+                    class: 'Users__cell Users__cell--name',
+                    sortable: true,
+                    render: (h, user) => {
+                        const isActiveUser = user.id === currentUserId;
 
                         return (
-                            <Fragment>
+                            <span class="Users__name">
                                 <Icon name={isActiveUser ? 'user-circle' : 'user'} />
-                                {user.pseudo}
-                            </Fragment>
+                                <span class="Users__name__data">
+                                    <span class="Users__full-name">{user.full_name}</span>
+                                    <span class="Users__pseudo">@{user.pseudo}</span>
+                                </span>
+                            </span>
                         );
                     },
-                    full_name: (h, user) => {
-                        if (!user.full_name) {
-                            return (
-                                <span class="Users__no-profile">
-                                    {__('page.users.profile-missing-or-deleted')}
-                                </span>
-                            );
-                        }
-                        return user.full_name;
-                    },
-                    group: (h, user) => __(user.group),
-                    email: (h, user) => {
-                        const isActiveUser = user.id === this.currentUserId;
-                        if (isActiveUser) {
+                },
+                {
+                    key: 'group',
+                    title: __('group'),
+                    class: 'Users__cell Users__cell--group',
+                    sortable: true,
+                    render: (h, user) => __(user.group),
+                },
+                {
+                    key: 'email',
+                    title: __('email'),
+                    class: 'Users__cell Users__cell--email',
+                    sortable: true,
+                    render: (h, user) => {
+                        const isActiveUser = user.id === currentUserId;
+                        if (isActiveUser || isTrashDisplayed) {
                             return user.email;
                         }
                         return <a href={`mailto:${user.email}`}>{user.email}</a>;
                     },
-                    phone: (h, user) => user.phone ?? null,
-                    actions: (h, user) => {
-                        const isActiveUser = user.id === this.currentUserId;
+                },
+                !isTrashDisplayed && {
+                    key: 'phone',
+                    title: __('phone'),
+                    class: 'Users__cell Users__cell--phone',
+                    render: (h, user) => user.phone ?? null,
+                },
+                {
+                    key: 'actions',
+                    title: '',
+                    class: 'Users__cell Users__cell--actions',
+                    render: (h, user) => {
+                        const isActiveUser = user.id === currentUserId;
                         if (isActiveUser) {
                             return <Button type="edit" to={{ name: 'user-settings' }} />;
                         }
 
                         const isUserAdmin = user.group === Group.ADMIN;
-                        const {
-                            isTrashDisplayed,
-                            handleDeleteItem,
-                            handleRestoreItem,
-                        } = this;
-
                         if (isTrashDisplayed) {
                             return (
                                 <Fragment>
@@ -144,13 +130,12 @@ export default {
                         );
                     },
                 },
-            },
-        };
-    },
-    computed: {
-        currentUserId() {
-            return this.$store.state.auth.user.id;
+            ].filter(isTruthy);
         },
+    },
+    created() {
+        // - Binding.
+        this.fetch = this.fetch.bind(this);
     },
     methods: {
         // ------------------------------------------------------
@@ -209,7 +194,7 @@ export default {
             }
         },
 
-        handleShowTrashed() {
+        handleToggleShowTrashed() {
             this.shouldDisplayTrashed = !this.shouldDisplayTrashed;
             this.$refs.table.setPage(1);
         },
@@ -220,7 +205,7 @@ export default {
         // -
         // ------------------------------------------------------
 
-        async getData(pagination) {
+        async fetch(pagination) {
             this.isLoading = true;
 
             try {
@@ -250,13 +235,13 @@ export default {
     render() {
         const {
             $t: __,
+            fetch,
             $options,
             columns,
-            options,
             isLoading,
             isTrashDisplayed,
             hasCriticalError,
-            handleShowTrashed,
+            handleToggleShowTrashed,
         } = this;
 
         if (hasCriticalError) {
@@ -267,41 +252,55 @@ export default {
             );
         }
 
+        // - Titre de la page.
+        const title = !isTrashDisplayed
+            ? __('page.users.title')
+            : __('page.users.title-trash');
+
+        // - Aide de page.
+        const help = !isTrashDisplayed
+            ? __('page.users.help')
+            : undefined;
+
+        // - Actions de la page.
+        const actions = !isTrashDisplayed
+            ? [
+                <Button type="add" icon="user-plus" to={{ name: 'add-user' }}>
+                    {__('page.users.action-add')}
+                </Button>,
+                <Dropdown>
+                    <Button icon="trash" onClick={handleToggleShowTrashed}>
+                        {__('open-trash-bin')}
+                    </Button>
+                </Dropdown>,
+            ]
+            : [
+                <Button onClick={handleToggleShowTrashed} icon="eye" type="primary">
+                    {__('display-not-deleted-items')}
+                </Button>,
+            ];
+
         return (
             <Page
                 name="users"
-                title={__('page.users.title')}
-                help={__('page.users.help')}
+                title={title}
+                help={help}
                 isLoading={isLoading}
-                actions={[
-                    <Button
-                        type="add"
-                        icon="user-plus"
-                        to={{ name: 'add-user' }}
-                    >
-                        {__('page.users.action-add')}
-                    </Button>,
-                ]}
+                actions={actions}
             >
                 <div class="Users">
-                    <v-server-table
+                    <ServerTable
                         ref="table"
+                        key={!isTrashDisplayed ? 'default' : 'trash'}
+                        name={!isTrashDisplayed ? $options.name : undefined}
                         class="Users__table"
-                        name={$options.name}
                         columns={columns}
-                        options={options}
+                        fetcher={fetch}
                     />
-                    <div class="content__footer">
-                        <Button
-                            onClick={handleShowTrashed}
-                            icon={isTrashDisplayed ? 'eye' : 'trash'}
-                            type={isTrashDisplayed ? 'success' : 'danger'}
-                        >
-                            {isTrashDisplayed ? __('display-not-deleted-items') : __('open-trash-bin')}
-                        </Button>
-                    </div>
                 </div>
             </Page>
         );
     },
-};
+});
+
+export default Users;

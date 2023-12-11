@@ -4,4 +4,6 @@ export default {
     'FileManager': require('@/themes/default/components/FileManager/translations/fr.yml'),
     'MaterialsSelector': require('@/themes/default/components/MaterialsSelector/translations/fr.yml'),
     'MaterialsSorted': require('@/themes/default/components/MaterialsSorted/translations/fr.yml'),
+    'Inventory': require('@/themes/default/components/Inventory/translations/fr.yml'),
+    'Datepicker': require('@/themes/default/components/Datepicker/translations/fr.yml'),
 };

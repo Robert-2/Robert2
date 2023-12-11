@@ -17,6 +17,8 @@ use Loxya\Models\Traits\SoftDeletable;
 use Loxya\Services\I18n;
 use Loxya\Support\Arr;
 use Loxya\Support\Collections\MaterialsCollection;
+use Loxya\Support\FullDuration;
+use Loxya\Support\Period;
 use Loxya\Support\Str;
 
 /**
@@ -30,7 +32,7 @@ use Loxya\Support\Str;
  * @property int $booking_id
  * @property-read Event $booking
  * @property string|null $booking_title
- * @property-read int $booking_duration
+ * @property-read FullDuration $booking_duration
  * @property CarbonImmutable $booking_start_date
  * @property CarbonImmutable $booking_end_date
  * @property-read string|null $booking_location
@@ -308,13 +310,13 @@ final class Invoice extends BaseModel implements Serializable
             ->withPath(sprintf('/invoices/%s/pdf', $this->id));
     }
 
-    public function getBookingDurationAttribute(): int
+    public function getBookingDurationAttribute(): FullDuration
     {
-        $startDate = $this->booking_start_date;
-        $endDate = $this->booking_end_date;
-
-        $diff = $startDate->diff($endDate);
-        return (int) $diff->format('%a') + 1;
+        $period = new Period(
+            $this->booking_start_date,
+            $this->booking_end_date,
+        );
+        return new FullDuration($period);
     }
 
     public function getBookingLocationAttribute(): ?string

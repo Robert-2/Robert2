@@ -25,20 +25,12 @@
                 &:first-child > td {
                     border-top: 1px solid globals.$list-left-border-color;
                 }
-
-                &:hover {
-                    background: rgba(#fff, 0.05);
-                }
             }
         }
     }
     /* stylelint-enable selector-max-type, selector-max-compound-selectors */
 
     &__col {
-        &--child-toggler {
-            width: 50px;
-        }
-
         &--quantity {
             width: 65px;
             // stylelint-disable-next-line declaration-no-important

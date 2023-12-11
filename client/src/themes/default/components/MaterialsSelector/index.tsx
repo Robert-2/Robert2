@@ -43,6 +43,11 @@ type Data = {
     materials: Material[],
 };
 
+type InstanceProperties = {
+    unsubscribeStore: (() => void) | undefined,
+    fetchInterval: ReturnType<typeof setInterval> | undefined,
+};
+
 /**
  * Représente l'état des filtres quand ils sont vides.
  *
@@ -76,6 +81,10 @@ const MaterialsSelector = defineComponent({
         'ready',
         'change',
     ],
+    setup: (): InstanceProperties => ({
+        unsubscribeStore: undefined,
+        fetchInterval: undefined,
+    }),
     data(): Data {
         return {
             isInitialized: false,

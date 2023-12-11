@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Loxya\Observers;
 
 use Loxya\Models\Event;
+use Loxya\Models\EventMaterial;
 
 final class EventObserver
 {
@@ -38,6 +39,8 @@ final class EventObserver
         debug("[Event] Événement #%s modifié.", $event->id);
 
         $this->onUpdateSyncCache($event);
+        $this->onUpdateSyncDepartureInventories($event);
+        $this->onUpdateSyncReturnInventories($event);
     }
 
     public function restored(Event $event): void
@@ -131,6 +134,76 @@ final class EventObserver
         foreach ($neighborEvents as $neighborEvent) {
             $neighborEvent->invalidateCache('has_missing_materials');
         }
+    }
+
+    private function onUpdateSyncDepartureInventories(Event $event): void
+    {
+        // - Si les dates de l'événement n'ont pas changées, on ne va pas plus loin.
+        if (!$event->wasChanged(['start_date', 'end_date'])) {
+            return;
+        }
+
+        // - Si la période d'inventaire est "ouverte", on laisse passer.
+        if ($event->is_departure_inventory_period_open) {
+            return;
+        }
+
+        // - Si la période d'inventaire n'est pas ouverte, on supprime l'inventaire de départ.
+        dbTransaction(function () use ($event) {
+            $event->is_departure_inventory_done = false;
+            $event->departure_inventory_author_id = null;
+            $event->departure_inventory_datetime = null;
+            $event->saveQuietly();
+            $event->refresh();
+
+            foreach ($event->materials as $material) {
+                /** @var EventMaterial $eventMaterial */
+                $eventMaterial = $material->pivot;
+                $eventMaterial->quantity_departed = null;
+                $eventMaterial->departure_comment = null;
+                $eventMaterial->save();
+            }
+        });
+    }
+
+    private function onUpdateSyncReturnInventories(Event $event): void
+    {
+        // - Si les dates de l'événement n'ont pas changées, on ne va pas plus loin.
+        if (!$event->wasChanged(['start_date', 'end_date'])) {
+            return;
+        }
+
+        // FIXME: Cette condition devra être modifiée lorsque les dates
+        //        de mobilisation auront été implémentées.
+        // - L'inventaire de retour ne peut pas être marqué comme terminé
+        //   avant le jour de fin de l'événement.
+        $canBeTerminated = (
+            $event->getEndDate()->isPast() ||
+            $event->getEndDate()->isSameDay()
+        );
+        if (!$canBeTerminated) {
+            $event->is_return_inventory_done = false;
+            $event->return_inventory_author_id = null;
+            $event->return_inventory_datetime = null;
+            $event->saveQuietly();
+            $event->refresh();
+        }
+
+        // - Si la période d'inventaire est "ouverte", on laisse passer.
+        if ($event->is_return_inventory_period_open) {
+            return;
+        }
+
+        // - Sinon, on reset les quantités d'inventaire.
+        dbTransaction(function () use ($event) {
+            foreach ($event->materials()->get() as $material) {
+                /** @var EventMaterial $eventMaterial */
+                $eventMaterial = $material->pivot;
+                $eventMaterial->quantity_returned = null;
+                $eventMaterial->quantity_returned_broken = null;
+                $eventMaterial->save();
+            }
+        });
     }
 
     private function onRestoreSyncCache(Event $event): void

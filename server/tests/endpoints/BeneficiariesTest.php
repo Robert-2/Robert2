@@ -7,6 +7,7 @@ use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Loxya\Support\Arr;
 use Loxya\Models\Beneficiary;
 use Illuminate\Support\Collection;
+use Loxya\Models\Event;
 
 final class BeneficiariesTest extends ApiTestCase
 {
@@ -32,6 +33,9 @@ final class BeneficiariesTest extends ApiTestCase
                 'company' => CompaniesTest::data(1),
                 'country' => CountriesTest::data(1),
                 'can_make_reservation' => true,
+                'stats' => [
+                    'borrowings' => 2,
+                ],
                 'user' => UsersTest::data(1),
             ],
             [
@@ -53,6 +57,9 @@ final class BeneficiariesTest extends ApiTestCase
                 'company' => null,
                 'country' => null,
                 'can_make_reservation' => true,
+                'stats' => [
+                    'borrowings' => 2,
+                ],
                 'user' => UsersTest::data(2),
             ],
             [
@@ -74,6 +81,9 @@ final class BeneficiariesTest extends ApiTestCase
                 'company' => null,
                 'country' => null,
                 'can_make_reservation' => false,
+                'stats' => [
+                    'borrowings' => 1,
+                ],
                 'user' => null,
             ],
             [
@@ -95,13 +105,16 @@ final class BeneficiariesTest extends ApiTestCase
                 'company' => null,
                 'country' => null,
                 'can_make_reservation' => false,
+                'stats' => [
+                    'borrowings' => 0,
+                ],
                 'user' => null,
             ],
         ]);
 
         $beneficiaries = match ($format) {
             Beneficiary::SERIALIZE_DEFAULT => $beneficiaries->map(fn($material) => (
-                Arr::except($material, ['user'])
+                Arr::except($material, ['user', 'stats'])
             )),
             Beneficiary::SERIALIZE_DETAILS => $beneficiaries,
             default => throw new \InvalidArgumentException(sprintf("Unknown format \"%s\"", $format)),
@@ -181,6 +194,64 @@ final class BeneficiariesTest extends ApiTestCase
         $this->assertResponseData(self::data(1, Beneficiary::SERIALIZE_DETAILS));
     }
 
+    public function testGetBookings(): void
+    {
+        $this->client->get('/api/beneficiaries/1/bookings');
+        $this->assertStatusCode(StatusCode::STATUS_OK);
+        $this->assertResponsePaginatedData(2, [
+            array_replace(
+                EventsTest::data(5, Event::SERIALIZE_BOOKING_SUMMARY),
+                ['entity' => 'event'],
+            ),
+            array_replace(
+                EventsTest::data(1, Event::SERIALIZE_BOOKING_SUMMARY),
+                ['entity' => 'event'],
+            ),
+        ]);
+
+        // - Test avec une date minimum.
+        $this->client->get('/api/beneficiaries/1/bookings?after=2020-01-01');
+        $this->assertStatusCode(StatusCode::STATUS_OK);
+        $this->assertResponsePaginatedData(1, [
+            array_replace(
+                EventsTest::data(5, Event::SERIALIZE_BOOKING_SUMMARY),
+                ['entity' => 'event'],
+            ),
+        ]);
+
+        // - Test avec un sens ascendant.
+        $this->client->get('/api/beneficiaries/1/bookings?direction=asc');
+        $this->assertStatusCode(StatusCode::STATUS_OK);
+        $this->assertResponsePaginatedData(2, [
+            array_replace(
+                EventsTest::data(1, Event::SERIALIZE_BOOKING_SUMMARY),
+                ['entity' => 'event'],
+            ),
+            array_replace(
+                EventsTest::data(5, Event::SERIALIZE_BOOKING_SUMMARY),
+                ['entity' => 'event'],
+            ),
+        ]);
+    }
+
+    public function testGetEstimates(): void
+    {
+        $this->client->get('/api/beneficiaries/1/estimates');
+        $this->assertStatusCode(StatusCode::STATUS_OK);
+        $this->assertResponseData([
+            EstimatesTest::data(1),
+        ]);
+    }
+
+    public function testGetInvoices(): void
+    {
+        $this->client->get('/api/beneficiaries/1/invoices');
+        $this->assertStatusCode(StatusCode::STATUS_OK);
+        $this->assertResponseData([
+            InvoicesTest::data(1),
+        ]);
+    }
+
     public function testCreateWithoutData(): void
     {
         $this->client->post('/api/beneficiaries');
@@ -197,14 +268,14 @@ final class BeneficiariesTest extends ApiTestCase
             'reference' => '0001',
         ]);
         $this->assertApiValidationError([
-            'first_name' => ['This field contains some unauthorized characters'],
+            'first_name' => ['This field contains some unauthorized characters.'],
             'last_name' => [
-                "This field is mandatory",
-                "This field contains some unauthorized characters",
-                "2 min. characters, 35 max. characters",
+                "This field is mandatory.",
+                "This field contains some unauthorized characters.",
+                "2 min. characters, 35 max. characters.",
             ],
-            'reference' => ['This reference is already in use'],
-            'email' => ["This email address is not valid"],
+            'reference' => ['This reference is already in use.'],
+            'email' => ["This email address is invalid."],
         ]);
     }
 
@@ -244,6 +315,9 @@ final class BeneficiariesTest extends ApiTestCase
             'country' => CountriesTest::data(2),
             'full_address' => "1 rue du test\n74000 Annecy",
             'can_make_reservation' => false,
+            'stats' => [
+                'borrowings' => 0,
+            ],
             'user' => null,
             'note' => null,
         ]);
@@ -269,8 +343,8 @@ final class BeneficiariesTest extends ApiTestCase
             'phone' => 'notAphoneNumber',
         ]);
         $this->assertApiValidationError([
-            'email' => ['This email address is not valid'],
-            'phone' => ['This telephone number is not valid'],
+            'email' => ['This email address is invalid.'],
+            'phone' => ['This phone number is invalid.'],
         ]);
     }
 

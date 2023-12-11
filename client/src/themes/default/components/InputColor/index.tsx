@@ -17,7 +17,7 @@ type Props = {
      * le jeu de données d'un formulaire parent lors de la soumission
      * (`submit`) de celui-ci.
      */
-    name?: string | null,
+    name?: string,
 
     /**
      * Valeur actuelle (= couleur) du champ.
@@ -73,7 +73,7 @@ const InputColor = defineComponent({
     props: {
         name: {
             type: String as PropType<Required<Props>['name']>,
-            default: null,
+            default: undefined,
         },
         value: {
             type: null as unknown as PropType<Required<Props>['value']>,
@@ -108,17 +108,23 @@ const InputColor = defineComponent({
         pickerPosition: { x: 0, y: 0 },
     }),
     computed: {
-        inheritedInvalid() {
+        inheritedInvalid(): boolean {
             if (this.invalid !== undefined) {
                 return this.invalid;
             }
+
+            // @ts-expect-error -- Normalement fixé lors du passage à Vue 3 (et son meilleur typage).
+            // @see https://github.com/vuejs/core/pull/6804
             return this['input.invalid'].value;
         },
 
-        inheritedDisabled() {
+        inheritedDisabled(): boolean {
             if (this.disabled !== undefined) {
                 return this.disabled;
             }
+
+            // @ts-expect-error -- Normalement fixé lors du passage à Vue 3 (et son meilleur typage).
+            // @see https://github.com/vuejs/core/pull/6804
             return this['input.disabled'].value;
         },
 
@@ -202,8 +208,8 @@ const InputColor = defineComponent({
             }
 
             // - Si c'est un click sur le champ, on ignore.
-            const fieldRef = this.$refs.fieldRef as HTMLDivElement;
-            if (fieldRef.contains(e.target as Element)) {
+            const $field = this.$refs.field as HTMLDivElement;
+            if ($field.contains(e.target as Element)) {
                 return;
             }
 
@@ -222,15 +228,15 @@ const InputColor = defineComponent({
         // ------------------------------------------------------
 
         async updatePickerPosition(): Promise<void> {
-            const fieldRef = this.$refs.fieldRef as HTMLDivElement;
-            const pickerRef = this.$refs.pickerRef as HTMLDivElement | undefined;
+            const $field = this.$refs.field as HTMLDivElement;
+            const $picker = this.$refs.picker as HTMLDivElement | undefined;
 
-            if (!this.showPicker || !pickerRef) {
+            if (!this.showPicker || !$picker) {
                 return;
             }
 
             const oldPosition = { ...this.pickerPosition };
-            const newPosition = await computePosition(fieldRef, pickerRef, {
+            const newPosition = await computePosition($field, $picker, {
                 placement: 'bottom',
                 middleware: [flip(), shift(), offset(10)],
             });
@@ -252,10 +258,12 @@ const InputColor = defineComponent({
         registerPickerPositionUpdater() {
             this.cleanupPickerPositionUpdater();
 
-            if (this.$refs.fieldRef && this.$refs.pickerRef) {
+            const $field = this.$refs.field as HTMLDivElement | undefined;
+            const $picker = this.$refs.picker as HTMLDivElement | undefined;
+            if ($field && $picker) {
                 this.cancelPickerPositionUpdater = autoUpdate(
-                    this.$refs.fieldRef,
-                    this.$refs.pickerRef,
+                    $field,
+                    $picker,
                     this.updatePickerPosition.bind(this),
                 );
             }
@@ -292,7 +300,7 @@ const InputColor = defineComponent({
                     '--InputColor--placeholder': formattedPlaceholder,
                 }}
             >
-                <div ref="fieldRef" class="InputColor__field" onClick={handleFieldClick}>
+                <div ref="field" class="InputColor__field" onClick={handleFieldClick}>
                     <div class="InputColor__field__preview" />
                     {(!!name && !disabled) && (
                         <input type="hidden" name={name} value={formattedValue ?? ''} />
@@ -301,7 +309,7 @@ const InputColor = defineComponent({
                 {showPicker && (
                     <Portal mountTo="#app" append>
                         <div
-                            ref="pickerRef"
+                            ref="picker"
                             class="InputColor__picker"
                             v-clickOutside={handlePickerClose}
                             style={{

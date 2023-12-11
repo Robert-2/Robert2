@@ -9,9 +9,11 @@
 }
 
 .vm--modal {
+    display: flex;
+    flex-direction: column;
     overflow: auto !important;
     max-height: 95%;
-    border-radius: 10px;
+    border-radius: $border-radius-large;
     background: $bg-color-body !important;
     color: $text-base-color !important;
     box-shadow: 3px 8px 20px 0 #151515 !important;

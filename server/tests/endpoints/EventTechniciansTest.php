@@ -33,6 +33,16 @@ final class EventTechniciansTest extends ApiTestCase
                 'technician' => TechniciansTest::data(2),
                 'event' => EventsTest::data(1),
             ],
+            [
+                'id' => 3,
+                'event_id' => 7,
+                'technician_id' => 2,
+                'start_time' => '2023-05-25 00:00:00',
+                'end_time' => '2023-05-28 23:59:59',
+                'position' => 'Ingénieur du son',
+                'technician' => TechniciansTest::data(2),
+                'event' => EventsTest::data(7),
+            ],
         ]);
 
         $eventTechnicians = match ($format) {

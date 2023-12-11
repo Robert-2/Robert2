@@ -57,20 +57,20 @@ final class SettingsTest extends ApiTestCase
         ]);
         $this->assertApiValidationError([
             'calendar.event.showBorrower' => [
-                'Must be a boolean value',
+                'This field should be a boolean.',
             ],
             'eventSummary.materialDisplayMode' => [
-                'One of the following rules must be verified',
-                'Must equal "categories"',
-                'Must equal "sub-categories"',
-                'Must equal "parks"',
-                'Must equal "flat"',
+                'One of the following rules must be verified:',
+                'Must equal "categories".',
+                'Must equal "sub-categories".',
+                'Must equal "parks".',
+                'Must equal "flat".',
             ],
             'eventSummary.customText.title' => [
-                '191 max. characters',
+                '191 max. characters.',
             ],
             'calendar.public.uuid' => [
-                'The unique identifier (UUID) is not valid.',
+                'This unique identifier (UUID) is invalid.',
             ],
         ]);
     }
