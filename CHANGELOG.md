@@ -4,7 +4,7 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 0.23.0 (UNRELEASED)
+## 0.23.0 (2023-12-14)
 
 - Mise à jour des dépendances du projet.
 - Ajoute la prise en charge complète de l'authentification SAML 2.0 (Premium).
