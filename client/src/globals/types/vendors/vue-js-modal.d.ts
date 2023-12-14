@@ -1,3 +1,5 @@
+import 'vue-js-modal';
+
 declare module 'vue-js-modal' {
     export type OnCloseEvent<Params extends Record<string, any>> = {
         /** Le nom de la modale (créé dynamiquement par vue-js-modal). */

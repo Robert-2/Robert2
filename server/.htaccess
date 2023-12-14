@@ -1,11 +1,11 @@
-## Prohibit autoindex
+# - Prohibit autoindex.
 Options -Indexes
 
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteBase /
 
-    ## Redirect all requests to `public/` folder
+    # - Redirect all requests to `public/` folder.
     RewriteRule ^$ src/public/ [QSA,NC,L]
     RewriteRule ^(.*)$ src/public/$1 [QSA,NC,L]
 </IfModule>
