@@ -9,9 +9,11 @@ import apiBeneficiaries from '@/stores/api/beneficiaries';
 import EventDetails from '@/themes/default/modals/EventDetails';
 import CriticalError from '@/themes/default/components/CriticalError';
 import Loading from '@/themes/default/components/Loading';
-import Timeline from '@/themes/default/components/Timeline';
+
 import EmptyMessage from '@/themes/default/components/EmptyMessage';
 import Item from '../../components/BookingsItem';
+
+import Timeline from '@/themes/default/components/Timeline';
 
 import type { ComponentRef } from 'vue';
 import type { PropType } from '@vue/composition-api';
@@ -73,7 +75,6 @@ const BeneficiaryViewBorrowings = defineComponent({
                 end: moment().add(7, 'days').endOf('day'),
                 editable: false,
                 selectable: isTeamMember,
-                locale: this.$store.state.i18n.locale,
                 height: '100%',
                 orientation: 'top',
                 zoomMin: ONE_DAY * 7,

@@ -185,7 +185,7 @@ const CalendarHeader = defineComponent({
                                 onChange={handleFilterCategoryChange}
                                 options={categoriesOptions}
                                 placeholder={__('page.calendar.display-all-categories')}
-                                highlight={!!filters.park && categoriesOptions.length > 1}
+                                highlight={!!filters.category && categoriesOptions.length > 1}
                             />
                         </div>
                     )}
