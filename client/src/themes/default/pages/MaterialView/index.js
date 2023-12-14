@@ -14,13 +14,12 @@ import Documents from './tabs/Documents';
 
 const TABS = [
     'infos',
-    'units',
     'documents',
     'availabilities',
 ];
 
-// @vue/component
-const MaterialView = {
+/** Page de détails d'un matériel. */
+const MaterialView = defineComponent({
     name: 'MaterialView',
     data() {
         return {
@@ -55,15 +54,6 @@ const MaterialView = {
                             {__('action-edit')}
                         </Button>,
                     ];
-                case '#units':
-                    return [
-                        <Button
-                            type="add"
-                            to={{ name: 'add-material-unit', params: { materialId: id } }}
-                        >
-                            {__('page.material-view.add-unit')}
-                        </Button>,
-                    ];
                 default:
                     return [];
             }
@@ -86,8 +76,8 @@ const MaterialView = {
                 return;
             }
 
-            const { documentsRef } = this.$refs;
-            if (!documentsRef?.isUploading()) {
+            const $documents = this.$refs.documents;
+            if (!$documents?.isUploading()) {
                 return;
             }
 
@@ -181,13 +171,13 @@ const MaterialView = {
                             <Infos material={material} />
                         </Tab>
                         <Tab title={__('documents')} icon="file-pdf">
-                            <Documents ref="documentsRef" material={material} />
+                            <Documents ref="documents" material={material} />
                         </Tab>
                     </Tabs>
                 </div>
             </Page>
         );
     },
-};
+});
 
-export default defineComponent(MaterialView);
+export default MaterialView;

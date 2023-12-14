@@ -66,7 +66,7 @@ class EntryController extends BaseController
             Event::orderBy('updated_at', 'DESC')->first()->updated_at,
         ]);
 
-        return $response->withJson(['last_update' => $lastUpdate->format('Y-m-d H:i:s')], StatusCode::STATUS_OK);
+        return $response->withJson(['last_update' => $lastUpdate?->format('Y-m-d H:i:s')], StatusCode::STATUS_OK);
     }
 
     // ------------------------------------------------------

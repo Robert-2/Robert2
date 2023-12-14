@@ -83,7 +83,6 @@ const FileManager = defineComponent({
          * @returns `true` si un fichier est en cours d'upload, `false` sinon.
          */
         isUploading(): boolean {
-            // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
             const $uploadAreaRef = this.$refs.uploadArea as ComponentRef<typeof UploadArea>;
             return !!$uploadAreaRef?.isUploading();
         },

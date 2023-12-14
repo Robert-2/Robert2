@@ -92,7 +92,6 @@ const InterfaceUserSettings = defineComponent({
                 localStorage.setItem('userLocale', this.settings.language);
                 this.$store.commit('auth/setLocale', this.settings.language);
 
-                // @ts-expect-error En attendant un typage correct de ce module.
                 Vue.i18n.set(this.settings.language);
             } catch (error) {
                 if (!axios.isAxiosError(error)) {

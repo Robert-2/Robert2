@@ -63,6 +63,9 @@ class Acl
             'Beneficiary' => [
                 'getAll',
                 'getOne',
+                'getBookings',
+                'getEstimates',
+                'getInvoices',
                 'create',
                 'update',
                 'restore',
@@ -116,6 +119,8 @@ class Acl
                 'restore',
                 'updateReturnInventory',
                 'finishReturnInventory',
+                'updateDepartureInventory',
+                'finishDepartureInventory',
                 'delete',
                 'createInvoice',
                 'createEstimate',

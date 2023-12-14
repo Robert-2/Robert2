@@ -1,0 +1,73 @@
+@use '~@/themes/default/style/globals';
+
+.BeneficiaryViewBilling {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    gap: globals.$spacing-medium;
+
+    &--loading-error {
+        justify-content: center;
+    }
+
+    &__invoices,
+    &__estimates {
+        padding: globals.$spacing-small 0;
+    }
+
+    &__header {
+        display: flex;
+        align-items: baseline;
+        margin-bottom: globals.$spacing-large;
+        color: globals.$text-base-color;
+        gap: globals.$spacing-medium;
+    }
+
+    &__title {
+        flex: 1;
+        margin: 0;
+        font-size: 1.3rem;
+    }
+
+    &__total {
+        padding: 5px 10px;
+        border-radius: 6px;
+        background-color: globals.$bg-color-emphasis;
+        font-size: 1.3rem;
+        font-weight: 600;
+        text-align: right;
+    }
+
+    &__list {
+        @extend %reset-list;
+
+        display: flex;
+        flex-direction: column;
+        gap: globals.$spacing-medium;
+    }
+
+    //
+    // - Responsive
+    //
+
+    @media screen and (min-width: globals.$screen-desktop) {
+        flex-direction: row;
+        gap: 30px;
+
+        &--loading-error {
+            align-items: center;
+            height: 100%;
+        }
+
+        &__invoices,
+        &__estimates {
+            flex: 1;
+            max-width: none;
+        }
+
+        &__invoices {
+            padding-right: globals.$spacing-large;
+            border-right: 1px solid globals.$divider-color;
+        }
+    }
+}

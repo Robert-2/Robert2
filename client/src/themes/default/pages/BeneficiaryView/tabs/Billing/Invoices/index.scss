@@ -1,0 +1,61 @@
+@use '~@/themes/default/style/globals';
+
+.BeneficiaryViewBillingInvoices {
+    &__header {
+        display: flex;
+        align-items: baseline;
+        margin-bottom: globals.$spacing-small;
+        color: globals.$text-base-color;
+        gap: globals.$spacing-medium;
+    }
+
+    &__title {
+        flex: 1;
+        margin: 0;
+        font-size: 1.3rem;
+    }
+
+    &__count,
+    &__total {
+        padding: 0 10px;
+        font-size: 1.15rem;
+        font-weight: 600;
+    }
+
+    &__empty {
+        color: globals.$text-soft-color;
+        font-style: italic;
+    }
+
+    &__col {
+        &--number {
+            width: 100px;
+            font-weight: 600;
+        }
+
+        &--amount {
+            font-weight: 600;
+
+            // Important, pour surcharger le placement du texte dans le header de vue-table.
+            /* stylelint-disable-next-line declaration-no-important */
+            text-align: right !important;
+        }
+
+        &--discount {
+            // Important, pour surcharger la couleur du texte de vue-table.
+            /* stylelint-disable-next-line declaration-no-important */
+            color: globals.$text-soft-color !important;
+
+            // Important, pour surcharger le placement du texte dans le header de vue-table.
+            /* stylelint-disable-next-line declaration-no-important */
+            text-align: center !important;
+            text-transform: capitalize;
+        }
+
+        &--actions {
+            width: 1%;
+            text-align: right;
+            white-space: nowrap;
+        }
+    }
+}

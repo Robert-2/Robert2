@@ -2,7 +2,6 @@ export default {
     'hello-name': "Hello {name}!",
     'your-settings': "Your settings",
     'logout-quit': "Quit Loxya (Robert2)",
-
     'action-add': "Add",
     'action-edit': "Edit",
     'action-view': "Display details",
@@ -16,10 +15,8 @@ export default {
     'action-enable': "Enable",
     'action-disable': "Disable",
     'action-refresh': "Refresh data",
-
     'yes': "Yes",
     'no': "No",
-
     'warning': "Warning!",
     'loading': "Loading...",
     'please-confirm': "Please confirm...",
@@ -43,7 +40,6 @@ export default {
     'take-control': "Take control",
     'update-in-progress': "Update in progress",
     'regenerate-link': "Regenerate link",
-
     'please-choose': "Please choose...",
     'start-typing-to-search': "Start typing to search...",
     'type-at-least-count-chars-to-search': [
@@ -63,7 +59,8 @@ export default {
     'optional': "Optional",
     'n-persons': ["{count} person", "{count} persons"],
     'and-n-others': ["and {count} other", "and {count} others"],
-
+    'add-comment': "Add a comment",
+    'modify-comment': "Modify comment",
     'save': "Save",
     'manually-save': "Manually save",
     'save-draft': "Save draft",
@@ -109,9 +106,7 @@ export default {
     'admin': "Administrator",
     'member': "Member",
     'visitor': "Visitor",
-    'external': "External",
     'owner': "Owner",
-    'owner-key': "Owner:",
     'opening-hours': "Opening hours",
     'hours': "hours",
     'minutes': "minutes",
@@ -120,9 +115,9 @@ export default {
     'ref': "Ref.",
     'ref-ref': "Ref.: {reference}",
     'reference': "Reference",
+    'number': "Number",
     'park': "Park",
     'prices': "Prices",
-    'identification-type': "Identification type",
     'rental-price': "Rental price",
     'replacement-price': "Replacement price",
     'rent-price': "Rent. price",
@@ -130,6 +125,7 @@ export default {
     'value-per-day': '{value}\u00A0/\u00A0day',
     'serial-number': "Serial n°",
     'examples-list': "Examples: {list}, etc.",
+    'not-specified': "Not specified",
 
     'qty': "Qty",
     'stock-qty': "Stock qty",
@@ -171,6 +167,7 @@ export default {
 
     'event-details': "Event's details",
     'title': "Title",
+    'date': "Date",
     'dates': "Dates",
     'start-end-dates': "Start and end dates",
     'start-date': "Start Date",
@@ -181,7 +178,6 @@ export default {
         "Duration {duration} day",
         "Duration {duration} days",
     ],
-    'please-choose-dates': "Please choose dates",
     'confirmed': "Confirmed",
     'not-confirmed': "Not confirmed",
     'is-billable': "Is billable?",
@@ -193,8 +189,6 @@ export default {
     'unconfirm-event': "Set event back on hold",
     'delete-event': "Delete event",
     'duplicate-event': "Duplicate event",
-    'duplicate-the-event': "Duplicate event \"{title}\"",
-    'dates-of-duplicated-event': "Dates of new event",
     'print': "Print",
     'print-summary': "Print this summary",
     'open': "Open",
@@ -306,9 +300,11 @@ export default {
     'add-tags': "Add tags",
     'remove-all-tags': "Remove all tags",
     'remaining-count': "{count} remaining",
+    'departure-inventory': "Departure inventory",
     'return-inventory': "Return inventory",
     'grouped-by': "Display grouped by:",
     'not-grouped': "Not grouped",
+    'start-on': "Start on",
     'return-scheduled-on': "Return scheduled on",
     'back-to-calendar': "Back to calendar",
     'previous-month': "Previous month",
@@ -316,31 +312,16 @@ export default {
 
     'used-by': "Used by",
     'events-count': ['{count} event', '{count} events'],
-    'reservations-count': ['{count} reservation', '{count} reservations'],
-    'list-templates-count': ['{count} list template', '{count} list templates'],
 
-    'use-list-template': "Use a template...",
-    'choose-list-template-to-use': "Choose a template to use",
     'use': "Use",
-    'list-template-details': "Details of list template \"{name}\"",
-    'list-template-use-warning': "Be careful, using this template will add its materials to the already selected, and will save the list right away!",
     'use-this-template': "Use this list template",
-    'no-list-template-available': (
-        "No list template available yet...\n" +
-        "You can create them from the \"Materials\" page, then \"List templates\" button."
-    ),
-    'create-list-template': "Create a material list template",
-    'create-list-template-from-event': "Create a list template with this event",
-    'list-template-created': "Le modèle de liste de matériel nommé «\u00A0{name}\u00A0» a bien été créé",
+
     'create-company': "Add a new company",
 
     'inventories': "Inventories",
     'terminate-inventory': "Terminate inventory",
-    'warning-terminate-inventory': "Beware, once this inventory terminated, it will no longer be modifiable.",
     'inventory-validation-error': "Some quantities are not valid. Please double-check the list.",
 
-    'list-templates': "List templates",
-    'materials-list-templates': "Materials list templates",
     'reuse-list-from-event': "Add materials from another event...",
     'choose-event-to-reuse-materials-list': "Choose an event to reuse its materials list",
     'type-to-search-event': "Type in to search an event...",
@@ -359,6 +340,7 @@ export default {
     'events': "Events",
     'user': "User",
     'beneficiary': "Beneficiary",
+    'main-beneficiary': "Main Beneficiary",
     'borrower': "Borrower",
     'technicians': "Technicians",
     'material': "Material",

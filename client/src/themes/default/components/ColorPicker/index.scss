@@ -5,7 +5,7 @@
     flex-wrap: wrap;
     justify-content: flex-end;
     width: 200px;
-    border-radius: 10px;
+    border-radius: globals.$border-radius-large;
     background-color: #fff;
     direction: ltr;
     box-shadow:
@@ -27,7 +27,7 @@
         position: relative;
         height: 8px;
         margin: 0 4px;
-        border-radius: 4px;
+        border-radius: globals.$border-radius-normal;
 
         &__slider {
             position: absolute;

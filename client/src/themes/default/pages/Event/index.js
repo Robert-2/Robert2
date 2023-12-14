@@ -4,6 +4,7 @@ import config from '@/globals/config';
 import apiEvents from '@/stores/api/events';
 import Help from '@/themes/default/components/Help';
 import Page from '@/themes/default/components/Page';
+import Loading from '@/themes/default/components/Loading';
 import EventStore from './EventStore';
 import Breadcrumb from './components/Breadcrumb';
 import MiniSummary from './components/MiniSummary';
@@ -93,26 +94,11 @@ const EventPage = defineComponent({
         EventStore.commit('reset');
     },
     methods: {
-        async fetch() {
-            if (this.isNew) {
-                this.isFetched = true;
-                return;
-            }
-
-            const { id } = this.event;
-            this.isLoading = true;
-
-            try {
-                this.event = await apiEvents.one(id);
-                this.help = 'page.event-edit.help-edit';
-                EventStore.commit('init', this.event);
-            } catch (error) {
-                this.error = error;
-            } finally {
-                this.isFetched = true;
-                this.isLoading = false;
-            }
-        },
+        // ------------------------------------------------------
+        // -
+        // -    Handlers
+        // -
+        // ------------------------------------------------------
 
         handleUpdateEvent(data) {
             this.help = { type: 'success', text: 'page.event-edit.saved' };
@@ -130,6 +116,50 @@ const EventPage = defineComponent({
             this.error = error;
             this.isLoading = false;
         },
+
+        // ------------------------------------------------------
+        // -
+        // -    Méthodes internes
+        // -
+        // ------------------------------------------------------
+
+        async fetch() {
+            if (this.isNew) {
+                this.isFetched = true;
+                return;
+            }
+
+            const { $t: __, event: { id } } = this;
+            this.isLoading = true;
+
+            try {
+                const event = await apiEvents.one(id);
+
+                const isEditable = (
+                    // - Un événement archivé n'est pas modifiable.
+                    !event.is_archived &&
+
+                    // - Un événement ne peut être modifié que si son inventaire de retour
+                    //   n'a pas été effectué (sans quoi celui-ci n'aurait plus aucun sens,
+                    //   d'autant que le stock global a pu être impacté suite à cet inventaire).
+                    !event.is_return_inventory_done
+                );
+                if (!isEditable) {
+                    this.$toasted.error(__('page.event-edit.cannot-be-modified'));
+                    this.$router.replace({ name: 'calendar' });
+                    return;
+                }
+
+                this.event = event;
+                this.help = 'page.event-edit.help-edit';
+                EventStore.commit('init', this.event);
+            } catch (error) {
+                this.error = error;
+            } finally {
+                this.isFetched = true;
+                this.isLoading = false;
+            }
+        },
     },
     render() {
         const {
@@ -145,6 +175,16 @@ const EventPage = defineComponent({
             isFetched,
             isLoading,
         } = this;
+
+        if (!isFetched) {
+            return (
+                <Page ref="page" name="event-edit" title={pageTitle}>
+                    <div class="Event">
+                        <div class="Event__loading"><Loading /></div>
+                    </div>
+                </Page>
+            );
+        }
 
         const renderStep = () => {
             if (!isFetched) {

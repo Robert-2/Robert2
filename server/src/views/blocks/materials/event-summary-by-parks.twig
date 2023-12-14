@@ -12,9 +12,9 @@
         </tr>
     </thead>
     <tbody>
-        {%- for material in parkMaterials -%}
+        {% for material in parkMaterials %}
             {{- include('blocks/materials/line-event-summary.twig', { material: material, withoutPark: true }) -}}
-        {%- endfor -%}
+        {% endfor %}
     </tbody>
 </table>
 {%- endfor -%}

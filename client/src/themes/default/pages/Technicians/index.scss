@@ -1,5 +1,6 @@
 @use '~@/themes/default/style/globals';
 @use 'sass:math';
+@use 'sass:color';
 
 .Page--technicians {
     display: flex;
@@ -13,6 +14,8 @@
 }
 
 .Technicians {
+    $block: &;
+
     display: flex;
     flex-direction: column;
 
@@ -40,58 +43,60 @@
         flex: 1;
     }
 
-    &__link {
-        padding: 10px 0;
+    &:not(&--trashed) {
+        #{$block}__row {
+            cursor: pointer;
 
-        // "important", pour surcharger la définition globale du <a>
-        // stylelint-disable-next-line declaration-no-important
-        color: globals.$text-base-color !important;
-
-        &:hover {
-            // "important", pour surcharger la définition globale du <a>
-            // stylelint-disable-next-line declaration-no-important
-            color: globals.$link-hover-color !important;
+            &:hover > #{$block}__cell {
+                background-color: color.adjust(globals.$bg-color-table-td, $lightness: 5%);
+            }
         }
     }
 
-    &__nickname,
-    &__email,
-    &__address,
-    &__note {
-        display: none;
-    }
-
-    &__address {
-        white-space: pre-line;
-    }
-
-    &__note {
-        max-width: 200px;
-        white-space: pre-line;
-    }
-
-    &__actions {
-        width: 1%;
-        text-align: right;
-        white-space: nowrap;
-    }
-
-    @media (min-width: globals.$screen-mobile) {
-        &__email {
-            display: table-cell;
+    &__cell {
+        &--nickname,
+        &--email,
+        &--address,
+        &--note {
+            display: none;
         }
-    }
 
-    @media (min-width: globals.$screen-tablet) {
-        &__nickname {
-            display: table-cell;
+        &--address {
+            white-space: pre-line;
         }
-    }
 
-    @media (min-width: globals.$screen-desktop) {
-        &__address,
-        &__note {
-            display: table-cell;
+        &--note {
+            max-width: 200px;
+            white-space: pre-line;
+        }
+
+        &--actions {
+            width: 1%;
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        //
+        // - Responsive
+        //
+
+        @media (min-width: globals.$screen-tablet) {
+            &--email {
+                display: table-cell;
+            }
+        }
+
+        @media (min-width: globals.$screen-desktop) {
+            &--nickname {
+                display: table-cell;
+            }
+        }
+
+        @media (min-width: globals.$screen-big-desktop) {
+            &--address,
+            &--note {
+                display: table-cell;
+            }
         }
     }
 }

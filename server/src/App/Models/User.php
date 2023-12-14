@@ -83,7 +83,7 @@ final class User extends BaseModel implements Serializable
     public function checkPseudo($value)
     {
         V::notEmpty()
-            ->alnum('-', '_')
+            ->alnum('-', '_', '.')
             ->length(4, 100)
             ->check($value);
 

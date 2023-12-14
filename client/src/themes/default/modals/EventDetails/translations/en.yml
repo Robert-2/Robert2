@@ -4,6 +4,13 @@ unarchive: Unarchive event
 release-sheet-by-lists: Release sheet (materials sorted by parameters)
 release-sheet-by-parks: Release sheet (material sorted by parks)
 
+inventories-unavailable-help: >-
+    The event contains shortages, the inventories cannot be
+    cannot be carried out until these have been corrected.
+inventory-unavailable-help: >-
+    The event contains shortages, the inventory cannot be
+    cannot be carried out until these have been corrected.
+
 #
 # - Tabs
 #

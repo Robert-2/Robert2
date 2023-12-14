@@ -26,7 +26,7 @@
     // Note: Augmente la spécificité (pour surcharger la définition de `.toasted`).
     &#{&}.toasted-primary {
         padding: 8px 10px;
-        border-radius: 3px;
+        border-radius: $border-radius-normal;
         font-size: 1rem;
 
         &.error {

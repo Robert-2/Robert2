@@ -31,7 +31,7 @@ final class Kernel
     public static function get(): static
     {
         if (is_null(static::$instance)) {
-            throw new \LogicException("Tentative de récupération du kernel avant le boot de celui-ci.");
+            throw new \LogicException("Attempt to retrieve the kernel before it boots.");
         }
         return static::$instance;
     }
@@ -57,7 +57,7 @@ final class Kernel
     public function getContainer(): Container
     {
         if (!$this->container) {
-            throw new \LogicException("Impossible de récupérer le conteneur à partir d'un kernel non initialisé.");
+            throw new \LogicException("Unable to retrieve the container from an uninitialized kernel.");
         }
         return $this->container;
     }
@@ -119,6 +119,9 @@ final class Kernel
         Models\EventMaterial::observe(Observers\EventMaterialObserver::class);
         Models\Material::observe(Observers\MaterialObserver::class);
         Models\AttributeCategory::observe(Observers\AttributeCategoryObserver::class);
+        Models\Beneficiary::observe(Observers\BeneficiaryObserver::class);
         Models\Park::observe(Observers\ParkObserver::class);
+        Models\Technician::observe(Observers\TechnicianObserver::class);
+        Models\User::observe(Observers\UserObserver::class);
     }
 }

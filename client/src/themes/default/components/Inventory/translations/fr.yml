@@ -1,0 +1,16 @@
+comment-label: "Commentaire\_:"
+departure-comment-label: "Commentaire lors du départ\_:"
+
+#
+# - Fenêtres modales
+#
+
+modals:
+    #
+    # - Édition d'un commentaire de matériel / d'unité.
+    #
+
+    comment-edition:
+        modal-title:
+            material: "Commentaire\_: «\_{name}\_»"
+        save-comment: Enregistrer le commentaire

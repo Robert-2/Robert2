@@ -2,6 +2,7 @@ import './index.scss';
 import moment from 'moment';
 import { defineComponent } from '@vue/composition-api';
 import Button from '@/themes/default/components/Button';
+import computeFullDurations from '@/utils/computeFullDurations';
 
 import type { PropType } from '@vue/composition-api';
 import type { EventSummary } from '@/stores/api/events';
@@ -32,7 +33,7 @@ const SearchEventResultItem = defineComponent({
 
         duration() {
             const { start, end } = this;
-            return end.diff(start, 'days') + 1;
+            return computeFullDurations(start, end);
         },
     },
     methods: {
@@ -50,8 +51,8 @@ const SearchEventResultItem = defineComponent({
                     {event.title} {event.location && <em>({event.location})</em>}
                 </span>
                 <span class="SearchEventResultItem__dates">
-                    {duration === 1 && __('on-date', { date: start.format('LL') })}
-                    {duration > 1 && __(
+                    {duration.days === 1 && __('on-date', { date: start.format('LL') })}
+                    {duration.days > 1 && __(
                         'from-date-to-date',
                         { from: start.format('L'), to: end.format('L') },
                     )}

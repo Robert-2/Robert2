@@ -7,6 +7,9 @@ use Brick\Math\BigDecimal as Decimal;
 use DI\Container;
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Loxya\Controllers\Traits\WithCrud;
+use Loxya\Errors\Enums\ApiErrorCode;
+use Loxya\Errors\Exception\ApiConflictException;
+use Loxya\Errors\Exception\ConflictException;
 use Loxya\Errors\Exception\HttpConflictException;
 use Loxya\Errors\Exception\HttpUnprocessableEntityException;
 use Loxya\Http\Request;
@@ -113,6 +116,8 @@ class EventController extends BaseController
 
     public function duplicate(Request $request, Response $response): ResponseInterface
     {
+        $force = (bool) $request->getQueryParam('force', false);
+
         $id = (int) $request->getAttribute('id');
         $originalEvent = Event::findOrFail($id);
 
@@ -121,10 +126,148 @@ class EventController extends BaseController
             throw new HttpBadRequestException($request, "No data was provided.");
         }
 
-        $newEvent = $originalEvent->duplicate($postData, Auth::user());
+        try {
+            $newEvent = $originalEvent->duplicate($postData, $force, Auth::user());
+        } catch (ConflictException $e) {
+            if ($force || $e->getCode() !== ConflictException::TECHNICIAN_ALREADY_BUSY) {
+                throw new HttpConflictException($request);
+            }
+
+            throw new ApiConflictException(
+                ApiErrorCode::TECHNICIAN_ALREADY_BUSY,
+                'Some technicians are already busy during this period.',
+            );
+        }
 
         $data = $newEvent->serialize(Event::SERIALIZE_DETAILS);
         return $response->withJson($data, StatusCode::STATUS_CREATED);
+    }
+
+    public function updateDepartureInventory(Request $request, Response $response): ResponseInterface
+    {
+        $id = (int) $request->getAttribute('id');
+        $event = Event::findOrFail($id);
+
+        if ($event->is_archived) {
+            throw new HttpUnprocessableEntityException($request, "This event is archived.");
+        }
+
+        // - Si l'inventaire de départ est déjà terminé.
+        if ($event->is_departure_inventory_done) {
+            throw new HttpConflictException($request, "This event's departure inventory is already done.");
+        }
+
+        // - Si l'inventaire de départ ne peut pas encore être commencé.
+        if (!$event->is_departure_inventory_period_open) {
+            throw new HttpUnprocessableEntityException($request, (
+                "This event's departure inventory cannot be done yet."
+            ));
+        }
+
+        // -  Si l'inventaire de retour ne peut plus être effectué.
+        if ($event->is_departure_inventory_period_closed) {
+            throw new HttpUnprocessableEntityException($request, (
+                "This event's departure inventory can no longer be done."
+            ));
+        }
+
+        // - Si l'événement ne contient pas de matériel, il n'y a pas d'inventaire à faire.
+        if ($event->materials->isEmpty()) {
+            throw new HttpUnprocessableEntityException($request, (
+                "This event contains no material, so there can be no inventory."
+            ));
+        }
+
+        // - S'il y a du matériel manquant, on ne peut pas faire l'inventaire de départ.
+        if ($event->has_missing_materials) {
+            throw new HttpUnprocessableEntityException($request, (
+                "This event contains shortage that should be fixed " .
+                "before proceeding with the departure inventory."
+            ));
+        }
+
+        $rawInventory = $request->getParsedBody();
+        if (!is_array($rawInventory) && $rawInventory !== null) {
+            throw new HttpBadRequestException($request, "Invalid data format.");
+        }
+
+        if (empty($rawInventory)) {
+            throw new HttpBadRequestException($request, "No data was provided.");
+        }
+
+        try {
+            $event->updateDepartureInventory($rawInventory);
+        } catch (\InvalidArgumentException $e) {
+            throw new HttpBadRequestException($request, "Invalid data format.");
+        }
+
+        return $response->withJson(static::_formatOne($event), StatusCode::STATUS_OK);
+    }
+
+    public function finishDepartureInventory(Request $request, Response $response): ResponseInterface
+    {
+        $id = (int) $request->getAttribute('id');
+        $event = Event::findOrFail($id);
+
+        if ($event->is_archived) {
+            throw new HttpUnprocessableEntityException($request, "This event is archived.");
+        }
+
+        // - Si l'inventaire de départ est déjà terminé.
+        if ($event->is_departure_inventory_done) {
+            throw new HttpConflictException($request, "This event's departure inventory is already done.");
+        }
+
+        // - Si l'inventaire de départ ne peut pas encore être commencé.
+        if (!$event->is_departure_inventory_period_open) {
+            throw new HttpUnprocessableEntityException($request, (
+                "This event's departure inventory cannot be done yet."
+            ));
+        }
+
+        // -  Si l'inventaire de retour ne peut plus être effectué.
+        if ($event->is_departure_inventory_period_closed) {
+            throw new HttpUnprocessableEntityException($request, (
+                "This event's departure inventory can no longer be done."
+            ));
+        }
+
+        // - Si l'événement ne contient pas de matériel, il n'y a pas d'inventaire à faire.
+        if ($event->materials->isEmpty()) {
+            throw new HttpUnprocessableEntityException($request, (
+                "This event contains no material, so there can be no inventory."
+            ));
+        }
+
+        // - S'il y a du matériel manquant, on ne peut pas faire l'inventaire de départ.
+        if ($event->has_missing_materials) {
+            throw new HttpUnprocessableEntityException($request, (
+                "This event contains shortage that should be fixed " .
+                "before proceeding with the departure inventory."
+            ));
+        }
+
+        $rawInventory = $request->getParsedBody();
+        if (!empty($rawInventory)) {
+            if (!is_array($rawInventory)) {
+                throw new HttpBadRequestException($request, "Invalid data format.");
+            }
+
+            try {
+                $event->updateDepartureInventory($rawInventory);
+            } catch (\InvalidArgumentException $e) {
+                throw new HttpBadRequestException($request, "Invalid data format.");
+            }
+        }
+
+        if (!$event->can_finish_departure_inventory) {
+            throw new HttpUnprocessableEntityException($request, (
+                "This event's departure inventory cannot be marked as finished."
+            ));
+        }
+        $event->finishDepartureInventory(Auth::user());
+
+        return $response->withJson(static::_formatOne($event), StatusCode::STATUS_OK);
     }
 
     public function updateReturnInventory(Request $request, Response $response): ResponseInterface
@@ -132,14 +275,35 @@ class EventController extends BaseController
         $id = (int) $request->getAttribute('id');
         $event = Event::findOrFail($id);
 
+        if ($event->is_archived) {
+            throw new HttpUnprocessableEntityException($request, "This event is archived.");
+        }
+
         // - Si l'inventaire de retour est déjà terminé.
         if ($event->is_return_inventory_done) {
             throw new HttpConflictException($request, "This event's return inventory is already done.");
         }
 
         // - Si l'inventaire de retour ne peut pas encore être commencé.
-        if (!$event->can_do_return_inventory) {
-            throw new HttpUnprocessableEntityException($request, "This event's return inventory cannot be done yet.");
+        if (!$event->is_return_inventory_period_open) {
+            throw new HttpUnprocessableEntityException($request, (
+                "This event's return inventory cannot be done yet."
+            ));
+        }
+
+        // - Si l'événement ne contient pas de matériel, il n'y a pas d'inventaire à faire.
+        if ($event->materials->isEmpty()) {
+            throw new HttpUnprocessableEntityException($request, (
+                "This event contains no material, so there can be no inventory."
+            ));
+        }
+
+        // - S'il y a du matériel manquant, on ne peut pas faire l'inventaire de retour.
+        if ($event->has_missing_materials) {
+            throw new HttpUnprocessableEntityException($request, (
+                "This event contains shortage that should be fixed " .
+                "before proceeding with the return inventory."
+            ));
         }
 
         $rawInventory = $request->getParsedBody();
@@ -165,14 +329,35 @@ class EventController extends BaseController
         $id = (int) $request->getAttribute('id');
         $event = Event::findOrFail($id);
 
+        if ($event->is_archived) {
+            throw new HttpUnprocessableEntityException($request, "This event is archived.");
+        }
+
         // - Si l'inventaire de retour est déjà terminé.
         if ($event->is_return_inventory_done) {
             throw new HttpConflictException($request, "This event's return inventory is already done.");
         }
 
         // - Si l'inventaire de retour ne peut pas encore être commencé.
-        if (!$event->can_do_return_inventory) {
-            throw new HttpUnprocessableEntityException($request, "This event's return inventory cannot be done yet.");
+        if (!$event->is_return_inventory_period_open) {
+            throw new HttpUnprocessableEntityException($request, (
+                "This event's return inventory cannot be done yet."
+            ));
+        }
+
+        // - Si l'événement ne contient pas de matériel, il n'y a pas d'inventaire à faire.
+        if ($event->materials->isEmpty()) {
+            throw new HttpUnprocessableEntityException($request, (
+                "This event contains no material, so there can be no inventory."
+            ));
+        }
+
+        // - S'il y a du matériel manquant, on ne peut pas faire l'inventaire de retour.
+        if ($event->has_missing_materials) {
+            throw new HttpUnprocessableEntityException($request, (
+                "This event contains shortage that should be fixed " .
+                "before proceeding with the return inventory."
+            ));
         }
 
         $rawInventory = $request->getParsedBody();
@@ -190,10 +375,10 @@ class EventController extends BaseController
 
         if (!$event->can_finish_return_inventory) {
             throw new HttpUnprocessableEntityException($request, (
-                "This event's return inventory cannot be marked as finished yet."
+                "This event's return inventory cannot be marked as finished."
             ));
         }
-        $event->finishReturnInventory();
+        $event->finishReturnInventory(Auth::user());
 
         return $response->withJson(static::_formatOne($event), StatusCode::STATUS_OK);
     }

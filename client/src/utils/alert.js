@@ -10,9 +10,9 @@ import Sweetalert from 'sweetalert2/dist/sweetalert2';
  * de celui-ci, SweetAlert change l'élément de la page qui a le focus (via un genre de `blur`)
  * et provoque des soucis pour le reste de l'application (qui voit son focus "sauter" ailleurs après coup).
  *
- * @param {SweetAlertOptions} options - Les options passés à SweetAlert.
+ * @param {import('sweetalert2').SweetAlertOptions} options - Les options passés à SweetAlert.
  *
- * @returns {Promise<SweetAlertResult>} Une promesse contenant le résultat retourné par SweetAlert.
+ * @returns {Promise<import('sweetalert2').SweetAlertResult>} Une promesse contenant le résultat retourné par SweetAlert.
  */
 const wrapSweetAlert = (options) => (
     new Promise((resolve) => {
@@ -29,6 +29,84 @@ const wrapSweetAlert = (options) => (
         );
     })
 );
+
+/**
+ * Permet de créer un nouveau type d'alerte.
+ *
+ * @param {import('sweetalert2').SweetAlertIcon} icon - L'icône à utiliser.
+ * @param {string} title - Le titre de l'alerte.
+ * @param {string} message - Le corps de l'alerte.
+ * @param {boolean|number} autoClose - Permet de fermer automatiquement l'alerte.
+ *                                     Deux valeurs sont possibles:
+ *                                     - Un booléen, auquel cas ceci activera / désactivera la
+ *                                       fonctionnalité (avec un timer de 20s par défaut)
+ *                                     - Un nombre, en millisecondes, permettant de customiser le
+ *                                       délai avant fermeture automatique.
+ */
+const wrapAlert = (icon, title, message, autoClose) => {
+    const { translate: __ } = Vue.i18n;
+
+    if (typeof autoClose === 'boolean') {
+        autoClose = autoClose === true ? 20_000 : undefined;
+    }
+
+    wrapSweetAlert({
+        icon,
+        titleText: title,
+        text: message,
+        timer: autoClose,
+        timerProgressBar: true,
+        confirmButtonText: __('close'),
+    });
+};
+
+/**
+ * Affiche une alerte de type "error".
+ *
+ * @param {string} title - Le titre de l'alerte.
+ * @param {string} message - Le corps de l'alerte.
+ * @param {boolean|number} autoClose - Permet de fermer automatiquement l'alerte.
+ *                                     Deux valeurs sont possibles:
+ *                                     - Un booléen, auquel cas ceci activera / désactivera la
+ *                                       fonctionnalité (avec un timer de 5s par défaut)
+ *                                     - Un nombre, en millisecondes, permettant de customiser le
+ *                                       délai avant fermeture automatique.
+ */
+export const error = (title, message, autoClose = false) => {
+    wrapAlert('error', title, message, autoClose);
+};
+
+/**
+ * Affiche une alerte de type "warning".
+ *
+ * @param {string} title - Le titre de l'alerte.
+ * @param {string} message - Le corps de l'alerte.
+ * @param {boolean|number} autoClose - Permet de fermer automatiquement l'alerte.
+ *                                     Deux valeurs sont possibles:
+ *                                     - Un booléen, auquel cas ceci activera / désactivera la
+ *                                       fonctionnalité (avec un timer de 5s par défaut)
+ *                                     - Un nombre, en millisecondes, permettant de customiser le
+ *                                       délai avant fermeture automatique.
+ */
+export const warning = (title, message, autoClose = false) => {
+    wrapAlert('warning', title, message, autoClose);
+};
+
+/**
+ * Affiche une alerte de type "info".
+ *
+ * @param {string} title - Le titre de l'alerte.
+ * @param {string} message - Le corps de l'alerte.
+ * @param {boolean|number} autoClose - Permet de fermer automatiquement l'alerte.
+ *                                     Deux valeurs sont possibles:
+ *                                     - Un booléen, auquel cas ceci activera / désactivera la
+ *                                       fonctionnalité (avec un timer de 5s par défaut)
+ *                                     - Un nombre, en millisecondes, permettant de customiser le
+ *                                       délai avant fermeture automatique.
+ */
+export const info = (title, message, autoClose = false) => {
+    wrapAlert('info', title, message, autoClose);
+};
 
 export const confirm = async (options) => {
     const { translate: __ } = Vue.i18n;

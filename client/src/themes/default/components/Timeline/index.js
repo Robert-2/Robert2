@@ -3,6 +3,7 @@ import '@loxya/vis-timeline/index.scss';
 import './index.scss';
 /* eslint-enable import/order */
 
+import { defineComponent } from '@vue/composition-api';
 import moment from 'moment';
 import styleObjectToString from 'style-object-to-css-string';
 import { Timeline as TimelineCore, DataSet, DataView } from '@loxya/vis-timeline';
@@ -12,8 +13,8 @@ import dateRoundMinutes from '@/utils/dateRoundMinutes';
 import Loading from '@/themes/default/components/Loading';
 import { mountVisData } from './_utils';
 
-// @vue/component
-export default {
+/* Frise temporelle qui affiche des éléments à la manière d'un diagramme de Gantt. */
+const Timeline = defineComponent({
     name: 'Timeline',
     props: {
         items: {
@@ -243,4 +244,6 @@ export default {
             </div>
         );
     },
-};
+});
+
+export default Timeline;

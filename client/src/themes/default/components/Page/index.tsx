@@ -107,7 +107,7 @@ const Page = defineComponent({
          *                             propriété CSS `scroll-behavior`.
          */
         scrollToTop(behavior: ScrollBehavior = 'smooth') {
-            const $pageContent = (this.$refs.pageContent as HTMLDivElement | undefined);
+            const $pageContent = this.$refs.pageContent as HTMLElement | undefined;
             $pageContent?.scrollTo({ top: 0, left: 0, behavior });
         },
     },

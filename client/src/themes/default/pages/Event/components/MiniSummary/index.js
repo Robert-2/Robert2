@@ -70,10 +70,10 @@ export default {
                 )}
                 {(!!dates.start && !!dates.end) && (
                     <div class="EventMiniSummary__detail">
-                        {duration === 1 && __('on-date', { date: fromToDates.from })}
-                        {duration > 1 && __('from-date-to-date', fromToDates)}
+                        {duration.days === 1 && __('on-date', { date: fromToDates.from })}
+                        {duration.days > 1 && __('from-date-to-date', fromToDates)}
                         <br />
-                        {__('duration-days', { duration }, duration)}
+                        {__('duration-days', { duration: duration.days }, duration.days)}
                         {showPrices && <div>{__('ratio')} {degressiveRate.toString()}</div>}
                     </div>
                 )}

@@ -4,19 +4,16 @@ import { defineComponent } from '@vue/composition-api';
 // @vue/component
 const Fieldset = defineComponent({
     name: 'Fieldset',
-    inject: {
-        verticalForm: { default: false },
-    },
     props: {
         title: { type: String, default: undefined },
         help: { type: String, default: undefined },
     },
     render() {
-        const { title, help, verticalForm } = this;
+        const { title, help } = this;
         const children = this.$slots.default;
 
         const classNames = ['Fieldset', {
-            'Fieldset--in-vertical-form': verticalForm,
+            'Fieldset--with-help': !!help,
         }];
 
         return (

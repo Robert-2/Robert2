@@ -2,6 +2,7 @@ title-create: New event
 title-simple: Modify event
 title: 'Modify event "{title}"'
 help-edit: ''
+cannot-be-modified: This event cannot be modified anymore.
 back-to-calendar: Back to calendar
 save-and-go-to-prev-step: Save and back to previous step
 save-and-go-to-next-step: Save and continue

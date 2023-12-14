@@ -9,27 +9,22 @@
     }
 
     &__help {
+        margin: 0 0 globals.$spacing-medium;
         color: globals.$text-light-color;
-
-        @include globals.icon('info-circle') {
-            margin-right: 0.3rem;
-        }
+        white-space: pre-line;
     }
 
     & + & {
-        margin-top: 40px;
+        margin-top: globals.$spacing-large;
     }
 
     //
-    // - Responsive
+    // - Variantes
     //
 
-    @media screen and (min-width: globals.$screen-tablet) {
-        &:not(&--in-vertical-form) {
-            #{$block}__title {
-                margin-left: globals.$form-label-width;
-                font-size: 1.1rem;
-            }
+    &--with-help {
+        #{$block}__title {
+            margin-bottom: globals.$spacing-small;
         }
     }
 }

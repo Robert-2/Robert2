@@ -1,0 +1,36 @@
+full-days: Jours entiers?
+full-day: Jour entier?
+
+select-hour: Sélectionner l'heure
+select-hours: Sélectionner les heures
+
+select-date: Sélectionner la date
+select-dates: Sélectionner les dates
+
+predefined-period:
+    today: Aujourd'hui
+    yesterday: Hier
+    tomorrow: Demain
+    this-week: Cette semaine
+    this-month: Ce mois
+    this-year: Cette année
+    next-week: Semaine prochaine
+    next-month: Mois prochain
+    next-year: Année prochaine
+    last-week: Semaine dernière
+    last-month: Mois dernier
+    last-year: Année dernière
+    next-30days: 30 prochains jours
+    next-90days: 90 prochains jours
+    next-365days: 365 prochains jours
+    last-30days: 30 derniers jours
+    last-90days: 90 derniers jours
+    last-365days: 365 derniers jours
+
+range-format:
+    full:
+        start: 'D MMM YYYY'
+        end: 'D MMM YYYY'
+    same-year:
+        start: 'D MMM'
+        end: 'D MMM YYYY'

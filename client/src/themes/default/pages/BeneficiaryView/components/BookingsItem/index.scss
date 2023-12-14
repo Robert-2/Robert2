@@ -1,0 +1,89 @@
+@use '~@/themes/default/style/globals';
+@use 'sass:color';
+
+.BeneficiaryViewBookingsItem {
+    $block: &;
+
+    display: flex;
+    align-items: center;
+    margin-bottom: globals.$spacing-small;
+    padding: globals.$spacing-small 0;
+    border-radius: globals.$input-border-radius;
+    background-color: globals.$bg-color-table-th;
+    color: globals.$text-soft-color;
+    list-style: square;
+    opacity: 0.7;
+    cursor: pointer;
+
+    &:hover {
+        background-color: globals.$bg-color-table-td;
+    }
+
+    &__booking {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        margin: 0 25px;
+
+        &__icon {
+            margin-right: 15px;
+            text-align: center;
+        }
+
+        &__infos {
+            flex: 1;
+        }
+
+        &__title {
+            margin: 0 0 globals.$spacing-small;
+            color: globals.$text-base-color;
+        }
+
+        &__duration {
+            margin-left: 5px;
+        }
+    }
+
+    &__readable-state {
+        flex: 0 0 260px;
+        padding: 0 globals.$spacing-medium;
+        text-align: left;
+    }
+
+    &__actions {
+        padding: 0 globals.$spacing-medium;
+    }
+
+    &--future {
+        color: globals.$text-base-color;
+        opacity: 1;
+
+        #{$block}__booking__title {
+            color: globals.$link-base-color;
+        }
+
+        #{$block}__readable-state {
+            @include globals.icon('binoculars') {
+                margin-right: 0.5rem;
+            }
+        }
+    }
+
+    &--future + &:not(#{$block}--future) {
+        margin-top: globals.$spacing-large;
+    }
+
+    &--current {
+        background-color: #7a2b0d;
+
+        #{$block}__readable-state {
+            @include globals.icon('sign-out-alt') {
+                margin-right: 0.5rem;
+            }
+        }
+
+        &:hover {
+            background-color: #913410;
+        }
+    }
+}

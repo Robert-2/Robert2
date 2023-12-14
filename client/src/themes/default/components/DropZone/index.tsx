@@ -108,7 +108,8 @@ const DropZone = defineComponent({
         handleClickOpenFileBrowser(e: Event) {
             e.stopPropagation();
 
-            this.$refs.inputFileRef.click();
+            const $inputFile = this.$refs.inputFile as HTMLInputElement | undefined;
+            $inputFile?.click();
         },
 
         handleAddFiles(e: Event) {
@@ -179,7 +180,7 @@ const DropZone = defineComponent({
                 <input
                     multiple={multiple}
                     type="file"
-                    ref="inputFileRef"
+                    ref="inputFile"
                     accept={acceptTypes.join(',')}
                     class="DropZone__file-input"
                     onChange={handleAddFiles}

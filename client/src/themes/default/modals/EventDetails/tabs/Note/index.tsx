@@ -36,7 +36,7 @@ type InstanceProperties = {
     ),
 };
 
-type State = {
+type Data = {
     value: string,
     isSaving: boolean,
     shouldReSave: boolean,
@@ -56,7 +56,7 @@ const EventDetailsNote = defineComponent({
     setup: (): InstanceProperties => ({
         throttledSave: undefined,
     }),
-    data(): State {
+    data(): Data {
         return {
             value: this.event.note ?? '',
             saveMode: SaveMode.AUTOMATIC,

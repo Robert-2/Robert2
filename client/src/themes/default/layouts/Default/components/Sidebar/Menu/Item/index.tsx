@@ -12,14 +12,14 @@ type Props = {
     /** L'URL du lien. */
     url: string,
 
-    /** L'icône à affiher. */
+    /** L'icône à afficher. */
     icon: string,
 
     /** Un nombre à afficher dans une pastille sur le lien. */
     counter?: number,
 
     /**
-     * Si la valeur vaut `true`, le router considèrera
+     * Si la valeur vaut `true`, le router considérera
      * l'URL comme exacte lors du check du lien actif.
      */
     exact?: boolean,

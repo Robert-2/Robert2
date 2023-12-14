@@ -2,74 +2,49 @@ import './index.scss';
 import { defineComponent } from '@vue/composition-api';
 import HttpCode from 'status-code-enum';
 import { isRequestErrorStatusCode } from '@/utils/errors';
+import isTruthy from '@/utils/isTruthy';
 import Fragment from '@/components/Fragment';
 import { confirm } from '@/utils/alert';
 import apiBeneficiaries from '@/stores/api/beneficiaries';
-import initColumnsDisplay from '@/utils/initColumnsDisplay';
 import Page from '@/themes/default/components/Page';
 import CriticalError from '@/themes/default/components/CriticalError';
+import { ServerTable } from '@/themes/default/components/Table';
+import Dropdown from '@/themes/default/components/Dropdown';
 import Button from '@/themes/default/components/Button';
 
+/* Page de listing des bénéficiaires. */
 const Beneficiaries = defineComponent({
     name: 'Beneficiaries',
-    data() {
-        const { $t: __, $options } = this;
+    data: () => ({
+        isLoading: false,
+        hasCriticalError: false,
+        shouldDisplayTrashed: false,
+        isTrashDisplayed: false,
+    }),
+    computed: {
+        columns() {
+            const { $t: __, isTrashDisplayed, handleDeleteItemClick, handleRestoreItemClick } = this;
 
-        return {
-            hasCriticalError: false,
-            isLoading: false,
-            shouldDisplayTrashed: false,
-            isTrashDisplayed: false,
-
-            //
-            // - Tableau
-            //
-
-            columns: [
-                'full_name',
-                'reference',
-                'company',
-                'email',
-                'phone',
-                'address',
-                'note',
-                'actions',
-            ],
-            options: {
-                columnsDropdown: true,
-                preserveState: true,
-                saveState: true,
-                orderBy: { column: 'full_name', ascending: true },
-                sortable: ['full_name', 'reference', 'company', 'email'],
-                columnsDisplay: initColumnsDisplay($options.name, {
-                    full_name: true,
-                    reference: true,
-                    company: true,
-                    email: true,
-                    phone: true,
-                    address: true,
-                    note: false,
-                }),
-                headings: {
-                    full_name: `${__('first-name')} / ${__('last-name')}`,
-                    reference: __('reference'),
-                    company: __('company'),
-                    email: __('email'),
-                    phone: __('phone'),
-                    address: __('address'),
-                    note: __('notes'),
-                    actions: '',
+            return [
+                {
+                    key: 'full_name',
+                    title: `${__('first-name')} / ${__('last-name')}`,
+                    class: 'Beneficiaries__cell Beneficiaries__cell--full-name',
+                    sortable: true,
                 },
-                columnsClasses: {
-                    company: 'Beneficiaries__company ',
-                    email: 'Beneficiaries__email ',
-                    address: 'Beneficiaries__address ',
-                    note: 'Beneficiaries__note ',
-                    actions: 'Beneficiaries__actions ',
+                {
+                    key: 'reference',
+                    title: __('reference'),
+                    class: 'Beneficiaries__cell Beneficiaries__cell--reference',
+                    sortable: true,
+                    hidden: true,
                 },
-                requestFunction: this.fetch.bind(this),
-                templates: {
-                    company: (h, { company }) => {
+                {
+                    key: 'company',
+                    title: __('company'),
+                    class: 'Beneficiaries__cell Beneficiaries__cell--company',
+                    sortable: true,
+                    render: (h, { company }) => {
                         if (!company) {
                             return null;
                         }
@@ -80,40 +55,62 @@ const Beneficiaries = defineComponent({
                             </router-link>
                         );
                     },
-                    email: (h, { email }) => (
+                },
+                !isTrashDisplayed && {
+                    key: 'email',
+                    title: __('email'),
+                    class: 'Beneficiaries__cell Beneficiaries__cell--email',
+                    sortable: true,
+                    render: (h, { email }) => (
                         <a href={`mailto:${email}`}>{email}</a>
                     ),
-                    phone: (h, beneficiary) => (
+                },
+                !isTrashDisplayed && {
+                    key: 'phone',
+                    title: __('phone'),
+                    class: 'Beneficiaries__cell Beneficiaries__cell--phone',
+                    render: (h, beneficiary) => (
                         <Fragment>
                             {!!beneficiary.phone && <div>{beneficiary.phone}</div>}
                             {!!beneficiary.company && <div>{beneficiary.company.phone}</div>}
                         </Fragment>
                     ),
-                    address: (h, beneficiary) => (
+                },
+                !isTrashDisplayed && {
+                    key: 'address',
+                    title: __('address'),
+                    hidden: true,
+                    class: 'Beneficiaries__cell Beneficiaries__cell--address',
+                    render: (h, beneficiary) => (
                         beneficiary.company?.full_address || beneficiary.full_address || ''
                     ),
-                    note: (h, beneficiary) => (
+                },
+                !isTrashDisplayed && {
+                    key: 'note',
+                    title: __('notes'),
+                    class: 'Beneficiaries__cell Beneficiaries__cell--note',
+                    hidden: true,
+                    render: (h, beneficiary) => (
                         beneficiary.company
                             ? beneficiary.company.note
                             : beneficiary.note
                     ),
-                    actions: (h, { id }) => {
-                        const {
-                            isTrashDisplayed,
-                            handleDeleteItem,
-                            handleRestoreItem,
-                        } = this;
-
+                },
+                {
+                    key: 'actions',
+                    title: '',
+                    class: 'Beneficiaries__cell Beneficiaries__cell--actions',
+                    render: (h, { id }) => {
                         if (isTrashDisplayed) {
                             return (
                                 <Fragment>
                                     <Button
                                         type="restore"
-                                        onClick={() => { handleRestoreItem(id); }}
+                                        onClick={(e) => { handleRestoreItemClick(e, id); }}
                                     />
                                     <Button
                                         type="delete"
-                                        onClick={() => { handleDeleteItem(id); }}
+                                        onClick={(e) => { handleDeleteItemClick(e, id); }}
                                     />
                                 </Fragment>
                             );
@@ -121,6 +118,10 @@ const Beneficiaries = defineComponent({
 
                         return (
                             <Fragment>
+                                <Button
+                                    icon="eye"
+                                    to={{ name: 'view-beneficiary', params: { id } }}
+                                />
                                 <Button
                                     type="edit"
                                     to={{
@@ -130,14 +131,18 @@ const Beneficiaries = defineComponent({
                                 />
                                 <Button
                                     type="trash"
-                                    onClick={() => { handleDeleteItem(id); }}
+                                    onClick={(e) => { handleDeleteItemClick(e, id); }}
                                 />
                             </Fragment>
                         );
                     },
                 },
-            },
-        };
+            ].filter(isTruthy);
+        },
+    },
+    created() {
+        // - Binding.
+        this.fetch = this.fetch.bind(this);
     },
     methods: {
         // ------------------------------------------------------
@@ -146,7 +151,9 @@ const Beneficiaries = defineComponent({
         // -
         // ------------------------------------------------------
 
-        async handleDeleteItem(id) {
+        async handleDeleteItemClick(e, id) {
+            e.stopPropagation();
+
             const { $t: __ } = this;
             const isSoft = !this.isTrashDisplayed;
 
@@ -174,7 +181,8 @@ const Beneficiaries = defineComponent({
             }
         },
 
-        async handleRestoreItem(id) {
+        async handleRestoreItemClick(e, id) {
+            e.stopPropagation();
             const { $t: __ } = this;
 
             const isConfirmed = await confirm({
@@ -196,7 +204,14 @@ const Beneficiaries = defineComponent({
             }
         },
 
-        handleShowTrashed() {
+        handleRowClick({ id }) {
+            this.$router.push({
+                name: 'view-beneficiary',
+                params: { id: id.toString() },
+            });
+        },
+
+        handleToggleShowTrashed() {
             this.shouldDisplayTrashed = !this.shouldDisplayTrashed;
             this.$refs.table.setPage(1);
         },
@@ -236,13 +251,14 @@ const Beneficiaries = defineComponent({
     render() {
         const {
             $t: __,
+            fetch,
             $options,
             columns,
-            options,
-            hasCriticalError,
-            isTrashDisplayed,
             isLoading,
-            handleShowTrashed,
+            isTrashDisplayed,
+            hasCriticalError,
+            handleToggleShowTrashed,
+            handleRowClick,
         } = this;
 
         if (hasCriticalError) {
@@ -253,11 +269,30 @@ const Beneficiaries = defineComponent({
             );
         }
 
-        const pageActions = [
-            <Button type="add" icon="user-plus" to={{ name: 'add-beneficiary' }}>
-                {__('page.beneficiaries.action-add')}
-            </Button>,
-        ];
+        if (isTrashDisplayed) {
+            return (
+                <Page
+                    name="beneficiaries"
+                    title={__('page.beneficiaries.title-trash')}
+                    isLoading={isLoading}
+                    actions={[
+                        <Button onClick={handleToggleShowTrashed} icon="eye" type="primary">
+                            {__('display-not-deleted-items')}
+                        </Button>,
+                    ]}
+                >
+                    <div class="Beneficiaries Beneficiaries--trashed">
+                        <ServerTable
+                            ref="table"
+                            key="trash"
+                            rowClass="Beneficiaries__row"
+                            columns={columns}
+                            fetcher={fetch}
+                        />
+                    </div>
+                </Page>
+            );
+        }
 
         return (
             <Page
@@ -265,25 +300,28 @@ const Beneficiaries = defineComponent({
                 title={__('page.beneficiaries.title')}
                 help={__('page.beneficiaries.help')}
                 isLoading={isLoading}
-                actions={pageActions}
+                actions={[
+                    <Button type="add" icon="user-plus" to={{ name: 'add-beneficiary' }}>
+                        {__('page.beneficiaries.action-add')}
+                    </Button>,
+                    <Dropdown>
+                        <Button icon="trash" onClick={handleToggleShowTrashed}>
+                            {__('open-trash-bin')}
+                        </Button>
+                    </Dropdown>,
+                ]}
             >
                 <div class="Beneficiaries">
-                    <v-server-table
+                    <ServerTable
                         ref="table"
-                        class="Beneficiaries__table"
+                        key="default"
                         name={$options.name}
+                        class="Beneficiaries__table"
+                        rowClass="Beneficiaries__row"
                         columns={columns}
-                        options={options}
+                        fetcher={fetch}
+                        onRowClick={handleRowClick}
                     />
-                    <div class="content__footer">
-                        <Button
-                            onClick={handleShowTrashed}
-                            icon={isTrashDisplayed ? 'eye' : 'trash'}
-                            type={isTrashDisplayed ? 'success' : 'danger'}
-                        >
-                            {isTrashDisplayed ? __('display-not-deleted-items') : __('open-trash-bin')}
-                        </Button>
-                    </div>
                 </div>
             </Page>
         );

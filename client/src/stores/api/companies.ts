@@ -16,6 +16,7 @@ export type Company = {
     locality: string | null,
     country_id: Country['id'] | null,
     country: Country | null,
+    full_address: string | null,
     note: string | null,
 };
 

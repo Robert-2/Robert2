@@ -33,7 +33,10 @@ type Data = {
     uploads: Upload[],
 };
 
-/** Nombre d'upload simultanés maximum (au delà, les uploads seront placés dans une queue). */
+/**
+ * Nombre d'upload simultanés maximum (au delà, les
+ * uploads seront placés dans une queue).
+ */
 const MAX_CONCURRENT_UPLOADS = 5;
 
 // @vue/component

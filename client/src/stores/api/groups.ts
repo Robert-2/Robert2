@@ -38,4 +38,9 @@ const all = (): GroupDetails[] => {
     ];
 };
 
-export default { all };
+const one = (group: Group): GroupDetails | undefined => {
+    const allGroups = all();
+    return allGroups.find(({ id }: GroupDetails) => id === group);
+};
+
+export default { all, one };

@@ -56,7 +56,7 @@ const SearchEvents = defineComponent({
     mounted() {
         this.handleSearchDebounced = throttle(this.handleSearch.bind(this), 400);
     },
-    beforeUnmount() {
+    beforeDestroy() {
         this.handleSearchDebounced?.cancel();
     },
     methods: {

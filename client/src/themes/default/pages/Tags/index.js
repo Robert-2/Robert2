@@ -1,8 +1,10 @@
 import './index.scss';
+import { defineComponent } from '@vue/composition-api';
 import Page from '@/themes/default/components/Page';
 import CriticalError from '@/themes/default/components/CriticalError';
 import Loading from '@/themes/default/components/Loading';
 import EmptyMessage from '@/themes/default/components/EmptyMessage';
+import Dropdown from '@/themes/default/components/Dropdown';
 import Button from '@/themes/default/components/Button';
 import Icon from '@/themes/default/components/Icon';
 import { confirm, prompt } from '@/utils/alert';
@@ -10,20 +12,18 @@ import stringCompare from '@/utils/stringCompare';
 import apiTags from '@/stores/api/tags';
 import { ApiErrorCode } from '@/stores/api/@codes';
 
-// @vue/component
-export default {
+/** Page de listing des tags. */
+const Tags = defineComponent({
     name: 'Tags',
-    data() {
-        return {
-            tags: null,
-            isFetched: false,
-            isLoading: false,
-            isProcessing: [],
-            hasCriticalError: null,
-            shouldDisplayTrashed: false,
-            isTrashDisplayed: false,
-        };
-    },
+    data: () => ({
+        tags: null,
+        isFetched: false,
+        isLoading: false,
+        isProcessing: [],
+        hasCriticalError: null,
+        shouldDisplayTrashed: false,
+        isTrashDisplayed: false,
+    }),
     computed: {
         sortedTags() {
             const { tags } = this;
@@ -157,7 +157,7 @@ export default {
             }
         },
 
-        handleToggleTrashed() {
+        handleToggleShowTrashed() {
             this.shouldDisplayTrashed = !this.shouldDisplayTrashed;
             this.fetchData();
         },
@@ -247,17 +247,45 @@ export default {
             handleEdit,
             handleRemove,
             handleRestore,
-            handleToggleTrashed,
+            handleToggleShowTrashed,
         } = this;
 
         const displayLoading = isLoading || isProcessing.length > 0;
+
+        // - Titre de la page.
+        const title = !isTrashDisplayed
+            ? __('page.tags.title')
+            : __('page.tags.title-trash');
+
+        // - Aide de page.
+        const help = !isTrashDisplayed
+            ? __('page.tags.help')
+            : undefined;
+
+        // - Actions de la page.
+        const actions = !isTrashDisplayed
+            ? [
+                <Button type="add" onClick={handleCreate}>
+                    {__('page.tags.action-add')}
+                </Button>,
+                <Dropdown>
+                    <Button icon="trash" onClick={handleToggleShowTrashed}>
+                        {__('open-trash-bin')}
+                    </Button>
+                </Dropdown>,
+            ]
+            : [
+                <Button onClick={handleToggleShowTrashed} icon="eye" type="primary">
+                    {__('display-not-deleted-items')}
+                </Button>,
+            ];
 
         if (hasCriticalError || !isFetched) {
             return (
                 <Page
                     name="tags"
-                    title={__('page.tags.title')}
-                    help={__('page.tags.help')}
+                    title={title}
+                    help={help}
                     isLoading={displayLoading}
                 >
                     {hasCriticalError ? <CriticalError /> : <Loading />}
@@ -269,9 +297,10 @@ export default {
             return (
                 <Page
                     name="tags"
-                    title={__('page.tags.title')}
-                    help={__('page.tags.help')}
+                    title={title}
+                    help={help}
                     isLoading={displayLoading}
+                    actions={actions}
                 >
                     <div class="Tags">
                         <EmptyMessage
@@ -285,26 +314,16 @@ export default {
                                     ? {
                                         type: 'primary',
                                         label: __('display-not-deleted-items'),
-                                        onClick: handleToggleTrashed,
+                                        onClick: handleToggleShowTrashed,
                                     }
                                     : {
+                                        type: 'add',
                                         label: __('page.tags.create-first-tag'),
                                         onClick: handleCreate,
                                     }
                             )}
                         />
                     </div>
-                    {!isTrashDisplayed && (
-                        <div class="content__footer">
-                            <Button
-                                onClick={handleToggleTrashed}
-                                icon="trash"
-                                type="danger"
-                            >
-                                {__('open-trash-bin')}
-                            </Button>
-                        </div>
-                    )}
                 </Page>
             );
         }
@@ -312,14 +331,10 @@ export default {
         return (
             <Page
                 name="tags"
-                title={__('page.tags.title')}
-                help={__('page.tags.help')}
+                title={title}
+                help={help}
                 isLoading={displayLoading}
-                actions={[
-                    <Button type="add" onClick={handleCreate}>
-                        {__('page.tags.action-add')}
-                    </Button>,
-                ]}
+                actions={actions}
             >
                 <div class="Tags">
                     <ul class="Tags__list">
@@ -358,16 +373,9 @@ export default {
                         ))}
                     </ul>
                 </div>
-                <div class="content__footer">
-                    <Button
-                        onClick={handleToggleTrashed}
-                        icon={isTrashDisplayed ? 'eye' : 'trash'}
-                        type={isTrashDisplayed ? 'success' : 'danger'}
-                    >
-                        {isTrashDisplayed ? __('display-not-deleted-items') : __('open-trash-bin')}
-                    </Button>
-                </div>
             </Page>
         );
     },
-};
+});
+
+export default Tags;

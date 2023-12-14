@@ -9,19 +9,20 @@ const withIcon = (iconName, text) => (
 );
 
 const formatTimelineEvent = (event, __, now = Date.now(), options = {}) => {
+    const { title, color, location, beneficiaries, technicians } = event;
     const { showLocation = true, showBorrower = false } = options;
     const startDate = moment(event.start_date);
     const endDate = moment(event.end_date);
-    const isPast = endDate.isBefore(now, 'day');
-    const {
-        title,
-        color,
-        location,
-        is_confirmed: isConfirmed,
-        is_return_inventory_done: isReturnInventoryDone,
-        beneficiaries,
-        technicians,
-    } = event;
+
+    const isEditable = (
+        // - Un événement archivé n'est pas modifiable.
+        !event.is_archived &&
+
+        // - Un événement ne peut être modifié que si son inventaire de retour
+        //   n'a pas été effectué (sans quoi celui-ci n'aurait plus aucun sens,
+        //   d'autant que le stock global a pu être impacté suite à cet inventaire).
+        !event.is_return_inventory_done
+    );
 
     // - Période de l'événement
     const intervalText = withIcon('clock', __('from-date-to-date', {
@@ -122,7 +123,7 @@ const formatTimelineEvent = (event, __, now = Date.now(), options = {}) => {
         color,
         className: getTimelineBookingClassNames(event),
         editable: {
-            updateTime: !isConfirmed || (isPast && !isConfirmed && !isReturnInventoryDone),
+            updateTime: isEditable,
             remove: false,
         },
     };

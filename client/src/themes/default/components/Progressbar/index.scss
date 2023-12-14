@@ -4,7 +4,7 @@
     position: relative;
     width: 100%;
     height: 20px;
-    border-radius: 10px;
+    border-radius: globals.$border-radius-large;
     background: #141414;
 
     &__progress {
@@ -13,7 +13,7 @@
         left: 0;
         bottom: 0;
         overflow: hidden;
-        border-radius: 10px;
+        border-radius: globals.$border-radius-large;
         background: globals.$bg-color-button-info;
         text-align: center;
         transition: width 200ms linear;

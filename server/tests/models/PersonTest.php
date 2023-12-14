@@ -22,8 +22,8 @@ final class PersonTest extends TestCase
             'last_name' => 'fo#32;reux',
         ]);
         $expectedErrors = [
-            'first_name' => ['Ce champ contient des caractères non autorisés'],
-            'last_name' => ['Ce champ contient des caractères non autorisés'],
+            'first_name' => ['Ce champ contient des caractères non autorisés.'],
+            'last_name' => ['Ce champ contient des caractères non autorisés.'],
         ];
         $this->assertFalse($person->isValid());
         $this->assertSame($expectedErrors, $person->validationErrors());

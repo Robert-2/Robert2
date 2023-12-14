@@ -8,6 +8,7 @@ import apiEvents from '@/stores/api/events';
 import FormField from '@/themes/default/components/FormField';
 import Fieldset from '@/themes/default/components/Fieldset';
 import { ApiErrorCode } from '@/stores/api/@codes';
+import computeFullDurations from '@/utils/computeFullDurations';
 import getCSSProperty from '@/utils/getCSSProperty';
 import EventStore from '../../EventStore';
 
@@ -62,20 +63,14 @@ const EventStep1 = defineComponent({
 
         duration() {
             const [startDate, endDate] = this.dates ?? [null, null];
-            if (!startDate || !endDate) {
-                return 0;
-            }
-            return moment(endDate).diff(startDate, 'days') + 1;
+            return startDate && endDate
+                ? computeFullDurations(startDate, endDate)
+                : null;
         },
 
         defaultColor() {
             return getCSSProperty('calendar-event-default-color');
         },
-
-        datepickerOptions: () => ({
-            range: true,
-            disabled: { from: null, to: null },
-        }),
     },
     watch: {
         event() {
@@ -169,12 +164,12 @@ const EventStep1 = defineComponent({
             data,
             errors,
             defaultColor,
-            datepickerOptions,
             allowBillingToggling,
             handleBasicChange,
             handleDatesChange,
             handleSubmit,
         } = this;
+        const hasDuration = duration !== null && duration.days > 0;
 
         return (
             <form class="EventStep1" method="POST" onSubmit={handleSubmit}>
@@ -186,21 +181,23 @@ const EventStep1 = defineComponent({
                         errors={errors?.title}
                         required
                     />
-                    <div class="EventStep1__dates">
-                        <div class="EventStep1__dates__fields">
+                    <div class="EventStep1__period">
+                        <div class="EventStep1__period__dates">
                             <FormField
                                 label="dates"
                                 type="date"
                                 value={dates}
-                                datepickerOptions={datepickerOptions}
                                 errors={errors?.start_date || errors?.end_date}
                                 onChange={handleDatesChange}
                                 required
+                                range
                             />
                         </div>
-                        <div class="EventStep1__dates__duration">
-                            {duration > 0 && __('duration-days', { duration }, duration)}
-                        </div>
+                        {hasDuration && (
+                            <div class="EventStep1__period__duration">
+                                {__('duration-days', { duration: duration.days }, duration.days)}
+                            </div>
+                        )}
                     </div>
                 </Fieldset>
                 <Fieldset title={__('event-details')}>

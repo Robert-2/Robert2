@@ -596,6 +596,31 @@ final class Material extends BaseModel implements Serializable
         });
     }
 
+    public function scopeCustomOrderBy(Builder $query, string $column, string $direction = 'asc'): Builder
+    {
+        if (!in_array($column, ['stock_quantity', 'out_of_order_quantity'], true)) {
+            return parent::scopeCustomOrderBy($query, $column, $direction);
+        }
+
+        if ($column === 'stock_quantity') {
+            return $query
+                ->orderBy(
+                    $query->raw('IF(stock_quantity)'),
+                    $direction,
+                );
+        }
+
+        if ($column === 'out_of_order_quantity') {
+            return $query
+                ->orderBy(
+                    $query->raw('IF(out_of_order_quantity)'),
+                    $direction,
+                );
+        }
+
+        return $query;
+    }
+
     // ------------------------------------------------------
     // -
     // -    Méthodes utilitaires
@@ -629,6 +654,7 @@ final class Material extends BaseModel implements Serializable
 
         // - NOTE : Ne pas prefetch le materiel des bookables via `->with()`,
         //   car cela peut surcharger la mémoire rapidement.
+        // FIXME: Utiliser le principe du lazy-loading pou optimiser l'utilisation de la mémoire.
         $otherBorrowings = new Collection();
         if ($period !== null) {
             $otherBorrowings = $period->__cachedConcurrentBookables ?? null;

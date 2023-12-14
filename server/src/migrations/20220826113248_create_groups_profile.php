@@ -116,12 +116,6 @@ final class CreateGroupsProfile extends AbstractMigration
                 'null' => true,
                 'after' => 'event_id',
             ])
-            ->addIndex(['beneficiary_id'])
-            ->addForeignKey('beneficiary_id', 'beneficiaries', 'id', [
-                'delete' => 'CASCADE',
-                'update' => 'NO_ACTION',
-                'constraint' => 'fk__event_beneficiary__beneficiary',
-            ])
             ->update();
 
         foreach ($personBeneficiaryMap as $personId => $beneficiaryId) {
@@ -135,6 +129,12 @@ final class CreateGroupsProfile extends AbstractMigration
         $event_beneficiaries
             ->changeColumn('beneficiary_id', 'integer', ['signed' => true, 'null' => false])
             ->removeColumn('person_id')
+            ->addIndex(['beneficiary_id'])
+            ->addForeignKey('beneficiary_id', 'beneficiaries', 'id', [
+                'delete' => 'CASCADE',
+                'update' => 'NO_ACTION',
+                'constraint' => 'fk__event_beneficiary__beneficiary',
+            ])
             ->update();
 
         //
@@ -160,17 +160,6 @@ final class CreateGroupsProfile extends AbstractMigration
                     'null' => true,
                     'after' => 'event_id',
                 ])
-                ->addIndex(['beneficiary_id'])
-                ->addForeignKey('beneficiary_id', 'beneficiaries', 'id', [
-                    'delete' => 'CASCADE',
-                    'update' => 'NO_ACTION',
-                    'constraint' => sprintf('fk__%s__beneficiary', $billTableSingularName),
-                ])
-                ->addForeignKey('event_id', 'events', 'id', [
-                    'delete' => 'CASCADE',
-                    'update' => 'NO_ACTION',
-                    'constraint' => sprintf('fk__%s__event', $billTableSingularName),
-                ])
                 ->update();
 
             foreach ($personBeneficiaryMap as $personId => $beneficiaryId) {
@@ -184,6 +173,17 @@ final class CreateGroupsProfile extends AbstractMigration
             $table
                 ->changeColumn('beneficiary_id', 'integer', ['signed' => true, 'null' => false])
                 ->removeColumn('person_id')
+                ->addIndex(['beneficiary_id'])
+                ->addForeignKey('beneficiary_id', 'beneficiaries', 'id', [
+                    'delete' => 'CASCADE',
+                    'update' => 'NO_ACTION',
+                    'constraint' => sprintf('fk__%s__beneficiary', $billTableSingularName),
+                ])
+                ->addForeignKey('event_id', 'events', 'id', [
+                    'delete' => 'CASCADE',
+                    'update' => 'NO_ACTION',
+                    'constraint' => sprintf('fk__%s__event', $billTableSingularName),
+                ])
                 ->update();
         }
 
@@ -271,12 +271,6 @@ final class CreateGroupsProfile extends AbstractMigration
                 'null' => true,
                 'after' => 'event_id',
             ])
-            ->addIndex(['technician_id'])
-            ->addForeignKey('technician_id', 'technicians', 'id', [
-                'delete' => 'CASCADE',
-                'update' => 'NO_ACTION',
-                'constraint' => 'fk__event_technician__technician',
-            ])
             ->update();
 
         foreach ($personTechnicianMap as $personId => $technicianId) {
@@ -290,6 +284,12 @@ final class CreateGroupsProfile extends AbstractMigration
         $event_technicians
             ->changeColumn('technician_id', 'integer', ['signed' => true, 'null' => false])
             ->removeColumn('person_id')
+            ->addIndex(['technician_id'])
+            ->addForeignKey('technician_id', 'technicians', 'id', [
+                'delete' => 'CASCADE',
+                'update' => 'NO_ACTION',
+                'constraint' => 'fk__event_technician__technician',
+            ])
             ->update();
 
         //
@@ -465,12 +465,6 @@ final class CreateGroupsProfile extends AbstractMigration
                 'null' => true,
                 'after' => 'event_id',
             ])
-            ->addIndex(['person_id'])
-            ->addForeignKey('person_id', 'persons', 'id', [
-                'delete' => 'CASCADE',
-                'update' => 'NO_ACTION',
-                'constraint' => 'fk__event_beneficiary__person',
-            ])
             ->update();
 
         foreach ($personBeneficiaryMap as $personId => $beneficiaryId) {
@@ -484,6 +478,12 @@ final class CreateGroupsProfile extends AbstractMigration
         $event_beneficiaries
             ->changeColumn('person_id', 'integer', ['signed' => true, 'null' => false])
             ->removeColumn('beneficiary_id')
+            ->addIndex(['person_id'])
+            ->addForeignKey('person_id', 'persons', 'id', [
+                'delete' => 'CASCADE',
+                'update' => 'NO_ACTION',
+                'constraint' => 'fk__event_beneficiary__person',
+            ])
             ->update();
 
         //
@@ -509,17 +509,6 @@ final class CreateGroupsProfile extends AbstractMigration
                     'null' => true,
                     'after' => 'event_id',
                 ])
-                ->addIndex(['beneficiary_id'])
-                ->addForeignKey('beneficiary_id', 'persons', 'id', [
-                    'delete' => 'CASCADE',
-                    'update' => 'NO_ACTION',
-                    'constraint' => sprintf('fk__%s__beneficiary', $billTableSingularName),
-                ])
-                ->addForeignKey('event_id', 'events', 'id', [
-                    'delete' => 'CASCADE',
-                    'update' => 'NO_ACTION',
-                    'constraint' => sprintf('fk__%s__event', $billTableSingularName),
-                ])
                 ->update();
 
             foreach ($personBeneficiaryMap as $personId => $beneficiaryId) {
@@ -533,6 +522,17 @@ final class CreateGroupsProfile extends AbstractMigration
             $table
                 ->changeColumn('beneficiary_id', 'integer', ['signed' => true, 'null' => false])
                 ->removeColumn('old_beneficiary_id')
+                ->addIndex(['beneficiary_id'])
+                ->addForeignKey('beneficiary_id', 'persons', 'id', [
+                    'delete' => 'CASCADE',
+                    'update' => 'NO_ACTION',
+                    'constraint' => sprintf('fk__%s__beneficiary', $billTableSingularName),
+                ])
+                ->addForeignKey('event_id', 'events', 'id', [
+                    'delete' => 'CASCADE',
+                    'update' => 'NO_ACTION',
+                    'constraint' => sprintf('fk__%s__event', $billTableSingularName),
+                ])
                 ->update();
         }
 
@@ -599,12 +599,6 @@ final class CreateGroupsProfile extends AbstractMigration
                 'null' => true,
                 'after' => 'event_id',
             ])
-            ->addIndex(['technician_id'])
-            ->addForeignKey('technician_id', 'persons', 'id', [
-                'delete' => 'CASCADE',
-                'update' => 'NO_ACTION',
-                'constraint' => 'fk__event_technician__technician',
-            ])
             ->update();
 
         foreach ($personTechnicianMap as $personId => $technicianId) {
@@ -618,6 +612,12 @@ final class CreateGroupsProfile extends AbstractMigration
         $event_technicians
             ->changeColumn('technician_id', 'integer', ['signed' => true, 'null' => false])
             ->removeColumn('old_technician_id')
+            ->addIndex(['technician_id'])
+            ->addForeignKey('technician_id', 'persons', 'id', [
+                'delete' => 'CASCADE',
+                'update' => 'NO_ACTION',
+                'constraint' => 'fk__event_technician__technician',
+            ])
             ->update();
 
         $this->table('technicians')->drop()->save();

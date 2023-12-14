@@ -126,7 +126,7 @@
                     <div class="vspace2">
                         ×&nbsp;<strong>{{ degressiveRate|format_number(locale=locale) }}</strong><br><br>
                         <span class="lighter">
-                            ({{ plural('number-of-days', booking.duration) }})
+                            ({{ plural('number-of-days', booking.duration.days) }})
                         </span>
                     </div>
                 </td>

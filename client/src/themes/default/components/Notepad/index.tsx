@@ -4,23 +4,33 @@ import { defineComponent } from '@vue/composition-api';
 import type { PropType } from '@vue/composition-api';
 
 type Props = {
-    /** Le nom du champ (utilisé dans un attribut `name`). */
+    /**
+     * Le nom du champ (attribut `[name]`).
+     *
+     * Ceci permettra notamment de récupérer la valeur du champ dans
+     * le jeu de données d'un formulaire parent lors de la soumission
+     * (`submit`) de celui-ci.
+     */
     name?: string,
 
-    /** La valeur du champ. */
+    /**
+     * Valeur actuelle du champ.
+     *
+     * Si cette prop. est omise, le component ne sera pas "contrôlé".
+     */
     value?: string | number,
 
     /**
      * Dois-t'on donner le focus au champ lorsque le component est monté ?
      * (cette prop. est incompatible avec la prop. `readonly`)
      */
-    autofocus: boolean,
+    autofocus?: boolean,
 
     /**
      * Le champ est-il désactivé ?
      * (cette prop. est incompatible avec la prop. `readonly`)
      */
-    disabled: boolean,
+    disabled?: boolean,
 };
 
 // @vue/component
@@ -31,11 +41,11 @@ const Notepad = defineComponent({
     },
     props: {
         name: {
-            type: String as PropType<Required<Props>['name']>,
+            type: String as PropType<Props['name']>,
             default: undefined,
         },
         value: {
-            type: [String, Number] as PropType<Required<Props>['value']>,
+            type: [String, Number] as PropType<Props['value']>,
             default: undefined,
         },
         autofocus: {
@@ -47,27 +57,40 @@ const Notepad = defineComponent({
             default: false,
         },
     },
+    emits: ['input', 'change'],
     computed: {
-        inheritedDisabled() {
+        inheritedDisabled(): boolean {
             if (this.disabled !== undefined) {
                 return this.disabled;
             }
+
+            // @ts-expect-error -- Normalement fixé lors du passage à Vue 3 (et son meilleur typage).
+            // @see https://github.com/vuejs/core/pull/6804
             return this['input.disabled'].value;
         },
     },
     mounted() {
         if (this.autofocus && !this.disabled) {
-            this.$nextTick(() => { this.$refs.inputRef.focus(); });
+            this.$nextTick(() => {
+                const $input = this.$refs.input as HTMLTextAreaElement | undefined;
+                $input?.focus();
+            });
         }
     },
     methods: {
         handleInput(e: InputEvent) {
             const { value } = e.target as HTMLTextAreaElement;
+            if (this.inheritedDisabled) {
+                return;
+            }
             this.$emit('input', value);
         },
 
         handleChange(e: Event) {
             const { value } = e.target as HTMLTextAreaElement;
+            if (this.inheritedDisabled) {
+                return;
+            }
             this.$emit('change', value);
         },
     },
@@ -88,7 +111,7 @@ const Notepad = defineComponent({
         return (
             <div class={className}>
                 <textarea
-                    ref="inputRef"
+                    ref="input"
                     class="Notepad__input"
                     name={name}
                     value={value}

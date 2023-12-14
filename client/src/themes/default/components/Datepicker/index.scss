@@ -1,3 +1,4 @@
+@use 'sass:color';
 @use '~@/themes/default/style/globals';
 
 .Datepicker {
@@ -6,6 +7,79 @@
 
     &__input {
         width: 100%;
+    }
+
+    &__full-days {
+        display: inline-flex;
+        align-items: center;
+        font-size: 0.95rem;
+        gap: globals.$spacing-thin;
+    }
+
+    &__toggle-mode {
+        width: 100%;
+    }
+
+    &__snippets {
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        height: 100%;
+        min-height: 0;
+        gap: globals.$spacing-medium;
+
+        &__group {
+            @extend %reset-dl;
+
+            display: flex;
+            flex-direction: column;
+
+            & + & {
+                padding-top: globals.$spacing-medium;
+                border-top: 1px solid #525252;
+            }
+        }
+    }
+
+    &__snippet {
+        $sub-block: &;
+
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        padding: 5px 10px;
+        border-radius: globals.$border-radius-normal;
+        cursor: pointer;
+        gap: 0 globals.$spacing-medium;
+
+        &__label {
+            font-weight: 400;
+            white-space: nowrap;
+        }
+
+        &__value {
+            @extend %reset-dd;
+
+            color: globals.$text-soft-color;
+            white-space: nowrap;
+        }
+
+        &:hover {
+            background: #a84825;
+        }
+
+        &--active {
+            &,
+            &:hover {
+                background: rgba(250, 99, 23, 0.2);
+                color: #fb6418;
+                font-weight: 500;
+
+                #{$sub-block}__value {
+                    color: color.adjust(#fb6418, $alpha: -0.4);
+                }
+            }
+        }
     }
 
     //

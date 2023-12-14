@@ -206,7 +206,6 @@ const ButtonDropdown = defineComponent({
         return (
             <div class={classNames} v-clickOutside={handleClose}>
                 <Button
-                    type="secondary"
                     to={to}
                     icon={icon}
                     external={external}
@@ -217,7 +216,6 @@ const ButtonDropdown = defineComponent({
                     {label}
                 </Button>
                 <Button
-                    type="secondary"
                     onClick={handleToggle}
                     class="ButtonDropdown__toggle"
                     disabled={disabled}

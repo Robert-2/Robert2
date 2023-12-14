@@ -1,7 +1,6 @@
 import './index.scss';
 import apiParks from '@/stores/api/parks';
 import Button from '@/themes/default/components/Button';
-import Icon from '@/themes/default/components/Icon';
 import formatAmount from '@/utils/formatAmount';
 
 // @vue/component
@@ -42,7 +41,7 @@ export default {
             <div class="ParksTotalAmount">
                 {amount === null && (
                     <Button onClick={handleCalculate} loading={loading}>
-                        {loading ? <Icon name="circle-notch" spin /> : __('calculate')}
+                        {__('calculate')}
                     </Button>
                 )}
                 {amount !== null && (

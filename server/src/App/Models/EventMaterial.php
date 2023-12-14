@@ -26,8 +26,12 @@ use Loxya\Models\Traits\TransientAttributes;
  * @property-read Decimal|null $total_price
  * @property-read Decimal $unit_replacement_price
  * @property-read Decimal $total_replacement_price
+ * @property string|null $departure_comment
+ * @property int|null $quantity_departed
  * @property int|null $quantity_returned
  * @property int|null $quantity_returned_broken
+ * @property-read bool $is_departure_inventory_filled
+ * @property-read bool $is_return_inventory_filled
  */
 final class EventMaterial extends BaseModel implements Serializable
 {
@@ -39,6 +43,8 @@ final class EventMaterial extends BaseModel implements Serializable
     public $timestamps = false;
 
     protected $attributes = [
+        'departure_comment' => null,
+        'quantity_departed' => null,
         'quantity_returned' => null,
         'quantity_returned_broken' => null,
     ];
@@ -51,6 +57,7 @@ final class EventMaterial extends BaseModel implements Serializable
             'event_id' => V::custom([$this, 'checkEventId']),
             'material_id' => V::custom([$this, 'checkMaterialId']),
             'quantity' => V::intVal()->min(1),
+            'quantity_departed' => V::custom([$this, 'checkQuantityDeparted']),
             'quantity_returned' => V::custom([$this, 'checkQuantityReturned']),
             'quantity_returned_broken' => V::custom([$this, 'checkQuantityReturnedBroken']),
         ];
@@ -82,6 +89,45 @@ final class EventMaterial extends BaseModel implements Serializable
 
         return !$this->exists || $this->isDirty('material_id')
             ? !$material->trashed()
+            : true;
+    }
+
+    public function checkQuantityDeparted($value)
+    {
+        $quantityChecker = V::intVal()->min(0);
+
+        $quantity = $this->getAttributeFromArray('quantity');
+        $isValidQuantity = V::intVal()->min(1)->validate($quantity);
+        if ($isValidQuantity) {
+            $quantityChecker->max($quantity);
+        }
+
+        V::anyOf(V::nullType(), $quantityChecker)->check($value);
+
+        // - L'événement courante n'est pas récupérable...
+        //   => On ne peut pas vérifier son statut, on s'arrête là.
+        if ($this->event === null) {
+            return true;
+        }
+
+        // - Si la valeur n'a pas changée, on ne va pas plus loin
+        //   même si la valeur en base est potentiellement invalide.
+        //   (car ce n'est pas la responsabilité de cette sauvegarde
+        //   que de traiter le souci)
+        if ($this->exists && !$this->isDirty('quantity_departed')) {
+            return true;
+        }
+
+        // NOTE: On pourrait être tenté de checker que, lorsque l'inventaire de départ
+        //       est marqué comme effectué, la quantité de ce champ (`quantity_departed`)
+        //       correspond bien à la quantité totale (`quantity`).
+        //       Mais ceci ne doit pas être fait car on autorise la modification du matériel
+        //       après la réalisation de l'inventaire de départ et ceci impliquerait de mettre
+        //       automatiquement les nouvelles quantités dans ce champ lors des modifications,
+        //       comme si cela avait été fait manuellement lors de l'inventaire de départ, ce
+        //       qui n'est pas le cas.
+        return !$this->event->is_departure_inventory_period_open
+            ? V::nullType()
             : true;
     }
 
@@ -143,8 +189,10 @@ final class EventMaterial extends BaseModel implements Serializable
         'event_id' => 'integer',
         'material_id' => 'integer',
         'quantity' => 'integer',
+        'quantity_departed' => 'integer',
         'quantity_returned' => 'integer',
         'quantity_returned_broken' => 'integer',
+        'departure_comment' => 'string',
     ];
 
     public function getIsDiscountableAttribute(): bool
@@ -156,6 +204,16 @@ final class EventMaterial extends BaseModel implements Serializable
             );
         }
         return $this->material->is_discountable;
+    }
+
+    public function getQuantityDepartedAttribute($value): ?int
+    {
+        // - Si l'inventaire de départ est marqué comme terminé, on
+        //   considère que tout est parti, même si `quantity_departed`
+        //   n'est pas à jour (ne devrait toutefois pas arriver).
+        return !$this->event?->is_departure_inventory_done
+            ? $this->castAttribute('quantity_departed', $value)
+            : $this->quantity;
     }
 
     public function getQuantityMissingAttribute(): int
@@ -221,6 +279,22 @@ final class EventMaterial extends BaseModel implements Serializable
             ->toScale(2, RoundingMode::UNNECESSARY);
     }
 
+    public function getIsDepartureInventoryFilledAttribute(): bool
+    {
+        if (!$this->material) {
+            throw new \LogicException(
+                'The event material\'s related material is missing, ' .
+                'this relation should always be defined.'
+            );
+        }
+
+        if ($this->quantity_departed !== $this->quantity) {
+            return false;
+        }
+
+        return true;
+    }
+
     public function getIsReturnInventoryFilledAttribute(): bool
     {
         return (
@@ -238,8 +312,10 @@ final class EventMaterial extends BaseModel implements Serializable
     protected $fillable = [
         'material_id',
         'quantity',
+        'quantity_departed',
         'quantity_returned',
         'quantity_returned_broken',
+        'departure_comment',
     ];
 
     public function setQuantityMissingAttribute(int $value): void

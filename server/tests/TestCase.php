@@ -6,6 +6,7 @@ namespace Loxya\Tests;
 use Illuminate\Support\Carbon;
 use Adbar\Dot as DotArray;
 use Loxya\Config\Config;
+use Loxya\Errors\Exception\ValidationException;
 use Loxya\Tests\Fixtures\Fixtures;
 use PHPUnit\Framework\TestCase as CoreTestCase;
 use Spatie\Snapshots\MatchesSnapshots;
@@ -96,6 +97,42 @@ class TestCase extends CoreTestCase
     // -    Custom assertions
     // -
     // ------------------------------------------------------
+
+    public function assertException($expectedException, callable $executor): void
+    {
+        $actualException = null;
+        try {
+            $executor();
+        } catch (\Throwable $e) {
+            $actualException = $e;
+        }
+
+        if ($expectedException instanceof \Throwable) {
+            $this->assertInstanceOf(get_class($expectedException), $actualException);
+            $this->assertSame($expectedException->getMessage(), $actualException->getMessage());
+            $this->assertSame($expectedException->getCode(), $actualException->getCode());
+
+            if ($expectedException instanceof ValidationException) {
+                /** @var ValidationException $actualException */
+                $this->assertSameCanonicalize(
+                    $expectedException->getValidationErrors(),
+                    $actualException->getValidationErrors(),
+                );
+            }
+        }
+
+        if (is_string($expectedException)) {
+            if (class_exists($expectedException)) {
+                $this->assertInstanceOf($expectedException, $actualException);
+            } else {
+                $this->assertStringContainsString($expectedException, $actualException->getMessage());
+            }
+        }
+
+        if (is_int($expectedException)) {
+            $this->assertSame($expectedException, $actualException->getCode());
+        }
+    }
 
     public function assertSameCanonicalize($expected, $actual, string $message = ''): void
     {
