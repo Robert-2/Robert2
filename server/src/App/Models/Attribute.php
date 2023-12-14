@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Loxya\Models;
 
-use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Loxya\Contracts\Serializable;
@@ -20,8 +20,8 @@ use Loxya\Models\Traits\TransientAttributes;
  * @property string|null $unit
  * @property int|null $max_length
  * @property-read int|float|bool|string|null $value
- * @property-read Carbon $created_at
- * @property-read ?Carbon $updated_at
+ * @property-read CarbonImmutable $created_at
+ * @property-read CarbonImmutable|null $updated_at
  *
  * @property-read Collection|Category[] $categories
  * @property-read Collection|Material[] $materials
@@ -126,6 +126,8 @@ final class Attribute extends BaseModel implements Serializable
         'unit' => 'string',
         'max_length' => 'integer',
         'is_totalisable' => 'boolean',
+        'created_at' => 'immutable_datetime',
+        'updated_at' => 'immutable_datetime',
     ];
 
     public function getCategoriesAttribute()
@@ -206,7 +208,7 @@ final class Attribute extends BaseModel implements Serializable
         'is_totalisable',
     ];
 
-    public function setValueAttribute(string $value)
+    public function setValueAttribute(string $value): void
     {
         $this->setTransientAttribute('value', $value);
     }

@@ -35,6 +35,7 @@ type EventBookingSummary = (
         | 'is_confirmed'
         | 'is_billable'
         | 'is_archived'
+        | 'is_departure_inventory_done'
         | 'is_return_inventory_done'
         | 'has_missing_materials'
         | 'has_not_returned_materials'

@@ -1,0 +1,10 @@
+.Page--beneficiary-view {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+
+    .BeneficiaryView {
+        flex: 1;
+    }
+}

@@ -1,9 +1,12 @@
 @use 'sass:color';
 @use '~vue2-datepicker/scss' as datepicker with (
     $default-color: $text-base-color,
-    $primary-color: $link-base-color,
+    $primary-color: #fb6418,
 
-    $border-color: $bg-color-input-normal,
+    $disabled-background-color: transparent,
+    $disabled-color: $text-muted-color,
+
+    $border-color: transparent,
 
     $input-border-color: $bg-color-input-normal,
     $input-color: $color-input,
@@ -30,13 +33,13 @@
     }
 
     &-range-wrapper &-calendar {
-        min-width: 250px;
+        min-width: 280px;
     }
 
     &-input {
         height: auto;
         min-height: $input-min-height;
-        padding: $input-padding-vertical $input-padding-horizontal;
+        padding: $input-padding-vertical 33px $input-padding-vertical $input-padding-horizontal;
         outline: 0;
         border: $input-border-size solid $bg-color-input-normal;
         border-radius: $input-border-radius;
@@ -55,6 +58,7 @@
     &-icon-calendar,
     &-icon-clear {
         color: $text-soft-color;
+        cursor: pointer;
     }
 
     &-datepicker-main,
@@ -62,35 +66,87 @@
         background-color: $bg-color-input-normal;
     }
 
-    &-table-date {
-        .cell.not-current-month {
-            color: $text-soft-color;
+    &-time-content {
+        padding: 7px;
+    }
+
+    &-time-option {
+        border-radius: $border-radius-normal;
+        text-align: center;
+        transition: all 300ms ease;
+
+        &:hover:not(.disabled) {
+            background: #a84825;
         }
 
-        .cell.disabled {
-            background-color: $bg-color-input-normal;
-            color: $text-muted-color;
+        &.active,
+        &.active:hover {
+            background: rgba(250, 99, 23, 0.2);
         }
     }
 
+    &-table-date {
+        .cell {
+            &.not-current-month {
+                color: $text-soft-color;
+            }
+
+            &.disabled {
+                background-color: $bg-color-input-normal;
+                color: $text-muted-color;
+            }
+
+            &:hover,
+            &.active:not(.in-range) {
+                border-radius: $border-radius-normal;
+            }
+        }
+    }
+
+    &-datepicker-popup {
+        display: flex;
+        flex-direction: row-reverse;
+        align-items: center;
+        border: 0;
+    }
+
+    &-datepicker-header {
+        padding: 10px 10px 5px;
+        border-bottom: 0;
+    }
+
+    &-datepicker-footer {
+        padding: 5px 10px 10px;
+    }
+
+    &-datepicker-sidebar {
+        display: none;
+        flex-direction: column;
+        overflow: hidden;
+        width: auto;
+        max-height: 350px;
+        min-height: 270px;
+        padding: $spacing-medium;
+        border-left: 1px solid #525252;
+    }
+
+    &-datepicker-content {
+        // - Désactive le style ajouté par défaut quand une sidebar est affichée.
+        /* stylelint-disable declaration-no-important */
+        margin: 0 !important;
+        border: 0 !important;
+        /* stylelint-enable declaration-no-important */
+    }
+
+    &-datepicker-header,
     &-datepicker-footer {
         display: flex;
         justify-content: center;
     }
 
     &-btn {
-        padding: 9px 10px;
-        border: none;
-        border-radius: 2px;
-        color: $color-base-button;
-        font-size: 1rem;
-        line-height: 1.25;
-
-        &:hover,
-        &:focus {
-            outline: 0;
-            background-color: color.adjust($bg-color-button-default, $lightness: 8%);
-            color: $color-hover-button;
+        &-current-month {
+            text-transform: capitalize;
         }
     }
 
@@ -118,6 +174,16 @@
         #{$block}-icon-calendar,
         #{$block}-icon-clear {
             color: $bg-color-input-normal;
+        }
+    }
+
+    //
+    // - Responsive
+    //
+
+    @media (min-width: $screen-big-desktop) {
+        &-datepicker-sidebar {
+            display: flex;
         }
     }
 }

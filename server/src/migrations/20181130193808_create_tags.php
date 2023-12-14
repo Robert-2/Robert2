@@ -5,7 +5,7 @@ use Phinx\Migration\AbstractMigration;
 
 final class CreateTags extends AbstractMigration
 {
-    public function up()
+    public function up(): void
     {
         $table = $this->table('tags', ['signed' => true]);
         $table
@@ -20,7 +20,7 @@ final class CreateTags extends AbstractMigration
             ->create();
     }
 
-    public function down()
+    public function down(): void
     {
         $this->table('tags')->drop()->save();
     }

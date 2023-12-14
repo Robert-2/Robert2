@@ -1,12 +1,14 @@
 .tooltip {
-    z-index: 999;
+    z-index: 1000;
+    max-width: 300px;
 
     .tooltip-inner {
         padding: 0.5rem 0.78rem;
-        border-radius: 3px;
+        border-radius: $border-radius-normal;
         background: $bg-color-tooltip;
         color: $text-soft-color;
         text-align: center;
+        box-shadow: 0 1px 6px #151515;
         white-space: pre-line;
     }
 }

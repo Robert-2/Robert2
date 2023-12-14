@@ -51,9 +51,12 @@ class ErrorHandler extends CoreErrorHandler
     {
         $isIgnoredException = (
             $this->exception instanceof ModelNotFoundException ||
-            $this->exception instanceof HttpException ||
             $this->exception instanceof ValidationException ||
-            $this->exception instanceof ApiException
+            $this->exception instanceof ApiException ||
+            (
+                $this->exception instanceof HttpException &&
+                $this->exception->getCode() < 500
+            )
         );
         if ($isIgnoredException) {
             return;

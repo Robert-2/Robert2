@@ -19,7 +19,7 @@ export enum AppContext {
 // - Types
 //
 
-type Session = UserDetails & {
+export type Session = UserDetails & {
     language: string,
 };
 
@@ -27,7 +27,7 @@ type NewSession = Session & {
     token: string,
 };
 
-type Credentials = {
+export type Credentials = {
     identifier: string,
     password: string,
     context?: AppContext,

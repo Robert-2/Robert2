@@ -5,7 +5,7 @@ use Phinx\Migration\AbstractMigration;
 
 final class AddInformationsToParks extends AbstractMigration
 {
-    public function up()
+    public function up(): void
     {
         $parks = $this->table('parks', ['signed' => true]);
         $parks
@@ -69,7 +69,7 @@ final class AddInformationsToParks extends AbstractMigration
             ->update();
     }
 
-    public function down()
+    public function down(): void
     {
         $parks = $this->table('parks');
         $parks

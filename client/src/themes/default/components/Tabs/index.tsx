@@ -95,7 +95,6 @@ const Tabs = defineComponent({
         // - Ceci ne peut pas être placé dans un computed, car sinon
         // on perd la réactivité du contenu du panel.
         const tabs = this.$slots.default!.filter((tab: VNode) => (
-            // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
             (tab.componentOptions!.Ctor as any).extendOptions.name === 'Tab'
         ));
 

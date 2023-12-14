@@ -23,7 +23,7 @@ final class EstimatesTest extends ApiTestCase
         ]);
     }
 
-    public function testDeleteAndDestroy()
+    public function testDeleteAndDestroy(): void
     {
         // - First call: soft delete.
         $this->client->delete('/api/estimates/1');
@@ -38,7 +38,7 @@ final class EstimatesTest extends ApiTestCase
         $this->assertNull(Estimate::withTrashed()->find(1));
     }
 
-    public function testDownloadPdf()
+    public function testDownloadPdf(): void
     {
         // - Si le devis n'existe pas...
         $this->client->get('/estimates/999/pdf');

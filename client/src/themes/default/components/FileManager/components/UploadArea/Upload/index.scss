@@ -6,7 +6,7 @@
 
     position: relative;
     padding: globals.$spacing-medium globals.$spacing-large;
-    border-radius: 10px;
+    border-radius: globals.$border-radius-large;
     background: globals.$bg-color-emphasis;
     color: globals.$text-base-color;
 

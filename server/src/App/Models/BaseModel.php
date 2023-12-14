@@ -58,12 +58,6 @@ abstract class BaseModel extends Model
 
     protected $fillable;
 
-    protected $dates = [
-        'created_at',
-        'updated_at',
-        'deleted_at',
-    ];
-
     public $validation;
 
     protected const EXTRA_CHARS = "-_.' ÇçàÀâÂäÄåÅèÈéÉêÊëËíÍìÌîÎïÏòÒóÓôÔöÖðÐõÕøØúÚùÙûÛüÜýÝÿŸŷŶøØæÆœŒñÑßÞ";
@@ -253,6 +247,13 @@ abstract class BaseModel extends Model
     // -
     // ------------------------------------------------------
 
+    /**
+     * Permet de rechercher un terme donné, dans le ou les champ(s) spécifié(s)
+     * dans le model (voir propriété `searchField` du model).
+     *
+     * @param Builder $query
+     * @param string $term Le terme à rechercher (doit avoir au moins 2 caractères)
+     */
     public function scopeSearch(Builder $query, string $term): Builder
     {
         if (!property_exists($this, 'searchField')) {

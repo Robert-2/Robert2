@@ -1,0 +1,5 @@
+title: Modification du matériel
+title-event: "Modification du matériel de l'événement «\_{title}\_»"
+
+materials-saved: Liste du matériel sauvegardée.
+list-cannot-be-empty: La liste du matériel ne peut pas être totalement vide.

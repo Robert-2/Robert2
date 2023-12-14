@@ -1,35 +1,58 @@
 @use '~@/themes/default/style/globals';
 
 .EventReturnInventory {
-    &__missing,
-    &__not-saved,
-    &__all-returned,
-    &__has-broken {
-        margin-bottom: globals.$spacing-medium;
+    $block: &;
+
+    &__summary {
+        margin-bottom: globals.$spacing-large;
+
+        &__introduction {
+            margin: 0;
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-align: center;
+
+            &::after {
+                content: '';
+                display: block;
+                width: 60%;
+                height: 1px;
+                margin: globals.$spacing-medium auto;
+                background-color: globals.$divider-color;
+            }
+        }
+
+        &__statuses {
+            display: flex;
+            flex-direction: column;
+            gap: globals.$spacing-small;
+
+            &__item {
+                font-size: 1.2rem;
+                text-align: center;
+                white-space: pre-line;
+
+                &--all-returned {
+                    color: globals.$text-success-color;
+                }
+
+                &--missing {
+                    color: globals.$text-danger-color;
+                }
+
+                &--has-broken {
+                    color: globals.$text-warning-color;
+                }
+            }
+        }
+    }
+
+    &__complete {
+        margin-top: globals.$spacing-large;
+        color: globals.$text-success-color;
         font-size: 1.2rem;
         text-align: center;
-    }
-
-    &__not-saved,
-    &__all-returned,
-    &__has-broken {
-        margin-top: globals.$spacing-large;
-    }
-
-    &__not-saved {
-        color: globals.$text-warning-color;
-    }
-
-    &__all-returned {
-        color: globals.$text-success-color;
         white-space: pre-line;
-    }
-
-    &__missing {
-        color: globals.$text-danger-color;
-    }
-
-    &__has-broken {
-        color: globals.$text-warning-color;
     }
 }

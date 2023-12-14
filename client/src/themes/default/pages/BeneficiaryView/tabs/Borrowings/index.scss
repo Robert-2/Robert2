@@ -1,0 +1,32 @@
+@use '~@/themes/default/style/globals';
+
+.BeneficiaryViewBorrowings {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+
+    &__empty {
+        flex: 1 1 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: globals.$text-light-color;
+        font-size: 1.2rem;
+        font-style: italic;
+    }
+
+    &__listing {
+        @extend %reset-list;
+
+        flex: 1 1 0;
+        overflow: auto;
+        margin: globals.$spacing-medium 0;
+    }
+
+    &__timeline {
+        flex: 1 1 0;
+    }
+}

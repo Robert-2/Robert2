@@ -20,7 +20,7 @@ final class Kernel
 
     protected Container $container;
 
-    public static function boot()
+    public static function boot(): static
     {
         if (!is_null(static::$instance)) {
             return static::$instance;
@@ -28,15 +28,15 @@ final class Kernel
         return static::$instance = new static;
     }
 
-    public static function get()
+    public static function get(): static
     {
         if (is_null(static::$instance)) {
-            throw new \LogicException("Tentative de récupération du kernel avant le boot de celui-ci.");
+            throw new \LogicException("Attempt to retrieve the kernel before it boots.");
         }
         return static::$instance;
     }
 
-    public static function reset()
+    public static function reset(): void
     {
         static::$instance = new static;
     }
@@ -57,7 +57,7 @@ final class Kernel
     public function getContainer(): Container
     {
         if (!$this->container) {
-            throw new \LogicException("Impossible de récupérer le conteneur à partir d'un kernel non initialisé.");
+            throw new \LogicException("Unable to retrieve the container from an uninitialized kernel.");
         }
         return $this->container;
     }
@@ -70,18 +70,9 @@ final class Kernel
 
     protected function initializeContainer(): void
     {
-        $builder = new ContainerBuilder();
-
-        $builder->addDefinitions(CONFIG_FOLDER . DS . 'definitions.php');
-
-        $container = $builder->build();
-
-        //
-        // - Settings
-        //
-
-        $container->set('settings', Config::getSettings());
-        $this->container = $container;
+        $this->container = (new ContainerBuilder())
+            ->addDefinitions(CONFIG_FOLDER . DS . 'definitions.php')
+            ->build();
     }
 
     protected function initializeValidator(): void
@@ -128,6 +119,9 @@ final class Kernel
         Models\EventMaterial::observe(Observers\EventMaterialObserver::class);
         Models\Material::observe(Observers\MaterialObserver::class);
         Models\AttributeCategory::observe(Observers\AttributeCategoryObserver::class);
+        Models\Beneficiary::observe(Observers\BeneficiaryObserver::class);
         Models\Park::observe(Observers\ParkObserver::class);
+        Models\Technician::observe(Observers\TechnicianObserver::class);
+        Models\User::observe(Observers\UserObserver::class);
     }
 }

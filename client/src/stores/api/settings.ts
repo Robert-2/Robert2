@@ -1,10 +1,17 @@
 import requester from '@/globals/requester';
 
+import type { Merge } from 'type-fest';
+
 //
 // - Types
 //
 
-export type MaterialDisplayMode = 'categories' | 'sub-categories' | 'parks' | 'flat';
+export enum MaterialDisplayMode {
+    CATEGORIES = 'categories',
+    SUB_CATEGORIES = 'sub-categories',
+    PARKS = 'parks',
+    FLAT = 'flat',
+}
 
 export enum ReturnInventoryMode {
     START_EMPTY = 'start-empty',
@@ -25,11 +32,22 @@ export type Settings = {
             showLocation: boolean,
             showBorrower: boolean,
         },
+        public: (
+            | { enabled: true, url: string }
+            | { enabled: false }
+        ),
     },
     returnInventory: {
         mode: ReturnInventoryMode,
     },
 };
+
+type SettingsEdit = Partial<Merge<Settings, {
+    calendar: (
+        & Omit<Settings['calendar'], 'public'>
+        & { public: { enabled: boolean } }
+    ),
+}>>;
 
 //
 // - Fonctions
@@ -39,7 +57,7 @@ const all = async (): Promise<Settings> => (
     (await requester.get('/settings')).data
 );
 
-const update = async (data: Partial<Settings>): Promise<Settings> => (
+const update = async (data: SettingsEdit): Promise<Settings> => (
     (await requester.put('/settings', data)).data
 );
 

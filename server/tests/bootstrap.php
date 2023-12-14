@@ -15,7 +15,7 @@ use Loxya\Tests\Fixtures;
 $dotenv = Dotenv\Dotenv::createImmutable(ROOT_FOLDER, ['.env', '.env.test'], false);
 $dotenv->safeLoad();
 
-$echoError = function (string $msg) {
+$echoError = function (string $msg): void {
     echo sprintf("\n\033[1;31m%s\033[0m\n\n", $msg);
     exit(1);
 };

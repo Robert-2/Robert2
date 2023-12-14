@@ -23,8 +23,10 @@ export type EventMaterial = (
         pivot: {
             quantity: number,
             quantity_missing: number,
-            quantity_returned: number,
-            quantity_returned_broken: number,
+            quantity_departed: number | null,
+            quantity_returned: number | null,
+            quantity_returned_broken: number | null,
+            departure_comment: string | null,
         },
     }
 );
@@ -40,7 +42,10 @@ export type RawEvent<
         description: string | null,
         start_date: string,
         end_date: string,
-        duration: number, // - En jours.
+        duration: {
+            days: number,
+            hours: number,
+        },
         color: string | null,
         location: string | null,
         total_replacement: DecimalType,
@@ -49,13 +54,37 @@ export type RawEvent<
         technicians: Technician[],
         materials: EventMaterial[],
         is_confirmed: boolean,
-        is_return_inventory_started: boolean,
-        is_return_inventory_done: boolean,
         note: string | null,
         author: User | null,
         created_at: string,
         updated_at: string,
     }
+    & (
+        | {
+            is_departure_inventory_done: true,
+            departure_inventory_datetime: string | null,
+            departure_inventory_author: User | null,
+        }
+        | {
+            is_departure_inventory_done: false,
+            departure_inventory_datetime: null,
+            departure_inventory_author: null,
+        }
+    )
+    & (
+        | {
+            is_return_inventory_done: true,
+            is_return_inventory_started: true,
+            return_inventory_datetime: string | null,
+            return_inventory_author: User | null,
+        }
+        | {
+            is_return_inventory_done: false,
+            is_return_inventory_started: boolean,
+            return_inventory_datetime: null,
+            return_inventory_author: null,
+        }
+    )
     & (
         | {
             is_archived: true,
@@ -117,6 +146,14 @@ type EventReturnInventoryMaterial = {
 };
 
 type EventReturnInventory = EventReturnInventoryMaterial[];
+
+type EventDepartureInventoryMaterial = {
+    id: Material['id'],
+    actual: number,
+    comment?: string | null,
+};
+
+type EventDepartureInventory = EventDepartureInventoryMaterial[];
 
 type EventDuplicatePayload = {
     start_date: string,
@@ -205,6 +242,14 @@ const finishReturnInventory = async (id: Event['id'], inventory: EventReturnInve
     normalize((await requester.put(`/events/${id}/return/finish`, inventory)).data)
 );
 
+const updateDepartureInventory = async (id: Event['id'], inventory: EventDepartureInventory): Promise<Event> => (
+    normalize((await requester.put(`/events/${id}/departure`, inventory)).data)
+);
+
+const finishDepartureInventory = async (id: Event['id'], inventory: EventDepartureInventory): Promise<Event> => (
+    normalize((await requester.put(`/events/${id}/departure/finish`, inventory)).data)
+);
+
 const createInvoice = async (id: Event['id'], discountRate: number = 0): Promise<Invoice> => (
     normalizeInvoice((await requester.post(`/events/${id}/invoices`, { discountRate })).data)
 );
@@ -221,9 +266,14 @@ const update = async (id: Event['id'], params: any): Promise<Event> => (
     normalize((await requester.put(`/events/${id}`, params)).data)
 );
 
-const duplicate = async (id: Event['id'], data: EventDuplicatePayload): Promise<Event> => (
-    normalize((await requester.post(`/events/${id}/duplicate`, data)).data)
-);
+const duplicate = async (
+    id: Event['id'],
+    data: EventDuplicatePayload,
+    force: boolean = false,
+): Promise<Event> => {
+    const params = { force: force || undefined };
+    return normalize((await requester.post(`/events/${id}/duplicate`, data, { params })).data);
+};
 
 const remove = async (id: Event['id']): Promise<void> => {
     await requester.delete(`/events/${id}`);
@@ -247,6 +297,8 @@ export default {
     unarchive,
     updateReturnInventory,
     finishReturnInventory,
+    updateDepartureInventory,
+    finishDepartureInventory,
     createInvoice,
     createEstimate,
     create,

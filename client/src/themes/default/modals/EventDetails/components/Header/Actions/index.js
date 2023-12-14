@@ -9,9 +9,9 @@ import { ApiErrorCode } from '@/stores/api/@codes';
 import apiEvents from '@/stores/api/events';
 import DuplicateEvent from '@/themes/default/modals/DuplicateEvent';
 import Dropdown from '@/themes/default/components/Dropdown';
-import ButtonDropdown from '@/themes/default/components/ButtonDropdown';
 import Button from '@/themes/default/components/Button';
 import { Group } from '@/stores/api/groups';
+import ButtonDropdown from '@/themes/default/components/ButtonDropdown';
 
 // @vue/component
 const EventDetailsHeaderActions = defineComponent({
@@ -20,37 +20,118 @@ const EventDetailsHeaderActions = defineComponent({
         event: { type: Object, required: true },
     },
     emits: ['saved', 'deleted', 'duplicated'],
-    data() {
-        return {
-            now: Date.now(),
-            isConfirming: false,
-            isArchiving: false,
-            isDeleting: false,
-        };
-    },
+    data: () => ({
+        now: Date.now(),
+        isConfirming: false,
+        isArchiving: false,
+        isDeleting: false,
+    }),
     computed: {
-        startDate() {
-            return moment(this.event.start_date);
+        eventSummaryPdfUrl() {
+            const { id } = this.event ?? { id: null };
+            return `${config.baseUrl}/events/${id}/pdf`;
         },
 
-        endDate() {
-            return moment(this.event.end_date);
+        hasStarted() {
+            const startDate = moment(this.event.start_date);
+            return startDate.isSameOrBefore(this.now, 'day');
         },
 
         hasMaterials() {
             return this.event.materials.length > 0;
         },
 
-        isConfirmable() {
-            return this.event.materials.length === 0;
-        },
-
-        hasStarted() {
-            return this.startDate.isSameOrBefore(this.now);
+        hasMaterialShortage() {
+            return this.event.has_missing_materials === true;
         },
 
         isEventPast() {
-            return this.endDate.isBefore(this.now, 'day');
+            const endDate = moment(this.event.end_date);
+            return endDate.isBefore(this.now, 'day');
+        },
+
+        isConfirmed() {
+            return this.event.is_confirmed;
+        },
+
+        isConfirmTogglable() {
+            return !this.isEventPast && (this.isConfirmed || this.hasMaterials);
+        },
+
+        isArchived() {
+            return this.event.is_archived;
+        },
+
+        isArchivable() {
+            return this.isEventPast && this.isReturnInventoryDone;
+        },
+
+        isDepartureInventoryPeriodOpen() {
+            // FIXME: Lorsque les dates de mobilisation auront été implémentées,
+            //        on devra pouvoir commencer l'inventaire de départ quand on
+            //        veut avant le début de l'événement et cela "bougera" la date
+            //        de début de mobilisation à cette date.
+            const inventoryPeriodStart = moment(this.event.start_date).subtract(1, 'days');
+            return inventoryPeriodStart.isSameOrBefore(this.now, 'day');
+        },
+
+        isDepartureInventoryPeriodClosed() {
+            // - Si l'inventaire de retour est fait, la période de réalisation
+            //   des inventaires de départ est forcément fermée.
+            if (this.isReturnInventoryDone) {
+                return true;
+            }
+
+            // NOTE 1: C'est la date de début d'événement qui fait foi pour permettre
+            //         de calculer la période d'ouverture de l'inventaire de départ, pas
+            //         la date de début de mobilisation. La date de début de mobilisation
+            //         est la résultante de cet inventaire de départ.
+            // NOTE 2: On laisse un délai de 1 jour après la date de départ pour faire
+            //         l'inventaire de départ (mais en ne dépassant jamais la date de
+            //         fin d'événement).
+            // FIXME: Lorsque les dates de mobilisation auront été implémentées, il ne
+            //        faudra permettre les inventaires de départ que jusqu'à la date de
+            //        début de l'événement.
+            let inventoryPeriodCloseDate = moment(this.event.start_date).add(1, 'days');
+            if (inventoryPeriodCloseDate.isAfter(this.event.end_date)) {
+                inventoryPeriodCloseDate = moment(this.event.end_date);
+            }
+            return inventoryPeriodCloseDate.isBefore(this.now);
+        },
+
+        isDepartureInventoryDone() {
+            return this.event.is_departure_inventory_done;
+        },
+
+        isReturnInventoryPeriodOpen() {
+            // NOTE: C'est la date de début d'événement qui fait foi pour permettre
+            //       le retour, pas la date de début de mobilisation.
+            //       (sans quoi on pourrait faire le retour d'un événement avant même
+            //       qu'il ait réellement commencé, ce qui n'a pas de sens).
+            const startDate = moment(this.event.start_date);
+            return startDate.isSameOrBefore(this.now, 'day');
+        },
+
+        isReturnInventoryDone() {
+            return this.event.is_return_inventory_done;
+        },
+
+        isTeamMember() {
+            return this.$store.getters['auth/is']([Group.MEMBER, Group.ADMIN]);
+        },
+
+        isEditable() {
+            const { event } = this;
+
+            return (
+                // - Un événement archivé n'est pas modifiable.
+                !event.is_archived &&
+
+                // - Un événement ne peut être modifié que si son inventaire de retour
+                //   n'a pas été effectué (sans quoi celui-ci n'aurait plus aucun sens,
+                //   d'autant que le stock global a pu être impacté suite à cet inventaire).
+                !event.is_return_inventory_done
+            );
         },
 
         isPrintable() {
@@ -63,38 +144,15 @@ const EventDetailsHeaderActions = defineComponent({
             );
         },
 
-        isTeamMember() {
-            return this.$store.getters['auth/is']([Group.MEMBER, Group.ADMIN]);
-        },
-
-        isEditable() {
-            const {
-                is_confirmed: isConfirmed,
-                is_return_inventory_done: isInventoryDone,
-            } = this.event;
-
-            return !this.isEventPast || !(isInventoryDone || isConfirmed);
-        },
-
         isRemovable() {
-            const {
-                is_confirmed: isConfirmed,
-                is_return_inventory_done: isInventoryDone,
-            } = this.event;
-
-            return !(isConfirmed || isInventoryDone);
-        },
-
-        eventSummaryPdfUrl() {
-            const { id } = this.event ?? { id: null };
-            return `${config.baseUrl}/events/${id}/pdf`;
+            return !this.isConfirmed && !this.isInventoryDone;
         },
     },
     mounted() {
         // - Actualise le timestamp courant toutes les minutes.
         this.nowTimer = setInterval(() => { this.now = Date.now(); }, 60_000);
     },
-    beforeUnmount() {
+    beforeDestroy() {
         if (this.nowTimer) {
             clearInterval(this.nowTimer);
         }
@@ -107,13 +165,19 @@ const EventDetailsHeaderActions = defineComponent({
         // ------------------------------------------------------
 
         async handleToggleConfirm() {
-            const { $t: __, isTeamMember, isConfirming } = this;
-            if (!isTeamMember || isConfirming) {
+            const {
+                $t: __,
+                event: { id },
+                isTeamMember,
+                isConfirming,
+                isConfirmed,
+                isConfirmTogglable,
+            } = this;
+
+            if (!isConfirmTogglable || !isTeamMember || isConfirming) {
                 return;
             }
             this.isConfirming = true;
-
-            const { id, is_confirmed: isConfirmed } = this.event;
 
             try {
                 const data = await apiEvents.setConfirmed(id, !isConfirmed);
@@ -126,13 +190,19 @@ const EventDetailsHeaderActions = defineComponent({
         },
 
         async handleToggleArchived() {
-            const { $t: __, isTeamMember, isArchiving } = this;
-            if (!isTeamMember || isArchiving) {
+            const {
+                $t: __,
+                event: { id },
+                isTeamMember,
+                isArchivable,
+                isArchiving,
+                isArchived,
+            } = this;
+
+            if (!isArchivable || !isTeamMember || isArchiving) {
                 return;
             }
             this.isArchiving = true;
-
-            const { id, is_archived: isArchived } = this.event;
 
             try {
                 const data = isArchived
@@ -158,8 +228,8 @@ const EventDetailsHeaderActions = defineComponent({
         },
 
         async handleDelete() {
-            const { $t: __, isTeamMember, isRemovable, isDeleting } = this;
-            if (!isTeamMember || !isRemovable || isDeleting) {
+            const { $t: __, event: { id }, isTeamMember, isRemovable, isDeleting } = this;
+            if (!isRemovable || !isTeamMember || isDeleting) {
                 return;
             }
 
@@ -173,8 +243,6 @@ const EventDetailsHeaderActions = defineComponent({
             }
             this.isDeleting = true;
 
-            const { id } = this.event;
-
             try {
                 await apiEvents.remove(id);
                 this.$emit('deleted', id);
@@ -185,49 +253,142 @@ const EventDetailsHeaderActions = defineComponent({
             }
         },
 
-        handleDuplicated(newEvent) {
-            this.$emit('duplicated', newEvent);
-        },
-
-        askDuplicate() {
-            const { isTeamMember, event, handleDuplicated } = this;
+        async handleDuplicate() {
+            const { isTeamMember, event } = this;
             if (!isTeamMember) {
                 return;
             }
 
-            showModal(this.$modal, DuplicateEvent, {
-                event,
-                onDuplicated: handleDuplicated,
-            });
+            const newEvent = await showModal(this.$modal, DuplicateEvent, { event });
+            if (newEvent === undefined) {
+                return;
+            }
+
+            this.$emit('duplicated', newEvent);
         },
     },
     render() {
         const {
             $t: __,
-            event,
+            event: { id },
             isPrintable,
             eventSummaryPdfUrl,
-            isEditable,
             isTeamMember,
-            isEventPast,
-            hasStarted,
-            isConfirmable,
+            isEditable,
+            isConfirmed,
             isConfirming,
-            handleToggleConfirm,
+            isConfirmTogglable,
+            isArchived,
             isArchiving,
-            handleToggleArchived,
-            askDuplicate,
+            isArchivable,
             isRemovable,
             isDeleting,
+            hasStarted,
+            hasMaterials,
+            hasMaterialShortage,
+            isDepartureInventoryPeriodOpen,
+            isDepartureInventoryPeriodClosed,
+            isDepartureInventoryDone,
+            isReturnInventoryPeriodOpen,
+            isReturnInventoryDone,
             handleDelete,
+            handleDuplicate,
+            handleToggleConfirm,
+            handleToggleArchived,
         } = this;
 
-        const {
-            id,
-            is_confirmed: isConfirmed,
-            is_return_inventory_done: isReturnInventoryDone,
-            is_archived: isArchived,
-        } = event;
+        const renderInventoryAction = () => {
+            if (!isTeamMember || isArchived || !hasMaterials) {
+                return null;
+            }
+
+            const isReturnInventoryViewable = isReturnInventoryPeriodOpen;
+            const isDepartureInventoryViewable = (
+                isDepartureInventoryPeriodOpen &&
+                (isDepartureInventoryDone || !isDepartureInventoryPeriodClosed)
+            );
+
+            const isReturnInventoryUnavailable = !isReturnInventoryDone && hasMaterialShortage;
+            const isDepartureInventoryUnavailable = !isDepartureInventoryDone && hasMaterialShortage;
+
+            // - Si la période de tous les inventaires a commencé et qu'ils sont tous indisponible
+            //   à cause du matériel manquant, on affiche qu'un seul bouton désactivé.
+            const allInventoriesOpenAndUnavailable = (
+                (isDepartureInventoryViewable && isDepartureInventoryUnavailable) &&
+                (isReturnInventoryViewable && isReturnInventoryUnavailable)
+            );
+            if (allInventoriesOpenAndUnavailable) {
+                return (
+                    <Button
+                        icon="tasks"
+                        type="primary"
+                        tooltip={__('modal.event-details.inventories-unavailable-help')}
+                        disabled
+                    >
+                        {__('inventories')}
+                    </Button>
+                );
+            }
+
+            const actions = [];
+            if (isDepartureInventoryViewable) {
+                actions.push(
+                    <Button
+                        type={!isDepartureInventoryDone ? 'primary' : 'default'}
+                        icon="boxes"
+                        disabled={isDepartureInventoryUnavailable}
+                        to={(
+                            !isDepartureInventoryUnavailable
+                                ? { name: 'event-departure-inventory', params: { id } }
+                                : undefined
+                        )}
+                        tooltip={(
+                            isDepartureInventoryUnavailable
+                                ? __('modal.event-details.inventory-unavailable-help')
+                                : undefined
+                        )}
+                    >
+                        {__('departure-inventory')}
+                    </Button>,
+                );
+            }
+            if (isReturnInventoryViewable) {
+                actions.push(
+                    <Button
+                        type={!isReturnInventoryDone ? 'primary' : 'default'}
+                        icon="tasks"
+                        disabled={isReturnInventoryUnavailable}
+                        to={(
+                            !isReturnInventoryUnavailable
+                                ? { name: 'event-return-inventory', params: { id } }
+                                : undefined
+                        )}
+                        tooltip={(
+                            isReturnInventoryUnavailable
+                                ? __('modal.event-details.inventory-unavailable-help')
+                                : undefined
+                        )}
+                    >
+                        {__('return-inventory')}
+                    </Button>,
+                );
+            }
+
+            if (actions.length < 2) {
+                return actions.shift() ?? null;
+            }
+
+            const isAllInventoriesDone = isDepartureInventoryDone && isReturnInventoryDone;
+            return (
+                <Dropdown
+                    icon="tasks"
+                    type={!isAllInventoriesDone ? 'primary' : 'default'}
+                    label={__('inventories')}
+                >
+                    {actions}
+                </Dropdown>
+            );
+        };
 
         return (
             <div class="EventDetailsHeaderActions">
@@ -235,21 +396,18 @@ const EventDetailsHeaderActions = defineComponent({
                     <ButtonDropdown
                         icon="print"
                         label={__('print')}
-                        type="secondary"
                         to={eventSummaryPdfUrl}
                         external
                         class="EventDetailsHeaderActions__print"
                         actions={[
                             {
                                 label: __('modal.event-details.release-sheet-by-lists'),
-                                type: 'secondary',
                                 icon: 'print',
                                 target: `${eventSummaryPdfUrl}?sortedBy=lists`,
                                 external: true,
                             },
                             {
                                 label: __('modal.event-details.release-sheet-by-parks'),
-                                type: 'secondary',
                                 icon: 'print',
                                 target: `${eventSummaryPdfUrl}?sortedBy=parks`,
                                 external: true,
@@ -257,38 +415,29 @@ const EventDetailsHeaderActions = defineComponent({
                         ]}
                     />
                 )}
-                {isEditable && isTeamMember && (
+                {(isTeamMember && isEditable) && (
                     <Button
-                        type="primary"
                         icon="edit"
+                        type={!hasStarted ? 'primary' : 'default'}
                         to={{ name: 'edit-event', params: { id } }}
                     >
                         {__('action-edit')}
                     </Button>
                 )}
-                {(isEventPast || hasStarted) && !isArchived && isTeamMember && (
-                    <Button
-                        type="primary"
-                        icon="tasks"
-                        to={{ name: 'event-return-inventory', params: { id } }}
-                    >
-                        {__('return-inventory')}
-                    </Button>
-                )}
+                {renderInventoryAction()}
                 {isTeamMember && (
                     <Dropdown>
-                        {!isEventPast && (
+                        {isConfirmTogglable && (
                             <Button
                                 type={isConfirmed ? 'warning' : 'success'}
                                 icon={isConfirmed ? 'hourglass-half' : 'check'}
-                                disabled={isConfirmable}
                                 loading={isConfirming}
                                 onClick={handleToggleConfirm}
                             >
                                 {isConfirmed ? __('unconfirm-event') : __('confirm-event')}
                             </Button>
                         )}
-                        {isEventPast && isReturnInventoryDone && (
+                        {isArchivable && (
                             <Button
                                 type={isArchived ? 'default' : 'primary'}
                                 icon="archive"
@@ -305,7 +454,7 @@ const EventDetailsHeaderActions = defineComponent({
                         <Button
                             icon="copy"
                             type="primary"
-                            onClick={askDuplicate}
+                            onClick={handleDuplicate}
                         >
                             {__('duplicate-event')}
                         </Button>

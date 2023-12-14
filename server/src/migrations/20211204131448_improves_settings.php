@@ -14,7 +14,7 @@ final class ImprovesSettings extends AbstractMigration
 
     public function up(): void
     {
-        $prefix = Config::getSettings('db')['prefix'];
+        $prefix = Config::get('db.prefix');
         foreach (static::MIGRATION_MAP as $from => $to) {
             $builder = $this->getQueryBuilder();
             $builder
@@ -27,7 +27,7 @@ final class ImprovesSettings extends AbstractMigration
 
     public function down(): void
     {
-        $prefix = Config::getSettings('db')['prefix'];
+        $prefix = Config::get('db.prefix');
         foreach (array_flip(static::MIGRATION_MAP) as $from => $to) {
             $builder = $this->getQueryBuilder();
             $builder

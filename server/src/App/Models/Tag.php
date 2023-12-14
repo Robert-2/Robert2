@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Loxya\Models;
 
 use Adbar\Dot as DotArray;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Collection;
 use Loxya\Contracts\Serializable;
 use Loxya\Models\Traits\Serializer;
@@ -15,9 +16,9 @@ use Loxya\Models\Traits\SoftDeletable;
  *
  * @property-read ?int $id
  * @property string $name
- * @property-read Carbon $created_at
- * @property-read Carbon|null $updated_at
- * @property-read Carbon|null $deleted_at
+ * @property-read CarbonImmutable $created_at
+ * @property-read CarbonImmutable|null $updated_at
+ * @property-read CarbonImmutable|null $deleted_at
  *
  * @property-read Collection|Material[] $materials
  */
@@ -78,6 +79,9 @@ final class Tag extends BaseModel implements Serializable
 
     protected $casts = [
         'name' => 'string',
+        'created_at' => 'immutable_datetime',
+        'updated_at' => 'immutable_datetime',
+        'deleted_at' => 'immutable_datetime',
     ];
 
     // ------------------------------------------------------

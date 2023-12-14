@@ -50,6 +50,10 @@ $size: 1.7rem;
         }
     }
 
+    //
+    // - States
+    //
+
     &--toggled {
         #{$block}__slide {
             flex-direction: row-reverse;

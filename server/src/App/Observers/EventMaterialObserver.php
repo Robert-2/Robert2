@@ -11,19 +11,24 @@ final class EventMaterialObserver
 {
     public $afterCommit = true;
 
-    public function created(EventMaterial $eventMaterial)
+    public function created(EventMaterial $eventMaterial): void
     {
         $this->syncCache($eventMaterial);
     }
 
-    public function updated(EventMaterial $eventMaterial)
+    public function updated(EventMaterial $eventMaterial): void
     {
         $this->syncCache($eventMaterial);
     }
 
-    public function deleting(EventMaterial $eventMaterial)
+    public function deleting(EventMaterial $eventMaterial): void
     {
         $this->syncCache($eventMaterial);
+    }
+
+    public function deleted(EventMaterial $eventMaterial): void
+    {
+        $this->onDeleteSyncInventories($eventMaterial);
     }
 
     // ------------------------------------------------------
@@ -31,6 +36,30 @@ final class EventMaterialObserver
     // -    Event sub-processing
     // -
     // ------------------------------------------------------
+
+    private function onDeleteSyncInventories(EventMaterial $eventMaterial): void
+    {
+        $event = $eventMaterial->event;
+
+        // - Si aucun inventaire n'a été fait, on a rien à faire.
+        if (!$event->is_departure_inventory_done && !$event->is_return_inventory_done) {
+            return;
+        }
+
+        // - S'il reste du matériel dans l'événement, on ne fait rien.
+        if (!$event->materials->isEmpty()) {
+            return;
+        }
+
+        // - ... Sinon, on reset les inventaires.
+        $event->is_departure_inventory_done = false;
+        $event->departure_inventory_author_id = null;
+        $event->departure_inventory_datetime = null;
+        $event->is_return_inventory_done = false;
+        $event->return_inventory_author_id = null;
+        $event->return_inventory_datetime = null;
+        $event->save();
+    }
 
     private function syncCache(EventMaterial $eventMaterial): void
     {

@@ -193,7 +193,7 @@ final class Setting extends BaseModel
 
     protected $fillable = ['value'];
 
-    public function reset()
+    public function reset(): void
     {
         $manifest = static::manifest();
         if (!array_key_exists($this->key, $manifest)) {

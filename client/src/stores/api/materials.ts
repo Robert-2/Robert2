@@ -54,7 +54,7 @@ export type MaterialWithAvailabilities = Material & {
     available_quantity?: number,
 };
 
-export type BookingWithPivot = BookingSummary & {
+export type MaterialBookingSummary = BookingSummary & {
     pivot: {
         quantity: number,
     },
@@ -91,7 +91,7 @@ type BaseFilters = {
 };
 
 export type Filters = Omit<BaseFilters, 'category'> & {
-    dateForQuantities?: string | { start: string, end: string },
+    quantitiesPeriod?: { start: string, end: string },
     category?: Category['id'] | typeof UNCATEGORIZED,
     park?: Park['id'],
     tags?: Array<Tag['id']>,
@@ -107,21 +107,21 @@ type GetAllRaw = GetAllBase & { paginated: false };
 
 async function all(params: GetAllRaw): Promise<MaterialWithAvailabilities[]>;
 async function all(params: GetAllPaginated): Promise<PaginatedData<MaterialWithAvailabilities[]>>;
-async function all({ dateForQuantities, ...params }: GetAllPaginated | GetAllRaw): Promise<unknown> {
-    const rawParams: Record<string, unknown> = params;
-    if (dateForQuantities !== undefined) {
-        if (
-            typeof dateForQuantities === 'object' &&
-            'start' in dateForQuantities &&
-            'end' in dateForQuantities
-        ) {
-            rawParams['dateForQuantities[start]'] = dateForQuantities.start;
-            rawParams['dateForQuantities[end]'] = dateForQuantities.end;
-        } else {
-            rawParams.dateForQuantities = dateForQuantities;
+async function all({ quantitiesPeriod, ...otherParams }: GetAllPaginated | GetAllRaw): Promise<unknown> {
+    const params: Record<string, unknown> = otherParams;
+    if (quantitiesPeriod !== undefined) {
+        const isValidPeriod = (
+            typeof quantitiesPeriod === 'object' &&
+            'start' in quantitiesPeriod &&
+            'end' in quantitiesPeriod
+        );
+        if (!isValidPeriod) {
+            throw new Error('Invalid quantities period.');
         }
+        params['quantitiesPeriod[start]'] = quantitiesPeriod.start;
+        params['quantitiesPeriod[end]'] = quantitiesPeriod.end;
     }
-    return (await requester.get('/materials', { params: rawParams })).data;
+    return (await requester.get('/materials', { params })).data;
 }
 /* eslint-enable func-style */
 
@@ -151,9 +151,13 @@ const remove = async (id: Material['id']): Promise<void> => {
     await requester.delete(`/materials/${id}`);
 };
 
-const bookings = async (id: Material['id']): Promise<BookingWithPivot[]> => (
-    (await requester.get(`/materials/${id}/bookings`)).data
-);
+const bookings = async (
+    id: Material['id'],
+    params?: PaginationParams,
+): Promise<PaginatedData<MaterialBookingSummary[]>> => {
+    const config = { ...(params ? { params } : {}) };
+    return (await requester.get(`/materials/${id}/bookings`, config)).data;
+};
 
 const documents = async (id: Material['id']): Promise<Document[]> => (
     (await requester.get(`/materials/${id}/documents`)).data

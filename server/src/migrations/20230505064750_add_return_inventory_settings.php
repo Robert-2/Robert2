@@ -6,7 +6,7 @@ use Loxya\Config\Config;
 
 final class AddReturnInventorySettings extends AbstractMigration
 {
-    public function up()
+    public function up(): void
     {
         $data = [
             'key' => 'returnInventory.mode',
@@ -15,9 +15,9 @@ final class AddReturnInventorySettings extends AbstractMigration
         $this->table('settings')->insert($data)->save();
     }
 
-    public function down()
+    public function down(): void
     {
-        $prefix = Config::getSettings('db')['prefix'];
+        $prefix = Config::get('db.prefix');
         $builder = $this->getQueryBuilder();
         $builder
             ->delete(sprintf('%ssettings', $prefix))

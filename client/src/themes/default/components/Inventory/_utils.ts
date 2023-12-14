@@ -1,22 +1,13 @@
+import trim from 'lodash/trim';
 import stringCompare from '@/utils/stringCompare';
 
-import type { Material } from '@/stores/api/materials';
 import type { Category } from '@/stores/api/categories';
-import type { ParkSummary as Park } from '@/stores/api/parks';
+import type { AwaitedMaterial, AwaitedMaterialGroup } from './_types';
 
-/* eslint-disable @typescript-eslint/naming-convention */
-export type AwaitedMaterial = Material & {
-    awaited_quantity: number,
+export const normalizeComment = (comment: string | null): string | null => {
+    comment = comment !== null ? trim(comment) : null;
+    return comment && comment.length > 0 ? comment : null;
 };
-/* eslint-enable @typescript-eslint/naming-convention */
-
-export type AwaitedMaterialGroup<G extends Category | Park = Category | Park> = (
-    & (
-        | { id: G['id'], name: G['name'] }
-        | { id: null, name: null }
-    )
-    & { materials: AwaitedMaterial[] }
-);
 
 export const groupByCategories = (
     materials: AwaitedMaterial[],

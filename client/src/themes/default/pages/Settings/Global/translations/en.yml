@@ -62,12 +62,16 @@ calendar:
     public-calendar-url-reset-success: >-
         The public calendar link has been successfully re-generated! The new one is available above.
 
-return-inventory:
-    title: Return inventories
-    help: Here you can define the behavior of return inventories.
-    saved: Return inventories settings has been successfully saved.
+inventories:
+    title: "Departure\_/\_Return inventories"
+    help: "Here you can define the behavior of departure and return inventories."
+    saved: Inventories settings has been successfully saved.
 
-    mode: Behaviour of return inventories
-    modes:
-        start-empty: Returned quantities must be defined manually.
-        start-full: Returned quantities are pre-filled with the expected quantities.
+    return:
+        section-title: Return inventories
+
+        fill-mode:
+            label: Behaviour of return inventories
+            choices:
+                start-empty: Returned quantities must be defined manually.
+                start-full: Returned quantities are pre-filled with the expected quantities.

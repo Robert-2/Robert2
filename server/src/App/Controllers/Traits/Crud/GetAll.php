@@ -6,13 +6,14 @@ namespace Loxya\Controllers\Traits\Crud;
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Loxya\Controllers\Traits\WithModel;
 use Loxya\Http\Request;
+use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Response;
 
 trait GetAll
 {
     use WithModel;
 
-    public function getAll(Request $request, Response $response): Response
+    public function getAll(Request $request, Response $response): ResponseInterface
     {
         $paginated = (bool) $request->getQueryParam('paginated', true);
         $search = $request->getQueryParam('search', null);

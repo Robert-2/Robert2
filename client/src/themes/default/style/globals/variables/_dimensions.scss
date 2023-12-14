@@ -1,16 +1,24 @@
-// -----------------------------------------
-// -
+//
 // - Text sizes
-// -
-// -----------------------------------------
+//
 
 $base-font-size: 13px;
 
-// -----------------------------------------
-// -
+//
+// - Bords arrondis
+//
+
+/// Bord arrondi moyen pour les éléments d'interface.
+/// @type Number
+$border-radius-normal: 4px;
+
+/// Grand bord arrondi pour les éléments d'interface.
+/// @type Number
+$border-radius-large: 10px;
+
+//
 // - Nav sizes
-// -
-// -----------------------------------------
+//
 
 $sidebar-width: 50px;
 $sidebar-full-width: 130px;
@@ -19,16 +27,14 @@ $sidebar-icon-size: 1.5rem;
 $main-header-height: 50px;
 $table-search-input: 206px;
 
-// -----------------------------------------
-// -
+//
 // - Spacing
-// -
-// -----------------------------------------
+//
 
 /// Très petit espace pour les éléments d'interface.
-/// (Équivalent à un espace de ~3.5px)
+/// (Équivalent à un espace de ~4.55px)
 /// @type Number
-$spacing-thin: 0.27rem;
+$spacing-thin: 0.35rem;
 
 /// Petit espace pour les éléments d'interface.
 /// (Équivalent à un espace de ~7.5px)
@@ -45,11 +51,9 @@ $spacing-medium: 1.154rem;
 /// @type Number
 $spacing-large: 1.923rem;
 
-// -----------------------------------------
-// -
+//
 // - Forms and inputs sizes
-// -
-// -----------------------------------------
+//
 
 $form-min-width: 200px;
 $form-max-width: 600px;
@@ -61,18 +65,16 @@ $input-min-height: 38px;
 $input-padding-horizontal: 10px;
 $input-padding-vertical: 9px;
 $input-border-size: 1px;
-$input-border-radius: 4px;
+$input-border-radius: $border-radius-normal;
 
 $input-font-size: 1rem;
 $input-line-height: 1.4;
 
 $dropdown-min-width: 220px;
 
-// -----------------------------------------
-// -
+//
 // - Screens sizes variables
-// -
-// -----------------------------------------
+//
 
 $screen-mobile: 580px;
 $screen-tablet: 768px;

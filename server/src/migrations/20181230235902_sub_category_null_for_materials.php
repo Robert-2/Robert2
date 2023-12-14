@@ -5,7 +5,7 @@ use Phinx\Migration\AbstractMigration;
 
 final class SubCategoryNullForMaterials extends AbstractMigration
 {
-    public function up()
+    public function up(): void
     {
         $materials = $this->table('materials');
         $materials
@@ -22,7 +22,7 @@ final class SubCategoryNullForMaterials extends AbstractMigration
             ->save();
     }
 
-    public function down()
+    public function down(): void
     {
         $materials = $this->table('materials');
         $materials

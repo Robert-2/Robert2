@@ -5,7 +5,7 @@ use Phinx\Migration\AbstractMigration;
 
 final class CreateSettings extends AbstractMigration
 {
-    public function up()
+    public function up(): void
     {
         $table = $this->table('settings', ['id' => false, 'primary_key' => 'key']);
         $table
@@ -30,7 +30,7 @@ final class CreateSettings extends AbstractMigration
         $this->table('settings')->insert($settingsData)->save();
     }
 
-    public function down()
+    public function down(): void
     {
         $this->table('settings')->drop()->save();
     }

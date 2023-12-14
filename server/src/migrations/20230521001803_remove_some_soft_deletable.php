@@ -5,13 +5,13 @@ use Phinx\Migration\AbstractMigration;
 
 final class RemoveSomeSoftDeletable extends AbstractMigration
 {
-    private array $__tables = ['countries', 'attributes'];
+    private const TABLES = ['countries', 'attributes'];
 
     public function up(): void
     {
-        foreach ($this->__tables as $tableName) {
-            $tables = $this->table($tableName);
-            $tables
+        foreach (self::TABLES as $tableName) {
+            $table = $this->table($tableName);
+            $table
                 ->removeColumn('deleted_at')
                 ->update();
         }
@@ -19,9 +19,9 @@ final class RemoveSomeSoftDeletable extends AbstractMigration
 
     public function down(): void
     {
-        foreach ($this->__tables as $tableName) {
-            $tables = $this->table($tableName);
-            $tables
+        foreach (self::TABLES as $tableName) {
+            $table = $this->table($tableName);
+            $table
                 ->addColumn('deleted_at', 'datetime', ['null' => true, 'after' => 'updated_at'])
                 ->update();
         }

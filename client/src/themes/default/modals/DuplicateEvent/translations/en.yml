@@ -1,0 +1,11 @@
+title: "Duplicate event \"{title}\""
+
+dates-of-duplicated-event: Dates of new event
+please-choose-dates: Please choose new event dates.
+new-event-saved: New event successfully saved.
+
+technician-already-busy-force: |
+    Some of the technicians from the original event are busy during the period of the new event.
+
+    If you continue, the new event will be created without them.
+force-duplicate: Duplicate anyway

@@ -7,13 +7,13 @@ use Fig\Http\Message\StatusCodeInterface as StatusCode;
 
 final class ErrorsTest extends ApiTestCase
 {
-    public function testRouteNotFound()
+    public function testRouteNotFound(): void
     {
         $this->client->get('/api/inexistant-resource');
         $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
-    public function testMethodNotAllowed()
+    public function testMethodNotAllowed(): void
     {
         $this->client->put('/not-a-get-route');
 

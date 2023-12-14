@@ -9,18 +9,16 @@ import Button from '@/themes/default/components/Button';
 import EmptyMessage from '@/themes/default/components/EmptyMessage';
 import Item from './components/Item';
 
-// @vue/component
-const Categories = {
+/** Page de listing des catégories de matériel. */
+const Categories = defineComponent({
     name: 'Categories',
-    data() {
-        return {
-            hasCriticalError: false,
-            isFetching: false,
-            isFetched: false,
-            isSaving: false,
-            categories: [],
-        };
-    },
+    data: () => ({
+        hasCriticalError: false,
+        isFetching: false,
+        isFetched: false,
+        isSaving: false,
+        categories: [],
+    }),
     mounted() {
         this.fetchData();
     },
@@ -181,6 +179,7 @@ const Categories = {
                     <EmptyMessage
                         message={__('page.categories.no-category-yet')}
                         action={{
+                            type: 'add',
                             label: __('page.categories.create-a-first-category'),
                             onClick: handleClickNewCategory,
                         }}
@@ -215,6 +214,6 @@ const Categories = {
             </Page>
         );
     },
-};
+});
 
-export default defineComponent(Categories);
+export default Categories;

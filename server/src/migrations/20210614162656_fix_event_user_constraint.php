@@ -5,7 +5,7 @@ use Phinx\Migration\AbstractMigration;
 
 final class FixEventUserConstraint extends AbstractMigration
 {
-    public function up()
+    public function up(): void
     {
         $table = $this->table('events');
 
@@ -21,7 +21,7 @@ final class FixEventUserConstraint extends AbstractMigration
             ->save();
     }
 
-    public function down()
+    public function down(): void
     {
         $table = $this->table('events');
 

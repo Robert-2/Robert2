@@ -11,6 +11,7 @@ use Loxya\Http\Request;
 use Loxya\Models\Enums\Group;
 use Loxya\Models\User;
 use Loxya\Services\Auth;
+use Psr\Http\Message\ResponseInterface;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpForbiddenException;
 use Slim\Http\Response;
@@ -22,7 +23,7 @@ class UserController extends BaseController
         delete as protected _originalDelete;
     }
 
-    public function getAll(Request $request, Response $response): Response
+    public function getAll(Request $request, Response $response): ResponseInterface
     {
         $paginated = (bool) $request->getQueryParam('paginated', true);
         $search = $request->getQueryParam('search', null);
@@ -54,7 +55,7 @@ class UserController extends BaseController
         return $response->withJson($results, StatusCode::STATUS_OK);
     }
 
-    public function getOne(Request $request, Response $response): Response
+    public function getOne(Request $request, Response $response): ResponseInterface
     {
         $id = $request->getAttribute('id');
         if ($id !== 'self') {
@@ -77,7 +78,7 @@ class UserController extends BaseController
         return $response->withJson($user, StatusCode::STATUS_OK);
     }
 
-    public function update(Request $request, Response $response): Response
+    public function update(Request $request, Response $response): ResponseInterface
     {
         $id = $request->getAttribute('id');
         if ($id !== 'self') {
@@ -122,7 +123,7 @@ class UserController extends BaseController
         return $response->withJson($user, StatusCode::STATUS_OK);
     }
 
-    public function getSettings(Request $request, Response $response): Response
+    public function getSettings(Request $request, Response $response): ResponseInterface
     {
         $id = (int) $request->getAttribute('id');
         $user = User::findOrFail($id);
@@ -130,7 +131,7 @@ class UserController extends BaseController
         return $response->withJson($user->settings, StatusCode::STATUS_OK);
     }
 
-    public function updateSettings(Request $request, Response $response): Response
+    public function updateSettings(Request $request, Response $response): ResponseInterface
     {
         $postData = (array) $request->getParsedBody();
         if (empty($postData)) {
@@ -155,7 +156,7 @@ class UserController extends BaseController
         return $response->withJson($user->settings, StatusCode::STATUS_OK);
     }
 
-    public function delete(Request $request, Response $response): Response
+    public function delete(Request $request, Response $response): ResponseInterface
     {
         $id = (int) $request->getAttribute('id');
         if (Auth::user()->id === $id) {

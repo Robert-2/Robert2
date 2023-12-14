@@ -28,6 +28,9 @@ return [
 
         '/beneficiaries[/]' => 'BeneficiaryController:getAll',
         '/beneficiaries/{id:[0-9]+}[/]' => 'BeneficiaryController:getOne',
+        '/beneficiaries/{id:[0-9]+}/bookings[/]' => 'BeneficiaryController:getBookings',
+        '/beneficiaries/{id:[0-9]+}/estimates[/]' => 'BeneficiaryController:getEstimates',
+        '/beneficiaries/{id:[0-9]+}/invoices[/]' => 'BeneficiaryController:getInvoices',
 
         '/countries[/]' => 'CountryController:getAll',
         '/countries/{id:[0-9]+}[/]' => 'CountryController:getOne',
@@ -132,6 +135,8 @@ return [
         '/events/restore/{id:[0-9]+}[/]' => 'EventController:restore',
         '/events/{id:[0-9]+}/return[/]' => 'EventController:updateReturnInventory',
         '/events/{id:[0-9]+}/return/finish[/]' => 'EventController:finishReturnInventory',
+        '/events/{id:[0-9]+}/departure[/]' => 'EventController:updateDepartureInventory',
+        '/events/{id:[0-9]+}/departure/finish[/]' => 'EventController:finishDepartureInventory',
         '/events/{id:[0-9]+}/archive[/]' => 'EventController:archive',
         '/events/{id:[0-9]+}/unarchive[/]' => 'EventController:unarchive',
 

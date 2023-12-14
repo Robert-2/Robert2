@@ -40,6 +40,18 @@
             }
         }
 
+        &__location {
+            margin: 0;
+
+            @include globals.icon('map-marker-alt') {
+                width: 20px;
+            }
+
+            &__link {
+                margin-left: 5px;
+            }
+        }
+
         &__preparer {
             margin: 0;
 

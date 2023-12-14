@@ -5,7 +5,7 @@ use Phinx\Migration\AbstractMigration;
 
 final class AddReferenceToEvents extends AbstractMigration
 {
-    public function up()
+    public function up(): void
     {
         $events = $this->table('events');
         $events
@@ -21,7 +21,7 @@ final class AddReferenceToEvents extends AbstractMigration
             ->update();
     }
 
-    public function down()
+    public function down(): void
     {
         $events = $this->table('events');
         $events

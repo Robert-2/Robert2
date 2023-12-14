@@ -10,7 +10,7 @@ export default {
     },
     methods: {
         openStep(step) {
-            if (!this.isActive(step)) {
+            if (!this.isReachable(step)) {
                 return;
             }
             this.$emit('openStep', step.id);
@@ -20,10 +20,15 @@ export default {
             return step.id === this.currentStep;
         },
 
-        isActive(step) {
+        isReachable(step) {
             const stepIndex = this.steps.findIndex((_step) => _step.id === step.id);
             if (stepIndex < 0) {
                 return false;
+            }
+
+            // - Si l'événement est sauvegardé, chaque étape est accessible.
+            if (![null, undefined].includes(this.event?.id)) {
+                return true;
             }
 
             const previousStep = this.steps[stepIndex - 1] || null;
@@ -47,7 +52,7 @@ export default {
         getStepClassNames(step) {
             return {
                 'Breadcrumb__step--current': this.isCurrent(step),
-                'Breadcrumb__step--active': this.isActive(step),
+                'Breadcrumb__step--reachable': this.isReachable(step),
                 'Breadcrumb__step--validated': !this.isCurrent(step) && this.isValidated(step),
             };
         },

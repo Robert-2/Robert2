@@ -1,30 +1,59 @@
 <?php
 declare(strict_types=1);
 
-use Psr\Cache\CacheItemPoolInterface;
-use Psr\Container\ContainerInterface;
+use Loxya\Config\Config;
 use Loxya\Console\Command;
 use Loxya\Services;
+use Odan\Session\FlashInterface;
+use Odan\Session\MemorySession;
+use Odan\Session\PhpSession;
+use Odan\Session\SessionInterface;
+use Odan\Session\SessionManagerInterface;
+use Psr\Cache\CacheItemPoolInterface;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\Cache\Adapter\TagAwareAdapter;
 use Symfony\Contracts\Cache\CacheInterface;
 
 return [
-    'logger' => function (ContainerInterface $container) {
-        $settings = $container->get('settings')['logger'] ?? [];
+    'logger' => function () {
+        $settings = Config::get('logger', []);
         return new Services\Logger($settings);
     },
 
-    'auth' => function () {
-        return new Services\Auth([
-            new Services\Auth\JWT,
+    'auth' => function (ContainerInterface $container) {
+        $authenticators = $container->get('auth.authenticators');
+        return new Services\Auth($authenticators);
+    },
+
+    'session' => function () {
+        $secure = Config::getBaseUri()->getScheme() === 'https';
+        $sessionClass = Config::getEnv() !== 'test'
+            ? PhpSession::class
+            : MemorySession::class;
+
+        return new $sessionClass([
+            'name' => 'LOXYA_SESSION',
+            'lifetime' => 0,
+            'path' => '/',
+            'httponly' => true,
+            'secure' => $secure,
+            'cache_limiter' => 'nocache',
         ]);
     },
+
+    'auth.authenticators' => DI\add([
+        DI\get(Services\Auth\JWT::class),
+    ]),
 
     'cache' => function (): TagAwareAdapter {
         return new TagAwareAdapter(
             new FilesystemAdapter('core', 0, CACHE_FOLDER)
         );
+    },
+
+    'flash' => function (ContainerInterface $container) {
+        return $container->get(SessionInterface::class)->getFlash();
     },
 
     'console.commands' => DI\add([
@@ -46,4 +75,7 @@ return [
     Services\Logger::class => DI\get('logger'),
     CacheInterface::class => DI\get('cache'),
     CacheItemPoolInterface::class => DI\get('cache'),
+    SessionManagerInterface::class => DI\get('session'),
+    SessionInterface::class => DI\get('session'),
+    FlashInterface::class => DI\get('flash'),
 ];

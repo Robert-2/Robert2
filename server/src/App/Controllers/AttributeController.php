@@ -7,6 +7,7 @@ use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Loxya\Controllers\Traits\Crud;
 use Loxya\Http\Request;
 use Loxya\Models\Attribute;
+use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Response;
 
 class AttributeController extends BaseController
@@ -16,7 +17,7 @@ class AttributeController extends BaseController
     use Crud\Update;
     use Crud\HardDelete;
 
-    public function getAll(Request $request, Response $response): Response
+    public function getAll(Request $request, Response $response): ResponseInterface
     {
         $query = Attribute::orderBy('name', 'asc');
 

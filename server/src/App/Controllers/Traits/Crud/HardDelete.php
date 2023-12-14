@@ -6,13 +6,14 @@ namespace Loxya\Controllers\Traits\Crud;
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Loxya\Controllers\Traits\WithModel;
 use Loxya\Http\Request;
+use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Response;
 
 trait HardDelete
 {
     use WithModel;
 
-    public function delete(Request $request, Response $response): Response
+    public function delete(Request $request, Response $response): ResponseInterface
     {
         $id = (int) $request->getAttribute('id');
         $entity = $this->getModelClass()::findOrFail($id);

@@ -1,14 +1,13 @@
 import './index.scss';
+import { defineComponent } from '@vue/composition-api';
 import moment from 'moment';
 import HttpCode from 'status-code-enum';
-import { defineComponent } from '@vue/composition-api';
 import { isRequestErrorStatusCode } from '@/utils/errors';
 import config from '@/globals/config';
 import { confirm } from '@/utils/alert';
-import initColumnsDisplay from '@/utils/initColumnsDisplay';
+import isTruthy from '@/utils/isTruthy';
 import formatAmount from '@/utils/formatAmount';
 import isValidInteger from '@/utils/isValidInteger';
-import isSameDate from '@/utils/isSameDate';
 import showModal from '@/utils/showModal';
 import apiMaterials, { UNCATEGORIZED } from '@/stores/api/materials';
 import AssignTags from '@/themes/default/modals/AssignTags';
@@ -16,6 +15,7 @@ import Fragment from '@/components/Fragment';
 import Dropdown from '@/themes/default/components/Dropdown';
 import Page from '@/themes/default/components/Page';
 import CriticalError from '@/themes/default/components/CriticalError';
+import { ServerTable } from '@/themes/default/components/Table';
 import Button from '@/themes/default/components/Button';
 import Icon from '@/themes/default/components/Icon';
 import MaterialsFilters from '@/themes/default/components/MaterialsFilters';
@@ -24,8 +24,9 @@ import Datepicker from '@/themes/default/components/Datepicker';
 import { Group } from '@/stores/api/groups';
 import Quantities from './components/Quantities';
 
+import type { ComponentRef, CreateElement } from 'vue';
 import type { PaginationParams } from '@/stores/api/@types';
-import type { ServerTableInstance } from 'vue-tables-2-premium';
+import type { Column } from '@/themes/default/components/Table';
 import type { Filters as CoreFilters } from '@/themes/default/components/MaterialsFilters';
 import type { Filters, MaterialWithAvailabilities as Material } from '@/stores/api/materials';
 import type { Tag } from '@/stores/api/tags';
@@ -40,101 +41,34 @@ type Data = {
     hasCriticalError: boolean,
     shouldDisplayTrashed: boolean,
     isTrashDisplayed: boolean,
-    periodForQuantities: [string, string] | null,
-    columns: string[],
-    options: any,
+    rawPeriodForQuantities: [string, string] | null,
 };
 
-// @vue/component
+/** Page de listing du matériel. */
 const Materials = defineComponent({
     name: 'Materials',
     setup: (): InstanceProperties => ({
         todayTimer: undefined,
     }),
-    data(): Data {
-        const { $options } = this;
-
-        // - Columns
-        let columns = [
-            'reference',
-            'name',
-            'description',
-            'park',
-            'category',
-            'rental_price',
-            'replacement_price',
-            'stock_quantity',
-            'out_of_order_quantity',
-            'tags',
-            'actions',
-        ];
-        if (config.billingMode === 'none') {
-            columns = columns.filter((column: string) => (
-                column !== 'rental_price'
-            ));
-        }
-
-        return {
-            hasCriticalError: false,
-            isLoading: false,
-            shouldDisplayTrashed: false,
-            isTrashDisplayed: false,
-            today: moment().format('YYYY-MM-DD'),
-            periodForQuantities: null,
-
-            //
-            // - Tableau
-            //
-
-            columns,
-            options: {
-                columnsDropdown: true,
-                preserveState: true,
-                saveState: true,
-                orderBy: { column: 'name', ascending: true },
-                sortable: [],
-                columnsDisplay: initColumnsDisplay($options.name, {
-                    reference: true,
-                    name: true,
-                    description: false,
-                    park: false,
-                    category: true,
-                    rental_price: true,
-                    replacement_price: false,
-                    stock_quantity: true,
-                    out_of_order_quantity: false,
-                    tags: true,
-                }),
-                headings: {},
-                columnsClasses: {
-                    reference: 'Materials__cell Materials__cell--ref ',
-                    name: 'Materials__cell Materials__cell--name ',
-                    park: 'Materials__cell Materials__cell--park ',
-                    category: 'Materials__cell Materials__cell--category ',
-                    description: 'Materials__cell Materials__cell--description ',
-                    rental_price: 'Materials__cell Materials__cell--rental-price ',
-                    replacement_price: 'Materials__cell Materials__cell--replacement-price ',
-                    stock_quantity: 'Materials__cell Materials__cell--quantity ',
-                    out_of_order_quantity: 'Materials__cell Materials__cell--quantity-broken ',
-                    tags: 'Materials__cell Materials__cell--tags ',
-                    actions: 'Materials__cell Materials__cell--actions ',
-                },
-                rowClassCallback: () => 'Materials__row',
-                requestFunction: this.fetch.bind(this),
-            },
-        };
-    },
+    data: (): Data => ({
+        isLoading: false,
+        hasCriticalError: false,
+        isTrashDisplayed: false,
+        shouldDisplayTrashed: false,
+        today: moment().format('YYYY-MM-DD'),
+        rawPeriodForQuantities: null,
+    }),
     computed: {
         isAdmin(): boolean {
             return this.$store.getters['auth/is'](Group.ADMIN);
         },
 
-        datesForQuantities() {
-            if (this.periodForQuantities === null) {
+        periodForQuantities() {
+            if (this.rawPeriodForQuantities === null) {
                 const { today } = this;
                 return [today, today];
             }
-            return this.periodForQuantities;
+            return this.rawPeriodForQuantities;
         },
 
         filters(): Filters {
@@ -142,10 +76,8 @@ const Materials = defineComponent({
             const routeQuery = this.$route?.query ?? {};
 
             // - Période.
-            const [start, end] = this.datesForQuantities;
-            filters.dateForQuantities = !isSameDate(start, end)
-                ? { start, end }
-                : start;
+            const [start, end] = this.periodForQuantities;
+            filters.quantitiesPeriod = { start, end };
 
             // - Catégorie.
             if ('category' in routeQuery) {
@@ -182,89 +114,134 @@ const Materials = defineComponent({
             return filters;
         },
 
-        dataTableOptions() {
-            const { $t: __ } = this;
-            const headings = {
-                reference: __('ref'),
-                name: __('name'),
-                description: __('description'),
-                park: __('park'),
-                category: __('category'),
-                rental_price: __('rent-price'),
-                replacement_price: __('repl-price'),
-                stock_quantity: __('page.materials.available-qty-total-qty'),
-                out_of_order_quantity: __('out-of-order-qty'),
-                tags: __('tags'),
-                actions: '',
-            };
-            const sortable = [
-                'reference',
-                'name',
-                'description',
-                'rental_price',
-                'replacement_price',
-                'stock_quantity',
-                'out_of_order_quantity',
-            ];
+        columns(): Array<Column<Material>> {
+            const isBillingEnabled = config.billingMode !== 'none';
+            const {
+                $t: __,
+                $store: store,
+                filters,
+                handleSetTags,
+                isTrashDisplayed,
+                handleRestoreItemClick,
+                handleDeleteItemClick,
+            } = this;
 
-            return { ...this.options, headings, sortable };
-        },
-
-        columnsRender() {
-            return {
-                park: ({ row: { park_id: parkId } }: { row: Material }) => {
-                    const parkName = this.$store.getters['parks/parkName'](parkId);
-                    return parkName ?? '--';
+            return [
+                {
+                    key: 'reference',
+                    title: __('reference'),
+                    class: 'Materials__cell Materials__cell--ref',
+                    sortable: true,
                 },
-                category: ({ row: material }: { row: Material }) => {
-                    const { $t: __ } = this;
-                    const { category_id: categoryId, sub_category_id: subCategoryId } = material;
-                    const categoryName = this.$store.getters['categories/categoryName'](categoryId);
-                    if (!categoryName) {
+                {
+                    key: 'name',
+                    title: __('name'),
+                    class: 'Materials__cell Materials__cell--name',
+                    sortable: true,
+                },
+                {
+                    key: 'description',
+                    title: __('description'),
+                    class: 'Materials__cell Materials__cell--description',
+                    sortable: true,
+                    hidden: true,
+                },
+                !isTrashDisplayed && {
+                    key: 'park',
+                    title: __('park'),
+                    class: 'Materials__cell Materials__cell--park',
+                    hidden: true,
+                    render(h: CreateElement, { park_id: parkId }: Material) {
+                        const parkName = store.getters['parks/parkName'](parkId);
+                        return parkName ?? '--';
+                    },
+                },
+                !isTrashDisplayed && {
+                    key: 'category',
+                    title: __('category'),
+                    class: 'Materials__cell Materials__cell--category',
+                    render(h: CreateElement, { category_id: categoryId, sub_category_id: subCategoryId }: Material) {
+                        const categoryName = store.getters['categories/categoryName'](categoryId);
+                        if (!categoryName) {
+                            return (
+                                <span class="Materials__not-categorized">
+                                    {__('not-categorized')}
+                                </span>
+                            );
+                        }
+
+                        const subCategoryName = subCategoryId
+                            ? store.getters['categories/subCategoryName'](subCategoryId)
+                            : null;
+
                         return (
-                            <span class="Materials__not-categorized">
-                                {__('not-categorized')}
+                            <Fragment>
+                                <Icon name="folder-open" />&nbsp;{categoryName}
+                                {!!subCategoryName && (
+                                    <div class="Materials__sub-category">
+                                        <Icon name="arrow-right" />&nbsp;{subCategoryName}
+                                    </div>
+                                )}
+                            </Fragment>
+                        );
+                    },
+                },
+                !!(!isTrashDisplayed && isBillingEnabled) && {
+                    key: 'rental_price',
+                    title: __('rent-price'),
+                    class: 'Materials__cell Materials__cell--rental-price',
+                    sortable: true,
+                    render: (h: CreateElement, material: Material) => (
+                        formatAmount(material.rental_price ?? 0)
+                    ),
+                },
+                !isTrashDisplayed && {
+                    key: 'replacement_price',
+                    title: __('repl-price'),
+                    class: 'Materials__cell Materials__cell--replacement-price',
+                    sortable: true,
+                    hidden: true,
+                    render: (h: CreateElement, material: Material) => (
+                        formatAmount(material.replacement_price ?? 0)
+                    ),
+                },
+                !isTrashDisplayed && {
+                    key: 'stock_quantity',
+                    title: __('page.materials.available-qty-total-qty'),
+                    class: 'Materials__cell Materials__cell--quantity',
+                    sortable: true,
+                    render: (h: CreateElement, material: Material) => (
+                        <Quantities
+                            material={material}
+                            parkFilter={filters.park}
+                        />
+                    ),
+                },
+                !isTrashDisplayed && {
+                    key: 'out_of_order_quantity',
+                    title: __('out-of-order-qty'),
+                    class: 'Materials__cell Materials__cell--quantity-broken',
+                    sortable: true,
+                    hidden: true,
+                    render(h: CreateElement, material: Material) {
+                        const quantityBroken: number = (() => material.out_of_order_quantity!)();
+
+                        const className = ['Materials__quantity-broken', {
+                            'Materials__quantity-broken--exists': quantityBroken > 0,
+                        }];
+
+                        return (
+                            <span class={className}>
+                                {quantityBroken}
                             </span>
                         );
-                    }
-
-                    const subCategoryName = subCategoryId
-                        ? this.$store.getters['categories/subCategoryName'](subCategoryId)
-                        : null;
-
-                    return (
-                        <Fragment>
-                            <Icon name="folder-open" />&nbsp;{categoryName}
-                            {!!subCategoryName && (
-                                <div class="Materials__sub-category">
-                                    <Icon name="arrow-right" />&nbsp;{subCategoryName}
-                                </div>
-                            )}
-                        </Fragment>
-                    );
+                    },
                 },
-                rental_price: ({ row: material }: { row: Material }) => (
-                    formatAmount(material.rental_price ?? 0)
-                ),
-                replacement_price: ({ row: material }: { row: Material }) => (
-                    formatAmount(material.replacement_price ?? 0)
-                ),
-                stock_quantity: ({ row: material }: { row: Material }) => (
-                    <Quantities material={material} />
-                ),
-                out_of_order_quantity: ({ row: material }: { row: Material }) => {
-                    const {
-                        out_of_order_quantity: quantityBroken,
-                    } = material;
-
-                    return quantityBroken! > 0
-                        ? <span class="Materials__quantity-broken">{quantityBroken}</span>
-                        : null;
-                },
-                tags: ({ row: material }: { row: Material }) => {
-                    const { $t: __, isTrashDisplayed, handleSetTags } = this;
-
-                    return (
+                !isTrashDisplayed && {
+                    key: 'tags',
+                    title: __('tags'),
+                    class: 'Materials__cell Materials__cell--tags',
+                    render: (h: CreateElement, material: Material) => (
                         <div
                             class="Materials__tags-list"
                             role="button"
@@ -277,60 +254,63 @@ const Materials = defineComponent({
                                 </span>
                             )}
                         </div>
-                    );
+                    ),
                 },
-                actions: ({ row: { id } }: { row: Material }) => {
-                    const {
-                        isTrashDisplayed,
-                        handleRestoreItemClick,
-                        handleDeleteItemClick,
-                    } = this;
+                {
+                    key: 'actions',
+                    title: '',
+                    class: 'Materials__cell Materials__cell--actions',
+                    render(h: CreateElement, { id }: Material) {
+                        if (isTrashDisplayed) {
+                            return (
+                                <Fragment>
+                                    <Button
+                                        type="restore"
+                                        onClick={(e: MouseEvent) => {
+                                            handleRestoreItemClick(e, id);
+                                        }}
+                                    />
+                                    <Button
+                                        type="delete"
+                                        onClick={(e: MouseEvent) => {
+                                            handleDeleteItemClick(e, id);
+                                        }}
+                                    />
+                                </Fragment>
+                            );
+                        }
 
-                    if (isTrashDisplayed) {
                         return (
                             <Fragment>
                                 <Button
-                                    type="restore"
-                                    onClick={(e: MouseEvent) => {
-                                        handleRestoreItemClick(e, id);
-                                    }}
+                                    icon="eye"
+                                    to={{ name: 'view-material', params: { id } }}
                                 />
                                 <Button
-                                    type="delete"
+                                    type="edit"
+                                    to={{ name: 'edit-material', params: { id } }}
+                                />
+                                <Button
+                                    type="trash"
                                     onClick={(e: MouseEvent) => {
                                         handleDeleteItemClick(e, id);
                                     }}
                                 />
                             </Fragment>
                         );
-                    }
-
-                    return (
-                        <Fragment>
-                            <Button
-                                icon="eye"
-                                to={{ name: 'view-material', params: { id } }}
-                            />
-                            <Button
-                                type="edit"
-                                to={{ name: 'edit-material', params: { id } }}
-                            />
-                            <Button
-                                type="trash"
-                                onClick={(e: MouseEvent) => {
-                                    handleDeleteItemClick(e, id);
-                                }}
-                            />
-                        </Fragment>
-                    );
+                    },
                 },
-            };
+            ].filter(isTruthy);
         },
     },
     watch: {
-        periodForQuantities() {
+        rawPeriodForQuantities() {
             this.refreshTable();
         },
+    },
+    created() {
+        // - Binding.
+        this.fetch = this.fetch.bind(this);
     },
     mounted() {
         this.$store.dispatch('categories/fetch');
@@ -375,10 +355,12 @@ const Materials = defineComponent({
         },
 
         handleChangePeriodForQuantities([start, end]: [string, string]) {
-            this.periodForQuantities = [start, end];
+            this.rawPeriodForQuantities = start !== null && end !== null
+                ? [start, end]
+                : null;
         },
 
-        handleRowClick({ row: { id } }: { row: Material }) {
+        handleRowClick({ id }: Material) {
             this.$router.push({
                 name: 'view-material',
                 params: { id: id.toString() },
@@ -387,6 +369,7 @@ const Materials = defineComponent({
 
         async handleDeleteItemClick(e: MouseEvent, id: Material['id']) {
             e.stopPropagation();
+
             const { $t: __ } = this;
             const isSoft = !this.isTrashDisplayed;
 
@@ -460,7 +443,7 @@ const Materials = defineComponent({
             };
         },
 
-        handleShowTrashed() {
+        handleToggleShowTrashed() {
             this.shouldDisplayTrashed = !this.shouldDisplayTrashed;
             this.isTrashDisplayed = !this.isTrashDisplayed;
             this.setTablePage(1);
@@ -492,7 +475,7 @@ const Materials = defineComponent({
                 }
 
                 // eslint-disable-next-line no-console
-                console.error(`Error ocurred while retrieving materials:`, error);
+                console.error(`Error occurred while retrieving materials:`, error);
                 this.hasCriticalError = true;
             } finally {
                 this.isLoading = false;
@@ -502,27 +485,26 @@ const Materials = defineComponent({
         },
 
         refreshTable() {
-            (this.$refs.table as ServerTableInstance | undefined)?.refresh();
+            (this.$refs.table as ComponentRef<typeof ServerTable>)?.refresh();
         },
 
         setTablePage(page: number) {
-            (this.$refs.table as ServerTableInstance | undefined)?.setPage(page);
+            (this.$refs.table as ComponentRef<typeof ServerTable>)?.setPage(page);
         },
     },
     render() {
         const {
             $t: __,
+            fetch,
             $options,
             hasCriticalError,
             isAdmin,
             isLoading,
             filters,
             columns,
-            columnsRender,
-            dataTableOptions,
-            handleShowTrashed,
+            handleToggleShowTrashed,
             isTrashDisplayed,
-            datesForQuantities,
+            periodForQuantities,
             handleChangePeriodForQuantities,
             handleChangeFilters,
             handleRowClick,
@@ -536,28 +518,28 @@ const Materials = defineComponent({
             );
         }
 
-        const pageActions = [
-            <Button type="add" to={{ name: 'add-material' }} icon="plus">
-                {__('page.materials.action-add')}
-            </Button>,
-        ];
-        if (isAdmin) {
-            pageActions.push(
-                <Dropdown>
-                    <Button
-                        icon="cog"
-                        to={{ name: 'attributes' }}
-                    >
-                        {__('page.materials.manage-attributes')}
-                    </Button>
-                    <Button
-                        icon="print"
-                        to={`${config.baseUrl}/materials/pdf`}
-                        external
-                    >
-                        {__('page.materials.print-complete-list')}
-                    </Button>
-                </Dropdown>,
+        if (isTrashDisplayed) {
+            return (
+                <Page
+                    name="materials"
+                    title={__('page.materials.title-trash')}
+                    isLoading={isLoading}
+                    actions={[
+                        <Button onClick={handleToggleShowTrashed} icon="eye" type="primary">
+                            {__('display-not-deleted-items')}
+                        </Button>,
+                    ]}
+                >
+                    <div class="Materials Materials--trashed">
+                        <ServerTable
+                            ref="table"
+                            key="trash"
+                            rowClass="Materials__row"
+                            columns={columns}
+                            fetcher={fetch}
+                        />
+                    </div>
+                </Page>
             );
         }
 
@@ -567,7 +549,33 @@ const Materials = defineComponent({
                 title={__('page.materials.title')}
                 help={__('page.materials.help')}
                 isLoading={isLoading}
-                actions={pageActions}
+                actions={[
+                    <Button type="add" to={{ name: 'add-material' }} icon="plus">
+                        {__('page.materials.action-add')}
+                    </Button>,
+                    <Dropdown>
+                        {isAdmin && (
+                            <Fragment>
+                                <Button
+                                    icon="cog"
+                                    to={{ name: 'attributes' }}
+                                >
+                                    {__('page.materials.manage-attributes')}
+                                </Button>
+                                <Button
+                                    icon="print"
+                                    to={`${config.baseUrl}/materials/pdf`}
+                                    external
+                                >
+                                    {__('page.materials.print-complete-list')}
+                                </Button>
+                            </Fragment>
+                        )}
+                        <Button icon="trash" onClick={handleToggleShowTrashed}>
+                            {__('open-trash-bin')}
+                        </Button>
+                    </Dropdown>,
+                ].filter(isTruthy)}
             >
                 <div class="Materials">
                     <div class="Materials__filters">
@@ -578,9 +586,10 @@ const Materials = defineComponent({
                         <div class="Materials__quantities-date">
                             <Datepicker
                                 type="date"
-                                value={datesForQuantities}
+                                value={periodForQuantities}
                                 onChange={handleChangePeriodForQuantities}
                                 class="Materials__quantities-date__input"
+                                withSnippets
                                 range
                                 v-tooltip={{
                                     placement: 'top',
@@ -589,23 +598,15 @@ const Materials = defineComponent({
                             />
                         </div>
                     </div>
-                    <v-server-table
+                    <ServerTable
                         ref="table"
+                        key="default"
                         name={$options.name}
+                        rowClass="Materials__row"
                         columns={columns}
-                        options={dataTableOptions}
-                        onRow-click={handleRowClick}
-                        scopedSlots={columnsRender}
+                        fetcher={fetch}
+                        onRowClick={handleRowClick}
                     />
-                    <div class="content__footer">
-                        <Button
-                            onClick={handleShowTrashed}
-                            icon={isTrashDisplayed ? 'eye' : 'trash'}
-                            type={isTrashDisplayed ? 'success' : 'danger'}
-                        >
-                            {isTrashDisplayed ? __('display-not-deleted-items') : __('open-trash-bin')}
-                        </Button>
-                    </div>
                 </div>
             </Page>
         );

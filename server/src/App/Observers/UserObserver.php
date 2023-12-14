@@ -9,7 +9,7 @@ final class UserObserver
 {
     public $afterCommit = true;
 
-    public function deleted(User $user)
+    public function deleted(User $user): void
     {
         //
         // - Suppression de la Person associée à l'utilisateur si elle n'est

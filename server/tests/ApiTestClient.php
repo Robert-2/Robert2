@@ -34,9 +34,9 @@ class ApiTestClient
         $this->app = $app;
     }
 
-    public function __call($method, $arguments)
+    public function __call($method, $arguments): Body
     {
-        $methods = [ 'get', 'post', 'patch', 'put', 'delete', 'head', 'options'];
+        $methods = ['get', 'post', 'patch', 'put', 'delete', 'head', 'options'];
         if (!in_array($method, $methods, true)) {
             throw new \BadMethodCallException(sprintf("%s is not supported", strtoupper($method)));
         }

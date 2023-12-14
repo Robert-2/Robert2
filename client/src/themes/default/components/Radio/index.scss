@@ -1,0 +1,41 @@
+@use '~@/themes/default/style/globals';
+
+.Radio {
+    $block: &;
+
+    &__choices {
+        display: flex;
+        flex-direction: column;
+        gap: globals.$spacing-thin;
+    }
+
+    &__choice {
+        display: inline-flex;
+        align-items: center;
+        gap: globals.$spacing-thin;
+
+        &__radio {
+            margin: 0;
+            cursor: pointer;
+        }
+
+        &__label {
+            cursor: pointer;
+        }
+    }
+
+    //
+    // - States
+    //
+
+    &--disabled {
+        #{$block}__choice {
+            opacity: 0.5;
+
+            &__radio,
+            &__label {
+                cursor: not-allowed;
+            }
+        }
+    }
+}

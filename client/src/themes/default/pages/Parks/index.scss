@@ -17,60 +17,71 @@
         flex: 1;
     }
 
-    &__address,
-    &__opening-hours,
-    &__note,
-    &__total-amount,
-    &__events {
-        display: none;
-    }
-
-    &__address {
-        white-space: pre-line;
-    }
-
-    &__total-amount {
-        width: 105px;
-
-        // - Pour surcharger la définition de VueTables th
-        // stylelint-disable-next-line declaration-no-important
-        text-align: center !important;
-    }
-
-    &__note {
-        max-width: 200px;
-        white-space: pre-line;
-    }
-
-    &__events {
-        // - Pour surcharger la définition de VueTables th
-        // stylelint-disable-next-line declaration-no-important
-        text-align: center !important;
-    }
-
-    &__actions {
-        width: 1%;
-        text-align: right;
-        white-space: nowrap;
-    }
-
-    @media (min-width: globals.$screen-mobile) {
-        &__address {
-            display: table-cell;
+    &__cell {
+        &--address,
+        &--opening-hours,
+        &--note,
+        &--total-amount,
+        &--events {
+            display: none;
         }
-    }
 
-    @media (min-width: globals.$screen-tablet) {
-        &__opening-hours,
-        &__total-amount {
-            display: table-cell;
+        &--address {
+            white-space: pre-line;
         }
-    }
 
-    @media (min-width: globals.$screen-desktop) {
-        &__note,
-        &__events {
-            display: table-cell;
+        &--total-amount {
+            width: 105px;
+
+            // - Important pour surcharger la définition du <th> de `.VueTables`.
+            // stylelint-disable-next-line declaration-no-important
+            text-align: center !important;
+        }
+
+        &--note {
+            max-width: 200px;
+            white-space: pre-line;
+        }
+
+        &--events {
+            // - Important pour surcharger la définition du <th> de `.VueTables`.
+            // stylelint-disable-next-line declaration-no-important
+            text-align: center !important;
+        }
+
+        &--actions {
+            width: 1%;
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        //
+        // - Responsive
+        //
+
+        @media (min-width: globals.$screen-mobile) {
+            &--address {
+                display: table-cell;
+            }
+        }
+
+        @media (min-width: globals.$screen-tablet) {
+            &--opening-hours,
+            &--total-amount {
+                display: table-cell;
+            }
+        }
+
+        @media (min-width: globals.$screen-desktop) {
+            &--events {
+                display: table-cell;
+            }
+        }
+
+        @media (min-width: globals.$screen-big-desktop) {
+            &--note {
+                display: table-cell;
+            }
         }
     }
 }

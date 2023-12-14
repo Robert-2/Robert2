@@ -1,0 +1,14 @@
+@use '~@/themes/default/style/globals';
+
+.EventDepartureFooter {
+    display: flex;
+    justify-content: center;
+    padding: globals.$spacing-medium 0;
+    background-color: globals.$bg-color-body;
+    text-align: center;
+    gap: globals.$spacing-medium;
+
+    .Button + .Button {
+        margin-left: 0;
+    }
+}

@@ -8,6 +8,7 @@ use Loxya\Models\Enums\Group;
 class Acl
 {
     public const PUBLIC_ROUTES = [
+        '/healthcheck',
         '/install',
         '/login',
 
@@ -62,6 +63,9 @@ class Acl
             'Beneficiary' => [
                 'getAll',
                 'getOne',
+                'getBookings',
+                'getEstimates',
+                'getInvoices',
                 'create',
                 'update',
                 'restore',
@@ -115,6 +119,8 @@ class Acl
                 'restore',
                 'updateReturnInventory',
                 'finishReturnInventory',
+                'updateDepartureInventory',
+                'finishDepartureInventory',
                 'delete',
                 'createInvoice',
                 'createEstimate',

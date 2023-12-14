@@ -5,7 +5,7 @@ use Phinx\Migration\AbstractMigration;
 
 final class ChangeSubCategoriesUnicityConstraint extends AbstractMigration
 {
-    public function up()
+    public function up(): void
     {
         $table = $this->table('sub_categories');
         $table
@@ -17,7 +17,7 @@ final class ChangeSubCategoriesUnicityConstraint extends AbstractMigration
             ->update();
     }
 
-    public function down()
+    public function down(): void
     {
         $table = $this->table('sub_categories');
         $table

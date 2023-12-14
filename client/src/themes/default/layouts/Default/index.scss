@@ -5,6 +5,7 @@
     flex-direction: column;
     overflow: auto;
     height: 100vh;
+    min-width: 375px;
     color: globals.$text-soft-color;
 
     &__body {

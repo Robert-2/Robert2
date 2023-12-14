@@ -35,8 +35,9 @@ const EventDetails = {
     props: {
         id: { type: Number, required: true },
         openedTab: { type: String, default: 'infos' },
-        onUpdateEvent: { type: Function, default: undefined },
-        onDuplicateEvent: { type: Function, default: undefined },
+        onUpdated: { type: Function, default: undefined },
+        onDuplicated: { type: Function, default: undefined },
+        onDeleted: { type: Function, default: undefined },
     },
     data: () => ({
         isFetched: false,
@@ -125,8 +126,8 @@ const EventDetails = {
                 return;
             }
 
-            const { documentsRef } = this.$refs;
-            if (!documentsRef?.isUploading()) {
+            const $documents = this.$refs.documents;
+            if (!$documents?.isUploading()) {
                 return;
             }
 
@@ -159,10 +160,15 @@ const EventDetails = {
                 onDuplicated(newEvent);
             }
 
-            this.handleClose();
+            this.$emit('close');
         },
 
         handleDeleted() {
+            const { onDeleted } = this.$props;
+            if (onDeleted) {
+                onDeleted();
+            }
+
             this.$emit('close');
         },
 
@@ -295,7 +301,7 @@ const EventDetails = {
                             </Tab>
                         )}
                         <Tab title={__('documents')} icon="file-pdf">
-                            <Documents ref="documentsRef" event={event} />
+                            <Documents ref="documents" event={event} />
                         </Tab>
                         <Tab title={__('notes')} icon="clipboard:regular">
                             <Note event={event} onUpdated={handleUpdated} />

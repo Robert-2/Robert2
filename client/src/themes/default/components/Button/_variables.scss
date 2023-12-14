@@ -4,7 +4,7 @@
 
 /// Padding vertical des boutons.
 /// @type Number
-$padding-y: 0.396rem !default;
+$padding-y: 0.45rem !default;
 
 /// Padding horizontal des boutons.
 /// @type Number
@@ -20,7 +20,7 @@ $border-width: 2px !default;
 
 /// Border radius des boutons.
 /// @type Number
-$border-radius: 4px !default;
+$border-radius: globals.$border-radius-normal !default;
 
 //
 // - Tailles

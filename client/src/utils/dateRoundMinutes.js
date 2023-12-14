@@ -24,7 +24,10 @@ const dateRoundMinutes = (date, minutesStep = 15) => {
 
     const hours = date.getHours();
     if (hours === 23) {
-        return moment(result).add(1, 'day').startOf('day').toDate();
+        return moment(result)
+            .add(1, 'day')
+            .startOf('day')
+            .toDate();
     }
 
     result.setHours(hours + 1);

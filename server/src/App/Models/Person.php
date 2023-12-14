@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Loxya\Models;
 
 use Adbar\Dot as DotArray;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 use Loxya\Contracts\Serializable;
@@ -27,8 +28,8 @@ use Respect\Validation\Validator as V;
  * @property int|null $country_id
  * @property-read Country|null $country
  * @property-read string|null $full_address
- * @property-read Carbon $created_at
- * @property-read Carbon|null $updated_at
+ * @property-read CarbonImmutable $created_at
+ * @property-read CarbonImmutable|null $updated_at
  *
  * @property-read Beneficiary $beneficiary
  * @property-read Technician $technician
@@ -130,6 +131,8 @@ final class Person extends BaseModel implements Serializable
         'postal_code' => 'string',
         'locality' => 'string',
         'country_id' => 'integer',
+        'created_at' => 'immutable_datetime',
+        'updated_at' => 'immutable_datetime',
     ];
 
     public function getFullNameAttribute()
@@ -174,7 +177,7 @@ final class Person extends BaseModel implements Serializable
         'country_id',
     ];
 
-    public function setPhoneAttribute($value)
+    public function setPhoneAttribute($value): void
     {
         $value = !empty($value) ? Str::remove(' ', $value) : $value;
         $this->attributes['phone'] = $value === '' ? null : $value;
@@ -227,7 +230,6 @@ final class Person extends BaseModel implements Serializable
      * @param bool $checkUser Est-ce qu'on veut vérifier que la personne a un utilisateur lié ?
      *                        Dans le cas de la suppression d'un utilisateur, passer ce paramètre
      *                        à `false` pour pouvoir supprimer également son profil.
-     * @return void
      */
     public function deleteIfOrphan(bool $checkUser = true): void
     {

@@ -76,9 +76,7 @@ class Fixtures
         $stmt->execute();
         $pdo = null;
 
-        $tables = $stmt->fetchAll(\PDO::FETCH_COLUMN);
-
-        return $tables;
+        return $stmt->fetchAll(\PDO::FETCH_COLUMN);
     }
 
     public static function dumpTestSchema(): void
@@ -165,7 +163,7 @@ class Fixtures
         }
     }
 
-    protected static function _log(string $msg, bool $force = false)
+    protected static function _log(string $msg, bool $force = false): void
     {
         $isVerbose = (env('SHELL_VERBOSITY') ?? 0) > 0;
         if ($isVerbose || $force) {

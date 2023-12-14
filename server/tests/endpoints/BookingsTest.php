@@ -10,7 +10,7 @@ use Loxya\Support\Arr;
 
 final class BookingsTest extends ApiTestCase
 {
-    public function testGetAll()
+    public function testGetAll(): void
     {
         // - Test simple.
         $this->client->get('/api/bookings?start=2018-12-01&end=2018-12-31');
@@ -35,7 +35,7 @@ final class BookingsTest extends ApiTestCase
         $this->assertStatusCode(StatusCode::STATUS_RANGE_NOT_SATISFIABLE);
     }
 
-    public function testUpdateEventMaterialsInvalid()
+    public function testUpdateEventMaterialsInvalid(): void
     {
         Carbon::setTestNow(Carbon::create(2023, 5, 3, 18, 0, 0));
 
@@ -53,7 +53,7 @@ final class BookingsTest extends ApiTestCase
         $this->assertStatusCode(StatusCode::STATUS_UNPROCESSABLE_ENTITY);
     }
 
-    public function testUpdateEventMaterials()
+    public function testUpdateEventMaterials(): void
     {
         Carbon::setTestNow(Carbon::create(2019, 3, 15, 18, 0, 0));
 

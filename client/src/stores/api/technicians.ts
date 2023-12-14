@@ -41,15 +41,31 @@ export type TechnicianEdit = {
     note: string | null,
 };
 
-type GetAllParams = ListingParams & { deleted?: boolean };
+type GetAllParams = ListingParams & {
+    availabilityPeriod?: { start: string, end: string },
+    deleted?: boolean,
+};
 
 //
 // - Fonctions
 //
 
-const all = async (params: GetAllParams): Promise<PaginatedData<Technician[]>> => (
-    (await requester.get('/technicians', { params })).data
-);
+const all = async ({ availabilityPeriod, ...otherParams }: GetAllParams): Promise<PaginatedData<Technician[]>> => {
+    const params: Record<string, unknown> = otherParams;
+    if (availabilityPeriod !== undefined) {
+        const isValidPeriod = (
+            typeof availabilityPeriod === 'object' &&
+            'start' in availabilityPeriod &&
+            'end' in availabilityPeriod
+        );
+        if (!isValidPeriod) {
+            throw new Error('Invalid quantities period.');
+        }
+        params['availabilityPeriod[start]'] = availabilityPeriod.start;
+        params['availabilityPeriod[end]'] = availabilityPeriod.end;
+    }
+    return (await requester.get('/technicians', { params })).data;
+};
 
 const allWhileEvent = async (eventId: Event['id']): Promise<Technician[]> => (
     (await requester.get(`/technicians/while-event/${eventId}`)).data

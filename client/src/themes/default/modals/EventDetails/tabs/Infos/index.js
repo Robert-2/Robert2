@@ -1,10 +1,10 @@
 import './index.scss';
 import moment from 'moment';
 import { defineComponent } from '@vue/composition-api';
+import Icon from '@/themes/default/components/Icon';
 import Button from '@/themes/default/components/Button';
 import EventTechnicians from '@/themes/default/components/EventTechnicians';
 import EventTotals from '@/themes/default/components/EventTotals';
-import LocationText from '@/themes/default/components/LocationText';
 import MainBeneficiary from './components/MainBeneficiary';
 import EventBeneficiaries from '@/themes/default/components/EventBeneficiaries';
 
@@ -70,7 +70,16 @@ const EventDetailsInfos = defineComponent({
                     )}
                     {!!location && (
                         <div class="EventDetailsInfos__summary__location">
-                            <LocationText location={location} />
+                            {__('in', { location })}
+                            <a
+                                rel="noopener noreferrer nofollow"
+                                class="EventDetailsInfos__summary__location__link"
+                                href={`https://maps.google.com/?q=${location}`}
+                                title={__('open-in-google-maps')}
+                                target="_blank"
+                            >
+                                <Icon name="external-link-alt" />
+                            </a>
                         </div>
                     )}
                     {!!(author || hasTechnicians) && (

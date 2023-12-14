@@ -1,26 +1,28 @@
 import Login from './Login';
 import Calendar from './Calendar';
 import Event from './Event';
+import EventDeparture from './EventDeparture';
 import EventReturn from './EventReturn';
 import Users from './Users';
-import User from './User';
+import UserEdit from './UserEdit';
 import Beneficiaries from './Beneficiaries';
-import Beneficiary from './Beneficiary';
-import Company from './Company';
+import BeneficiaryView from './BeneficiaryView';
+import BeneficiaryEdit from './BeneficiaryEdit';
+import CompanyEdit from './CompanyEdit';
 import Materials from './Materials';
-import Material from './Material';
+import MaterialEdit from './MaterialEdit';
 import MaterialView from './MaterialView';
 import Attributes from './Attributes';
-import Attribute from './Attribute';
+import AttributeEdit from './AttributeEdit';
 import Tags from './Tags';
 import Technicians from './Technicians';
-import Technician from './Technician';
+import TechnicianEdit from './TechnicianEdit';
 import TechnicianView from './TechnicianView';
 import Categories from './Categories';
 import Parks from './Parks';
-import Park from './Park';
+import ParkEdit from './ParkEdit';
 import UserSettings from './Settings/User';
-import GlobalSettings from './Settings/Global';
+import GlobalSettings, { pages as globalSettingsPages } from './Settings/Global';
 import { Group } from '@/stores/api/groups';
 
 export default [
@@ -70,6 +72,15 @@ export default [
         },
     },
     {
+        name: 'event-departure-inventory',
+        path: '/events/:id(\\d+)/departure-inventory',
+        component: EventDeparture,
+        meta: {
+            requiresAuth: true,
+            requiresGroups: [Group.ADMIN, Group.MEMBER],
+        },
+    },
+    {
         name: 'event-return-inventory',
         path: '/events/:id(\\d+)/return-inventory',
         component: EventReturn,
@@ -104,7 +115,7 @@ export default [
     {
         name: 'add-user',
         path: '/users/new',
-        component: User,
+        component: UserEdit,
         meta: {
             requiresAuth: true,
             requiresGroups: [Group.ADMIN],
@@ -113,7 +124,7 @@ export default [
     {
         name: 'edit-user',
         path: '/users/:id(\\d+)',
-        component: User,
+        component: UserEdit,
         meta: {
             requiresAuth: true,
             requiresGroups: [Group.ADMIN],
@@ -134,9 +145,18 @@ export default [
         },
     },
     {
+        name: 'view-beneficiary',
+        path: '/beneficiaries/:id(\\d+)/view',
+        component: BeneficiaryView,
+        meta: {
+            requiresAuth: true,
+            requiresGroups: [Group.ADMIN, Group.MEMBER],
+        },
+    },
+    {
         name: 'add-beneficiary',
         path: '/beneficiaries/new',
-        component: Beneficiary,
+        component: BeneficiaryEdit,
         meta: {
             requiresAuth: true,
             requiresGroups: [Group.ADMIN, Group.MEMBER],
@@ -145,7 +165,7 @@ export default [
     {
         name: 'edit-beneficiary',
         path: '/beneficiaries/:id(\\d+)',
-        component: Beneficiary,
+        component: BeneficiaryEdit,
         meta: {
             requiresAuth: true,
             requiresGroups: [Group.ADMIN, Group.MEMBER],
@@ -159,7 +179,7 @@ export default [
     {
         name: 'add-company',
         path: '/companies/new',
-        component: Company,
+        component: CompanyEdit,
         meta: {
             requiresAuth: true,
             requiresGroups: [Group.ADMIN, Group.MEMBER],
@@ -168,7 +188,7 @@ export default [
     {
         name: 'edit-company',
         path: '/companies/:id(\\d+)',
-        component: Company,
+        component: CompanyEdit,
         meta: {
             requiresAuth: true,
             requiresGroups: [Group.ADMIN, Group.MEMBER],
@@ -191,7 +211,7 @@ export default [
     {
         name: 'add-material',
         path: '/materials/new',
-        component: Material,
+        component: MaterialEdit,
         meta: {
             requiresAuth: true,
             requiresGroups: [Group.ADMIN, Group.MEMBER],
@@ -200,7 +220,7 @@ export default [
     {
         name: 'edit-material',
         path: '/materials/:id(\\d+)',
-        component: Material,
+        component: MaterialEdit,
         meta: {
             requiresAuth: true,
             requiresGroups: [Group.ADMIN, Group.MEMBER],
@@ -232,7 +252,7 @@ export default [
     {
         name: 'add-attribute',
         path: '/attributes/new',
-        component: Attribute,
+        component: AttributeEdit,
         meta: {
             requiresAuth: true,
             requiresGroups: [Group.ADMIN],
@@ -241,7 +261,7 @@ export default [
     {
         name: 'edit-attribute',
         path: '/attributes/:id(\\d+)',
-        component: Attribute,
+        component: AttributeEdit,
         meta: {
             requiresAuth: true,
             requiresGroups: [Group.ADMIN],
@@ -278,7 +298,7 @@ export default [
     {
         name: 'add-technician',
         path: '/technicians/new',
-        component: Technician,
+        component: TechnicianEdit,
         meta: {
             requiresAuth: true,
             requiresGroups: [Group.ADMIN, Group.MEMBER],
@@ -287,7 +307,7 @@ export default [
     {
         name: 'edit-technician',
         path: '/technicians/:id(\\d+)',
-        component: Technician,
+        component: TechnicianEdit,
         meta: {
             requiresAuth: true,
             requiresGroups: [Group.ADMIN, Group.MEMBER],
@@ -333,7 +353,7 @@ export default [
     {
         name: 'add-park',
         path: '/parks/new',
-        component: Park,
+        component: ParkEdit,
         meta: {
             requiresAuth: true,
             requiresGroups: [Group.ADMIN],
@@ -342,7 +362,7 @@ export default [
     {
         name: 'edit-park',
         path: '/parks/:id(\\d+)',
-        component: Park,
+        component: ParkEdit,
         meta: {
             requiresAuth: true,
             requiresGroups: [Group.ADMIN],
@@ -367,13 +387,13 @@ export default [
         },
     },
     {
-        name: 'global-settings',
         path: '/settings',
         component: GlobalSettings,
         meta: {
             requiresAuth: true,
             requiresGroups: [Group.ADMIN],
         },
+        children: globalSettingsPages,
     },
 
     //

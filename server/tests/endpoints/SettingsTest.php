@@ -7,7 +7,7 @@ use Fig\Http\Message\StatusCodeInterface as StatusCode;
 
 final class SettingsTest extends ApiTestCase
 {
-    public function testGetAll()
+    public function testGetAll(): void
     {
         $this->client->get('/api/settings');
         $this->assertStatusCode(StatusCode::STATUS_OK);
@@ -27,7 +27,7 @@ final class SettingsTest extends ApiTestCase
                 ],
                 'public' => [
                     'enabled' => true,
-                    'url' => '/calendar/public/dfe7cd82-52b9-4c9b-aaed-033df210f23b.ics',
+                    'url' => 'http://loxya.test/calendar/public/dfe7cd82-52b9-4c9b-aaed-033df210f23b.ics',
                 ],
             ],
             'returnInventory' => [
@@ -57,20 +57,20 @@ final class SettingsTest extends ApiTestCase
         ]);
         $this->assertApiValidationError([
             'calendar.event.showBorrower' => [
-                'Must be a boolean value',
+                'This field should be a boolean.',
             ],
             'eventSummary.materialDisplayMode' => [
-                'One of the following rules must be verified',
-                'Must equal "categories"',
-                'Must equal "sub-categories"',
-                'Must equal "parks"',
-                'Must equal "flat"',
+                'One of the following rules must be verified:',
+                'Must equal "categories".',
+                'Must equal "sub-categories".',
+                'Must equal "parks".',
+                'Must equal "flat".',
             ],
             'eventSummary.customText.title' => [
-                '191 max. characters',
+                '191 max. characters.',
             ],
             'calendar.public.uuid' => [
-                'The unique identifier (UUID) is not valid.',
+                'This unique identifier (UUID) is invalid.',
             ],
         ]);
     }
@@ -168,7 +168,7 @@ final class SettingsTest extends ApiTestCase
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseHasKeyNotEquals(
             'calendar.public.url',
-            '/calendar/public/dfe7cd82-52b9-4c9b-aaed-033df210f23b.ics'
+            'http://loxya.test/calendar/public/dfe7cd82-52b9-4c9b-aaed-033df210f23b.ics'
         );
 
         // - Par défaut, le calendrier public est désactivé.

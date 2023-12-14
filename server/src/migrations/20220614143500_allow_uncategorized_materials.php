@@ -28,7 +28,7 @@ final class AllowUncategorizedMaterials extends AbstractMigration
 
     public function down(): void
     {
-        $prefix = Config::getSettings('db')['prefix'];
+        $prefix = Config::get('db.prefix');
         $noCategoryName = 'Non catégorisé';
 
         $categories = $this->table('categories');

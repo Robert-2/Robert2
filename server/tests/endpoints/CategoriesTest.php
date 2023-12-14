@@ -49,7 +49,7 @@ final class CategoriesTest extends ApiTestCase
         return static::_dataFactory($id, $categories->all());
     }
 
-    public function testGetAll()
+    public function testGetAll(): void
     {
         $this->client->get('/api/categories');
         $this->assertStatusCode(StatusCode::STATUS_OK);
@@ -61,24 +61,24 @@ final class CategoriesTest extends ApiTestCase
         ]);
     }
 
-    public function testCreateWithoutData()
+    public function testCreateWithoutData(): void
     {
         $this->client->post('/api/categories');
         $this->assertStatusCode(StatusCode::STATUS_BAD_REQUEST);
         $this->assertApiErrorMessage("No data was provided.");
     }
 
-    public function testCreateBadData()
+    public function testCreateBadData(): void
     {
         $this->client->post('/api/categories', [
             'name' => '',
         ]);
         $this->assertApiValidationError([
-            'name' => ['This field is mandatory'],
+            'name' => ['This field is mandatory.'],
         ]);
     }
 
-    public function testCreate()
+    public function testCreate(): void
     {
         $this->client->post('/api/categories', [
             'name' => 'New Category',
@@ -92,20 +92,20 @@ final class CategoriesTest extends ApiTestCase
         ]);
     }
 
-    public function testUpdateNoData()
+    public function testUpdateNoData(): void
     {
         $this->client->put('/api/categories/1', []);
         $this->assertStatusCode(StatusCode::STATUS_BAD_REQUEST);
         $this->assertApiErrorMessage("No data was provided.");
     }
 
-    public function testUpdateCategoryNotFound()
+    public function testUpdateCategoryNotFound(): void
     {
         $this->client->put('/api/categories/999', ['name' => '__inexistant__']);
         $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
-    public function testUpdate()
+    public function testUpdate(): void
     {
         $updatedData = [
             'name' => 'Sound edited',
@@ -117,7 +117,7 @@ final class CategoriesTest extends ApiTestCase
         );
     }
 
-    public function testDelete()
+    public function testDelete(): void
     {
         $this->client->delete('/api/categories/3');
         $this->assertStatusCode(StatusCode::STATUS_NO_CONTENT);

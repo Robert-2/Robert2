@@ -8,6 +8,7 @@ use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Loxya\Config\Config;
 use Loxya\Services\I18n;
 use Loxya\Services\View;
+use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Response;
 use Slim\Psr7\Stream;
 
@@ -78,10 +79,10 @@ final class Pdf
     // -
     // ------------------------------------------------------
 
-    public static function createFromTemplate(string $template, I18n $i18n, string $name, array $data): self
+    public static function createFromTemplate(string $template, I18n $i18n, string $name, array $data): static
     {
         $html = (new View($i18n, 'pdf'))->fetch($template, array_merge($data, [
-            'baseUrl' => rtrim(Config::getSettings('apiUrl'), '/'),
+            'baseUrl' => Config::getBaseUrl(),
         ]));
         return new static($name, $html);
     }
@@ -92,7 +93,7 @@ final class Pdf
     // -
     // ------------------------------------------------------
 
-    public function asResponse(Response $response): Response
+    public function asResponse(Response $response): ResponseInterface
     {
         if (env('DEBUG_PDF') === true && Config::getEnv() !== 'test') {
             return $this->asResponseHtml($response);
@@ -131,7 +132,7 @@ final class Pdf
         }
     }
 
-    public function asResponseHtml(Response $response): Response
+    public function asResponseHtml(Response $response): ResponseInterface
     {
         $content = $this->getRawContent();
         $response->getBody()->write($content);

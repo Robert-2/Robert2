@@ -7,13 +7,14 @@ use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Loxya\Controllers\Traits\WithCrud;
 use Loxya\Http\Request;
 use Loxya\Models\Tag;
+use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Response;
 
 class TagController extends BaseController
 {
     use WithCrud;
 
-    public function getAll(Request $request, Response $response): Response
+    public function getAll(Request $request, Response $response): ResponseInterface
     {
         $onlyDeleted = (bool) $request->getQueryParam('deleted', false);
 

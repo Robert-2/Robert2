@@ -4,12 +4,15 @@ declare(strict_types=1);
 namespace Loxya\Support;
 
 use Carbon\Carbon;
-use Carbon\CarbonPeriod;
+use Carbon\CarbonImmutable;
+use Carbon\CarbonPeriodImmutable;
+use DateTimeInterface;
 use Loxya\Contracts\PeriodInterface;
+use Respect\Validation\Validator as V;
 
 final class Period implements PeriodInterface
 {
-    private CarbonPeriod $rawPeriod;
+    private CarbonPeriodImmutable $rawPeriod;
 
     public function __construct($start, $end = null)
     {
@@ -22,15 +25,20 @@ final class Period implements PeriodInterface
             throw new \InvalidArgumentException('Missing end for the period.');
         }
 
-        $this->rawPeriod = new CarbonPeriod($start, $end);
+        $rawPeriod = new CarbonPeriodImmutable($start, $end);
+        if ($rawPeriod->getStartDate()->isAfter($rawPeriod->getEndDate())) {
+            throw new \InvalidArgumentException('End date should be after start date.');
+        }
+
+        $this->rawPeriod = $rawPeriod;
     }
 
-    public function getStartDate(): Carbon
+    public function getStartDate(): CarbonImmutable
     {
         return $this->rawPeriod->getStartDate();
     }
 
-    public function getEndDate(): Carbon
+    public function getEndDate(): CarbonImmutable
     {
         return $this->rawPeriod->getEndDate();
     }
@@ -77,5 +85,54 @@ final class Period implements PeriodInterface
             : $otherPeriod->getEndDate();
 
         return new static($startDate, $endDate);
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Helpers
+    // -
+    // ------------------------------------------------------
+
+    /**
+     * Permet de récupérer une période depuis un tableau de dates.
+     *
+     * @param array $array - Le tableau à convertir en période, deux formats sont acceptés:
+     *                       - Soit `['start' => '[Date début]', 'end' => '[Date fin]']`.
+     *                       - Soit `['[Date début]', '[Date fin]']`.
+     *
+     * @return static - La période équivalente aux dates du tableau.
+     */
+    public static function fromArray(array $array): static
+    {
+        if (!array_key_exists('start', $array) || !array_key_exists('end', $array)) {
+            $keys = array_keys($array);
+            if (count($array) !== 2 || !is_numeric($keys[0]) || !is_numeric($keys[1])) {
+                throw new \InvalidArgumentException('Missing date part in array.');
+            }
+            $array = array_combine(['start', 'end'], array_values($array));
+        }
+
+        $dateChecker = V::notEmpty()->dateTime();
+        foreach (['start', 'end'] as $type) {
+            $isValid = (
+                $array[$type] instanceof DateTimeInterface ||
+                $dateChecker->validate($array[$type])
+            );
+            if (!$isValid) {
+                throw new \InvalidArgumentException(sprintf('Invalid %s date.', $type));
+            }
+        }
+
+        $start = new Carbon($array['start']);
+        if (is_string($array['start']) && date_parse($array['start'])['hour'] === false) {
+            $start->startOfDay();
+        }
+
+        $end = new Carbon($array['end']);
+        if (is_string($array['end']) && date_parse($array['end'])['hour'] === false) {
+            $end->setTime(23, 59, 59);
+        }
+
+        return new static($start, $end);
     }
 }

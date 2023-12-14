@@ -14,7 +14,7 @@ final class MoveUploadedFiles extends AbstractMigration
             return;
         }
 
-        $prefix = Config::getSettings('db')['prefix'];
+        $prefix = Config::get('db.prefix');
         $rootOldDirectory = sprintf('_old-%s', date('YmdHis'));
         $fs = FilesystemFactory::createLocalDriver([
             'root' => DATA_FOLDER . DS . 'materials',
@@ -84,7 +84,7 @@ final class MoveUploadedFiles extends AbstractMigration
             return;
         }
 
-        $prefix = Config::getSettings('db')['prefix'];
+        $prefix = Config::get('db.prefix');
         $rootOldDirectory = sprintf('_old-%s', date('YmdHis'));
         $fs = FilesystemFactory::createLocalDriver([
             'root' => DATA_FOLDER . DS . 'materials',

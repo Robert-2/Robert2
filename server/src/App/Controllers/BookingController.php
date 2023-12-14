@@ -13,7 +13,9 @@ use Loxya\Errors\Exception\HttpUnprocessableEntityException;
 use Loxya\Http\Request;
 use Loxya\Models\Event;
 use Loxya\Models\Park;
+use Loxya\Support\Database\QueryAggregator;
 use Loxya\Support\Period;
+use Psr\Http\Message\ResponseInterface;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpException;
 use Slim\Exception\HttpNotFoundException;
@@ -27,7 +29,7 @@ class BookingController extends BaseController
         Event::TYPE => Event::class,
     ];
 
-    public function getAll(Request $request, Response $response): Response
+    public function getAll(Request $request, Response $response): ResponseInterface
     {
         $startDate = $request->getQueryParam('start', null);
         $endDate = $request->getQueryParam('end', null);
@@ -42,19 +44,20 @@ class BookingController extends BaseController
             );
         }
 
-        /** @var Collection|(Event)[] $bookings */
-        $bookings = (new Collection())
+        $query = new QueryAggregator([
             // - Événements.
-            ->concat(
+            Event::class => (
                 Event::inPeriod($startDate, $endDate)
                     ->with('beneficiaries')
                     ->with('technicians')
                     ->with(['materials' => function ($q) {
                         $q->reorder('name', 'asc');
                     }])
-                    ->get()
-            );
+            ),
+        ]);
 
+        /** @var Collection<array-key, Event> $bookings */
+        $bookings = $query->get();
         if ($bookings->isEmpty()) {
             return $response->withJson([], StatusCode::STATUS_OK);
         }
@@ -105,7 +108,7 @@ class BookingController extends BaseController
         return $response->withJson($data, StatusCode::STATUS_OK);
     }
 
-    public function updateMaterials(Request $request, Response $response): Response
+    public function updateMaterials(Request $request, Response $response): ResponseInterface
     {
         $id = (int) $request->getAttribute('id');
         $entity = $request->getAttribute('entity');
@@ -113,7 +116,7 @@ class BookingController extends BaseController
             throw new HttpNotFoundException($request, "Booking type (entity) not recognized.");
         }
 
-        /** @var Event|Reservation $booking */
+        /** @var Event $booking */
         $booking = self::BOOKING_TYPES[$entity]::findOrFail($id);
 
         if (!$booking->is_editable) {

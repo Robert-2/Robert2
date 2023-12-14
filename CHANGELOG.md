@@ -4,6 +4,38 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.23.0 (2023-12-14)
+
+- Mise à jour des dépendances du projet.
+- Ajoute la prise en charge complète de l'authentification SAML 2.0 (Premium).
+- La clé de configuration `apiUrl` a été renommée `baseUrl` dans le fichier de configuration.  
+  L'ancien nom est toujours pris en charge pour le moment pour une question de rétro-compatibilité. 
+  (il sera toutefois supprimé dans une future version, pensez à mettre à jour vos 
+  `settings.json` si vous ne disposez pas d'une offre SaaS)
+- Ajoute une commande permettant d'envoyer un e-mail de test via la console (Premium).
+- L'import de bénéficiaires en masse est maintenant possible depuis un fichier CSV (Premium).
+- Corrige l'affichage des disponibilités des techniciens à l'étape 3 de la modification d'événement.
+- Ajoute un endpoint `/healthcheck` (désactivé par défaut) pour vérifier l'état de l'instance,
+  et la date de dernière modification de son matériel, événements ou réservations.
+- Corrige le champ de recherche des demandes de réservations.
+- Permet la modification du matériel des réservations jusqu'au dernier jour de sortie (Premium).
+- Prise en charge des inventaires de départ des événements et réservations.
+- Corrige un souci lors de la sauvegarde d'une unité de matériel avec une référence déjà 
+  existante pour le même matériel (l'erreur de sauvegarde faisait penser à un bug de l'application).
+- Il est maintenant possible de chercher dans les événements par lieu.
+- Prise en charge des retour à la ligne dans l'affichage de description des matériels.
+- Corrige l'affichage et le tri des quantités cassées dans le matériel.
+- Ajoute une page permettant de consulter les informations d'un bénéficiaire, son historique de commandes,
+  ainsi que la liste des devis et factures qui lui ont été adressés.
+- Corrige la duplication d'événement lorsque des unités de l'événement d'origine sont 
+  déjà utilisées au même moment que dans le nouvel événement (Premium).
+- Corrige la duplication d'événement lorsque des techniciens de l'événement d'origine sont 
+  déjà mobilisés au même moment que dans le nouvel événement (voir #346).
+- Améliore les sélecteurs de dates, notamment en permettant de choisir des périodes pré-définies quand 
+  c'est utile (par exemple dans les filtres de période matériels et techniciens).
+- Corrige un problème de performance lors de la récupération des réservations et événements liés
+  aux matériels et bénéficiaires. La récupération se fait maintenant de manière séquentielle (voir #387).
+
 ## 0.22.2 (2023-08-11)
 
 - Enlève le tri par liste dans les fiches de sorties classées par parc (Premium).
@@ -15,7 +47,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 
 ## 0.22.1 (2023-08-04)
 
-- L'utilisation d'un champ de tri non autorisé ne fait plus planter les pages de listing.
+- L'utilisation d'un champ de tri non autorisé ne provoque plus de dysfonctionnement dans les pages de listing.
 - Corrige les boutons de modification et suppression des emplacements de parc (Premium).
 
 ## 0.22.0 (2023-08-03)

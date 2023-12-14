@@ -5,7 +5,7 @@ use Phinx\Migration\AbstractMigration;
 
 final class AddIsDiscountableToMaterials extends AbstractMigration
 {
-    public function up()
+    public function up(): void
     {
         $materials = $this->table('materials');
         $materials
@@ -17,7 +17,7 @@ final class AddIsDiscountableToMaterials extends AbstractMigration
             ->update();
     }
 
-    public function down()
+    public function down(): void
     {
         $materials = $this->table('materials');
         $materials

@@ -1,12 +1,31 @@
 declare module 'vue-tables-2-premium' {
-    import type { VNode } from 'vue';
+    import type { CreateElement, VNode, VNodeClass } from 'vue';
     import type { PaginationParams } from '@/stores/api/@types';
 
     //
     // - Common types
     //
 
-    type BaseTableOptions = {
+    type ColumnVisibility =
+        | `${'min' | 'not' | 'max'}_mobile`
+        | `${'min' | 'not' | 'max'}_mobileP`
+        | `${'min' | 'not' | 'max'}_mobileL`
+        | `${'min' | 'not' | 'max'}_tablet`
+        | `${'min' | 'not' | 'max'}_tabletP`
+        | `${'min' | 'not' | 'max'}_tabletL`
+        | `${'min' | 'not' | 'max'}_desktop`
+        | `${'min' | 'not' | 'max'}_desktopLarge`
+        | `${'min' | 'not' | 'max'}_desktopHuge`;
+
+    type ColumnsVisibility = Record<string, ColumnVisibility>;
+
+    type TemplateRenderFunction<Data = any> = (
+        (h: CreateElement, row: Data, index: number) => JSX.Element | string | null
+    );
+
+    type RowClickEventPayload<Data = any> = { row: Data, event: PointerEvent, index: number };
+
+    type BaseTableOptions<Data> = {
         headings?: Record<string, string>,
         initialPage?: number,
         perPage?: number,
@@ -16,14 +35,17 @@ declare module 'vue-tables-2-premium' {
         filterByColumn?: boolean,
         columnsDropdown?: boolean,
         preserveState?: boolean,
-        columnsDisplay?: Record<string, string>, // - Voir https://matanya.gitbook.io/vue-tables-2/columns-visibility
+        saveState?: boolean,
+        columnsDisplay?: ColumnsVisibility,
         columnsClasses?: Record<string, string>,
+        templates?: Record<string, TemplateRenderFunction<Data>>,
+        rowClassCallback(row: Data): VNodeClass,
     };
 
-    interface BaseTableInstance {
+    interface BaseTableInstance<Data> {
         name: string;
         columns: string[];
-        data: Array<Record<string, unknown>>;
+        data: Data[];
         filtersCount: number;
         openChildRows: number[];
         selectedRows: number[] | undefined;
@@ -39,7 +61,7 @@ declare module 'vue-tables-2-premium' {
         resetCustomFilters(): void;
         setLoadingState(): void;
         $refs: {
-            table: BaseTableInstance,
+            table: BaseTableInstance<Data>,
         };
     }
 
@@ -53,38 +75,40 @@ declare module 'vue-tables-2-premium' {
     // - Client component specific types
     //
 
-    export type ClientCustomFilter<TData> = {
+    export type ClientCustomFilter<Data> = {
         name: string,
-        callback(item: TData, identifier: number | string | boolean): boolean,
+        callback(item: Data, identifier: number | string | boolean): boolean,
     };
 
-    export type CustomSortFunction<TData> = (ascending: boolean) => (a: TData, b: TData) => number;
+    export type CustomSortFunction<Data> = (ascending: boolean) => (a: Data, b: Data) => number;
 
-    export type ClientTableOptions<TData, TFilter> = BaseTableOptions & {
-        initFilters: TFilter,
-        customSorting?: Record<string, CustomSortFunction<TData>>,
-        customFilters?: ClientCustomFilter[],
+    export type ClientTableOptions<Data = any, Filters = any> = BaseTableOptions<Data> & {
+        initFilters: Filters,
+        customSorting?: Record<string, CustomSortFunction<Data>>,
+        customFilters?: Array<ClientCustomFilter<Data>>,
     };
 
-    export interface ClientTableInstance extends BaseTableInstance {
-        filteredData: Array<Record<string, unknown>>;
-        allFilteredData: Array<Record<string, unknown>>;
+    export interface ClientTableInstance<Data = any> extends BaseTableInstance<Data> {
+        filteredData: Data[];
+        allFilteredData: Data[];
     }
 
     //
     // - Server component specific types
     //
 
-    export type RequestFunction<TData> = (pagination: PaginationParams) => Promise<{ data: TData } | undefined>;
+    export type RequestFunction<Data = any> = (pagination: PaginationParams) => (
+        Promise<{ data: Data } | undefined>
+    );
 
-    export type ServerTableOptions<TData> = BaseTableOptions & {
+    export type ServerTableOptions<Data = any> = BaseTableOptions<Data> & {
         customFilters?: string[],
-        requestFunction?: RequestFunction<TData>,
+        requestFunction?: RequestFunction<Data>,
     };
 
-    export interface ServerTableInstance extends BaseTableInstance {
+    export interface ServerTableInstance<Data = any> extends BaseTableInstance<Data> {
         setRequestParams(params: Record<string, unknown>): void;
-        getData(): any;
+        geData(): Data[];
         getQueryParams(): Record<string, unknown>;
     }
 }

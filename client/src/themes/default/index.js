@@ -47,6 +47,7 @@ Vue.use(VueJsModal, {
 VTooltip.options.defaultContainer = '#app';
 VTooltip.options.disposeTimeout = 1000;
 VTooltip.options.defaultDelay = 100;
+VTooltip.options.defaultOffset = 10;
 Vue.directive('tooltip', VTooltip);
 
 // - Internationalization
@@ -69,7 +70,6 @@ initMoment();
 
 // - Tables (order, pagination)
 const tablesConfig = {
-    columnsClasses: { actions: 'VueTables__actions' },
     sortIcon: {
         base: 'fas',
         up: 'fa-sort-up',
@@ -96,8 +96,8 @@ const tablesConfig = {
         };
     },
 };
-Vue.use(ClientTable, tablesConfig);
-Vue.use(ServerTable, tablesConfig, true);
+Vue.use(ClientTable, tablesConfig, false);
+Vue.use(ServerTable, tablesConfig, false);
 
 // - Toast notifications
 Vue.use(Toasted, {

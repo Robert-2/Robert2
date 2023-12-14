@@ -330,7 +330,7 @@ final class MaterialsTest extends ApiTestCase
         return static::_dataFactory($id, $materials->all());
     }
 
-    public function testGetAll()
+    public function testGetAll(): void
     {
         $this->client->get('/api/materials');
         $this->assertStatusCode(StatusCode::STATUS_OK);
@@ -393,7 +393,7 @@ final class MaterialsTest extends ApiTestCase
         $this->assertResponsePaginatedData(0);
     }
 
-    public function testGetAllSearchByName()
+    public function testGetAllSearchByName(): void
     {
         $this->client->get('/api/materials?search=console');
         $this->assertStatusCode(StatusCode::STATUS_OK);
@@ -402,13 +402,13 @@ final class MaterialsTest extends ApiTestCase
         $this->assertEquals('CL3', $results['data'][0]['reference']);
     }
 
-    public function testGetMaterialNotFound()
+    public function testGetMaterialNotFound(): void
     {
         $this->client->get('/api/materials/999');
         $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
-    public function testGetAllWhileEvent()
+    public function testGetAllWhileEvent(): void
     {
         $this->client->get('/api/materials/while-event/1');
         $this->assertStatusCode(StatusCode::STATUS_OK);
@@ -440,20 +440,20 @@ final class MaterialsTest extends ApiTestCase
         ]);
     }
 
-    public function testGetOne()
+    public function testGetOne(): void
     {
         $this->client->get('/api/materials/1');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData(self::data(1, Material::SERIALIZE_DETAILS));
     }
 
-    public function testGetTagsNotFound()
+    public function testGetTagsNotFound(): void
     {
         $this->client->get('/api/materials/999/tags');
         $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
-    public function testGetTags()
+    public function testGetTags(): void
     {
         $this->client->get('/api/materials/1/tags');
         $this->assertStatusCode(StatusCode::STATUS_OK);
@@ -462,7 +462,7 @@ final class MaterialsTest extends ApiTestCase
         ]);
     }
 
-    public function testGetAllByTagsNotFound()
+    public function testGetAllByTagsNotFound(): void
     {
         $this->client->get('/api/materials?tags[0]=notFound');
         $this->assertStatusCode(StatusCode::STATUS_OK);
@@ -476,44 +476,32 @@ final class MaterialsTest extends ApiTestCase
         ]);
     }
 
-    public function testGetAllByTags()
+    public function testGetAllByTags(): void
     {
         $this->client->get('/api/materials?tags[0]=1');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponsePaginatedData(3);
     }
 
-    public function testGetAllByPark()
+    public function testGetAllByPark(): void
     {
         $this->client->get('/api/materials?park=1');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponsePaginatedData(7);
     }
 
-    public function testGetAllByCategoryAndSubCategory()
+    public function testGetAllByCategoryAndSubCategory(): void
     {
         $this->client->get('/api/materials?category=1&subCategory=1');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponsePaginatedData(2);
     }
 
-    public function testGetAllWithDateForQuantities()
+    public function testGetAllWithQuantitiesPeriod(): void
     {
-        // - Récupère le matériel avec les quantités qu'il reste pour un jour
-        // - pendant lequel se déroulent les événements n°1 et n°2
-        $this->client->get('/api/materials?dateForQuantities=2018-12-18');
-        $this->assertStatusCode(StatusCode::STATUS_OK);
-        $response = $this->_getResponseAsArray();
-        $this->assertCount(8, $response['data']);
-
-        foreach ([2, 32, 0, 2, 30, 0, 1, 2] as $index => $expected) {
-            $this->assertArrayHasKey('available_quantity', $response['data'][$index]);
-            $this->assertEquals($expected, $response['data'][$index]['available_quantity']);
-        }
-
         // - Récupère le matériel avec les quantités qu'il reste pour une période
         // - pendant laquelle se déroulent les événements n°1, n°2 et n°3
-        $this->client->get('/api/materials?dateForQuantities[start]=2018-12-16&dateForQuantities[end]=2018-12-19');
+        $this->client->get('/api/materials?quantitiesPeriod[start]=2018-12-16&quantitiesPeriod[end]=2018-12-19');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $response = $this->_getResponseAsArray();
         $this->assertCount(8, $response['data']);
@@ -524,7 +512,7 @@ final class MaterialsTest extends ApiTestCase
         }
 
         // - Test avec une période non valide (retourne les quantités en stock uniquement)
-        $this->client->get('/api/materials?dateForQuantities[end]=2018-12-18');
+        $this->client->get('/api/materials?quantitiesPeriod[end]=2018-12-18');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $response = $this->_getResponseAsArray();
         $this->assertCount(8, $response['data']);
@@ -535,14 +523,14 @@ final class MaterialsTest extends ApiTestCase
         }
     }
 
-    public function testCreateWithoutData()
+    public function testCreateWithoutData(): void
     {
         $this->client->post('/api/materials');
         $this->assertStatusCode(StatusCode::STATUS_BAD_REQUEST);
         $this->assertApiErrorMessage("No data was provided.");
     }
 
-    public function testCreateBadData()
+    public function testCreateBadData(): void
     {
         $this->client->post('/api/materials', [
             'name' => 'Analog Mixing Console Yamaha RM800',
@@ -554,11 +542,11 @@ final class MaterialsTest extends ApiTestCase
             'stock_quantity' => 1,
         ]);
         $this->assertApiValidationError([
-            'reference' => ['This field is mandatory'],
+            'reference' => ['This field is mandatory.'],
         ]);
     }
 
-    public function testCreateDuplicate()
+    public function testCreateDuplicate(): void
     {
         $this->client->post('/api/materials', [
             'name' => 'Analog Mixing Console Yamaha CL3',
@@ -572,7 +560,7 @@ final class MaterialsTest extends ApiTestCase
         $this->assertApiValidationError();
     }
 
-    public function testCreateWithTags()
+    public function testCreateWithTags(): void
     {
         Carbon::setTestNow(Carbon::create(2022, 10, 22, 18, 42, 36));
 
@@ -618,7 +606,7 @@ final class MaterialsTest extends ApiTestCase
         ]);
     }
 
-    public function testCreateWithAttributes()
+    public function testCreateWithAttributes(): void
     {
         Carbon::setTestNow(Carbon::create(2022, 10, 22, 18, 42, 36));
 
@@ -688,7 +676,7 @@ final class MaterialsTest extends ApiTestCase
         ]);
     }
 
-    public function testUpdate()
+    public function testUpdate(): void
     {
         Carbon::setTestNow(Carbon::create(2023, 5, 26, 16, 0, 0));
 
@@ -736,7 +724,7 @@ final class MaterialsTest extends ApiTestCase
         ));
     }
 
-    public function testDeleteAndDestroy()
+    public function testDeleteAndDestroy(): void
     {
         // - First call: soft delete.
         $this->client->delete('/api/materials/5');
@@ -751,13 +739,13 @@ final class MaterialsTest extends ApiTestCase
         $this->assertNull(Material::withTrashed()->find(5));
     }
 
-    public function testRestoreInexistent()
+    public function testRestoreInexistent(): void
     {
         $this->client->put('/api/materials/999/restore');
         $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
-    public function testRestore()
+    public function testRestore(): void
     {
         // - First, delete material #3
         $this->client->delete('/api/materials/3');
@@ -769,7 +757,7 @@ final class MaterialsTest extends ApiTestCase
         $this->assertNotNull(Material::find(2));
     }
 
-    public function testAttachDocument()
+    public function testAttachDocument(): void
     {
         Carbon::setTestNow(Carbon::create(2022, 10, 22, 18, 42, 36));
 
@@ -893,7 +881,7 @@ final class MaterialsTest extends ApiTestCase
         }
     }
 
-    public function testGetDocuments()
+    public function testGetDocuments(): void
     {
         // - Matériel inexistant.
         $this->client->get('/api/materials/999/documents');
@@ -913,11 +901,11 @@ final class MaterialsTest extends ApiTestCase
         $this->assertResponseData([]);
     }
 
-    public function testGetBookings()
+    public function testGetBookings(): void
     {
         $this->client->get('/api/materials/1/bookings');
         $this->assertStatusCode(StatusCode::STATUS_OK);
-        $this->assertResponseData([
+        $this->assertResponsePaginatedData(4, [
             array_replace(
                 EventsTest::data(7, Event::SERIALIZE_BOOKING_SUMMARY),
                 [
@@ -947,9 +935,22 @@ final class MaterialsTest extends ApiTestCase
                 ],
             ),
         ]);
+
+        // - Avec une limite et un numéro de page.
+        $this->client->get('/api/materials/1/bookings?page=2&limit=1');
+        $this->assertStatusCode(StatusCode::STATUS_OK);
+        $this->assertResponsePaginatedData(4, [
+            array_replace(
+                EventsTest::data(4, Event::SERIALIZE_BOOKING_SUMMARY),
+                [
+                    'entity' => 'event',
+                    'pivot' => ['quantity' => 1],
+                ],
+            ),
+        ]);
     }
 
-    public function testGetAllPdf()
+    public function testGetAllPdf(): void
     {
         Carbon::setTestNow(Carbon::create(2022, 9, 23, 12, 0, 0));
 

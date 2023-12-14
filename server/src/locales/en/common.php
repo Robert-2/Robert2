@@ -159,10 +159,10 @@ return [
     => "Unit Price (excl. VAT)",
 
     "daily-total"
-    => "Total / day",
+    => "Total\xc2\xa0/\xc2\xa0day",
 
     "daily-total-excl-tax"
-    => "Total excl. VAT / day",
+    => "Total excl. VAT\xc2\xa0/\xc2\xa0day",
 
     "total"
     => "Total",
@@ -231,7 +231,7 @@ return [
     => "This event is confirmed.",
 
     "description-notes"
-    => "Description / Notes",
+    => "Description\xc2\xa0/\xc2\xa0Notes",
 
     "materials"
     => "Materials",

@@ -1,4 +1,5 @@
 import './index.scss';
+import { defineComponent } from '@vue/composition-api';
 import axios from 'axios';
 import HttpCode from 'status-code-enum';
 import apiTechnicians from '@/stores/api/technicians';
@@ -18,9 +19,9 @@ const TABS = [
     'documents',
 ];
 
-// @vue/component
-export default {
-    name: 'TechnicianViewPage',
+/** Page de détails d'un technicien. */
+const TechnicianView = defineComponent({
+    name: 'TechnicianView',
     data() {
         return {
             id: parseInt(this.$route.params.id, 10),
@@ -78,8 +79,8 @@ export default {
                 return;
             }
 
-            const { documentsRef } = this.$refs;
-            if (!documentsRef?.isUploading()) {
+            const $documents = this.$refs.documents;
+            if (!$documents?.isUploading()) {
                 return;
             }
 
@@ -117,7 +118,7 @@ export default {
             } catch (error) {
                 if (!axios.isAxiosError(error)) {
                     // eslint-disable-next-line no-console
-                    console.error(`Error ocurred while retrieving technician #${this.id} data`, error);
+                    console.error(`Error occurred while retrieving technician #${this.id} data`, error);
                     this.criticalError = ERROR.UNKNOWN;
                 } else {
                     const { status = HttpCode.ServerErrorInternal } = error.response ?? {};
@@ -168,11 +169,13 @@ export default {
                             <Schedule technician={technician} />
                         </Tab>
                         <Tab title={__('documents')} icon="file-pdf">
-                            <Documents ref="documentsRef" technician={technician} />
+                            <Documents ref="documents" technician={technician} />
                         </Tab>
                     </Tabs>
                 </div>
             </Page>
         );
     },
-};
+});
+
+export default TechnicianView;

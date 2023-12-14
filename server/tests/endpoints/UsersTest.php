@@ -84,7 +84,7 @@ final class UsersTest extends ApiTestCase
         return static::_dataFactory($id, $users->all());
     }
 
-    public function testGetAll()
+    public function testGetAll(): void
     {
         $this->client->get('/api/users');
         $this->assertStatusCode(StatusCode::STATUS_OK);
@@ -101,7 +101,7 @@ final class UsersTest extends ApiTestCase
         $this->assertResponsePaginatedData(0);
     }
 
-    public function testGetAllOnlyMembers()
+    public function testGetAllOnlyMembers(): void
     {
         $this->client->get(sprintf('/api/users?group=%s', Group::MEMBER));
         $this->assertStatusCode(StatusCode::STATUS_OK);
@@ -111,32 +111,32 @@ final class UsersTest extends ApiTestCase
         ]);
     }
 
-    public function testGetOneNotFound()
+    public function testGetOneNotFound(): void
     {
         $this->client->get('/api/users/9999');
         $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
-    public function testForbidGetSelfWithId()
+    public function testForbidGetSelfWithId(): void
     {
         $this->client->get('/api/users/1');
         $this->assertStatusCode(StatusCode::STATUS_FORBIDDEN);
     }
 
-    public function testGetOne()
+    public function testGetOne(): void
     {
         $this->client->get('/api/users/self');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData(self::data(1, User::SERIALIZE_DETAILS));
     }
 
-    public function testGetOneSettingsNotFound()
+    public function testGetOneSettingsNotFound(): void
     {
         $this->client->get('/api/users/9999/settings');
         $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
-    public function testGetOneSettings()
+    public function testGetOneSettings(): void
     {
         $this->client->get('/api/users/1/settings');
         $this->assertStatusCode(StatusCode::STATUS_OK);
@@ -145,20 +145,20 @@ final class UsersTest extends ApiTestCase
         ]);
     }
 
-    public function testUpdateSettingsNoData()
+    public function testUpdateSettingsNoData(): void
     {
         $this->client->put('/api/users/1/settings', []);
         $this->assertStatusCode(StatusCode::STATUS_BAD_REQUEST);
         $this->assertApiErrorMessage("No data was provided.");
     }
 
-    public function testUpdateSettingsNoUser()
+    public function testUpdateSettingsNoUser(): void
     {
         $this->client->put('/api/users/999/settings', ['language' => 'fr']);
         $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
-    public function testUpdateSettings()
+    public function testUpdateSettings(): void
     {
         $this->client->put('/api/users/1/settings', [
             'language' => 'fr',
@@ -169,7 +169,7 @@ final class UsersTest extends ApiTestCase
         ]);
     }
 
-    public function testCreateBadData()
+    public function testCreateBadData(): void
     {
         $this->client->post('/api/users', [
             'email' => 'not-an-email',
@@ -178,37 +178,37 @@ final class UsersTest extends ApiTestCase
         ]);
         $this->assertApiValidationError([
             'pseudo' => [
-                "This field is mandatory",
+                "This field is mandatory.",
             ],
             'email' => [
-                "This email address is not valid",
+                "This email address is invalid.",
             ],
             'group' => [
-                "This field is mandatory",
-                "One of the following rules must be verified",
-                'Must equal "admin"',
-                'Must equal "member"',
-                'Must equal "visitor"',
-                'Must equal "external"',
+                "This field is mandatory.",
+                "One of the following rules must be verified:",
+                'Must equal "admin".',
+                'Must equal "member".',
+                'Must equal "visitor".',
+                'Must equal "external".',
             ],
             'password' => [
-                "This field is mandatory",
-                "4 min. characters, 191 max. characters",
+                "This field is mandatory.",
+                "4 min. characters, 191 max. characters.",
             ],
             'first_name' => [
-                "This field is mandatory",
-                "This field contains some unauthorized characters",
-                "2 min. characters, 35 max. characters",
+                "This field is mandatory.",
+                "This field contains some unauthorized characters.",
+                "2 min. characters, 35 max. characters.",
             ],
             'last_name' => [
-                "This field is mandatory",
-                "This field contains some unauthorized characters",
-                "2 min. characters, 35 max. characters",
+                "This field is mandatory.",
+                "This field contains some unauthorized characters.",
+                "2 min. characters, 35 max. characters.",
             ],
         ]);
     }
 
-    public function testCreateDuplicate()
+    public function testCreateDuplicate(): void
     {
         $this->client->post('/api/users', [
             'pseudo' => 'test1',
@@ -219,12 +219,12 @@ final class UsersTest extends ApiTestCase
             'group' => Group::MEMBER,
         ]);
         $this->assertApiValidationError([
-            'pseudo' => ["This pseudo is already in use"],
-            'email' => ["This email is already in use"],
+            'pseudo' => ["This pseudo is already in use."],
+            'email' => ["This email is already in use."],
         ]);
     }
 
-    public function testCreate()
+    public function testCreate(): void
     {
         $this->client->post('/api/users', [
             'email' => 'nobody@test.org',
@@ -249,26 +249,26 @@ final class UsersTest extends ApiTestCase
         ]);
     }
 
-    public function testUpdateNoData()
+    public function testUpdateNoData(): void
     {
         $this->client->put('/api/users/2', []);
         $this->assertStatusCode(StatusCode::STATUS_BAD_REQUEST);
         $this->assertApiErrorMessage("No data was provided.");
     }
 
-    public function testUpdateNotFound()
+    public function testUpdateNotFound(): void
     {
         $this->client->put('/api/users/999', ['pseudo' => '__inexistant__']);
         $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
-    public function testForbidUpdateSelfWithId()
+    public function testForbidUpdateSelfWithId(): void
     {
         $this->client->put('/api/users/1', ['pseudo' => 'Admin']);
         $this->assertStatusCode(StatusCode::STATUS_FORBIDDEN);
     }
 
-    public function testUpdate()
+    public function testUpdate(): void
     {
         // - L'utilisateur lui-même
         $updatedData = ['pseudo' => 'Admin'];
@@ -295,7 +295,7 @@ final class UsersTest extends ApiTestCase
         ));
     }
 
-    public function testDeleteAndDestroy()
+    public function testDeleteAndDestroy(): void
     {
         // - First call: soft delete.
         $this->client->delete('/api/users/3');
@@ -317,13 +317,13 @@ final class UsersTest extends ApiTestCase
         $this->assertNotEmpty($user->deleted_at);
     }
 
-    public function testRestoreNotFound()
+    public function testRestoreNotFound(): void
     {
         $this->client->put('/api/users/restore/999');
         $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
-    public function testRestore()
+    public function testRestore(): void
     {
         // - First, delete user #2
         $this->client->delete('/api/users/2');

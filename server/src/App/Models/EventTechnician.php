@@ -3,7 +3,10 @@ declare(strict_types=1);
 
 namespace Loxya\Models;
 
+use Carbon\Carbon;
+use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Collection;
+use Loxya\Contracts\PeriodInterface;
 use Loxya\Contracts\Serializable;
 use Loxya\Models\Traits\Serializer;
 use Respect\Validation\Validator as V;
@@ -29,8 +32,6 @@ final class EventTechnician extends BaseModel implements Serializable
     public const SERIALIZE_DETAILS = 'details';
 
     public $timestamps = false;
-
-    protected $withoutAlreadyBusyChecks = false;
 
     public function __construct(array $attributes = [])
     {
@@ -85,25 +86,25 @@ final class EventTechnician extends BaseModel implements Serializable
             return 'invalid-date';
         }
 
-        $utcTimezone = new \DateTimeZone('UTC');
-        $start = new \DateTimeImmutable($this->start_time, $utcTimezone);
-        $end = new \DateTimeImmutable($this->end_time, $utcTimezone);
+        $start = new \DateTimeImmutable($this->start_time);
+        $end = new \DateTimeImmutable($this->end_time);
 
         if ($start > $end) {
             return 'end-date-must-be-later';
         }
 
-        // - Les horaires des techniciens étant en UTC, on passe les dates de
-        //   l'événement (qui sont en local time) en UTC aussi pour les comparer.
-        $eventStart = (new \DateTimeImmutable($this->event->start_date))->setTimezone($utcTimezone);
-        $eventEnd = (new \DateTimeImmutable($this->event->end_date))->setTimezone($utcTimezone);
+        $eventStart = $this->event->getStartDate();
+        $eventEnd = $this->event->getEndDate();
         if ($start < $eventStart || $end < $eventStart) {
             return 'technician-assignation-before-event';
         }
 
-        // - On ajoute 1 seconde à la fin de l'événement car le technicien peut être
-        //   assigné jusqu'à minuit pile (alors que l'événement se termine à 23:59:59)
-        $normalizedEventEnd = $eventEnd->add(new \DateInterval('PT1S'));
+        // - On utilise le début de la journée suivante comme limite car les techniciens
+        //   utilisent des heures pleines tandis que les événements utilisent `23:59:59`
+        //   comme fin de journée.
+        $normalizedEventEnd = $eventEnd
+            ->add(new \DateInterval('P1D'))
+            ->startOfDay();
         if ($start > $eventEnd || $end > $normalizedEventEnd) {
             return 'technician-assignation-after-event';
         }
@@ -115,11 +116,10 @@ final class EventTechnician extends BaseModel implements Serializable
             return 'date-precision-must-be-quarter';
         }
 
-        if ($this->withoutAlreadyBusyChecks) {
-            return true;
-        }
-
-        $technicianHasOtherEvents = static::where('id', '!=', $this->id)
+        $isAlreadyBusy = static::query()
+            ->when($this->exists, fn ($query) => (
+                $query->where('id', '!=', $this->id)
+            ))
             ->where('technician_id', $this->technician_id)
             ->where([
                 ['end_time', '>', $this->start_time],
@@ -127,11 +127,8 @@ final class EventTechnician extends BaseModel implements Serializable
             ])
             ->whereRelation('event', 'deleted_at', null)
             ->exists();
-        if ($technicianHasOtherEvents) {
-            return 'technician-already-busy-for-this-period';
-        }
 
-        return true;
+        return !$isAlreadyBusy ?: 'technician-already-busy-for-this-period';
     }
 
     // ------------------------------------------------------
@@ -194,21 +191,10 @@ final class EventTechnician extends BaseModel implements Serializable
         'position',
     ];
 
-    public function setPositionAttribute($value)
+    public function setPositionAttribute($value): void
     {
         $value = is_string($value) ? trim($value) : $value;
         $this->attributes['position'] = $value;
-    }
-
-    /**
-     * Permet d'ignorer la validation qui vérifie le chevauchement avec les dates des autres assignations.
-     * Utile quand on est certain que les autres assignations vont être supprimées avant le save
-     * (voir static::flushForEvent). À chaîner avec un ->validate().
-     */
-    public function withoutAlreadyBusyChecks(): self
-    {
-        $this->withoutAlreadyBusyChecks = true;
-        return $this;
     }
 
     // ------------------------------------------------------
@@ -218,33 +204,30 @@ final class EventTechnician extends BaseModel implements Serializable
     // ------------------------------------------------------
 
     /**
-     * @param Collection|EventTechnician[] $eventTechnicians
-     * @param \DateTime $prevStartDate
-     * @param array $newEventData
+     * @param Collection<array-key, EventTechnician> $eventTechnicians
+     * @param CarbonInterface $prevStartDate
+     * @param PeriodInterface $newPeriod
      *
      * @return array
      */
     public static function getForNewDates(
         Collection $eventTechnicians,
-        \DateTime $prevStartDate,
-        array $newEventData
+        CarbonInterface $prevStartDate,
+        PeriodInterface $newPeriod,
     ): array {
-        $offsetInterval = $prevStartDate->diff(new \DateTime($newEventData['start_date']));
-
-        // - Les horaires des techniciens étant en UTC, on passe les dates de
-        //   l'événement (qui sont en local time) en UTC aussi pour les comparer.
-        $utcTimezone = new \DateTimeZone('UTC');
-        $eventStart = (new \DateTimeImmutable($newEventData['start_date']))->setTimezone($utcTimezone);
-        $eventEnd = (new \DateTimeImmutable($newEventData['end_date']))->setTimezone($utcTimezone);
+        $eventStart = $newPeriod->getStartDate();
+        $eventEnd = $newPeriod->getEndDate();
+        $offsetInterval = $prevStartDate->diff($eventStart);
 
         $technicians = [];
         foreach ($eventTechnicians as $eventTechnician) {
-            $technicianStartTime = roundDate(
-                (new \DateTime($eventTechnician->start_time, $utcTimezone))->add($offsetInterval)
-            );
-            $technicianEndTime = roundDate(
-                (new \DateTime($eventTechnician->end_time, $utcTimezone))->add($offsetInterval)
-            );
+            $technicianStartTime = (new Carbon($eventTechnician->start_time))
+                ->add($offsetInterval)
+                ->roundMinutes(15);
+
+            $technicianEndTime = (new Carbon($eventTechnician->end_time))
+                ->add($offsetInterval)
+                ->roundMinutes(15);
 
             if ($technicianStartTime > $eventEnd) {
                 continue;
@@ -256,9 +239,12 @@ final class EventTechnician extends BaseModel implements Serializable
                 $technicianStartTime = $eventStart;
             }
             if ($technicianEndTime >= $eventEnd) {
-                // - On ajoute 1 seconde à la fin de l'événement car le technicien doit
-                //   être assigné à minuit pile et non à 23:59:59 comme l'événement.
-                $technicianEndTime = clone($eventEnd)->add(new \DateInterval('PT1S'));
+                // - On utilise le début de la journée car les techniciens utilisent
+                //   des heures pleines tandis que les événements utilisent `23:59:59`
+                //   comme fin de journée.
+                $technicianEndTime = clone($eventEnd)
+                    ->add(new \DateInterval('P1D'))
+                    ->startOfDay();
             }
 
             $technicians[] = [
@@ -272,7 +258,7 @@ final class EventTechnician extends BaseModel implements Serializable
         return $technicians;
     }
 
-    public static function flushForEvent(int $eventId)
+    public static function flushForEvent(int $eventId): void
     {
         static::where('event_id', $eventId)->delete();
     }

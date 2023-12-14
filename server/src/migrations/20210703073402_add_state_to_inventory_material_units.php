@@ -6,7 +6,7 @@ use Loxya\Config\Config;
 
 final class AddStateToInventoryMaterialUnits extends AbstractMigration
 {
-    public function up()
+    public function up(): void
     {
         $inventoryMaterialUnitsTable = $this->table('inventory_material_units');
         $inventoryMaterialUnitsTable
@@ -34,7 +34,7 @@ final class AddStateToInventoryMaterialUnits extends AbstractMigration
             ])
             ->save();
 
-        $prefix = Config::getSettings('db')['prefix'];
+        $prefix = Config::get('db.prefix');
 
         $units = $this->fetchAll(sprintf(
             'SELECT imu.`id`, mu.`state`
@@ -66,7 +66,7 @@ final class AddStateToInventoryMaterialUnits extends AbstractMigration
             ->save();
     }
 
-    public function down()
+    public function down(): void
     {
         $inventoryMaterialUnitsTable = $this->table('inventory_material_units');
         $inventoryMaterialUnitsTable

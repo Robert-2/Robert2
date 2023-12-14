@@ -7,8 +7,10 @@ const eventMaterials: EventMaterial[] = [
         pivot: {
             quantity: 1,
             quantity_missing: 0,
+            quantity_departed: null,
             quantity_returned: 0,
             quantity_returned_broken: 0,
+            departure_comment: null,
         },
     },
     {
@@ -16,8 +18,10 @@ const eventMaterials: EventMaterial[] = [
         pivot: {
             quantity: 2,
             quantity_missing: 0,
+            quantity_departed: null,
             quantity_returned: 0,
             quantity_returned_broken: 0,
+            departure_comment: null,
         },
     },
     {
@@ -25,8 +29,10 @@ const eventMaterials: EventMaterial[] = [
         pivot: {
             quantity: 1,
             quantity_missing: 0,
+            quantity_departed: null,
             quantity_returned: 0,
             quantity_returned_broken: 0,
+            departure_comment: null,
         },
     },
     {
@@ -34,8 +40,10 @@ const eventMaterials: EventMaterial[] = [
         pivot: {
             quantity: 3,
             quantity_missing: 0,
+            quantity_departed: null,
             quantity_returned: 0,
             quantity_returned_broken: 0,
+            departure_comment: 'En un seul paquet.',
         },
     },
     {
@@ -43,8 +51,10 @@ const eventMaterials: EventMaterial[] = [
         pivot: {
             quantity: 3,
             quantity_missing: 0,
+            quantity_departed: null,
             quantity_returned: 0,
             quantity_returned_broken: 0,
+            departure_comment: null,
         },
     },
 ];

@@ -9,14 +9,14 @@ final class MaterialObserver
 {
     public $afterCommit = true;
 
-    public function updated(Material $material)
+    public function updated(Material $material): void
     {
         debug("[Event] Matériel #%s mis à jour.", $material->id);
 
         $this->onUpdateSyncCache($material);
     }
 
-    public function restored(Material $material)
+    public function restored(Material $material): void
     {
         debug("[Event] Matériel #%s restauré.", $material->id);
 
@@ -36,7 +36,7 @@ final class MaterialObserver
         }
     }
 
-    public function deleting(Material $material)
+    public function deleting(Material $material): void
     {
         $isSoftDeleting = !$material->isForceDeleting();
         if (!$isSoftDeleting) {

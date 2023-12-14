@@ -9,14 +9,13 @@ use Illuminate\Support\Str;
 use Loxya\Config\Config;
 use Loxya\Http\Request;
 use Loxya\Models\User;
+use Loxya\Services\Auth\Contracts\AuthenticatorInterface;
 
 final class JWT implements AuthenticatorInterface
 {
-    private $settings;
-
-    public function __construct()
+    public function isEnabled(): bool
     {
-        $this->settings = Config::getSettings();
+        return true;
     }
 
     public function getUser(Request $request): ?User
@@ -35,9 +34,10 @@ final class JWT implements AuthenticatorInterface
         return User::find($decoded['user']->id);
     }
 
-    public function logout(bool $full = true): bool
+    public function clearPersistentData(): void
     {
-        return static::clearRegisteredToken();
+        $cookieName = Config::get('auth.cookie');
+        setcookie($cookieName, '', time() - 42000, '/');
     }
 
     // ------------------------------------------------------
@@ -49,7 +49,7 @@ final class JWT implements AuthenticatorInterface
     private function fetchToken(Request $request): string
     {
         // - Tente de récupérer le token dans les headers HTTP.
-        $headerName = $this->settings['httpAuthHeader'];
+        $headerName = Config::get('httpAuthHeader');
         $header = $request->getHeaderLine(sprintf('HTTP_%s', strtoupper(Str::snake($headerName))));
         if (!empty($header)) {
             if (preg_match('/Bearer\s+(.*)$/i', $header, $matches)) {
@@ -59,7 +59,7 @@ final class JWT implements AuthenticatorInterface
 
         if (!$request->isApi()) {
             // - Sinon tente de récupérer le token dans les cookies.
-            $cookieName = $this->settings['auth']['cookie'];
+            $cookieName = Config::get('auth.cookie');
             $cookieParams = $request->getCookieParams();
             if (isset($cookieParams[$cookieName])) {
                 if (preg_match('/Bearer\s+(.*)$/i', $cookieParams[$cookieName], $matches)) {
@@ -75,7 +75,7 @@ final class JWT implements AuthenticatorInterface
     private function decodeToken(string $token): array
     {
         try {
-            $key = new JWTKey($this->settings['JWTSecret'], 'HS256');
+            $key = new JWTKey(Config::get('JWTSecret'), 'HS256');
             $decoded = JWTCore::decode($token, $key);
             return (array) $decoded;
         } catch (\Exception $exception) {
@@ -85,13 +85,13 @@ final class JWT implements AuthenticatorInterface
 
     // ------------------------------------------------------
     // -
-    // -    Méthodes publiques statiques
+    // -    Méthodes "helpers" statiques
     // -
     // ------------------------------------------------------
 
     public static function generateToken(User $user): string
     {
-        $duration = Config::getSettings()['sessionExpireHours'];
+        $duration = Config::get('sessionExpireHours');
         $expires = new \DateTime(sprintf('now +%d hours', $duration));
 
         $payload = [
@@ -100,36 +100,17 @@ final class JWT implements AuthenticatorInterface
             'user' => $user->toArray(),
         ];
 
-        $secret = Config::getSettings('JWTSecret');
+        $secret = Config::get('JWTSecret');
         return JWTCore::encode($payload, $secret, 'HS256');
     }
 
-    public static function registerToken(User $user, $forceSessionOnly = false): string
+    public static function registerSessionToken(User $user): string
     {
-        $settings = Config::getSettings();
         $token = static::generateToken($user);
 
-        $expireTime = 0;
-        if (!$forceSessionOnly) {
-            $expireHours = Config::getSettings()['sessionExpireHours'];
-            if ($expireHours && $expireHours !== 0) {
-                $expireTime = time() + $expireHours * 60 * 60;
-            }
-        }
-
-        setcookie(
-            $settings['auth']['cookie'],
-            $token,
-            $expireTime,
-            '/'
-        );
+        $cookieName = Config::get('auth.cookie');
+        setcookie($cookieName, $token, 0, '/');
 
         return $token;
-    }
-
-    public static function clearRegisteredToken(): bool
-    {
-        $cookieName = Config::getSettings()['auth']['cookie'];
-        return setcookie($cookieName, '', time() - 42000, '/');
     }
 }

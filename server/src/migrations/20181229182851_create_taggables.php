@@ -5,7 +5,7 @@ use Phinx\Migration\AbstractMigration;
 
 final class CreateTaggables extends AbstractMigration
 {
-    public function up()
+    public function up(): void
     {
         $taggables = $this->table('taggables', [
             'id' => false,
@@ -26,7 +26,7 @@ final class CreateTaggables extends AbstractMigration
         $this->table('persons_tags')->drop()->save();
     }
 
-    public function down()
+    public function down(): void
     {
         $personsTags = $this->table('persons_tags', [
             'id' => false,

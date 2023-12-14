@@ -3,7 +3,7 @@
 {% block title %}{{ translate("Install") }} - {{ translate(step) }}{% endblock %}
 
 {% block head %}
-<link rel="stylesheet" type="text/css" href="css/style.css">
+<link rel="stylesheet" type="text/css" href="{{ asset('/install/css/style.css') }}">
 {% endblock %}
 
 {% block body %}
@@ -18,7 +18,7 @@
         </div>
         <footer class="layout__footer footer">
             <div class="footer__version">
-                Robert2, version <strong>{{version()}}</strong>
+                Loxya, version <strong>{{version()}}</strong>
             </div>
             <div class="footer__licence">
                 &copy; Pulsanova 2017-{{ 'now'|date('Y') }} - Tous droits réservés.

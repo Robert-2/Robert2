@@ -34,6 +34,7 @@ class App
         $this->container = Kernel::boot()->getContainer();
         $this->app = AppFactory::create(null, $this->container);
 
+        // NOTE: Les middlewares sont appelés du dernier ajouté au premier.
         $this->configureMiddlewares();
         $this->configureRouter();
         $this->configureErrorHandlers();
@@ -65,9 +66,9 @@ class App
     // -
     // ------------------------------------------------------
 
-    protected function configureCors()
+    protected function configureCors(): void
     {
-        $isCORSEnabled = (bool) $this->container->get('settings')['enableCORS'];
+        $isCORSEnabled = (bool) Config::get('enableCORS', false);
         if (Config::getEnv() === 'test' || !$isCORSEnabled) {
             return;
         }
@@ -87,19 +88,17 @@ class App
         });
     }
 
-    protected function configureRouter()
+    protected function configureRouter(): void
     {
-        $settings = $this->container->get('settings');
-        $isCORSEnabled = (bool) $settings['enableCORS'] && Config::getEnv() !== 'test';
-        $useRouterCache = (bool) $settings['useRouterCache'] && Config::getEnv() === 'production';
+        $isCORSEnabled = (bool) Config::get('enableCORS', false) && Config::getEnv() !== 'test';
+        $useRouterCache = (bool) Config::get('useRouterCache') && Config::getEnv() === 'production';
         $routeCollector = $this->app->getRouteCollector();
 
         // - Ajoute le parseur de route au conteneur.
         $this->container->set(RouteParserInterface::class, $routeCollector->getRouteParser());
 
         // - Base Path
-        $baseUrlParts = parse_url(Config::getSettings('apiUrl'));
-        $basePath = rtrim($baseUrlParts['path'] ?? '', '/');
+        $basePath = rtrim(Config::getBaseUri()->getPath(), '/');
         $routeCollector->setBasePath($basePath);
 
         // - Route cache
@@ -144,6 +143,9 @@ class App
         // -- Routes: "statics"
         //
 
+        // - Health check
+        $this->app->get('/healthcheck', $getActionFqn('EntryController:healthcheck'));
+
         // - Install
         $this->app->map(['GET', 'POST'], '/install', $getActionFqn('SetupController:index'));
         $this->app->get('/install/end', $getActionFqn('SetupController:endInstall'));
@@ -166,19 +168,21 @@ class App
         $this->app->get('/[{path:.*}]', $getActionFqn('EntryController:default'));
     }
 
-    protected function configureMiddlewares()
+    protected function configureMiddlewares(): void
     {
-        $this->app->add(new Middlewares\BodyParser);
-        $this->app->add(new Middlewares\Acl);
+        // NOTE: Les middlewares sont appelés du dernier ajouté au premier.
+        $this->app->add(Middlewares\Pagination::class);
+        $this->app->add(Middlewares\Acl::class);
         $this->app->add([$this->container->get('auth'), 'middleware']);
-        $this->app->add(new Middlewares\Pagination);
+        $this->app->add(new Middlewares\BodyParser);
+        $this->app->add(Middlewares\SessionStart::class);
     }
 
-    protected function configureErrorHandlers()
+    protected function configureErrorHandlers(): void
     {
         $shouldLog = Config::getEnv() !== 'test';
         $displayErrorDetails = (
-            (bool) $this->container->get('settings')['displayErrorDetails']
+            (bool) Config::get('displayErrorDetails', false)
             || in_array(Config::getEnv(), ['production', 'test'], true)
         );
 

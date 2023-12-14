@@ -5,7 +5,7 @@ import { defineComponent } from '@vue/composition-api';
 import Fragment from '@/components/Fragment';
 import config from '@/globals/config';
 import formatAmount from '@/utils/formatAmount';
-import EmptyMessage from '@/themes/default/components/EmptyMessage';
+import StateMessage, { State } from '@/themes/default/components/StateMessage';
 import Button from '@/themes/default/components/Button';
 import Icon from '@/themes/default/components/Icon';
 import Availability from './Availability';
@@ -16,6 +16,7 @@ import type { PropType } from '@vue/composition-api';
 import type { Tag } from '@/stores/api/tags';
 import type { SelectedQuantities, Filters } from '../../_types';
 import type { MaterialWithAvailabilities as Material } from '@/stores/api/materials';
+import type { ClientTableInstance } from 'vue-tables-2-premium';
 
 type FilterResolver<T extends keyof Filters> = (
     (material: Material, filter: NonNullable<Filters[T]>) => boolean
@@ -74,9 +75,9 @@ const MaterialsSelectorList = defineComponent({
                 preserveState: false,
                 filterByColumn: false,
                 showChildRowToggler: false,
-                orderBy: { column: 'reference', ascending: true },
+                orderBy: { column: 'name', ascending: true },
                 perPage: filters.onlySelected ? NO_PAGINATION_LIMIT : config.defaultPaginationLimit,
-                sortable: ['reference', 'name'],
+                sortable: ['name'],
                 columnsClasses: {
                     'child-toggler': 'MaterialsSelectorList__col MaterialsSelectorList__col--child-toggler ',
                     'quantity': 'MaterialsSelectorList__col MaterialsSelectorList__col--quantity ',
@@ -90,6 +91,7 @@ const MaterialsSelectorList = defineComponent({
                 initFilters: filters,
                 customSorting: {
                     custom: (ascending: boolean) => (a: Material, b: Material) => {
+                        // @ts-expect-error -- À sortir du `data()` qui n'est pas censé acceder à l'instance du component...
                         const { filters: _filters, manualOrder } = this;
                         let result = null;
 
@@ -180,17 +182,23 @@ const MaterialsSelectorList = defineComponent({
     },
     watch: {
         openChildRows(openChildRows: Array<Material['id']>) {
-            const $coreTable = this.$refs.table?.$refs.table;
+            const $table = (this.$refs.table as ClientTableInstance | undefined);
+            const $coreTable = $table?.$refs.table;
             if ($coreTable) {
                 $coreTable.openChildRows = [...openChildRows];
             }
         },
 
         filters(newFilters: Filters, oldFilters: Filters) {
-            this.$refs.table.setPage(1);
+            const $table = (this.$refs.table as ClientTableInstance | undefined);
+            if ($table === undefined) {
+                return;
+            }
+
+            $table.setPage(1);
 
             if (oldFilters.onlySelected !== newFilters.onlySelected) {
-                this.$refs.table.setLimit(
+                $table.setLimit(
                     newFilters.onlySelected
                         ? NO_PAGINATION_LIMIT
                         : config.defaultPaginationLimit,
@@ -201,15 +209,18 @@ const MaterialsSelectorList = defineComponent({
     mounted() {
         // - Synchronize manuellement les "child rows" du Table vu qu'il
         //   n'y a qu'une API impérative de disponible.
-        const $coreTable = this.$refs.table.$refs.table.openChildRows;
-        this.$watch(
-            () => $coreTable.openChildRows,
-            (coreTableOpenChildRows: Array<Material['id']>) => {
-                if (!isEqual(coreTableOpenChildRows, this.openChildRows)) {
-                    $coreTable.openChildRows = [...this.openChildRows];
-                }
-            },
-        );
+        const $table = (this.$refs.table as ClientTableInstance | undefined);
+        const $coreTable = $table?.$refs.table;
+        if (undefined !== $coreTable) {
+            this.$watch(
+                () => $coreTable.openChildRows,
+                (coreTableOpenChildRows: Array<Material['id']>) => {
+                    if (!isEqual(coreTableOpenChildRows, this.openChildRows)) {
+                        $coreTable.openChildRows = [...this.openChildRows];
+                    }
+                },
+            );
+        }
     },
     methods: {
         // ------------------------------------------------------
@@ -229,12 +240,11 @@ const MaterialsSelectorList = defineComponent({
         // ------------------------------------------------------
 
         getQuantity(material: Material) {
-            return store.getters.getQuantity(material.id, this.list?.id ?? null);
+            return store.getters.getQuantity(material.id);
         },
 
         setQuantity(material: Material, quantity: number) {
-            const listId = this.list?.id ?? null;
-            store.commit('setQuantity', { material, quantity, listId });
+            store.commit('setQuantity', { material, quantity });
         },
 
         __(key: string, params?: Record<string, number | string>, count?: number): string {
@@ -271,14 +281,15 @@ const MaterialsSelectorList = defineComponent({
             // - Ou, s'il n'y a pas de résultats selon les critères de recherche courants.
             isFilteredEmpty
         );
-        const renderEmptyMessage = (): JSX.Element | null => {
+        const renderState = (): JSX.Element | null => {
             if (!isEmpty) {
                 return null;
             }
 
             if (isMaterialsEmpty) {
                 return (
-                    <EmptyMessage
+                    <StateMessage
+                        type={State.EMPTY}
                         size="small"
                         message={__('empty-state.no-materials')}
                     />
@@ -287,7 +298,8 @@ const MaterialsSelectorList = defineComponent({
 
             if (isSelectionEmpty && filters.onlySelected) {
                 return (
-                    <EmptyMessage
+                    <StateMessage
+                        type={State.EMPTY}
                         size="small"
                         message={__('empty-state.no-selection')}
                         action={{
@@ -300,9 +312,9 @@ const MaterialsSelectorList = defineComponent({
             }
 
             return (
-                <EmptyMessage
+                <StateMessage
+                    type={State.NO_RESULT}
                     size="small"
-                    type="search"
                     message={__('empty-state.no-filters-results')}
                 />
             );
@@ -314,7 +326,7 @@ const MaterialsSelectorList = defineComponent({
 
         return (
             <div class={classNames}>
-                {renderEmptyMessage()}
+                {renderState()}
                 <div class="MaterialsSelectorList__table">
                     <v-client-table
                         ref="table"
@@ -340,6 +352,7 @@ const MaterialsSelectorList = defineComponent({
                                     key={`${material.id}--availability`}
                                     list={list}
                                     material={material}
+                                    filters={filters}
                                 />
                             ),
                             'price': ({ row: material }: { row: Material }) => (

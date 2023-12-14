@@ -6,7 +6,7 @@ use Loxya\Config\Config;
 
 final class CreateUserSettings extends AbstractMigration
 {
-    public function up()
+    public function up(): void
     {
         $userSettings = $this->table('user_settings', ['signed' => true]);
         $userSettings
@@ -30,7 +30,7 @@ final class CreateUserSettings extends AbstractMigration
             ])
             ->create();
 
-        $prefix = Config::getSettings('db')['prefix'];
+        $prefix = Config::get('db.prefix');
         $users = $this->fetchAll(sprintf('SELECT * FROM `%susers`', $prefix));
         $now = date('Y-m-d H:i:s');
         foreach (array_column($users, 'id') as $userId) {
@@ -43,7 +43,7 @@ final class CreateUserSettings extends AbstractMigration
         $userSettings->saveData();
     }
 
-    public function down()
+    public function down(): void
     {
         $this->table('user_settings')->drop()->save();
     }

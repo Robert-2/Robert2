@@ -17,7 +17,7 @@ use Symfony\Component\Finder\Finder;
 #[AsCommand(name: 'cleanup')]
 class CleanupCommand extends Command
 {
-    protected function configure()
+    protected function configure(): void
     {
         /* phpcs:disable Generic.Files.LineLength.TooLong */
         $this

@@ -8,12 +8,12 @@ final class ResetEventsIsBillableWhenNoBilling extends AbstractMigration
 {
     public function up(): void
     {
-        $billingMode = Config::getSettings('billingMode');
+        $billingMode = Config::get('billingMode');
         if ($billingMode !== 'none') {
             return;
         }
 
-        $prefix = Config::getSettings('db')['prefix'];
+        $prefix = Config::get('db.prefix');
 
         $this->getQueryBuilder()
             ->update(sprintf('%sevents', $prefix))

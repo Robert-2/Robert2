@@ -9,7 +9,7 @@ use Loxya\Support\Collections\MaterialsCollection;
 
 final class MaterialsCollectionTest extends TestCase
 {
-    public function testByCategoriesMaterials()
+    public function testByCategoriesMaterials(): void
     {
         $collection = new MaterialsCollection(Material::all());
         $result = $collection->byCategories();
@@ -33,7 +33,7 @@ final class MaterialsCollectionTest extends TestCase
         }
     }
 
-    public function testByCategoriesEventMaterials()
+    public function testByCategoriesEventMaterials(): void
     {
         $materials = Event::findOrFail(1)->materials;
 
@@ -52,7 +52,7 @@ final class MaterialsCollectionTest extends TestCase
         }
     }
 
-    public function testBySubCategoriesMaterials()
+    public function testBySubCategoriesMaterials(): void
     {
         $collection = new MaterialsCollection(Material::all());
         $result = $collection->bySubCategories();
@@ -74,7 +74,7 @@ final class MaterialsCollectionTest extends TestCase
         }
     }
 
-    public function testBySubCategoriesEventMaterials()
+    public function testBySubCategoriesEventMaterials(): void
     {
         $materials = Event::findOrFail(1)->materials;
 
@@ -94,7 +94,7 @@ final class MaterialsCollectionTest extends TestCase
         }
     }
 
-    public function testByParksMaterials()
+    public function testByParksMaterials(): void
     {
         $collection = new MaterialsCollection(Material::all());
         $result = $collection->byParks();
@@ -121,7 +121,7 @@ final class MaterialsCollectionTest extends TestCase
         }
     }
 
-    public function testByParksEventMaterials()
+    public function testByParksEventMaterials(): void
     {
         $materials = Event::findOrFail(1)->materials;
 

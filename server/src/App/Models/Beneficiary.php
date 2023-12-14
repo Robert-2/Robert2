@@ -4,13 +4,15 @@ declare(strict_types=1);
 namespace Loxya\Models;
 
 use Adbar\Dot as DotArray;
-use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Loxya\Config\Config;
 use Loxya\Contracts\Serializable;
 use Loxya\Errors\Exception\ValidationException;
 use Loxya\Models\Traits\Serializer;
 use Respect\Validation\Validator as V;
+use Loxya\Models\Enums\Group;
 use Loxya\Models\Traits\SoftDeletable;
 
 /**
@@ -37,9 +39,14 @@ use Loxya\Models\Traits\SoftDeletable;
  * @property-read string|null $full_address
  * @property bool $can_make_reservation
  * @property string|null $note
- * @property-read Carbon $created_at
- * @property-read Carbon|null $updated_at
- * @property-read Carbon|null $deleted_at
+ * @property-read array $stats
+ * @property-read CarbonImmutable $created_at
+ * @property-read CarbonImmutable|null $updated_at
+ * @property-read CarbonImmutable|null $deleted_at
+ *
+ * @property-read Collection|Event[] $events
+ * @property-read Collection|Estimate[] $estimates
+ * @property-read Collection|Invoice[] $invoices
  */
 final class Beneficiary extends BaseModel implements Serializable
 {
@@ -62,6 +69,7 @@ final class Beneficiary extends BaseModel implements Serializable
             'person_id' => V::custom([$this, 'checkPersonId']),
             'reference' => V::custom([$this, 'checkReference']),
             'company_id' => V::custom([$this, 'checkCompanyId']),
+            'can_make_reservation' => V::optional(V::boolType()),
         ];
     }
 
@@ -77,6 +85,16 @@ final class Beneficiary extends BaseModel implements Serializable
         if (!$this->exists && $value === null) {
             return true;
         }
+
+        $query = static::where('person_id', $value);
+        if ($this->exists) {
+            $query->where('id', '!=', $this->id);
+        }
+
+        if ($query->withTrashed()->exists()) {
+            return 'person-already-a-beneficiary';
+        }
+
         return Person::staticExists($value);
     }
 
@@ -135,6 +153,23 @@ final class Beneficiary extends BaseModel implements Serializable
         return $this->belongsTo(Company::class);
     }
 
+    public function events()
+    {
+        return $this->belongsToMany(Event::class, 'event_beneficiaries');
+    }
+
+    public function estimates()
+    {
+        return $this->hasMany(Estimate::class, 'beneficiary_id')
+            ->orderBy('date', 'desc');
+    }
+
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class, 'beneficiary_id')
+            ->orderBy('date', 'desc');
+    }
+
     // ------------------------------------------------------
     // -
     // -    Mutators
@@ -161,8 +196,11 @@ final class Beneficiary extends BaseModel implements Serializable
         'reference' => 'string',
         'person_id' => 'integer',
         'company_id' => 'integer',
-        'note' => 'string',
         'can_make_reservation' => 'boolean',
+        'note' => 'string',
+        'created_at' => 'immutable_datetime',
+        'updated_at' => 'immutable_datetime',
+        'deleted_at' => 'immutable_datetime',
     ];
 
     public function getFirstNameAttribute(): string
@@ -313,6 +351,25 @@ final class Beneficiary extends BaseModel implements Serializable
         return $this->person->user;
     }
 
+    public function getStatsAttribute()
+    {
+        $events = $this->events;
+
+        return [
+            'borrowings' => $events->count(),
+        ];
+    }
+
+    public function getEstimatesAttribute()
+    {
+        return $this->getRelationValue('estimates');
+    }
+
+    public function getInvoicesAttribute()
+    {
+        return $this->getRelationValue('invoices');
+    }
+
     // ------------------------------------------------------
     // -
     // -    Setters
@@ -323,6 +380,7 @@ final class Beneficiary extends BaseModel implements Serializable
         'reference',
         'person_id',
         'company_id',
+        'can_make_reservation',
         'note',
     ];
 
@@ -411,14 +469,33 @@ final class Beneficiary extends BaseModel implements Serializable
         $beneficiary = static::firstOrNew(compact('id'))->fill($data);
         $person = Person::firstOrNew(['id' => $personId])->fill($personData);
 
-        if (!$beneficiary->isValid() || !$person->isValid()) {
+        $user = null;
+        if ($beneficiary->can_make_reservation === true && !$beneficiary->person?->user) {
+            $user = (new User)->fill(array_merge($userData, [
+                'group' => Group::EXTERNAL,
+                'language' => Config::get('defaultLang'),
+                'password' => !empty($userData['password'])
+                    ? password_hash($userData['password'], PASSWORD_DEFAULT)
+                    : null,
+            ]));
+        }
+
+        if (!$beneficiary->isValid() || !$person->isValid() || ($user && !$user->isValid())) {
             throw new ValidationException(array_merge(
                 $beneficiary->validationErrors(),
                 ['person' => $person->validationErrors()],
+                ['user' => $user?->validationErrors() ?? null],
             ));
         }
 
-        return dbTransaction(function () use ($person, $beneficiary) {
+        return dbTransaction(function () use ($person, $user, $beneficiary) {
+            if ($user && !$user->exists) {
+                if (!$user->save()) {
+                    throw new \RuntimeException("Unable to create the beneficiary's related user.");
+                }
+                $person->user()->associate($user);
+            }
+
             if (!$person->save()) {
                 throw new \RuntimeException("Unable to save the beneficiary's related person.");
             }
@@ -442,7 +519,7 @@ final class Beneficiary extends BaseModel implements Serializable
     {
         $beneficiary = tap(clone $this, function (Beneficiary $beneficiary) use ($format) {
             if ($format === self::SERIALIZE_DETAILS) {
-                $beneficiary->append('user');
+                $beneficiary->append(['user', 'stats']);
             }
         });
 

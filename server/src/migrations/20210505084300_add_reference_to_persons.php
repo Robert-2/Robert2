@@ -5,7 +5,7 @@ use Phinx\Migration\AbstractMigration;
 
 final class AddReferenceToPersons extends AbstractMigration
 {
-    public function up()
+    public function up(): void
     {
         $persons = $this->table('persons');
         $persons
@@ -21,7 +21,7 @@ final class AddReferenceToPersons extends AbstractMigration
             ->update();
     }
 
-    public function down()
+    public function down(): void
     {
         $persons = $this->table('persons');
         $persons

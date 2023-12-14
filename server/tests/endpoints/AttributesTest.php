@@ -64,7 +64,7 @@ final class AttributesTest extends ApiTestCase
         return static::_dataFactory($id, $attributes->all());
     }
 
-    public function testGetAll()
+    public function testGetAll(): void
     {
         // - Récupère toutes les caractéristiques spéciales avec leurs catégories
         $this->client->get('/api/attributes');
@@ -78,14 +78,14 @@ final class AttributesTest extends ApiTestCase
         ]);
     }
 
-    public function testGetOne()
+    public function testGetOne(): void
     {
         $this->client->get('/api/attributes/1');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData(self::data(1, true));
     }
 
-    public function testGetAllForCategory()
+    public function testGetAllForCategory(): void
     {
         // - Récupère les caractéristiques spéciales qui n'ont
         // - pas de catégorie, + celles de la catégorie #3
@@ -110,7 +110,7 @@ final class AttributesTest extends ApiTestCase
         ]);
     }
 
-    public function testGetAllWithoutCategory()
+    public function testGetAllWithoutCategory(): void
     {
         // - Récupère les caractéristiques spéciales qui n'ont pas de catégorie.
         $this->client->get('/api/attributes?category=none');
@@ -122,7 +122,7 @@ final class AttributesTest extends ApiTestCase
         ]);
     }
 
-    public function testCreate()
+    public function testCreate(): void
     {
         $this->client->post('/api/attributes', [
             'name' => 'Speed',
@@ -145,7 +145,7 @@ final class AttributesTest extends ApiTestCase
         ]);
     }
 
-    public function testUpdate()
+    public function testUpdate(): void
     {
         $this->client->put('/api/attributes/1', [
             'name' => 'Masse',

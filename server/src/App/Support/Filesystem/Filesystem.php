@@ -69,7 +69,7 @@ class Filesystem
      *
      * @return mixed Le retour de la méthode bas-niveau.
      */
-    public function __call($method, array $parameters)
+    public function __call($method, array $parameters): mixed
     {
         return $this->driver->{$method}(...$parameters);
     }

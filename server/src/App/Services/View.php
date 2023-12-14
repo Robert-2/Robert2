@@ -6,6 +6,8 @@ namespace Loxya\Services;
 use Brick\Math\BigDecimal as Decimal;
 use Psr\Http\Message\ResponseInterface as Response;
 use Loxya\Config\Config;
+use Loxya\Support\BaseUri;
+use Psr\Http\Message\ResponseInterface;
 use Slim\Views\Twig;
 use Twig\Extension\DebugExtension;
 use Twig\Extra\Html\HtmlExtension;
@@ -67,11 +69,13 @@ final class View
         $translate = new TwigFunction('translate', [$i18n, 'translate']);
         $plural = new TwigFunction('plural', [$i18n, 'plural']);
         $version = new TwigFunction('version', $this->getVersion());
-        $clientAssetFunction = new TwigFunction('client_asset', $this->getClientAsset());
-
         $this->view->getEnvironment()->addFunction($translate);
         $this->view->getEnvironment()->addFunction($plural);
         $this->view->getEnvironment()->addFunction($version);
+
+        $assetFunction = new TwigFunction('asset', $this->getAsset());
+        $clientAssetFunction = new TwigFunction('client_asset', $this->getClientAsset());
+        $this->view->getEnvironment()->addFunction($assetFunction);
         $this->view->getEnvironment()->addFunction($clientAssetFunction);
 
         //
@@ -116,7 +120,7 @@ final class View
      *
      * @return Response - La réponse passée en paramètres mais avec le rendu de la vue ajouté à son contenu.
      */
-    public function render(Response $response, string $template, array $data = []): Response
+    public function render(Response $response, string $template, array $data = []): ResponseInterface
     {
         $response->getBody()->write($this->fetch($template, $data));
         return $response;
@@ -159,18 +163,30 @@ final class View
 
     private function getClientAsset(): callable
     {
-        $host = Config::getEnv() === 'development'
+        $baseUri = Config::getEnv() === 'development'
             ? 'http://localhost:8081'
-            : '';
+            : Config::getBaseUri()->getPath();
 
-        $basePath = sprintf('%s/webclient', rtrim($host, '/'));
-        return function ($path) use ($basePath) {
-            return vsprintf('%s/%s?v=%s', [
-                $basePath,
+        $basePath = (string) (new BaseUri($baseUri))->withPath('/webclient');
+        return fn ($path) => (
+            vsprintf('%s/%s?v=%s', [
+                rtrim($basePath, '/'),
                 ltrim($path, '/'),
                 Config::getVersion(),
-            ]);
-        };
+            ])
+        );
+    }
+
+    private function getAsset(): callable
+    {
+        $basePath = Config::getBaseUri()->getPath();
+        return fn ($path) => (
+            vsprintf('%s/%s?v=%s', [
+                rtrim($basePath, '/'),
+                ltrim($path, '/'),
+                Config::getVersion(),
+            ])
+        );
     }
 
     // ------------------------------------------------------

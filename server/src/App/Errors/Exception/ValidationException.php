@@ -23,7 +23,7 @@ class ValidationException extends \RuntimeException
     // -
     // ------------------------------------------------------
 
-    public function getValidationErrors()
+    public function getValidationErrors(): array
     {
         return $this->validationErrors;
     }

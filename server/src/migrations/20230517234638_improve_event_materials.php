@@ -9,7 +9,7 @@ final class ImproveEventMaterials extends AbstractMigration
 {
     public function up(): void
     {
-        $prefix = Config::getSettings('db')['prefix'];
+        $prefix = Config::get('db.prefix');
 
         // - Récupère le matériel des événements et groupe ça par `[event_id]-[material_id]`
         //   pour récupérer les doublons ensuite.

@@ -24,7 +24,13 @@ const IconMessage = defineComponent({
 
         return (
             <p class="IconMessage">
-                <Icon name={name} variant={variant} spin={spin} /> {message}
+                <Icon
+                    class="IconMessage__icon"
+                    name={name}
+                    variant={variant}
+                    spin={spin}
+                />
+                <span class="IconMessage__message">{message}</span>
             </p>
         );
     },

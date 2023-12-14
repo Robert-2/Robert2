@@ -1,0 +1,20 @@
+@use '~@/themes/default/style/globals';
+
+.BeneficiaryViewNextBookings {
+    &__title {
+        margin: 0 0 globals.$spacing-medium;
+        font-size: 1.2rem;
+    }
+
+    &__empty {
+        color: globals.$text-light-color;
+        font-style: italic;
+    }
+
+    &__list {
+        @extend %reset-list;
+
+        overflow-y: auto;
+        max-height: 400px;
+    }
+}

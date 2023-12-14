@@ -101,8 +101,8 @@ chmod 777 src/install
 echo -e "\e[1m\e[34m-> Installation des dépendances back-end...\e[0m"
 query=(
     'del(."require-dev")'
-    'del(.autoload."psr-4"."Robert2\\Tests\\")'
-    'del(.autoload."psr-4"."Robert2\\Fixtures\\")'
+    'del(.autoload."psr-4"."Loxya\\Tests\\")'
+    'del(.autoload."psr-4"."Loxya\\Fixtures\\")'
     'del(.scripts."create-migration")'
     'del(.scripts."lint")'
     'del(.scripts."lint:fix")'

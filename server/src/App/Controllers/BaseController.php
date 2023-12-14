@@ -6,13 +6,13 @@ namespace Loxya\Controllers;
 use DI\Container;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Loxya\Config\Config;
 use Loxya\Errors\Exception\HttpRangeNotSatisfiableException;
 use Loxya\Http\Request;
 
 abstract class BaseController
 {
-    /** @var Container */
-    protected $container;
+    protected Container $container;
 
     public function __construct(Container $container)
     {
@@ -28,7 +28,7 @@ abstract class BaseController
      */
     protected function paginate(Request $request, $query, ?int $limit = null): array
     {
-        $maxItemsPerPage = $this->container->get('settings')['maxItemsPerPage'] ?? 100;
+        $maxItemsPerPage = Config::get('maxItemsPerPage', 100);
         $limit = min($limit ? (int) $limit : $maxItemsPerPage, $maxItemsPerPage);
 
         /** @var LengthAwarePaginator $paginated */

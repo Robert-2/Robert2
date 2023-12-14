@@ -1,8 +1,9 @@
 import './index.scss';
+import { defineComponent } from '@vue/composition-api';
 import Icon from '@/themes/default/components/Icon';
 
 // @vue/component
-export default {
+const EventBeneficiaries = defineComponent({
     name: 'EventBeneficiaries',
     props: {
         beneficiaries: { type: Array, required: true },
@@ -36,4 +37,6 @@ export default {
             </div>
         );
     },
-};
+});
+
+export default EventBeneficiaries;

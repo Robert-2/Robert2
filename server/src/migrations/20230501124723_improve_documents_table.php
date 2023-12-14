@@ -57,7 +57,7 @@ final class ImproveDocumentsTable extends AbstractMigration
             ])
             ->update();
 
-        $prefix = Config::getSettings('db')['prefix'];
+        $prefix = Config::get('db.prefix');
         $documentsData = $this->fetchAll(sprintf('SELECT `id`, `name` FROM `%sdocuments`', $prefix));
         foreach ($documentsData as $documentData) {
             $this->getQueryBuilder()
@@ -95,7 +95,7 @@ final class ImproveDocumentsTable extends AbstractMigration
         // - Documents
         //
 
-        $prefix = Config::getSettings('db')['prefix'];
+        $prefix = Config::get('db.prefix');
         $incompatibleDocuments = $this->fetchAll(
             sprintf("SELECT * FROM `%sdocuments` WHERE `entity_type` <> 'material' OR `name` <> `file`", $prefix)
         );
@@ -106,7 +106,7 @@ final class ImproveDocumentsTable extends AbstractMigration
             );
         }
 
-        $prefix = Config::getSettings('db')['prefix'];
+        $prefix = Config::get('db.prefix');
         $documentsData = $this->fetchAll(sprintf('SELECT `id`, `name` FROM `%sdocuments`', $prefix));
         foreach ($documentsData as $documentData) {
             $this->getQueryBuilder()

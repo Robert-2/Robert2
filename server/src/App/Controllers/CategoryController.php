@@ -10,6 +10,7 @@ use Loxya\Errors\Exception\ValidationException;
 use Loxya\Http\Request;
 use Loxya\Models\Category;
 use Loxya\Services\I18n;
+use Psr\Http\Message\ResponseInterface;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Http\Response;
 
@@ -17,8 +18,7 @@ class CategoryController extends BaseController
 {
     use Crud\HardDelete;
 
-    /** @var I18n */
-    private $i18n;
+    private I18n $i18n;
 
     public function __construct(Container $container, I18n $i18n)
     {
@@ -27,7 +27,7 @@ class CategoryController extends BaseController
         $this->i18n = $i18n;
     }
 
-    public function getAll(Request $request, Response $response): Response
+    public function getAll(Request $request, Response $response): ResponseInterface
     {
         $categories = Category::orderBy('name', 'asc')
             ->with(['subCategories'])
@@ -37,7 +37,7 @@ class CategoryController extends BaseController
         return $response->withJson($categories, StatusCode::STATUS_OK);
     }
 
-    public function create(Request $request, Response $response): Response
+    public function create(Request $request, Response $response): ResponseInterface
     {
         $postData = (array) $request->getParsedBody();
         if (empty($postData)) {
@@ -48,7 +48,7 @@ class CategoryController extends BaseController
         return $response->withJson($category, StatusCode::STATUS_CREATED);
     }
 
-    public function update(Request $request, Response $response): Response
+    public function update(Request $request, Response $response): ResponseInterface
     {
         $postData = (array) $request->getParsedBody();
         if (empty($postData)) {

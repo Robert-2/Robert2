@@ -21,8 +21,8 @@ const formatEventTechnician = (eventTechnician) => {
         title = `${title} (${location})`;
     }
 
-    const start = moment.utc(startTime).local();
-    const end = moment.utc(endTime).local();
+    const start = moment(startTime);
+    const end = moment(endTime);
     const duration = end.diff(start, 'days') + 1;
     let dateFormat = 'LT';
     if (duration > 1) {

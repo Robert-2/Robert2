@@ -13,7 +13,8 @@ use Loxya\Models\EventTechnician;
 use Loxya\Models\Technician;
 use Loxya\Services\Auth;
 use Loxya\Services\I18n;
-use Loxya\Support\Arr;
+use Loxya\Support\Period;
+use Psr\Http\Message\ResponseInterface;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Http\Response;
 
@@ -36,11 +37,13 @@ class TechnicianController extends BaseController
     // -
     // ------------------------------------------------------
 
-    public function getAll(Request $request, Response $response): Response
+    public function getAll(Request $request, Response $response): ResponseInterface
     {
         $search = $request->getQueryParam('search', null);
+        $isPreparer = $request->getQueryParam('isPreparer', null);
         $limit = $request->getQueryParam('limit', null);
         $ascending = (bool) $request->getQueryParam('ascending', true);
+        $availabilityPeriod = $request->getQueryParam('availabilityPeriod', null);
         $onlyDeleted = (bool) $request->getQueryParam('deleted', false);
 
         $orderBy = $request->getQueryParam('orderBy', null);
@@ -49,39 +52,27 @@ class TechnicianController extends BaseController
         }
 
         // - Disponibilité dans une période donnée.
-        $availabilityPeriod = Arr::mapKeys(
-            function ($key) use ($request) {
-                $rawDate = $request->getQueryParam(sprintf('%sDate', $key));
-                if (!$rawDate) {
-                    return null;
-                }
-
-                $date = \DateTime::createFromFormat('Y-m-d', $rawDate);
-                if (!$date) {
-                    return null;
-                }
-
-                $date = $key === 'end'
-                    ? $date->setTime(23, 59, 59)
-                    : $date->setTime(0, 0, 0);
-
-                return $date->format('Y-m-d H:i:s');
-            },
-            array_fill_keys(['start', 'end'], null),
-        );
+        $periodForAvailabilities = null;
+        if ($availabilityPeriod !== null && is_array($availabilityPeriod)) {
+            try {
+                $periodForAvailabilities = Period::fromArray($availabilityPeriod);
+            } catch (\Throwable $e) {
+                $periodForAvailabilities = null;
+            }
+        }
 
         $builder = (new Technician())
             ->setOrderBy($orderBy, $ascending)
             ->setSearch($search)
             ->getAll($onlyDeleted);
 
-        if ($availabilityPeriod['start'] && $availabilityPeriod['end']) {
+        if ($periodForAvailabilities !== null) {
             $builder = $builder->whereDoesntHave(
                 'assignments',
-                function ($query) use ($availabilityPeriod) {
+                function ($query) use ($periodForAvailabilities) {
                     $query->where([
-                        ['end_time', '>', $availabilityPeriod['start']],
-                        ['start_time', '<', $availabilityPeriod['end']],
+                        ['end_time', '>', $periodForAvailabilities->getStartDate()],
+                        ['start_time', '<', $periodForAvailabilities->getEndDate()],
                     ]);
                 }
             );
@@ -91,7 +82,7 @@ class TechnicianController extends BaseController
         return $response->withJson($paginated, StatusCode::STATUS_OK);
     }
 
-    public function getAllWhileEvent(Request $request, Response $response): Response
+    public function getAllWhileEvent(Request $request, Response $response): ResponseInterface
     {
         $eventId = (int) $request->getAttribute('eventId');
         $event = Event::findOrFail($eventId);
@@ -104,6 +95,7 @@ class TechnicianController extends BaseController
                     ->whereHas('event', function ($query) use ($event) {
                         $query
                             ->where('id', '!=', $event->id)
+                            ->where('deleted_at', null)
                             ->where([
                                 ['end_date', '>=', $event->start_date],
                                 ['start_date', '<=', $event->end_date],
@@ -122,7 +114,7 @@ class TechnicianController extends BaseController
         return $response->withJson($technicians, StatusCode::STATUS_OK);
     }
 
-    public function getEvents(Request $request, Response $response): Response
+    public function getEvents(Request $request, Response $response): ResponseInterface
     {
         $id = $request->getAttribute('id');
         $technician = Technician::findOrFail($id);
@@ -130,7 +122,7 @@ class TechnicianController extends BaseController
         return $response->withJson($assignments, StatusCode::STATUS_OK);
     }
 
-    public function getDocuments(Request $request, Response $response): Response
+    public function getDocuments(Request $request, Response $response): ResponseInterface
     {
         $id = (int) $request->getAttribute('id');
         $technician = Technician::findOrFail($id);
@@ -138,7 +130,7 @@ class TechnicianController extends BaseController
         return $response->withJson($technician->documents, StatusCode::STATUS_OK);
     }
 
-    public function attachDocument(Request $request, Response $response): Response
+    public function attachDocument(Request $request, Response $response): ResponseInterface
     {
         $id = (int) $request->getAttribute('id');
         $technician = Technician::findOrFail($id);

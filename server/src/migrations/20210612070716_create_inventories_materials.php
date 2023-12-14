@@ -5,7 +5,7 @@ use Phinx\Migration\AbstractMigration;
 
 final class CreateInventoriesMaterials extends AbstractMigration
 {
-    public function up()
+    public function up(): void
     {
         $inventoryMaterials = $this->table('inventory_materials', ['signed' => true]);
         $inventoryMaterials
@@ -79,7 +79,7 @@ final class CreateInventoriesMaterials extends AbstractMigration
             ->create();
     }
 
-    public function down()
+    public function down(): void
     {
         $this->table('inventory_material_units')->drop()->save();
         $this->table('inventory_materials')->drop()->save();

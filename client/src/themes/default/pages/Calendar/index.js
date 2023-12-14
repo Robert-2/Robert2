@@ -21,7 +21,7 @@ const ONE_DAY = 1000 * 3600 * 24;
 const FETCH_DELTA_DAYS = 3;
 const MAX_ZOOM_MONTH = 3;
 
-// @vue/component
+/** Page du calendrier des réservations / événements. */
 const Calendar = defineComponent({
     name: 'Calendar',
     data() {
@@ -141,7 +141,7 @@ const Calendar = defineComponent({
         },
 
         handleSetCenterDate(date) {
-            this.$refs.timelineRef.moveTo(date);
+            this.$refs.timeline.moveTo(date);
         },
 
         handleFilterMissingMaterial(filterMissingMaterial) {
@@ -163,7 +163,7 @@ const Calendar = defineComponent({
 
             localStorage.setItem('calendarStart', dates.start.format('YYYY-MM-DD HH:mm:ss'));
             localStorage.setItem('calendarEnd', dates.end.format('YYYY-MM-DD HH:mm:ss'));
-            this.$refs.headerRef.changePeriod(dates);
+            this.$refs.header.changePeriod(dates);
 
             const newFetchStart = moment(dates.start).subtract(FETCH_DELTA_DAYS, 'days').startOf('day');
             const newFetchEnd = moment(dates.end).add(FETCH_DELTA_DAYS, 'days').endOf('day');
@@ -203,6 +203,7 @@ const Calendar = defineComponent({
                 isTeamMember,
                 handleUpdatedBooking,
                 handleDuplicatedBooking,
+                handleDeletedBooking,
             } = this;
 
             // - Si c'est un double-clic sur une partie vide (= sans booking) du calendrier...
@@ -252,14 +253,17 @@ const Calendar = defineComponent({
                         onUpdated(event) {
                             handleUpdatedBooking({ entity: BookingEntity.EVENT, ...event });
                         },
-                        onDuplicateEvent(newEvent) {
+                        onDuplicated(newEvent) {
                             handleDuplicatedBooking({ entity: BookingEntity.EVENT, ...newEvent });
+                        },
+                        onDeleted() {
+                            handleDeletedBooking(booking);
                         },
                     });
                     break;
 
                 default:
-                    // - Modale non prise en charge.
+                    throw new Error('Unsupported booking type.');
             }
         },
 
@@ -319,7 +323,17 @@ const Calendar = defineComponent({
 
         handleDuplicatedBooking(booking) {
             const date = moment(booking.start_date).toDate();
-            this.$refs.timelineRef.moveTo(date);
+            this.$refs.timeline.moveTo(date);
+        },
+
+        handleDeletedBooking(booking) {
+            const bookingIndex = this.bookings.findIndex(
+                ({ entity, id }) => entity === booking.entity && id === booking.id,
+            );
+            if (bookingIndex === -1) {
+                return;
+            }
+            this.bookings.splice(bookingIndex, 1);
         },
 
         // ------------------------------------------------------
@@ -337,7 +351,7 @@ const Calendar = defineComponent({
                 this.isFetched = true;
             } catch (error) {
                 if (isRequestErrorStatusCode(error, HttpCode.ClientErrorRangeNotSatisfiable)) {
-                    this.$refs.timelineRef.zoomIn(1, { animation: false });
+                    this.$refs.timeline.zoomIn(1, { animation: false });
                     return;
                 }
                 this.hasCriticalError = true;
@@ -379,7 +393,7 @@ const Calendar = defineComponent({
             <Page name="calendar" title={__('page.calendar.title')}>
                 <div class="Calendar">
                     <CalendarHeader
-                        ref="headerRef"
+                        ref="header"
                         isLoading={isLoading || isSaving}
                         onRefresh={handleRefresh}
                         onSetCenterDate={handleSetCenterDate}
@@ -388,7 +402,7 @@ const Calendar = defineComponent({
                         onFilterByCategory={handleFilterByCategory}
                     />
                     <Timeline
-                        ref="timelineRef"
+                        ref="timeline"
                         class="Calendar__timeline"
                         items={timelineBookingsFiltered}
                         options={timelineOptions}

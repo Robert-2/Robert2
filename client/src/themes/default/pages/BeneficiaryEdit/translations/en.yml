@@ -1,0 +1,13 @@
+title-create: New beneficiary
+title-edit-simple: Modify beneficiary
+title-edit: 'Modify beneficiary "{name}"'
+
+help-reference: >-
+    This value can be a customer or member number for your internal management,
+    which will appear on the output sheets, estimates and invoices. It must be
+    unique.
+
+type-to-search-company: Enter a company name...
+user-account: User account
+existing-user-help: "To modify or delete the user linked to this beneficiary, go to the \"Users\" section."
+saved: Beneficiary saved.

@@ -4,8 +4,10 @@ declare(strict_types=1);
 namespace Loxya\Models;
 
 use Adbar\Dot as DotArray;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Loxya\Config\Config;
 use Loxya\Contracts\Serializable;
 use Loxya\Errors\Exception\ValidationException;
 use Loxya\Models\Enums\Group;
@@ -27,9 +29,9 @@ use Loxya\Support\Arr;
  * @property string $group
  * @property string $password
  * @property string $language
- * @property-read Carbon $created_at
- * @property-read Carbon|null $updated_at
- * @property-read Carbon|null $deleted_at
+ * @property-read CarbonImmutable $created_at
+ * @property-read CarbonImmutable|null $updated_at
+ * @property-read CarbonImmutable|null $deleted_at
  *
  * @property-read Person $person
  * @property-read Beneficiary $beneficiary
@@ -81,7 +83,7 @@ final class User extends BaseModel implements Serializable
     public function checkPseudo($value)
     {
         V::notEmpty()
-            ->alnum('-', '_')
+            ->alnum('-', '_', '.')
             ->length(4, 100)
             ->check($value);
 
@@ -157,6 +159,7 @@ final class User extends BaseModel implements Serializable
 
     protected $hidden = [
         'cas_identifier',
+        'saml2_identifier',
         'password',
     ];
 
@@ -167,6 +170,9 @@ final class User extends BaseModel implements Serializable
         'password' => 'string',
         'language' => 'string',
         'notifications_enabled' => 'boolean',
+        'created_at' => 'immutable_datetime',
+        'updated_at' => 'immutable_datetime',
+        'deleted_at' => 'immutable_datetime',
     ];
 
     public function getFirstNameAttribute(): ?string
@@ -255,6 +261,11 @@ final class User extends BaseModel implements Serializable
         return $user;
     }
 
+    public static function fromEmail(string $email): ?User
+    {
+        return static::where('email', $email)->first();
+    }
+
     public static function staticEdit($id = null, array $data = []): BaseModel
     {
         if ($id && !static::staticExists($id)) {
@@ -269,7 +280,7 @@ final class User extends BaseModel implements Serializable
         }
 
         if (!$id && !isset($data['language'])) {
-            $data['language'] = container('settings')['defaultLang'];
+            $data['language'] = Config::get('defaultLang');
         }
 
         $personData = $data['person'] ?? [];

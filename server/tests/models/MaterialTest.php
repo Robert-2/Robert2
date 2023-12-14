@@ -11,7 +11,7 @@ use Loxya\Support\Period;
 
 final class MaterialTest extends TestCase
 {
-    public function testValidation()
+    public function testValidation(): void
     {
         $data = [
             'name' => 'A',
@@ -25,24 +25,16 @@ final class MaterialTest extends TestCase
             'out_of_order_quantity' => 110_000,
             'replacement_price' => -10,
         ];
-
-        $errors = null;
-        try {
-            (new Material($data))->validate();
-        } catch (ValidationException $e) {
-            $errors = $e->getValidationErrors();
-        }
-
         $expectedErrors = [
             'name' => ["2 caractères min., 191 caractères max."],
-            'reference' => ["Ce champ contient des caractères non autorisés"],
+            'reference' => ["Ce champ contient des caractères non autorisés."],
             'picture' => ["5 caractères min., 227 caractères max."],
-            'rental_price' => ["Doit être supérieur ou égal à 0"],
-            'stock_quantity' => ["Doit être inférieur ou égal à 100000"],
-            'out_of_order_quantity' => ["Doit être inférieur ou égal à 100000"],
-            'replacement_price' => ["Doit être supérieur ou égal à 0"],
+            'rental_price' => ["Doit être supérieur ou égal à 0."],
+            'stock_quantity' => ["Doit être inférieur ou égal à 100000."],
+            'out_of_order_quantity' => ["Doit être inférieur ou égal à 100000."],
+            'replacement_price' => ["Doit être supérieur ou égal à 0."],
         ];
-        $this->assertEquals($expectedErrors, $errors);
+        $this->assertEquals($expectedErrors, (new Material($data))->validationErrors());
     }
 
     public function testAllWithAvailabilities(): void

@@ -18,7 +18,7 @@ type Props = {
     technician: Technician,
 };
 
-type State = {
+type Data = {
     isFetched: boolean,
     hasCriticalError: boolean,
     documents: Document[],
@@ -33,7 +33,7 @@ const TechnicianViewDocuments = defineComponent({
             required: true,
         },
     },
-    data: (): State => ({
+    data: (): Data => ({
         hasCriticalError: false,
         isFetched: false,
         documents: [],
@@ -87,7 +87,6 @@ const TechnicianViewDocuments = defineComponent({
         // ------------------------------------------------------
 
         isUploading(): boolean {
-            // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
             const $fileManager = this.$refs.fileManager as ComponentRef<typeof FileManager>;
             return !!$fileManager?.isUploading();
         },

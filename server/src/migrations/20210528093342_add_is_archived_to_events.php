@@ -5,7 +5,7 @@ use Phinx\Migration\AbstractMigration;
 
 final class AddIsArchivedToEvents extends AbstractMigration
 {
-    public function up()
+    public function up(): void
     {
         $table = $this->table('events');
         $table
@@ -17,7 +17,7 @@ final class AddIsArchivedToEvents extends AbstractMigration
             ->save();
     }
 
-    public function down()
+    public function down(): void
     {
         $events = $this->table('events');
         $events

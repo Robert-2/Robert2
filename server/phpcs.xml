@@ -20,6 +20,7 @@
     <rule ref="Generic.Arrays.DisallowLongArraySyntax"/>
     <rule ref="Squiz.Arrays.ArrayBracketSpacing"/>
     <rule ref="SlevomatCodingStandard.Arrays.TrailingArrayComma"/>
+    <rule ref="SlevomatCodingStandard.Arrays.ArrayAccess"/>
 
     <rule ref="Squiz.Classes.LowercaseClassKeywords"/>
     <rule ref="SlevomatCodingStandard.Classes.ClassConstantVisibility">

@@ -12,7 +12,7 @@ class Install
 {
     protected const INSTALL_FILE = __DIR__ . '/progress.json';
 
-    // See in SetupController for steps execution
+    // - See in `SetupController` for steps execution.
     public const INSTALL_STEPS = [
         'welcome',
         'coreSettings',
@@ -38,6 +38,7 @@ class Install
         'pcre',
         'PDO',
         'pdo_mysql',
+        'openssl',
         'xml',
     ];
 
@@ -45,7 +46,6 @@ class Install
         'enableCORS' => 'boolean',
         'displayErrorDetails' => 'boolean',
         'useRouterCache' => 'boolean',
-        'useHTTPS' => 'boolean',
         'sessionExpireHours' => 'integer',
         'maxItemsPerPage' => 'integer',
         'vatRate' => 'float',

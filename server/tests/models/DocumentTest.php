@@ -7,7 +7,7 @@ use Loxya\Models\Document;
 
 final class DocumentTest extends TestCase
 {
-    public function testGetFilePathAttribute()
+    public function testGetFilePathAttribute(): void
     {
         $expected = [
             1 => DATA_FOLDER . DS . 'materials' . DS . 'documents' . DS . '1' . DS . 'User-manual.pdf',
@@ -20,7 +20,7 @@ final class DocumentTest extends TestCase
         }
     }
 
-    public function testRemove()
+    public function testRemove(): void
     {
         $document = Document::find(1);
         $filePath = $document->path;

@@ -8,7 +8,7 @@ final class RemoveInvalidDatesFromMaterialAttributes extends AbstractMigration
 {
     public function up(): void
     {
-        $prefix = Config::getSettings('db')['prefix'];
+        $prefix = Config::get('db.prefix');
         $builder = $this->getQueryBuilder();
         $builder
             ->delete(sprintf('%smaterial_attributes', $prefix))

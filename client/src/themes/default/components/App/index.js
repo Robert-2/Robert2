@@ -1,42 +1,73 @@
 import invariant from 'invariant';
 import HttpCode from 'status-code-enum';
-import { computed, watch } from '@vue/composition-api';
-import useRouter from '@/hooks/useRouter';
 import layouts from '@/themes/default/layouts';
 import { isRequestErrorStatusCode } from '@/utils/errors';
 
 // @vue/component
-const App = (props, { root }) => {
-    const { route } = useRouter();
-    const layout = computed(() => {
-        const routeMeta = route.value?.meta;
-        return routeMeta?.layout ?? 'default';
-    });
+const App = {
+    name: 'App',
+    computed: {
+        layout() {
+            const { meta } = this.$route;
+            return meta?.layout ?? 'default';
+        },
+    },
+    watch: {
+        $route() {
+            // - "Cache" les modales ouvertes entre deux changements de page.
+            this.$modal.hideAll();
+        },
+    },
+    created() {
+        // - Configure Axios pour qu'il redirige en cas de soucis de connexion lors des requêtes API.
+        this.$http.interceptors.response.use((response) => response, (error) => {
+            if (isRequestErrorStatusCode(error, HttpCode.ClientErrorUnauthorized)) {
+                this.$store.dispatch('auth/logout').then(() => {
+                    this.$router.replace({ name: 'login', hash: '#expired' })
+                        .catch(() => {});
+                });
+            }
+            return Promise.reject(error);
+        });
+    },
+    mounted() {
+        this.showBootMessages();
+    },
+    methods: {
+        // ------------------------------------------------------
+        // -
+        // -    Méthodes internes
+        // -
+        // ------------------------------------------------------
 
-    // - Configure Axios pour qu'il redirige en cas de soucis de connexion lors des requêtes API.
-    root.$http.interceptors.response.use((response) => response, (error) => {
-        if (isRequestErrorStatusCode(error, HttpCode.ClientErrorUnauthorized)) {
-            root.$store.dispatch('auth/logout').then(() => {
-                root.$router.replace({ path: '/login', hash: '#expired' })
-                    .catch(() => {});
+        showBootMessages() {
+            const showBootMessage = (type, message) => (
+                this.$toasted[type](message, {
+                    keepOnHover: true,
+                    duration: 10_000,
+                })
+            );
+
+            // - S'il y a des messages serveur, on les affiche.
+            (window.__SERVER_MESSAGES__ ?? []).forEach(({ type, message }) => {
+                if (!['success', 'info', 'error'].includes(type)) {
+                    type = 'show';
+                }
+                showBootMessage(type, message);
             });
-        }
-        return Promise.reject(error);
-    });
-
-    // - "Cache" les modales ouvertes entre deux changements de page.
-    watch(route, () => { root.$modal.hideAll(); });
-
-    return () => {
-        invariant(layout.value in layouts, `Le layout "${layout.value}" n'existe pas.`);
-        const Layout = layouts[layout.value];
+        },
+    },
+    render() {
+        const { layout } = this;
+        invariant(layout in layouts, `Le layout "${layout}" n'existe pas.`);
+        const Layout = layouts[layout];
 
         return (
             <Layout>
-                <router-view key={route.value.path} />
+                <router-view key={this.$route.path} />
             </Layout>
         );
-    };
+    },
 };
 
 export default App;

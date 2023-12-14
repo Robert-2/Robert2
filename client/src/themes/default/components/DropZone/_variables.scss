@@ -1,0 +1,41 @@
+@use '~@/themes/default/style/globals';
+
+/// Couleur de fond des zones de dépôt de fichier.
+/// @type Color
+$background-color: transparent !default;
+
+/// Couleur du texte des zones de dépôt de fichier.
+/// @type Color
+$color: globals.$text-base-color !default;
+
+/// Border radius des zones de dépôt de fichier.
+/// @type Number
+$border-radius: globals.$border-radius-large !default;
+
+/// Largeur de la bordure des zones de dépôt de fichier.
+/// @type Number
+$border-width: 5px !default;
+
+/// Couleur de la bordure des zones de dépôt de fichier.
+/// @type Color
+$border-color: globals.$divider-color !default;
+
+/// Couleur de l'icône des zones de dépôt de fichier.
+/// @type Color
+$icon-color: globals.$text-soft-color !default;
+
+//
+// - État: Zone active.
+//
+
+/// Couleur de fond des zones de dépôt de fichier lorsqu'elles sont actives.
+/// @type Color
+$active-background-color: rgba(224, 68, 6, 0.3) !default;
+
+/// Couleur du texte des zones de dépôt de fichier lorsqu'elles sont actives.
+/// @type Color
+$active-color: $color !default;
+
+/// Couleur de l'icône des zones de dépôt de fichier lorsqu'elles sont actives.
+/// @type Color
+$active-icon-color: $icon-color !default;

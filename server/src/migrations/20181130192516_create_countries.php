@@ -5,7 +5,7 @@ use Phinx\Migration\AbstractMigration;
 
 final class CreateCountries extends AbstractMigration
 {
-    public function up()
+    public function up(): void
     {
         $countries = $this->table('countries', ['signed' => true]);
         $countries
@@ -39,7 +39,7 @@ final class CreateCountries extends AbstractMigration
         $countries->insert($data)->save();
     }
 
-    public function down()
+    public function down(): void
     {
         $this->table('countries')->drop()->save();
     }

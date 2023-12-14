@@ -6,7 +6,7 @@ use Loxya\Config\Config;
 
 final class CreateParks extends AbstractMigration
 {
-    public function up()
+    public function up(): void
     {
         $parks = $this->table('parks', ['signed' => true]);
         $parks
@@ -29,7 +29,7 @@ final class CreateParks extends AbstractMigration
             'fr' => 'Interne',
         ];
 
-        $lang = Config::getSettings('defaultLang');
+        $lang = Config::get('defaultLang');
         $defaultName = $defaultNameTranslations['en'];
         if ($lang && array_key_exists($lang, $defaultNameTranslations)) {
             $defaultName = $defaultNameTranslations[$lang];
@@ -45,7 +45,7 @@ final class CreateParks extends AbstractMigration
             ->save();
     }
 
-    public function down()
+    public function down(): void
     {
         $this->table('parks')->drop()->save();
     }

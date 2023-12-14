@@ -7,16 +7,14 @@ import Loading from '@/themes/default/components/Loading';
 import Button from '@/themes/default/components/Button';
 import Item from './components/Item';
 
-// @vue/component
+/** Page de listing des attributs de matériel. */
 const Attributes = defineComponent({
     name: 'Attributes',
-    data() {
-        return {
-            attributes: [],
-            isFetched: false,
-            hasCriticalError: false,
-        };
-    },
+    data: () => ({
+        attributes: [],
+        isFetched: false,
+        hasCriticalError: false,
+    }),
     mounted() {
         this.fetchData();
     },

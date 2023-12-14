@@ -1,0 +1,71 @@
+@use '~@/themes/default/style/globals';
+
+.EventDepartureHeader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: globals.$spacing-medium;
+
+    &__infos {
+        @extend %reset-dl;
+
+        flex: 1;
+        display: flex;
+        gap: globals.$spacing-large;
+
+        &__item {
+            max-width: 250px;
+            text-align: center;
+            line-height: 1.3;
+
+            &__name {
+                display: block;
+                margin-bottom: globals.$spacing-thin;
+            }
+
+            &__value {
+                @extend %reset-dd;
+
+                @include globals.line-clamp(2);
+
+                color: globals.$text-base-color;
+                font-weight: 500;
+            }
+        }
+    }
+
+    &__actions {
+        display: flex;
+        flex-direction: column-reverse;
+        align-items: center;
+        gap: globals.$spacing-medium;
+    }
+
+    &__group-by {
+        &__label {
+            margin-right: globals.$spacing-small;
+        }
+    }
+
+    //
+    // - Responsive
+    //
+
+    @media (min-width: globals.$screen-tablet) {
+        flex-flow: row wrap;
+        gap: globals.$spacing-large;
+
+        &__actions {
+            align-items: flex-end;
+            gap: globals.$spacing-small;
+        }
+    }
+
+    @media (min-width: globals.$screen-desktop) {
+        &__actions {
+            flex-direction: row;
+            align-items: center;
+            gap: globals.$spacing-medium;
+        }
+    }
+}

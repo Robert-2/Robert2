@@ -65,7 +65,8 @@ const CalendarHeader = defineComponent({
         },
 
         handleSetCenterDate(newDate) {
-            newDate = moment(newDate).hour(12).minute(0).toDate();
+            newDate = newDate ? moment(newDate) : moment();
+            newDate = newDate.hour(12).minute(0).toDate();
             this.$emit('setCenterDate', newDate);
         },
 
@@ -133,6 +134,7 @@ const CalendarHeader = defineComponent({
                         value={centerDate}
                         onInput={handleSetCenterDate}
                         class="CalendarHeader__center-date"
+                        withSnippets
                     />
                     <Button
                         type="secondary"
@@ -183,7 +185,7 @@ const CalendarHeader = defineComponent({
                                 onChange={handleFilterCategoryChange}
                                 options={categoriesOptions}
                                 placeholder={__('page.calendar.display-all-categories')}
-                                highlight={!!filters.park && categoriesOptions.length > 1}
+                                highlight={!!filters.category && categoriesOptions.length > 1}
                             />
                         </div>
                     )}

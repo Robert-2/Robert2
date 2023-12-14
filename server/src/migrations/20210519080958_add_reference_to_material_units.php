@@ -5,7 +5,7 @@ use Phinx\Migration\AbstractMigration;
 
 final class AddReferenceToMaterialUnits extends AbstractMigration
 {
-    public function up()
+    public function up(): void
     {
         $table = $this->table('material_units');
         $table
@@ -21,7 +21,7 @@ final class AddReferenceToMaterialUnits extends AbstractMigration
             ->save();
     }
 
-    public function down()
+    public function down(): void
     {
         $table = $this->table('material_units');
         $table

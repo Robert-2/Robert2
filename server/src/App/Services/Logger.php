@@ -86,10 +86,8 @@ final class Logger
      * @param int $level Le niveau de log.
      * @param string $message Le message à logger.
      * @param array $context Le contexte du log (si utile).
-     *
-     * @return void
      */
-    public function log($level, $message, array $context = [])
+    public function log($level, $message, array $context = []): void
     {
         $this->globalLogger->log($level, $message, $context);
     }

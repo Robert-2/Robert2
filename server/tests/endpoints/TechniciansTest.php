@@ -53,7 +53,7 @@ final class TechniciansTest extends ApiTestCase
         ]);
     }
 
-    public function testGetAll()
+    public function testGetAll(): void
     {
         $this->client->get('/api/technicians');
         $this->assertStatusCode(StatusCode::STATUS_OK);
@@ -63,7 +63,7 @@ final class TechniciansTest extends ApiTestCase
         ]);
     }
 
-    public function testGetAllWithSearch()
+    public function testGetAllWithSearch(): void
     {
         // - Prénom
         $this->client->get('/api/technicians?search=ro');
@@ -101,22 +101,22 @@ final class TechniciansTest extends ApiTestCase
         ]);
     }
 
-    public function testGetAllInPeriod()
+    public function testGetAllWithAvailabilityPeriod(): void
     {
         // - Aucun technicien n'est disponible pendant ces dates
-        $this->client->get('/api/technicians?startDate=2018-12-15&endDate=2018-12-20');
+        $this->client->get('/api/technicians?availabilityPeriod[start]=2018-12-15&availabilityPeriod[end]=2018-12-20');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponsePaginatedData(0);
 
         // - Un technicien est disponible pendant ces dates
-        $this->client->get('/api/technicians?startDate=2018-12-17&endDate=2018-12-17');
+        $this->client->get('/api/technicians?availabilityPeriod[start]=2018-12-17&availabilityPeriod[end]=2018-12-17');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponsePaginatedData(1, [
             self::data(2),
         ]);
     }
 
-    public function testGetAllWhileEvent()
+    public function testGetAllWhileEvent(): void
     {
         $this->client->get('/api/technicians/while-event/2');
         $this->assertStatusCode(StatusCode::STATUS_OK);
@@ -137,13 +137,13 @@ final class TechniciansTest extends ApiTestCase
         ]);
     }
 
-    public function testGetEventNotFound()
+    public function testGetEventNotFound(): void
     {
         $this->client->get('/api/technicians/999/events');
         $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
-    public function testGetEvents()
+    public function testGetEvents(): void
     {
         $this->client->get('/api/technicians/1/events');
         $this->assertStatusCode(StatusCode::STATUS_OK);
@@ -183,27 +183,27 @@ final class TechniciansTest extends ApiTestCase
         ]);
     }
 
-    public function testGetOneNotFound()
+    public function testGetOneNotFound(): void
     {
         $this->client->get('/api/technicians/999');
         $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
-    public function testGetOne()
+    public function testGetOne(): void
     {
         $this->client->get('/api/technicians/1');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData(self::data(1));
     }
 
-    public function testCreateWithoutData()
+    public function testCreateWithoutData(): void
     {
         $this->client->post('/api/technicians');
         $this->assertStatusCode(StatusCode::STATUS_BAD_REQUEST);
         $this->assertApiErrorMessage("No data was provided.");
     }
 
-    public function testCreateBadData()
+    public function testCreateBadData(): void
     {
         // - Test 1.
         $this->client->post('/api/technicians', [
@@ -213,14 +213,14 @@ final class TechniciansTest extends ApiTestCase
             'nickname' => 'ilestvraimeeeentrèslongcesurnom',
         ]);
         $this->assertApiValidationError([
-            'nickname' => ["30 max. characters"],
-            'first_name' => ['This field contains some unauthorized characters'],
+            'nickname' => ["30 max. characters."],
+            'first_name' => ['This field contains some unauthorized characters.'],
             'last_name' => [
-                "This field is mandatory",
-                "This field contains some unauthorized characters",
-                "2 min. characters, 35 max. characters",
+                "This field is mandatory.",
+                "This field contains some unauthorized characters.",
+                "2 min. characters, 35 max. characters.",
             ],
-            'email' => ["This email address is not valid"],
+            'email' => ["This email address is invalid."],
         ]);
 
         // - Test 2.
@@ -232,11 +232,11 @@ final class TechniciansTest extends ApiTestCase
             'phone' => 'notAphoneNumber',
         ]);
         $this->assertApiValidationError([
-            'phone' => ['This telephone number is not valid'],
+            'phone' => ['This phone number is invalid.'],
         ]);
     }
 
-    public function testCreate()
+    public function testCreate(): void
     {
         $this->client->post('/api/technicians', [
             'first_name' => 'José',
@@ -272,7 +272,7 @@ final class TechniciansTest extends ApiTestCase
         ]);
     }
 
-    public function testUpdate()
+    public function testUpdate(): void
     {
         $this->client->put('/api/technicians/1', [
             'first_name' => 'José',
@@ -297,7 +297,7 @@ final class TechniciansTest extends ApiTestCase
         ]));
     }
 
-    public function testDeleteAndDestroy()
+    public function testDeleteAndDestroy(): void
     {
         // - First call: soft delete.
         $this->client->delete('/api/technicians/2');
@@ -312,13 +312,13 @@ final class TechniciansTest extends ApiTestCase
         $this->assertNull(Technician::withTrashed()->find(2));
     }
 
-    public function testRestoreNotFound()
+    public function testRestoreNotFound(): void
     {
         $this->client->put('/api/technicians/restore/999');
         $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
     }
 
-    public function testRestore()
+    public function testRestore(): void
     {
         // - First, delete person #2
         $this->client->delete('/api/technicians/2');
@@ -330,7 +330,7 @@ final class TechniciansTest extends ApiTestCase
         $this->assertNotNull(Technician::find(2));
     }
 
-    public function testAttachDocument()
+    public function testAttachDocument(): void
     {
         Carbon::setTestNow(Carbon::create(2022, 10, 22, 18, 42, 36));
 
@@ -454,7 +454,7 @@ final class TechniciansTest extends ApiTestCase
         }
     }
 
-    public function testGetDocuments()
+    public function testGetDocuments(): void
     {
         // - Technicien inexistant.
         $this->client->get('/api/technicians/999/documents');
