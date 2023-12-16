@@ -7,7 +7,7 @@ import Actions from './Actions';
 
 // @vue/component
 export default {
-    name: 'CalendarEventDetailsHeader',
+    name: 'EventDetailsHeader',
     props: {
         event: { type: Object, required: true },
     },

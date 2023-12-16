@@ -62,7 +62,7 @@ final class EstimateTest extends TestCase
         Carbon::setTestNow(Carbon::create(2022, 10, 22, 18, 42, 36));
 
         $event = tap(Event::findOrFail(2), function ($event) {
-            $event->discount_rate = Decimal::of('25.9542');
+            $event->discount_rate = Decimal::of('1.3923');
         });
         $result = Estimate::createFromBooking($event, User::findOrFail(1));
         $expected = [
@@ -104,7 +104,7 @@ final class EstimateTest extends TestCase
                 ],
             ],
             'degressive_rate' => '1.75',
-            'discount_rate' => '25.9542',
+            'discount_rate' => '1.3923',
             'vat_rate' => '20.00',
 
             'daily_total_without_discount' => '951.00',

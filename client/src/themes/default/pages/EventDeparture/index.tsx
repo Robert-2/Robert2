@@ -191,10 +191,18 @@ const EventDeparture = defineComponent({
                 return true;
             }
 
-            // - Si l'inventaire n'est pas déjà effectué, la période d'inventaire
-            //   doit être encore en cours et la réservation ne doit pas contenir
-            //   de pénurie.
-            return !this.isInventoryPeriodClosed && !this.hasMaterialShortage;
+            // FIXME: À re-activer lorsque les inventaires de retour terminés
+            //        rendront disponibles les stocks utilisés dans l'événement
+            //        (en bougeant la date de fin de mobilisation) OU quand la
+            //        gestion horaire aura été implémentée.
+            //        Sans ça, pour les événements qui partent juste après un autre
+            //        dont l'inventaire de retour a été terminé, sur un même jour,
+            //        on est bloqué car le système pense qu'il y a une pénurie.
+            // // - Si l'inventaire n'est pas déjà effectué, la période d'inventaire
+            // //   doit être encore en cours et la réservation ne doit pas contenir
+            // //   de pénurie.
+            // return !this.isInventoryPeriodClosed && !this.hasMaterialShortage;
+            return !this.isInventoryPeriodClosed;
         },
 
         isEditable(): boolean {
@@ -429,7 +437,7 @@ const EventDeparture = defineComponent({
             isArchived,
             canTerminate,
             hasMaterials,
-            hasMaterialShortage,
+            // hasMaterialShortage,
             isInventoryPeriodOpen,
             isInventoryPeriodClosed,
             isUpdatingMaterial,
@@ -474,14 +482,21 @@ const EventDeparture = defineComponent({
                     />
                 );
             }
-            if (!isDone && hasMaterialShortage) {
-                return (
-                    <Unavailable
-                        event={event}
-                        reason={UnavailabilityReason.MATERIAL_SHORTAGE}
-                    />
-                );
-            }
+            // FIXME: À re-activer lorsque les inventaires de retour terminés
+            //        rendront disponibles les stocks utilisés dans l'événement
+            //        (en bougeant la date de fin de mobilisation) OU quand la
+            //        gestion horaire aura été implémentée.
+            //        Sans ça, pour les événements qui partent juste après un autre
+            //        dont l'inventaire de retour a été terminé, sur un même jour,
+            //        on est bloqué car le système pense qu'il y a une pénurie.
+            // if (!isDone && hasMaterialShortage) {
+            //     return (
+            //         <Unavailable
+            //             event={event}
+            //             reason={UnavailabilityReason.MATERIAL_SHORTAGE}
+            //         />
+            //     );
+            // }
             if (!isDone && isInventoryPeriodClosed) {
                 return (
                     <Unavailable

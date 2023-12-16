@@ -1388,13 +1388,20 @@ final class EventsTest extends ApiTestCase
         // - On met la date courante à la date de début de l'événement.
         Carbon::setTestNow(Carbon::create(2018, 12, 15, 10, 00, 00));
 
-        // - Avec un événement qui contient des pénuries.
-        $this->client->put('/api/events/3/departure', $validInventories[3]);
-        $this->assertStatusCode(StatusCode::STATUS_UNPROCESSABLE_ENTITY);
-        $this->assertApiErrorMessage(
-            "This event contains shortage that should be fixed " .
-            "before proceeding with the departure inventory."
-        );
+        // FIXME: À re-activer lorsque les inventaires de retour terminés
+        //        rendront disponibles les stocks utilisés dans l'événement
+        //        (en bougeant la date de fin de mobilisation) OU quand la
+        //        gestion horaire aura été implémentée.
+        //        Sans ça, pour les événements qui partent juste après un autre
+        //        dont l'inventaire de retour a été terminé, sur un même jour,
+        //        on est bloqué car le système pense qu'il y a une pénurie.
+        // // - Avec un événement qui contient des pénuries.
+        // $this->client->put('/api/events/3/departure', $validInventories[3]);
+        // $this->assertStatusCode(StatusCode::STATUS_UNPROCESSABLE_ENTITY);
+        // $this->assertApiErrorMessage(
+        //     "This event contains shortage that should be fixed " .
+        //     "before proceeding with the departure inventory."
+        // );
 
         // - On corrige la pénurie en déplaçant l'événement #1.
         $event1->start_date = '2018-12-17 00:00:00';
@@ -1420,6 +1427,47 @@ final class EventsTest extends ApiTestCase
         $this->assertApiValidationError([
             ['id' => 3, 'message' => "The outgoing quantity cannot be greater than the planned quantity."],
             ['id' => 2, 'message' => "Please specify outgoing quantity."],
+        ]);
+
+        // - On met la date courante à la date de début de l'événement #5.
+        Carbon::setTestNow(Carbon::create(2020, 1, 1, 10, 00, 00));
+
+        // FIXME: À re-activer lorsque les inventaires de retour terminés
+        //        rendront disponibles les stocks utilisés dans l'événement
+        //        (en bougeant la date de fin de mobilisation) OU quand la
+        //        gestion horaire aura été implémentée.
+        //        Sans ça, pour les événements qui partent juste après un autre
+        //        dont l'inventaire de retour a été terminé, sur un même jour,
+        //        on est bloqué car le système pense qu'il y a une pénurie.
+        // // - Avec un événement contenant des unités en pénurie.
+        // $this->client->put('/api/events/5/departure', []);
+        // $this->assertStatusCode(StatusCode::STATUS_UNPROCESSABLE_ENTITY);
+        // $this->assertApiErrorMessage(
+        //     "This event contains shortage that should be fixed " .
+        //     "before proceeding with the departure inventory."
+        // );
+
+        // - On supprime le matériel en excédent pour pouvoir faire l'inventaire.
+        Event::findOrFail(5)->syncMaterials([
+            ['id' => 8, 'quantity' => 1],
+        ]);
+
+        // - Avec des données invalides (2)...
+        $this->client->put('/api/events/5/departure', [
+            [
+                'id' => 8,
+                'actual' => 0,
+                'comment' => 'État passable ...',
+            ],
+        ]);
+        $this->assertApiValidationError([
+            [
+                'id' => 8,
+                'message' => (
+                    "The number of outgoing units may not " .
+                    "exceed the total outgoing quantity."
+                ),
+            ],
         ]);
 
         // - On met la date courante à la date de début de l'événement #3.
@@ -1607,13 +1655,20 @@ final class EventsTest extends ApiTestCase
         // - On met la date courante à la date de début de l'événement.
         Carbon::setTestNow(Carbon::create(2018, 12, 15, 10, 00, 00));
 
-        // - Avec un événement qui contient des pénuries.
-        $this->client->put('/api/events/3/departure/finish', $validInventories[3]);
-        $this->assertStatusCode(StatusCode::STATUS_UNPROCESSABLE_ENTITY);
-        $this->assertApiErrorMessage(
-            "This event contains shortage that should be fixed " .
-            "before proceeding with the departure inventory."
-        );
+        // FIXME: À re-activer lorsque les inventaires de retour terminés
+        //        rendront disponibles les stocks utilisés dans l'événement
+        //        (en bougeant la date de fin de mobilisation) OU quand la
+        //        gestion horaire aura été implémentée.
+        //        Sans ça, pour les événements qui partent juste après un autre
+        //        dont l'inventaire de retour a été terminé, sur un même jour,
+        //        on est bloqué car le système pense qu'il y a une pénurie.
+        // // - Avec un événement qui contient des pénuries.
+        // $this->client->put('/api/events/3/departure/finish', $validInventories[3]);
+        // $this->assertStatusCode(StatusCode::STATUS_UNPROCESSABLE_ENTITY);
+        // $this->assertApiErrorMessage(
+        //     "This event contains shortage that should be fixed " .
+        //     "before proceeding with the departure inventory."
+        // );
 
         // - On corrige la pénurie en déplaçant l'événement #1.
         $event1->start_date = '2018-12-17 00:00:00';
@@ -1634,6 +1689,47 @@ final class EventsTest extends ApiTestCase
         $this->assertApiValidationError([
             ['id' => 3, 'message' => "The outgoing quantity cannot be greater than the planned quantity."],
             ['id' => 2, 'message' => "Please specify outgoing quantity."],
+        ]);
+
+        // - On met la date courante à la date de début de l'événement #5.
+        Carbon::setTestNow(Carbon::create(2020, 1, 1, 10, 00, 00));
+
+        // FIXME: À re-activer lorsque les inventaires de retour terminés
+        //        rendront disponibles les stocks utilisés dans l'événement
+        //        (en bougeant la date de fin de mobilisation) OU quand la
+        //        gestion horaire aura été implémentée.
+        //        Sans ça, pour les événements qui partent juste après un autre
+        //        dont l'inventaire de retour a été terminé, sur un même jour,
+        //        on est bloqué car le système pense qu'il y a une pénurie.
+        // // - Avec un événement contenant des unités en pénurie.
+        // $this->client->put('/api/events/5/departure/finish', []);
+        // $this->assertStatusCode(StatusCode::STATUS_UNPROCESSABLE_ENTITY);
+        // $this->assertApiErrorMessage(
+        //     "This event contains shortage that should be fixed " .
+        //     "before proceeding with the departure inventory."
+        // );
+
+        // - On supprime le matériel en excédent pour pouvoir faire l'inventaire.
+        Event::findOrFail(5)->syncMaterials([
+            ['id' => 8, 'quantity' => 1],
+        ]);
+
+        // - Avec des données invalides (2)...
+        $this->client->put('/api/events/5/departure/finish', [
+            [
+                'id' => 8,
+                'actual' => 0,
+                'comment' => 'État passable ...',
+            ],
+        ]);
+        $this->assertApiValidationError([
+            [
+                'id' => 8,
+                'message' => (
+                    "The number of outgoing units may not " .
+                    "exceed the total outgoing quantity."
+                ),
+            ],
         ]);
 
         // - On met la date courante à la date de début de l'événement #3.
@@ -1815,13 +1911,20 @@ final class EventsTest extends ApiTestCase
         $event->is_return_inventory_done = false;
         $event->save();
 
-        // - Avec un événement qui contient des pénuries.
-        $this->client->put('/api/events/2/return', $validInventories[2]);
-        $this->assertStatusCode(StatusCode::STATUS_UNPROCESSABLE_ENTITY);
-        $this->assertApiErrorMessage(
-            "This event contains shortage that should be fixed " .
-            "before proceeding with the return inventory."
-        );
+        // FIXME: À re-activer lorsque les inventaires de retour terminés
+        //        rendront disponibles les stocks utilisés dans l'événement
+        //        (en bougeant la date de fin de mobilisation) OU quand la
+        //        gestion horaire aura été implémentée.
+        //        Sans ça, pour les événements qui partent juste après un autre
+        //        dont l'inventaire de retour a été terminé, sur un même jour,
+        //        on est bloqué car le système pense qu'il y a une pénurie.
+        // // - Avec un événement qui contient des pénuries.
+        // $this->client->put('/api/events/2/return', $validInventories[2]);
+        // $this->assertStatusCode(StatusCode::STATUS_UNPROCESSABLE_ENTITY);
+        // $this->assertApiErrorMessage(
+        //     "This event contains shortage that should be fixed " .
+        //     "before proceeding with the return inventory."
+        // );
 
         // - On modifie les dates de l'événement pour qu'il n'y ait plus de pénurie.
         $event = Event::findOrFail(2);
@@ -1873,6 +1976,62 @@ final class EventsTest extends ApiTestCase
             ['id' => 2, 'message' => "Please specify the returned quantity."],
         ]);
 
+        // FIXME: À re-activer lorsque les inventaires de retour terminés
+        //        rendront disponibles les stocks utilisés dans l'événement
+        //        (en bougeant la date de fin de mobilisation) OU quand la
+        //        gestion horaire aura été implémentée.
+        //        Sans ça, pour les événements qui partent juste après un autre
+        //        dont l'inventaire de retour a été terminé, sur un même jour,
+        //        on est bloqué car le système pense qu'il y a une pénurie.
+        // // - Avec un événement contenant des unités en pénurie.
+        // $this->client->put('/api/events/5/return', []);
+        // $this->assertStatusCode(StatusCode::STATUS_UNPROCESSABLE_ENTITY);
+        // $this->assertApiErrorMessage(
+        //     "This event contains shortage that should be fixed " .
+        //     "before proceeding with the return inventory."
+        // );
+
+        // - On supprime le matériel en excédent pour pouvoir faire l'inventaire.
+        Event::findOrFail(5)->syncMaterials([
+            ['id' => 8, 'quantity' => 1],
+        ]);
+
+        // - Avec des données invalides (3)...
+        $this->client->put('/api/events/5/return', [
+            [
+                'id' => 8,
+                'actual' => 0,
+                'broken' => 0,
+            ],
+        ]);
+        $this->assertApiValidationError([
+            [
+                'id' => 8,
+                'message' => (
+                    "The number of units returned may not " .
+                    "exceed the total quantity returned."
+                ),
+            ],
+        ]);
+
+        // - Avec des données invalides (3)...
+        $this->client->put('/api/events/5/return', [
+            [
+                'id' => 8,
+                'actual' => 1,
+                'broken' => 0,
+            ],
+        ]);
+        $this->assertApiValidationError([
+            [
+                'id' => 8,
+                'message' => (
+                    "The number of units returned broken may not exceed " .
+                    "the total quantity returned broken."
+                ),
+            ],
+        ]);
+
         Carbon::setTestNow(Carbon::create(2023, 6, 2, 12, 30, 00));
 
         // - Avec des données valides simples...
@@ -1917,13 +2076,20 @@ final class EventsTest extends ApiTestCase
         $event->is_return_inventory_done = false;
         $event->save();
 
-        // - Avec un événement qui contient des pénuries.
-        $this->client->put('/api/events/2/return/finish');
-        $this->assertStatusCode(StatusCode::STATUS_UNPROCESSABLE_ENTITY);
-        $this->assertApiErrorMessage(
-            "This event contains shortage that should be fixed " .
-            "before proceeding with the return inventory."
-        );
+        // FIXME: À re-activer lorsque les inventaires de retour terminés
+        //        rendront disponibles les stocks utilisés dans l'événement
+        //        (en bougeant la date de fin de mobilisation) OU quand la
+        //        gestion horaire aura été implémentée.
+        //        Sans ça, pour les événements qui partent juste après un autre
+        //        dont l'inventaire de retour a été terminé, sur un même jour,
+        //        on est bloqué car le système pense qu'il y a une pénurie.
+        // // - Avec un événement qui contient des pénuries.
+        // $this->client->put('/api/events/2/return/finish');
+        // $this->assertStatusCode(StatusCode::STATUS_UNPROCESSABLE_ENTITY);
+        // $this->assertApiErrorMessage(
+        //     "This event contains shortage that should be fixed " .
+        //     "before proceeding with the return inventory."
+        // );
 
         // - On modifie les dates de l'événement pour qu'il n'y ait plus de pénurie.
         $event = Event::findOrFail(2);
@@ -2179,7 +2345,9 @@ final class EventsTest extends ApiTestCase
     {
         Carbon::setTestNow(Carbon::create(2020, 10, 22, 18, 42, 36));
 
-        $this->client->post('/api/events/2/invoices', ['discountRate' => 50.0]);
+        $this->client->post('/api/events/2/invoices', [
+            'discountRate' => 50.0,
+        ]);
         $this->assertStatusCode(StatusCode::STATUS_CREATED);
         $this->assertResponseData([
             'id' => 2,
@@ -2187,8 +2355,8 @@ final class EventsTest extends ApiTestCase
             'date' => '2020-10-22 18:42:36',
             'url' => 'http://loxya.test/invoices/2/pdf',
             'discount_rate' => '50.0000',
-            'total_without_taxes' => '1619.63',
-            'total_with_taxes' => '1943.56',
+            'total_without_taxes' => '832.13',
+            'total_with_taxes' => '998.56',
             'currency' => 'EUR',
         ]);
     }
@@ -2214,15 +2382,17 @@ final class EventsTest extends ApiTestCase
     {
         Carbon::setTestNow(Carbon::create(2022, 10, 22, 18, 42, 36));
 
-        $this->client->post('/api/events/2/estimates', ['discountRate' => 50.0]);
+        $this->client->post('/api/events/2/estimates', [
+            'discountRate' => 50.0,
+        ]);
         $this->assertStatusCode(StatusCode::STATUS_CREATED);
         $this->assertResponseData([
             'id' => 2,
             'date' => '2022-10-22 18:42:36',
             'url' => 'http://loxya.test/estimates/2/pdf',
             'discount_rate' => '50.0000',
-            'total_without_taxes' => '1619.63',
-            'total_with_taxes' => '1943.56',
+            'total_without_taxes' => '832.13',
+            'total_with_taxes' => '998.56',
             'currency' => 'EUR',
         ]);
     }

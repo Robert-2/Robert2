@@ -9,7 +9,7 @@ import { round } from '@/utils/decimalRound';
 import Fragment from '@/components/Fragment';
 import Icon from '@/themes/default/components/Icon';
 import Button from '@/themes/default/components/Button';
-import Form from '@/themes/default/components/BillingForm';
+import Form from '../../components/BillingForm';
 import Estimate from './Estimate';
 
 // @vue/component
@@ -59,11 +59,19 @@ const EventDetailsEstimates = defineComponent({
         maxDiscountRate() {
             const { event, totalDiscountable } = this;
             const { total_without_taxes: totalWithoutTaxes } = event;
-            if (totalWithoutTaxes <= 0) {
-                return new Decimal(0);
-            }
 
-            return (totalDiscountable.times(100)).div(totalWithoutTaxes);
+            return totalWithoutTaxes > 0
+                ? (totalDiscountable.times(100)).div(totalWithoutTaxes)
+                : new Decimal(0);
+        },
+
+        minTotalAmount() {
+            const { event, totalDiscountable } = this;
+            const { total_without_taxes: totalWithoutTaxes } = event;
+
+            return totalWithoutTaxes > 0
+                ? totalWithoutTaxes.sub(totalDiscountable)
+                : new Decimal(0);
         },
 
         discountRate: {
@@ -81,11 +89,12 @@ const EventDetailsEstimates = defineComponent({
 
         discountTarget: {
             get() {
-                const { event, discountRate, totalDiscountable } = this;
+                const { event, discountRate, minTotalAmount } = this;
                 const { total_without_taxes: totalWithoutTaxes } = event;
-                const discountAmount = totalDiscountable.times(discountRate / 100);
 
-                return totalWithoutTaxes.sub(discountAmount).toNumber();
+                const discountAmount = totalWithoutTaxes.times(discountRate / 100);
+                const totalAmount = totalWithoutTaxes.sub(discountAmount).toNumber();
+                return Math.max(totalAmount, minTotalAmount.toNumber());
             },
             set(value) {
                 const { event, totalDiscountable, maxDiscountRate } = this;
@@ -101,7 +110,7 @@ const EventDetailsEstimates = defineComponent({
                     discountAmount = totalDiscountable;
                 }
 
-                const rate = (discountAmount.div(totalDiscountable)).times(100).toNumber();
+                const rate = discountAmount.times(100).div(totalWithoutTaxes).toNumber();
                 this.unsavedDiscountRate = Math.min(round(rate, 4), maxDiscountRate.toNumber());
             },
         },
@@ -174,6 +183,7 @@ const EventDetailsEstimates = defineComponent({
             discountRate,
             discountTarget,
             maxDiscountRate,
+            minTotalAmount,
             isCreating,
             hasInvoice,
             hasEstimate,
@@ -269,6 +279,7 @@ const EventDetailsEstimates = defineComponent({
                     <Form
                         discountRate={discountRate}
                         discountTarget={discountTarget}
+                        minAmount={minTotalAmount}
                         maxAmount={totalWithoutTaxes}
                         maxRate={maxDiscountRate}
                         beneficiary={event.beneficiaries[0]}

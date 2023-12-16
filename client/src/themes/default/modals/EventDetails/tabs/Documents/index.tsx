@@ -13,7 +13,7 @@ import type { Document } from '@/stores/api/documents';
 import type { Event } from '@/stores/api/events';
 
 type Props = {
-    /** L'événement dont on veut gérer les documents. */
+    /** L'événement dont on souhaite gérer les documents. */
     event: Event,
 };
 
@@ -23,7 +23,7 @@ type Data = {
     documents: Document[],
 };
 
-// @vue/component
+/** L'onglet "Documents" de la modale de détails d'un événement. */
 const EventDetailsDocuments = defineComponent({
     name: 'EventDetailsDocuments',
     props: {

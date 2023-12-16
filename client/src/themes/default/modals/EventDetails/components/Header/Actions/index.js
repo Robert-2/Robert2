@@ -136,12 +136,7 @@ const EventDetailsHeaderActions = defineComponent({
 
         isPrintable() {
             const { event, hasMaterials } = this;
-            return (
-                event.materials &&
-                hasMaterials &&
-                event.beneficiaries &&
-                event.beneficiaries.length > 0
-            );
+            return event.materials && hasMaterials;
         },
 
         isRemovable() {
@@ -285,7 +280,7 @@ const EventDetailsHeaderActions = defineComponent({
             isDeleting,
             hasStarted,
             hasMaterials,
-            hasMaterialShortage,
+            // hasMaterialShortage,
             isDepartureInventoryPeriodOpen,
             isDepartureInventoryPeriodClosed,
             isDepartureInventoryDone,
@@ -308,8 +303,15 @@ const EventDetailsHeaderActions = defineComponent({
                 (isDepartureInventoryDone || !isDepartureInventoryPeriodClosed)
             );
 
-            const isReturnInventoryUnavailable = !isReturnInventoryDone && hasMaterialShortage;
-            const isDepartureInventoryUnavailable = !isDepartureInventoryDone && hasMaterialShortage;
+            // FIXME: À re-activer lorsque les inventaires de retour terminés
+            //        rendront disponibles les stocks utilisés dans l'événement
+            //        (en bougeant la date de fin de mobilisation) OU quand la
+            //        gestion horaire aura été implémentée.
+            //        Sans ça, pour les événements qui partent juste après un autre
+            //        dont l'inventaire de retour a été terminé, sur un même jour,
+            //        on est bloqué car le système pense qu'il y a une pénurie.
+            const isReturnInventoryUnavailable = false; // !isReturnInventoryDone && hasMaterialShortage;
+            const isDepartureInventoryUnavailable = false; // !isDepartureInventoryDone && hasMaterialShortage;
 
             // - Si la période de tous les inventaires a commencé et qu'ils sont tous indisponible
             //   à cause du matériel manquant, on affiche qu'un seul bouton désactivé.
