@@ -159,13 +159,9 @@ class SetupController extends BaseController
         }
 
         // - Données de configuration existantes.
-        $config = Config::get();
-
-        // - Prise en charge de la rétro-compatibilité vu qu'anciennement
-        //   `baseUrl` était nommé `apiUrl`.
-        if (($config['baseUrl'] ?? null) === null) {
-            $config['baseUrl'] = $config['apiUrl'] ?? '';
-        }
+        $config = array_replace(Config::get(), [
+            'baseUrl' => Config::getBaseUrl(),
+        ]);
 
         return $this->view->render($response, 'install.twig', [
             'lang' => $lang,

@@ -22,6 +22,7 @@
                     event.end_date|format_date('short', locale=locale)]
                 ) -}}
             </h3>
+            {% if beneficiaries is not empty -%}
             <table class="layout-table">
                 <tr>
                     <td class="third">
@@ -34,6 +35,7 @@
                     </td>
                 </tr>
             </table>
+            {% endif -%}
         </td>
     </tr>
 </table>
