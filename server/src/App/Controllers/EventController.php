@@ -178,13 +178,20 @@ class EventController extends BaseController
             ));
         }
 
-        // - S'il y a du matériel manquant, on ne peut pas faire l'inventaire de départ.
-        if ($event->has_missing_materials) {
-            throw new HttpUnprocessableEntityException($request, (
-                "This event contains shortage that should be fixed " .
-                "before proceeding with the departure inventory."
-            ));
-        }
+        // FIXME: À re-activer lorsque les inventaires de retour terminés
+        //        rendront disponibles les stocks utilisés dans l'événement
+        //        (en bougeant la date de fin de mobilisation) OU quand la
+        //        gestion horaire aura été implémentée.
+        //        Sans ça, pour les événements qui partent juste après un autre
+        //        dont l'inventaire de retour a été terminé, sur un même jour,
+        //        on est bloqué car le système pense qu'il y a une pénurie.
+        // // - S'il y a du matériel manquant, on ne peut pas faire l'inventaire de départ.
+        // if ($event->has_missing_materials) {
+        //     throw new HttpUnprocessableEntityException($request, (
+        //         "This event contains shortage that should be fixed " .
+        //         "before proceeding with the departure inventory."
+        //     ));
+        // }
 
         $rawInventory = $request->getParsedBody();
         if (!is_array($rawInventory) && $rawInventory !== null) {
@@ -239,13 +246,20 @@ class EventController extends BaseController
             ));
         }
 
-        // - S'il y a du matériel manquant, on ne peut pas faire l'inventaire de départ.
-        if ($event->has_missing_materials) {
-            throw new HttpUnprocessableEntityException($request, (
-                "This event contains shortage that should be fixed " .
-                "before proceeding with the departure inventory."
-            ));
-        }
+        // FIXME: À re-activer lorsque les inventaires de retour terminés
+        //        rendront disponibles les stocks utilisés dans l'événement
+        //        (en bougeant la date de fin de mobilisation) OU quand la
+        //        gestion horaire aura été implémentée.
+        //        Sans ça, pour les événements qui partent juste après un autre
+        //        dont l'inventaire de retour a été terminé, sur un même jour,
+        //        on est bloqué car le système pense qu'il y a une pénurie.
+        // // - S'il y a du matériel manquant, on ne peut pas faire l'inventaire de départ.
+        // if ($event->has_missing_materials) {
+        //     throw new HttpUnprocessableEntityException($request, (
+        //         "This event contains shortage that should be fixed " .
+        //         "before proceeding with the departure inventory."
+        //     ));
+        // }
 
         $rawInventory = $request->getParsedBody();
         if (!empty($rawInventory)) {
@@ -298,13 +312,20 @@ class EventController extends BaseController
             ));
         }
 
-        // - S'il y a du matériel manquant, on ne peut pas faire l'inventaire de retour.
-        if ($event->has_missing_materials) {
-            throw new HttpUnprocessableEntityException($request, (
-                "This event contains shortage that should be fixed " .
-                "before proceeding with the return inventory."
-            ));
-        }
+        // FIXME: À re-activer lorsque les inventaires de retour terminés
+        //        rendront disponibles les stocks utilisés dans l'événement
+        //        (en bougeant la date de fin de mobilisation) OU quand la
+        //        gestion horaire aura été implémentée.
+        //        Sans ça, pour les événements qui partent juste après un autre
+        //        dont l'inventaire de retour a été terminé, sur un même jour,
+        //        on est bloqué car le système pense qu'il y a une pénurie.
+        // // - S'il y a du matériel manquant, on ne peut pas faire l'inventaire de retour.
+        // if ($event->has_missing_materials) {
+        //     throw new HttpUnprocessableEntityException($request, (
+        //         "This event contains shortage that should be fixed " .
+        //         "before proceeding with the return inventory."
+        //     ));
+        // }
 
         $rawInventory = $request->getParsedBody();
         if (!is_array($rawInventory) && $rawInventory !== null) {
@@ -352,13 +373,20 @@ class EventController extends BaseController
             ));
         }
 
-        // - S'il y a du matériel manquant, on ne peut pas faire l'inventaire de retour.
-        if ($event->has_missing_materials) {
-            throw new HttpUnprocessableEntityException($request, (
-                "This event contains shortage that should be fixed " .
-                "before proceeding with the return inventory."
-            ));
-        }
+        // FIXME: À re-activer lorsque les inventaires de retour terminés
+        //        rendront disponibles les stocks utilisés dans l'événement
+        //        (en bougeant la date de fin de mobilisation) OU quand la
+        //        gestion horaire aura été implémentée.
+        //        Sans ça, pour les événements qui partent juste après un autre
+        //        dont l'inventaire de retour a été terminé, sur un même jour,
+        //        on est bloqué car le système pense qu'il y a une pénurie.
+        // // - S'il y a du matériel manquant, on ne peut pas faire l'inventaire de retour.
+        // if ($event->has_missing_materials) {
+        //     throw new HttpUnprocessableEntityException($request, (
+        //         "This event contains shortage that should be fixed " .
+        //         "before proceeding with the return inventory."
+        //     ));
+        // }
 
         $rawInventory = $request->getParsedBody();
         if (!empty($rawInventory)) {

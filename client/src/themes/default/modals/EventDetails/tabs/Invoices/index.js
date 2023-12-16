@@ -2,16 +2,16 @@ import './index.scss';
 import invariant from 'invariant';
 import Decimal from 'decimal.js';
 import { defineComponent } from '@vue/composition-api';
+import getEventDiscountRate from '@/utils/getEventDiscountRate';
+import { round } from '@/utils/decimalRound';
 import apiEvents from '@/stores/api/events';
 import { Group } from '@/stores/api/groups';
+import Fragment from '@/components/Fragment';
 import Icon from '@/themes/default/components/Icon';
 import Button from '@/themes/default/components/Button';
 import Link from '@/themes/default/components/Link';
-import Form from '@/themes/default/components/BillingForm';
-import Fragment from '@/components/Fragment';
+import Form from '../../components/BillingForm';
 import Invoice, { InvoiceLayout } from './Invoice';
-import getEventDiscountRate from '@/utils/getEventDiscountRate';
-import { round } from '@/utils/decimalRound';
 
 // @vue/component
 const EventDetailsInvoices = defineComponent({
@@ -68,11 +68,19 @@ const EventDetailsInvoices = defineComponent({
         maxDiscountRate() {
             const { event, totalDiscountable } = this;
             const { total_without_taxes: totalWithoutTaxes } = event;
-            if (totalWithoutTaxes <= 0) {
-                return new Decimal(0);
-            }
 
-            return (totalDiscountable.times(100)).div(totalWithoutTaxes);
+            return totalWithoutTaxes > 0
+                ? (totalDiscountable.times(100)).div(totalWithoutTaxes)
+                : new Decimal(0);
+        },
+
+        minTotalAmount() {
+            const { event, totalDiscountable } = this;
+            const { total_without_taxes: totalWithoutTaxes } = event;
+
+            return totalWithoutTaxes > 0
+                ? totalWithoutTaxes.sub(totalDiscountable)
+                : new Decimal(0);
         },
 
         discountRate: {
@@ -90,11 +98,12 @@ const EventDetailsInvoices = defineComponent({
 
         discountTarget: {
             get() {
-                const { event, discountRate, totalDiscountable } = this;
+                const { event, discountRate, minTotalAmount } = this;
                 const { total_without_taxes: totalWithoutTaxes } = event;
-                const discountAmount = totalDiscountable.times(discountRate / 100);
 
-                return totalWithoutTaxes.sub(discountAmount).toNumber();
+                const discountAmount = totalWithoutTaxes.times(discountRate / 100);
+                const totalAmount = totalWithoutTaxes.sub(discountAmount).toNumber();
+                return Math.max(totalAmount, minTotalAmount.toNumber());
             },
             set(value) {
                 const { event, totalDiscountable, maxDiscountRate } = this;
@@ -110,7 +119,7 @@ const EventDetailsInvoices = defineComponent({
                     discountAmount = totalDiscountable;
                 }
 
-                const rate = (discountAmount.div(totalDiscountable)).times(100).toNumber();
+                const rate = discountAmount.times(100).div(totalWithoutTaxes).toNumber();
                 this.unsavedDiscountRate = Math.min(round(rate, 4), maxDiscountRate.toNumber());
             },
         },
@@ -181,6 +190,7 @@ const EventDetailsInvoices = defineComponent({
             discountRate,
             discountTarget,
             maxDiscountRate,
+            minTotalAmount,
             isCreating,
             hasEstimate,
             hasRequestedForm,
@@ -291,6 +301,7 @@ const EventDetailsInvoices = defineComponent({
                     <Form
                         discountRate={discountRate}
                         discountTarget={discountTarget}
+                        minAmount={minTotalAmount}
                         maxAmount={totalWithoutTaxes}
                         maxRate={maxDiscountRate}
                         beneficiary={event.beneficiaries[0]}

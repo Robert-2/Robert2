@@ -4,6 +4,19 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.23.1 (2023-12-16)
+
+- Les fiches de sorties des événements peuvent être éditées même en l'absence d'un bénéficiaire.
+- Désactive TEMPORAIREMENT la vérification de l'absence de pénuries dans les inventaires de départ / retour
+  en attendant la gestion horaire des événements / réservations (sans quoi cela pouvait être problématique 
+  pour les événements / réservations avec retour / départ le même jour)
+- Corrige une incohérence au niveau de la limitation de la remise applicable aux événements contenant du
+  matériel non remisable. Le système proposait de définir un pourcentage de remise sur la totalité du prix
+  (en fonction du matériel remisable) mais limitait l'application de ce pourcentage à la partie remisable (#402).
+  Seuls les nouveaux devis / factures utiliseront ce nouveau mode de fonctionnement, plus logique, les anciens
+  devis / factures ne seront évidemment pas modifies (les données étant de toute façon figées).
+- Corrige une erreur 403 qui s'affichait lorsqu'un serveur HTTP de type Apache était utilisé pour "servir" l'application.
+
 ## 0.23.0 (2023-12-14)
 
 - Mise à jour des dépendances du projet.

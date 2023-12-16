@@ -7,11 +7,12 @@ import Button from '@/themes/default/components/Button';
 
 // @vue/component
 export default {
-    name: 'BillingForm',
+    name: 'EventDetailsBillingForm',
     props: {
         discountRate: { type: Number, required: true },
         discountTarget: { type: Number, required: true },
         maxRate: { type: Object, default: () => new Decimal(100) },
+        minAmount: { type: Object, default: undefined },
         maxAmount: { type: Object, default: undefined },
         loading: { type: Boolean, default: false },
         beneficiary: { type: Object, default: undefined },
@@ -41,30 +42,21 @@ export default {
     methods: {
         handleChangeRate(givenValue) {
             const rate = new Decimal(givenValue);
-
             if (rate.isNaN() || !rate.isFinite()) {
                 return;
             }
 
             const value = rate.clampedTo(0, this.maxRate);
-
             this.$emit('change', { field: 'rate', value });
         },
 
         handleChangeAmount(givenValue) {
             const amount = new Decimal(givenValue);
-
             if (amount.isNaN() || !amount.isFinite()) {
                 return;
             }
 
-            let max = new Decimal(Infinity);
-            if (amount.greaterThan(this.maxAmount ?? Infinity)) {
-                max = Decimal.clone(this.maxAmount);
-            }
-
-            const value = amount.clampedTo(0, max);
-
+            const value = amount.clampedTo(0, this.maxAmount ?? Infinity);
             this.$emit('change', { field: 'amount', value });
         },
 
@@ -85,6 +77,7 @@ export default {
             saveLabel,
             beneficiary,
             maxRate,
+            minAmount,
             maxAmount,
             isDiscountable,
             discountRate,
@@ -97,21 +90,21 @@ export default {
 
         const classNames = [
             'Form',
-            'BillingForm',
-            { 'BillingForm--not-discountable': !isDiscountable },
+            'EventDetailsBillingForm',
+            { 'EventDetailsBillingForm--not-discountable': !isDiscountable },
         ];
 
         return (
             <form class={classNames} onSubmit={handleSubmit}>
                 {!isDiscountable && (
-                    <p class="BillingForm__no-discount">{__('no-discount-applicable')}</p>
+                    <p class="EventDetailsBillingForm__no-discount">{__('no-discount-applicable')}</p>
                 )}
                 {isDiscountable && (
                     <Fragment>
                         <FormField
                             type="number"
                             label="wanted-discount-rate"
-                            class="BillingForm__discount-input"
+                            class="EventDetailsBillingForm__discount-input"
                             name="discountRate"
                             disabled={loading}
                             value={discountRate}
@@ -129,29 +122,29 @@ export default {
                         <FormField
                             type="number"
                             label="wanted-total-amount"
-                            class="BillingForm__discount-target-input"
+                            class="EventDetailsBillingForm__discount-target-input"
                             name="discountTarget"
                             disabled={loading}
                             value={targetAmount}
                             step={0.01}
-                            min={0}
-                            max={maxAmount.toNumber()}
+                            min={minAmount?.toNumber() ?? undefined}
+                            max={maxAmount?.toNumber() ?? undefined}
                             addon={currency}
                             onChange={handleChangeAmount}
                         />
                     </Fragment>
                 )}
                 {!!beneficiary && (
-                    <div class="BillingForm__beneficiary">
-                        <div class="BillingForm__beneficiary__label">
+                    <div class="EventDetailsBillingForm__beneficiary">
+                        <div class="EventDetailsBillingForm__beneficiary__label">
                             {__('beneficiary')}
                         </div>
-                        <div class="BillingForm__beneficiary__name">
+                        <div class="EventDetailsBillingForm__beneficiary__name">
                             {beneficiary.full_name}
                         </div>
                     </div>
                 )}
-                <div class="BillingForm__save">
+                <div class="EventDetailsBillingForm__save">
                     <Button htmlType="submit" type="primary" loading={loading}>
                         {saveLabel}
                     </Button>

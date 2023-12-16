@@ -603,7 +603,7 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
             return null;
         }
 
-        return $this->daily_total_discountable
+        return $this->daily_total_without_discount
             ->multipliedBy($this->discount_rate->dividedBy(100, 6))
             // @see https://www.ibm.com/docs/en/order-management-sw/9.2.1?topic=rounding-price
             // @see https://wiki.dolibarr.org/index.php?title=VAT_setup,_calculation_and_rounding_rules
@@ -779,9 +779,20 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
             return false;
         }
 
-        if ($this->materials->isEmpty() || $this->has_missing_materials) {
+        if ($this->materials->isEmpty()) {
             return false;
         }
+
+        // FIXME: À re-activer lorsque les inventaires de retour terminés
+        //        rendront disponibles les stocks utilisés dans l'événement
+        //        (en bougeant la date de fin de mobilisation) OU quand la
+        //        gestion horaire aura été implémentée.
+        //        Sans ça, pour les événements qui partent juste après un autre
+        //        dont l'inventaire de retour a été terminé, sur un même jour,
+        //        on est bloqué car le système pense qu'il y a une pénurie.
+        // if ($this->has_missing_materials) {
+        //     return false;
+        // }
 
         return $this->materials->every(
             fn ($material) => $material->pivot->is_departure_inventory_filled
@@ -811,9 +822,20 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
             return false;
         }
 
-        if ($this->materials->isEmpty() || $this->has_missing_materials === true) {
+        if ($this->materials->isEmpty()) {
             return false;
         }
+
+        // FIXME: À re-activer lorsque les inventaires de retour terminés
+        //        rendront disponibles les stocks utilisés dans l'événement
+        //        (en bougeant la date de fin de mobilisation) OU quand la
+        //        gestion horaire aura été implémentée.
+        //        Sans ça, pour les événements qui partent juste après un autre
+        //        dont l'inventaire de retour a été terminé, sur un même jour,
+        //        on est bloqué car le système pense qu'il y a une pénurie.
+        // if ($this->has_missing_materials) {
+        //     return false;
+        // }
 
         // FIXME: Cette condition devra être supprimée lorsque les dates de
         //        mobilisation auront été implémentées.
@@ -1104,10 +1126,17 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
             throw new \LogicException("This event contains no material, so there can be no inventory.");
         }
 
-        // - S'il y a du matériel manquant, on ne peut pas faire l'inventaire de retour.
-        if ($this->has_missing_materials) {
-            throw new \LogicException("This event contains shortage that should be fixed.");
-        }
+        // FIXME: À re-activer lorsque les inventaires de retour terminés
+        //        rendront disponibles les stocks utilisés dans l'événement
+        //        (en bougeant la date de fin de mobilisation) OU quand la
+        //        gestion horaire aura été implémentée.
+        //        Sans ça, pour les événements qui partent juste après un autre
+        //        dont l'inventaire de retour a été terminé, sur un même jour,
+        //        on est bloqué car le système pense qu'il y a une pénurie.
+        // // - S'il y a du matériel manquant, on ne peut pas faire l'inventaire de retour.
+        // if ($this->has_missing_materials) {
+        //     throw new \LogicException("This event contains shortage that should be fixed.");
+        // }
 
         $schema = V::arrayType()->each(new Rule\KeySetStrict(
             new Rule\Key('id'),
@@ -1208,10 +1237,17 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
             throw new \LogicException("This event contains no material, so there can be no inventory.");
         }
 
-        // - S'il y a du matériel manquant, on ne peut pas faire l'inventaire de retour.
-        if ($this->has_missing_materials) {
-            throw new \LogicException("This event contains shortage that should be fixed.");
-        }
+        // FIXME: À re-activer lorsque les inventaires de retour terminés
+        //        rendront disponibles les stocks utilisés dans l'événement
+        //        (en bougeant la date de fin de mobilisation) OU quand la
+        //        gestion horaire aura été implémentée.
+        //        Sans ça, pour les événements qui partent juste après un autre
+        //        dont l'inventaire de retour a été terminé, sur un même jour,
+        //        on est bloqué car le système pense qu'il y a une pénurie.
+        // // - S'il y a du matériel manquant, on ne peut pas faire l'inventaire de retour.
+        // if ($this->has_missing_materials) {
+        //     throw new \LogicException("This event contains shortage that should be fixed.");
+        // }
 
         if (!$this->can_finish_departure_inventory) {
             throw new \LogicException("This event's departure inventory cannot be finished.");
@@ -1249,10 +1285,17 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
             throw new \LogicException("This event contains no material, so there can be no inventory.");
         }
 
-        // - S'il y a du matériel manquant, on ne peut pas faire l'inventaire de retour.
-        if ($this->has_missing_materials) {
-            throw new \LogicException("This event contains shortage that should be fixed.");
-        }
+        // FIXME: À re-activer lorsque les inventaires de retour terminés
+        //        rendront disponibles les stocks utilisés dans l'événement
+        //        (en bougeant la date de fin de mobilisation) OU quand la
+        //        gestion horaire aura été implémentée.
+        //        Sans ça, pour les événements qui partent juste après un autre
+        //        dont l'inventaire de retour a été terminé, sur un même jour,
+        //        on est bloqué car le système pense qu'il y a une pénurie.
+        // // - S'il y a du matériel manquant, on ne peut pas faire l'inventaire de retour.
+        // if ($this->has_missing_materials) {
+        //     throw new \LogicException("This event contains shortage that should be fixed.");
+        // }
 
         $schema = V::arrayType()->each(new Rule\KeySetStrict(
             new Rule\Key('id'),
@@ -1346,10 +1389,17 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
             throw new \LogicException("This event contains no material, so there can be no inventory.");
         }
 
-        // - S'il y a du matériel manquant, on ne peut pas faire l'inventaire de retour.
-        if ($this->has_missing_materials) {
-            throw new \LogicException("This event contains shortage that should be fixed.");
-        }
+        // FIXME: À re-activer lorsque les inventaires de retour terminés
+        //        rendront disponibles les stocks utilisés dans l'événement
+        //        (en bougeant la date de fin de mobilisation) OU quand la
+        //        gestion horaire aura été implémentée.
+        //        Sans ça, pour les événements qui partent juste après un autre
+        //        dont l'inventaire de retour a été terminé, sur un même jour,
+        //        on est bloqué car le système pense qu'il y a une pénurie.
+        // // - S'il y a du matériel manquant, on ne peut pas faire l'inventaire de retour.
+        // if ($this->has_missing_materials) {
+        //     throw new \LogicException("This event contains shortage that should be fixed.");
+        // }
 
         if (!$this->can_finish_return_inventory) {
             throw new \LogicException("This event's return inventory cannot be finished.");

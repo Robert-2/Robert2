@@ -1,6 +1,8 @@
 @use '~@/themes/default/style/globals';
 
-.BillingForm {
+.EventDetailsBillingForm {
+    $block: &;
+
     &__no-discount {
         margin: 0;
         text-align: center;
@@ -35,7 +37,7 @@
         flex-direction: column;
         align-items: center;
 
-        .BillingForm__beneficiary {
+        #{$block}__beneficiary {
             text-align: center;
 
             &__label {
@@ -43,7 +45,7 @@
             }
         }
 
-        .BillingForm__save {
+        #{$block}__save {
             padding: 0;
         }
     }
