@@ -6,6 +6,7 @@ import { Group } from '@/stores/api/groups';
 import { DATE_DB_FORMAT } from '@/globals/constants';
 import apiBookings, { BookingEntity } from '@/stores/api/bookings';
 import apiEvents from '@/stores/api/events';
+import Queue from 'p-queue';
 import EventDetails from '@/themes/default/modals/EventDetails';
 import Page from '@/themes/default/components/Page';
 import CriticalError from '@/themes/default/components/CriticalError';
@@ -21,9 +22,18 @@ const ONE_DAY = 1000 * 3600 * 24;
 const FETCH_DELTA_DAYS = 3;
 const MAX_ZOOM_MONTH = 3;
 
+/**
+ * Nombre de requêtes simultanées maximum pour la récupération du
+ * matériel manquant (au delà, elles seront placées dans une file d'attente).
+ */
+const MAX_CONCURRENT_FETCHES = 5;
+
 /** Page du calendrier des réservations / événements. */
 const Calendar = defineComponent({
     name: 'Calendar',
+    setup: () => ({
+        fetchMissingMaterialsQueue: undefined,
+    }),
     data() {
         const parkFilter = this.$route.query.park;
         const { start, end } = getDefaultPeriod();
@@ -120,11 +130,17 @@ const Calendar = defineComponent({
             });
         },
     },
+    created() {
+        this.fetchMissingMaterialsQueue = new Queue({ concurrency: MAX_CONCURRENT_FETCHES });
+    },
     mounted() {
         // - Actualise le timestamp courant toutes les minutes.
         this.nowTimer = setInterval(() => { this.now = Date.now(); }, 60_000);
     },
     beforeDestroy() {
+        // - Vide la file d'attente des requêtes.
+        this.fetchMissingMaterialsQueue?.clear();
+
         if (this.nowTimer) {
             clearInterval(this.nowTimer);
         }
@@ -346,8 +362,31 @@ const Calendar = defineComponent({
             this.isLoading = true;
             this.isModalOpened = false;
 
+            // - Vide la file d'attente des requêtes avant de la re-peupler.
+            this.fetchMissingMaterialsQueue?.clear();
+
             try {
                 this.bookings = await apiBookings.all(this.fetchStart, this.fetchEnd);
+
+                const promises = this.bookings
+                    .filter((booking) => (
+                        !booking.is_archived &&
+                        !(
+                            moment(booking.end_date).isBefore(this.now, 'day') &&
+                            booking.is_return_inventory_done
+                        )
+                    ))
+                    .map((booking) => async () => {
+                        const missingMaterials = await apiEvents.missingMaterials(booking.id);
+
+                        this.handleUpdatedBooking({
+                            ...booking,
+                            has_missing_materials: missingMaterials.length > 0,
+                        });
+                    });
+
+                await this.fetchMissingMaterialsQueue?.addAll(promises);
+
                 this.isFetched = true;
             } catch (error) {
                 if (isRequestErrorStatusCode(error, HttpCode.ClientErrorRangeNotSatisfiable)) {

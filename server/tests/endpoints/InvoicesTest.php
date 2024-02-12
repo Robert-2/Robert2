@@ -15,9 +15,9 @@ final class InvoicesTest extends ApiTestCase
                 'number' => '2020-00001',
                 'date' => '2020-01-30 14:00:00',
                 'url' => 'http://loxya.test/invoices/1/pdf',
-                'discount_rate' => '50.0000',
-                'total_without_taxes' => '547.31',
-                'total_with_taxes' => '658.52',
+                'discount_rate' => '4.4766',
+                'total_without_taxes' => '544.13',
+                'total_with_taxes' => '652.96',
                 'currency' => 'EUR',
             ],
         ]);

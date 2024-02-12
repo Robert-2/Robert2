@@ -7,10 +7,6 @@ import Item from './Item';
 const DefaultLayoutSidebarMenu = defineComponent({
     name: 'DefaultLayoutSidebarMenu',
     computed: {
-        reservationsEnabled() {
-            return this.$store.state.settings.reservation.enabled;
-        },
-
         links() {
             const links = [
                 { ident: 'calendar', url: '/', icon: 'calendar-alt', exact: true },

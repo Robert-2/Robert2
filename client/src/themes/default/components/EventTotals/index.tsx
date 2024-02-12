@@ -39,7 +39,7 @@ const EventTotals = defineComponent({
             }
 
             const { vat_rate: vatRate } = this.event;
-            return vatRate.toNumber() > 0;
+            return !vatRate.isZero();
         },
 
         hasDiscount(): boolean {
@@ -49,28 +49,28 @@ const EventTotals = defineComponent({
             }
 
             const { discount_rate: discountRate } = this.event;
-            return discountRate.toNumber() > 0;
+            return !discountRate.isZero();
         },
 
-        discountableDifferentFromTotal(): boolean {
+        isNotFullyDiscountable(): boolean {
             const { is_billable: isBillable } = this.event;
             if (!isBillable) {
                 return false;
             }
 
             const {
-                daily_total_discountable: dailyTotalDiscountable,
-                daily_total_without_taxes: dailyTotalWithoutTaxes,
+                total_without_discount: totalWithoutDiscount,
+                total_discountable: totalDiscountable,
             } = this.event;
 
-            return dailyTotalDiscountable.toNumber() !== dailyTotalWithoutTaxes.toNumber();
+            return !totalDiscountable.eq(totalWithoutDiscount);
         },
     },
     created() {
         this.$store.dispatch('categories/fetch');
     },
     render() {
-        const { $t: __, event, itemsCount, useTaxes, hasDiscount, discountableDifferentFromTotal } = this;
+        const { $t: __, event, itemsCount, useTaxes, hasDiscount, isNotFullyDiscountable } = this;
         const {
             is_billable: isBillable,
             duration,
@@ -107,11 +107,11 @@ const EventTotals = defineComponent({
         const {
             degressive_rate: degressiveRate,
             vat_rate: vatRate,
+            daily_total: dailyTotal,
+            total_without_discount: totalWithoutDiscount,
             discount_rate: discountRate,
-            daily_total_without_discount: dailyTotalWithoutDiscount,
-            daily_total_discountable: dailyTotalDiscountable,
-            daily_total_discount: dailyTotalDiscount,
-            daily_total_without_taxes: dailyTotalWithoutTaxes,
+            total_discountable: totalDiscountable,
+            total_discount: totalDiscount,
             total_without_taxes: totalWithoutTaxes,
             total_taxes: totalTaxes,
             total_with_taxes: totalWithTaxes,
@@ -123,10 +123,10 @@ const EventTotals = defineComponent({
                 <div class="EventTotals__billing">
                     <div class="EventTotals__line">
                         <div class="EventTotals__line__title">
-                            {__('daily-total')}
+                            {useTaxes ? __('daily-total-without-tax') : __('daily-total')}
                         </div>
                         <div class="EventTotals__line__price">
-                            {formatAmount(dailyTotalWithoutDiscount, currency)}
+                            {formatAmount(dailyTotal, currency)}
                         </div>
                     </div>
                     <div class="EventTotals__line">
@@ -142,18 +142,18 @@ const EventTotals = defineComponent({
                             {useTaxes ? __('total-without-taxes') : __('total')}
                         </div>
                         <div class="EventTotals__line__price">
-                            {formatAmount(totalWithoutTaxes, currency)}
+                            {formatAmount(totalWithoutDiscount, currency)}
                         </div>
                     </div>
                     {hasDiscount && (
                         <Fragment>
-                            {discountableDifferentFromTotal && (
+                            {isNotFullyDiscountable && (
                                 <div class="EventTotals__line">
                                     <div class="EventTotals__line__title">
-                                        {__('daily-total-discountable')}
+                                        {__('total-discountable')}
                                     </div>
                                     <div class="EventTotals__line__price">
-                                        {formatAmount(dailyTotalDiscountable, currency)}
+                                        {formatAmount(totalDiscountable, currency)}
                                     </div>
                                 </div>
                             )}
@@ -162,15 +162,15 @@ const EventTotals = defineComponent({
                                     {__('discount-rate', { rate: discountRate })}
                                 </div>
                                 <div class="EventTotals__line__price">
-                                    - {formatAmount(dailyTotalDiscount, currency)}
+                                    - {formatAmount(totalDiscount, currency)}
                                 </div>
                             </div>
                             <div class="EventTotals__line EventTotals__line--grand-total">
                                 <div class="EventTotals__line__title">
-                                    {useTaxes ? __('daily-total-without-tax-after-discount') : __('daily-total-after-discount')}
+                                    {__('total-after-discount')}
                                 </div>
                                 <div class="EventTotals__line__price">
-                                    {formatAmount(dailyTotalWithoutTaxes, currency)}
+                                    {formatAmount(totalWithoutTaxes, currency)}
                                 </div>
                             </div>
                         </Fragment>
@@ -194,6 +194,16 @@ const EventTotals = defineComponent({
                                 </div>
                             </div>
                         </Fragment>
+                    )}
+                    {(!hasDiscount && isNotFullyDiscountable) && (
+                        <div class="EventTotals__line EventTotals__line--secondary">
+                            <div class="EventTotals__line__title">
+                                {__('total-discountable')}
+                            </div>
+                            <div class="EventTotals__line__price">
+                                {formatAmount(totalDiscountable, currency)}
+                            </div>
+                        </div>
                     )}
                 </div>
             </div>

@@ -5,6 +5,8 @@ import { defineComponent } from '@vue/composition-api';
 import showModal from '@/utils/showModal';
 import { BookingEntity } from '@/stores/api/bookings';
 import apiBeneficiaries from '@/stores/api/beneficiaries';
+import apiEvents from '@/stores/api/events';
+import Queue from 'p-queue';
 import Loading from '@/themes/default/components/Loading';
 import EventDetails from '@/themes/default/modals/EventDetails';
 import Item from '../../../components/BookingsItem';
@@ -20,6 +22,7 @@ type Props = {
 
 type InstanceProperties = {
     cancelOngoingFetch: (() => void) | undefined,
+    fetchMissingMaterialsQueue: Queue | undefined,
 };
 
 type Data = {
@@ -28,6 +31,12 @@ type Data = {
     isPartiallyFetched: boolean,
     isFullyFetched: boolean,
 };
+
+/**
+ * Nombre de requêtes simultanées maximum pour la récupération du
+ * matériel manquant (au delà, elles seront placées dans une file d'attente).
+ */
+const MAX_CONCURRENT_FETCHES = 5;
 
 /* Liste des emprunts en cours ou futurs d'un bénéficiaire. */
 const BeneficiaryViewNextBookings = defineComponent({
@@ -40,6 +49,7 @@ const BeneficiaryViewNextBookings = defineComponent({
     },
     setup: (): InstanceProperties => ({
         cancelOngoingFetch: undefined,
+        fetchMissingMaterialsQueue: undefined,
     }),
     data: (): Data => ({
         bookings: [],
@@ -48,10 +58,15 @@ const BeneficiaryViewNextBookings = defineComponent({
         isFullyFetched: false,
     }),
     created() {
+        this.fetchMissingMaterialsQueue = new Queue({ concurrency: MAX_CONCURRENT_FETCHES });
+
         this.fetchData();
     },
     beforeDestroy() {
         this.cancelOngoingFetch?.();
+
+        // - Vide la file d'attente des requêtes.
+        this.fetchMissingMaterialsQueue?.clear();
     },
     methods: {
         // ------------------------------------------------------
@@ -98,6 +113,9 @@ const BeneficiaryViewNextBookings = defineComponent({
             const { id } = this;
             const now = moment();
 
+            // - Vide la file d'attente des requêtes avant de la re-peupler.
+            this.fetchMissingMaterialsQueue?.clear();
+
             // - Annule la récupération en cours, s'il y en a une.
             this.cancelOngoingFetch?.();
 
@@ -119,6 +137,27 @@ const BeneficiaryViewNextBookings = defineComponent({
                     } else {
                         this.bookings.push(...data);
                     }
+
+                    const promises = data.map((booking: BookingSummary) => async () => {
+                        const missingMaterials = await apiEvents.missingMaterials(booking.id);
+
+                        const originalBookingIndex = this.bookings.findIndex(
+                            ({ entity, id: searchId }: BookingSummary) => (
+                                entity === booking.entity && searchId === booking.id
+                            ),
+                        );
+                        if (originalBookingIndex === -1) {
+                            return;
+                        }
+
+                        this.$set(this.bookings, originalBookingIndex, {
+                            ...booking,
+                            has_missing_materials: missingMaterials.length > 0,
+                        });
+                    });
+
+                    await this.fetchMissingMaterialsQueue?.addAll(promises);
+
                     this.isPartiallyFetched = true;
                     this.isFullyFetched = false;
 

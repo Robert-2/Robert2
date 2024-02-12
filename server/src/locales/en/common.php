@@ -116,6 +116,9 @@ return [
     "invoice-note-detail-next-page"
     => "Note: you'll find the detail of materials in next pages.",
 
+    "amount"
+    => "Amount",
+
     "daily-amount"
     => "Daily price",
 
@@ -131,11 +134,14 @@ return [
     "discountable"
     => "Discountable",
 
-    "discount-rate"
+    "discount"
     => "Discount",
 
     "no-discount"
     => "No discount",
+
+    "discount-of-amount"
+    => "%s of %s",
 
     "totals"
     => "Totals",
