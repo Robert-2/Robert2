@@ -285,10 +285,10 @@ export default {
     'time': "heure",
     'delete-selected': "Effacer la selection",
 
+    "daily-total-without-tax": "Total H.T.\u00A0/\u00A0jour\u00A0:",
     "daily-total": "Total\u00A0/\u00A0jour\u00A0:",
-    "daily-total-discountable": "Total remisable\u00A0/\u00A0jour\u00A0:",
-    "daily-total-without-tax-after-discount": "Total H.T.\u00A0/\u00A0jour après remise\u00A0:",
-    "daily-total-after-discount": "Total\u00A0/\u00A0jour après remise\u00A0:",
+    "total-discountable": "Total remisable\u00A0:",
+    "total-after-discount": "Total après remise\u00A0:",
     "total-without-taxes": "Total H.T.\u00A0:",
     "total-taxes": "T.V.A.\u00A0:",
     "total-with-taxes": "Total T.T.C.\u00A0:",

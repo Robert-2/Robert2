@@ -6,6 +6,8 @@ import { BookingEntity } from '@/stores/api/bookings';
 import formatTimelineBooking from '@/utils/formatTimelineBooking';
 import showModal from '@/utils/showModal';
 import apiBeneficiaries from '@/stores/api/beneficiaries';
+import apiEvents from '@/stores/api/events';
+import Queue from 'p-queue';
 import EventDetails from '@/themes/default/modals/EventDetails';
 import CriticalError from '@/themes/default/components/CriticalError';
 import Loading from '@/themes/default/components/Loading';
@@ -28,6 +30,7 @@ type Props = {
 type InstanceProperties = {
     cancelOngoingFetch: (() => void) | undefined,
     nowTimer: ReturnType<typeof setInterval> | undefined,
+    fetchMissingMaterialsQueue: Queue | undefined,
 };
 
 type Data = {
@@ -39,6 +42,13 @@ type Data = {
     now: number,
 };
 
+/**
+ * Nombre de requêtes simultanées maximum pour la récupération du
+ * matériel manquant (au delà, elles seront placées dans une file d'attente).
+ */
+const MAX_CONCURRENT_FETCHES = 5;
+
+/** Nombre de millisecondes pour faire un jour entier. */
 const ONE_DAY = 1000 * 3600 * 24;
 
 /* Contenu de l'onglet "emprunts" de la page de détails d'un bénéficiaire. */
@@ -53,6 +63,7 @@ const BeneficiaryViewBorrowings = defineComponent({
     setup: (): InstanceProperties => ({
         cancelOngoingFetch: undefined,
         nowTimer: undefined,
+        fetchMissingMaterialsQueue: undefined,
     }),
     data: (): Data => ({
         bookings: [],
@@ -98,6 +109,9 @@ const BeneficiaryViewBorrowings = defineComponent({
             }));
         },
     },
+    created() {
+        this.fetchMissingMaterialsQueue = new Queue({ concurrency: MAX_CONCURRENT_FETCHES });
+    },
     mounted() {
         this.fetchData();
 
@@ -106,6 +120,9 @@ const BeneficiaryViewBorrowings = defineComponent({
     },
     beforeDestroy() {
         this.cancelOngoingFetch?.();
+
+        // - Vide la file d'attente des requêtes.
+        this.fetchMissingMaterialsQueue?.clear();
 
         if (this.nowTimer) {
             clearInterval(this.nowTimer);
@@ -209,6 +226,9 @@ const BeneficiaryViewBorrowings = defineComponent({
         async fetchData() {
             const { beneficiary } = this;
 
+            // - Vide la file d'attente des requêtes avant de la re-peupler.
+            this.fetchMissingMaterialsQueue?.clear();
+
             // - Annule la récupération en cours, s'il y en a une.
             this.cancelOngoingFetch?.();
 
@@ -229,6 +249,35 @@ const BeneficiaryViewBorrowings = defineComponent({
                     } else {
                         this.bookings.push(...data);
                     }
+
+                    const promises = data
+                        .filter((booking: BookingSummary) => (
+                            !booking.is_archived &&
+                            !(
+                                moment(booking.end_date).isBefore(this.now, 'day') &&
+                                booking.is_return_inventory_done
+                            )
+                        ))
+                        .map((booking: BookingSummary) => async () => {
+                            const missingMaterials = await apiEvents.missingMaterials(booking.id);
+
+                            const originalBookingIndex = this.bookings.findIndex(
+                                ({ entity, id }: BookingSummary) => (
+                                    entity === booking.entity && id === booking.id
+                                ),
+                            );
+                            if (originalBookingIndex === -1) {
+                                return;
+                            }
+
+                            this.$set(this.bookings, originalBookingIndex, {
+                                ...booking,
+                                has_missing_materials: missingMaterials.length > 0,
+                            });
+                        });
+
+                    await this.fetchMissingMaterialsQueue?.addAll(promises);
+
                     this.isPartiallyFetched = true;
                     this.isFullyFetched = false;
 

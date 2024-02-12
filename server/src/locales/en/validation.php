@@ -1214,6 +1214,9 @@ return [
     "invalid-csv-delimiter"
     => "The CSV delimiter is invalid.",
 
+    "discount-rate-exceeds-maximum"
+    => "The discount rate exceeds the maximum.",
+
     //
     // - Existence messages
     //

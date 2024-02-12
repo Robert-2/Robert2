@@ -6,7 +6,6 @@ namespace Loxya\Controllers;
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
-use Loxya\Contracts\PeriodInterface;
 use Loxya\Errors\Enums\ApiErrorCode;
 use Loxya\Errors\Exception\ApiBadRequestException;
 use Loxya\Errors\Exception\HttpUnprocessableEntityException;
@@ -14,7 +13,6 @@ use Loxya\Http\Request;
 use Loxya\Models\Event;
 use Loxya\Models\Park;
 use Loxya\Support\Database\QueryAggregator;
-use Loxya\Support\Period;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpException;
@@ -61,33 +59,6 @@ class BookingController extends BaseController
         if ($bookings->isEmpty()) {
             return $response->withJson([], StatusCode::STATUS_OK);
         }
-
-        $period = $bookings->reduce(
-            fn(?Period $currentPeriod, PeriodInterface $booking) => (
-                $currentPeriod === null
-                    ? new Period($booking)
-                    : $currentPeriod->merge($booking)
-            )
-        );
-
-        // - NOTE : Ne pas prefetch le materiel des bookables via `->with()`,
-        //   car cela peut surcharger la mémoire rapidement.
-        $allConcurrentBookables = (new Collection())
-            // - Événements.
-            ->concat(
-                Event::inPeriod($period)->get()
-            );
-
-        foreach ($bookings as $booking) {
-            $booking->__cachedConcurrentBookables = $allConcurrentBookables
-                ->filter(fn($otherBookable) => (
-                    !$booking->is($otherBookable) &&
-                    $booking->getStartDate() <= $otherBookable->getEndDate() &&
-                    $booking->getEndDate() >= $otherBookable->getStartDate()
-                ))
-                ->values();
-        }
-
         $useMultipleParks = Park::count() > 1;
 
         $data = $bookings

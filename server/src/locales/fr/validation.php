@@ -1217,6 +1217,9 @@ return [
     "invalid-csv-delimiter"
     => "Le délimiteur CSV est invalide.",
 
+    "discount-rate-exceeds-maximum"
+    => "Le taux de remise dépasse le maximum.",
+
     //
     // - Existence messages
     //

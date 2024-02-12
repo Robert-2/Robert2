@@ -100,6 +100,10 @@
         .listing-table > tbody > tr > td:last-child {
             border-right: 1pt solid #888;
         }
+        .totals-table > tbody > tr > td {
+            border-bottom: 1pt solid #888;
+            vertical-align: middle;
+        }
         .inset {
             padding: 5mm 3mm 8mm !important;
             border: 1pt solid #999 !important;
@@ -209,11 +213,9 @@
 </div>
 
 <div class="vspace5 size8">
-    <table>
+    <table class="totals-table">
         <thead>
             <tr>
-                <th>Tarif H.T.&nbsp;/&nbsp;jour</th>
-                <th>Remise</th>
                 <th>Total&nbsp;/&nbsp;jour</th>
                 <th>Coef. d&eacute;gressif</th>
                 <th colspan="2">Totaux</th>
@@ -221,68 +223,55 @@
         </thead>
         <tbody>
             <tr class="center">
-                <td rowspan="3" style="border-bottom: 1pt solid #888;">
+                <td>
                     <div class="vspace2">
                         926,45&nbsp;&euro;
                     </div>
-                    <div class="vspace2 lighter">
-                        Remisable<br>
-                        26,45&nbsp;&euro;
-                    </div>
-                </td>
-                <td rowspan="3" style="border-bottom: 1pt solid #888;">
-                    <div class="vspace2">
-                                                <span class="lighter">Sans remise</span>
-                                            </div>
-                </td>
-                <td rowspan="3" style="border-bottom: 1pt solid #888;">
-                                        <div class="vspace2 right">
-                        H.T.<br>
-                        926,45&nbsp;&euro;
-                    </div>
-                    <div class="vspace2 right lighter">
-                        T.V.A. (20,0&nbsp;%)<br>
-                        185,29&nbsp;&euro;
-                    </div>
-                                        <div class="vspace2 right">
-                        T.T.C.<br>                        1&#8239;111,74&nbsp;&euro;
-                    </div>
-                </td>
-                <td rowspan="3" style="border-bottom: 1pt solid #888;">
-                    <div class="vspace2">
-                        &times;&nbsp;<strong>3,8</strong><br><br>
-                        <span class="lighter">
-                            (4 jours)
-                        </span>
-                    </div>
-                </td>
-                                <td>
-                    <div class="vspace2 strong center">Total H.T.</div>
                 </td>
                 <td>
+                    <div class="vspace2">
+                        &times;&nbsp;<strong>3,8</strong>
+                        <span class="lighter">(4 jours)</span>
+                    </div>
+                </td>
+                <td rowspan="1">
+                    <div class="vspace2 center">
+                        Total H.T.
+                        </div>
+                </td>
+                <td rowspan="1">
                     <div class="vspace2 right">
                         3&#8239;520,51&nbsp;&euro;
                     </div>
                 </td>
-                                            </tr>
-                        <tr>
+            </tr>
+            <tr class="center">
+                <td rowspan="2" colspan="2">
+                    <div class="vspace5 strong">
+                        = 3&#8239;520,51&nbsp;&euro;
+                    </div>
+                </td>
                 <td>
-                    <div class="vspace2 strong center">Total T.T.C.</div>
+                    <div class="vspace2 center">
+                        T.V.A.
+                        (20&nbsp;%)
+                    </div>
                 </td>
                 <td>
                     <div class="vspace2 right">
-                        4&#8239;224,61&nbsp;&euro;
+                        704,10&nbsp;&euro;
                     </div>
                 </td>
-            </tr>
+                </tr>
             <tr>
                 <td>
-                    <div class="vspace2 strong size10 center">
+                    <div class="vspace2 strong center">
+                        Total T.T.C.<br>
                         Montant net &agrave; payer
                     </div>
                 </td>
                 <td>
-                    <div class="vspace2 size10 strong right">
+                    <div class="vspace2 right strong">
                         4&#8239;224,61&nbsp;&euro;
                     </div>
                 </td>
