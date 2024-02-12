@@ -86,4 +86,10 @@
             background-color: #913410;
         }
     }
+
+    &--warning {
+        #{$block}__booking__icon {
+            color: globals.$text-danger-color;
+        }
+    }
 }

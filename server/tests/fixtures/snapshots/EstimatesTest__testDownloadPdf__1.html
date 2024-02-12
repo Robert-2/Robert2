@@ -100,6 +100,10 @@
         .listing-table > tbody > tr > td:last-child {
             border-right: 1pt solid #888;
         }
+        .totals-table > tbody > tr > td {
+            border-bottom: 1pt solid #888;
+            vertical-align: middle;
+        }
         .inset {
             padding: 5mm 3mm 8mm !important;
             border: 1pt solid #999 !important;
@@ -203,82 +207,75 @@
 </div>
 
 <div class="vspace5 size8">
-    <table>
+    <table class="totals-table">
         <thead>
             <tr>
-                <th>Daily price excl. VAT</th>
-                <th>Discount</th>
                 <th>Total&nbsp;/&nbsp;day</th>
                 <th>Degressive rate</th>
+                <th>Discount</th>
                 <th colspan="2">Totals</th>
             </tr>
         </thead>
         <tbody>
             <tr class="center">
-                <td rowspan="3" style="border-bottom: 1pt solid #888;">
+                <td>
                     <div class="vspace2">
                         &euro;331.00
                     </div>
-                    <div class="vspace2 lighter">
-                        Discountable<br>
-                        &euro;31.00
-                    </div>
                 </td>
-                <td rowspan="3" style="border-bottom: 1pt solid #888;">
+                <td>
                     <div class="vspace2">
-                                                50.0000%<br><br>
-                        - &euro;15.50
-                                            </div>
-                </td>
-                <td rowspan="3" style="border-bottom: 1pt solid #888;">
-                                        <div class="vspace2 right">
-                        Excl. VAT<br>
-                        &euro;315.50
-                    </div>
-                    <div class="vspace2 right lighter">
-                        V.A.T. (20.0%)<br>
-                        &euro;63.10
-                    </div>
-                                        <div class="vspace2 right">
-                        Incl. VAT<br>                        &euro;378.60
+                        &times;&nbsp;<strong>1.75</strong>
+                        <span class="lighter">(2 days)</span>
                     </div>
                 </td>
-                <td rowspan="3" style="border-bottom: 1pt solid #888;">
+                <td rowspan="3">
                     <div class="vspace2">
-                        &times;&nbsp;<strong>1.75</strong><br><br>
-                        <span class="lighter">
-                            (2 days)
-                        </span>
+                        5% of &euro;579.25
+                    </div>
+                    <div class="vspace5 strong">
+                        - &euro;28.97
                     </div>
                 </td>
-                                <td>
-                    <div class="vspace2 strong center">Total excl. VAT</div>
+                <td rowspan="1">
+                    <div class="vspace2 center">
+                        Total excl. VAT
+                        </div>
                 </td>
-                <td>
+                <td rowspan="1">
                     <div class="vspace2 right">
-                        &euro;552.13
-                    </div>
-                </td>
-                                            </tr>
-                        <tr>
-                <td>
-                    <div class="vspace2 strong center">Total incl. VAT</div>
-                </td>
-                <td>
-                    <div class="vspace2 right">
-                        &euro;662.56
+                        &euro;550.28
                     </div>
                 </td>
             </tr>
+            <tr class="center">
+                <td rowspan="2" colspan="2">
+                    <div class="vspace5 strong">
+                        = &euro;579.25
+                    </div>
+                </td>
+                <td>
+                    <div class="vspace2 center">
+                        V.A.T.
+                        (20%)
+                    </div>
+                </td>
+                <td>
+                    <div class="vspace2 right">
+                        &euro;110.06
+                    </div>
+                </td>
+                </tr>
             <tr>
                 <td>
-                    <div class="vspace2 strong size10 center">
+                    <div class="vspace2 strong center">
+                        Total incl. VAT<br>
                         Amount due
                     </div>
                 </td>
                 <td>
-                    <div class="vspace2 size10 strong right">
-                        &euro;662.56
+                    <div class="vspace2 right strong">
+                        &euro;660.34
                     </div>
                 </td>
             </tr>

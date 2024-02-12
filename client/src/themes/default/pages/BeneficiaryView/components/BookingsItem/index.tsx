@@ -152,7 +152,7 @@ const BeneficiaryViewBookingsItem = defineComponent({
         },
     },
     render() {
-        const { duration } = this.booking;
+        const { duration, has_missing_materials: hasMissingMaterials } = this.booking;
         const {
             $t: __,
             icon,
@@ -172,6 +172,7 @@ const BeneficiaryViewBookingsItem = defineComponent({
             'BeneficiaryViewBookingsItem--future': !isPast,
             'BeneficiaryViewBookingsItem--current': isOngoing,
             'BeneficiaryViewBookingsItem--confirmed': isConfirmed,
+            'BeneficiaryViewBookingsItem--warning': hasMissingMaterials,
         }];
 
         return (

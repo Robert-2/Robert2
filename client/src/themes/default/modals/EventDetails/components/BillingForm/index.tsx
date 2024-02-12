@@ -1,46 +1,118 @@
 import './index.scss';
+import { defineComponent } from '@vue/composition-api';
 import Decimal from 'decimal.js';
 import config from '@/globals/config';
 import Fragment from '@/components/Fragment';
 import FormField from '@/themes/default/components/FormField';
 import Button from '@/themes/default/components/Button';
 
-// @vue/component
-export default {
+import type { PropType } from '@vue/composition-api';
+import type { Beneficiary } from '@/stores/api/beneficiaries';
+
+type Props = {
+    /**
+     * Le taux de remise, en pourcent.
+     * Doit être un nombre compris entre 0 et 100.
+     */
+    discountRate: Decimal,
+
+    /**
+     * Le montant total voulu après remise.
+     * Doit être un nombre compris entre 0 (ou la valeur de minAmount)
+     * et le montant total sans remise (ou la valeur de maxAmount).
+     */
+    discountTarget: Decimal,
+
+    /**
+     * Le taux maximum de la remise, en pourcent.
+     *
+     * @default 100
+     */
+    maxRate?: Decimal,
+
+    /**
+     * Le montant total minimum applicable, pour limiter la saisie dans le champ.
+     * Doit être un nombre compris entre 0 et le montant total sans remise.
+     */
+    minAmount?: Decimal,
+
+    /**
+     * Le montant total maximum applicable, pour limiter la saisie dans le champ.
+     * Doit être un nombre compris entre 0 et le montant total sans remise.
+     */
+    maxAmount?: Decimal,
+
+    /**
+     * Le devis (ou la facture) est en cours de création ?
+     *
+     * @default false
+     */
+    loading?: boolean,
+
+    /** Le bénéficiaire, si on veut afficher son nom. */
+    beneficiary?: Beneficiary,
+
+    /**
+     * Le texte à afficher dans le bouton de sauvegarde.
+     *
+     * @default "Sauvegarder" (traduit)
+     */
+    saveLabel?: string,
+};
+
+/** Formulaire permettant de créer un devis ou une facture. */
+const EventDetailsBillingForm = defineComponent({
     name: 'EventDetailsBillingForm',
     props: {
-        discountRate: { type: Number, required: true },
-        discountTarget: { type: Number, required: true },
-        maxRate: { type: Object, default: () => new Decimal(100) },
-        minAmount: { type: Object, default: undefined },
-        maxAmount: { type: Object, default: undefined },
-        loading: { type: Boolean, default: false },
-        beneficiary: { type: Object, default: undefined },
+        discountRate: {
+            type: Object as PropType<Props['discountRate']>,
+            required: true,
+        },
+        discountTarget: {
+            type: Object as PropType<Props['discountTarget']>,
+            required: true,
+        },
+        maxRate: {
+            type: Object as PropType<Required<Props>['maxRate']>,
+            default: () => new Decimal(100),
+        },
+        minAmount: {
+            type: Object as PropType<Props['minAmount']>,
+            default: undefined,
+        },
+        maxAmount: {
+            type: Object as PropType<Props['maxAmount']>,
+            default: undefined,
+        },
+        loading: {
+            type: Boolean as PropType<Required<Props>['loading']>,
+            default: false,
+        },
+        beneficiary: {
+            type: Object as PropType<Props['beneficiary']>,
+            default: undefined,
+        },
         saveLabel: {
-            type: String,
+            type: String as PropType<Required<Props>['saveLabel']>,
             default() {
                 const { $t: __ } = this;
                 return __('save');
             },
         },
     },
+    emits: ['change', 'submit', 'cancel'],
     computed: {
-        isDiscountable() {
+        isDiscountable(): boolean {
             const { maxRate } = this;
             return maxRate.greaterThan(0);
         },
 
-        targetAmount() {
-            const { discountTarget } = this;
-            return (new Decimal(discountTarget)).toFixed(2);
-        },
-
-        currency() {
+        currency(): string {
             return config.currency.symbol;
         },
     },
     methods: {
-        handleChangeRate(givenValue) {
+        handleChangeRate(givenValue: string) {
             const rate = new Decimal(givenValue);
             if (rate.isNaN() || !rate.isFinite()) {
                 return;
@@ -50,7 +122,7 @@ export default {
             this.$emit('change', { field: 'rate', value });
         },
 
-        handleChangeAmount(givenValue) {
+        handleChangeAmount(givenValue: string) {
             const amount = new Decimal(givenValue);
             if (amount.isNaN() || !amount.isFinite()) {
                 return;
@@ -60,7 +132,7 @@ export default {
             this.$emit('change', { field: 'amount', value });
         },
 
-        handleSubmit(e) {
+        handleSubmit(e: SubmitEvent) {
             e.preventDefault();
             this.$emit('submit');
         },
@@ -81,7 +153,7 @@ export default {
             maxAmount,
             isDiscountable,
             discountRate,
-            targetAmount,
+            discountTarget,
             handleSubmit,
             handleCancel,
             handleChangeRate,
@@ -95,7 +167,7 @@ export default {
         ];
 
         return (
-            <form class={classNames} onSubmit={handleSubmit}>
+            <form class={classNames} onSubmit={handleSubmit} novalidate>
                 {!isDiscountable && (
                     <p class="EventDetailsBillingForm__no-discount">{__('no-discount-applicable')}</p>
                 )}
@@ -107,7 +179,7 @@ export default {
                             class="EventDetailsBillingForm__discount-input"
                             name="discountRate"
                             disabled={loading}
-                            value={discountRate}
+                            value={discountRate.toFixed(4)}
                             step={0.0001}
                             min={0.0}
                             max={maxRate.toNumber()}
@@ -125,7 +197,7 @@ export default {
                             class="EventDetailsBillingForm__discount-target-input"
                             name="discountTarget"
                             disabled={loading}
-                            value={targetAmount}
+                            value={discountTarget.toFixed(2)}
                             step={0.01}
                             min={minAmount?.toNumber() ?? undefined}
                             max={maxAmount?.toNumber() ?? undefined}
@@ -155,4 +227,6 @@ export default {
             </form>
         );
     },
-};
+});
+
+export default EventDetailsBillingForm;

@@ -3,7 +3,6 @@ import invariant from 'invariant';
 import Decimal from 'decimal.js';
 import { defineComponent } from '@vue/composition-api';
 import getEventDiscountRate from '@/utils/getEventDiscountRate';
-import { round } from '@/utils/decimalRound';
 import apiEvents from '@/stores/api/events';
 import { Group } from '@/stores/api/groups';
 import Fragment from '@/components/Fragment';
@@ -56,30 +55,29 @@ const EventDetailsInvoices = defineComponent({
             return this.$store.getters['auth/is']([Group.ADMIN, Group.MEMBER]);
         },
 
-        totalDiscountable() {
+        maxDiscountRate() {
             const {
-                degressive_rate: degressiveRate,
-                daily_total_discountable: dailyTotalDiscountable,
+                total_without_discount: totalWithoutDiscount,
+                total_discountable: totalDiscountable,
             } = this.event;
 
-            return dailyTotalDiscountable.times(degressiveRate);
-        },
+            if (totalWithoutDiscount > 0) {
+                return (totalDiscountable.times(100))
+                    .div(totalWithoutDiscount)
+                    .toDecimalPlaces(4, Decimal.ROUND_UP);
+            }
 
-        maxDiscountRate() {
-            const { event, totalDiscountable } = this;
-            const { total_without_taxes: totalWithoutTaxes } = event;
-
-            return totalWithoutTaxes > 0
-                ? (totalDiscountable.times(100)).div(totalWithoutTaxes)
-                : new Decimal(0);
+            return new Decimal(0);
         },
 
         minTotalAmount() {
-            const { event, totalDiscountable } = this;
-            const { total_without_taxes: totalWithoutTaxes } = event;
+            const {
+                total_without_discount: totalWithoutDiscount,
+                total_discountable: totalDiscountable,
+            } = this.event;
 
-            return totalWithoutTaxes > 0
-                ? totalWithoutTaxes.sub(totalDiscountable)
+            return totalWithoutDiscount > 0
+                ? totalWithoutDiscount.sub(totalDiscountable)
                 : new Decimal(0);
         },
 
@@ -89,38 +87,46 @@ const EventDetailsInvoices = defineComponent({
                 if (unsavedDiscountRate !== null) {
                     return this.unsavedDiscountRate;
                 }
-                return Math.min(getEventDiscountRate(event), maxDiscountRate.toNumber());
+
+                const eventDiscountRate = new Decimal(getEventDiscountRate(event));
+                return Decimal.min(eventDiscountRate, maxDiscountRate);
             },
             set(value) {
-                this.unsavedDiscountRate = Math.min(value, this.maxDiscountRate.toNumber());
+                this.unsavedDiscountRate = Decimal.min(new Decimal(value), this.maxDiscountRate);
             },
         },
 
         discountTarget: {
             get() {
                 const { event, discountRate, minTotalAmount } = this;
-                const { total_without_taxes: totalWithoutTaxes } = event;
+                const { total_without_discount: totalWithoutDiscount } = event;
 
-                const discountAmount = totalWithoutTaxes.times(discountRate / 100);
-                const totalAmount = totalWithoutTaxes.sub(discountAmount).toNumber();
-                return Math.max(totalAmount, minTotalAmount.toNumber());
+                const discountAmount = totalWithoutDiscount.times(discountRate / 100);
+                const totalAmount = totalWithoutDiscount.sub(discountAmount);
+                return Decimal.max(totalAmount, minTotalAmount);
             },
             set(value) {
-                const { event, totalDiscountable, maxDiscountRate } = this;
-                const { total_without_taxes: totalWithoutTaxes } = event;
+                const { event, maxDiscountRate } = this;
+                const {
+                    total_without_discount: totalWithoutDiscount,
+                    total_discountable: totalDiscountable,
+                } = event;
 
-                if (totalWithoutTaxes <= 0 || totalDiscountable === 0) {
+                if (totalWithoutDiscount <= 0 || totalDiscountable.isZero()) {
                     this.unsavedDiscountRate = 0;
                     return;
                 }
 
-                let discountAmount = totalWithoutTaxes.sub(value);
+                let discountAmount = totalWithoutDiscount.sub(value);
                 if (discountAmount.greaterThan(totalDiscountable)) {
                     discountAmount = totalDiscountable;
                 }
 
-                const rate = discountAmount.times(100).div(totalWithoutTaxes).toNumber();
-                this.unsavedDiscountRate = Math.min(round(rate, 4), maxDiscountRate.toNumber());
+                const rate = discountAmount.times(100)
+                    .div(totalWithoutDiscount)
+                    .toDecimalPlaces(4, Decimal.ROUND_UP);
+
+                this.unsavedDiscountRate = Decimal.min(rate, maxDiscountRate);
             },
         },
     },

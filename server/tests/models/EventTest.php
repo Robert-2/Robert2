@@ -234,14 +234,14 @@ final class EventTest extends TestCase
         $this->assertSame(null, $result->hasNotReturnedMaterials);
     }
 
-    public function testDailyAmountWithoutDiscount(): void
+    public function testTotalWithoutDiscount(): void
     {
-        $this->assertEquals('341.45', (string) Event::find(1)->daily_total_without_discount);
+        $this->assertEquals('597.54', (string) Event::find(1)->total_without_discount);
     }
 
-    public function testDailyTotalDiscountable(): void
+    public function testTotalDiscountable(): void
     {
-        $this->assertEquals('41.45', (string) Event::find(1)->daily_total_discountable);
+        $this->assertEquals('72.54', (string) Event::find(1)->total_discountable);
     }
 
     public function testTotalReplacement(): void

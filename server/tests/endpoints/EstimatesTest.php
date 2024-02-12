@@ -15,9 +15,9 @@ final class EstimatesTest extends ApiTestCase
                 'id' => 1,
                 'date' => '2021-01-30 14:00:00',
                 'url' => 'http://loxya.test/estimates/1/pdf',
-                'discount_rate' => '50.0000',
-                'total_with_taxes' => '662.56',
-                'total_without_taxes' => '552.13',
+                'discount_rate' => '5.0000',
+                'total_without_taxes' => '550.28',
+                'total_with_taxes' => '660.34',
                 'currency' => 'EUR',
             ],
         ]);

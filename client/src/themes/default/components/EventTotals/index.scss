@@ -41,6 +41,11 @@
             text-align: right;
         }
 
+        &--secondary {
+            margin-bottom: globals.$spacing-medium;
+            color: globals.$text-light-color;
+        }
+
         &--grand-total {
             margin-bottom: globals.$spacing-medium;
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Loxya\Models;
 
 use Brick\Math\BigDecimal as Decimal;
+use Brick\Math\RoundingMode;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Collection;
@@ -40,12 +41,10 @@ use Loxya\Support\Str;
  * @property Decimal $degressive_rate
  * @property Decimal $discount_rate
  * @property Decimal $vat_rate
- * @property Decimal $daily_total_without_discount
- * @property Decimal $daily_total_discountable
- * @property Decimal $daily_total_discount
- * @property Decimal $daily_total_without_taxes
- * @property Decimal $daily_total_taxes
- * @property Decimal $daily_total_with_taxes
+ * @property Decimal $daily_total
+ * @property Decimal $total_without_discount
+ * @property Decimal $total_discountable
+ * @property Decimal $total_discount
  * @property Decimal $total_without_taxes
  * @property Decimal $total_taxes
  * @property Decimal $total_with_taxes
@@ -84,12 +83,10 @@ final class Estimate extends BaseModel implements Serializable
             'degressive_rate' => V::custom([$this, 'checkDegressiveRate']),
             'discount_rate' => V::custom([$this, 'checkDiscountRate']),
             'vat_rate' => V::custom([$this, 'checkVatRate']),
-            'daily_total_without_discount' => V::custom([$this, 'checkAmount']),
-            'daily_total_discountable' => V::custom([$this, 'checkAmount']),
-            'daily_total_discount' => V::custom([$this, 'checkAmount']),
-            'daily_total_without_taxes' => V::custom([$this, 'checkAmount']),
-            'daily_total_taxes' => V::custom([$this, 'checkAmount']),
-            'daily_total_with_taxes' => V::custom([$this, 'checkAmount']),
+            'daily_total' => V::custom([$this, 'checkAmount']),
+            'total_without_discount' => V::custom([$this, 'checkAmount']),
+            'total_discountable' => V::custom([$this, 'checkAmount']),
+            'total_discount' => V::custom([$this, 'checkAmount']),
             'total_without_taxes' => V::custom([$this, 'checkAmount']),
             'total_taxes' => V::custom([$this, 'checkAmount']),
             'total_with_taxes' => V::custom([$this, 'checkAmount']),
@@ -163,11 +160,37 @@ final class Estimate extends BaseModel implements Serializable
         V::floatVal()->check($value);
         $value = Decimal::of($value);
 
-        return (
-            $value->isGreaterThanOrEqualTo(0) &&
-            $value->isLessThan(100) &&
-            $value->getScale() <= 4
-        );
+        $totalWithoutDiscountRaw = $this->getAttributeFromArray('total_without_discount');
+        if (!$this->validation['total_without_discount']->validate($totalWithoutDiscountRaw)) {
+            return true;
+        }
+        $totalWithoutDiscount = Decimal::of($totalWithoutDiscountRaw);
+
+        // - Si le total sans remise est à 0, la remise est forcément à 0 aussi.
+        if ($totalWithoutDiscount->isZero()) {
+            return $value->isZero();
+        }
+
+        $totalDiscountableRaw = $this->getAttributeFromArray('total_discountable');
+        if ($totalDiscountableRaw === null) {
+            return $value->isLessThan(100) ?: 'discount-rate-exceeds-maximum';
+        }
+
+        if (!$this->validation['total_discountable']->validate($totalDiscountableRaw)) {
+            return true;
+        }
+        $totalDiscountable = Decimal::of($totalDiscountableRaw);
+
+        // - Si le total remisable est à 0, il ne peut pas y avoir de remise.
+        if ($totalDiscountable->isZero()) {
+            return $value->isZero();
+        }
+
+        $maxDiscountRate = $totalDiscountable
+            ->multipliedBy(100)
+            ->dividedBy($totalWithoutDiscount, 4, RoundingMode::HALF_UP);
+
+        return !$value->isGreaterThan($maxDiscountRate) ?: 'discount-rate-exceeds-maximum';
     }
 
     public function checkVatRate($value)
@@ -262,12 +285,10 @@ final class Estimate extends BaseModel implements Serializable
         'degressive_rate' => AsDecimal::class,
         'discount_rate' => AsDecimal::class,
         'vat_rate' => AsDecimal::class,
-        'daily_total_without_discount' => AsDecimal::class,
-        'daily_total_discountable' => AsDecimal::class,
-        'daily_total_discount' => AsDecimal::class,
-        'daily_total_without_taxes' => AsDecimal::class,
-        'daily_total_taxes' => AsDecimal::class,
-        'daily_total_with_taxes' => AsDecimal::class,
+        'daily_total' => AsDecimal::class,
+        'total_without_discount' => AsDecimal::class,
+        'total_discountable' => AsDecimal::class,
+        'total_discount' => AsDecimal::class,
         'total_without_taxes' => AsDecimal::class,
         'total_taxes' => AsDecimal::class,
         'total_with_taxes' => AsDecimal::class,
@@ -384,13 +405,12 @@ final class Estimate extends BaseModel implements Serializable
             'degressiveRate' => $this->degressive_rate,
             'discountRate' => $this->discount_rate->dividedBy(100, 6),
             'vatRate' => $this->vat_rate->dividedBy(100, 4),
-            'dailyTotalWithoutDiscount' => $this->daily_total_without_discount,
-            'dailyTotalDiscountable' => $this->daily_total_discountable,
-            'dailyTotalDiscount' => $this->daily_total_discount,
-            'dailyTotalWithoutTaxes' => $this->daily_total_without_taxes,
-            'dailyTotalTaxes' => $this->daily_total_taxes,
-            'dailyTotalWithTaxes' => $this->daily_total_with_taxes,
+            'dailyTotal' => $this->daily_total,
+            'totalWithoutDiscount' => $this->total_without_discount,
+            'totalDiscountable' => $this->total_discountable,
+            'totalDiscount' => $this->total_discount,
             'totalWithoutTaxes' => $this->total_without_taxes,
+            'totalTaxes' => $this->total_taxes,
             'totalWithTaxes' => $this->total_with_taxes,
             'categoriesSubTotals' => $categoriesTotals,
             'materials' => (
@@ -414,12 +434,10 @@ final class Estimate extends BaseModel implements Serializable
         'degressive_rate',
         'discount_rate',
         'vat_rate',
-        'daily_total_without_discount',
-        'daily_total_discountable',
-        'daily_total_discount',
-        'daily_total_without_taxes',
-        'daily_total_taxes',
-        'daily_total_with_taxes',
+        'daily_total',
+        'total_without_discount',
+        'total_discountable',
+        'total_discount',
         'total_without_taxes',
         'total_taxes',
         'total_with_taxes',
@@ -472,15 +490,13 @@ final class Estimate extends BaseModel implements Serializable
                 'discount_rate' => $booking->discount_rate,
                 'vat_rate' => $booking->vat_rate,
 
-                // - Remise.
-                'daily_total_without_discount' => $booking->daily_total_without_discount,
-                'daily_total_discountable' => $booking->daily_total_discountable,
-                'daily_total_discount' => $booking->daily_total_discount,
-                'daily_total_without_taxes' => $booking->daily_total_without_taxes,
+                // - Total / jour.
+                'daily_total' => $booking->daily_total,
 
-                // - Taxes.
-                'daily_total_taxes' => $booking->daily_total_taxes,
-                'daily_total_with_taxes' => $booking->daily_total_with_taxes,
+                // - Remise.
+                'total_without_discount' => $booking->total_without_discount,
+                'total_discountable' => $booking->total_discountable,
+                'total_discount' => $booking->total_discount,
 
                 // - Totaux.
                 'total_without_taxes' => $booking->total_without_taxes,

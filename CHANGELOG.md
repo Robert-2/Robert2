@@ -4,6 +4,11 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.23.2 (2024-02-12)
+
+- Sur le calendrier, la vérification du matériel manquant est différée pour optimiser les temps de chargement.
+- Dans les devis et factures, le calcul de la remise s'applique sur le montant total, non plus sur le total journalier.
+
 ## 0.23.1 (2023-12-16)
 
 - Les fiches de sorties des événements peuvent être éditées même en l'absence d'un bénéficiaire.

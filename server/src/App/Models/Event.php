@@ -46,12 +46,10 @@ use Symfony\Contracts\Cache\ItemInterface as CacheItemInterface;
  * @property-read Decimal|null $degressive_rate
  * @property Decimal|null $discount_rate
  * @property-read Decimal|null $vat_rate
- * @property-read Decimal|null $daily_total_without_discount
- * @property-read Decimal|null $daily_total_discountable
- * @property-read Decimal|null $daily_total_discount
- * @property-read Decimal|null $daily_total_without_taxes
- * @property-read Decimal|null $daily_total_taxes
- * @property-read Decimal|null $daily_total_with_taxes
+ * @property-read Decimal|null $daily_total
+ * @property-read Decimal|null $total_discountable
+ * @property-read Decimal|null $total_discount
+ * @property-read Decimal|null $total_without_discount
  * @property-read Decimal|null $total_without_taxes
  * @property-read Decimal|null $total_taxes
  * @property-read Decimal|null $total_with_taxes
@@ -560,10 +558,10 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
     }
 
     //
-    // - Daily totals.
+    // - Daily total.
     //
 
-    public function getDailyTotalWithoutDiscountAttribute(): ?Decimal
+    public function getDailyTotalAttribute(): ?Decimal
     {
         if (!$this->is_billable) {
             return null;
@@ -579,7 +577,24 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
             ->toScale(2, RoundingMode::UNNECESSARY);
     }
 
-    public function getDailyTotalDiscountableAttribute(): ?Decimal
+    //
+    // - Discount.
+    //
+
+    public function getTotalWithoutDiscountAttribute(): ?Decimal
+    {
+        if (!$this->is_billable) {
+            return null;
+        }
+
+        return $this->daily_total
+            ->multipliedBy($this->degressive_rate)
+            // @see https://www.ibm.com/docs/en/order-management-sw/9.2.1?topic=rounding-price
+            // @see https://wiki.dolibarr.org/index.php?title=VAT_setup,_calculation_and_rounding_rules
+            ->toScale(2, RoundingMode::HALF_UP);
+    }
+
+    public function getTotalDiscountableAttribute(): ?Decimal
     {
         if (!$this->is_billable) {
             return null;
@@ -594,55 +609,21 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
                 ),
                 Decimal::zero()
             )
-            ->toScale(2, RoundingMode::UNNECESSARY);
+            ->multipliedBy($this->degressive_rate)
+            ->toScale(2, RoundingMode::HALF_UP);
     }
 
-    public function getDailyTotalDiscountAttribute(): ?Decimal
+    public function getTotalDiscountAttribute(): ?Decimal
     {
         if (!$this->is_billable) {
             return null;
         }
 
-        return $this->daily_total_without_discount
+        return $this->total_without_discount
             ->multipliedBy($this->discount_rate->dividedBy(100, 6))
             // @see https://www.ibm.com/docs/en/order-management-sw/9.2.1?topic=rounding-price
             // @see https://wiki.dolibarr.org/index.php?title=VAT_setup,_calculation_and_rounding_rules
             ->toScale(2, RoundingMode::HALF_UP);
-    }
-
-    public function getDailyTotalWithoutTaxesAttribute(): ?Decimal
-    {
-        if (!$this->is_billable) {
-            return null;
-        }
-
-        return $this->daily_total_without_discount
-            ->minus($this->daily_total_discount)
-            ->toScale(2, RoundingMode::UNNECESSARY);
-    }
-
-    public function getDailyTotalTaxesAttribute(): ?Decimal
-    {
-        if (!$this->is_billable) {
-            return null;
-        }
-
-        return $this->daily_total_without_taxes
-            ->multipliedBy($this->vat_rate->dividedBy(100, 4))
-            // @see https://www.ibm.com/docs/en/order-management-sw/9.2.1?topic=rounding-price
-            // @see https://wiki.dolibarr.org/index.php?title=VAT_setup,_calculation_and_rounding_rules
-            ->toScale(2, RoundingMode::HALF_UP);
-    }
-
-    public function getDailyTotalWithTaxesAttribute(): ?Decimal
-    {
-        if (!$this->is_billable) {
-            return null;
-        }
-
-        return $this->daily_total_without_taxes
-            ->plus($this->daily_total_taxes)
-            ->toScale(2, RoundingMode::UNNECESSARY);
     }
 
     //
@@ -655,8 +636,8 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
             return null;
         }
 
-        return $this->daily_total_without_taxes
-            ->multipliedBy($this->degressive_rate)
+        return $this->total_without_discount
+            ->minus($this->total_discount)
             // @see https://www.ibm.com/docs/en/order-management-sw/9.2.1?topic=rounding-price
             // @see https://wiki.dolibarr.org/index.php?title=VAT_setup,_calculation_and_rounding_rules
             ->toScale(2, RoundingMode::HALF_UP);
@@ -1773,7 +1754,6 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
                     'duration',
                     'technicians',
                     'beneficiaries',
-                    'has_missing_materials',
                     'has_not_returned_materials',
                     'parks',
                 ]);
@@ -1800,12 +1780,10 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
                         'degressive_rate',
                         'vat_rate',
                         'discount_rate',
-                        'daily_total_without_discount',
-                        'daily_total_discountable',
-                        'daily_total_discount',
-                        'daily_total_without_taxes',
-                        'daily_total_taxes',
-                        'daily_total_with_taxes',
+                        'daily_total',
+                        'total_without_discount',
+                        'total_discountable',
+                        'total_discount',
                         'total_without_taxes',
                         'total_taxes',
                         'total_with_taxes',

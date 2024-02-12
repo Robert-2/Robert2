@@ -33,12 +33,10 @@ final class EventsTest extends ApiTestCase
                 'discount_rate' => '0',
                 'vat_rate' => '20.00',
                 'currency' => 'EUR',
-                'daily_total_without_discount' => '341.45',
-                'daily_total_discountable' => '41.45',
-                'daily_total_discount' => '0.00',
-                'daily_total_without_taxes' => '341.45',
-                'daily_total_taxes' => '68.29',
-                'daily_total_with_taxes' => '409.74',
+                'daily_total' => '341.45',
+                'total_without_discount' => '597.54',
+                'total_discountable' => '72.54',
+                'total_discount' => '0.00',
                 'total_without_taxes' => '597.54',
                 'total_taxes' => '119.51',
                 'total_with_taxes' => '717.05',
@@ -137,12 +135,10 @@ final class EventsTest extends ApiTestCase
                 'discount_rate' => '0',
                 'vat_rate' => '20.00',
                 'currency' => 'EUR',
-                'daily_total_without_discount' => '951.00',
-                'daily_total_discountable' => '51.00',
-                'daily_total_discount' => '0.00',
-                'daily_total_without_taxes' => '951.00',
-                'daily_total_taxes' => '190.20',
-                'daily_total_with_taxes' => '1141.20',
+                'daily_total' => '951.00',
+                'total_without_discount' => '1664.25',
+                'total_discountable' => '89.25',
+                'total_discount' => '0.00',
                 'total_without_taxes' => '1664.25',
                 'total_taxes' => '332.85',
                 'total_with_taxes' => '1997.10',
@@ -425,12 +421,10 @@ final class EventsTest extends ApiTestCase
                 'discount_rate' => '0',
                 'vat_rate' => '20.00',
                 'currency' => 'EUR',
-                'daily_total_without_discount' => '1031.88',
-                'daily_total_discountable' => '31.90',
-                'daily_total_discount' => '0.00',
-                'daily_total_without_taxes' => '1031.88',
-                'daily_total_taxes' => '206.38',
-                'daily_total_with_taxes' => '1238.26',
+                'daily_total' => '1031.88',
+                'total_without_discount' => '3353.61',
+                'total_discountable' => '103.68',
+                'total_discount' => '0.00',
                 'total_without_taxes' => '3353.61',
                 'total_taxes' => '670.72',
                 'total_with_taxes' => '4024.33',
@@ -544,7 +538,7 @@ final class EventsTest extends ApiTestCase
             Event::SERIALIZE_BOOKING_DEFAULT => $events->map(fn($event) => (
                 Arr::except($event, ['parks', 'categories'])
             )),
-            Event::SERIALIZE_BOOKING_SUMMARY => $events->map(fn($event) => (
+            Event::SERIALIZE_BOOKING_SUMMARY => $events->map(fn ($event) => (
                 Arr::only($event, [
                     'id',
                     'title',
@@ -562,7 +556,6 @@ final class EventsTest extends ApiTestCase
                     'is_archived',
                     'is_departure_inventory_done',
                     'is_return_inventory_done',
-                    'has_missing_materials',
                     'has_not_returned_materials',
                     'parks',
                     'categories',
@@ -622,12 +615,10 @@ final class EventsTest extends ApiTestCase
             'discount_rate' => '0',
             'vat_rate' => '20.00',
             'currency' => 'EUR',
-            'daily_total_without_discount' => '0.00',
-            'daily_total_discountable' => '0.00',
-            'daily_total_discount' => '0.00',
-            'daily_total_without_taxes' => '0.00',
-            'daily_total_taxes' => '0.00',
-            'daily_total_with_taxes' => '0.00',
+            'daily_total' => '0.00',
+            'total_without_discount' => '0.00',
+            'total_discountable' => '0.00',
+            'total_discount' => '0.00',
             'total_without_taxes' => '0.00',
             'total_taxes' => '0.00',
             'total_with_taxes' => '0.00',
@@ -686,12 +677,10 @@ final class EventsTest extends ApiTestCase
         $this->assertResponseData(array_replace($expected, [
             'id' => 9,
             'title' => "Encore un événement",
-            'daily_total_without_taxes' => '357.40',
-            'daily_total_discountable' => '57.40',
-            'daily_total_discount' => '0.00',
-            'daily_total_without_discount' => '357.40',
-            'daily_total_taxes' => '71.48',
-            'daily_total_with_taxes' => '428.88',
+            'daily_total' => '357.40',
+            'total_without_discount' => '893.50',
+            'total_discountable' => '143.50',
+            'total_discount' => '0.00',
             'total_without_taxes' => '893.50',
             'total_taxes' => '178.70',
             'total_with_taxes' => '1072.20',
@@ -790,12 +779,10 @@ final class EventsTest extends ApiTestCase
                     'hours' => 984,
                 ],
                 'has_missing_materials' => true,
-                'daily_total_discount' => '0.00',
-                'daily_total_discountable' => '0.00',
-                'daily_total_taxes' => '260.00',
-                'daily_total_with_taxes' => '1559.98',
-                'daily_total_without_discount' => '1299.98',
-                'daily_total_without_taxes' => '1299.98',
+                'daily_total' => '1299.98',
+                'total_without_discount' => '40299.38',
+                'total_discountable' => '0.00',
+                'total_discount' => '0.00',
                 'degressive_rate' => '31.00',
                 'discount_rate' => '0',
                 'vat_rate' => '20.00',
@@ -843,12 +830,10 @@ final class EventsTest extends ApiTestCase
                     'hours' => 984,
                 ],
                 'has_missing_materials' => true,
-                'daily_total_discount' => '0.00',
-                'daily_total_discountable' => '149.85',
-                'daily_total_taxes' => '149.97',
-                'daily_total_with_taxes' => '899.82',
-                'daily_total_without_discount' => '749.85',
-                'daily_total_without_taxes' => '749.85',
+                'daily_total' => '749.85',
+                'total_without_discount' => '23245.35',
+                'total_discountable' => '4645.35',
+                'total_discount' => '0.00',
                 'degressive_rate' => '31.00',
                 'discount_rate' => '0',
                 'vat_rate' => '20.00',
@@ -953,6 +938,8 @@ final class EventsTest extends ApiTestCase
                     'hours' => 72,
                 ],
                 'degressive_rate' => '2.50',
+                'total_without_discount' => '853.63',
+                'total_discountable' => '103.63',
                 'total_taxes' => '170.73',
                 'total_with_taxes' => '1024.36',
                 'total_without_taxes' => '853.63',
@@ -2258,8 +2245,17 @@ final class EventsTest extends ApiTestCase
     {
         Carbon::setTestNow(Carbon::create(2020, 10, 22, 18, 42, 36));
 
+        // - Test avec un taux de remise dépassant le taux maximum (5.3628 %).
         $this->client->post('/api/events/2/invoices', [
-            'discountRate' => 50.0,
+            'discountRate' => '5.3629',
+        ]);
+        $this->assertApiValidationError([
+            'discount_rate' => ['The discount rate exceeds the maximum.'],
+        ]);
+
+        // - Test avec le taux de remise maximum possible.
+        $this->client->post('/api/events/2/invoices', [
+            'discountRate' => '5.3628',
         ]);
         $this->assertStatusCode(StatusCode::STATUS_CREATED);
         $this->assertResponseData([
@@ -2267,9 +2263,9 @@ final class EventsTest extends ApiTestCase
             'number' => '2020-00002',
             'date' => '2020-10-22 18:42:36',
             'url' => 'http://loxya.test/invoices/2/pdf',
-            'discount_rate' => '50.0000',
-            'total_without_taxes' => '832.13',
-            'total_with_taxes' => '998.56',
+            'discount_rate' => '5.3628',
+            'total_without_taxes' => '1575.00',
+            'total_with_taxes' => '1890.00',
             'currency' => 'EUR',
         ]);
     }
@@ -2295,17 +2291,26 @@ final class EventsTest extends ApiTestCase
     {
         Carbon::setTestNow(Carbon::create(2022, 10, 22, 18, 42, 36));
 
+        // - Test avec un taux de remise dépassant le taux maximum (5.3628 %).
         $this->client->post('/api/events/2/estimates', [
-            'discountRate' => 50.0,
+            'discountRate' => '5.3629',
+        ]);
+        $this->assertApiValidationError([
+            'discount_rate' => ['The discount rate exceeds the maximum.'],
+        ]);
+
+        // - Test avec le taux de remise maximum possible.
+        $this->client->post('/api/events/2/estimates', [
+            'discountRate' => '5.3628',
         ]);
         $this->assertStatusCode(StatusCode::STATUS_CREATED);
         $this->assertResponseData([
             'id' => 2,
             'date' => '2022-10-22 18:42:36',
             'url' => 'http://loxya.test/estimates/2/pdf',
-            'discount_rate' => '50.0000',
-            'total_without_taxes' => '832.13',
-            'total_with_taxes' => '998.56',
+            'discount_rate' => '5.3628',
+            'total_without_taxes' => '1575.00',
+            'total_with_taxes' => '1890.00',
             'currency' => 'EUR',
         ]);
     }

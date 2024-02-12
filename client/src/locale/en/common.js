@@ -286,10 +286,10 @@ export default {
     'time': "time",
     'delete-selected': "Delete-selected",
 
+    "daily-total-without-tax": "Daily total excl. tax:",
     "daily-total": "Daily total:",
-    "daily-total-discountable": "Daily total discountable:",
-    "daily-total-without-tax-after-discount": "Daily total excl. tax after discount:",
-    "daily-total-after-discount": "Daily Total after discount:",
+    "total-discountable": "Total discountable:",
+    "total-after-discount": "Total with discount:",
     "total-without-taxes": "Total excl. tax:",
     "total-taxes": "Taxes:",
     "total-with-taxes": "Total incl. taxes:",

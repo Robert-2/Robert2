@@ -116,6 +116,9 @@ return [
     "invoice-note-detail-next-page"
     => "Remarque\xc2\xa0: vous trouverez le détail du matériel aux pages suivantes.",
 
+    "amount"
+    => "Montant",
+
     "daily-amount"
     => "Tarif\xc2\xa0/\xc2\xa0jour",
 
@@ -131,11 +134,14 @@ return [
     "discountable"
     => "Remisable",
 
-    "discount-rate"
+    "discount"
     => "Remise",
 
     "no-discount"
     => "Sans remise",
+
+    "discount-of-amount"
+    => "%s de %s",
 
     "totals"
     => "Totaux",
