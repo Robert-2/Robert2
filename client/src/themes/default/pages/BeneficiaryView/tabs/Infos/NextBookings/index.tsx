@@ -4,6 +4,7 @@ import { Direction } from '@/stores/api/@types';
 import { defineComponent } from '@vue/composition-api';
 import showModal from '@/utils/showModal';
 import { BookingEntity } from '@/stores/api/bookings';
+import config from '@/globals/config';
 import apiBeneficiaries from '@/stores/api/beneficiaries';
 import apiEvents from '@/stores/api/events';
 import Queue from 'p-queue';
@@ -32,12 +33,6 @@ type Data = {
     isFullyFetched: boolean,
 };
 
-/**
- * Nombre de requêtes simultanées maximum pour la récupération du
- * matériel manquant (au delà, elles seront placées dans une file d'attente).
- */
-const MAX_CONCURRENT_FETCHES = 5;
-
 /* Liste des emprunts en cours ou futurs d'un bénéficiaire. */
 const BeneficiaryViewNextBookings = defineComponent({
     name: 'BeneficiaryViewNextBookings',
@@ -58,7 +53,7 @@ const BeneficiaryViewNextBookings = defineComponent({
         isFullyFetched: false,
     }),
     created() {
-        this.fetchMissingMaterialsQueue = new Queue({ concurrency: MAX_CONCURRENT_FETCHES });
+        this.fetchMissingMaterialsQueue = new Queue({ concurrency: config.maxConcurrentFetches });
 
         this.fetchData();
     },
