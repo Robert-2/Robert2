@@ -70,6 +70,7 @@ class TestCase extends CoreTestCase
             'billingMode' => 'partial',
             'degressiveRateFunction' => '((daysCount - 1) * 0.75) + 1',
             'maxItemsPerPage' => 100,
+            'maxConcurrentFetches' => 2,
             'companyData' => [
                 'name' => 'Testing corp.',
                 'street' => '5 rue des tests',

@@ -96,6 +96,7 @@ class EntryController extends BaseController
             ],
             'companyName' => $rawConfig['companyData']['name'],
             'defaultPaginationLimit' => $rawConfig['maxItemsPerPage'],
+            'maxConcurrentFetches' => $rawConfig['maxConcurrentFetches'],
             'defaultLang' => $rawConfig['defaultLang'],
             'currency' => $rawConfig['currency'],
             'billingMode' => $rawConfig['billingMode'],

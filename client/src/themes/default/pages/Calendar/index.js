@@ -16,17 +16,12 @@ import CalendarCaption from './components/Caption';
 import formatTimelineBooking from '@/utils/formatTimelineBooking';
 import { isRequestErrorStatusCode } from '@/utils/errors';
 import showModal from '@/utils/showModal';
+import config from '@/globals/config';
 import { getDefaultPeriod } from './_utils';
 
 const ONE_DAY = 1000 * 3600 * 24;
 const FETCH_DELTA_DAYS = 3;
 const MAX_ZOOM_MONTH = 3;
-
-/**
- * Nombre de requêtes simultanées maximum pour la récupération du
- * matériel manquant (au delà, elles seront placées dans une file d'attente).
- */
-const MAX_CONCURRENT_FETCHES = 5;
 
 /** Page du calendrier des réservations / événements. */
 const Calendar = defineComponent({
@@ -131,7 +126,7 @@ const Calendar = defineComponent({
         },
     },
     created() {
-        this.fetchMissingMaterialsQueue = new Queue({ concurrency: MAX_CONCURRENT_FETCHES });
+        this.fetchMissingMaterialsQueue = new Queue({ concurrency: config.maxConcurrentFetches });
     },
     mounted() {
         // - Actualise le timestamp courant toutes les minutes.
@@ -370,11 +365,7 @@ const Calendar = defineComponent({
 
                 const promises = this.bookings
                     .filter((booking) => (
-                        !booking.is_archived &&
-                        !(
-                            moment(booking.end_date).isBefore(this.now, 'day') &&
-                            booking.is_return_inventory_done
-                        )
+                        moment(booking.start_date).isAfter(this.now, 'day')
                     ))
                     .map((booking) => async () => {
                         const missingMaterials = await apiEvents.missingMaterials(booking.id);

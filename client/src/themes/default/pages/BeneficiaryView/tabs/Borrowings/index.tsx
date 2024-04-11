@@ -13,6 +13,7 @@ import CriticalError from '@/themes/default/components/CriticalError';
 import Loading from '@/themes/default/components/Loading';
 
 import EmptyMessage from '@/themes/default/components/EmptyMessage';
+import config from '@/globals/config';
 import Item from '../../components/BookingsItem';
 
 import Timeline from '@/themes/default/components/Timeline';
@@ -41,12 +42,6 @@ type Data = {
     isModalOpened: boolean,
     now: number,
 };
-
-/**
- * Nombre de requêtes simultanées maximum pour la récupération du
- * matériel manquant (au delà, elles seront placées dans une file d'attente).
- */
-const MAX_CONCURRENT_FETCHES = 5;
 
 /** Nombre de millisecondes pour faire un jour entier. */
 const ONE_DAY = 1000 * 3600 * 24;
@@ -110,7 +105,7 @@ const BeneficiaryViewBorrowings = defineComponent({
         },
     },
     created() {
-        this.fetchMissingMaterialsQueue = new Queue({ concurrency: MAX_CONCURRENT_FETCHES });
+        this.fetchMissingMaterialsQueue = new Queue({ concurrency: config.maxConcurrentFetches });
     },
     mounted() {
         this.fetchData();
@@ -252,11 +247,7 @@ const BeneficiaryViewBorrowings = defineComponent({
 
                     const promises = data
                         .filter((booking: BookingSummary) => (
-                            !booking.is_archived &&
-                            !(
-                                moment(booking.end_date).isBefore(this.now, 'day') &&
-                                booking.is_return_inventory_done
-                            )
+                            moment(booking.start_date).isAfter(this.now, 'day')
                         ))
                         .map((booking: BookingSummary) => async () => {
                             const missingMaterials = await apiEvents.missingMaterials(booking.id);
