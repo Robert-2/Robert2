@@ -36,6 +36,11 @@ class Config
         'httpAuthHeader' => 'Authorization',
         'sessionExpireHours' => 12,
         'maxItemsPerPage' => 100,
+        /**
+         * Nombre de requêtes simultanées maximum pour la
+         * récupération du matériel manquant.
+         */
+        'maxConcurrentFetches' => 2,
         'defaultLang' => 'fr',
         'billingMode' => 'partial', // - Valeurs possibles : 'none', 'partial', 'all'.
         'degressiveRateFunction' => 'daysCount',

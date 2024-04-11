@@ -24,6 +24,7 @@ const defaultConfig = {
     },
     companyName: null,
     defaultPaginationLimit: 100,
+    maxConcurrentFetches: 2,
     billingMode: 'partial',
     maxFileUploadSize: 25 * 1024 * 1024,
     colorSwatches: null,
